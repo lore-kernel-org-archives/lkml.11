@@ -2,178 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15400CCA47E
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 22:19:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B5A1CCA473
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 22:19:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345655AbiFIWTY (ORCPT
+        id S1345572AbiFIWT3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 18:19:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51104 "EHLO
+        Thu, 9 Jun 2022 18:19:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345680AbiFIWTS (ORCPT
+        with ESMTP id S1345702AbiFIWTT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 18:19:18 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A91D1FA
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 15:19:08 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id f9so10872704plg.0
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 15:19:08 -0700 (PDT)
+        Thu, 9 Jun 2022 18:19:19 -0400
+Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38E614D614
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 15:19:11 -0700 (PDT)
+Received: by mail-pf1-x44a.google.com with SMTP id j10-20020aa783ca000000b00518265c7cacso12991749pfn.3
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 15:19:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=YULgola7K497MBlM6Pfvzbon5/Nm8Tu+pAooiIC9hlw=;
-        b=GlOpLLlbuCZm916o3oGh2cF5PooLoBW5W20ClJJY90wE155D+yME0t7SkksQwN1lRK
-         aumrDVpwKzc6OGHzg4M9BgL4PK3QxQU12CxsoOhKevC8xc/dYTRp9yCp7w4GyWAY88U8
-         +uoBt+wuOAE+F+435zyJV8EBiC+pqzXBy7GJs8JoinzdN1aS/QuHFQawfW3qNj6LkWEW
-         FvuX+WgVYvcbCkN9EKtLlGQ5BFohie4ujmlYN31DcQE9CHjkLPD0dPh5PteM/5ZrV6rl
-         uuZxeYfP6Nn4Al3uNNLMf/US+ZOiRtmTdfTx6rjEPjwzoeL1x17S+hgceHkjMbY3aKA4
-         PckA==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=fWdTUxWRVXkKLWYheGOI11e0mL2XAHFKbZxg8ksMoZM=;
+        b=ezNDouTkewW/awvW/cRvKC6jHhcMBl4eQkJi6sdP+X2J6iJMkd00jA2jaRJhpFY7aw
+         yxivdcEq++4iV1GgB2ziv1ayV3oP8FWg/GB0Zo4bN9LSRrIbKMWW4pYYedFNqaZbtBdq
+         LI7orAiKEXNDUMTMRTz+eYmtPr0ihFSVRZhCMEgns7LQjXXffU9ysRs8Jm7/xp/mkHV8
+         hqJ/WTn4IigfYhYdyyonY3s//N3eKAKkW8RZYgrVC9YsY682gIJn1c0bZa76vTplgKaA
+         3OGnJiqbOGhiGk4PrcLnGinCbRAB3xGsfKwPwyZscTB2mgetoP8/LmB/5HB6hMrHCgU0
+         s7qw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YULgola7K497MBlM6Pfvzbon5/Nm8Tu+pAooiIC9hlw=;
-        b=8NO4B5uHU6YQMEnlJmTq+qBmiMHi5qVNN5tE/8vtDCzqLZTY+ve2rAXdNfgjdvbA32
-         MIyiHZXzr6+HxePrrQ7CtoQB4Sy9875eXrp4MBzX+ZVEP7MrV+dx1YdIdMix2kpB2BYJ
-         fCwQHpyUU6HivbNAve/S0oqEV7KkjQPfwfw3WhUpz0nmbWfFyK36MHllgaqaPUCaZGFJ
-         gfUEoYjXb81BJqRDwoW/+bIKnSZpT205DR0zZb/ZyZfdlgmrzGtVCMRlqLvJ/EnkW9uz
-         gB5AkGfuCzF8cP/DGWUtZ4TUgMhRSXqdQ54EjG75at8AH5zAlaTUWRK24DVcyE6kaXSo
-         bYqA==
-X-Gm-Message-State: AOAM5328uHL2p1OHZTiVCDGYKXDlyKTBZ2izpLRtm3dDtXS6TKpCYFFH
-        3fwT2lZcIFyV8Dcvn0Tk5cLF6g==
-X-Google-Smtp-Source: ABdhPJzVrvk6q78nh7Ue2eeMbkCIjL2IwjqmzrEUkajeU7gsKvrNiyqUTY+0T0A7h07wuRPLb8B5Lw==
-X-Received: by 2002:a17:902:ef93:b0:163:de9e:edf8 with SMTP id iz19-20020a170902ef9300b00163de9eedf8mr41749061plb.151.1654813147192;
-        Thu, 09 Jun 2022 15:19:07 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id q8-20020a170902eb8800b00167804a044fsm8631422plg.56.2022.06.09.15.19.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 15:19:06 -0700 (PDT)
-Date:   Thu, 9 Jun 2022 22:19:03 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Subject: Re: [PATCH 3/6] KVM: x86: wean in-kernel PIO from vcpu->arch.pio*
-Message-ID: <YqJx1/26XGLBX3AH@google.com>
-References: <20220608121253.867333-1-pbonzini@redhat.com>
- <20220608121253.867333-4-pbonzini@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220608121253.867333-4-pbonzini@redhat.com>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=fWdTUxWRVXkKLWYheGOI11e0mL2XAHFKbZxg8ksMoZM=;
+        b=roYYKILK7G0+nOOs/4I3y7IOXWyXZ1DvdJLo2AqUmrMMDYcOXiHcnKeU6RCG+NpbJ4
+         Y/E4nk4VR262Bq/NwI62+JGYv2Zx6ScgXLprOpa24ueXYkhPVMfQc1xoOY4tiFZK2XUt
+         GAIsqyMyKizqypZXE1E/3sUSMZroTJC7S2R+zt9gbHxCOvaNkMeigNuXyOa6bDeY+QWK
+         WBivlfcKz5m3dE3+tOyQT8E7ftPCAASEwbSx8fDo56UkWaqqnRuU9u05HZ41L+Fosm+O
+         Ut9/VJWJuvcIaIFwAMc7ISuPdM5aVSVD9knbg0Tx3EQO84OWIr0rqk80pnm9lHr//5jj
+         +yCw==
+X-Gm-Message-State: AOAM531dTC/BVyy4h2d1d/7iN+ENL7EV8PFnIPlKRh1n1bIzDIXCEV/B
+        eIfDM3ntY1zurSbcP0EJO6yJX/Ut
+X-Google-Smtp-Source: ABdhPJymRh8XdI6qUr+0U3jn9BPA1WS3MroiwqAq54XxkobNI9HSYvmGC6qhWN+ZtdS8zin/gyNAdfGHUw==
+X-Received: from fawn.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5795])
+ (user=morbo job=sendgmr) by 2002:a63:c5:0:b0:3fe:26a0:7abe with SMTP id
+ 188-20020a6300c5000000b003fe26a07abemr10973746pga.152.1654813150612; Thu, 09
+ Jun 2022 15:19:10 -0700 (PDT)
+Date:   Thu,  9 Jun 2022 22:16:24 +0000
+In-Reply-To: <20220609221702.347522-1-morbo@google.com>
+Message-Id: <20220609221702.347522-6-morbo@google.com>
+Mime-Version: 1.0
+References: <20220609221702.347522-1-morbo@google.com>
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+Subject: [PATCH 05/12] fs: quota: use correct format characters
+From:   Bill Wendling <morbo@google.com>
+To:     isanbard@gmail.com
+Cc:     Tony Luck <tony.luck@intel.com>, Borislav Petkov <bp@alien8.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Jan Kara <jack@suse.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>,
+        Ross Philipson <ross.philipson@oracle.com>,
+        Daniel Kiper <daniel.kiper@oracle.com>,
+        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-mm@kvack.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, alsa-devel@alsa-project.org,
+        llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022, Paolo Bonzini wrote:
->  static void complete_emulator_pio_in(struct kvm_vcpu *vcpu, void *val)
-> @@ -7482,16 +7486,11 @@ static int emulator_pio_in(struct kvm_vcpu *vcpu, int size,
->  		 * shenanigans as KVM doesn't support modifying the rep count,
->  		 * and the emulator ensures @count doesn't overflow the buffer.
->  		 */
-> +		complete_emulator_pio_in(vcpu, val);
-> +		return 1;
->  	} else {
-> -		int r = __emulator_pio_in(vcpu, size, port, count);
-> -		if (!r)
-> -			return r;
-> -
-> -		/* Results already available, fall through.  */
-> +		return __emulator_pio_in(vcpu, size, port, val, count);
+From: Bill Wendling <isanbard@gmail.com>
 
-Any objections to not using an "else"?  I.e.
+When compiling with -Wformat, clang emits the following warnings:
 
-	if (vcpu->arch.pio.count) {
-		/*
-		 * Complete a previous iteration that required userspace I/O.
-		 * Note, @count isn't guaranteed to match pio.count as userspace
-		 * can modify ECX before rerunning the vCPU.  Ignore any such
-		 * shenanigans as KVM doesn't support modifying the rep count,
-		 * and the emulator ensures @count doesn't overflow the buffer.
-		 */
-		complete_emulator_pio_in(vcpu, val);
-		return 1;
-	}
-	return __emulator_pio_in(vcpu, size, port, val, count);
+fs/quota/dquot.c:206:22: error: format string is not a string literal (potentially insecure) [-Werror,-Wformat-security]
+                    request_module(module_names[qm].qm_mod_name))
+                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
->  	}
-> -
-> -	complete_emulator_pio_in(vcpu, val);
-> -	return 1;
->  }
->  
->  static int emulator_pio_in_emulated(struct x86_emulate_ctxt *ctxt,
-> @@ -7506,14 +7505,8 @@ static int emulator_pio_out(struct kvm_vcpu *vcpu, int size,
->  			    unsigned short port, const void *val,
->  			    unsigned int count)
->  {
-> -	int ret;
-> -
->  	trace_kvm_pio(KVM_PIO_OUT, port, size, count, val);
-> -	ret = emulator_pio_in_out(vcpu, size, port, (void *)val, count, false);
-> -	if (ret)
-> -                vcpu->arch.pio.count = 0;
-> -
-> -        return ret;
-> +	return emulator_pio_in_out(vcpu, size, port, (void *)val, count, false);
->  }
->  
->  static int emulator_pio_out_emulated(struct x86_emulate_ctxt *ctxt,
-> @@ -13064,20 +13057,20 @@ static int kvm_sev_es_outs(struct kvm_vcpu *vcpu, unsigned int size,
->  static int kvm_sev_es_ins(struct kvm_vcpu *vcpu, unsigned int size,
->  			  unsigned int port);
->  
-> -static void advance_sev_es_emulated_ins(struct kvm_vcpu *vcpu)
-> +static void advance_sev_es_emulated_ins(struct kvm_vcpu *vcpu, unsigned count, int size)
->  {
-> -	unsigned count = vcpu->arch.pio.count;
-> -	complete_emulator_pio_in(vcpu, vcpu->arch.sev_pio_data);
->  	vcpu->arch.sev_pio_count -= count;
-> -	vcpu->arch.sev_pio_data += count * vcpu->arch.pio.size;
-> +	vcpu->arch.sev_pio_data += count * size;
->  }
->  
->  static int complete_sev_es_emulated_ins(struct kvm_vcpu *vcpu)
->  {
-> +	unsigned count = vcpu->arch.pio.count;
+Use a string literal for the format string.
 
-Opportunistically use an "unsigned int" if you spin another version?
+Link: https://github.com/ClangBuiltLinux/linux/issues/378
+Signed-off-by: Bill Wendling <isanbard@gmail.com>
+---
+ fs/quota/dquot.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->  	int size = vcpu->arch.pio.size;
->  	int port = vcpu->arch.pio.port;
->  
-> -	advance_sev_es_emulated_ins(vcpu);
-> +	complete_emulator_pio_in(vcpu, vcpu->arch.sev_pio_data);
-> +	advance_sev_es_emulated_ins(vcpu, count, size);
+diff --git a/fs/quota/dquot.c b/fs/quota/dquot.c
+index a74aef99bd3d..3b613de3b371 100644
+--- a/fs/quota/dquot.c
++++ b/fs/quota/dquot.c
+@@ -203,7 +203,7 @@ static struct quota_format_type *find_quota_format(int id)
+ 			     module_names[qm].qm_fmt_id != id; qm++)
+ 			;
+ 		if (!module_names[qm].qm_fmt_id ||
+-		    request_module(module_names[qm].qm_mod_name))
++		    request_module("%s", module_names[qm].qm_mod_name))
+ 			return NULL;
+ 
+ 		spin_lock(&dq_list_lock);
+-- 
+2.36.1.255.ge46751e96f-goog
 
-Eww.  The dependency between vcpu->arch.pio.count and complete_emulator_pio_in()
-is nasty.  Can you add a comment above count to reduce the likelihood of someone
-using vcpu->arch.pio.count directly here instead of making a snapshot?
-
-	/*
-	 * Snapshot the count before completing userspace I/O, which will
-	 * consume the userspace data and thus clear vcpu->arch.pio.count.
-	 */
-	unsigned int count = vcpu->arch.pio.count;
-
->  	if (vcpu->arch.sev_pio_count)
->  		return kvm_sev_es_ins(vcpu, size, port);
->  	return 1;
-> @@ -13089,11 +13082,11 @@ static int kvm_sev_es_ins(struct kvm_vcpu *vcpu, unsigned int size,
->  	for (;;) {
->  		unsigned int count =
->  			min_t(unsigned int, PAGE_SIZE / size, vcpu->arch.sev_pio_count);
-> -		if (!__emulator_pio_in(vcpu, size, port, count))
-> +		if (!__emulator_pio_in(vcpu, size, port, vcpu->arch.sev_pio_data, count))
->  			break;
->  
->  		/* Emulation done by the kernel.  */
-> -		advance_sev_es_emulated_ins(vcpu);
-> +		advance_sev_es_emulated_ins(vcpu, count, size);
->  		if (!vcpu->arch.sev_pio_count)
->  			return 1;
->  	}
-> -- 
-> 2.31.1
-> 
-> 
