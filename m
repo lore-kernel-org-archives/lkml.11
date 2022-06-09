@@ -2,90 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 597AACCA47E
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 20:27:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20A11C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 20:28:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344064AbiFIU1A (ORCPT
+        id S1344212AbiFIU2X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 16:27:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41518 "EHLO
+        Thu, 9 Jun 2022 16:28:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343803AbiFIU05 (ORCPT
+        with ESMTP id S234419AbiFIU2V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 16:26:57 -0400
-Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7F2FF419A3;
-        Thu,  9 Jun 2022 13:26:54 -0700 (PDT)
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1nzOjz-0005nZ-00; Thu, 09 Jun 2022 22:26:51 +0200
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id C10CAC032C; Thu,  9 Jun 2022 22:25:18 +0200 (CEST)
-Date:   Thu, 9 Jun 2022 22:25:18 +0200
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Yupeng Li <liyupeng@zbhlos.com>
-Cc:     chenhuacai@kernel.org, jiaxun.yang@flygoat.com, jdelvare@suse.com,
-        linux@roeck-us.net, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        caizp2008@163.com
-Subject: Re: [PATCH 1/1] MIPS: Loongson-3: fix compile mips cpu_hwmon as
- module build error.
-Message-ID: <20220609202518.GA4320@alpha.franken.de>
-References: <20220608011229.2056016-1-liyupeng@zbhlos.com>
+        Thu, 9 Jun 2022 16:28:21 -0400
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE80A1E04B1;
+        Thu,  9 Jun 2022 13:28:19 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id j20so3816179ljg.8;
+        Thu, 09 Jun 2022 13:28:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=46OkSZCeD56sfzrRV9ixVa9kbc26s0RkXULJ1qM0uHw=;
+        b=Cqo4DSvIxHUHTuqtmXxBEQEss56ECscrzgfl6tFBQQHCwHv4gHc+tfptnqcWotUnwn
+         kfM7AqT75NAxphIsW4UmWdx1OMvBH82UlNcB/J3l+xA8Q25UnaHbCypKPUGW1epXcIKW
+         3IBLprzy5gOxwNAFx+x8NZCg3gTeT62BvN7F1YSOfoRuJo6+ew2xM1G0cAoCpdUwZ2kp
+         kZBttUZCWNmLKpe7pg00P+/0iVJoNtSmAcO2jLvQpGHsCBOGni1DyGQUkMTpo0JoxCH9
+         /8y4RA7vHZS/yy51dpCqH9fZ3EATcI+zV+1c4+nvuiJCJ6JNvUwSokhuStUyONTQ67/k
+         fLGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=46OkSZCeD56sfzrRV9ixVa9kbc26s0RkXULJ1qM0uHw=;
+        b=n5x0kifhw/XGnaQXvwgLnhiWKRWXJsclrdhZtZ+MFE3vcDQylP9seGTIosf9sN5kbv
+         +uim5SpRX2nxlmpE+Ou1M45OgkF41lo1rrVybdtcZi+gV+1lGdaF19zJpjGQqx0ezvbY
+         ckNcJ4vpik7Eqmc3TK+0tLuRgG+K7QniKAZCZeo7u6zpxBdaLmkr5yWB0Kmig+xM4ZId
+         aLn1H1VBdJAfzu3JyOYYJmezTf+jrJdLG4p10hGJhppe3BD2dwPMHlJjL53+bp9RMjhp
+         xabITciWrpwoimZOHuw/kZ6WHtvVlouZsxXnr0SJ7j5xp9Zuz2o8Fhn3uEqS524q24hC
+         42lQ==
+X-Gm-Message-State: AOAM533A9J74+6G4MoKKclP9PSKlioUoogoeRoLomiOwvDCDqAFDlp2L
+        weYvOrOVrRbXyGVSwLf3LsiSRjVTro0=
+X-Google-Smtp-Source: ABdhPJyyeult8NpzAQqn7PaWa4sRx7dCdjWErZ27oucNSpMUlcJj32mPjTi39OlTcDR82vmZrn5E7w==
+X-Received: by 2002:a2e:9808:0:b0:255:59c1:3086 with SMTP id a8-20020a2e9808000000b0025559c13086mr27890832ljj.495.1654806498059;
+        Thu, 09 Jun 2022 13:28:18 -0700 (PDT)
+Received: from [192.168.0.131] ([194.183.54.57])
+        by smtp.gmail.com with ESMTPSA id p20-20020ac24ed4000000b004744bfd620fsm198164lfr.236.2022.06.09.13.28.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Jun 2022 13:28:17 -0700 (PDT)
+Message-ID: <d6d1642c-26b4-e4a8-5ae7-c4b952ae6c62@gmail.com>
+Date:   Thu, 9 Jun 2022 22:28:16 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220608011229.2056016-1-liyupeng@zbhlos.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 1/3] dt-bindings: leds: skyworks,aat1290: convert to
+ dtschema
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org
+References: <20220607085343.72414-1-krzysztof.kozlowski@linaro.org>
+From:   Jacek Anaszewski <jacek.anaszewski@gmail.com>
+In-Reply-To: <20220607085343.72414-1-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022 at 09:12:29AM +0800, Yupeng Li wrote:
->   set cpu_hwmon as a module build with loongson_sysconf, loongson_chiptemp
->   undefined error,fix cpu_hwmon compile options to be bool.Some kernel
->   compilation error information is as follows:
-> 
->   Checking missing-syscalls for N32
->   CALL    scripts/checksyscalls.sh
->   Checking missing-syscalls for O32
->   CALL    scripts/checksyscalls.sh
->   CALL    scripts/checksyscalls.sh
->   CHK     include/generated/compile.h
->   CC [M]  drivers/platform/mips/cpu_hwmon.o
->   Building modules, stage 2.
->   MODPOST 200 modules
-> ERROR: "loongson_sysconf" [drivers/platform/mips/cpu_hwmon.ko] undefined!
-> ERROR: "loongson_chiptemp" [drivers/platform/mips/cpu_hwmon.ko] undefined!
-> make[1]: *** [scripts/Makefile.modpost:92：__modpost] 错误 1
-> make: *** [Makefile:1261：modules] 错误 2
-> 
-> Signed-off-by: Yupeng Li <liyupeng@zbhlos.com>
-> ---
->  drivers/platform/mips/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/platform/mips/Kconfig b/drivers/platform/mips/Kconfig
-> index d421e1482395..6b51ad01f791 100644
-> --- a/drivers/platform/mips/Kconfig
-> +++ b/drivers/platform/mips/Kconfig
-> @@ -17,7 +17,7 @@ menuconfig MIPS_PLATFORM_DEVICES
->  if MIPS_PLATFORM_DEVICES
->  
->  config CPU_HWMON
-> -	tristate "Loongson-3 CPU HWMon Driver"
-> +	bool "Loongson-3 CPU HWMon Driver"
->  	depends on MACH_LOONGSON64
->  	select HWMON
->  	default y
-> -- 
-> 2.34.1
+Hi Krzysztof,
 
-applied to mips-fixes.
+On 6/7/22 10:53, Krzysztof Kozlowski wrote:
+> Convert the Skyworks Solutions, Inc. AAT1290 Current Regulator bindings
+> to DT Schema.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+[...]
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/gpio/gpio.h>
+> +    #include <dt-bindings/leds/common.h>
+> +
+> +    // Ct = 220 nF, Rset = 160 kOhm
+> +    led-controller {
+> +        compatible = "skyworks,aat1290";
+> +        flen-gpios = <&gpj1 1 GPIO_ACTIVE_HIGH>;
+> +        enset-gpios = <&gpj1 2 GPIO_ACTIVE_HIGH>;
+> +
+> +        pinctrl-names = "default", "host", "isp";
+> +        pinctrl-0 = <&camera_flash_host>;
+> +        pinctrl-1 = <&camera_flash_host>;
+> +        pinctrl-2 = <&camera_flash_isp>;
+> +
+> +        led {
+> +            label = "flash";
 
-Thomas.
+Why are you adding label? It is deprecated, but has the precedence over
+new function and color for backwards compatibility, so it would make
+those unused by the driver now. Please drop the label from this example.
+
+> +            function = LED_FUNCTION_FLASH;
+> +            color = <LED_COLOR_ID_WHITE>;
+> +            led-max-microamp = <520833>;
+> +            flash-max-microamp = <1012500>;
+> +            flash-max-timeout-us = <1940000>;
+> +        };
+> +    };
 
 -- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+Best regards,
+Jacek Anaszewski
