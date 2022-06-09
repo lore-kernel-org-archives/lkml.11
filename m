@@ -2,95 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29FDFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:58:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77E19C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 11:59:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244887AbiFIL6j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 07:58:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42216 "EHLO
+        id S244893AbiFIL66 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 07:58:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235627AbiFIL6h (ORCPT
+        with ESMTP id S244511AbiFIL6y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 07:58:37 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF82014D1D
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 04:58:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654775915; x=1686311915;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=zl1pfpL1wUggkXludigL5TwIsEDn0JoTiHEU69wclNs=;
-  b=FpuQ7uGo+hl1d43xTiGi8ZtB7Q1BeA+Pt6ng5nwXvwgLoKqgjc46JQdj
-   ktXw2KPEcU4h5erof940uwa648SoE1+HCAo5kfgKS9dGhbSvxWT3LvR3b
-   7rsdWZ43fGrrdlJwgKIpf6MfYWOdpruHr8uxmGvI1no7r1sKfWunHG+df
-   IeSnqoMgu7u6GK2GeIymedeIs0aTnMzThF1k8sI4rii1rR3pFUbnDw2+y
-   b/OuJQn0rUkbc5p0ubKsrj+5Kj7BXDN7736sZMelX04XqJNAnbCU+wkeE
-   vzTz3WZgB+nIwKNjffTX8Fvh/TgDAbsWsahPQt2XAWkyrnPvZzcWtB6O3
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10372"; a="277278952"
-X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="277278952"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 04:58:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="710393246"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 09 Jun 2022 04:58:32 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nzGo3-000Fx1-KF;
-        Thu, 09 Jun 2022 11:58:31 +0000
-Date:   Thu, 9 Jun 2022 19:57:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Liao Chang <liaochang1@huawei.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Li Zhengyu <lizhengyu3@huawei.com>
-Subject: kexec_core.c:undefined reference to `machine_kexec'
-Message-ID: <202206091916.0xLwCTGT-lkp@intel.com>
+        Thu, 9 Jun 2022 07:58:54 -0400
+Received: from gentwo.de (gentwo.de [IPv6:2a02:c206:2048:5042::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45EF813CE4
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 04:58:50 -0700 (PDT)
+Received: by gentwo.de (Postfix, from userid 1001)
+        id 0CDE7B00149; Thu,  9 Jun 2022 13:58:47 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gentwo.de; s=default;
+        t=1654775927; bh=NzmzzhGPGUY7xZcOQ+0OfmkAMUDNRFa2wttp68Yz7bk=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=mDV8x/vOv68VDjg22k4RMOhgEUyQVhp17be0H3abpHmpzRHLZ6eO0kdAts6i3K9nY
+         /EiGmDVD0hGP/O4Pi+KdVjBAFkYec4qnTpSaNfOhGMLZRGtbGgwRwdqWQSGCP+UJ4s
+         DXp63jvxADrXo3v/B15z140CcV7ptnfpj7f5q+cLQx7j9KPrJc0O06VLtRDDSTiSXs
+         AXGOtstnavFqll3La/hP6p6Df1tSar0ioozucIOfyORzOOuStcR7kYuGcV9q7t+vZi
+         OIAKhJHOuzd+Fe8hRfR2IMAOD+ZzafeFSvO9XR9dBgVI7twEF6uV/hT0Cko/PDQTGN
+         uVtkXOkrMGKrQ==
+Received: from localhost (localhost [127.0.0.1])
+        by gentwo.de (Postfix) with ESMTP id 0B516B0012F;
+        Thu,  9 Jun 2022 13:58:47 +0200 (CEST)
+Date:   Thu, 9 Jun 2022 13:58:47 +0200 (CEST)
+From:   Christoph Lameter <cl@gentwo.de>
+To:     Jann Horn <jannh@google.com>
+cc:     Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mm/slub: add missing TID updates on slab deactivation
+In-Reply-To: <20220608182205.2945720-1-jannh@google.com>
+Message-ID: <alpine.DEB.2.22.394.2206091358040.566833@gentwo.de>
+References: <20220608182205.2945720-1-jannh@google.com>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   6bfb56e93bcef41859c2d5ab234ffd80b691be35
-commit: 6261586e0c91db14c34f894f4bc48f2300cff1d4 RISC-V: Add kexec_file support
-date:   3 weeks ago
-config: riscv-buildonly-randconfig-r002-20220608 (https://download.01.org/0day-ci/archive/20220609/202206091916.0xLwCTGT-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=6261586e0c91db14c34f894f4bc48f2300cff1d4
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 6261586e0c91db14c34f894f4bc48f2300cff1d4
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
+On Wed, 8 Jun 2022, Jann Horn wrote:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+> The fastpath in slab_alloc_node() assumes that c->slab is stable as long as
+> the TID stays the same. However, two places in __slab_alloc() currently
+> don't update the TID when deactivating the CPU slab.
 
-All errors (new ones prefixed by >>):
+Looks ok.
 
-   riscv64-linux-ld: kernel/kexec_core.o: in function `.L1364':
->> kexec_core.c:(.text+0x3568): undefined reference to `machine_kexec_cleanup'
-   riscv64-linux-ld: kernel/kexec_core.o: in function `__crash_kexec':
->> (.text+0x3b08): undefined reference to `machine_crash_shutdown'
-   riscv64-linux-ld: (.text+0x3b14): undefined reference to `machine_kexec'
-   riscv64-linux-ld: (.text+0x3b68): undefined reference to `riscv_crash_save_regs'
-   riscv64-linux-ld: kernel/kexec_core.o: in function `.L1553':
->> kexec_core.c:(.text+0x44a4): undefined reference to `machine_shutdown'
-   riscv64-linux-ld: kernel/kexec_core.o: in function `.L1528':
->> kexec_core.c:(.text+0x44bc): undefined reference to `machine_kexec'
-   riscv64-linux-ld: kernel/kexec_file.o: in function `.L440':
->> kexec_file.c:(.text+0x15d4): undefined reference to `machine_kexec_prepare'
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Acked-by: Christoph Lameter <cl@linux.com>
