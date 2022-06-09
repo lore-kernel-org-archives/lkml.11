@@ -2,201 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2103C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 08:57:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CEB3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 08:57:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242725AbiFII5g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 04:57:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34234 "EHLO
+        id S242368AbiFII54 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 04:57:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242911AbiFII4a (ORCPT
+        with ESMTP id S242897AbiFII5R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 04:56:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09B2E1E4BE2;
-        Thu,  9 Jun 2022 01:56:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE503B82C83;
-        Thu,  9 Jun 2022 08:56:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08582C3411B;
-        Thu,  9 Jun 2022 08:56:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654764969;
-        bh=ScHy2oNKDQN88wGyOWo+ETI+r/83tzJ6YXEnFHZqZ8o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=deaJEMDjwOgfkZHssV9iu4Ic0ee7pBaY+xMceaDLfidNsueykiw1PcV/PFbbTU2up
-         04sgosYwAc0lgmjUNLig5exgYF+eoOKPwkA09zXM2fUhiLVN8NXWJbF+HpSZsqgEz3
-         yPQ83q3nYY76QoAOYmEzmwq8M9h5rmBu+fRAoLAsShj0keon0D5DLeWY4Rw7ZNIMvM
-         TOJGMBn/g2u2wPy7SZFUIA5SwVLJreEHEoufJ+0CUl7y0MajNJnTWfKzZhwj/7nMT1
-         1OJstwUpOMG2/GlmNOuD7MIEYpUM7cEzCeWZ1+K/PL3dskYQve6tg3rtNXTQ21FgDz
-         sk0R3EcwjnZ+g==
-Date:   Thu, 9 Jun 2022 10:56:04 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     Amir Goldstein <amir73il@gmail.com>
-Cc:     Christian =?utf-8?B?R8O2dHRzY2hl?= <cgzones@googlemail.com>,
-        selinux@vger.kernel.org, Miklos Szeredi <mszeredi@redhat.com>,
-        Linux API <linux-api@vger.kernel.org>,
-        linux-man <linux-man@vger.kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Aleksa Sarai <cyphar@cyphar.com>
-Subject: Re: [RFC PATCH] f*xattr: allow O_PATH descriptors
-Message-ID: <20220609085604.n44fphhnshyyf63z@wittgenstein>
-References: <20220607153139.35588-1-cgzones@googlemail.com>
- <20220608112728.b4xrdppxqmyqmtwf@wittgenstein>
- <CAOQ4uxipD6khNUYuZT80WUa0KOMdyyP0ia55uhmeRCLj4NBicg@mail.gmail.com>
- <20220608124808.uylo5lntzfgxxmns@wittgenstein>
- <CAOQ4uxjP7kC95ou56wabVhQcc2vkNcD-8usYhLhbLOoJZ-jkOw@mail.gmail.com>
+        Thu, 9 Jun 2022 04:57:17 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B72B1B216F
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 01:56:55 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id 25so30010383edw.8
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 01:56:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=+yd5iHP2yY5c1OXBZIRV0qC4dmycegJSyCeqfOJ7QUY=;
+        b=Fv6Wptj50UJPR+ugIGW0UUBw/egxBXl/lFQf7aK+QiWMToDtwFA04ho4CjXClEXpp0
+         PXWtI4lk1YKtEc3H0rr09wd6tbHVNOwkCk3z+UNNt+rrQxIvGrgZ+AIJlmywPvi+najY
+         CVAs+Ur8PinDyOX/HNDW+Pfk+2s8ZzY7YFHLTqjzbkfXzPwwhKOC/zigTRcOxOSfQf9v
+         wCN7YbR2v9V40hLgzLv38jsj/7sl6jt3GUC1n08fvchfiacy7Q6W+CQmvzS1frQJjDCx
+         J/CvAR3t0Z2+q7XnkQb4Z1H9Kdq+L2K9B1Vc+NOT4qEfbL7jgIUnwb4Nonjkupp9SIzh
+         CqHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=+yd5iHP2yY5c1OXBZIRV0qC4dmycegJSyCeqfOJ7QUY=;
+        b=mWw1TMIXQQZLfi9wfS3oJ7qYfiehl7i6U8oGyzvFOB3ppqwbOzqHk2ghwS3T88MXAh
+         dxW7h1oEk25KYTWEMhSwPOg7F76Wdjfbk+AbY7DLCHjvIVoxOXt4sf5qIF7Nk2SHo9gw
+         E7etbWJrFW/oSkSQ2XEf4zzebtnVPAa4blimjYYlEC4eQ3hMjuu1ZfKy7Ackjkuigztc
+         0TLh/b8C3KAqrlTdj/1NHYYdhbHulRMn/YtljhON/bDZAt9E1/fEHDpHnL0JGBUqzR7D
+         B20P8vNJzdY+ZETHmfeqtzSiYHxWmUStjBVm0LIxVSMiT/bwjPOwuoO2fGJksZK0lsAT
+         cUkQ==
+X-Gm-Message-State: AOAM532eglFLdNnrgWXd9fBfceUP12JMgX725f03bf6FQB8R8essqjxm
+        C7NvyWGHIQZTa+KqW1bRtgfT2A==
+X-Google-Smtp-Source: ABdhPJzTbp6zWlYGU8YUGkUgG8xefKpnPiNwgjkqSsVpzIE67QdAmXQbobdNpCmQBlBiTd4qE5khxQ==
+X-Received: by 2002:a05:6402:542:b0:42d:c7d6:4121 with SMTP id i2-20020a056402054200b0042dc7d64121mr43169569edx.302.1654765013804;
+        Thu, 09 Jun 2022 01:56:53 -0700 (PDT)
+Received: from [192.168.0.195] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id bv21-20020a170906b1d500b006fe98fb9523sm10405226ejb.129.2022.06.09.01.56.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Jun 2022 01:56:53 -0700 (PDT)
+Message-ID: <640d2a3d-4c38-b921-45c1-048c255b5a9d@linaro.org>
+Date:   Thu, 9 Jun 2022 10:56:52 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 1/3] rpmsg: qcom: glink: replace strncpy() with
+ strscpy_pad()
+Content-Language: en-US
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Stephen Boyd <sboyd@kernel.org>
+References: <20220519073330.7187-1-krzysztof.kozlowski@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220519073330.7187-1-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAOQ4uxjP7kC95ou56wabVhQcc2vkNcD-8usYhLhbLOoJZ-jkOw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022 at 06:12:29PM +0300, Amir Goldstein wrote:
-> On Wed, Jun 8, 2022 at 3:48 PM Christian Brauner <brauner@kernel.org> wrote:
-> >
-> > On Wed, Jun 08, 2022 at 03:28:52PM +0300, Amir Goldstein wrote:
-> > > On Wed, Jun 8, 2022 at 2:57 PM Christian Brauner <brauner@kernel.org> wrote:
-> > > >
-> > > > On Tue, Jun 07, 2022 at 05:31:39PM +0200, Christian Göttsche wrote:
-> > > > > From: Miklos Szeredi <mszeredi@redhat.com>
-> > > > >
-> > > > > Support file descriptors obtained via O_PATH for extended attribute
-> > > > > operations.
-> > > > >
-> > > > > Extended attributes are for example used by SELinux for the security
-> > > > > context of file objects. To avoid time-of-check-time-of-use issues while
-> > > > > setting those contexts it is advisable to pin the file in question and
-> > > > > operate on a file descriptor instead of the path name. This can be
-> > > > > emulated in userspace via /proc/self/fd/NN [1] but requires a procfs,
-> > > > > which might not be mounted e.g. inside of chroots, see[2].
-> > > > >
-> > > > > [1]: https://github.com/SELinuxProject/selinux/commit/7e979b56fd2cee28f647376a7233d2ac2d12ca50
-> > > > > [2]: https://github.com/SELinuxProject/selinux/commit/de285252a1801397306032e070793889c9466845
-> > > > >
-> > > > > Original patch by Miklos Szeredi <mszeredi@redhat.com>
-> > > > > https://patchwork.kernel.org/project/linux-fsdevel/patch/20200505095915.11275-6-mszeredi@redhat.com/
-> > > > >
-> > > > > > While this carries a minute risk of someone relying on the property of
-> > > > > > xattr syscalls rejecting O_PATH descriptors, it saves the trouble of
-> > > > > > introducing another set of syscalls.
-> > > > > >
-> > > > > > Only file->f_path and file->f_inode are accessed in these functions.
-> > > > > >
-> > > > > > Current versions return EBADF, hence easy to detect the presense of
-> > > > > > this feature and fall back in case it's missing.
-> > > > >
-> > > > > CC: linux-api@vger.kernel.org
-> > > > > CC: linux-man@vger.kernel.org
-> > > > > Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
-> > > > > ---
-> > > >
-> > > > I'd be somewhat fine with getxattr and listxattr but I'm worried that
-> > > > setxattr/removexattr waters down O_PATH semantics even more. I don't
-> > > > want O_PATH fds to be useable for operations which are semantically
-> > > > equivalent to a write.
-> > >
-> > > It is not really semantically equivalent to a write if it works on a
-> > > O_RDONLY fd already.
-> >
-> > The fact that it works on a O_RDONLY fd has always been weird. And is
-> > probably a bug. If you look at xattr_permission() you can see that it
+On 19/05/2022 09:33, Krzysztof Kozlowski wrote:
+> The use of strncpy() is considered deprecated for NUL-terminated
+> strings[1]. Replace strncpy() with strscpy_pad(), to keep existing
+> pad-behavior of strncpy, similarly to commit 08de420a8014 ("rpmsg:
+> glink: Replace strncpy() with strscpy_pad()").  This fixes W=1 warning:
 > 
-> Bug or no bug, this is the UAPI. It is not fixable anymore.
+>   In function ‘qcom_glink_rx_close’,
+>     inlined from ‘qcom_glink_work’ at ../drivers/rpmsg/qcom_glink_native.c:1638:4:
+>   drivers/rpmsg/qcom_glink_native.c:1549:17: warning: ‘strncpy’ specified bound 32 equals destination size [-Wstringop-truncation]
+>    1549 |                 strncpy(chinfo.name, channel->name, sizeof(chinfo.name));
 > 
-> > checks for MAY_WRITE for set operations... setxattr() writes to disk for
-> > real filesystems. I don't know how much closer to a write this can get.
-> >
-> > In general, one semantic aberration doesn't justify piling another one
-> > on top.
-> >
-> > (And one thing that speaks for O_RDONLY is at least that it actually
-> > opens the file wheres O_PATH doesn't.)
+> [1] https://www.kernel.org/doc/html/latest/process/deprecated.html#strncpy-on-nul-terminated-strings
 > 
-> Ok. I care mostly about consistent UAPI, so if you want to set the
-> rule that modify f*() operations are not allowed to use O_PATH fd,
-> I can live with that, although fcntl(2) may be breaking that rule, but
-> fine by me.
-> It's good to have consistent rules and it's good to add a new UAPI for
-> new behavior.
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 > 
-> However...
+> ---
 > 
-> >
-> > >
-> > > >
-> > > > In sensitive environments such as service management/container runtimes
-> > > > we often send O_PATH fds around precisely because it is restricted what
-> > > > they can be used for. I'd prefer to not to plug at this string.
-> > >
-> > > But unless I am mistaken, path_setxattr() and syscall_fsetxattr()
-> > > are almost identical w.r.t permission checks and everything else.
-> > >
-> > > So this change introduces nothing new that a user in said environment
-> > > cannot already accomplish with setxattr().
-> > >
-> > > Besides, as the commit message said, doing setxattr() on an O_PATH
-> > > fd is already possible with setxattr("/proc/self/$fd"), so whatever security
-> > > hole you are trying to prevent is already wide open.
-> >
-> > That is very much a something that we're trying to restrict for this
-> > exact reason and is one of the main motivator for upgrade mask in
-> > openat2(). If I want to send a O_PATH around I want it to not be
-> > upgradable. Aleksa is working on upgrade masks with openat2() (see [1]
-> > and part of the original patchset in [2]. O_PATH semantics don't need to
-> > become weird.
-> >
-> > [1]: https://lore.kernel.org/all/20220526130355.fo6gzbst455fxywy@senku
-> > [2]: https://patchwork.ozlabs.org/project/linuxppc-dev/patch/20190728010207.9781-8-cyphar@cyphar.com
-> 
-> ... thinking forward, if this patch is going to be rejected, the patch that
-> will follow is *xattrat() syscalls.
-> 
-> What will you be able to argue then?
-> 
-> There are several *at() syscalls that modify metadata.
-> fchownat(.., AT_EMPTY_PATH) is intentionally designed for this.
-> 
-> Do you intend to try and block setxattrat()?
-> Just try and block setxattrat(.., AT_EMPTY_PATH)?
-> those *at() syscalls have real use cases to avoid TOCTOU races.
-> Do you propose that applications will have to use fsetxattr() on an open
-> file to avert races?
-> 
-> I completely understand the idea behind upgrade masks
-> for limiting f_mode, but I don't know if trying to retroactively
-> change semantics of setxattr() in the move to setxattrat()
-> is going to be a good idea.
-> 
-> And forgive me if I am failing to see the big picture.
-> It is certainly a possibility.
+> Changes since v1:
+> 1. Split series per subsystem.
 
-The big picture is that we should not water down O_PATH to the point
-where it can be used for almost any operation.
+Any comments on these?
 
-Just looking at your point about fchown*(), the open(2) manpage
-still notes:
-
-    "Obtain a file descriptor that can be used for two purposes: to indicate
-    a location in the filesystem tree and to perform operations that act
-    purely at  the  file  descriptor level.  The file itself is not opened,
-    and other file operations (e.g., read(2), write(2), fchmod(2),
-    fchown(2), fgetxattr(2), ioctl(2), mmap(2)) fail with the error EBADF."
-
-so it explicitly mentions that *fch{own,mod}*() operations
-__and fgetxattr()__
-should fail and in fact that any non-fd level operations should fail...
-
-Yet we are watering that contract down to the point where the
-distinction between an O_PATH fd and a regular fd becomes more and more
-meaningless
-
-That's a point completely separate from upgrade masks; which are there
-to make O_PATH fds more meaningful.
+Best regards,
+Krzysztof
