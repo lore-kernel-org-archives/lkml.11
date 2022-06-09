@@ -2,239 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54E84C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 13:58:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 103FCC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 13:59:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243775AbiFIN6J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 09:58:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56198 "EHLO
+        id S236769AbiFIN7L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 09:59:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233850AbiFIN6H (ORCPT
+        with ESMTP id S233518AbiFIN7I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 09:58:07 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BE3629DC19;
-        Thu,  9 Jun 2022 06:58:04 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id g186so13028620pgc.1;
-        Thu, 09 Jun 2022 06:58:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=96RW/mbL/2DXM4l3I73TuzvCiuTWdOKUYU3PG/oUzAI=;
-        b=SlFMlYBtIJ/K5g5OCznvRlvul8d4SV8HRB+pG+lzVNyUqxOFclbbfZLuxq27CIKtyu
-         4N3BPrpxDld8pG00PIuA20mHxX0oz9kBlygD0ZmiXuBxS6erJ7D4pRMjsPDqogyuvNzV
-         bGSm2yOWc4m1fJZnW0KJcbqwV8wqK4A7bwKydp8hisrUK7uUX5p4Y1+6e3RxDcTwDQLs
-         kwt0/PgrFHTlaDUr0PMxb44X2P2I0USvSdyyM4CGSTEXg7BSxAiWkASIx1V7KtW9yVv5
-         6qKG9qEAD5AUWQih6Gez6cBRLwO2XjvHivcBP3g6/YbREDinrcn0csMsXHoRPc148rzu
-         zlWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=96RW/mbL/2DXM4l3I73TuzvCiuTWdOKUYU3PG/oUzAI=;
-        b=1mv5eD0aipGGB6FPVKQJdca+B3ra5FRXZ4xbh9driIYNYE26RFf3naVKsntJn6GxMt
-         Xrf/SpAIY/+T4Mrgr3zxtkJLyJv+tpRqU7Rg8gb/R8HG//U6O7AbutSZ1mTm3v7MdvJS
-         S8Y9pW6m05sqL+Tz3S8ukxXS/Ngh3gIqGBzMIMWN4zzPseBvDHhE07vemPZK0nKgWNZZ
-         DrMMnwcHDN04g5UZ6DlDoSe2tqvUnCw9+ChMOhikgrjoIAgSNmd3KivZRQ/4rkjaohIn
-         50eGkc2MVdMFk/vPiEuIsXORQzN0NihdutUAy8jwx7rI7MjIM5ohdj/Ojv8iRoJCB0EH
-         oIsA==
-X-Gm-Message-State: AOAM531/THL/NLQ2tFupxPmME0z7taBYkHOJOr4yTK9K74+fzUZCK7Eb
-        JDCCI5JftDP0oe6miyr08hF9fayLsVYTt2+YhYJXGzFTv5xUYw==
-X-Google-Smtp-Source: ABdhPJxdQOsF/jy/W9Sm3gtlVbx9Q0MLLzsW63TqmMEat5HrSAEw2Wm/rDyrqDhSBuYXXOi9qMB0pvCET46e5qc4pC4=
-X-Received: by 2002:a63:2:0:b0:3f6:5b37:e94c with SMTP id 2-20020a630002000000b003f65b37e94cmr34982956pga.356.1654783083815;
- Thu, 09 Jun 2022 06:58:03 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220609113721.379932-1-krzysztof.kozlowski@linaro.org> <20220609114026.380682-3-krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220609114026.380682-3-krzysztof.kozlowski@linaro.org>
-From:   Maya Matuszczyk <maccraft123mc@gmail.com>
-Date:   Thu, 9 Jun 2022 15:57:27 +0200
-Message-ID: <CAO_MupKxvaXRQvMyEUZMThBZ9033OeJec+BtBndjs5oZ3etTEQ@mail.gmail.com>
-Subject: Re: [PATCH v2 32/48] arm64: dts: rockchip: align gpio-key node names
- with dtschema
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        arm@kernel.org, soc@kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        devicetree <devicetree@vger.kernel.org>,
-        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 9 Jun 2022 09:59:08 -0400
+Received: from na01-obe.outbound.protection.outlook.com (mail-eastus2azon11021026.outbound.protection.outlook.com [52.101.57.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A48A633A14;
+        Thu,  9 Jun 2022 06:59:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NawdQEbtyWQudAcIWLroD/QUygcYSWuMKb/WFDMWLQLH6T8x5vHFHW8jZvHhb859e6XPOlnJ5winsE94KIILdCQjLI32WVKykN5izLIn8V1xguY/pga2rvZ85xPDOt9ia4No9mRdrMqEf/FIFowOTEYK/usUWwkPV27fRyiQgLFCmgmQrlGFWSEA9YqfNGm4Sjo2gTn1mdus1MZ5F1wJIwPoHvChTAvR4U7g5AW/R8teUsTxD3Xrm+vhT04uAvwzmJd0QV+j3mw+UGUzY2e5g0LIgxeHmY7ksFfgDFFfJMzt3y1Vd5C2oZt9cF+pOQaXE9j/mj8hB5a59reVcYcFTw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=plELV5Rq3RIZ+9gyTLopQ7uNSlL9yCr5a78D/jPsMfk=;
+ b=ayovGF3bRRexDFI+szaf+Hr0gxY17vc+oFitCN+XfSmJerOJFi33phsRumMqKF+X2ALRi4p+xpEm4ui4zwONKFeH4rrG+In2SWasbE8gbA7ssR1vOzmJ5nEDv5MfxeQ26qG5NnkJu12A4eLZOSu/wN0A8C4P4tvudgzsiV9ZbYp+wDHB7OniBthv9+/28CXVbkRU9ETpq6a8/BAi0PoEhoDHf3ppmNcXkQmaP9JYZ07vSp/zOpgueEnuXydJWbTb05fKJF9jDATEi1f37HfO5EBsa+gVDFeRIe+J9TYsUbEF9+wzXGy+mYzPhaieeAZUH0dWwwgYAE0VDlaIMMCYxA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=plELV5Rq3RIZ+9gyTLopQ7uNSlL9yCr5a78D/jPsMfk=;
+ b=UyVnan89IwMZueWUp5759xiAcAHAwa2vsWaqG7sJReHVnwicav1EuNKtD1URrQbz+uig7s1Rf1ouEagwu7tjnxs9Emsj4tELXDFqepufLbfbCfi5oji9pAo2LZ13eAytOJzoc1YCL9KXVx4E2vhb/QTRce3SXxt5+P9Ct8Imt7c=
+Received: from DM5PR21MB1749.namprd21.prod.outlook.com (2603:10b6:4:9f::21) by
+ PH7PR21MB3143.namprd21.prod.outlook.com (2603:10b6:510:1d7::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.7; Thu, 9 Jun
+ 2022 13:59:03 +0000
+Received: from DM5PR21MB1749.namprd21.prod.outlook.com
+ ([fe80::9953:f2bc:5a8b:9d3e]) by DM5PR21MB1749.namprd21.prod.outlook.com
+ ([fe80::9953:f2bc:5a8b:9d3e%5]) with mapi id 15.20.5353.006; Thu, 9 Jun 2022
+ 13:59:03 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+        Saurabh Sengar <ssengar@linux.microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Saurabh Singh Sengar <ssengar@microsoft.com>
+Subject: RE: [PATCH] Drivers: hv: vmbus: Add cpu read lock
+Thread-Topic: [PATCH] Drivers: hv: vmbus: Add cpu read lock
+Thread-Index: AQHYe8Gfhgj9ktByNUKxLk8ZOUOEfK1HGHkAgAABgYA=
+Date:   Thu, 9 Jun 2022 13:59:02 +0000
+Message-ID: <DM5PR21MB17495741194946995BA2F7D5CAA79@DM5PR21MB1749.namprd21.prod.outlook.com>
+References: <1654752446-20113-1-git-send-email-ssengar@linux.microsoft.com>
+ <PH0PR21MB30251360E8081A96F5A33F3ED7A79@PH0PR21MB3025.namprd21.prod.outlook.com>
+In-Reply-To: <PH0PR21MB30251360E8081A96F5A33F3ED7A79@PH0PR21MB3025.namprd21.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=0a9be4d0-1dd4-4276-990a-e6e44613ade9;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-06-09T13:44:15Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 6d5c6eaf-8875-4b6b-b166-08da4a2035e2
+x-ms-traffictypediagnostic: PH7PR21MB3143:EE_
+x-microsoft-antispam-prvs: <PH7PR21MB31434984AAEB13D1EBA967F7CAA79@PH7PR21MB3143.namprd21.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: pF2+wMrm3yRROZMGtP3wkcPMqCRxBKWn/4QMx9T9Eg5u71AQf6ov4PSR+12hlvYbpnk6Kh6uRPkQCSsQBjSXALrtZYTV71yqpBsEZEk1qIeDsLexUnXyW90SoXssXy8MnadMmhZ5x5J/jLYK5ZSXGHF4MeB3kLMDttaQ5L74xdkd4uNbrj3pT9vD0CYqpjvpQcVX2iqv97uzK3ozldU7mkOpAHG7tWGrVarmz9FJB5Lx7ZQHrIQ1TzbJIVqh9l2NJEeVM/Y2JZkuEHZRVKkUOiPutSpatYW7BMI4F0UmxNu/4WnG4RtWb9s+FsdBVMBkqjQGjydIuaehCvivav+B/ImIghL1bmRAuDpxrJu/K9EpJ7kGj6UrHu0FI5fXt0kuNGnjDojG3tECWYw180ay/xBaRXELuhPggCJ/+eF1gvR9merRjUCvtBqzzfID9VFGCrNlcUTPBWAkffPmYE3wNcDVI8RlqAv1vs74O6P0tFtf4J8GdqsfiRMKVexPmcRy1CyoHfdj+dmRnFRAttks1ejlzGiH0junsqbCfKfwBWweheCwQ9wulUFUPK5CAVLMFbvIlF072q4cmVRGp8sQru/2ApTYf8oGrM8chnTxMCUMJsEdKGCMtQQD5SNGVGqIvHQHdP6wO3yPtFvABg5xDjCjme4rjlaK8BwqUMqUwkvr50vWv28KU0oU2V2+GXahqI2xJgDfiiY8Be/oMV+COiEbrgalYGBrnRgM5nEwo8gFvDt+JtBI+VxbMA2WlhPA
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR21MB1749.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(451199009)(8936002)(52536014)(186003)(38070700005)(7696005)(71200400001)(53546011)(316002)(33656002)(110136005)(122000001)(508600001)(2906002)(6636002)(9686003)(6506007)(5660300002)(26005)(66446008)(76116006)(66556008)(66476007)(8990500004)(66946007)(82960400001)(86362001)(55016003)(38100700002)(10290500003)(64756008)(8676002)(83380400001)(82950400001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?MNGy1cO3f+nfcPExCVe9+5fruJSaNwDwLqodhHuCvTOOfWx4OuXTZpqteOEp?=
+ =?us-ascii?Q?as6xUT1Oa39Ejli05qu4p0Wer9IO3MAZcavBwrkm1kV/CID2gmldNx9m62Y0?=
+ =?us-ascii?Q?ttAfvV4q9dYAAavb7Ime3KmczXh0tp7bL3aq2NyDbpN2jUsqZwoVRmChtj38?=
+ =?us-ascii?Q?GxGDu5w5RKaKOjADlCrr9uHE4VroVnVdePh87sq2OZuvTul86rqqE64aQqgX?=
+ =?us-ascii?Q?bTwzEt/10XBm/2jXCfLU6uKQL+DpNIWcT3WFaNURjuZ2rrzkSZ/jw9Twk2xU?=
+ =?us-ascii?Q?KEm3gAkvrkB3A/r9Zuvbj9CPZImtzaxFFZjIiDG/87Zt1cwcYjz9iGIguS1g?=
+ =?us-ascii?Q?uN7+QiOL63UFcSkyX5VwO2nOOegV50MeGwB9en2Nyt3ZpRcMWFq1chhTBF6w?=
+ =?us-ascii?Q?QXqAfdCFhwesn+Ilt0rOUoiaOomvS3KxIn8FMsGuuvPGQG2AZArCLrCAKCG+?=
+ =?us-ascii?Q?3PtAhAswkn1ZxrnH/IOWl7B016JQK/snGLkkXZtebTkJxWXFB7buciXYUaSk?=
+ =?us-ascii?Q?ENKVDO6AW/2rbQsL+ZTBGDmX47wALm+BaeYdSWCBBtiWsCBiGs67Oi8uS0FL?=
+ =?us-ascii?Q?AXrQh+JGZyICaLCkYJN8P7F3EooBuhykd9YmgtL6P+KJPFxL48d51XEDNZsa?=
+ =?us-ascii?Q?Sig3JK8ezSwA76fnMIX6V5W9nJhon1SFapValLNAlakCNxk4B4oPDKF/BBZW?=
+ =?us-ascii?Q?WiEZY0C0mKwSNK9GZalEiXYpNKXPn+KvYSPeO1khFf3+egWbR4xa7Yi5Y5Ou?=
+ =?us-ascii?Q?vcwYjuDk6HOEJ5o8+Xpj9ekxOgQEg6LH+JNFUEYwhWCzHJ4uoS0LiEipZ/f7?=
+ =?us-ascii?Q?hz0ix+51NsJSJICJ17N9VJY1Vzrk4xeJZYXlNJgB0DwpMm5R92IJHoROzhhc?=
+ =?us-ascii?Q?SiS/jM6h7ju8V2drTZ5wz53R24TFJ9GqyV6Zxqnnvm8dqzUcE/tMp6gietM+?=
+ =?us-ascii?Q?F1u8t7E7zQj0xe4vePmC5gja8y14NIfjTzyqgnFT7cb5bdtNLBu8C6i8hP84?=
+ =?us-ascii?Q?UmGWdKMbWJ1OxXA/k3u9M9PmPcoIFdFYGu5oruKR1/7NT/3ARLdiBRwrxpjL?=
+ =?us-ascii?Q?/C6MB8ZetRgYMVt25elNf6v6H07+nw2QpDvTvkZK7Cc3GIZjMCI81KBeGm62?=
+ =?us-ascii?Q?XQRrMzqXtebgLhNv5D3n5nqsjWoW1WTJQTQsrRlVG22e4UWZAA98CUnfiXsJ?=
+ =?us-ascii?Q?BlrsRbQbtZlznZU0KvX0vEoScd9+WJg+EGJQt0TALJ1vO9qyjZbyauYaH0gX?=
+ =?us-ascii?Q?fwTRtztDTrStTlu1j3f6kc1NnFZZvhv4e4AZA2bBlPaZeJr2UKO1WPmoP91i?=
+ =?us-ascii?Q?yF3v6BiVmXuX6zai4ny3uhNLWDHj81LV4oPFT8Weyr8U8u4EEiWc8zkpY+Ar?=
+ =?us-ascii?Q?jK/QCba7PA9DQXu8IpL5PYdmFf3Ysm58yUeg/wFzzjzkYzLluW/Nr2jK72Al?=
+ =?us-ascii?Q?9DKPNapAX8Ka+ZT0m+Q6HrQyEAuZ2RCxrFwRo/sbM8sfeE8HiG/1lFMOKz3V?=
+ =?us-ascii?Q?ul/kWKmpPff4HpkOJX7CljFMRWO1waTWjhoXsZaYWRjxlFqBPAN8LwRAnE2V?=
+ =?us-ascii?Q?PVeARjsKbmxXL8sZl4Dodu9HQuvyC6PmVroSTBZbjUSbGdgjq39E/wbCoUqJ?=
+ =?us-ascii?Q?OMI1F92dOkbq3iis39X17cKUeakcVywDMB1ZT5oq5WMLRrt+SbnpgR4ZW14D?=
+ =?us-ascii?Q?hg6KjzftLxC8t646i/3SRPRDVe5VoZGbM3aDMcWa3N7rjIpmrlzncLVsx7j6?=
+ =?us-ascii?Q?RERgvuJHZA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR21MB1749.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6d5c6eaf-8875-4b6b-b166-08da4a2035e2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Jun 2022 13:59:02.9179
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 4CX0zEoANozsptD68/w92gFPhVFYjSC0kKXRF28IKsEt0u08ewudVsCB6WlP0pZ1Rf6p6rFnuc6+v54QXMtm2g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR21MB3143
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-czw., 9 cze 2022 o 13:56 Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> napisa=C5=82(a):
->
-> The node names should be generic and DT schema expects certain pattern
-> (e.g. with key/button/switch).
->
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
->  arch/arm64/boot/dts/rockchip/rk3308-evb.dts   |  2 +-
->  .../boot/dts/rockchip/rk3326-odroid-go2.dts   | 32 +++++++++----------
->  .../boot/dts/rockchip/rk3328-nanopi-r2s.dts   |  2 +-
->  arch/arm64/boot/dts/rockchip/rk3368-evb.dtsi  |  2 +-
->  .../boot/dts/rockchip/rk3368-geekbox.dts      |  2 +-
->  .../dts/rockchip/rk3368-orion-r68-meta.dts    |  2 +-
->  .../boot/dts/rockchip/rk3368-px5-evb.dts      |  2 +-
->  arch/arm64/boot/dts/rockchip/rk3368-r88.dts   |  2 +-
->  .../boot/dts/rockchip/rk3399-firefly.dts      |  2 +-
->  .../dts/rockchip/rk3399-gru-chromebook.dtsi   |  2 +-
->  .../boot/dts/rockchip/rk3399-gru-kevin.dts    |  2 +-
->  .../boot/dts/rockchip/rk3399-gru-scarlet.dtsi |  2 +-
->  .../boot/dts/rockchip/rk3399-khadas-edge.dtsi |  2 +-
->  .../boot/dts/rockchip/rk3399-nanopi-r4s.dts   |  4 +--
->  .../boot/dts/rockchip/rk3399-nanopi4.dtsi     |  2 +-
->  .../boot/dts/rockchip/rk3399-orangepi.dts     |  2 +-
->  .../boot/dts/rockchip/rk3399-pinebook-pro.dts |  4 +--
->  .../boot/dts/rockchip/rk3399-roc-pc.dtsi      |  2 +-
->  .../boot/dts/rockchip/rk3399-rockpro64.dtsi   |  2 +-
->  .../boot/dts/rockchip/rk3399-sapphire.dtsi    |  2 +-
->  .../boot/dts/rockchip/rk3566-pinenote.dtsi    |  2 +-
->  21 files changed, 38 insertions(+), 38 deletions(-)
->
-> diff --git a/arch/arm64/boot/dts/rockchip/rk3308-evb.dts b/arch/arm64/boo=
-t/dts/rockchip/rk3308-evb.dts
-> index 9b4f855ea5d4..4b5413b12bfa 100644
-> --- a/arch/arm64/boot/dts/rockchip/rk3308-evb.dts
-> +++ b/arch/arm64/boot/dts/rockchip/rk3308-evb.dts
-> @@ -75,7 +75,7 @@ gpio-keys {
->                 pinctrl-names =3D "default";
->                 pinctrl-0 =3D <&pwr_key>;
->
-> -               power {
-> +               power-key {
->                         gpios =3D <&gpio0 RK_PA6 GPIO_ACTIVE_LOW>;
->                         linux,code =3D <KEY_POWER>;
->                         label =3D "GPIO Key Power";
-> diff --git a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2.dts b/arch/ar=
-m64/boot/dts/rockchip/rk3326-odroid-go2.dts
-> index ea0695b51ecd..72328dd993ee 100644
-> --- a/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2.dts
-> +++ b/arch/arm64/boot/dts/rockchip/rk3326-odroid-go2.dts
-> @@ -71,82 +71,82 @@ gpio-keys {
->                  * |------------------------------------------------|
->                  */
->
-> -               sw1 {
-> +               switch-1 {
-Wouldn't it make more sense to rename this and all other
-renamed nodes in this dts into "button-dpad-up" or "button-1",
-as on the physical device those are buttons and the naming
-scheme of "sw" + number seems to be a carryover from
-downstream sources.
 
->                         gpios =3D <&gpio1 RK_PB4 GPIO_ACTIVE_LOW>;
->                         label =3D "DPAD-UP";
->                         linux,code =3D <BTN_DPAD_UP>;
->                 };
-> -               sw2 {
-> +               switch-2 {
->                         gpios =3D <&gpio1 RK_PB5 GPIO_ACTIVE_LOW>;
->                         label =3D "DPAD-DOWN";
->                         linux,code =3D <BTN_DPAD_DOWN>;
->                 };
-> -               sw3 {
-> +               switch-3 {
->                         gpios =3D <&gpio1 RK_PB6 GPIO_ACTIVE_LOW>;
->                         label =3D "DPAD-LEFT";
->                         linux,code =3D <BTN_DPAD_LEFT>;
->                 };
-> -               sw4 {
-> +               switch-4 {
->                         gpios =3D <&gpio1 RK_PB7 GPIO_ACTIVE_LOW>;
->                         label =3D "DPAD-RIGHT";
->                         linux,code =3D <BTN_DPAD_RIGHT>;
->                 };
-> -               sw5 {
-> +               switch-5 {
->                         gpios =3D <&gpio1 RK_PA2 GPIO_ACTIVE_LOW>;
->                         label =3D "BTN-A";
->                         linux,code =3D <BTN_EAST>;
->                 };
-> -               sw6 {
-> +               switch-6 {
->                         gpios =3D <&gpio1 RK_PA5 GPIO_ACTIVE_LOW>;
->                         label =3D "BTN-B";
->                         linux,code =3D <BTN_SOUTH>;
->                 };
-> -               sw7 {
-> +               switch-7 {
->                         gpios =3D <&gpio1 RK_PA6 GPIO_ACTIVE_LOW>;
->                         label =3D "BTN-Y";
->                         linux,code =3D <BTN_WEST>;
->                 };
-> -               sw8 {
-> +               switch-8 {
->                         gpios =3D <&gpio1 RK_PA7 GPIO_ACTIVE_LOW>;
->                         label =3D "BTN-X";
->                         linux,code =3D <BTN_NORTH>;
->                 };
-> -               sw9 {
-> +               switch-9 {
->                         gpios =3D <&gpio2 RK_PA0 GPIO_ACTIVE_LOW>;
->                         label =3D "F1";
->                         linux,code =3D <BTN_TRIGGER_HAPPY1>;
->                 };
-> -               sw10 {
-> +               switch-10 {
->                         gpios =3D <&gpio2 RK_PA1 GPIO_ACTIVE_LOW>;
->                         label =3D "F2";
->                         linux,code =3D <BTN_TRIGGER_HAPPY2>;
->                 };
-> -               sw11 {
-> +               switch-11 {
->                         gpios =3D <&gpio2 RK_PA2 GPIO_ACTIVE_LOW>;
->                         label =3D "F3";
->                         linux,code =3D <BTN_TRIGGER_HAPPY3>;
->                 };
-> -               sw12 {
-> +               switch-12 {
->                         gpios =3D <&gpio2 RK_PA3 GPIO_ACTIVE_LOW>;
->                         label =3D "F4";
->                         linux,code =3D <BTN_TRIGGER_HAPPY4>;
->                 };
-> -               sw13 {
-> +               switch-13 {
->                         gpios =3D <&gpio2 RK_PA4 GPIO_ACTIVE_LOW>;
->                         label =3D "F5";
->                         linux,code =3D <BTN_TRIGGER_HAPPY5>;
->                 };
-> -               sw14 {
-> +               switch-14 {
->                         gpios =3D <&gpio2 RK_PA5 GPIO_ACTIVE_LOW>;
->                         label =3D "F6";
->                         linux,code =3D <BTN_TRIGGER_HAPPY6>;
->                 };
-> -               sw15 {
-> +               switch-15 {
->                         gpios =3D <&gpio2 RK_PA6 GPIO_ACTIVE_LOW>;
->                         label =3D "TOP-LEFT";
->                         linux,code =3D <BTN_TL>;
->                 };
-> -               sw16 {
-> +               switch-16 {
->                         gpios =3D <&gpio2 RK_PA7 GPIO_ACTIVE_LOW>;
->                         label =3D "TOP-RIGHT";
->                         linux,code =3D <BTN_TR>;
-> diff --git a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts b/arch/ar=
-m64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
-> index 3857d487ab84..1445b879ac7a 100644
-> --- a/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
-> +++ b/arch/arm64/boot/dts/rockchip/rk3328-nanopi-r2s.dts
-> @@ -34,7 +34,7 @@ keys {
->                 pinctrl-0 =3D <&reset_button_pin>;
->                 pinctrl-names =3D "default";
->
-> -               reset {
-> +               key-reset {
->                         label =3D "reset";
->                         gpios =3D <&gpio0 RK_PA0 GPIO_ACTIVE_LOW>;
->                         linux,code =3D <KEY_RESTART>;
 
-[snip]
+> -----Original Message-----
+> From: Michael Kelley (LINUX) <mikelley@microsoft.com>
+> Sent: Thursday, June 9, 2022 9:51 AM
+> To: Saurabh Sengar <ssengar@linux.microsoft.com>; KY Srinivasan
+> <kys@microsoft.com>; Haiyang Zhang <haiyangz@microsoft.com>; Stephen
+> Hemminger <sthemmin@microsoft.com>; wei.liu@kernel.org; Dexuan Cui
+> <decui@microsoft.com>; linux-hyperv@vger.kernel.org; linux-
+> kernel@vger.kernel.org; Saurabh Singh Sengar <ssengar@microsoft.com>
+> Subject: RE: [PATCH] Drivers: hv: vmbus: Add cpu read lock
+>=20
+> From: Saurabh Sengar <ssengar@linux.microsoft.com> Sent: Wednesday, June
+> 8, 2022 10:27 PM
+> >
+> > Add cpus_read_lock to prevent CPUs from going offline between query and
+> > actual use of cpumask. cpumask_of_node is first queried, and based on i=
+t
+> > used later, in case any CPU goes offline between these two events, it c=
+an
+> > potentially cause an infinite loop of retries.
+> >
+> > Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
+> > ---
+> >  drivers/hv/channel_mgmt.c | 4 ++++
+> >  1 file changed, 4 insertions(+)
+> >
+> > diff --git a/drivers/hv/channel_mgmt.c b/drivers/hv/channel_mgmt.c
+> > index 85a2142..6a88b7e 100644
+> > --- a/drivers/hv/channel_mgmt.c
+> > +++ b/drivers/hv/channel_mgmt.c
+> > @@ -749,6 +749,9 @@ static void init_vp_index(struct vmbus_channel
+> *channel)
+> >  		return;
+> >  	}
+> >
+> > +	/* No CPUs should come up or down during this. */
+> > +	cpus_read_lock();
+> > +
+> >  	for (i =3D 1; i <=3D ncpu + 1; i++) {
+> >  		while (true) {
+> >  			numa_node =3D next_numa_node_id++;
+> > @@ -781,6 +784,7 @@ static void init_vp_index(struct vmbus_channel
+> *channel)
+> >  			break;
+> >  	}
+> >
+> > +	cpus_read_unlock();
+> >  	channel->target_cpu =3D target_cpu;
+> >
+> >  	free_cpumask_var(available_mask);
+> > --
+> > 1.8.3.1
+>=20
+> This patch was motivated because I suggested a potential issue here durin=
+g
+> a separate conversation with Saurabh, but it turns out I was wrong. :-(
+>=20
+> init_vp_index() is only called from vmbus_process_offer(), and the
+> cpus_read_lock() is already held when init_vp_index() is called.  So the
+> issue doesn't exist, and this patch isn't needed.
+>=20
+> However, looking at vmbus_process_offer(), there appears to be a
+> different problem in that cpus_read_unlock() is not called when taking
+> the error return because the sub_channel_index is zero.
+>=20
+> Michael
+>=20
+
+        } else {
+                /*
+                 * Check to see if this is a valid sub-channel.
+                 */
+                if (newchannel->offermsg.offer.sub_channel_index =3D=3D 0) =
+{
+                        mutex_unlock(&vmbus_connection.channel_mutex);
+                        /*
+                         * Don't call free_channel(), because newchannel->k=
+obj
+                         * is not initialized yet.
+                         */
+                        kfree(newchannel);
+                        WARN_ON_ONCE(1);
+                        return;
+                }
+
+If this happens, it should be a host bug. Yes, I also think the cpus_read_u=
+nlock()
+is missing in this error path.
+
+Thanks,
+- Haiyang
