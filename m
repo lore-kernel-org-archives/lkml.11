@@ -2,138 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BC34C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 08:33:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFD87C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 08:34:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241581AbiFIIdC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 04:33:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57162 "EHLO
+        id S241250AbiFIIed (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 04:34:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241879AbiFIIcf (ORCPT
+        with ESMTP id S241932AbiFIIeO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 04:32:35 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57C6419CB57
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 01:31:44 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id w13-20020a17090a780d00b001e8961b355dso8872997pjk.5
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 01:31:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sS4MgQu//5lSEEE1q6KXTrd1V5xl/lXvZSVVghs7MXw=;
-        b=A6fON0R19AwVP4siIpMfsE0jiVUbdZTxhdZgGuDcnHo5MuncqBIVRWqZEOYy8GRVLH
-         jMEW/8GQXhBtMn8nhODuLfSu9cMIIB6dnqoNFXW5OpWxMKcdCjkIV1rnO4kY5Lkxvaeh
-         c6+9AUkHIYE7RrSnxcSDbZ79NrmHVCajSlzPZrpRbvThDImtRXxR4EVDXRLD1DvB1mil
-         A1Iq5lX4+7EX1b4I6a2gttHd6IPPCLjQ0iZJKaeq+2Q25eaZXnkvfIQCmVFug3ZypDED
-         0HBgQs60DNdoL73hElE9UY+n9VzstUa3KBhTvcaaxDrPcnam1hO3uxoiuvATM734zq+0
-         GWig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sS4MgQu//5lSEEE1q6KXTrd1V5xl/lXvZSVVghs7MXw=;
-        b=JVHzRiqkayFx3O9E2CccSPZCsSbtFBzYz2ZuzNKtxaSbYY0qib2j7ChuQGTdFALhf4
-         XqOgskwCQh6G/OgpQz3B+S/aNUP5PHhoqjCEiYAc2NyNIHmx6upuAtNK7McavtvE58JA
-         GRdKf+9DDyqGAaroCT4guOmRw9PRxqNsIdLffbUYgkoV+/ep3CbnYk6iVqCPmY6Huing
-         gMU4FcYGow22D/6aze1ziYY50+rdzlNFYBBiHHSqbKpkXkXU1jGLWkqKtVmpBdtSz3eB
-         tzBGCCrsovG5fe9RKBUY0z3yYVTS50uOxt6pnzUJjeCbXAsLTefwWqeOi+vEn0lDPWiJ
-         o2aA==
-X-Gm-Message-State: AOAM5323Ay/SvbQAlsyr7qMM28wMk5RB8pk6ll8sSqMAtSiZYunxCXOl
-        qBq+adGyxWE3Zo0MV8lLVw==
-X-Google-Smtp-Source: ABdhPJyMKPE0SMsVlrskRJxIXsELInHCqg+E38JgCSBPo303Em9YKygyvCF4vs7WaLSaQ7dn0RwOrg==
-X-Received: by 2002:a17:902:ec88:b0:166:33fe:a60c with SMTP id x8-20020a170902ec8800b0016633fea60cmr38199895plg.157.1654763503831;
-        Thu, 09 Jun 2022 01:31:43 -0700 (PDT)
-Received: from localhost.localdomain ([144.202.91.207])
-        by smtp.gmail.com with ESMTPSA id c11-20020aa7880b000000b00518e1251197sm17074597pfo.148.2022.06.09.01.31.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 01:31:43 -0700 (PDT)
-From:   Zheyu Ma <zheyuma97@gmail.com>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org, fseidel@suse.de
-Cc:     linux-kernel@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>
-Subject: [PATCH] tty: nozomi: Return an error when failing to create the sysfs
-Date:   Thu,  9 Jun 2022 16:31:33 +0800
-Message-Id: <20220609083133.4120738-1-zheyuma97@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 9 Jun 2022 04:34:14 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2601E1D2AC4
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 01:34:13 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nzDcA-00016O-Vd; Thu, 09 Jun 2022 10:34:03 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 6F7938FDDD;
+        Thu,  9 Jun 2022 08:34:01 +0000 (UTC)
+Date:   Thu, 9 Jun 2022 10:34:00 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Srinivas Neeli <srinivas.neeli@xilinx.com>
+Cc:     wg@grandegger.com, davem@davemloft.net, edumazet@google.com,
+        srinivas.neeli@amd.com, neelisrinivas18@gmail.com,
+        appana.durga.rao@xilinx.com, sgoud@xilinx.com,
+        michal.simek@xilinx.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        git@xilinx.com
+Subject: Re: [PATCH V3 0/2] xilinx_can: Update on xilinx can
+Message-ID: <20220609083400.pb5q2fxhexhdqrec@pengutronix.de>
+References: <20220609082433.1191060-1-srinivas.neeli@xilinx.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="h4ux6p3yn7okbj3o"
+Content-Disposition: inline
+In-Reply-To: <20220609082433.1191060-1-srinivas.neeli@xilinx.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The driver does not handle the error of the creation of sysfs, resulting
-in duplicate file names being created.
 
-The following log can reveal it:
+--h4ux6p3yn7okbj3o
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-[   52.907211] sysfs: cannot create duplicate filename '/devices/pci0000:00/0000:00:05.0/card_type'
-[   52.907224] Call Trace:
-[   52.907269]  sysfs_add_file_mode_ns+0x23f/0x2b0
-[   52.907281]  sysfs_create_file_ns+0xe9/0x170
-[   52.907321]  nozomi_card_init+0x97f/0x12c0 [nozomi]
+On 09.06.2022 13:54:31, Srinivas Neeli wrote:
+> This patch series addresses
+> 1) Reverts the limiting CANFD brp_min to 2.
+> 2) Adds TDC support for Xilinx can driver.
 
-Fix this bug by returning an error when failing to create the sysfs.
+Thanks for your patches!
 
-Fixes: 20fd1e3bea55 ("nozomi driver")
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
----
- drivers/tty/nozomi.c | 24 ++++++++++++++++++++----
- 1 file changed, 20 insertions(+), 4 deletions(-)
+> Hi Marc,
+> Please apply PATCH V3 1/2 on stable branch.
+> Due to some mailing issue i didn't receive your mail.
 
-diff --git a/drivers/tty/nozomi.c b/drivers/tty/nozomi.c
-index 0454c78deee6..d0ad1b9898f5 100644
---- a/drivers/tty/nozomi.c
-+++ b/drivers/tty/nozomi.c
-@@ -1282,14 +1282,26 @@ static ssize_t open_ttys_show(struct device *dev, struct device_attribute *attr,
- }
- static DEVICE_ATTR_RO(open_ttys);
- 
--static void make_sysfs_files(struct nozomi *dc)
-+static int make_sysfs_files(struct nozomi *dc)
- {
--	if (device_create_file(&dc->pdev->dev, &dev_attr_card_type))
-+	int err;
-+
-+	err = device_create_file(&dc->pdev->dev, &dev_attr_card_type);
-+	if (err) {
- 		dev_err(&dc->pdev->dev,
- 			"Could not create sysfs file for card_type\n");
--	if (device_create_file(&dc->pdev->dev, &dev_attr_open_ttys))
-+		return err;
-+	}
-+
-+	err = device_create_file(&dc->pdev->dev, &dev_attr_open_ttys);
-+	if (err) {
-+		device_remove_file(&dc->pdev->dev, &dev_attr_card_type);
- 		dev_err(&dc->pdev->dev,
- 			"Could not create sysfs file for open_ttys\n");
-+		return err;
-+	}
-+
-+	return 0;
- }
- 
- static void remove_sysfs_files(struct nozomi *dc)
-@@ -1383,7 +1395,9 @@ static int nozomi_card_init(struct pci_dev *pdev,
- 
- 	DBG1("base_addr: %p", dc->base_addr);
- 
--	make_sysfs_files(dc);
-+	ret = make_sysfs_files(dc);
-+	if (ret)
-+		goto err_free_irq;
- 
- 	dc->index_start = ndev_idx * MAX_PORT;
- 	ndevs[ndev_idx] = dc;
-@@ -1420,6 +1434,8 @@ static int nozomi_card_init(struct pci_dev *pdev,
- 		tty_unregister_device(ntty_driver, dc->index_start + i);
- 		tty_port_destroy(&dc->port[i].port);
- 	}
-+	remove_sysfs_files(dc);
-+err_free_irq:
- 	free_irq(pdev->irq, dc);
- err_free_all_kfifo:
- 	i = MAX_PORT;
--- 
-2.25.1
+Applied to can/testing, please don't mix patches for can and can-next in
+on series in the future.
 
+> Changes in V3:
+> -Implemented GENMASK,FIELD_PERP & FIELD_GET Calls.
+> -Implemented TDC feature for all Xilinx CANFD controllers.
+> -corrected prescalar to prescaler(typo).
+
+Pleas make this a separate patch.
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--h4ux6p3yn7okbj3o
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKhsHYACgkQrX5LkNig
+010CkwgAr0Yn7uNWp2Rx87P8xbIi6hVYVLuyQarsLg75Xp2IjC1KG4KpIEBgY2uH
+im/FjZiJvUi1TCuFCjck+qNSdA22Jfn5rk0uyEmn7g0l1BZq7UlkK1tdAHqoQ/Cn
+Dcw9BMQqQfdm4btLikc4h1stqAH0CeZOwNXUkzjBga65ZmUaJIVowN55st01M1T3
+qO5elkWFftg1JOsbd594rh2mSDHXB/c3+a929hrAtk1KfC96F7tL+0lSdccFFL4f
+cN2+jGrt2mPCdawxZC/EGU6nr4zqCxDLsrbgMdQBkuH5l+O9ssfP3DI8MSIRuqtN
+8MaCL4sqduJssOhRn9qxccN72AwhaQ==
+=Q3e1
+-----END PGP SIGNATURE-----
+
+--h4ux6p3yn7okbj3o--
