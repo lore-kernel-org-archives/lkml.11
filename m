@@ -2,136 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CB18C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 17:02:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5C22C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 17:04:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343692AbiFIRCo (ORCPT
+        id S1344103AbiFIREZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 13:02:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46964 "EHLO
+        Thu, 9 Jun 2022 13:04:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230107AbiFIRCl (ORCPT
+        with ESMTP id S237847AbiFIREX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 13:02:41 -0400
-Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E02CAC365C;
-        Thu,  9 Jun 2022 10:02:38 -0700 (PDT)
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 259H13QN010121;
-        Thu, 9 Jun 2022 19:01:03 +0200
-Date:   Thu, 9 Jun 2022 19:01:03 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     Will Deacon <will@kernel.org>
-Cc:     Vegard Nossum <vegard.nossum@oracle.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Amit Shah <aams@amazon.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        David Woodhouse <dwmw@amazon.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
-        Jiri Kosina <jkosina@suse.cz>,
-        Kees Cook <keescook@chromium.org>,
-        Laura Abbott <labbott@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Solar Designer <solar@openwall.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Thorsten Leemhuis <linux@leemhuis.info>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>
-Subject: Re: [PATCH v2] Documentation/security-bugs: overhaul
-Message-ID: <20220609170102.GC9541@1wt.eu>
-References: <20220606194850.26122-1-vegard.nossum@oracle.com>
- <20220607090726.GB32282@willie-the-truck>
- <a0728939-0852-57e8-6d4b-8c11c73569bb@oracle.com>
- <20220609145127.GD3064@willie-the-truck>
+        Thu, 9 Jun 2022 13:04:23 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27B45B0D0E
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 10:04:17 -0700 (PDT)
+X-UUID: ea919fc6e7ff46d1ae53f09593b12f95-20220610
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:f3b7cb63-8a22-4c1f-aa9b-47610791aa59,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:5
+X-CID-META: VersionHash:2a19b09,CLOUDID:da00d37e-c8dc-403a-96e8-6237210dceee,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:0,BEC:nil
+X-UUID: ea919fc6e7ff46d1ae53f09593b12f95-20220610
+Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw01.mediatek.com
+        (envelope-from <miles.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1294950020; Fri, 10 Jun 2022 01:04:13 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Fri, 10 Jun 2022 01:04:12 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Fri, 10 Jun 2022 01:04:12 +0800
+From:   Miles Chen <miles.chen@mediatek.com>
+To:     <yf.wang@mediatek.com>
+CC:     <Libo.Kang@mediatek.com>, <Yong.Wu@mediatek.com>,
+        <iommu@lists.linux-foundation.org>, <joro@8bytes.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>, <matthias.bgg@gmail.com>,
+        <miles.chen@mediatek.com>, <ning.li@mediatek.com>,
+        <will@kernel.org>, <wsd_upstream@mediatek.com>
+Subject: Re: [PATCH] iommu/dma: Fix race condition during iova_domain initialization
+Date:   Fri, 10 Jun 2022 01:04:12 +0800
+Message-ID: <20220609170412.30690-1-miles.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220530120748.31733-1-yf.wang@mediatek.com>
+References: <20220530120748.31733-1-yf.wang@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220609145127.GD3064@willie-the-truck>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A few quick points below.
+Hi YF,
 
-On Thu, Jun 09, 2022 at 03:51:27PM +0100, Will Deacon wrote:
-> > "calendar days" -- this got changed just to make it more readable. Maybe
-> > it's just me and my personal experience, but this wording seemed
-> > redundant. Why would "day" default to anything but a calendar day except
-> > in a business setting (which this is not)?
+>When many devices share the same iova domain, iommu_dma_init_domain()
+>may be called at the same time. The checking of iovad->start_pfn will
+>all get false in iommu_dma_init_domain() and both enter init_iova_domain()
+>to do iovad initialization.
+
+After reading this patch.
+It means that we use iovad->start_pfn as a key to tell if an iovad is already initialized,
+but we do not protect iovad->start_pfn from concurrent access.
+
+So what's happening is like:
+
+   cpu0                                    cpu1
+of_dma_configure_id()              of_dma_configure_id()
+  arch_setup_dma_ops()               arch_setup_dma_ops()
+    iommu_setup_dma_ops()              iommu_setup_dma_ops()
+      init_iova_domain()	 	 init_iova_domain()
+         if (iovad->start_pfn) {           if (iovad->start_pfn) {
+         }                                 }
+         init_iova_domain()                init_iova_domain()
+
+
+init_iova_domain() is called at the same time.
+
+>Fix this by protecting init_iova_domain() with iommu_dma_cookie->mutex.
+
+Reviewed-by: Miles Chen <miles.chen@mediatek.com> 
+
+>Exception backtrace:
+>rb_insert_color(param1=0xFFFFFF80CD2BDB40, param3=1) + 64
+>init_iova_domain() + 180
+>iommu_setup_dma_ops() + 260
+>arch_setup_dma_ops() + 132
+>of_dma_configure_id() + 468
+>platform_dma_configure() + 32
+>really_probe() + 1168
+>driver_probe_device() + 268
+>__device_attach_driver() + 524
+>__device_attach() + 524
+>bus_probe_device() + 64
+>deferred_probe_work_func() + 260
+>process_one_work() + 580
+>worker_thread() + 1076
+>kthread() + 332
+>ret_from_fork() + 16
+>
+>Signed-off-by: Ning Li <ning.li@mediatek.com>
+>Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
+>---
+> drivers/iommu/dma-iommu.c | 17 +++++++++++++----
+> 1 file changed, 13 insertions(+), 4 deletions(-)
+>
+>diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>index 09f6e1c0f9c0..b38c5041eeab 100644
+>--- a/drivers/iommu/dma-iommu.c
+>+++ b/drivers/iommu/dma-iommu.c
+>@@ -63,6 +63,7 @@ struct iommu_dma_cookie {
 > 
-> In the past, people were unclear as to whether this included weekends,
-> public holidays etc and so being explicit helps.
-
-In fact that's often the problem between what is known from insiders
-and what is understood outside. The original 5 days used to allow to
-include a Monday's fix into the Sunday's -rc. It then extended to 7
-days to improve the likelyhood that participants involved the first
-day were available on the release day, but that was always implicitly
-"calendar days" or at least reminded as such during private discussions.
-But with more and more professionals reporting bugs as part of their
-job, the risk that this is implicitly understood with work days is much
-more present nowadays and I think it's worth being explicit here.
-
-> > "extension to 14 calendar days" -- I changed this after comments from
-> > Willy who said too many people took this to mean that 7 days was the
-> > norm and that 14 days was still an acceptable proposal in most cases. I
-> > _think_ (but I'm not sure) that 14 days is not even really the absolute
-> > maximum, depending on the severity of the bug.
+> 	/* Domain for flush queue callback; NULL if flush queue not in use */
+> 	struct iommu_domain		*fq_domain;
+>+	struct mutex			mutex;
+> };
 > 
-> The current text says:
+> static DEFINE_STATIC_KEY_FALSE(iommu_deferred_attach_enabled);
+>@@ -309,6 +310,7 @@ int iommu_get_dma_cookie(struct iommu_domain *domain)
+> 	if (!domain->iova_cookie)
+> 		return -ENOMEM;
 > 
->  | ... an exceptional extension to 14 calendar days if it is agreed that
->  | the criticality of the bug requires more time. The only valid reason
->  | for deferring the publication of a fix is to accommodate the logistics
->  | of QA and large scale rollouts which require release coordination.
+>+	mutex_init(&domain->iova_cookie->mutex);
+> 	return 0;
+> }
 > 
-> which I think is pretty clear; it states the single criterion under which
-> an exceptional extension to 14 days will be considered. There's no mention
-> of this in the rewrite.
-
-Indeed, it's important to keep that sentence to make sure reporters do
-not count on that upfront.
-
-> The current document is clear that any
-> agreed embargo begins only from the point where we have a robust fix:
+>@@ -549,26 +551,33 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+> 	}
 > 
->   | Once a robust fix has been developed, the release process starts.
+> 	/* start_pfn is always nonzero for an already-initialised domain */
+>+	mutex_lock(&cookie->mutex);
+>
+> 	if (iovad->start_pfn) {
+> 		if (1UL << order != iovad->granule ||
+> 		    base_pfn != iovad->start_pfn) {
+> 			pr_warn("Incompatible range for DMA domain\n");
+>-			return -EFAULT;
+>+			ret = -EFAULT;
+>+			goto done_unlock;
+> 		}
 > 
-> This is important -- if distributions mistakenly think that they have a
-> maximum of seven days to describe the problem, involve the right people,
-> iterate on a patch, backport it, test it and deploy it then they'll do
-> all of this in private and just notify security@ at the end, at which
-> point it's either a waste of time or the patch is found not to be as
-> robust as they thought because the right people weren't involved.
-
-This part is particularly important and is indeed at the core of some
-of the recent trouble. We need to make it clearer that it can take more
-time to develop a fix, possibly adding more and more people, but that
-once the fix is confirmed, the process starts and the only reason for
-an embargo is QA/rollout (which explains why there's no reason for a
-long embargo since everything is ready). But that brings back the
-concern that if we suggest that the reporter contacts linux-distros
-after the fix is ready, he may be bound by a 2-week embargo (unless
-it's fine to cut it to one week max by default). We need to make sure
-to limit friction because many reporters are first-timers and it's
-really unpleasant for them to be bounced between lists with different
-policies and being told they can't ask for this or that.
-
-> > It's always possible to go into more detail about what "robust" means
-> > exactly or who makes this decision (and how), but I think brevity does a
-> > lot to keep things readable.
+>-		return 0;
+>+		ret = 0;
+>+		goto done_unlock;
+> 	}
 > 
-> What exactly is unreadable with the current doc?
-
-I don't think there's anything unreadable, however both you (Will)
-and me are on the list and have implicit knowledge of certain things.
-Vegard is not and his perception is useful because it's closer to the
-one from a reporter who tries to find their way through all this. Even
-a feeling like "it's too difficult to grasp" can be listened to IMHO.
-
-Just my two cents,
-Willy
+> 	init_iova_domain(iovad, 1UL << order, base_pfn);
+> 	ret = iova_domain_init_rcaches(iovad);
+> 	if (ret)
+>-		return ret;
+>+		goto done_unlock;
+> 
+> 	/* If the FQ fails we can simply fall back to strict mode */
+> 	if (domain->type == IOMMU_DOMAIN_DMA_FQ && iommu_dma_init_fq(domain))
+> 		domain->type = IOMMU_DOMAIN_DMA;
+> 
+>-	return iova_reserve_iommu_regions(dev, domain);
+>+	ret = iova_reserve_iommu_regions(dev, domain);
+>+
+>+done_unlock:
+>+	mutex_unlock(&cookie->mutex);
+>+	return ret;
+> }
+> 
+> /**
+>-- 
+>2.18.0
+>
+>
+>_______________________________________________
+>Linux-mediatek mailing list
+>Linux-mediatek@lists.infradead.org
+>http://lists.infradead.org/mailman/listinfo/linux-mediatek
+>
