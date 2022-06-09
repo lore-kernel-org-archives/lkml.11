@@ -2,119 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F79DCCA47B
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 14:30:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7F7EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 14:30:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235463AbiFIOar (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 10:30:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38602 "EHLO
+        id S1344011AbiFIOau (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 10:30:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235645AbiFIOao (ORCPT
+        with ESMTP id S1343991AbiFIOaq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 10:30:44 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 671686129D
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 07:30:43 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id c196so21254245pfb.1
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 07:30:43 -0700 (PDT)
+        Thu, 9 Jun 2022 10:30:46 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36E926129D;
+        Thu,  9 Jun 2022 07:30:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=f3+B3/4f/EYX1WyHVwNor7M5aRUmp3PSGvyyEnFuqik=;
-        b=Uf0gZWDEqsfPzDO/WoOCeZ9zDaQpoG7mpw39fhVrNd4PT36eVUs/AWQRnJc1PGQy6z
-         MxJsCavq8e0r4QA2C5/DW163OyruGXogIMjLQqO9hOiXLcO9KAdDyetG2+YKxTQhKLEs
-         2Z2d8kh+Z+YW308jK/76QcgUk6kjZDzT2Hb++SdFAaMfqm1xGDHP/BHFdd3FUq7HYUxE
-         8N59xPbFsSOX7aqE9KZ3G0JG1v++Eu9VcU+yovBX8rENqdxOXtKpG9kuVkCEfUv35Ylq
-         93P03ULGNI5XIOFC8wrJz30QYpAsVBQrYnTwXdh5W3ycKKateO+O5A+JJHeMY2GkmYv8
-         FX2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=f3+B3/4f/EYX1WyHVwNor7M5aRUmp3PSGvyyEnFuqik=;
-        b=VcgfiBm1fZ8vvm8sJQOf7hDTQFJ1S47HyFUbpJ81sjQRFDPB2d1aihNWaBcV8xo0x7
-         srT7xiBlWdyucZ0mi4HfvWBl/Au8ZLSbhyu0iUHA9k52toj50J2JKneIHzmxH53accXG
-         4OOHsdgMKQ1pXP6UfEbWob41bGsPIqkwW90oL0eec9eNLxT1CX+x1A/55ZMwAznyMpof
-         GKwHUUkrd3Mourt58w8BKTC5T/Fb4uO/XUw/oeuJWh1FHG9AXpjO9pHnnoKuc1nHzrtS
-         5XyqizfRqTtaQcX8Rx5uZcyjZT2NZg7jbQaF3xS44pWuG0Z++j0kDM0fMqYzVTMYZV+K
-         5YwQ==
-X-Gm-Message-State: AOAM532aU2z/CoJ5T5vhyNu9+n5JZXLU1hxfbKOE6tCHbtu8lK4i9Lai
-        xPmPi/DIWrCN68L2rX8sqjSABw==
-X-Google-Smtp-Source: ABdhPJwWUD/Bnzq1gZvJJF6L4NnyDUcnw3k9MegfjCLajnnt2E7D2M2H5E8/ChxURaJNbJ6cPyrKfw==
-X-Received: by 2002:a62:8101:0:b0:51b:b859:7043 with SMTP id t1-20020a628101000000b0051bb8597043mr40685565pfd.25.1654785042892;
-        Thu, 09 Jun 2022 07:30:42 -0700 (PDT)
-Received: from [192.168.254.36] ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id e8-20020a170902784800b001640ab19773sm17226263pln.58.2022.06.09.07.30.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Jun 2022 07:30:42 -0700 (PDT)
-Message-ID: <b39cdb9c-aa2a-0f49-318b-8632b2989433@linaro.org>
-Date:   Thu, 9 Jun 2022 07:30:41 -0700
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1654785045; x=1686321045;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=zBhPh/4xM3+f0L83e2KBCz3Sryu0k4hi/47OV450dSk=;
+  b=zHTlLLVWfLHivyEECZPsatEBfDDi+io6+k+aGw95x62r+L9hF6F5Idmr
+   PYfX1DZvq45dc6IeswdtUaC0HLmCyXeEnpKO5RcndNZaZ3B8N4eIMO62m
+   gIHrthNzd2DZBH759HF71gSVxgNNOUamfylkVLmJnnsIFXPvUnbNetmhJ
+   k=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 09 Jun 2022 07:30:45 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 07:30:44 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 9 Jun 2022 07:30:43 -0700
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 9 Jun 2022 07:30:37 -0700
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <quic_plai@quicinc.com>, <bgoswami@quicinc.com>, <perex@perex.cz>,
+        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
+        <quic_rohkumar@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
+        <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>, <vkoul@kernel.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Subject: [PATCH v4 0/2] Add software clock gating requirement check
+Date:   Thu, 9 Jun 2022 20:00:21 +0530
+Message-ID: <1654785023-1667-1-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [cgroup] 3c87862ca1:
- WARNING:at_kernel/softirq.c:#__local_bh_enable_ip
-Content-Language: en-US
-To:     kernel test robot <oliver.sang@intel.com>
-Cc:     0day robot <lkp@intel.com>, Tejun Heo <tj@kernel.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, cgroups@vger.kernel.org,
-        lkp@lists.01.org, Michal Koutny <mkoutny@suse.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        stable@vger.kernel.org,
-        syzbot+e42ae441c3b10acf9e9d@syzkaller.appspotmail.com,
-        =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
-References: <20220609085641.GB17678@xsang-OptiPlex-9020>
-From:   Tadeusz Struk <tadeusz.struk@linaro.org>
-In-Reply-To: <20220609085641.GB17678@xsang-OptiPlex-9020>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/9/22 01:56, kernel test robot wrote:
-> 
-> Greeting,
-> 
-> FYI, we noticed the following commit (built with gcc-11):
-> 
-> commit: 3c87862ca13147416d900cf82ca56bb2f23910bf ("[PATCH v2] cgroup: serialize css kill and release paths")
-> url:https://github.com/intel-lab-lkp/linux/commits/Tadeusz-Struk/cgroup-serialize-css-kill-and-release-paths/20220606-014132
-> base:https://git.kernel.org/cgit/linux/kernel/git/tj/cgroup.git  for-next
-> patch link:https://lore.kernel.org/netdev/20220603181321.443716-1-tadeusz.struk@linaro.org
-> 
-> in testcase: boot
-> 
-> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
-> 
-> caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
-> 
-> 
-> 
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot<oliver.sang@intel.com>
-> 
-> 
-> [ 55.821003][ C1] WARNING: CPU: 1 PID: 1 at kernel/softirq.c:363 __local_bh_enable_ip (kernel/softirq.c:363)
+This patch set is to add software clock gating requirement check
 
-Looks like that will need to be spin_lock_irq(&css->lock) instead of spin_lock_bh(&css->lock)
-I can respin the patch, but I would like to request some feedback on it first.
+Changes Since V3:
+	-- Remove redundant check before reset control call
+	-- Reorganiaze patches.
+	-- Fix typos.
+Changes Since V2:
+	-- Fix if check before reset control call	
+Changes Since V1:
+	-- Use boolean flag for bool variable initialization
+	   instead of hard coding.
 
-Tejun, Michal
-Are you interested in fixing this at syzbot issue all? Do you have any more feedback on this?
+	
+Srinivasa Rao Mandadapu (2):
+  soundwire: qcom: Add flag for software clock gating check
+  ASoC: qcom: soundwire: Enable software clock gating requirement flag
+
+ drivers/soundwire/qcom.c | 22 +++++++++++++++++-----
+ 1 file changed, 17 insertions(+), 5 deletions(-)
 
 -- 
-Thanks,
-Tadeusz
+2.7.4
+
