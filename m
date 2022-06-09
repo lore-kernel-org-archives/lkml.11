@@ -2,124 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C18BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 22:21:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFFCEC43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 22:21:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345640AbiFIWVm (ORCPT
+        id S1345623AbiFIWVv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 18:21:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34266 "EHLO
+        Thu, 9 Jun 2022 18:21:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235687AbiFIWVc (ORCPT
+        with ESMTP id S239191AbiFIWVo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 18:21:32 -0400
-Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D38784F1F0
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 15:21:27 -0700 (PDT)
-Received: by mail-pl1-x64a.google.com with SMTP id c10-20020a170903234a00b00168b5f7661bso544418plh.6
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 15:21:27 -0700 (PDT)
+        Thu, 9 Jun 2022 18:21:44 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7595E4EA3E
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 15:21:42 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id g25so27660090ljm.2
+        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 15:21:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=+JW2n6LLjgkLeZpu0VrK7uVIniA8Omo9w9YQRrZ1ImQ=;
-        b=i42901GYNhaxsHQ0DOGoOky9iCPlDaMMKrye+1S6wrdYfiDoHAZcC7HTQX/ufq8JDc
-         FtLJH8ibG+4hcwJncrABH5MINqNlaiBQcg6AiUjnTwqlf664IuYPp0tvgNpDNS6s/GjQ
-         Wjh2TOa/isNuXc04yhOdZrj9wIAtXkGMKkDBH370v2doh3glFP/6lvE9gZpbXECpN/zv
-         UStKebGupQmmTtj2yMjnHwJiwJi/peKu25pYf9NTE11Ch6upWSa6FAa3CkIKEN5+Emo5
-         3UDTgqdqaohZKI3Gp3XYmJjjv1YwnDPf8AUi3y1kFAWlFzS3PLERdXTH2sKpk0ltR6ij
-         /vAw==
+        bh=6XAbGvzvs5JyHtN+RCe7kogF0fQRuXabkc/jwZnOnp4=;
+        b=jqQ8j3WFlwEOdf3SCe6ZcweH6ojSaSbE9VrXW4B3MbW0GMoSpy4stkcYl695HlmwKI
+         F7bCUgy/rBQrQ0+BhAr86l59kOZxRs3G5JSaaIhT2tx9p8qfqPRL+CrIKxzxUJfGVopm
+         aUixLZPmwZEtUqNHEjBb5/kad1uyqJQR1svclMmOur6tFPoEytLhd3Y9oml0D4dcc3+1
+         PXi9H6WVuyIqsV5uSDKFTND0hiuHFrZtnzBCJS/9AYeiFN/YB1gcny0tKpzdusbYuFv3
+         hhEKSnfBgjMBIAuYlIb0NFY36wHNjlDebznPxd7EYqjX62aUqqKWOUEBLjIEXQreI2XH
+         liow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=+JW2n6LLjgkLeZpu0VrK7uVIniA8Omo9w9YQRrZ1ImQ=;
-        b=aOKwzsB+p/Ev67H12hbS4XkcR9F/4bwOlB/uINkyC3U4MHnju1dDCQlVSVXaB9DCVk
-         xXV3cCaYzybTCmzp/j22aTIMj/2PzNNuDGA15rUHzU1pPzy2OLoxZTIwZ07JEL2qA4Z0
-         70QYiKvl9maDYYmWxKTz/0Xveo1IrJeXKa4DJTxvOPh/7toYJB3Z46VlfbxY1QrU/b+3
-         oKAPcJ7N7F2haDJWChTLvUbCVogE4UdTESpCzhVUpS5Age/GiOZUAhW8sFaQ2meIxiqf
-         pJYaxU6KuAsTmoDx2+XlVhqpEATUYn4aY+hnxRiOZu3HIJwGU+WCxivBaLX+WZy+MNGs
-         P5Qg==
-X-Gm-Message-State: AOAM5317V+VEtTlus4qJfo5bmRLOyvIwUlRK7t3aZTq4ICO9jpIdf/yS
-        QmqDrRfpEWOcA4stmO2WjIIWBgM+
-X-Google-Smtp-Source: ABdhPJxwIiVK0GwVN12g3ZMNH56OyPQzBgCjPEweYrbMYHqEsJdgXTONzisCGHUJLebHzTiLq5Vb6Q5FXg==
-X-Received: from fawn.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5795])
- (user=morbo job=sendgmr) by 2002:a63:409:0:b0:3fd:77f0:9a75 with SMTP id
- 9-20020a630409000000b003fd77f09a75mr25262295pge.149.1654813287223; Thu, 09
- Jun 2022 15:21:27 -0700 (PDT)
-Date:   Thu,  9 Jun 2022 22:16:30 +0000
-In-Reply-To: <20220609221702.347522-1-morbo@google.com>
-Message-Id: <20220609221702.347522-12-morbo@google.com>
-Mime-Version: 1.0
-References: <20220609221702.347522-1-morbo@google.com>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH 11/12] ALSA: control: use correct format characters
-From:   Bill Wendling <morbo@google.com>
-To:     isanbard@gmail.com
-Cc:     Tony Luck <tony.luck@intel.com>, Borislav Petkov <bp@alien8.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Jan Kara <jack@suse.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>,
-        Daniel Kiper <daniel.kiper@oracle.com>,
-        Ross Philipson <ross.philipson@oracle.com>,
-        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-mm@kvack.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, alsa-devel@alsa-project.org,
-        llvm@lists.linux.dev
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6XAbGvzvs5JyHtN+RCe7kogF0fQRuXabkc/jwZnOnp4=;
+        b=Xn2zdqw1WdnSD4vGGcLtkkmleZ/s5PElcbraB/TzC1EwbeUqeA7Dwd9EGJ4KJZQfKU
+         AbAVr1K/SEtzIf2JZPsLTMjfCN5oUZ9TUvXBRE7nCfhrP4/99Xv2nTaLEcDNum9SjvDH
+         1F4YuthDPr9u5pOiE0udovmXM7teYb8O94RWUvocQ5VA1x8eEJ7yRc3q5a306/ZjnozO
+         eyTwhzWPJkLD3SIfjfJZYsj+lLW5NjQUCkObHhHF1Q9MmSpxU6JQdKNC2iI3lkugpQBa
+         8VbHaaI51YPk/N+/bndeZZ+fbhgJcqdeZ8A06VMyGznIt2rJ/ywkF2pbxFhI7MBRws3s
+         FG2w==
+X-Gm-Message-State: AOAM532AOZ9jEE1B0KG2oICOvbIpO6UGMpMzvEyC57ESqH3X2IasLpQ4
+        D5PImVt0iff3gVg1QZdU/R/Aam7rpagI+R4wPtxjMA==
+X-Google-Smtp-Source: ABdhPJyLQDCXCJpTDAOne+nagR40Mtns6u31Vb0Y/80nZPshX8AbfMJumpJDu+moXo3G1ul+sCUgcRgoxMbBJ1/Cz28=
+X-Received: by 2002:a2e:9183:0:b0:255:75b7:48ae with SMTP id
+ f3-20020a2e9183000000b0025575b748aemr20855781ljg.466.1654813300470; Thu, 09
+ Jun 2022 15:21:40 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220606214414.736109-1-shy828301@gmail.com> <20220606214414.736109-3-shy828301@gmail.com>
+In-Reply-To: <20220606214414.736109-3-shy828301@gmail.com>
+From:   "Zach O'Keefe" <zokeefe@google.com>
+Date:   Thu, 9 Jun 2022 15:21:04 -0700
+Message-ID: <CAAa6QmTYZQVf_U3dBnFpYGh3E8Qc4w8CKctMUC7jV_t=naGURQ@mail.gmail.com>
+Subject: Re: [v3 PATCH 2/7] mm: thp: introduce transhuge_vma_size_ok() helper
+To:     Yang Shi <shy828301@gmail.com>
+Cc:     vbabka@suse.cz, kirill.shutemov@linux.intel.com,
+        willy@infradead.org, akpm@linux-foundation.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bill Wendling <isanbard@gmail.com>
+On Mon, Jun 6, 2022 at 2:44 PM Yang Shi <shy828301@gmail.com> wrote:
+>
+> There are couple of places that check whether the vma size is ok for
+> THP or not, they are open coded and duplicate, introduce
+> transhuge_vma_size_ok() helper to do the job.
+>
+> Signed-off-by: Yang Shi <shy828301@gmail.com>
+> ---
+>  include/linux/huge_mm.h | 17 +++++++++++++++++
+>  mm/huge_memory.c        |  5 +----
+>  mm/khugepaged.c         | 12 ++++++------
+>  3 files changed, 24 insertions(+), 10 deletions(-)
+>
+> diff --git a/include/linux/huge_mm.h b/include/linux/huge_mm.h
+> index 648cb3ce7099..a8f61db47f2a 100644
+> --- a/include/linux/huge_mm.h
+> +++ b/include/linux/huge_mm.h
+> @@ -116,6 +116,18 @@ extern struct kobj_attribute shmem_enabled_attr;
+>
+>  extern unsigned long transparent_hugepage_flags;
+>
+> +/*
+> + * The vma size has to be large enough to hold an aligned HPAGE_PMD_SIZE area.
+> + */
+> +static inline bool transhuge_vma_size_ok(struct vm_area_struct *vma)
+> +{
+> +       if (round_up(vma->vm_start, HPAGE_PMD_SIZE) <
+> +           (vma->vm_end & HPAGE_PMD_MASK))
+> +               return true;
+> +
+> +       return false;
+> +}
 
-When compiling with -Wformat, clang emits the following warnings:
+First time coming across round_up() - thanks for that - but for
+symmetry, maybe also use round_down() for the end? No strong opinion -
+just a suggestion given I've just discovered it.
 
-sound/core/control.c:2062:24: error: format string is not a string literal (potentially insecure) [-Werror,-Wformat-security]
-        return request_module(module_name);
-                              ^~~~~~~~~~~
+>  static inline bool transhuge_vma_suitable(struct vm_area_struct *vma,
+>                 unsigned long addr)
+>  {
+> @@ -345,6 +357,11 @@ static inline bool transparent_hugepage_active(struct vm_area_struct *vma)
+>         return false;
+>  }
+>
+> +static inline bool transhuge_vma_size_ok(struct vm_area_struct *vma)
+> +{
+> +       return false;
+> +}
+> +
+>  static inline bool transhuge_vma_suitable(struct vm_area_struct *vma,
+>                 unsigned long addr)
+>  {
+> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+> index 48182c8fe151..36ada544e494 100644
+> --- a/mm/huge_memory.c
+> +++ b/mm/huge_memory.c
+> @@ -71,10 +71,7 @@ unsigned long huge_zero_pfn __read_mostly = ~0UL;
+>
+>  bool transparent_hugepage_active(struct vm_area_struct *vma)
+>  {
+> -       /* The addr is used to check if the vma size fits */
+> -       unsigned long addr = (vma->vm_end & HPAGE_PMD_MASK) - HPAGE_PMD_SIZE;
+> -
+> -       if (!transhuge_vma_suitable(vma, addr))
+> +       if (!transhuge_vma_size_ok(vma))
+>                 return false;
+>         if (vma_is_anonymous(vma))
+>                 return __transparent_hugepage_enabled(vma);
 
-Use a string literal for the format string.
+Do we need a check for vma->vm_pgoff alignment here, after
+!vma_is_anonymous(), and now that we don't call
+transhuge_vma_suitable()?
 
-Link: https://github.com/ClangBuiltLinux/linux/issues/378
-Signed-off-by: Bill Wendling <isanbard@gmail.com>
----
- sound/core/control.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> diff --git a/mm/khugepaged.c b/mm/khugepaged.c
+> index 84b9cf4b9be9..d0f8020164fc 100644
+> --- a/mm/khugepaged.c
+> +++ b/mm/khugepaged.c
+> @@ -454,6 +454,9 @@ bool hugepage_vma_check(struct vm_area_struct *vma,
+>                                 vma->vm_pgoff, HPAGE_PMD_NR))
+>                 return false;
+>
+> +       if (!transhuge_vma_size_ok(vma))
+> +               return false;
+> +
+>         /* Enabled via shmem mount options or sysfs settings. */
+>         if (shmem_file(vma->vm_file))
+>                 return shmem_huge_enabled(vma);
+> @@ -512,9 +515,7 @@ void khugepaged_enter_vma(struct vm_area_struct *vma,
+>                           unsigned long vm_flags)
+>  {
+>         if (!test_bit(MMF_VM_HUGEPAGE, &vma->vm_mm->flags) &&
+> -           khugepaged_enabled() &&
+> -           (((vma->vm_start + ~HPAGE_PMD_MASK) & HPAGE_PMD_MASK) <
+> -            (vma->vm_end & HPAGE_PMD_MASK))) {
+> +           khugepaged_enabled()) {
+>                 if (hugepage_vma_check(vma, vm_flags))
+>                         __khugepaged_enter(vma->vm_mm);
+>         }
+> @@ -2142,10 +2143,9 @@ static unsigned int khugepaged_scan_mm_slot(unsigned int pages,
+>                         progress++;
+>                         continue;
+>                 }
+> -               hstart = (vma->vm_start + ~HPAGE_PMD_MASK) & HPAGE_PMD_MASK;
+> +
+> +               hstart = round_up(vma->vm_start, HPAGE_PMD_SIZE);
+>                 hend = vma->vm_end & HPAGE_PMD_MASK;
+> -               if (hstart >= hend)
+> -                       goto skip;
+>                 if (khugepaged_scan.address > hend)
+>                         goto skip;
+>                 if (khugepaged_scan.address < hstart)
 
-diff --git a/sound/core/control.c b/sound/core/control.c
-index a25c0d64d104..a1778137147d 100644
---- a/sound/core/control.c
-+++ b/sound/core/control.c
-@@ -2059,7 +2059,7 @@ int snd_ctl_request_layer(const char *module_name)
- 	up_read(&snd_ctl_layer_rwsem);
- 	if (lops)
- 		return 0;
--	return request_module(module_name);
-+	return request_module("%s", module_name);
- }
- EXPORT_SYMBOL_GPL(snd_ctl_request_layer);
- 
--- 
-2.36.1.255.ge46751e96f-goog
+Likewise, could do round_down() here (just a suggestion)
 
+> --
+> 2.26.3
+>
+>
