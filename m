@@ -2,96 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25BCAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 15:18:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 492E7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 15:18:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344351AbiFIPSS (ORCPT
+        id S1344379AbiFIPSs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 11:18:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47914 "EHLO
+        Thu, 9 Jun 2022 11:18:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242212AbiFIPSP (ORCPT
+        with ESMTP id S1344427AbiFIPSg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 11:18:15 -0400
-X-Greylist: delayed 1849 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 09 Jun 2022 08:18:10 PDT
-Received: from m15113.mail.126.com (m15113.mail.126.com [220.181.15.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C7C0349F16
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 08:18:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=9jmiY
-        Z8pRS/uF1eNB9/cdQDjDlfV/hTLDW6XrEdWyxM=; b=QIUfBDoMM6uG/b+UyRtV1
-        09Z/AYUPPVjNPFIKRSWuokn6epR/6uXPw8pRRPlO1WwJ6S5nwT2LfhtbRAFfpqBS
-        yMmD5zkvzhI7O/1PoJ+sPSFT9eVsr0863tP104Ar8nMOXy23iRRopi0P/C1kYnIB
-        r0LFaSjXu3z8Bg4MQkslpU=
-Received: from localhost.localdomain (unknown [117.174.18.188])
-        by smtp3 (Coremail) with SMTP id DcmowADX3mrVB6JiHxKeCw--.14055S2;
-        Thu, 09 Jun 2022 22:46:49 +0800 (CST)
-From:   cxbing <zhangkkoo@126.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Balbir Singh <bsingharora@gmail.com>, linux-kernel@vger.kernel.org,
-        cxbing <chenxuebing@jari.cn>
-Subject: [PATCH] delayacct: Remove some unused variables
-Date:   Thu,  9 Jun 2022 07:44:59 -0700
-Message-Id: <20220609144459.86379-1-zhangkkoo@126.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 9 Jun 2022 11:18:36 -0400
+Received: from mail-il1-f177.google.com (mail-il1-f177.google.com [209.85.166.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43CDD49F8D;
+        Thu,  9 Jun 2022 08:18:34 -0700 (PDT)
+Received: by mail-il1-f177.google.com with SMTP id f12so19004074ilj.1;
+        Thu, 09 Jun 2022 08:18:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1gmOzw7Uedt/uo+o3zQbOPqoyD7maSwLjV34dKxt390=;
+        b=DVVyMZtAgFeYA1laaeWqDoUqnDskeZJiVWdJIaXh1BDs3ug37NAaU9tpbmZ5+edhga
+         lbHLSjmWDEaJbOjO/XpBgy23bBJ8PG3Lf1n1YxovaZXmDCgInjF+dVrdQutnr6L/JE7m
+         0RRkg5poIqsivQakJGbTXHkh0woONf+fa6+HG1cPp81ERCARKc5/kZ2ghHMUJq6OJBff
+         tCiWSw5e0qceOBvxJ5XRqmP1sm4KBrCKj/tQA4SSHMD+tB06MIPLE7JQwHrHGYOF37cl
+         3OHJlV8PyVzRaGOArJfoQY+RgZIF5AAbfHbuzEvxY8ZS5ZcSUjLXCkn7+xeTE3q+Outb
+         4FPQ==
+X-Gm-Message-State: AOAM533VW43mXMCV3qe/KTOo9KiTv98DLl6vojGUsGRSPEBfKjr7K0ci
+        yKP/f+CXdHEIMWPdaXb7UQ==
+X-Google-Smtp-Source: ABdhPJxtMHHVPS+lHxLQJsKydz9fs+sGTPoA7UIGtpxvKHKRyH4605h3UklPDvAcj26MB7xJGqasng==
+X-Received: by 2002:a05:6e02:5cd:b0:2d3:ad26:4b53 with SMTP id l13-20020a056e0205cd00b002d3ad264b53mr21562060ils.117.1654787914056;
+        Thu, 09 Jun 2022 08:18:34 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.251])
+        by smtp.gmail.com with ESMTPSA id i2-20020a92c942000000b002d4070b07b7sm8151707ilq.59.2022.06.09.08.18.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jun 2022 08:18:33 -0700 (PDT)
+Received: (nullmailer pid 3813967 invoked by uid 1000);
+        Thu, 09 Jun 2022 15:18:31 -0000
+Date:   Thu, 9 Jun 2022 09:18:31 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-input@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        arm@kernel.org, Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Olof Johansson <olof@lixom.net>, soc@kernel.org,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v2 02/48] dt-bindings: input: gpio-keys: reference
+ input.yaml and document properties
+Message-ID: <20220609151831.GA3813893-robh@kernel.org>
+References: <20220609113721.379932-1-krzysztof.kozlowski@linaro.org>
+ <20220609113911.380368-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DcmowADX3mrVB6JiHxKeCw--.14055S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7JFW7Zr4DCF43Xw1xuFyxGrg_yoWkArbEq3
-        yag3y8CrZ5Aryjka18Ja18XrW0q3WrW3s7CwsrtrW3Xr1xWa4FyFWDZr1DA3Wruay7AFW3
-        JFsYyr1fC3yUGjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUbaZX7UUUUU==
-X-Originating-IP: [117.174.18.188]
-X-CM-SenderInfo: x2kd0wpnnr0qqrswhudrp/1tbi2hob-VuwMKhWjAAAsP
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220609113911.380368-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: cxbing <chenxuebing@jari.cn>
+On Thu, 09 Jun 2022 13:39:04 +0200, Krzysztof Kozlowski wrote:
+> The original text bindings documented "autorepeat" and "label"
+> properties (in the device node, beside the nodes with keys).  DTS use
+> also poll-interval.  Reference the input.yaml to get these top-level
+> properties.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  .../devicetree/bindings/input/gpio-keys.yaml  | 32 +++++++++++--------
+>  1 file changed, 19 insertions(+), 13 deletions(-)
+> 
 
-Drop the unused variables *done* and *count*.
-
-Signed-off-by: cxbing <chenxuebing@jari.cn>
----
- tools/accounting/getdelays.c | 4 ----
- 1 file changed, 4 deletions(-)
-
-diff --git a/tools/accounting/getdelays.c b/tools/accounting/getdelays.c
-index 11e86739456d..ea54ee53a802 100644
---- a/tools/accounting/getdelays.c
-+++ b/tools/accounting/getdelays.c
-@@ -45,7 +45,6 @@
- 		exit(code);			\
- 	} while (0)
- 
--int done;
- int rcvbufsz;
- char name[100];
- int dbg;
-@@ -279,7 +278,6 @@ int main(int argc, char *argv[])
- 	pid_t rtid = 0;
- 
- 	int fd = 0;
--	int count = 0;
- 	int write_file = 0;
- 	int maskset = 0;
- 	char *logfile = NULL;
-@@ -489,7 +487,6 @@ int main(int argc, char *argv[])
- 				len2 = 0;
- 				/* For nested attributes, na follows */
- 				na = (struct nlattr *) NLA_DATA(na);
--				done = 0;
- 				while (len2 < aggr_len) {
- 					switch (na->nla_type) {
- 					case TASKSTATS_TYPE_PID:
-@@ -503,7 +500,6 @@ int main(int argc, char *argv[])
- 							printf("TGID\t%d\n", rtid);
- 						break;
- 					case TASKSTATS_TYPE_STATS:
--						count++;
- 						if (print_delays)
- 							print_delayacct((struct taskstats *) NLA_DATA(na));
- 						if (print_io_accounting)
--- 
-2.25.1
-
+Reviewed-by: Rob Herring <robh@kernel.org>
