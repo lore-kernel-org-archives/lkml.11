@@ -2,102 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7758BCCA473
-	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 16:30:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A2C2C43334
+	for <linux-kernel@archiver.kernel.org>; Thu,  9 Jun 2022 16:34:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244223AbiFIQau (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 12:30:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41214 "EHLO
+        id S244393AbiFIQer (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 12:34:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344261AbiFIQar (ORCPT
+        with ESMTP id S232459AbiFIQep (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 12:30:47 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F00233CF66;
-        Thu,  9 Jun 2022 09:30:46 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Thu, 9 Jun 2022 12:34:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 030A13A8A70;
+        Thu,  9 Jun 2022 09:34:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id C82491FEAA;
-        Thu,  9 Jun 2022 16:30:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1654792244;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Y2i6/2xfXmqrG3UQrxWuJBZA/au7sKNam077cWguoHI=;
-        b=WAFGqmnIhYNvM2ssVKG3KczLLHpzVExLaqbMNaaD4TxG3LoWXkMqgKnr5sAnFUCBPyx6Bj
-        RhP7Axe2UJS1vtWME26BQmMzF4seMk852MkeYIJ1XbXQW9TzZc/m/RdeIYLyaRgTqpIusE
-        ixbzVs/BQECC0I+aIWNnX7/19GjySKk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1654792244;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Y2i6/2xfXmqrG3UQrxWuJBZA/au7sKNam077cWguoHI=;
-        b=OcorPq9pvgFSPMUepbubrqyCj9P6m8KkNJ5KgBjsd3ExzLQ6RMGB6JpwEUQqKFOx6b3ocZ
-        x6fso1mpPJmN9sCA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5E9DB13A8C;
-        Thu,  9 Jun 2022 16:30:44 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id s5sbFjQgomLwJQAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Thu, 09 Jun 2022 16:30:44 +0000
-Date:   Thu, 9 Jun 2022 18:26:14 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-aio@kvack.org,
-        linux-btrfs@vger.kernel.org, linux-ext4@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net, cluster-devel@redhat.com,
-        linux-mm@kvack.org, linux-xfs@vger.kernel.org,
-        linux-nfs@vger.kernel.org, linux-ntfs-dev@lists.sourceforge.net,
-        ocfs2-devel@oss.oracle.com, linux-mtd@lists.infradead.org,
-        virtualization@lists.linux-foundation.org,
-        Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH v2 10/19] mm/migrate: Convert migrate_page() to
- migrate_folio()
-Message-ID: <20220609162614.GU20633@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-aio@kvack.org,
-        linux-btrfs@vger.kernel.org, linux-ext4@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net, cluster-devel@redhat.com,
-        linux-mm@kvack.org, linux-xfs@vger.kernel.org,
-        linux-nfs@vger.kernel.org, linux-ntfs-dev@lists.sourceforge.net,
-        ocfs2-devel@oss.oracle.com, linux-mtd@lists.infradead.org,
-        virtualization@lists.linux-foundation.org,
-        Christoph Hellwig <hch@lst.de>
-References: <20220608150249.3033815-1-willy@infradead.org>
- <20220608150249.3033815-11-willy@infradead.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 93CCF611C8;
+        Thu,  9 Jun 2022 16:34:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5E91C34114;
+        Thu,  9 Jun 2022 16:34:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654792483;
+        bh=Z+8881I4lGsavWzdw6DGjO9wRYbLtT/CZtArIVyvZaE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=c4Uz+6A+2OOmdOhCtufOjwLRgEWGfXzyZ8jao+p0kgecuiArHgWdmUAlciS4UWhFP
+         VqqxlcQKwF8fxvxaOPv653HqMr0xYDtqUiUViRXvwCXrTA4sEeOYamoS2xapoQmpBQ
+         swqkXvhfnnLMtYy6ivQezK+H4KvvdFGT4eRRwsGbvSHN7GPW6JoDCqeExAAvNz767r
+         8a33RldnDFm8dsLV9u0t0Jd38YwmeGWokosVNzov4z21KdATX11BebY+mrFvQPsDne
+         ZTV++N4GGGNVwfba6OPP0NGn1sLNGT/SUfODp0hnx9DS2O5tY6EPKdqniH2XUByKBB
+         aUmgNH187oG3A==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id A4ACB4096F; Thu,  9 Jun 2022 13:34:40 -0300 (-03)
+Date:   Thu, 9 Jun 2022 13:34:40 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Fangrui Song <maskray@google.com>
+Cc:     Ian Rogers <irogers@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Sedat Dilek <sedat.dilek@gmail.com>, llvm@lists.linux.dev,
+        Sebastian Ullrich <sebasti@nullri.ch>
+Subject: Re: [PATCH] perf unwind: Fix uninitialized variable
+Message-ID: <YqIhIHQVh7s52Fap@kernel.org>
+References: <20220607000851.39798-1-irogers@google.com>
+ <20220607002658.zkbs4c37ihmivcmn@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220608150249.3033815-11-willy@infradead.org>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+In-Reply-To: <20220607002658.zkbs4c37ihmivcmn@google.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022 at 04:02:40PM +0100, Matthew Wilcox (Oracle) wrote:
-> Convert all callers to pass a folio.  Most have the folio
-> already available.  Switch all users from aops->migratepage to
-> aops->migrate_folio.  Also turn the documentation into kerneldoc.
+Em Mon, Jun 06, 2022 at 05:26:58PM -0700, Fangrui Song escreveu:
+> On 2022-06-06, Ian Rogers wrote:
+> > ret may be uninitialized on error goto paths.
+> > 
+> > Reported-by: Sedat Dilek <sedat.dilek@gmail.com>
+> > Fixes: dc2cf4ca866f ("perf unwind: Fix segbase for ld.lld linked objects")
+> > Signed-off-by: Ian Rogers <irogers@google.com>
 > 
-> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-> Reviewed-by: Christoph Hellwig <hch@lst.de>
-> ---
->  drivers/gpu/drm/i915/gem/i915_gem_userptr.c |  4 +--
+> Thanks. Sorry for my mistake...
+> 
+> Reviewed-by: Fangrui Song <maskray@google.com>
 
-For
+Thanks, applied.
 
->  fs/btrfs/disk-io.c                          |  2 +-
+- Arnaldo
 
-Acked-by: David Sterba <dsterba@suse.com>
+ 
+> > ---
+> > tools/perf/util/unwind-libunwind-local.c | 2 +-
+> > 1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/tools/perf/util/unwind-libunwind-local.c b/tools/perf/util/unwind-libunwind-local.c
+> > index 37622699c91a..6e5b8cce47bf 100644
+> > --- a/tools/perf/util/unwind-libunwind-local.c
+> > +++ b/tools/perf/util/unwind-libunwind-local.c
+> > @@ -174,7 +174,7 @@ static int elf_section_address_and_offset(int fd, const char *name, u64 *address
+> > 	Elf *elf;
+> > 	GElf_Ehdr ehdr;
+> > 	GElf_Shdr shdr;
+> > -	int ret;
+> > +	int ret = -1;
+> > 
+> > 	elf = elf_begin(fd, PERF_ELF_C_READ_MMAP, NULL);
+> > 	if (elf == NULL)
+> > -- 
+> > 2.36.1.255.ge46751e96f-goog
+> > 
+
+-- 
+
+- Arnaldo
