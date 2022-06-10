@@ -2,124 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0A85C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 09:58:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD698C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 09:59:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348057AbiFJJ6y convert rfc822-to-8bit (ORCPT
+        id S1348094AbiFJJ7L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 05:58:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38552 "EHLO
+        Fri, 10 Jun 2022 05:59:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347393AbiFJJ6v (ORCPT
+        with ESMTP id S1348108AbiFJJ7J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 05:58:51 -0400
-X-Greylist: delayed 397 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 10 Jun 2022 02:58:47 PDT
-Received: from pout.email.it (pout.email.it [77.93.251.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 700CAB040C;
-        Fri, 10 Jun 2022 02:58:47 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by pout.email.it (Postfix) with ESMTP id 4A930CBD01;
-        Fri, 10 Jun 2022 11:52:07 +0200 (CEST)
-Received: from pout.email.it ([127.0.0.1])
-        by localhost (ir-mtaout02.email.it [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id a-vjGxilERSg; Fri, 10 Jun 2022 11:52:07 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by pout.email.it (Postfix) with ESMTP id F2B8ECE1CF;
-        Fri, 10 Jun 2022 11:52:06 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at ir-mtaout02.email.it
-Received: from pout.email.it ([127.0.0.1])
-        by localhost (ir-mtaout02.email.it [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id NW5ds1gH4l21; Fri, 10 Jun 2022 11:52:06 +0200 (CEST)
-Received: from ir-zstore42.email.it (unknown [192.168.25.42])
-        by pout.email.it (Postfix) with ESMTP id DB257CBD01;
-        Fri, 10 Jun 2022 11:52:05 +0200 (CEST)
-Date:   Fri, 10 Jun 2022 11:52:05 +0200 (CEST)
-From:   blinkin@email.it
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        linux-acpi <linux-acpi@vger.kernel.org>
-Message-ID: <1131544892.7359423.1654854725508.JavaMail.zimbra@email.it>
-Subject: Re: Bug report for kernel v4.15-rc8+
+        Fri, 10 Jun 2022 05:59:09 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 087D6B0431
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 02:59:04 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id n28so34575301edb.9
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 02:59:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Wq9gVVdD1/J4q1/EmaJv8aMnFa3KHaLmU1Qz7ppGNhE=;
+        b=sESAYG8k3Sf9OIqWLT4EVVR1tdBRPzoeATKW1Bbr2Qec6XgtDTd0dLvf3JxpbsdtiN
+         haM4S5D0p35YqjS96SRhlhV9PmgIBeJZRFmqLI2mTKsHDeogxhZjOgQrxOnzy+1/2XtD
+         0eX4ckZuGDw9VkCsjWhZCr46CF8UjrkgRy6bgK/5g382J+YFtdU43gWuOYUyzULLe/G5
+         0oLO+Ocf8dUlYZC2cquCijGI6UDKjYA4U3w5eOjWMvkknznKAeuz19JOqsRhoOxhN3jy
+         C83YXicE7j8ja6i/EwLN5oSrZBoRFP5A1cJViH3BlNc9kFVxMxQaduFcPkr6w8n090DN
+         bvhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Wq9gVVdD1/J4q1/EmaJv8aMnFa3KHaLmU1Qz7ppGNhE=;
+        b=Nn2F5lcz0Ldo7LTLmoEksIWMCpHKryTsMkJmG7lAQ6gSQGH2ClYUnOf0T/z9tt2e6g
+         lt0bDh38x0W1IDUjk/RiZUrkkoJJM/ZE1WJ+GWJZMBHp70Z0Aj+J1M2g6iPJsbZSL2Zj
+         V31zI1/KqJE9nSx6wUkI/PlPZVjfn1FCkU2UzhbdGAgWI99PntLTyNvkQlXTK/nPZ8lb
+         z0WIXn1WS8FlKkpnvQxQ+kqWlPFXQOJ4NsEI7jeWEcuJ8w5XIxPVpUYtxAa6slL0m/9h
+         YsPmrdaZB9QLGq9KO2UxiK6yVzAnCyY+HECo3Phb0T9fVjkScXM4hI1DhgrIf6BGflI0
+         YAwQ==
+X-Gm-Message-State: AOAM530tWVwdptCSSrho4YFpeLS0fxuiGX9MoGth4fG/031ahMsB8Mi9
+        uYTU83NZYviHIjH0b1g2Yt1cPw==
+X-Google-Smtp-Source: ABdhPJznPfBVrxm6drYBka7ZGOrt2dIG3zy2ti6SB08YUWNwJwfIafeTfcbr7B/2U8M4buh900aY3w==
+X-Received: by 2002:a05:6402:500b:b0:431:78d0:bf9d with SMTP id p11-20020a056402500b00b0043178d0bf9dmr22935174eda.184.1654855143357;
+        Fri, 10 Jun 2022 02:59:03 -0700 (PDT)
+Received: from [192.168.0.201] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id l15-20020a17090615cf00b006f3ef214dd9sm11969760ejd.63.2022.06.10.02.59.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 10 Jun 2022 02:59:02 -0700 (PDT)
+Message-ID: <11245d23-76a2-1008-eac6-f396954857c7@linaro.org>
+Date:   Fri, 10 Jun 2022 11:59:00 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-X-Originating-IP: [93.146.250.201]
-X-Mailer: Zimbra 8.8.15_GA_4257 (ZimbraWebClient - GC102 (Linux)/8.8.15_GA_4257)
-Thread-Index: 3jCrU3LIC1isKA2ySsKGyjGyPR+46g==
-Thread-Topic: Bug report for kernel v4.15-rc8+
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 18/20] arm64: dts: nuvoton: Add initial NPCM8XX device
+ tree
+Content-Language: en-US
+To:     Tomer Maimon <tmaimon77@gmail.com>
+Cc:     Avi Fishman <avifishman70@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Robert Hancock <robert.hancock@calian.com>,
+        =?UTF-8?Q?Jonathan_Neusch=c3=a4fer?= <j.neuschaefer@gmx.net>,
+        Lubomir Rintel <lkundrak@v3.sk>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+References: <20220608095623.22327-1-tmaimon77@gmail.com>
+ <20220608095623.22327-19-tmaimon77@gmail.com>
+ <24ad8ba0-4244-1159-328d-12d0e67951e1@linaro.org>
+ <CAP6Zq1iXaN8D-g2O=cD-XERGj3BROQO=NJ66mquVsOw8nSM=0A@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAP6Zq1iXaN8D-g2O=cD-XERGj3BROQO=NJ66mquVsOw8nSM=0A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hello, any news on this?
+On 10/06/2022 00:29, Tomer Maimon wrote:
+>>> +     clk_refclk: clk-refclk {
+>>> +             compatible = "fixed-clock";
+>>> +             #clock-cells = <0>;
+>>> +             clock-frequency = <25000000>;
+>>
+>> Ignored comment.
+> Could we use it as a default clock-frequency?
 
------ Messaggio originale -----
-Da: "Thomas Gleixner" <tglx@linutronix.de>
-A: blinkin@email.it
-Cc: "linux-kernel" <linux-kernel@vger.kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, "Len Brown" <lenb@kernel.org>, linux-acpi@vger.kernel.org
-Inviato: Mercoledì, 11 agosto 2021 16:20:41
-Oggetto: Re: Bug report for kernel v4.15-rc8+
+In DTS? If my assumption, that this clock is not on SoC itself, is
+correct, then the answer is no, you cannot. The clock physically sits on
+the board, so it is defined by board DTS. Feel free to embed in SoC DTSI
+most of the clock properties, but the core property - frequency - must
+be outside.
 
-On Wed, Aug 11 2021 at 15:51, blinkin@email.it wrote:
-> 1) You're booting with an out of tree module
->
->   Uninstalled virtualbox, reproduced same behavior without the module.
->   dmesg outputs attached with and without the workaround
->   (dmesg_novboxdrv_clean.txt and dmesg_novboxdrv_irqaffinity0.txt)
+>>
+>>> +             clock-output-names = "refclk";
+>>> +     };
+>>> +
+>>> +     /* external reference clock for cpu. float in normal operation */
+>>> +     clk_sysbypck: clk-sysbypck {
+>>> +             compatible = "fixed-clock";
+>>> +             #clock-cells = <0>;
+>>> +             clock-frequency = <1000000000>;
+>>
+>> Ignored comment.
+> same as above
+>>
+>>> +             clock-output-names = "sysbypck";
+>>> +     };
+>>> +
+>>> +     /* external reference clock for MC. float in normal operation */
+>>> +     clk_mcbypck: clk-mcbypck {
+>>> +             compatible = "fixed-clock";
+>>> +             #clock-cells = <0>;
+>>> +             clock-frequency = <1050000000>;
+> same as above
+>>> +             clock-output-names = "mcbypck";
+>>> +     };
+>>> +
+>>> +     soc {
+>>> +             #address-cells = <2>;
+>>> +             #size-cells = <2>;
+>>> +             compatible = "simple-bus";
+>>> +             interrupt-parent = <&gic>;
+>>> +             ranges;
+>>> +
+>>> +             gcr: gcr@f0800000 {
+> I understand it sounds generic but I try to be as much compatible with NPCM7XX
+> https://elixir.bootlin.com/linux/v5.19-rc1/source/arch/arm/boot/dts/nuvoton-common-npcm7xx.dtsi#L91
 
-Ok.
+Then fix NPCM7XX. Please do not multiple bad choices because it looks
+similar. Fix the other wrong one.
 
-> 2) Please provide information what is consuming 90% of a CPU
->
->   top shows a kworker process consistently at 50% without the
->   workaround, 60% with the workaround. No significant activity amounts
->   from other processes.  Sometimes that 50% is split between two
->   kworker processes for a short time.  CPU core #0 activity is a
->   constant 60% without the workaround, 90% with the workaround
+>>
+>> Ignored comment.
+>>
+>>> +                     compatible = "nuvoton,npcm845-gcr", "syscon",
+>>> +                             "simple-mfd";
+>>
+>> This is not a simple-mfd... I see original bindings defined it that way,
+>> but why? I think they should be corrected - remove simple-mfd from the
+>> bindings and DTS.
+> will remove in both places in V3
+>>
+>>
+>>> +                     reg = <0x0 0xf0800000 0x0 0x1000>;
+>>> +             };
+>>> +
+>>> +             gic: interrupt-controller@dfff9000 {
+>>> +                     compatible = "arm,gic-400";
+>>> +                     reg = <0x0 0xdfff9000 0x0 0x1000>,
+>>> +                           <0x0 0xdfffa000 0x0 0x2000>,
+>>> +                           <0x0 0xdfffc000 0x0 0x2000>,
+>>> +                           <0x0 0xdfffe000 0x0 0x2000>;
+>>> +                     interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
+>>> +                     #interrupt-cells = <3>;
+>>> +                     interrupt-controller;
+>>> +                     #address-cells = <0>;
+>>> +                     ppi-partitions {
+>>> +                             ppi_cluster0: interrupt-partition-0 {
+>>> +                                     affinity = <&cpu0 &cpu1 &cpu2 &cpu3>;
+>>> +                             };
+>>> +                     };
+>>> +             };
+>>> +     };
+>>> +
+>>> +     ahb {
+>>> +             #address-cells = <2>;
+>>> +             #size-cells = <2>;
+>>> +             compatible = "simple-bus";
+>>> +             interrupt-parent = <&gic>;
+> 
+>>> +             ranges;
+>>> +
+>>> +             rstc: rstc@f0801000 {
+>>
+>> Ignored comment.
+>>
+> I understand it sounds generic but I try to be as much compatible with NPCM7XX
+> https://elixir.bootlin.com/linux/v5.19-rc1/source/arch/arm/boot/dts/nuvoton-common-npcm7xx.dtsi#L109
 
-That's broken. /proc/interrupts gives some hint:
+Fix 7xx.
 
-1) Stock kernel
 
->             CPU0       CPU1       CPU2       CPU3       
->    0:         10          0          0          0  IR-IO-APIC    2-edge      timer
->    1:          0          0          0          9  IR-IO-APIC    1-edge      i8042
->    8:          0          1          0          0  IR-IO-APIC    8-edge      rtc0
->    9:          0     923411          0          0  IR-IO-APIC    9-fasteoi   acpi
-
-900k ACPI interrupts right after boot
-
->             CPU0       CPU1       CPU2       CPU3       
->    0:         10          0          0          0  IR-IO-APIC    2-edge      timer
->    1:          0          0          0         11  IR-IO-APIC    1-edge      i8042
->    8:          0          1          0          0  IR-IO-APIC    8-edge      rtc0
->    9:          0    4869059          0          0  IR-IO-APIC    9-fasteoi   acpi
-
-One minute later it's 4.8M
-
-With affinity forced to CPU0 it's even more:
-
->             CPU0       CPU1       CPU2       CPU3       
->    0:         10          0          0          0  IR-IO-APIC    2-edge      timer
->    1:          9          0          0          0  IR-IO-APIC    1-edge      i8042
->    8:          1          0          0          0  IR-IO-APIC    8-edge      rtc0
->    9:    7576456          0          0          0  IR-IO-APIC    9-fasteoi   acpi
-
-7.5M right after boot
-
->             CPU0       CPU1       CPU2       CPU3       
->    0:         10          0          0          0  IR-IO-APIC    2-edge      timer
->    1:         11          0          0          0  IR-IO-APIC    1-edge      i8042
->    8:          1          0          0          0  IR-IO-APIC    8-edge      rtc0
->    9:   10992420          0          0          0  IR-IO-APIC    9-fasteoi   acpi
-
-10.9M after one minute. Though the delta between right after boot and 1
-minute later is in the same ballpark.
-
-Cc'ed the ACPI people for clues.
-
-Thanks,
-
-        tglx
+Best regards,
+Krzysztof
