@@ -2,128 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3431AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 01:53:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15083CCA473
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 01:58:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233260AbiFJBxm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 21:53:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39662 "EHLO
+        id S235124AbiFJB6Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 21:58:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243162AbiFJBx3 (ORCPT
+        with ESMTP id S229833AbiFJB6P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 21:53:29 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 060BF220E10;
-        Thu,  9 Jun 2022 18:53:27 -0700 (PDT)
-X-UUID: c6474b2a664d465384038855891fd241-20220610
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:003f4ba2-deef-4258-9d9e-ef3cb446e937,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:95
-X-CID-INFO: VERSION:1.1.5,REQID:003f4ba2-deef-4258-9d9e-ef3cb446e937,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,ACT
-        ION:quarantine,TS:95
-X-CID-META: VersionHash:2a19b09,CLOUDID:793352e5-2ba2-4dc1-b6c5-11feb6c769e0,C
-        OID:2f4a6f21fb7e,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:0,BEC:nil
-X-UUID: c6474b2a664d465384038855891fd241-20220610
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
-        (envelope-from <yunfei.dong@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 46941017; Fri, 10 Jun 2022 09:53:22 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Fri, 10 Jun 2022 09:53:21 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 10 Jun 2022 09:53:19 +0800
-From:   Yunfei Dong <yunfei.dong@mediatek.com>
-To:     Yunfei Dong <yunfei.dong@mediatek.com>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        Nicolas Dufresne <nicolas@ndufresne.ca>,
-        "Hans Verkuil" <hverkuil-cisco@xs4all.nl>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tomasz Figa <tfiga@google.com>
-CC:     George Sun <george.sun@mediatek.com>,
-        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Fritz Koenig <frkoenig@chromium.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Irui Wang <irui.wang@mediatek.com>,
-        "Steve Cho" <stevecho@chromium.org>, <linux-media@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v2, 3/4] media: mediatek: vcodec: Fix encoder v4l2 bus_info not correctly
-Date:   Fri, 10 Jun 2022 09:53:14 +0800
-Message-ID: <20220610015315.25513-3-yunfei.dong@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220610015315.25513-1-yunfei.dong@mediatek.com>
-References: <20220610015315.25513-1-yunfei.dong@mediatek.com>
+        Thu, 9 Jun 2022 21:58:15 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 013C17642;
+        Thu,  9 Jun 2022 18:58:14 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id o6-20020a17090a0a0600b001e2c6566046so974969pjo.0;
+        Thu, 09 Jun 2022 18:58:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=O3LtD/aDVvE2wBzGRW4V0+STwua/GO8Xrmfqlkp9N2s=;
+        b=lxXJTgddIZrrXoH1Ic5uWclhiaG3LHEknnCzwkN3/Lvs84IVaofd0opU2VXzapsNTR
+         GbXkjCLfnIX/o2FTHzH4BCk9LBSLMch6rySPhwS7XbfRj2F8VpFjQGM1QWLI5BmzAve9
+         1pzvdcgW2ZfpH/nJSozRjn6+HSv1gJ8fdgYUNOKDeunXAlOb6EaG9jU5Dln81bqzr7w3
+         nImxh+W+aoEGuk+t1ZqDZAPVPro8Okpfkl+OEf/rlRAx9J8/LFdiI5a512kZ8tH4Ogyf
+         wksI1S1CHjAjDoYtZbR9g3DDuJzYwHNeunyNVwnbKZUsM9TXzQiR5D34ROEl9EpR0c+a
+         HztQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=O3LtD/aDVvE2wBzGRW4V0+STwua/GO8Xrmfqlkp9N2s=;
+        b=WLgUuB7ehvG7GNJl64hNMRRt+lvddDhibusN7AcUAjoQ/DZJOzgn4HPaprmsr7ZJei
+         CGXGdqfnErKeTTqptcC7L6TS9mYXZoPc9hVmN+9ZnxJBroW+3R9K/pJYLjYo79xgKEnM
+         vSKMrvHN0aycIgs/dr6SjemScn4EQwR+hxX24sfzr595Q9l7ekFN2eAIqBirW1P8jic2
+         njskxVMVdj1/MUBHm771gGfWUZx1jivyKfRSMSG7QP2X4X3nk74pLYaUHreq3105x8Ca
+         /M08DJRgaDNCGEdlYRXbnrMaZzOp7RFrVTfz8pSS6Gg7+T99bdvvmDyZjRMTXdCafbL4
+         0rGQ==
+X-Gm-Message-State: AOAM532VUIBsF+2/wNutJperiTAgZqBKaHfm8X8LW04w4/fleGm4eNvi
+        0nxw3ZFT7gMz4coDYkaycLg=
+X-Google-Smtp-Source: ABdhPJwUDyRRXAZMFHVN/1bQuIDfalX0tHlEaBneQ7uoGFzqoFeqBwVJM4PdLoHdY7RKLVeea1SeOw==
+X-Received: by 2002:a17:90a:b703:b0:1dd:1e2f:97d7 with SMTP id l3-20020a17090ab70300b001dd1e2f97d7mr6264351pjr.62.1654826293469;
+        Thu, 09 Jun 2022 18:58:13 -0700 (PDT)
+Received: from [192.168.11.5] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
+        by smtp.gmail.com with ESMTPSA id 72-20020a62144b000000b0051b416c065esm17832918pfu.8.2022.06.09.18.58.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Jun 2022 18:58:12 -0700 (PDT)
+Message-ID: <7bac8111-d18c-4edc-0722-66e6312daab9@gmail.com>
+Date:   Fri, 10 Jun 2022 10:58:09 +0900
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 2/5] docs/doc-guide: Mention make variable SPHINXDIRS
+Content-Language: en-US
+To:     Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Miguel Ojeda <ojeda@kernel.org>, linux-kernel@vger.kernel.org,
+        Akira Yokosawa <akiyks@gmail.com>
+References: <dccb5233-7f4f-1be6-d1f4-bbe9f42f88e0@gmail.com>
+ <ff89c064-e24a-0f2f-fc03-b029e5d04338@gmail.com>
+ <87v8t9504m.fsf@meer.lwn.net>
+From:   Akira Yokosawa <akiyks@gmail.com>
+In-Reply-To: <87v8t9504m.fsf@meer.lwn.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix v4l2 capability bus_info value with correct chip name according to compatible.
+On Thu, 09 Jun 2022 09:26:17 -0600,
+Jonathan Corbet wrote:
+> Akira Yokosawa <akiyks@gmail.com> writes:
+[...]
+>> --- a/Documentation/doc-guide/sphinx.rst
+>> +++ b/Documentation/doc-guide/sphinx.rst
+>> @@ -151,6 +151,10 @@ If the theme is not available, it will fall-back to the classic one.
+>>  
+>>  The Sphinx theme can be overridden by using the ``DOCS_THEME`` make variable.
+>>  
+>> +There is another make variable ``SPHINXDIRS``, which is useful when test
+>> +building a subset of documentation.  Again, see the documentation section
+>> +of ``make help`` for the details.
+> 
+> This should definitely be documented, it's kind of sad that we never did
+> that.  Rather than redirect readers to type a "make" command, though,
+> why not just tell them how to use it here?
 
-Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
----
-changed with v1:
-- change bus_info from "platform:mt%d" to "platform:mt%d-enc"
----
- .../platform/mediatek/vcodec/mtk_vcodec_enc.c | 21 ++++++++++++++++++-
- 1 file changed, 20 insertions(+), 1 deletion(-)
+Good point.
+I have updated the hunk as follows:
 
-diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_enc.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_enc.c
-index c21367038c34..f22efad761d8 100644
---- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_enc.c
-+++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_enc.c
-@@ -204,11 +204,30 @@ static int vidioc_enum_fmt_vid_out(struct file *file, void *priv,
- 			       pdata->num_output_formats);
- }
- 
-+static int mtk_vcodec_enc_get_chip_name(void *priv)
-+{
-+	struct mtk_vcodec_ctx *ctx = fh_to_ctx(priv);
-+	struct device *dev = &ctx->dev->plat_dev->dev;
-+
-+	if (of_device_is_compatible(dev->of_node, "mediatek,mt8173-vcodec-enc"))
-+		return 8173;
-+	else if (of_device_is_compatible(dev->of_node, "mediatek,mt8183-vcodec-enc"))
-+		return 8183;
-+	else if (of_device_is_compatible(dev->of_node, "mediatek,mt8192-vcodec-enc"))
-+		return 8192;
-+	else if (of_device_is_compatible(dev->of_node, "mediatek,mt8195-vcodec-enc"))
-+		return 8195;
-+	else
-+		return 8173;
-+}
-+
- static int vidioc_venc_querycap(struct file *file, void *priv,
- 				struct v4l2_capability *cap)
- {
-+	int platform_name = mtk_vcodec_enc_get_chip_name(priv);
-+
- 	strscpy(cap->driver, MTK_VCODEC_ENC_NAME, sizeof(cap->driver));
--	strscpy(cap->bus_info, MTK_PLATFORM_STR, sizeof(cap->bus_info));
-+	snprintf(cap->bus_info, sizeof(cap->bus_info), "platform:mt%d-enc", platform_name);
- 	strscpy(cap->card, MTK_PLATFORM_STR, sizeof(cap->card));
- 
- 	return 0;
--- 
-2.18.0
++There is another make variable ``SPHINXDIRS``, which is useful when test
++building a subset of documentation.  For example, you can build documents
++under ``Documentation/doc-guide`` by running
++``make SPHINXDIRS=doc-guide htmldocs``.
++The documentation section of ``make help`` will show you the list of
++subdirectories you can specify.
 
+Thoughts?
+
+        Thanks, Akira
+
+> 
+> Thanks,
+> 
+> jon
