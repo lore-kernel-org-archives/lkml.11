@@ -2,146 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2610AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 07:09:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C208EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 07:09:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346364AbiFJHJS (ORCPT
+        id S1346411AbiFJHJo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 03:09:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43428 "EHLO
+        Fri, 10 Jun 2022 03:09:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241586AbiFJHJL (ORCPT
+        with ESMTP id S1346369AbiFJHJi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 03:09:11 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B069E323880
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 00:09:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654844946; x=1686380946;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=prsKme4t8qsKePFyd1/lDxgNPz0quzkkSmZzNVZ8u2o=;
-  b=SxB8HAOpmDo4RAA0mlijUapetTGt8Qxbbk847dSSc5KsgcGsFr5PYeDP
-   Y39Y0USbZJJnGWsLp/So4Zopq6LLJXZcgqExxxsyCKtrr3xdC6zGO1uRp
-   KAjC9tk6NSvewHKmpooReCizg5VdIKn9kufMMQN7nsXdd+FdiplNScAJH
-   9LVDiedoNVV6jCX4KYmDuBBbxf+IMisYQRhVr0cVMqFcFdtPcW8bd7b/E
-   sHTNi0zSZHhWl7amOEp+klKQDYrxzkEtHU/BLWlf3c+5eYndCIc6U0R+X
-   SHoxvWnipZUN+Ww4CV3DDbhka+PUKr33ZZLsb54s+K/cMRG+514NxL36Y
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="341604184"
-X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
-   d="scan'208";a="341604184"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 00:09:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
-   d="scan'208";a="828086581"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 10 Jun 2022 00:09:04 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nzYlT-000GmH-RB;
-        Fri, 10 Jun 2022 07:09:03 +0000
-Date:   Fri, 10 Jun 2022 15:08:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [norov:fns 8/8] lib/find_bit.c:105:1: error: redefinition of
- '__ksymtab__find_first_bit'
-Message-ID: <202206101503.SiKOLRsZ-lkp@intel.com>
+        Fri, 10 Jun 2022 03:09:38 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D8E832239C
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 00:09:38 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LKBp571kXzRhWY;
+        Fri, 10 Jun 2022 15:06:21 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 10 Jun 2022 15:09:35 +0800
+Subject: Re: [v3 PATCH 1/7] mm: khugepaged: check THP flag in
+ hugepage_vma_check()
+To:     Yang Shi <shy828301@gmail.com>
+CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        <vbabka@suse.cz>, <kirill.shutemov@linux.intel.com>,
+        <willy@infradead.org>, <akpm@linux-foundation.org>
+References: <20220606214414.736109-1-shy828301@gmail.com>
+ <20220606214414.736109-2-shy828301@gmail.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <85932a40-a05b-3610-5836-aab36d2664f0@huawei.com>
+Date:   Fri, 10 Jun 2022 15:09:35 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In-Reply-To: <20220606214414.736109-2-shy828301@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/norov/linux fns
-head:   785e34f40a6ad867ddc1fccf032a54bb41563865
-commit: 785e34f40a6ad867ddc1fccf032a54bb41563865 [8/8] fns
-config: hexagon-randconfig-r041-20220609 (https://download.01.org/0day-ci/archive/20220610/202206101503.SiKOLRsZ-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 70d35fe1257e429266b83025997b400e9f79110e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/norov/linux/commit/785e34f40a6ad867ddc1fccf032a54bb41563865
-        git remote add norov https://github.com/norov/linux
-        git fetch --no-tags norov fns
-        git checkout 785e34f40a6ad867ddc1fccf032a54bb41563865
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash
+On 2022/6/7 5:44, Yang Shi wrote:
+> Currently the THP flag check in hugepage_vma_check() will fallthrough if
+> the flag is NEVER and VM_HUGEPAGE is set.  This is not a problem for now
+> since all the callers have the flag checked before or can't be invoked if
+> the flag is NEVER.
+> 
+> However, the following patch will call hugepage_vma_check() in more
+> places, for example, page fault, so this flag must be checked in
+> hugepge_vma_check().
+> 
+> Signed-off-by: Yang Shi <shy828301@gmail.com>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
 
-All errors (new ones prefixed by >>):
+Thanks!
 
->> lib/find_bit.c:105:1: error: redefinition of '__ksymtab__find_first_bit'
-   EXPORT_SYMBOL(_find_first_bit);
-   ^
-   include/linux/export.h:150:29: note: expanded from macro 'EXPORT_SYMBOL'
-   #define EXPORT_SYMBOL(sym)              _EXPORT_SYMBOL(sym, "")
-                                           ^
-   include/linux/export.h:147:34: note: expanded from macro '_EXPORT_SYMBOL'
-   #define _EXPORT_SYMBOL(sym, sec)        __EXPORT_SYMBOL(sym, sec, "")
-                                           ^
-   include/linux/export.h:140:39: note: expanded from macro '__EXPORT_SYMBOL'
-   #define __EXPORT_SYMBOL(sym, sec, ns)   ___EXPORT_SYMBOL(sym, sec, ns)
-                                           ^
-   include/linux/export.h:96:2: note: expanded from macro '___EXPORT_SYMBOL'
-           __KSYMTAB_ENTRY(sym, sec)
-           ^
-   include/linux/export.h:57:36: note: expanded from macro '__KSYMTAB_ENTRY'
-           static const struct kernel_symbol __ksymtab_##sym               \
-                                             ^
-   <scratch space>:183:1: note: expanded from here
-   __ksymtab__find_first_bit
-   ^
-   lib/find_bit.c:89:1: note: previous definition is here
-   EXPORT_SYMBOL(_find_first_bit);
-   ^
-   include/linux/export.h:150:29: note: expanded from macro 'EXPORT_SYMBOL'
-   #define EXPORT_SYMBOL(sym)              _EXPORT_SYMBOL(sym, "")
-                                           ^
-   include/linux/export.h:147:34: note: expanded from macro '_EXPORT_SYMBOL'
-   #define _EXPORT_SYMBOL(sym, sec)        __EXPORT_SYMBOL(sym, sec, "")
-                                           ^
-   include/linux/export.h:140:39: note: expanded from macro '__EXPORT_SYMBOL'
-   #define __EXPORT_SYMBOL(sym, sec, ns)   ___EXPORT_SYMBOL(sym, sec, ns)
-                                           ^
-   include/linux/export.h:96:2: note: expanded from macro '___EXPORT_SYMBOL'
-           __KSYMTAB_ENTRY(sym, sec)
-           ^
-   include/linux/export.h:57:36: note: expanded from macro '__KSYMTAB_ENTRY'
-           static const struct kernel_symbol __ksymtab_##sym               \
-                                             ^
-   <scratch space>:168:1: note: expanded from here
-   __ksymtab__find_first_bit
-   ^
-   1 error generated.
+> ---
+>  mm/khugepaged.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/mm/khugepaged.c b/mm/khugepaged.c
+> index 671ac7800e53..84b9cf4b9be9 100644
+> --- a/mm/khugepaged.c
+> +++ b/mm/khugepaged.c
+> @@ -458,6 +458,9 @@ bool hugepage_vma_check(struct vm_area_struct *vma,
+>  	if (shmem_file(vma->vm_file))
+>  		return shmem_huge_enabled(vma);
+>  
+> +	if (!khugepaged_enabled())
+> +		return false;
+> +
+>  	/* THP settings require madvise. */
+>  	if (!(vm_flags & VM_HUGEPAGE) && !khugepaged_always())
+>  		return false;
+> 
 
-
-vim +/__ksymtab__find_first_bit +105 lib/find_bit.c
-
-    91	
-    92	unsigned long _find_nth_bit(const unsigned long *addr, unsigned long size, unsigned long n)
-    93	{
-    94		unsigned long idx, w;
-    95	
-    96		for (idx = 0; idx * BITS_PER_LONG < size; idx++, n -= w) {
-    97			w = hweight_long(addr[idx]);
-    98			if (w >= n)
-    99				return min(idx * BITS_PER_LONG + fns(addr[idx], n), size);
-   100		}
-   101	
-   102		return size;
-   103	
-   104	}
- > 105	EXPORT_SYMBOL(_find_first_bit);
-   106	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
