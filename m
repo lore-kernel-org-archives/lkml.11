@@ -2,185 +2,272 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D23BCCA47B
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 08:50:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F745C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 08:51:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348363AbiFJIu2 (ORCPT
+        id S1348405AbiFJIvD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 04:50:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48078 "EHLO
+        Fri, 10 Jun 2022 04:51:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348365AbiFJIuN (ORCPT
+        with ESMTP id S1344251AbiFJIvA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 04:50:13 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2068.outbound.protection.outlook.com [40.107.243.68])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F42A1ACE76;
-        Fri, 10 Jun 2022 01:50:10 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ge9TT69oLV76YB1TkZeMV42txQpr1Z2+6hK+iZSd8m7FeD8o7v8OgCquxZty/1GSUInHnxloJz45dIjavVWf1K1TttHMnZ7TD4+vZeADS9NgL3sC8psGRG6koTBgjqHExjkwdobIVLSS6269vY3O58E+JTLkpudClg5P0S7itR5UVYCPM1z90qTSHW/MhVERv+0rR7S7eSPwnD8uwhZklZivZDSl9kgHJ5lWZ3YihWolPmO466PIP68QpdtrhjhNzP86G3Whkl91H3b+rr7Y/lyP0es2PNvpaRLfhh+/YUPmeJP6jkl52uc4MBvnMs4YpL4K6H86NIDRIYCDbZ6MIA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XyGQecI5wqvqWkOiLH3ineqPveGXqrV7Mblj0s/Rv6U=;
- b=UtX+Li+ruSEIloeK3m+K6z9ypSkKd9qTSBRq7HXL2WUl4mesZgDDRXwihm1kCYDOZvdvu4dhfIGIxnlbEVhJXTqqyDRJvST+uw82H/fZCkX8+1xo2OlJRy8oTRH6Tn06MfUYuZ2aMYrjvbUETkStA1mPWGm2Kftp1wy2Su0m/znccLHaJzFG7pxqZg/U5/rtUmQC1n3QkOqgFKxC0E1f0ogQbv2y+B3MYZdWMUbI6Bcg/FSUjkVjoHjN4jF1hZagbEYGnq4wFg7/l9jLmVFXMBifxasLTY797z4jinEMvd8kIqcQnxXNSycaiMQOtnFjsQpbyv1ieNkIj6ZVleRp1Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=xilinx.com; dmarc=pass action=none header.from=xilinx.com;
- dkim=pass header.d=xilinx.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XyGQecI5wqvqWkOiLH3ineqPveGXqrV7Mblj0s/Rv6U=;
- b=KxvtNVmTnMHAs9gJkqE7cVO1p0S7L/sbGLnHvZ2CFkmN9RBsiLKZYYAnObP4Yv02Gg7VH/YtRPV7smzihbIJ2OJ5gjWN6Q9YaxaGHrTphZa4ecmi4sYewAfkbPAwgRIFSQnIhHQMD3+y3QZF4TW8pLYRY2YbufFB/axa3TtraNM=
-Received: from BY5PR02MB6947.namprd02.prod.outlook.com (2603:10b6:a03:23e::12)
- by BYAPR02MB5366.namprd02.prod.outlook.com (2603:10b6:a03:65::30) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.18; Fri, 10 Jun
- 2022 08:50:08 +0000
-Received: from BY5PR02MB6947.namprd02.prod.outlook.com
- ([fe80::70fe:1953:96d4:dd88]) by BY5PR02MB6947.namprd02.prod.outlook.com
- ([fe80::70fe:1953:96d4:dd88%9]) with mapi id 15.20.5332.014; Fri, 10 Jun 2022
- 08:50:07 +0000
-From:   Bharat Kumar Gogada <bharatku@xilinx.com>
-To:     Rob Herring <robh@kernel.org>
-CC:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        Michal Simek <michals@xilinx.com>
-Subject: RE: [PATCH v4 1/2] dt-bindings: PCI: xilinx-cpm: Add Versal CPM5 Root
- Port
-Thread-Topic: [PATCH v4 1/2] dt-bindings: PCI: xilinx-cpm: Add Versal CPM5
- Root Port
-Thread-Index: AQHYe1aUovnAhRDa9kGWI7WlN6nEm61HlAuAgADDS8A=
-Date:   Fri, 10 Jun 2022 08:50:07 +0000
-Message-ID: <BY5PR02MB69477D4EDA359F6C6E249337A5A69@BY5PR02MB6947.namprd02.prod.outlook.com>
-References: <20220608164046.3474-1-bharat.kumar.gogada@xilinx.com>
- <20220608164046.3474-2-bharat.kumar.gogada@xilinx.com>
- <20220609211035.GA102003-robh@kernel.org>
-In-Reply-To: <20220609211035.GA102003-robh@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=xilinx.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ce9661ec-bd91-4c3a-ffed-08da4abe3878
-x-ms-traffictypediagnostic: BYAPR02MB5366:EE_
-x-microsoft-antispam-prvs: <BYAPR02MB53661B2749C738FF0A7F5727A5A69@BYAPR02MB5366.namprd02.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: +xNiwYZ/up7Q6HQDvuuMN9f5npq7qrqDxtieFaU9wlHUFmk/NMxO5eySLB16UxDKVX2yCBXnNVlWecx7tN4Jscjpd/h9xXYDLPK/xHEJdjAb4WjS2/mHHvr5WbFage+F/GKZHDOzHsGNsupT0KavrIsYtud6gdurJeaHk/Wl7ubK9uwje7h+0pUQjg0nOgA5AspOu7dU7tCRWZceLwVTae+d3GQybnN+anarFRz3JdwZNAay6Hra0iiYOHNOrPg2SipoGz0D/HQmRQB2f+MjUJzXWshwNScR9qoWEQs7ZuG60bCLOaN32HbulVGc2Mk4e0kWD41sa+aJPL808wg4Gw6q9FB8uLvYQiNfWiEeHEukTW+FAsvSjmc/AzZsqX9/Ihll0DGSb+LraI769yv6fZX5drH6T3Gt0nU0iaZaOTRdYNjV2KCKN+XtsahPUZaUsANhgklr41mhQh9f/oQMcSsBlTYltQYvd29RIhisZqw8IgPoPb6TjkhC3KTCmSM7GaUOyXa55aCSWqhmXjKlGMo9tsR6uYdEMcUIRUo9prXm+p4Dzp4HzJVf5rhjF1/zo5pdzsxWJMKgHjyXa0r4Ki4HL6AjL5lGkz9+tK6BgKJWhBUSqYSfGuDcNm/mqzDGkVJ14CMQNrBpsSt/waT3okFlqLr6mBWOdt94JEhmDPLdC2ky5ogfP/d5MVeBZi9EYEYizxTpFcGIpADZcU0gCQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR02MB6947.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(33656002)(38100700002)(38070700005)(86362001)(83380400001)(9686003)(26005)(107886003)(122000001)(6506007)(55236004)(186003)(7696005)(508600001)(6916009)(52536014)(8936002)(5660300002)(54906003)(71200400001)(66556008)(66476007)(76116006)(66446008)(4326008)(8676002)(64756008)(66946007)(316002)(2906002)(55016003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?4akcEeiPGpIG5OlvTYHnPRCNKsOu0ojm/FZowkp3W0+9UNIBI+tG4fjJDDM0?=
- =?us-ascii?Q?RKqqgX0PB6umF1TB6QgE9TY9VuZhyuUGlLiRPxpYdKaP2txEo5quuB68tGey?=
- =?us-ascii?Q?ktfxb2lTRyb/mi/OOSB8kpoIv+LOxNi3WylWaB8NwaZj+POl/zzAY7f+Dbck?=
- =?us-ascii?Q?3wlMSzrAljS19NuS9LBhLC2YigNOgvBw3lUbK+wnn4RLcsTDhQGEGrXAJ5Cl?=
- =?us-ascii?Q?EcbVsb2rX2SmfcxEadLy8w8ADrJ8xQQ6W9Xe3S6C6KgBO/Qa+ieTQsCoxjs/?=
- =?us-ascii?Q?CjcHYwq7xJwSC5K4+z361k5wx3kEsUUFiW/dAsJulnV/JDwOan6m9jt9iqlc?=
- =?us-ascii?Q?kLjc0mdJn6RRWF6L0g6JOSv5G6wo2I6VgOYV2btDCltAYcwJGfIOsKuefFwV?=
- =?us-ascii?Q?laTdvyxJwcfX0rnUS4VGoVFu+9s7nJIdnIyg1A3M4Jw/y5aD7fMVijkUTuqp?=
- =?us-ascii?Q?qhFO1xZtEysxX8hLpj2E2+PfqiWM7+K4lphaWYVdq76Kj+uJv4AJV+c4tCd4?=
- =?us-ascii?Q?dinNcbP2Txe5ljg+SZSvTx7uCvNNjH3NyMNclAVf0G3UBrKOPbB1fuQ9tGtu?=
- =?us-ascii?Q?vpBKf48xvnUYCGeC7MgxCjfYXU+on4GHFBRcTOJQsvOp5NyVZXvuER8LuqYP?=
- =?us-ascii?Q?okodt5lRlDY/sWKo6sZ8x+72MmvBg3IOYdFjsMn4T3YLrEqMbTFnviSXCZGu?=
- =?us-ascii?Q?FlSqarFfZC+y2lQXsqXkUr2Vc+WCY8WlXegT03Vi0qTzxENYh12qOhLdzgOI?=
- =?us-ascii?Q?gmLIgMeK0aYv7lKKpabfOqQLZAAZlpc4FjZt1jsu0uzBnF1KY6dyySI10eOm?=
- =?us-ascii?Q?Ld2IEz+s9GovEGK96YP7xwQtXfjfwBQWD9GYAkPi+5yuJQQHYECxlGwTsBgq?=
- =?us-ascii?Q?cH9HX558mhD930MjMBA+kg65EnjaFrIuf3ZpS+7x55txL5Cv4jzVPwFlfHjq?=
- =?us-ascii?Q?MtrKyiLJJ0wBreqzr+MCDJ0Enw+6R82cgVch6jK2t2p3/j2kE5sF0OcErtvW?=
- =?us-ascii?Q?xsp9wP0fKvPMoQg63K1e0JQcQnmlju2M7/mg2u/PmFzNq0AH4WfaS3/aoyVJ?=
- =?us-ascii?Q?Xv8/R/moTQfEoG6Q0L0stcnthtYhyq3N4P7JHY+msfHuXLwTNmLwqqZgRSVW?=
- =?us-ascii?Q?dxCTRmW57YL5Zg9cNdCtcvwPgYAp8L5DVZjZVzPqsJFe2IsiMKQTG0C25nqV?=
- =?us-ascii?Q?91UMJQC0lg8OGQ8dadzTANbvKO/TRo5mbnXQaqmVuby1i1nvJ7GymeM7FD/F?=
- =?us-ascii?Q?JBF8BtjLg+JbhYIF/rpdnm3cuVQBbIf2+LzFMIUmiZKEjeMkad319herjmts?=
- =?us-ascii?Q?LNJsnmlTSXew8fzI2JaW4YDIZJiwojG4JLGvskasWxKTWAYbvI3cN1VuCN5O?=
- =?us-ascii?Q?oqjA4MxT048WqFwyhrwpWOaT+AWzLw+zU2w3yemPQOeVUND3qQ9/ZiNkuICI?=
- =?us-ascii?Q?+CoA/rrfkpg3Yw2/nIgvL0y9VqK4RUvcJa7HZkZaaM6SWFM2ZTM9XZYKI58o?=
- =?us-ascii?Q?IeVinU6tLrLuAXYMbgIAMDPk536I8l5qr58iV+gUtT9cZqZPoq6f4Olgzu/D?=
- =?us-ascii?Q?rcLkwvBNazCN/FAqpsXmsHk55ItEosJxaiacsUT1OfqWgTRAnRO+V5bCQ0A4?=
- =?us-ascii?Q?dUe8eX8xXLZuvgpzibXmm6yNZrzn/obWLuvGJO41tZxnhi+T/HKHxWf80oAw?=
- =?us-ascii?Q?dJx6MT5OXXJv41YThQP/Vj7woDnwLZxafZhSn26zDf+XS+Nr?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Fri, 10 Jun 2022 04:51:00 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 358911D4227;
+        Fri, 10 Jun 2022 01:50:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654851059; x=1686387059;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=etC3uz8qUuWgAsIvtsfrLwFYKAKR7aLj+1lVe6qTKuw=;
+  b=BDnm5jblDI/BJ1fMpxKz41dTv15Oe8QOoGw/R2kv09jRhZ0TH+WAtbke
+   ZCBgF0V8v9QULF9VDLqA/c9aQbBHv873djpIpK5ia/mxyulMfl4MgQ5Yn
+   NvNqCNFi0gmI8TAxy0wg9uqXNqx3x+4fzps8N2xI8SyyLpAgU5mwgpDYu
+   YoQbL73YQQFhvT19Tway0ChFquZxicfAhPEnM7DrmT4j9+R+VvNlpyPaa
+   lRNCHH89mvYGE++wzYnujvKoVJQlm0/GGGWTqu2EP8QEhDBgqVg4Jv1rS
+   NsOMvLZe0xY0AcpLnKunsOtQgsyCjUQxNH20HyyMe+yHMcy/ZTM3TatOx
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="363893926"
+X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
+   d="scan'208";a="363893926"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 01:50:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
+   d="scan'208";a="638025972"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
+  by fmsmga008.fm.intel.com with ESMTP; 10 Jun 2022 01:50:55 -0700
+Date:   Fri, 10 Jun 2022 16:42:59 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Ivan Bornyakov <i.bornyakov@metrotek.ru>
+Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com, corbet@lwn.net,
+        Ivan Bornyakov <brnkv.i1@gmail.com>,
+        Conor.Dooley@microchip.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, system@metrotek.ru
+Subject: Re: [PATCH v17 1/4] fpga: fpga-mgr: support bitstream offset in
+  image buffer
+Message-ID: <20220610084259.GB693376@yilunxu-OptiPlex-7050>
+References: <20220609154752.20781-1-i.bornyakov@metrotek.ru>
+ <20220609154752.20781-2-i.bornyakov@metrotek.ru>
+ <20220610074311.GA693376@yilunxu-OptiPlex-7050>
+ <20220610081342.45x65lxbuxozej57@x260>
 MIME-Version: 1.0
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR02MB6947.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ce9661ec-bd91-4c3a-ffed-08da4abe3878
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Jun 2022 08:50:07.7417
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: MQATQg+Sh0/c/NT/uksDt8MU9Fvyk4GCe/vlcOMfvOMm2cPAl2iuSeuOhGU4RnXpXgbnPvUzQR8FZbZfKR0BWQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR02MB5366
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220610081342.45x65lxbuxozej57@x260>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> On Wed, Jun 08, 2022 at 10:10:45PM +0530, Bharat Kumar Gogada wrote:
-> > Xilinx Versal Premium series has CPM5 block which supports Root Port
-> > functionality at Gen5 speed.
-> >
-> > Add support for YAML schemas documentation for Versal CPM5 Root Port
-> driver.
-> >
-> > Signed-off-by: Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>
-> > ---
-> >  .../bindings/pci/xilinx-versal-cpm.yaml       | 48 +++++++++++++++++--
-> >  1 file changed, 44 insertions(+), 4 deletions(-)
-> >
-> > diff --git
-> > a/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml
-> > b/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml
-> > index cca395317a4c..80597f2974e5 100644
-> > --- a/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml
-> > +++ b/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml
-> > @@ -14,17 +14,27 @@ allOf:
-> >
-> >  properties:
-> >    compatible:
-> > -    const: xlnx,versal-cpm-host-1.00
-> > +    contains:
->=20
-> Drop 'contains'.
->=20
-> > +      enum:
-> > +        - xlnx,versal-cpm-host-1.00
-> > +        - xlnx,versal-cpm5-host
-> >
-> >    reg:
-> >      items:
-> >        - description: CPM system level control and status registers.
-> >        - description: Configuration space region and bridge registers.
-> > +      - description: CPM5 control and status registers.
-> > +    minItems: 2
-> >
-> >    reg-names:
-> > -    items:
-> > -      - const: cpm_slcr
-> > -      - const: cfg
-> > +    oneOf:
->=20
-> You don't need oneOf.
->=20
-> > +      - items:
-> > +          - const: cpm_slcr
-> > +          - const: cfg
->=20
-> > +      - items:
-> > +          - const: cpm_slcr
-> > +          - const: cfg
-> > +          - const: cpm_csr
->=20
-> Just add 'minItems: 2'
->=20
-Thanks Rob, will change this in next patch.
+On Fri, Jun 10, 2022 at 11:13:42AM +0300, Ivan Bornyakov wrote:
+> On Fri, Jun 10, 2022 at 03:43:11PM +0800, Xu Yilun wrote:
+> > On Thu, Jun 09, 2022 at 06:47:49PM +0300, Ivan Bornyakov wrote:
+> > > At the moment FPGA manager core loads to the device entire image
+> > > provided to fpga_mgr_load(). But it is not always whole FPGA image
+> > > buffer meant to be written to the device. In particular, .dat formatted
+> > > image for Microchip MPF contains meta info in the header that is not
+> > > meant to be written to the device. This is issue for those low level
+> > > drivers that loads data to the device with write() fpga_manager_ops
+> > > callback, since write() can be called in iterator over scatter-gather
+> > > table, not only linear image buffer. On the other hand, write_sg()
+> > > callback is provided with whole image in scatter-gather form and can
+> > > decide itself which part should be sent to the device.
+> > > 
+> > > Add header_size and data_size to the fpga_image_info struct and adjust
+> > > fpga_mgr_write() callers with respect to them.
+> > > 
+> > >   * info->header_size indicates part at the beginning of image buffer
+> > >     that is *not* meant to be written to the device. It is optional and
+> > >     can be 0.
+> > > 
+> > >   * info->data_size is the size of actual bitstream data that *is* meant
+> > >     to be written to the device, starting at info->header_size from the
+> > >     beginning of image buffer. It is also optional and can be 0, which
+> > >     means bitstream data is up to the end of image buffer.
+> > > 
+> > > Also add parse_header() callback to fpga_manager_ops, which purpose is
+> > > to set info->header_size and info->data_size. At least
+> > > initial_header_size bytes of image buffer will be passed into
+> > > parse_header() first time. If it is not enough, parse_header() should
+> > > set desired size into info->header_size and return -EAGAIN, then it will
+> > > be called again with greater part of image buffer on the input.
+> > > 
+> > > Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
+> > > ---
+> > >  drivers/fpga/fpga-mgr.c       | 243 +++++++++++++++++++++++++++++-----
+> > >  include/linux/fpga/fpga-mgr.h |  17 ++-
+> > >  2 files changed, 229 insertions(+), 31 deletions(-)
+> > > 
+> > > diff --git a/drivers/fpga/fpga-mgr.c b/drivers/fpga/fpga-mgr.c
+> > > index 08dc85fcd511..0854fbc8f11e 100644
+> > > --- a/drivers/fpga/fpga-mgr.c
+> > > +++ b/drivers/fpga/fpga-mgr.c
+> > 
+> > Should we check in fpga_mgr_create, that initial_header_size must not be
+> > 0 if parse_header() is defined. If we pass no data to parse_header(),
+> > does it make any sense?
+> > 
+> 
+> If FPGA image is mapped, whole buffer will be passed to parse_header(),
+> regardless of initial_header_size.
+> 
+> If FPGA image is sg_table and initial_header_size is 0, first sg
+> fragment will be passed to parse_header() in
+> fpga_mgr_parse_header_sg_first().
+> 
+> If low level driver's parse_header() is buggy and return -EAGAIN without
+> setting desired size into info->header_size, we will fail in
+> fpga_mgr_parse_header_sg() with -ENOMEM.
+> 
+> static ssize_t fpga_mgr_parse_header_sg(...)
+> {
+> 	size_t header_size = mgr->mops->initial_header_size; /* header_size == 0 */
+> 	...
+> 
+> 	do {
+> 		if (info->header_size) /* header_size is still 0 */
+> 			header_size = info->header_size;
+> 
+> 		buf = krealloc(buf, header_size, GFP_KERNEL); /* returned buf will be NULL */
+> 		if (!buf) {
+> 			ret = -ENOMEM;
+> 			break;
+> 		}
+> 
+> 		...
+> 
+> 	} while (ret == -EAGAIN);
+> 
+> 	...
+> }
+> 
+> So, I believe it is OK to define parse_header() without defining
+> initial_header_size.
 
-Regards,
-Bharat
+That's good to me.
+
+> 
+> > > @@ -74,6 +74,15 @@ static inline int fpga_mgr_write_complete(struct fpga_manager *mgr,
+> > >  	return 0;
+> > >  }
+> > >  
+> > > +static inline int fpga_mgr_parse_header(struct fpga_manager *mgr,
+> > > +					struct fpga_image_info *info,
+> > > +					const char *buf, size_t count)
+> > > +{
+> > > +	if (mgr->mops->parse_header)
+> > > +		return mgr->mops->parse_header(mgr, info, buf, count);
+> > > +	return 0;
+> > > +}
+> > > +
+> > >  static inline int fpga_mgr_write_init(struct fpga_manager *mgr,
+> > >  				      struct fpga_image_info *info,
+> > >  				      const char *buf, size_t count)
+> > > @@ -136,24 +145,145 @@ void fpga_image_info_free(struct fpga_image_info *info)
+> > >  EXPORT_SYMBOL_GPL(fpga_image_info_free);
+> > >  
+> > >  /*
+> > > - * Call the low level driver's write_init function.  This will do the
+> > > + * Call the low level driver's parse_header function with entire FPGA image
+> > > + * buffer on the input. This will set info->header_size and info->data_size.
+> > > + */
+> > > +static int fpga_mgr_parse_header_mapped(struct fpga_manager *mgr,
+> > > +					struct fpga_image_info *info,
+> > > +					const char *buf, size_t count)
+> > > +{
+> > > +	int ret;
+> > > +
+> > > +	mgr->state = FPGA_MGR_STATE_PARSE_HEADER;
+> > > +	ret = fpga_mgr_parse_header(mgr, info, buf, count);
+> > > +
+> > > +	if (info->header_size + info->data_size > count) {
+> > > +		dev_err(&mgr->dev, "Bitsream data outruns FPGA image\n");
+> > > +		ret = -EINVAL;
+> > > +	}
+> > > +
+> > > +	if (ret) {
+> > > +		dev_err(&mgr->dev, "Error while parsing FPGA image header\n");
+> > > +		mgr->state = FPGA_MGR_STATE_PARSE_HEADER_ERR;
+> > > +	}
+> > > +
+> > > +	return ret;
+> > > +}
+> > > +
+> > > +/*
+> > > + * Call the low level driver's parse_header function with first fragment of
+> > > + * scattered FPGA image on the input. If header fits first fragment,
+> > > + * parse_header will set info->header_size and info->data_size. If it is not,
+> > > + * parse_header will set desired size to info->header_size and -EAGAIN will be
+> > > + * returned.
+> > > + */
+> > > +static int fpga_mgr_parse_header_sg_first(struct fpga_manager *mgr,
+> > > +					  struct fpga_image_info *info,
+> > > +					  struct sg_table *sgt)
+> > > +{
+> > > +	size_t header_size = mgr->mops->initial_header_size;
+> > > +	struct sg_mapping_iter miter;
+> > > +	int ret;
+> > > +
+> > > +	mgr->state = FPGA_MGR_STATE_PARSE_HEADER;
+> > > +
+> > > +	sg_miter_start(&miter, sgt->sgl, sgt->nents, SG_MITER_FROM_SG);
+> > > +	if (sg_miter_next(&miter) &&
+> > > +	    miter.length >= header_size)
+> > > +		ret = fpga_mgr_parse_header(mgr, info, miter.addr, miter.length);
+> > > +	else
+> > > +		ret = -EAGAIN;
+> > > +	sg_miter_stop(&miter);
+> > > +
+> > > +	if (ret && ret != -EAGAIN) {
+> > > +		dev_err(&mgr->dev, "Error while parsing FPGA image header\n");
+> > > +		mgr->state = FPGA_MGR_STATE_PARSE_HEADER_ERR;
+> > > +	}
+> > > +
+> > > +	return ret;
+> > > +}
+> > > +
+> > > +/*
+> > > + * Copy scattered FPGA image fragments to temporary buffer and call the
+> > > + * low level driver's parse_header function. This should be called after
+> > > + * fpga_mgr_parse_header_sg_first() returned -EAGAIN. In case of success,
+> > > + * pointer to the newly allocated image header copy will be set into *ret_buf
+> > > + * and its size will be returned. *ret_buf needs to be freed by caller.
+> > > + */
+> > > +static ssize_t fpga_mgr_parse_header_sg(struct fpga_manager *mgr,
+> > > +					struct fpga_image_info *info,
+> > > +					struct sg_table *sgt, char **ret_buf)
+> > 
+> > Since the function allocs buffer for the user, I suggest it still returns
+> > the buffer pointer. The buffer size could be an output parameter.
+> > 
+> 
+> OK, will do that.
+> 
+> > > +{
+> > > +	size_t len, header_size = mgr->mops->initial_header_size;
+> > > +	char *buf = NULL;
+> > > +	int ret;
+> > > +
+> > > +	do {
+> > > +		if (info->header_size)
+> > > +			header_size = info->header_size;
+> > > +
+> > > +		buf = krealloc(buf, header_size, GFP_KERNEL);
+> > > +		if (!buf) {
+> > > +			ret = -ENOMEM;
+> > 
+> > If you need to return ERROR value, ERR_PTR() could be used.
+> > 
+> > 
+> > BTW: Have you tried to test your FPGA programming using sg buffers? I want
+> > to ensure these changes are actually tested?
+> > 
+> 
+> Of course, but not every single error path, to be honest. Yet, I'm
+> trying my best.
+
+That's fine. Thanks for your support.
