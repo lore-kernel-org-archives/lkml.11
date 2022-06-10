@@ -2,114 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4FE4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 11:55:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C576BC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 11:56:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347199AbiFJLzw (ORCPT
+        id S1347278AbiFJL4B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 07:55:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45200 "EHLO
+        Fri, 10 Jun 2022 07:56:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347183AbiFJLzt (ORCPT
+        with ESMTP id S1345305AbiFJLz7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 07:55:49 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5EFD25E
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 04:55:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654862140; x=1686398140;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=1aFYvO3gKG91AJpe7s7pE6RHbODPsUTIADYEyMjTuHA=;
-  b=aPtsX7Z+zl7Ry5e6dwzotX6iXNWI2FPoYzXTr+g8DcrGnISzkWcDisjr
-   PjGqaLevagw9S+RDWNJJP+Bb7Bh9HM970aceTzhDU12PWFX0OAM/bqEfD
-   AK5WAzgS+sLNtqKnmTWs1wD4k/pWOkCTLfAO5kA7LEL4YtDcOBzCqs/aj
-   gl+0uezMdP4xDmXtfy/K/FYdLD75qTDVDFexVZpZK9w+CJCwqdFcY4vCq
-   eP3K3Xx3jcOAo2joTFrdGYkDjVl78IYiVZMpV+N3CBcpAqQfnSZSQf9ua
-   yEVavamNzQzYtKhjDdf6bmbM9Wt1GrtpdEsby+ALNmTAjF+SlcN3tiSb0
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="260725116"
-X-IronPort-AV: E=Sophos;i="5.91,290,1647327600"; 
-   d="scan'208";a="260725116"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 04:55:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,290,1647327600"; 
-   d="scan'208";a="638101204"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 10 Jun 2022 04:55:39 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nzdEo-000Hvh-8Q;
-        Fri, 10 Jun 2022 11:55:38 +0000
-Date:   Fri, 10 Jun 2022 19:55:25 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [kas:lam 6/8] arch/x86/kernel/process_64.c:745:5: warning: no
- previous prototype for 'prctl_enable_tagged_addr'
-Message-ID: <202206101916.IklgUdbQ-lkp@intel.com>
+        Fri, 10 Jun 2022 07:55:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4479F301;
+        Fri, 10 Jun 2022 04:55:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EB52DB834DC;
+        Fri, 10 Jun 2022 11:55:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F31CC34114;
+        Fri, 10 Jun 2022 11:55:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654862155;
+        bh=q7IRaOcR5N0y4hQ7ul3oj3HKBb/4yIpXXBgpN69y+P0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MzwmgEiZFFNA+TrqjBWL6C5BfOw2x+48EXK1lfJkATaemiSWtRAK+5cQb/K4YrJj9
+         16J6dYCEDwinAucQcLLiZL1k3XqBlcwmkBcYJNHGrTVnZJQJPTdUxhy1DOmlvQJNbZ
+         DomPsKZ9OJckCguljg5yLWxzaEmOMZd3rp4VrPHc=
+Date:   Fri, 10 Jun 2022 13:55:53 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "D. Starke" <daniel.starke@siemens.com>
+Cc:     linux-serial@vger.kernel.org, jirislaby@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 6/9] tty: n_gsm: fix deadlock and link starvation in
+ outgoing data path
+Message-ID: <YqMxSQIvHbl/ofWB@kroah.com>
+References: <20220530144512.2731-1-daniel.starke@siemens.com>
+ <20220530144512.2731-6-daniel.starke@siemens.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220530144512.2731-6-daniel.starke@siemens.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/kas/linux.git lam
-head:   83ba389477b29461f0c926b69deca5eb6f3f5b6a
-commit: 91934401d053c31ea7851a9e88fa83b9fa5a7bc4 [6/8] x86/mm: Provide ARCH_GET_UNTAG_MASK and ARCH_ENABLE_TAGGED_ADDR
-config: x86_64-defconfig (https://download.01.org/0day-ci/archive/20220610/202206101916.IklgUdbQ-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/kas/linux.git/commit/?id=91934401d053c31ea7851a9e88fa83b9fa5a7bc4
-        git remote add kas https://git.kernel.org/pub/scm/linux/kernel/git/kas/linux.git
-        git fetch --no-tags kas lam
-        git checkout 91934401d053c31ea7851a9e88fa83b9fa5a7bc4
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/kernel/
+On Mon, May 30, 2022 at 04:45:09PM +0200, D. Starke wrote:
+> From: Daniel Starke <daniel.starke@siemens.com>
+> 
+> The current implementation queues up new control and user packets as needed
+> and processes this queue down to the ldisc in the same code path.
+> That means that the upper and the lower layer are hard coupled in the code.
+> Due to this deadlocks can happen as seen below while transmitting data,
+> especially during ldisc congestion. Furthermore, the data channels starve
+> the control channel on high transmission load on the ldisc.
+> 
+> Introduce an additional control channel data queue to prevent timeouts and
+> link hangups during ldisc congestion. This is being processed before the
+> user channel data queue in gsm_data_kick(), i.e. with the highest priority.
+> Put the queue to ldisc data path into a workqueue and trigger it whenever
+> new data has been put into the transmission queue. Change
+> gsm_dlci_data_sweep() accordingly to fill up the transmission queue until
+> TX_THRESH_HI. This solves the locking issue, keeps latency low and provides
+> good performance on high data load.
+> Note that now all packets from a DLCI are removed from the internal queue
+> if the associated DLCI was closed. This ensures that no data is sent by the
+> introduced write task to an already closed DLCI.
+> 
+> BUG: spinlock recursion on CPU#0, test_v24_loop/124
+>  lock: serial8250_ports+0x3a8/0x7500, .magic: dead4ead, .owner: test_v24_loop/124, .owner_cpu: 0
+> CPU: 0 PID: 124 Comm: test_v24_loop Tainted: G           O      5.18.0-rc2 #3
+> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
+> Call Trace:
+>  <IRQ>
+>  dump_stack_lvl+0x34/0x44
+>  do_raw_spin_lock+0x76/0xa0
+>  _raw_spin_lock_irqsave+0x72/0x80
+>  uart_write_room+0x3b/0xc0
+>  gsm_data_kick+0x14b/0x240 [n_gsm]
+>  gsmld_write_wakeup+0x35/0x70 [n_gsm]
+>  tty_wakeup+0x53/0x60
+>  tty_port_default_wakeup+0x1b/0x30
+>  serial8250_tx_chars+0x12f/0x220
+>  serial8250_handle_irq.part.0+0xfe/0x150
+>  serial8250_default_handle_irq+0x48/0x80
+>  serial8250_interrupt+0x56/0xa0
+>  __handle_irq_event_percpu+0x78/0x1f0
+>  handle_irq_event+0x34/0x70
+>  handle_fasteoi_irq+0x90/0x1e0
+>  __common_interrupt+0x69/0x100
+>  common_interrupt+0x48/0xc0
+>  asm_common_interrupt+0x1e/0x40
+> RIP: 0010:__do_softirq+0x83/0x34e
+> Code: 2a 0a ff 0f b7 ed c7 44 24 10 0a 00 00 00 48 c7 c7 51 2a 64 82 e8 2d
+> e2 d5 ff 65 66 c7 05 83 af 1e 7e 00 00 fb b8 ff ff ff ff <49> c7 c2 40 61
+> 80 82 0f bc c5 41 89 c4 41 83 c4 01 0f 84 e6 00 00
+> RSP: 0018:ffffc90000003f98 EFLAGS: 00000286
+> RAX: 00000000ffffffff RBX: 0000000000000000 RCX: 0000000000000000
+> RDX: 0000000000000000 RSI: ffffffff82642a51 RDI: ffffffff825bb5e7
+> RBP: 0000000000000200 R08: 00000008de3271a8 R09: 0000000000000000
+> R10: 0000000000000001 R11: 0000000000000000 R12: 0000000000000000
+> R13: 0000000000000030 R14: 0000000000000000 R15: 0000000000000000
+>  ? __do_softirq+0x73/0x34e
+>  irq_exit_rcu+0xb5/0x100
+>  common_interrupt+0xa4/0xc0
+>  </IRQ>
+>  <TASK>
+>  asm_common_interrupt+0x1e/0x40
+> RIP: 0010:_raw_spin_unlock_irqrestore+0x2e/0x50
+> Code: 00 55 48 89 fd 48 83 c7 18 53 48 89 f3 48 8b 74 24 10 e8 85 28 36 ff
+> 48 89 ef e8 cd 58 36 ff 80 e7 02 74 01 fb bf 01 00 00 00 <e8> 3d 97 33 ff
+> 65 8b 05 96 23 2b 7e 85 c0 74 03 5b 5d c3 0f 1f 44
+> RSP: 0018:ffffc9000020fd08 EFLAGS: 00000202
+> RAX: 0000000000000000 RBX: 0000000000000246 RCX: 0000000000000000
+> RDX: 0000000000000004 RSI: ffffffff8257fd74 RDI: 0000000000000001
+> RBP: ffff8880057de3a0 R08: 00000008de233000 R09: 0000000000000000
+> R10: 0000000000000001 R11: 0000000000000000 R12: 0000000000000000
+> R13: 0000000000000100 R14: 0000000000000202 R15: ffff8880057df0b8
+>  ? _raw_spin_unlock_irqrestore+0x23/0x50
+>  gsmtty_write+0x65/0x80 [n_gsm]
+>  n_tty_write+0x33f/0x530
+>  ? swake_up_all+0xe0/0xe0
+>  file_tty_write.constprop.0+0x1b1/0x320
+>  ? n_tty_flush_buffer+0xb0/0xb0
+>  new_sync_write+0x10c/0x190
+>  vfs_write+0x282/0x310
+>  ksys_write+0x68/0xe0
+>  do_syscall_64+0x3b/0x90
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> RIP: 0033:0x7f3e5e35c15c
+> Code: 8b 7c 24 08 89 c5 e8 c5 ff ff ff 89 ef 89 44 24 08 e8 58 bc 02 00 8b
+> 44 24 08 48 83 c4 10 5d c3 48 63 ff b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff
+> ff 76 10 48 8b 15 fd fc 05 00 f7 d8 64 89 02 48 83
+> RSP: 002b:00007ffcee77cd18 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+> RAX: ffffffffffffffda RBX: 00007ffcee77cd70 RCX: 00007f3e5e35c15c
+> RDX: 0000000000000100 RSI: 00007ffcee77cd90 RDI: 0000000000000003
+> RBP: 0000000000000100 R08: 0000000000000000 R09: 7efefefefefefeff
+> R10: 00007f3e5e3bddeb R11: 0000000000000246 R12: 00007ffcee77ce8f
+> R13: 0000000000000001 R14: 000056214404e010 R15: 00007ffcee77cd90
+>  </TASK>
+> 
+> Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+> ---
+>  drivers/tty/n_gsm.c | 410 ++++++++++++++++++++++++++++++--------------
+>  1 file changed, 280 insertions(+), 130 deletions(-)
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+This is a bit huge for stable backports, especially given that a huge
+number of the previous stable backports have totally failed and no one
+has submitted new versions.
 
-All warnings (new ones prefixed by >>):
+So why is this needed for stable?  Same for all of these in the
+series...
 
->> arch/x86/kernel/process_64.c:745:5: warning: no previous prototype for 'prctl_enable_tagged_addr' [-Wmissing-prototypes]
-     745 | int prctl_enable_tagged_addr(unsigned long nr_bits)
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~
+thanks,
 
-
-vim +/prctl_enable_tagged_addr +745 arch/x86/kernel/process_64.c
-
-   744	
- > 745	int prctl_enable_tagged_addr(unsigned long nr_bits)
-   746	{
-   747		struct mm_struct *mm = current->mm;
-   748	
-   749		/* Already enabled? */
-   750		if (mm->context.lam_cr3_mask)
-   751			return -EBUSY;
-   752	
-   753		/* LAM has to be enabled before spawning threads */
-   754		if (get_nr_threads(current) > 1)
-   755			return -EBUSY;
-   756	
-   757		if (!nr_bits) {
-   758			return -EINVAL;
-   759		} else if (nr_bits <= 6) {
-   760			mm->context.lam_cr3_mask = X86_CR3_LAM_U57;
-   761			mm->context.untag_mask =  ~GENMASK(62, 57);
-   762		} else {
-   763			return -EINVAL;
-   764		}
-   765	
-   766		/* Update CR3 to get LAM active */
-   767		switch_mm(current->mm, current->mm, current);
-   768		return 0;
-   769	}
-   770	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+greg k-h
