@@ -2,103 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F3DAC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 10:46:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC727C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 10:47:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348195AbiFJKqP (ORCPT
+        id S1348878AbiFJKr0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 06:46:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54782 "EHLO
+        Fri, 10 Jun 2022 06:47:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348281AbiFJKn7 (ORCPT
+        with ESMTP id S1346796AbiFJKrG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 06:43:59 -0400
-Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CA76110C3
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 03:40:34 -0700 (PDT)
-Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id 4DF1316A1;
-        Fri, 10 Jun 2022 13:41:25 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 4DF1316A1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1654857685;
-        bh=7UodIabqVyDU3SPlILihCd8OS/Ni6Cu5BMdPIofuqrc=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=Gi1LSwZRjbnD17wkAhQKd5gnhYq8Rtk7SqxDQ7kYU5co8S8pU/S7k+yyh8VAOXVXF
-         37mdsWZmFcscHHQZBDyUzGySwIFOOFemi4BL/6FmShN3MFAcryisGRReNBefRVFSZM
-         X4QdcvquauyyY7MH+yNoXAOROLCgOpOeaHg8R07M=
-Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 10 Jun 2022 13:40:32 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Arnd Bergmann <arnd@arndb.de>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        <soc@kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 2/2] bus: bt1-axi: Don't print error on -EPROBE_DEFER
-Date:   Fri, 10 Jun 2022 13:40:30 +0300
-Message-ID: <20220610104030.28399-2-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220610104030.28399-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220610104030.28399-1-Sergey.Semin@baikalelectronics.ru>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+        Fri, 10 Jun 2022 06:47:06 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A0D78205F99;
+        Fri, 10 Jun 2022 03:43:12 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id 05E351E80D6E;
+        Fri, 10 Jun 2022 18:42:27 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id JGR-NiiVUZu0; Fri, 10 Jun 2022 18:42:24 +0800 (CST)
+Received: from localhost.localdomain (unknown [219.141.250.2])
+        (Authenticated sender: kunyu@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id 313A51E80D24;
+        Fri, 10 Jun 2022 18:42:24 +0800 (CST)
+From:   Li kunyu <kunyu@nfschina.com>
+To:     chenhuacai@kernel.org, rafael@kernel.org, len.brown@intel.com,
+        pavel@ucw.cz, mingo@redhat.com, bp@alien8.de
+Cc:     kernel@xen0n.name, tglx@linutronix.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com, linux-ia64@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        Li kunyu <kunyu@nfschina.com>
+Subject: [PATCH] x86: Change the return type of acpi_map_cpu2node to void
+Date:   Fri, 10 Jun 2022 18:43:05 +0800
+Message-Id: <20220610104305.201688-1-kunyu@nfschina.com>
+X-Mailer: git-send-email 2.18.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Baikal-T1 AXI bus driver correctly handles the deferred probe
-situation, but still pollutes the system log with a misleading error
-message. Let's fix that by using the dev_err_probe() method to print the
-log message in case of the clocks/resets request errors.
+Reduce eax register calls by removing unused return values.
 
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-
+Signed-off-by: Li kunyu <kunyu@nfschina.com>
 ---
+ arch/ia64/kernel/acpi.c      | 3 +--
+ arch/loongarch/kernel/acpi.c | 3 +--
+ arch/x86/kernel/acpi/boot.c  | 3 +--
+ 3 files changed, 3 insertions(+), 6 deletions(-)
 
-Link: https://lore.kernel.org/lkml/20220610080103.10689-1-Sergey.Semin@baikalelectronics.ru/
-Changelog v2:
-- Use the dev_err_probe() return value as the return status of the
-  corresponding method. (@Philipp)
----
- drivers/bus/bt1-axi.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/bus/bt1-axi.c b/drivers/bus/bt1-axi.c
-index e7a6744acc7b..70e49a6e5374 100644
---- a/drivers/bus/bt1-axi.c
-+++ b/drivers/bus/bt1-axi.c
-@@ -135,10 +135,9 @@ static int bt1_axi_request_rst(struct bt1_axi *axi)
- 	int ret;
+diff --git a/arch/ia64/kernel/acpi.c b/arch/ia64/kernel/acpi.c
+index 96d13cb7c19f..2665cc873f0a 100644
+--- a/arch/ia64/kernel/acpi.c
++++ b/arch/ia64/kernel/acpi.c
+@@ -712,7 +712,7 @@ int acpi_isa_irq_to_gsi(unsigned isa_irq, u32 *gsi)
+  *  ACPI based hotplug CPU support
+  */
+ #ifdef CONFIG_ACPI_HOTPLUG_CPU
+-int acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
++void acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
+ {
+ #ifdef CONFIG_ACPI_NUMA
+ 	/*
+@@ -725,7 +725,6 @@ int acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
+ 	node_cpuid[cpu].phys_id = physid;
+ 	node_cpuid[cpu].nid = acpi_get_node(handle);
+ #endif
+-	return 0;
+ }
  
- 	axi->arst = devm_reset_control_get_optional_exclusive(axi->dev, "arst");
--	if (IS_ERR(axi->arst)) {
--		dev_warn(axi->dev, "Couldn't get reset control line\n");
--		return PTR_ERR(axi->arst);
--	}
-+	if (IS_ERR(axi->arst))
-+		return dev_err_probe(axi->dev, PTR_ERR(axi->arst),
-+				     "Couldn't get reset control line\n");
+ int additional_cpus __initdata = -1;
+diff --git a/arch/loongarch/kernel/acpi.c b/arch/loongarch/kernel/acpi.c
+index b16c3dea5eeb..369b49343563 100644
+--- a/arch/loongarch/kernel/acpi.c
++++ b/arch/loongarch/kernel/acpi.c
+@@ -282,7 +282,7 @@ void __init arch_reserve_mem_area(acpi_physical_address addr, size_t size)
  
- 	ret = reset_control_deassert(axi->arst);
- 	if (ret)
-@@ -159,10 +158,9 @@ static int bt1_axi_request_clk(struct bt1_axi *axi)
- 	int ret;
+ #include <acpi/processor.h>
  
- 	axi->aclk = devm_clk_get(axi->dev, "aclk");
--	if (IS_ERR(axi->aclk)) {
--		dev_err(axi->dev, "Couldn't get AXI Interconnect clock\n");
--		return PTR_ERR(axi->aclk);
--	}
-+	if (IS_ERR(axi->aclk))
-+		return dev_err_probe(axi->dev, PTR_ERR(axi->aclk),
-+				     "Couldn't get AXI Interconnect clock\n");
+-static int __ref acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
++static void __ref acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
+ {
+ #ifdef CONFIG_ACPI_NUMA
+ 	int nid;
+@@ -295,7 +295,6 @@ static int __ref acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
+ 		cpumask_set_cpu(cpu, cpumask_of_node(nid));
+ 	}
+ #endif
+-	return 0;
+ }
  
- 	ret = clk_prepare_enable(axi->aclk);
- 	if (ret) {
+ int acpi_map_cpu(acpi_handle handle, phys_cpuid_t physid, u32 acpi_id, int *pcpu)
+diff --git a/arch/x86/kernel/acpi/boot.c b/arch/x86/kernel/acpi/boot.c
+index 907cc98b1938..d63ec3ea3be3 100644
+--- a/arch/x86/kernel/acpi/boot.c
++++ b/arch/x86/kernel/acpi/boot.c
+@@ -799,7 +799,7 @@ static void __init acpi_set_irq_model_ioapic(void)
+ #ifdef CONFIG_ACPI_HOTPLUG_CPU
+ #include <acpi/processor.h>
+ 
+-static int acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
++static void acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
+ {
+ #ifdef CONFIG_ACPI_NUMA
+ 	int nid;
+@@ -810,7 +810,6 @@ static int acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
+ 		numa_set_node(cpu, nid);
+ 	}
+ #endif
+-	return 0;
+ }
+ 
+ int acpi_map_cpu(acpi_handle handle, phys_cpuid_t physid, u32 acpi_id,
 -- 
-2.35.1
+2.18.2
 
