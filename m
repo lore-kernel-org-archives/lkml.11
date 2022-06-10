@@ -2,90 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99634C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 08:21:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC5BDCCA47B
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 08:24:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347311AbiFJIVb (ORCPT
+        id S1346823AbiFJIY0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 04:21:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37540 "EHLO
+        Fri, 10 Jun 2022 04:24:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347471AbiFJIS7 (ORCPT
+        with ESMTP id S1343660AbiFJIYE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 04:18:59 -0400
-Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D066B258B59;
-        Fri, 10 Jun 2022 01:18:45 -0700 (PDT)
-Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id EA4A216C7;
-        Fri, 10 Jun 2022 11:19:13 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com EA4A216C7
+        Fri, 10 Jun 2022 04:24:04 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D21343E7DCF
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 01:21:04 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id d129so24104556pgc.9
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 01:21:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1654849153;
-        bh=3u4VMOP9WP/bUX2nLZCHP7NA6dt1Cj7fmiCuhFVAUp0=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=IwkKn1NZfotqjwJdydo5F7xNKjhu9XCx3G36A3DmfG02+dWP2QcUJELMBBAxdRKT2
-         oNS/GIP/MvmrXPqurUJq4pDvWN+odO0ptQTL+U7miV/fy2F8i1JoDuSlaCyVUW2jTR
-         y67rHp24np3Eq30PpiXUu8FG1cw8AsFv7dOQnLF8=
-Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 10 Jun 2022 11:18:21 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>, Hannes Reinecke <hare@suse.de>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Rob Herring <robh+dt@kernel.org>, <linux-ide@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: [PATCH v4 23/23] MAINTAINERS: Add maintainers for DWC AHCI SATA driver
-Date:   Fri, 10 Jun 2022 11:18:01 +0300
-Message-ID: <20220610081801.11854-24-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220610081801.11854-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220610081801.11854-1-Sergey.Semin@baikalelectronics.ru>
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=e26ugP+G0D2r5xR0rmI7tzXuT4/A3dEEKa7RW0oG3h8=;
+        b=rp11IKySQeUqZjSXxco0cSSupsGWjAH2k0IcKlNpZgrodfzpYhZ9EhosVi0nJnzCvu
+         OvPa27L5AFIJYsuKoxLfrmVpeRCapjhj2DUgHw35rVtgGB7CxnoOBgAF0FXW9MnsfQ88
+         Fpzl/XGYfoPrFuq6cHZ6j/+j5+ewGEVT4QH1+oMhfyWlWfcS4suvKkrcTi7FVpaQfJEk
+         HesevTNGOjveg2q3nqEkBjczH8z3v0cbv2CNNmxS8e1J0upmjFLV0KPYxcpYU7mkNdy1
+         cnO28senNigNxDEgGyXSSV4stL+DGoTxfaQlUS9XouiqxfyoFQRgP4zh9fgUoxaDZ6y8
+         gFJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=e26ugP+G0D2r5xR0rmI7tzXuT4/A3dEEKa7RW0oG3h8=;
+        b=1dPtIHOe3yrE3vf1PUWD5b8JpDJwbv3tUOUY1UG+inzNKUqhHyMGvczgWCq8NKkkpU
+         q/w9f+BdfSa839d2XrzH4slEBm4LqynqFwmehiGGDjlPtyq3bzs3rMVvsQKv1YH9mMRZ
+         FOerctXy0WMbpqZZ5HoiOu69NSbJOgG/pl5rEDChiofcSZx66rV0UrHiqes3epqdB4ad
+         aqbGiCHRMhjM4RBcPnl0uWHacyAvd1rkp5zpUAIrkxsRToKhUUzvKD+RafH7iwEjsHnw
+         RkZ7XrkKmCwS3/VgSUwD6bimqkdmdyeRHRD6vFMBXxmIuzaJhMFHHC5pML+ZdihlFvEw
+         +9ng==
+X-Gm-Message-State: AOAM533fZgEjEHqQmxsgvCbi/DlmwuZUKDvqD8AeEZO2pdYfCJj9SoE2
+        +EI/j+2ebzvnpTbtz+VcSgUjmw==
+X-Google-Smtp-Source: ABdhPJzS5tE0forDdQKBwrlwDpZzjHGLAz8PkQkqz1GDmOqpjiduq08hWCxEpAi6sQyk+83yDqtd6A==
+X-Received: by 2002:a63:441f:0:b0:3fc:8bd2:f828 with SMTP id r31-20020a63441f000000b003fc8bd2f828mr38169652pga.579.1654849263818;
+        Fri, 10 Jun 2022 01:21:03 -0700 (PDT)
+Received: from localhost ([122.162.234.2])
+        by smtp.gmail.com with ESMTPSA id gi6-20020a17090b110600b001e2f53e1042sm1117593pjb.7.2022.06.10.01.21.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Jun 2022 01:21:03 -0700 (PDT)
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Nishanth Menon <nm@ti.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Viresh Kumar <vireshk@kernel.org>
+Cc:     Viresh Kumar <viresh.kumar@linaro.org>, linux-pm@vger.kernel.org,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 0/8] OPP: Add support for multiple clocks
+Date:   Fri, 10 Jun 2022 13:50:44 +0530
+Message-Id: <cover.1654849214.git.viresh.kumar@linaro.org>
+X-Mailer: git-send-email 2.31.1.272.g89b43f80a514
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add myself as a maintainer of the new DWC AHCI SATA driver and
-its DT-bindings schema.
+Hello,
 
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+This patchset adds support for device with multiple clocks. None of the clocks
+is considered primary in this case and all are handled equally.
 
----
+This is rebased over a lot of other OPP changes and is pushed here:
 
-Changelog v2:
-- Use dlemoal/libata.git git tree for the LIBATA SATA AHCI SYNOPSYS
-  DWC driver (@Damien).
----
- MAINTAINERS | 9 +++++++++
- 1 file changed, 9 insertions(+)
+git://git.kernel.org/pub/scm/linux/kernel/git/vireshk/pm.git opp/clk
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f468864fd268..fee2e1c8dde5 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -11137,6 +11137,15 @@ F:	drivers/ata/ahci_platform.c
- F:	drivers/ata/libahci_platform.c
- F:	include/linux/ahci_platform.h
- 
-+LIBATA SATA AHCI SYNOPSYS DWC CONTROLLER DRIVER
-+M:	Serge Semin <fancer.lancer@gmail.com>
-+L:	linux-ide@vger.kernel.org
-+S:	Maintained
-+T:	git git://git.kernel.org/pub/scm/linux/kernel/git/dlemoal/libata.git
-+F:	Documentation/devicetree/bindings/ata/baikal,bt1-ahci.yaml
-+F:	Documentation/devicetree/bindings/ata/snps,dwc-ahci.yaml
-+F:	drivers/ata/ahci_dwc.c
-+
- LIBATA SATA PROMISE TX2/TX4 CONTROLLER DRIVER
- M:	Mikael Pettersson <mikpelinux@gmail.com>
- L:	linux-ide@vger.kernel.org
+Krzysztof, can you please test this for your use case. I wasn't able to test he
+multiple clock support.
+
+--
+Viresh
+
+Viresh Kumar (8):
+  OPP: Use consistent names for OPP table instances
+  OPP: Remove rate_not_available parameter to _opp_add()
+  OPP: Reuse _opp_compare_key() in _opp_add_static_v2()
+  OPP: Make dev_pm_opp_set_opp() independent of frequency
+  OPP: Allow multiple clocks for a device
+  OPP: Add key specific assert() method to key finding helpers
+  OPP: Assert clk_count == 1 for single clk helpers
+  OPP: Provide a simple implementation to configure multiple clocks
+
+ drivers/opp/core.c     | 337 +++++++++++++++++++++++++++++++----------
+ drivers/opp/cpu.c      |  12 +-
+ drivers/opp/debugfs.c  |  27 +++-
+ drivers/opp/of.c       |  91 +++++++----
+ drivers/opp/opp.h      |  22 +--
+ include/linux/pm_opp.h |  17 ++-
+ 6 files changed, 378 insertions(+), 128 deletions(-)
+
 -- 
-2.35.1
+2.31.1.272.g89b43f80a514
 
