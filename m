@@ -2,97 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED769C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 14:34:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF567CCA47C
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 14:35:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343655AbiFJOes (ORCPT
+        id S1344807AbiFJOfe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 10:34:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36022 "EHLO
+        Fri, 10 Jun 2022 10:35:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241014AbiFJOeZ (ORCPT
+        with ESMTP id S230241AbiFJOfb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 10:34:25 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22C17144BD2;
-        Fri, 10 Jun 2022 07:34:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=sgYdCWZmrc0bO6tRsB4xcpTV6Dk/0UYI28zBnLwu8Bs=; b=elwdjNnUnH6YAnK7XycKt05SI8
-        heZgbZnNVQ10zgCTLuaFHbHDlabqFJedlTpL6OOTRnVnbswPeR5D6/3tmdEnpW4nSgWEPqfN/tF5m
-        POFy+MmLs5SFywyQqJa8c1FGo1NxbC3GB4m3YCCX8kUdvsjMVQphpcQCubiGiBxxOBm/IBUCHn3Jc
-        vLLbSiXovpDf4Ltl9f7G44RzSnE7haHA1HpnymPg69to1P6/LOBra620BKhxc1QWniTfollSJG3Tv
-        40sYAXNJH4lPG9o05MyE590bWRkYCGPi4nbbehKyLctQg2gvJVTq4q5p29T4Ahmt2AyFGAgDcrIqu
-        sgOdpEdg==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nzfiF-00EWBp-W5; Fri, 10 Jun 2022 14:34:12 +0000
-Date:   Fri, 10 Jun 2022 15:34:11 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Yu Kuai <yukuai3@huawei.com>, kent.overstreet@gmail.com
-Cc:     akpm@linux-foundation.org, axboe@kernel.dk,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, yi.zhang@huawei.com
-Subject: Re: [PATCH -next] mm/filemap: fix that first page is not mark
- accessed in filemap_read()
-Message-ID: <YqNWY46ZRoK6Cwbu@casper.infradead.org>
-References: <20220602082129.2805890-1-yukuai3@huawei.com>
- <YpkB1+PwIZ3AKUqg@casper.infradead.org>
- <c49af4f7-5005-7cf1-8b58-a398294472ab@huawei.com>
+        Fri, 10 Jun 2022 10:35:31 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9AE9193F0
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 07:35:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654871730; x=1686407730;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Q31itKy4PC7SvEU3qrX2Ci7VMhO97r4+bi4c5XZJr5s=;
+  b=BzBUF+5uj4DTurytGJrBrqGsiwKRfJXHSj+HfXnSgoFNNQpfUpfOG3RE
+   MdF78x8ChfOMS0BO+0nuo36aweQ10Xn85B5FJNvv5JzKdNIJW6kkRjurA
+   lJwCHf4ei5eUpVVLll5ocEeaJxuhhhY2yx6+2HMUeZ8y+dunEUtiLKc2y
+   tr4hjn3ZRiJJqEUgDpcetzSzJuxmIViAOS+joMGREPOCcXu2+BtFWr1VC
+   lCeyw5MhVyAMNg1Krl6Nhj2CSoGuWTAYZYrrEukEDoiCaiVw3yRdmlE/9
+   enzTUBybk2ICdPkBHRCo1DICSmPwvO8cHJnUh3447w4Pfhk1H7MQRmdui
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10374"; a="277679664"
+X-IronPort-AV: E=Sophos;i="5.91,290,1647327600"; 
+   d="scan'208";a="277679664"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 07:35:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,290,1647327600"; 
+   d="scan'208";a="581096259"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga007.jf.intel.com with ESMTP; 10 Jun 2022 07:35:26 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id 2D6F5346; Fri, 10 Jun 2022 17:35:30 +0300 (EEST)
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>
+Cc:     x86@kernel.org, Kostya Serebryany <kcc@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "H . J . Lu" <hjl.tools@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCHv3 2/8] x86: CPUID and CR3/CR4 flags for Linear Address Masking
+Date:   Fri, 10 Jun 2022 17:35:21 +0300
+Message-Id: <20220610143527.22974-3-kirill.shutemov@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220610143527.22974-1-kirill.shutemov@linux.intel.com>
+References: <20220610143527.22974-1-kirill.shutemov@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c49af4f7-5005-7cf1-8b58-a398294472ab@huawei.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 06, 2022 at 09:10:03AM +0800, Yu Kuai wrote:
-> On 2022/06/03 2:30, Matthew Wilcox wrote:
-> > On Thu, Jun 02, 2022 at 04:21:29PM +0800, Yu Kuai wrote:
-> > > In filemap_read(), 'ra->prev_pos' is set to 'iocb->ki_pos + copied',
-> > > while it should be 'iocb->ki_ops'.
-> > 
-> > Can you walk me through your reasoning which leads you to believe that
-> > it should be ki_pos instead of ki_pos + copied?  As I understand it,
-> > prev_pos is the end of the previous read, not the beginning of the
-> > previous read.
-> 
-> Hi, Matthew
-> 
-> The main reason is the following judgement in flemap_read():
-> 
-> if (iocb->ki_pos >> PAGE_SHIFT !=	-> current page
->     ra->prev_pos >> PAGE_SHIFT)		-> previous page
->         folio_mark_accessed(fbatch.folios[0]);
-> 
-> Which means if current page is the same as previous page, don't mark
-> page accessed. However, prev_pos is set to 'ki_pos + copied' during last
-> read, which will cause 'prev_pos >> PAGE_SHIFT' to be current page
-> instead of previous page.
-> 
-> I was thinking that if prev_pos is set to the begining of the previous
-> read, 'prev_pos >> PAGE_SHIFT' will be previous page as expected. Set to
-> the end of previous read is ok, however, I think the caculation of
-> previous page should be '(prev_pos - 1) >> PAGE_SHIFT' instead.
+Enumerate Linear Address Masking and provide defines for CR3 and CR4
+flags.
 
-OK, I think Kent broke this in 723ef24b9b37 ("mm/filemap/c: break
-generic_file_buffered_read up into multiple functions").  Before:
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+---
+ arch/x86/include/asm/cpufeatures.h          | 1 +
+ arch/x86/include/uapi/asm/processor-flags.h | 6 ++++++
+ 2 files changed, 7 insertions(+)
 
--       prev_index = ra->prev_pos >> PAGE_SHIFT;
--       prev_offset = ra->prev_pos & (PAGE_SIZE-1);
-...
--               if (prev_index != index || offset != prev_offset)
--                       mark_page_accessed(page);
+diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
+index 393f2bbb5e3a..9835ab09b590 100644
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -300,6 +300,7 @@
+ /* Intel-defined CPU features, CPUID level 0x00000007:1 (EAX), word 12 */
+ #define X86_FEATURE_AVX_VNNI		(12*32+ 4) /* AVX VNNI instructions */
+ #define X86_FEATURE_AVX512_BF16		(12*32+ 5) /* AVX512 BFLOAT16 instructions */
++#define X86_FEATURE_LAM			(12*32+26) /* Linear Address Masking */
+ 
+ /* AMD-defined CPU features, CPUID level 0x80000008 (EBX), word 13 */
+ #define X86_FEATURE_CLZERO		(13*32+ 0) /* CLZERO instruction */
+diff --git a/arch/x86/include/uapi/asm/processor-flags.h b/arch/x86/include/uapi/asm/processor-flags.h
+index c47cc7f2feeb..d898432947ff 100644
+--- a/arch/x86/include/uapi/asm/processor-flags.h
++++ b/arch/x86/include/uapi/asm/processor-flags.h
+@@ -82,6 +82,10 @@
+ #define X86_CR3_PCID_BITS	12
+ #define X86_CR3_PCID_MASK	(_AC((1UL << X86_CR3_PCID_BITS) - 1, UL))
+ 
++#define X86_CR3_LAM_U57_BIT	61 /* Activate LAM for userspace, 62:57 bits masked */
++#define X86_CR3_LAM_U57		_BITULL(X86_CR3_LAM_U57_BIT)
++#define X86_CR3_LAM_U48_BIT	62 /* Activate LAM for userspace, 62:48 bits masked */
++#define X86_CR3_LAM_U48		_BITULL(X86_CR3_LAM_U48_BIT)
+ #define X86_CR3_PCID_NOFLUSH_BIT 63 /* Preserve old PCID */
+ #define X86_CR3_PCID_NOFLUSH    _BITULL(X86_CR3_PCID_NOFLUSH_BIT)
+ 
+@@ -132,6 +136,8 @@
+ #define X86_CR4_PKE		_BITUL(X86_CR4_PKE_BIT)
+ #define X86_CR4_CET_BIT		23 /* enable Control-flow Enforcement Technology */
+ #define X86_CR4_CET		_BITUL(X86_CR4_CET_BIT)
++#define X86_CR4_LAM_SUP_BIT	28 /* LAM for supervisor pointers */
++#define X86_CR4_LAM_SUP		_BITUL(X86_CR4_LAM_SUP_BIT)
+ 
+ /*
+  * x86-64 Task Priority Register, CR8
+-- 
+2.35.1
 
-After:
-+       if (iocb->ki_pos >> PAGE_SHIFT != ra->prev_pos >> PAGE_SHIFT)
-+               mark_page_accessed(page);
-
-So surely this should have been:
-
-+       if (iocb->ki_pos != ra->prev_pos)
-+               mark_page_accessed(page);
-
-Kent, do you recall why you changed it the way you did?
