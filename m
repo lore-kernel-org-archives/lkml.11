@@ -2,209 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9108DC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 07:52:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA97CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 07:52:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347013AbiFJHwR (ORCPT
+        id S1347028AbiFJHw4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 03:52:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47154 "EHLO
+        Fri, 10 Jun 2022 03:52:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244463AbiFJHwP (ORCPT
+        with ESMTP id S1346600AbiFJHww (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 03:52:15 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D56D1C284F;
-        Fri, 10 Jun 2022 00:52:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654847534; x=1686383534;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Vi/Cl0PyJOCXlWY+DAGC0EAW94aIzRv2dNjS6RisAUg=;
-  b=h3LCxusJBB3qrT8698ODwct78Fxd67dNb+Eem3PEg3vXpxhqFly6szAd
-   xNqbbuDCPticV4f5l4q3F7eSWbvPbJMc/yuksrNRaB+ISDl8rWT1K8GPD
-   kfzi32TnqssY/G48BnFknXCtXFgr19YG/CZBbqLwIUQ+qw0iQ0kUVNiLq
-   5aJio8YqsKdXnWSkMISD/O/las1Ip5m/aqGjiBHuVH+GS91t2JKsMxSGU
-   ej3wM8qJQVX7G+sW+4c/N5Ntr8uDuPV/OHJzMWdtySd1WeswlBfFNeK06
-   PxW58b9YkOUK891VYZG+dRaIlRMKb4i2JQre8CaPmXXIj+gybR5IjuOV4
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="363881095"
-X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
-   d="scan'208";a="363881095"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 00:52:14 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
-   d="scan'208";a="616379856"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 10 Jun 2022 00:52:05 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nzZR6-000GoA-Vi;
-        Fri, 10 Jun 2022 07:52:04 +0000
-Date:   Fri, 10 Jun 2022 15:51:40 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Casey Schaufler <casey@schaufler-ca.com>,
-        casey.schaufler@intel.com, jmorris@namei.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, casey@schaufler-ca.com,
-        linux-audit@redhat.com, keescook@chromium.org,
-        john.johansen@canonical.com, penguin-kernel@i-love.sakura.ne.jp,
-        paul@paul-moore.com, stephen.smalley.work@gmail.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v36 04/33] LSM: provide lsm name and id slot mappings
-Message-ID: <202206101543.IWAKe4Qx-lkp@intel.com>
-References: <20220609230146.319210-5-casey@schaufler-ca.com>
+        Fri, 10 Jun 2022 03:52:52 -0400
+Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2108.outbound.protection.outlook.com [40.107.215.108])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C0B41E4B5B;
+        Fri, 10 Jun 2022 00:52:51 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=N5h4D6opVLtSGne5yC0db7N8DZNU7yju62VIC5EHM9XXJloZ5K37t/CLYtnBUSNNkyjL8oc1Duuu73fRTu3Pwvo2ZDvOYoOzXSC8zzG5WAaw0dY5qENROEBSgeZp0yMPiTV+HT250w1V/jkkB5is5aAUTr6C3H1GGHrezvCX1lmErs+vGiwN5Nio8EpowFAda2P2IiSbDK8NUTw2+x8K+kE4tkiVyyWTSFaLMOYZ9VtjUahc6ltYOquT8gOQ4iQg/XWDVJ5O1P4q1r5/lGndRLd4OPQYLuk6hgsFUkZyBTc92K0pM6tAnubgyzTAslyQbWd91jZ96pjRZbGtIATgzg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=EKZoOldyoVb419C3vi8I1N+6etu14Vr1vxkkcwjqACg=;
+ b=DWof5XhU8QZ6kzsI/Kl0s0sKkzKVgYxuzVXZ9Pgxe/NnycvEqbXF4XhCim3Xhp2hS5hrr+MREBIRBy4QP4hc4zvrjyAivS1nlId5SSNOuKZ6SZ9F1ZRQMwCvWFwpDKUDCs8HrrShFFhWmWqP4BSTp4m/I82GvwfRZsRPPnbeCZV75IWjLY5YIhY80q+/SSMf0/XXJZw3z+WY4Tj3Lnfax/76VCGWlRS7sV1wWJBol1sSYpaKojKcgkHJgwSHwSlO4q13eVL0ZxWOu9YawrPNIbhB18KPdjJvAjbk5GOrPNx7KZNlatVoCK2j+rOrpAgqOb/BaOyPzFvcVly3ESlGeg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EKZoOldyoVb419C3vi8I1N+6etu14Vr1vxkkcwjqACg=;
+ b=V0BXpiB+uyql0gyQtvog99p/0nm2wz8DMrDCQSR2AjBv4IkU9FnQeXa6eO6RMFVcZrXVfw7my1xc1my82d/90Thjuxm5jS1SrkS/X+5mgHVU0JKDhxoRawlQOOhssfJWcip657Meu1SKeb3SHkOeKto3hi+knpJLHgAfF7xlrqM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from SG2PR06MB3367.apcprd06.prod.outlook.com (2603:1096:4:78::19) by
+ PS1PR0601MB3689.apcprd06.prod.outlook.com (2603:1096:300:78::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.18; Fri, 10 Jun
+ 2022 07:52:48 +0000
+Received: from SG2PR06MB3367.apcprd06.prod.outlook.com
+ ([fe80::ccb7:f612:80b2:64d5]) by SG2PR06MB3367.apcprd06.prod.outlook.com
+ ([fe80::ccb7:f612:80b2:64d5%4]) with mapi id 15.20.5314.019; Fri, 10 Jun 2022
+ 07:52:48 +0000
+Message-ID: <7a689b6c-31b7-61d2-7bf4-6fdf49bb4ae4@vivo.com>
+Date:   Fri, 10 Jun 2022 15:52:39 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] dma-buf: Don't use typeof in va_arg
+Content-Language: en-US
+To:     =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
+References: <20220610072019.3075023-1-wanjiabing@vivo.com>
+ <c079243c-9084-b565-2320-20453815c79a@amd.com>
+From:   Jiabing Wan <wanjiabing@vivo.com>
+Organization: vivo
+In-Reply-To: <c079243c-9084-b565-2320-20453815c79a@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: ME2PR01CA0062.ausprd01.prod.outlook.com
+ (2603:10c6:201:2b::26) To SG2PR06MB3367.apcprd06.prod.outlook.com
+ (2603:1096:4:78::19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220609230146.319210-5-casey@schaufler-ca.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f30d2bf0-464e-4186-6fcf-08da4ab63635
+X-MS-TrafficTypeDiagnostic: PS1PR0601MB3689:EE_
+X-Microsoft-Antispam-PRVS: <PS1PR0601MB3689C6A6A8B056E862007E0CABA69@PS1PR0601MB3689.apcprd06.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: aQxy22c684aAePEda9FhYGeW26AqIMhTTwT6/H5qissipU4/QmU4wat+Sy6ZFYe6MZUWnrYXo6/XqFxl598LZ2ICTOPT/0HhjpvPfp4jpAqLD01Kbg8saDl1hiHWDLGqkICnZ+T8F0KlRZ6FSEo78wu/o+5YRT6hWM+plMmZEuzvPsr3jdfUp4VVFD5Hw8pQnwwhKFznhUEgdPBsxcSTF4ZBXSXzITPROahfQyysfwVzUoCqvni+4vO/at02yif0jAzJekvuqgUyZr10b/P6Afd8h3A1Stgzv16kzJ6/WUbrMXzxfRZK5jk/621BD08vOkV4s859wuq26oFgOta0fOOZixBAUkDY/BMcJZ4uaGndvPXbaIOWWOg8kbmvymbyg/8o1mPFXQk7yphi8jde39M8zsykN73T92aDts8aSi5jISDBf2DXRELo4PBN83VChhdBzYBMVeq3FCg7IiJ5cO7rxwoxhG8N+FGk8RC2qeRMgKXyaGUfXlYK2s3F55bkNd9OMY/mqIa8MZn662CLOpCTGwo6AwosS/miEFA4xvYHWH+SwAOTPyUsiIIVL3V9K8VB8LNKuo46jNPJVDwfOCE6yvxBe4RF11dXLgHf73IysH73LT3ryIF1nYAn0MlQde5Y2Z5m+lTQOZ81/1yAqU8uJnmLTUofT8jbdM+9LaX2ru3BgqmVvMVTKEATOdY4glz269HnLpnye7EDRgdtIg6aH6IVCCG+7CPbUxOj++pIXzIa6k9Ll478MWfZc4EvA5vC2OKZqGTTEmqYaqbLNrdedJgbgmaCkO3GZNTRQyM=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB3367.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66946007)(66556008)(31686004)(8676002)(31696002)(86362001)(8936002)(5660300002)(316002)(49246003)(66476007)(110136005)(6666004)(2906002)(53546011)(6506007)(508600001)(26005)(6512007)(83380400001)(36756003)(186003)(38100700002)(2616005)(66574015)(38350700002)(6486002)(36916002)(52116002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?V3JITEFlZGg2bG9VL3l6RXFUVDRKQ2VCTmt0T0VpQy9OS1gzai9QQTBKdEIz?=
+ =?utf-8?B?bkl4RnZ2aFpYKzczREtzbStOTnUyWnRWemdoK0xtM0dsUzVvN3ptMFRvYzRh?=
+ =?utf-8?B?Y1J3djMwb09lNzlUUXZlNDQ5MlRiTDFTZmRzQy8vRC93Y05uemhvdStMcVlz?=
+ =?utf-8?B?VjVJU3NNNWc4MXlFNVBlVE1NK0w2OGg3ZnRiZUhxY3ZJTVdoMjZlTEJ1STgr?=
+ =?utf-8?B?a3RxeEJVQ0JtVndkNW5lN20wVUFGRmwwVCtkTHBZSmFTM1ZBMTk5d25sb0Ri?=
+ =?utf-8?B?RWZ3ekZMK3U2N1lVbEdHWVR5bHo0SkZnUWltM3Y4ZVJuSEt3bnVNMXlxZ3hC?=
+ =?utf-8?B?MXl6VDBkL2NobmVyMVMxZFFvbzFhWkVaL0ZPK0VNNEdDMURDU0podit4eFBr?=
+ =?utf-8?B?RWxaQUd4dnRKUnEyV3lHU0orVWEyVmhIOWllMjNnekZ4NFpmWTNPc2JHTkdn?=
+ =?utf-8?B?UFRLTkIxT3ZhbVYrQXdmWEJxRzR0K0F2T3MzeXIvWHJUKytsWDZWZm41a0NG?=
+ =?utf-8?B?NGptOXplQlJZT1cyMUdzU3FjSDduanNabUZmNVdCNlBiTENyYjhIOXc4S3BJ?=
+ =?utf-8?B?TTdvRVRnSERDbkorTVc4ZXM1cjVrMXNqOFp5cW1OMjhweXk3R1N0L1hSWDJr?=
+ =?utf-8?B?RDlsV0plSjE1enBIZTFhOThEQS80cVNGOGZGWllXbnhjOXI1TEtVSnFTL0Zz?=
+ =?utf-8?B?MXdjUVpFd01zejhxcURsUEI5KzZ3MXJaa2IyS0RORURWOCtBUkFlWWpoM0tt?=
+ =?utf-8?B?aW03dDhIbGVMMHo5RE5yS0p1UlIxK0xoSkFYOW5ETnZkdE1wWitkeWJSTXZC?=
+ =?utf-8?B?d05qOGpIYXpHU0VNRTRKUWpDS0RNK2NFN3ZnUGVveVRJMjg2Ky9BSWZOUG1I?=
+ =?utf-8?B?cW9aQmNTT1JGY0szQUNwdGhOZGM1N3ZPalJsUWhzZGtVOTMrS1B0SElLbGNu?=
+ =?utf-8?B?MW1Vakg1dXhNTE93R29FNHlGeHpZMGk1TU1haFVZUXJMSWdzdHpwdU9pa1k1?=
+ =?utf-8?B?a1FVTEVNUVIwZThyakJTTjZhVFduRkxsUWdFY3pBRlhWK1B3NVJIeWFSalhz?=
+ =?utf-8?B?VW9UTDdnNTJBbGkyUzd1d1hGM25jTzd3M3U5ZGV0ODlJWW8rREZZR1VVZlIz?=
+ =?utf-8?B?QjFZRWtnV1JtUFZkTzYwNGRYdGdQcE4xK0pQdmFKek9WSGlzeVZQZ3laS21x?=
+ =?utf-8?B?bUZRajVGQ0plTWlDclhNb2pDMExnbi9GOXJwaUNVQndlaTFuZGt1R1FVbzZp?=
+ =?utf-8?B?T2R3cmxVL01UL3phRngrUlJxL3JteVZ0Y0swdm1kamVqZmk1U1dDNmJ1S0hD?=
+ =?utf-8?B?cGt3b2ovVFZrQTMrK3NNWlFkZTRDWHV1NzJHRWVmakpiT1B2TUpMd1JXS0dN?=
+ =?utf-8?B?R29lWG01bEN0b1ZwejBCR09ueUlPNHM0Q3lrRnFPTjhYUXlVVW9vaEVUdjNC?=
+ =?utf-8?B?TXJNbUhNZE40ZG1kSnlpZmNWaUp5NFRPaStVM3BrV3UwcjZyY1NEd1ZUM2lG?=
+ =?utf-8?B?UzFzcjJrNEtpR1YwRXAzWTdZSjYrYk5vd1FjcHhtZW9ZQkdNK0g3cW9xamRB?=
+ =?utf-8?B?eDVqd0hPV2tuT0ptWVpsWmlvNVlZN09GK0FJbFROQjNGY3FGUG5KOFcyMk0w?=
+ =?utf-8?B?UW1CMkNXNituVjN2cmFxdndhUzlwOFZpZVB1WDN0R2VIRm1hVjZiSmZkdWp0?=
+ =?utf-8?B?TmZtU3pYWGtiazdtV3BSYTBxa2hENWFXV1pBekVNaHVxNXY0VFZSVmlFSU1X?=
+ =?utf-8?B?WGtaRXJjaGlhejUzN09uSldXdnZ4SVhkN29FRzRQVTBPZXA1Nkt1T1A4ajlt?=
+ =?utf-8?B?Q0NtaHluRTVRRHoxSjQ3ck5hV0R5MWM5cFlTZkxsSDUvK3BMNERuR05KT1dw?=
+ =?utf-8?B?cjFjZ0x5ZVoyVHBwWW0xRXpPRy94ekgveVRLWi9MSzRLM1RGeFBTa3hjak5p?=
+ =?utf-8?B?cHlleWltZ09sU2huYW1JYkIvcXEvSnFadElJMkp0YVIzMVhnSTdZM3hFVzBv?=
+ =?utf-8?B?OHNVcWE0WFZjZGJIMkdJeWFXQXNGUFlrVE1JbTE5OGhUWHZiWDdNOEVWWXE3?=
+ =?utf-8?B?TVpGTWJ3MTNpOHdyVGpvNU55d3pUeUdDQnlaZnBrM0lCQjNKNTNVVi82N2VD?=
+ =?utf-8?B?M0FvVjVmVlVncmZqTnl0bVhwNitTN2MrVEFnNElEQUlSS2hZSmZZdWg5WlBV?=
+ =?utf-8?B?U2JqVU54RmVCV3VNVEx3YThsL3kxZmRGYm4xM1Noa2YxK0ZDV0lxUWJBUWlS?=
+ =?utf-8?B?VHRKVXZUL1JRUmpvbWxvdjVSVHY1SXBkdVBvVzY5NXQ4V3g0ZWRQRHF1ejJi?=
+ =?utf-8?B?bEw3VUpSeFFFeHpOVFM3Rll1R3ZaVGZ4WGIxS1FoSEY2NG1XWmthUT09?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f30d2bf0-464e-4186-6fcf-08da4ab63635
+X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB3367.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jun 2022 07:52:48.2665
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: uN1Mhff/SJ13m9dHkLnDnoCiuIJv8dCTCycrihbWROPmr1F752SQrILwssUEQ+uRUfv0NYVG1uM8y9ba1Ccy+Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PS1PR0601MB3689
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Casey,
-
-I love your patch! Perhaps something to improve:
-
-[auto build test WARNING on pcmoore-audit/next]
-[also build test WARNING on pcmoore-selinux/next linus/master v5.19-rc1 next-20220610]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Casey-Schaufler/integrity-disassociate-ima_filter_rule-from-security_audit_rule/20220610-080129
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/audit.git next
-config: sparc-randconfig-r014-20220609 (https://download.01.org/0day-ci/archive/20220610/202206101543.IWAKe4Qx-lkp@intel.com/config)
-compiler: sparc-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/767517968014af3744e00ba2c0c956b290a56ecb
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Casey-Schaufler/integrity-disassociate-ima_filter_rule-from-security_audit_rule/20220610-080129
-        git checkout 767517968014af3744e00ba2c0c956b290a56ecb
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=sparc SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   security/security.c: In function 'lsm_name_to_slot':
->> security/security.c:496:40: warning: array subscript i is outside array bounds of 'struct lsm_id *[0]' [-Warray-bounds]
-     496 |                 if (strcmp(lsm_slotlist[i]->lsm, name) == 0)
-         |                            ~~~~~~~~~~~~^~~
-   security/security.c:481:23: note: while referencing 'lsm_slotlist'
-     481 | static struct lsm_id *lsm_slotlist[LSMBLOB_ENTRIES] __lsm_ro_after_init;
-         |                       ^~~~~~~~~~~~
-   security/security.c: In function 'lsm_slot_to_name':
->> security/security.c:521:25: warning: array subscript 0 is outside array bounds of 'struct lsm_id *[0]' [-Warray-bounds]
-     521 |         if (lsm_slotlist[slot] == NULL)
-         |             ~~~~~~~~~~~~^~~~~~
-   security/security.c:481:23: note: while referencing 'lsm_slotlist'
-     481 | static struct lsm_id *lsm_slotlist[LSMBLOB_ENTRIES] __lsm_ro_after_init;
-         |                       ^~~~~~~~~~~~
-   security/security.c: In function 'security_add_hooks':
->> security/security.c:546:29: warning: array subscript <unknown> is outside array bounds of 'struct lsm_id *[0]' [-Warray-bounds]
-     546 |                 lsm_slotlist[lsm_slot] = lsmid;
-         |                 ~~~~~~~~~~~~^~~~~~~~~~
-   security/security.c:481:23: note: while referencing 'lsm_slotlist'
-     481 | static struct lsm_id *lsm_slotlist[LSMBLOB_ENTRIES] __lsm_ro_after_init;
-         |                       ^~~~~~~~~~~~
 
 
-vim +496 security/security.c
+On 2022/6/10 15:24, Christian König wrote:
+> Am 10.06.22 um 09:20 schrieb Wan Jiabing:
+>> Fix following coccicheck warning:
+>> ./drivers/dma-buf/st-dma-fence-unwrap.c:75:39-45: ERROR: reference 
+>> preceded by free on line 70
+>>
+>> Use 'struct dma_fence *' instead of 'typeof(*fences)' to avoid this
+>> warning and also fix other 'typeof(*fences)' to make them consistent.
+>
+> Well that doesn't looks correct to me.
+>
+> *fence should be valid at this point, why does coccicheck things it is 
+> freed?
 
-   482	
-   483	/**
-   484	 * lsm_name_to_slot - Report the slot number for a security module
-   485	 * @name: name of the security module
-   486	 *
-   487	 * Look up the slot number for the named security module.
-   488	 * Returns the slot number or LSMBLOB_INVALID if @name is not
-   489	 * a registered security module name.
-   490	 */
-   491	int lsm_name_to_slot(char *name)
-   492	{
-   493		int i;
-   494	
-   495		for (i = 0; i < lsm_slot; i++)
- > 496			if (strcmp(lsm_slotlist[i]->lsm, name) == 0)
-   497				return i;
-   498	
-   499		return LSMBLOB_INVALID;
-   500	}
-   501	
-   502	/**
-   503	 * lsm_slot_to_name - Get the name of the security module in a slot
-   504	 * @slot: index into the interface LSM slot list.
-   505	 *
-   506	 * Provide the name of the security module associated with
-   507	 * a interface LSM slot.
-   508	 *
-   509	 * If @slot is LSMBLOB_INVALID return the value
-   510	 * for slot 0 if it has been set, otherwise NULL.
-   511	 *
-   512	 * Returns a pointer to the name string or NULL.
-   513	 */
-   514	const char *lsm_slot_to_name(int slot)
-   515	{
-   516		if (slot == LSMBLOB_INVALID)
-   517			slot = 0;
-   518		else if (slot >= LSMBLOB_ENTRIES || slot < 0)
-   519			return NULL;
-   520	
- > 521		if (lsm_slotlist[slot] == NULL)
-   522			return NULL;
-   523		return lsm_slotlist[slot]->lsm;
-   524	}
-   525	
-   526	/**
-   527	 * security_add_hooks - Add a modules hooks to the hook lists.
-   528	 * @hooks: the hooks to add
-   529	 * @count: the number of hooks to add
-   530	 * @lsmid: the identification information for the security module
-   531	 *
-   532	 * Each LSM has to register its hooks with the infrastructure.
-   533	 * If the LSM is using hooks that export secids allocate a slot
-   534	 * for it in the lsmblob.
-   535	 */
-   536	void __init security_add_hooks(struct security_hook_list *hooks, int count,
-   537				       struct lsm_id *lsmid)
-   538	{
-   539		int i;
-   540	
-   541		WARN_ON(!lsmid->slot || !lsmid->lsm);
-   542	
-   543		if (lsmid->slot == LSMBLOB_NEEDED) {
-   544			if (lsm_slot >= LSMBLOB_ENTRIES)
-   545				panic("%s Too many LSMs registered.\n", __func__);
- > 546			lsm_slotlist[lsm_slot] = lsmid;
-   547			lsmid->slot = lsm_slot++;
-   548			init_debug("%s assigned lsmblob slot %d\n", lsmid->lsm,
-   549				   lsmid->slot);
-   550		}
-   551	
-   552		for (i = 0; i < count; i++) {
-   553			hooks[i].lsmid = lsmid;
-   554			hlist_add_tail_rcu(&hooks[i].list, hooks[i].head);
-   555		}
-   556	
-   557		/*
-   558		 * Don't try to append during early_security_init(), we'll come back
-   559		 * and fix this up afterwards.
-   560		 */
-   561		if (slab_is_available()) {
-   562			if (lsm_append(lsmid->lsm, &lsm_names) < 0)
-   563				panic("%s - Cannot get early memory.\n", __func__);
-   564		}
-   565	}
-   566	
+*fence is valid. Coccicheck reports this because fence is freed.
+But use 'struct dma_fence *' can avoid this wrong report.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+I also grep all code and find it's unusual to use 'typeof' in va_arg, 
+only two files.
+
+grep -R "va_arg("  . | grep 'typeof'
+./drivers/dma-buf/st-dma-fence-unwrap.c:                fences[i] = 
+va_arg(valist, typeof(*fences));
+./drivers/dma-buf/st-dma-fence-unwrap.c: dma_fence_put(va_arg(valist, 
+typeof(*fences)));
+./lib/test_scanf.c:             typeof(*expect) got = *va_arg(ap, 
+typeof(expect));              \
+
+And other files all use declaration name directly.
+So I send this patch makes code clearer and fix the wrong warning by the 
+way.
+
+Thanks,
+Wan Jiabing
+
+>
+> Regards,
+> Christian.
+>
+>>
+>> Fixes: 0c5064fa8d5a ("dma-buf: cleanup dma_fence_unwrap selftest v2")
+>> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+>> ---
+>>   drivers/dma-buf/st-dma-fence-unwrap.c | 4 ++--
+>>   1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/dma-buf/st-dma-fence-unwrap.c 
+>> b/drivers/dma-buf/st-dma-fence-unwrap.c
+>> index 4105d5ea8dde..1137a6d90b32 100644
+>> --- a/drivers/dma-buf/st-dma-fence-unwrap.c
+>> +++ b/drivers/dma-buf/st-dma-fence-unwrap.c
+>> @@ -56,7 +56,7 @@ static struct dma_fence *mock_array(unsigned int 
+>> num_fences, ...)
+>>         va_start(valist, num_fences);
+>>       for (i = 0; i < num_fences; ++i)
+>> -        fences[i] = va_arg(valist, typeof(*fences));
+>> +        fences[i] = va_arg(valist, struct dma_fence *);
+>>       va_end(valist);
+>>         array = dma_fence_array_create(num_fences, fences,
+>> @@ -72,7 +72,7 @@ static struct dma_fence *mock_array(unsigned int 
+>> num_fences, ...)
+>>   error_put:
+>>       va_start(valist, num_fences);
+>>       for (i = 0; i < num_fences; ++i)
+>> -        dma_fence_put(va_arg(valist, typeof(*fences)));
+>> +        dma_fence_put(va_arg(valist, struct dma_fence *));
+>>       va_end(valist);
+>>       return NULL;
+>>   }
+>
+
