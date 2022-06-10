@@ -2,118 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7868C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 20:08:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF1A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 20:08:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349922AbiFJUIG (ORCPT
+        id S1350503AbiFJUId (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 16:08:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34034 "EHLO
+        Fri, 10 Jun 2022 16:08:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347111AbiFJUIE (ORCPT
+        with ESMTP id S1350528AbiFJUIY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 16:08:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 34B8B23D9A5
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 13:08:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654891681;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3IcTkjpi4Nv+Fwx6BAvfcMz5m/PBNRkbkLn3OCjCcMk=;
-        b=XHPk79PYlfpL05rVGE33egknXdVKYfPeVEAbID6TPqUjYE68eJlAnivtso8PTLlLcsWvTC
-        DEL/6YoqhJ/ljyW7TP2Pklcqy4EYt78bVeC23IrrU0H89ZA5G/sHfYjy3cen3URXm8fL4Y
-        lBfPUAR8rv+IUCRYDtGXpDPLL55ukD8=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-166-kXJn24YfMYSDXogb-E7wcw-1; Fri, 10 Jun 2022 16:08:00 -0400
-X-MC-Unique: kXJn24YfMYSDXogb-E7wcw-1
-Received: by mail-ej1-f72.google.com with SMTP id v13-20020a170906b00d00b006f51e289f7cso2366ejy.19
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 13:08:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=3IcTkjpi4Nv+Fwx6BAvfcMz5m/PBNRkbkLn3OCjCcMk=;
-        b=g1IeNHa7uFQ9eZJQtnNfq/vXRR7ApCMLD4J2oF8fgx1lf2l+AOsWT7+iQWvaCRk0Gr
-         UX+JsZfcGnDR0qeflJ27Bt409dUAvWdl+U6v8fhDEMx/16cYiHYol+YvpmKoYIM1nT8x
-         H2MxILKNM1RdJvMM2GqbsyA9J2ZVAPysid9KBjzzx0ggeuv3sF0iHCWgEizmYaHB1jM+
-         5OczIqSFTZSDIJfWq4PYLFOwUrQmEYD4rnizMXp6x6+1UZAniYrzfD59KUoYmbV7CM/b
-         3qgSKLKuZZG9M2YMvcDMOGfU13uVCnP2AwovZ0D4E9flW6alSkAR7dezwnGEVs6UTRM/
-         3nZg==
-X-Gm-Message-State: AOAM533TH+3drM0ClG6qa5CFjqGcdRTmPCIJElJX5/rtYNMW7s4CFpGT
-        H1R9SLfBtHh+LNpZ3bzXnnXkRK0bo9rGqNBVQdUejyvJrPi22BFtYUOKY6OrRaXCQI17OR0WXsZ
-        1DdbB4HJmTNViQGYGzZOyLvaV
-X-Received: by 2002:a17:906:73d2:b0:712:3ca2:c5f with SMTP id n18-20020a17090673d200b007123ca20c5fmr1071613ejl.219.1654891679109;
-        Fri, 10 Jun 2022 13:07:59 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw+MtcZBYvjTM94br3T6XI7hifKNCAFO4aAMaaafT9KyqTuXs4TUOAVmRGdgaeNUemHMsCw/w==
-X-Received: by 2002:a17:906:73d2:b0:712:3ca2:c5f with SMTP id n18-20020a17090673d200b007123ca20c5fmr1071600ejl.219.1654891678887;
-        Fri, 10 Jun 2022 13:07:58 -0700 (PDT)
-Received: from ?IPV6:2001:1c00:2a07:3a01:67e5:daf9:cec0:df6? (2001-1c00-2a07-3a01-67e5-daf9-cec0-0df6.cable.dynamic.v6.ziggo.nl. [2001:1c00:2a07:3a01:67e5:daf9:cec0:df6])
-        by smtp.gmail.com with ESMTPSA id x15-20020aa7d38f000000b0042dd1584e74sm75182edq.90.2022.06.10.13.07.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Jun 2022 13:07:58 -0700 (PDT)
-Message-ID: <5284998a-908b-1f0d-fe08-762880935147@redhat.com>
-Date:   Fri, 10 Jun 2022 22:07:57 +0200
+        Fri, 10 Jun 2022 16:08:24 -0400
+X-Greylist: delayed 93714 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 10 Jun 2022 13:08:22 PDT
+Received: from 7.mo584.mail-out.ovh.net (7.mo584.mail-out.ovh.net [178.33.253.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D8D23D9A2
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 13:08:21 -0700 (PDT)
+Received: from player787.ha.ovh.net (unknown [10.110.115.3])
+        by mo584.mail-out.ovh.net (Postfix) with ESMTP id 6AEBD2398B
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 19:52:51 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player787.ha.ovh.net (Postfix) with ESMTPSA id C17712BA6FB0A;
+        Fri, 10 Jun 2022 19:52:43 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-104R00590c0b8eb-a28d-41b2-a5b9-2a9d9c025f35,
+                    3EA6D779A65D7DCBA15D92F127CD72011C01B2E3) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+Date:   Fri, 10 Jun 2022 21:52:36 +0200
+From:   Stephen Kitt <steve@sk2.org>
+To:     Sam Ravnborg <sam@ravnborg.org>
+Cc:     Sebastian Reichel <sebastian.reichel@collabora.com>,
+        David Airlie <airlied@linux.ie>, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 2/3] drm/panel: panel-dsi-cm: Use backlight helpers
+Message-ID: <20220610215236.0d5d47b7@heffalump.sk2.org>
+In-Reply-To: <YqObYPttYuRDikrO@ravnborg.org>
+References: <20220607182026.1121992-1-steve@sk2.org>
+        <20220607182026.1121992-3-steve@sk2.org>
+        <20220609215236.ojxw6l2vkf652hgu@mercury.elektranox.org>
+        <20220610194720.485cf7be@heffalump.sk2.org>
+        <YqObYPttYuRDikrO@ravnborg.org>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] platform/x86: gigabyte-wmi: add support for B450M DS3H-CF
-Content-Language: en-US
-To:     August Wikerfors <git@augustwikerfors.se>,
-        =?UTF-8?Q?Thomas_Wei=c3=9fschuh?= <thomas@weissschuh.net>,
-        Mark Gross <markgross@kernel.org>
-Cc:     platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220608212028.28307-1-git@augustwikerfors.se>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220608212028.28307-1-git@augustwikerfors.se>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/h3C.i8DgeSuOC0V+IcexQeD";
+ protocol="application/pgp-signature"; micalg=pgp-sha512
+X-Ovh-Tracer-Id: 11606620668290696838
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrudduuddgudegtdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpeffhffvvefukfgjfhfogggtsehgtderreertdejnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeeiheevvdeugeejffefteffvefhieegjeevhfekjeejvdelgfefkeehhfdufffhjeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejkeejrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheekge
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+--Sig_/h3C.i8DgeSuOC0V+IcexQeD
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On 6/8/22 23:20, August Wikerfors wrote:
-> Tested and works on my system.
-> 
-> Signed-off-by: August Wikerfors <git@augustwikerfors.se>
+On Fri, 10 Jun 2022 21:28:32 +0200, Sam Ravnborg <sam@ravnborg.org> wrote:
+> Hi Stephen.
+> On Fri, Jun 10, 2022 at 07:47:20PM +0200, Stephen Kitt wrote:
+> > Hi Sebastian,
+> >=20
+> > On Thu, 9 Jun 2022 23:52:36 +0200, Sebastian Reichel
+> > <sebastian.reichel@collabora.com> wrote: =20
+> > > On Tue, Jun 07, 2022 at 08:20:25PM +0200, Stephen Kitt wrote: =20
+> > > > diff --git a/drivers/gpu/drm/panel/panel-dsi-cm.c
+> > > > b/drivers/gpu/drm/panel/panel-dsi-cm.c index
+> > > > b58cb064975f..aa36dc6cedd3 100644 ---
+> > > > a/drivers/gpu/drm/panel/panel-dsi-cm.c +++
+> > > > b/drivers/gpu/drm/panel/panel-dsi-cm.c @@ -86,16 +86,10 @@ static
+> > > > void dsicm_bl_power(struct panel_drv_data *ddata, bool enable) retu=
+rn;
+> > > > =20
+> > > >  	if (enable) {
+> > > > -		backlight->props.fb_blank =3D FB_BLANK_UNBLANK;
+> > > > -		backlight->props.state =3D ~(BL_CORE_FBBLANK |
+> > > > BL_CORE_SUSPENDED);
+> > > > -		backlight->props.power =3D FB_BLANK_UNBLANK;
+> > > > +		backlight_enable(backlight);
+> > > >  	} else {
+> > > > -		backlight->props.fb_blank =3D FB_BLANK_NORMAL;
+> > > > -		backlight->props.power =3D FB_BLANK_POWERDOWN;
+> > > > -		backlight->props.state |=3D BL_CORE_FBBLANK |
+> > > > BL_CORE_SUSPENDED;
+> > > > +		backlight_disable(backlight);
+> > > >  	}   =20
+> > >=20
+> > > The brackets can be removed now. Otherwise: =20
+> >  =20
+> > >=20
+> > > Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.com> =20
+> >=20
+> > Thanks, I=E2=80=99ll wait a little more to see if there are any other r=
+eviews of
+> > the patches and then push a v2 with that fix. =20
+> It would be very nice if you could kill all uses of FB_BLANK in the
+> drivers/gpu/drm/panel/* drivers, and post them as one series.
+> This is long overdue to introduce the backlight helpers.
+>=20
+> The three you posted is already a nice step forward, and there may be
+> more panel drivers I have missed.
 
-Thank you for your patch, I've applied this patch to my review-hans 
-branch:
-https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git/log/?h=review-hans
+With this series on top of 5.19-rc1, the only remaining .fb_blank reference=
+ is
+in acx565akm_backlight_init() in panel-sony-acx565akm.c; I was planning on
+nuking that along with the other .fb_blank initialisers in a series removing
+.fb_blank entirely from backlight_properties. I=E2=80=99ll add it as a four=
+th patch
+for drm/panel if that makes things easier!
 
-Note it will show up in my review-hans branch once I've pushed my
-local branch there, which might take a while.
-
-Once I've run some tests on this branch the patches there will be
-added to the platform-drivers-x86/for-next branch and eventually
-will be included in the pdx86 pull-request to Linus for the next
-merge-window.
+There will still be references to FB_BLANK constants since they=E2=80=99re =
+used for
+backlight_properties.power values. Would it make sense to rename those?
 
 Regards,
 
-Hans
+Stephen
 
-> ---
->  drivers/platform/x86/gigabyte-wmi.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/platform/x86/gigabyte-wmi.c b/drivers/platform/x86/gigabyte-wmi.c
-> index 1ef606e3ef80..12dbaef518e8 100644
-> --- a/drivers/platform/x86/gigabyte-wmi.c
-> +++ b/drivers/platform/x86/gigabyte-wmi.c
-> @@ -140,6 +140,7 @@ static u8 gigabyte_wmi_detect_sensor_usability(struct wmi_device *wdev)
->  	}}
->  
->  static const struct dmi_system_id gigabyte_wmi_known_working_platforms[] = {
-> +	DMI_EXACT_MATCH_GIGABYTE_BOARD_NAME("B450M DS3H-CF"),
->  	DMI_EXACT_MATCH_GIGABYTE_BOARD_NAME("B450M S2H V2"),
->  	DMI_EXACT_MATCH_GIGABYTE_BOARD_NAME("B550 AORUS ELITE AX V2"),
->  	DMI_EXACT_MATCH_GIGABYTE_BOARD_NAME("B550 AORUS ELITE"),
+--Sig_/h3C.i8DgeSuOC0V+IcexQeD
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEnPVX/hPLkMoq7x0ggNMC9Yhtg5wFAmKjoQQACgkQgNMC9Yht
+g5w1wA/+LN0+/CDVxZV49N+eebrd08Wh2wSZNW/GHE4YOp6TbzDidFX2NCp7PDG3
+huw6ptYSS5zwufLv/oLE4HlshS6+5fVyvZyungOSpwfto4Ay5KR211xsCbxpdFk/
+QDNRR6pn81hWzRxmdLle79HO1oWx1f2k1rVGSIYwt5LyxImdn3qS3CmNxYTR8ful
+H8Yu2CJ+udrhSxflQW74mpYzVTs7elnXL5MIhJ9noG1QJ9Ymn2fFth33sHNd6sWV
+S/SR0K1UUobBXVP37CyjldxTdxGYiu50kKrdiBEecp9RmE9fM3Gayzqep62mtBX4
+0SZncfWuiR5rB/+nvXgpvrjl+4Acas1lgfr+YwyXGnXNINUWcQBhZBPXx45dcFPP
+dosuSR+mkegJTcWjJgDarBAHNuYZfQ+3q0IB+M33D+oAkcgFhDZrgKJSK7peVi8n
+3i32dooNuMa6ljSStEkVW1N6ixNI2uhBcUydD3aB4SiDDGgfc5C1wTMTaVEFbkqT
+CUOZ1uTauftmBUyVIOEQ8Zij0p9+6AznP1kXfAA/qRm+xg1NDdkBo0198ToPnCDz
+Y5ykpmQ8wdj9IH/xlAwXNEdX1NtyuLPbx/GnpLx7m5g6m+f77DueJcXQhzz4WMDd
+Cy9/Jm5zVEw49ziokdLjhgYGx+qnQLm2hx+F/fzZAjF8fLDtzKg=
+=qbaU
+-----END PGP SIGNATURE-----
+
+--Sig_/h3C.i8DgeSuOC0V+IcexQeD--
