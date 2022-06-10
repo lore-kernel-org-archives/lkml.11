@@ -2,141 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D62CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 07:27:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF8E1C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 07:28:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346759AbiFJH1t (ORCPT
+        id S1346838AbiFJH2r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 03:27:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59652 "EHLO
+        Fri, 10 Jun 2022 03:28:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343879AbiFJH1q (ORCPT
+        with ESMTP id S1346863AbiFJH21 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 03:27:46 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D01C5766E;
-        Fri, 10 Jun 2022 00:27:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=H0Po1e85toAXw3RbuejcHeMli/OCRToQR1vDolHiUUU=; b=rx0Zw5yu5PhdYdeuwAbaJfgswf
-        tPS/HuOnRprB6tVdAKCZlnv8lAxe10w7a8wsYkCaPSwJwNoQ+XQDHIXYz6/f7vpbf+YqOxdzmQmva
-        f91uWsQpJWTIlwP3zmz0kkAWH9pZnKcDAyKv45sjjmepDFUUVpvVZesCONMTg+RQVLmAyqVkbf9I4
-        nxMbpa/DWNFebz5u/sM5zjEdC4WdyU2isa5dNlDh78sOAyqwSgvQ2TZ8Bpf9vo5Ad+0/1XGvkIbVR
-        JN+HhO8r6b2S+x1oEd5wSyOfJtPeypbRo1jdfmSKlUmU0ULO1MUhWTWKQi4njI/gMNuKxNIMEsguQ
-        9PjnC1eA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:32812)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nzZ2z-0007Dy-Ap; Fri, 10 Jun 2022 08:27:09 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nzZ2l-0003Ut-L7; Fri, 10 Jun 2022 08:26:55 +0100
-Date:   Fri, 10 Jun 2022 08:26:55 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Ong Boon Leong <boon.leong.ong@intel.com>
-Cc:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Emilio Riva <emilio.riva@ericsson.com>
-Subject: Re: [PATCH net-next v2 3/6] net: pcs: xpcs: add CL37 1000BASE-X AN
- support
-Message-ID: <YqLyP6ezO3C9Fe4t@shell.armlinux.org.uk>
-References: <20220610032941.113690-1-boon.leong.ong@intel.com>
- <20220610032941.113690-4-boon.leong.ong@intel.com>
+        Fri, 10 Jun 2022 03:28:27 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F0D133E3B
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 00:28:26 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LKCH800nnzDqlB;
+        Fri, 10 Jun 2022 15:28:03 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 10 Jun 2022 15:28:24 +0800
+Subject: Re: [v3 PATCH 3/7] mm: khugepaged: remove the redundant anon vma
+ check
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     Yang Shi <shy828301@gmail.com>
+CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        <vbabka@suse.cz>, <kirill.shutemov@linux.intel.com>,
+        <willy@infradead.org>, <akpm@linux-foundation.org>
+References: <20220606214414.736109-1-shy828301@gmail.com>
+ <20220606214414.736109-4-shy828301@gmail.com>
+ <3f485480-9474-4401-bc4f-fb66aac1e591@huawei.com>
+Message-ID: <519ec924-483c-aec0-cb84-b33b25ce92b4@huawei.com>
+Date:   Fri, 10 Jun 2022 15:28:23 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220610032941.113690-4-boon.leong.ong@intel.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+In-Reply-To: <3f485480-9474-4401-bc4f-fb66aac1e591@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 11:29:38AM +0800, Ong Boon Leong wrote:
-> +static int xpcs_get_state_c37_1000basex(struct dw_xpcs *xpcs,
-> +					struct phylink_link_state *state)
-> +{
-> +	int lpa, adv;
-> +	int ret;
-> +
-> +	if (state->an_enabled) {
-> +		/* Reset link state */
-> +		state->link = false;
-> +
-> +		lpa = xpcs_read(xpcs, MDIO_MMD_VEND2, MII_LPA);
-> +		if (lpa < 0 || lpa & LPA_RFAULT)
-> +			return lpa;
-> +
-> +		adv = xpcs_read(xpcs, MDIO_MMD_VEND2, MII_ADVERTISE);
-> +		if (adv < 0)
-> +			return adv;
-> +
-> +		if (lpa & ADVERTISE_1000XFULL &&
-> +		    adv & ADVERTISE_1000XFULL) {
-> +			state->link = true;
-> +			state->speed = SPEED_1000;
-> +			state->duplex = DUPLEX_FULL;
-> +		}
+On 2022/6/10 15:23, Miaohe Lin wrote:
+> On 2022/6/7 5:44, Yang Shi wrote:
+>> The hugepage_vma_check() already checked it, so remove the redundant
+>> check.
+>>
+>> Signed-off-by: Yang Shi <shy828301@gmail.com>
+>> ---
+>>  mm/khugepaged.c | 3 ---
+>>  1 file changed, 3 deletions(-)
+>>
+>> diff --git a/mm/khugepaged.c b/mm/khugepaged.c
+>> index d0f8020164fc..7a5d1c1a1833 100644
+>> --- a/mm/khugepaged.c
+>> +++ b/mm/khugepaged.c
+>> @@ -966,9 +966,6 @@ static int hugepage_vma_revalidate(struct mm_struct *mm, unsigned long address,
+>>  		return SCAN_ADDRESS_RANGE;
+>>  	if (!hugepage_vma_check(vma, vma->vm_flags))
+>>  		return SCAN_VMA_CHECK;
+>> -	/* Anon VMA expected */
+>> -	if (!vma->anon_vma || !vma_is_anonymous(vma))
+>> -		return SCAN_VMA_CHECK;
+> 
+> Is it possible that hugepage_vma_check returns true due to the shmem check, or file thp check since
+> we dropped mmap_lock ? So anon vma is explicitly checked again here?
 
-phylink_mii_c22_pcs_decode_state() is your friend here, will implement
-this correctly, and will set lp_advertising correctly as well.
+I just see your discussion with similar problem. Sorry for make noise.
 
-> +
-> +		/* Clear CL37 AN complete status */
-> +		ret = xpcs_write(xpcs, MDIO_MMD_VEND2, DW_VR_MII_AN_INTR_STS, 0);
-> +		if (ret < 0)
-> +			return ret;
+> 
+> Thanks!
+> 
+>>  	return 0;
+>>  }
+>>  
+>>
+> 
 
-Why do you need to clear the interrupt status here? This function will
-be called from a work queue sometime later after an interrupt has fired.
-It will also be called at random times when userspace enquires what the
-link parameters are, so clearing the interrupt here can result in lost
-link changes.
-
-> +static void xpcs_link_up_1000basex(struct dw_xpcs *xpcs, int speed,
-> +				   int duplex)
-> +{
-> +	int val, ret;
-> +
-> +	switch (speed) {
-> +	case SPEED_1000:
-> +		val = BMCR_SPEED1000;
-> +		break;
-> +	case SPEED_100:
-> +	case SPEED_10:
-> +	default:
-> +		pr_err("%s: speed = %d\n", __func__, speed);
-> +		return;
-> +	}
-> +
-> +	if (duplex == DUPLEX_FULL)
-> +		val |= BMCR_FULLDPLX;
-> +	else
-> +		pr_err("%s: half duplex not supported\n", __func__);
-> +
-> +	ret = xpcs_write(xpcs, MDIO_MMD_VEND2, MDIO_CTRL1, val);
-> +	if (ret)
-> +		pr_err("%s: xpcs_write returned %pe\n", __func__, ERR_PTR(ret));
-
-Does this need to be done even when AN is enabled?
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
