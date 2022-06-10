@@ -2,138 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6029CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 13:48:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF716C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 13:49:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238432AbiFJNsk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 09:48:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52702 "EHLO
+        id S233977AbiFJNso (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 10 Jun 2022 09:48:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232901AbiFJNsW (ORCPT
+        with ESMTP id S239067AbiFJNsk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 09:48:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0F3522B35;
-        Fri, 10 Jun 2022 06:48:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 582E3B83500;
-        Fri, 10 Jun 2022 13:48:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5F34C34114;
-        Fri, 10 Jun 2022 13:48:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654868895;
-        bh=T+pPDaDcvZBdzFlfEgDE/742pWO4FIoVsNv9CScJ/4w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SANMuVrPIf1A4ysoL3oDttK/kvQYqkGdgddwxMRf4rzO3lJXrSHANVgrcLg3RfAnP
-         znsT8L7iR7heDAfk1cl/HdupPnK1FGfRmpcZtw4ZFhnSDFh3z6W+p2EZyxaOfE8lb1
-         vrKs51/mWKp4SeuBjgSH8iToYiqM7xr4ai5Jz5ZJzHvmasxJZiP/KIo7vThuOvWb9t
-         MJnX7DDIz7WxqWFnROwR4qKMYA2RAq4eqbQw/9zN2amRRW8/OMt0Tm3D5wciZ1Nh3A
-         ATB8715JCHdYX9FjACZEew86eYDC1Bu7EOxddiVkHykIxaOiKdFOmFM09rn7SFRq1D
-         ISvCHTEFFtkAA==
-Date:   Fri, 10 Jun 2022 19:18:10 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Michael Nazzareno Trimarchi <michael@amarulasolutions.com>
-Cc:     Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        linux-kernel@vger.kernel.org,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>, dmaengine@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [RESEND PATCH v2] dmaengine: mxs: fix driver registering
-Message-ID: <YqNLmixdb3fv7Cgs@matsya>
-References: <20220607095829.1035903-1-dario.binacchi@amarulasolutions.com>
- <YqGJnORzbp2xiEU3@matsya>
- <CAOf5uwkxit8kAAmwWGgTqR57m_SRmAxere10rCucOuBHU5+8fw@mail.gmail.com>
- <YqGODNACHfKKHBOf@matsya>
- <CAOf5uw=8j1F3tLE9fLAjFGhVt4WXsU7GJdCkEhPtAAxvzM2fyg@mail.gmail.com>
+        Fri, 10 Jun 2022 09:48:40 -0400
+Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24B223B281
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 06:48:38 -0700 (PDT)
+Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-313a8a8b95aso38857967b3.5
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 06:48:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=XwTm2wEFcPzM9otUDKYTRibEvpUn3l/6ZogWvW+AFbY=;
+        b=a/DDq8tlGMDbAGV3qmEghrGw7Mwhg03Veu8NFNqQmFEYEUL5YRpnwK7cElEpAZzH4t
+         9qsaaQiABUQ/vYBmhMhYC8knQ6rUxptG3/U/PQkPyfgaA/A7JwOHUR2mj5Dh3uuurfYv
+         ThOn8VCUVub2hmJCg/iyCmF9AuUHkVVz+whrv4BcBZw0rrJlvOi1PSTmaV1bs+HifLlC
+         OWPjiiH/6O1+5wlbDJnNqgfbahu4iR/BbsS87bIth7QCDQt7DJ8fW6QDG25b6yymHzfV
+         5i0hbi+TaygGshkTFQE8alT+OE3n0HAU+lJOvDaaYXW+XtkhL+SheBQMGSroNz1GMApj
+         NHFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=XwTm2wEFcPzM9otUDKYTRibEvpUn3l/6ZogWvW+AFbY=;
+        b=AVjFFqhSlVTAzu083fUe2GRnWCAtdxFu2R7TLR6tNxLQOAimbiVnZ6vPUQkrgFSiEZ
+         CZ4zi+bDC7FpVnMycJlrS+C/csGlyNBeburMAjSh+t379UQkTztJq/b2rV8AAzqlBlCe
+         I6aUadJ0RvFXfK0woM1UDDNTalWqLNDiaG26wxp9My+VIexjXA6HnPYsTpZ2z9WEARaM
+         eJXxBwZrzmbF2njDaPxr35fdyxyvfGPKVKGm4QrznYUobhQTyn9IAUVY1q0AQj7PlQQ2
+         r1AqRwJfgG1DEBfBdJwGjphGFavVuHIhKK4Oz/EnZNt4xxDGg5gps/gV5raONNh+hNVl
+         m+2g==
+X-Gm-Message-State: AOAM531j+CqZQMJDTqS3do/c6HAH6q7fMWBgBTWZojl/Ki6UNwi9aW7y
+        gXErYUTW1iqTPZ7Tc+3xOHXcrAEVpUfOG3ELStYbAg==
+X-Google-Smtp-Source: ABdhPJwfNs16uySnE70fDRtkWMXwYd1E0PUX0Uc2tr4CEOsmC9YIf2x1vFsCOcvzh1S5ZzMwVcLoE5j+UGeMOMRXp44=
+X-Received: by 2002:a81:fe0b:0:b0:30c:7e9c:701 with SMTP id
+ j11-20020a81fe0b000000b0030c7e9c0701mr47839419ywn.118.1654868917363; Fri, 10
+ Jun 2022 06:48:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOf5uw=8j1F3tLE9fLAjFGhVt4WXsU7GJdCkEhPtAAxvzM2fyg@mail.gmail.com>
+References: <20220607120530.2447112-1-tarumizu.kohei@fujitsu.com>
+In-Reply-To: <20220607120530.2447112-1-tarumizu.kohei@fujitsu.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 10 Jun 2022 15:48:25 +0200
+Message-ID: <CACRpkdbPLFOoPdX4L6ABV8GKpC8cQGP3s2aN2AvRHEK49U9VMg@mail.gmail.com>
+Subject: Re: [PATCH v5 0/6] Add hardware prefetch control driver for A64FX and x86
+To:     Kohei Tarumizu <tarumizu.kohei@fujitsu.com>,
+        Mel Gorman <mgorman@suse.de>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     catalin.marinas@arm.com, will@kernel.org, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com, rafael@kernel.org, lenb@kernel.org,
+        gregkh@linuxfoundation.org, eugenis@google.com,
+        tony.luck@intel.com, pcc@google.com, peterz@infradead.org,
+        marcos@orca.pet, marcan@marcan.st, nicolas.ferre@microchip.com,
+        conor.dooley@microchip.com, arnd@arndb.de, ast@kernel.org,
+        peter.chen@kernel.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-acpi@vger.kernel.org,
+        Paolo Valente <paolo.valente@unimore.it>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09-06-22, 08:18, Michael Nazzareno Trimarchi wrote:
-> Hi Vinod
-> 
-> On Thu, Jun 9, 2022 at 8:07 AM Vinod Koul <vkoul@kernel.org> wrote:
-> >
-> > On 09-06-22, 08:01, Michael Nazzareno Trimarchi wrote:
-> > > Hi
-> > >
-> > > On Thu, Jun 9, 2022 at 7:48 AM Vinod Koul <vkoul@kernel.org> wrote:
-> > > >
-> > > > On 07-06-22, 11:58, Dario Binacchi wrote:
-> > > > > Driver registration fails on SOC imx8mn as its supplier, the clock
-> > > > > control module, is not ready. Since platform_driver_probe(), as
-> > > > > reported by its description, is incompatible with deferred probing,
-> > > > > we have to use platform_driver_register().
-> > > > >
-> > > > > Fixes: a580b8c5429a ("dmaengine: mxs-dma: add dma support for i.MX23/28")
-> > > > > Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
-> > > > > Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
-> > > > > Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-> > > > > Cc: stable@vger.kernel.org
-> > > > >
-> > > > > ---
-> > > > >
-> > > > > Changes in v2:
-> > > > > - Add the tag "Cc: stable@vger.kernel.org" in the sign-off area.
-> > > > >
-> > > > >  drivers/dma/mxs-dma.c | 11 ++++-------
-> > > > >  1 file changed, 4 insertions(+), 7 deletions(-)
-> > > > >
-> > > > > diff --git a/drivers/dma/mxs-dma.c b/drivers/dma/mxs-dma.c
-> > > > > index 994fc4d2aca4..b8a3e692330d 100644
-> > > > > --- a/drivers/dma/mxs-dma.c
-> > > > > +++ b/drivers/dma/mxs-dma.c
-> > > > > @@ -670,7 +670,7 @@ static enum dma_status mxs_dma_tx_status(struct dma_chan *chan,
-> > > > >       return mxs_chan->status;
-> > > > >  }
-> > > > >
-> > > > > -static int __init mxs_dma_init(struct mxs_dma_engine *mxs_dma)
-> > > > > +static int mxs_dma_init(struct mxs_dma_engine *mxs_dma)
-> > > >
-> > > > why drop __init for these...?
-> > > >
-> > >
-> > > I think that you refer to the fact that it can not be compiled as a
-> > > module, am I right?
-> >
-> > It is still declared as a module_platform_driver... From changelog I can
-> > understand that you are changing init level from subsys to module (in
-> > fact clocks should be moved up as arch level and dmaengine users as
-> > module) ...
-> 
-> The way the driver was using to register was:
-> platform_driver_probe(&driver, driver_probe);
-> 
-> The function try to register the driver, one time and if the
-> dependences is not satisfied,
-> then there will not a next try, so the driver initialized that way can
-> not depends to anything
-> apart himself, or all the dependencies should be ready at the time the
-> driver_probe is called
+On Tue, Jun 7, 2022 at 2:07 PM Kohei Tarumizu
+<tarumizu.kohei@fujitsu.com> wrote:
 
-There are two ways to solve this, you lowered the init level of this
-driver but your consumers are going to have same issue...
+> This patch series add sysfs interface to control CPU's hardware
+> prefetch behavior for performance tuning from userspace for the
+> processor A64FX and x86 (on supported CPU).
 
-> 
-> >
-> > But why remove __init declaration from these? Whatever purpose that may
-> > solve needs to be documented in changelog and perhaps a different patch
-> >
-> 
-> I was thinking that driver can be compiled as module as other driver
-> but is bool and not tristate
+OK
 
-Ok, but why drop __init()
+> A64FX and some Intel processors have implementation-dependent register
+> for controlling CPU's hardware prefetch behavior. A64FX has
+> IMP_PF_STREAM_DETECT_CTRL_EL0[1], and Intel processors have MSR 0x1a4
+> (MSR_MISC_FEATURE_CONTROL)[2].
 
--- 
-~Vinod
+Hardware prefetch (I guess of memory contents) is a memory hierarchy featur=
+e.
+
+Linux has a memory hierarchy manager, conveniently named "mm",
+developed by some of the smartest people I know. The main problem
+addressed by that is paging, but prefetching into the CPU from the
+next lowest level in the memory hierarchy is just another memory
+hierarchy hardware feature, such as hard disks, primary RAM etc.
+
+> These registers cannot be accessed from userspace.
+
+Good. The kernel managed hardware. If the memory hierarchy people have
+userspace now doing stuff behind their back, through some special
+interface, that makes their world more complicated.
+
+This looks like it needs information from the generic memory manager,
+from the scheduler, and possibly all the way down from the block
+layer to do the right thing, so it has no business in userspace.
+Have you seen mm/damon for example? Access to statistics for
+memory access patterns seems really useful for tuning the behaviour
+of this hardware. Just my =E2=82=AC0.01.
+
+If it does interact with userspace I suppose it should be using control
+groups, like everything else of this type, see e.g. mm/memcontrol.c,
+not custom sysfs files.
+
+Just an example from one of the patches:
+
++                       - "* Adjacent Cache Line Prefetcher Disable (R/W)"
++                           corresponds to the
+"adjacent_cache_line_prefetcher_enable"
+
+I might only be on "a little knowledge is dangerous" on the memory
+manager topics, but I know for sure that they at times adjust the members
+of structs to fit nicely on cache lines. And now this? It looks really usef=
+ul
+for kernel machinery that know very well what needs to go into the cache
+line next and when.
+
+Talk to the people on linux-mm and memory maintainer Andrew Morton on
+how to do this right, it's a really interesting feature! Also given
+that people say
+that the memory hierarchy is an important part in the performance of the Ap=
+ple
+M1 (M2) silicon, I expect that machine to have this too?
+
+Yours,
+Linus Walleij
