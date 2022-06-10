@@ -2,39 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95E5AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 07:21:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD2E6C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 07:22:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346648AbiFJHVz (ORCPT
+        id S1346665AbiFJHWB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 03:21:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34262 "EHLO
+        Fri, 10 Jun 2022 03:22:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244596AbiFJHVn (ORCPT
+        with ESMTP id S1343616AbiFJHVn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 10 Jun 2022 03:21:43 -0400
 Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D486638AC8F
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EC66038C083
         for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 00:21:35 -0700 (PDT)
 Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id 63080BD2;
-        Fri, 10 Jun 2022 10:22:24 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 63080BD2
+        by mail.baikalelectronics.com (Postfix) with ESMTP id 819DDBD1;
+        Fri, 10 Jun 2022 10:22:23 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 819DDBD1
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baikalelectronics.ru; s=mail; t=1654845744;
-        bh=3UfPEG9NoKRc1ViJ6X0Y9kRe75ENoa5FpKOJZHHMvCA=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=avykppIBpoyrI2q5eEojPnj5AcXNHhy0xGSKlVn3x467yB9UU2sB55Ew7ADyBdUP5
-         OcNEGklL/IZTcEzFeFwR/TFkkxEU3SY7lm5GMi0PYy/4fcOTOOhE7NIUHWSSWCE7mq
-         wMOlLKlT9C5UQgHMN85vjegOvQHFAWeelS+YhZoI=
+        bh=z8mq2UkwmLMqL0DG3q1BtK9e5Sy5l+mkuuDHM21YBtE=;
+        h=From:To:CC:Subject:Date:From;
+        b=m6eCIpghqmDeRukr/Br6GjfyvzRYxOnOv8AGjsR3DwyzaNp6wykxtCSgkvoN3pptk
+         2kSPJi481Cto5P5X6ZeoVgW7cYWD4XT8ebTade/DDUoBdkGtgvg+dM1Ow4mexRsJ0V
+         7KJ7AoyzVf604/r+gBjvGolMuU3S1C3J9whpcUTI=
 Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
  Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 10 Jun 2022 10:21:31 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Stephen Boyd <sboyd@kernel.org>,
         Philipp Zabel <p.zabel@pengutronix.de>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Mark Brown <broonie@kernel.org>,
-        Dmitry Osipenko <digetx@gmail.com>
+        Michael Turquette <mturquette@baylibre.com>
 CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Serge Semin <fancer.lancer@gmail.com>,
         Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
@@ -42,11 +40,9 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         <linux-clk@vger.kernel.org>, <linux-mips@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH v4 1/8] reset: Fix devm bulk optional exclusive control getter
-Date:   Fri, 10 Jun 2022 10:21:17 +0300
-Message-ID: <20220610072124.8714-2-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220610072124.8714-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220610072124.8714-1-Sergey.Semin@baikalelectronics.ru>
+Subject: [PATCH v4 0/8] clk/resets: baikal-t1: Add DDR/PCIe resets and xGMAC/SATA fixes
+Date:   Fri, 10 Jun 2022 10:21:16 +0300
+Message-ID: <20220610072124.8714-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -55,42 +51,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Most likely due to copy-paste mistake the device managed version of the
-denoted reset control getter has been implemented with invalid semantic,
-which can be immediately spotted by having "WARN_ON(shared && acquired)"
-warning in the system log as soon as the method is called. Anyway let's
-fix it by altering the boolean arguments passed to the
-__devm_reset_control_bulk_get() method from
-- shared = true, optional = false, acquired = true
-to
-+ shared = false, optional = true, acquired = true
-That's what they were supposed to be in the first place (see the non-devm
-version of the same method: reset_control_bulk_get_optional_exclusive()).
+Short summary regarding this patchset. The series starts from fixing a
+wrong semantic of the device managed optional exclusive bulk reset control
+getter. Then we suggest a fix of the clocks glitching cause by the Renesas
+5P49V6901 chip in some circumstances. Afterwards a few more modifications
+are introduced to finally finish the Baikal-T1 CCU unit support up and
+prepare the code before adding the Baikal-T1 PCIe/xGMAC support. First of
+all it turned out I specified wrong DW xGMAC PTP reference clock divider
+in my initial patches. It must be 8, not 10. Secondly I was wrong to add a
+joint xGMAC Ref and PTP clock instead of having them separately defined.
+The SoC manual describes these clocks as separate fixed clock wrappers.
+Finally in order to close the SoC clock/reset support up we need to add
+the DDR and PCIe interfaces reset controls support. It's done in two
+steps. First I've moved the reset-controls-related code into a dedicated
+module. Then the DDR/PCIe reset-control functionality is added. As the
+series finalization we've decided to convert the Baikal-T1 clock/reset
+source drivers to mainly being the platform device driver and
+pre-initialize the basic clocks only at the early kernel boot stages.
 
-Fixes: 48d71395896d ("reset: Add reset_control_bulk API")
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Link: https://lore.kernel.org/linux-pci/20220324010905.15589-1-Sergey.Semin@baikalelectronics.ru/
+Changelog v2:
+- Resubmit the series with adding @Philipp to the list of the recipients.
 
----
+Link: https://lore.kernel.org/linux-pci/20220330144320.27039-1-Sergey.Semin@baikalelectronics.ru/
+Changelog v3:
+- No comments. Just resend the series.
+- Rebased from v5.17 onto v5.18-rc3.
 
+Link: https://lore.kernel.org/linux-clk/20220503205722.24755-1-Sergey.Semin@baikalelectronics.ru/
 Changelog v4:
-- This is a new patch added on v4 lap of the series.
----
- include/linux/reset.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+- Completely split the CCU Dividers and Resets functionality up. (@Stephen)
+- Add a new fixes patch: "clk: baikal-t1: Actually enable SATA internal
+  ref clock".
+- Add a new fixes patch: "reset: Fix devm bulk optional exclusive control
+  getter".
+- Add a new fixes patch: "clk: vc5: Fix 5P49V6901 outputs disabling when
+  enabling FOD".
+- Add a new feagure patch: "clk: baikal-t1: Convert to platform device
+  driver".
+- Change the internal clock ID to the XGMAC-referred name.
+- Rebase onto the kernel v5.18.
 
-diff --git a/include/linux/reset.h b/include/linux/reset.h
-index 8a21b5756c3e..514ddf003efc 100644
---- a/include/linux/reset.h
-+++ b/include/linux/reset.h
-@@ -731,7 +731,7 @@ static inline int __must_check
- devm_reset_control_bulk_get_optional_exclusive(struct device *dev, int num_rstcs,
- 					       struct reset_control_bulk_data *rstcs)
- {
--	return __devm_reset_control_bulk_get(dev, num_rstcs, rstcs, true, false, true);
-+	return __devm_reset_control_bulk_get(dev, num_rstcs, rstcs, false, true, true);
- }
- 
- /**
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc: Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>
+Cc: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc: linux-clk@vger.kernel.org
+Cc: linux-mips@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+
+Serge Semin (8):
+  reset: Fix devm bulk optional exclusive control getter
+  clk: vc5: Fix 5P49V6901 outputs disabling when enabling FOD
+  clk: baikal-t1: Fix invalid xGMAC PTP clock divider
+  clk: baikal-t1: Add shared xGMAC ref/ptp clocks internal parent
+  clk: baikal-t1: Add SATA internal ref clock buffer
+  clk: baikal-t1: Move reset-controls code into a dedicated module
+  clk: baikal-t1: Add DDR/PCIe directly controlled resets support
+  clk: baikal-t1: Convert to platform device driver
+
+ drivers/clk/baikal-t1/Kconfig       |  12 +-
+ drivers/clk/baikal-t1/Makefile      |   1 +
+ drivers/clk/baikal-t1/ccu-div.c     |  84 +++++++--
+ drivers/clk/baikal-t1/ccu-div.h     |  17 +-
+ drivers/clk/baikal-t1/ccu-pll.h     |   8 +
+ drivers/clk/baikal-t1/ccu-rst.c     |  99 ++++++++++
+ drivers/clk/baikal-t1/ccu-rst.h     |  79 ++++++++
+ drivers/clk/baikal-t1/clk-ccu-div.c | 272 +++++++++++++++++-----------
+ drivers/clk/baikal-t1/clk-ccu-pll.c | 128 ++++++++++---
+ drivers/clk/baikal-t1/clk-ccu-rst.c | 257 ++++++++++++++++++++++++++
+ drivers/clk/clk-versaclock5.c       |   2 +-
+ include/dt-bindings/reset/bt1-ccu.h |   9 +
+ include/linux/reset.h               |   2 +-
+ 13 files changed, 814 insertions(+), 156 deletions(-)
+ create mode 100644 drivers/clk/baikal-t1/ccu-rst.c
+ create mode 100644 drivers/clk/baikal-t1/ccu-rst.h
+ create mode 100644 drivers/clk/baikal-t1/clk-ccu-rst.c
+
 -- 
 2.35.1
 
