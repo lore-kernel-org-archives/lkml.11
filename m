@@ -2,132 +2,293 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A709DC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 09:59:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8825C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 10:02:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348098AbiFJJ75 (ORCPT
+        id S1348192AbiFJKCM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 05:59:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43004 "EHLO
+        Fri, 10 Jun 2022 06:02:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347512AbiFJJ7w (ORCPT
+        with ESMTP id S1347270AbiFJKCI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 05:59:52 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CE25B0417
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 02:59:51 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id g25so5984944ejh.9
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 02:59:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=gDHlNqBe4kROE4J7/F3QmWesLzxh4ZBvnILe171UGCs=;
-        b=oDUOaXR7FzLMWZm3OxcWJ7MJl+lrNYx7qQfEIjW1VPEtcXwKo22y8LG3qxZERYh5D2
-         1/6bktCkaRTFXhZRPn+Tr2xjLHk2tsGAHz227PSTLTEStq6e1c1EnxqsgfASf8KpXtOL
-         ytT4IB96hjk9kQwUL0DYslPXSmrvavbvoAF1Aasp8dsm4RIq3Ofqr0TaG8jKkL6LZoVh
-         HlxckmQQNlM1L/ErpqkpH83MwvKjpne9sdZWGkBHCzSl4/7ohRIBcMy9tzktRd7LIJSw
-         2JXTjIkbSQqyAI9pB5aFcmeh+Wg5uXoi0GnkvRpd5dxQhHR8MuDnOSDfcYiOPFCbQNqo
-         4jYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=gDHlNqBe4kROE4J7/F3QmWesLzxh4ZBvnILe171UGCs=;
-        b=diGV6I2kmt/PHeo50XWzol7KukuQM6tXXGVGXO/dlMaeG6lpEMDjZEbro2A0BMuL3V
-         JJKHvglu0LY1uRZaLBYHWEQHcUatR1ODbh8ibSyX3dfBhe7nXjVytIh2hTfzsgRPPMjA
-         MjW0wplAb8FlQyucxuj+3r2VKG27ScSujes7KfQotm002dLy5FGIsBWksZZASSJ7xRF7
-         4zeWhDHD9rBzFK+FXv+Og1JldCfISIwEgiwfRJkrinGL4bVKlbdiAkRoitKAgWhRw5GV
-         x8mkGMXDHtgWiwjQX+znO/jOvpTs/BMPBNVMhCVbmjjV1ZvL+5Pmebr/RCdQDIb/EMzq
-         s5bA==
-X-Gm-Message-State: AOAM5311H6QVMjT95v0R8t7BTCVJf4vRTrFMLHuZjpIdRhqLZ3lJOwgY
-        OVRDZRpO1iXi1cPko/Jt2GW+Ow==
-X-Google-Smtp-Source: ABdhPJwhGh4TDi4lutZR0Redc77UMHZsElUmLjFEgzgCSTtr0oq2PlTyBwfzFCkOUwxt2ruFoM26kA==
-X-Received: by 2002:a17:906:3087:b0:6f4:2901:608a with SMTP id 7-20020a170906308700b006f42901608amr40752732ejv.646.1654855189985;
-        Fri, 10 Jun 2022 02:59:49 -0700 (PDT)
-Received: from [192.168.0.201] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id en22-20020a056402529600b0043120d5f3dcsm11051751edb.14.2022.06.10.02.59.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Jun 2022 02:59:49 -0700 (PDT)
-Message-ID: <2f386fc3-d496-62e3-20b0-ac962169e7a1@linaro.org>
-Date:   Fri, 10 Jun 2022 11:59:47 +0200
+        Fri, 10 Jun 2022 06:02:08 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE425B36E6;
+        Fri, 10 Jun 2022 03:01:57 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 7D14C6601737;
+        Fri, 10 Jun 2022 11:01:54 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1654855315;
+        bh=ZXnRPfOHyh8XNB3jxvw2h0Jk8FXI9GIuiWMT3+NbAiE=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=LMKBoNBiQXBvYHcNZhRO6scOy0NBtE3k1c0bthm90hSjKTcqw3h13FefFkqr3Lqaz
+         lPQoO8jYc51TAleC9oTQD8iMuZftsGMACbdmedMH/AqpBp909a7GKYsYMsgzsK8zfA
+         QPyOUQHxBK+lQYjxMCmNiaVWBhR4K+6abJJKEx17lthCdmsNz53hOWmAC9zt3VDQ8Q
+         jTa32xG2fOm1bCk7Pg14OMmOtg+rkgmadJWS95InqepagMQvs1s0fo0Mu3Z3LCtPlZ
+         L06xRQ8/7PJS5GF7Uf9VatEugkjTkFUHbr93I7v7z/KLObaWBADDvxBYdtrhdB+WPT
+         J4GEsxc1m+3UA==
+Message-ID: <295c06c1-2cc9-d8f4-2516-b23a99e2542c@collabora.com>
+Date:   Fri, 10 Jun 2022 12:01:51 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 18/20] arm64: dts: nuvoton: Add initial NPCM8XX device
- tree
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v7 5/8] ASoC: mediatek: mt8186: add machine driver with
+ mt6366, da7219 and max98357
 Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Tomer Maimon <tmaimon77@gmail.com>
-Cc:     Avi Fishman <avifishman70@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Robert Hancock <robert.hancock@calian.com>,
-        =?UTF-8?Q?Jonathan_Neusch=c3=a4fer?= <j.neuschaefer@gmx.net>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-References: <20220608095623.22327-1-tmaimon77@gmail.com>
- <20220608095623.22327-19-tmaimon77@gmail.com>
- <24ad8ba0-4244-1159-328d-12d0e67951e1@linaro.org>
- <CAP6Zq1iXaN8D-g2O=cD-XERGj3BROQO=NJ66mquVsOw8nSM=0A@mail.gmail.com>
- <CAMuHMdU53RWvKXd0cPcPA8SiMA820stcpK4_UsTDGDAfByhcYg@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CAMuHMdU53RWvKXd0cPcPA8SiMA820stcpK4_UsTDGDAfByhcYg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Jiaxin Yu <jiaxin.yu@mediatek.com>, broonie@kernel.org,
+        robh+dt@kernel.org
+Cc:     aaronyu@google.com, matthias.bgg@gmail.com, trevor.wu@mediatek.com,
+        tzungbi@google.com, julianbraha@gmail.com,
+        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220610082724.29256-1-jiaxin.yu@mediatek.com>
+ <20220610082724.29256-6-jiaxin.yu@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220610082724.29256-6-jiaxin.yu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/06/2022 09:57, Geert Uytterhoeven wrote:
->>  "+             cpu0: cpu@0 {
->>  +                     device_type = "cpu";
->>  +                     compatible = "arm,cortex-a35";
->>  +                     clocks = <&clk NPCM8XX_CLK_CPU>;
->>  +                     reg = <0x0 0x0>;
->> Why do you have two address cells? A bit more complicated and not
->> necessary, I think."
->> the arm,cortex-a35 is 64 Bit this is why we use  #address-cells = <2>;
->> and therefore reg = <0x0 0x0>;
+Il 10/06/22 10:27, Jiaxin Yu ha scritto:
+> Add support for mt8186 board with mt6366, da7219 and max98357.
 > 
-> These addresses are not addresses on the main memory bus (which
-> is indeed 64-bit), but on the logical CPU bus.
-> Now, Documentation/devicetree/bindings/arm/cpus.yaml says you can
-> have #address-cells = <2> if you have non-zero MPIDR_EL1 high bits.
+> Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
+> ---
+>   sound/soc/mediatek/Kconfig                    |   16 +
+>   sound/soc/mediatek/mt8186/Makefile            |    1 +
+>   .../mt8186/mt8186-mt6366-da7219-max98357.c    | 1002 +++++++++++++++++
+>   3 files changed, 1019 insertions(+)
+>   create mode 100644 sound/soc/mediatek/mt8186/mt8186-mt6366-da7219-max98357.c
 > 
+> diff --git a/sound/soc/mediatek/Kconfig b/sound/soc/mediatek/Kconfig
+> index f3c3b93226e4..cc93a0d42fe1 100644
+> --- a/sound/soc/mediatek/Kconfig
+> +++ b/sound/soc/mediatek/Kconfig
+> @@ -164,6 +164,22 @@ config SND_SOC_MT8186
+>   	  Select Y if you have such device.
+>   	  If unsure select "N".
+>   
+> +config SND_SOC_MT8186_MT6366_DA7219_MAX98357
+> +	tristate "ASoC Audio driver for MT8186 with DA7219 MAX98357A codec"
+> +	depends on I2C && GPIOLIB
+> +	depends on SND_SOC_MT8186 && MTK_PMIC_WRAP
+> +	select SND_SOC_MT6358
+> +	select SND_SOC_MAX98357A
+> +	select SND_SOC_DA7219
+> +	select SND_SOC_BT_SCO
+> +	select SND_SOC_DMIC
+> +	select SND_SOC_HDMI_CODEC
+> +	help
+> +	  This adds ASoC driver for Mediatek MT8186 boards
+> +	  with the MT6366(MT6358) DA7219 MAX98357A codecs.
+> +	  Select Y if you have such device.
+> +	  If unsure select "N".
+> +
+>   config SND_SOC_MTK_BTCVSD
+>   	tristate "ALSA BT SCO CVSD/MSBC Driver"
+>   	help
+> diff --git a/sound/soc/mediatek/mt8186/Makefile b/sound/soc/mediatek/mt8186/Makefile
+> index bdca1a3b3ff0..e7ddbe74d9d5 100644
+> --- a/sound/soc/mediatek/mt8186/Makefile
+> +++ b/sound/soc/mediatek/mt8186/Makefile
+> @@ -18,3 +18,4 @@ snd-soc-mt8186-afe-objs := \
+>   	mt8186-mt6366-common.o
+>   
+>   obj-$(CONFIG_SND_SOC_MT8186) += snd-soc-mt8186-afe.o
+> +obj-$(CONFIG_SND_SOC_MT8186_MT6366_DA7219_MAX98357) += mt8186-mt6366-da7219-max98357.o
+> diff --git a/sound/soc/mediatek/mt8186/mt8186-mt6366-da7219-max98357.c b/sound/soc/mediatek/mt8186/mt8186-mt6366-da7219-max98357.c
+> new file mode 100644
+> index 000000000000..5123754374b2
+> --- /dev/null
+> +++ b/sound/soc/mediatek/mt8186/mt8186-mt6366-da7219-max98357.c
+> @@ -0,0 +1,1002 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +//
+> +// mt8186-mt6366-da7219-max98357.c
+> +//	--  MT8186-MT6366-DA7219-MAX98357 ALSA SoC machine driver
+> +//
+> +// Copyright (c) 2022 MediaTek Inc.
+> +// Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
+> +//
+> +
 
-Thanks Tomer and Geert for explanation. OK for me.
+
+...snip...
+
+> +}
+> +
+> +static int mt8186_da7219_i2s_hw_params(struct snd_pcm_substream *substream,
+> +				       struct snd_pcm_hw_params *params)
+> +{
+> +	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
+> +	struct snd_soc_dai *codec_dai;
+> +	unsigned int rate = params_rate(params);
+> +	unsigned int mclk_fs_ratio = 256;
+> +	unsigned int mclk_fs = rate * mclk_fs_ratio;
+> +	unsigned int freq;
+> +	int ret = 0, j;
+
+Why are you assigning 0 to ret here? You're reassigning just one line under here...
+
+> +
+> +	ret = snd_soc_dai_set_sysclk(asoc_rtd_to_cpu(rtd, 0), 0,
+> +				     mclk_fs, SND_SOC_CLOCK_OUT);
+> +	if (ret < 0) {
+> +		dev_err(rtd->dev, "failed to set cpu dai sysclk: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	for_each_rtd_codec_dais(rtd, j, codec_dai) {
+> +		if (!strcmp(codec_dai->component->name, DA7219_DEV_NAME)) {
+> +			ret = snd_soc_dai_set_sysclk(codec_dai,
+> +						     DA7219_CLKSRC_MCLK,
+> +						     mclk_fs,
+> +						     SND_SOC_CLOCK_IN);
+> +			if (ret < 0) {
+> +				dev_err(rtd->dev, "failed to set sysclk: %d\n",
+> +					ret);
+> +				return ret;
+> +			}
+> +
+> +			if ((rate % 8000) == 0)
+> +				freq = DA7219_PLL_FREQ_OUT_98304;
+> +			else
+> +				freq = DA7219_PLL_FREQ_OUT_90316;
+> +
+> +			ret = snd_soc_dai_set_pll(codec_dai, 0,
+> +						  DA7219_SYSCLK_PLL_SRM,
+> +						  0, freq);
+> +			if (ret) {
+> +				dev_err(rtd->dev, "failed to start PLL: %d\n",
+> +					ret);
+> +				return ret;
+> +			}
+> +		}
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int mt8186_da7219_i2s_hw_free(struct snd_pcm_substream *substream)
+> +{
+> +	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
+> +	struct snd_soc_dai *codec_dai;
+> +	int ret = 0, j;
+> +
+> +	for_each_rtd_codec_dais(rtd, j, codec_dai) {
+> +		if (!strcmp(codec_dai->component->name, DA7219_DEV_NAME)) {
+> +			ret = snd_soc_dai_set_pll(codec_dai,
+> +						  0, DA7219_SYSCLK_MCLK, 0, 0);
+> +			if (ret < 0) {
+> +				dev_err(rtd->dev, "failed to stop PLL: %d\n",
+> +					ret);
+
+				return ret;
+
+> +				break;
+> +			}
+> +		}
+> +	}
+> +
+
+... and return 0 here.
+
+> +	return ret;
+> +}
+> +
+
+..snip..
+
+> +
+> +static const struct snd_soc_dapm_widget
+> +mt8186_mt6366_da7219_max98357_widgets[] = {
+> +	SND_SOC_DAPM_SPK("SPK Out", NULL),
+
+In mt8183-da7219-max98357, this widget is called "Speakers": please use the
+same name, so that we can (at least partially) reuse ALSA UCM2 configurations.
+
+> +	SND_SOC_DAPM_OUTPUT("HDMI Out"),
+
+...and some Intel boards (bxt_da7219_max98357a and others) are calling these
+like "HDMI1", "HDMI2", etc.
+
+We have only one HDMI output, yes, but if we change this to "HDMI1" we can again
+increase UCM2 conf reusability.
+By the way, these comments are actually valid also for the other card driver
+mt6366-rt1019-rt5682s, so please model the names to commonize as much as possible.
+
+Look at https://github.com/alsa-project/alsa-ucm-conf/tree/master/ucm2 to
+understand what should be the final mixer names to achieve configuration
+commonization.
 
 
-Best regards,
-Krzysztof
+> +};
+> +
+> +static const struct snd_soc_dapm_route
+> +mt8186_mt6366_da7219_max98357_routes[] = {
+> +	/* SPK */
+> +	{ "SPK Out", NULL, "Speaker" },
+> +	/* HDMI */
+> +	{ "HDMI Out", NULL, "TX" },
+> +};
+> +
+> +static const struct snd_kcontrol_new
+> +mt8186_mt6366_da7219_max98357_controls[] = {
+> +	SOC_DAPM_PIN_SWITCH("SPK Out"),
+> +	SOC_DAPM_PIN_SWITCH("HDMI Out"),
+> +};
+> +
+> +static struct snd_soc_card mt8186_mt6366_da7219_max98357_soc_card = {
+> +	.name = "mt8186_mt6366_da7219_max98357",
+> +	.owner = THIS_MODULE,
+> +	.dai_link = mt8186_mt6366_da7219_max98357_dai_links,
+> +	.num_links = ARRAY_SIZE(mt8186_mt6366_da7219_max98357_dai_links),
+> +	.controls = mt8186_mt6366_da7219_max98357_controls,
+> +	.num_controls = ARRAY_SIZE(mt8186_mt6366_da7219_max98357_controls),
+> +	.dapm_widgets = mt8186_mt6366_da7219_max98357_widgets,
+> +	.num_dapm_widgets = ARRAY_SIZE(mt8186_mt6366_da7219_max98357_widgets),
+> +	.dapm_routes = mt8186_mt6366_da7219_max98357_routes,
+> +	.num_dapm_routes = ARRAY_SIZE(mt8186_mt6366_da7219_max98357_routes),
+> +	.codec_conf = mt8186_mt6366_da7219_max98357_codec_conf,
+> +	.num_configs = ARRAY_SIZE(mt8186_mt6366_da7219_max98357_codec_conf),
+> +};
+> +
+> +static int mt8186_mt6366_da7219_max98357_dev_probe(struct platform_device *pdev)
+> +{
+> +	struct snd_soc_card *card;
+> +	struct snd_soc_dai_link *dai_link;
+> +	struct mt8186_mt6366_da7219_max98357_priv *priv;
+> +	struct device_node *platform_node, *headset_codec, *playback_codec;
+> +	int ret, i;
+> +
+> +	card = (struct snd_soc_card *)of_device_get_match_data(&pdev->dev);
+> +	if (!card)
+> +		return -EINVAL;
+> +	card->dev = &pdev->dev;
+> +
+> +	platform_node = of_parse_phandle(pdev->dev.of_node, "mediatek,platform", 0);
+> +	if (!platform_node) {
+> +		ret = -EINVAL;
+> +		dev_err_probe(&pdev->dev, ret, "Property 'platform' missing or invalid\n");
+> +		goto err_platform_node;
+
+You don't need this particular goto, you can just return in here.
+
+> +	}
+
+
+Regards,
+Angelo
+
+
