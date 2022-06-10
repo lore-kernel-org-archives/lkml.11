@@ -2,223 +2,239 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ED2FC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 14:00:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AD4DC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 14:00:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349128AbiFJN77 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 09:59:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38246 "EHLO
+        id S235886AbiFJOAy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 10 Jun 2022 10:00:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236558AbiFJN7i (ORCPT
+        with ESMTP id S1347334AbiFJOAm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 09:59:38 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7254203A2A;
-        Fri, 10 Jun 2022 06:59:32 -0700 (PDT)
-Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LKMtg3YYhz683Pb;
-        Fri, 10 Jun 2022 21:55:55 +0800 (CST)
-Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
- fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 10 Jun 2022 15:59:30 +0200
-From:   Roberto Sassu <roberto.sassu@huawei.com>
-To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kpsingh@kernel.org>
-CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Roberto Sassu <roberto.sassu@huawei.com>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH v3 1/2] bpf: Add bpf_verify_signature() helper
-Date:   Fri, 10 Jun 2022 15:59:15 +0200
-Message-ID: <20220610135916.1285509-2-roberto.sassu@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220610135916.1285509-1-roberto.sassu@huawei.com>
-References: <20220610135916.1285509-1-roberto.sassu@huawei.com>
+        Fri, 10 Jun 2022 10:00:42 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B84E2941DB;
+        Fri, 10 Jun 2022 07:00:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1654869641; x=1686405641;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=H2Rfk6EsX/DNk2dY2H0TNC9rZFRh8YIYx3Ojrjcnchw=;
+  b=MKWi9iwNcdEdc+3FIQXCsLkquMRt4OsjdOiKxcuZA0I6znolhRLTnUPL
+   ceO+SFexbi1Ckyc2nYV8cx0PIiK3wkF6DoZ5w3kjJf6SCnQjZh+wG20hR
+   5C46bIF0l6zRxkE+le04JXoqQqmtQ6ivZctfWh9Bmib7KZZLeW3+CFRCg
+   A=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 10 Jun 2022 07:00:40 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 07:00:39 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 10 Jun 2022 07:00:39 -0700
+Received: from [10.226.59.182] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 10 Jun
+ 2022 07:00:38 -0700
+Message-ID: <9a11394d-f7df-e549-8afb-0834f7d30202@quicinc.com>
+Date:   Fri, 10 Jun 2022 08:00:37 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.204.63.22]
-X-ClientProxiedBy: lhreml753-chm.china.huawei.com (10.201.108.203) To
- fraeml714-chm.china.huawei.com (10.206.15.33)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH] bus: mhi: Disable IRQs instead of freeing them during
+ power down
+Content-Language: en-US
+To:     Qiang Yu <quic_qianyu@quicinc.com>, <mani@kernel.org>,
+        <quic_hemantk@quicinc.com>, <loic.poulain@linaro.org>
+CC:     <mhi@lists.linux.dev>, <linux-arm-msm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <quic_cang@quicinc.com>
+References: <1654782215-70383-1-git-send-email-quic_qianyu@quicinc.com>
+ <62d09e6f-9898-6233-dfd6-b5ba5d837571@quicinc.com>
+ <9659ecb9-9727-a146-e286-d28d656483c3@quicinc.com>
+From:   Jeffrey Hugo <quic_jhugo@quicinc.com>
+In-Reply-To: <9659ecb9-9727-a146-e286-d28d656483c3@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the bpf_verify_signature() helper, to give eBPF security modules the
-ability to check the validity of a signature against supplied data, by
-using system-provided keys as trust anchor.
+On 6/9/2022 9:21 PM, Qiang Yu wrote:
+> On 6/9/2022 9:54 PM, Jeffrey Hugo wrote:
+> 
+>> On 6/9/2022 7:43 AM, Qiang Yu wrote:
+>>> EP tends to read MSI address/data once and cache them after BME is set.
+>>> So host should avoid changing MSI address/data after BME is set.
+>>>
+>>> In pci reset function, host invokes free_irq(), which also clears MSI
+>>> address/data in EP's PCIe config space. If the invalid address/data
+>>> are cached and used by EP, MSI triggered by EP wouldn't be received by
+>>> host, because an invalid MSI data is sent to an invalid MSI address.
+>>>
+>>> To fix this issue, after host runs request_irq() successfully during
+>>> mhi driver probe, let's invoke enable_irq()/disable_irq() instead of
+>>> request_irq()/free_irq() when we want to power on and power down MHI.
+>>> Meanwhile, Host should invoke free_irq() when mhi host driver is
+>>> removed.
+>>
+>> I don't think this works for hotplug, nor cases where there are 
+>> multiple MHI devices on the system.
+>>
+>> The EP shouldn't be caching this information for multiple reasons. 
+>> Masking the MSIs, disabling the MSIs, changing the address when the 
+>> affinity changes, etc.
+>>
+>> It really feels like we are solving the problem in the wrong place.
+>>
+>> Right now, this gets a NACK from me.
+>>
+> After free_irq(), MSI is still enabled but MSI address and data are 
+> cleared. So there is a chance that device initiates MSI using zero 
+> address. How to fix this race conditions.
 
-The new helper makes it possible to enforce mandatory policies, as eBPF
-programs might be allowed to make security decisions only based on data
-sources the system administrator approves.
+On what system is MSI still enabled?  I just removed the AIC100 
+controller on an random x86 system, and lspci is indicating MSIs are 
+disabled -
 
-The caller should specify the identifier of the keyring containing the keys
-for signature verification: 0 for the primary keyring (immutable keyring of
-system keys); 1 for both the primary and secondary keyring (where keys can
-be added only if they are vouched for by existing keys in those keyrings);
-2 for the platform keyring (primarily used by the integrity subsystem to
-verify a kexec'ed kerned image and, possibly, the initramfs signature);
-0xffff for the session keyring (for testing purposes).
+Capabilities: [50] MSI: Enable- Count=32/32 Maskable+ 64bit+
 
-The caller should also specify the type of signature. Currently only PKCS#7
-is supported.
-
-Since the maximum number of parameters of an eBPF helper is 5, the keyring
-and signature types share one (keyring ID: low 16 bits, signature type:
-high 16 bits).
-
-Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
-Reported-by: kernel test robot <lkp@intel.com> (cast warning)
----
- include/uapi/linux/bpf.h       | 17 +++++++++++++
- kernel/bpf/bpf_lsm.c           | 46 ++++++++++++++++++++++++++++++++++
- tools/include/uapi/linux/bpf.h | 17 +++++++++++++
- 3 files changed, 80 insertions(+)
-
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index f4009dbdf62d..97521857e44a 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -5249,6 +5249,22 @@ union bpf_attr {
-  *		Pointer to the underlying dynptr data, NULL if the dynptr is
-  *		read-only, if the dynptr is invalid, or if the offset and length
-  *		is out of bounds.
-+ *
-+ * long bpf_verify_signature(u8 *data, u32 datalen, u8 *sig, u32 siglen, u32 info)
-+ *	Description
-+ *		Verify a signature of length *siglen* against the supplied data
-+ *		with length *datalen*. *info* contains the keyring identifier
-+ *		(low 16 bits) and the signature type (high 16 bits). The keyring
-+ *		identifier can have the following values (some defined in
-+ *		verification.h): 0 for the primary keyring (immutable keyring of
-+ *		system keys); 1 for both the primary and secondary keyring
-+ *		(where keys can be added only if they are vouched for by
-+ *		existing keys in those keyrings); 2 for the platform keyring
-+ *		(primarily used by the integrity subsystem to verify a kexec'ed
-+ *		kerned image and, possibly, the initramfs signature); 0xffff for
-+ *		the session keyring (for testing purposes).
-+ *	Return
-+ *		0 on success, a negative value on error.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -5455,6 +5471,7 @@ union bpf_attr {
- 	FN(dynptr_read),		\
- 	FN(dynptr_write),		\
- 	FN(dynptr_data),		\
-+	FN(verify_signature),		\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
-index c1351df9f7ee..20bd850ea3ee 100644
---- a/kernel/bpf/bpf_lsm.c
-+++ b/kernel/bpf/bpf_lsm.c
-@@ -16,6 +16,8 @@
- #include <linux/bpf_local_storage.h>
- #include <linux/btf_ids.h>
- #include <linux/ima.h>
-+#include <linux/verification.h>
-+#include <linux/module_signature.h>
- 
- /* For every LSM hook that allows attachment of BPF programs, declare a nop
-  * function where a BPF program can be attached.
-@@ -132,6 +134,46 @@ static const struct bpf_func_proto bpf_get_attach_cookie_proto = {
- 	.arg1_type	= ARG_PTR_TO_CTX,
- };
- 
-+#ifdef CONFIG_SYSTEM_DATA_VERIFICATION
-+BPF_CALL_5(bpf_verify_signature, u8 *, data, u32, datalen, u8 *, sig,
-+	   u32, siglen, u32, info)
-+{
-+	unsigned long keyring_id = info & U16_MAX;
-+	enum pkey_id_type id_type = info >> 16;
-+	const struct cred *cred = current_cred();
-+	struct key *keyring;
-+
-+	if (keyring_id > (unsigned long)VERIFY_USE_PLATFORM_KEYRING &&
-+	    keyring_id != U16_MAX)
-+		return -EINVAL;
-+
-+	keyring = (keyring_id == U16_MAX) ?
-+		  cred->session_keyring : (struct key *)keyring_id;
-+
-+	switch (id_type) {
-+	case PKEY_ID_PKCS7:
-+		return verify_pkcs7_signature(data, datalen, sig, siglen,
-+					      keyring,
-+					      VERIFYING_UNSPECIFIED_SIGNATURE,
-+					      NULL, NULL);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static const struct bpf_func_proto bpf_verify_signature_proto = {
-+	.func		= bpf_verify_signature,
-+	.gpl_only	= false,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_MEM,
-+	.arg2_type	= ARG_CONST_SIZE_OR_ZERO,
-+	.arg3_type	= ARG_PTR_TO_MEM,
-+	.arg4_type	= ARG_CONST_SIZE_OR_ZERO,
-+	.arg5_type	= ARG_ANYTHING,
-+	.allowed	= bpf_ima_inode_hash_allowed,
-+};
-+#endif
-+
- static const struct bpf_func_proto *
- bpf_lsm_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- {
-@@ -158,6 +200,10 @@ bpf_lsm_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 		return prog->aux->sleepable ? &bpf_ima_file_hash_proto : NULL;
- 	case BPF_FUNC_get_attach_cookie:
- 		return bpf_prog_has_trampoline(prog) ? &bpf_get_attach_cookie_proto : NULL;
-+#ifdef CONFIG_SYSTEM_DATA_VERIFICATION
-+	case BPF_FUNC_verify_signature:
-+		return prog->aux->sleepable ? &bpf_verify_signature_proto : NULL;
-+#endif
- 	default:
- 		return tracing_prog_func_proto(func_id, prog);
- 	}
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index f4009dbdf62d..97521857e44a 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -5249,6 +5249,22 @@ union bpf_attr {
-  *		Pointer to the underlying dynptr data, NULL if the dynptr is
-  *		read-only, if the dynptr is invalid, or if the offset and length
-  *		is out of bounds.
-+ *
-+ * long bpf_verify_signature(u8 *data, u32 datalen, u8 *sig, u32 siglen, u32 info)
-+ *	Description
-+ *		Verify a signature of length *siglen* against the supplied data
-+ *		with length *datalen*. *info* contains the keyring identifier
-+ *		(low 16 bits) and the signature type (high 16 bits). The keyring
-+ *		identifier can have the following values (some defined in
-+ *		verification.h): 0 for the primary keyring (immutable keyring of
-+ *		system keys); 1 for both the primary and secondary keyring
-+ *		(where keys can be added only if they are vouched for by
-+ *		existing keys in those keyrings); 2 for the platform keyring
-+ *		(primarily used by the integrity subsystem to verify a kexec'ed
-+ *		kerned image and, possibly, the initramfs signature); 0xffff for
-+ *		the session keyring (for testing purposes).
-+ *	Return
-+ *		0 on success, a negative value on error.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -5455,6 +5471,7 @@ union bpf_attr {
- 	FN(dynptr_read),		\
- 	FN(dynptr_write),		\
- 	FN(dynptr_data),		\
-+	FN(verify_signature),		\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
--- 
-2.25.1
+> Maybe EP should not cache MSI data and address. But I think this patch 
+> is necessary and we will talk with EP POC.
+> 
+>>>
+>>> Signed-off-by: Qiang Yu <quic_qianyu@quicinc.com>
+>>> ---
+>>>   drivers/bus/mhi/host/init.c        | 31 
+>>> +++++++++++++++++++++++++++++++
+>>>   drivers/bus/mhi/host/pci_generic.c |  2 ++
+>>>   drivers/bus/mhi/host/pm.c          |  4 ++--
+>>>   3 files changed, 35 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/bus/mhi/host/init.c b/drivers/bus/mhi/host/init.c
+>>> index cbb86b2..48cb093 100644
+>>> --- a/drivers/bus/mhi/host/init.c
+>>> +++ b/drivers/bus/mhi/host/init.c
+>>> @@ -18,6 +18,7 @@
+>>>   #include <linux/slab.h>
+>>>   #include <linux/vmalloc.h>
+>>>   #include <linux/wait.h>
+>>> +#include <linux/irq.h>
+>>
+>> Should be in alphabetical order
+>>
+>>>   #include "internal.h"
+>>>     static DEFINE_IDA(mhi_controller_ida);
+>>> @@ -168,6 +169,22 @@ int mhi_init_irq_setup(struct mhi_controller 
+>>> *mhi_cntrl)
+>>>       unsigned long irq_flags = IRQF_SHARED | IRQF_NO_SUSPEND;
+>>>       int i, ret;
+>>>   +    /*
+>>> +     * if irq[0] has action, it represents all MSI IRQs have been
+>>> +     * requested, so we just need to enable them.
+>>> +     */
+>>
+>> This seems like an assumption about how the interrupts are allocated 
+>> and assigned that may not hold true for all devices.
+> 
+> All interrupts are allocated and assigned together in mhi_pci_get_irqs() 
+> and mhi_init_irq_setup().
+> 
+> So I think if irq[0] has action, other irqs must be requested 
+> successfully. If any other msi request fail, irq[0] should have been freed.
+> 
+>>> +    if (irq_has_action(mhi_cntrl->irq[0])) {
+>>> +        enable_irq(mhi_cntrl->irq[0]);
+>>> +
+>>> +        for (i = 0; i < mhi_cntrl->total_ev_rings; i++, mhi_event++) {
+>>> +            if (mhi_event->offload_ev)
+>>> +                continue;
+>>> +
+>>> +            enable_irq(mhi_cntrl->irq[mhi_event->irq]);
+>>> +        }
+>>> +        return 0;
+>>> +    }
+>>> +
+>>>       /* if controller driver has set irq_flags, use it */
+>>>       if (mhi_cntrl->irq_flags)
+>>>           irq_flags = mhi_cntrl->irq_flags;
+>>> @@ -179,6 +196,11 @@ int mhi_init_irq_setup(struct mhi_controller 
+>>> *mhi_cntrl)
+>>>                      "bhi", mhi_cntrl);
+>>>       if (ret)
+>>>           return ret;
+>>> +    /*
+>>> +     * IRQ marked IRQF_SHARED isn't recommended to use IRQ_NOAUTOEN,
+>>> +     * so disable it explicitly.
+>>> +     */
+>>> +    disable_irq(mhi_cntrl->irq[0]);
+>>>         for (i = 0; i < mhi_cntrl->total_ev_rings; i++, mhi_event++) {
+>>>           if (mhi_event->offload_ev)
+>>> @@ -200,6 +222,8 @@ int mhi_init_irq_setup(struct mhi_controller 
+>>> *mhi_cntrl)
+>>>                   mhi_cntrl->irq[mhi_event->irq], i);
+>>>               goto error_request;
+>>>           }
+>>> +
+>>> +        disable_irq(mhi_cntrl->irq[mhi_event->irq]);
+>>>       }
+>>>         return 0;
+>>> @@ -1003,8 +1027,14 @@ int mhi_register_controller(struct 
+>>> mhi_controller *mhi_cntrl,
+>>>         mhi_create_debugfs(mhi_cntrl);
+>>>   +    ret = mhi_init_irq_setup(mhi_cntrl);
+>>> +    if (ret)
+>>> +        goto error_setup_irq;
+>>> +
+>>>       return 0;
+>>>   +error_setup_irq:
+>>> +    mhi_destroy_debugfs(mhi_cntrl);
+>>>   err_release_dev:
+>>>       put_device(&mhi_dev->dev);
+>>>   err_ida_free:
+>>> @@ -1027,6 +1057,7 @@ void mhi_unregister_controller(struct 
+>>> mhi_controller *mhi_cntrl)
+>>>       struct mhi_chan *mhi_chan = mhi_cntrl->mhi_chan;
+>>>       unsigned int i;
+>>>   +    mhi_deinit_free_irq(mhi_cntrl);
+>>>       mhi_destroy_debugfs(mhi_cntrl);
+>>>         destroy_workqueue(mhi_cntrl->hiprio_wq);
+>>> diff --git a/drivers/bus/mhi/host/pci_generic.c 
+>>> b/drivers/bus/mhi/host/pci_generic.c
+>>> index 6fbc591..60020d0 100644
+>>> --- a/drivers/bus/mhi/host/pci_generic.c
+>>> +++ b/drivers/bus/mhi/host/pci_generic.c
+>>> @@ -945,6 +945,8 @@ static void mhi_pci_remove(struct pci_dev *pdev)
+>>>         mhi_unregister_controller(mhi_cntrl);
+>>>       pci_disable_pcie_error_reporting(pdev);
+>>> +
+>>> +    pci_free_irq_vectors(pdev);
+>>>   }
+>>>     static void mhi_pci_shutdown(struct pci_dev *pdev)
+>>> diff --git a/drivers/bus/mhi/host/pm.c b/drivers/bus/mhi/host/pm.c
+>>> index dc2e8ff..190231c 100644
+>>> --- a/drivers/bus/mhi/host/pm.c
+>>> +++ b/drivers/bus/mhi/host/pm.c
+>>> @@ -500,7 +500,7 @@ static void mhi_pm_disable_transition(struct 
+>>> mhi_controller *mhi_cntrl)
+>>>       for (i = 0; i < mhi_cntrl->total_ev_rings; i++, mhi_event++) {
+>>>           if (mhi_event->offload_ev)
+>>>               continue;
+>>> -        free_irq(mhi_cntrl->irq[mhi_event->irq], mhi_event);
+>>> +        disable_irq(mhi_cntrl->irq[mhi_event->irq]);
+>>>           tasklet_kill(&mhi_event->task);
+>>>       }
+>>>   @@ -1182,7 +1182,7 @@ void mhi_power_down(struct mhi_controller 
+>>> *mhi_cntrl, bool graceful)
+>>>       /* Wait for shutdown to complete */
+>>>       flush_work(&mhi_cntrl->st_worker);
+>>>   -    free_irq(mhi_cntrl->irq[0], mhi_cntrl);
+>>> +    disable_irq(mhi_cntrl->irq[0]);
+>>>   }
+>>>   EXPORT_SYMBOL_GPL(mhi_power_down);
+>>
 
