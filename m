@@ -2,184 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 273B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 08:28:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C865CC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 08:28:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243263AbiFJI2I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 04:28:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42348 "EHLO
+        id S1347732AbiFJI2T (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 10 Jun 2022 04:28:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347458AbiFJI1c (ORCPT
+        with ESMTP id S1347684AbiFJI1S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 04:27:32 -0400
-Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E2B0D48E47;
-        Fri, 10 Jun 2022 01:25:47 -0700 (PDT)
-Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id B7CA0BD4;
-        Fri, 10 Jun 2022 11:26:31 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com B7CA0BD4
+        Fri, 10 Jun 2022 04:27:18 -0400
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C88FC49CA7
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 01:25:37 -0700 (PDT)
+Received: by mail-yb1-xb29.google.com with SMTP id v140so1464092ybe.9
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 01:25:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1654849592;
-        bh=EOVES41k44a8aiGRCiFSCyFxTqVIh9wxi/EixTfGm+s=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=S2axTQ5bT19+4BJFYMMFdCS+J+srYhHyfxQLAZLk02sjCtLuaHv5dPXgbL0Fjog5y
-         lfiWyk7yQB/i2t2KMS/dQ8Yiea8yPYrSA44Jvc7Z/g8KWg50L4zXUy8cxKsAxmulL7
-         KM3aN+VhpSbUXBdGTG4J6+4JS5d8hBm7xVhHoA4g=
-Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 10 Jun 2022 11:25:39 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Rob Herring <robh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Pankaj Dubey <pankaj.dubey@samsung.com>,
-        Shradha Todi <shradha.t@samsung.com>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v4 04/18] PCI: dwc: Set INCREASE_REGION_SIZE flag based on limit address
-Date:   Fri, 10 Jun 2022 11:25:20 +0300
-Message-ID: <20220610082535.12802-5-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220610082535.12802-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220610082535.12802-1-Sergey.Semin@baikalelectronics.ru>
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eLcNDbfanR+9OC/qj3TxYDSuqrtVsDPMKOVV+JQ2Ebk=;
+        b=qYH3eZm3seThktIWCEgiuC5CXyWK/GsQmp6anI5aIb6WSFfjgrvJs4p7L3uEYPjzlO
+         GkpRJ66GZKUGuLP+eVCYPdnQQ3mGQairHQPI2PQc1CH1h2wbBhNSPsStZaGA2/6tX3at
+         D8KJUf05Z3XZyoX+vQ5pLBt3uaq7/Fy6rgwWGrqhUMyVOLJ7MN+2NVzUknbR9jsV4dbS
+         Ex2rFoIyPAm1bbbPBZE2IOshCFVPOUCDXQn1JL5cFS6RedIbifXHNKbm8mXOOqP/BgB7
+         Cn0NJz199Cds1Hu0PjRzH+OzsRVEpaKpNjt6r1pElqk4N6HD/j6TXSi1LE4VE8FLXAQ5
+         MWlQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eLcNDbfanR+9OC/qj3TxYDSuqrtVsDPMKOVV+JQ2Ebk=;
+        b=pNhQGHzvGggvJDHIaQvRKwYllnR86hW73UfFjIgOqj16iAFVI+CFquX543SJc/hOUr
+         fyoEaDBCoYbogeRZA29ZtXxUjpc/e2Sj/wAeocV1eSdJj/tPr7Bjek7YqTyVqRaHF24D
+         oLQy6sT4oGuponzcOKy3Cl7mUexo1zxQnv2gstWn4lQDd88cfxQLQ943d/rfq5mSOvBg
+         ObkRqKBJb1iRXYrTrQ9c9HqAZI6S60NRCqq6B+AzvLSacjfEPrLICZ6kaDykFGg7cJZb
+         8xSxmIsp9H1iUB/4zi/10Cv5goakgvEOrOS5uBP05REurOB9dVUvg0P6TPQMbbZIbgq4
+         wczA==
+X-Gm-Message-State: AOAM530T+m8tFeQl7TOOpebA6i+8bqbopal56ZQbkO7FiY4H5Y/Jsv2J
+        +gHizMf+kpJTzExzNhtDfuyoU6W8TaDE097XRlyGSw==
+X-Google-Smtp-Source: ABdhPJydoxyoTdgF9ni8cdiFnXZkxJlGkObaA7hNXhDjoVc4B0iiziqKPPa6r/6uLoLWbaxJTW/jn03h0o1hIC06IXs=
+X-Received: by 2002:a25:d054:0:b0:664:49cb:410 with SMTP id
+ h81-20020a25d054000000b0066449cb0410mr4709163ybg.609.1654849536816; Fri, 10
+ Jun 2022 01:25:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+References: <20220609113046.780504-1-elver@google.com> <20220609113046.780504-8-elver@google.com>
+ <CACT4Y+bGPLampPm7JHJeXeK_CwQ2_=3mRktPCh7T9r3y8r02hw@mail.gmail.com>
+In-Reply-To: <CACT4Y+bGPLampPm7JHJeXeK_CwQ2_=3mRktPCh7T9r3y8r02hw@mail.gmail.com>
+From:   Marco Elver <elver@google.com>
+Date:   Fri, 10 Jun 2022 10:25:00 +0200
+Message-ID: <CANpmjNNwOOYxOXLixrUD25YoszYcy7SRwXMMfrj5zZvrETkp0g@mail.gmail.com>
+Subject: Re: [PATCH 7/8] perf/hw_breakpoint: Optimize task_bp_pinned() if CPU-independent
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-perf-users@vger.kernel.org, x86@kernel.org,
+        linux-sh@vger.kernel.org, kasan-dev@googlegroups.com,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It was wrong to use the region size parameter in order to determine
-whether the INCREASE_REGION_SIZE flag needs to be set for the outbound
-iATU entry because in general there are cases when combining a region base
-address and size together produces the out of bounds upper range limit
-while upper_32_bits(size) still returns zero. So having a region size
-within the permitted values doesn't mean the region limit address will fit
-to the corresponding CSR. Here is the way iATU calculates the in- and
-outbound untranslated regions if the INCREASE_REGION_SIZE flag is cleared
-[1]:
+On Thu, 9 Jun 2022 at 17:00, 'Dmitry Vyukov' via kasan-dev
+<kasan-dev@googlegroups.com> wrote:
+>
+> On Thu, 9 Jun 2022 at 13:31, Marco Elver <elver@google.com> wrote:
+> >
+> > Running the perf benchmark with (note: more aggressive parameters vs.
+> > preceding changes, but same host with 256 CPUs):
+> >
+> >  | $> perf bench -r 100 breakpoint thread -b 4 -p 128 -t 512
+> >  | # Running 'breakpoint/thread' benchmark:
+> >  | # Created/joined 100 threads with 4 breakpoints and 128 parallelism
+> >  |      Total time: 1.953 [sec]
+> >  |
+> >  |       38.146289 usecs/op
+> >  |     4882.725000 usecs/op/cpu
+> >
+> >     16.29%  [kernel]       [k] rhashtable_jhash2
+> >     16.19%  [kernel]       [k] osq_lock
+> >     14.22%  [kernel]       [k] queued_spin_lock_slowpath
+> >      8.58%  [kernel]       [k] task_bp_pinned
+> >      8.30%  [kernel]       [k] mutex_spin_on_owner
+> >      4.03%  [kernel]       [k] smp_cfm_core_cond
+> >      2.97%  [kernel]       [k] toggle_bp_slot
+> >      2.94%  [kernel]       [k] bcmp
+> >
+> > We can see that a majority of the time is now spent hashing task
+> > pointers to index into task_bps_ht in task_bp_pinned().
+> >
+> > However, if task_bp_pinned()'s computation is independent of any CPU,
+> > i.e. always `iter->cpu < 0`, the result for each invocation will be
+> > identical. With increasing CPU-count, this problem worsens.
+> >
+> > Instead, identify if every call to task_bp_pinned() is CPU-independent,
+> > and cache the result. Use the cached result instead of a call to
+> > task_bp_pinned(), now __task_bp_pinned(), with task_bp_pinned() deciding
+> > if the cached result can be used.
+> >
+> > After this optimization:
+> >
+> >     21.96%  [kernel]       [k] queued_spin_lock_slowpath
+> >     16.39%  [kernel]       [k] osq_lock
+> >      9.82%  [kernel]       [k] toggle_bp_slot
+> >      9.81%  [kernel]       [k] find_next_bit
+> >      4.93%  [kernel]       [k] mutex_spin_on_owner
+> >      4.71%  [kernel]       [k] smp_cfm_core_cond
+> >      4.30%  [kernel]       [k] __reserve_bp_slot
+> >      2.65%  [kernel]       [k] cpumask_next
+> >
+> > Showing that the time spent hashing keys has become insignificant.
+> >
+> > With the given benchmark parameters, however, we see no statistically
+> > significant improvement in performance on the test system with 256 CPUs.
+> > This is very likely due to the benchmark parameters being too aggressive
+> > and contention elsewhere becoming dominant.
+> >
+> > Indeed, when using the less aggressive parameters from the preceding
+> > changes, we now observe:
+> >
+> >  | $> perf bench -r 30 breakpoint thread -b 4 -p 64 -t 64
+> >  | # Running 'breakpoint/thread' benchmark:
+> >  | # Created/joined 30 threads with 4 breakpoints and 64 parallelism
+> >  |      Total time: 0.071 [sec]
+> >  |
+> >  |       37.134896 usecs/op
+> >  |     2376.633333 usecs/op/cpu
+> >
+> > Which is an improvement of 12% compared to without this optimization
+> > (baseline is 42 usecs/op). This is now only 5% slower than the
+> > theoretical ideal (constraints disabled), and 18% slower than no
+> > breakpoints at all.
+> >
+> > [ While we're here, swap task_bp_pinned()'s bp and cpu arguments to be
+> >   more consistent with other functions (which have bp first, before the
+> >   cpu argument). ]
+>
+> There are 3 main cases:
+> 1. Per-cpu bp.
 
-  Start address:                      End address:
-63              31              0   63              31              0
-+---------------+---------------+   +---------------+---------------+
-|               |         |  0s |   |               |         |  Fs |
-+---------------+---------------+   +---------------+---------------+
-   upper base   |   lower base       !upper! base   | limit address
-     address          address           address
+Yes, CPU-target breakpoint on just 1 CPU.
 
-So the region start address is determined by the iATU lower and upper base
-address registers, while the region upper boundary is calculated based on
-the 32-bits limit address register and the upper part of the base address.
-In accordance with that logic for instance the range
-0xf0000000 @ 0x20000000 does have the size smaller than 4GB, but the
-actual limit address turns to be invalid forming the untranslated address
-map as [0xf0000000; 0x1000FFFF], which isn't what the original range was.
-In order to fix that we need to check whether the size after being added
-to the lower part of the base address causes the 4GB range overflow. If it
-does then we need to set the INCREASE_REGION_SIZE flag thus activating the
-extended limit address by means of an additional iATU CSR (upper limit
-address register) [2]:
+> 2. Per-task and per-cpu bp.
 
-  Start address:                      End address:
-63              31              0   63      x       31              0
-+---------------+---------------+   +---------------+---------------+
-|               |         |  0s |   |       |       |         |  Fs |
-+---------------+---------------+   +---------------+---------------+
-   upper base   |  lower base         upper | upper | limit address
-     address         address          base  | limit |
-                                     address|address|
+Task-target breakpoint but pinned to 1 CPU.
 
-Otherwise there is enough room in the 32-bits wide limit address register,
-and the flag can be left unset.
+> 3. Per-task bp (on all cpus)
 
-Note the case when the size-based flag setting approach is correct implies
-requiring to have the size-aligned base addresses only. But that
-constraint isn't relevant to the PCIe ranges accepted by the kernel.
-There is also no point in implementing it either seeing the problem can be
-easily fixed by checking the whole limit address instead of the region
-size.
+Task-target breakpoint that can run on all CPUs.
 
-[1] DesignWare Cores PCI Express Controller Databook - DWC PCIe Root Port,
-    v5.40a, March 2019, fig.3-36, p.175
-[2] DesignWare Cores PCI Express Controller Databook - DWC PCIe Root Port,
-    v5.40a, March 2019, fig.3-37, p.176
+> right?
+>
+> For case 1 we still seem to do lots of unnecessary work in
+> fetch_bp_busy_slots() by iterating over all CPUs. We are going to bump
+> only the CPU's cpu_pinned, so that's the only CPU we need to
+> fetch/check.
 
-Fixes: 5b4cf0f65324 ("PCI: dwc: Add upper limit address for outbound iATU")
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+It'll just do 1 iteration, because cpumask_of_bp() will return a mask
+with just the event's target CPU in it.
 
----
+> For case 2 we also do lots of unnecessary work, again we also need to
+> check only 1 CPU (don't need cached_tbp_pinned). Also don't need to do
+> atomic_dec/inc on all other CPUs (they dec/inc the same variable).
 
-Changelog v2:
-- Fix the end address in the example of the patch log. It should be
-  0x1000FFFF and not 0x0000FFFF (@Manivannan).
----
- drivers/pci/controller/dwc/pcie-designware.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+Same as above, just 1 iteration because cpumask_of_bp() does the right
+thing. cached_tbp_pinned may still be used if all existing task
+breakpoints are CPU-independent (i.e. cpu==-1; granted, doing
+task_bp_pinned() once or twice probably is irrelevant in this case).
 
-diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
-index 84fef21efdbc..347251bf87d0 100644
---- a/drivers/pci/controller/dwc/pcie-designware.c
-+++ b/drivers/pci/controller/dwc/pcie-designware.c
-@@ -287,8 +287,8 @@ static void dw_pcie_prog_outbound_atu_unroll(struct dw_pcie *pci, u8 func_no,
- 	dw_pcie_writel_ob_unroll(pci, index, PCIE_ATU_UNR_UPPER_TARGET,
- 				 upper_32_bits(pci_addr));
- 	val = type | PCIE_ATU_FUNC_NUM(func_no);
--	val = upper_32_bits(size - 1) ?
--		val | PCIE_ATU_INCREASE_REGION_SIZE : val;
-+	if (upper_32_bits(limit_addr) > upper_32_bits(cpu_addr))
-+		val |= PCIE_ATU_INCREASE_REGION_SIZE;
- 	if (pci->version == 0x490A)
- 		val = dw_pcie_enable_ecrc(val);
- 	dw_pcie_writel_ob_unroll(pci, index, PCIE_ATU_UNR_REGION_CTRL1, val);
-@@ -315,6 +315,7 @@ static void __dw_pcie_prog_outbound_atu(struct dw_pcie *pci, u8 func_no,
- 					u64 pci_addr, u64 size)
- {
- 	u32 retries, val;
-+	u64 limit_addr;
- 
- 	if (pci->ops && pci->ops->cpu_addr_fixup)
- 		cpu_addr = pci->ops->cpu_addr_fixup(pci, cpu_addr);
-@@ -325,6 +326,8 @@ static void __dw_pcie_prog_outbound_atu(struct dw_pcie *pci, u8 func_no,
- 		return;
- 	}
- 
-+	limit_addr = cpu_addr + size - 1;
-+
- 	dw_pcie_writel_dbi(pci, PCIE_ATU_VIEWPORT,
- 			   PCIE_ATU_REGION_OUTBOUND | index);
- 	dw_pcie_writel_dbi(pci, PCIE_ATU_LOWER_BASE,
-@@ -332,17 +335,18 @@ static void __dw_pcie_prog_outbound_atu(struct dw_pcie *pci, u8 func_no,
- 	dw_pcie_writel_dbi(pci, PCIE_ATU_UPPER_BASE,
- 			   upper_32_bits(cpu_addr));
- 	dw_pcie_writel_dbi(pci, PCIE_ATU_LIMIT,
--			   lower_32_bits(cpu_addr + size - 1));
-+			   lower_32_bits(limit_addr));
- 	if (pci->version >= 0x460A)
- 		dw_pcie_writel_dbi(pci, PCIE_ATU_UPPER_LIMIT,
--				   upper_32_bits(cpu_addr + size - 1));
-+				   upper_32_bits(limit_addr));
- 	dw_pcie_writel_dbi(pci, PCIE_ATU_LOWER_TARGET,
- 			   lower_32_bits(pci_addr));
- 	dw_pcie_writel_dbi(pci, PCIE_ATU_UPPER_TARGET,
- 			   upper_32_bits(pci_addr));
- 	val = type | PCIE_ATU_FUNC_NUM(func_no);
--	val = ((upper_32_bits(size - 1)) && (pci->version >= 0x460A)) ?
--		val | PCIE_ATU_INCREASE_REGION_SIZE : val;
-+	if (upper_32_bits(limit_addr) > upper_32_bits(cpu_addr) &&
-+	    pci->version >= 0x460A)
-+		val |= PCIE_ATU_INCREASE_REGION_SIZE;
- 	if (pci->version == 0x490A)
- 		val = dw_pcie_enable_ecrc(val);
- 	dw_pcie_writel_dbi(pci, PCIE_ATU_CR1, val);
--- 
-2.35.1
+> Case 3 is the only one when we need to check all CPUs and
+> cached_tbp_pinned may be useful.
+> But I wonder if we could instead add a per-task
+> has_per_cpu_breakpoints flag. Then if the flag is set, we check all
+> CPUs as we do now (don't need cached_tbp_pinned). And if it's not set,
+> then we could optimize the code even more by making it O(1) instead of
+> O(N).
 
+> Namely, we add global tsk_pinned for tasks that don't have
+> per-cpu breakpoints, and we update only that tsk_pinned instead of
+> iterating over all CPUs.
+
+That seems reasonable.
+
+> I think this will require adding cpu_pinned as well (similar to
+> tsk_pinned but aggregated over all CPUs).
+
+> Then the fast path capacity check can become just:
+>
+> if (bp->hw.target && !bp->hw.target->has_per_cpu_breakpoints && bp->cpu < 0) {
+>   if (max_cpu_bp_pinned(type) + task_bp_pinned(-1 /*cpu*/, bp, type) +
+> hw_breakpoint_weight(bp) > nr_slots[type])
+>     return -ENOSPC;
+> }
+>
+> Does it make any sense?
+
+Yes, I think this might work. I'll see if I can make it work.
