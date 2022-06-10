@@ -2,92 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2E2AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 14:02:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E87DBC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 14:05:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244978AbiFJOB7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 10:01:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48388 "EHLO
+        id S238616AbiFJOFt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 10 Jun 2022 10:05:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349401AbiFJOBq (ORCPT
+        with ESMTP id S229974AbiFJOFr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 10:01:46 -0400
-Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5757A2B72CB
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 07:01:44 -0700 (PDT)
+        Fri, 10 Jun 2022 10:05:47 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C5D21B112;
+        Fri, 10 Jun 2022 07:05:46 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id u12so53721495eja.8;
+        Fri, 10 Jun 2022 07:05:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1654869704;
-  x=1686405704;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=d28BFi0/VBb4bixwduhrFurpMjara8WE4vvBx38KIlM=;
-  b=AdpReraq0AkSip49aWoRClfjN7eVD7yOg5a0Hs45GnA0QlTdmFoMtmpZ
-   QQXgUuFgSoWtlV7dtc7HRkESCGamdr4nd0sAl+rvLtfh04vYR1c0u41LW
-   yk1j81ly7OYyFENBoeOZiC2F3mrqujITE9nAwaYF69hcsHGSECLvSLmXg
-   mKMmPgx84uuNBCttj4dg339C94id9YMf2Oo4Mky8VVYiQJmoulN7GqyCh
-   lwy7sKQtMm7pmmbGkK/N7sa6V6kT9x50P4BBABQPrc3CrDmppi4pBc9EM
-   dkgxi36MLdrrlhrVEkh7ZiSK20aDPlYrkdKdjAs/eYKoTRpJuCcQqmH4D
-   w==;
-From:   =?UTF-8?q?Ludvig=20P=C3=A4rsson?= <ludvig.parsson@axis.com>
-To:     Sudeep Holla <sudeep.holla@arm.com>
-CC:     <kernel@axis.com>,
-        =?UTF-8?q?Ludvig=20P=C3=A4rsson?= <ludvig.parsson@axis.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] firmware: arm_scmi: Fix incorrect error propagation
-Date:   Fri, 10 Jun 2022 16:00:55 +0200
-Message-ID: <20220610140055.31491-1-ludvig.parsson@axis.com>
-X-Mailer: git-send-email 2.20.1
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YbP9gsqB3qLAoNU77kEBLK9K01UViT8sDRAizGOWGnQ=;
+        b=nWkjQLJG1m1S4r5WE2Gtw3EP/pIxjJTHgF1eR8+KokXXsSNNpb+SqC94VTcD0tAMp3
+         tkefAzAetwJHDH0kmJ24rFsU/5cVNdS+HmLXBqyfZHdCJSzPGrYFZ+CiwmIjrt2VFFjO
+         xCuFSR8HaLcnWttMLCYSLjvH/J4NgGKk7sgLQJbCSIaUdFhpFRip6jwyCCspYMD5ZMuB
+         ya848z4SH/f4Uralab+xCGDpPzTAt7O294CzkXjb4pj7qCEVzUXU4Rit5EzWc1Sc39Yb
+         OoWIOUVgZ1uEDRlPM6LKkrSXL1AkCoVY/mi6aFcPn3wPYc5s3QeDbEpR4edSLelxDVRT
+         Zgig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YbP9gsqB3qLAoNU77kEBLK9K01UViT8sDRAizGOWGnQ=;
+        b=Y5fXsNsnTucKuVdZWkb4ewN9X+e1l3+addHk6G8UzIhKyd2aFMGoiHThRBiW3hVBpK
+         8yti8jP47UNQ8IrTpKMVcq3iLpK9JFHs8byRz0x+mib2wsk7l73jjOxuZot3riUSZMXg
+         sZn94Uc5B0h9qXbiNA5v5X70mJ6WTGrqrT/ncGZqTUuTZjcvw8bmCD64I8Tzsxv5+O5r
+         3bgEwOJZCgcYQRZSmlnAaT4CgG+HbLCEOb15GV/0UQYl/KPSFTuvdrdHcbZ9wQA1R3aW
+         MWojWKdzQnDgjEyn/600RjDWsGUMrnJi2sIlq3msvsmHwqxpXArw+rq3qA8/RtSknvAe
+         dtPg==
+X-Gm-Message-State: AOAM533YyMCMijcvEV84w8CT/1hRLYvJC5oBKmZP2DD6tWAdWB+UvtQq
+        G4V1dBzZrq17YoqY9Vf09hXUgEr6VDowMZzMiOM=
+X-Google-Smtp-Source: ABdhPJwdT1ddg6Z7ftgUrjujTENenz0urdV1b3U/bCuWXcAIRq+FIlp8WEY+sC9/bq1VeoLtxTiU4RFuGbwHqkQXIL0=
+X-Received: by 2002:a17:906:d550:b0:704:7ba6:9854 with SMTP id
+ cr16-20020a170906d55000b007047ba69854mr40122920ejc.579.1654869945337; Fri, 10
+ Jun 2022 07:05:45 -0700 (PDT)
 MIME-Version: 1.0
+References: <20220609121334.2984808-1-david@protonic.nl>
+In-Reply-To: <20220609121334.2984808-1-david@protonic.nl>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 10 Jun 2022 16:05:06 +0200
+Message-ID: <CAHp75VeA72YLPbPipx+MQCHdkgXy5dnCbADm=CMjgA5NpJE44g@mail.gmail.com>
+Subject: Re: [PATCH] spi: Fix per-cpu stats access on 32 bit systems
+To:     David Jander <david@protonic.nl>
+Cc:     Mark Brown <broonie@kernel.org>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-scmi_voltage_descriptors_get() will incorrecly return an
-error code if the last iteration of the for loop that
-retrieves the descriptors is skipped due to an error.
-Skipping an iteration in the loop is not an error, but
-the `ret` value from the last iteration will be
-propagated when the function returns.
+On Thu, Jun 9, 2022 at 2:29 PM David Jander <david@protonic.nl> wrote:
+>
+> On 32 bit systems, the following kernel BUG is hit:
+>
+> BUG: using smp_processor_id() in preemptible [00000000] code: swapper/0/1
 
-Fix by not saving return values that should not be
-propagated. This solution also minimizes the risk of
-future patches accidentally reintroducing this bug.
+https://www.kernel.org/doc/html/latest/process/submitting-patches.html#backtraces-in-commit-mesages
 
-Signed-off-by: Ludvig Pärsson <ludvig.parsson@axis.com>
----
- drivers/firmware/arm_scmi/voltage.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/firmware/arm_scmi/voltage.c b/drivers/firmware/arm_scmi/voltage.c
-index 9d195d8719ab..49b75375d3ff 100644
---- a/drivers/firmware/arm_scmi/voltage.c
-+++ b/drivers/firmware/arm_scmi/voltage.c
-@@ -225,9 +225,8 @@ static int scmi_voltage_descriptors_get(const struct scmi_protocol_handle *ph,
- 
- 		/* Retrieve domain attributes at first ... */
- 		put_unaligned_le32(dom, td->tx.buf);
--		ret = ph->xops->do_xfer(ph, td);
- 		/* Skip domain on comms error */
--		if (ret)
-+		if (ph->xops->do_xfer(ph, td))
- 			continue;
- 
- 		v = vinfo->domains + dom;
-@@ -249,9 +248,8 @@ static int scmi_voltage_descriptors_get(const struct scmi_protocol_handle *ph,
- 				v->async_level_set = true;
- 		}
- 
--		ret = scmi_voltage_levels_get(ph, v);
- 		/* Skip invalid voltage descriptors */
--		if (ret)
-+		if (scmi_voltage_levels_get(ph, v))
- 			continue;
- 
- 		ph->xops->reset_rx_to_maxsz(ph, td);
 -- 
-2.20.1
-
+With Best Regards,
+Andy Shevchenko
