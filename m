@@ -2,264 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CAC9C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 16:41:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EFABC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 16:46:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343984AbiFJQli (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 12:41:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37044 "EHLO
+        id S245465AbiFJQp6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 10 Jun 2022 12:45:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244328AbiFJQlO (ORCPT
+        with ESMTP id S234808AbiFJQp5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 12:41:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E71AB19031;
-        Fri, 10 Jun 2022 09:41:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 886FAB83640;
-        Fri, 10 Jun 2022 16:41:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53212C341C4;
-        Fri, 10 Jun 2022 16:41:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654879268;
-        bh=pAdz++aE+4RP4T7B3ruJVc+D7hErfuaYU5oKbDu8EmI=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=gEcl11kmgr1KMeIZwSXSRyCvo8ObflBhq7pv7JRikFEbkisNF3tF+fC4NRJ3sGUoU
-         TBH61xWMTbVLCtjKHBEOqc9mxWsO054eHFpI+fqz5m9r31Cw57q+Ic9OSVE5/TZsw3
-         Zvxnbi2fzOv6nHO/c1Xb2yEGnspXECYgnptK69AZXUGYaDml8h9UT1fFd5oAI7nqUa
-         JeapFlydkDt1KKjxuBYByl6mEmQAfCoy855YvD+hcu+RICZyBfQAQ1zDWWr09j8yrM
-         y4HXO7+EJG+h0OkxSDfGNafSX+4hMoSDCxRBIioqqlWYlc8xTKyfLmla7GS4mVjt5w
-         /9kWOO8GoYtug==
-Received: by mail-oi1-f169.google.com with SMTP id y69so22405647oia.7;
-        Fri, 10 Jun 2022 09:41:08 -0700 (PDT)
-X-Gm-Message-State: AOAM533eB7RngrT0j1szZpRd0mJrpj/pPslTXCpaMz2eXirOmIm+0dSX
-        z8Qis0P5LeRCXn6jF+80AnFtw+FBxLZkbqjbTsw=
-X-Google-Smtp-Source: ABdhPJztkPGLoTJZN81zwpZywu2nmc1BbqQHx87+gMgcUq4NGlSgUjSKcQyiEiYhxPTeDcflatIExEqxx60IF4YDUf0=
-X-Received: by 2002:a05:6808:300e:b0:32c:425e:df34 with SMTP id
- ay14-20020a056808300e00b0032c425edf34mr397582oib.126.1654879267364; Fri, 10
- Jun 2022 09:41:07 -0700 (PDT)
+        Fri, 10 Jun 2022 12:45:57 -0400
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF8A03C782D
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 09:45:55 -0700 (PDT)
+Received: by mail-qv1-xf35.google.com with SMTP id j2so18982727qvp.9
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 09:45:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=joelfernandes.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=smRKq849MMEHP1mVTcI2nyuMXjCH70MLQXxMNUYUaqc=;
+        b=bN386ziC7e4CvAmi+Mk8s659bfOMKMsXDTY5HMDjpPYbyR5xCnboJK39A3uA6tFeGQ
+         yT3GbPO7Xq9mPEtZ6wYiqIB5D65zeT72fGQ8DtkM9WUDyCMUUyd1zsusvIQ0eDoElYak
+         ew5V4oX0ky/yXtaAmTti8E+4SPYhaeYTa2SCs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=smRKq849MMEHP1mVTcI2nyuMXjCH70MLQXxMNUYUaqc=;
+        b=ehs+bzHGOgePmUC6P26GdpoWGJKz/O4L7vqkmOESsBgRbHJKrMJUtOOLzbviezcEER
+         jxDFAW5aQJTm682EUU13KXUE1RkaL2VBFL3pRurX9tQeaicxOj36Zd1dOHb40oQEEqZ3
+         r1XNUUK6G/bxHdeUjOVt/oBY7tJSDjlzxIeYF8MG5vV0H7BfeKlqaOn7guBXMwleVnf1
+         9QxBwzzK5bJiQpPCi7l3paPTaB32MH8+lLcUX5xA1OTWvKQUI6s8h4vxQYRbkXkt2GpG
+         39G6IuMt1wHhbAOVnXWhWm+n7Q5GZj3nsQVKjKdwBonZ6Lu9ZoYjGrAuuwmFXRr5lyC1
+         gWbQ==
+X-Gm-Message-State: AOAM532NZKdk4r+893np6DcVhPMUuHkBTzb/ey1SckTsanpQ/Gqx6HW8
+        HBvrJuvwNqKWY7Dznvt25KPT+++8o59Xcg==
+X-Google-Smtp-Source: ABdhPJweXoeSHl6eMayWCDtc93MuHa9vFGd1PuGq29AAM/IBWrXOAB/7pT5F0ijeFsnAM594AKDVLA==
+X-Received: by 2002:a05:6214:29c6:b0:466:fda7:8279 with SMTP id gh6-20020a05621429c600b00466fda78279mr34516480qvb.32.1654879554966;
+        Fri, 10 Jun 2022 09:45:54 -0700 (PDT)
+Received: from localhost (228.221.150.34.bc.googleusercontent.com. [34.150.221.228])
+        by smtp.gmail.com with ESMTPSA id hh8-20020a05622a618800b00304f3e320f2sm8582639qtb.4.2022.06.10.09.45.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Jun 2022 09:45:54 -0700 (PDT)
+Date:   Fri, 10 Jun 2022 16:45:54 +0000
+From:   Joel Fernandes <joel@joelfernandes.org>
+To:     Uladzislau Rezki <urezki@gmail.com>
+Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, RCU <rcu@vger.kernel.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <neeraj.iitr10@gmail.com>,
+        Oleksiy Avramchenko <oleksiy.avramchenko@sony.com>
+Subject: Re: [PATCH 2/2] rcu/kvfree: Introduce KFREE_DRAIN_JIFFIES_[MAX/MIN]
+ interval
+Message-ID: <YqN1QqRmPpchDm/k@google.com>
+References: <20220602080644.432156-1-urezki@gmail.com>
+ <20220602080644.432156-2-urezki@gmail.com>
+ <20220604155108.GU1790663@paulmck-ThinkPad-P17-Gen-1>
+ <YpxzB3/HRN/EEHa8@pc638.lan>
+ <20220607034710.GE1790663@paulmck-ThinkPad-P17-Gen-1>
+ <CA+KHdyXU1apQQbVVZ_zX7o86Qp-AQnif2u8aJFULqHNtfCGcSA@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220329174057.GA17778@srcf.ucam.org> <f9622b47-c45f-8c91-cb85-e5db7fd541cf@apertussolutions.com>
-In-Reply-To: <f9622b47-c45f-8c91-cb85-e5db7fd541cf@apertussolutions.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Fri, 10 Jun 2022 18:40:54 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXEUT8BK_akqjF1Wx0JkLniFyV_h9s1TfQnPqfxCHsKfWw@mail.gmail.com>
-Message-ID: <CAMj1kXEUT8BK_akqjF1Wx0JkLniFyV_h9s1TfQnPqfxCHsKfWw@mail.gmail.com>
-Subject: Re: Linux DRTM on UEFI platforms
-To:     "Daniel P. Smith" <dpsmith@apertussolutions.com>
-Cc:     Matthew Garrett <mjg59@srcf.ucam.org>,
-        Daniel Kiper <daniel.kiper@oracle.com>,
-        Alec Brown <alec.r.brown@oracle.com>,
-        Kanth Ghatraju <kanth.ghatraju@oracle.com>,
-        Ross Philipson <ross.philipson@oracle.com>,
-        "piotr.krol@3mdeb.com" <piotr.krol@3mdeb.com>,
-        "krystian.hebel@3mdeb.com" <krystian.hebel@3mdeb.com>,
-        "persaur@gmail.com" <persaur@gmail.com>,
-        "Yoder, Stuart" <stuart.yoder@arm.com>,
-        Andrew Cooper <andrew.cooper3@citrix.com>,
-        "michal.zygowski@3mdeb.com" <michal.zygowski@3mdeb.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        "lukasz@hawrylko.pl" <lukasz@hawrylko.pl>,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        grub-devel@gnu.org, James Morris <jmorris@namei.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+KHdyXU1apQQbVVZ_zX7o86Qp-AQnif2u8aJFULqHNtfCGcSA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 19 May 2022 at 22:59, Daniel P. Smith
-<dpsmith@apertussolutions.com> wrote:
->
->
-> Greetings,
->
-> Based on the discussions that occurred in this thread, there seems to be
-> two issues at hand that should be decoupled, as their solutions can and
-> should be implemented independently. These are:
-> - the handling of the Dynamic Launch preamble
-> - providing the complete kernel configuration for measurement
->
-> For the former, it is believed there is a consensus that Matthew's
-> proposed callback approach would be the preferred method. Through some
-> contemplating and prototyping, the determination is that this will in
-> fact be an approach that will ultimately benefit the TrenchBoot project
-> itself.
->
-> In general, the preamble consists of two activities: 1. preparing the
-> contents in memory and 2. preparing the hardware in order to call the
-> Dynamic Launch instruction. In past implementations, these two
-> activities were conducted sequentially, but in reality the time delta
-> between the two may be arbitrary. Introducing this separation does not
-> introduce any security concerns due to how the Dynamic Launch works. Any
-> tampering of the contents in memory will either cause the Dynamic Launch
-> to fail or result in a detectable difference in the Dynamic Launch
-> measurement chain.
->
-> In order to separate the hardware interactions into what will be called
-> the DLE Handler, this will require a collection of information regarding
-> how the environment is set up. When working through what would be
-> required, this led to the realization that this really should be
-> generalized into a formal specification for TrenchBoot's Secure Launch.
-> This will enable a reusable solution for the TrenchBoot project, versus
-> implementing a one-off solution for Linux. A prototype of is near
-> completion, for which below is a visual depiction along with a
-> step-by-step walk through of how it would work for efi-stub.
->
-> Secure Launch Flow:
->
->                          +-----------------+
->                          |                 |
->          +-------------->| Secure Launch   +---------------+
->          |               | Resource Table  |               |
->          |               |                 |    +------|---------------+
->          |               +--------+--------+    |      |         DLME  |
->          |                        |             |      v               |
->          |                        |             | +---------------+    |
->    +-----+---------+              v             | |               |    |
-> +--+-------------+ |       +-------------+      | | Secure Launch |    |
-> |                | +------>|             +------->|     Entry     |    |
-> | Bootloader(s)  | |       | DLE Handler |      | |               |    |
-> |                +-+       |             |      | +---------------+    |
-> +----------------+         +-------------+      +----------------------+
->
-> A quick note on the flow diagram, for simplicity all entities prior to
-> the DLE Handler are represented by the "Bootloader(s)" block due to the
-> fact that what entities are involved can and will vary. This is where
-> both GRUB and efi-stub are being represented even though for Linux EFI,
-> GRUB is considered the bootmanager while efi-stub is the bootloader.
->
-> An efi-stub walk-thru:
->
-> 1. - GRUB
-> 1.1 - GRUB will initialize the Secure Launch Resource Table (SLRT)
-> 1.2 - GRUB will set up DLE Handler and register it in SLRT
-> 1.5 - GRUB will load Linux kernel
-> 1.3 - GRUB will set up DL environment appropriately for HW platform
-> 1.4 - GRUB will record DL setup in SLRT
-> 1.5 - GRUB will record SLRT location in platform's DL config structure
-> 1.5 - GRUB will register SLRT in EFI configuration table under SL GUID
-> 1.6 - GRUB will invoke efi-stub
->
-> 2. - efi-stub
-> 2.1 - efi-stub will check if SL GUID is in EFI configuration table
-> 2.2 - for each efi-stub config action, an SLRT EFI config event will be
->       recorded
-> 2.3 - efi-stub calls EBS() then jumps to DLE Handler registered in SLRT
->       while passing the SLRT address
->
-> 3. - DL Handler
-> 3.1 - DL Handler will retrieve SL Entry from SLRT
-> 3.2 - DL Handler will prepare HW for calling DL CPU instruction
-> 3.3 - DL Handler will execute DL CPU instruction
->
-> 4. SL Entry
-> 4.1 SL Entry will retrieve SLRT address from platform's DL config struct
-> 4.2 SL Entry will use policy in SLRT to determine what to measure
-> 4.3 SL Entry will set up HW to what Linux expects
-> 4.4 SL Entry will jump into Linux setup kernel
-> 4.5 SL Entry will record measurements into TPM prior to init process
->     starting
->
-> While Matthew's original proposal was around having a location in the
-> efi-stub for the callback to be registered, it is felt that it would be
-> better suited as part of the Secure Launch specification. What is
-> proposed is for the address of the DL Handler to be stored in the SLRT,
-> details for the SLRT are below. Then the bootloader that is responsible
-> for loading the DL Handler will register the SLRT in the EFI
-> configuration table. Checking for the SLRT GUID in the EFI configuration
-> table will enable the EFI bootoader responsible for calling EBS, in this
-> case efi-stub, to know that a Dynamic Launch has been requested. It also
-> seems this would be more in line with how EFI tends to work, versus a
-> Linux-specific callback boot param or something similar.
->
+Hi Vlad, Paul,
 
-This all looks reasonable but it is not clear to me what a 'Linux
-setup kernel' is, and what the boot protocol is for that handover.
+On Thu, Jun 09, 2022 at 03:10:57PM +0200, Uladzislau Rezki wrote:
+> On Tue, Jun 7, 2022 at 5:47 AM Paul E. McKenney <paulmck@kernel.org> wrote:
+> >
+> > On Sun, Jun 05, 2022 at 11:10:31AM +0200, Uladzislau Rezki wrote:
+> > > > On Thu, Jun 02, 2022 at 10:06:44AM +0200, Uladzislau Rezki (Sony) wrote:
+> > > > > Currently the monitor work is scheduled with a fixed interval that
+> > > > > is HZ/20 or each 50 milliseconds. The drawback of such approach is
+> > > > > a low utilization of page slot in some scenarios. The page can store
+> > > > > up to 512 records. For example on Android system it can look like:
+> > > > >
+> > > > > <snip>
+> > > > >   kworker/3:0-13872   [003] .... 11286.007048: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000026522604 nr_records=1
+> > > > >   kworker/3:0-13872   [003] .... 11286.015638: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000095ed6fca nr_records=2
+> > > > >   kworker/1:2-20434   [001] .... 11286.051230: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000044872ffd nr_records=1
+> > > > >   kworker/1:2-20434   [001] .... 11286.059322: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000026522604 nr_records=2
+> > > > >   kworker/0:1-20052   [000] .... 11286.095295: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000044872ffd nr_records=2
+> > > > >   kworker/0:1-20052   [000] .... 11286.103418: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x00000000cbcf05db nr_records=1
+> > > > >   kworker/2:3-14372   [002] .... 11286.135155: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000095ed6fca nr_records=2
+> > > > >   kworker/2:3-14372   [002] .... 11286.135198: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000044872ffd nr_records=1
+> > > > >   kworker/1:2-20434   [001] .... 11286.155377: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x00000000cbcf05db nr_records=5
+> > > > >   kworker/2:3-14372   [002] .... 11286.167181: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000026522604 nr_records=5
+> > > > >   kworker/1:2-20434   [001] .... 11286.179202: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x000000008ef95e14 nr_records=1
+> > > > >   kworker/2:3-14372   [002] .... 11286.187398: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x00000000c597d297 nr_records=6
+> > > > >   kworker/3:0-13872   [003] .... 11286.187445: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000050bf92e2 nr_records=3
+> > > > >   kworker/1:2-20434   [001] .... 11286.198975: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x00000000cbcf05db nr_records=4
+> > > > >   kworker/1:2-20434   [001] .... 11286.207203: rcu_invoke_kfree_bulk_callback: rcu_preempt bulk=0x0000000095ed6fca nr_records=4
+> > > > > <snip>
+> > > > >
+> > > > > where a page only carries few records to reclaim a memory. In order to
+> > > > > improve batching and make utilization more efficient the patch introduces
+> > > > > a drain interval that can be set either to KFREE_DRAIN_JIFFIES_MAX or
+> > > > > KFREE_DRAIN_JIFFIES_MIN. It is adjusted if a flood is detected, in this
+> > > > > case a memory reclaim occurs more often whereas in mostly idle cases the
+> > > > > interval is set to its maximum timeout that improves the utilization of
+> > > > > page slots.
+> > > > >
+> > > > > Signed-off-by: Uladzislau Rezki (Sony) <urezki@gmail.com>
+> > > >
+> > > > That does look like a problem well worth solving!
+> > > >
+> > > Agree, better ideas make better final solution :)
+> > >
+> > > >
+> > > > But I am missing one thing. If we are having a callback flood, why do we
+> > > > need a shorter timeout?
+> > > >
+> > > To offload faster, because otherwise we run into classical issue, it is a low
+> > > memory condition state resulting in OOM.
+> >
+> > But doesn't each callback queued during the flood give us an opportunity
+> > to react to the flood?  That will be way more fine-grained than any
+> > reasonable timer, right?  Or am I missing something?
+> >
+> We can set the timer to zero or to current "jiffies" to initiate the
+> offloading if the
+> page is full. In that sense probably it make sense to propagate those two attr.
+> to user space, so the user can configure min/max drain interval.
+> 
+> Or we can only deal with fixed interval exposed via sysfs to control it by user.
+> In that case we can get rid of MIN one and just trigger a timer if the page is
+> full. I think this approach is better.
 
-The EFI stub to core kernel handover ABI is private to Linux,
-architecture specific, and subject to change. This is basically the
-point I made before: if you want to boot Linux in EFI mode, you have
-to go via the EFI stub, and the EFI stub is in charge of booting the
-kernel proper. This is why I (we?) suggested some kind of callback
-mechanism, where the EFI stub makes a D-RTM specific call after EBS(),
-but does regain control over the boot flow.
+Yes I also think triggering timer with zero-timeout is better. Can you (Vlad)
+accomplish that by just calling the timer callback inline, instead of queuing
+a timer? I imagine you would just do queue_work() instead of
+queue_delayed_work() in this scenario.
 
-If we add another entry point into the kernel proper for the Secure
-Launch Entry component to use, we are again exposing an internal ABI
-in a way that limits our future ability to make changes to the EFI <->
-kernel handover.
+> > I do agree that the action would often need to be indirect to avoid the
+> > memory-allocation-state hassles, but we already can do that, either via
+> > an extremely short-term hrtimer or something like irq-work.
+> >
+> > > > Wouldn't a check on the number of blocks queued be simpler, more direct,
+> > > > and provide faster response to the start of a callback flood?
+> > > >
+> > > I rely on krcp->count because not always we can store the pointer in the page
+> > > slots. We can not allocate a page in the caller context thus we use page-cache
+> > > worker that fills the cache in normal context. While it populates the cache,
+> > > pointers temporary are queued to the linked-list.
+> > >
+> > > Any thoughts?
+> >
+> > There are a great many ways to approach this.  One of them is to maintain
+> > a per-CPU free-running counter of kvfree_rcu() calls, and to reset this
+> > counter each jiffy.
+> >
+> > Or am I missing a trick here?
+> >
+> Do you mean to have a per-cpu timer that checks the per-cpu-freed counter
+> and schedule the work when if it is needed? Or i have missed your point?
 
-> Hopefully this resolves the first of the two issues mentioned at the
-> beginning of this email in a manner that addresses most of the concerns
-> raised in the earlier discussions. This leaves the second issue over how
-> to get an accurate measurement of how the kernel was configured by
-> efi-stub. When reviewing the comments in the discussion, it was realized
-> the originally requested approach was in fact in reverse. Instead of
-> asking for efi-stub's internal API/ABI to be documented, Secure Launch
-> should specify an ABI for how any bootloader should be invoking a Secure
-> Launch entrypoint, particularly capturing how an EFI bootloader
-> configured the environment. This is the second motivation for devising
-> the SLRT. Specifying this ABI also provided the opportunity to
-> incorporate a measurement policy and thus allowing for it to be
-> separated away from sl-stub, as it is in the current implementation. For
-> this discussion the focus will be on the portions of the SLRT relating
-> to EFI Environments and in particular the EFI config event record
-> mentioned in step 2.2 of the efi-stub walk-thru.
->
-> First, a short review of what the Secure Launch Resource Table is and
-> its purpose. The SLRT is to provide a platform and kernel agnostic
-> configuration table of the meta-data pertinent to the Secure Launch
-> entry points for the variety of kernels the TrenchBoot project will be
-> seeking to support. The specification for the table is in progress, but
-> the consensus is that it will consist of a header structure followed by
-> a packed series of TLV records. The specification will describe the
-> various types of records, but the ones of interests in this discussion
-> are those that efi-stub would use to record how it configured the
-> environment.
->
-> The initially proposed TLV record, see below, for EFI configuration
-> information was devised around allowing an EFI bootloader to save
-> multiple config events under a single TLV record. In discussions on the
-> specification thus far, there are questions if it would be better to
-> have a TLV record for each config event or the proposed multiple events
-> per TLV record. It is worth noting that an assumption is being made in
-> the proposed record. The assumption is that a config event will either
-> be setting a configuration value between 1 and 8 bytes, or it will be a
-> data blob for which the address and size will be recorded. The question
-> is whether that covers all actions the efi-stub does or expects that it
-> will have to do in the near future.
->
-> struct slrt_entry_efi_config_event {
->         struct slrt_entry_hdr hdr;
->         uint32_t identifier;                /* EFI bootloader ID */
->         uint16_t reserved;
->         uint16_t nr_entries;                /* Num cfg records */
->         struct efi_cfg_value values[0];     /* Array of cfg values */
->     };
->
->     struct efi_cfg_value {
->         uint64_t data;          /* cfg data (address or value) */
->         uint32_t size;          /* data size if data is an addr */
->         uint32_t flags;         /* 1L<0 IS_ADDR: data is an addr */
->         char evt_info[8];       /* event info str for TPM event log */
->     };
->
-> Hopefully the general approach here is agreeable, as IMHO it does
-> provide a fairly elegant approach to resolving the issues at hand.
-> Details can always be negotiated to address various implementation
-> concerns. Provided this is acceptable, then everyone here is welcome to
-> provide input on the Secure Launch specification, link forthcoming.
->
+I think he (Paul) is describing the way 'flood detection' can work similar to how the
+bypass list code is implemented. There he maintains a count which only if
+exceeds a limit, will queue on to the bypass list.
 
-Given that this is EFI, I would expect all these implementation
-details to be exposed via a protocol that the stub can invoke, in a
-way that will likely be similar (or the same?) as the TCG protocol
-used for recording PCR measurements.
+This code:
 
-So could you elaborate on the types of actions? Is this simply things
-like the command line, initrd contents, initrd load address, kernel
-load address etc etc? There isn't generally that much going on in the
-stub beyond that.
+        // If we have advanced to a new jiffy, reset counts to allow
+        // moving back from ->nocb_bypass to ->cblist.
+        if (j == rdp->nocb_nobypass_last) {
+                c = rdp->nocb_nobypass_count + 1;
+        } else {
+                WRITE_ONCE(rdp->nocb_nobypass_last, j);
+                c = rdp->nocb_nobypass_count - nocb_nobypass_lim_per_jiffy;
+                if (ULONG_CMP_LT(rdp->nocb_nobypass_count,
+                                 nocb_nobypass_lim_per_jiffy))
+                        c = 0;
+                else if (c > nocb_nobypass_lim_per_jiffy)
+                        c = nocb_nobypass_lim_per_jiffy;
+        }
+        WRITE_ONCE(rdp->nocb_nobypass_count, c);
+
+
+Your (Vlad's) approach OTOH is also fine to me, you check if page is full and
+make that as a 'flood is happening' detector.
+
+thanks,
+
+ - Joel
+
