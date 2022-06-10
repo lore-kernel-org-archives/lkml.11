@@ -2,99 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A05C9CCA47B
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 07:28:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88271C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 07:30:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346854AbiFJH2t (ORCPT
+        id S1346936AbiFJHaH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 03:28:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34122 "EHLO
+        Fri, 10 Jun 2022 03:30:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346951AbiFJH2c (ORCPT
+        with ESMTP id S1346881AbiFJH36 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 03:28:32 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A299113B49;
-        Fri, 10 Jun 2022 00:28:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1654846096;
-        bh=bM7qwrMX5txhavEAHeipJu6JmkjUsYWlTUyj3tUAEK4=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=Pm7wekgSiianeX1XdxNpHFDLDGgyeSyzr3p5+NUH/qoxz6kiuEoIunYVLheGprqcG
-         qWIqXirB/j1ZZqLt+Ql5Jm572xNA0XigG1gOBn6xDJMiN+nOSPxzWn2iWRsCr6VYYT
-         j1CqCpASQDDjvNElk31tXa6wQ84uQOg9tKUz594Q=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([5.146.195.3]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MBDj4-1ntUXG25Xi-00Cgc6; Fri, 10
- Jun 2022 09:28:16 +0200
-From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     netdev@vger.kernel.org
-Cc:     =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] docs: networking: phy: Fix a typo
-Date:   Fri, 10 Jun 2022 09:28:08 +0200
-Message-Id: <20220610072809.352962-1-j.neuschaefer@gmx.net>
-X-Mailer: git-send-email 2.35.1
+        Fri, 10 Jun 2022 03:29:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBBCD559B;
+        Fri, 10 Jun 2022 00:29:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8098E61FD6;
+        Fri, 10 Jun 2022 07:29:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9E06C34114;
+        Fri, 10 Jun 2022 07:29:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654846178;
+        bh=jNsd0kuZCZ1CNIJYpIFtvU1hgHvp2sYZQcvjXBIrM8k=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WvKhmR6Q0fp41iNBJJAoTF9qMnXaKDFj27FquI70np8DEgKD73PxHaovUFUvYGwjU
+         JhGdWcRljWRH7UofR4M8DPsJk42gZJ7e/2BwxzOYPS66UfBVx0yMFWxZyGDyneyHJx
+         xGeEQO4Qx29VmHrYfTgtx7QaH2Q4CtIqqIUTVnfsFbgChcV3gBbHvjDexuCwmmjj6h
+         FMBkfaOy2jr3lN3DmyGrnIkI+XPp9XeIBbayKzAecoj1xLQWSqflysgsE84ja6Y6qe
+         l6zjMqyzSLbAOJMbBeh01Z6k4+mTa/Jw2XJY2NuFHWHVQhio7tTLEn/MxBDNIrBgb5
+         yAKlJm+DCBQpg==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1nzZ5J-0007FW-VV; Fri, 10 Jun 2022 09:29:34 +0200
+Date:   Fri, 10 Jun 2022 09:29:33 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Dongliang Mu <mudongliangabcd@gmail.com>
+Cc:     Dongliang Mu <dzm91@hust.edu.cn>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        gushengxian <gushengxian@yulong.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Oliver Neukum <oneukum@suse.com>, Sean Young <sean@mess.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-media@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] media: flexcop-usb: fix sanity check of bNumEndpoints
+Message-ID: <YqLy3QpRxnSrj7ge@hovoldconsulting.com>
+References: <20220602055027.849014-1-dzm91@hust.edu.cn>
+ <YphciEToNtxIUrzU@hovoldconsulting.com>
+ <CAD-N9QUfeN7qQ-S20x9mU=-rd38nPFeont2dYT2+-phTxdqMvA@mail.gmail.com>
+ <YqH86qB4wfYctyYP@hovoldconsulting.com>
+ <CAD-N9QVQpm87wpCnLj08db3kAr=b191op3=ESOMm1yh7UWu4jw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:YIXRPmHeDOcYOo18uCtx0Dhe69ABV50rrJAONLwZgjkGbK4Ckw5
- A6urwdfpYxU+EAesm/HdHrgdBYYuvWI7jMKMr/TcBzqqoDWX8wqQRkJba9E8KTjecm7SwxM
- Bmu1s0e5chfZI1lRyxNvYWNusslxUYOQS0dmszwAw5qmyUr0G6nJhGZ0Lt9sDLs4C4w+6df
- MwtBLz8/DxDE+rvrOjnVA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:tfo2lx4XluM=:oboDSAj9AMk0kunZSUgaHC
- 4ZGTtnRGzAQJOMAY/4qcNDByXiVD0t+tSF63dfoVOS7KSZ2+53lYkw8jREb71lQf5AnU/O97R
- fv18CBB39ZdrypGI/xiD6+cyKX6AHTLpO6uabSWWD8s15cgjmFAD12cnQQyaO03SDzSk5ZlBp
- RlqwPNjpIx3tU64kE+RvdTHYNj3m0Hq6dyXV3MzgyxvRaoZRXrTofxmFzarbdKW36QBOEL3z8
- yuyfXeyR6T54f5SFcXCDeddMVpPhVZO4ddTFPqQTG7yDN/q1gEduI01WxBZKDpRQpELHKaX5A
- raiF7OdODQdJJZ/pIzaNVSfMZ57qtik3CM8jVo4JKFYRFUOtGMC1kQW/EduAJ6ZDUe26L3MxX
- F7W3pvuZ3mW4kjubFAiwPFQmElLCjGBCuKWHbc6ttKCiGrAZYjSLgsUfzubz5z3wAPkUet8/U
- FNb5xajatSNkIPzdH+/PyyVukvZUOlb+GKe7kFB2clYtg4esAYYsaaG/bk3gZU2jCj2lf/69R
- DY+4X3e9jwH+GsaJwV4w8YiU/a9IEbNporpU1Q5pFgPshOEmv9y8B95jVODQapJfMUBU7t3Kc
- 8ht/waSTFphIrN1Or+FRXM4iRz9fkdnKYfso1BFgpZ3UfQ72415gZfHdcfmGkvNlGzaiYoXJg
- 5VZ1mXCjiYPSwZvfQmDunL20KRg1iQBd+LRxrj76IDdJ5VEOdxXTbmL1zc8LwT4UxVt6EHDIH
- ahqoq8/kWB3SGippGQ9HVTjIOG8e8YoB+Wnu3kQTWCPnQRZVJx1OuwCz7DAIlefj+CP9LSfyx
- s/Vak76ndJloR9ZHNLcFBJl9TvQSbcjxY6oInAfAXVXd9A847RLxoktaOrJXg8PtbE5NYoa/5
- fyt3euQE8Ru88e+GHU0ODmK52DO8+0RrCjkpZeBzj2dOan9ef2LQsTTSy+jVlSubV8YH2ibvT
- bEHSaDv+F5cekSAp8zacP1g7iRVrCBhyw0Cyd/T9bCnLEyhSp9YPoXVWpv+2HE1bfNVZeVBrT
- zj7hewydzl1NU2qFycs6FlKYLT6YYwDyA0+7PpYYPGrTIxd4YV8vSzHSp5oAzTxceiVL3TM7O
- 6J0hcZuFjzNLMZATrDP+XLncCieVXRw6nuA9zRgHh6UZK6As1vB3+fH1A==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAD-N9QVQpm87wpCnLj08db3kAr=b191op3=ESOMm1yh7UWu4jw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Write "to be operated" instead of "to be operate".
+On Fri, Jun 10, 2022 at 09:27:27AM +0800, Dongliang Mu wrote:
+> On Thu, Jun 9, 2022 at 10:00 PM Johan Hovold <johan@kernel.org> wrote:
+> >
+> > On Thu, Jun 09, 2022 at 09:42:15AM +0800, Dongliang Mu wrote:
+> > > On Thu, Jun 2, 2022 at 2:45 PM Johan Hovold <johan@kernel.org> wrote:
 
-Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-=2D--
- Documentation/networking/phy.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> > > > Are you sure that d725d20e81c2 ("media: flexcop-usb: sanity checking of
+> > > > endpoint type) was correct?
+> > >
+> > > I am not sure if fc_usb->uintf->cur_altsetting->endpoint[1] is right or not.
+> > >
+> > > But the sanity check of bNumEndpoints does not match the following dereference.
+> >
+> > I should know better than try to be subtle on the internet: Your fix is
+> > wrong.
+> >
+> > You need to try to understand the code you're changing. Not just do
+> > pattern matching.
+> 
+> I see. Yeah, I have such an incorrect assumption - previous commits
+> should be somehow correct since maintainers already review them.
 
-diff --git a/Documentation/networking/phy.rst b/Documentation/networking/p=
-hy.rst
-index d43da709bf40a..704f31da51672 100644
-=2D-- a/Documentation/networking/phy.rst
-+++ b/Documentation/networking/phy.rst
-@@ -104,7 +104,7 @@ Whenever possible, use the PHY side RGMII delay for th=
-ese reasons:
+Everyone makes mistakes and our review process isn't perfect.
 
- * PHY device drivers in PHYLIB being reusable by nature, being able to
-   configure correctly a specified delay enables more designs with similar=
- delay
--  requirements to be operate correctly
-+  requirements to be operated correctly
+And if your assumption was correct we wouldn't have any bugs at all.
 
- For cases where the PHY is not capable of providing this delay, but the
- Ethernet MAC driver is capable of doing so, the correct phy_interface_t v=
-alue
-=2D-
-2.35.1
+> Next time, I will dig more about the code logic and try to post a more
+> comprehensive patch.
 
+Sounds good.
+
+> > > > > Fixes: d725d20e81c2 ("media: flexcop-usb: sanity checking of endpoint type")
+> > > > > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+> > > > > ---
+> > > > >  drivers/media/usb/b2c2/flexcop-usb.c | 2 +-
+> > > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > > >
+> > > > > diff --git a/drivers/media/usb/b2c2/flexcop-usb.c b/drivers/media/usb/b2c2/flexcop-usb.c
+> > > > > index 7835bb0f32fc..eb54bfdda01f 100644
+> > > > > --- a/drivers/media/usb/b2c2/flexcop-usb.c
+> > > > > +++ b/drivers/media/usb/b2c2/flexcop-usb.c
+> > > > > @@ -509,7 +509,7 @@ static int flexcop_usb_init(struct flexcop_usb *fc_usb)
+> > > > >               return ret;
+> > > > >       }
+> > > > >
+> > > > > -     if (fc_usb->uintf->cur_altsetting->desc.bNumEndpoints < 1)
+> > > > > +     if (fc_usb->uintf->cur_altsetting->desc.bNumEndpoints < 2)
+> > > > >               return -ENODEV;
+> > > > >       if (!usb_endpoint_is_isoc_in(&fc_usb->uintf->cur_altsetting->endpoint[1].desc))
+> > > > >               return -ENODEV;
+> > > >
+> > > > It looks like it should have verified the type of endpoint[0] here
+> > > > instead.
+> > >
+> > > This sanity check originally makes sure the
+> > > fc_usb->uintf->cur_altsetting->endpoint[0] in
+> > > flexcop_usb_transfer_init.
+> >
+> > Yes, and that is the only endpoint that this driver uses.
+> 
+> This needs an understanding of the working mechanism of this hardware.
+
+Not really, you only need to look at the driver in this case. But sure,
+you need some familiarity with USB to understand what is going on.
+
+Johan
