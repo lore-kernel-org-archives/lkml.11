@@ -2,88 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94967CCA47B
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 17:46:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EBB8C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 17:46:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350202AbiFJRqF (ORCPT
+        id S1350201AbiFJRqz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 13:46:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55562 "EHLO
+        Fri, 10 Jun 2022 13:46:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350182AbiFJRqC (ORCPT
+        with ESMTP id S1349788AbiFJRqx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 13:46:02 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 94C84562E2;
-        Fri, 10 Jun 2022 10:46:01 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E6626113E;
-        Fri, 10 Jun 2022 10:46:00 -0700 (PDT)
-Received: from hype-n1-sdp.warwick.arm.com (hype-n1-sdp.warwick.arm.com [10.32.32.32])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 8428B3F766;
-        Fri, 10 Jun 2022 10:45:58 -0700 (PDT)
-From:   Nick Forrington <nick.forrington@arm.com>
-To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        acme@kernel.org
-Cc:     Nick Forrington <nick.forrington@arm.com>,
-        John Garry <john.garry@huawei.com>,
-        Will Deacon <will@kernel.org>,
-        James Clark <james.clark@arm.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Andrew Kilroy <andrew.kilroy@arm.com>,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH] perf vendor events arm64: Arm Cortex-A78C and X1C
-Date:   Fri, 10 Jun 2022 18:44:59 +0100
-Message-Id: <20220610174459.615995-1-nick.forrington@arm.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 10 Jun 2022 13:46:53 -0400
+Received: from mail-0201.mail-europe.com (mail-0201.mail-europe.com [51.77.79.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B82F562EE
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 10:46:51 -0700 (PDT)
+Date:   Fri, 10 Jun 2022 17:46:40 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
+        s=protonmail3; t=1654883207; x=1655142407;
+        bh=QufpaSI3FHp/11KdpTOr1o3pvr2wl7OD5zTBc5ErmDA=;
+        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:Feedback-ID:From:To:
+         Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID;
+        b=BsGipUK/6NVeglk+eg57RrwxO6H8v8CasloCswNXxf4J4pfKq1aI7lHfD8Au5eL5s
+         NKbdo0XAF3hZuvha5xnjVYH8j4JOl6Nx2AzSBTI8UkuC4pCQ8BzxxN+GPmzEYhuVvq
+         ojZtCj9H3kQaSyEMY6Ikgl38xwerdDGme0dJcp8TVfdlGxqP5bXZLYWkp8VTVnemSG
+         7fBy5Tz7qYPlQHToaDAIWA+T0uaOXE7V/14MA9iXs+b58hAyUGipxzr+QhE5E4ZE6Y
+         IWCUnJqmQZtr5cs4C9kMXnAu3jdWntf/kVjzvt61Jv0dmEuDmKjsUnkxSmVhRS4ZWW
+         yr0ak7xzIMR5A==
+To:     devicetree@vger.kernel.org
+From:   "Lin, Meng-Bo" <linmengbo0689@protonmail.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, stephan@gerhold.net,
+        nikita@trvn.ru
+Reply-To: "Lin, Meng-Bo" <linmengbo0689@protonmail.com>
+Subject: [PATCH] arm64: dts: qcom: msm8916-samsung-a2015: Add touchscreen pinctrl
+Message-ID: <20220610172018.101498-1-linmengbo0689@protonmail.com>
+Feedback-ID: 40467236:user:proton
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add PMU events for the Arm Cortex-A78C and Arm Cortex-X1C CPUs.
+A3, A5 and most of the MSM8916 Samsung uses GPIO pin 13 for touchscreen
+interrupts. Add it to common dtsi.
 
-Events for Arm Cortex-A78C match those for Arm Cortex-A78.
-Events for Arm Cortex-X1C match those for Arm Cortex- X1.
-
-As such, this is just a mapfile change.
-
-Main ID Register (MIDR) and event data is sourced from the corresponding
-Arm Technical Reference Manuals:
-
-Arm Cortex-A78C
-https://developer.arm.com/documentation/102226/
-
-Arm Cortex-X1C
-https://developer.arm.com/documentation/101968/
-
-Signed-off-by: Nick Forrington <nick.forrington@arm.com>
+Signed-off-by: Lin, Meng-Bo <linmengbo0689@protonmail.com>
 ---
- tools/perf/pmu-events/arch/arm64/mapfile.csv | 2 ++
- 1 file changed, 2 insertions(+)
+ .../arm64/boot/dts/qcom/msm8916-samsung-a2015-common.dtsi | 8 ++++++++
+ arch/arm64/boot/dts/qcom/msm8916-samsung-a3u-eur.dts      | 8 --------
+ arch/arm64/boot/dts/qcom/msm8916-samsung-a5u-eur.dts      | 8 --------
+ 3 files changed, 8 insertions(+), 16 deletions(-)
 
-diff --git a/tools/perf/pmu-events/arch/arm64/mapfile.csv b/tools/perf/pmu-events/arch/arm64/mapfile.csv
-index ed29e4433c67..406f6edd4e12 100644
---- a/tools/perf/pmu-events/arch/arm64/mapfile.csv
-+++ b/tools/perf/pmu-events/arch/arm64/mapfile.csv
-@@ -27,7 +27,9 @@
- 0x00000000410fd0d0,v1,arm/cortex-a77,core
- 0x00000000410fd400,v1,arm/neoverse-v1,core
- 0x00000000410fd410,v1,arm/cortex-a78,core
-+0x00000000410fd4b0,v1,arm/cortex-a78,core
- 0x00000000410fd440,v1,arm/cortex-x1,core
-+0x00000000410fd4c0,v1,arm/cortex-x1,core
- 0x00000000410fd460,v1,arm/cortex-a510,core
- 0x00000000410fd470,v1,arm/cortex-a710,core
- 0x00000000410fd480,v1,arm/cortex-x2,core
--- 
-2.25.1
+diff --git a/arch/arm64/boot/dts/qcom/msm8916-samsung-a2015-common.dtsi b/a=
+rch/arm64/boot/dts/qcom/msm8916-samsung-a2015-common.dtsi
+index 9b4b7de7cec2..9c19f257cc81 100644
+--- a/arch/arm64/boot/dts/qcom/msm8916-samsung-a2015-common.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8916-samsung-a2015-common.dtsi
+@@ -460,6 +460,14 @@ tsp_en_default: tsp-en-default {
+ =09=09drive-strength =3D <2>;
+ =09=09bias-disable;
+ =09};
++
++=09ts_int_default: ts-int-default {
++=09=09pins =3D "gpio13";
++=09=09function =3D "gpio";
++
++=09=09drive-strength =3D <2>;
++=09=09bias-disable;
++=09};
+ };
+
+ &pm8916_gpios {
+diff --git a/arch/arm64/boot/dts/qcom/msm8916-samsung-a3u-eur.dts b/arch/ar=
+m64/boot/dts/qcom/msm8916-samsung-a3u-eur.dts
+index 4ba11b020f9b..bc198a2eea25 100644
+--- a/arch/arm64/boot/dts/qcom/msm8916-samsung-a3u-eur.dts
++++ b/arch/arm64/boot/dts/qcom/msm8916-samsung-a3u-eur.dts
+@@ -128,12 +128,4 @@ tkey_led_en_default: tkey-led-en-default {
+ =09=09drive-strength =3D <2>;
+ =09=09bias-disable;
+ =09};
+-
+-=09ts_int_default: ts-int-default {
+-=09=09pins =3D "gpio13";
+-=09=09function =3D "gpio";
+-
+-=09=09drive-strength =3D <2>;
+-=09=09bias-disable;
+-=09};
+ };
+diff --git a/arch/arm64/boot/dts/qcom/msm8916-samsung-a5u-eur.dts b/arch/ar=
+m64/boot/dts/qcom/msm8916-samsung-a5u-eur.dts
+index d978c9ac179d..7f2ab1891d91 100644
+--- a/arch/arm64/boot/dts/qcom/msm8916-samsung-a5u-eur.dts
++++ b/arch/arm64/boot/dts/qcom/msm8916-samsung-a5u-eur.dts
+@@ -69,12 +69,4 @@ tkey_en_default: tkey-en-default {
+ =09=09drive-strength =3D <2>;
+ =09=09bias-disable;
+ =09};
+-
+-=09ts_int_default: ts-int-default {
+-=09=09pins =3D "gpio13";
+-=09=09function =3D "gpio";
+-
+-=09=09drive-strength =3D <2>;
+-=09=09bias-disable;
+-=09};
+ };
+--
+2.30.2
+
 
