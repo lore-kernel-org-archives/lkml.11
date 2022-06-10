@@ -2,100 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55319C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 09:05:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D60E8C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 09:05:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348397AbiFJJFM (ORCPT
+        id S1348408AbiFJJFU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 05:05:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38856 "EHLO
+        Fri, 10 Jun 2022 05:05:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348256AbiFJJE4 (ORCPT
+        with ESMTP id S1348329AbiFJJE6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 05:04:56 -0400
-Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E6698242483;
-        Fri, 10 Jun 2022 02:04:49 -0700 (PDT)
-Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id 5929C16CA;
-        Fri, 10 Jun 2022 11:58:10 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 5929C16CA
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1654851490;
-        bh=tsTGa4nIQSpfcKAffHTArOaL54sx0Z3GDpMrlHib4M8=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=bGYo9BgWyWBYZWr1Hwb4GQ+ZBELL6vgubusO+LbyJOn4VFuV3+Kr5udEjKzrgMKYf
-         BqRaSmrGAIVPiSrm6DMjfGpMe2yaU8GnNfw+2nePcm/GrGErJxgac+II5djQb8XgPi
-         atpqc0ORRjSfkmlM3haxZfDfJI1q6e60Gm9Nt5X4=
-Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 10 Jun 2022 11:57:18 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Rob Herring <robh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Shawn Lin <shawn.lin@rock-chips.com>,
-        Simon Xue <xxm@rock-chips.com>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        <linux-pci@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-rockchip@lists.infradead.org>
-Subject: [PATCH v3 11/17] dt-bindings: PCI: dwc: Apply common schema to Rockchip DW PCIe nodes
-Date:   Fri, 10 Jun 2022 11:56:59 +0300
-Message-ID: <20220610085706.15741-12-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220610085706.15741-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220610085706.15741-1-Sergey.Semin@baikalelectronics.ru>
+        Fri, 10 Jun 2022 05:04:58 -0400
+Received: from smtpbg.qq.com (smtpbg123.qq.com [175.27.65.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62E8E25F91D
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 02:04:50 -0700 (PDT)
+X-QQ-mid: bizesmtp74t1654851760tuxb3c51
+Received: from localhost.localdomain ( [182.148.15.124])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Fri, 10 Jun 2022 17:02:37 +0800 (CST)
+X-QQ-SSF: 01000000002000C0H000B00A0000000
+X-QQ-FEAT: HoyAXBWgsknBzJifp2+Njyqq0cP9V10DvphHsceYwQvb/w1hNrXRGwUgwtxzj
+        al7E4L1pQMvGlRAk449pLVajp2fBLDCCtPOcXrRoQ9xfpyC2me0tM/6wMHi74U6Lj/7ZFdm
+        RYFmKEBFpm0H60hskt9Q/pYAfwMUaUfLFKqedoON2q0fpRnwN7eB+Jp7B2EFhpWeSECOJdk
+        BjwsLEuuOdRZsXviQm+TCpHmqqSiDqcgvqacalQpeHOgZNCx+coymEC3kj+dDimvTQ1OUQg
+        uZStgqSu2oUkM+qNGwt2GVyDL0r1d5a/BPQiPe52ue/gKvvxDl/jJi1u3mAyp95hDsRi0Si
+        O1NkTaQKtELsE0s36A+K7NJf7T4q8Cu+E0QBYzx
+X-QQ-GoodBg: 0
+From:   Xiang wangx <wangxiang@cdjrlc.com>
+To:     suzuki.poulose@arm.com
+Cc:     mathieu.poirier@linaro.org, mike.leach@linaro.org,
+        leo.yan@linaro.org, alexander.shishkin@linux.intel.com,
+        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Xiang wangx <wangxiang@cdjrlc.com>
+Subject: [PATCH] coresight: etm4x: Fix typo in comment
+Date:   Fri, 10 Jun 2022 17:02:30 +0800
+Message-Id: <20220610090230.62126-1-wangxiang@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the DT-bindings description states the Rockchip PCIe controller is
-based on the DW PCIe RP IP-core thus its DT-nodes are supposed to be
-compatible with the common DW PCIe controller schema. Let's make sure they
-evaluated against it by referring to the snps,dw-pcie-common.yaml schema
-in the allOf sub-schemas composition.
+Delete the redundant word 'the'.
 
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-
+Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
 ---
+ drivers/hwtracing/coresight/coresight-etm4x-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Changelog v3:
-- This is a new patch created on v3 lap of the series.
----
- Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml b/Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml
-index 142bbe577763..d5de609f2145 100644
---- a/Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml
-+++ b/Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml
-@@ -14,10 +14,11 @@ maintainers:
- description: |+
-   RK3568 SoC PCIe host controller is based on the Synopsys DesignWare
-   PCIe IP and thus inherits all the common properties defined in
--  designware-pcie.txt.
-+  snps,dw-pcie-common.yaml.
+diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
+index 86a313857b58..36a670b7d195 100644
+--- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
++++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
+@@ -1496,7 +1496,7 @@ static int etm4_set_event_filters(struct etmv4_drvdata *drvdata,
  
- allOf:
-   - $ref: /schemas/pci/pci-bus.yaml#
-+  - $ref: /schemas/pci/snps,dw-pcie-common.yaml#
- 
- # We need a select here so we don't match all nodes with 'snps,dw-pcie'
- select:
+ 			/*
+ 			 * If filters::ssstatus == 1, trace acquisition was
+-			 * started but the process was yanked away before the
++			 * started but the process was yanked away before
+ 			 * the stop address was hit.  As such the start/stop
+ 			 * logic needs to be re-started so that tracing can
+ 			 * resume where it left.
 -- 
-2.35.1
+2.36.1
+
 
