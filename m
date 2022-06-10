@@ -2,109 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5401AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 08:27:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F2A5CCA47E
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 08:27:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347687AbiFJI1T (ORCPT
+        id S1347703AbiFJI1s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 04:27:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37784 "EHLO
+        Fri, 10 Jun 2022 04:27:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347708AbiFJI0s (ORCPT
+        with ESMTP id S243682AbiFJI1Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 04:26:48 -0400
-Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EDD6195906
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 01:24:26 -0700 (PDT)
-Received: by mail-qt1-f179.google.com with SMTP id j8so16103846qtn.13
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 01:24:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ePiWLMIFFFMTZGAPUYMPtOQbf4rBsBwydN2vOsIC08U=;
-        b=nu7ctk4yVyub89JHGQm21Uz1Xev2o2V+S1bb26f4epxYD+G+3+H6Wy62rgmLarNsiZ
-         7FWaVxb6WQ/zGnaZjdpeMwLtjxE0SCxnUVeigy8M3KgIq6N+Sd8u0KZt/FKS3ePaKZ+9
-         L8DfK0Uv0WYpOKhHftiPGyadEkzKjx1tlvz8Jd9oomH+f8+ts1RV02bcCjUdk6Z5uJL8
-         XJW63J9yOelgJojsHIx1qETKrd8o5BTGInFxkxu3admhuPJZaINQ+Bm03lORbOotA6j+
-         4jnF3V0aiYSGPXYq1NqeHPeNmdV1YoWK6KwslAW+atFhJY6x2f9Wg+DnB1goQft/IYX0
-         /XQg==
-X-Gm-Message-State: AOAM530xfoDCYrZ2Jk3vS7/VeoHPfXOLlqAT/5vHMWYdOfFSQhSro7nU
-        AZV41auu7jLMyqErjyMYMO5+NP7iH7MtSQ==
-X-Google-Smtp-Source: ABdhPJy+kmPATM1NrYpK+8Rz68rgpD7KPTFZs5j5yVNytss03GdqJBlD2ZFD9jEcGtLS0qqWE4ONCw==
-X-Received: by 2002:a05:622a:38f:b0:301:43c8:cda4 with SMTP id j15-20020a05622a038f00b0030143c8cda4mr34819392qtx.244.1654849465192;
-        Fri, 10 Jun 2022 01:24:25 -0700 (PDT)
-Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com. [209.85.128.172])
-        by smtp.gmail.com with ESMTPSA id bs32-20020a05620a472000b006a67eb4610fsm2116987qkb.116.2022.06.10.01.24.24
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Jun 2022 01:24:25 -0700 (PDT)
-Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-31336535373so114245137b3.2
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 01:24:24 -0700 (PDT)
-X-Received: by 2002:a81:6157:0:b0:30c:7e4d:b28e with SMTP id
- v84-20020a816157000000b0030c7e4db28emr46912140ywb.502.1654849464556; Fri, 10
- Jun 2022 01:24:24 -0700 (PDT)
+        Fri, 10 Jun 2022 04:27:25 -0400
+Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 95F4E656A;
+        Fri, 10 Jun 2022 01:25:43 -0700 (PDT)
+Received: from mail (mail.baikal.int [192.168.51.25])
+        by mail.baikalelectronics.com (Postfix) with ESMTP id 6BD48BD2;
+        Fri, 10 Jun 2022 11:26:30 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 6BD48BD2
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baikalelectronics.ru; s=mail; t=1654849590;
+        bh=HvFRjLfRZVpB1a2dJ+Y3tW+LbZlq0RtxiS2ht743LVQ=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
+        b=etMH0YIwGyxgZteiVlL9m99N6IZFcasnFIXTikG/5iUfHiXmLm0taYkZp67SexH8H
+         fkNobuFmZhG9yQ7vYwLajQs9rCyOPDkE//GqjbBPRtBT99dlbrPkbgxkgY4I+xdQuO
+         ifMZmoyymNHOva5+l5UL6NLSHRzgAtf0fbz4nKzI=
+Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 10 Jun 2022 11:25:38 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Rob Herring <robh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>
+CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Frank Li <Frank.Li@nxp.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        <linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v4 02/18] PCI: dwc: Add unroll iATU space support to the regions disable method
+Date:   Fri, 10 Jun 2022 11:25:18 +0300
+Message-ID: <20220610082535.12802-3-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20220610082535.12802-1-Sergey.Semin@baikalelectronics.ru>
+References: <20220610082535.12802-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-References: <20220610082150.23677-1-wangxiang@cdjrlc.com>
-In-Reply-To: <20220610082150.23677-1-wangxiang@cdjrlc.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 10 Jun 2022 10:24:12 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWCo+_WbpXtA1XJPM=t4LQ=UuO7Pd5nw4i5R7mJaWZmjQ@mail.gmail.com>
-Message-ID: <CAMuHMdWCo+_WbpXtA1XJPM=t4LQ=UuO7Pd5nw4i5R7mJaWZmjQ@mail.gmail.com>
-Subject: Re: [PATCH] m68k: mac: Fix typo in comment
-To:     Xiang wangx <wangxiang@cdjrlc.com>
-Cc:     Joshua Thompson <funaho@jurai.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Xiang,
+The dw_pcie_disable_atu() method was introduced in the commit f8aed6ec624f
+("PCI: dwc: designware: Add EP mode support"). Since then it hasn't
+changed at all.  For all that time the method has supported the viewport
+version of the iATU CSRs only. Basically it works for the DW PCIe IP-cores
+older than v4.80a since the newer controllers are equipped with the
+unrolled iATU/eDMA space. It means the methods using it like
+pci_epc_ops.clear_bar and pci_epc_ops.unmap_addr callbacks just don't work
+correctly for the DW PCIe controllers with unrolled iATU CSRs. The same
+concerns the dw_pcie_setup_rc() method, which disables the outbound iATU
+entries before re-initializing them.
 
-On Fri, Jun 10, 2022 at 10:22 AM Xiang wangx <wangxiang@cdjrlc.com> wrote:
-> Delete the redundant word 'an'.
-> Delete the redundant word 'and'.
->
-> Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
+So in order to fix the problems denoted above let's convert the
+dw_pcie_disable_atu() method to disabling the iATU inbound and outbound
+regions in the unrolled iATU CSRs in case the DW PCIe controller has been
+synthesized with the ones support. The former semantics will be remained
+for the controller having iATU mapped over the viewport.
 
-Thanks for your patch!
+Fixes: f8aed6ec624f ("PCI: dwc: designware: Add EP mode support")
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-> --- a/arch/m68k/mac/iop.c
-> +++ b/arch/m68k/mac/iop.c
-> @@ -25,7 +25,7 @@
->   *               check this.)
->   * 990605 (jmt) - Rearranged things a bit wrt IOP detection; iop_present is
->   *               gone, IOP base addresses are now in an array and the
-> - *               globally-visible functions take an IOP number instead of an
-> + *               globally-visible functions take an IOP number instead of
+---
 
-OK
+Changelog v3:
+- Convert region variable type to u32 in order to fix the implicit type
+  conversion peculiarity. (@kbot)
+---
+ drivers/pci/controller/dwc/pcie-designware.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
->   *               an actual base address.
->   * 990610 (jmt) - Finished the message passing framework and it seems to work.
->   *               Sending _definitely_ works; my adb-bus.c mods can send
-> @@ -66,7 +66,7 @@
->   * a shared memory area in the IOP RAM. Each IOP has seven "channels"; each
->   * channel is connected to a specific software driver on the IOP. For example
->   * on the SCC IOP there is one channel for each serial port. Each channel has
-> - * an incoming and and outgoing message queue with a depth of one.
-> + * an incoming and outgoing message queue with a depth of one.
+diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
+index d92c8a25094f..84fef21efdbc 100644
+--- a/drivers/pci/controller/dwc/pcie-designware.c
++++ b/drivers/pci/controller/dwc/pcie-designware.c
+@@ -491,7 +491,7 @@ int dw_pcie_prog_inbound_atu(struct dw_pcie *pci, u8 func_no, int index,
+ void dw_pcie_disable_atu(struct dw_pcie *pci, int index,
+ 			 enum dw_pcie_region_type type)
+ {
+-	int region;
++	u32 region;
+ 
+ 	switch (type) {
+ 	case DW_PCIE_REGION_INBOUND:
+@@ -504,8 +504,18 @@ void dw_pcie_disable_atu(struct dw_pcie *pci, int index,
+ 		return;
+ 	}
+ 
+-	dw_pcie_writel_dbi(pci, PCIE_ATU_VIEWPORT, region | index);
+-	dw_pcie_writel_dbi(pci, PCIE_ATU_CR2, ~(u32)PCIE_ATU_ENABLE);
++	if (pci->iatu_unroll_enabled) {
++		if (region == PCIE_ATU_REGION_INBOUND) {
++			dw_pcie_writel_ib_unroll(pci, index, PCIE_ATU_UNR_REGION_CTRL2,
++						 ~(u32)PCIE_ATU_ENABLE);
++		} else {
++			dw_pcie_writel_ob_unroll(pci, index, PCIE_ATU_UNR_REGION_CTRL2,
++						 ~(u32)PCIE_ATU_ENABLE);
++		}
++	} else {
++		dw_pcie_writel_dbi(pci, PCIE_ATU_VIEWPORT, region | index);
++		dw_pcie_writel_dbi(pci, PCIE_ATU_CR2, ~(u32)PCIE_ATU_ENABLE);
++	}
+ }
+ 
+ int dw_pcie_wait_for_link(struct dw_pcie *pci)
+-- 
+2.35.1
 
-The second "and" should not be deleted, but replaced by "an".
-
->   *
->   * A message is 32 bytes plus a state byte for the channel (MSG_IDLE, MSG_NEW,
->   * MSG_RCVD, MSG_COMPLETE). To send a message you copy the message into the
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
