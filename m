@@ -2,92 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C9D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 12:06:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17934C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 12:08:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347758AbiFJMGo (ORCPT
+        id S1347915AbiFJMH7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 08:06:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39286 "EHLO
+        Fri, 10 Jun 2022 08:07:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240885AbiFJMGl (ORCPT
+        with ESMTP id S240337AbiFJMH6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 08:06:41 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E433EF18
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 05:06:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654862800; x=1686398800;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=K1k+oIO+VBXWvrUqhojZiI+4Uhrj8EJsXUfooupVGdk=;
-  b=isXcptkfyiD5+jn8C0KpGl4t/Ml24v8MeuLT3Mm2JGcGrIn+irgyqPg6
-   bQH15yRbIDb0/PogITJn6/6rbi6drU2PUWIxFeNi8IXp9ptVeCoEzLvH0
-   2UtpxIzMBgFJ53GliHT4zHljsBFagSOO+AMNOlZL/wih01Tg/g/XU39Fy
-   j/58EihWuC+38Z4VoF54guTkUOwzAsivHutkWymjgHUNlWJbU8qmkLOAM
-   GsOneoFwT580nJnzOf8MXQIly81/2i69y59hgx1Pa4yU61UEuLaKKPC9J
-   cwWWaEjYzebibk4JSe0DN9CbY1eq0S7XoT55dpuSo216qbsNPW4VMQx1z
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="275142446"
-X-IronPort-AV: E=Sophos;i="5.91,290,1647327600"; 
-   d="scan'208";a="275142446"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 05:06:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,290,1647327600"; 
-   d="scan'208";a="828225455"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 10 Jun 2022 05:06:39 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nzdPS-000Hvx-De;
-        Fri, 10 Jun 2022 12:06:38 +0000
-Date:   Fri, 10 Jun 2022 20:05:40 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Tzung-Bi Shih <tzungbi@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Matthias Kaehlcke <mka@chromium.org>
-Subject: [chrome-platform:for-next 13/34]
- drivers/platform/chrome/cros_kbd_led_backlight.c:192:42: warning:
- 'keyboard_led_drvdata_ec_pwm' defined but not used
-Message-ID: <202206102051.ZaCPUVE8-lkp@intel.com>
+        Fri, 10 Jun 2022 08:07:58 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7F05C3F892;
+        Fri, 10 Jun 2022 05:07:55 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id 424E11E80D6E;
+        Fri, 10 Jun 2022 20:07:09 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id xn3Z_1SjwQcY; Fri, 10 Jun 2022 20:07:06 +0800 (CST)
+Received: from localhost.localdomain (unknown [219.141.250.2])
+        (Authenticated sender: zhounan@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id 87C5F1E80D24;
+        Fri, 10 Jun 2022 20:07:06 +0800 (CST)
+From:   zhoun <zhounan@nfschina.com>
+To:     martin.petersen@oracle.com, jejb@linux.ibm.com,
+        dick.kennedy@broadcom.com, james.smart@broadcom.com
+Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        zhoun <zhounan@nfschina.com>
+Subject: [PATCH] driver:Change the return value to void and add the parameter name to lpfc_hba_down_prep
+Date:   Fri, 10 Jun 2022 08:07:49 -0400
+Message-Id: <20220610120749.82272-1-zhounan@nfschina.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/chrome-platform/linux.git for-next
-head:   cfed691b80dce32b62634b1d7f92a661a3b03e4f
-commit: 40f58143745eaabc68ef44b068642ca3b38d23a6 [13/34] platform/chrome: cros_kbd_led_backlight: support EC PWM backend
-config: x86_64-defconfig (https://download.01.org/0day-ci/archive/20220610/202206102051.ZaCPUVE8-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/chrome-platform/linux.git/commit/?id=40f58143745eaabc68ef44b068642ca3b38d23a6
-        git remote add chrome-platform https://git.kernel.org/pub/scm/linux/kernel/git/chrome-platform/linux.git
-        git fetch --no-tags chrome-platform for-next
-        git checkout 40f58143745eaabc68ef44b068642ca3b38d23a6
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/platform/chrome/
+Optimize unused integer return values, add the parameter name to the 
+function lpfc_hba_down_prep header file.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: zhoun <zhounan@nfschina.com>
 
-All warnings (new ones prefixed by >>):
+ Committer: zhoun <zhounan@nfschina.com>
+---
+ drivers/scsi/lpfc/lpfc_crtn.h | 2 +-
+ drivers/scsi/lpfc/lpfc_init.c | 6 ++----
+ 2 files changed, 3 insertions(+), 5 deletions(-)
 
->> drivers/platform/chrome/cros_kbd_led_backlight.c:192:42: warning: 'keyboard_led_drvdata_ec_pwm' defined but not used [-Wunused-const-variable=]
-     192 | static const struct keyboard_led_drvdata keyboard_led_drvdata_ec_pwm = {};
-         |                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/keyboard_led_drvdata_ec_pwm +192 drivers/platform/chrome/cros_kbd_led_backlight.c
-
-   191	
- > 192	static const struct keyboard_led_drvdata keyboard_led_drvdata_ec_pwm = {};
-   193	
-
+diff --git a/drivers/scsi/lpfc/lpfc_crtn.h b/drivers/scsi/lpfc/lpfc_crtn.h
+index b1be0dd0337a..5f7bfbfd7cad 100644
+--- a/drivers/scsi/lpfc/lpfc_crtn.h
++++ b/drivers/scsi/lpfc/lpfc_crtn.h
+@@ -212,7 +212,7 @@ int lpfc_config_port_prep(struct lpfc_hba *);
+ void lpfc_update_vport_wwn(struct lpfc_vport *vport);
+ int lpfc_config_port_post(struct lpfc_hba *);
+ int lpfc_sli4_refresh_params(struct lpfc_hba *phba);
+-int lpfc_hba_down_prep(struct lpfc_hba *);
++void lpfc_hba_down_prep(struct lpfc_hba *phba);
+ int lpfc_hba_down_post(struct lpfc_hba *);
+ void lpfc_hba_init(struct lpfc_hba *, uint32_t *);
+ int lpfc_sli3_post_buffer(struct lpfc_hba *phba, struct lpfc_sli_ring *pring, int cnt);
+diff --git a/drivers/scsi/lpfc/lpfc_init.c b/drivers/scsi/lpfc/lpfc_init.c
+index 93b94c64518d..2439c474eddc 100644
+--- a/drivers/scsi/lpfc/lpfc_init.c
++++ b/drivers/scsi/lpfc/lpfc_init.c
+@@ -872,10 +872,9 @@ lpfc_hba_down_link(struct lpfc_hba *phba, uint32_t flag)
+  * bringing down the SLI Layer.
+  *
+  * Return codes
+- *   0 - success.
+- *   Any other value - error.
++ *   void.
+  **/
+-int
++void
+ lpfc_hba_down_prep(struct lpfc_hba *phba)
+ {
+ 	struct lpfc_vport **vports;
+@@ -897,7 +896,6 @@ lpfc_hba_down_prep(struct lpfc_hba *phba)
+ 				lpfc_cleanup_discovery_resources(vports[i]);
+ 		lpfc_destroy_vport_work_array(phba, vports);
+ 	}
+-	return 0;
+ }
+ 
+ /**
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.27.0
+
