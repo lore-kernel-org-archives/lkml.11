@@ -2,111 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E6BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 15:39:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E1B2C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 15:40:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346260AbiFJPj5 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 11:39:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45564 "EHLO
+        id S245512AbiFJPkG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 10 Jun 2022 11:40:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345390AbiFJPjU (ORCPT
+        with ESMTP id S1345410AbiFJPjX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 11:39:20 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 438EB293819
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 08:39:18 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id me5so53682132ejb.2
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 08:39:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pqrs.dk; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=TXmIOiKtTji5uvqDZkSqwPGXddUogZT+Gvmhu7MqhdQ=;
-        b=JXsDC6jUtUYbphZF98hJGA789y+6YpRm9frF/gsABOBXH8s40fei6Bh/9Gdg1Iq4Fb
-         fCDvsyeQ/6H7VGFndaI4QuK0biv88R2t+b3tLQ4dC3zEAQ1tftpd8+b3Rf3mDHDQF8YL
-         erVfMsR9iWft+MuVvQU0ICkcfMKaWOL1kogBw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=TXmIOiKtTji5uvqDZkSqwPGXddUogZT+Gvmhu7MqhdQ=;
-        b=KcSmypQ6rUIWilcEPPLgatfe51y07fM25tU1dBBFflc6s29G6zA7m6w3j7gar7pUqA
-         AsNgPBkR9Iuwf0zB/Bl6ZlIFTRRG7ETobqI7Xph0EFbOa8lmyvlAftAhQTMXKRam786t
-         L2Dgob5oE1XUC7x0ZARNPoHrNhgbNT6KVAYqqcys8PLktujRBvuRI9hGlLWOzi/T+qco
-         kce1x9GCDoi2cGU5wA5aDT1LqtRtsGH9swUGNsACfBzDT//BMa3gborMdOvWqvvhyR9x
-         iuhPWpqm4prJfKmgh9PWQ15DHLX8AMsFwBHpT3so67sJ9+AjlexAivhB0ckVkABztZlF
-         c7Xw==
-X-Gm-Message-State: AOAM5308mEt4/1dZQcU58oVa6rGQc3Azgu2PpTYov3Kps8huAoSt4rWo
-        CePA3OgoP/UZYmh/5UIrDtEWeA==
-X-Google-Smtp-Source: ABdhPJzKDXSDcDmYJ+pwwoQ2nlnDeLS7uzfHEb1EGwtD5LpD9/Zwa39jmqOYLrKxfF1HpTV9lbcHSA==
-X-Received: by 2002:a17:907:868f:b0:702:f865:55de with SMTP id qa15-20020a170907868f00b00702f86555demr41395122ejc.24.1654875556764;
-        Fri, 10 Jun 2022 08:39:16 -0700 (PDT)
-Received: from localhost.localdomain (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
-        by smtp.gmail.com with ESMTPSA id h24-20020a170906829800b0070f7d1c5a18sm9783857ejx.55.2022.06.10.08.39.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jun 2022 08:39:16 -0700 (PDT)
-From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
-To:     hauke@hauke-m.de, Linus Walleij <linus.walleij@linaro.org>,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 3/5] net: dsa: realtek: rtl8365mb: correct the max number of ports
-Date:   Fri, 10 Jun 2022 17:38:27 +0200
-Message-Id: <20220610153829.446516-4-alvin@pqrs.dk>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220610153829.446516-1-alvin@pqrs.dk>
-References: <20220610153829.446516-1-alvin@pqrs.dk>
+        Fri, 10 Jun 2022 11:39:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 461E72945D6;
+        Fri, 10 Jun 2022 08:39:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B06261F9B;
+        Fri, 10 Jun 2022 15:39:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 850AFC34114;
+        Fri, 10 Jun 2022 15:39:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654875559;
+        bh=0YV5Bhw/4d55YAwiUrbPCrQ1q4G7AwKMvir9aX7y6ok=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=PsBKNm5pYWJd8zWQeM4m5JiOWWw4DY4ew5R6uEagEsbavET/Wx4b1qP7mzctsgCdH
+         IhhllGimvmoSUf31cL+30ctdW5HqvnCeduch0y+L3xOokDUx3BklaO9kKFl9OI3NtC
+         9NrKJHtObmsl6EXfU3IAnq2iq/zm7jJUHrcps27fXym0eCFqZNEx+D0vMzXSqNghM2
+         OV+RZKzNqKNEzUe1U4PkL7vLwI5GbsND2zRlX6ek3WZmQlLdiZ3lmE8mDJVV1nJkhb
+         6IjDJnoTRdB3nMAh86YqBoDL9QC1p4DchHInUWUJmtlDl1R24T4P0NG29u0sqnBYqf
+         6ztZ1I+BkkMxA==
+Date:   Fri, 10 Jun 2022 08:39:18 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Richard Cochran <richardcochran@gmail.com>
+Subject: Re: [PATCH net-next v1 1/5] ptp_ocp: use dev_err_probe()
+Message-ID: <20220610083918.65f3baeb@kernel.org>
+In-Reply-To: <YqMmZBEsCv+f19se@smile.fi.intel.com>
+References: <20220608120358.81147-1-andriy.shevchenko@linux.intel.com>
+        <20220608120358.81147-2-andriy.shevchenko@linux.intel.com>
+        <20220609224523.78b6a6e6@kernel.org>
+        <YqMmZBEsCv+f19se@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alvin Šipraga <alsi@bang-olufsen.dk>
+On Fri, 10 Jun 2022 14:09:24 +0300 Andy Shevchenko wrote:
+> I have just checked that if you drop this patch the rest will be still
+> applicable. If you have no objections, can you apply patches 2-5 then?
 
-The maximum number of ports is actually 11, according to two
-observations:
-
-1. The highest port ID used in the vendor driver is 10. Since port IDs
-   are indexed from 0, and since DSA follows the same numbering system,
-   this means up to 11 ports are to be presumed.
-
-2. The registers with port mask fields always amount to a maximum port
-   mask of 0x7FF, corresponding to a maximum 11 ports.
-
-In view of this, I also deleted the comment.
-
-Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
-Reviewed-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
----
- drivers/net/dsa/realtek/rtl8365mb.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
-index 42afba122bb4..3599fa5d9f14 100644
---- a/drivers/net/dsa/realtek/rtl8365mb.c
-+++ b/drivers/net/dsa/realtek/rtl8365mb.c
-@@ -115,8 +115,7 @@
- #define RTL8365MB_PHYADDRMAX		7
- #define RTL8365MB_NUM_PHYREGS		32
- #define RTL8365MB_PHYREGMAX		(RTL8365MB_NUM_PHYREGS - 1)
--/* RTL8370MB and RTL8310SR, possibly suportable by this driver, have 10 ports */
--#define RTL8365MB_MAX_NUM_PORTS		10
-+#define RTL8365MB_MAX_NUM_PORTS		11
- #define RTL8365MB_LEARN_LIMIT_MAX	2112
- 
- /* valid for all 6-port or less variants */
--- 
-2.36.1
-
+It's tradition in netdev to ask people to repost. But looks completely
+safe for me to drop patch 1, so applied 2-5. Don't tell anyone I did this.
