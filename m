@@ -2,123 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C554CCA47B
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 18:06:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8769DC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 18:06:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347308AbiFJSGF (ORCPT
+        id S1347559AbiFJSGm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 14:06:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56284 "EHLO
+        Fri, 10 Jun 2022 14:06:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233646AbiFJSGD (ORCPT
+        with ESMTP id S1347484AbiFJSGh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 14:06:03 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2F98EB1FF
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 11:06:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654884361;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+YSOp7OVxLF72vh/zJwUtYoBADG1yurDFuxv9zOncC8=;
-        b=EEHnTKIbwYDi9+pPINHtITED5HizHMpNwQ7W3qlhSlf4O09f6LpcZB55Fs3TMk28DszqkF
-        u78rRuE5LpzZrrRIAFoL9WycJ8Bvu11Pie1uMKUcCsX2fc3UqHWQx9YmFCcye83eqTq7Ye
-        S6n40nbsIjps5BZBgYPOjU8W7aX1SEg=
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
- [209.85.166.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-272-bgXgI0NIPmOjJvGy1tR6UQ-1; Fri, 10 Jun 2022 14:05:58 -0400
-X-MC-Unique: bgXgI0NIPmOjJvGy1tR6UQ-1
-Received: by mail-io1-f72.google.com with SMTP id y2-20020a056602164200b00668dc549adbso13609915iow.18
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 11:05:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+YSOp7OVxLF72vh/zJwUtYoBADG1yurDFuxv9zOncC8=;
-        b=CQ7Fbr/d/hBB8RrbNd5HoX6sz8AQfoug7HrqkQqFeYtb0Mea1dC1eUIoEh2OwrQah5
-         RaU+V1adbzFaE37kviqFlkGho7CxjFGq4pPbJdgDPujQhFI+syRh+UZ3TXa3JLvFOPgi
-         fSplg8vDQuk3aCkz5rO1zeaunuKOVBZeL6PyXXWSvlfnfSBk3EjMTDI83wzcyrWX8MJC
-         xqXD35zJwhTVggrzQFFjj5z7mncn62siLtNCAHxVvFeW4mf6zPAOBw1VC0ExNvwmhcRg
-         wW0W359W4+9m8QmAmU0TnZxm4WN8ysAlVBOwiMQdqsPqxQqbkJfD8gnITeBmaMm1/VZP
-         brIw==
-X-Gm-Message-State: AOAM530yh5ojuL0biPKMhcl3ap1XS7R9guFTEq3WdtY0oyAq3u6sAapM
-        kWI+V+ohBDJxFEx45GRqB4m+WKjuOqpfTs9rkSFQK0famVJNhOPzpdct6Sf5yD46CRzDPujYflA
-        NZ8forAj/CFb058Lb9Q6DMlF/
-X-Received: by 2002:a05:6e02:552:b0:2d1:db28:5434 with SMTP id i18-20020a056e02055200b002d1db285434mr26259378ils.115.1654884358026;
-        Fri, 10 Jun 2022 11:05:58 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJweN9LCXIbV5RCAndNmWIQkh4tD+Sg78vRKNfgWb1sUjYk+ID4hSP1WDUwkF+/PbrZ6jYMBNw==
-X-Received: by 2002:a05:6e02:552:b0:2d1:db28:5434 with SMTP id i18-20020a056e02055200b002d1db285434mr26259369ils.115.1654884357736;
-        Fri, 10 Jun 2022 11:05:57 -0700 (PDT)
-Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
-        by smtp.gmail.com with ESMTPSA id a21-20020a056638059500b0032e0a9d63e6sm11104941jar.118.2022.06.10.11.05.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jun 2022 11:05:57 -0700 (PDT)
-Date:   Fri, 10 Jun 2022 14:05:55 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     Axel Rasmussen <axelrasmussen@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v2] mm: userfaultfd: fix UFFDIO_CONTINUE on fallocated
- shmem pages
-Message-ID: <YqOIA05ihTsQbMoG@xz-m1.local>
-References: <20220610173812.1768919-1-axelrasmussen@google.com>
+        Fri, 10 Jun 2022 14:06:37 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD7EC5F
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 11:06:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654884396; x=1686420396;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=IFRrzvN2oP18xaw+PepMuRmspRZRLwDxgXN4BczW7yk=;
+  b=hgm8ufY7LFGJRQwF9LidnHhqbTyaDitslzYkem3a2oggGeivwEBgGcEb
+   j458DbuMY58M+XOtswukuGt1iGcJb2HTUDegQN+gX+2op25al2YeVpevl
+   ndnNc1eLCm/ErHi9ukbVzB//2pf+JA2GDi4d6ybNBHogtoROHFvscITFV
+   vCUk/jgEyq+IZvukqZjsHkHAamvqFAu6lS78xYX60GBF03KLaXpunsx2O
+   TJiSI1xesfJzNJEg2To2/q2qQz+JNSN0RaWC1MuP1S39Axz3c6JAB8zXI
+   lTy3Sb6/TLllbfbND6Rr18XB3H+yo9U6hTtVJLGhLx0402l1NjVsQlhUT
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10374"; a="278837355"
+X-IronPort-AV: E=Sophos;i="5.91,291,1647327600"; 
+   d="scan'208";a="278837355"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 11:06:35 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,291,1647327600"; 
+   d="scan'208";a="760612596"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga005.jf.intel.com with ESMTP; 10 Jun 2022 11:06:32 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id B4787F8; Fri, 10 Jun 2022 21:06:35 +0300 (EEST)
+Date:   Fri, 10 Jun 2022 21:06:35 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
+Cc:     "peterz@infradead.org" <peterz@infradead.org>,
+        "Lutomirski, Andy" <luto@kernel.org>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "kcc@google.com" <kcc@google.com>,
+        "andreyknvl@gmail.com" <andreyknvl@gmail.com>,
+        "ak@linux.intel.com" <ak@linux.intel.com>,
+        "dvyukov@google.com" <dvyukov@google.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "ryabinin.a.a@gmail.com" <ryabinin.a.a@gmail.com>,
+        "glider@google.com" <glider@google.com>
+Subject: Re: [PATCHv3 6/8] x86/mm: Provide ARCH_GET_UNTAG_MASK and
+ ARCH_ENABLE_TAGGED_ADDR
+Message-ID: <20220610180635.l44opq2votd3gxpl@black.fi.intel.com>
+References: <20220610143527.22974-1-kirill.shutemov@linux.intel.com>
+ <20220610143527.22974-7-kirill.shutemov@linux.intel.com>
+ <c3b4f3ccf8ee547a588bf8a971064e4d62b6a44c.camel@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220610173812.1768919-1-axelrasmussen@google.com>
+In-Reply-To: <c3b4f3ccf8ee547a588bf8a971064e4d62b6a44c.camel@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 10:38:12AM -0700, Axel Rasmussen wrote:
-> When fallocate() is used on a shmem file, the pages we allocate can end
-> up with !PageUptodate.
+On Fri, Jun 10, 2022 at 04:16:01PM +0000, Edgecombe, Rick P wrote:
+> On Fri, 2022-06-10 at 17:35 +0300, Kirill A. Shutemov wrote:
+> > +static int prctl_enable_tagged_addr(unsigned long nr_bits)
+> > +{
+> > +       struct mm_struct *mm = current->mm;
+> > +
+> > +       /* Already enabled? */
+> > +       if (mm->context.lam_cr3_mask)
+> > +               return -EBUSY;
+> > +
+> > +       /* LAM has to be enabled before spawning threads */
+> > +       if (get_nr_threads(current) > 1)
+> > +               return -EBUSY;
 > 
-> Since UFFDIO_CONTINUE tries to find the existing page the user wants to
-> map with SGP_READ, we would fail to find such a page, since
-> shmem_getpage_gfp returns with a "NULL" pagep for SGP_READ if it
-> discovers !PageUptodate. As a result, UFFDIO_CONTINUE returns -EFAULT,
-> as it would do if the page wasn't found in the page cache at all.
-> 
-> This isn't the intended behavior. UFFDIO_CONTINUE is just trying to find
-> if a page exists, and doesn't care whether it still needs to be cleared
-> or not. So, instead of SGP_READ, pass in SGP_NOALLOC. This is the same,
-> except for one critical difference: in the !PageUptodate case,
-> SGP_NOALLOC will clear the page and then return it. With this change,
-> UFFDIO_CONTINUE works properly (succeeds) on a shmem file which has been
-> fallocated, but otherwise not modified.
-> 
-> Fixes: 153132571f02 ("userfaultfd/shmem: support UFFDIO_CONTINUE for shmem")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
-> ---
->  mm/userfaultfd.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/mm/userfaultfd.c b/mm/userfaultfd.c
-> index 4f4892a5f767..07d3befc80e4 100644
-> --- a/mm/userfaultfd.c
-> +++ b/mm/userfaultfd.c
-> @@ -246,7 +246,10 @@ static int mcontinue_atomic_pte(struct mm_struct *dst_mm,
->  	struct page *page;
->  	int ret;
->  
-> -	ret = shmem_getpage(inode, pgoff, &page, SGP_READ);
-> +	ret = shmem_getpage(inode, pgoff, &page, SGP_NOALLOC);
-> +	/* Our caller expects us to return -EFAULT if we failed to find page. */
-> +	if (ret == -ENOENT)
-> +		ret = -EFAULT;
+> Does this work for vfork()? I guess the idea is that locking is not
+> needed below because there is only one thread with the MM, but with
+> vfork() another task could operate on the MM, call fork(), etc. I'm not
+> sure...
 
-I checked shmem_getpage_gfp() and it only returns -ENOENT in one place
-where is the missing case for SGP_NOALLOC, then this looks correct to me.
-
-Acked-by: Peter Xu <peterx@redhat.com>
-
-Thanks,
+I'm not sure I follow. vfork() blocks parent process until child exit or
+execve(). I don't see how it is a problem.
 
 -- 
-Peter Xu
-
+ Kirill A. Shutemov
