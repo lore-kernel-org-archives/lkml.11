@@ -2,110 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72AF6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 06:44:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A6F3CCA482
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 06:45:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343703AbiFJGoL (ORCPT
+        id S1343528AbiFJGpU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 02:44:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56016 "EHLO
+        Fri, 10 Jun 2022 02:45:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346605AbiFJGnp (ORCPT
+        with ESMTP id S234725AbiFJGpP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 02:43:45 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D185CB71
-        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 23:43:43 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id i131-20020a1c3b89000000b0039c6fd897b4so160261wma.4
-        for <linux-kernel@vger.kernel.org>; Thu, 09 Jun 2022 23:43:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=+pMYTdTOwcWkh7F/q0j0AiuTSMLZ7GoNW5PGLysPGgQ=;
-        b=RY0+3FU0v4gL04KoZBho/SaD7j9RO8it3RTo+CNH9f+5KS/uvSeAfZCjs0d34jJGB5
-         lsoRPDGq0g7zFmKVmMm0g1grQHXNaARt5wgIXnY/W/11KM+wTFGwGHvICwf8Ji2BKm2B
-         irT9Uk2ydvgv7peGrN1GShuBnLBMnjAjiCdivYPNWxVrSF7gp7p3ilC9qi4HYXj9DA9N
-         6hJmKhFeJbhMmr3htXMx6ng1NDUuitPa9w/FilqUhftxR6wBQwBwg6f8Vk5NxUWTpZGG
-         jIq/cILt9VsVBgJY5KWln8kaXo/HJqXr0+Cn0wVHZNER1aTJ8xiPTs4kGi88gRT9H4n7
-         2I4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+pMYTdTOwcWkh7F/q0j0AiuTSMLZ7GoNW5PGLysPGgQ=;
-        b=vTXQXYqnvXLjylcc82cp1mBcgU8CjAodJogdQrPTfYkdQHloowAKSfO0oDbtbB0oIb
-         QDTfKjHF7QjYrrEHwcqmvqXB1pPNfkGlRgpM9CC80NcyNkR740096IygE2kyTv+fQepg
-         hwFZu3J+YOiZdDKlqCSrTWIUL22qbUrXKLm5YjsoUPdAJG0G3R9xPhL9leB/RWRYLTYp
-         ulmKt0DOn+ppNszRBPPUdTNMNIY+X/Q11hcU1eziIYmrkNqUX/Ter+goZwgJIDtvEI8l
-         h0ydHvJk0KE/CQIRzlTFn7gl8V+kO9ci4YB+p8m9kdF+RuymVLC/KRBek6I/Ms1RnOtg
-         nYIg==
-X-Gm-Message-State: AOAM532N/p4uVXxryj+/rcKPTZeXatVD7D1OwrLm/7XIztktIRChgBGh
-        pqJgHztOaBdS8wOIMHnH+8gLBA==
-X-Google-Smtp-Source: ABdhPJyfRLX7Z45385BozdvtX7Q1i5LrdI5pS4W17si77omQpV9Jutm5XmEuywAMqOBLbVOjy6g81g==
-X-Received: by 2002:a7b:cd91:0:b0:39c:4a18:1533 with SMTP id y17-20020a7bcd91000000b0039c4a181533mr7051332wmj.148.1654843422354;
-        Thu, 09 Jun 2022 23:43:42 -0700 (PDT)
-Received: from localhost.localdomain ([2001:861:44c0:66c0:27b0:82d9:d0c6:702a])
-        by smtp.gmail.com with ESMTPSA id i65-20020a1c3b44000000b0039c5a765388sm1799916wma.28.2022.06.09.23.43.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 23:43:41 -0700 (PDT)
-From:   Neil Armstrong <narmstrong@baylibre.com>
-To:     Carlo Caione <carlo@endlessm.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        linux-amlogic@lists.infradead.org,
-        Miaoqian Lin <linmq006@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Kevin Hilman <khilman@baylibre.com>,
-        linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>
-Cc:     Neil Armstrong <narmstrong@baylibre.com>
-Subject: Re: [PATCH] ARM: meson: Fix refcount leak in meson_smp_prepare_cpus
-Date:   Fri, 10 Jun 2022 08:43:38 +0200
-Message-Id: <165484341553.1385009.11750075420975194525.b4-ty@baylibre.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220512021611.47921-1-linmq006@gmail.com>
-References: <20220512021611.47921-1-linmq006@gmail.com>
+        Fri, 10 Jun 2022 02:45:15 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D373F4D9F8;
+        Thu,  9 Jun 2022 23:45:13 -0700 (PDT)
+X-UUID: be1e6704b3f94d47adafeb2b847889a0-20220610
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:72e3c507-70ab-48d3-8916-5129a6c07abb,OB:100,
+        LOB:40,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,
+        ACTION:release,TS:95
+X-CID-INFO: VERSION:1.1.5,REQID:72e3c507-70ab-48d3-8916-5129a6c07abb,OB:100,LO
+        B:40,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,
+        ACTION:quarantine,TS:95
+X-CID-META: VersionHash:2a19b09,CLOUDID:9915e87e-c8dc-403a-96e8-6237210dceee,C
+        OID:5f1534f7e55d,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:0,BEC:nil
+X-UUID: be1e6704b3f94d47adafeb2b847889a0-20220610
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <moudy.ho@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 650611090; Fri, 10 Jun 2022 14:45:08 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Fri, 10 Jun 2022 14:45:06 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Fri, 10 Jun 2022 14:45:06 +0800
+From:   Moudy Ho <moudy.ho@mediatek.com>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>
+CC:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Rob Landley <rob@landley.net>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        <tfiga@chromium.org>, <drinkcat@chromium.org>,
+        <pihsun@chromium.org>, <hsinyi@google.com>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        daoyuan huang <daoyuan.huang@mediatek.com>,
+        Ping-Hsun Wu <ping-hsun.wu@mediatek.com>,
+        <allen-kh.cheng@mediatek.com>, <xiandong.wang@mediatek.com>,
+        <randy.wu@mediatek.com>, <moudy.ho@mediatek.com>,
+        <jason-jh.lin@mediatek.com>, <roy-cw.yeh@mediatek.com>,
+        <river.cheng@mediatek.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <cellopoint.kai@gmail.com>
+Subject: [PATCH v18 3/4] dts: arm64: mt8183: add Mediatek MDP3 nodes
+Date:   Fri, 10 Jun 2022 14:45:03 +0800
+Message-ID: <20220610064504.8302-4-moudy.ho@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220610064504.8302-1-moudy.ho@mediatek.com>
+References: <20220610064504.8302-1-moudy.ho@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Add device nodes for Media Data Path 3 (MDP3) modules.
 
-On Thu, 12 May 2022 06:16:10 +0400, Miaoqian Lin wrote:
-> of_find_compatible_node() returns a node pointer with refcount
-> incremented, we should use of_node_put() on it when done.
-> Add missing of_node_put() to avoid refcount leak.
-> 
-> 
+Signed-off-by: Moudy Ho <moudy.ho@mediatek.com>
+---
+ arch/arm64/boot/dts/mediatek/mt8183.dtsi | 79 +++++++++++++++++++++++-
+ 1 file changed, 78 insertions(+), 1 deletion(-)
 
-Thanks, Applied to https://git.kernel.org/pub/scm/linux/kernel/git/amlogic/linux.git (v5.20/arm)
-
-[1/1] ARM: meson: Fix refcount leak in meson_smp_prepare_cpus
-      https://git.kernel.org/amlogic/c/34d2cd3fccced12b958b8848e3eff0ee4296764c
-
-These changes has been applied on the intermediate git tree [1].
-
-The v5.20/arm branch will then be sent via a formal Pull Request to the Linux SoC maintainers
-for inclusion in their intermediate git branches in order to be sent to Linus during
-the next merge window, or sooner if it's a set of fixes.
-
-In the cases of fixes, those will be merged in the current release candidate
-kernel and as soon they appear on the Linux master branch they will be
-backported to the previous Stable and Long-Stable kernels [2].
-
-The intermediate git branches are merged daily in the linux-next tree [3],
-people are encouraged testing these pre-release kernels and report issues on the
-relevant mailing-lists.
-
-If problems are discovered on those changes, please submit a signed-off-by revert
-patch followed by a corrective changeset.
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/amlogic/linux.git
-[2] https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
-[3] https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+index e74fd253478b..ade5997a9656 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+@@ -1389,6 +1389,50 @@
+ 			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0 0x1000>;
+ 		};
+ 
++		mdp3-rdma0@14001000 {
++			compatible = "mediatek,mt8183-mdp3-rdma";
++			reg = <0 0x14001000 0 0x1000>;
++			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x1000 0x1000>;
++			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
++			clocks = <&mmsys CLK_MM_MDP_RDMA0>,
++				 <&mmsys CLK_MM_MDP_RSZ1>;
++			iommus = <&iommu M4U_PORT_MDP_RDMA0>;
++			mboxes = <&gce 20 CMDQ_THR_PRIO_LOWEST 0>,
++				 <&gce 21 CMDQ_THR_PRIO_LOWEST 0>;
++		};
++
++		mdp3-rsz0@14003000 {
++			compatible = "mediatek,mt8183-mdp3-rsz";
++			reg = <0 0x14003000 0 0x1000>;
++			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x3000 0x1000>;
++			clocks = <&mmsys CLK_MM_MDP_RSZ0>;
++		};
++
++		mdp3-rsz1@14004000 {
++			compatible = "mediatek,mt8183-mdp3-rsz";
++			reg = <0 0x14004000 0 0x1000>;
++			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x4000 0x1000>;
++			clocks = <&mmsys CLK_MM_MDP_RSZ1>;
++		};
++
++		mdp3-wrot0@14005000 {
++			compatible = "mediatek,mt8183-mdp3-wrot";
++			reg = <0 0x14005000 0 0x1000>;
++			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x5000 0x1000>;
++			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
++			clocks = <&mmsys CLK_MM_MDP_WROT0>;
++			iommus = <&iommu M4U_PORT_MDP_WROT0>;
++		};
++
++		mdp3-wdma@14006000 {
++			compatible = "mediatek,mt8183-mdp3-wdma";
++			reg = <0 0x14006000 0 0x1000>;
++			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x6000 0x1000>;
++			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
++			clocks = <&mmsys CLK_MM_MDP_WDMA0>;
++			iommus = <&iommu M4U_PORT_MDP_WDMA0>;
++		};
++
+ 		ovl0: ovl@14008000 {
+ 			compatible = "mediatek,mt8183-disp-ovl";
+ 			reg = <0 0x14008000 0 0x1000>;
+@@ -1507,7 +1551,33 @@
+ 			interrupts = <GIC_SPI 217 IRQ_TYPE_LEVEL_LOW>;
+ 			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
+ 			mediatek,gce-events = <CMDQ_EVENT_MUTEX_STREAM_DONE0>,
+-					      <CMDQ_EVENT_MUTEX_STREAM_DONE1>;
++					      <CMDQ_EVENT_MUTEX_STREAM_DONE1>,
++					      <CMDQ_EVENT_MDP_RDMA0_SOF>,
++					      <CMDQ_EVENT_MDP_RDMA0_EOF>,
++					      <CMDQ_EVENT_MDP_RSZ0_SOF>,
++					      <CMDQ_EVENT_MDP_RSZ1_SOF>,
++					      <CMDQ_EVENT_MDP_TDSHP_SOF>,
++					      <CMDQ_EVENT_MDP_WROT0_SOF>,
++					      <CMDQ_EVENT_MDP_WROT0_EOF>,
++					      <CMDQ_EVENT_MDP_WDMA0_SOF>,
++					      <CMDQ_EVENT_MDP_WDMA0_EOF>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_0>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_1>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_2>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_3>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_4>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_5>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_6>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_7>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_8>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_9>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_10>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_11>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_12>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_13>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_14>,
++					      <CMDQ_EVENT_WPE_A_DONE>,
++					      <CMDQ_EVENT_SPE_B_DONE>;
+ 			mediatek,gce-client-reg = <&gce SUBSYS_1401XXXX 0x6000 0x1000>;
+ 		};
+ 
+@@ -1532,6 +1602,13 @@
+ 			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
+ 		};
+ 
++		mdp3-ccorr@1401c000 {
++			compatible = "mediatek,mt8183-mdp3-ccorr";
++			reg = <0 0x1401c000 0 0x1000>;
++			mediatek,gce-client-reg = <&gce SUBSYS_1401XXXX 0xc000 0x1000>;
++			clocks = <&mmsys CLK_MM_MDP_CCORR>;
++		};
++
+ 		imgsys: syscon@15020000 {
+ 			compatible = "mediatek,mt8183-imgsys", "syscon";
+ 			reg = <0 0x15020000 0 0x1000>;
 -- 
-Neil
+2.18.0
+
