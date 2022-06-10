@@ -2,82 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EFA1CCA47E
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 07:07:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E82E9C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 07:07:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245323AbiFJHHv convert rfc822-to-8bit (ORCPT
+        id S1346186AbiFJHHz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 03:07:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37364 "EHLO
+        Fri, 10 Jun 2022 03:07:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239815AbiFJHHp (ORCPT
+        with ESMTP id S241586AbiFJHHq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 03:07:45 -0400
-X-Greylist: delayed 540 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 10 Jun 2022 00:07:43 PDT
-Received: from mx1.uni-regensburg.de (mx1.uni-regensburg.de [194.94.157.146])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E3DF2666
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 00:07:43 -0700 (PDT)
-Received: from mx1.uni-regensburg.de (localhost [127.0.0.1])
-        by localhost (Postfix) with SMTP id 1E0EB600005A
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 08:58:38 +0200 (CEST)
-Received: from gwsmtp.uni-regensburg.de (gwsmtp1.uni-regensburg.de [132.199.5.51])
-        by mx1.uni-regensburg.de (Postfix) with ESMTP id 04F706000051
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 08:58:38 +0200 (CEST)
-Received: from uni-regensburg-smtp1-MTA by gwsmtp.uni-regensburg.de
-        with Novell_GroupWise; Fri, 10 Jun 2022 08:58:38 +0200
-Message-Id: <62A2EB9C020000A10004ACB6@gwsmtp.uni-regensburg.de>
-X-Mailer: Novell GroupWise Internet Agent 18.4.0 
-Date:   Fri, 10 Jun 2022 08:58:36 +0200
-From:   "Ulrich Windl" <Ulrich.Windl@rz.uni-regensburg.de>
-To:     <linux-kernel@vger.kernel.org>
-Subject: Q: (rt)netlink documentation
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 8BIT
-Content-Disposition: inline
+        Fri, 10 Jun 2022 03:07:46 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EF6F633F;
+        Fri, 10 Jun 2022 00:07:43 -0700 (PDT)
+Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LKBnV016Jz1K99Y;
+        Fri, 10 Jun 2022 15:05:49 +0800 (CST)
+Received: from dggpeml500011.china.huawei.com (7.185.36.84) by
+ dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 10 Jun 2022 15:07:41 +0800
+Received: from DESKTOP-9883QJJ.china.huawei.com (10.136.114.155) by
+ dggpeml500011.china.huawei.com (7.185.36.84) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 10 Jun 2022 15:07:40 +0800
+From:   Di Zhu <zhudi2@huawei.com>
+To:     <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <zhudi2@huawei.com>, <rose.chen@huawei.com>,
+        <syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com>
+Subject: [PATCH] fq_codel: Discard problematic packets with pkt_len 0
+Date:   Fri, 10 Jun 2022 15:05:29 +0800
+Message-ID: <20220610070529.1623-1-zhudi2@huawei.com>
+X-Mailer: git-send-email 2.27.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.136.114.155]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500011.china.huawei.com (7.185.36.84)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi!
+Syzbot found an issue [1]: fq_codel_drop() try to drop a flow whitout any
+skbs, that is, the flow->head is null.
+The root cause is that: when the first queued skb with pkt_len 0, backlogs
+of the flow that this skb enqueued is still 0 and if sch->limit is set to
+0 then fq_codel_drop() will be called. At this point, the backlogs of all
+flows are all 0, so flow with idx 0 is selected to drop, but this flow have
+not any skbs.
+skb with pkt_len 0 can break existing processing logic, so just discard
+these invalid skbs.
 
-I'm working with an older kernel (SLES12 SP5, 4.12.14), trying to implement a module to access rtnetlink data, specifically that returned for RTM_GETLINK.
-However I have the problem that the documentation on the packet structure is very poor, if not to say absent. So I fail to parse the response correctly.
-Furthermore I realized (when trying to contact the maintainer), that "netlink" is not present in the MAINTAINERS file.
+LINK: [1] https://syzkaller.appspot.com/bug?id=0b84da80c2917757915afa89f7738a9d16ec96c5
 
-To be honest, the only working example I have is derived from some C code someone had published.
-From the manual pages or header files (even from the kernel sources, or the Documentation directory) it's absolutely non-obvious how the data is structured and how to use those many macros defined.
+Reported-by: syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com
+Signed-off-by: Di Zhu <zhudi2@huawei.com>
+---
+ net/sched/sch_fq_codel.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-NLMSG_ALIGN
-RTA_ALIGN
-RTA_OK
-RTA_NEXT
-RTA_LENGTH
-RTA_SPACE
-RTA_DATA
-RTA_PAYLOAD
-RTM_RTA
-RTM_PAYLOAD
-TCA_RTA
-TCA_PAYLOAD
-TA_RTA
-TA_PAYLOAD
-NFDN_RTMSG
-NLMSG_LENGTH
-NLMSG_SPACE
-NLMSG_DATA
-NLMSG_NEXT
-NLMSG_OK
-NLMSG_PAYLOAD
-IFA_RTA
-IFA_PAYLOAD
-NFM_PAYLOAD
-IFLA_RTA
-IFLA_PAYLOAD
-(This list is most likely not complete)
-
-Regards,
-Ulrich Windl
-P.S.: Keep me on CC:, I'm not subscribed to LKML
-
+diff --git a/net/sched/sch_fq_codel.c b/net/sched/sch_fq_codel.c
+index 839e1235db05..c0f82b7358e1 100644
+--- a/net/sched/sch_fq_codel.c
++++ b/net/sched/sch_fq_codel.c
+@@ -191,6 +191,9 @@ static int fq_codel_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 	unsigned int pkt_len;
+ 	bool memory_limited;
+ 
++	if (unlikely(!qdisc_pkt_len(skb)))
++		return qdisc_drop(skb, sch, to_free);
++
+ 	idx = fq_codel_classify(skb, sch, &ret);
+ 	if (idx == 0) {
+ 		if (ret & __NET_XMIT_BYPASS)
+-- 
+2.27.0
 
