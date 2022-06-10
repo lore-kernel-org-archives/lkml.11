@@ -2,197 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 362AACCA47F
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 10:58:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30517C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 10:58:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349052AbiFJK6S (ORCPT
+        id S1344554AbiFJK6n (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 06:58:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43022 "EHLO
+        Fri, 10 Jun 2022 06:58:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343921AbiFJK5r (ORCPT
+        with ESMTP id S1345346AbiFJK5v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 06:57:47 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5200D218A8F;
-        Fri, 10 Jun 2022 03:55:33 -0700 (PDT)
-X-UUID: a6adc6f793e04be3994c994e3590af2d-20220610
-X-CID-P-RULE: Spam_GS6885AD
-X-CID-O-INFO: VERSION:1.1.5,REQID:af9720a6-dc48-4319-a8f0-8734f015d776,OB:0,LO
-        B:40,IP:0,URL:25,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS6885A
-        D,ACTION:quarantine,TS:115
-X-CID-INFO: VERSION:1.1.5,REQID:af9720a6-dc48-4319-a8f0-8734f015d776,OB:0,LOB:
-        40,IP:0,URL:25,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,
-        ACTION:quarantine,TS:115
-X-CID-META: VersionHash:2a19b09,CLOUDID:912ff27e-c8dc-403a-96e8-6237210dceee,C
-        OID:FAIL,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,Fil
-        e:nil,QS:0,BEC:nil
-X-UUID: a6adc6f793e04be3994c994e3590af2d-20220610
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 323076661; Fri, 10 Jun 2022 18:55:24 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Fri, 10 Jun 2022 18:55:23 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Fri, 10 Jun 2022 18:55:23 +0800
-From:   Bo-Chen Chen <rex-bc.chen@mediatek.com>
-To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
-        <daniel@ffwll.ch>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <mripard@kernel.org>,
-        <tzimmermann@suse.de>, <matthias.bgg@gmail.com>, <deller@gmx.de>,
-        <airlied@linux.ie>
-CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
-        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
-        <angelogioacchino.delregno@collabora.com>, <ck.hu@mediatek.com>,
-        <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-fbdev@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Bo-Chen Chen <rex-bc.chen@mediatek.com>
-Subject: [PATCH v11 01/10] dt-bindings: mediatek,dp: Add Display Port binding
-Date:   Fri, 10 Jun 2022 18:55:13 +0800
-Message-ID: <20220610105522.13449-2-rex-bc.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220610105522.13449-1-rex-bc.chen@mediatek.com>
-References: <20220610105522.13449-1-rex-bc.chen@mediatek.com>
+        Fri, 10 Jun 2022 06:57:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DF8E52D2522
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 03:55:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654858541;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Zz4FcuWwsUSXGAJMbqMsSNCwY/ABPIpK2Pm5RbgJbQg=;
+        b=ZQcDa/DI4D9SSXNF/qKsk6zqp7hqdPyxfgzFKkRyr21cO6/gJL1vwwCBq/2Lpq5My/xqg1
+        onzKj2x3Im2FuCPD2FbsfiAZVAVmgvHMW2xZtLBbcq6a40ZBljfJOkMmllvkgv2ACSa0Wc
+        b3Rri4DUgFZHxRo6Il7eLxMnIMCaPpE=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-25-rr6WpqsWOEetn97keS7TCw-1; Fri, 10 Jun 2022 06:55:40 -0400
+X-MC-Unique: rr6WpqsWOEetn97keS7TCw-1
+Received: by mail-wm1-f70.google.com with SMTP id o3-20020a05600c510300b0039743540ac7so9501906wms.5
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 03:55:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=Zz4FcuWwsUSXGAJMbqMsSNCwY/ABPIpK2Pm5RbgJbQg=;
+        b=5NIp4igGLfLdDZKhICY7319IR7TZYa3dKAXI4JC5mfmFW69SviA6ZXz/l1mlTn/X/d
+         uyi75F3Fn+/p5Am4kjV5X+z9qjFYz5MP8PuguMP5z09hxN6ptqnR9fYmDDcoJyup9tyG
+         rQqyXaKgFRPS/KIzIF6OQHH+ECB749r3dFtYZcPq8aFc4wQ1/Ome0BgYjV7MbZaHTRvA
+         zMm5H04qKh5PjE8CJR2WTOIfFfCgusS2OblDs58fW4kYkADAy9W7dTz/3bPMzMEdul4B
+         3nUKbgnU2N8dDxormoS+y1eXw8AnJ6+w9AT5yxHvF/BVzd/GDHxdSsWTHxDgiUskdZRJ
+         1ExA==
+X-Gm-Message-State: AOAM532h1IE1DCoGyf5PBD3p634bgAtr/WnyKrNYgQeOKpFNf0I08ry/
+        zqF3rT39M/P7oFfWUbRYiX78eL52U9CeU8Wr088X6H1fIjI5q2x23B/W/+gGjdBWdjtMqVk5aIM
+        81ay1QxrqR9i5mZbSwmJPV4qy
+X-Received: by 2002:a05:600c:4f04:b0:39c:75e9:a3a5 with SMTP id l4-20020a05600c4f0400b0039c75e9a3a5mr5534271wmq.181.1654858539547;
+        Fri, 10 Jun 2022 03:55:39 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwIESYBb9wLI6gE8ep4bMC3Rlvyyi6Izcpxz5yNfkW/GdAdhNvis/Qs2p7Cym6z95sPDwrWbg==
+X-Received: by 2002:a05:600c:4f04:b0:39c:75e9:a3a5 with SMTP id l4-20020a05600c4f0400b0039c75e9a3a5mr5534244wmq.181.1654858539295;
+        Fri, 10 Jun 2022 03:55:39 -0700 (PDT)
+Received: from vschneid.remote.csb ([185.11.37.247])
+        by smtp.gmail.com with ESMTPSA id w7-20020adfee47000000b002185631adf0sm9818110wro.23.2022.06.10.03.55.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Jun 2022 03:55:38 -0700 (PDT)
+From:   Valentin Schneider <vschneid@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        K Prateek Nayak <kprateek.nayak@amd.com>
+Cc:     aubrey.li@linux.intel.com, efault@gmx.de, gautham.shenoy@amd.com,
+        linux-kernel@vger.kernel.org, mgorman@techsingularity.net,
+        mingo@kernel.org, song.bao.hua@hisilicon.com,
+        srikar@linux.vnet.ibm.com, valentin.schneider@arm.com,
+        vincent.guittot@linaro.org
+Subject: Re: [PATCH v7] sched/fair: Consider cpu affinity when allowing NUMA
+ imbalance in find_idlest_group
+In-Reply-To: <YqHfdn9O81Ir1+bI@worktop.programming.kicks-ass.net>
+References: <20220407111222.22649-1-kprateek.nayak@amd.com>
+ <YqHfdn9O81Ir1+bI@worktop.programming.kicks-ass.net>
+Date:   Fri, 10 Jun 2022 11:55:37 +0100
+Message-ID: <xhsmhr13w7pp2.mognet@vschneid.remote.csb>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Markus Schneider-Pargmann <msp@baylibre.com>
+On 09/06/22 13:54, Peter Zijlstra wrote:
+> Now, I can (and have) fixed up the conflict, but it did make me look at
+> this in a little more detail; and the thing I noticed is that your:
+>
+>   'p->nr_cpus_allowed != num_online_cpus()'
+>
+> test makes no sense. That's basically 'true'. The thing is,
+> nr_cpus_allowed is initialized to NR_CPUS, and unless someone somewhere
+> did set_cpus_allowed() on it, it'll still be NR_CPUS.
+>
+> Also, CPU hotplug doesn't change nr_cpus_allowed, so num_online_cpus()
+> is just plain wrong.
+>
+> Now, something that might work is:
+>
+>   'p->nr_cpus_allowed < num_online_cpus()'
+>
+> And even that is no guarantee. You can construct a situation where this
+> is still false even though you actually have a constrained set.
+> Consider a machine with 8 CPUs. Then set the mask to: 0x55, which has 4
+> CPUs set. Then offline the last 4 so that the online mask becomes 0x0f.
+>
+> Then the effective mask is 0x05, and the number we're looking for above
+> is 2, but the suggested test would still be false, because
+> nr_cpus_allowed would be 4, as would num_online_cpus().
+>
 
-This controller is present on several mediatek hardware. Currently
-mt8195 and mt8395 have this controller without a functional difference,
-so only one compatible field is added.
+IIUC we want to pay special attention when the task isn't allowed to run on
+all online CPUs, wouldn't the below do that?
 
-The controller can have two forms, as a normal display port and as an
-embedded display port.
+  !cpumask_subset(cpu_online_mask, p->cpus_ptr)
 
-Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-[Bo-Chen: Fix reviewers' comment]
-Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
----
- .../display/mediatek/mediatek,dp.yaml         | 101 ++++++++++++++++++
- 1 file changed, 101 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,dp.yaml
+The task affinity can be a superset of the online mask, obvious case is
+init_task's CPU_MASK_ALL, and the above test is still false if both masks
+are equal.
 
-diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dp.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,dp.yaml
-new file mode 100644
-index 000000000000..10f50a0dcf49
---- /dev/null
-+++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,dp.yaml
-@@ -0,0 +1,101 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/display/mediatek/mediatek,dp.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: MediaTek Display Port Controller
-+
-+maintainers:
-+  - Chun-Kuang Hu <chunkuang.hu@kernel.org>
-+  - Jitao shi <jitao.shi@mediatek.com>
-+
-+description: |
-+  Device tree bindings for the MediaTek display port and
-+  embedded display port controller present on some MediaTek SoCs.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - mediatek,mt8195-dp-tx
-+      - mediatek,mt8195-edp-tx
-+
-+  reg:
-+    maxItems: 1
-+
-+  nvmem-cells:
-+    maxItems: 1
-+    description: efuse data for display port calibration
-+
-+  nvmem-cell-names:
-+    const: dp_calibration_data
-+
-+  power-domains:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  ports:
-+    $ref: /schemas/graph.yaml#/properties/ports
-+    properties:
-+      port@0:
-+        $ref: /schemas/graph.yaml#/properties/port
-+        description: Input endpoint of the controller, usually dp_intf
-+
-+      port@1:
-+        $ref: /schemas/graph.yaml#/properties/port
-+        description: Output endpoint of the controller
-+
-+    required:
-+      - port@0
-+      - port@1
-+
-+  max-lanes:
-+    maxItems: 1
-+    description: maximum number of lanes supported by the hardware.
-+
-+  max-linkrate:
-+    maxItems: 1
-+    description: maximum link rate supported by the hardware and unit is MHz.
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - ports
-+  - max-lanes
-+  - max-linkrate
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/power/mt8195-power.h>
-+    dp_tx@1c600000 {
-+        compatible = "mediatek,mt8195-dp-tx";
-+        reg = <0x1c600000 0x8000>;
-+        power-domains = <&spm MT8195_POWER_DOMAIN_DP_TX>;
-+        interrupts = <GIC_SPI 458 IRQ_TYPE_LEVEL_HIGH 0>;
-+        max-lanes = /bits/ 8 <4>;
-+        max-linkrate = /bits/ 16 <8100>;
-+
-+        ports {
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            port@0 {
-+                reg = <0>;
-+                edp_in: endpoint {
-+                    remote-endpoint = <&dp_intf0_out>;
-+                };
-+            };
-+            port@1 {
-+                reg = <1>;
-+                edp_out: endpoint {
-+                    remote-endpoint = <&panel_in>;
-+                };
-+            };
-+        };
-+    };
--- 
-2.18.0
+(Additionnaly we could add a step in sched_init() to "properly" initialize
+the init_task mask and remove the NR_CPUS faff).
 
