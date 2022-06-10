@@ -2,155 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD80BC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 20:33:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD5C1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 20:34:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348002AbiFJUdc (ORCPT
+        id S1350361AbiFJUeW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 16:33:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55142 "EHLO
+        Fri, 10 Jun 2022 16:34:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350756AbiFJUd2 (ORCPT
+        with ESMTP id S1347934AbiFJUeS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 16:33:28 -0400
-X-Greylist: delayed 1797 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 10 Jun 2022 13:33:26 PDT
-Received: from 11.mo582.mail-out.ovh.net (11.mo582.mail-out.ovh.net [188.165.38.119])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 370511CB730
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 13:33:25 -0700 (PDT)
-Received: from player770.ha.ovh.net (unknown [10.110.115.195])
-        by mo582.mail-out.ovh.net (Postfix) with ESMTP id 691B123BC9
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 19:56:14 +0000 (UTC)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player770.ha.ovh.net (Postfix) with ESMTPSA id BC5042B7B8404;
-        Fri, 10 Jun 2022 19:56:07 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-98R002ead98320-4cb9-4ad4-8b0a-e84dbc580c18,
-                    4E496447C43E4C7632BA90A0B7747719B130BEDF) smtp.auth=steve@sk2.org
-X-OVh-ClientIp: 82.65.25.201
-Date:   Fri, 10 Jun 2022 21:56:06 +0200
-From:   Stephen Kitt <steve@sk2.org>
-To:     Sam Ravnborg <sam@ravnborg.org>
-Cc:     Sebastian Reichel <sebastian.reichel@collabora.com>,
-        David Airlie <airlied@linux.ie>, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 2/3] drm/panel: panel-dsi-cm: Use backlight helpers
-Message-ID: <20220610215606.5c7a97b9@heffalump.sk2.org>
-In-Reply-To: <20220610215236.0d5d47b7@heffalump.sk2.org>
-References: <20220607182026.1121992-1-steve@sk2.org>
-        <20220607182026.1121992-3-steve@sk2.org>
-        <20220609215236.ojxw6l2vkf652hgu@mercury.elektranox.org>
-        <20220610194720.485cf7be@heffalump.sk2.org>
-        <YqObYPttYuRDikrO@ravnborg.org>
-        <20220610215236.0d5d47b7@heffalump.sk2.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Fri, 10 Jun 2022 16:34:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD1F4EDC6;
+        Fri, 10 Jun 2022 13:34:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE2FFB83779;
+        Fri, 10 Jun 2022 20:34:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04F3FC34114;
+        Fri, 10 Jun 2022 20:34:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654893254;
+        bh=EILQd+YWkr1rPaW8ldUePcDfeY9c8mbJR99AZrSm2Ig=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=tRJxW2CgJlRYQKru9IQVWPEQ8ciuLvcEp92RphQNQzTMqjeTikbb2boPaglcjC0U2
+         WqjuxlZ9jSXCGvzDPUtE9luEsBC/26WF8D9jbu8eOVsSIf+doY2456z/p+O1lGkG3p
+         ziPVG2p0bw+AAZcWADO0Wv5BHNHU6ovnoGSve6BzyoGcsmefGhJnSVUi/pyWk0I1ph
+         UqSOeu+k00MmuBgBuRrC4jMnCzydJCQtqxbeVrPKxR4B4v5bEErJgIT9rAfs6CZqVa
+         2u1eyr0uCMJ+y0UJeBDgV+JelhOaPQz/oz1Z1E9rBtXC1h/J1iSbl7Wi8FwoRYL3Np
+         e7C2mBTBbLKJg==
+Date:   Fri, 10 Jun 2022 13:34:13 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-gpio@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Wolfram Sang <wsa@kernel.org>,
+        Terry Bowman <terry.bowman@amd.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v10 net-next 0/7] add support for VSC7512 control over
+ SPI
+Message-ID: <20220610133413.39ba9170@kernel.org>
+In-Reply-To: <20220610202330.799510-1-colin.foster@in-advantage.com>
+References: <20220610202330.799510-1-colin.foster@in-advantage.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/80XS4+CdZ9JSPRbvT9=p+Py";
- protocol="application/pgp-signature"; micalg=pgp-sha512
-X-Ovh-Tracer-Id: 11663760088923145862
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrudduuddgudegudcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpeffhffvvefukfgjfhfogggtsehgtderreertdejnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucggtffrrghtthgvrhhnpeeiheevvdeugeejffefteffvefhieegjeevhfekjeejvdelgfefkeehhfdufffhjeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejjedtrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepshhtvghvvgesshhkvddrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheekvd
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/80XS4+CdZ9JSPRbvT9=p+Py
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+On Fri, 10 Jun 2022 13:23:23 -0700 Colin Foster wrote:
+> v10
+>     * Fix warming by removing unused function
 
-On Fri, 10 Jun 2022 21:52:36 +0200, Stephen Kitt <steve@sk2.org> wrote:
+I've had it today with people bombarding the list with multiple
+versions of the same patchset.
 
-> On Fri, 10 Jun 2022 21:28:32 +0200, Sam Ravnborg <sam@ravnborg.org> wrote:
-> > Hi Stephen.
-> > On Fri, Jun 10, 2022 at 07:47:20PM +0200, Stephen Kitt wrote: =20
-> > > Hi Sebastian,
-> > >=20
-> > > On Thu, 9 Jun 2022 23:52:36 +0200, Sebastian Reichel
-> > > <sebastian.reichel@collabora.com> wrote:   =20
-> > > > On Tue, Jun 07, 2022 at 08:20:25PM +0200, Stephen Kitt wrote:   =20
-> > > > > diff --git a/drivers/gpu/drm/panel/panel-dsi-cm.c
-> > > > > b/drivers/gpu/drm/panel/panel-dsi-cm.c index
-> > > > > b58cb064975f..aa36dc6cedd3 100644 ---
-> > > > > a/drivers/gpu/drm/panel/panel-dsi-cm.c +++
-> > > > > b/drivers/gpu/drm/panel/panel-dsi-cm.c @@ -86,16 +86,10 @@ static
-> > > > > void dsicm_bl_power(struct panel_drv_data *ddata, bool enable)
-> > > > > return;=20
-> > > > >  	if (enable) {
-> > > > > -		backlight->props.fb_blank =3D FB_BLANK_UNBLANK;
-> > > > > -		backlight->props.state =3D ~(BL_CORE_FBBLANK |
-> > > > > BL_CORE_SUSPENDED);
-> > > > > -		backlight->props.power =3D FB_BLANK_UNBLANK;
-> > > > > +		backlight_enable(backlight);
-> > > > >  	} else {
-> > > > > -		backlight->props.fb_blank =3D FB_BLANK_NORMAL;
-> > > > > -		backlight->props.power =3D FB_BLANK_POWERDOWN;
-> > > > > -		backlight->props.state |=3D BL_CORE_FBBLANK |
-> > > > > BL_CORE_SUSPENDED;
-> > > > > +		backlight_disable(backlight);
-> > > > >  	}     =20
-> > > >=20
-> > > > The brackets can be removed now. Otherwise:   =20
-> > >    =20
-> > > >=20
-> > > > Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.com>   =
-=20
-> > >=20
-> > > Thanks, I=E2=80=99ll wait a little more to see if there are any other=
- reviews of
-> > > the patches and then push a v2 with that fix.   =20
-> > It would be very nice if you could kill all uses of FB_BLANK in the
-> > drivers/gpu/drm/panel/* drivers, and post them as one series.
-> > This is long overdue to introduce the backlight helpers.
-> >=20
-> > The three you posted is already a nice step forward, and there may be
-> > more panel drivers I have missed. =20
->=20
-> With this series on top of 5.19-rc1, the only remaining .fb_blank referen=
-ce
-> is in acx565akm_backlight_init() in panel-sony-acx565akm.c; I was planning
-> on nuking that along with the other .fb_blank initialisers in a series
-> removing .fb_blank entirely from backlight_properties. I=E2=80=99ll add i=
-t as a
-> fourth patch for drm/panel if that makes things easier!
+https://www.kernel.org/doc/html/latest/process/maintainer-netdev.html#i-have-received-review-feedback-when-should-i-post-a-revised-version-of-the-patches
 
-That=E2=80=99s in drivers/gpu/drm/panel of course, there are a few others e=
-lsewhere
-(I=E2=80=99ve got patches in flight for most of them, I=E2=80=99ve got the =
-rest ready for
-submission).
-
-> There will still be references to FB_BLANK constants since they=E2=80=99r=
-e used for
-> backlight_properties.power values. Would it make sense to rename those?
-
-Just to make sure =E2=80=94 I=E2=80=99m cleaning up backlight_properties.fb=
-_blank, not
-fb_ops.fb_blank. I wasn=E2=80=99t planning on touching the latter...
-
-Regards,
-
-Stephen
-
---Sig_/80XS4+CdZ9JSPRbvT9=p+Py
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEnPVX/hPLkMoq7x0ggNMC9Yhtg5wFAmKjodYACgkQgNMC9Yht
-g5zgdg/+IdFMt3CSBicFd90HvGT0WoTKYAJFPFnHEWkMP5NNbOshaTX7eHnYfuB6
-gDkYhXuGC6OZJ1N839HXyXWPkmL4iZX/+Ba1hCFqOx+2znIY+zRRlf19+EdvyuGU
-jarSv7VZScgVjrFtpVtt1DRRlFqG86ppemyH3og1S+7gQ1gss7maNILXyRg/40lj
-VhmluONX1E+pIW9Dh50iGKEd3Gn/Im4B0UwV383fLlOMgtOyjGJ5BfMKJ/E+A3vo
-XedrZPJ3xFFSo9l5kNKnGChwXBkUfBKg74fc1q1QmpFVb/dTAVHWy0bL7bCpSoPs
-s/XfpgIFEQqWdrKTB9yR2O67OLHL0AnMUDYJcIemBcyEmVL6WlEpKp1I7czEP8Fq
-m79YxTTzO12Sath7Yh6ntGYBgMLBO57Vl+CSqDNpuXQAWD7u5HQLpHiYE8vaAfPG
-D+WHSu4ZUVOrpAe8TonrzKgXTsHwZzR0JZ2EmSSJsyPmmSk+0Ro8PR64grw7n4Di
-FUqVotIKtY7uDfXsRiTNhPlIpde1Sm4MDQPhITEcVdSRCXkTdsq3jZFhvKW8l8Wx
-bQxICmVk1WQGubs++s8ArUxJhO4KnAzsB3yiv/obcMT4lgWKbUmUmyjSlYngLVnq
-jaP+Hb4auLOEWvoWOReySy7ovgrkhhZ9zuqGvDYB3IToa2uoULs=
-=HpMT
------END PGP SIGNATURE-----
-
---Sig_/80XS4+CdZ9JSPRbvT9=p+Py--
+If you can't find a compiler before sending the set you're gonna
+have to wait. I'm tossing this, come back after the weekend, bye.
