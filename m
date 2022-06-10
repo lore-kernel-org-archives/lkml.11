@@ -2,47 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD2E6C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 07:22:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E7C6C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 07:22:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346665AbiFJHWB (ORCPT
+        id S1346673AbiFJHWI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 03:22:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34264 "EHLO
+        Fri, 10 Jun 2022 03:22:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343616AbiFJHVn (ORCPT
+        with ESMTP id S243513AbiFJHVn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 10 Jun 2022 03:21:43 -0400
 Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EC66038C083
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 00:21:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8A0C838D200
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 00:21:36 -0700 (PDT)
 Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id 819DDBD1;
-        Fri, 10 Jun 2022 10:22:23 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 819DDBD1
+        by mail.baikalelectronics.com (Postfix) with ESMTP id 9D1BCBD3;
+        Fri, 10 Jun 2022 10:22:24 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 9D1BCBD3
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1654845744;
-        bh=z8mq2UkwmLMqL0DG3q1BtK9e5Sy5l+mkuuDHM21YBtE=;
-        h=From:To:CC:Subject:Date:From;
-        b=m6eCIpghqmDeRukr/Br6GjfyvzRYxOnOv8AGjsR3DwyzaNp6wykxtCSgkvoN3pptk
-         2kSPJi481Cto5P5X6ZeoVgW7cYWD4XT8ebTade/DDUoBdkGtgvg+dM1Ow4mexRsJ0V
-         7KJ7AoyzVf604/r+gBjvGolMuU3S1C3J9whpcUTI=
+        d=baikalelectronics.ru; s=mail; t=1654845745;
+        bh=/ATpPn5tsZ4m5LXVjUB+s2xJExFcZUwfGGYs9UuBRm0=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
+        b=rED/PiOtEGQlT6B72rH4m9mv6LGMvLGiQSaD9co31gQi+glvLXrXBaXaXP25QzUVA
+         G7pu13gfID8vrbqTeaacGQhBDKcju+YxwwWx1gcFaT2Gyzdc3SuQIwNdap2xiUTsry
+         GZ9XqLzxjNgr1JXIzKaqaQtXmceyPUpPDnqMwASs=
 Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 10 Jun 2022 10:21:31 +0300
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 10 Jun 2022 10:21:32 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Stephen Boyd <sboyd@kernel.org>,
         Philipp Zabel <p.zabel@pengutronix.de>,
-        Michael Turquette <mturquette@baylibre.com>
+        Michael Turquette <mturquette@baylibre.com>,
+        Luca Ceresoli <luca@lucaceresoli.net>,
+        Marek Vasut <marek.vasut@gmail.com>
 CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Serge Semin <fancer.lancer@gmail.com>,
         Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
         Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
         Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         <linux-clk@vger.kernel.org>, <linux-mips@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v4 0/8] clk/resets: baikal-t1: Add DDR/PCIe resets and xGMAC/SATA fixes
-Date:   Fri, 10 Jun 2022 10:21:16 +0300
-Message-ID: <20220610072124.8714-1-Sergey.Semin@baikalelectronics.ru>
+        <linux-kernel@vger.kernel.org>, Stephen Boyd <sboyd@codeaurora.org>
+Subject: [PATCH v4 2/8] clk: vc5: Fix 5P49V6901 outputs disabling when enabling FOD
+Date:   Fri, 10 Jun 2022 10:21:18 +0300
+Message-ID: <20220610072124.8714-3-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20220610072124.8714-1-Sergey.Semin@baikalelectronics.ru>
+References: <20220610072124.8714-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -51,83 +55,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Short summary regarding this patchset. The series starts from fixing a
-wrong semantic of the device managed optional exclusive bulk reset control
-getter. Then we suggest a fix of the clocks glitching cause by the Renesas
-5P49V6901 chip in some circumstances. Afterwards a few more modifications
-are introduced to finally finish the Baikal-T1 CCU unit support up and
-prepare the code before adding the Baikal-T1 PCIe/xGMAC support. First of
-all it turned out I specified wrong DW xGMAC PTP reference clock divider
-in my initial patches. It must be 8, not 10. Secondly I was wrong to add a
-joint xGMAC Ref and PTP clock instead of having them separately defined.
-The SoC manual describes these clocks as separate fixed clock wrappers.
-Finally in order to close the SoC clock/reset support up we need to add
-the DDR and PCIe interfaces reset controls support. It's done in two
-steps. First I've moved the reset-controls-related code into a dedicated
-module. Then the DDR/PCIe reset-control functionality is added. As the
-series finalization we've decided to convert the Baikal-T1 clock/reset
-source drivers to mainly being the platform device driver and
-pre-initialize the basic clocks only at the early kernel boot stages.
+We have discovered random glitches during the system boot up procedure.
+The problem investigation led us to the weird outcomes: when none of the
+Renesas 5P49V6901 ports are explicitly enabled by the kernel driver, the
+glitches disappeared. It was a mystery since the SoC external clock
+domains were fed with different 5P49V6901 outputs. The driver code didn't
+seem like bogus either. We almost despaired to find out a root cause when
+the solution was found for a more modern revision of the chip. It turned
+out the 5P49V6901 clock generator stopped its output for a short period of
+time during the VC5_OUT_DIV_CONTROL register writing. The same problem has
+was found for the 5P49V6965 revision of the chip and the was successfully
+fixed in commit fc336ae622df ("clk: vc5: fix output disabling when
+enabling a FOD") by enabling the "bypass_sync" flag hidden inside "Unused
+Factory Reserved Register". Even though the 5P49V6901 registers
+description and programming guide doesn't provide any intel regarding that
+flag, setting it up anyway in the officially unused register completely
+eliminated the denoted glitches. Thus let's activate the functionality
+submitted in commit fc336ae622df ("clk: vc5: fix output disabling when
+enabling a FOD") for the Renesas 5P49V6901 chip too in order to remove
+the ports implicit inter-dependency.
 
-Link: https://lore.kernel.org/linux-pci/20220324010905.15589-1-Sergey.Semin@baikalelectronics.ru/
-Changelog v2:
-- Resubmit the series with adding @Philipp to the list of the recipients.
-
-Link: https://lore.kernel.org/linux-pci/20220330144320.27039-1-Sergey.Semin@baikalelectronics.ru/
-Changelog v3:
-- No comments. Just resend the series.
-- Rebased from v5.17 onto v5.18-rc3.
-
-Link: https://lore.kernel.org/linux-clk/20220503205722.24755-1-Sergey.Semin@baikalelectronics.ru/
-Changelog v4:
-- Completely split the CCU Dividers and Resets functionality up. (@Stephen)
-- Add a new fixes patch: "clk: baikal-t1: Actually enable SATA internal
-  ref clock".
-- Add a new fixes patch: "reset: Fix devm bulk optional exclusive control
-  getter".
-- Add a new fixes patch: "clk: vc5: Fix 5P49V6901 outputs disabling when
-  enabling FOD".
-- Add a new feagure patch: "clk: baikal-t1: Convert to platform device
-  driver".
-- Change the internal clock ID to the XGMAC-referred name.
-- Rebase onto the kernel v5.18.
-
+Fixes: dbf6b16f5683 ("clk: vc5: Add support for IDT VersaClock 5P49V6901")
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc: Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>
-Cc: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: linux-clk@vger.kernel.org
-Cc: linux-mips@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
 
-Serge Semin (8):
-  reset: Fix devm bulk optional exclusive control getter
-  clk: vc5: Fix 5P49V6901 outputs disabling when enabling FOD
-  clk: baikal-t1: Fix invalid xGMAC PTP clock divider
-  clk: baikal-t1: Add shared xGMAC ref/ptp clocks internal parent
-  clk: baikal-t1: Add SATA internal ref clock buffer
-  clk: baikal-t1: Move reset-controls code into a dedicated module
-  clk: baikal-t1: Add DDR/PCIe directly controlled resets support
-  clk: baikal-t1: Convert to platform device driver
+---
 
- drivers/clk/baikal-t1/Kconfig       |  12 +-
- drivers/clk/baikal-t1/Makefile      |   1 +
- drivers/clk/baikal-t1/ccu-div.c     |  84 +++++++--
- drivers/clk/baikal-t1/ccu-div.h     |  17 +-
- drivers/clk/baikal-t1/ccu-pll.h     |   8 +
- drivers/clk/baikal-t1/ccu-rst.c     |  99 ++++++++++
- drivers/clk/baikal-t1/ccu-rst.h     |  79 ++++++++
- drivers/clk/baikal-t1/clk-ccu-div.c | 272 +++++++++++++++++-----------
- drivers/clk/baikal-t1/clk-ccu-pll.c | 128 ++++++++++---
- drivers/clk/baikal-t1/clk-ccu-rst.c | 257 ++++++++++++++++++++++++++
- drivers/clk/clk-versaclock5.c       |   2 +-
- include/dt-bindings/reset/bt1-ccu.h |   9 +
- include/linux/reset.h               |   2 +-
- 13 files changed, 814 insertions(+), 156 deletions(-)
- create mode 100644 drivers/clk/baikal-t1/ccu-rst.c
- create mode 100644 drivers/clk/baikal-t1/ccu-rst.h
- create mode 100644 drivers/clk/baikal-t1/clk-ccu-rst.c
+Changelog v4:
+- This is a new patch added on v4 lap of the series.
+---
+ drivers/clk/clk-versaclock5.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/clk/clk-versaclock5.c b/drivers/clk/clk-versaclock5.c
+index e7be3e54b9be..03cfef494b49 100644
+--- a/drivers/clk/clk-versaclock5.c
++++ b/drivers/clk/clk-versaclock5.c
+@@ -1204,7 +1204,7 @@ static const struct vc5_chip_info idt_5p49v6901_info = {
+ 	.model = IDT_VC6_5P49V6901,
+ 	.clk_fod_cnt = 4,
+ 	.clk_out_cnt = 5,
+-	.flags = VC5_HAS_PFD_FREQ_DBL,
++	.flags = VC5_HAS_PFD_FREQ_DBL | VC5_HAS_BYPASS_SYNC_BIT,
+ };
+ 
+ static const struct vc5_chip_info idt_5p49v6965_info = {
 -- 
 2.35.1
 
