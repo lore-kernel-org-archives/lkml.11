@@ -2,174 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 814F3C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 04:43:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF228C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 04:44:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242900AbiFJEnD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 00:43:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40794 "EHLO
+        id S242143AbiFJEot (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 10 Jun 2022 00:44:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232425AbiFJEm6 (ORCPT
+        with ESMTP id S232425AbiFJEop (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 00:42:58 -0400
-Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C2021D01CA;
-        Thu,  9 Jun 2022 21:42:57 -0700 (PDT)
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id E4C551A0A73;
-        Fri, 10 Jun 2022 06:42:55 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 613ED1A0A6F;
-        Fri, 10 Jun 2022 06:42:55 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id ADC901802201;
-        Fri, 10 Jun 2022 12:42:53 +0800 (+08)
-From:   Shengjiu Wang <shengjiu.wang@nxp.com>
-To:     vkoul@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
-        kernel@pengutronix.de, festevam@gmail.com, shengjiu.wang@gmail.com,
-        joy.zou@nxp.com, linux-imx@nxp.com, dmaengine@vger.kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] dmaengine: imx-sdma: Add FIFO stride support for multi FIFO script
-Date:   Fri, 10 Jun 2022 12:29:16 +0800
-Message-Id: <1654835356-6825-1-git-send-email-shengjiu.wang@nxp.com>
-X-Mailer: git-send-email 2.7.4
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Fri, 10 Jun 2022 00:44:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2C7222ABEE;
+        Thu,  9 Jun 2022 21:44:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 61C6AB830F5;
+        Fri, 10 Jun 2022 04:44:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3A7EC385A9;
+        Fri, 10 Jun 2022 04:44:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654836279;
+        bh=6g8FeECka/KS2OLX1kxuu5yztPOwSYzNR43hULG6+8Q=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=E3wNbIM4qlOnhH5R9OAfUinrtC77k/72ABLwvZGgUA3Re9CWAXoP332lZlxjeRePm
+         /ZTNnWx2KC5UGLglD+QnvPKnhUrc1lMctnmAPgPlkrNXMcy+8bplePqGlhaEeMt2Gl
+         b4X1VWTEPm3/svMjAWhVp+Yzam3CFRy3riM5c5o179W/z1jGYBwLy8Bdw4rkhgHDC1
+         jrZAti5votTEtRGUfHycsBpw4E3zzgecUMhGu9YPTwe6QUqKhClmPJ3cVguY8qUSG6
+         ldKV73X5m/V5XGL4OPgn8eJ35MqME/ZrIKRNjB2RlFozaiGCIsCumj6J0pu8Z1sT4v
+         5xE1b3Z3OaY4Q==
+Received: by mail-lj1-f172.google.com with SMTP id b7so15806510ljr.6;
+        Thu, 09 Jun 2022 21:44:38 -0700 (PDT)
+X-Gm-Message-State: AOAM530/hIk6uyBooC8NfYJDFKAnY4SvXVMt6XMglXeiAL5lTJBBRgnL
+        5iCXiTzTz39Ltkh6m6iBLRM93C07Izvpz7j+tmY=
+X-Google-Smtp-Source: ABdhPJy5/YxRiE2j7JzJj5kNHWQCd1L9sjVAS061CWCsWWdXO/0bRtO7RJBYvN8z2BbzNpYDOyZk8RnoIs3UB2Vxfeg=
+X-Received: by 2002:a2e:9695:0:b0:255:6eb1:469c with SMTP id
+ q21-20020a2e9695000000b002556eb1469cmr24151525lji.188.1654836276984; Thu, 09
+ Jun 2022 21:44:36 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220610011958.3263650-1-liyupeng@zbhlos.com>
+In-Reply-To: <20220610011958.3263650-1-liyupeng@zbhlos.com>
+From:   Huacai Chen <chenhuacai@kernel.org>
+Date:   Fri, 10 Jun 2022 12:44:26 +0800
+X-Gmail-Original-Message-ID: <CAAhV-H7HY=vT5Z2d2WEt75LYSxEgrf+TSKebt0hjc7qUNhKd9g@mail.gmail.com>
+Message-ID: <CAAhV-H7HY=vT5Z2d2WEt75LYSxEgrf+TSKebt0hjc7qUNhKd9g@mail.gmail.com>
+Subject: Re: [PATCH 1/1] irqchip/loongson-liointc: Guard uses of cpu_logical_map
+To:     Yupeng Li <liyupeng@zbhlos.com>
+Cc:     Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        "open list:MIPS" <linux-mips@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, caizp2008@163.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The peripheral may have several FIFOs, but some case just select
-some FIFOs from them for data transfer, which means FIFO0 and FIFO2
-may be selected. So add FIFO address stride support, 0 means all FIFOs
-are continuous, 1 means 1 word stride between FIFOs. All stride between
-FIFOs should be same.
+Hi, Yupeng,
 
-Another option words_per_fifo means how many audio channel data copied
-to one FIFO one time, 1 means one channel per FIFO, 2 means 2 channels
-per FIFO.
+On Fri, Jun 10, 2022 at 9:20 AM Yupeng Li <liyupeng@zbhlos.com> wrote:
+>
+>   cpu_logical_map is only defined for CONFIG_SMP builds, when we are in an
+>   UP configuration, the boot CPU is 0. Some kernel compilation error
+>   information is as follows:
+>
+>   CALL    scripts/atomic/check-atomics.sh
+>   CALL    scripts/checksyscalls.sh
+>   CHK     include/generated/compile.h
+>   CC      drivers/irqchip/irq-loongson-liointc.o
+> drivers/irqchip/irq-loongson-liointc.c: In function 'liointc_chained_handle_irq':
+> drivers/irqchip/irq-loongson-liointc.c:60:13: error: implicit declaration of function 'cpu_logical_map' [-Werror=implicit-function-declaration]
+>   int core = cpu_logical_map(smp_processor_id()) % LIOINTC_NUM_CORES;
+>              ^~~~~~~~~~~~~~~
+> cc1: some warnings being treated as errors
+> make[2]: *** [scripts/Makefile.build:249:drivers/irqchip/irq-loongson-liointc.o] error 1
+> make[1]: *** [scripts/Makefile.build:466:drivers/irqchip] error 2
+This has been fixed by Jiaxun:
+https://lore.kernel.org/lkml/20220609175242.977-1-jiaxun.yang@flygoat.com/T/#t
 
-If 'n_fifos_src =  4' and 'words_per_fifo = 2', it means the first two
-words(channels) fetch from FIFO0 and then jump to FIFO1 for next two words,
-and so on after the last FIFO3 fetched, roll back to FIFO0.
 
-Signed-off-by: Joy Zou <joy.zou@nxp.com>
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
----
-changes in v2
-- change offset to stride for naming and description
-- fix description for words_per_fifo
-- update subsystem tag to be dmaengine
+Huacai
 
-
- drivers/dma/imx-sdma.c      | 26 ++++++++++++++++++++++++--
- include/linux/dma/imx-dma.h | 13 +++++++++++++
- 2 files changed, 37 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
-index 39d70ef1caf0..d3c478131824 100644
---- a/drivers/dma/imx-sdma.c
-+++ b/drivers/dma/imx-sdma.c
-@@ -183,6 +183,8 @@
- 				 BIT(DMA_DEV_TO_DEV))
- 
- #define SDMA_WATERMARK_LEVEL_N_FIFOS	GENMASK(15, 12)
-+#define SDMA_WATERMARK_LEVEL_OFF_FIFOS  GENMASK(19, 16)
-+#define SDMA_WATERMARK_LEVEL_WORDS_PER_FIFO   GENMASK(31, 28)
- #define SDMA_WATERMARK_LEVEL_SW_DONE	BIT(23)
- 
- #define SDMA_DONE0_CONFIG_DONE_SEL	BIT(7)
-@@ -429,6 +431,9 @@ struct sdma_desc {
-  * @n_fifos_src:	number of source device fifos
-  * @n_fifos_dst:	number of destination device fifos
-  * @sw_done:		software done flag
-+ * @stride_fifos_src:	stride for source device FIFOs
-+ * @stride_fifos_dst:	stride for destination device FIFOs
-+ * @words_per_fifo:	copy number of words one time for one FIFO
-  */
- struct sdma_channel {
- 	struct virt_dma_chan		vc;
-@@ -456,6 +461,9 @@ struct sdma_channel {
- 	bool				is_ram_script;
- 	unsigned int			n_fifos_src;
- 	unsigned int			n_fifos_dst;
-+	unsigned int			stride_fifos_src;
-+	unsigned int			stride_fifos_dst;
-+	unsigned int			words_per_fifo;
- 	bool				sw_done;
- };
- 
-@@ -1245,17 +1253,28 @@ static void sdma_set_watermarklevel_for_p2p(struct sdma_channel *sdmac)
- static void sdma_set_watermarklevel_for_sais(struct sdma_channel *sdmac)
- {
- 	unsigned int n_fifos;
-+	unsigned int stride_fifos;
-+	unsigned int words_per_fifo;
- 
- 	if (sdmac->sw_done)
- 		sdmac->watermark_level |= SDMA_WATERMARK_LEVEL_SW_DONE;
- 
--	if (sdmac->direction == DMA_DEV_TO_MEM)
-+	if (sdmac->direction == DMA_DEV_TO_MEM) {
- 		n_fifos = sdmac->n_fifos_src;
--	else
-+		stride_fifos = sdmac->stride_fifos_src;
-+	} else {
- 		n_fifos = sdmac->n_fifos_dst;
-+		stride_fifos = sdmac->stride_fifos_dst;
-+	}
-+
-+	words_per_fifo = sdmac->words_per_fifo;
- 
- 	sdmac->watermark_level |=
- 			FIELD_PREP(SDMA_WATERMARK_LEVEL_N_FIFOS, n_fifos);
-+	sdmac->watermark_level |=
-+			FIELD_PREP(SDMA_WATERMARK_LEVEL_OFF_FIFOS, stride_fifos);
-+	sdmac->watermark_level |=
-+			FIELD_PREP(SDMA_WATERMARK_LEVEL_WORDS_PER_FIFO, (words_per_fifo - 1));
- }
- 
- static int sdma_config_channel(struct dma_chan *chan)
-@@ -1769,6 +1788,9 @@ static int sdma_config(struct dma_chan *chan,
- 		}
- 		sdmac->n_fifos_src = sdmacfg->n_fifos_src;
- 		sdmac->n_fifos_dst = sdmacfg->n_fifos_dst;
-+		sdmac->stride_fifos_src = sdmacfg->stride_fifos_src;
-+		sdmac->stride_fifos_dst = sdmacfg->stride_fifos_dst;
-+		sdmac->words_per_fifo = sdmacfg->words_per_fifo;
- 		sdmac->sw_done = sdmacfg->sw_done;
- 	}
- 
-diff --git a/include/linux/dma/imx-dma.h b/include/linux/dma/imx-dma.h
-index 8887762360d4..f487a4fa103a 100644
---- a/include/linux/dma/imx-dma.h
-+++ b/include/linux/dma/imx-dma.h
-@@ -70,6 +70,16 @@ static inline int imx_dma_is_general_purpose(struct dma_chan *chan)
-  * struct sdma_peripheral_config - SDMA config for audio
-  * @n_fifos_src: Number of FIFOs for recording
-  * @n_fifos_dst: Number of FIFOs for playback
-+ * @stride_fifos_src: FIFO address stride for recording, 0 means all FIFOs are
-+ *                    continuous, 1 means 1 word stride between FIFOs. All stride
-+ *                    between FIFOs should be same.
-+ * @stride_fifos_dst: FIFO address stride for playback
-+ * @words_per_fifo: numbers of words per FIFO fetch/fill, 1 means
-+ *                  one channel per FIFO, 2 means 2 channels per FIFO..
-+ *                  If 'n_fifos_src =  4' and 'words_per_fifo = 2', it
-+ *                  means the first two words(channels) fetch from FIFO0
-+ *                  and then jump to FIFO1 for next two words, and so on
-+ *                  after the last FIFO3 fetched, roll back to FIFO0.
-  * @sw_done: Use software done. Needed for PDM (micfil)
-  *
-  * Some i.MX Audio devices (SAI, micfil) have multiple successive FIFO
-@@ -82,6 +92,9 @@ static inline int imx_dma_is_general_purpose(struct dma_chan *chan)
- struct sdma_peripheral_config {
- 	int n_fifos_src;
- 	int n_fifos_dst;
-+	int stride_fifos_src;
-+	int stride_fifos_dst;
-+	int words_per_fifo;
- 	bool sw_done;
- };
- 
--- 
-2.17.1
-
+>
+> Acked-by: Caicai <caizp2008@163.com>
+> Signed-off-by: Yupeng Li <liyupeng@zbhlos.com>
+> ---
+>  drivers/irqchip/irq-loongson-liointc.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/drivers/irqchip/irq-loongson-liointc.c b/drivers/irqchip/irq-loongson-liointc.c
+> index aed88857d90f..927e236bf18e 100644
+> --- a/drivers/irqchip/irq-loongson-liointc.c
+> +++ b/drivers/irqchip/irq-loongson-liointc.c
+> @@ -57,7 +57,11 @@ static void liointc_chained_handle_irq(struct irq_desc *desc)
+>         struct liointc_handler_data *handler = irq_desc_get_handler_data(desc);
+>         struct irq_chip *chip = irq_desc_get_chip(desc);
+>         struct irq_chip_generic *gc = handler->priv->gc;
+> +#ifdef CONFIG_SMP
+>         int core = cpu_logical_map(smp_processor_id()) % LIOINTC_NUM_CORES;
+> +#else
+> +       int core = 0;
+> +#endif
+>         u32 pending;
+>
+>         chained_irq_enter(chip, desc);
+> --
+> 2.34.1
+>
