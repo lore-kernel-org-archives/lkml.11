@@ -2,88 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEA8FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 08:01:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DCE2C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 08:02:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347134AbiFJIBZ (ORCPT
+        id S1347143AbiFJICV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 04:01:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54452 "EHLO
+        Fri, 10 Jun 2022 04:02:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347117AbiFJIBK (ORCPT
+        with ESMTP id S245600AbiFJICQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 04:01:10 -0400
-Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D70D520C24A
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 01:01:06 -0700 (PDT)
-Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id ABF0F16A1;
-        Fri, 10 Jun 2022 11:01:57 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com ABF0F16A1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1654848117;
-        bh=e4ZfABF2H4VfWmciwS705FYjJaibel8PX+2+puveoMc=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=Ef/Yb2/S4rJIkO98RxL4IzCCjWdDXftjL3WTbxxElZw1TnpVnaY1Ains4k8fVRlaU
-         pyD8wWclaVDv5ANfDr2370uOhPnk4NJPwo8MyLdhbDqHnT3izIBbzTT5z9AbBy59mr
-         MjlYQssDM7eHgkaCgeOM2worvMESx7pgZNMUHUCE=
-Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 10 Jun 2022 11:01:05 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Arnd Bergmann <arnd@arndb.de>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        <soc@kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 2/2] bus: bt1-axi: Don't print error on -EPROBE_DEFER
-Date:   Fri, 10 Jun 2022 11:01:03 +0300
-Message-ID: <20220610080103.10689-2-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220610080103.10689-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220610080103.10689-1-Sergey.Semin@baikalelectronics.ru>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+        Fri, 10 Jun 2022 04:02:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71AE7212D91
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 01:02:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0DDC462048
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 08:02:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 628ABC34114;
+        Fri, 10 Jun 2022 08:02:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654848134;
+        bh=QkpmABflv2pJVO3bKwyMBZRgjaOjEOLuAV3GsKrcM+s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=JI8jdfXd6JjH1I3BNMkVZ9swStfLIQSdpRhYUIC0U67OZYNmS40DIWn6wH3Vzkdby
+         M4JN2ebbteRCYucbjMFkLUKDCPbC4xHG37pGvxBiyXLkAYZNXWrvMeSQztK4ZElVeu
+         955sF1AQlFNEeqGSRZPfTnxJnNcVNJllWAGC3NtybrUKt+3ge1Es4LNMdd26IyPMxz
+         RKHyZlTkQwntgRsl3z6dHHEDDJ85eCsDbRzsoZgnpd2CQAMF6u10HeMkGv5NkafNCT
+         6kfqKcDkwE8SO28BtiJljUG+PGab8fNINlaj5qv36l14wmv6x/ew8we+Z2xI/eQtrX
+         wGdNuUSkce/9g==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nzZat-00H4Zx-RF; Fri, 10 Jun 2022 09:02:11 +0100
+Date:   Fri, 10 Jun 2022 09:02:11 +0100
+Message-ID: <874k0t3q0s.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Jiaxun Yang <jiaxun.yang@flygoat.com>
+Cc:     chenhuacai@kernel.org, kernel@xen0n.name,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH for-5.19 v2 2/2] loongarch: Mask out higher bits for cpuid and rename the function
+In-Reply-To: <20220609175242.977-2-jiaxun.yang@flygoat.com>
+References: <20220609175242.977-1-jiaxun.yang@flygoat.com>
+        <20220609175242.977-2-jiaxun.yang@flygoat.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: jiaxun.yang@flygoat.com, chenhuacai@kernel.org, kernel@xen0n.name, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Baikal-T1 AXI bus driver correctly handles the deferred probe
-situation, but still pollutes the system log with a misleading error
-message. Let's fix that by using the dev_err_probe() method to print the
-log message in case of the clocks/resets request errors.
+On Thu, 09 Jun 2022 18:52:42 +0100,
+Jiaxun Yang <jiaxun.yang@flygoat.com> wrote:
+> 
+> Only low 9 bits of CPUID CSR represents coreid, higher bits
+> are marked as reserved. In case Loongson may define higher
+> bits in future, just mask them out for get_csr_cpuid.
+> 
+> Also, as we already have read_csr_cpuid, rename get_csr_cpuid
+> to get_csr_coreid to reflect the actual bit domain name.
 
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
----
- drivers/bus/bt1-axi.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+I assume you meant read_csr_cpuid here?
 
-diff --git a/drivers/bus/bt1-axi.c b/drivers/bus/bt1-axi.c
-index e7a6744acc7b..47bcf18f3115 100644
---- a/drivers/bus/bt1-axi.c
-+++ b/drivers/bus/bt1-axi.c
-@@ -136,7 +136,8 @@ static int bt1_axi_request_rst(struct bt1_axi *axi)
- 
- 	axi->arst = devm_reset_control_get_optional_exclusive(axi->dev, "arst");
- 	if (IS_ERR(axi->arst)) {
--		dev_warn(axi->dev, "Couldn't get reset control line\n");
-+		dev_err_probe(axi->dev, PTR_ERR(axi->arst),
-+			      "Couldn't get reset control line\n");
- 		return PTR_ERR(axi->arst);
- 	}
- 
-@@ -160,7 +161,8 @@ static int bt1_axi_request_clk(struct bt1_axi *axi)
- 
- 	axi->aclk = devm_clk_get(axi->dev, "aclk");
- 	if (IS_ERR(axi->aclk)) {
--		dev_err(axi->dev, "Couldn't get AXI Interconnect clock\n");
-+		dev_err_probe(axi->dev, PTR_ERR(axi->aclk),
-+			      "Couldn't get AXI Interconnect clock\n");
- 		return PTR_ERR(axi->aclk);
- 	}
- 
+> 
+> Signed-off-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
+> ---
+>  arch/loongarch/include/asm/loongarch.h | 4 ++--
+>  drivers/irqchip/irq-loongson-liointc.c | 2 +-
+>  2 files changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/arch/loongarch/include/asm/loongarch.h b/arch/loongarch/include/asm/loongarch.h
+> index 3ba4f7e87cd2..fe2408144fa3 100644
+> --- a/arch/loongarch/include/asm/loongarch.h
+> +++ b/arch/loongarch/include/asm/loongarch.h
+> @@ -1198,9 +1198,9 @@ static inline u64 drdtime(void)
+>  	return val;
+>  }
+>  
+> -static inline unsigned int get_csr_cpuid(void)
+> +static inline unsigned int get_csr_coreid(void)
+>  {
+> -	return csr_read32(LOONGARCH_CSR_CPUID);
+> +	return csr_read32(LOONGARCH_CSR_CPUID) & CSR_CPUID_COREID;
+>  }
+>  
+>  static inline void csr_any_send(unsigned int addr, unsigned int data,
+> diff --git a/drivers/irqchip/irq-loongson-liointc.c b/drivers/irqchip/irq-loongson-liointc.c
+> index 8d05d8bcf56f..2ee636b2d827 100644
+> --- a/drivers/irqchip/irq-loongson-liointc.c
+> +++ b/drivers/irqchip/irq-loongson-liointc.c
+> @@ -42,7 +42,7 @@
+>  #if defined(CONFIG_MIPS)
+>  #define liointc_core_id get_ebase_cpunum()
+>  #else
+> -#define liointc_core_id get_csr_cpuid()
+> +#define liointc_core_id read_csr_cpuid()
+>  #endif
+>  
+>  struct liointc_handler_data {
+
+I'm not going to take this patch as part of 5.19, as loongarch doesn't
+have any irqchip support yet, and this can be made part of the IRQ
+enabling series if really necessary.
+
+	M.
+
 -- 
-2.35.1
-
+Without deviation from the norm, progress is not possible.
