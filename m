@@ -2,87 +2,260 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED345C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 20:57:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1810C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 20:58:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350541AbiFJU5Q (ORCPT
+        id S1348550AbiFJU6S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 16:57:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49236 "EHLO
+        Fri, 10 Jun 2022 16:58:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346491AbiFJU5P (ORCPT
+        with ESMTP id S1346491AbiFJU6Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 16:57:15 -0400
-Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE6BF38236C;
-        Fri, 10 Jun 2022 13:57:14 -0700 (PDT)
-Received: from g550jk.localnet (31-151-115-246.dynamic.upc.nl [31.151.115.246])
-        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 5D339CD36E;
-        Fri, 10 Jun 2022 20:56:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
-        t=1654894603; bh=YqnJRmEEGGGLnbon8PyU8VzAUasfE5yXwIodQh5KFrg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=KQTHnjZF3gH7tUgRDx8wrKjjPzD3VxMmJ+OKVe/YTpsFGZKOseyFJCYRCBXL/dNIw
-         r2Eq2Z16NsF7L5l2d3PKRXViSmircruNzsrYFnOhoYJp9+5nCaaVrMFuP4zBIHKAeZ
-         bMrWrw1upZG40nSoJjrpgjYZdyAZMeayD2UtNew4=
-From:   Luca Weiss <luca@z3ntu.xyz>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Brian Masney <masneyb@onstation.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        Fri, 10 Jun 2022 16:58:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76DC83A79F7;
+        Fri, 10 Jun 2022 13:58:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 062A261719;
+        Fri, 10 Jun 2022 20:58:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65931C34114;
+        Fri, 10 Jun 2022 20:58:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654894694;
+        bh=EGmrWeV3cG/YF0aNeoJH2Jag7C5HhEhgf8ghD/0kBGE=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=OmGaezuQeK2QoimtndXrD883DQW29TKAcKkm/GH0URwTR/lciwJkXyuTUaMkMzlf7
+         76cXkBY2nbGNOAwjbdbFyvSkQ/KglU2b1S0qMkZyy41ZpF6NfUptDIlmggqR4s2XbL
+         FN51oZsk8Uv97WqQWJXUJcGjZCVj5MxygzErJcE0WxYgOn3XiSjyrtBAEjEQnaZMLG
+         2BzZLLU6F6hplozRNJjeJLPfb3iNgGG0QwchSXjWX5j7XrqGWy5tTHh571RQ1AUDbR
+         Uw9OAJX7gepUeubYSuh0BmHTSvTDVOCe9uML/dzHyOzoy8kM9Mh384fkU/jJG1EYo3
+         b7pXqA/nhdLWQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 05A645C05ED; Fri, 10 Jun 2022 13:58:14 -0700 (PDT)
+Date:   Fri, 10 Jun 2022 13:58:14 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Waiman Long <longman@redhat.com>
+Cc:     Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>, rcu@vger.kernel.org,
         linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: Re: [PATCH 07/14] ARM: dts: qcom: msm8974: add required ranges to OCMEM
-Date:   Fri, 10 Jun 2022 22:56:43 +0200
-Message-ID: <4403116.LvFx2qVVIh@g550jk>
-In-Reply-To: <20220607171848.535128-7-krzysztof.kozlowski@linaro.org>
-References: <20220607171848.535128-1-krzysztof.kozlowski@linaro.org> <20220607171848.535128-7-krzysztof.kozlowski@linaro.org>
+        "Uladzislau Rezki (Sony)" <urezki@gmail.com>
+Subject: Re: [PATCH] rcu-tasks: Delay rcu_tasks_verify_self_tests() to avoid
+ missed callbacks
+Message-ID: <20220610205814.GK1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220610184212.822113-1-longman@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220610184212.822113-1-longman@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
-
-On Dienstag, 7. Juni 2022 19:18:41 CEST Krzysztof Kozlowski wrote:
-> The OCMEM bindings require ranges property.
+On Fri, Jun 10, 2022 at 02:42:12PM -0400, Waiman Long wrote:
+> Even though rcu_tasks selftest is initiated early in the boot process,
+> the verification done at late initcall time may not be late enough to
+> catch all the callbacks especially on systems with just a few cpus and
+> small memory.
 > 
-> Fixes: a2cc991ed634 ("ARM: dts: qcom: msm8974: add ocmem node")
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> After 12 bootup's On a s390x system, 1 of them had failed rcu_tasks
+> verification test.
 > 
+> [    8.183013] call_rcu_tasks() has been failed.
+> [    8.183041] WARNING: CPU: 0 PID: 1 at kernel/rcu/tasks.h:1696 rcu_tasks_verify_self_tests+0x64/0xd0
+> [    8.203246] Callback from call_rcu_tasks() invoked.
+> 
+> In this particular case, the callback missed the check by about
+> 20ms. Similar rcu_tasks selftest failures are also seen in ppc64le
+> systems.
+> 
+> [    0.313391] call_rcu_tasks() has been failed.
+> [    0.313407] WARNING: CPU: 0 PID: 1 at kernel/rcu/tasks.h:1696 rcu_tasks_verify_self_tests+0x5c/0xa0
+> [    0.335569] Callback from call_rcu_tasks() invoked.
+> 
+> Avoid this missed callback by delaying the verification using
+> delayed_work. The delay is set to be about 0.1s which hopefully will
+> be long enough to catch all the callbacks on systems with few cpus and
+> small memory.
+> 
+> Fixes: bfba7ed084f8 ("rcu-tasks: Add RCU-tasks self tests")
+> Signed-off-by: Waiman Long <longman@redhat.com>
 
-No functional regression on fairphone-fp2. Thanks!
+Good catch, thank you!
 
-Reviewed-by: Luca Weiss <luca@z3ntu.xyz>
-Tested-by: Luca Weiss <luca@z3ntu.xyz>
+A few days ago, I queued this:
+
+2585014188d5 ("rcu-tasks: Be more patient for RCU Tasks boot-time testing")
+
+This is shown in full at the end of this email.  Does this fix this
+problem for you?
+
+							Thanx, Paul
 
 > ---
+>  kernel/rcu/tasks.h | 19 ++++++++++++++++---
+>  1 file changed, 16 insertions(+), 3 deletions(-)
 > 
-> Not tested on HW. Testing might be useful.
-> ---
->  arch/arm/boot/dts/qcom-msm8974.dtsi | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/arch/arm/boot/dts/qcom-msm8974.dtsi
-> b/arch/arm/boot/dts/qcom-msm8974.dtsi index 5e6b2ae72e62..add03309b3b4
-> 100644
-> --- a/arch/arm/boot/dts/qcom-msm8974.dtsi
-> +++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
-> @@ -1608,6 +1608,7 @@ sram@fdd00000 {
->  			reg = <0xfdd00000 0x2000>,
->  			      <0xfec00000 0x180000>;
->  			reg-names = "ctrl", "mem";
-> +			ranges = <0 0xfec00000 0x180000>;
->  			clocks = <&rpmcc RPM_SMD_OCMEMGX_CLK>,
->  				 <&mmcc OCMEMCX_OCMEMNOC_CLK>;
->  			clock-names = "core", "iface";
+> diff --git a/kernel/rcu/tasks.h b/kernel/rcu/tasks.h
+> index 3925e32159b5..25f964a671ba 100644
+> --- a/kernel/rcu/tasks.h
+> +++ b/kernel/rcu/tasks.h
+> @@ -1735,7 +1735,7 @@ static void rcu_tasks_initiate_self_tests(void)
+>  #endif
+>  }
+>  
+> -static int rcu_tasks_verify_self_tests(void)
+> +static void rcu_tasks_verify_self_tests(struct work_struct *work __maybe_unused)
+>  {
+>  	int ret = 0;
+>  	int i;
+> @@ -1749,10 +1749,23 @@ static int rcu_tasks_verify_self_tests(void)
+>  
+>  	if (ret)
+>  		WARN_ON(1);
+> +}
+> +
+> +static struct delayed_work rcu_tasks_verify_work;
+>  
+> -	return ret;
+> +/*
+> + * The rcu_tasks verification is done indirectly via the work queue to
+> + * introduce an additional 0.1s delay to catch all the callbacks before
+> + * the verification is done as late_initcall time may not be late enough
+> + * to have all the callbacks fired.
+> + */
+> +static int rcu_tasks_verify_schedule_work(void)
+> +{
+> +	INIT_DELAYED_WORK(&rcu_tasks_verify_work, rcu_tasks_verify_self_tests);
+> +	schedule_delayed_work(&rcu_tasks_verify_work, HZ/10);
+> +	return 0;
+>  }
+> -late_initcall(rcu_tasks_verify_self_tests);
+> +late_initcall(rcu_tasks_verify_schedule_work);
+>  #else /* #ifdef CONFIG_PROVE_RCU */
+>  static void rcu_tasks_initiate_self_tests(void) { }
+>  #endif /* #else #ifdef CONFIG_PROVE_RCU */
+> -- 
+> 2.31.1
 
+------------------------------------------------------------------------
 
+commit 2585014188d5e66052b4226b42602b6f3d921389
+Author: Paul E. McKenney <paulmck@kernel.org>
+Date:   Tue Jun 7 15:23:52 2022 -0700
 
+    rcu-tasks: Be more patient for RCU Tasks boot-time testing
+    
+    The RCU-Tasks family of grace-period primitives can take some time to
+    complete, and the amount of time can depend on the exact hardware and
+    software configuration.  Some configurations boot up fast enough that the
+    RCU-Tasks verification process gets false-positive failures.  This commit
+    therefore allows up to 30 seconds for the grace periods to complete, with
+    this value adjustable downwards using the rcupdate.rcu_task_stall_timeout
+    kernel boot parameter.
+    
+    Reported-by: Matthew Wilcox <willy@infradead.org>
+    Reported-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
+    Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+    Tested-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
 
+diff --git a/kernel/rcu/tasks.h b/kernel/rcu/tasks.h
+index df6b2cb2f205d..fcbd0ec33c866 100644
+--- a/kernel/rcu/tasks.h
++++ b/kernel/rcu/tasks.h
+@@ -145,6 +145,7 @@ static int rcu_task_ipi_delay __read_mostly = RCU_TASK_IPI_DELAY;
+ module_param(rcu_task_ipi_delay, int, 0644);
+ 
+ /* Control stall timeouts.  Disable with <= 0, otherwise jiffies till stall. */
++#define RCU_TASK_BOOT_STALL_TIMEOUT (HZ * 30)
+ #define RCU_TASK_STALL_TIMEOUT (HZ * 60 * 10)
+ static int rcu_task_stall_timeout __read_mostly = RCU_TASK_STALL_TIMEOUT;
+ module_param(rcu_task_stall_timeout, int, 0644);
+@@ -1776,23 +1777,24 @@ struct rcu_tasks_test_desc {
+ 	struct rcu_head rh;
+ 	const char *name;
+ 	bool notrun;
++	unsigned long runstart;
+ };
+ 
+ static struct rcu_tasks_test_desc tests[] = {
+ 	{
+ 		.name = "call_rcu_tasks()",
+ 		/* If not defined, the test is skipped. */
+-		.notrun = !IS_ENABLED(CONFIG_TASKS_RCU),
++		.notrun = IS_ENABLED(CONFIG_TASKS_RCU),
+ 	},
+ 	{
+ 		.name = "call_rcu_tasks_rude()",
+ 		/* If not defined, the test is skipped. */
+-		.notrun = !IS_ENABLED(CONFIG_TASKS_RUDE_RCU),
++		.notrun = IS_ENABLED(CONFIG_TASKS_RUDE_RCU),
+ 	},
+ 	{
+ 		.name = "call_rcu_tasks_trace()",
+ 		/* If not defined, the test is skipped. */
+-		.notrun = !IS_ENABLED(CONFIG_TASKS_TRACE_RCU)
++		.notrun = IS_ENABLED(CONFIG_TASKS_TRACE_RCU)
+ 	}
+ };
+ 
+@@ -1803,23 +1805,28 @@ static void test_rcu_tasks_callback(struct rcu_head *rhp)
+ 
+ 	pr_info("Callback from %s invoked.\n", rttd->name);
+ 
+-	rttd->notrun = true;
++	rttd->notrun = false;
+ }
+ 
+ static void rcu_tasks_initiate_self_tests(void)
+ {
++	unsigned long j = jiffies;
++
+ 	pr_info("Running RCU-tasks wait API self tests\n");
+ #ifdef CONFIG_TASKS_RCU
++	tests[0].runstart = j;
+ 	synchronize_rcu_tasks();
+ 	call_rcu_tasks(&tests[0].rh, test_rcu_tasks_callback);
+ #endif
+ 
+ #ifdef CONFIG_TASKS_RUDE_RCU
++	tests[1].runstart = j;
+ 	synchronize_rcu_tasks_rude();
+ 	call_rcu_tasks_rude(&tests[1].rh, test_rcu_tasks_callback);
+ #endif
+ 
+ #ifdef CONFIG_TASKS_TRACE_RCU
++	tests[2].runstart = j;
+ 	synchronize_rcu_tasks_trace();
+ 	call_rcu_tasks_trace(&tests[2].rh, test_rcu_tasks_callback);
+ #endif
+@@ -1829,11 +1836,18 @@ static int rcu_tasks_verify_self_tests(void)
+ {
+ 	int ret = 0;
+ 	int i;
++	unsigned long bst = rcu_task_stall_timeout;
+ 
++	if (bst <= 0 || bst > RCU_TASK_BOOT_STALL_TIMEOUT)
++		bst = RCU_TASK_BOOT_STALL_TIMEOUT;
+ 	for (i = 0; i < ARRAY_SIZE(tests); i++) {
+-		if (!tests[i].notrun) {		// still hanging.
+-			pr_err("%s has been failed.\n", tests[i].name);
+-			ret = -1;
++		while (tests[i].notrun) {		// still hanging.
++			if (time_after(jiffies, tests[i].runstart + bst)) {
++				pr_err("%s has failed boot-time tests.\n", tests[i].name);
++				ret = -1;
++				break;
++			}
++			schedule_timeout_uninterruptible(1);
+ 		}
+ 	}
+ 
