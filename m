@@ -2,103 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D531DC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 18:30:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C513C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 18:32:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346267AbiFJSai (ORCPT
+        id S1346315AbiFJSc4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 14:30:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55090 "EHLO
+        Fri, 10 Jun 2022 14:32:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232547AbiFJSae (ORCPT
+        with ESMTP id S233646AbiFJScw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 14:30:34 -0400
-Received: from mail.toke.dk (mail.toke.dk [45.145.95.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F2802C5;
-        Fri, 10 Jun 2022 11:30:27 -0700 (PDT)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
-        t=1654885826; bh=dOSCXQzjwFZEV1hoFi4ArTidngE1DKbmjXVs1mcXVcg=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=aqhRyPIiKsPK42HW/NX/UIAYh+aylE5Ic8jQgrIdJcroEywr0V6qE1ON9PQMwQ5+i
-         yImQg8BfoKPHraTzMO/Jo43IGI5RgWsTBKrdRMivwArAUFb0ONMMn1mlKT1XSWj6d0
-         Q2Ej7/hmrzisVeXzqdF6LUDeRBepZROZP6Fs9uyFxNKOyOlzIXlkHyrTbKImli5yCb
-         kV7AB0dgqR6dSs9E46Z/f62mweqRtDdgqVe4l4ClN+a4KeBOqGBJ36Ig6amQKpmi8j
-         qD4zkdSi3i4e327++AarwUq16hPnuH0iG3DhyUCOzDKDeK74FK4NCFOQugEtdo7tZs
-         8m4h6PdY54c2g==
-To:     Takashi Iwai <tiwai@suse.de>
-Cc:     Pavel Skripkin <paskripkin@gmail.com>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        senthilkumar@atheros.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzbot+03110230a11411024147@syzkaller.appspotmail.com,
-        syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
-Subject: Re: [PATCH v5 1/2] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
-In-Reply-To: <87bkv0vg2p.wl-tiwai@suse.de>
-References: <961b028f073d0d5541de66c00a517495431981f9.1653168225.git.paskripkin@gmail.com>
- <87bkv0vg2p.wl-tiwai@suse.de>
-Date:   Fri, 10 Jun 2022 20:30:25 +0200
-X-Clacks-Overhead: GNU Terry Pratchett
-Message-ID: <87r13w2wxq.fsf@toke.dk>
+        Fri, 10 Jun 2022 14:32:52 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 274F337AA5
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 11:32:51 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id o6so18351326plg.2
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 11:32:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wBbbnyxAp776PF/MoHr2OTyzExEVGSOzu1ia9Yc3H1I=;
+        b=Q5B2LvQMun4KV1/iBHtpnFzF8ZF0cRO+ulZr7uc4CBP6lDhcOHhHZpvnirmdt8SUYQ
+         B/n612LXFpiD5oBtzSVEmggJzllxcE4RLtC1+R5BBsOJIimuG+euZamHED1O37WzcUwM
+         QxYw2NwMHWuQ6NGVB/Vmnn7xP2uKMLJ1zOLcK/zUBVzUrtcglzny7vBmKS3ainZ1DNNF
+         lixEshxk6vsx6SO8N/2aNvpkRbaLmD0GbpJa8Cnd7nnrIOxA2y2tbL9N1p5IGH3YRKPg
+         Y3QmytvOStuLhIHv3NT4Cxgc9wFNnIB5XxZv/VRUq5SxbSGeSXpI4eWyjqGvkx17Do6g
+         VFrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wBbbnyxAp776PF/MoHr2OTyzExEVGSOzu1ia9Yc3H1I=;
+        b=hp7E4lhd3vB0jS354e49bnu5XAbjFhK3GEb7tQpiuDvrPNXHmulhOqugnwiF3F0K2O
+         Kscdg0xvHuiMWMbSmKBFZRU6JhmPs1v6AP+hAiTS8BY1bv1Pks4cBx1J9JZcx0EwPJqs
+         wwSp6pajdSKlP59WpFIRH8x/uk4kFMFJie27J8utdcsKUsvgxG7vzJAMUPqW2GkPbm8W
+         RTTO/BoEPEdTag9v1kgCZlhIU6nmAV/jdztPHtlGd8jGhyNn9JC9aLYIMjC/MwyYd976
+         bje661uv2V/+lwbNPzvR0J4B1Vz9VMs+Bi7UE4rqFhlLSg2RIZlq3Tn/oWWvENE11/aP
+         LzPw==
+X-Gm-Message-State: AOAM533ckuhBDxuSOzm8ymf+GkYzF1jUNftbyJH4v0yaGx9VlueOmTOY
+        8909zOT9raTLLnrPvViyYsvSBUYFLWw=
+X-Google-Smtp-Source: ABdhPJwSAuNuM9jqLVqZXSAsYNlqY0zT0OmxOY2NN+1B/MwSfK6lo2bq+uZCH+VLXZNb6OzPO/5XIA==
+X-Received: by 2002:a17:90a:7841:b0:1ea:3f61:7673 with SMTP id y1-20020a17090a784100b001ea3f617673mr1041199pjl.110.1654885970124;
+        Fri, 10 Jun 2022 11:32:50 -0700 (PDT)
+Received: from daehojeong-desktop.mtv.corp.google.com ([2620:15c:211:201:9407:3889:1417:db63])
+        by smtp.gmail.com with ESMTPSA id w15-20020a1709026f0f00b001677d4a9654sm23086plk.265.2022.06.10.11.32.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Jun 2022 11:32:49 -0700 (PDT)
+From:   Daeho Jeong <daeho43@gmail.com>
+To:     linux-kernel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net, kernel-team@android.com
+Cc:     Daeho Jeong <daehojeong@google.com>
+Subject: [PATCH] f2fs: fix iostat related lock protection
+Date:   Fri, 10 Jun 2022 11:32:40 -0700
+Message-Id: <20220610183240.2269085-1-daeho43@gmail.com>
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Takashi Iwai <tiwai@suse.de> writes:
+From: Daeho Jeong <daehojeong@google.com>
 
-> On Sat, 21 May 2022 23:28:01 +0200,
-> Pavel Skripkin wrote:
->> 
->> Syzbot reported use-after-free Read in ath9k_hif_usb_rx_cb() [0]. The
->> problem was in incorrect htc_handle->drv_priv initialization.
->> 
->> Probable call trace which can trigger use-after-free:
->> 
->> ath9k_htc_probe_device()
->>   /* htc_handle->drv_priv = priv; */
->>   ath9k_htc_wait_for_target()      <--- Failed
->>   ieee80211_free_hw()		   <--- priv pointer is freed
->> 
->> <IRQ>
->> ...
->> ath9k_hif_usb_rx_cb()
->>   ath9k_hif_usb_rx_stream()
->>    RX_STAT_INC()		<--- htc_handle->drv_priv access
->> 
->> In order to not add fancy protection for drv_priv we can move
->> htc_handle->drv_priv initialization at the end of the
->> ath9k_htc_probe_device() and add helper macro to make
->> all *_STAT_* macros NULL safe, since syzbot has reported related NULL
->> deref in that macros [1]
->> 
->> Link: https://syzkaller.appspot.com/bug?id=6ead44e37afb6866ac0c7dd121b4ce07cb665f60 [0]
->> Link: https://syzkaller.appspot.com/bug?id=b8101ffcec107c0567a0cd8acbbacec91e9ee8de [1]
->> Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
->> Reported-and-tested-by: syzbot+03110230a11411024147@syzkaller.appspotmail.com
->> Reported-and-tested-by: syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
->> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
->
-> Hi Toke, any update on this?
+Made iostat related locks safe to be called from irq context again.
 
-It's marked as "Changes Requested" in patchwork, due to the kernel test
-robot comments on patch 2[0]. So it's waiting for Pavel to resubmit
-fixing that. There's also a separate comment on patch 1, which I just
-noticed didn't have the mailing list in Cc; will reply to that and try
-to get it back on the list.
+Signed-off-by: Daeho Jeong <daehojeong@google.com>
+---
+ fs/f2fs/iostat.c | 31 ++++++++++++++++++-------------
+ 1 file changed, 18 insertions(+), 13 deletions(-)
 
-> I'm asking it because this is a fix for a security issue
-> (CVE-2022-1679 [*]), and distros have been waiting for the fix getting
-> merged to the upstream for weeks.
->
-> [*] https://nvd.nist.gov/vuln/detail/CVE-2022-1679
-
-In general, if a patch is marked as "changes requested", the right thing
-to do is to bug the submitter to resubmit. Which I guess you just did,
-so hopefully we'll get an update soon :)
-
--Toke
-
-[0] https://patchwork.kernel.org/project/linux-wireless/patch/7bb006bb88e280c596d0e86ece7d251a21b8ed1f.1653168225.git.paskripkin@gmail.com/
+diff --git a/fs/f2fs/iostat.c b/fs/f2fs/iostat.c
+index be599f31d3c4..d84c5f6cc09d 100644
+--- a/fs/f2fs/iostat.c
++++ b/fs/f2fs/iostat.c
+@@ -91,8 +91,9 @@ static inline void __record_iostat_latency(struct f2fs_sb_info *sbi)
+ 	unsigned int cnt;
+ 	struct f2fs_iostat_latency iostat_lat[MAX_IO_TYPE][NR_PAGE_TYPE];
+ 	struct iostat_lat_info *io_lat = sbi->iostat_io_lat;
++	unsigned long flags;
+ 
+-	spin_lock_bh(&sbi->iostat_lat_lock);
++	spin_lock_irqsave(&sbi->iostat_lat_lock, flags);
+ 	for (idx = 0; idx < MAX_IO_TYPE; idx++) {
+ 		for (io = 0; io < NR_PAGE_TYPE; io++) {
+ 			cnt = io_lat->bio_cnt[idx][io];
+@@ -106,7 +107,7 @@ static inline void __record_iostat_latency(struct f2fs_sb_info *sbi)
+ 			io_lat->bio_cnt[idx][io] = 0;
+ 		}
+ 	}
+-	spin_unlock_bh(&sbi->iostat_lat_lock);
++	spin_unlock_irqrestore(&sbi->iostat_lat_lock, flags);
+ 
+ 	trace_f2fs_iostat_latency(sbi, iostat_lat);
+ }
+@@ -115,14 +116,15 @@ static inline void f2fs_record_iostat(struct f2fs_sb_info *sbi)
+ {
+ 	unsigned long long iostat_diff[NR_IO_TYPE];
+ 	int i;
++	unsigned long flags;
+ 
+ 	if (time_is_after_jiffies(sbi->iostat_next_period))
+ 		return;
+ 
+ 	/* Need double check under the lock */
+-	spin_lock_bh(&sbi->iostat_lock);
++	spin_lock_irqsave(&sbi->iostat_lock, flags);
+ 	if (time_is_after_jiffies(sbi->iostat_next_period)) {
+-		spin_unlock_bh(&sbi->iostat_lock);
++		spin_unlock_irqrestore(&sbi->iostat_lock, flags);
+ 		return;
+ 	}
+ 	sbi->iostat_next_period = jiffies +
+@@ -133,7 +135,7 @@ static inline void f2fs_record_iostat(struct f2fs_sb_info *sbi)
+ 				sbi->prev_rw_iostat[i];
+ 		sbi->prev_rw_iostat[i] = sbi->rw_iostat[i];
+ 	}
+-	spin_unlock_bh(&sbi->iostat_lock);
++	spin_unlock_irqrestore(&sbi->iostat_lock, flags);
+ 
+ 	trace_f2fs_iostat(sbi, iostat_diff);
+ 
+@@ -145,25 +147,27 @@ void f2fs_reset_iostat(struct f2fs_sb_info *sbi)
+ 	struct iostat_lat_info *io_lat = sbi->iostat_io_lat;
+ 	int i;
+ 
+-	spin_lock_bh(&sbi->iostat_lock);
++	spin_lock_irq(&sbi->iostat_lock);
+ 	for (i = 0; i < NR_IO_TYPE; i++) {
+ 		sbi->rw_iostat[i] = 0;
+ 		sbi->prev_rw_iostat[i] = 0;
+ 	}
+-	spin_unlock_bh(&sbi->iostat_lock);
++	spin_unlock_irq(&sbi->iostat_lock);
+ 
+-	spin_lock_bh(&sbi->iostat_lat_lock);
++	spin_lock_irq(&sbi->iostat_lat_lock);
+ 	memset(io_lat, 0, sizeof(struct iostat_lat_info));
+-	spin_unlock_bh(&sbi->iostat_lat_lock);
++	spin_unlock_irq(&sbi->iostat_lat_lock);
+ }
+ 
+ void f2fs_update_iostat(struct f2fs_sb_info *sbi,
+ 			enum iostat_type type, unsigned long long io_bytes)
+ {
++	unsigned long flags;
++
+ 	if (!sbi->iostat_enable)
+ 		return;
+ 
+-	spin_lock_bh(&sbi->iostat_lock);
++	spin_lock_irqsave(&sbi->iostat_lock, flags);
+ 	sbi->rw_iostat[type] += io_bytes;
+ 
+ 	if (type == APP_BUFFERED_IO || type == APP_DIRECT_IO)
+@@ -172,7 +176,7 @@ void f2fs_update_iostat(struct f2fs_sb_info *sbi,
+ 	if (type == APP_BUFFERED_READ_IO || type == APP_DIRECT_READ_IO)
+ 		sbi->rw_iostat[APP_READ_IO] += io_bytes;
+ 
+-	spin_unlock_bh(&sbi->iostat_lock);
++	spin_unlock_irqrestore(&sbi->iostat_lock, flags);
+ 
+ 	f2fs_record_iostat(sbi);
+ }
+@@ -185,6 +189,7 @@ static inline void __update_iostat_latency(struct bio_iostat_ctx *iostat_ctx,
+ 	struct f2fs_sb_info *sbi = iostat_ctx->sbi;
+ 	struct iostat_lat_info *io_lat = sbi->iostat_io_lat;
+ 	int idx;
++	unsigned long flags;
+ 
+ 	if (!sbi->iostat_enable)
+ 		return;
+@@ -202,12 +207,12 @@ static inline void __update_iostat_latency(struct bio_iostat_ctx *iostat_ctx,
+ 			idx = WRITE_ASYNC_IO;
+ 	}
+ 
+-	spin_lock_bh(&sbi->iostat_lat_lock);
++	spin_lock_irqsave(&sbi->iostat_lat_lock, flags);
+ 	io_lat->sum_lat[idx][iotype] += ts_diff;
+ 	io_lat->bio_cnt[idx][iotype]++;
+ 	if (ts_diff > io_lat->peak_lat[idx][iotype])
+ 		io_lat->peak_lat[idx][iotype] = ts_diff;
+-	spin_unlock_bh(&sbi->iostat_lat_lock);
++	spin_unlock_irqrestore(&sbi->iostat_lat_lock, flags);
+ }
+ 
+ void iostat_update_and_unbind_ctx(struct bio *bio, int rw)
+-- 
+2.36.1.476.g0c4daa206d-goog
 
