@@ -2,112 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5BFEC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 21:05:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD2B5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 21:05:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350801AbiFJVE7 (ORCPT
+        id S1350845AbiFJVFK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 17:04:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56902 "EHLO
+        Fri, 10 Jun 2022 17:05:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350765AbiFJVEw (ORCPT
+        with ESMTP id S1350788AbiFJVFC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 17:04:52 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 272D7245A0
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 14:04:50 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id g205so449719pfb.11
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 14:04:50 -0700 (PDT)
+        Fri, 10 Jun 2022 17:05:02 -0400
+Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EBB630F7C
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 14:05:01 -0700 (PDT)
+Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-30fa61b1a83so4348627b3.0
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 14:05:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=SiLCrAL53VdiLKOXfLPLunTsPwo2FINx12xxld+VcU4=;
-        b=bFQVTO6kUj6C9eZqt3ASwH3yDJCd8h4+qHqP1I+aPVsKQAS8QoEkX82JRGy9ooQDC2
-         MR8htAsandvUIN3h90FZvL04oRvRshPFFbdKJ1A29ojwxreeu/mqSzweWjeNRGmGx7xK
-         Vs/O8fPBaQaYpevC/OBloET2GC9ejXJDZpiNRsmSGIxlYWF9RIQEu1Gf6dmrhl7I17o0
-         RB5a0RHCLeFhu3WcZSBQtNm0A6dj5SnN2ZdpmFi2FYl4qCF/bRV7JG8Su4HSu+8+sCZH
-         2eeIIsuAeOG5yJwagorVIKfbV+8tCYLs/V4UtEdtzjxCBKK+8VbpEUb2vw187EbIm1YC
-         t1Pg==
+        bh=xJlKMK3HVq56WXfodTgOAOhNas0GRU8DHURRXkOK2dA=;
+        b=SxT0lhEd13pHhK1+KST3B6KvA8cFHhURWis09vfvF0B6ltmmLVBEjVXL91BgxJ+0SQ
+         d2e+LJxpycjGXiHOzxE3gXU0HWSXr7hTJ6Q3r2FmFOrlEfr2e0oxSuIep45tDQ3VOCJA
+         G+wiwJIF/pWLi8rl8XCfe5YIHlswiXbhQLezYwTEWCjmGCoo4gy2CmnfnEpzMfAbtzy7
+         AtsUxcz+GMHhuoNWaLk5OnHEP1r1N9b3ndFgHT0S1a3xZvgU24UN5qjTclxGHfzTWZgC
+         5TyT/bg5kK34oJWoFn7fKvf3lV3/3CeHCt99iNwrRNh6yVhciImWy8u/3uAINcKXUuaT
+         mZCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=SiLCrAL53VdiLKOXfLPLunTsPwo2FINx12xxld+VcU4=;
-        b=NZCV2c6Kvr/c9e4unsL+fHcp2GaCWAehJ4eEbrspSWcLbyBFZb3s0zSSfazhDKhc5p
-         5GY7WhV9y5gwBY0PH4CAv2imPpa8SG+nFgBZLU0EY2zVHs1C7x8M7Si/yg76en2k/09+
-         qeJEn3FfKJCd+dZEiMDSrid8cSFi/iLJmYwzjONRlKd0N4i3iKYQZYlarFoaehp4+/+f
-         k7yvS11zIDFP8AXZ6kOWLxppMpT5DHedc06Qxmaog2MzxWZFpsYhWh1pRNPikJzwmYtE
-         dvDHjlfUheXwH7Eae3sUStLYGBLQIHkT2MbuyBLyAcskIA9piefMx+FRlGqGye0LVkk2
-         vPgg==
-X-Gm-Message-State: AOAM530ZkqZQ0Ard2GT8Aa7iqRJkPguk3t4Ec3vsQPLqm+Ygw4E8w+AQ
-        YdJ+/WiG4rmlmfPz8+uuELbXa76zNyiJaJjmV2kD
-X-Google-Smtp-Source: ABdhPJwNdRdVzr3QMEopSyl6AGpCfiZgxW6A683tU/g0pcw8EZpJjU6kRe3OUp1IJyJkmTxwo6rWP/C3gyWE88D/3OI=
-X-Received: by 2002:a62:868c:0:b0:51b:bd62:4c87 with SMTP id
- x134-20020a62868c000000b0051bbd624c87mr47036124pfd.83.1654895089650; Fri, 10
- Jun 2022 14:04:49 -0700 (PDT)
+        bh=xJlKMK3HVq56WXfodTgOAOhNas0GRU8DHURRXkOK2dA=;
+        b=ixLdQD0zVKHFsUuYzYDuOwICoMCR7W8VMSCu836zaE18erX+ek2HZ3irv5HUdyrb4Z
+         6cqnXFA1H0Lf8G8p1Ln2MzBgTCJPBPIZl6cUWaz5iMScUo2CIc2TjrtRXz8MZ0Sl6RIZ
+         sGz2+TZXhLmhOub5wXC+S9+ys3qgeeHmYb7yAr/vIPARkXFI0S2S0f1gW3aQ9V6CRLeT
+         GDnQ43AeA/QTk9v6WMtKytEC8KWtdHiT3NfZgb0HNX2kgy4JJ9rdLofm9b0hP66Hdjfh
+         00CWiiZMPH0u+XylpuugaiqkIFrEgtRnVN+Py9Tc/eyZ/MDqOtrupei1I2sXYW+JKo48
+         jmgQ==
+X-Gm-Message-State: AOAM531DpsWF9qcOp3PGRCoRUQ50lavzYBkXpNXZJgrSe8DmTRtZ7ux1
+        7qRZ18jHgM6VI+5NLjuYa5CeaDajNGgWiPaI7qFTyA==
+X-Google-Smtp-Source: ABdhPJzkTaSGVJkh5pjJAIaIz4OU76YdvHXrdXNhim9IcSyDfVPY1QNmGVVh79xcWdhtLPsTCCXNpW1DtaDVmfHmNtc=
+X-Received: by 2002:a81:c54a:0:b0:2d6:435a:5875 with SMTP id
+ o10-20020a81c54a000000b002d6435a5875mr49234125ywj.181.1654895100356; Fri, 10
+ Jun 2022 14:05:00 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220609230146.319210-1-casey@schaufler-ca.com> <20220609230146.319210-27-casey@schaufler-ca.com>
-In-Reply-To: <20220609230146.319210-27-casey@schaufler-ca.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Fri, 10 Jun 2022 17:04:38 -0400
-Message-ID: <CAHC9VhT-qo=N4k7fWvZNELNLTGDWuE4kDXEOYwMBgZGRQu8f7w@mail.gmail.com>
-Subject: Re: [PATCH v36 26/33] Audit: Allow multiple records in an audit_buffer
-To:     Casey Schaufler <casey@schaufler-ca.com>
-Cc:     casey.schaufler@intel.com, jmorris@namei.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-        linux-audit@redhat.com, keescook@chromium.org,
-        john.johansen@canonical.com, penguin-kernel@i-love.sakura.ne.jp,
-        stephen.smalley.work@gmail.com, linux-kernel@vger.kernel.org
+References: <cover.1651774250.git.isaku.yamahata@intel.com> <9a45667060dd2f8634bf1ecba23b89567c7e46e7.1651774251.git.isaku.yamahata@intel.com>
+In-Reply-To: <9a45667060dd2f8634bf1ecba23b89567c7e46e7.1651774251.git.isaku.yamahata@intel.com>
+From:   Sagi Shahar <sagis@google.com>
+Date:   Fri, 10 Jun 2022 14:04:49 -0700
+Message-ID: <CAAhR5DE8FmzACXja1znjdR04HS_kOsJ4awWsU5AHm3__oqOx8g@mail.gmail.com>
+Subject: Re: [RFC PATCH v6 095/104] KVM: TDX: Handle TDX PV rdmsr/wrmsr hypercall
+To:     "Yamahata, Isaku" <isaku.yamahata@intel.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        isaku.yamahata@gmail.com, Paolo Bonzini <pbonzini@redhat.com>,
+        Erdem Aktas <erdemaktas@google.com>,
+        Sean Christopherson <seanjc@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 9, 2022 at 7:15 PM Casey Schaufler <casey@schaufler-ca.com> wrote:
+On Thu, May 5, 2022 at 11:16 AM <isaku.yamahata@intel.com> wrote:
 >
-> Replace the single skb pointer in an audit_buffer with
-> a list of skb pointers. Add the audit_stamp information
-> to the audit_buffer as there's no guarantee that there
-> will be an audit_context containing the stamp associated
-> with the event. At audit_log_end() time create auxiliary
-> records (none are currently defined) as have been added
-> to the list. Functions are created to manage the skb list
-> in the audit_buffer.
+> From: Isaku Yamahata <isaku.yamahata@intel.com>
 >
-> Suggested-by: Paul Moore <paul@paul-moore.com>
-> Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+> Wire up TDX PV rdmsr/wrmsr hypercall to the KVM backend function.
+>
+> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+> Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
 > ---
->  kernel/audit.c | 113 +++++++++++++++++++++++++++++++++++++++----------
->  1 file changed, 90 insertions(+), 23 deletions(-)
-
-...
-
-> diff --git a/kernel/audit.c b/kernel/audit.c
-> index 6b6c089512f7..987740374dfa 100644
-> --- a/kernel/audit.c
-> +++ b/kernel/audit.c
-> @@ -1784,8 +1789,12 @@ static struct audit_buffer *audit_buffer_alloc(struct audit_context *ctx,
->         ab->skb = nlmsg_new(AUDIT_BUFSIZ, gfp_mask);
->         if (!ab->skb)
->                 goto err;
-> +
-> +       skb_queue_head_init(&ab->skb_list);
-> +       skb_queue_tail(&ab->skb_list, ab->skb);
-> +
->         if (!nlmsg_put(ab->skb, 0, 0, type, 0, 0))
-> -               goto err;
-> +               kfree_skb(ab->skb);
+>  arch/x86/kvm/vmx/tdx.c | 37 +++++++++++++++++++++++++++++++++++++
+>  1 file changed, 37 insertions(+)
 >
->         ab->ctx = ctx;
->         ab->gfp_mask = gfp_mask;
+> diff --git a/arch/x86/kvm/vmx/tdx.c b/arch/x86/kvm/vmx/tdx.c
+> index f46825843a8b..1518a8c310d6 100644
+> --- a/arch/x86/kvm/vmx/tdx.c
+> +++ b/arch/x86/kvm/vmx/tdx.c
+> @@ -1169,6 +1169,39 @@ static int tdx_emulate_mmio(struct kvm_vcpu *vcpu)
+>         return 1;
+>  }
+>
+> +static int tdx_emulate_rdmsr(struct kvm_vcpu *vcpu)
+> +{
+> +       u32 index = tdvmcall_a0_read(vcpu);
+> +       u64 data;
+> +
+> +       if (kvm_get_msr(vcpu, index, &data)) {
 
-I didn't notice this in v35, but if the nlmsg_put() fails I think you
-need to preserve the 'goto err;' since the skb hasn't been properly
-initialized.  The good news is that I don't think you need to worry
-about the 'kfree_skb(ab->skb);' in the error handler as it's already
-been placed on the audit_buffer:skb_list list and will be freed when
-audit_buffer_alloc()'s error handling code calls audit_buffer_free().
+kvm_get_msr and kvm_set_msr used to check the MSR permissions using
+kvm_msr_allowed but that behaviour changed in "KVM: x86: Only do MSR
+filtering when access MSR by rdmsr/wrmsr".
 
--- 
-paul-moore.com
+Now kvm_get_msr and kvm_set_msr skip these checks and will allow
+access regardless of the permissions in the msr_filter.
+
+These should be changed to kvm_get_msr_with_filter and
+kvm_set_msr_with_filter or something similar that checks permissions
+for MSR access.
+
+> +               trace_kvm_msr_read_ex(index);
+> +               tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_INVALID_OPERAND);
+> +               return 1;
+> +       }
+> +       trace_kvm_msr_read(index, data);
+> +
+> +       tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_SUCCESS);
+> +       tdvmcall_set_return_val(vcpu, data);
+> +       return 1;
+> +}
+> +
+> +static int tdx_emulate_wrmsr(struct kvm_vcpu *vcpu)
+> +{
+> +       u32 index = tdvmcall_a0_read(vcpu);
+> +       u64 data = tdvmcall_a1_read(vcpu);
+> +
+> +       if (kvm_set_msr(vcpu, index, data)) {
+> +               trace_kvm_msr_write_ex(index, data);
+> +               tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_INVALID_OPERAND);
+> +               return 1;
+> +       }
+> +
+> +       trace_kvm_msr_write(index, data);
+> +       tdvmcall_set_return_code(vcpu, TDG_VP_VMCALL_SUCCESS);
+> +       return 1;
+> +}
+> +
+>  static int handle_tdvmcall(struct kvm_vcpu *vcpu)
+>  {
+>         if (tdvmcall_exit_type(vcpu))
+> @@ -1183,6 +1216,10 @@ static int handle_tdvmcall(struct kvm_vcpu *vcpu)
+>                 return tdx_emulate_io(vcpu);
+>         case EXIT_REASON_EPT_VIOLATION:
+>                 return tdx_emulate_mmio(vcpu);
+> +       case EXIT_REASON_MSR_READ:
+> +               return tdx_emulate_rdmsr(vcpu);
+> +       case EXIT_REASON_MSR_WRITE:
+> +               return tdx_emulate_wrmsr(vcpu);
+>         default:
+>                 break;
+>         }
+> --
+> 2.25.1
+>
+
+Sagi
