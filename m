@@ -2,69 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6FE7C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 07:13:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ABBDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 07:14:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346454AbiFJHNY (ORCPT
+        id S1346599AbiFJHOa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 03:13:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59858 "EHLO
+        Fri, 10 Jun 2022 03:14:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346385AbiFJHNL (ORCPT
+        with ESMTP id S1346543AbiFJHO0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 03:13:11 -0400
-Received: from smtpbg.qq.com (smtpbg136.qq.com [106.55.201.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E292FB0A50;
-        Fri, 10 Jun 2022 00:13:02 -0700 (PDT)
-X-QQ-mid: bizesmtp75t1654845175tfa8xrcm
-Received: from localhost.localdomain ( [117.176.187.14])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Fri, 10 Jun 2022 15:12:50 +0800 (CST)
-X-QQ-SSF: 01000000002000C0H000B00A0000000
-X-QQ-FEAT: xoS364mEyr1DaoeVNVatJwYFrEvA7K7CSbv/9wrGw9REx7cj7dDejJqDnGol/
-        FfD3U3O/mIp8raKSuLeMm465lRxnK7UKCB7hufoYq8bGHgYODDbtE/lL9+meRex3h966Nlq
-        ozACF9Wq6B81UdE6duggN4pBWTEgEoxFb0rBGAzYetkNAF3pbF2UFMWFr6xlYPS4oKOXcFs
-        sjwFGX/kE+uNkaBux8sjGpHjPw1/DhdfDEGV347eMVsVXaXL3MoymtWQ05GFHmuErxX5TYg
-        wCJX9LmWrxiwEUWCcBf1277lWANM7Jw77/EpJAGI01P1elIGbhnrvwzjh8t5eHOhX93befB
-        Jr1jydX38+AR1xhq97pTtp5fFEpvQ==
-X-QQ-GoodBg: 0
-From:   Xiang wangx <wangxiang@cdjrlc.com>
-To:     akpm@linux-foundation.org
-Cc:     shuah@kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Xiang wangx <wangxiang@cdjrlc.com>
-Subject: [PATCH] userfaultfd/selftests: Fix typo in comment
-Date:   Fri, 10 Jun 2022 15:12:44 +0800
-Message-Id: <20220610071244.59679-1-wangxiang@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Fri, 10 Jun 2022 03:14:26 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 504FF2DA9F;
+        Fri, 10 Jun 2022 00:14:25 -0700 (PDT)
+Received: from sslproxy04.your-server.de ([78.46.152.42])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nzYqW-000848-PU; Fri, 10 Jun 2022 09:14:16 +0200
+Received: from [85.1.206.226] (helo=linux-3.home)
+        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nzYqW-000UfC-Et; Fri, 10 Jun 2022 09:14:16 +0200
+Subject: Re: [PATCH] net: sched: fix potential null pointer deref
+To:     Jianhao Xu <jianhao_xu@smail.nju.edu.cn>, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220610021445.2441579-1-jianhao_xu@smail.nju.edu.cn>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <3f460707-e267-e749-07fc-c44604cd5713@iogearbox.net>
+Date:   Fri, 10 Jun 2022 09:14:15 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam7
+In-Reply-To: <20220610021445.2441579-1-jianhao_xu@smail.nju.edu.cn>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.6/26567/Thu Jun  9 10:06:06 2022)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'in'.
+Hi Jianhao,
 
-Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
----
- tools/testing/selftests/vm/userfaultfd.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 6/10/22 4:14 AM, Jianhao Xu wrote:
+> mq_queue_get() may return NULL, a check is needed to avoid using
+> the NULL pointer.
+> 
+> Signed-off-by: Jianhao Xu <jianhao_xu@smail.nju.edu.cn>
 
-diff --git a/tools/testing/selftests/vm/userfaultfd.c b/tools/testing/selftests/vm/userfaultfd.c
-index 0bdfc1955229..4bc24581760d 100644
---- a/tools/testing/selftests/vm/userfaultfd.c
-+++ b/tools/testing/selftests/vm/userfaultfd.c
-@@ -860,7 +860,7 @@ static int stress(struct uffd_stats *uffd_stats)
- 	/*
- 	 * Be strict and immediately zap area_src, the whole area has
- 	 * been transferred already by the background treads. The
--	 * area_src could then be faulted in in a racy way by still
-+	 * area_src could then be faulted in a racy way by still
- 	 * running uffdio_threads reading zeropages after we zapped
- 	 * area_src (but they're guaranteed to get -EEXIST from
- 	 * UFFDIO_COPY without writing zero pages into area_dst
--- 
-2.36.1
+Do you have a reproducer where this is triggered?
+
+> ---
+>   net/sched/sch_mq.c | 6 ++++++
+>   1 file changed, 6 insertions(+)
+> 
+> diff --git a/net/sched/sch_mq.c b/net/sched/sch_mq.c
+> index 83d2e54bf303..9aca4ca82947 100644
+> --- a/net/sched/sch_mq.c
+> +++ b/net/sched/sch_mq.c
+> @@ -201,6 +201,8 @@ static int mq_graft(struct Qdisc *sch, unsigned long cl, struct Qdisc *new,
+>   static struct Qdisc *mq_leaf(struct Qdisc *sch, unsigned long cl)
+>   {
+>   	struct netdev_queue *dev_queue = mq_queue_get(sch, cl);
+> +	if (!dev_queue)
+> +		return NULL;
+>   
+>   	return dev_queue->qdisc_sleeping;
+>   }
+> @@ -218,6 +220,8 @@ static int mq_dump_class(struct Qdisc *sch, unsigned long cl,
+>   			 struct sk_buff *skb, struct tcmsg *tcm)
+>   {
+>   	struct netdev_queue *dev_queue = mq_queue_get(sch, cl);
+> +	if (!dev_queue)
+> +		return -1;
+>   
+>   	tcm->tcm_parent = TC_H_ROOT;
+>   	tcm->tcm_handle |= TC_H_MIN(cl);
+> @@ -229,6 +233,8 @@ static int mq_dump_class_stats(struct Qdisc *sch, unsigned long cl,
+>   			       struct gnet_dump *d)
+>   {
+>   	struct netdev_queue *dev_queue = mq_queue_get(sch, cl);
+> +	if (!dev_queue)
+> +		return -1;
+>   
+>   	sch = dev_queue->qdisc_sleeping;
+>   	if (gnet_stats_copy_basic(d, sch->cpu_bstats, &sch->bstats, true) < 0 ||
+> 
 
