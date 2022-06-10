@@ -2,120 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F4C5C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 09:09:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C384C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 09:09:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346858AbiFJJJB (ORCPT
+        id S1348493AbiFJJJs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 05:09:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42806 "EHLO
+        Fri, 10 Jun 2022 05:09:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346754AbiFJJH2 (ORCPT
+        with ESMTP id S1348414AbiFJJJX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 05:07:28 -0400
-Received: from out0-151.mail.aliyun.com (out0-151.mail.aliyun.com [140.205.0.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D1E27E464;
-        Fri, 10 Jun 2022 02:06:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=alibaba-inc.com; s=default;
-        t=1654852008; h=Date:From:To:Message-ID:Subject:MIME-Version:Content-Type;
-        bh=e6YItSYSvR2X0RI4hmCMDtqJZC08EPzkVeRsalHStFU=;
-        b=f/G9YoMhuId38ijqLTqa4r3FpN1iz7bRYw7BOan19fEbOFZe1QQiiDYrWL1AgnNyxIEQpC/HkS1NA1TWbWgfKJNqwZVgdO1NAzrGaj+b0sGc+h0kZZiEyaMFgmmCQ7rAqQoWHBgt6ERam97lkUV/odb13IAFGeMW5IONrGD6lhE=
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018047208;MF=zhaowuyun.zwy@alibaba-inc.com;NM=1;PH=DW;RN=4;SR=0;TI=W4_0.1.30_v5ForWebDing_2126A81F_1654851901386_o7001c428;
-Received: from WS-web (zhaowuyun.zwy@alibaba-inc.com[W4_0.1.30_v5ForWebDing_2126A81F_1654851901386_o7001c428]) by ay29a011140100180.et135 at Fri, 10 Jun 2022 17:06:48 +0800
-Date:   Fri, 10 Jun 2022 17:06:48 +0800
-From:   "=?UTF-8?B?6LW15q2m5LqR?=" <zhaowuyun.zwy@alibaba-inc.com>
-To:     "axboe" <axboe@kernel.dk>
-Cc:     "linux-block" <linux-block@vger.kernel.org>,
-        "linux-kernel" <linux-kernel@vger.kernel.org>,
-        "zhaowuyun.zwy" <zhaowuyun.zwy@alibaba-inc.com>
-Reply-To: "=?UTF-8?B?6LW15q2m5LqR?=" <zhaowuyun.zwy@alibaba-inc.com>
-Message-ID: <fd0ee676-4083-4b89-a58a-429d74fb2d33.zhaowuyun.zwy@alibaba-inc.com>
-Subject: =?UTF-8?B?W1BBVENIXSBibG9jazogcGVlayBQTSByZXF1ZXN0cyBkdXJpbmcgcnVudGltZSBQTQ==?=
-X-Mailer: [Alimail-Mailagent revision 5][W4_0.1.30][v5ForWebDing][Safari]
+        Fri, 10 Jun 2022 05:09:23 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3457F283E96
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 02:07:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654852036; x=1686388036;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=KWBbBv0fNbkt9AOdrz/gHPWthaP0yG+qgfQ5rAjHmCE=;
+  b=VaRRoc+cWdFVOvMRfY/Ozb7S/cKSOR0lM17qOKtjB1KtwatyOMAiWMTC
+   iDMUb9FacXfrmYUp+7r9HZJQku5TXMu83TD5j5zLmLGEAnouDMFf6I0UF
+   hQNEZD4a5yGOkGA1OHgTOUdzN4YCXqpW5mPknnPRzelMd1Dj+S2wdXGC3
+   U5sMnSORy8CZkFlT7LtAmsURd6hrYVpEd71LaSQpSRsOlG9znJiqcHxZy
+   Bg5Xq/i2MFwwsSSVvmXCJy8jXav9wfJfOsHG7W3mjWt+Y9hHU8Pp3zac7
+   If1OiRko/38JEwmfqo5rxi/NoMWeocskV/wL4fR7GG7+cB1cu4bQkTlwH
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="276343866"
+X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
+   d="scan'208";a="276343866"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 02:07:16 -0700
+X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
+   d="scan'208";a="638032467"
+Received: from chengxu1-mobl2.ccr.corp.intel.com (HELO [10.249.169.148]) ([10.249.169.148])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 02:07:12 -0700
+Message-ID: <79c41aab-ec9c-3f5e-65d1-ff857f57816e@linux.intel.com>
+Date:   Fri, 10 Jun 2022 17:07:10 +0800
 MIME-Version: 1.0
-x-aliyun-mail-creator: W4_0.1.30_v5ForWebDing_QvNTW96aWxsYS81LjAgKE1hY2ludG9zaDsgSW50ZWwgTWFjIE9TIFggMTBfMTVfNykgQXBwbGVXZWJLaXQvNjA1LjEuMTUgKEtIVE1MLCBsaWtlIEdlY2tvKSBWZXJzaW9uLzE1LjIgU2FmYXJpLzYwNS4xLjE1La
-Content-Type: multipart/mixed;
-  boundary="----=ALIBOUNDARY_75069_7f504c844700_62a309a8_23b95d"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        "Jiang, Dave" <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Eric Auger <eric.auger@redhat.com>,
+        "Liu, Yi L" <yi.l.liu@intel.com>,
+        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v8 02/11] iommu: Add max_pasids field in struct dev_iommu
+Content-Language: en-US
+To:     "Tian, Kevin" <kevin.tian@intel.com>,
+        "Raj, Ashok" <ashok.raj@intel.com>
+References: <20220607014942.3954894-1-baolu.lu@linux.intel.com>
+ <20220607014942.3954894-3-baolu.lu@linux.intel.com>
+ <20220609190102.GC33363@araj-dh-work>
+ <f92629ef-8c9a-b89a-ef0b-32e71617bd51@linux.intel.com>
+ <BN9PR11MB5276C7B4FAC55C58A5466EFC8CA69@BN9PR11MB5276.namprd11.prod.outlook.com>
+From:   Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB5276C7B4FAC55C58A5466EFC8CA69@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a multi-part message in MIME format.
+On 2022/6/10 17:01, Tian, Kevin wrote:
+>> From: Baolu Lu <baolu.lu@linux.intel.com>
+>> Sent: Friday, June 10, 2022 2:47 PM
+>>
+>> On 2022/6/10 03:01, Raj, Ashok wrote:
+>>> On Tue, Jun 07, 2022 at 09:49:33AM +0800, Lu Baolu wrote:
+>>>> @@ -218,6 +219,30 @@ static void dev_iommu_free(struct device *dev)
+>>>>    	kfree(param);
+>>>>    }
+>>>>
+>>>> +static u32 dev_iommu_get_max_pasids(struct device *dev)
+>>>> +{
+>>>> +	u32 max_pasids = dev->iommu->iommu_dev->max_pasids;
+>>>> +	u32 num_bits;
+>>>> +	int ret;
+>>>> +
+>>>> +	if (!max_pasids)
+>>>> +		return 0;
+>>>> +
+>>>> +	if (dev_is_pci(dev)) {
+>>>> +		ret = pci_max_pasids(to_pci_dev(dev));
+>>>> +		if (ret < 0)
+>>>> +			return 0;
+>>>> +
+>>>> +		return min_t(u32, max_pasids, ret);
+>>>
+>>> Ah.. that answers my other question to consider device pasid-max. I guess
+>>> if we need any enforcement of restricting devices that aren't supporting
+>>> the full PASID, that will be done by some higher layer?
+>>
+>> The mm->pasid style of SVA is explicitly enabled through
+>> iommu_dev_enable_feature(IOMMU_DEV_FEAT_SVA). The IOMMU driver
+>> specific
+>> restriction might be put there?
+>>
+>>>
+>>> too many returns in this function, maybe setup all returns to the end of
+>>> the function might be elegant?
+>>
+>> I didn't find cleanup room after a quick scan of the code. But sure, let
+>> me go through code again offline.
+>>
+> 
+> If we do care:
+> 
+> +static u32 dev_iommu_get_max_pasids(struct device *dev)
+> +{
+> +	u32 max_pasids = 0,
+> +	u32 num_bits = 0;
+> +	int ret;
+> +
+> +	if (dev_is_pci(dev)) {
+> +		ret = pci_max_pasids(to_pci_dev(dev));
+> +		if (ret > 0)
+> +			max_pasids = ret;
+> +	} else {
+> +		ret = device_property_read_u32(dev, "pasid-num-bits", &num_bits);
+> +		if (!ret)
+> +			max_pasids = 1UL << num_bits;
+> +	}
+> +
+> +	return min_t(u32, max_pasids, dev->iommu->iommu_dev->max_pasids);
+> +}
 
-------=ALIBOUNDARY_75069_7f504c844700_62a309a8_23b95d
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
+Great! Cleaner and more compact than mine. Thank you!
 
-SGkgSmVucywKCnBsZWFzZSBjaGVjayB0aGlzIHBhdGNoIGZvciA0LjE5IGluIHRoZSBhdHRhY2ht
-ZW50LgpiZWNhdXNlIGkgY2FuIG5vdCB1c2UgZ2l0IHNlbmQtZW1haWwgd2l0aCBlbWFpbCBvZiBv
-dXIgY29tcGFueSwgc28gaSBzZW5kIGF0dGFjaG1lbnQuCgoKCg==
-------=ALIBOUNDARY_75069_7f504c844700_62a309a8_23b95d
-Content-Type: application/octet-stream
-Content-Disposition: attachment; filename="=?UTF-8?B?MDAwMS1ibG9jay1wZWVrLVBNLXJlcXVlc3RzLWR1cmluZy1ydW50aW1lLVBNLnBhdGNo?="
-Content-Transfer-Encoding: base64
-
-RnJvbSBjNDczM2M3MTY2YjdlNjk2YmE1YzZmNGI3OGUxMGQ0MDkzNmFlYzA0IE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBaaGFvIFd1eXVuIDx6aGFvd3V5dW4uend5QGFsaWJhYmEtaW5j
-LmNvbT4KRGF0ZTogRnJpLCAxMCBKdW4gMjAyMiAxNjowMTo0MyArMDgwMApTdWJqZWN0OiBbUEFU
-Q0hdIGJsb2NrOiBwZWVrIFBNIHJlcXVlc3RzIGR1cmluZyBydW50aW1lIFBNCgpxdWV1ZSBibG9j
-a2VkIGR1cmluZyBydW50aW1lIFBNIHdoZW4gYXQgdGhlIGZvbGxvd2luZyBzaXR1YXRpb246Cgpw
-cm9jZXNzIEE6CiAgICBydW50aW1lIHN1c3BlbmQgcnVuIGFuZCBzZXQgdGhlIFBNIHN0YXR1cyB0
-byBSUE1fU1VTUEVORElORwogICAgdGhlbiBydW4gcmVxIHdpdGggUlFGX1BNIHdpdGggYmxrX2V4
-ZWN1dGVfcnEocmVxLT5xLCBOVUxMLCByZXEsIDEpCiAgICB0aGVuIHRoZSByZXEgcXVldWVkIHRv
-IGhlYWQKICAgIGl0IGlzIG5vdCBleGVjdXRlZCB3aGVuIHRoZSBkcml2ZXIgaXMgYnVzeQoKcHJv
-Y2VzcyBCOgogICAgbm9ybWFsIGRldmljZSBtYW5hZ2VtZW50IG9wZXJhdGlvbgogICAgcnVuIHJl
-cSB3aXRoIG5vIFJRRl9QTSB3aXRoIGJsa19leGVjdXRlX3JxKHJlcS0+cSwgTlVMTCwgcmVxLCAx
-KQogICAgdGhlIHRoZSByZXEgaXMgcXVldWVkIGluIGZyb250IG9mIHRoZSBSUUZfUE0gcmVxIG9m
-IHByb2Nlc3MgQQogICAgX19ibGtfcnVuX3F1ZXVlIHN0aWxsIG5vdCBydW4KCmJlY2F1c2UgdGhl
-IGZpcnN0IHJlcSBpcyBub24gUlFGX1BNIHJlcSBhbmQgd2l0aCBSUUZfU09GVEJBUlJJRVIsCnNv
-IHRoZSBxdWV1ZSBpcyB0b3RhbGx5IGJsb2NrZWQgd2hlbiBhdCBSUE1fU1VTUEVORElORyBzdGF0
-dXMuCgpzZWUgdGhlIGZvbGxvd2luZyB0YXNrIGNhbGx0cmFjZToKCnByb2Nlc3MgQToKICAgIFs8
-ZmZmZmZmOWQ4N2U4NjE1MD5dIF9fc3dpdGNoX3RvKzB4MTBjCiAgICBbPGZmZmZmZjlkODhlZDhh
-YjA+XSBfX3NjaGVkdWxlKzB4NjcwCiAgICBbPGZmZmZmZjlkODhlZDhkMTg+XSBzY2hlZHVsZSsw
-eDc0CiAgICBbPGZmZmZmZjlkODhlZGM4ZjQ+XSBzY2hlZHVsZV90aW1lb3V0KzB4MzI4CiAgICBb
-PGZmZmZmZjlkODhlZDkxMzA+XSBpb19zY2hlZHVsZV90aW1lb3V0KzB4MjQKICAgIFs8ZmZmZmZm
-OWQ4OGVkOWIxMD5dIHdhaXRfZm9yX2NvbW1vbl9pbysweDkwCiAgICBbPGZmZmZmZjlkODhlZDli
-YjQ+XSB3YWl0X2Zvcl9jb21wbGV0aW9uX2lvX3RpbWVvdXQrMHgyNAogICAgWzxmZmZmZmY5ZDg4
-MjllMWUwPl0gYmxrX2V4ZWN1dGVfcnErMHg4OAogICAgWzxmZmZmZmY5ZDg4NTliM2E0Pl0gc2Nz
-aV9leGVjdXRlKzB4MTE0CiAgICBbPGZmZmZmZjlkODg1YzQwNzA+XSBzZF9zeW5jX2NhY2hlKzB4
-ZmMKICAgIFs8ZmZmZmZmOWQ4ODVjNDM5Yz5dIHNkX3N1c3BlbmRfY29tbW9uKzB4NTgKICAgIFs8
-ZmZmZmZmOWQ4ODVjNDMzOD5dIHNkX3N1c3BlbmRfcnVudGltZSsweDIwCiAgICBbPGZmZmZmZjlk
-ODg1YTczY2M+XSBzY3NpX3J1bnRpbWVfc3VzcGVuZCsweDcwCiAgICBbPGZmZmZmZjlkODg1MzQx
-ZTg+XSBfX3JwbV9jYWxsYmFjaysweGNjCiAgICBbPGZmZmZmZjlkODg1MzQwZTg+XSBycG1fY2Fs
-bGJhY2srMHg1YwogICAgWzxmZmZmZmY5ZDg4NTMyMTM0Pl0gcnBtX3N1c3BlbmQrMHgxZTgKICAg
-IFs8ZmZmZmZmOWQ4ODUzM2IyOD5dIHBtX3J1bnRpbWVfd29yaysweDdjCiAgICBbPGZmZmZmZjlk
-ODdlZDMxZDQ+XSBwcm9jZXNzX29uZV93b3JrKzB4MWJjCiAgICBbPGZmZmZmZjlkODdlZDM2Njg+
-XSB3b3JrZXJfdGhyZWFkKzB4MjE0CiAgICBbPGZmZmZmZjlkODdlZDgzOWM+XSBrdGhyZWFkKzB4
-MTFjCiAgICBbPGZmZmZmZjlkODdlODRmY2M+XSByZXRfZnJvbV9mb3JrKzB4MTAKCnByb2Nlc3Mg
-QjoKICAgIFs8ZmZmZmZmOWQ4N2U4NjE1MD5dIF9fc3dpdGNoX3RvKzB4MTBjCiAgICBbPGZmZmZm
-ZjlkODhlZDhhYjA+XSBfX3NjaGVkdWxlKzB4NjcwCiAgICBbPGZmZmZmZjlkODhlZDhkMTg+XSBz
-Y2hlZHVsZSsweDc0CiAgICBbPGZmZmZmZjlkODhlZGM4ZjQ+XSBzY2hlZHVsZV90aW1lb3V0KzB4
-MzI4CiAgICBbPGZmZmZmZjlkODhlZDkxMzA+XSBpb19zY2hlZHVsZV90aW1lb3V0KzB4MjQKICAg
-IFs8ZmZmZmZmOWQ4OGVkOWIxMD5dIHdhaXRfZm9yX2NvbW1vbl9pbysweDkwCiAgICBbPGZmZmZm
-ZjlkODhlZDliYjQ+XSB3YWl0X2Zvcl9jb21wbGV0aW9uX2lvX3RpbWVvdXQrMHgyNAogICAgWzxm
-ZmZmZmY5ZDg4MjllMWUwPl0gYmxrX2V4ZWN1dGVfcnErMHg4OAogICAgWzxmZmZmZmY5ZDg4NTli
-M2E0Pl0gc2NzaV9leGVjdXRlKzB4MTE0CiAgICBbPGZmZmZmZjlkODg1OWQ4NTQ+XSBzY3NpX3Rl
-c3RfdW5pdF9yZWFkeSsweDcwCiAgICBbPGZmZmZmZjlkODg1YzJmNDg+XSBzZF9jaGVja19ldmVu
-dHMrMHhkNAogICAgWzxmZmZmZmY5ZDg4MmFiZGU4Pl0gZGlza19jaGVja19ldmVudHMrMHg1OAog
-ICAgWzxmZmZmZmY5ZDg4MmFjYzBjPl0gZGlza19ldmVudHNfd29ya2ZuKzB4MjAKICAgIFs8ZmZm
-ZmZmOWQ4N2VkMzFkND5dIHByb2Nlc3Nfb25lX3dvcmsrMHgxYmMKICAgIFs8ZmZmZmZmOWQ4N2Vk
-MzY2OD5dIHdvcmtlcl90aHJlYWQrMHgyMTQKICAgIFs8ZmZmZmZmOWQ4N2VkODM5Yz5dIGt0aHJl
-YWQrMHgxMWMKICAgIFs8ZmZmZmZmOWQ4N2U4NGZjYz5dIHJldF9mcm9tX2ZvcmsrMHgxMAoKU2ln
-bmVkLW9mZi1ieTogWmhhbyBXdXl1biA8emhhb3d1eXVuLnp3eUBhbGliYWJhLWluYy5jb20+Ci0t
-LQogYmxvY2svYmxrLWNvcmUuYyB8IDkgKysrKysrKysrCiAxIGZpbGUgY2hhbmdlZCwgOSBpbnNl
-cnRpb25zKCspCgpkaWZmIC0tZ2l0IGEvYmxvY2svYmxrLWNvcmUuYyBiL2Jsb2NrL2Jsay1jb3Jl
-LmMKaW5kZXggYTMzNzc1Y2Q5N2JlLi44YjkyNzJiZmRjMDkgMTAwNjQ0Ci0tLSBhL2Jsb2NrL2Js
-ay1jb3JlLmMKKysrIGIvYmxvY2svYmxrLWNvcmUuYwpAQCAtMjg1Niw2ICsyODU2LDE1IEBAIHN0
-YXRpYyBzdHJ1Y3QgcmVxdWVzdCAqZWx2X25leHRfcmVxdWVzdChzdHJ1Y3QgcmVxdWVzdF9xdWV1
-ZSAqcSkKIAkJCWlmIChibGtfcG1fYWxsb3dfcmVxdWVzdChycSkpCiAJCQkJcmV0dXJuIHJxOwog
-CisJCQkvKgorCQkJICogbGV0IHRoZSBQTSByZXF1ZXN0IHJ1biwKKwkJCSAqIG9yIHRoZSBxdWV1
-ZSBtYXkgYmUgYmxvY2tlZCBieSB0aGUgbm9uLVBNIHJlcXVlc3QKKwkJCSAqIHdpdGggUlFGX1NP
-RlRCQVJSSUVSIGZvcmV2ZXIgd2hpbGUgZG9pbmcgcnVudGltZSBQTS4KKwkJCSAqLworCQkJaWYg
-KHEtPnJwbV9zdGF0dXMgPT0gUlBNX1NVU1BFTkRJTkcKKwkJCQkJCXx8IHEtPnJwbV9zdGF0dXMg
-PT0gUlBNX1JFU1VNSU5HKQorCQkJCWNvbnRpbnVlOworCiAJCQlpZiAocnEtPnJxX2ZsYWdzICYg
-UlFGX1NPRlRCQVJSSUVSKQogCQkJCWJyZWFrOwogCQl9Ci0tIAoyLjMyLjEgKEFwcGxlIEdpdC0x
-MzMpCgo=
-
-------=ALIBOUNDARY_75069_7f504c844700_62a309a8_23b95d--
-
+Best regards,
+baolu
