@@ -2,114 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3007CC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 19:01:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBF0ACCA47B
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 19:10:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350402AbiFJTBR (ORCPT
+        id S1348045AbiFJTKO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 15:01:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51390 "EHLO
+        Fri, 10 Jun 2022 15:10:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243528AbiFJTBO (ORCPT
+        with ESMTP id S1350461AbiFJTKH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 15:01:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DB312C36B9;
-        Fri, 10 Jun 2022 12:01:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B2D556222E;
-        Fri, 10 Jun 2022 19:01:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1352DC34114;
-        Fri, 10 Jun 2022 19:01:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654887672;
-        bh=Hnvop1nQB2a1YvXC9KrSU6WdMwLevAsVoA6EE55HKf0=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=j2V8JdBRB9od3csLhFaWyYbQv4LOFTb655urrswTus3Zufk/CEtBBoyna10Gf0yzw
-         g2Q25Psjl8EgSp54TApA8f2BEC4zmE/5LyPX/9sWAd+T/8SbBiqlZnpRS8NJmLdfLJ
-         YXccNmbOugAmc0N1Y4Y3Zqb3FiKyYm8NFPBK6NqoIj0m2eVqVFUeBXoiZHdMKm2T3t
-         UlUApgeWIfxWnmUOGL1W8187VMKi/0/uYDgZMax5vUo8xdYFSmcp0F5suozphejrz8
-         WDs2WSLXWc27b2R5mOv8MNt7/VTjNxoQHJIWnHepHV54LX80fhopqJX0VAsjrJGjXj
-         z8wubT/wkWYcA==
-Content-Type: text/plain; charset="utf-8"
+        Fri, 10 Jun 2022 15:10:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D88E6DF7
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 12:10:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654888206;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qUW6JDLfmxj9lFzCpBnq7MGkjudHtjpg7FJPkpReq6I=;
+        b=YzrHk8ANKkdwsfW5kABDc/uNzjxIHs1qJaadf139pUKck6MDMvkROu40yaWcUUHIN4esE4
+        b9aVc34LsvNFD75yjVUuFkdgqJlKhe/WKoC+KpMqzctg7GgGE1QR7iCHnIifatPhv47Tbk
+        moKxd4mrowV398XbqbkbfYqD7b7T7FA=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-346-zncx7-M-MC2-MME9Jz9ZmQ-1; Fri, 10 Jun 2022 15:10:05 -0400
+X-MC-Unique: zncx7-M-MC2-MME9Jz9ZmQ-1
+Received: by mail-ed1-f71.google.com with SMTP id g7-20020a056402424700b0042dee9d11d0so80085edb.3
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 12:10:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=qUW6JDLfmxj9lFzCpBnq7MGkjudHtjpg7FJPkpReq6I=;
+        b=QM3uS+AlaX8XVmdDpoha/I+XRUEpzV3KKDfeJjbqNMpqu13gQxwWzEeU4LMlUM0xDI
+         j6YXbVQV9bK9miiQ8AYu4/G73TUw5MT9dngoooozUF5iBrdo9KsY/H6R4PQT3EJGDeHD
+         bDffalHsydetm7F+C5hsiE4inFeK0CCF6XXWaFX7fHkXVDHlL5MqDEOfm9rXT2P0U3ZE
+         teQr5PlPJsAx+jfmfaFI3zwwyC43tH6W6EVHWz3WR7A8sRG5QjpWYiK5BBAatOj0YI3j
+         5ZJBuVk6dvLBx4eaM4SqfqEwdajz6QvOd2JCqtZ0CjcEd6Tg/dsV9I+qmOC8oib8nKrU
+         vqaA==
+X-Gm-Message-State: AOAM532FEh+h+BnPAw9zSZPnbPGajUp3Zg9TuPlDC/vZyhkg5eRuXoRo
+        DnGgkOU5WM3ipzDi7gPKv02wULN9XReHFmKYoFnU7kSUd2BJDRyrsZvvzm8TKFZPkrStnReWCLZ
+        PDmOm7CSgArGbIRSqaPuN6wCG
+X-Received: by 2002:a05:6402:4246:b0:42f:3a4b:cc71 with SMTP id g6-20020a056402424600b0042f3a4bcc71mr43556562edb.107.1654888203759;
+        Fri, 10 Jun 2022 12:10:03 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxnQNxWVZrJvoD/0PvZcdsGvidN1hpNu/R4NfW2TAvvSoYJyzY0SE26ysyPLnRN+SSoVDGpzg==
+X-Received: by 2002:a05:6402:4246:b0:42f:3a4b:cc71 with SMTP id g6-20020a056402424600b0042f3a4bcc71mr43556545edb.107.1654888203542;
+        Fri, 10 Jun 2022 12:10:03 -0700 (PDT)
+Received: from ?IPV6:2001:1c00:2a07:3a01:67e5:daf9:cec0:df6? (2001-1c00-2a07-3a01-67e5-daf9-cec0-0df6.cable.dynamic.v6.ziggo.nl. [2001:1c00:2a07:3a01:67e5:daf9:cec0:df6])
+        by smtp.gmail.com with ESMTPSA id t2-20020a05640203c200b0042617ba63c2sm5084edw.76.2022.06.10.12.10.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 10 Jun 2022 12:10:03 -0700 (PDT)
+Message-ID: <d5680f64-d5e7-3e42-0340-0f540ea12e50@redhat.com>
+Date:   Fri, 10 Jun 2022 21:10:02 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220610074632.abtec5kulbclund4@SoMainline.org>
-References: <20220601220747.1145095-1-marijn.suijten@somainline.org> <20220601220747.1145095-4-marijn.suijten@somainline.org> <CAA8EJpomtbN0+ocD2pRbkYriUY4D9OnjgoFzL9qNHhPm3Uz5cQ@mail.gmail.com> <20220609221211.684C1C34114@smtp.kernel.org> <20220610074632.abtec5kulbclund4@SoMainline.org>
-Subject: Re: [PATCH v2 03/11] clk: fixed-factor: Introduce *clk_hw_register_fixed_factor_parent_hw()
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Martin Botka <martin.botka@somainline.org>,
-        Jami Kettunen <jami.kettunen@somainline.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rajeev Nandan <quic_rajeevny@quicinc.com>,
-        Vladimir Lypak <vladimir.lypak@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Jonathan Marek <jonathan@marek.ca>, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org
-To:     Marijn Suijten <marijn.suijten@somainline.org>
-Date:   Fri, 10 Jun 2022 12:01:10 -0700
-User-Agent: alot/0.10
-Message-Id: <20220610190112.1352DC34114@smtp.kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH] platform/x86: system76_acpi: use dev_get_drvdata
+Content-Language: en-US
+To:     Haowen Bai <baihaowen@meizu.com>,
+        Jeremy Soller <jeremy@system76.com>,
+        System76 Product Development <productdev@system76.com>,
+        Mark Gross <markgross@kernel.org>
+Cc:     platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1653989063-20180-1-git-send-email-baihaowen@meizu.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <1653989063-20180-1-git-send-email-baihaowen@meizu.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Marijn Suijten (2022-06-10 00:46:32)
-> On 2022-06-09 15:12:09, Stephen Boyd wrote:
-> > Quoting Dmitry Baryshkov (2022-06-02 03:20:19)
-> > > On Thu, 2 Jun 2022 at 01:07, Marijn Suijten
-> > > <marijn.suijten@somainline.org> wrote:
-> > > > diff --git a/drivers/clk/clk-fixed-factor.c b/drivers/clk/clk-fixed=
--factor.c
-> > > > index 54942d758ee6..fabb98d0cdb2 100644
-> > > > --- a/drivers/clk/clk-fixed-factor.c
-> > > > +++ b/drivers/clk/clk-fixed-factor.c
-> > > > @@ -148,17 +151,50 @@ struct clk_hw *devm_clk_hw_register_fixed_fac=
-tor_index(struct device *dev,
-> > > >                 const char *name, unsigned int index, unsigned long=
- flags,
-> > > >                 unsigned int mult, unsigned int div)
-> > > >  {
-> > > > -       return __clk_hw_register_fixed_factor(dev, NULL, name, NULL=
-, index,
-> > > > -                                             flags, mult, div, tru=
-e);
-> > > > +       return __clk_hw_register_fixed_factor(dev, NULL, name, NULL=
-, NULL,
-> > > > +                                             index, flags, mult, d=
-iv, true);
-> > >=20
-> > > Here (and several times later) you are inserting an argument and then
-> > > moving arguments to the next line. My slight preference would be to
-> > > just insert the arg (and maybe break the line if it gets too long) w/o
-> > > touching the next lines.
->=20
-> That'll definitely look odd, as we'll end up with index floating on a
-> single line, all on its own.
+Hi,
 
-Pretty sure Dmitry is suggesting to make the line longer, not put the
-index on a line by itself. Ignore the 80-column limit.
+On 5/31/22 11:24, Haowen Bai wrote:
+> Eliminate direct accesses to the driver_data field.
+> 
+> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 
->=20
-> > I'd just add the argument at the end because when it is added in the
-> > middle it makes the diff more difficult to read.
->=20
-> How strong is this feeling, against keeping argument ordering consistent
-> with other implementations of similar __clk_hw_register_* functions?
->=20
+Thank you for your patch, I've applied this patch to my review-hans 
+branch:
+https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git/log/?h=review-hans
 
-Not super strong. Just try to minimize the diff to make the reviewer's
-job easier. In this case it would be inserting NULL before 'index' and
-not modifying the next line so the diff is one line instead of two.
+Note it will show up in my review-hans branch once I've pushed my
+local branch there, which might take a while.
+
+Once I've run some tests on this branch the patches there will be
+added to the platform-drivers-x86/for-next branch and eventually
+will be included in the pdx86 pull-request to Linus for the next
+merge-window.
+
+Regards,
+
+Hans
+
+> ---
+>  drivers/platform/x86/system76_acpi.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/platform/x86/system76_acpi.c b/drivers/platform/x86/system76_acpi.c
+> index 7299ad08c838..958df41ad509 100644
+> --- a/drivers/platform/x86/system76_acpi.c
+> +++ b/drivers/platform/x86/system76_acpi.c
+> @@ -339,7 +339,7 @@ static ssize_t kb_led_color_show(
+>  	struct led_classdev *led;
+>  	struct system76_data *data;
+>  
+> -	led = (struct led_classdev *)dev->driver_data;
+> +	led = dev_get_drvdata(dev);
+>  	data = container_of(led, struct system76_data, kb_led);
+>  	return sysfs_emit(buf, "%06X\n", data->kb_color);
+>  }
+> @@ -356,7 +356,7 @@ static ssize_t kb_led_color_store(
+>  	unsigned int val;
+>  	int ret;
+>  
+> -	led = (struct led_classdev *)dev->driver_data;
+> +	led = dev_get_drvdata(dev);
+>  	data = container_of(led, struct system76_data, kb_led);
+>  	ret = kstrtouint(buf, 16, &val);
+>  	if (ret)
+
