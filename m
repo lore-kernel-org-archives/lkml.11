@@ -2,99 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B2DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 12:04:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07150C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 12:05:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348399AbiFJME1 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 08:04:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56782 "EHLO
+        id S243556AbiFJMFw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 10 Jun 2022 08:05:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347752AbiFJMEY (ORCPT
+        with ESMTP id S245550AbiFJMFu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 08:04:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7D8F193E4;
-        Fri, 10 Jun 2022 05:04:23 -0700 (PDT)
+        Fri, 10 Jun 2022 08:05:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 339CF3F322;
+        Fri, 10 Jun 2022 05:05:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A38B6B834E0;
-        Fri, 10 Jun 2022 12:04:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53FECC3411D;
-        Fri, 10 Jun 2022 12:04:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C179B834DC;
+        Fri, 10 Jun 2022 12:05:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2574C3411E;
+        Fri, 10 Jun 2022 12:05:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654862661;
-        bh=q29Sh8OaZZnjTZf4cfd9bieOC8BLYRFYnh2YtXknEQs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=YHYc9HR0FWAu3R/i2PNgPZXqUoX/2Mv13LjYTzteYGKaiqmIdWGzdfiX/5l8szL39
-         J1JxpDpN9bearnk8nZaOK39LmBiJbW/cc/JDRgqZ7ha6bxBdsYGdq+LiDTo9dLOovh
-         v+nEfprR3nynbRN/ZEGdkZ+0/23GyGzB65rYLFGgjEUY5h5IVrTSDcmHsgv538lYit
-         NDXZWg2gMnc3FJyfTezyMKsBKZjBDfN+1Qa3ANPN2uQ7vklE+ts0eOOD4AlURlnHwg
-         M5qv5wGdExkSg/pEohXx2n2ln4hjflkJOHkTxFzz/ub3yoIZ0AaVGuW2OA52Coq6g7
-         7vNT6JWOg/dhA==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan+linaro@kernel.org>)
-        id 1nzdNB-0002li-B5; Fri, 10 Jun 2022 14:04:17 +0200
-From:   Johan Hovold <johan+linaro@kernel.org>
-To:     stable@vger.kernel.org
-Cc:     linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>
-Subject: [PATCH stable-4.9] PCI: qcom: Fix unbalanced PHY init on probe errors
-Date:   Fri, 10 Jun 2022 14:04:11 +0200
-Message-Id: <20220610120411.10619-1-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        s=k20201202; t=1654862745;
+        bh=f9tCZ3dUGujHwZtgBBhgrGaWaeeMtU5w+k7egcKNfkU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jR8trHrWTHYG7Z9ccS+GVbKyAVHH9oRp5ckreKkEj0zGsQL+sdaLJz/xs+JTOXidt
+         +oEYLXGUcHLwrC8KnvQ8Ua2sMCxlC3qTniMSMxVVgVjRTH0AsnjchsRcXwmbvjNMLz
+         6k5SvVcwPRHnbw4bOV+Cyi3FNXjJzno+2ilZJU82Mi6tLJZ7CJcdxpM9WSTTdsvJF/
+         atC1RjwAyHrMA0l6ivT7fsoo9rVhuSvkHzKZJezQmPZOerlkPNxgfzcBehEnHmg7oA
+         KDOe0t1Q1hhwJIJsWdeJpD8YbiA4r/r7fPAj63FCX/fbs14+yBZi3RIWXjTSHo7JeG
+         hBYCeFocezpLQ==
+Date:   Fri, 10 Jun 2022 14:05:42 +0200
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     Zqiang <qiang1.zhang@intel.com>
+Cc:     paulmck@kernel.org, rcu@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] rcu/nocb: Avoid polling when myrdp->nocb_head_rdp
+ list is empty
+Message-ID: <20220610120542.GA1811980@lothringen>
+References: <20220607075057.909070-1-qiang1.zhang@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220607075057.909070-1-qiang1.zhang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-commit 83013631f0f9961416abd812e228c8efbc2f6069 upstream.
+On Tue, Jun 07, 2022 at 03:50:57PM +0800, Zqiang wrote:
+> Currently, If the 'rcu_nocb_poll' bootargs is enable, all rcuog kthreads
+> enter polling mode. however, due to only insert CPU's rdp which belong to
+> rcu_nocb_mask to 'nocb_head_rdp' list or all CPU's rdp served by rcuog
+> kthread have been de-offloaded, these cause the 'nocb_head_rdp' list
+> served by rcuog kthread is empty, when the 'nocb_head_rdp' is empty,
+> the rcuog kthread in polling mode not actually do anything. fix it by
+> exiting polling mode when the 'nocb_head_rdp'list is empty, otherwise
+> entering polling mode.
+> 
+> Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+> ---
+>  v1->v2:
+>  Move rcu_nocb_poll flags check from rdp_offload_toggle() to
+>  rcu_nocb_rdp_offload/deoffload(), avoid unnecessary setting of
+>  rdp_gp->nocb_gp_sleep flags, because when rcu_nocb_poll is set
+>  the rdp_gp->nocb_gp_sleep is not used.
+> 
+>  kernel/rcu/tree_nocb.h | 16 ++++++++++------
+>  1 file changed, 10 insertions(+), 6 deletions(-)
+> 
+> diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h
+> index fa8e4f82e60c..2a52c9abc681 100644
+> --- a/kernel/rcu/tree_nocb.h
+> +++ b/kernel/rcu/tree_nocb.h
+> @@ -698,10 +698,14 @@ static void nocb_gp_wait(struct rcu_data *my_rdp)
+>  				   TPS("WakeBypassIsDeferred"));
+>  	}
+>  	if (rcu_nocb_poll) {
+> -		/* Polling, so trace if first poll in the series. */
+> -		if (gotcbs)
+> -			trace_rcu_nocb_wake(rcu_state.name, cpu, TPS("Poll"));
+> -		schedule_timeout_idle(1);
+> +		if (list_empty(&my_rdp->nocb_head_rdp)) {
+> +			rcu_wait(READ_ONCE(my_rdp->nocb_toggling_rdp));
 
-Undo the PHY initialisation (e.g. balance runtime PM) if host
-initialisation fails during probe.
+I suspect you have based your patch on upstream tree which doesn't seem
+to have this one yet:
 
-Link: https://lore.kernel.org/r/20220401133854.10421-3-johan+linaro@kernel.org
-Fixes: 82a823833f4e ("PCI: qcom: Add Qualcomm PCIe controller driver")
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Acked-by: Stanimir Varbanov <svarbanov@mm-sol.com>
-Cc: stable@vger.kernel.org      # 4.5
-[ johan: adjust context to 4.9 ]
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
----
- drivers/pci/host/pcie-qcom.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+   "rcu/nocb: Add/del rdp to iterate from rcuog itself"
 
-diff --git a/drivers/pci/host/pcie-qcom.c b/drivers/pci/host/pcie-qcom.c
-index aeb46f8c7087..4e21ca3c067e 100644
---- a/drivers/pci/host/pcie-qcom.c
-+++ b/drivers/pci/host/pcie-qcom.c
-@@ -562,10 +562,15 @@ static int qcom_pcie_probe(struct platform_device *pdev)
- 	ret = dw_pcie_host_init(pp);
- 	if (ret) {
- 		dev_err(dev, "cannot initialize host\n");
--		return ret;
-+		goto err_phy_exit;
- 	}
- 
- 	return 0;
-+
-+err_phy_exit:
-+	phy_exit(pcie->phy);
-+
-+	return ret;
+With this patch you can't wait on changes to my_rdp->nocb_toggling_rdp because
+nocb_gp_wait() now performs the list_add/list_del itself.
+
+Please rebase your patch on top of latest rcu:dev from Paul's tree. Then
+all you need to do is to change the wait side, something like this (untested):
+
+diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h
+index fa8e4f82e60c..f36d6be4f372 100644
+--- a/kernel/rcu/tree_nocb.h
++++ b/kernel/rcu/tree_nocb.h
+@@ -584,6 +584,15 @@ static int nocb_gp_toggle_rdp(struct rcu_data *rdp,
+ 	return ret;
  }
  
- static const struct of_device_id qcom_pcie_match[] = {
--- 
-2.35.1
-
++static void nocb_gp_sleep(struct rdp *my_rdp, int cpu)
++{
++	trace_rcu_nocb_wake(rcu_state.name, cpu, TPS("Sleep"));
++	swait_event_interruptible_exclusive(my_rdp->nocb_gp_wq,
++					    !READ_ONCE(my_rdp->nocb_gp_sleep));
++	trace_rcu_nocb_wake(rcu_state.name, cpu, TPS("EndSleep"));
++}
++
++
+ /*
+  * No-CBs GP kthreads come here to wait for additional callbacks to show up
+  * or for grace periods to end.
+@@ -701,13 +710,19 @@ static void nocb_gp_wait(struct rcu_data *my_rdp)
+ 		/* Polling, so trace if first poll in the series. */
+ 		if (gotcbs)
+ 			trace_rcu_nocb_wake(rcu_state.name, cpu, TPS("Poll"));
+-		schedule_timeout_idle(1);
++		if (list_empty(&my_rdp->nocb_head_rdp)) {
++			raw_spin_lock_irqsave(&my_rdp->nocb_gp_lock, flags);
++			if (!my_rdp->nocb_toggling_rdp)
++				WRITE_ONCE(my_rdp->nocb_gp_sleep, true);
++			raw_spin_unlock_irqrestore(&my_rdp->nocb_gp_lock, flags);
++			/* Wait for any offloading rdp */
++			rdp_gp_sleep(my_rdp, cpu);
++		} else {
++			schedule_timeout_idle(1);
++		}
+ 	} else if (!needwait_gp) {
+ 		/* Wait for callbacks to appear. */
+-		trace_rcu_nocb_wake(rcu_state.name, cpu, TPS("Sleep"));
+-		swait_event_interruptible_exclusive(my_rdp->nocb_gp_wq,
+-				!READ_ONCE(my_rdp->nocb_gp_sleep));
+-		trace_rcu_nocb_wake(rcu_state.name, cpu, TPS("EndSleep"));
++		rdp_gp_sleep(my_rdp, cpu);
+ 	} else {
+ 		rnp = my_rdp->mynode;
+ 		trace_rcu_this_gp(rnp, my_rdp, wait_gp_seq, TPS("StartWait"));
