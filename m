@@ -2,125 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE13ACCA47B
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 08:18:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA58BCCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 08:18:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347317AbiFJISI (ORCPT
+        id S1347289AbiFJISm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 04:18:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57596 "EHLO
+        Fri, 10 Jun 2022 04:18:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343801AbiFJIRq (ORCPT
+        with ESMTP id S1347310AbiFJISQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 04:17:46 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0DFC622C8B5
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 01:17:30 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-187-CJ42ikeuMzOpi7KnFHFl1g-1; Fri, 10 Jun 2022 09:17:28 +0100
-X-MC-Unique: CJ42ikeuMzOpi7KnFHFl1g-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.36; Fri, 10 Jun 2022 09:17:25 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.036; Fri, 10 Jun 2022 09:17:25 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Bill Wendling' <morbo@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-CC:     Bill Wendling <isanbard@gmail.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Ingo Molnar" <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Jan Kara <jack@suse.com>,
-        "Pablo Neira Ayuso" <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        "Florian Westphal" <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Eric Dumazet" <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>,
-        Ross Philipson <ross.philipson@oracle.com>,
-        Daniel Kiper <daniel.kiper@oracle.com>,
-        "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
-        "coreteam@netfilter.org" <coreteam@netfilter.org>,
-        Networking <netdev@vger.kernel.org>,
-        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
-        clang-built-linux <llvm@lists.linux.dev>
-Subject: RE: [PATCH 00/12] Clang -Wformat warning fixes
-Thread-Topic: [PATCH 00/12] Clang -Wformat warning fixes
-Thread-Index: AQHYfFM1C3rJ7kSMAEGkdVTZFYHL+K1ISrPg
-Date:   Fri, 10 Jun 2022 08:17:25 +0000
-Message-ID: <01da36bfd13e421aadb2eff661e7a959@AcuMS.aculab.com>
-References: <20220609221702.347522-1-morbo@google.com>
- <20220609152527.4ad7862d4126e276e6f76315@linux-foundation.org>
- <CAGG=3QXDt9AeCQOAp1311POFRSByJru4=Q=oFiQn3u2iZYk2_w@mail.gmail.com>
-In-Reply-To: <CAGG=3QXDt9AeCQOAp1311POFRSByJru4=Q=oFiQn3u2iZYk2_w@mail.gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Fri, 10 Jun 2022 04:18:16 -0400
+Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8D2E823512D;
+        Fri, 10 Jun 2022 01:18:15 -0700 (PDT)
+Received: from mail (mail.baikal.int [192.168.51.25])
+        by mail.baikalelectronics.com (Postfix) with ESMTP id 8D54816A6;
+        Fri, 10 Jun 2022 11:18:59 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 8D54816A6
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baikalelectronics.ru; s=mail; t=1654849139;
+        bh=ziywhS226uueS7ATE0wHWin9aE5fJAEXVPduh54bP74=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
+        b=SuOxovivlh/stWfNHG5TLO+h5avykiBoP88eN0ALtI86v6D0JSiGWWvNFJ14scpw6
+         3iqgWWUEaf89yFnn5TI9FOsXz7zGI5K3FuNj6pxJ65ToeJptX1x1yF/re30OINl/Cu
+         6iEQU8fq42m2YvhRZHkQWnFtuVrRvIa0E2KHRgmg=
+Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 10 Jun 2022 11:18:07 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>, Hannes Reinecke <hare@suse.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Florian Fainelli <f.fainelli@gmail.com>
+CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        <linux-ide@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+Subject: [PATCH v4 05/23] dt-bindings: ata: sata-brcm: Apply common AHCI schema
+Date:   Fri, 10 Jun 2022 11:17:43 +0300
+Message-ID: <20220610081801.11854-6-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20220610081801.11854-1-Sergey.Semin@baikalelectronics.ru>
+References: <20220610081801.11854-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RnJvbTogQmlsbCBXZW5kbGluZw0KPiBTZW50OiAwOSBKdW5lIDIwMjIgMjM6NDkNCj4gDQo+IE9u
-IFRodSwgSnVuIDksIDIwMjIgYXQgMzoyNSBQTSBBbmRyZXcgTW9ydG9uIDxha3BtQGxpbnV4LWZv
-dW5kYXRpb24ub3JnPiB3cm90ZToNCj4gPg0KPiA+IE9uIFRodSwgIDkgSnVuIDIwMjIgMjI6MTY6
-MTkgKzAwMDAgQmlsbCBXZW5kbGluZyA8bW9yYm9AZ29vZ2xlLmNvbT4gd3JvdGU6DQo+ID4NCj4g
-PiA+IFRoaXMgcGF0Y2ggc2V0IGZpeGVzIHNvbWUgY2xhbmcgd2FybmluZ3Mgd2hlbiAtV2Zvcm1h
-dCBpcyBlbmFibGVkLg0KPiA+ID4NCj4gPg0KPiA+IHRsZHI6DQo+ID4NCj4gPiAtICAgICAgIHBy
-aW50ayhtc2cpOw0KPiA+ICsgICAgICAgcHJpbnRrKCIlcyIsIG1zZyk7DQo+ID4NCj4gPiB0aGUg
-b25seSByZWFzb24gdG8gbWFrZSB0aGlzIGNoYW5nZSBpcyB3aGVyZSBgbXNnJyBjb3VsZCBjb250
-YWluIGEgYCUnLg0KPiA+IEdlbmVyYWxseSwgaXQgY2FtZSBmcm9tIHVzZXJzcGFjZS4NCj4gDQo+
-IEl0IGhlbHBzIGtlcm5lbCBkZXZlbG9wZXJzIG5vdCBhY2NpZGVudGFsbHkgdG8gaW5zZXJ0IGFu
-IHVuZXNjYXBlZCAnJScNCj4gaW4gdGhlaXIgbWVzc2FnZXMsIHBvdGVudGlhbGx5IGV4cG9zaW5n
-IHRoZWlyIGNvZGUgdG8gYW4gYXR0YWNrDQo+IHZlY3Rvci4NCj4gDQo+ID4gT3RoZXJ3aXNlIHRo
-ZXNlIGNoYW5nZXMgYXJlIGENCj4gPiB1c2VsZXNzIGNvbnN1bWVyIG9mIHJ1bnRpbWUgcmVzb3Vy
-Y2VzLg0KPiANCj4gQ2FsbGluZyBhICJwcmludGYiIHN0eWxlIGZ1bmN0aW9uIGlzIGFscmVhZHkg
-aW5zYW5lbHkgZXhwZW5zaXZlLiA6LSkgSQ0KPiB1bmRlcnN0YW5kIHRoYXQgaXQncyBub3Qgb2th
-eSBibGl0aGVseSB0byBpbmNyZWFzZSBydW50aW1lIHJlc291cmNlcw0KPiBzaW1wbHkgYmVjYXVz
-ZSBpdCdzIGFscmVhZHkgc2xvdywgYnV0IGluIHRoaXMgY2FzZSBpdCdzIHdvcnRod2hpbGUuDQoN
-ClllcCwgSU1ITyBkZWZpbml0ZWx5IHNob3VsZCBiZSBmaXhlZC4NCkl0IGlzIGV2ZW4gcG9zc2li
-bGUgdGhhdCB1c2luZyAiJXMiIGlzIGZhc3RlciBiZWNhdXNlIHRoZSBwcmludGYNCmNvZGUgZG9l
-c24ndCBoYXZlIHRvIHNjYW4gdGhlIHN0cmluZyBmb3IgZm9ybWF0IGVmZmVjdG9ycy4NCg0KPiA+
-IEkgdGhpbmsgaXQgd291bGQgYmUgYmV0dGVyIHRvIHF1aWV0ZW4gY2xhbmcgaW4gc29tZSBmYXNo
-aW9uLg0KPiANCj4gVGhlICJwcmludGsiIGFuZCBzaW1pbGFyIGZ1bmN0aW9ucyBhbGwgaGF2ZSB0
-aGUgIl9fcHJpbnRmIiBhdHRyaWJ1dGUuDQo+IEkgZG9uJ3Qga25vdyBvZiBhIG1vZGlmaWNhdGlv
-biB0byB0aGF0IGF0dHJpYnV0ZSB3aGljaCBjYW4gdHVybiBvZmYNCj4gdGhpcyB0eXBlIG9mIGNo
-ZWNrLg0KDQpBbmQgeW91IHdvdWxkbid0IHdhbnQgdG8gZm9yIHRoZXNlIGNhc2VzLg0KDQpUaGUg
-b25seSBwcm9ibGVtcyBhcmlzZSB3aGVuIHRoZSBmb3JtYXQgaXMgY2FsY3VsYXRlZA0KKG9yIHBh
-c3NlZCBpbiBmcm9tIGEgY2FsbGVyKS4NCkJ1dCB0aGF0IGlzIGxpa2VseSB0byBiZSBkYW5nZXJv
-dXMgLSByZWFkaW5nIGZvcm1hdHMgZnJvbQ0KZmlsZXMgKGVnIGZvciBsYW5ndWFnZSB0cmFuc2xh
-dGlvbikgaXNuJ3QgYSBnb29kIGlkZWEgYXQgYWxsLg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJl
-ZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXlu
-ZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
+The Broadcom SATA controller is obviously based on the AHCI standard. The
+device driver uses the kernel AHCI library to work with it. Therefore we
+can be have a more thorough DT-bindings evaluation by referring to the
+AHCI-common schema instead of using the more relaxed SATA-common one.
+
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+
+---
+
+Changelog v4:
+- This is a new patch added on v4 lap of the review procedure.
+---
+ Documentation/devicetree/bindings/ata/brcm,sata-brcm.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/ata/brcm,sata-brcm.yaml b/Documentation/devicetree/bindings/ata/brcm,sata-brcm.yaml
+index 4ee74df8e58a..fa8ebc8f243f 100644
+--- a/Documentation/devicetree/bindings/ata/brcm,sata-brcm.yaml
++++ b/Documentation/devicetree/bindings/ata/brcm,sata-brcm.yaml
+@@ -14,7 +14,7 @@ maintainers:
+   - Florian Fainelli <f.fainelli@gmail.com>
+ 
+ allOf:
+-  - $ref: sata-common.yaml#
++  - $ref: ahci-common.yaml#
+ 
+ properties:
+   compatible:
+-- 
+2.35.1
 
