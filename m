@@ -2,244 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA119C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 09:12:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8D6AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 09:12:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347155AbiFJJMd (ORCPT
+        id S1343513AbiFJJMj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 05:12:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41884 "EHLO
+        Fri, 10 Jun 2022 05:12:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241486AbiFJJL7 (ORCPT
+        with ESMTP id S243414AbiFJJMB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 05:11:59 -0400
-Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3AE3227B48F;
-        Fri, 10 Jun 2022 02:09:49 -0700 (PDT)
-Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id CCA7416A5;
-        Fri, 10 Jun 2022 11:45:39 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com CCA7416A5
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1654850739;
-        bh=tLDZ4t9AmtdrQJHS+CENj6gWGZ+R4rvHui2B1H/+aeU=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=kldjajKvcj9HwHc3wT4+OH0wD6+O+hwFxDNiCR4smuBEwnUaMSCwLFKXENIktXn71
-         bEAn7FWZQX/Hcl/jV11oslTNdHwB6xuQ4PguZY1MiUl8XuplPEhXRiV5G4exGj6Ggu
-         TX99r4MUexQ3pmKgq/gaBWJOn2PxTLe4DjoyqdTM=
-Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 10 Jun 2022 11:44:47 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Rob Herring <robh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Rahul Tanwar <rtanwar@maxlinear.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, <linux-pci@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-tegra@vger.kernel.org>
-Subject: [PATCH v3 03/15] PCI: dwc: Convert to using native IP-core versions representation
-Date:   Fri, 10 Jun 2022 11:44:31 +0300
-Message-ID: <20220610084444.14549-4-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220610084444.14549-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220610084444.14549-1-Sergey.Semin@baikalelectronics.ru>
+        Fri, 10 Jun 2022 05:12:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6434A2864A0;
+        Fri, 10 Jun 2022 02:09:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0931E61D06;
+        Fri, 10 Jun 2022 09:09:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72889C34114;
+        Fri, 10 Jun 2022 09:09:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654852190;
+        bh=/qdROdWD24rBg3azmTj1UmmI9WAWTh2B8jeXrv1aSiw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=GlgkqHLdmwi2zxs5qnJMHzxG60wRAb49jUqvpQzpmsDMbXvQ8/G0jPJuXKS5BPJL/
+         0aqPXCYxRasi77UbaQWD4peserc9Uu1JWNSWTmyOQsxtya8un9zsYBvMlVBI8mm1O9
+         IBUYmAdoCJOQOItgB03T2ao3GcrAYBM7zWbzHnOsJiin6cncdbLMSy23xGhrmWrcWW
+         fzwavPACYRxnlNM9HVa1JgyxZXcfpizzc1pFwbUtRqHnolnkyMHCXd2B/ELxdfPchE
+         bv81RhnJ7/+T9NgFLCLpc/x95JnKDdWQMa6eywgF09YIDlQFdtjdlkPPhpLnChWrX9
+         VRRP6IRcFf4PQ==
+Received: by mail-oi1-f175.google.com with SMTP id k24so8159283oij.2;
+        Fri, 10 Jun 2022 02:09:50 -0700 (PDT)
+X-Gm-Message-State: AOAM530wi4fB4Cbs8sA74a3X7eVlauGiXJtD2IqnC50MZafPgVN8nyjZ
+        fjLdRrvq3hQvBqkACUNoZ8PmKmhjQBROoWIBRpk=
+X-Google-Smtp-Source: ABdhPJxnmzJJt3U8HkiFRCYk7NouLU7Mp9v+nABUnRUH7tUXo9HgFJRR3FqSp0C8PUmdigDCMLUQjaaR9ONFsn/iDPo=
+X-Received: by 2002:a05:6808:300e:b0:32c:425e:df34 with SMTP id
+ ay14-20020a056808300e00b0032c425edf34mr4014898oib.126.1654852189628; Fri, 10
+ Jun 2022 02:09:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+References: <20220610090005.1358402-1-javierm@redhat.com>
+In-Reply-To: <20220610090005.1358402-1-javierm@redhat.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Fri, 10 Jun 2022 11:09:38 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXH5HfkqYYb+MKbEVNtpQnRULgZSCm7cWDP0SmrjthOFPQ@mail.gmail.com>
+Message-ID: <CAMj1kXH5HfkqYYb+MKbEVNtpQnRULgZSCm7cWDP0SmrjthOFPQ@mail.gmail.com>
+Subject: Re: [PATCH] efi: sysfb_efi: remove unnecessary <asm/efi.h> include
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        linux-efi <linux-efi@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since DWC PCIe v4.70a the controller version can be read from the
-PORT_LOGIC.PCIE_VERSION_OFF register. Version is represented in the FourCC
-format [1]. It's standard versioning approach for the Synopsys DWC
-IP-cores. Moreover some of the DWC kernel drivers already make use of it
-to fixup version-dependent functionality (See DWC USB3, Stmicro STMMAC or
-recent DW SPI driver). In order to preserve the standard version
-representation and prevent the data conversion back and forth, we suggest
-to preserve the native version representation in the DWC PCIe driver too
-in the same way as it has already been done in the rest of the DWC
-drivers. IP-core version reading from the CSR will be introduced in the
-next commit together with a simple macro-based API to use it.
+On Fri, 10 Jun 2022 at 11:00, Javier Martinez Canillas
+<javierm@redhat.com> wrote:
+>
+> Nothing defined in the header is used by drivers/firmware/efi/sysfb_efi.c
+> but also, including it can lead to build errors when built on arches that
+> don't have an asm/efi.h header file.
+>
+> This can happen for example if a driver that is built when COMPILE_TEST is
+> enabled selects the SYSFB symbol, e.g. on powerpc with allyesconfig:
+>
+> drivers/firmware/efi/sysfb_efi.c:29:10: fatal error: asm/efi.h: No such file or directory
+>    29 | #include <asm/efi.h>
+>       |          ^~~~~~~~~~~
+>
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
 
-[1] https://en.wikipedia.org/wiki/FourCC
+Queued up in efi/urgent, thanks
 
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Reviewed-by: Rob Herring <robh@kernel.org>
----
- drivers/pci/controller/dwc/pci-keystone.c    | 12 ++++++------
- drivers/pci/controller/dwc/pcie-designware.c |  8 ++++----
- drivers/pci/controller/dwc/pcie-designware.h | 10 +++++++++-
- drivers/pci/controller/dwc/pcie-intel-gw.c   |  4 ++--
- drivers/pci/controller/dwc/pcie-tegra194.c   |  2 +-
- 5 files changed, 22 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/pci/controller/dwc/pci-keystone.c b/drivers/pci/controller/dwc/pci-keystone.c
-index c3d88aa27dd4..c4ab3d775a18 100644
---- a/drivers/pci/controller/dwc/pci-keystone.c
-+++ b/drivers/pci/controller/dwc/pci-keystone.c
-@@ -109,7 +109,7 @@ struct ks_pcie_of_data {
- 	enum dw_pcie_device_mode mode;
- 	const struct dw_pcie_host_ops *host_ops;
- 	const struct dw_pcie_ep_ops *ep_ops;
--	unsigned int version;
-+	u32 version;
- };
- 
- struct keystone_pcie {
-@@ -1069,19 +1069,19 @@ static int ks_pcie_am654_set_mode(struct device *dev,
- 
- static const struct ks_pcie_of_data ks_pcie_rc_of_data = {
- 	.host_ops = &ks_pcie_host_ops,
--	.version = 0x365A,
-+	.version = DW_PCIE_VER_365A,
- };
- 
- static const struct ks_pcie_of_data ks_pcie_am654_rc_of_data = {
- 	.host_ops = &ks_pcie_am654_host_ops,
- 	.mode = DW_PCIE_RC_TYPE,
--	.version = 0x490A,
-+	.version = DW_PCIE_VER_490A,
- };
- 
- static const struct ks_pcie_of_data ks_pcie_am654_ep_of_data = {
- 	.ep_ops = &ks_pcie_am654_ep_ops,
- 	.mode = DW_PCIE_EP_TYPE,
--	.version = 0x490A,
-+	.version = DW_PCIE_VER_490A,
- };
- 
- static const struct of_device_id ks_pcie_of_match[] = {
-@@ -1114,12 +1114,12 @@ static int __init ks_pcie_probe(struct platform_device *pdev)
- 	struct device_link **link;
- 	struct gpio_desc *gpiod;
- 	struct resource *res;
--	unsigned int version;
- 	void __iomem *base;
- 	u32 num_viewport;
- 	struct phy **phy;
- 	u32 num_lanes;
- 	char name[10];
-+	u32 version;
- 	int ret;
- 	int irq;
- 	int i;
-@@ -1233,7 +1233,7 @@ static int __init ks_pcie_probe(struct platform_device *pdev)
- 		goto err_get_sync;
- 	}
- 
--	if (pci->version >= 0x480A)
-+	if (pci->version >= DW_PCIE_VER_480A)
- 		ret = ks_pcie_am654_set_mode(dev, mode);
- 	else
- 		ret = ks_pcie_set_mode(dev);
-diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
-index e66d16a86168..f10a7d5d94e8 100644
---- a/drivers/pci/controller/dwc/pcie-designware.c
-+++ b/drivers/pci/controller/dwc/pcie-designware.c
-@@ -289,7 +289,7 @@ static void dw_pcie_prog_outbound_atu_unroll(struct dw_pcie *pci, u8 func_no,
- 	val = type | PCIE_ATU_FUNC_NUM(func_no);
- 	if (upper_32_bits(limit_addr) > upper_32_bits(cpu_addr))
- 		val |= PCIE_ATU_INCREASE_REGION_SIZE;
--	if (pci->version == 0x490A)
-+	if (pci->version == DW_PCIE_VER_490A)
- 		val = dw_pcie_enable_ecrc(val);
- 	dw_pcie_writel_ob_unroll(pci, index, PCIE_ATU_UNR_REGION_CTRL1, val);
- 	dw_pcie_writel_ob_unroll(pci, index, PCIE_ATU_UNR_REGION_CTRL2,
-@@ -336,7 +336,7 @@ static void __dw_pcie_prog_outbound_atu(struct dw_pcie *pci, u8 func_no,
- 			   upper_32_bits(cpu_addr));
- 	dw_pcie_writel_dbi(pci, PCIE_ATU_LIMIT,
- 			   lower_32_bits(limit_addr));
--	if (pci->version >= 0x460A)
-+	if (pci->version >= DW_PCIE_VER_460A)
- 		dw_pcie_writel_dbi(pci, PCIE_ATU_UPPER_LIMIT,
- 				   upper_32_bits(limit_addr));
- 	dw_pcie_writel_dbi(pci, PCIE_ATU_LOWER_TARGET,
-@@ -345,9 +345,9 @@ static void __dw_pcie_prog_outbound_atu(struct dw_pcie *pci, u8 func_no,
- 			   upper_32_bits(pci_addr));
- 	val = type | PCIE_ATU_FUNC_NUM(func_no);
- 	if (upper_32_bits(limit_addr) > upper_32_bits(cpu_addr) &&
--	    pci->version >= 0x460A)
-+	    pci->version >= DW_PCIE_VER_460A)
- 		val |= PCIE_ATU_INCREASE_REGION_SIZE;
--	if (pci->version == 0x490A)
-+	if (pci->version == DW_PCIE_VER_490A)
- 		val = dw_pcie_enable_ecrc(val);
- 	dw_pcie_writel_dbi(pci, PCIE_ATU_CR1, val);
- 	dw_pcie_writel_dbi(pci, PCIE_ATU_CR2, PCIE_ATU_ENABLE);
-diff --git a/drivers/pci/controller/dwc/pcie-designware.h b/drivers/pci/controller/dwc/pcie-designware.h
-index 32df3ebccf19..6b81530fb2ca 100644
---- a/drivers/pci/controller/dwc/pcie-designware.h
-+++ b/drivers/pci/controller/dwc/pcie-designware.h
-@@ -20,6 +20,14 @@
- #include <linux/pci-epc.h>
- #include <linux/pci-epf.h>
- 
-+/* DWC PCIe IP-core versions (native support since v4.70a) */
-+#define DW_PCIE_VER_365A		0x3336352a
-+#define DW_PCIE_VER_460A		0x3436302a
-+#define DW_PCIE_VER_470A		0x3437302a
-+#define DW_PCIE_VER_480A		0x3438302a
-+#define DW_PCIE_VER_490A		0x3439302a
-+#define DW_PCIE_VER_520A		0x3532302a
-+
- /* Parameters for the waiting for link up routine */
- #define LINK_WAIT_MAX_RETRIES		10
- #define LINK_WAIT_USLEEP_MIN		90000
-@@ -270,7 +278,7 @@ struct dw_pcie {
- 	struct dw_pcie_rp	pp;
- 	struct dw_pcie_ep	ep;
- 	const struct dw_pcie_ops *ops;
--	unsigned int		version;
-+	u32			version;
- 	int			num_lanes;
- 	int			link_gen;
- 	u8			n_fts[2];
-diff --git a/drivers/pci/controller/dwc/pcie-intel-gw.c b/drivers/pci/controller/dwc/pcie-intel-gw.c
-index 07bc54886d71..371b5aa189d1 100644
---- a/drivers/pci/controller/dwc/pcie-intel-gw.c
-+++ b/drivers/pci/controller/dwc/pcie-intel-gw.c
-@@ -59,7 +59,7 @@
- #define RESET_INTERVAL_MS		100
- 
- struct intel_pcie_soc {
--	unsigned int	pcie_ver;
-+	u32	pcie_ver;
- };
- 
- struct intel_pcie {
-@@ -395,7 +395,7 @@ static const struct dw_pcie_host_ops intel_pcie_dw_ops = {
- };
- 
- static const struct intel_pcie_soc pcie_data = {
--	.pcie_ver =		0x520A,
-+	.pcie_ver =		DW_PCIE_VER_520A,
- };
- 
- static int intel_pcie_probe(struct platform_device *pdev)
-diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
-index fd80afdd6a7a..b7109699c2c9 100644
---- a/drivers/pci/controller/dwc/pcie-tegra194.c
-+++ b/drivers/pci/controller/dwc/pcie-tegra194.c
-@@ -1981,7 +1981,7 @@ static int tegra194_pcie_probe(struct platform_device *pdev)
- 	pci->ops = &tegra_dw_pcie_ops;
- 	pci->n_fts[0] = N_FTS_VAL;
- 	pci->n_fts[1] = FTS_VAL;
--	pci->version = 0x490A;
-+	pci->version = DW_PCIE_VER_490A;
- 
- 	pp = &pci->pp;
- 	pp->num_vectors = MAX_MSI_IRQS;
--- 
-2.35.1
-
+> ---
+>
+>  drivers/firmware/efi/sysfb_efi.c | 2 --
+>  1 file changed, 2 deletions(-)
+>
+> diff --git a/drivers/firmware/efi/sysfb_efi.c b/drivers/firmware/efi/sysfb_efi.c
+> index 4c7c9dd7733f..7882d4b3f2be 100644
+> --- a/drivers/firmware/efi/sysfb_efi.c
+> +++ b/drivers/firmware/efi/sysfb_efi.c
+> @@ -26,8 +26,6 @@
+>  #include <linux/sysfb.h>
+>  #include <video/vga.h>
+>
+> -#include <asm/efi.h>
+> -
+>  enum {
+>         OVERRIDE_NONE = 0x0,
+>         OVERRIDE_BASE = 0x1,
+> --
+> 2.36.1
+>
