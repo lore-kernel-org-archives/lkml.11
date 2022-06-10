@@ -2,82 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA585C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 21:11:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A28A8C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 21:12:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350835AbiFJVLQ (ORCPT
+        id S1350849AbiFJVMh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 17:11:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56382 "EHLO
+        Fri, 10 Jun 2022 17:12:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345137AbiFJVLK (ORCPT
+        with ESMTP id S1350848AbiFJVMe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 17:11:10 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E619E4926B
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 14:11:09 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id w21so532945pfc.0
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 14:11:09 -0700 (PDT)
+        Fri, 10 Jun 2022 17:12:34 -0400
+Received: from mail-oa1-x2c.google.com (mail-oa1-x2c.google.com [IPv6:2001:4860:4864:20::2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98D0549B5A
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 14:12:32 -0700 (PDT)
+Received: by mail-oa1-x2c.google.com with SMTP id 586e51a60fabf-fe15832ce5so727052fac.8
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 14:12:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mAlhHjicxdibTZDY5HOZ3HLGftkcyfsPbsuBXvhev58=;
-        b=rZoLQeeoRRIJfdLUJHE4dnrv8nvOAt9iOR0vH2qVCqvRI5W3AZ+mv8x+IW7fCeK6ba
-         OVKZBg+dmXyW9W+XodkUKv8lx+avXiEFgpHK17IIYAWUXvzSmlWwi9ZgEJByV24JtQVO
-         yqMzskfHsVeIjFMHcrNFCLiOvBVonmGQq2DEtnnHc9yOLy++SvJkgef5FG4G+cG43fEd
-         /Fvg5ax3RpWb3XiCYQeuzl/1lH4B3XataJDDAwrYOiiTIg3FxWNSp0B+/gxNwomFI++O
-         03qLVVKkULvOYqTllPPH4HMOJPK4F6Da8bvMMDw6+uMoPLYmWDrfFLEGDTdRsqCouOQ6
-         n14w==
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=eUw90MQM5SVuieh3UI6r6+Ffszit+OiITVtSMahiOlI=;
+        b=PxZoMFPohd1GKquX3Z0yebjsbyodzL6Sc1YYSADroQz8Hm2TevBoKncjyGg2shlJqe
+         Kt2jvBqIz83qvGPjgsU19YaG+D6Qom/vhBlROqhNcOjp5nqnRXCUN8z8ysEHYUNHZvP4
+         ZY+0oNzWQLIQsNhMs6YyFQqnji2XBG4+NKb/s=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mAlhHjicxdibTZDY5HOZ3HLGftkcyfsPbsuBXvhev58=;
-        b=gRy9OBJYFxftSQxeJX2FTp+VkFEiGwaU2WorObEwjE5ivtMSe0fox3J9GXEX7WJoep
-         cevtxCHbEY5v3r8IHu2F2BQRBPabuRPmWjLk8PtVqdhtLUCjJ0ufPj4gv2bEzc4aDgRQ
-         npojwiCCEtmU3huSufVHGJkgNEwL7QggqAb6iApIktEDPKSKOzCqRmHBQQPOdssZgrJ5
-         FqanoebUrqZ+1zxtPnUNFstG1onVaKwlnjdvS0jgAkApCjQAni9PGHTyTYvj5+AbOAwn
-         FSEm6h9GEjdlkD1od4AQq9P3p4vdckU2kW6l0pQ30kFNlz5c7i75sq5UH1NSCtOcaDOx
-         bX1A==
-X-Gm-Message-State: AOAM533JDwoBplLEJ0E+PruFMyYH0nzp5qEDFWbgYFROFHFWwwUIXoZJ
-        FVEFUtDUHDmJ6VkSdlyumPIIl/fMfn+B3wbHk7pt
-X-Google-Smtp-Source: ABdhPJwx7n3musHGFyiyfqvl/EdH710RryS6Xm5TNC7u0DL6j33BjBGOdeGMogcoVPAETgbUEuZ93EmDm/ToHyuQPv0=
-X-Received: by 2002:a63:31d0:0:b0:3fc:5770:e779 with SMTP id
- x199-20020a6331d0000000b003fc5770e779mr40782512pgx.376.1654895469427; Fri, 10
- Jun 2022 14:11:09 -0700 (PDT)
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=eUw90MQM5SVuieh3UI6r6+Ffszit+OiITVtSMahiOlI=;
+        b=1vJQStNXWdJE4I0QRn29KQ1waPJ7d8hZhvTkbfZI2XRMtoOZCweBPpuumEub91N+y8
+         xGtKik1arzfHAFO4lnbMXbi9kJwge7wJgvMrueKn3FDhx9p1pFNSIjkdeFXXMtDK01sC
+         mSZeq01v8yKNeGncxZju/C1zR6hsNFsCyNxDIpWQdgiDDPaDkWsFRP4Gl2r8QBkJBMLq
+         ZE3ZGUc/wwYQyRvv6p09hK1Vuku859k0iWJ0WoJ/MRqG3NWsBoTc0NsUczh0h8S7CeqY
+         Zq1g9xnW3YYL/zpwW9apMqXvedKzNjXzUxE8tDRBTeGU+FdKOyhAZPMUlDkt5wPMMhxK
+         qKvg==
+X-Gm-Message-State: AOAM533KrxvW2FyPZJUOlZkJCCVejtjieKaQPh0Uj8AjRTiGq0xQEaUt
+        Vfmik+VpuYM8TyviblS7XSgWpmB3RiIQQH1BpKj//w==
+X-Google-Smtp-Source: ABdhPJxFZZJBT4zmQa9rbL6oi07IG1L075UxWAqyTprFlgGRMHH3fCtuJiv9mMe6loLyhtjcJqcBOdO2wSQrhVr5se8=
+X-Received: by 2002:a05:6870:240d:b0:f1:b878:e97c with SMTP id
+ n13-20020a056870240d00b000f1b878e97cmr895829oap.193.1654895551998; Fri, 10
+ Jun 2022 14:12:31 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Fri, 10 Jun 2022 14:12:31 -0700
 MIME-Version: 1.0
-References: <20220609230146.319210-1-casey@schaufler-ca.com> <20220609230146.319210-29-casey@schaufler-ca.com>
-In-Reply-To: <20220609230146.319210-29-casey@schaufler-ca.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Fri, 10 Jun 2022 17:10:58 -0400
-Message-ID: <CAHC9VhSTdZVVAbSS_kT-Qtk6iy7w+GdAx7-F=aPQLtG5Ncb_ZA@mail.gmail.com>
-Subject: Re: [PATCH v36 28/33] audit: multiple subject lsm values for netlabel
-To:     Casey Schaufler <casey@schaufler-ca.com>
-Cc:     casey.schaufler@intel.com, jmorris@namei.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-        linux-audit@redhat.com, keescook@chromium.org,
-        john.johansen@canonical.com, penguin-kernel@i-love.sakura.ne.jp,
-        stephen.smalley.work@gmail.com, linux-kernel@vger.kernel.org
+In-Reply-To: <1654538139-7450-1-git-send-email-quic_khsieh@quicinc.com>
+References: <1654538139-7450-1-git-send-email-quic_khsieh@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Fri, 10 Jun 2022 14:12:31 -0700
+Message-ID: <CAE-0n51hjNTcy5xpPknrtP3897qZkVqf9ksObxRF4v0Ej0=qag@mail.gmail.com>
+Subject: Re: [PATCH v2] drm/msm/dp: check core_initialized before disable
+ interrupts at dp_display_unbind()
+To:     Kuogee Hsieh <quic_khsieh@quicinc.com>, agross@kernel.org,
+        airlied@linux.ie, bjorn.andersson@linaro.org, daniel@ffwll.ch,
+        dianders@chromium.org, dmitry.baryshkov@linaro.org,
+        robdclark@gmail.com, sean@poorly.run, vkoul@kernel.org
+Cc:     quic_abhinavk@quicinc.com, quic_aravindh@quicinc.com,
+        quic_sbillaka@quicinc.com, freedreno@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 9, 2022 at 7:16 PM Casey Schaufler <casey@schaufler-ca.com> wrote:
+Quoting Kuogee Hsieh (2022-06-06 10:55:39)
+> During msm initialize phase, dp_display_unbind() will be called to undo
+> initializations had been done by dp_display_bind() previously if there is
+> error happen at msm_drm_bind. In this case, core_initialized flag had to
+> be check to make sure clocks is on before update DP controller register
+> to disable HPD interrupts. Otherwise system will crash due to below NOC
+> fatal error.
 >
-> Refactor audit_log_task_context(), creating a new
-> audit_log_subject_context(). This is used in netlabel auditing
-> to provide multiple subject security contexts as necessary.
+> QTISECLIB [01f01a7ad]CNOC2 ERROR: ERRLOG0_LOW = 0x00061007
+> QTISECLIB [01f01a7ad]GEM_NOC ERROR: ERRLOG0_LOW = 0x00001007
+> QTISECLIB [01f0371a0]CNOC2 ERROR: ERRLOG0_HIGH = 0x00000003
+> QTISECLIB [01f055297]GEM_NOC ERROR: ERRLOG0_HIGH = 0x00000003
+> QTISECLIB [01f072beb]CNOC2 ERROR: ERRLOG1_LOW = 0x00000024
+> QTISECLIB [01f0914b8]GEM_NOC ERROR: ERRLOG1_LOW = 0x00000042
+> QTISECLIB [01f0ae639]CNOC2 ERROR: ERRLOG1_HIGH = 0x00004002
+> QTISECLIB [01f0cc73f]GEM_NOC ERROR: ERRLOG1_HIGH = 0x00004002
+> QTISECLIB [01f0ea092]CNOC2 ERROR: ERRLOG2_LOW = 0x0009020c
+> QTISECLIB [01f10895f]GEM_NOC ERROR: ERRLOG2_LOW = 0x0ae9020c
+> QTISECLIB [01f125ae1]CNOC2 ERROR: ERRLOG2_HIGH = 0x00000000
+> QTISECLIB [01f143be7]GEM_NOC ERROR: ERRLOG2_HIGH = 0x00000000
+> QTISECLIB [01f16153a]CNOC2 ERROR: ERRLOG3_LOW = 0x00000000
+> QTISECLIB [01f17fe07]GEM_NOC ERROR: ERRLOG3_LOW = 0x00000000
+> QTISECLIB [01f19cf89]CNOC2 ERROR: ERRLOG3_HIGH = 0x00000000
+> QTISECLIB [01f1bb08e]GEM_NOC ERROR: ERRLOG3_HIGH = 0x00000000
+> QTISECLIB [01f1d8a31]CNOC2 ERROR: SBM1 FAULTINSTATUS0_LOW = 0x00000002
+> QTISECLIB [01f1f72a4]GEM_NOC ERROR: SBM0 FAULTINSTATUS0_LOW = 0x00000001
+> QTISECLIB [01f21a217]CNOC3 ERROR: ERRLOG0_LOW = 0x00000006
+> QTISECLIB [01f23dfd3]NOC error fatal
+
+Don't think this pile of lines really helps anyone, but OK.
+
 >
-> Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+> changes in v2:
+> -- drop the first patch (drm/msm: enable msm irq after all initializations are done successfully at msm_drm_init()) since the problem had been fixed by other patch
+>
+> Fixes: a65c95ff88f2 ("drm/msm/dp: stop event kernel thread when DP unbind")
+> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
 > ---
->  include/linux/audit.h        |  7 +++++++
->  kernel/audit.c               | 26 ++++++++++++++++----------
->  net/netlabel/netlabel_user.c |  7 +------
->  3 files changed, 24 insertions(+), 16 deletions(-)
 
-Acked-by: Paul Moore <paul@paul-moore.com>
-
--- 
-paul-moore.com
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
