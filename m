@@ -2,112 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9961DC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 16:47:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FD6ECCA47C
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 16:47:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349728AbiFJQr1 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 12:47:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35218 "EHLO
+        id S242904AbiFJQru (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 10 Jun 2022 12:47:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235042AbiFJQrV (ORCPT
+        with ESMTP id S241054AbiFJQrr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 12:47:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EE2B6B7C8
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 09:47:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1BCCFB83652
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 16:47:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AAC1C34114;
-        Fri, 10 Jun 2022 16:47:16 +0000 (UTC)
-Date:   Fri, 10 Jun 2022 17:47:12 +0100
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Ionela Voinescu <ionela.voinescu@arm.com>
-Cc:     Will Deacon <will@kernel.org>, James Morse <james.morse@arm.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] arm64: errata: add detection for AMEVCNTR01 incrementing
- incorrectly
-Message-ID: <YqN1kJlIkhNAEl/K@arm.com>
-References: <20220607125340.13635-1-ionela.voinescu@arm.com>
+        Fri, 10 Jun 2022 12:47:47 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4039EABF61;
+        Fri, 10 Jun 2022 09:47:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654879666; x=1686415666;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ASHUK70l3jcIuhh1boRG1NOD4kHVjzcknTDu0uZ1whM=;
+  b=anmp8LhLhxah4UzDCjR/c7zUXQtBXt+GKrCUAfEBSq5wZI2ShtwOwe1V
+   IOSn1qfhHbbwixlXJjPXYr4KN3HpSPLRDjhsuxmUB8gAuX10LBgOMn5/p
+   jnSIP1fPxi9mtT/9UGCZGln1yM4fc4JymsskgN3svholtkXD+gNsSc7xC
+   uRtvwSy6DjcsHKVSeVbJeyW6M99WJf9fbQZTr0c1nTJJMs3DUIjpCgCWF
+   pCEvK90q2ODCkkUw/JQBepTrvQZnrKuZJIyAbZGFugcFLw/eU0g1yWHTr
+   hkM3CJPvYtfUk7ve0rVo7/Y7LohSyF/RDetSTu+HjhWUjL0bqWlU4ygAk
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10374"; a="275209596"
+X-IronPort-AV: E=Sophos;i="5.91,290,1647327600"; 
+   d="scan'208";a="275209596"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 09:47:44 -0700
+X-IronPort-AV: E=Sophos;i="5.91,290,1647327600"; 
+   d="scan'208";a="638211025"
+Received: from unknown (HELO jiaqingz-server.sh.intel.com) ([10.239.48.171])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 09:47:42 -0700
+From:   Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+To:     Samuel Mendoza-Jonas <sam@mendozajonas.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+Subject: [PATCH 0/6] Configurable VLAN mode for NCSI driver
+Date:   Sat, 11 Jun 2022 00:45:49 +0800
+Message-Id: <20220610164555.2322930-1-jiaqing.zhao@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220607125340.13635-1-ionela.voinescu@arm.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 01:53:40PM +0100, Ionela Voinescu wrote:
-> diff --git a/arch/arm64/include/asm/cpufeature.h b/arch/arm64/include/asm/cpufeature.h
-> index 14a8f3d93add..80e0c700cecf 100644
-> --- a/arch/arm64/include/asm/cpufeature.h
-> +++ b/arch/arm64/include/asm/cpufeature.h
-> @@ -881,11 +881,16 @@ static inline bool cpu_has_pan(void)
->  #ifdef CONFIG_ARM64_AMU_EXTN
->  /* Check whether the cpu supports the Activity Monitors Unit (AMU) */
->  extern bool cpu_has_amu_feat(int cpu);
-> +extern bool cpu_has_broken_amu_constcnt(void);
->  #else
->  static inline bool cpu_has_amu_feat(int cpu)
->  {
->  	return false;
->  }
-> +static inline bool cpu_has_broken_amu_constcnt(void)
-> +{
-> +	return false;
-> +}
->  #endif
->  
->  /* Get a cpu that supports the Activity Monitors Unit (AMU) */
-> diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
-> index 42ea2bd856c6..b9e4b2bd2c63 100644
-> --- a/arch/arm64/kernel/cpufeature.c
-> +++ b/arch/arm64/kernel/cpufeature.c
-> @@ -1791,6 +1791,19 @@ int get_cpu_with_amu_feat(void)
->  	return cpumask_any(&amu_cpus);
->  }
->  
-> +bool cpu_has_broken_amu_constcnt(void)
-> +{
-> +	/* List of CPUs which have broken AMEVCNTR01 (constant counter) */
-> +	static const struct midr_range cpus[] = {
-> +#ifdef CONFIG_ARM64_ERRATUM_2457168
-> +		MIDR_RANGE(MIDR_CORTEX_A510, 0, 0, 1, 1),
-> +#endif
-> +		{},
-> +	};
-> +
-> +	return is_midr_in_range(read_cpuid_id(), cpus);
-> +}
+Currently kernel kernel NCSI driver only supports the "VLAN + non-VLAN"
+mode (Mode #2), but this mode is an optional mode [1] defined in NCSI
+specification and some NCSI devices like Intel E810 Network Adapter [2]
+does not support that mode. This patchset adds a new "ncsi,vlan-mode"
+device tree property for configuring the VLAN mode of NCSI device.
 
-I'd rather not have this in cpufeature.c as it's not really a feature.
-We have some precedent with checking errata in cpufeature.c but IIRC we
-did that only to check whether to enable a feature or not in that file
-(DBM).
+[1] Table 58 - VLAN Enable Modes
+    https://www.dmtf.org/sites/default/files/standards/documents/DSP0222_1.0.0.pdf
+[2] 12.6.5.4.3 VLAN
+    https://cdrdv2.intel.com/v1/dl/getContent/613875
 
-> +
->  static void cpu_amu_enable(struct arm64_cpu_capabilities const *cap)
->  {
->  	if (has_cpuid_feature(cap, SCOPE_LOCAL_CPU)) {
-> diff --git a/arch/arm64/kernel/topology.c b/arch/arm64/kernel/topology.c
-> index 9ab78ad826e2..d4b0b0a40515 100644
-> --- a/arch/arm64/kernel/topology.c
-> +++ b/arch/arm64/kernel/topology.c
-> @@ -127,7 +127,8 @@ int __init parse_acpi_topology(void)
->  
->  #ifdef CONFIG_ARM64_AMU_EXTN
->  #define read_corecnt()	read_sysreg_s(SYS_AMEVCNTR0_CORE_EL0)
-> -#define read_constcnt()	read_sysreg_s(SYS_AMEVCNTR0_CONST_EL0)
-> +#define read_constcnt()	(cpu_has_broken_amu_constcnt() ? 0UL : \
-> +			read_sysreg_s(SYS_AMEVCNTR0_CONST_EL0))
+Jiaqing Zhao (6):
+  net/ncsi: Fix value of NCSI_CAP_VLAN_ANY
+  net/ncsi: Rename NCSI_CAP_VLAN_NO to NCSI_CAP_VLAN_FILTERED
+  net/ncsi: Enable VLAN filtering when callback is registered
+  ftgmac100: Remove enable NCSI VLAN filtering
+  dt-bindings: net: Add NCSI bindings
+  net/ncsi: Support VLAN mode configuration
 
-How often is this called? You end up reading the cpuid, comparing the
-range on each call. I guess you can't use a cpucap in the arm64_errata[]
-array as you want a check per-CPU? Does it matter if we return 0UL on
-for all CPUs if one is affected?
+ .../devicetree/bindings/net/ncsi.yaml         | 34 ++++++++++++++
+ MAINTAINERS                                   |  2 +
+ drivers/net/ethernet/faraday/ftgmac100.c      |  3 --
+ include/dt-bindings/net/ncsi.h                | 15 ++++++
+ net/ncsi/internal.h                           |  5 +-
+ net/ncsi/ncsi-manage.c                        | 46 ++++++++++++++++---
+ 6 files changed, 93 insertions(+), 12 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/ncsi.yaml
+ create mode 100644 include/dt-bindings/net/ncsi.h
 
 -- 
-Catalin
+2.34.1
+
