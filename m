@@ -2,146 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5323CCCA47B
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 16:50:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5950CCCA47B
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 16:51:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350004AbiFJQu4 (ORCPT
+        id S1349817AbiFJQv2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 12:50:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48750 "EHLO
+        Fri, 10 Jun 2022 12:51:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349892AbiFJQuD (ORCPT
+        with ESMTP id S1349926AbiFJQu3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 12:50:03 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C09CA28E05;
-        Fri, 10 Jun 2022 09:50:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654879801; x=1686415801;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=xfml1NwpVsO1qKFhuV1kEyknIGEvUDk3GH8dIhLg1z4=;
-  b=ebTjv6QhtybLGIqF50Nc2WVyiCoz0OkDhSnaHJ0E1KtsBxfV0s7lEGnC
-   CxGHvz7Ok2sGHgDtHQ4ckbPCsKlz3j7MxZi1aGT2UB2cADj00d7phngTV
-   TmpFy0jlXzEwBJJyiWVLGordfPTI30XUiHcNI3ndA0aRN8MIf3pP5zvSp
-   IIfCGdkJM88ZXszsLRGZ182cwzI2S0p0ZoxfhCVCiDIZQxTzjsO/Y/kn6
-   Ha2cQtEv57YUUjB7ECF3ulyElLH2sg2bcZrT1req+8wsYW+V44bWFYC5b
-   LnyQyashoyvbPGbS4wXgd50L/HvZtn0vVkWAoZd9ZolGz+HqmbMs4bWEw
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10374"; a="339432571"
-X-IronPort-AV: E=Sophos;i="5.91,290,1647327600"; 
-   d="scan'208";a="339432571"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 09:50:01 -0700
-X-IronPort-AV: E=Sophos;i="5.91,290,1647327600"; 
-   d="scan'208";a="760587734"
-Received: from unknown (HELO jiaqingz-server.sh.intel.com) ([10.239.48.171])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 09:49:59 -0700
-From:   Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
-To:     Samuel Mendoza-Jonas <sam@mendozajonas.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        openbmc@lists.ozlabs.org
-Cc:     Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
-Subject: [PATCH 5/6] dt-bindings: net: Add NCSI bindings
-Date:   Sat, 11 Jun 2022 00:48:07 +0800
-Message-Id: <20220610164808.2323340-6-jiaqing.zhao@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220610164808.2323340-1-jiaqing.zhao@linux.intel.com>
-References: <20220610164808.2323340-1-jiaqing.zhao@linux.intel.com>
+        Fri, 10 Jun 2022 12:50:29 -0400
+Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C50A29348;
+        Fri, 10 Jun 2022 09:50:28 -0700 (PDT)
+Received: by mail-il1-x12a.google.com with SMTP id h18so21357494ilj.7;
+        Fri, 10 Jun 2022 09:50:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WGxcvvJYy03A6wteBM0BcXbbkTu0XQ38OAx58GjiKYI=;
+        b=I28gC4LJOetplJcM9grRBxKIYjuI5i/X5PfZAxaN2YDFflEClUrX7I7tOPOldrr7mi
+         Nt86AkBx3bGtSEtMYKpxRr0mW6brtuLag0h0p8AQwzmgLf+F1WEGFbzjcZkTYb77omv6
+         cR9UMBAskXtIHR97VtHYuzNBjWLo5UdcHSG05+5JWoecGDr7qzb9B0Jzx9HgWVVTK2TY
+         /AU149gMGpavE/fPfiIKLBTGxHWf2+vXQTzh7sUmGPB06tDfDB4/IjkQGW25yi//aArH
+         b8/VYaYPfhG/lwDAywZQTVB8V9DPf2M2kDNkl0m/O8fSdwgR4Itp4pznQsU3db1mit5F
+         UBHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WGxcvvJYy03A6wteBM0BcXbbkTu0XQ38OAx58GjiKYI=;
+        b=pvXXvs+pS/fX7ZQFQ69FCw1gF/kqjkawrjysKuNrn3SNGk6ZG0iLTxn9Rw6cE8DOTI
+         2AzFUAJUj2SpZ5oDprWccQWcQM5rtzh3eV71/2x6beCdQQjDHc59WVpOUlO6UbM1k+wK
+         tMovXPC7/CGsPj09IardvANnaJ+Tsq6hPgwa6/Kf+wzpvdf8zVjLgkKPeJvW+7lhSwfa
+         hPaUodTEFZZqQRaf15TVLYDXLa75C23d2aH4nZU0vT6monlPa65nTkKAUA/dHHfvtFd/
+         tIZ8Uvw9cJoB8xXa/ZVXCBattIdremS1e4Wg+uGQkWNKv1mQPBiecDy39sV469IitYjo
+         w4ug==
+X-Gm-Message-State: AOAM5306QdaHeEnx0Ao1Lyqily/aOcXuqFiH1zU0SV3P+I6XCTSxQn1G
+        b+C4f1wGMcTvwkeJF914ZjcPKz6XV4d/lNgQdq3O+NHstjo=
+X-Google-Smtp-Source: ABdhPJxNLHpFyPTXbs5fl264+vPRDCjkwED81P+zBTPlUV0jZd9Yas7zs7ph54LGjttd2VsxIR+LJRjm+dguQ7TFT5k=
+X-Received: by 2002:a05:6e02:152f:b0:2d4:980:a529 with SMTP id
+ i15-20020a056e02152f00b002d40980a529mr21205445ilu.72.1654879827513; Fri, 10
+ Jun 2022 09:50:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <dccb5233-7f4f-1be6-d1f4-bbe9f42f88e0@gmail.com>
+In-Reply-To: <dccb5233-7f4f-1be6-d1f4-bbe9f42f88e0@gmail.com>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Fri, 10 Jun 2022 18:50:16 +0200
+Message-ID: <CANiq72=jEDgxD5ZWwGXBTf7q760Rb-WKF7xNmY6cJurnULSUqA@mail.gmail.com>
+Subject: Re: [PATCH 0/5] docs/doc-guide: Sphinx related updates
+To:     Akira Yokosawa <akiyks@gmail.com>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add devicetree bindings for NCSI VLAN modes. This allows VLAN mode to
-be configured in devicetree.
+On Thu, Jun 9, 2022 at 3:21 PM Akira Yokosawa <akiyks@gmail.com> wrote:
+>
+> This update was inspired by private communication with Miguel and
+> Jon.
 
-Signed-off-by: Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
----
- .../devicetree/bindings/net/ncsi.yaml         | 34 +++++++++++++++++++
- MAINTAINERS                                   |  2 ++
- include/dt-bindings/net/ncsi.h                | 15 ++++++++
- 3 files changed, 51 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/ncsi.yaml
- create mode 100644 include/dt-bindings/net/ncsi.h
+Thanks for working on the update, Akira!
 
-diff --git a/Documentation/devicetree/bindings/net/ncsi.yaml b/Documentation/devicetree/bindings/net/ncsi.yaml
-new file mode 100644
-index 000000000000..ec76ae9a77a9
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/ncsi.yaml
-@@ -0,0 +1,34 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/ncsi.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Network Controller Sideband Interface (NCSI)
-+
-+maintainers:
-+  - Samuel Mendoza-Jonas <sam@mendozajonas.com>
-+
-+description: |
-+  Bindings for the Network Controller Sideband Interface (NCSI) driver
-+
-+properties:
-+  ncsi,vlan-mode:
-+    description: VLAN mode used on the NCSI device.
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    enum: [0, 1, 2, 3]
-+
-+examples:
-+  - |
-+    #include <dt-bindings/net/ncsi.h>
-+
-+    mac0: ethernet@1e660000 {
-+      compatible = "aspeed,ast2600-mac", "faraday,ftgmac100";
-+      reg = <0x1e660000 0x180>;
-+      status = "okay";
-+
-+      use-ncsi;
-+      ncsi,vlan-mode = <NCSI_VLAN_MODE_ANY>;
-+    };
-+
-+...
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f468864fd268..199e4b5bceab 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -13534,6 +13534,8 @@ F:	drivers/scsi/sun3_scsi_vme.c
- NCSI LIBRARY
- M:	Samuel Mendoza-Jonas <sam@mendozajonas.com>
- S:	Maintained
-+F:	Documentation/devicetree/bindings/net/ncsi.yaml
-+F:	include/dt-bindings/net/ncsi.h
- F:	net/ncsi/
- 
- NCT6775 HARDWARE MONITOR DRIVER
-diff --git a/include/dt-bindings/net/ncsi.h b/include/dt-bindings/net/ncsi.h
-new file mode 100644
-index 000000000000..19eb9a5db08b
---- /dev/null
-+++ b/include/dt-bindings/net/ncsi.h
-@@ -0,0 +1,15 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+/*
-+ * Device Tree constants for NCSI
-+ */
-+
-+#ifndef _DT_BINDINGS_NCSI_H
-+#define _DT_BINDINGS_NCSI_H
-+
-+/* VLAN Modes */
-+#define NCSI_VLAN_MODE_DISABLED	0
-+#define NCSI_VLAN_MODE_ONLY	1
-+#define NCSI_VLAN_MODE_FILTERED	2
-+#define NCSI_VLAN_MODE_ANY	3
-+
-+#endif
--- 
-2.34.1
-
+Cheers,
+Miguel
