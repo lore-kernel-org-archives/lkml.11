@@ -2,108 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28D39C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 10:30:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A82AC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 10:30:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348580AbiFJKaU (ORCPT
+        id S1348754AbiFJKa0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 06:30:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60416 "EHLO
+        Fri, 10 Jun 2022 06:30:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347450AbiFJKaO (ORCPT
+        with ESMTP id S241672AbiFJKaP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 06:30:14 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E357A3B2AD
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 03:30:12 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id u12so52643930eja.8
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 03:30:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Q1gr3NrnB39CoRuCt8vX807hgcXw9Mek2bCnOsXpGQo=;
-        b=QSvTbaU77/wWFvrHNSjvh11fTizVqERqxJuaRgPrXbIgYWkB3CNmRbgVdVuKjtHqg3
-         EhSrgR3EDatDWGn50GSs7FLRqgSt7xMwyUPawjSnOhbxJydoSzj+Z5VWNx0tqz85MBMo
-         Vk1XUUH3JEvlwH6cKqlREF9eU8xDoGFMNMu5Nl/jmUm64Flgc2ocZwbJyXi3drtRY6Ce
-         OtC/dRTh7/xtSe2jqd0/wVwIMillp/6cVXMKcDPCOT+jHNM5BWJhsKtk2KgZCrb75QJt
-         eb/XTr0mcr6gpXFDyxvAmk7j805M3kAuK/PDlIPjgsoRIylJTb3LlTJmGIUjbAD05Lm2
-         PkjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Q1gr3NrnB39CoRuCt8vX807hgcXw9Mek2bCnOsXpGQo=;
-        b=GJidxNFFl6q8wYrMK758nQ7JQMTT2RuNT/ZHBSJStLqhGmsIsYMuBr1DJnEDCLDuSs
-         kaFQePIE4a+GQjesISBWSjB2F+dmKnh3CFvclZHpU9svKIlEr81Q+YWQTSfX46diXpQL
-         gEfMxbX2JGeVsuZrmv25uUh6N3qVv3n9XuLCWI7zC0CTOdZ5UhZtpT06i4pC0CRTj+m/
-         8B+QC0Y/w98teC+NTIm8pjC0g++CDbytOHLP6MeOiDyJHDvfPZ9pAnNtNsInAz+2+DpL
-         t4VW8dfYB2w4puCcqe3W4jWHaDf2AarxD+MS5QWbfg71Z9rE2OGifgc+eoryUP41W2m0
-         KCGg==
-X-Gm-Message-State: AOAM531xwmZW2iK+ntmbUM0ZHLCqAbhFNDkwaRGfAmlv8m92i5fJzQhc
-        dI2gUe5k9gjVdySwDBjUWHHPmw==
-X-Google-Smtp-Source: ABdhPJw7PvzVwnAjoaC8oJ5ApDXIoYkN0OCc5cmycobzyGZiBOEgvGwNWQ7HGD/AvnfFZNoUw76PJQ==
-X-Received: by 2002:a17:907:8195:b0:710:b40:95d2 with SMTP id iy21-20020a170907819500b007100b4095d2mr31029973ejc.604.1654857011476;
-        Fri, 10 Jun 2022 03:30:11 -0700 (PDT)
-Received: from [192.168.0.202] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id e20-20020a056402149400b0042bd75c53casm16186593edv.83.2022.06.10.03.30.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Jun 2022 03:30:11 -0700 (PDT)
-Message-ID: <e68724b0-4a9f-f564-c833-befd6c3515fb@linaro.org>
-Date:   Fri, 10 Jun 2022 12:30:09 +0200
+        Fri, 10 Jun 2022 06:30:15 -0400
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 726A0419B1;
+        Fri, 10 Jun 2022 03:30:13 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 3B6D3100002;
+        Fri, 10 Jun 2022 10:30:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1654857011;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=GyK/HEB8Y6ske/BNNq6/G70klLzxtTJDCFXseTBmW2M=;
+        b=RHJfg92FiznXmVedTTV7m6LhD73PN6mJA+U6/1CcRYHFtEUw/LQkuRCjIMh2kYGh56JZW0
+        h0FvGuPkIcJWIMAe7N90R1jd2nwlJY1IlfIzocbEAMABlCnSJizek72wao6zPSHqxLphdS
+        6ylhEQrpg/BHxYhIJA4301lqaWgzyGKIXnwCUzoTkaVwD7HImTHfOWEpQ8Elbb43Wfyo+p
+        1YZinXw9YtDrAY866RIAAKaa+YLSGnjQBbozxBT3JQgitA15efxqb1jGNhuMlXh+K7+uEL
+        cCegJRqXq9IalgSGazZh+JBQSyMTLQkOjjwerb8b1lPP4/cS9CmjuebU3DapAA==
+From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <joabreu@synopsys.com>
+Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?q?Miqu=C3=A8l=20Raynal?= <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next v7 01/16] net: dsa: allow port_bridge_join() to override extack message
+Date:   Fri, 10 Jun 2022 12:28:18 +0200
+Message-Id: <20220610102833.541098-2-clement.leger@bootlin.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220610102833.541098-1-clement.leger@bootlin.com>
+References: <20220610102833.541098-1-clement.leger@bootlin.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v9 1/2] thermal: Add thermal driver for Sunplus
-Content-Language: en-US
-To:     Randy Dunlap <rdunlap@infradead.org>,
-        =?UTF-8?B?6YOt5Yqb6LGq?= <lhjeff911@gmail.com>,
-        rafael@kernel.org, Daniel Lezcano <daniel.lezcano@linaro.org>,
-        amitk@kernel.org, rui.zhang@intel.com, robh+dt@kernel.org,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     "lh.kuo" <lh.kuo@sunplus.com>,
-        =?UTF-8?B?5ZGC6Iqz6aiwTHVXZWxscw==?= <wells.lu@sunplus.com>
-References: <CAGcXWkzJwOPXfE6ESAtwBbe7W-UkApKosKUy=UBRh0kmi-Bc2Q@mail.gmail.com>
- <395072af-3349-cead-fe07-62d3d758d635@infradead.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <395072af-3349-cead-fe07-62d3d758d635@infradead.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/06/2022 05:19, Randy Dunlap wrote:
-> Hi--
-> 
-> On 6/9/22 18:32, 郭力豪 wrote:
->> diff --git a/drivers/thermal/Kconfig b/drivers/thermal/Kconfig
->> index 0e5cc94..c85e668 100644
->> --- a/drivers/thermal/Kconfig
->> +++ b/drivers/thermal/Kconfig
->> @@ -504,4 +504,14 @@ config KHADAS_MCU_FAN_THERMAL
->>     If you say yes here you get support for the FAN controlled
->>     by the Microcontroller found on the Khadas VIM boards.
->>
->> +config SUNPLUS_THERMAL
->> + tristate "Sunplus thermal drivers"
->> + depends on SOC_SP7021 || COMPILE_TEST
->> + help
->> +   This enable the Sunplus SP7021 thermal driver, which supports the primitive
->> +   temperature sensor embedded in Sunplus SP7021 SoC.
->> +
->> +   If you have a Sunplus SP7021 platform say Y here and enable this option
->> +   to have support for thermal management
-> 
-> End the sentence above with a period ('.').
-> 
-> And the indentation here is all messed up.
-> See Documentation/process/coding-style.rst:
-> 
+Some drivers might report that they are unable to bridge ports by
+returning -EOPNOTSUPP, but still wants to override extack message.
+In order to do so, in dsa_slave_changeupper(), if port_bridge_join()
+returns -EOPNOTSUPP, check if extack message is set and if so, do not
+override it.
 
-It's not only this one. Entire file has wrong indentation.
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+---
+ net/dsa/slave.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-Best regards,
-Krzysztof
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 2e1ac638d135..509b98dd9954 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -2460,8 +2460,9 @@ static int dsa_slave_changeupper(struct net_device *dev,
+ 			if (!err)
+ 				dsa_bridge_mtu_normalization(dp);
+ 			if (err == -EOPNOTSUPP) {
+-				NL_SET_ERR_MSG_MOD(extack,
+-						   "Offloading not supported");
++				if (!extack->_msg)
++					NL_SET_ERR_MSG_MOD(extack,
++							   "Offloading not supported");
+ 				err = 0;
+ 			}
+ 			err = notifier_from_errno(err);
+-- 
+2.36.1
+
