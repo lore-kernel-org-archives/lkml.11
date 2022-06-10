@@ -2,95 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BC94C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 08:40:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CC77C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 08:42:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347877AbiFJIkk (ORCPT
+        id S1347451AbiFJImJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 04:40:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44892 "EHLO
+        Fri, 10 Jun 2022 04:42:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241270AbiFJIki (ORCPT
+        with ESMTP id S239779AbiFJImH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 04:40:38 -0400
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52E341A5;
-        Fri, 10 Jun 2022 01:40:37 -0700 (PDT)
-Received: by mail-wm1-f46.google.com with SMTP id l2-20020a05600c4f0200b0039c55c50482so803940wmq.0;
-        Fri, 10 Jun 2022 01:40:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ztq4k3KUPkKf4HUs/0KYVoq6RFzFscI/AU5d2/079VY=;
-        b=0Z/HATVtdJxGJ4Fd4/G/QwZILxgDvo86fBR/vnqIrUkKCki5H3ma+9nQPJxAks0OK5
-         WRy7yL3br6970z+NBFo+uYCsAGbY/ndtgWnNhwBTUalcE1M9mGqQhEBHH29XAOmP/qez
-         x8UJrtQ62zSgzRnSmZmnd0b+vkl5QX+FATScGm98RH3ncUEyA1z//EFzF08DtFeLwDdk
-         m6kE6HIUkJwvETF7Zz3IkJ9Zz4erLaLvyeKEK3S3tYDQhcgobAxSfHxH/67jGXhON+2s
-         +4oOuWPNxeb46X1o9cPcbC7jpYIr3Ge2wz4rpTQWshpo17HvMWReEyledcSnalbXhtWb
-         zq7g==
-X-Gm-Message-State: AOAM5335dW+en9sKVFy214ndBvMXvCGE1gLBk4t1mzuYQnD7+i+SpDTj
-        FH0zxHCP61LudLCkE5S48Fg=
-X-Google-Smtp-Source: ABdhPJyQtOeBG1bBmUjSZGZ8BW8JYMPPtMA6gpFagh2WNHrMfZnGM2P6qHsHBdknbAwB+oOQ/gdRFA==
-X-Received: by 2002:a05:600c:190b:b0:39c:7704:74a4 with SMTP id j11-20020a05600c190b00b0039c770474a4mr4333763wmq.92.1654850435757;
-        Fri, 10 Jun 2022 01:40:35 -0700 (PDT)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id 123-20020a1c1981000000b003975c7058bfsm2172199wmz.12.2022.06.10.01.40.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jun 2022 01:40:35 -0700 (PDT)
-Date:   Fri, 10 Jun 2022 08:40:33 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc:     Saurabh Sengar <ssengar@linux.microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Saurabh Singh Sengar <ssengar@microsoft.com>
-Subject: Re: [PATCH] Drivers: hv: vmbus: Release cpu lock in error case
-Message-ID: <20220610084033.r6llz4dadlw6gyoz@liuwe-devbox-debian-v2>
-References: <1654794996-13244-1-git-send-email-ssengar@linux.microsoft.com>
- <PH0PR21MB30259484AB91D8EA2DEBD3E7D7A79@PH0PR21MB3025.namprd21.prod.outlook.com>
+        Fri, 10 Jun 2022 04:42:07 -0400
+Received: from smtpbg.qq.com (smtpbg138.qq.com [106.55.201.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 219551FA6C
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 01:42:02 -0700 (PDT)
+X-QQ-mid: bizesmtp63t1654850386tif11fbf
+Received: from localhost.localdomain ( [182.148.15.124])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Fri, 10 Jun 2022 16:39:31 +0800 (CST)
+X-QQ-SSF: 01000000002000C0H000B00A0000000
+X-QQ-FEAT: ZHWZeLXy+8cOxDPLyuwRmzpNsjh1fQNcUTozYbxsddqVmpR3yZs0SiudcbKuW
+        RztaTflJn89M1v+BOmlBdDa67Dqc3AM2U+2aTwLZZQr7fS6zQBwKnW8Ev/oqeRt8fx55g3l
+        drXo36cmFGxsaESEYQSBJ1zLmie7lS+WoJ7w1cTWRItUSFh8DpAy0eh3H0S4mBtOlQj/2Cl
+        TSZkVfcfVDmyeVcqjDGSNCFWG7C6c5IaxlzEwRFzEE88l0VI80XJN3BysvO23HZ4tVJgZQb
+        Bsi7KGinRDb4BnuRYehbOqQCJJ8KuhFHI12Xw8OcQkDsHVVJWficNWXYJF1zFKmJEERi2in
+        ih7HJyubBOsb0/Q0EAV33Tpp0QN4WANMIimkTg7
+X-QQ-GoodBg: 0
+From:   Xiang wangx <wangxiang@cdjrlc.com>
+To:     geert@linux-m68k.org
+Cc:     funaho@jurai.org, linux-m68k@lists.linux-m68k.org,
+        linux-kernel@vger.kernel.org, Xiang wangx <wangxiang@cdjrlc.com>
+Subject: [PATCH v2] m68k: mac: Fix typo in comment
+Date:   Fri, 10 Jun 2022 16:39:24 +0800
+Message-Id: <20220610083924.32877-1-wangxiang@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PH0PR21MB30259484AB91D8EA2DEBD3E7D7A79@PH0PR21MB3025.namprd21.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 09, 2022 at 05:39:06PM +0000, Michael Kelley (LINUX) wrote:
-> From: Saurabh Sengar <ssengar@linux.microsoft.com> Sent: Thursday, June 9, 2022 10:17 AM
-> > 
-> > In case of invalid sub channel, release cpu lock before returning.
-> > 
-> > Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
-> > ---
-> >  drivers/hv/channel_mgmt.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> > 
-> > diff --git a/drivers/hv/channel_mgmt.c b/drivers/hv/channel_mgmt.c
-> > index 280b529..5b12040 100644
-> > --- a/drivers/hv/channel_mgmt.c
-> > +++ b/drivers/hv/channel_mgmt.c
-> > @@ -639,6 +639,7 @@ static void vmbus_process_offer(struct vmbus_channel
-> > *newchannel)
-> >  		 */
-> >  		if (newchannel->offermsg.offer.sub_channel_index == 0) {
-> >  			mutex_unlock(&vmbus_connection.channel_mutex);
-> > +			cpus_read_unlock();
-> >  			/*
-> >  			 * Don't call free_channel(), because newchannel->kobj
-> >  			 * is not initialized yet.
-> > --
-> > 1.8.3.1
-> 
-> Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-> 
+Delete the redundant word 'an'.
+The second "and" should not be deleted, but replaced by "an".
 
-The bug comes from a949e86c0d780.
+Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
+---
+Changes since v1
+*Change comments "and and" to "and an"
 
-Added a Fixes tag and applied to hyperv-fixes. Thanks.
+ arch/m68k/mac/iop.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/m68k/mac/iop.c b/arch/m68k/mac/iop.c
+index de156a027f5b..010b3b5ae8e8 100644
+--- a/arch/m68k/mac/iop.c
++++ b/arch/m68k/mac/iop.c
+@@ -25,7 +25,7 @@
+  *		  check this.)
+  * 990605 (jmt) - Rearranged things a bit wrt IOP detection; iop_present is
+  *		  gone, IOP base addresses are now in an array and the
+- *		  globally-visible functions take an IOP number instead of an
++ *		  globally-visible functions take an IOP number instead of
+  *		  an actual base address.
+  * 990610 (jmt) - Finished the message passing framework and it seems to work.
+  *		  Sending _definitely_ works; my adb-bus.c mods can send
+@@ -66,7 +66,7 @@
+  * a shared memory area in the IOP RAM. Each IOP has seven "channels"; each
+  * channel is connected to a specific software driver on the IOP. For example
+  * on the SCC IOP there is one channel for each serial port. Each channel has
+- * an incoming and and outgoing message queue with a depth of one.
++ * an incoming and an outgoing message queue with a depth of one.
+  *
+  * A message is 32 bytes plus a state byte for the channel (MSG_IDLE, MSG_NEW,
+  * MSG_RCVD, MSG_COMPLETE). To send a message you copy the message into the
+-- 
+2.36.1
+
