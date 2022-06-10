@@ -2,76 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17FBFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 04:32:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 595B5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 04:40:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240882AbiFJEcp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 00:32:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57064 "EHLO
+        id S240263AbiFJEkV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 10 Jun 2022 00:40:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236110AbiFJEcl (ORCPT
+        with ESMTP id S232034AbiFJEkT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 00:32:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D57334B1C7;
-        Thu,  9 Jun 2022 21:32:37 -0700 (PDT)
+        Fri, 10 Jun 2022 00:40:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DCA2B71;
+        Thu,  9 Jun 2022 21:40:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 898E661DAD;
-        Fri, 10 Jun 2022 04:32:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44E9DC3411B;
-        Fri, 10 Jun 2022 04:32:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA33B61DDB;
+        Fri, 10 Jun 2022 04:40:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 42863C385A5;
+        Fri, 10 Jun 2022 04:40:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654835556;
-        bh=Q4mjg8PJAOOQ6q6x0lZ6Lio+9WvdvZuDWJII0lD+QGc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DWpkxCB61af31hbHA0tzbxnOaoyT8uLlypCzliz+cEdQSwzvd0gqetH6bKkap9WiC
-         fwpEo/bYrnc77NstY4fuGnAK+HJG9Mon5vTxWNIBZwFbobR3bl2lMABCXHnZiFOerC
-         FOwFCU1udFf3EPCUNqhLlX3QkTFJhUgn1ncRU75xldw33+EJGYmNi8mC+JsTEZA+iV
-         +Uln+o/e/6Lm1UeIVS1jBr6wWdBw1Ebl66hw6GL7oxejEADME6KgK84spJUcZTMtrN
-         bT4Qbei5Dtar9OZUm/Fzp/tIp2lTgHMZKn4rigYoSQdrKRk5xshFyGU2sJNDQBvRUz
-         cayanERWUPIpg==
-Date:   Fri, 10 Jun 2022 10:02:32 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the dmaengine tree
-Message-ID: <YqLJYJglqmDnGZGP@matsya>
-References: <20220610124626.141d5f61@canb.auug.org.au>
+        s=k20201202; t=1654836017;
+        bh=dJlNq2TyFXmhv3KP0VOW3PAskcPpHWhMtmrEcpvN1/o=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Mi6kiS+3KSU9X7pGDW7C+m2AX7Yg23wsVYRbUqnNm+hBiUmiBkgHnlfmAoy9DG9nM
+         y/4Cy05bW3bb0PY5zMAjtB6Y359WAEKA+kmVwmqdJnCLlNYOmoAQQVA2szbnDtsMwY
+         DDhftjcI7zoc9sgHz1f6l0yB6WODTVDxFkR1wHPojoWslvMDwPHYKDmEvkLgwXTs8K
+         P8vyppUU0kyq5nUmaBMlEy1x8chHTTi7uYqyjQr/GrBz0FB5AbltpAYo7iZBV9HmKZ
+         12nEEGc2yUmHLLa5Ek6tRO3aIsWOXY+Piiz/02ATYrKFbKMTGaWfdvAQqWgZfsQFW/
+         44mONSXdeJg3Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 282F8E737FE;
+        Fri, 10 Jun 2022 04:40:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220610124626.141d5f61@canb.auug.org.au>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v4 0/5] platform/chrome: cros_kbd_led_backlight: add EC PWM
+ backend
+From:   patchwork-bot+chrome-platform@kernel.org
+Message-Id: <165483601716.17399.13464543301386484643.git-patchwork-notify@kernel.org>
+Date:   Fri, 10 Jun 2022 04:40:17 +0000
+References: <20220523090822.3035189-1-tzungbi@kernel.org>
+In-Reply-To: <20220523090822.3035189-1-tzungbi@kernel.org>
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     bleung@chromium.org, groeck@chromium.org, robh+dt@kernel.org,
+        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org,
+        mka@chromium.org, devicetree@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10-06-22, 12:46, Stephen Rothwell wrote:
-> Hi all,
+Hello:
+
+This series was applied to chrome-platform/linux.git (for-next)
+by Tzung-Bi Shih <tzungbi@kernel.org>:
+
+On Mon, 23 May 2022 17:08:17 +0800 you wrote:
+> The series adds EC PWM as an backend option for ChromeOS keyboard LED
+> backlight.
 > 
-> After merging the dmaengine tree, today's linux-next build (x86_64
-> allmodconfig) failed like this:
+> The 1st patch reorder the headers alphabetically.
 > 
-> In file included from include/linux/printk.h:584,
->                  from include/linux/kernel.h:29,
->                  from arch/x86/include/asm/percpu.h:27,
->                  from arch/x86/include/asm/current.h:6,
->                  from include/linux/sched.h:12,
->                  from include/linux/ratelimit.h:6,
->                  from include/linux/dev_printk.h:16,
->                  from include/linux/device.h:15,
->                  from drivers/dma/apple-admac.c:10:
-> drivers/dma/apple-admac.c: In function 'admac_cyclic_write_one_desc':
-> drivers/dma/apple-admac.c:209:26: error: format '%x' expects argument of type 'unsigned int', but argument 7 has type 'long unsigned int' [-Werror=format=]
->   209 |         dev_dbg(ad->dev, "ch%d descriptor: addr=0x%pad len=0x%zx flags=0x%x\n",
+> The 2nd patch separates the ACPI backend.
+> 
+> [...]
 
-Thanks for the report, I have fixed it up and send the patch to fix the
-print format
+Here is the summary with links:
+  - [v4,1/5] platform/chrome: cros_kbd_led_backlight: sort headers alphabetically
+    https://git.kernel.org/chrome-platform/c/337eac8f8499
+  - [v4,2/5] platform/chrome: cros_kbd_led_backlight: separate ACPI backend
+    https://git.kernel.org/chrome-platform/c/6b1e5ba39c44
+  - [v4,3/5] dt-bindings: add google,cros-kbd-led-backlight
+    https://git.kernel.org/chrome-platform/c/20f370efddb5
+  - [v4,4/5] platform/chrome: cros_kbd_led_backlight: support OF match
+    https://git.kernel.org/chrome-platform/c/fd1e8054ff69
+  - [v4,5/5] platform/chrome: cros_kbd_led_backlight: support EC PWM backend
+    https://git.kernel.org/chrome-platform/c/40f58143745e
 
-https://lore.kernel.org/dmaengine/20220610043117.39337-1-vkoul@kernel.org/
-
+You are awesome, thank you!
 -- 
-~Vinod
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
