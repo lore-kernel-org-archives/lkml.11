@@ -2,101 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88A1AC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 12:06:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C9D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 12:06:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347660AbiFJMGD (ORCPT
+        id S1347758AbiFJMGo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 08:06:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35938 "EHLO
+        Fri, 10 Jun 2022 08:06:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347121AbiFJMGA (ORCPT
+        with ESMTP id S240885AbiFJMGl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 08:06:00 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A27483F32C
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 05:05:57 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id c4so10457642lfj.12
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 05:05:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=130B3kkD/RZIkOCrcmz351BczRa1xYiEzwjuOf+BIgM=;
-        b=E7/lo+IHcf40eLTK2hdrDgSXpWYiZZx33aHPtjRfBkJ5+KwfnypczseU/evZGlMKHS
-         wdTE0F34tV97mzUPq5NeVhXM8MGKNDBzKJRqNxzmLH5Fkefsa11QkIiGc5mF9mPxTCOx
-         C+ak6qQvMLINN6c9cGRExCq3uqQv/bk7BG7ngLnSjX07nA8OvXGW0m3CSXJ8zZP8TsSo
-         K4Cd7JXgGA4jLI008NOD7MlPfKROGzPol5DFWMQSdInu6sh3kh7V2Mr1SqJB4KvCZPHo
-         eTmor6XZKpk+inF5sIf5xfDX5iOeAUVxRn58Y2TR0+bXwQLBc3itmURO3u+UJk7JFdWg
-         NlMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=130B3kkD/RZIkOCrcmz351BczRa1xYiEzwjuOf+BIgM=;
-        b=BjK/FGisGNw8jPSvvc3aay9sLHh6cozSXIxYQj1Ch3PLDd6DVwa5pT8pCljS6nkuUd
-         w0td2nX5KVSugUJi8dLYCr1aOIg13jgRw81Is4TBL7QFzE1bI/CxNB2RoOg77qdJLxxa
-         OEcptzkOfm+fnyCsK++Ga2vFxM9sutF9uLI+q5MR915FfRcRUVbcTs0ALPuovL7YBcsu
-         NpEv6kgAnUWa46i6D5VCgQU26mqJogTpcbhR7NTO9wPT5J4TjLTbg0JDpCvIPZKpqYUa
-         Bdg0ZN57C3uZc4Z+MAvGxhobLPdqRxXYjAtqWR540KHwKfEZJKIn/W/PDp0s59odB3vW
-         M5Kw==
-X-Gm-Message-State: AOAM533NCPD4C0npOPPYXtayDHN8bAkbY60xGpZytTb2gnNhf5KTPvue
-        kuwPyA254gmiNe6Elgxo4lY=
-X-Google-Smtp-Source: ABdhPJyewHpKPtRT9Pz2gZdCnPyd60KQ0mno5fKFPbEcrCwStmYLat3hyEHndZKfU4T/we0GvsOTMQ==
-X-Received: by 2002:a05:6512:3183:b0:479:3e62:2cb with SMTP id i3-20020a056512318300b004793e6202cbmr16934264lfe.459.1654862756109;
-        Fri, 10 Jun 2022 05:05:56 -0700 (PDT)
-Received: from localhost (87-49-45-7-mobile.dk.customer.tdc.net. [87.49.45.7])
-        by smtp.gmail.com with ESMTPSA id o18-20020ac25e32000000b00478fc1eca9bsm4690143lfg.131.2022.06.10.05.05.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jun 2022 05:05:55 -0700 (PDT)
-Date:   Fri, 10 Jun 2022 14:05:54 +0200
-From:   Pankaj Raghav <pankydev8@gmail.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        "R, Monish Kumar" <monish.kumar.r@intel.com>,
-        "open list:NVM EXPRESS DRIVER" <linux-nvme@lists.infradead.org>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        "alan.adamson@oracle.com" <alan.adamson@oracle.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Yi Zhang <yi.zhang@redhat.com>,
-        Keith Busch <kbusch@kernel.org>, "axboe@fb.com" <axboe@fb.com>,
-        "Rao, Abhijeet" <abhijeet.rao@intel.com>,
-        Pankaj Raghav <p.raghav@samsung.com>,
-        Javier =?utf-8?B?R29uesOhbGV6?= <javier.gonz@samsung.com>
-Subject: Re: 2 second nvme initialization delay regression in 5.18 [Was: Re:
- [bug report]nvme0: Admin Cmd(0x6), I/O Error (sct 0x0 / sc 0x2) MORE DNR
- observed during blktests]
-Message-ID: <20220610120554.ry7w37jbf3g6w3p3@quentin>
-References: <CAHj4cs_iC+FE8ZAXXZPeia1V3ZX7zRbeASdOP_8c7DLiFozNfA@mail.gmail.com>
- <Ykyf5Zuz1W8yHhNY@zx2c4.com>
- <CAHmME9pwz4q0m-pSUy7ReWu4nNzxySNcYZrqyDZiTuGxHN=1NQ@mail.gmail.com>
- <CAHmME9o-orF52HzkT80054e3Op5fLOcTHb-KHpvvU7H3FpAJ7A@mail.gmail.com>
- <SA2PR11MB5115DCE45778910C96813CA1C3A79@SA2PR11MB5115.namprd11.prod.outlook.com>
- <YqG/pybFg0P5yQ9a@zx2c4.com>
- <20220610061449.GD24331@lst.de>
+        Fri, 10 Jun 2022 08:06:41 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E433EF18
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 05:06:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654862800; x=1686398800;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=K1k+oIO+VBXWvrUqhojZiI+4Uhrj8EJsXUfooupVGdk=;
+  b=isXcptkfyiD5+jn8C0KpGl4t/Ml24v8MeuLT3Mm2JGcGrIn+irgyqPg6
+   bQH15yRbIDb0/PogITJn6/6rbi6drU2PUWIxFeNi8IXp9ptVeCoEzLvH0
+   2UtpxIzMBgFJ53GliHT4zHljsBFagSOO+AMNOlZL/wih01Tg/g/XU39Fy
+   j/58EihWuC+38Z4VoF54guTkUOwzAsivHutkWymjgHUNlWJbU8qmkLOAM
+   GsOneoFwT580nJnzOf8MXQIly81/2i69y59hgx1Pa4yU61UEuLaKKPC9J
+   cwWWaEjYzebibk4JSe0DN9CbY1eq0S7XoT55dpuSo216qbsNPW4VMQx1z
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="275142446"
+X-IronPort-AV: E=Sophos;i="5.91,290,1647327600"; 
+   d="scan'208";a="275142446"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 05:06:40 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,290,1647327600"; 
+   d="scan'208";a="828225455"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 10 Jun 2022 05:06:39 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nzdPS-000Hvx-De;
+        Fri, 10 Jun 2022 12:06:38 +0000
+Date:   Fri, 10 Jun 2022 20:05:40 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Tzung-Bi Shih <tzungbi@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Matthias Kaehlcke <mka@chromium.org>
+Subject: [chrome-platform:for-next 13/34]
+ drivers/platform/chrome/cros_kbd_led_backlight.c:192:42: warning:
+ 'keyboard_led_drvdata_ec_pwm' defined but not used
+Message-ID: <202206102051.ZaCPUVE8-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220610061449.GD24331@lst.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 08:14:49AM +0200, Christoph Hellwig wrote:
-> The 970 seems to actually be very slightly newer than the X5.  What
-> I suspect is that they actually are the same m.2 SSD or at least a
-> very similar one and Samsung decided to ship it in the thunderbolt
-> attached versions first.  Maybe one of the Samsung folks here can
-> confirm.
-> 
-> That leaves us with two plausible theories:
-> 
->  - the problems could be due to an earlier firmware version or
->    ASIC stepping
->  - the problems are due to the thunderbolt attachment
-> 
-I have forwarded this report internally within Samsung and I will post an
-update once I have more information about this issue.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/chrome-platform/linux.git for-next
+head:   cfed691b80dce32b62634b1d7f92a661a3b03e4f
+commit: 40f58143745eaabc68ef44b068642ca3b38d23a6 [13/34] platform/chrome: cros_kbd_led_backlight: support EC PWM backend
+config: x86_64-defconfig (https://download.01.org/0day-ci/archive/20220610/202206102051.ZaCPUVE8-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/chrome-platform/linux.git/commit/?id=40f58143745eaabc68ef44b068642ca3b38d23a6
+        git remote add chrome-platform https://git.kernel.org/pub/scm/linux/kernel/git/chrome-platform/linux.git
+        git fetch --no-tags chrome-platform for-next
+        git checkout 40f58143745eaabc68ef44b068642ca3b38d23a6
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/platform/chrome/
 
-Cheers,
-Pankaj
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/platform/chrome/cros_kbd_led_backlight.c:192:42: warning: 'keyboard_led_drvdata_ec_pwm' defined but not used [-Wunused-const-variable=]
+     192 | static const struct keyboard_led_drvdata keyboard_led_drvdata_ec_pwm = {};
+         |                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +/keyboard_led_drvdata_ec_pwm +192 drivers/platform/chrome/cros_kbd_led_backlight.c
+
+   191	
+ > 192	static const struct keyboard_led_drvdata keyboard_led_drvdata_ec_pwm = {};
+   193	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
