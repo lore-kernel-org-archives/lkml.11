@@ -2,270 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BA89C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 20:59:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 502EBC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 21:02:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347390AbiFJU67 (ORCPT
+        id S1347717AbiFJVB6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 16:58:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56660 "EHLO
+        Fri, 10 Jun 2022 17:01:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346839AbiFJU6z (ORCPT
+        with ESMTP id S1346839AbiFJVBz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 16:58:55 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C2C521E0FA
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 13:58:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654894734; x=1686430734;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=4rIPihjUQ3/vqUO1aHGaCTo5V02mslW2B7uO0c4QY6c=;
-  b=NZ4KsHFt/TDHO+5KIlA+fGsAHG9IDUR0EHFSHQmb7GcSzxf7cOUfKFq5
-   lel9VI7+FX4fbC8SA5v9cX3/hpvY0H2Ff2AUoJM0NUMzFuBcPstK4fOKB
-   mYPJyksZfzU0Uz/b3DQ2qCSPq9hElUD33kH/K01oVs+CzTG38gYoJlU6V
-   6WVDjwPgwK81qBjtQ+GfjRWtrilj58FV1ylbsx/HNEffJysHqI9aLe7F3
-   7aKvv3Jd1P3jvbfSLE4C4bWVkv2HWl2PEXRLnpww3OxzYdjxb/vXWlvh4
-   g5vg4mmj7TI8NyTSxy9q43wu6eGYxvD1mGhB9f5vTQkqxWnYBrFsCm8cZ
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10374"; a="258182117"
-X-IronPort-AV: E=Sophos;i="5.91,291,1647327600"; 
-   d="scan'208";a="258182117"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 13:58:53 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,291,1647327600"; 
-   d="scan'208";a="650017011"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 10 Jun 2022 13:58:52 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nzliV-000IH7-UR;
-        Fri, 10 Jun 2022 20:58:51 +0000
-Date:   Sat, 11 Jun 2022 04:57:54 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>
-Subject: [gustavoars:for-next/kspp-fam1] BUILD SUCCESS
- 9ef205b8cbf786449c98b4cd9a207ec5707974db
-Message-ID: <62a3b052.4+blFycKslATyNlK%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Fri, 10 Jun 2022 17:01:55 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD02749F28
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 14:01:53 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id t2so236756pld.4
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 14:01:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9j+lUZ+Mcfs1Jcoa4etI2TPzedTT1LtFJEr4fDqaygA=;
+        b=NKflmcL3DRRoEVI9aA2myzxnaV92k/hIea6L4aJUQzCGDuHMfvHPgs1/rD0/Vm7kOy
+         ZTQxPAjfe1ez1G30H2jihUbHdbUmFFXTAmnEYfpv2Nrs8pSzHaktoorFzSEvDx13LGG6
+         UkPqWHPJiteD974QKgN0Tq5hW/vfR9VBK4nDGXkd4ymYHM1wEZ0IG2QZSq6d720hjieK
+         TBepncYM2w+AqxgoR/le9W1+ez7DFwX0gcDPeo3JWb0yCnkE1FiidcdGAskXT7g3L5ia
+         jvDiTdAx3e9ZCPlt3uX1o7eE7x+2h6VjNxbWH5BbvnNP3NNWqZO+PUjGttxVaxnRNLTU
+         +9vQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9j+lUZ+Mcfs1Jcoa4etI2TPzedTT1LtFJEr4fDqaygA=;
+        b=xyoPeTl1zHtRwuDcn8RV1piao2dekJ2EXL1WqcCQyqvHgDkVZ5cO8YdJvkhr0/W3G6
+         ElS1BrZORVnIgaw4VKHdeALP+HhVXj8lokavSYkmNhrFqld59JajLF0T5EnpFpxWaWwb
+         v8uwT8zzpG0pEw3eP2T4TkpgevbScbFteg8mNM0l06cStGj8HwJjTqW6qkKi6CuER2xh
+         WysMBcvJcHfadR3M5NQ+qCc8JQ1wCmtXlWScHhaYd66lL9H4gKySDOMcC8oD0JQo91OQ
+         TIIQZG5/2xpNtL1z1rK/dJTISnyztds/f8XiMhDfCIzeHT677Uwvl0WT1eZ4YTJy3DMP
+         FvSA==
+X-Gm-Message-State: AOAM533BDPrA8jgASnSifETXFarhRWoLG0qJIhnNb+vlT10Mn+vU2l31
+        wAK6U9pnf9v5G+qR62uI8q1E8l0nBaYSIXe6pE5crg==
+X-Google-Smtp-Source: ABdhPJwvRGSfjW+BQVoBdbJMFI3SGm9Mmrx5BjmO46SgVdtXKMaXbKuqMg2V/NxgtH3LSYo3AH35O1L6keWUVQOdZgw=
+X-Received: by 2002:a17:90b:3806:b0:1e2:adc5:d192 with SMTP id
+ mq6-20020a17090b380600b001e2adc5d192mr1581921pjb.223.1654894912870; Fri, 10
+ Jun 2022 14:01:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+References: <20220524205646.1798325-1-vannapurve@google.com> <20220610010510.vlxax4g3sgvsmoly@amd.com>
+In-Reply-To: <20220610010510.vlxax4g3sgvsmoly@amd.com>
+From:   Vishal Annapurve <vannapurve@google.com>
+Date:   Fri, 10 Jun 2022 14:01:41 -0700
+Message-ID: <CAGtprH92PVtCDGrtwcvfrsKokFbYrqXqtH6D_aUrYXvHYyWpyQ@mail.gmail.com>
+Subject: Re: [RFC V1 PATCH 0/3] selftests: KVM: sev: selftests for fd-based
+ approach of supporting private memory
+To:     Michael Roth <michael.roth@amd.com>
+Cc:     x86 <x86@kernel.org>, kvm list <kvm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-kselftest@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        dave.hansen@linux.intel.com, "H . Peter Anvin" <hpa@zytor.com>,
+        shuah <shuah@kernel.org>, yang.zhong@intel.com,
+        drjones@redhat.com, Ricardo Koller <ricarkol@google.com>,
+        Aaron Lewis <aaronlewis@google.com>, wei.w.wang@intel.com,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Chao Peng <chao.p.peng@linux.intel.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        Jun Nakajima <jun.nakajima@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Quentin Perret <qperret@google.com>,
+        Steven Price <steven.price@arm.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        David Hildenbrand <david@redhat.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Marc Orr <marcorr@google.com>,
+        Erdem Aktas <erdemaktas@google.com>,
+        Peter Gonda <pgonda@google.com>,
+        "Nikunj A. Dadhania" <nikunj@amd.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Austin Diviness <diviness@google.com>, maz@kernel.org,
+        dmatlack@google.com, axelrasmussen@google.com,
+        maciej.szmigiero@oracle.com, Mingwei Zhang <mizhang@google.com>,
+        bgardon@google.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gustavoars/linux.git for-next/kspp-fam1
-branch HEAD: 9ef205b8cbf786449c98b4cd9a207ec5707974db  scsi: bfa: Replace one-element array with flexible-array member
+....
+>
+> I ended up adding a KVM_CAP_UNMAPPED_PRIVATE_MEM to distinguish between the
+> 2 modes. With UPM-mode enabled it basically means KVM can/should enforce that
+> all private guest pages are backed by private memslots, and enable a couple
+> platform-specific hooks to handle MAP_GPA_RANGE, and queries from MMU on
+> whether or not an NPT fault is for a private page or not. SEV uses these hooks
+> to manage its encryption bitmap, and uses that bitmap as the authority on
+> whether or not a page is encrypted. SNP uses GHCB page-state-change requests
+> so MAP_GPA_RANGE is a no-op there, but uses the MMU hook to indicate whether a
+> fault is private based on the page fault flags.
+>
+> When UPM-mode isn't enabled, MAP_GPA_RANGE just gets passed on to userspace
+> as before, and platform-specific hooks above are no-ops. That's the mode
+> your SEV self-tests ran in initially. I added a test that runs the
+> PrivateMemoryPrivateAccess in UPM-mode, where the guest's OS memory is also
+> backed by private memslot and the platform hooks are enabled, and things seem
+> to still work okay there. I only added a UPM-mode test for the
+> PrivateMemoryPrivateAccess one though so far. I suppose we'd want to make
+> sure it works exactly as it did with UPM-mode disabled, but I don't see why
+> it wouldn't.
 
-elapsed time: 4200m
+Thanks Michael for the update. Yeah, using the bitmap to track
+private/shared-ness of gfn ranges should be the better way to go as
+compared to the limited approach I used to just track a single
+contiguous pfn range.
+I spent some time in getting the SEV/SEV-ES priv memfd selftests to
+execute from private fd as well and ended up doing similar changes as
+part of the github tree:
+https://github.com/vishals4gh/linux/commits/sev_upm_selftests_rfc_v2.
 
-configs tested: 188
-configs skipped: 4
+>
+> But probably worth having some discussion on how exactly we should define this
+> mode, and whether that meshes with what TDX folks are planning.
+>
+> I've pushed my UPM-mode selftest additions here:
+>   https://github.com/mdroth/linux/commits/sev_upm_selftests_rfc_v1_upmmode
+>
+> And the UPM SEV/SEV-SNP tree I'm running them against (DISCLAIMER: EXPERIMENTAL):
+>   https://github.com/mdroth/linux/commits/pfdv6-on-snpv6-upm1
+>
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+Thanks for the references here. This helps get a clear picture around
+the status of priv memfd integration with Sev-SNP VMs and this work
+will be the base of future SEV specific priv memfd selftest patches as
+things get more stable.
 
-gcc tested configs:
-arm64                               defconfig
-arm64                            allyesconfig
-arm                              allmodconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                          randconfig-c001
-mips                 randconfig-c004-20220608
-sh                         ap325rxa_defconfig
-arc                     haps_hs_smp_defconfig
-m68k                       m5475evb_defconfig
-nios2                               defconfig
-arc                         haps_hs_defconfig
-mips                          rb532_defconfig
-riscv                               defconfig
-ia64                         bigsur_defconfig
-m68k                        m5272c3_defconfig
-sh                            titan_defconfig
-powerpc                 mpc837x_mds_defconfig
-mips                         tb0226_defconfig
-m68k                            q40_defconfig
-microblaze                      mmu_defconfig
-powerpc                      chrp32_defconfig
-powerpc                 mpc834x_itx_defconfig
-sh                           se7750_defconfig
-powerpc                 linkstation_defconfig
-powerpc64                           defconfig
-sh                          rsk7201_defconfig
-powerpc                 canyonlands_defconfig
-sh                          lboxre2_defconfig
-m68k                          sun3x_defconfig
-powerpc                 mpc8540_ads_defconfig
-arc                      axs103_smp_defconfig
-sparc64                             defconfig
-sh                           sh2007_defconfig
-arm                           viper_defconfig
-mips                           ci20_defconfig
-powerpc                     stx_gp3_defconfig
-powerpc                     pq2fads_defconfig
-mips                      fuloong2e_defconfig
-arm                       aspeed_g5_defconfig
-powerpc                   currituck_defconfig
-parisc64                         alldefconfig
-sh                ecovec24-romimage_defconfig
-m68k                        mvme16x_defconfig
-arm                           sama5_defconfig
-arm                        clps711x_defconfig
-arm                          simpad_defconfig
-m68k                        mvme147_defconfig
-arm                       imx_v6_v7_defconfig
-arm                         s3c6400_defconfig
-arm                             ezx_defconfig
-arm                        multi_v7_defconfig
-powerpc                       ppc64_defconfig
-sh                      rts7751r2d1_defconfig
-powerpc                        cell_defconfig
-powerpc                      pasemi_defconfig
-sh                   secureedge5410_defconfig
-powerpc                     tqm8541_defconfig
-powerpc                   motionpro_defconfig
-sparc                               defconfig
-powerpc                         wii_defconfig
-sh                            shmin_defconfig
-sh                             shx3_defconfig
-powerpc                      ppc6xx_defconfig
-powerpc                 mpc85xx_cds_defconfig
-arm                      footbridge_defconfig
-powerpc                  storcenter_defconfig
-mips                           xway_defconfig
-openrisc                         alldefconfig
-arm                          pxa3xx_defconfig
-sh                              ul2_defconfig
-xtensa                  cadence_csp_defconfig
-sh                               alldefconfig
-powerpc                      ep88xc_defconfig
-sh                   sh7770_generic_defconfig
-arc                    vdk_hs38_smp_defconfig
-um                           x86_64_defconfig
-alpha                            alldefconfig
-sh                          sdk7780_defconfig
-sh                          urquell_defconfig
-arm                            mps2_defconfig
-powerpc                      ppc40x_defconfig
-powerpc                      pcm030_defconfig
-sh                          rsk7203_defconfig
-sh                           se7619_defconfig
-ia64                             alldefconfig
-arc                              allyesconfig
-sh                            migor_defconfig
-x86_64                        randconfig-c001
-arm                  randconfig-c002-20220608
-arm                  randconfig-c002-20220609
-ia64                                defconfig
-ia64                             allmodconfig
-ia64                             allyesconfig
-riscv                             allnoconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-m68k                                defconfig
-csky                                defconfig
-nios2                            allyesconfig
-alpha                               defconfig
-alpha                            allyesconfig
-h8300                            allyesconfig
-xtensa                           allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-s390                                defconfig
-s390                             allmodconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-s390                             allyesconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-um                             i386_defconfig
-powerpc                          allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-x86_64                        randconfig-a011
-x86_64                        randconfig-a013
-x86_64                        randconfig-a015
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-arc                  randconfig-r043-20220608
-s390                 randconfig-r044-20220608
-riscv                randconfig-r042-20220608
-riscv                            allmodconfig
-riscv                            allyesconfig
-x86_64                    rhel-8.3-kselftests
-x86_64                                  kexec
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                           rhel-8.3-syz
-x86_64                         rhel-8.3-kunit
+I see usage of pwrite to populate initial private memory contents.
+Does it make sense to have SEV_VM_LAUNCH_UPDATE_DATA handle the
+private fd population as well?
+I tried to prototype it via:
+https://github.com/vishals4gh/linux/commit/c85ee15c8bf9d5d43be9a34898176e8230a3b680#
+as I got this suggestion from Erdem Aktas(erdemaktas@google) while
+discussing about executing guest code from private fd.
+Apart from the aspects I might not be aware of, this can have
+performance overhead depending on the initial Guest UEFI boot memory
+requirements. But this can allow the userspace VMM to keep most of the
+guest vm boot memory setup the same and
+avoid changing the host kernel to allow private memfd writes from userspace.
 
-clang tested configs:
-powerpc              randconfig-c003-20220608
-x86_64                        randconfig-c007
-riscv                randconfig-c006-20220608
-i386                          randconfig-c001
-s390                 randconfig-c005-20220608
-mips                 randconfig-c004-20220608
-arm                  randconfig-c002-20220608
-powerpc                        fsp2_defconfig
-powerpc                          g5_defconfig
-arm64                            allyesconfig
-powerpc                   bluestone_defconfig
-powerpc                 xes_mpc85xx_defconfig
-powerpc                 mpc8313_rdb_defconfig
-mips                           rs90_defconfig
-mips                        maltaup_defconfig
-powerpc                       ebony_defconfig
-arm                  colibri_pxa300_defconfig
-powerpc                      katmai_defconfig
-powerpc                 mpc832x_mds_defconfig
-mips                        workpad_defconfig
-powerpc                     kmeter1_defconfig
-arm                         shannon_defconfig
-powerpc                 mpc8560_ads_defconfig
-powerpc                     akebono_defconfig
-arm                         mv78xx0_defconfig
-arm                         lpc32xx_defconfig
-i386                             allyesconfig
-mips                        omega2p_defconfig
-x86_64                        randconfig-k001
-x86_64                        randconfig-a005
-x86_64                        randconfig-a003
-x86_64                        randconfig-a001
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-i386                          randconfig-a011
-hexagon              randconfig-r045-20220609
-s390                 randconfig-r044-20220609
-riscv                randconfig-r042-20220609
-hexagon              randconfig-r041-20220609
-hexagon              randconfig-r045-20220608
-hexagon              randconfig-r041-20220608
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Regards,
+Vishal
