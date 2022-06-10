@@ -2,111 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4755C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 18:46:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2917ACCA47B
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 18:48:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349839AbiFJSqs (ORCPT
+        id S1347716AbiFJSsJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 14:46:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43642 "EHLO
+        Fri, 10 Jun 2022 14:48:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346230AbiFJSqp (ORCPT
+        with ESMTP id S1346230AbiFJSsG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 14:46:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72BBC27F892
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 11:46:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 05E48621FB
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 18:46:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38642C34114;
-        Fri, 10 Jun 2022 18:46:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654886802;
-        bh=WXGBkUiTe50Bk0aDEY/TJ56Vy0QMGwI6PLwEWi8lGBY=;
-        h=Date:From:To:Cc:Subject:From;
-        b=VH3fVi2ogdd2mPfoQr4AfGNIEAW29o8QrxCH+5yzD73ztziIcAoSk1ICFL0w0Rq3M
-         k45+y2MUKZxm9XgjPtWQhovvtid0I/1wXWNf3sp5vhCAMPxSJQk4aMmLPJ6sOaq0FW
-         bmw2gxzcPL4eCzzol3sGdmC/4ALtzkC3csybiBsT9DCRFqRdk395mWY678d0aWs0ym
-         9wE+qoL/JrZlueJiC+qSBLpkuHlbAh4VTmvyHTZWWOPfKDQRdPI7V34vn/l+526ese
-         fNFt/N8coR7ATGZ+Bt9FoZJQ7L3f+hHZOVqFGIjJfp+whax+0IvxEkXksXVW4IEaaw
-         QVShcID8iLatQ==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id E57304096F; Fri, 10 Jun 2022 15:46:39 -0300 (-03)
-Date:   Fri, 10 Jun 2022 15:46:39 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] perf beauty: Update copy of linux/socket.h with the
- kernel sources
-Message-ID: <YqORj9d58AiGYl8b@kernel.org>
+        Fri, 10 Jun 2022 14:48:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D1B6513F5A
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 11:48:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654886885;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cQJvEeLF3FaPSVIqqkc4TorYc9fXCT+vm0vr/Ev8Wck=;
+        b=Me8924kzA6/bTKUV9p+6PKXxilgKHvunYSMDTghFrsO5mwYgx2XzL7EroRuiOFzSz7xbJk
+        mO/ImtCR+LiF4NCOhfgyfEPaU28dOzFJptn/RuwYrGhzG1l1aB4k2BuSEMvqWERqlB0WFe
+        JsDJmEOGoYU7xOlGb51d6gWqkD6GOSM=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-459-eoP5urhqO4m4qqpqjOAzAg-1; Fri, 10 Jun 2022 14:48:04 -0400
+X-MC-Unique: eoP5urhqO4m4qqpqjOAzAg-1
+Received: by mail-ed1-f72.google.com with SMTP id g7-20020a056402424700b0042dee9d11d0so54054edb.3
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 11:48:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=cQJvEeLF3FaPSVIqqkc4TorYc9fXCT+vm0vr/Ev8Wck=;
+        b=of1ae8XYdTtuyNohFFgolsFboxVWGdYt3uE51y5sXWo7ygmODRJmSYtaZ2q/NWJ9mw
+         cH7aANbalyYo6oyz1UrtyTo4Jb5XH64KvHRnH6Gewj6wgR+fJ2Hr6zgc5WHDyGtvroIV
+         6eQBYHG4tyEIiwP3F9FKJ5eRFwVuPpdzxfMKwRK1pZUcCJqufGNNEojCHiL1m6URKp0b
+         O+3gy7hsNWN9VVX/tIHJHSYnwx2CS2QO0HCLe+xQ54axg4mVrFB/C6Wm2R1JVbycfJqz
+         tu5smndH/p35CG9dgDKsTOeevTcrjsLVOcHDljELCjCPZGpndb1QS4It8OmUC9rq/l1l
+         FOLA==
+X-Gm-Message-State: AOAM531N+Malh3R2T9wB/gDTL69VMe2MtqF8Sadzi9rT/QE6FpjpeB4o
+        3PzSBCNo131syonbNUaAmNwQ9nobGDalqkcg937/r7AePv8uhDOLztCzjb2PqBUCON9sd5Jl/ou
+        xgWShU3bwFYuZ+kKNKOixNUDh
+X-Received: by 2002:a05:6402:5191:b0:42f:b303:ed61 with SMTP id q17-20020a056402519100b0042fb303ed61mr41996444edd.233.1654886882375;
+        Fri, 10 Jun 2022 11:48:02 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx7lXvW4sKC5uS5pmUSAk6B7E3AsjomPuvd4DXesgz0gbp4+TrP/ck0tZ0CAi4KKOttG5GVkA==
+X-Received: by 2002:a05:6402:5191:b0:42f:b303:ed61 with SMTP id q17-20020a056402519100b0042fb303ed61mr41996424edd.233.1654886882160;
+        Fri, 10 Jun 2022 11:48:02 -0700 (PDT)
+Received: from ?IPV6:2001:1c00:2a07:3a01:67e5:daf9:cec0:df6? (2001-1c00-2a07-3a01-67e5-daf9-cec0-0df6.cable.dynamic.v6.ziggo.nl. [2001:1c00:2a07:3a01:67e5:daf9:cec0:df6])
+        by smtp.gmail.com with ESMTPSA id e20-20020a056402149400b0042bd75c53casm17024484edv.83.2022.06.10.11.48.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 10 Jun 2022 11:48:01 -0700 (PDT)
+Message-ID: <01b424c3-fd5b-c60f-5b1d-6eb76fe732ea@redhat.com>
+Date:   Fri, 10 Jun 2022 20:48:01 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH] [PATCH] platform/x86/intel: Fix pmt_crashlog array
+ reference
+Content-Language: en-US
+To:     David Arcari <darcari@redhat.com>,
+        platform-driver-x86@vger.kernel.org
+Cc:     "David E. Box" <david.e.box@linux.intel.com>,
+        Mark Gross <markgross@kernel.org>, linux-kernel@vger.kernel.org
+References: <20220526203140.339120-1-darcari@redhat.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220526203140.339120-1-darcari@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Just FYI, I'm carrying this on the perf tools tree.
+Hi,
 
-- Arnaldo
+On 5/26/22 22:31, David Arcari wrote:
+> The probe function pmt_crashlog_probe() may incorrectly reference
+> the 'priv->entry array' as it uses 'i' to reference the array instead
+> of 'priv->num_entries' as it should.  This is similar to the problem
+> that was addressed in pmt_telemetry_probe via commit 2cdfa0c20d58
+> ("platform/x86/intel: Fix 'rmmod pmt_telemetry' panic").
+> 
+> Cc: "David E. Box" <david.e.box@linux.intel.com>
+> Cc: Hans de Goede <hdegoede@redhat.com>
+> Cc: Mark Gross <markgross@kernel.org>
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: David Arcari <darcari@redhat.com>
 
----
+Thank you for your patch, I've applied this patch to my review-hans 
+branch:
+https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git/log/?h=review-hans
 
-To pick the changes in:
+Note it will show up in my review-hans branch once I've pushed my
+local branch there, which might take a while.
 
-  f94fd25cb0aaf77f ("tcp: pass back data left in socket after receive")
+Once I've run some tests on this branch the patches there will be
+added to the platform-drivers-x86/for-next branch and eventually
+will be included in the pdx86 pull-request to Linus for the next
+merge-window.
 
-That don't result in any changes in the tables generated from that
-header.
+Regards,
 
-This silences this perf build warning:
+Hans
 
-  Warning: Kernel ABI header at 'tools/perf/trace/beauty/include/linux/socket.h' differs from latest version at 'include/linux/socket.h'
-  diff -u tools/perf/trace/beauty/include/linux/socket.h include/linux/socket.h
-
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
----
- tools/perf/trace/beauty/include/linux/socket.h | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/tools/perf/trace/beauty/include/linux/socket.h b/tools/perf/trace/beauty/include/linux/socket.h
-index 6f85f5d957efea06..17311ad9f9af2479 100644
---- a/tools/perf/trace/beauty/include/linux/socket.h
-+++ b/tools/perf/trace/beauty/include/linux/socket.h
-@@ -50,6 +50,9 @@ struct linger {
- struct msghdr {
- 	void		*msg_name;	/* ptr to socket address structure */
- 	int		msg_namelen;	/* size of socket address structure */
-+
-+	int		msg_inq;	/* output, data left in socket */
-+
- 	struct iov_iter	msg_iter;	/* data */
- 
- 	/*
-@@ -62,8 +65,9 @@ struct msghdr {
- 		void __user	*msg_control_user;
- 	};
- 	bool		msg_control_is_user : 1;
--	__kernel_size_t	msg_controllen;	/* ancillary data buffer length */
-+	bool		msg_get_inq : 1;/* return INQ after receive */
- 	unsigned int	msg_flags;	/* flags on received message */
-+	__kernel_size_t	msg_controllen;	/* ancillary data buffer length */
- 	struct kiocb	*msg_iocb;	/* ptr to iocb for async requests */
- };
- 
-@@ -434,6 +438,7 @@ extern struct file *do_accept(struct file *file, unsigned file_flags,
- extern int __sys_accept4(int fd, struct sockaddr __user *upeer_sockaddr,
- 			 int __user *upeer_addrlen, int flags);
- extern int __sys_socket(int family, int type, int protocol);
-+extern struct file *__sys_socket_file(int family, int type, int protocol);
- extern int __sys_bind(int fd, struct sockaddr __user *umyaddr, int addrlen);
- extern int __sys_connect_file(struct file *file, struct sockaddr_storage *addr,
- 			      int addrlen, int file_flags);
--- 
-2.36.1
+> ---
+>  drivers/platform/x86/intel/pmt/crashlog.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/platform/x86/intel/pmt/crashlog.c b/drivers/platform/x86/intel/pmt/crashlog.c
+> index 34daf9df168b..ace1239bc0a0 100644
+> --- a/drivers/platform/x86/intel/pmt/crashlog.c
+> +++ b/drivers/platform/x86/intel/pmt/crashlog.c
+> @@ -282,7 +282,7 @@ static int pmt_crashlog_probe(struct auxiliary_device *auxdev,
+>  	auxiliary_set_drvdata(auxdev, priv);
+>  
+>  	for (i = 0; i < intel_vsec_dev->num_resources; i++) {
+> -		struct intel_pmt_entry *entry = &priv->entry[i].entry;
+> +		struct intel_pmt_entry *entry = &priv->entry[priv->num_entries].entry;
+>  
+>  		ret = intel_pmt_dev_create(entry, &pmt_crashlog_ns, intel_vsec_dev, i);
+>  		if (ret < 0)
 
