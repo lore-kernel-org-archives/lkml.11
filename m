@@ -2,62 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EDC2CCA47B
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 13:53:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A4BEC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 13:53:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349232AbiFJNxE (ORCPT
+        id S1349120AbiFJNxl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 09:53:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39658 "EHLO
+        Fri, 10 Jun 2022 09:53:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231167AbiFJNwS (ORCPT
+        with ESMTP id S1349100AbiFJNxU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 09:52:18 -0400
+        Fri, 10 Jun 2022 09:53:20 -0400
 Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5E0B1B781
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 06:52:14 -0700 (PDT)
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25ADgdSf000460;
-        Fri, 10 Jun 2022 13:50:46 GMT
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41BF33207A
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 06:53:07 -0700 (PDT)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25ADelMD022560;
+        Fri, 10 Jun 2022 13:52:51 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : mime-version : content-transfer-encoding; s=pp1;
  bh=ESZ79LDKw4Og1Sb2xDSPQAbZQmnUmVjDYMVu/+zaIOo=;
- b=hhXt+aF/W+fqWoB1WPNGdU4lEfn03kppuKOsPEwy8IkL6CxyhlOxDQJl7ZSFsryOEPTv
- SgSD2t5d5stIZUuz56aH8g5snSyL0Es73iL8N/LV/KuhXhZc3ES7Xacvc2p/PEy2BeAn
- pmcdmRaPqExEWyCFT0YTY5ub8GwvTMPnnnlSa7JEt4+0XAYXSZVf2fgOIv5234c7LdCD
- XHTIgr1vWFqrkWoBOsTv7zu9D5GhIHHj2ZejdrqsKuCQY7ls58RLESV/IAxAkR3vNn7c
- d2YrJ7mFgr5GaNAq+gu/fvEbDT5B8lHs/1lNhKje5Y1QW+ENzzrYBcvxZr18gnqduTsI 4Q== 
+ b=oneEJzDXqUfAsQgJwr6Ie+ZmlNkq5PU4DJQmG/PvR5z7TKyG8ZYwgvQOdC+1bfNPhUeE
+ uvMZ9H9nPXvEh+4V4dq8AABRMiyK2YVBVmFUwulgBjd/2O95zQqZzMbYRkkzXgdUlRvH
+ roJREVnn/JGE+acxMMjpqrsgK2nXuGgZUKhksZ0AhQrMc2X2gDWt9JonyxMHetYu5B7V
+ rs7UAUWFMUG8G1Jy+rB/lY9Dt2AA6K/g5QAeSux45w5O4GhAWJJ0db5z5PjtyYDxhZSN
+ XXlVu0mMdYfR1kgTuMXmFJ9d6sGA434J/8/i78UTApHsO6X0U7Lij4hohChaC7VuZnLE iQ== 
 Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gm72vr4rn-1
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gm6at144g-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 10 Jun 2022 13:50:45 +0000
-Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25ADiXN8004585;
-        Fri, 10 Jun 2022 13:50:45 GMT
-Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gm72vr4r7-1
+        Fri, 10 Jun 2022 13:52:51 +0000
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25ADhWo2027470;
+        Fri, 10 Jun 2022 13:52:51 GMT
+Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3gm6at1445-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 10 Jun 2022 13:50:45 +0000
-Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
-        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25ADZSsR014169;
-        Fri, 10 Jun 2022 13:50:44 GMT
+        Fri, 10 Jun 2022 13:52:50 +0000
+Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
+        by ppma04wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25ADZRSG004826;
+        Fri, 10 Jun 2022 13:52:49 GMT
 Received: from b03cxnp07029.gho.boulder.ibm.com (b03cxnp07029.gho.boulder.ibm.com [9.17.130.16])
-        by ppma02dal.us.ibm.com with ESMTP id 3gfy1bb42c-1
+        by ppma04wdc.us.ibm.com with ESMTP id 3gfy1a91tg-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 10 Jun 2022 13:50:44 +0000
+        Fri, 10 Jun 2022 13:52:49 +0000
 Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
-        by b03cxnp07029.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25ADogRi35652054
+        by b03cxnp07029.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25ADqmiD37748992
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 10 Jun 2022 13:50:42 GMT
+        Fri, 10 Jun 2022 13:52:48 GMT
 Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 86BEA6A047;
-        Fri, 10 Jun 2022 13:50:42 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 4B4F26A047;
+        Fri, 10 Jun 2022 13:52:48 +0000 (GMT)
 Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A1F076A04F;
-        Fri, 10 Jun 2022 13:50:34 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id AC72B6A04D;
+        Fri, 10 Jun 2022 13:52:39 +0000 (GMT)
 Received: from skywalker.ibmuc.com (unknown [9.43.90.151])
         by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Fri, 10 Jun 2022 13:50:34 +0000 (GMT)
+        Fri, 10 Jun 2022 13:52:39 +0000 (GMT)
 From:   "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
 To:     linux-mm@kvack.org, akpm@linux-foundation.org
 Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
@@ -79,22 +79,22 @@ Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
         David Rientjes <rientjes@google.com>,
         "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
 Subject: [PATCH v6 00/13] mm/demotion: Memory tiers and demotion
-Date:   Fri, 10 Jun 2022 19:19:53 +0530
-Message-Id: <20220610135006.182507-1-aneesh.kumar@linux.ibm.com>
+Date:   Fri, 10 Jun 2022 19:22:16 +0530
+Message-Id: <20220610135229.182859-1-aneesh.kumar@linux.ibm.com>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: AkJwcwOFp1YlfnV2dMT_lMlBXGVtZAMv
-X-Proofpoint-GUID: 7cNiVZgrt86ggQFUTrjncSIHGw3TcYsO
+X-Proofpoint-GUID: 7EdckBhR6rtDe1DhhrWFYDSJ7Om0Ugel
+X-Proofpoint-ORIG-GUID: 4fbGCg373Au8PfvHfO00zGJ_GWqusNIs
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
  definitions=2022-06-10_06,2022-06-09_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 spamscore=0
- malwarescore=0 bulkscore=0 impostorscore=0 clxscore=1015
- priorityscore=1501 mlxlogscore=999 mlxscore=0 adultscore=0
- lowpriorityscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2204290000 definitions=main-2206100052
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 priorityscore=1501
+ mlxlogscore=999 spamscore=0 suspectscore=0 bulkscore=0 adultscore=0
+ phishscore=0 clxscore=1015 malwarescore=0 lowpriorityscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206100056
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
