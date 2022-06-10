@@ -2,139 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83E73C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 08:39:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 993DFCCA47B
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 08:40:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347962AbiFJIjY (ORCPT
+        id S1347820AbiFJIk0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 04:39:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33604 "EHLO
+        Fri, 10 Jun 2022 04:40:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348111AbiFJIib (ORCPT
+        with ESMTP id S1347922AbiFJIkV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 04:38:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FA533CFD7
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 01:36:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BFBDD60DD7
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 08:36:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25CCCC34114;
-        Fri, 10 Jun 2022 08:36:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654850194;
-        bh=8CLQrzdA+jFP6P5OBG66y3p/sqqVmwPEF7Q/2guufxU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=MMjJZGrfefP2xJhWnbP/E7Js2pkTJTeQDzsznxcmX3o1PmR+g9yrDzt6x5oznH9Lm
-         mkq64HriJCAxQpplf70uLyvBG6cwTiYdG+ddWYhR+8XIqlqTm0zFwSU3sL5wjTYXaT
-         EtV2aBUDJG9UdWh5+5K5m4ZXj7Qi1lSL6BptihCO5NEZKVJgsIzA+y1TRS8Ps19fEF
-         rKw0NztXzE4mYbWMPyIbszqIfKPRDAEWztULG1ZT1m4S5chTmp1My2KRGRcRUGBnPl
-         pKh5aRxzgWbW5SjGZnN3CTzkLJ+r6hxak26WhXu/CfDZ9FMt2d+gIEmRLXqjxbI5f8
-         2GSMaiVby3sAg==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nza87-00H5Gi-Og; Fri, 10 Jun 2022 09:36:31 +0100
-From:   Marc Zyngier <maz@kernel.org>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Jamie Iles <jamie@jamieiles.com>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Liu Ying <victor.liu@nxp.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Miaoqian Lin <linmq006@gmail.com>,
-        Michal Simek <michal.simek@amd.com>,
-        Rob Herring <robh@kernel.org>, linux-kernel@vger.kernel.org,
-        kernel-team@android.com
-Subject: [GIT PULL] irqchip fixes for 5.19, take #1
-Date:   Fri, 10 Jun 2022 09:36:28 +0100
-Message-Id: <20220610083628.1205136-1-maz@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Fri, 10 Jun 2022 04:40:21 -0400
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2055519038
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 01:40:20 -0700 (PDT)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-30fdbe7467cso230266127b3.1
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 01:40:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Y9js5siYkXmTlCcqhnBttnSyxADQBz416pvWYIEpQLc=;
+        b=MWoSw9aN1k9ACFkxYohmtn6bcP8F/dnn2OkswCnt3jJJOGEEy3u2qjj3YR+DG5NUZ2
+         SlVaNtds1yBoe2csJdMH1A2luuJOQ6bGushZRQuEpa357R5UwpahmQdjvhTIaVo0TICK
+         HPE1VN2x0+HbMlDA5UrdYbiYS/IFDyncENyuZ+g/xziIpZE9HY3iTOkSpcbAi5hr6Yml
+         ZqL/cTZtyR3uJnypqKvu6OY812v8ibuEWo7nO8joVBnoyzZutYTuD5jX6KPT2arjGDif
+         aiLu5SFWq7WEpV2GHBUYEk03u1NMoHJgCh0SpA+taNN9pRCYcussMln4izassYh6nfG4
+         etVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Y9js5siYkXmTlCcqhnBttnSyxADQBz416pvWYIEpQLc=;
+        b=yQWmPpP0UmOkLf8d8csD3Mqu67i8PnkbI2kaB+26Htx8CIEoUi/H8J9sokBWSDq4ck
+         JZhCjm9eKYapMOZwFTQQlGgppN7ga8jl3dctXMKDJ0deF4EqVSgVCDLtG7ohbY+uRti0
+         UmbVctzO2Gy0j9AjoIFkj0lV9/sDJGaBw12WdrE4SXLHJWiDnut8xwVPtMt6UwP5M6PX
+         OxhyTXEUmmNycZNaeQr6fJvPqlyf3osFIoYm0FFQrZD1INW07p22f2R+0HX5skMpXqfT
+         rKOWJJpTsLjJGh0Z3ZoEzTUR9AAt0viRxN+OrJoW2RfYVv2IhrC7w4Peg7aBZetjYn11
+         w8Zw==
+X-Gm-Message-State: AOAM532A44CCHJVIpGtV3wWoqTeqq4z+b6HEY2ycg8a5x2puqxBSBk5B
+        U3w1LQGanmf+wrZyrjV4OjgiopwDFfvTHNsdrEr2gA==
+X-Google-Smtp-Source: ABdhPJzTeAzIrk04WGbwRnb/1rU3YjD+kBesukZkSgAMmy++D6UL2koc33Qw5/mwbF66PlaSovKzbvwOVn5rXLM6iJs=
+X-Received: by 2002:a81:4909:0:b0:30c:34d5:9f2c with SMTP id
+ w9-20020a814909000000b0030c34d59f2cmr47467546ywa.489.1654850418987; Fri, 10
+ Jun 2022 01:40:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: tglx@linutronix.de, jamie@jamieiles.com, jiaxun.yang@flygoat.com, hayashi.kunihiko@socionext.com, victor.liu@nxp.com, l.stach@pengutronix.de, linmq006@gmail.com, michal.simek@amd.com, robh@kernel.org, linux-kernel@vger.kernel.org, kernel-team@android.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+References: <20220610021445.2441579-1-jianhao_xu@smail.nju.edu.cn>
+ <3f460707-e267-e749-07fc-c44604cd5713@iogearbox.net> <tencent_29981C021E6150B064C7DBA3@qq.com>
+In-Reply-To: <tencent_29981C021E6150B064C7DBA3@qq.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 10 Jun 2022 01:40:06 -0700
+Message-ID: <CANn89iKHfi=kQY1FC=07COJfVX4ROTnGkM_1uKvOfPfdhqt4Ow@mail.gmail.com>
+Subject: Re: [PATCH] net: sched: fix potential null pointer deref
+To:     Jianhao Xu <jianhao_xu@smail.nju.edu.cn>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, jhs <jhs@mojatatu.com>,
+        "xiyou.wangcong" <xiyou.wangcong@gmail.com>,
+        jiri <jiri@resnulli.us>, davem <davem@davemloft.net>,
+        kuba <kuba@kernel.org>, pabeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Thomas,
+On Fri, Jun 10, 2022 at 1:09 AM Jianhao Xu <jianhao_xu@smail.nju.edu.cn> wr=
+ote:
+>
+> Hi,
+>
+> TBH, We do not have a reproducer. This is found by our static analysis to=
+ol. We can not see any clue of the context here of mq_queue_get() to ensure=
+ it never returns NULL.
+>
 
-Here's a small set of fixes for 5.19.
 
-The only really notable change is a fix for chained interrupts, which
-were never calling into the runtime PM subsystem. Depending on the
-probing order, you could end-up with configuring an irqchip that
-wasn't switched on.
+All netdev devices have their dev->_tx allocated in netif_alloc_netdev_queu=
+es()
 
-The rest is a small stack of of_node refcounting fixes, config
-updates, fixing MIPS after the loongarch merge, and the obligaroty DT
-update for one irqchip.
+There is absolutely no way MQ qdisc could be attached to a device that
+has failed netif_alloc_netdev_queues() step.
 
-Please pull,
 
-	M.
 
-The following changes since commit f2906aa863381afb0015a9eb7fefad885d4e5a56:
+> I would appreciate it if you could tell me why when you found out it was =
+our false positive. It will be helpful for us to improve our tool.
 
-  Linux 5.19-rc1 (2022-06-05 17:18:54 -0700)
 
-are available in the Git repository at:
+Please do not send patches before you can provide a detailed
+explanation of a real bug.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms.git tags/irqchip-fixes-5.19-1
+If you need help, post instead a [RFC] with a message explaining how
+far you went into your analysis.
 
-for you to fetch changes up to 6fac824f40987a54a08dfbcc36145869d02e45b1:
+A patch should be sent only once you are absolutely sure that there is
+a real bug to fix.
 
-  irqchip/loongson-liointc: Use architecture register to get coreid (2022-06-10 08:57:19 +0100)
+Thank you.
 
-----------------------------------------------------------------
-irqchip/genirq fixes for 5.19, take #1
 
-- Invoke runtime PM for chained interrupts, aligning the behaviour
-  with that of 'normal' interrupts
-
-- A flurry of of_node refcounting fixes
-
-- A fix for the recently merged loongarch that broke UP MIPS
-
-- A configuration fix for the Xilinx interrupt controller
-
-- Yet another new compat string for the Uniphier interrupt controller
-
-----------------------------------------------------------------
-Jamie Iles (1):
-      irqchip/xilinx: Remove microblaze+zynq dependency
-
-Jiaxun Yang (1):
-      irqchip/loongson-liointc: Use architecture register to get coreid
-
-Kunihiko Hayashi (2):
-      dt-bindings: interrupt-controller/uniphier-aidet: Add bindings for NX1 SoC
-      irqchip/uniphier-aidet: Add compatible string for NX1 SoC
-
-Marc Zyngier (1):
-      genirq: PM: Use runtime PM for chained interrupts
-
-Miaoqian Lin (6):
-      irqchip/gic/realview: Fix refcount leak in realview_gic_of_init
-      irqchip/apple-aic: Fix refcount leak in build_fiq_affinity
-      irqchip/apple-aic: Fix refcount leak in aic_of_ic_init
-      irqchip/gic-v3: Fix error handling in gic_populate_ppi_partitions
-      irqchip/gic-v3: Fix refcount leak in gic_populate_ppi_partitions
-      irqchip/realtek-rtl: Fix refcount leak in map_interrupts
-
- .../bindings/interrupt-controller/socionext,uniphier-aidet.yaml   | 1 +
- drivers/irqchip/Kconfig                                           | 2 +-
- drivers/irqchip/irq-apple-aic.c                                   | 2 ++
- drivers/irqchip/irq-gic-realview.c                                | 1 +
- drivers/irqchip/irq-gic-v3.c                                      | 7 +++++--
- drivers/irqchip/irq-loongson-liointc.c                            | 8 +++++++-
- drivers/irqchip/irq-realtek-rtl.c                                 | 2 +-
- drivers/irqchip/irq-uniphier-aidet.c                              | 1 +
- kernel/irq/chip.c                                                 | 5 ++++-
- 9 files changed, 23 insertions(+), 6 deletions(-)
+>
+> Thanks.
+> ------------------ Original ------------------
+> From:  "Daniel Borkmann"<daniel@iogearbox.net>;
+> Date:  Fri, Jun 10, 2022 09:14 AM
+> To:  "Jianhao Xu"<jianhao_xu@smail.nju.edu.cn>; "jhs"<jhs@mojatatu.com>; =
+"xiyou.wangcong"<xiyou.wangcong@gmail.com>; "jiri"<jiri@resnulli.us>; "dave=
+m"<davem@davemloft.net>; "edumazet"<edumazet@google.com>; "kuba"<kuba@kerne=
+l.org>; "pabeni"<pabeni@redhat.com>;
+> Cc:  "netdev"<netdev@vger.kernel.org>; "linux-kernel"<linux-kernel@vger.k=
+ernel.org>;
+> Subject:  Re: [PATCH] net: sched: fix potential null pointer deref
+>
+> Hi Jianhao,
+>
+> On 6/10/22 4:14 AM, Jianhao Xu wrote:
+> > mq_queue_get() may return NULL, a check is needed to avoid using
+> > the NULL pointer.
+> >
+> > Signed-off-by: Jianhao Xu <jianhao_xu@smail.nju.edu.cn>
+>
+> Do you have a reproducer where this is triggered?
+>
+> > ---
+> >   net/sched/sch_mq.c | 6 ++++++
+> >   1 file changed, 6 insertions(+)
+> >
+> > diff --git a/net/sched/sch_mq.c b/net/sched/sch_mq.c
+> > index 83d2e54bf303..9aca4ca82947 100644
+> > --- a/net/sched/sch_mq.c
+> > +++ b/net/sched/sch_mq.c
+> > @@ -201,6 +201,8 @@ static int mq_graft(struct Qdisc *sch, unsigned lon=
+g cl, struct Qdisc *new,
+> >   static struct Qdisc *mq_leaf(struct Qdisc *sch, unsigned long cl)
+> >   {
+> >  struct netdev_queue *dev_queue =3D mq_queue_get(sch, cl);
+> > + if (!dev_queue)
+> > +return NULL;
+> >
+> >  return dev_queue->qdisc_sleeping;
+> >   }
+> > @@ -218,6 +220,8 @@ static int mq_dump_class(struct Qdisc *sch, unsigne=
+d long cl,
+> >   struct sk_buff *skb, struct tcmsg *tcm)
+> >   {
+> >  struct netdev_queue *dev_queue =3D mq_queue_get(sch, cl);
+> > + if (!dev_queue)
+> > +return -1;
+> >
+> >  tcm->tcm_parent =3D TC_H_ROOT;
+> >  tcm->tcm_handle |=3D TC_H_MIN(cl);
+> > @@ -229,6 +233,8 @@ static int mq_dump_class_stats(struct Qdisc *sch, u=
+nsigned long cl,
+> >         struct gnet_dump *d)
+> >   {
+> >  struct netdev_queue *dev_queue =3D mq_queue_get(sch, cl);
+> > + if (!dev_queue)
+> > +return -1;
+> >
+> >  sch =3D dev_queue->qdisc_sleeping;
+> >  if (gnet_stats_copy_basic(d, sch->cpu_bstats, &sch->bstats, true) < 0 =
+||
+> >
+>
