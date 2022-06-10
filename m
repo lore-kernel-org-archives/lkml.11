@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E50C4C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 15:39:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DD7DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 15:39:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346145AbiFJPjn (ORCPT
+        id S1346178AbiFJPju (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 11:39:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45494 "EHLO
+        Fri, 10 Jun 2022 11:39:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345333AbiFJPjT (ORCPT
+        with ESMTP id S1345428AbiFJPjV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 11:39:19 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0323290B26
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 08:39:16 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id kq6so41173198ejb.11
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 08:39:16 -0700 (PDT)
+        Fri, 10 Jun 2022 11:39:21 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D31B928DC01
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 08:39:19 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id x5so30715214edi.2
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 08:39:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pqrs.dk; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=XE/B3EfYYQf1mtimqgsF3ZVDA9bOVjSyLpITpl2gz98=;
-        b=BVgwujirHOUIeTwEYAOXz/Fa5gPyFbFTfBDPBTeofutQ98qdf624mz/DQ/iM7jHM4b
-         iFAOdv3EzLvZCXsZ7GL4ihxUy3hnmkmqIJgGoYQmGwpqieCZLXhuxYW70pJmnAg6/VCS
-         0ahZBTABoQZFRCU0zIqF0rLGArZvPdL8Wt0Ts=
+        bh=AareH3Xp+hp4A5FOtY4uNivgTY9OEK29GzGPxmxFOws=;
+        b=cerH8wlG313nA0z0Y7JIP0fnogppEEaTDR4YmPZvIIxv2wRJq3Kq8l+xWfW7dFVRN/
+         jyeFFxTIn5hReE15OTzXVG8bqJG0kAI3ueQkwX8823WsOL3xlFtg5cCOeczLROZmimhL
+         1LZBzKju0bGg2IsnaN6U4rS8A8QuS9MTKReaE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=XE/B3EfYYQf1mtimqgsF3ZVDA9bOVjSyLpITpl2gz98=;
-        b=SIOcSBJRC0XLaCake9gCMOqBmNyx3t6JxNLKB62sdYPek7RlVxXtR4+aDE6uk+NfeN
-         +2K3tvKUg6WPDvyyjGulxU1mcDVaZVsCUMCwV3kvtARoYEsKXTQZ9/ZFnWCF9QuclzqM
-         PTGc8p2TMQzi5UDaPJWsPKO5JXDlyIBsY9C9MI0Iae67Sk4ZTvOCjqmJXGhKaG/FrTIw
-         g4WW5n7AW+tR/UAZIpvmPjVoktqlOb6jTY7bkz+ruEC12cLhnOiO3obsCmYIgyPVdJl/
-         Bu1Klj954jZWetPSeKo9Vvw+SsVakIPazf7IdqOA/nLArZ/dMKNdzAjkPpDM5Hu5J0zF
-         kopA==
-X-Gm-Message-State: AOAM531SUC6QpS6L28ZGonKGBiUDhZ813f60UJsucwQPNLgcjJ4GGaAR
-        MFTges5mNpUPQwXR0wiiiXCb+w==
-X-Google-Smtp-Source: ABdhPJwTbMezAtGxCn6LQq/LfANqqR2V4XCYQzJqALFJsXWfYQJAKH5hK+hEoU2+ewgtG9IEBh2EiQ==
-X-Received: by 2002:a17:907:6287:b0:6e1:6ac:c769 with SMTP id nd7-20020a170907628700b006e106acc769mr41817915ejc.388.1654875555111;
-        Fri, 10 Jun 2022 08:39:15 -0700 (PDT)
+        bh=AareH3Xp+hp4A5FOtY4uNivgTY9OEK29GzGPxmxFOws=;
+        b=FoQzTIpiAq/RFPXuKSjOziJrhb2KCOCexbE7qCshAx40TBRUJ4xc8oH9G3M+oad7bx
+         UWK8Y1Ay+WdBvznPNsjAgMRI7vYjJi2moLIjKAuPZUgnbU6T/v7shX1RiYuwItcJeog7
+         dtSK8sfEvBlVfzzu3E3w5pEdoh0x0bTA47X7Mqnrrvl5jWl9dr0CngUzv1hsO/iAbLbh
+         Usb7RxqCLvLlJMynLKvDHuSDk6ea2e9ko6ccQ7B7GJ/ZA083tPPdvw/uzU7tdZfkDJ2h
+         QrVnDwRpT8nfbxjkv/RyD3nySKwjI/nXNiVHkXEoijZpI5OYfwZdtnyjSWsS2crLll/J
+         QHZQ==
+X-Gm-Message-State: AOAM5327adj20x+sXluta2bxSGoRhSwzsJPrXB8PUz6VYZu1TIQowJrt
+        YqZJ0v/vJ0VqX4IJrYp2+cshfOEUzVC1YvRe
+X-Google-Smtp-Source: ABdhPJy4raIs0VwqrQPiBQc3E+6FgvT/KawaF9u4p4aP/jcqe9nJxFcsMMLVxxPhpWnrV5KLM9ze4g==
+X-Received: by 2002:aa7:c752:0:b0:42d:ee9d:5ace with SMTP id c18-20020aa7c752000000b0042dee9d5acemr52401926eds.318.1654875558812;
+        Fri, 10 Jun 2022 08:39:18 -0700 (PDT)
 Received: from localhost.localdomain (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
-        by smtp.gmail.com with ESMTPSA id h24-20020a170906829800b0070f7d1c5a18sm9783857ejx.55.2022.06.10.08.39.14
+        by smtp.gmail.com with ESMTPSA id h24-20020a170906829800b0070f7d1c5a18sm9783857ejx.55.2022.06.10.08.39.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jun 2022 08:39:14 -0700 (PDT)
+        Fri, 10 Jun 2022 08:39:17 -0700 (PDT)
 From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
 To:     hauke@hauke-m.de, Linus Walleij <linus.walleij@linaro.org>,
         =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
@@ -59,9 +59,9 @@ To:     hauke@hauke-m.de, Linus Walleij <linus.walleij@linaro.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Russell King <linux@armlinux.org.uk>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 2/5] net: dsa: realtek: rtl8365mb: remove port_mask private data member
-Date:   Fri, 10 Jun 2022 17:38:26 +0200
-Message-Id: <20220610153829.446516-3-alvin@pqrs.dk>
+Subject: [PATCH net-next v2 4/5] net: dsa: realtek: rtl8365mb: remove learn_limit_max private data member
+Date:   Fri, 10 Jun 2022 17:38:28 +0200
+Message-Id: <20220610153829.446516-5-alvin@pqrs.dk>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220610153829.446516-1-alvin@pqrs.dk>
 References: <20220610153829.446516-1-alvin@pqrs.dk>
@@ -74,66 +74,59 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-There is no real need for this variable: the line change interrupt mask
-is sufficiently masked out when getting linkup_ind and linkdown_ind in
-the interrupt handler.
+The variable is just assigned the value of a macro, so it can be
+removed.
 
 Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
 ---
- drivers/net/dsa/realtek/rtl8365mb.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ drivers/net/dsa/realtek/rtl8365mb.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
 diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
-index 905056250b88..42afba122bb4 100644
+index 3599fa5d9f14..676b88798976 100644
 --- a/drivers/net/dsa/realtek/rtl8365mb.c
 +++ b/drivers/net/dsa/realtek/rtl8365mb.c
-@@ -564,7 +564,6 @@ struct rtl8365mb_port {
+@@ -563,7 +563,6 @@ struct rtl8365mb_port {
   * @irq: registered IRQ or zero
   * @chip_id: chip identifier
   * @chip_ver: chip silicon revision
-- * @port_mask: mask of all ports
-  * @learn_limit_max: maximum number of L2 addresses the chip can learn
+- * @learn_limit_max: maximum number of L2 addresses the chip can learn
   * @cpu: CPU tagging and CPU port configuration for this chip
   * @mib_lock: prevent concurrent reads of MIB counters
-@@ -579,7 +578,6 @@ struct rtl8365mb {
+  * @ports: per-port data
+@@ -577,7 +576,6 @@ struct rtl8365mb {
  	int irq;
  	u32 chip_id;
  	u32 chip_ver;
--	u32 port_mask;
- 	u32 learn_limit_max;
+-	u32 learn_limit_max;
  	struct rtl8365mb_cpu cpu;
  	struct mutex mib_lock;
-@@ -1489,13 +1487,10 @@ static irqreturn_t rtl8365mb_irq(int irq, void *data)
+ 	struct rtl8365mb_port ports[RTL8365MB_MAX_NUM_PORTS];
+@@ -1088,15 +1086,13 @@ static void rtl8365mb_port_stp_state_set(struct dsa_switch *ds, int port,
+ static int rtl8365mb_port_set_learning(struct realtek_priv *priv, int port,
+ 				       bool enable)
  {
- 	struct realtek_priv *priv = data;
- 	unsigned long line_changes = 0;
--	struct rtl8365mb *mb;
- 	u32 stat;
- 	int line;
- 	int ret;
- 
--	mb = priv->chip_data;
+-	struct rtl8365mb *mb = priv->chip_data;
 -
- 	ret = rtl8365mb_get_and_clear_status_reg(priv, RTL8365MB_INTR_STATUS_REG,
- 						 &stat);
- 	if (ret)
-@@ -1520,7 +1515,7 @@ static irqreturn_t rtl8365mb_irq(int irq, void *data)
+ 	/* Enable/disable learning by limiting the number of L2 addresses the
+ 	 * port can learn. Realtek documentation states that a limit of zero
+ 	 * disables learning. When enabling learning, set it to the chip's
+ 	 * maximum.
+ 	 */
+ 	return regmap_write(priv->map, RTL8365MB_LUT_PORT_LEARN_LIMIT_REG(port),
+-			    enable ? mb->learn_limit_max : 0);
++			    enable ? RTL8365MB_LEARN_LIMIT_MAX : 0);
+ }
  
- 		linkdown_ind = FIELD_GET(RTL8365MB_PORT_LINKDOWN_IND_MASK, val);
- 
--		line_changes = (linkup_ind | linkdown_ind) & mb->port_mask;
-+		line_changes = linkup_ind | linkdown_ind;
- 	}
- 
- 	if (!line_changes)
-@@ -2009,7 +2004,6 @@ static int rtl8365mb_detect(struct realtek_priv *priv)
+ static int rtl8365mb_port_set_isolation(struct realtek_priv *priv, int port,
+@@ -2003,7 +1999,6 @@ static int rtl8365mb_detect(struct realtek_priv *priv)
  		mb->priv = priv;
  		mb->chip_id = chip_id;
  		mb->chip_ver = chip_ver;
--		mb->port_mask = GENMASK(priv->num_ports - 1, 0);
- 		mb->learn_limit_max = RTL8365MB_LEARN_LIMIT_MAX;
+-		mb->learn_limit_max = RTL8365MB_LEARN_LIMIT_MAX;
  		mb->jam_table = rtl8365mb_init_jam_8365mb_vc;
  		mb->jam_size = ARRAY_SIZE(rtl8365mb_init_jam_8365mb_vc);
+ 
 -- 
 2.36.1
 
