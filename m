@@ -2,81 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CC77C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 08:42:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21744C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 08:43:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347451AbiFJImJ (ORCPT
+        id S1347259AbiFJInx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 04:42:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51848 "EHLO
+        Fri, 10 Jun 2022 04:43:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239779AbiFJImH (ORCPT
+        with ESMTP id S243453AbiFJInu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 04:42:07 -0400
-Received: from smtpbg.qq.com (smtpbg138.qq.com [106.55.201.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 219551FA6C
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 01:42:02 -0700 (PDT)
-X-QQ-mid: bizesmtp63t1654850386tif11fbf
-Received: from localhost.localdomain ( [182.148.15.124])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Fri, 10 Jun 2022 16:39:31 +0800 (CST)
-X-QQ-SSF: 01000000002000C0H000B00A0000000
-X-QQ-FEAT: ZHWZeLXy+8cOxDPLyuwRmzpNsjh1fQNcUTozYbxsddqVmpR3yZs0SiudcbKuW
-        RztaTflJn89M1v+BOmlBdDa67Dqc3AM2U+2aTwLZZQr7fS6zQBwKnW8Ev/oqeRt8fx55g3l
-        drXo36cmFGxsaESEYQSBJ1zLmie7lS+WoJ7w1cTWRItUSFh8DpAy0eh3H0S4mBtOlQj/2Cl
-        TSZkVfcfVDmyeVcqjDGSNCFWG7C6c5IaxlzEwRFzEE88l0VI80XJN3BysvO23HZ4tVJgZQb
-        Bsi7KGinRDb4BnuRYehbOqQCJJ8KuhFHI12Xw8OcQkDsHVVJWficNWXYJF1zFKmJEERi2in
-        ih7HJyubBOsb0/Q0EAV33Tpp0QN4WANMIimkTg7
-X-QQ-GoodBg: 0
-From:   Xiang wangx <wangxiang@cdjrlc.com>
-To:     geert@linux-m68k.org
-Cc:     funaho@jurai.org, linux-m68k@lists.linux-m68k.org,
-        linux-kernel@vger.kernel.org, Xiang wangx <wangxiang@cdjrlc.com>
-Subject: [PATCH v2] m68k: mac: Fix typo in comment
-Date:   Fri, 10 Jun 2022 16:39:24 +0800
-Message-Id: <20220610083924.32877-1-wangxiang@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Fri, 10 Jun 2022 04:43:50 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8386F205E3;
+        Fri, 10 Jun 2022 01:43:49 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id c14so24126729pgu.13;
+        Fri, 10 Jun 2022 01:43:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Fnzztiv9XavT4IQNbT2bMnkx97CUI42MYbUmzR1Txe8=;
+        b=osnoxH5cTtQfl6/nlBpHZXqOKwchJOW7c6MPa94k864V/AAgr3P3DwrNci01DQafpm
+         fDQbtVzsLAwF9fIP3xHC1EOv/AGJea/tJ+39ydOMHEUSe1keNTiNsY8g8MzUBZ+9Fn/r
+         ROp2MBqAyfmCRvCaGOeUIat8fLsvtZ0LkD0mEu5xC3mrgOOcZdXwO0TnVF7u/Myd1K5A
+         alZvDpvEOPtcXYakblhG3iC5Mn1nVPTB1MCCYtsGNUUvYK31SPL3pFUyBgBY4fiSMVUQ
+         7WUcrM6yd/pmxTfyluVHwiG5dlx68ynTmlXgXHffDN8PaSXTEQvq9x/wxRkTMPCWoZyD
+         tlBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Fnzztiv9XavT4IQNbT2bMnkx97CUI42MYbUmzR1Txe8=;
+        b=AnIAzKxhw/sD+oLCd9GzziM/cCCF3PM4IBjUIExontpN6bGWyfYHQOm8P67VixiTAm
+         GAP2dnqqQVzCX3k9r4y9tpydQXWYOiUdwr1156caJ8KHRHGhSIaB0AZJSO5QC3K2S+58
+         N8dnQmB+8cUmOMV0lVFj9tZ1r0NN5X7M33ng1QRbfdAcgf13XljV0ua/ChUPLxdiX4gd
+         tK9ntwGQO2u7b3t8og7BppXuJG8pJj0dvnXteapIsYlziTx56n0tlNK6pnr5+EiuXUIt
+         NPWYZ4btrhOsxby9cEst2eQMfGF76CFdPkPhOcfs4uLgP1p7i2dVdpgwnQ3gSEn9bAmC
+         2Unw==
+X-Gm-Message-State: AOAM530FslniwsW5VUzno9S36XmNhGASg3cmEwLxukXNOzL77d9uQeOD
+        kWKF0JGNNOwFqZ6C+9PStK4=
+X-Google-Smtp-Source: ABdhPJzEYrGovMTXImTbXk9YA87MxIb9ZVrue/3Zo4riO+iJWCIyynA12osskNdE0FBUUb1xsJE/1w==
+X-Received: by 2002:a63:4726:0:b0:3fd:9e47:6b3f with SMTP id u38-20020a634726000000b003fd9e476b3fmr24629903pga.321.1654850628852;
+        Fri, 10 Jun 2022 01:43:48 -0700 (PDT)
+Received: from localhost.localdomain ([1.200.147.12])
+        by smtp.gmail.com with ESMTPSA id c28-20020aa7953c000000b0051c01aa7d31sm11703568pfp.46.2022.06.10.01.43.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Jun 2022 01:43:48 -0700 (PDT)
+From:   medadyoung@gmail.com
+X-Google-Original-From: ctcchien@nuvoton.com
+To:     rric@kernel.org, james.morse@arm.com, tony.luck@intel.com,
+        mchehab@kernel.org, bp@alien8.de, robh+dt@kernel.org,
+        benjaminfair@google.com, yuenn@google.com, venture@google.com,
+        KWLIU@nuvoton.com, YSCHU@nuvoton.com, JJLIU0@nuvoton.com,
+        KFTING@nuvoton.com, avifishman70@gmail.com, tmaimon77@gmail.com,
+        tali.perry1@gmail.com, ctcchien@nuvoton.com
+Cc:     linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, openbmc@lists.ozlabs.org
+Subject: [PATCH v12 0/3] EDAC: nuvoton: Add nuvoton NPCM memory controller driver
+Date:   Fri, 10 Jun 2022 16:43:37 +0800
+Message-Id: <20220610084340.2268-1-ctcchien@nuvoton.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'an'.
-The second "and" should not be deleted, but replaced by "an".
+From: Medad CChien <ctcchien@nuvoton.com>
 
-Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
----
-Changes since v1
-*Change comments "and and" to "and an"
+Support memory controller for Nuvoton NPCM SoC.
 
- arch/m68k/mac/iop.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Addressed comments from:
+ - Rob Herring : https://lkml.org/lkml/2022/2/25/1103
+ - Krzysztof Kozlowski : https://lkml.org/lkml/2022/2/27/63
+ - Rob Herring : https://lkml.org/lkml/2022/3/2/828
+ - Krzysztof Kozlowski : https://lkml.org/lkml/2022/3/11/294
+ - Jonathan Neuschäfer : https://lkml.org/lkml/2022/3/11/1167
+ - Krzysztof Kozlowski : https://lkml.org/lkml/2022/3/11/293
+ - Rob Herring : https://lkml.org/lkml/2022/3/11/575
+ - Krzysztof Kozlowski : https://lkml.org/lkml/2022/3/11/305
+ - Avi Fishman : https://lkml.org/lkml/2022/3/13/339
+ - Krzysztof Kozlowski : https://lkml.org/lkml/2022/3/14/93
+ - Krzysztof Kozlowski : https://lkml.org/lkml/2022/3/14/95
+ - Krzysztof Kozlowski : https://lkml.org/lkml/2022/3/15/378
+ - Boris Petkov : https://lkml.org/lkml/2022/3/17/561
+ - Paul Menzel : https://lkml.org/lkml/2022/4/9/47
+ - Paul Menzel : https://lkml.org/lkml/2022/4/11/182
+ - Borislav Petkov : https://lkml.org/lkml/2022/4/8/871
+ - Paul Menzel : https://lkml.org/lkml/2022/4/9/51
+ - Paul Menzel : https://lkml.org/lkml/2022/4/9/65
+ - Rob Herring : https://lkml.org/lkml/2022/4/21/681
+ - Paul Menzel : https://lkml.org/lkml/2022/5/3/307
+ - Paul Menzel : https://lkml.org/lkml/2022/5/3/304
+ - Borislav Petkov : https://lkml.org/lkml/2022/5/3/343
+ - Paul Menzel https://lkml.org/lkml/2022/5/10/47
+ - Paul Menzel https://lkml.org/lkml/2022/5/10/127
 
-diff --git a/arch/m68k/mac/iop.c b/arch/m68k/mac/iop.c
-index de156a027f5b..010b3b5ae8e8 100644
---- a/arch/m68k/mac/iop.c
-+++ b/arch/m68k/mac/iop.c
-@@ -25,7 +25,7 @@
-  *		  check this.)
-  * 990605 (jmt) - Rearranged things a bit wrt IOP detection; iop_present is
-  *		  gone, IOP base addresses are now in an array and the
-- *		  globally-visible functions take an IOP number instead of an
-+ *		  globally-visible functions take an IOP number instead of
-  *		  an actual base address.
-  * 990610 (jmt) - Finished the message passing framework and it seems to work.
-  *		  Sending _definitely_ works; my adb-bus.c mods can send
-@@ -66,7 +66,7 @@
-  * a shared memory area in the IOP RAM. Each IOP has seven "channels"; each
-  * channel is connected to a specific software driver on the IOP. For example
-  * on the SCC IOP there is one channel for each serial port. Each channel has
-- * an incoming and and outgoing message queue with a depth of one.
-+ * an incoming and an outgoing message queue with a depth of one.
-  *
-  * A message is 32 bytes plus a state byte for the channel (MSG_IDLE, MSG_NEW,
-  * MSG_RCVD, MSG_COMPLETE). To send a message you copy the message into the
+Changes since version 12:
+ - Pass ecc event count to edac_mc_handle_error.
+
+Changes since version 11:
+ - Update MAINTAINERS file
+
+Changes since version 10:
+ - Add one more maintainer.
+ - Correct indentation in npcm_edac.c.
+ - Add datasheet information in commit message.
+
+Changes since version 9:
+ - Add a necessary blank line in Kconfig for EDAC_NPCM.
+ - Reflow for 75 characters per line in commit message of devicetree file.
+ - Remove wrong tags in all the commit message.
+ - Reorder content in commit message of NPCM memory controller driver.
+
+Changes since version 8:
+ - Add new line character at the end of file of yaml file
+
+Changes since version 7:
+ - Refactor npcm_edac.c.
+ - Sort strings in npcm_edac.c.
+ - Reflow code for 75 characters per line.
+ - Summarize errors and warnings reported by kernel test robot.
+ - Shorten name of values to make them become more readable in npcm_edac.c.
+ - Put spaces between the * and the text in npcm_edac.c.
+
+Changes since version 6:
+ - Fix warnings in npcm_edac.c.
+ - Add information reported by kernel test robot <lkp@intel.com>.
+
+Changes since version 5:
+ - Update commit message for NPCM memory controller driver.
+
+Changes since version 4:
+ - Update filename in nuvoton,npcm-memory-controller.yaml.
+ - Add COMPILE_TEST in Kconfig.
+ - Fix errors in npcm_edac.c.
+ - Remove unnecessary checking after of_match_device() and of_device_get_match_data().
+
+Changes since version 3:
+ - Rename npcm-edac.yaml as nuvoton,npcm-memory-controller.yaml.
+ - Drop 'EDAC' in title of nuvoton,npcm-memory-controller.yaml.
+ - Update compatible in nuvoton,npcm-memory-controller.yaml.
+
+Changes since version 2:
+ - Update description and compatible in npcm-edac.yaml.
+ - Remove address-cells and size-cells in npcm-edac.yaml.
+ - Reorder the items of examples in npcm-edac.yaml.
+ - Reorder header file in driver.
+
+Changes since version 1:
+ - Add nuvoton,npcm750-memory-controller property in NPCM devicetree.
+ - Add new property in edac binding document.
+ - Add new driver for nuvoton NPCM memory controller.
+
+Medad CChien (3):
+  dt-bindings: edac: nuvoton: add NPCM memory controller
+  ARM: dts: nuvoton: Add memory controller node
+  EDAC: nuvoton: Add NPCM memory controller driver
+
+ .../edac/nuvoton,npcm-memory-controller.yaml  |  62 ++
+ MAINTAINERS                                   |   2 +
+ arch/arm/boot/dts/nuvoton-common-npcm7xx.dtsi |   7 +
+ drivers/edac/Kconfig                          |  17 +
+ drivers/edac/Makefile                         |   1 +
+ drivers/edac/npcm_edac.c                      | 680 ++++++++++++++++++
+ 6 files changed, 769 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/edac/nuvoton,npcm-memory-controller.yaml
+ create mode 100644 drivers/edac/npcm_edac.c
+
 -- 
-2.36.1
+2.17.1
 
