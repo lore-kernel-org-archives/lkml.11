@@ -2,79 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 992D4CCA47C
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 16:57:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 078C6CCA47B
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 16:59:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243795AbiFJQ5j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 12:57:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57902 "EHLO
+        id S1350026AbiFJQ7B (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 10 Jun 2022 12:59:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231317AbiFJQ5h (ORCPT
+        with ESMTP id S1350035AbiFJQ6c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 12:57:37 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16F0310C3;
-        Fri, 10 Jun 2022 09:57:31 -0700 (PDT)
-X-UUID: 3074d9628a6c410286eeecd13f5fc3f3-20220611
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:a4bc0329-0515-494a-8883-0e46bb75846b,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:22,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:22
-X-CID-INFO: VERSION:1.1.5,REQID:a4bc0329-0515-494a-8883-0e46bb75846b,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:22,FILE:0,RULE:Release_Ham,ACTIO
-        N:release,TS:22
-X-CID-META: VersionHash:2a19b09,CLOUDID:e1dd5e50-276a-4a9a-a4c8-ea931023add4,C
-        OID:IGNORED,Recheck:0,SF:28|100|17|19|48|101,TC:nil,Content:-5,EDM:-3,IP:n
-        il,URL:0,File:nil,QS:0,BEC:nil
-X-UUID: 3074d9628a6c410286eeecd13f5fc3f3-20220611
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <miles.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 796968846; Sat, 11 Jun 2022 00:57:25 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Sat, 11 Jun 2022 00:57:24 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Sat, 11 Jun 2022 00:57:24 +0800
-From:   Miles Chen <miles.chen@mediatek.com>
-To:     <masahiroy@kernel.org>
-CC:     <corbet@lwn.net>, <jonathanh@nvidia.com>,
-        <linux-doc@vger.kernel.org>, <linux-kbuild@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <llvm@lists.linux.dev>,
-        <mpe@ellerman.id.au>, <nathan@kernel.org>,
-        <ndesaulniers@google.com>, <penguin-kernel@I-love.SAKURA.ne.jp>,
-        <trix@redhat.com>, <wangyugui@e16-tech.com>
-Subject: Re: [PATCH v3] scripts/check-local-export: avoid 'wait $!' for process substitution
-Date:   Sat, 11 Jun 2022 00:57:24 +0800
-Message-ID: <20220610165724.16214-1-miles.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220608011100.486735-1-masahiroy@kernel.org>
-References: <20220608011100.486735-1-masahiroy@kernel.org>
+        Fri, 10 Jun 2022 12:58:32 -0400
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF8B010C3
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 09:58:30 -0700 (PDT)
+Received: from BUMER.localdomain (unknown [93.175.1.252])
+        by mail.ispras.ru (Postfix) with ESMTPSA id 1C7FC40737C0;
+        Fri, 10 Jun 2022 16:58:21 +0000 (UTC)
+From:   Daniil Dementev <d.dementev@ispras.ru>
+To:     Jaroslav Kysela <perex@perex.cz>
+Cc:     Daniil Dementev <d.dementev@ispras.ru>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>
+Subject: [PATCH] ALSA: usb-audio: US16x08: Move overflow check before array access
+Date:   Fri, 10 Jun 2022 19:57:32 +0300
+Message-Id: <20220610165732.2904-1-d.dementev@ispras.ru>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->Bash 4.4, released in 2016, supports 'wait $!' to check the exit status
->of a process substitution, but it seems too new.
->
->Some people using older bash versions (on CentOS 7, Ubuntu 16.04, etc.)
->reported an error like this:
->
->  ./scripts/check-local-export: line 54: wait: pid 17328 is not a child of this shell
+Buffer overflow could occur in the loop "while", due to accessing an
+array element before checking the index.
 
-Thanks for fixing this!
-I hit this issue and this patch fixes my problem.
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
 
-Tested-by: Miles Chen <miles.chen@mediatek.com> 
+Signed-off-by: Daniil Dementev <d.dementev@ispras.ru>
+Reviewed-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+---
+ sound/usb/mixer_us16x08.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
->
->I used the process substitution to avoid a pipeline, which executes each
->command in a subshell. If the while-loop is executed in the subshell
->context, variable changes within are lost after the subshell terminates.
-
+diff --git a/sound/usb/mixer_us16x08.c b/sound/usb/mixer_us16x08.c
+index b7b6f3834ed5..6eb7d93b358d 100644
+--- a/sound/usb/mixer_us16x08.c
++++ b/sound/usb/mixer_us16x08.c
+@@ -637,10 +637,10 @@ static int snd_get_meter_comp_index(struct snd_us16x08_meter_store *store)
+ 		}
+ 	} else {
+ 		/* skip channels with no compressor active */
+-		while (!store->comp_store->val[
++		while (store->comp_index <= SND_US16X08_MAX_CHANNELS
++			&& !store->comp_store->val[
+ 			COMP_STORE_IDX(SND_US16X08_ID_COMP_SWITCH)]
+-			[store->comp_index - 1]
+-			&& store->comp_index <= SND_US16X08_MAX_CHANNELS) {
++			[store->comp_index - 1]) {
+ 			store->comp_index++;
+ 		}
+ 		ret = store->comp_index++;
+-- 
+2.35.1.windows.2
 
