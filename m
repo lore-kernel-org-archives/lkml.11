@@ -2,99 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3369C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 18:35:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0930BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 18:36:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350368AbiFJSfr (ORCPT
+        id S1350360AbiFJSg1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 14:35:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42674 "EHLO
+        Fri, 10 Jun 2022 14:36:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350072AbiFJSfU (ORCPT
+        with ESMTP id S1350352AbiFJSgL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 14:35:20 -0400
-X-Greylist: delayed 72 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 10 Jun 2022 11:35:00 PDT
-Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 632273ED30;
-        Fri, 10 Jun 2022 11:35:00 -0700 (PDT)
-Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-12.nifty.com with ESMTP id 25AIX5TL020882;
-        Sat, 11 Jun 2022 03:33:05 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 25AIX5TL020882
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1654885986;
-        bh=9V5ZtNuA93j8Q20aLKhJjsp/qlA4DxrP5ew51lWbprM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=EiMGDoVxhBnNAUwmy9Pw4D8rmphe8eCNo0y+s4fv97gyda6/4gSz7svrcCC6tDIQW
-         aP0vbki01SCpg1hqhOCJc4naCcSl0SfPT+qJU7xSLOBGfdpcT+Ret0MBFozRLn5XIp
-         UVOJrKlfMMp/pEzmmedySfSmWAXRkowNr8dxMvxmjVqMgpXrRm3B52le1YCUqlnDBs
-         2NZDyLIkqRMlZyvrMhzWQv9MSgxNZ7474xOBSyN1ger4f19kJWCP1zXBV6tX7vTDy8
-         zzBTSPJRj8Gbv2W92g931cV6L+rKVyDjDTRdAJoThsRtiCCFLpVtndbszNtF06H1QM
-         4e+Hs+bAbBl0w==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        Nicolas Pitre <npitre@baylibre.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        linux-modules@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Alessio Igor Bogani <abogani@kernel.org>,
-        Andy Whitcroft <apw@canonical.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Dwaipayan Ray <dwaipayanray1@gmail.com>,
-        Joe Perches <joe@perches.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Rusty Russell <rusty@rustcorp.com.au>,
-        linux-arch@vger.kernel.org, linux-ia64@vger.kernel.org,
+        Fri, 10 Jun 2022 14:36:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 759603F33D;
+        Fri, 10 Jun 2022 11:35:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E634F621D5;
+        Fri, 10 Jun 2022 18:35:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E0AAC34114;
+        Fri, 10 Jun 2022 18:35:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654886144;
+        bh=m3CSPgnSkRLqgebnknIX+DA92vhoLZ73QX/ht0dUq3w=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=XJ60D+TAZBxmDkDmk6GNtHdCkxGxLWNCqmsNdbSBe/oqFSqn6qXsCNFHOQhJDiv7a
+         vPvLtUwqoKWxJIHo+lzA2fqgV5q1iSPwQ7XZ+aK9u91brHi++8/OW4D2ieqKFKTk6L
+         EmN9SmK6CtU/cYzFdhwSy8FZRK16GcC4x5uf3vEzxnuyHi5tiFL+f7NDR131A65VAd
+         hAK6kJNGDOG/XjPq692CGpyEkE0GTHS+B2j6gWaJkMLgLldeKFpRfwXI+LTq9bxCro
+         B1cWlCnEk4zplu8izczmoppoOxc21VfHUiPHKmW/97iAVNOmricmGBw2DF6N7iWMDe
+         BbvUYgH1K1rAQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id E713A5C05ED; Fri, 10 Jun 2022 11:35:43 -0700 (PDT)
+Date:   Fri, 10 Jun 2022 11:35:43 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Zqiang <qiang1.zhang@intel.com>
+Cc:     frederic@kernel.org, rcu@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 0/7] Unify <linux/export.h> and <asm/export.h>, remove EXPORT_DATA_SYMBOL()
-Date:   Sat, 11 Jun 2022 03:32:29 +0900
-Message-Id: <20220610183236.1272216-1-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
+Subject: Re: [PATCH] rcu-tasks: Remove unused trc_wait and holdouts
+Message-ID: <20220610183543.GJ1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220610062228.2185104-1-qiang1.zhang@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220610062228.2185104-1-qiang1.zhang@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Jun 10, 2022 at 02:22:28PM +0800, Zqiang wrote:
+> Remove unused trc_wait waitqueue and local holdouts list.
+> 
+> Signed-off-by: Zqiang <qiang1.zhang@intel.com>
 
-This patch set refactors EXPORT_SYMBOL, <linux/export.h> and <asm/export.h>.
+Good eyes, thank you!  I will fold this into the original commit
+with attribution.
 
-You can still put EXPORT_SYMBOL() in *.S file, very close to the definition,
-but you do not need to care about whether it is a function or a data.
-Remove EXPORT_DATA_SYMBOL().
+							Thanx, Paul
 
-
-
-Masahiro Yamada (7):
-  modpost: fix section mismatch check for exported init/exit sections
-  modpost: put get_secindex() call inside sec_name()
-  kbuild: generate struct kernel_symbol by modpost
-  ia64,export.h: replace EXPORT_DATA_SYMBOL* with EXPORT_SYMBOL*
-  checkpatch: warn if <asm/export.h> is included
-  modpost: merge sym_update_namespace() into sym_add_exported()
-  modpost: use null string instead of NULL pointer for default namespace
-
- arch/ia64/include/asm/Kbuild    |   1 +
- arch/ia64/include/asm/export.h  |   3 -
- arch/ia64/kernel/head.S         |   2 +-
- arch/ia64/kernel/ivt.S          |   2 +-
- include/asm-generic/export.h    |  83 +------------------
- include/linux/export-internal.h |  44 ++++++++++
- include/linux/export.h          |  97 ++++++++--------------
- kernel/module/internal.h        |  12 +++
- kernel/module/main.c            |   1 -
- scripts/Makefile.build          |   8 +-
- scripts/check-local-export      |   4 +-
- scripts/checkpatch.pl           |   7 ++
- scripts/mod/modpost.c           | 139 +++++++++++++++++---------------
- scripts/mod/modpost.h           |   1 +
- 14 files changed, 182 insertions(+), 222 deletions(-)
- delete mode 100644 arch/ia64/include/asm/export.h
-
--- 
-2.32.0
-
+> ---
+>  kernel/rcu/tasks.h | 3 ---
+>  1 file changed, 3 deletions(-)
+> 
+> diff --git a/kernel/rcu/tasks.h b/kernel/rcu/tasks.h
+> index 55e76db8b0d3..fcbd0ec33c86 100644
+> --- a/kernel/rcu/tasks.h
+> +++ b/kernel/rcu/tasks.h
+> @@ -1190,8 +1190,6 @@ EXPORT_SYMBOL_GPL(rcu_trace_lock_map);
+>  
+>  #ifdef CONFIG_TASKS_TRACE_RCU
+>  
+> -static DECLARE_WAIT_QUEUE_HEAD(trc_wait);	// List of holdout tasks.
+> -
+>  // Record outstanding IPIs to each CPU.  No point in sending two...
+>  static DEFINE_PER_CPU(bool, trc_ipi_to_cpu);
+>  
+> @@ -1641,7 +1639,6 @@ static void rcu_tasks_trace_empty_fn(void *unused)
+>  static void rcu_tasks_trace_postgp(struct rcu_tasks *rtp)
+>  {
+>  	int cpu;
+> -	LIST_HEAD(holdouts);
+>  
+>  	// Wait for any lingering IPI handlers to complete.  Note that
+>  	// if a CPU has gone offline or transitioned to userspace in the
+> -- 
+> 2.25.1
+> 
