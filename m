@@ -2,60 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 748C1C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 07:57:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB11EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 07:57:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347041AbiFJH5k (ORCPT
+        id S1347053AbiFJH5m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 03:57:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41648 "EHLO
+        Fri, 10 Jun 2022 03:57:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346980AbiFJH5i (ORCPT
+        with ESMTP id S1346874AbiFJH5j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 03:57:38 -0400
+        Fri, 10 Jun 2022 03:57:39 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A372F5FEA
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 00:57:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3FD431CB735
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 00:57:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654847853;
+        s=mimecast20190719; t=1654847857;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=9JUULinURQIF2agXGFcfqyCBp0u0vC7JiRZXKcJ+ITY=;
-        b=Shv/Ph9nsl1iRozUfeAaYw2trfDeWKqUM9KKIn3ok3xeogROlFvxnQ3fGojnuCqkzYoxWS
-        Fj0Qny6du87mNNq5B+jfFQl8iXVQfhqToeaGMlb3YjUgkWzc39VKHKrzKJbnbYJpaO6lsB
-        DfSHtvvb5pYW7tkB9dSZW7yHH8je/Ew=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ATkm+EAS67CnW4t/j84Y6CR89852slTzLc67eEvXk84=;
+        b=URwKekbtS3voKHIDNkRRtSaCC3BdrRFeLUXXpG/0Vor8+x2KoaTlsq8+tY/BTrqpoxD0qw
+        hzhmLSlcoNXv64yXS/BZeEgato1XPpZXjo/wYaRw3q8taVzsxmsRkkAc4DnlyhsAMtJNvT
+        AGBhQTmsgUi3DLf+Q9WggEnrmCUOVXk=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-441-1CoQXqmeNZ2zA-a-2wDyhg-1; Fri, 10 Jun 2022 03:57:32 -0400
-X-MC-Unique: 1CoQXqmeNZ2zA-a-2wDyhg-1
-Received: by mail-wm1-f69.google.com with SMTP id v8-20020a7bcb48000000b0039c62488f77so3162463wmj.4
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 00:57:32 -0700 (PDT)
+ us-mta-347-vBB-3pHdOH-KFf90kFWZ4A-1; Fri, 10 Jun 2022 03:57:36 -0400
+X-MC-Unique: vBB-3pHdOH-KFf90kFWZ4A-1
+Received: by mail-wm1-f71.google.com with SMTP id c125-20020a1c3583000000b003978decffedso940900wma.5
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 00:57:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9JUULinURQIF2agXGFcfqyCBp0u0vC7JiRZXKcJ+ITY=;
-        b=v7E+nlGc8PntjtAtx19MevpyjjlUMaMQVAffgWKezo86j1qRloI8DEnHd5PRtletKy
-         E9lkkrRNRf1ygB4MePt25yNi9nTRsbHwo5LgvO/aFBxUIm73H7g7i5aj1mKYpyQUP2Ep
-         D149lZ6z8DI8ufokBjfIgXgpJ+EHDy7AMM6OnKKysgVtdZAJMUJUg4mHYTEcqLnCbwCU
-         X9eN5PSEu7/Q2dTnrqW9CzRPKs6OyrE+hjChlIu4vHMgwqrAhgMfUD3JtcIwqjLLNCl6
-         kmoHl+ESJHA4nj6gBNPwzEDcuvWqvp0avlzVh1FfgBTiLgk4yFRp/YDuIJqB40H7gqIJ
-         cdGw==
-X-Gm-Message-State: AOAM532u35gtC6NQhdhCJXxuBAwWbyPl2PhySXeLHas9KiTDC/w6e8Lg
-        yqMm9f7u4OW987WuhV7dmSBjIRPAeAyWhrajj0nUpu5Jwc7LMqAOkxdb50HtJJEfjJcE6vgekMT
-        L9Mqbe27qrCy0gkpeaUBYVC+SmWT80S6oOS6mJHS4TwJS/MPT5FNrLRHaU/AqsFPAs6pLr1fZN/
-        8=
-X-Received: by 2002:a05:600c:4ca7:b0:39c:422a:fc6f with SMTP id g39-20020a05600c4ca700b0039c422afc6fmr7690893wmp.55.1654847850857;
-        Fri, 10 Jun 2022 00:57:30 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz9LDf4PbFRTolUMSMcOOuXciMzMVNXsXUGJVvn7HT+K0T/s38fEKlV27tmyea6wC5afDDpQA==
-X-Received: by 2002:a05:600c:4ca7:b0:39c:422a:fc6f with SMTP id g39-20020a05600c4ca700b0039c422afc6fmr7690854wmp.55.1654847850457;
-        Fri, 10 Jun 2022 00:57:30 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ATkm+EAS67CnW4t/j84Y6CR89852slTzLc67eEvXk84=;
+        b=uU7BAVwMPXOXnvo/ul7xpo9hj9UfyQsGjRhBOeLiPfifN5JY0JHU5E7ZjOMO/Vzqf0
+         1u7067PfMMbfMuHpa7SbQKZCOyDIExcxGN90Pauk1pno+16qt2NNgAaD9I14Z6BRY6NP
+         oC0NsC1PwB4gHTYMwRP+9IWeTEKg4agry8s3IoGN8TQT7R6IAbsOjgId3FIKaZu7DjXT
+         CurjbKDA/YT0uFgC1MDk/pWPW8MLpGVlQJRK2OI63no7tjNzXpo8VN8wS0oVTyXW/HZF
+         EObkkeXUyZ5+qrOjpbyuYoGU3oeeROpa1AP8C7mnPrS/gdpRH+TS1tVNvdN4ovSC3/X9
+         YvCQ==
+X-Gm-Message-State: AOAM532BRQMtvwDTESLY91lwa6oUhET6g8d3i/+GXBZGUFrdmbsMhyXl
+        wGgbEdgqblXorGfF0yrn2S4dXr0b3Z1TBN6U7aoRlFBfm+9gqFyfX2Cwy2wDivHlUpy/nockYiY
+        DZ9FqU4VvT4TkKypWgUMn9tyHzqPNyoBtsLcM6ZYXQnvFpxGRyfTSTleiD4jvvxAMH3hhDEzKGb
+        4=
+X-Received: by 2002:a05:6000:1e04:b0:217:88ff:eb86 with SMTP id bj4-20020a0560001e0400b0021788ffeb86mr28802977wrb.351.1654847854699;
+        Fri, 10 Jun 2022 00:57:34 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxQlwFK+FH4sMjCahy974jb0qPsptlEfGDrmM5xqbhSNgopqZIh4JoK76okVhVbqzw+BLOGCw==
+X-Received: by 2002:a05:6000:1e04:b0:217:88ff:eb86 with SMTP id bj4-20020a0560001e0400b0021788ffeb86mr28802943wrb.351.1654847854416;
+        Fri, 10 Jun 2022 00:57:34 -0700 (PDT)
 Received: from minerva.home (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id l6-20020a5d4bc6000000b0020e615bab7bsm26673363wrt.7.2022.06.10.00.57.29
+        by smtp.gmail.com with ESMTPSA id l6-20020a5d4bc6000000b0020e615bab7bsm26673363wrt.7.2022.06.10.00.57.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jun 2022 00:57:29 -0700 (PDT)
+        Fri, 10 Jun 2022 00:57:34 -0700 (PDT)
 From:   Javier Martinez Canillas <javierm@redhat.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Christian Kellner <ckellner@redhat.com>,
@@ -68,41 +69,32 @@ Cc:     Christian Kellner <ckellner@redhat.com>,
         Alexander Larsson <alexl@redhat.com>,
         Colin Walters <walters@verbum.org>,
         Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
-Subject: [PATCH v6 0/4] fat: add support for the renameat2 RENAME_EXCHANGE flag
-Date:   Fri, 10 Jun 2022 09:57:17 +0200
-Message-Id: <20220610075721.1182745-1-javierm@redhat.com>
+        Javier Martinez Canillas <javierm@redhat.com>
+Subject: [PATCH v6 3/4] fat: add renameat2 RENAME_EXCHANGE flag support
+Date:   Fri, 10 Jun 2022 09:57:20 +0200
+Message-Id: <20220610075721.1182745-4-javierm@redhat.com>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220610075721.1182745-1-javierm@redhat.com>
+References: <20220610075721.1182745-1-javierm@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+The renameat2 RENAME_EXCHANGE flag allows to atomically exchange two paths
+but is currently not supported by the Linux vfat filesystem driver.
 
-The series adds support for the renameat2 system call RENAME_EXCHANGE flag
-(which allows to atomically replace two paths) to the vfat filesystem code.
+Add a vfat_rename_exchange() helper function that implements this support.
 
-There are many use cases for this, but we are particularly interested in
-making possible for vfat filesystems to be part of OSTree [0] deployments.
+The super block lock is acquired during the operation to ensure atomicity,
+and in the error path actions made are reversed also with the mutex held.
 
-Currently OSTree relies on symbolic links to make the deployment updates
-an atomic transactional operation. But RENAME_EXCHANGE could be used [1]
-to achieve a similar level of robustness when using a vfat filesystem.
+It makes the operation as transactional as possible, within the limitation
+impossed by vfat due not having a journal with logs to replay.
 
-Patch #1 is just a preparatory patch to introduce the RENAME_EXCHANGE
-support, patch #2 moves some code blocks in vfat_rename() to a set of
-helper functions, that can be reused by tvfat_rename_exchange() that's
-added by patch #3 and finally patch #4 adds some kselftests to test it.
-
-This is a v6 that addresses issues pointed out in v5:
-
-https://lkml.org/lkml/2022/6/9/361
-
-[0]: https://github.com/ostreedev/ostree
-[1]: https://github.com/ostreedev/ostree/issues/1649
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+---
 
 Changes in v6:
 - Simplify logic to determine if nlink have to modified (OGAWA Hirofumi).
@@ -111,15 +103,8 @@ Changes in v5:
 - Only update nlink for different parent dirs and file types (OGAWA Hirofumi).
 
 Changes in v4:
-- Add new patch from OGAWA Hirofumi to use the helpers in vfat_rename().
 - Rebase the patch on top of OGAWA Hirofumi proposed changes.
 - Drop iversion increment for old and new file inodes (OGAWA Hirofumi).
-- Add Muhammad Usama Anjum Acked-by tag.
-
-Changes in v3:
-- Add a .gitignore for the rename_exchange binary (Muhammad Usama Anjum).
-- Include $(KHDR_INCLUDES) instead of hardcoding a relative path in Makefile
-  (Muhammad Usama Anjum).
 
 Changes in v2:
 - Only update the new_dir inode version and timestamps if != old_dir
@@ -128,33 +113,150 @@ Changes in v2:
 - Use braces for multi-lines blocks even if are one statement (OGAWA Hirofumi).
 - Mention in commit message that the operation is as transactional as possible
   but within the vfat limitations of not having a journal (Colin Walters).
-- Call sync to flush the page cache before checking the file contents
-  (Alex Larsson).
-- Drop RFC prefix since the patches already got some review.
 
-Javier Martinez Canillas (3):
-  fat: add a vfat_rename2() and make existing .rename callback a helper
-  fat: add renameat2 RENAME_EXCHANGE flag support
-  selftests/filesystems: add a vfat RENAME_EXCHANGE test
+ fs/fat/namei_vfat.c | 123 +++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 122 insertions(+), 1 deletion(-)
 
-OGAWA Hirofumi (1):
-  fat: factor out reusable code in vfat_rename() as helper functions
-
- MAINTAINERS                                   |   1 +
- fs/fat/namei_vfat.c                           | 231 +++++++++++++++---
- tools/testing/selftests/Makefile              |   1 +
- .../selftests/filesystems/fat/.gitignore      |   2 +
- .../selftests/filesystems/fat/Makefile        |   7 +
- .../testing/selftests/filesystems/fat/config  |   2 +
- .../filesystems/fat/rename_exchange.c         |  37 +++
- .../filesystems/fat/run_fat_tests.sh          |  82 +++++++
- 8 files changed, 324 insertions(+), 39 deletions(-)
- create mode 100644 tools/testing/selftests/filesystems/fat/.gitignore
- create mode 100644 tools/testing/selftests/filesystems/fat/Makefile
- create mode 100644 tools/testing/selftests/filesystems/fat/config
- create mode 100644 tools/testing/selftests/filesystems/fat/rename_exchange.c
- create mode 100755 tools/testing/selftests/filesystems/fat/run_fat_tests.sh
-
+diff --git a/fs/fat/namei_vfat.c b/fs/fat/namei_vfat.c
+index 9c04053a8f1c..21620054e1c4 100644
+--- a/fs/fat/namei_vfat.c
++++ b/fs/fat/namei_vfat.c
+@@ -1042,13 +1042,134 @@ static int vfat_rename(struct inode *old_dir, struct dentry *old_dentry,
+ 	goto out;
+ }
+ 
++static void vfat_exchange_ipos(struct inode *old_inode, struct inode *new_inode,
++			       loff_t old_i_pos, loff_t new_i_pos)
++{
++	fat_detach(old_inode);
++	fat_detach(new_inode);
++	fat_attach(old_inode, new_i_pos);
++	fat_attach(new_inode, old_i_pos);
++}
++
++static void vfat_move_nlink(struct inode *src, struct inode *dst)
++{
++	drop_nlink(src);
++	inc_nlink(dst);
++}
++
++static int vfat_rename_exchange(struct inode *old_dir, struct dentry *old_dentry,
++				struct inode *new_dir, struct dentry *new_dentry)
++{
++	struct buffer_head *old_dotdot_bh = NULL, *new_dotdot_bh = NULL;
++	struct msdos_dir_entry *old_dotdot_de = NULL, *new_dotdot_de = NULL;
++	struct inode *old_inode, *new_inode;
++	struct timespec64 ts = current_time(old_dir);
++	loff_t old_i_pos, new_i_pos;
++	int err, corrupt = 0;
++	struct super_block *sb = old_dir->i_sb;
++
++	old_inode = d_inode(old_dentry);
++	new_inode = d_inode(new_dentry);
++
++	/* Acquire super block lock for the operation to be atomic */
++	mutex_lock(&MSDOS_SB(sb)->s_lock);
++
++	/* if directories are not the same, get ".." info to update */
++	if (old_dir != new_dir) {
++		err = vfat_get_dotdot_de(old_inode, &old_dotdot_bh,
++					 &old_dotdot_de);
++		if (err)
++			goto out;
++
++		err = vfat_get_dotdot_de(new_inode, &new_dotdot_bh,
++					 &new_dotdot_de);
++		if (err)
++			goto out;
++	}
++
++	old_i_pos = MSDOS_I(old_inode)->i_pos;
++	new_i_pos = MSDOS_I(new_inode)->i_pos;
++
++	vfat_exchange_ipos(old_inode, new_inode, old_i_pos, new_i_pos);
++
++	err = vfat_sync_ipos(old_dir, new_inode);
++	if (err)
++		goto error_exchange;
++	err = vfat_sync_ipos(new_dir, old_inode);
++	if (err)
++		goto error_exchange;
++
++	/* update ".." directory entry info */
++	if (old_dotdot_de) {
++		err = vfat_update_dotdot_de(new_dir, old_inode, old_dotdot_bh,
++					    old_dotdot_de);
++		if (err)
++			goto error_old_dotdot;
++	}
++	if (new_dotdot_de) {
++		err = vfat_update_dotdot_de(old_dir, new_inode, new_dotdot_bh,
++					    new_dotdot_de);
++		if (err)
++			goto error_new_dotdot;
++	}
++
++	/* if cross directory and only one is a directory, adjust nlink */
++	if (!old_dotdot_de != !new_dotdot_de) {
++		if (old_dotdot_de)
++			vfat_move_nlink(old_dir, new_dir);
++		else
++			vfat_move_nlink(new_dir, old_dir);
++	}
++
++	vfat_update_dir_metadata(old_dir, &ts);
++	/* if directories are not the same, update new_dir as well */
++	if (old_dir != new_dir)
++		vfat_update_dir_metadata(new_dir, &ts);
++
++out:
++	brelse(old_dotdot_bh);
++	brelse(new_dotdot_bh);
++	mutex_unlock(&MSDOS_SB(sb)->s_lock);
++
++	return err;
++
++error_new_dotdot:
++	if (new_dotdot_de) {
++		corrupt |= vfat_update_dotdot_de(new_dir, new_inode,
++						 new_dotdot_bh, new_dotdot_de);
++	}
++
++error_old_dotdot:
++	if (old_dotdot_de) {
++		corrupt |= vfat_update_dotdot_de(old_dir, old_inode,
++						 old_dotdot_bh, old_dotdot_de);
++	}
++
++error_exchange:
++	vfat_exchange_ipos(old_inode, new_inode, new_i_pos, old_i_pos);
++	corrupt |= vfat_sync_ipos(new_dir, new_inode);
++	corrupt |= vfat_sync_ipos(old_dir, old_inode);
++
++	if (corrupt < 0) {
++		fat_fs_error(new_dir->i_sb,
++			     "%s: Filesystem corrupted (i_pos %lld, %lld)",
++			     __func__, old_i_pos, new_i_pos);
++	}
++	goto out;
++}
++
+ static int vfat_rename2(struct user_namespace *mnt_userns, struct inode *old_dir,
+ 			struct dentry *old_dentry, struct inode *new_dir,
+ 			struct dentry *new_dentry, unsigned int flags)
+ {
+-	if (flags & ~RENAME_NOREPLACE)
++	if (flags & ~(RENAME_NOREPLACE | RENAME_EXCHANGE))
+ 		return -EINVAL;
+ 
++	if (flags & RENAME_EXCHANGE) {
++		return vfat_rename_exchange(old_dir, old_dentry,
++					    new_dir, new_dentry);
++	}
++
+ 	/* VFS already handled RENAME_NOREPLACE, handle it as a normal rename */
+ 	return vfat_rename(old_dir, old_dentry, new_dir, new_dentry);
+ }
 -- 
 2.36.1
 
