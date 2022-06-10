@@ -2,384 +2,405 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94C5AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 19:45:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8512C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 19:48:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349976AbiFJTpo (ORCPT
+        id S1347759AbiFJTsA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 15:45:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46716 "EHLO
+        Fri, 10 Jun 2022 15:48:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350227AbiFJTpF (ORCPT
+        with ESMTP id S233646AbiFJTr6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 15:45:05 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 396E045052
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 12:44:50 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id d125-20020a636883000000b003db5e24db27so25253pgc.13
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 12:44:50 -0700 (PDT)
+        Fri, 10 Jun 2022 15:47:58 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA66A122B68
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 12:47:55 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id 3-20020a17090a174300b001e426a02ac5so3253655pjm.2
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 12:47:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=/IZsw4MqQOAPkM1DnTHDc/9ak1wPo9vb+Fz6mOsZXS8=;
-        b=LXZ+dVdWZCP97THZSCbjmToihMSItPPGE+c21TWVjRfhCelTq0WXd7Mp8EP6ntgHQC
-         DqSnBIQv3750W3Gt7IIboxx9D+HZBbQpf94pibgmIIQ4TKoOz9phnlrUtvUcenmdcu+C
-         lYyZLO/XQOaSTCboD+O3e/DNLzjoNYq4tIM7yUgbKay6D0mCZIRf4hKotHA0dLx07GhK
-         AXbUkSdRtEVm3bmX3jIOh7+Kp1PTE0WNV47Nvbjr8598W8oHDpSd9gR6DwIKnkhjzKfx
-         XuQEo/KKKpPWrFDYqf02XL0g4Y70gENomKvbVcYJI0kO4gzkJmgzmhQt3ZiIEYWY2hIY
-         PAxg==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qHVaOpIkikSJd4AS05K/7q+c6JWj3nFqBCEKcwv5cyw=;
+        b=jcvI3NTgmLB86zNnesqS6ZPSuyTCEjqOAZnyFMwc3fd1rkvlMUBQqb6XFS0wRnpmsf
+         dgDRQQTu97SJSM9pNnH5DzTr/bDByIjBCwyoj+dN7wDrweOIuVe1joqPmesN01ojB2QF
+         3HeaqpFEs1I/tVz3i99tQTpvVtPDLwX9DLv+s=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=/IZsw4MqQOAPkM1DnTHDc/9ak1wPo9vb+Fz6mOsZXS8=;
-        b=w/9/abeZKI6LK4jdRaYhX41xxeOxGtZZC6TEe78RaT/nYqU4PRf9Fwx/KcHB6RrON7
-         3B2LUAusX8mI86nQfegng10j/g3L0sPz1faen+1aN2ZxxBWR26m05YYkGPSHFviyGK/K
-         heczkxF1bb7n6/g1VpVo3tg2W/zSJuEDkedYCrIq8hZMYM3nPk9Vc8DFK+ESILzFwyo6
-         8KvrYhJMmXyA7pXFrSOBkZkBsYKSGxjJyJKSfYw3bdoY8WRTDsZWigmGaqoaWAzMFmhx
-         yBNBfuRN14AzRY0jya4ZY3dPlSnYZc120xFcmDZL57wh7UoAFIbVRIMz+zBVDM8XObx/
-         G3TA==
-X-Gm-Message-State: AOAM5309OvSxm+T6m7EPvtAyywtE76qlI9cY8/aKTEgmS1NuH9tyDcLQ
-        EXUjMqWdCQiyNhvoO+pkgxa+a7vKjYQZEg82
-X-Google-Smtp-Source: ABdhPJy16TQrz4IjYTYmGgvn9Cp7jzO8tdL2Qm5UBy+SAqDg5b0KSSEb+fPcYmWU2svsxBE/BjN+yAfktOUcFy8U
-X-Received: from yosry.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:2327])
- (user=yosryahmed job=sendgmr) by 2002:aa7:8890:0:b0:51c:454f:c93f with SMTP
- id z16-20020aa78890000000b0051c454fc93fmr19390374pfe.35.1654890290101; Fri,
- 10 Jun 2022 12:44:50 -0700 (PDT)
-Date:   Fri, 10 Jun 2022 19:44:32 +0000
-In-Reply-To: <20220610194435.2268290-1-yosryahmed@google.com>
-Message-Id: <20220610194435.2268290-6-yosryahmed@google.com>
-Mime-Version: 1.0
-References: <20220610194435.2268290-1-yosryahmed@google.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qHVaOpIkikSJd4AS05K/7q+c6JWj3nFqBCEKcwv5cyw=;
+        b=J192ZcKIfVQNdvBn3A+mtsHDwqKcONcylIb04j/55+n1DlayoA84RwhCaDdVWTcTq4
+         3I3eaf5F2ZAM2sjiCPX41H4k25hX5nP1DRbB1vM6S+TV3PTXbPXRma6w7YbHx4hYLOmJ
+         JRSPIw5LYsJacbzM/qGNTkuhqw6met3YAZZFxzomgWd/e6vynnLQ0Vqtfb6skfzILW2+
+         GNPgbX5zc+rpld3bMMa/L7S8E2l2qPvy7a9/k5F42ZS7rL/nYMECuGX1FbBE9MYqGDul
+         FIYsH3tbvWpYbJL+ENc5Sz97pxBZiR9Vg9YQSjwN9SW1xcdH83oHnRKTDuGUL4SEE++C
+         5NiQ==
+X-Gm-Message-State: AOAM531tLcV+jXNL/JlBbdw2ozlDSgzSoMKxCZW7wUnf/35K2lRPCjPb
+        alYwq118j2vISFoR78iOYEMv7g==
+X-Google-Smtp-Source: ABdhPJzDeEFTcdUxMi/c1HhWGSsw2zKB7dTsWNa7e8T/4dXCXi5IEcexLUBcXU+ROnNldGn1KlsA9g==
+X-Received: by 2002:a17:903:44c:b0:164:113:a433 with SMTP id iw12-20020a170903044c00b001640113a433mr45844915plb.163.1654890475266;
+        Fri, 10 Jun 2022 12:47:55 -0700 (PDT)
+Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:2604:9b98:9e57:c870])
+        by smtp.gmail.com with ESMTPSA id l4-20020a170903120400b001620db30cd6sm92864plh.201.2022.06.10.12.47.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Jun 2022 12:47:54 -0700 (PDT)
+From:   Douglas Anderson <dianders@chromium.org>
+To:     Rob Clark <robdclark@gmail.com>,
+        Akhil P Oommen <quic_akhilpo@quicinc.com>,
+        Jordan Crouse <jordan@cosmicpenguin.net>
+Cc:     Douglas Anderson <dianders@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Chia-I Wu <olvaffe@gmail.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Eric Anholt <eric@anholt.net>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Sean Paul <sean@poorly.run>,
+        Vladimir Lypak <vladimir.lypak@gmail.com>,
+        Yangtao Li <tiny.windzz@gmail.com>,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4] drm/msm: Avoid unclocked GMU register access in 6xx gpu_busy
+Date:   Fri, 10 Jun 2022 12:47:31 -0700
+Message-Id: <20220610124639.v4.1.Ie846c5352bc307ee4248d7cab998ab3016b85d06@changeid>
 X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH bpf-next v2 5/8] selftests/bpf: Test cgroup_iter.
-From:   Yosry Ahmed <yosryahmed@google.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>, Michal Hocko <mhocko@kernel.org>
-Cc:     Roman Gushchin <roman.gushchin@linux.dev>,
-        David Rientjes <rientjes@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, cgroups@vger.kernel.org,
-        Yosry Ahmed <yosryahmed@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hao Luo <haoluo@google.com>
+From testing on sc7180-trogdor devices, reading the GMU registers
+needs the GMU clocks to be enabled. Those clocks get turned on in
+a6xx_gmu_resume(). Confusingly enough, that function is called as a
+result of the runtime_pm of the GPU "struct device", not the GMU
+"struct device". Unfortunately the current a6xx_gpu_busy() grabs a
+reference to the GMU's "struct device".
 
-Add a selftest for cgroup_iter. The selftest creates a mini cgroup tree
-of the following structure:
+The fact that we were grabbing the wrong reference was easily seen to
+cause crashes that happen if we change the GPU's pm_runtime usage to
+not use autosuspend. It's also believed to cause some long tail GPU
+crashes even with autosuspend.
 
-    ROOT (working cgroup)
-     |
-   PARENT
-  /      \
-CHILD1  CHILD2
+We could look at changing it so that we do pm_runtime_get_if_in_use()
+on the GPU's "struct device", but then we run into a different
+problem. pm_runtime_get_if_in_use() will return 0 for the GPU's
+"struct device" the whole time when we're in the "autosuspend
+delay". That is, when we drop the last reference to the GPU but we're
+waiting a period before actually suspending then we'll think the GPU
+is off. One reason that's bad is that if the GPU didn't actually turn
+off then the cycle counter doesn't lose state and that throws off all
+of our calculations.
 
-and tests the following scenarios:
+Let's change the code to keep track of the suspend state of
+devfreq. msm_devfreq_suspend() is always called before we actually
+suspend the GPU and msm_devfreq_resume() after we resume it. This
+means we can use the suspended state to know if we're powered or not.
 
- - invalid cgroup fd.
- - pre-order walk over descendants from PARENT.
- - post-order walk over descendants from PARENT.
- - walk of ancestors from PARENT.
- - early termination.
+NOTE: one might wonder when exactly our status function is called when
+devfreq is supposed to be disabled. The stack crawl I captured was:
+  msm_devfreq_get_dev_status
+  devfreq_simple_ondemand_func
+  devfreq_update_target
+  qos_notifier_call
+  qos_max_notifier_call
+  blocking_notifier_call_chain
+  pm_qos_update_target
+  freq_qos_apply
+  apply_constraint
+  __dev_pm_qos_update_request
+  dev_pm_qos_update_request
+  msm_devfreq_idle_work
 
-Signed-off-by: Hao Luo <haoluo@google.com>
-Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
+Fixes: eadf79286a4b ("drm/msm: Check for powered down HW in the devfreq callbacks")
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Reviewed-by: Rob Clark <robdclark@gmail.com>
 ---
- .../selftests/bpf/prog_tests/cgroup_iter.c    | 190 ++++++++++++++++++
- tools/testing/selftests/bpf/progs/bpf_iter.h  |   7 +
- .../testing/selftests/bpf/progs/cgroup_iter.c |  39 ++++
- 3 files changed, 236 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/cgroup_iter.c
- create mode 100644 tools/testing/selftests/bpf/progs/cgroup_iter.c
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/cgroup_iter.c b/tools/testing/selftests/bpf/prog_tests/cgroup_iter.c
-new file mode 100644
-index 0000000000000..4c8f11f784915
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/cgroup_iter.c
-@@ -0,0 +1,190 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2022 Google */
+Changes in v4:
+- Add a comment that gpu_set_freq() / gpu_busy() assume pm resume
+
+Changes in v3:
+- Totally rewrote to not use the pm_runtime functions.
+- Moved the code to be common for all adreno GPUs.
+
+Changes in v2:
+- Move the set_freq runtime pm grab to the GPU file.
+- Use <= for the pm_runtime test, not ==.
+
+ drivers/gpu/drm/msm/adreno/a5xx_gpu.c |  8 ------
+ drivers/gpu/drm/msm/adreno/a6xx_gmu.c | 13 ++++-----
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 12 +++------
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.h |  3 ++-
+ drivers/gpu/drm/msm/msm_gpu.h         | 11 +++++++-
+ drivers/gpu/drm/msm/msm_gpu_devfreq.c | 39 +++++++++++++++++++++------
+ 6 files changed, 53 insertions(+), 33 deletions(-)
+
+diff --git a/drivers/gpu/drm/msm/adreno/a5xx_gpu.c b/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
+index c424e9a37669..3dcec7acb384 100644
+--- a/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
+@@ -1666,18 +1666,10 @@ static u64 a5xx_gpu_busy(struct msm_gpu *gpu, unsigned long *out_sample_rate)
+ {
+ 	u64 busy_cycles;
+ 
+-	/* Only read the gpu busy if the hardware is already active */
+-	if (pm_runtime_get_if_in_use(&gpu->pdev->dev) == 0) {
+-		*out_sample_rate = 1;
+-		return 0;
+-	}
+-
+ 	busy_cycles = gpu_read64(gpu, REG_A5XX_RBBM_PERFCTR_RBBM_0_LO,
+ 			REG_A5XX_RBBM_PERFCTR_RBBM_0_HI);
+ 	*out_sample_rate = clk_get_rate(gpu->core_clk);
+ 
+-	pm_runtime_put(&gpu->pdev->dev);
+-
+ 	return busy_cycles;
+ }
+ 
+diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
+index 9f76f5b15759..dc715d88ff21 100644
+--- a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
++++ b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
+@@ -102,7 +102,8 @@ bool a6xx_gmu_gx_is_on(struct a6xx_gmu *gmu)
+ 		A6XX_GMU_SPTPRAC_PWR_CLK_STATUS_GX_HM_CLK_OFF));
+ }
+ 
+-void a6xx_gmu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp)
++void a6xx_gmu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp,
++		       bool suspended)
+ {
+ 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
+ 	struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
+@@ -127,15 +128,16 @@ void a6xx_gmu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp)
+ 
+ 	/*
+ 	 * This can get called from devfreq while the hardware is idle. Don't
+-	 * bring up the power if it isn't already active
++	 * bring up the power if it isn't already active. All we're doing here
++	 * is updating the frequency so that when we come back online we're at
++	 * the right rate.
+ 	 */
+-	if (pm_runtime_get_if_in_use(gmu->dev) == 0)
++	if (suspended)
+ 		return;
+ 
+ 	if (!gmu->legacy) {
+ 		a6xx_hfi_set_freq(gmu, perf_index);
+ 		dev_pm_opp_set_opp(&gpu->pdev->dev, opp);
+-		pm_runtime_put(gmu->dev);
+ 		return;
+ 	}
+ 
+@@ -159,7 +161,6 @@ void a6xx_gmu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp)
+ 		dev_err(gmu->dev, "GMU set GPU frequency error: %d\n", ret);
+ 
+ 	dev_pm_opp_set_opp(&gpu->pdev->dev, opp);
+-	pm_runtime_put(gmu->dev);
+ }
+ 
+ unsigned long a6xx_gmu_get_freq(struct msm_gpu *gpu)
+@@ -895,7 +896,7 @@ static void a6xx_gmu_set_initial_freq(struct msm_gpu *gpu, struct a6xx_gmu *gmu)
+ 		return;
+ 
+ 	gmu->freq = 0; /* so a6xx_gmu_set_freq() doesn't exit early */
+-	a6xx_gmu_set_freq(gpu, gpu_opp);
++	a6xx_gmu_set_freq(gpu, gpu_opp, false);
+ 	dev_pm_opp_put(gpu_opp);
+ }
+ 
+diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+index 42ed9a3c4905..8c02a67f29f2 100644
+--- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+@@ -1658,27 +1658,21 @@ static u64 a6xx_gpu_busy(struct msm_gpu *gpu, unsigned long *out_sample_rate)
+ 	/* 19.2MHz */
+ 	*out_sample_rate = 19200000;
+ 
+-	/* Only read the gpu busy if the hardware is already active */
+-	if (pm_runtime_get_if_in_use(a6xx_gpu->gmu.dev) == 0)
+-		return 0;
+-
+ 	busy_cycles = gmu_read64(&a6xx_gpu->gmu,
+ 			REG_A6XX_GMU_CX_GMU_POWER_COUNTER_XOCLK_0_L,
+ 			REG_A6XX_GMU_CX_GMU_POWER_COUNTER_XOCLK_0_H);
+ 
+-
+-	pm_runtime_put(a6xx_gpu->gmu.dev);
+-
+ 	return busy_cycles;
+ }
+ 
+-static void a6xx_gpu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp)
++static void a6xx_gpu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp,
++			      bool suspended)
+ {
+ 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
+ 	struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
+ 
+ 	mutex_lock(&a6xx_gpu->gmu.lock);
+-	a6xx_gmu_set_freq(gpu, opp);
++	a6xx_gmu_set_freq(gpu, opp, suspended);
+ 	mutex_unlock(&a6xx_gpu->gmu.lock);
+ }
+ 
+diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.h b/drivers/gpu/drm/msm/adreno/a6xx_gpu.h
+index 86e0a7c3fe6d..ab853f61db63 100644
+--- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.h
++++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.h
+@@ -77,7 +77,8 @@ void a6xx_gmu_clear_oob(struct a6xx_gmu *gmu, enum a6xx_gmu_oob_state state);
+ int a6xx_gmu_init(struct a6xx_gpu *a6xx_gpu, struct device_node *node);
+ void a6xx_gmu_remove(struct a6xx_gpu *a6xx_gpu);
+ 
+-void a6xx_gmu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp);
++void a6xx_gmu_set_freq(struct msm_gpu *gpu, struct dev_pm_opp *opp,
++		       bool suspended);
+ unsigned long a6xx_gmu_get_freq(struct msm_gpu *gpu);
+ 
+ void a6xx_show(struct msm_gpu *gpu, struct msm_gpu_state *state,
+diff --git a/drivers/gpu/drm/msm/msm_gpu.h b/drivers/gpu/drm/msm/msm_gpu.h
+index 6def00883046..31269c1c896b 100644
+--- a/drivers/gpu/drm/msm/msm_gpu.h
++++ b/drivers/gpu/drm/msm/msm_gpu.h
+@@ -64,11 +64,14 @@ struct msm_gpu_funcs {
+ 	/* for generation specific debugfs: */
+ 	void (*debugfs_init)(struct msm_gpu *gpu, struct drm_minor *minor);
+ #endif
++	/* note: gpu_busy() can assume that we have been pm_resumed */
+ 	u64 (*gpu_busy)(struct msm_gpu *gpu, unsigned long *out_sample_rate);
+ 	struct msm_gpu_state *(*gpu_state_get)(struct msm_gpu *gpu);
+ 	int (*gpu_state_put)(struct msm_gpu_state *state);
+ 	unsigned long (*gpu_get_freq)(struct msm_gpu *gpu);
+-	void (*gpu_set_freq)(struct msm_gpu *gpu, struct dev_pm_opp *opp);
++	/* note: gpu_set_freq() can assume that we have been pm_resumed */
++	void (*gpu_set_freq)(struct msm_gpu *gpu, struct dev_pm_opp *opp,
++			     bool suspended);
+ 	struct msm_gem_address_space *(*create_address_space)
+ 		(struct msm_gpu *gpu, struct platform_device *pdev);
+ 	struct msm_gem_address_space *(*create_private_address_space)
+@@ -92,6 +95,9 @@ struct msm_gpu_devfreq {
+ 	/** devfreq: devfreq instance */
+ 	struct devfreq *devfreq;
+ 
++	/** lock: lock for "suspended", "busy_cycles", and "time" */
++	struct mutex lock;
 +
-+#include <test_progs.h>
-+#include <bpf/libbpf.h>
-+#include <bpf/btf.h>
-+#include "cgroup_iter.skel.h"
-+#include "cgroup_helpers.h"
+ 	/**
+ 	 * idle_constraint:
+ 	 *
+@@ -135,6 +141,9 @@ struct msm_gpu_devfreq {
+ 	 * elapsed
+ 	 */
+ 	struct msm_hrtimer_work boost_work;
 +
-+#define ROOT		0
-+#define PARENT		1
-+#define CHILD1		2
-+#define CHILD2		3
-+#define NUM_CGROUPS	4
-+
-+#define PROLOGUE	"prologue\n"
-+#define EPILOGUE	"epilogue\n"
-+
-+#define format_expected_output1(cg_id1) \
-+	snprintf(expected_output, sizeof(expected_output), \
-+		 PROLOGUE "%8llu\n" EPILOGUE, (cg_id1))
-+
-+#define format_expected_output2(cg_id1, cg_id2) \
-+	snprintf(expected_output, sizeof(expected_output), \
-+		 PROLOGUE "%8llu\n%8llu\n" EPILOGUE, \
-+		 (cg_id1), (cg_id2))
-+
-+#define format_expected_output3(cg_id1, cg_id2, cg_id3) \
-+	snprintf(expected_output, sizeof(expected_output), \
-+		 PROLOGUE "%8llu\n%8llu\n%8llu\n" EPILOGUE, \
-+		 (cg_id1), (cg_id2), (cg_id3))
-+
-+const char *cg_path[] = {
-+	"/", "/parent", "/parent/child1", "/parent/child2"
-+};
-+
-+static int cg_fd[] = {-1, -1, -1, -1};
-+static unsigned long long cg_id[] = {0, 0, 0, 0};
-+static char expected_output[64];
-+
-+int setup_cgroups(void)
-+{
-+	int fd, i = 0;
-+
-+	for (i = 0; i < NUM_CGROUPS; i++) {
-+		fd = create_and_get_cgroup(cg_path[i]);
-+		if (fd < 0)
-+			return fd;
-+
-+		cg_fd[i] = fd;
-+		cg_id[i] = get_cgroup_id(cg_path[i]);
-+	}
-+	return 0;
-+}
-+
-+void cleanup_cgroups(void)
-+{
-+	int i;
-+
-+	for (i = 0; i < NUM_CGROUPS; i++)
-+		close(cg_fd[i]);
-+}
-+
-+static void read_from_cgroup_iter(struct bpf_program *prog, int cgroup_fd,
-+				  int order, const char *testname)
-+{
-+	DECLARE_LIBBPF_OPTS(bpf_iter_attach_opts, opts);
-+	union bpf_iter_link_info linfo;
-+	struct bpf_link *link;
-+	int len, iter_fd;
-+	static char buf[64];
-+
-+	memset(&linfo, 0, sizeof(linfo));
-+	linfo.cgroup.cgroup_fd = cgroup_fd;
-+	linfo.cgroup.traversal_order = order;
-+	opts.link_info = &linfo;
-+	opts.link_info_len = sizeof(linfo);
-+
-+	link = bpf_program__attach_iter(prog, &opts);
-+	if (!ASSERT_OK_PTR(link, "attach_iter"))
-+		return;
-+
-+	iter_fd = bpf_iter_create(bpf_link__fd(link));
-+	if (iter_fd < 0)
-+		goto free_link;
-+
-+	memset(buf, 0, sizeof(buf));
-+	while ((len = read(iter_fd, buf, sizeof(buf))) > 0)
-+		;
-+
-+	ASSERT_STREQ(buf, expected_output, testname);
-+
-+	close(iter_fd);
-+free_link:
-+	bpf_link__destroy(link);
-+}
-+
-+/* Invalid cgroup. */
-+static void test_invalid_cgroup(struct cgroup_iter *skel)
-+{
-+
-+	DECLARE_LIBBPF_OPTS(bpf_iter_attach_opts, opts);
-+	union bpf_iter_link_info linfo;
-+	struct bpf_link *link;
-+
-+	memset(&linfo, 0, sizeof(linfo));
-+	linfo.cgroup.cgroup_fd = (__u32)-1;
-+	opts.link_info = &linfo;
-+	opts.link_info_len = sizeof(linfo);
-+
-+	link = bpf_program__attach_iter(skel->progs.cgroup_id_printer, &opts);
-+	if (!ASSERT_ERR_PTR(link, "attach_iter"))
-+		bpf_link__destroy(link);
-+}
-+
-+/* Preorder walk prints parent and child in order. */
-+static void test_walk_preorder(struct cgroup_iter *skel)
-+{
-+	format_expected_output3(cg_id[PARENT], cg_id[CHILD1], cg_id[CHILD2]);
-+
-+	read_from_cgroup_iter(skel->progs.cgroup_id_printer, cg_fd[PARENT],
-+			      BPF_ITER_CGROUP_PRE, "preorder");
-+}
-+
-+/* Postorder walk prints child and parent in order. */
-+static void test_walk_postorder(struct cgroup_iter *skel)
-+{
-+	format_expected_output3(cg_id[CHILD1], cg_id[CHILD2], cg_id[PARENT]);
-+
-+	read_from_cgroup_iter(skel->progs.cgroup_id_printer, cg_fd[PARENT],
-+			      BPF_ITER_CGROUP_POST, "postorder");
-+}
-+
-+/* Walking parents prints parent and then root. */
-+static void test_walk_parent_up(struct cgroup_iter *skel)
-+{
-+	/* terminate the walk when ROOT is met. */
-+	skel->bss->terminal_cgroup = cg_id[ROOT];
-+
-+	format_expected_output2(cg_id[PARENT], cg_id[ROOT]);
-+
-+	read_from_cgroup_iter(skel->progs.cgroup_id_printer, cg_fd[PARENT],
-+			      BPF_ITER_CGROUP_PARENT_UP, "parent_up");
-+
-+	skel->bss->terminal_cgroup = 0;
-+}
-+
-+/* Early termination prints parent only. */
-+static void test_early_termination(struct cgroup_iter *skel)
-+{
-+	/* terminate the walk after the first element is processed. */
-+	skel->bss->terminate_early = 1;
-+
-+	format_expected_output1(cg_id[PARENT]);
-+
-+	read_from_cgroup_iter(skel->progs.cgroup_id_printer, cg_fd[PARENT],
-+			      BPF_ITER_CGROUP_PRE, "early_termination");
-+
-+	skel->bss->terminate_early = 0;
-+}
-+
-+void test_cgroup_iter(void)
-+{
-+	struct cgroup_iter *skel = NULL;
-+
-+	if (setup_cgroup_environment() < 0)
-+		return;
-+
-+	if (setup_cgroups() < 0)
-+		goto out;
-+
-+	skel = cgroup_iter__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "cgroup_iter__open_and_load"))
-+		goto out;
-+
-+	if (test__start_subtest("cgroup_iter__invalid_cgroup"))
-+		test_invalid_cgroup(skel);
-+	if (test__start_subtest("cgroup_iter__preorder"))
-+		test_walk_preorder(skel);
-+	if (test__start_subtest("cgroup_iter__postorder"))
-+		test_walk_postorder(skel);
-+	if (test__start_subtest("cgroup_iter__parent_up_walk"))
-+		test_walk_parent_up(skel);
-+	if (test__start_subtest("cgroup_iter__early_termination"))
-+		test_early_termination(skel);
-+out:
-+	cgroup_iter__destroy(skel);
-+	cleanup_cgroups();
-+	cleanup_cgroup_environment();
-+}
-diff --git a/tools/testing/selftests/bpf/progs/bpf_iter.h b/tools/testing/selftests/bpf/progs/bpf_iter.h
-index 97ec8bc76ae62..df91f1daf74d3 100644
---- a/tools/testing/selftests/bpf/progs/bpf_iter.h
-+++ b/tools/testing/selftests/bpf/progs/bpf_iter.h
-@@ -17,6 +17,7 @@
- #define bpf_iter__bpf_sk_storage_map bpf_iter__bpf_sk_storage_map___not_used
- #define bpf_iter__sockmap bpf_iter__sockmap___not_used
- #define bpf_iter__bpf_link bpf_iter__bpf_link___not_used
-+#define bpf_iter__cgroup bpf_iter__cgroup__not_used
- #define btf_ptr btf_ptr___not_used
- #define BTF_F_COMPACT BTF_F_COMPACT___not_used
- #define BTF_F_NONAME BTF_F_NONAME___not_used
-@@ -39,6 +40,7 @@
- #undef bpf_iter__bpf_sk_storage_map
- #undef bpf_iter__sockmap
- #undef bpf_iter__bpf_link
-+#undef bpf_iter__cgroup
- #undef btf_ptr
- #undef BTF_F_COMPACT
- #undef BTF_F_NONAME
-@@ -139,6 +141,11 @@ struct bpf_iter__bpf_link {
- 	struct bpf_link *link;
++	/** suspended: tracks if we're suspended */
++	bool suspended;
  };
  
-+struct bpf_iter__cgroup {
-+	struct bpf_iter_meta *meta;
-+	struct cgroup *cgroup;
-+} __attribute((preserve_access_index));
+ struct msm_gpu {
+diff --git a/drivers/gpu/drm/msm/msm_gpu_devfreq.c b/drivers/gpu/drm/msm/msm_gpu_devfreq.c
+index d2539ca78c29..ea94bc18e72e 100644
+--- a/drivers/gpu/drm/msm/msm_gpu_devfreq.c
++++ b/drivers/gpu/drm/msm/msm_gpu_devfreq.c
+@@ -20,6 +20,7 @@ static int msm_devfreq_target(struct device *dev, unsigned long *freq,
+ 		u32 flags)
+ {
+ 	struct msm_gpu *gpu = dev_to_gpu(dev);
++	struct msm_gpu_devfreq *df = &gpu->devfreq;
+ 	struct dev_pm_opp *opp;
+ 
+ 	/*
+@@ -32,10 +33,13 @@ static int msm_devfreq_target(struct device *dev, unsigned long *freq,
+ 
+ 	trace_msm_gpu_freq_change(dev_pm_opp_get_freq(opp));
+ 
+-	if (gpu->funcs->gpu_set_freq)
+-		gpu->funcs->gpu_set_freq(gpu, opp);
+-	else
++	if (gpu->funcs->gpu_set_freq) {
++		mutex_lock(&df->lock);
++		gpu->funcs->gpu_set_freq(gpu, opp, df->suspended);
++		mutex_unlock(&df->lock);
++	} else {
+ 		clk_set_rate(gpu->core_clk, *freq);
++	}
+ 
+ 	dev_pm_opp_put(opp);
+ 
+@@ -58,15 +62,24 @@ static void get_raw_dev_status(struct msm_gpu *gpu,
+ 	unsigned long sample_rate;
+ 	ktime_t time;
+ 
++	mutex_lock(&df->lock);
 +
- struct btf_ptr {
- 	void *ptr;
- 	__u32 type_id;
-diff --git a/tools/testing/selftests/bpf/progs/cgroup_iter.c b/tools/testing/selftests/bpf/progs/cgroup_iter.c
-new file mode 100644
-index 0000000000000..2a34d146d6df0
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/cgroup_iter.c
-@@ -0,0 +1,39 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2022 Google */
-+
-+#include "bpf_iter.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+char _license[] SEC("license") = "GPL";
-+volatile int terminate_early = 0;
-+volatile u64 terminal_cgroup = 0;
-+
-+static inline u64 cgroup_id(struct cgroup *cgrp)
-+{
-+	return cgrp->kn->id;
-+}
-+
-+SEC("iter/cgroup")
-+int cgroup_id_printer(struct bpf_iter__cgroup *ctx)
-+{
-+	struct seq_file *seq = ctx->meta->seq;
-+	struct cgroup *cgrp = ctx->cgroup;
-+
-+	/* epilogue */
-+	if (cgrp == NULL) {
-+		BPF_SEQ_PRINTF(seq, "epilogue\n");
-+		return 0;
+ 	status->current_frequency = get_freq(gpu);
+-	busy_cycles = gpu->funcs->gpu_busy(gpu, &sample_rate);
+ 	time = ktime_get();
+-
+-	busy_time = busy_cycles - df->busy_cycles;
+ 	status->total_time = ktime_us_delta(time, df->time);
++	df->time = time;
+ 
++	if (df->suspended) {
++		mutex_unlock(&df->lock);
++		status->busy_time = 0;
++		return;
 +	}
 +
-+	/* prologue */
-+	if (ctx->meta->seq_num == 0)
-+		BPF_SEQ_PRINTF(seq, "prologue\n");
++	busy_cycles = gpu->funcs->gpu_busy(gpu, &sample_rate);
++	busy_time = busy_cycles - df->busy_cycles;
+ 	df->busy_cycles = busy_cycles;
+-	df->time = time;
 +
-+	BPF_SEQ_PRINTF(seq, "%8llu\n", cgroup_id(cgrp));
++	mutex_unlock(&df->lock);
+ 
+ 	busy_time *= USEC_PER_SEC;
+ 	do_div(busy_time, sample_rate);
+@@ -175,6 +188,8 @@ void msm_devfreq_init(struct msm_gpu *gpu)
+ 	if (!gpu->funcs->gpu_busy)
+ 		return;
+ 
++	mutex_init(&df->lock);
 +
-+	if (terminal_cgroup == cgroup_id(cgrp))
-+		return 1;
+ 	dev_pm_qos_add_request(&gpu->pdev->dev, &df->idle_freq,
+ 			       DEV_PM_QOS_MAX_FREQUENCY,
+ 			       PM_QOS_MAX_FREQUENCY_DEFAULT_VALUE);
+@@ -244,12 +259,16 @@ void msm_devfreq_cleanup(struct msm_gpu *gpu)
+ void msm_devfreq_resume(struct msm_gpu *gpu)
+ {
+ 	struct msm_gpu_devfreq *df = &gpu->devfreq;
++	unsigned long sample_rate;
+ 
+ 	if (!has_devfreq(gpu))
+ 		return;
+ 
+-	df->busy_cycles = 0;
++	mutex_lock(&df->lock);
++	df->busy_cycles = gpu->funcs->gpu_busy(gpu, &sample_rate);
+ 	df->time = ktime_get();
++	df->suspended = false;
++	mutex_unlock(&df->lock);
+ 
+ 	devfreq_resume_device(df->devfreq);
+ }
+@@ -261,6 +280,10 @@ void msm_devfreq_suspend(struct msm_gpu *gpu)
+ 	if (!has_devfreq(gpu))
+ 		return;
+ 
++	mutex_lock(&df->lock);
++	df->suspended = true;
++	mutex_unlock(&df->lock);
 +
-+	return terminate_early ? 1 : 0;
-+}
+ 	devfreq_suspend_device(df->devfreq);
+ 
+ 	cancel_idle_work(df);
 -- 
 2.36.1.476.g0c4daa206d-goog
 
