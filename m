@@ -2,90 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B037FCCA47B
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 12:04:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FE3EC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 12:04:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347471AbiFJMEH (ORCPT
+        id S1347910AbiFJMER (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 08:04:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55764 "EHLO
+        Fri, 10 Jun 2022 08:04:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241046AbiFJMEF (ORCPT
+        with ESMTP id S1347649AbiFJMEO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 08:04:05 -0400
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174AE36E1C;
-        Fri, 10 Jun 2022 05:04:01 -0700 (PDT)
-Received: (Authenticated sender: alexandre.belloni@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 2142C60008;
-        Fri, 10 Jun 2022 12:03:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1654862639;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Wk/jtq8xnieuXpnFHV28FbZhaagmc7D9cxAaLwaoz9Y=;
-        b=CYs4u8lBEb8T+7VflaieA4F8cQQ+Wv8XFP5a/KeI75L8Lulgv/WMPFpaLVkcv17QBvKyhg
-        03amMT0xX+/StH3JDr4WY276TWhEPhsQT4TRU7UjBxh7qaUx9++aDUv0KPSd5xYZ8em+Ks
-        k/oujVqIwLA/wMQBb4YBQr701dNHLLcG51tvgbmXG9tm+w6FrBVd6/dUn2zE7dw13jewa4
-        XMZT9wL3Nr9GZskUdAYx3YNJxcEFeVmj1asPRMnHBMIxE0sXPKcXancUaxGpUmr3JEc7P+
-        CkarAIjFkWTwuxglW+tKo2Hcy2ViMfe8J8/w00sWGiCjg7a2/XrvCLsb8ek1bw==
-Date:   Fri, 10 Jun 2022 14:03:55 +0200
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Srinivas Neeli <srinivas.neeli@xilinx.com>
-Cc:     a.zummo@towertech.it, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, michal.simek@xilinx.com,
-        sgoud@xilinx.com, shubhraj@xilinx.com, srinivas.neeli@amd.com,
-        neelisrinivas18@gmail.com, devicetree@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, git@xilinx.com
-Subject: Re: [PATCH V7 3/3] rtc: zynqmp: Updated calibration value
-Message-ID: <YqMzK50DbPAm1+dl@mail.local>
-References: <20220610113709.2646118-1-srinivas.neeli@xilinx.com>
- <20220610113709.2646118-3-srinivas.neeli@xilinx.com>
+        Fri, 10 Jun 2022 08:04:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 294DE3EB8F;
+        Fri, 10 Jun 2022 05:04:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B27E0B834C6;
+        Fri, 10 Jun 2022 12:04:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 744D5C3411E;
+        Fri, 10 Jun 2022 12:04:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654862650;
+        bh=ua8W2pZlEypzIR2/CA+H/l0UdSWdUU5VoLv1riU4QhU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=lLs8LlnrNR5UZPmnW+WEQ8HeX+UpI1jn66y9nEaV2sIga1PJlS7L+MOVo64AyJjQ7
+         HpOqd0OaZznKSjm4VjaWm+LwuKsucac4C5yz3QLSLdLFPL784D0+8WciC3QW4NOu+D
+         1KWinJlguDbDd/cK1VQdCQPVviSVShrdANZSdtJsx7bXMtLbRyQbFUsq0ZeB3Mq5ix
+         +Z0R5oyfWL+nvAwbbBlBYHfeYoW9VNSjJ+C8iva73OqH9cdGlEKcVhG53w1aW5u+eH
+         r/gATTdz4eCfEB5+xTDt0EAHftrxzd3M1hX7EumDXUr/NrIr92Y1f4fM3qhRn6n5NQ
+         DgM+e8baC9uiQ==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan+linaro@kernel.org>)
+        id 1nzdMz-0002ky-0V; Fri, 10 Jun 2022 14:04:05 +0200
+From:   Johan Hovold <johan+linaro@kernel.org>
+To:     stable@vger.kernel.org
+Cc:     linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>
+Subject: [PATCH stable-4.14] PCI: qcom: Fix unbalanced PHY init on probe errors
+Date:   Fri, 10 Jun 2022 13:58:57 +0200
+Message-Id: <20220610115857.10455-1-johan+linaro@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220610113709.2646118-3-srinivas.neeli@xilinx.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/06/2022 17:07:09+0530, Srinivas Neeli wrote:
-> As per RTC spec default calibration value is 0x7FFF.
-> 
+commit 83013631f0f9961416abd812e228c8efbc2f6069 upstream.
 
-Having that as a second patch breaks the calculation in your previous
-patch, really, this should just be a single patch.
+Undo the PHY initialisation (e.g. balance runtime PM) if host
+initialisation fails during probe.
 
-> Signed-off-by: Srinivas Neeli <srinivas.neeli@xilinx.com>
-> ---
-> Changes in V7:
-> -New patch
-> -TRM not updated yet, Internal design document contains 0x7FFF as
->  default value. TRM Will update in next release.
-> ---
->  drivers/rtc/rtc-zynqmp.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/rtc/rtc-zynqmp.c b/drivers/rtc/rtc-zynqmp.c
-> index 39b23f88ee26..1dd389b891fe 100644
-> --- a/drivers/rtc/rtc-zynqmp.c
-> +++ b/drivers/rtc/rtc-zynqmp.c
-> @@ -37,7 +37,7 @@
->  #define RTC_OSC_EN		BIT(24)
->  #define RTC_BATT_EN		BIT(31)
->  
-> -#define RTC_CALIB_DEF		0x198233
-> +#define RTC_CALIB_DEF		0x7FFF
->  #define RTC_CALIB_MASK		0x1FFFFF
->  #define RTC_ALRM_MASK          BIT(1)
->  #define RTC_MSEC               1000
-> -- 
-> 2.25.1
-> 
+Link: https://lore.kernel.org/r/20220401133854.10421-3-johan+linaro@kernel.org
+Fixes: 82a823833f4e ("PCI: qcom: Add Qualcomm PCIe controller driver")
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Acked-by: Stanimir Varbanov <svarbanov@mm-sol.com>
+Cc: stable@vger.kernel.org      # 4.5
+[ johan: adjust context to 4.14 ]
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+---
+ drivers/pci/dwc/pcie-qcom.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/pci/dwc/pcie-qcom.c b/drivers/pci/dwc/pcie-qcom.c
+index 374b2b3afb59..19a78fcf609c 100644
+--- a/drivers/pci/dwc/pcie-qcom.c
++++ b/drivers/pci/dwc/pcie-qcom.c
+@@ -1302,10 +1302,15 @@ static int qcom_pcie_probe(struct platform_device *pdev)
+ 	ret = dw_pcie_host_init(pp);
+ 	if (ret) {
+ 		dev_err(dev, "cannot initialize host\n");
+-		return ret;
++		goto err_phy_exit;
+ 	}
+ 
+ 	return 0;
++
++err_phy_exit:
++	phy_exit(pcie->phy);
++
++	return ret;
+ }
+ 
+ static const struct of_device_id qcom_pcie_match[] = {
 -- 
-Alexandre Belloni, co-owner and COO, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+2.35.1
+
