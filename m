@@ -2,192 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C513C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 18:32:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EA25C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 18:33:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346315AbiFJSc4 (ORCPT
+        id S1346778AbiFJSdy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 14:32:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34160 "EHLO
+        Fri, 10 Jun 2022 14:33:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233646AbiFJScw (ORCPT
+        with ESMTP id S1346477AbiFJSdv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 14:32:52 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 274F337AA5
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 11:32:51 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id o6so18351326plg.2
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 11:32:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wBbbnyxAp776PF/MoHr2OTyzExEVGSOzu1ia9Yc3H1I=;
-        b=Q5B2LvQMun4KV1/iBHtpnFzF8ZF0cRO+ulZr7uc4CBP6lDhcOHhHZpvnirmdt8SUYQ
-         B/n612LXFpiD5oBtzSVEmggJzllxcE4RLtC1+R5BBsOJIimuG+euZamHED1O37WzcUwM
-         QxYw2NwMHWuQ6NGVB/Vmnn7xP2uKMLJ1zOLcK/zUBVzUrtcglzny7vBmKS3ainZ1DNNF
-         lixEshxk6vsx6SO8N/2aNvpkRbaLmD0GbpJa8Cnd7nnrIOxA2y2tbL9N1p5IGH3YRKPg
-         Y3QmytvOStuLhIHv3NT4Cxgc9wFNnIB5XxZv/VRUq5SxbSGeSXpI4eWyjqGvkx17Do6g
-         VFrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wBbbnyxAp776PF/MoHr2OTyzExEVGSOzu1ia9Yc3H1I=;
-        b=hp7E4lhd3vB0jS354e49bnu5XAbjFhK3GEb7tQpiuDvrPNXHmulhOqugnwiF3F0K2O
-         Kscdg0xvHuiMWMbSmKBFZRU6JhmPs1v6AP+hAiTS8BY1bv1Pks4cBx1J9JZcx0EwPJqs
-         wwSp6pajdSKlP59WpFIRH8x/uk4kFMFJie27J8utdcsKUsvgxG7vzJAMUPqW2GkPbm8W
-         RTTO/BoEPEdTag9v1kgCZlhIU6nmAV/jdztPHtlGd8jGhyNn9JC9aLYIMjC/MwyYd976
-         bje661uv2V/+lwbNPzvR0J4B1Vz9VMs+Bi7UE4rqFhlLSg2RIZlq3Tn/oWWvENE11/aP
-         LzPw==
-X-Gm-Message-State: AOAM533ckuhBDxuSOzm8ymf+GkYzF1jUNftbyJH4v0yaGx9VlueOmTOY
-        8909zOT9raTLLnrPvViyYsvSBUYFLWw=
-X-Google-Smtp-Source: ABdhPJwSAuNuM9jqLVqZXSAsYNlqY0zT0OmxOY2NN+1B/MwSfK6lo2bq+uZCH+VLXZNb6OzPO/5XIA==
-X-Received: by 2002:a17:90a:7841:b0:1ea:3f61:7673 with SMTP id y1-20020a17090a784100b001ea3f617673mr1041199pjl.110.1654885970124;
-        Fri, 10 Jun 2022 11:32:50 -0700 (PDT)
-Received: from daehojeong-desktop.mtv.corp.google.com ([2620:15c:211:201:9407:3889:1417:db63])
-        by smtp.gmail.com with ESMTPSA id w15-20020a1709026f0f00b001677d4a9654sm23086plk.265.2022.06.10.11.32.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jun 2022 11:32:49 -0700 (PDT)
-From:   Daeho Jeong <daeho43@gmail.com>
-To:     linux-kernel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net, kernel-team@android.com
-Cc:     Daeho Jeong <daehojeong@google.com>
-Subject: [PATCH] f2fs: fix iostat related lock protection
-Date:   Fri, 10 Jun 2022 11:32:40 -0700
-Message-Id: <20220610183240.2269085-1-daeho43@gmail.com>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+        Fri, 10 Jun 2022 14:33:51 -0400
+Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57ACD39141;
+        Fri, 10 Jun 2022 11:33:48 -0700 (PDT)
+Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
+        by conuserg-12.nifty.com with ESMTP id 25AIX5TP020882;
+        Sat, 11 Jun 2022 03:33:09 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 25AIX5TP020882
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1654885990;
+        bh=ebV4+gRnFFeyUFcz5wz1eB/flTewuR25JCfy/TcRt2U=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=lg+lHyyBfli8Rd6bqhWTKnNmE1mIhzuyPRYKkjtgHHTLnFwO0jzJL3wggaX8iu0t5
+         rFhUYu9IfjG0mmDQl1SPIleRHAAAlqWiziwvhRg7GMGApx+DjsGNhOlJCcyYhrSdii
+         5o9RJT7YK0E0Vp+BtKQ8ocHJYr8FXy8Q97zIin/xHK1CyF57hoEfJi5UmvBfZC0pI4
+         CNyfwPAiV2dztxbYqq5ohhm79uIIZfGaA6JCLj/BLrgf7mWuOaB8Ey0F7COoVJd8gw
+         6YdMudxvmCwisssEIbxpM/AjxfQpDnes5smSSKPZplDvlrIrO8up/gpJdl6H4PwN1r
+         +WzkKXrVjBW9Q==
+X-Nifty-SrcIP: [133.32.177.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     Al Viro <viro@zeniv.linux.org.uk>,
+        Nicolas Pitre <npitre@baylibre.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        linux-modules@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org,
+        linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 4/7] ia64,export.h: replace EXPORT_DATA_SYMBOL* with EXPORT_SYMBOL*
+Date:   Sat, 11 Jun 2022 03:32:33 +0900
+Message-Id: <20220610183236.1272216-5-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220610183236.1272216-1-masahiroy@kernel.org>
+References: <20220610183236.1272216-1-masahiroy@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daeho Jeong <daehojeong@google.com>
+With the previous refactoring, you no longer need to know whether the
+exported symbol is a function or a data.
 
-Made iostat related locks safe to be called from irq context again.
+Replace two instances in ia64, then remove EXPORT_DATA_SYMBOL*.
 
-Signed-off-by: Daeho Jeong <daehojeong@google.com>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 ---
- fs/f2fs/iostat.c | 31 ++++++++++++++++++-------------
- 1 file changed, 18 insertions(+), 13 deletions(-)
 
-diff --git a/fs/f2fs/iostat.c b/fs/f2fs/iostat.c
-index be599f31d3c4..d84c5f6cc09d 100644
---- a/fs/f2fs/iostat.c
-+++ b/fs/f2fs/iostat.c
-@@ -91,8 +91,9 @@ static inline void __record_iostat_latency(struct f2fs_sb_info *sbi)
- 	unsigned int cnt;
- 	struct f2fs_iostat_latency iostat_lat[MAX_IO_TYPE][NR_PAGE_TYPE];
- 	struct iostat_lat_info *io_lat = sbi->iostat_io_lat;
-+	unsigned long flags;
+ arch/ia64/kernel/head.S      | 2 +-
+ arch/ia64/kernel/ivt.S       | 2 +-
+ include/asm-generic/export.h | 3 ---
+ 3 files changed, 2 insertions(+), 5 deletions(-)
+
+diff --git a/arch/ia64/kernel/head.S b/arch/ia64/kernel/head.S
+index f22469f1c1fc..c096500590e9 100644
+--- a/arch/ia64/kernel/head.S
++++ b/arch/ia64/kernel/head.S
+@@ -170,7 +170,7 @@ RestRR:											\
+ 	__PAGE_ALIGNED_DATA
  
--	spin_lock_bh(&sbi->iostat_lat_lock);
-+	spin_lock_irqsave(&sbi->iostat_lat_lock, flags);
- 	for (idx = 0; idx < MAX_IO_TYPE; idx++) {
- 		for (io = 0; io < NR_PAGE_TYPE; io++) {
- 			cnt = io_lat->bio_cnt[idx][io];
-@@ -106,7 +107,7 @@ static inline void __record_iostat_latency(struct f2fs_sb_info *sbi)
- 			io_lat->bio_cnt[idx][io] = 0;
- 		}
- 	}
--	spin_unlock_bh(&sbi->iostat_lat_lock);
-+	spin_unlock_irqrestore(&sbi->iostat_lat_lock, flags);
+ 	.global empty_zero_page
+-EXPORT_DATA_SYMBOL_GPL(empty_zero_page)
++EXPORT_SYMBOL_GPL(empty_zero_page)
+ empty_zero_page:
+ 	.skip PAGE_SIZE
  
- 	trace_f2fs_iostat_latency(sbi, iostat_lat);
- }
-@@ -115,14 +116,15 @@ static inline void f2fs_record_iostat(struct f2fs_sb_info *sbi)
- {
- 	unsigned long long iostat_diff[NR_IO_TYPE];
- 	int i;
-+	unsigned long flags;
+diff --git a/arch/ia64/kernel/ivt.S b/arch/ia64/kernel/ivt.S
+index d6d4229b28db..7a418e324d30 100644
+--- a/arch/ia64/kernel/ivt.S
++++ b/arch/ia64/kernel/ivt.S
+@@ -87,7 +87,7 @@
  
- 	if (time_is_after_jiffies(sbi->iostat_next_period))
- 		return;
+ 	.align 32768	// align on 32KB boundary
+ 	.global ia64_ivt
+-	EXPORT_DATA_SYMBOL(ia64_ivt)
++	EXPORT_SYMBOL(ia64_ivt)
+ ia64_ivt:
+ /////////////////////////////////////////////////////////////////////////////////////////
+ // 0x0000 Entry 0 (size 64 bundles) VHPT Translation (8,20,47)
+diff --git a/include/asm-generic/export.h b/include/asm-generic/export.h
+index 0ae9f38a904c..570cd4da7210 100644
+--- a/include/asm-generic/export.h
++++ b/include/asm-generic/export.h
+@@ -8,7 +8,4 @@
+  */
+ #include <linux/export.h>
  
- 	/* Need double check under the lock */
--	spin_lock_bh(&sbi->iostat_lock);
-+	spin_lock_irqsave(&sbi->iostat_lock, flags);
- 	if (time_is_after_jiffies(sbi->iostat_next_period)) {
--		spin_unlock_bh(&sbi->iostat_lock);
-+		spin_unlock_irqrestore(&sbi->iostat_lock, flags);
- 		return;
- 	}
- 	sbi->iostat_next_period = jiffies +
-@@ -133,7 +135,7 @@ static inline void f2fs_record_iostat(struct f2fs_sb_info *sbi)
- 				sbi->prev_rw_iostat[i];
- 		sbi->prev_rw_iostat[i] = sbi->rw_iostat[i];
- 	}
--	spin_unlock_bh(&sbi->iostat_lock);
-+	spin_unlock_irqrestore(&sbi->iostat_lock, flags);
- 
- 	trace_f2fs_iostat(sbi, iostat_diff);
- 
-@@ -145,25 +147,27 @@ void f2fs_reset_iostat(struct f2fs_sb_info *sbi)
- 	struct iostat_lat_info *io_lat = sbi->iostat_io_lat;
- 	int i;
- 
--	spin_lock_bh(&sbi->iostat_lock);
-+	spin_lock_irq(&sbi->iostat_lock);
- 	for (i = 0; i < NR_IO_TYPE; i++) {
- 		sbi->rw_iostat[i] = 0;
- 		sbi->prev_rw_iostat[i] = 0;
- 	}
--	spin_unlock_bh(&sbi->iostat_lock);
-+	spin_unlock_irq(&sbi->iostat_lock);
- 
--	spin_lock_bh(&sbi->iostat_lat_lock);
-+	spin_lock_irq(&sbi->iostat_lat_lock);
- 	memset(io_lat, 0, sizeof(struct iostat_lat_info));
--	spin_unlock_bh(&sbi->iostat_lat_lock);
-+	spin_unlock_irq(&sbi->iostat_lat_lock);
- }
- 
- void f2fs_update_iostat(struct f2fs_sb_info *sbi,
- 			enum iostat_type type, unsigned long long io_bytes)
- {
-+	unsigned long flags;
-+
- 	if (!sbi->iostat_enable)
- 		return;
- 
--	spin_lock_bh(&sbi->iostat_lock);
-+	spin_lock_irqsave(&sbi->iostat_lock, flags);
- 	sbi->rw_iostat[type] += io_bytes;
- 
- 	if (type == APP_BUFFERED_IO || type == APP_DIRECT_IO)
-@@ -172,7 +176,7 @@ void f2fs_update_iostat(struct f2fs_sb_info *sbi,
- 	if (type == APP_BUFFERED_READ_IO || type == APP_DIRECT_READ_IO)
- 		sbi->rw_iostat[APP_READ_IO] += io_bytes;
- 
--	spin_unlock_bh(&sbi->iostat_lock);
-+	spin_unlock_irqrestore(&sbi->iostat_lock, flags);
- 
- 	f2fs_record_iostat(sbi);
- }
-@@ -185,6 +189,7 @@ static inline void __update_iostat_latency(struct bio_iostat_ctx *iostat_ctx,
- 	struct f2fs_sb_info *sbi = iostat_ctx->sbi;
- 	struct iostat_lat_info *io_lat = sbi->iostat_io_lat;
- 	int idx;
-+	unsigned long flags;
- 
- 	if (!sbi->iostat_enable)
- 		return;
-@@ -202,12 +207,12 @@ static inline void __update_iostat_latency(struct bio_iostat_ctx *iostat_ctx,
- 			idx = WRITE_ASYNC_IO;
- 	}
- 
--	spin_lock_bh(&sbi->iostat_lat_lock);
-+	spin_lock_irqsave(&sbi->iostat_lat_lock, flags);
- 	io_lat->sum_lat[idx][iotype] += ts_diff;
- 	io_lat->bio_cnt[idx][iotype]++;
- 	if (ts_diff > io_lat->peak_lat[idx][iotype])
- 		io_lat->peak_lat[idx][iotype] = ts_diff;
--	spin_unlock_bh(&sbi->iostat_lat_lock);
-+	spin_unlock_irqrestore(&sbi->iostat_lat_lock, flags);
- }
- 
- void iostat_update_and_unbind_ctx(struct bio *bio, int rw)
+-#define EXPORT_DATA_SYMBOL(name)	EXPORT_SYMBOL(name)
+-#define EXPORT_DATA_SYMBOL_GPL(name)	EXPORT_SYMBOL_GPL(name)
+-
+ #endif
 -- 
-2.36.1.476.g0c4daa206d-goog
+2.32.0
 
