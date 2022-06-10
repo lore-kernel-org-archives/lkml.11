@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF2C2C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 15:39:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E50C4C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 15:39:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346006AbiFJPjb (ORCPT
+        id S1346145AbiFJPjn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 11:39:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45368 "EHLO
+        Fri, 10 Jun 2022 11:39:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345199AbiFJPjR (ORCPT
+        with ESMTP id S1345333AbiFJPjT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 11:39:17 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7763D28D694
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 08:39:13 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id h19so35846032edj.0
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 08:39:13 -0700 (PDT)
+        Fri, 10 Jun 2022 11:39:19 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0323290B26
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 08:39:16 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id kq6so41173198ejb.11
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 08:39:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pqrs.dk; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ttBUCbYGFLdzm2aXxZ1IGyfndCTrcRAN4ru0azsH/58=;
-        b=cZYmDUDy0wu5c9j6ewi0ELxc7qQdw0DCbocteP7SGDeSU/o89n1z5e1aVYndYZuLf8
-         vcmhpeWbwh5y1mYzyOM22ClVplmgYc831kwVHywjMRjHAgsz3d28u3WIXtmfaxFYWNyU
-         e16JsDO1awPiuGSta1Vrs/klJXTKa0bU9VpMc=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=XE/B3EfYYQf1mtimqgsF3ZVDA9bOVjSyLpITpl2gz98=;
+        b=BVgwujirHOUIeTwEYAOXz/Fa5gPyFbFTfBDPBTeofutQ98qdf624mz/DQ/iM7jHM4b
+         iFAOdv3EzLvZCXsZ7GL4ihxUy3hnmkmqIJgGoYQmGwpqieCZLXhuxYW70pJmnAg6/VCS
+         0ahZBTABoQZFRCU0zIqF0rLGArZvPdL8Wt0Ts=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ttBUCbYGFLdzm2aXxZ1IGyfndCTrcRAN4ru0azsH/58=;
-        b=GtLI08BW0e2/fVz0Ea1u0XPaRvSOfoXiNmLdJy/qzY4tonGGdO+FObIPkLAo5uSIqB
-         H9SFx164GoGKoV1Lmbh7qF96WkopSrlLBwxGacDREQDbL10d8eZ0NQmqOKDBFSBZ9DUJ
-         rcrVsXvhL/zSYhi/3IjQ4SkkqiTzY49SJ8d9aBTvtagKezDtzu9Qc0b/Q2TpdmpZpmui
-         G5yGW6ODOrmCxjFav2xWwLXbkJBY1sE5cvFtccP5xcRCYOoeP1OCfrh9uoa1MbksP8Cd
-         +Pe6gt8p9LbBOhPM3lwgFVLA9ECeXHsa5+kSDpHykkc2exWA9i8+D/malpIIvOpvjth4
-         NwOw==
-X-Gm-Message-State: AOAM533hBbdVglpIWlsGkGlOKMM0bf7XERD2FekTxCyUu6kj0cQBHYdf
-        PwwjydA/dHxwBT4ML2noF2NqPg==
-X-Google-Smtp-Source: ABdhPJyspXoMrwetgWUuQuUkvvnhDg0orQX5YpJax1xZh6BFYrS78uu1TShKsDkAnTFa3pXF0usKJA==
-X-Received: by 2002:a05:6402:22eb:b0:42d:d578:25d9 with SMTP id dn11-20020a05640222eb00b0042dd57825d9mr52318904edb.310.1654875552048;
-        Fri, 10 Jun 2022 08:39:12 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=XE/B3EfYYQf1mtimqgsF3ZVDA9bOVjSyLpITpl2gz98=;
+        b=SIOcSBJRC0XLaCake9gCMOqBmNyx3t6JxNLKB62sdYPek7RlVxXtR4+aDE6uk+NfeN
+         +2K3tvKUg6WPDvyyjGulxU1mcDVaZVsCUMCwV3kvtARoYEsKXTQZ9/ZFnWCF9QuclzqM
+         PTGc8p2TMQzi5UDaPJWsPKO5JXDlyIBsY9C9MI0Iae67Sk4ZTvOCjqmJXGhKaG/FrTIw
+         g4WW5n7AW+tR/UAZIpvmPjVoktqlOb6jTY7bkz+ruEC12cLhnOiO3obsCmYIgyPVdJl/
+         Bu1Klj954jZWetPSeKo9Vvw+SsVakIPazf7IdqOA/nLArZ/dMKNdzAjkPpDM5Hu5J0zF
+         kopA==
+X-Gm-Message-State: AOAM531SUC6QpS6L28ZGonKGBiUDhZ813f60UJsucwQPNLgcjJ4GGaAR
+        MFTges5mNpUPQwXR0wiiiXCb+w==
+X-Google-Smtp-Source: ABdhPJwTbMezAtGxCn6LQq/LfANqqR2V4XCYQzJqALFJsXWfYQJAKH5hK+hEoU2+ewgtG9IEBh2EiQ==
+X-Received: by 2002:a17:907:6287:b0:6e1:6ac:c769 with SMTP id nd7-20020a170907628700b006e106acc769mr41817915ejc.388.1654875555111;
+        Fri, 10 Jun 2022 08:39:15 -0700 (PDT)
 Received: from localhost.localdomain (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
-        by smtp.gmail.com with ESMTPSA id h24-20020a170906829800b0070f7d1c5a18sm9783857ejx.55.2022.06.10.08.39.10
+        by smtp.gmail.com with ESMTPSA id h24-20020a170906829800b0070f7d1c5a18sm9783857ejx.55.2022.06.10.08.39.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jun 2022 08:39:10 -0700 (PDT)
+        Fri, 10 Jun 2022 08:39:14 -0700 (PDT)
 From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
 To:     hauke@hauke-m.de, Linus Walleij <linus.walleij@linaro.org>,
         =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
@@ -59,10 +59,12 @@ To:     hauke@hauke-m.de, Linus Walleij <linus.walleij@linaro.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Russell King <linux@armlinux.org.uk>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 0/5] net: dsa: realtek: rtl8365mb: improve handling of PHY modes
-Date:   Fri, 10 Jun 2022 17:38:24 +0200
-Message-Id: <20220610153829.446516-1-alvin@pqrs.dk>
+Subject: [PATCH net-next v2 2/5] net: dsa: realtek: rtl8365mb: remove port_mask private data member
+Date:   Fri, 10 Jun 2022 17:38:26 +0200
+Message-Id: <20220610153829.446516-3-alvin@pqrs.dk>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220610153829.446516-1-alvin@pqrs.dk>
+References: <20220610153829.446516-1-alvin@pqrs.dk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -72,37 +74,66 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-This series introduces some minor cleanup of the driver and improves the
-handling of PHY interface modes to break the assumption that CPU ports
-are always over an external interface, and the assumption that user
-ports are always using an internal PHY.
+There is no real need for this variable: the line change interrupt mask
+is sufficiently masked out when getting linkup_ind and linkdown_ind in
+the interrupt handler.
 
-Changes v1 -> v2:
+Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+---
+ drivers/net/dsa/realtek/rtl8365mb.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
- - patches 1-4: no code change
-
- - add Luiz' reviewed-by to some of the patches
-
- - patch 5: put the chip_infos into a static array and get rid of the
-   switch in the detect function; also remove the macros for various
-   chip ID/versions and embed them directly into the array
-
- - patch 5: use array of size 3 rather than flexible array for extints
-   in the chip_info struct; gcc complained about initialization of
-   flexible array members in a nested context, and anyway, we know that
-   the max number of external interfaces is 3
-
-Alvin Šipraga (5):
-  net: dsa: realtek: rtl8365mb: rename macro RTL8367RB -> RTL8367RB_VB
-  net: dsa: realtek: rtl8365mb: remove port_mask private data member
-  net: dsa: realtek: rtl8365mb: correct the max number of ports
-  net: dsa: realtek: rtl8365mb: remove learn_limit_max private data
-    member
-  net: dsa: realtek: rtl8365mb: handle PHY interface modes correctly
-
- drivers/net/dsa/realtek/rtl8365mb.c | 299 ++++++++++++++++------------
- 1 file changed, 177 insertions(+), 122 deletions(-)
-
+diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
+index 905056250b88..42afba122bb4 100644
+--- a/drivers/net/dsa/realtek/rtl8365mb.c
++++ b/drivers/net/dsa/realtek/rtl8365mb.c
+@@ -564,7 +564,6 @@ struct rtl8365mb_port {
+  * @irq: registered IRQ or zero
+  * @chip_id: chip identifier
+  * @chip_ver: chip silicon revision
+- * @port_mask: mask of all ports
+  * @learn_limit_max: maximum number of L2 addresses the chip can learn
+  * @cpu: CPU tagging and CPU port configuration for this chip
+  * @mib_lock: prevent concurrent reads of MIB counters
+@@ -579,7 +578,6 @@ struct rtl8365mb {
+ 	int irq;
+ 	u32 chip_id;
+ 	u32 chip_ver;
+-	u32 port_mask;
+ 	u32 learn_limit_max;
+ 	struct rtl8365mb_cpu cpu;
+ 	struct mutex mib_lock;
+@@ -1489,13 +1487,10 @@ static irqreturn_t rtl8365mb_irq(int irq, void *data)
+ {
+ 	struct realtek_priv *priv = data;
+ 	unsigned long line_changes = 0;
+-	struct rtl8365mb *mb;
+ 	u32 stat;
+ 	int line;
+ 	int ret;
+ 
+-	mb = priv->chip_data;
+-
+ 	ret = rtl8365mb_get_and_clear_status_reg(priv, RTL8365MB_INTR_STATUS_REG,
+ 						 &stat);
+ 	if (ret)
+@@ -1520,7 +1515,7 @@ static irqreturn_t rtl8365mb_irq(int irq, void *data)
+ 
+ 		linkdown_ind = FIELD_GET(RTL8365MB_PORT_LINKDOWN_IND_MASK, val);
+ 
+-		line_changes = (linkup_ind | linkdown_ind) & mb->port_mask;
++		line_changes = linkup_ind | linkdown_ind;
+ 	}
+ 
+ 	if (!line_changes)
+@@ -2009,7 +2004,6 @@ static int rtl8365mb_detect(struct realtek_priv *priv)
+ 		mb->priv = priv;
+ 		mb->chip_id = chip_id;
+ 		mb->chip_ver = chip_ver;
+-		mb->port_mask = GENMASK(priv->num_ports - 1, 0);
+ 		mb->learn_limit_max = RTL8365MB_LEARN_LIMIT_MAX;
+ 		mb->jam_table = rtl8365mb_init_jam_8365mb_vc;
+ 		mb->jam_size = ARRAY_SIZE(rtl8365mb_init_jam_8365mb_vc);
 -- 
 2.36.1
 
