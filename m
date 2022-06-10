@@ -2,127 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D6E3C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 10:42:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C261DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 10:43:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346992AbiFJKm1 (ORCPT
+        id S1348300AbiFJKm6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 06:42:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59958 "EHLO
+        Fri, 10 Jun 2022 06:42:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346659AbiFJKlj (ORCPT
+        with ESMTP id S1344113AbiFJKmS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 06:41:39 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A47F1C4B32;
-        Fri, 10 Jun 2022 03:37:01 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id v1so41953896ejg.13;
-        Fri, 10 Jun 2022 03:37:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4RJUujkG76qVvHktVyroJwXiHF5a3Pxz7D+Gs0XGGk8=;
-        b=AVnu1qKnpzyAq+6vrJ1rQAu+7GHzMtbJx86n1XZ+M4tSVOgFaM/kZXFe7Lxrh3JFNk
-         COlyZXyD3sHR+8UnJQ6MAMbflYpgXNn06+XBC7sghOG6a+2LE5sx/9uW4WHAGPewS2Mi
-         uoif4nmtmFS6/qq6pIgrn89NZBxsXAlOoag3e8LOb6NueyPGrgVW0XboCqh2+LaM+Tf2
-         BE2MoWYBdaRFeR+ZqrsRg9QiV8ZEAjNg8JaPlWYVlvjTOydD8DsPkfeMiX8eHLSAAMYs
-         txHVOh/WzCd1Lav0+lVfrsxZbTxRPaHGqmF3tM3CJ1qJEQxJYlsd7ga/zeI4brPhMH/3
-         zs1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4RJUujkG76qVvHktVyroJwXiHF5a3Pxz7D+Gs0XGGk8=;
-        b=akwDCUzb4DlVBiRFPGD5kBQ59G9qS5bvMc4D/TkYQ7Ddar+G18AhuB1X2tXlU63hTP
-         /h+pmbmSF937rMN3SFGf6jGuo1XUb5QAWyr800OSxkdP+oK26sW5517OKztZvLgOE/Fx
-         7MKmCpFhAdO+vy3rp+OdnceHfnfP8KTHIjXar1o+X+jabVIvF6fRJzgCg2mCE2XmUgZS
-         gwvKBNU35oZayP96Z1ej/+FCSLzYqg9JFAKnK8D/+9xOuEMAYHsflx+FnAIVyVAQ3BRX
-         V2VO1QfswpAvoSBA6CiO6tJR29mE/Q3fZfAKphyPopabz3UQNhT7SiVaAde5Uy8QKQ4C
-         WMBw==
-X-Gm-Message-State: AOAM531X4KDtJ5uHYzSoHe7R1HbQGIEGXLy1waKj88Vsjytik/uu7c/H
-        xuHvW80utz4McBHkckZ3siM=
-X-Google-Smtp-Source: ABdhPJxQoXVoZnISb/CGAqoY0+/YG3RCmLCHENDYdW/OQSQ7xioPYzSqQsA+hC5zQ5drHcXTD5xxCg==
-X-Received: by 2002:a17:907:96ab:b0:711:f0a8:8fdc with SMTP id hd43-20020a17090796ab00b00711f0a88fdcmr13237546ejc.359.1654857419910;
-        Fri, 10 Jun 2022 03:36:59 -0700 (PDT)
-Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id g12-20020a056402424c00b00431962fe5d4sm6919323edb.77.2022.06.10.03.36.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jun 2022 03:36:58 -0700 (PDT)
-From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
-To:     openwrt-devel@lists.openwrt.org,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
-Subject: [PATCH] net: gro: respect nf_conntrack_checksum for skipping csum verification
-Date:   Fri, 10 Jun 2022 12:36:53 +0200
-Message-Id: <20220610103653.15261-1-zajec5@gmail.com>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Fri, 10 Jun 2022 06:42:18 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AD47F4B1DE;
+        Fri, 10 Jun 2022 03:37:32 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id C031A1E80D6E;
+        Fri, 10 Jun 2022 18:36:46 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id q_szG_0-xxXj; Fri, 10 Jun 2022 18:36:44 +0800 (CST)
+Received: from localhost.localdomain (unknown [219.141.250.2])
+        (Authenticated sender: kunyu@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id DD7271E80D24;
+        Fri, 10 Jun 2022 18:36:43 +0800 (CST)
+From:   Li kunyu <kunyu@nfschina.com>
+To:     chenhuacai@kernel.org, kernel@xen0n.name, rafael@kernel.org,
+        len.brown@intel.com, pavel@ucw.cz, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com
+Cc:     linux-ia64@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, Li kunyu <kunyu@nfschina.com>
+Subject: [PATCH] x86: Change the return type of acpi_map_cpu2node to void
+Date:   Fri, 10 Jun 2022 18:36:44 +0800
+Message-Id: <20220610103644.201245-1-kunyu@nfschina.com>
+X-Mailer: git-send-email 2.18.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafał Miłecki <rafal@milecki.pl>
+Reduce eax register calls by removing unused return values.
 
-Netfilter allows disabling checksum verification of incoming packets by
-setting nf_conntrack_checksum variable. That feature is very useful for
-home routers which:
-1. Most of the time just /forward/ network traffic
-2. Have slow CPU(s) and csum calculation is a challenge
-
-Some projects like OpenWrt set nf_conntrack_checksum to 0 by default.
-
-It would be nice to allow similar optimization in the GRO code paths.
-This patch simply reuses nf_conntrack_checksum variable to skip
-skb_gro_checksum_validate() calls if applicable.
-
-Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+Signed-off-by: Li kunyu <kunyu@nfschina.com>
 ---
-Hi guys,
+ arch/ia64/kernel/acpi.c      | 3 +--
+ arch/loongarch/kernel/acpi.c | 3 +--
+ arch/x86/kernel/acpi/boot.c  | 3 +--
+ 3 files changed, 3 insertions(+), 6 deletions(-)
 
-I'm not very familiar with net subsystem, please let me know if there is
-a better way of implementing such a feature.
----
- net/ipv4/tcp_offload.c   | 3 +++
- net/ipv6/tcpv6_offload.c | 3 +++
- 2 files changed, 6 insertions(+)
-
-diff --git a/net/ipv4/tcp_offload.c b/net/ipv4/tcp_offload.c
-index 30abde86db45..734a3c0f3d4a 100644
---- a/net/ipv4/tcp_offload.c
-+++ b/net/ipv4/tcp_offload.c
-@@ -311,6 +311,9 @@ struct sk_buff *tcp4_gro_receive(struct list_head *head, struct sk_buff *skb)
+diff --git a/arch/ia64/kernel/acpi.c b/arch/ia64/kernel/acpi.c
+index 96d13cb7c19f..2665cc873f0a 100644
+--- a/arch/ia64/kernel/acpi.c
++++ b/arch/ia64/kernel/acpi.c
+@@ -712,7 +712,7 @@ int acpi_isa_irq_to_gsi(unsigned isa_irq, u32 *gsi)
+  *  ACPI based hotplug CPU support
+  */
+ #ifdef CONFIG_ACPI_HOTPLUG_CPU
+-int acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
++void acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
  {
- 	/* Don't bother verifying checksum if we're going to flush anyway. */
- 	if (!NAPI_GRO_CB(skb)->flush &&
-+#if IS_ENABLED(CONFIG_NF_CONNTRACK)
-+	    dev_net(skb->dev)->ct.sysctl_checksum &&
-+#endif
- 	    skb_gro_checksum_validate(skb, IPPROTO_TCP,
- 				      inet_gro_compute_pseudo)) {
- 		NAPI_GRO_CB(skb)->flush = 1;
-diff --git a/net/ipv6/tcpv6_offload.c b/net/ipv6/tcpv6_offload.c
-index 39db5a226855..2144afa56fa3 100644
---- a/net/ipv6/tcpv6_offload.c
-+++ b/net/ipv6/tcpv6_offload.c
-@@ -18,6 +18,9 @@ struct sk_buff *tcp6_gro_receive(struct list_head *head, struct sk_buff *skb)
+ #ifdef CONFIG_ACPI_NUMA
+ 	/*
+@@ -725,7 +725,6 @@ int acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
+ 	node_cpuid[cpu].phys_id = physid;
+ 	node_cpuid[cpu].nid = acpi_get_node(handle);
+ #endif
+-	return 0;
+ }
+ 
+ int additional_cpus __initdata = -1;
+diff --git a/arch/loongarch/kernel/acpi.c b/arch/loongarch/kernel/acpi.c
+index b16c3dea5eeb..369b49343563 100644
+--- a/arch/loongarch/kernel/acpi.c
++++ b/arch/loongarch/kernel/acpi.c
+@@ -282,7 +282,7 @@ void __init arch_reserve_mem_area(acpi_physical_address addr, size_t size)
+ 
+ #include <acpi/processor.h>
+ 
+-static int __ref acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
++static void __ref acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
  {
- 	/* Don't bother verifying checksum if we're going to flush anyway. */
- 	if (!NAPI_GRO_CB(skb)->flush &&
-+#if IS_ENABLED(CONFIG_NF_CONNTRACK)
-+	    dev_net(skb->dev)->ct.sysctl_checksum &&
-+#endif
- 	    skb_gro_checksum_validate(skb, IPPROTO_TCP,
- 				      ip6_gro_compute_pseudo)) {
- 		NAPI_GRO_CB(skb)->flush = 1;
+ #ifdef CONFIG_ACPI_NUMA
+ 	int nid;
+@@ -295,7 +295,6 @@ static int __ref acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
+ 		cpumask_set_cpu(cpu, cpumask_of_node(nid));
+ 	}
+ #endif
+-	return 0;
+ }
+ 
+ int acpi_map_cpu(acpi_handle handle, phys_cpuid_t physid, u32 acpi_id, int *pcpu)
+diff --git a/arch/x86/kernel/acpi/boot.c b/arch/x86/kernel/acpi/boot.c
+index 907cc98b1938..d63ec3ea3be3 100644
+--- a/arch/x86/kernel/acpi/boot.c
++++ b/arch/x86/kernel/acpi/boot.c
+@@ -799,7 +799,7 @@ static void __init acpi_set_irq_model_ioapic(void)
+ #ifdef CONFIG_ACPI_HOTPLUG_CPU
+ #include <acpi/processor.h>
+ 
+-static int acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
++static void acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
+ {
+ #ifdef CONFIG_ACPI_NUMA
+ 	int nid;
+@@ -810,7 +810,6 @@ static int acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
+ 		numa_set_node(cpu, nid);
+ 	}
+ #endif
+-	return 0;
+ }
+ 
+ int acpi_map_cpu(acpi_handle handle, phys_cpuid_t physid, u32 acpi_id,
 -- 
-2.34.1
+2.18.2
 
