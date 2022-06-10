@@ -2,128 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 564A4C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 09:15:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28D8FCCA47B
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 09:15:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347904AbiFJJPO (ORCPT
+        id S1348270AbiFJJPS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 05:15:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38902 "EHLO
+        Fri, 10 Jun 2022 05:15:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344071AbiFJJOs (ORCPT
+        with ESMTP id S1347505AbiFJJOv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 05:14:48 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46E8D202D1C
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 02:13:42 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LKFbN54gyzjXYb;
-        Fri, 10 Jun 2022 17:12:16 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 10 Jun 2022 17:13:34 +0800
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 10 Jun 2022 17:13:33 +0800
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-To:     <catalin.marinas@arm.com>, <will@kernel.org>,
-        <akpm@linux-foundation.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <linux-mm@kvack.org>, <hch@infradead.org>, <arnd@arndb.de>,
-        Baoquan He <bhe@redhat.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Anshuman Khandual <anshuman.khandual@arm.com>
-Subject: [PATCH v5 resend 2/6] mm: ioremap: Use more sensible name in ioremap_prot()
-Date:   Fri, 10 Jun 2022 17:22:55 +0800
-Message-ID: <20220610092255.32445-1-wangkefeng.wang@huawei.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220607125027.44946-3-wangkefeng.wang@huawei.com>
-References: <20220607125027.44946-3-wangkefeng.wang@huawei.com>
+        Fri, 10 Jun 2022 05:14:51 -0400
+Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EED6D1E7BCD;
+        Fri, 10 Jun 2022 02:13:58 -0700 (PDT)
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
+        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
+        id 1nzaiF-005MT4-NF; Fri, 10 Jun 2022 19:13:53 +1000
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 10 Jun 2022 17:13:52 +0800
+Date:   Fri, 10 Jun 2022 17:13:52 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     John Allen <john.allen@amd.com>
+Cc:     linux-crypto@vger.kernel.org, seanjc@google.com,
+        Thomas.Lendacky@amd.com, Ashish.Kalra@amd.com,
+        linux-kernel@vger.kernel.org, theflow@google.com,
+        rientjes@google.com, pgonda@google.com, stable@vger.kernel.org
+Subject: Re: [PATCH v4] crypto: ccp - Use kzalloc for sev ioctl interfaces to
+ prevent kernel memory leak
+Message-ID: <YqMLUOQtcsNwU6xw@gondor.apana.org.au>
+References: <20220518153126.265074-1-john.allen@amd.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220518153126.265074-1-john.allen@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use more meaningful and sensible naming phys_addr
-instead of addr in ioremap_prot().
+On Wed, May 18, 2022 at 03:31:26PM +0000, John Allen wrote:
+> For some sev ioctl interfaces, input may be passed that is less than or
+> equal to SEV_FW_BLOB_MAX_SIZE, but larger than the data that PSP
+> firmware returns. In this case, kmalloc will allocate memory that is the
+> size of the input rather than the size of the data. Since PSP firmware
+> doesn't fully overwrite the buffer, the sev ioctl interfaces with the
+> issue may return uninitialized slab memory.
+> 
+> Currently, all of the ioctl interfaces in the ccp driver are safe, but
+> to prevent future problems, change all ioctl interfaces that allocate
+> memory with kmalloc to use kzalloc and memset the data buffer to zero
+> in sev_ioctl_do_platform_status.
+> 
+> Fixes: 38103671aad3 ("crypto: ccp: Use the stack and common buffer for status commands")
+> Fixes: e799035609e15 ("crypto: ccp: Implement SEV_PEK_CSR ioctl command")
+> Fixes: 76a2b524a4b1d ("crypto: ccp: Implement SEV_PDH_CERT_EXPORT ioctl command")
+> Fixes: d6112ea0cb344 ("crypto: ccp - introduce SEV_GET_ID2 command")
+> Cc: stable@vger.kernel.org
+> Reported-by: Andy Nguyen <theflow@google.com>
+> Suggested-by: David Rientjes <rientjes@google.com>
+> Suggested-by: Peter Gonda <pgonda@google.com>
+> Signed-off-by: John Allen <john.allen@amd.com>
+> ---
+> v2:
+>   - Add fixes tags and CC stable@vger.kernel.org
+> v3:
+>   - memset data buffer to zero in sev_ioctl_do_platform_status
+> v4:
+>   - Add fixes tag for sev_ioctl_do_platform_status change
+> ---
+>  drivers/crypto/ccp/sev-dev.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
 
-Suggested-by: Andrew Morton <akpm@linux-foundation.org>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Baoquan He <bhe@redhat.com>
-Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
-Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
----
-v5 resend:
-- use sensible and add RB
- include/asm-generic/io.h |  3 ++-
- mm/ioremap.c             | 14 ++++++++------
- 2 files changed, 10 insertions(+), 7 deletions(-)
-
-diff --git a/include/asm-generic/io.h b/include/asm-generic/io.h
-index 7ce93aaf69f8..b76379628a02 100644
---- a/include/asm-generic/io.h
-+++ b/include/asm-generic/io.h
-@@ -964,7 +964,8 @@ static inline void iounmap(volatile void __iomem *addr)
- #elif defined(CONFIG_GENERIC_IOREMAP)
- #include <linux/pgtable.h>
- 
--void __iomem *ioremap_prot(phys_addr_t addr, size_t size, unsigned long prot);
-+void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size,
-+			   unsigned long prot);
- void iounmap(volatile void __iomem *addr);
- 
- static inline void __iomem *ioremap(phys_addr_t addr, size_t size)
-diff --git a/mm/ioremap.c b/mm/ioremap.c
-index 5fe598ecd9b7..2d754b48d230 100644
---- a/mm/ioremap.c
-+++ b/mm/ioremap.c
-@@ -11,20 +11,21 @@
- #include <linux/io.h>
- #include <linux/export.h>
- 
--void __iomem *ioremap_prot(phys_addr_t addr, size_t size, unsigned long prot)
-+void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size,
-+			   unsigned long prot)
- {
- 	unsigned long offset, vaddr;
- 	phys_addr_t last_addr;
- 	struct vm_struct *area;
- 
- 	/* Disallow wrap-around or zero size */
--	last_addr = addr + size - 1;
--	if (!size || last_addr < addr)
-+	last_addr = phys_addr + size - 1;
-+	if (!size || last_addr < phys_addr)
- 		return NULL;
- 
- 	/* Page-align mappings */
--	offset = addr & (~PAGE_MASK);
--	addr -= offset;
-+	offset = phys_addr & (~PAGE_MASK);
-+	phys_addr -= offset;
- 	size = PAGE_ALIGN(size + offset);
- 
- 	area = get_vm_area_caller(size, VM_IOREMAP,
-@@ -33,7 +34,8 @@ void __iomem *ioremap_prot(phys_addr_t addr, size_t size, unsigned long prot)
- 		return NULL;
- 	vaddr = (unsigned long)area->addr;
- 
--	if (ioremap_page_range(vaddr, vaddr + size, addr, __pgprot(prot))) {
-+	if (ioremap_page_range(vaddr, vaddr + size, phys_addr,
-+			       __pgprot(prot))) {
- 		free_vm_area(area);
- 		return NULL;
- 	}
+Patch applied.  Thanks.
 -- 
-2.35.3
-
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
