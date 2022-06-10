@@ -2,107 +2,276 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EEBBC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 22:44:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6C12C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 22:53:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348797AbiFJWoR (ORCPT
+        id S1345305AbiFJWxU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 18:44:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46258 "EHLO
+        Fri, 10 Jun 2022 18:53:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348401AbiFJWoO (ORCPT
+        with ESMTP id S232323AbiFJWxS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 18:44:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 375A23BFAE
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 15:44:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654901052;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pblZd+Kqp7f2K+2rxNpvXUuiOLaopPh9IaEYk0kwYKE=;
-        b=NTjYhRsx6ctDVsjQjsegWvbKCxKclOsEO07UrXSk8ypDynoqmphEPoXwlWosTDmIHU9jKu
-        NKAwmxOJK34qSCSYKb+G7QwCrJl47j/kbQpKWg4P/UnmlckC+uUe3niKVZInsbxS/dMuzs
-        suM1nz9eAMOXglsw91/x6M5dOdPLk4g=
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com
- [209.85.166.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-557-LWyJeVxTNRizHAeT01e6VQ-1; Fri, 10 Jun 2022 18:44:11 -0400
-X-MC-Unique: LWyJeVxTNRizHAeT01e6VQ-1
-Received: by mail-il1-f198.google.com with SMTP id p12-20020a056e02144c00b002d196a4d73eso275887ilo.18
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 15:44:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=pblZd+Kqp7f2K+2rxNpvXUuiOLaopPh9IaEYk0kwYKE=;
-        b=adGI+YXacSFQUaFfxvf1wIPWbAkbiO0waNoEMdM1Z0eCAQ78l1sj1+FzQhp4vGeiIK
-         JDQiyvGKwBDiJUb760f6Ij9Es0vgEQ53IUdE76AC8ZeeEDYMHLEaFjwXEuSv6eLld0Se
-         qZugrJcbqMivaIflRoO6SGQA8yrA7V0g0mHOXl5oFyCOGwYNB06CLbdd9jRjtSrKpXBl
-         c6LSqBwIQG3uclT1Esf4feBngpCciJfB7bK855XtiWWSAFw8uo4u9VECRJ/dol4WuFkv
-         NNhzSL3cTT+RvA2sZtxGR99XGhnzoYUdVf6biX5TtUHi78fTyFutqVsFIoZiXd0QhnA/
-         gOaQ==
-X-Gm-Message-State: AOAM532xDxxqN4ftEwfSATMutbiPa9HksY9b5DQdhiPqVE46dDseRVv5
-        SS0jKGGlg/ZNV0Ux1gmDaD5H58uCZANR5HBOcr8jufNFYMyFF0t5NvUZHI/cFnanKBQ709tE8a8
-        JkiOUUcw9tCGx8roFUZBlAG4D
-X-Received: by 2002:a02:c811:0:b0:332:2c2e:88e0 with SMTP id p17-20020a02c811000000b003322c2e88e0mr343355jao.132.1654901050840;
-        Fri, 10 Jun 2022 15:44:10 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwgEFjSHs9TXHG3p6x60NRKxwsOGKtJ1mMFIodXcBQ3lbM9zLgveeGgcd98DfNgAuz2vKQAXQ==
-X-Received: by 2002:a02:c811:0:b0:332:2c2e:88e0 with SMTP id p17-20020a02c811000000b003322c2e88e0mr343346jao.132.1654901050600;
-        Fri, 10 Jun 2022 15:44:10 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id y2-20020a926402000000b002d3a3a089b3sm130533ilb.1.2022.06.10.15.44.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jun 2022 15:44:09 -0700 (PDT)
-Date:   Fri, 10 Jun 2022 16:44:07 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     kwankhede@nvidia.com, farman@linux.ibm.com, mjrosato@linux.ibm.com,
-        pasic@linux.ibm.com, diana.craciun@oss.nxp.com, cohuck@redhat.com,
-        eric.auger@redhat.com, kvm@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, yishaih@nvidia.com, hch@lst.de
-Subject: Re: [PATCH] vfio: de-extern-ify function prototypes
-Message-ID: <20220610164407.25feeb23.alex.williamson@redhat.com>
-In-Reply-To: <20220610000434.GE1343366@nvidia.com>
-References: <165471414407.203056.474032786990662279.stgit@omen>
-        <20220610000434.GE1343366@nvidia.com>
-Organization: Red Hat
+        Fri, 10 Jun 2022 18:53:18 -0400
+Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1EA013D6E;
+        Fri, 10 Jun 2022 15:53:16 -0700 (PDT)
+Received: from g550jk.arnhem.chello.nl (31-151-115-246.dynamic.upc.nl [31.151.115.246])
+        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 4346ECD3E6;
+        Fri, 10 Jun 2022 22:53:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
+        t=1654901594; bh=juMgCw/nmNxQ3b7/bs0cS2U1BmqwcY93GEJ6mlprFdw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=Bju+T6rInwzSBW3ypILRrq1fy+s/+nHgTYsNA4rnuiEvWnUihurQbkJT/V8ofaNwn
+         83De5atAk0X3IYG2NdtfhsG5j3fpIBtzvvEC+j/Ze/qY0HZRkwjmJjUZgKU5doM1oD
+         LiBoCO1wwEodN25ig/mIGiUlXlQkznQIt+ulMh3M=
+From:   Luca Weiss <luca@z3ntu.xyz>
+To:     linux-arm-msm@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Vladimir Lypak <vladimir.lypak@gmail.com>,
+        Luca Weiss <luca@z3ntu.xyz>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 2/2] arm64: dts: qcom: msm8953: add MDSS
+Date:   Sat, 11 Jun 2022 00:53:03 +0200
+Message-Id: <20220610225304.267508-2-luca@z3ntu.xyz>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220610225304.267508-1-luca@z3ntu.xyz>
+References: <20220610225304.267508-1-luca@z3ntu.xyz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 9 Jun 2022 21:04:34 -0300
-Jason Gunthorpe <jgg@nvidia.com> wrote:
+From: Vladimir Lypak <vladimir.lypak@gmail.com>
 
-> On Wed, Jun 08, 2022 at 12:55:13PM -0600, Alex Williamson wrote:
-> > The use of 'extern' in function prototypes has been disrecommended in
-> > the kernel coding style for several years now, remove them from all vfio
-> > related files so contributors no longer need to decide between style and
-> > consistency.
-> > 
-> > Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
-> > ---
-> > 
-> > A patch in the same vein was proposed about a year ago, but tied to an ill
-> > fated series and forgotten.  Now that we're at the beginning of a new
-> > development cycle, I'd like to propose kicking off the v5.20 vfio next
-> > branch with this patch and would kindly ask anyone with pending respins or
-> > significant conflicts to rebase on top of this patch.  Thanks!  
-> 
-> Can you stick it in your branch please?
+Add the MDSS, MDP and DSI nodes that are found on msm8953 SoC.
 
-Thanks for the R-b, it was my plan today to put it in my next branch,
-but I can't currently test vfio on mainline due to:
+IOMMU is not added because support for it isn't yet upstream and MDSS
+works fine without IOMMU on 8953.
 
-https://lore.kernel.org/all/165490039431.944052.12458624139225785964.stgit@omen/
+Signed-off-by: Vladimir Lypak <vladimir.lypak@gmail.com>
+Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
+---
+ arch/arm64/boot/dts/qcom/msm8953.dtsi | 202 ++++++++++++++++++++++++++
+ 1 file changed, 202 insertions(+)
 
-I'll get this in once there's a mainline base where vfio still works.  Thanks,
-
-Alex
+diff --git a/arch/arm64/boot/dts/qcom/msm8953.dtsi b/arch/arm64/boot/dts/qcom/msm8953.dtsi
+index ffc3ec2cd3bc..a2aca3d05899 100644
+--- a/arch/arm64/boot/dts/qcom/msm8953.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8953.dtsi
+@@ -726,6 +726,208 @@ tcsr_phy_clk_scheme_sel: syscon@193f044 {
+ 			reg = <0x193f044 0x4>;
+ 		};
+ 
++		mdss: mdss@1a00000 {
++			compatible = "qcom,mdss";
++
++			reg = <0x1a00000 0x1000>,
++			      <0x1ab0000 0x1040>;
++			reg-names = "mdss_phys",
++				    "vbif_phys";
++
++			power-domains = <&gcc MDSS_GDSC>;
++			interrupts = <GIC_SPI 72 IRQ_TYPE_LEVEL_HIGH>;
++
++			interrupt-controller;
++			#interrupt-cells = <1>;
++
++			clocks = <&gcc GCC_MDSS_AHB_CLK>,
++				 <&gcc GCC_MDSS_AXI_CLK>,
++				 <&gcc GCC_MDSS_VSYNC_CLK>;
++			clock-names = "iface",
++				      "bus",
++				      "vsync";
++
++			#address-cells = <1>;
++			#size-cells = <1>;
++			ranges;
++
++			mdp: mdp@1a01000 {
++				compatible = "qcom,mdp5";
++				reg = <0x1a01000 0x89000>;
++				reg-names = "mdp_phys";
++
++				interrupt-parent = <&mdss>;
++				interrupts = <0>;
++
++				power-domains = <&gcc MDSS_GDSC>;
++
++				clocks = <&gcc GCC_MDSS_AHB_CLK>,
++					 <&gcc GCC_MDSS_AXI_CLK>,
++					 <&gcc GCC_MDSS_MDP_CLK>,
++					 <&gcc GCC_MDSS_VSYNC_CLK>;
++				clock-names = "iface",
++					      "bus",
++					      "core",
++					      "vsync";
++
++				// iommus = <&apps_iommu 0xc00 0>;
++
++				ports {
++					#address-cells = <1>;
++					#size-cells = <0>;
++
++					port@0 {
++						reg = <0>;
++						mdp5_intf1_out: endpoint {
++							remote-endpoint = <&dsi0_in>;
++						};
++					};
++
++					port@1 {
++						reg = <1>;
++						mdp5_intf2_out: endpoint {
++							remote-endpoint = <&dsi1_in>;
++						};
++					};
++				};
++			};
++
++			dsi0: dsi@1a94000 {
++				compatible = "qcom,mdss-dsi-ctrl";
++				reg = <0x1a94000 0x400>;
++				reg-names = "dsi_ctrl";
++
++				interrupt-parent = <&mdss>;
++				interrupts = <4>;
++
++				assigned-clocks = <&gcc BYTE0_CLK_SRC>,
++						  <&gcc PCLK0_CLK_SRC>;
++				assigned-clock-parents = <&dsi0_phy 0>,
++							 <&dsi0_phy 1>;
++
++				clocks = <&gcc GCC_MDSS_MDP_CLK>,
++					 <&gcc GCC_MDSS_AHB_CLK>,
++					 <&gcc GCC_MDSS_AXI_CLK>,
++					 <&gcc GCC_MDSS_BYTE0_CLK>,
++					 <&gcc GCC_MDSS_PCLK0_CLK>,
++					 <&gcc GCC_MDSS_ESC0_CLK>;
++				clock-names = "mdp_core",
++					      "iface",
++					      "bus",
++					      "byte",
++					      "pixel",
++					      "core";
++
++				phys = <&dsi0_phy>;
++				phy-names = "dsi";
++
++				#address-cells = <1>;
++				#size-cells = <0>;
++
++				ports {
++					#address-cells = <1>;
++					#size-cells = <0>;
++
++					port@0 {
++						reg = <0>;
++						dsi0_in: endpoint {
++							remote-endpoint = <&mdp5_intf1_out>;
++						};
++					};
++
++					port@1 {
++						reg = <1>;
++						dsi0_out: endpoint {
++						};
++					};
++				};
++			};
++
++			dsi0_phy: dsi-phy@1a94400 {
++				compatible = "qcom,dsi-phy-14nm-8953";
++				reg = <0x1a94400 0x100>,
++				      <0x1a94500 0x300>,
++				      <0x1a94800 0x188>;
++				reg-names = "dsi_phy",
++					    "dsi_phy_lane",
++					    "dsi_pll";
++
++				#clock-cells = <1>;
++				#phy-cells = <0>;
++
++				clocks = <&gcc GCC_MDSS_AHB_CLK>, <&xo_board>;
++				clock-names = "iface", "ref";
++			};
++
++			dsi1: dsi@1a96000 {
++				compatible = "qcom,mdss-dsi-ctrl";
++				reg = <0x1a96000 0x400>;
++				reg-names = "dsi_ctrl";
++
++				interrupt-parent = <&mdss>;
++				interrupts = <5>;
++
++				assigned-clocks = <&gcc BYTE1_CLK_SRC>,
++						  <&gcc PCLK1_CLK_SRC>;
++				assigned-clock-parents = <&dsi1_phy 0>,
++							 <&dsi1_phy 1>;
++
++				clocks = <&gcc GCC_MDSS_MDP_CLK>,
++					 <&gcc GCC_MDSS_AHB_CLK>,
++					 <&gcc GCC_MDSS_AXI_CLK>,
++					 <&gcc GCC_MDSS_BYTE1_CLK>,
++					 <&gcc GCC_MDSS_PCLK1_CLK>,
++					 <&gcc GCC_MDSS_ESC1_CLK>;
++				clock-names = "mdp_core",
++					      "iface",
++					      "bus",
++					      "byte",
++					      "pixel",
++					      "core";
++
++				phys = <&dsi1_phy>;
++				phy-names = "dsi";
++
++				status = "disabled";
++
++				ports {
++					#address-cells = <1>;
++					#size-cells = <0>;
++
++					port@0 {
++						reg = <0>;
++						dsi1_in: endpoint {
++							remote-endpoint = <&mdp5_intf2_out>;
++						};
++					};
++
++					port@1 {
++						reg = <1>;
++						dsi1_out: endpoint {
++						};
++					};
++				};
++			};
++
++			dsi1_phy: dsi-phy@1a96400 {
++				compatible = "qcom,dsi-phy-14nm-8953";
++				reg = <0x1a96400 0x100>,
++				      <0x1a96500 0x300>,
++				      <0x1a96800 0x188>;
++				reg-names = "dsi_phy",
++					    "dsi_phy_lane",
++					    "dsi_pll";
++
++				#clock-cells = <1>;
++				#phy-cells = <0>;
++
++				clocks = <&gcc GCC_MDSS_AHB_CLK>, <&xo_board>;
++				clock-names = "iface", "ref";
++
++				status = "disabled";
++			};
++		};
++
+ 		spmi_bus: spmi@200f000 {
+ 			compatible = "qcom,spmi-pmic-arb";
+ 			reg = <0x200f000 0x1000>,
+-- 
+2.36.1
 
