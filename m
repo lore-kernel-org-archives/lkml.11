@@ -2,189 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CE07C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 14:01:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A60DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 14:01:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349982AbiFJN7f (ORCPT
+        id S1347334AbiFJOBa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 09:59:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48440 "EHLO
+        Fri, 10 Jun 2022 10:01:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349663AbiFJN6a (ORCPT
+        with ESMTP id S1344429AbiFJN7q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 09:58:30 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FC95232DBE
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 06:57:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654869463; x=1686405463;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=5gb1zQ0JyYGJutTfQxXJtGVRtZT/kcvLVqigXecq0UI=;
-  b=IQL41YsdHVODcQ3ftIjS+4t3pUWvKLi5yY0Qg+QGSw1qwbbsfZqK7eO6
-   L/lzMzlxYQxXTC6OhSocQ9FoCgHSf6Hd7mToR6WrMFlhyhAjo3ti/be86
-   w9hRqaLm8g3MXH9N7X78zlwLEYAue8jfhaRpWX63ZrMk3CNycviWlg1Vc
-   DKMGCdmOnt7ufJPFJU4qI4Z6CTbcXURUSaAoMkEYz9z5TB2Asi+eFmuZz
-   dEXBwJUsU5i5Rlsl2TtARb5TWOfpvDiNAQlkIi7N2kb90HT9yBw5yf3BX
-   sKqCswKCNzAP6vqoyB8OR9xKomUC91sBvxM8l5mjjT+Q4qNO4tP1GlZB5
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="258072676"
-X-IronPort-AV: E=Sophos;i="5.91,290,1647327600"; 
-   d="scan'208";a="258072676"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 06:57:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,290,1647327600"; 
-   d="scan'208";a="616491031"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 10 Jun 2022 06:57:41 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nzf8u-000Hzd-Gr;
-        Fri, 10 Jun 2022 13:57:40 +0000
-Date:   Fri, 10 Jun 2022 21:57:19 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Tom <support@vamrs.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Emil Renner Berthing <kernel@esmil.dk>
-Subject: [esmil:visionfive 33/54]
- drivers/dma/dw-axi-dmac-starfive/starfive_dmaengine_memcpy.c:38:27: warning:
- cast from pointer to integer of different size
-Message-ID: <202206102138.ihQBkC9n-lkp@intel.com>
+        Fri, 10 Jun 2022 09:59:46 -0400
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F69B25FC68
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 06:59:42 -0700 (PDT)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-30c143c41e5so273114767b3.3
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 06:59:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OWEPC7SAufrCkjFU0SfT1ySX9jvLl/PM1GkMbPRUTlE=;
+        b=EVitkBKz9HTETcRAjD4jGW+cco0VlHX2iLKnRGHPQGm6CKoryiObuhFKTAHjd+LGLi
+         6zYOTYLEbsUluzdHJgAz9ZvvMk29rs749HjMBKdzGaPX9cgem3LHcsh2HMGSdaxXyRJn
+         5YuSeynELes+xuZW7GEs4pT8lndKHz81Wjepfu6WP0UvgZm89gNVRHe/9+00BCNqtxJy
+         ETi3leVwScGZNzvk/MJrdTAKM9ui19dbzxWDfS2KaWRhNOArXj3sqyJMln0aBNlmxCwH
+         iQBVpK3e0RfcWIOTE3ebm+YXYmyEWbN0WcotgIMyCtpJbrsoD5JWvelbGJQWnS6mCwe5
+         EGOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OWEPC7SAufrCkjFU0SfT1ySX9jvLl/PM1GkMbPRUTlE=;
+        b=bGRlHgtBfcQnpLUuvvOLxIkvmikspquB5P6/+Brb5e7k16XAlv324plqBF7u+hLegh
+         6Nen1B9nZFLj5p6k96k29Y32L+KGfhulEa8xPX3N9v2d3ujp8N4u9DPPTVJQNou34Lou
+         XFCQQ/uhOKqhzpGbHxb/0CFJQiAkHTPAJaEyRwWr6TNWAy1E3GTLmPgcXzZdPL2QZM2w
+         SZmIizvJlrUa+wGqvDgpLIWoDoOEYMoerrGre1mqQ4B0osTsoCJOaUre0m4WOkTdQdSh
+         Fk92zOtM0hK9MVaL3aUTBJX0gMU+bFf1n7pAm/qzVyVHVaJaTLyDy1x22HEPmgx8hHpe
+         A9TQ==
+X-Gm-Message-State: AOAM530Sl7hf7S4/v9VIk3+ZHVlSptXXtS3OLNPb75WR5OE2PwawZz/o
+        ih8WMsGrs7TFWenxAwmYNoeMrUg75KHY07JJ5AdVSA==
+X-Google-Smtp-Source: ABdhPJzpokt62wF8w51PGFxOhJ4bvWwLARVlE5z03nqvvSEUQRP60Ws5kIgElWNEyhTSKx+UNMTvrNFzYJ1PAxe6uqw=
+X-Received: by 2002:a81:7b86:0:b0:310:e75:3abb with SMTP id
+ w128-20020a817b86000000b003100e753abbmr42924798ywc.332.1654869581103; Fri, 10
+ Jun 2022 06:59:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220610110749.110881-1-soenke.huster@eknoes.de>
+In-Reply-To: <20220610110749.110881-1-soenke.huster@eknoes.de>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 10 Jun 2022 06:59:29 -0700
+Message-ID: <CANn89i+YHqMddY68Qk1rZexqhYYX9gah-==WGttFbp4urLS7Qg@mail.gmail.com>
+Subject: Re: [PATCH v2] Bluetooth: RFCOMM: Use skb_trim to trim checksum
+To:     Soenke Huster <soenke.huster@eknoes.de>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-bluetooth@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/esmil/linux visionfive
-head:   906be7ef2fb9e2f1fcb740d3d506768cddfc52ca
-commit: 6f7b441aa698d7dd9a8878ff241c10080561bf8e [33/54] dmaengine: Add dw-axi-dmac-starfive driver for JH7100
-config: riscv-randconfig-s032-20220610 (https://download.01.org/0day-ci/archive/20220610/202206102138.ihQBkC9n-lkp@intel.com/config)
-compiler: riscv32-linux-gcc (GCC) 11.3.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-30-g92122700-dirty
-        # https://github.com/esmil/linux/commit/6f7b441aa698d7dd9a8878ff241c10080561bf8e
-        git remote add esmil https://github.com/esmil/linux
-        git fetch --no-tags esmil visionfive
-        git checkout 6f7b441aa698d7dd9a8878ff241c10080561bf8e
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=riscv SHELL=/bin/bash drivers/dma/dw-axi-dmac-starfive/
+On Fri, Jun 10, 2022 at 4:08 AM Soenke Huster <soenke.huster@eknoes.de> wrote:
+>
+> As skb->tail might be zero, it can underflow. This leads to a page
+> fault: skb_tail_pointer simply adds skb->tail (which is now MAX_UINT)
+> to skb->head.
+>
+>     BUG: unable to handle page fault for address: ffffed1021de29ff
+>     #PF: supervisor read access in kernel mode
+>     #PF: error_code(0x0000) - not-present page
+>     RIP: 0010:rfcomm_run+0x831/0x4040 (net/bluetooth/rfcomm/core.c:1751)
+>
+> By using skb_trim instead of the direct manipulation, skb->tail
+> is reset. Thus, the correct pointer to the checksum is used.
+>
+> Signed-off-by: Soenke Huster <soenke.huster@eknoes.de>
+> ---
+> v2: Clarified how the bug triggers, minimize code change
+>
+>  net/bluetooth/rfcomm/core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/net/bluetooth/rfcomm/core.c b/net/bluetooth/rfcomm/core.c
+> index 7324764384b6..443b55edb3ab 100644
+> --- a/net/bluetooth/rfcomm/core.c
+> +++ b/net/bluetooth/rfcomm/core.c
+> @@ -1747,7 +1747,7 @@ static struct rfcomm_session *rfcomm_recv_frame(struct rfcomm_session *s,
+>         type = __get_type(hdr->ctrl);
+>
+>         /* Trim FCS */
+> -       skb->len--; skb->tail--;
+> +       skb_trim(skb, skb->len - 1);
+>         fcs = *(u8 *)skb_tail_pointer(skb);
+>
+>         if (__check_fcs(skb->data, type, fcs)) {
+> --
+> 2.36.1
+>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Again, I do not see how skb->tail could possibly zero at this point.
 
-All warnings (new ones prefixed by >>):
+If it was, skb with illegal layout has been queued in the first place,
+we need to fix the producer, not the consumer.
 
-   drivers/dma/dw-axi-dmac-starfive/starfive_dmaengine_memcpy.c: In function 'dw_virt_to_phys':
->> drivers/dma/dw-axi-dmac-starfive/starfive_dmaengine_memcpy.c:38:27: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
-      38 |         u64 pfn_offset = ((u64)vaddr) & 0xfff;
-         |                           ^
-   drivers/dma/dw-axi-dmac-starfive/starfive_dmaengine_memcpy.c: In function 'dw_dma_async_do_memcpy':
-   drivers/dma/dw-axi-dmac-starfive/starfive_dmaengine_memcpy.c:153:9: error: implicit declaration of function 'iort_dma_setup' [-Werror=implicit-function-declaration]
-     153 |         iort_dma_setup(dma_dev, &dma_addr, &dma_size);
-         |         ^~~~~~~~~~~~~~
-   drivers/dma/dw-axi-dmac-starfive/starfive_dmaengine_memcpy.c:154:15: warning: assignment to 'const struct iommu_ops *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-     154 |         iommu = iort_iommu_configure_id(dma_dev, NULL);
-         |               ^
-   In file included from include/asm-generic/bug.h:22,
-                    from arch/riscv/include/asm/bug.h:83,
-                    from include/linux/bug.h:5,
-                    from arch/riscv/include/asm/current.h:13,
-                    from include/linux/mutex.h:14,
-                    from include/linux/kernfs.h:11,
-                    from include/linux/sysfs.h:16,
-                    from include/linux/kobject.h:20,
-                    from include/linux/of.h:17,
-                    from include/linux/irqdomain.h:35,
-                    from include/linux/acpi.h:13,
-                    from include/linux/acpi_iort.h:10,
-                    from drivers/dma/dw-axi-dmac-starfive/starfive_dmaengine_memcpy.c:16:
-   drivers/dma/dw-axi-dmac-starfive/starfive_dmaengine_memcpy.c:165:45: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
-     165 |         DMA_DEBUG("src=%#llx, dst=%#llx\n", (u64)src, (u64)dst);
-         |                                             ^
-   include/linux/printk.h:447:33: note: in definition of macro 'printk_index_wrap'
-     447 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
-         |                                 ^~~~~~~~~~~
-   include/soc/starfive/jh7100_dma.h:13:9: note: in expansion of macro 'printk'
-      13 |         printk("[DW_DMA_DEBUG] %s():%d \n" fmt, __func__, __LINE__, ##__VA_ARGS__)
-         |         ^~~~~~
-   drivers/dma/dw-axi-dmac-starfive/starfive_dmaengine_memcpy.c:165:9: note: in expansion of macro 'DMA_DEBUG'
-     165 |         DMA_DEBUG("src=%#llx, dst=%#llx\n", (u64)src, (u64)dst);
-         |         ^~~~~~~~~
-   drivers/dma/dw-axi-dmac-starfive/starfive_dmaengine_memcpy.c:165:55: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
-     165 |         DMA_DEBUG("src=%#llx, dst=%#llx\n", (u64)src, (u64)dst);
-         |                                                       ^
-   include/linux/printk.h:447:33: note: in definition of macro 'printk_index_wrap'
-     447 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
-         |                                 ^~~~~~~~~~~
-   include/soc/starfive/jh7100_dma.h:13:9: note: in expansion of macro 'printk'
-      13 |         printk("[DW_DMA_DEBUG] %s():%d \n" fmt, __func__, __LINE__, ##__VA_ARGS__)
-         |         ^~~~~~
-   drivers/dma/dw-axi-dmac-starfive/starfive_dmaengine_memcpy.c:165:9: note: in expansion of macro 'DMA_DEBUG'
-     165 |         DMA_DEBUG("src=%#llx, dst=%#llx\n", (u64)src, (u64)dst);
-         |         ^~~~~~~~~
-   drivers/dma/dw-axi-dmac-starfive/starfive_dmaengine_memcpy.c: In function 'dw_dma_memcpy_raw':
-   drivers/dma/dw-axi-dmac-starfive/starfive_dmaengine_memcpy.c:224:15: warning: assignment to 'const struct iommu_ops *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-     224 |         iommu = iort_iommu_configure_id(dma_dev, NULL);
-         |               ^
-   In file included from include/asm-generic/bug.h:22,
-                    from arch/riscv/include/asm/bug.h:83,
-                    from include/linux/bug.h:5,
-                    from arch/riscv/include/asm/current.h:13,
-                    from include/linux/mutex.h:14,
-                    from include/linux/kernfs.h:11,
-                    from include/linux/sysfs.h:16,
-                    from include/linux/kobject.h:20,
-                    from include/linux/of.h:17,
-                    from include/linux/irqdomain.h:35,
-                    from include/linux/acpi.h:13,
-                    from include/linux/acpi_iort.h:10,
-                    from drivers/dma/dw-axi-dmac-starfive/starfive_dmaengine_memcpy.c:16:
->> include/soc/starfive/jh7100_dma.h:13:16: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 4 has type 'dma_addr_t' {aka 'unsigned int'} [-Wformat=]
-      13 |         printk("[DW_DMA_DEBUG] %s():%d \n" fmt, __func__, __LINE__, ##__VA_ARGS__)
-         |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/printk.h:447:25: note: in definition of macro 'printk_index_wrap'
-     447 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
-         |                         ^~~~
-   include/soc/starfive/jh7100_dma.h:13:9: note: in expansion of macro 'printk'
-      13 |         printk("[DW_DMA_DEBUG] %s():%d \n" fmt, __func__, __LINE__, ##__VA_ARGS__)
-         |         ^~~~~~
-   drivers/dma/dw-axi-dmac-starfive/starfive_dmaengine_memcpy.c:237:9: note: in expansion of macro 'DMA_DEBUG'
-     237 |         DMA_DEBUG("src_dma=%#llx, dst_dma=%#llx \n", src_dma, dst_dma);
-         |         ^~~~~~~~~
-   include/soc/starfive/jh7100_dma.h:13:16: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 5 has type 'dma_addr_t' {aka 'unsigned int'} [-Wformat=]
-      13 |         printk("[DW_DMA_DEBUG] %s():%d \n" fmt, __func__, __LINE__, ##__VA_ARGS__)
-         |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/printk.h:447:25: note: in definition of macro 'printk_index_wrap'
-     447 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
-         |                         ^~~~
-   include/soc/starfive/jh7100_dma.h:13:9: note: in expansion of macro 'printk'
-      13 |         printk("[DW_DMA_DEBUG] %s():%d \n" fmt, __func__, __LINE__, ##__VA_ARGS__)
-         |         ^~~~~~
-   drivers/dma/dw-axi-dmac-starfive/starfive_dmaengine_memcpy.c:237:9: note: in expansion of macro 'DMA_DEBUG'
-     237 |         DMA_DEBUG("src_dma=%#llx, dst_dma=%#llx \n", src_dma, dst_dma);
-         |         ^~~~~~~~~
-   cc1: some warnings being treated as errors
+A driver missed an skb_put() perhaps.
 
+Can you please dump the skb here  ?
 
-vim +38 drivers/dma/dw-axi-dmac-starfive/starfive_dmaengine_memcpy.c
+diff --git a/net/bluetooth/rfcomm/core.c b/net/bluetooth/rfcomm/core.c
+index 7324764384b6773074032ad671777bf86bd3360e..358ccb4fe7214aea0bb4084188c7658316fe0ff7
+100644
+--- a/net/bluetooth/rfcomm/core.c
++++ b/net/bluetooth/rfcomm/core.c
+@@ -1746,6 +1746,11 @@ static struct rfcomm_session
+*rfcomm_recv_frame(struct rfcomm_session *s,
+        dlci = __get_dlci(hdr->addr);
+        type = __get_type(hdr->ctrl);
 
-    35	
-    36	u64 dw_virt_to_phys(void *vaddr)
-    37	{
-  > 38		u64 pfn_offset = ((u64)vaddr) & 0xfff;
-    39	
-    40		return _dw_virt_to_phys((u64 *)vaddr) + pfn_offset;
-    41	}
-    42	EXPORT_SYMBOL(dw_virt_to_phys);
-    43	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
++       if (!skb->tail) {
++               DO_ONCE_LITE(skb_dump(KERN_ERR, skb, false));
++               kfree_skb(skb);
++               return s;
++       }
+        /* Trim FCS */
+        skb->len--; skb->tail--;
+        fcs = *(u8 *)skb_tail_pointer(skb);
