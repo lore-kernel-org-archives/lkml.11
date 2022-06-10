@@ -2,427 +2,278 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 554B5C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 870B3C433EF
 	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 10:59:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349507AbiFJK6X (ORCPT
+        id S1349263AbiFJK7R (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 06:58:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39048 "EHLO
+        Fri, 10 Jun 2022 06:59:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349279AbiFJK5p (ORCPT
+        with ESMTP id S1349288AbiFJK6R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 06:57:45 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 439FC218A8C;
-        Fri, 10 Jun 2022 03:55:30 -0700 (PDT)
-X-UUID: 10722f3f002848cdb07303dfdbd2942c-20220610
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:f563f45c-d43f-4586-86ef-30a230c45275,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:0
-X-CID-META: VersionHash:2a19b09,CLOUDID:18d767e5-2ba2-4dc1-b6c5-11feb6c769e0,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:0,BEC:nil
-X-UUID: 10722f3f002848cdb07303dfdbd2942c-20220610
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1814500627; Fri, 10 Jun 2022 18:55:25 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Fri, 10 Jun 2022 18:55:24 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Fri, 10 Jun 2022 18:55:24 +0800
-From:   Bo-Chen Chen <rex-bc.chen@mediatek.com>
-To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
-        <daniel@ffwll.ch>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <mripard@kernel.org>,
-        <tzimmermann@suse.de>, <matthias.bgg@gmail.com>, <deller@gmx.de>,
-        <airlied@linux.ie>
-CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
-        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
-        <angelogioacchino.delregno@collabora.com>, <ck.hu@mediatek.com>,
-        <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-fbdev@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Bo-Chen Chen <rex-bc.chen@mediatek.com>
-Subject: [PATCH v11 06/10] drm/mediatek: Add MT8195 External DisplayPort support
-Date:   Fri, 10 Jun 2022 18:55:18 +0800
-Message-ID: <20220610105522.13449-7-rex-bc.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220610105522.13449-1-rex-bc.chen@mediatek.com>
-References: <20220610105522.13449-1-rex-bc.chen@mediatek.com>
+        Fri, 10 Jun 2022 06:58:17 -0400
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D080F2DCB2B
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 03:56:29 -0700 (PDT)
+Received: by mail-yb1-xb2e.google.com with SMTP id x38so532460ybd.9
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 03:56:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UVWDkivKH1r0YSSFaw6OjTiC/YFmD6ezZssjPD8j23w=;
+        b=RXvlY48vrnprsPhlzCN84oVM35sDdA8yC03DQqkStEKvLu2TPLb4+GXHZs42yE1HQx
+         ttOCe8rdEkjLlqM3l9WDtsBCXfF4s+ChMyYv8Rr+fnyZ3LeVOcdMg6nEcEEKhCDER0yr
+         fJTIw9qxUsAPtehkIPwv0SyUlxvDgwGcMmXAwiiBSv9/Zl7En+0nWztnAMnMDurZDcZY
+         api97837F1HNyG80jX0Pe+SJ1JI7N7lMGqY67LErpq+TZ7CiRQ+ruwaymVLbslc02zZl
+         XSlXazfrWTPWCpkIL90Vp8CX52j6WIsUEJ/9kUyf+tpm9WQnID+ZJjebzkTlpXQUnTgH
+         lxFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UVWDkivKH1r0YSSFaw6OjTiC/YFmD6ezZssjPD8j23w=;
+        b=2Z++5Udj0kOIpa70hzGf4pAHCnlAipPgf3SmgsTFuexkskwdWe1D5W7O1wAWpDWtpJ
+         1qTyxNiTzqch/UK7UQQhzhCt5sB5Ah6wEJ/MeaE6BS2wfnjnjhsD/q73QwGNNuAS9qyv
+         Q9ddUBYfJvn2P+2hAt4hEw+ouAXgHir59C73DuEWlfVHDYNLVnCdf49x8g15QZEeIeTi
+         VPAH+NiPn2xS8mxZYnJ3cQhzNXF6yhaY1VUXr5UKMAWRmOUYjh4yLTskSHH47U3+h4eK
+         QNFfAqagZuRgzLBfv5lK2yAMbknUhr7yZ2br6tOnddxN/yW5RrcS4zZT18NjkoR0hEG0
+         Kodw==
+X-Gm-Message-State: AOAM532zSvJ/mPPq8YPhaL1DR3x675XmLTWcm5eexVeLAFkL1ApMIfAx
+        2rynKPV79a2rFw8KH5ogl5rpA+fEn1puAEAJ4Tlh2w==
+X-Google-Smtp-Source: ABdhPJwm7RORsPVX9EpA+f/rpyV/bm7dA/SQ01EzbzV1yVf+JvmxjuyQHKmWdjTOtYg6usHy7cw6J444+7/JlR3E6Mo=
+X-Received: by 2002:a25:6546:0:b0:660:2a80:d6b6 with SMTP id
+ z67-20020a256546000000b006602a80d6b6mr42004476ybb.617.1654858588911; Fri, 10
+ Jun 2022 03:56:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+References: <CA+G9fYv7fESqpGoeKmHoJsst6wfRNMi2wQLGm+PsjbLDuDjdMQ@mail.gmail.com>
+ <CA+G9fYsJThWFAxXTbAcJmjshx+oYxVVd+gMM680hS0X1z37+FQ@mail.gmail.com> <YqItYKEIvsw4Yzjx@carbon>
+In-Reply-To: <YqItYKEIvsw4Yzjx@carbon>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Fri, 10 Jun 2022 16:26:17 +0530
+Message-ID: <CA+G9fYuLNjq0hc6T4sZcq7g4YoWgBwa1H7x21otED7QoLaTYXw@mail.gmail.com>
+Subject: Re: [next] arm64: boot failed - next-20220606
+To:     Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        regressions@lists.linux.dev, lkft-triage@lists.linaro.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-mm <linux-mm@kvack.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Raghuram Thammiraju <raghuram.thammiraju@arm.com>,
+        Mark Brown <broonie@kernel.org>, Will Deacon <will@kernel.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Vasily Averin <vvs@openvz.org>,
+        Qian Cai <quic_qiancai@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Ranquet <granquet@baylibre.com>
+Hi Roman,
 
-This patch adds External DisplayPort support to the mt8195 eDP driver.
+On Thu, 9 Jun 2022 at 22:57, Roman Gushchin <roman.gushchin@linux.dev> wrote:
+>
+> On Tue, Jun 07, 2022 at 11:00:39AM +0530, Naresh Kamboju wrote:
+> > On Mon, 6 Jun 2022 at 17:16, Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
+> > >
+> > > Linux next-20220606 arm64 boot failed. The kernel boot log is empty.
+> > > I am bisecting this problem.
+> > >
+> > > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> > >
+> > > The initial investigation show that,
+> > >
+> > > GOOD: next-20220603
+> > > BAD:  next-20220606
+> > >
+> > > Boot log:
+> > > Starting kernel ...
+> >
+> > Linux next-20220606 and next-20220607 arm64 boot failed.
+> > The kernel panic log showing after earlycon.
+> >
+> > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+>
+> Naresh, can you, please, check if the following patch resolves the issue?
+> (completely untested except for building)
 
-Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-[Bo-Chen: Move some dp features here and modify for reviewers' comments.]
-Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
----
- drivers/gpu/drm/mediatek/mtk_dp.c | 217 ++++++++++++++++++++++++------
- 1 file changed, 174 insertions(+), 43 deletions(-)
+I have tested this patch on top of next-20220606 and boot successfully [1].
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dp.c b/drivers/gpu/drm/mediatek/mtk_dp.c
-index e33b513469e8..7c2bb2a494dd 100644
---- a/drivers/gpu/drm/mediatek/mtk_dp.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dp.c
-@@ -124,6 +124,7 @@ struct mtk_dp {
- 
- 	bool enabled;
- 
-+	bool has_fec;
- 	/* protect the mtk_dp struct */
- 	struct mutex dp_lock;
- 
-@@ -138,6 +139,11 @@ static struct regmap_config mtk_dp_regmap_config = {
- 	.name = "mtk-dp-registers",
- };
- 
-+static bool mtk_dp_is_edp(struct mtk_dp *mtk_dp)
-+{
-+	return mtk_dp->next_bridge;
-+}
-+
- static struct mtk_dp *mtk_dp_from_bridge(struct drm_bridge *b)
- {
- 	return container_of(b, struct mtk_dp, bridge);
-@@ -414,6 +420,20 @@ static bool mtk_dp_plug_state(struct mtk_dp *mtk_dp)
- 		  HPD_DB_DP_TRANS_P0_MASK);
- }
- 
-+static bool mtk_dp_plug_state_avoid_pulse(struct mtk_dp *mtk_dp)
-+{
-+	int wait;
-+
-+	for (wait = 7; !mtk_dp_plug_state(mtk_dp) && wait > 0; --wait)
-+		/* Avoid short pulses on the HPD isr */
-+		usleep_range(1000, 5000);
-+
-+	if (wait == 0)
-+		return false;
-+
-+	return true;
-+}
-+
- static void mtk_dp_aux_irq_clear(struct mtk_dp *mtk_dp)
- {
- 	mtk_dp_write(mtk_dp, MTK_DP_AUX_P0_3640,
-@@ -638,6 +658,13 @@ static void mtk_dp_reset_swing_pre_emphasis(struct mtk_dp *mtk_dp)
- 			   DP_TX3_PRE_EMPH_MASK);
- }
- 
-+static void mtk_dp_fec_enable(struct mtk_dp *mtk_dp, bool enable)
-+{
-+	mtk_dp_update_bits(mtk_dp, MTK_DP_TRANS_P0_3540,
-+			   enable ? BIT(FEC_EN_DP_TRANS_P0_SHIFT) : 0,
-+			   FEC_EN_DP_TRANS_P0_MASK);
-+}
-+
- static u32 mtk_dp_swirq_get_clear(struct mtk_dp *mtk_dp)
- {
- 	u32 irq_status = mtk_dp_read(mtk_dp, MTK_DP_TRANS_P0_35D0) &
-@@ -865,35 +892,67 @@ static void mtk_dp_get_calibration_data(struct mtk_dp *mtk_dp)
- 		return;
- 	}
- 
--	cal_data->glb_bias_trim =
--		check_cal_data_valid(mtk_dp, 1, 0x1e,
--				     (buf[3] >> 27) & 0x1f, 0xf);
--	cal_data->clktx_impse =
--		check_cal_data_valid(mtk_dp, 1, 0xe,
--				     (buf[0] >> 9) & 0xf, 0x8);
--	cal_data->ln_tx_impsel_pmos[0] =
--		check_cal_data_valid(mtk_dp, 1, 0xe,
--				     (buf[2] >> 28) & 0xf, 0x8);
--	cal_data->ln_tx_impsel_nmos[0] =
--		check_cal_data_valid(mtk_dp, 1, 0xe,
--				     (buf[2] >> 24) & 0xf, 0x8);
--	cal_data->ln_tx_impsel_pmos[1] =
--		check_cal_data_valid(mtk_dp, 1, 0xe,
--				     (buf[2] >> 20) & 0xf, 0x8);
--	cal_data->ln_tx_impsel_nmos[1] =
--		check_cal_data_valid(mtk_dp, 1, 0xe,
--				     (buf[2] >> 16) & 0xf, 0x8);
--	cal_data->ln_tx_impsel_pmos[2] =
--		check_cal_data_valid(mtk_dp, 1, 0xe,
--				     (buf[2] >> 12) & 0xf, 0x8);
--	cal_data->ln_tx_impsel_nmos[2] =
--		check_cal_data_valid(mtk_dp, 1, 0xe,
--				     (buf[2] >> 8) & 0xf, 0x8);
--	cal_data->ln_tx_impsel_pmos[3] =
--		check_cal_data_valid(mtk_dp, 1, 0xe,
--				     (buf[2] >> 4) & 0xf, 0x8);
--	cal_data->ln_tx_impsel_nmos[3] =
--		check_cal_data_valid(mtk_dp, 1, 0xe, buf[2] & 0xf, 0x8);
-+	if (mtk_dp_is_edp(mtk_dp)) {
-+		cal_data->glb_bias_trim =
-+			check_cal_data_valid(mtk_dp, 1, 0x1e,
-+					     (buf[3] >> 27) & 0x1f, 0xf);
-+		cal_data->clktx_impse =
-+			check_cal_data_valid(mtk_dp, 1, 0xe,
-+					     (buf[0] >> 9) & 0xf, 0x8);
-+		cal_data->ln_tx_impsel_pmos[0] =
-+			check_cal_data_valid(mtk_dp, 1, 0xe,
-+					     (buf[2] >> 28) & 0xf, 0x8);
-+		cal_data->ln_tx_impsel_nmos[0] =
-+			check_cal_data_valid(mtk_dp, 1, 0xe,
-+					     (buf[2] >> 24) & 0xf, 0x8);
-+		cal_data->ln_tx_impsel_pmos[1] =
-+			check_cal_data_valid(mtk_dp, 1, 0xe,
-+					     (buf[2] >> 20) & 0xf, 0x8);
-+		cal_data->ln_tx_impsel_nmos[1] =
-+			check_cal_data_valid(mtk_dp, 1, 0xe,
-+					     (buf[2] >> 16) & 0xf, 0x8);
-+		cal_data->ln_tx_impsel_pmos[2] =
-+			check_cal_data_valid(mtk_dp, 1, 0xe,
-+					     (buf[2] >> 12) & 0xf, 0x8);
-+		cal_data->ln_tx_impsel_nmos[2] =
-+			check_cal_data_valid(mtk_dp, 1, 0xe,
-+					     (buf[2] >> 8) & 0xf, 0x8);
-+		cal_data->ln_tx_impsel_pmos[3] =
-+			check_cal_data_valid(mtk_dp, 1, 0xe,
-+					     (buf[2] >> 4) & 0xf, 0x8);
-+		cal_data->ln_tx_impsel_nmos[3] =
-+			check_cal_data_valid(mtk_dp, 1, 0xe, buf[2] & 0xf, 0x8);
-+	} else {
-+		cal_data->glb_bias_trim =
-+			check_cal_data_valid(mtk_dp, 1, 0x1e,
-+					     (buf[0] >> 27) & 0x1f, 0xf);
-+		cal_data->clktx_impse =
-+			check_cal_data_valid(mtk_dp, 1, 0xe,
-+					     (buf[0] >> 13) & 0xf, 0x8);
-+		cal_data->ln_tx_impsel_pmos[0] =
-+			check_cal_data_valid(mtk_dp, 1, 0xe,
-+					     (buf[1] >> 28) & 0xf, 0x8);
-+		cal_data->ln_tx_impsel_nmos[0] =
-+			check_cal_data_valid(mtk_dp, 1, 0xe,
-+					     (buf[1] >> 24) & 0xf, 0x8);
-+		cal_data->ln_tx_impsel_pmos[1] =
-+			check_cal_data_valid(mtk_dp, 1, 0xe,
-+					     (buf[1] >> 20) & 0xf, 0x8);
-+		cal_data->ln_tx_impsel_nmos[1] =
-+			check_cal_data_valid(mtk_dp, 1, 0xe,
-+					     (buf[1] >> 16) & 0xf, 0x8);
-+		cal_data->ln_tx_impsel_pmos[2] =
-+			check_cal_data_valid(mtk_dp, 1, 0xe,
-+					     (buf[1] >> 12) & 0xf, 0x8);
-+		cal_data->ln_tx_impsel_nmos[2] =
-+			check_cal_data_valid(mtk_dp, 1, 0xe,
-+					     (buf[1] >> 8) & 0xf, 0x8);
-+		cal_data->ln_tx_impsel_pmos[3] =
-+			check_cal_data_valid(mtk_dp, 1, 0xe,
-+					     (buf[1] >> 4) & 0xf, 0x8);
-+		cal_data->ln_tx_impsel_nmos[3] =
-+			check_cal_data_valid(mtk_dp, 1, 0xe, buf[1] & 0xf, 0x8);
-+	}
- 
- 	kfree(buf);
- }
-@@ -1021,7 +1080,10 @@ static void mtk_dp_video_mute(struct mtk_dp *mtk_dp, bool enable)
- 			   VIDEO_MUTE_SEL_DP_ENC0_P0_MASK |
- 			   VIDEO_MUTE_SW_DP_ENC0_P0_MASK);
- 
--	mtk_dp_sip_atf_call(mtk_dp, MTK_DP_SIP_ATF_EDP_VIDEO_UNMUTE, enable);
-+	mtk_dp_sip_atf_call(mtk_dp,
-+			    mtk_dp_is_edp(mtk_dp) ?
-+			    MTK_DP_SIP_ATF_EDP_VIDEO_UNMUTE :
-+			    MTK_DP_SIP_ATF_VIDEO_UNMUTE, enable);
- }
- 
- static void mtk_dp_power_enable(struct mtk_dp *mtk_dp)
-@@ -1069,6 +1131,8 @@ static void mtk_dp_initialize_priv_data(struct mtk_dp *mtk_dp)
- 	mtk_dp->info.depth = DP_MSA_MISC_8_BPC;
- 	memset(&mtk_dp->info.timings, 0, sizeof(struct mtk_dp_timings));
- 	mtk_dp->info.timings.frame_rate = 60;
-+
-+	mtk_dp->has_fec = false;
- }
- 
- static void mtk_dp_setup_tu(struct mtk_dp *mtk_dp)
-@@ -1416,6 +1480,9 @@ static int mtk_dp_parse_capabilities(struct mtk_dp *mtk_dp)
- 	drm_dp_dpcd_writeb(&mtk_dp->aux, DP_SET_POWER, DP_SET_POWER_D0);
- 	usleep_range(2000, 5000);
- 
-+	if (!mtk_dp_plug_state(mtk_dp))
-+		return -ENODEV;
-+
- 	drm_dp_read_dpcd_caps(&mtk_dp->aux, mtk_dp->rx_cap);
- 
- 	mtk_dp->rx_cap[DP_TRAINING_AUX_RD_INTERVAL] &= DP_TRAINING_AUX_RD_MASK;
-@@ -1461,6 +1528,9 @@ static int mtk_dp_train_start(struct mtk_dp *mtk_dp)
- 	u8 train_limit;
- 	u8 max_link_rate;
- 
-+	if (!mtk_dp_plug_state_avoid_pulse(mtk_dp))
-+		return -ENODEV;
-+
- 	link_rate = mtk_dp->rx_cap[1];
- 	lane_count = mtk_dp->rx_cap[2] & 0x1F;
- 
-@@ -1602,21 +1672,46 @@ static void mtk_dp_init_port(struct mtk_dp *mtk_dp)
- static irqreturn_t mtk_dp_hpd_event_thread(int hpd, void *dev)
- {
- 	struct mtk_dp *mtk_dp = dev;
-+	int event;
- 	u8 buf[DP_RECEIVER_CAP_SIZE] = {};
- 
-+	event = mtk_dp_plug_state(mtk_dp) ?
-+		connector_status_connected : connector_status_disconnected;
-+
-+	if (event < 0)
-+		return IRQ_HANDLED;
-+
-+	dev_info(mtk_dp->dev, "drm_helper_hpd_irq_event\n");
-+	drm_helper_hpd_irq_event(mtk_dp->bridge.dev);
-+
- 	if (mtk_dp->train_info.cable_state_change) {
- 		mtk_dp->train_info.cable_state_change = false;
- 
--		mtk_dp_update_bits(mtk_dp, MTK_DP_TOP_PWR_STATE,
--				   DP_PWR_STATE_BANDGAP_TPLL_LANE,
--				   DP_PWR_STATE_MASK);
--		drm_dp_read_dpcd_caps(&mtk_dp->aux, buf);
--		mtk_dp->train_info.link_rate =
--			min_t(int, mtk_dp->max_linkrate,
--			      buf[mtk_dp->max_linkrate]);
--		mtk_dp->train_info.lane_count =
--			min_t(int, mtk_dp->max_lanes,
--			      drm_dp_max_lane_count(buf));
-+		mtk_dp->train_state = MTK_DP_TRAIN_STATE_TRAINING;
-+
-+		if (!mtk_dp->train_info.cable_plugged_in) {
-+			mtk_dp_video_mute(mtk_dp, true);
-+
-+			mtk_dp_initialize_priv_data(mtk_dp);
-+			mtk_dp_set_idle_pattern(mtk_dp, true);
-+			if (mtk_dp->has_fec)
-+				mtk_dp_fec_enable(mtk_dp, false);
-+
-+			mtk_dp_update_bits(mtk_dp, MTK_DP_TOP_PWR_STATE,
-+					   DP_PWR_STATE_BANDGAP_TPLL,
-+					   DP_PWR_STATE_MASK);
-+		} else {
-+			mtk_dp_update_bits(mtk_dp, MTK_DP_TOP_PWR_STATE,
-+					   DP_PWR_STATE_BANDGAP_TPLL_LANE,
-+					   DP_PWR_STATE_MASK);
-+			drm_dp_read_dpcd_caps(&mtk_dp->aux, buf);
-+			mtk_dp->train_info.link_rate =
-+				min_t(int, mtk_dp->max_linkrate,
-+				      buf[mtk_dp->max_linkrate]);
-+			mtk_dp->train_info.lane_count =
-+				min_t(int, mtk_dp->max_lanes,
-+				      drm_dp_max_lane_count(buf));
-+		}
- 	}
- 
- 	if (mtk_dp->train_info.irq_sta.hpd_inerrupt) {
-@@ -1735,6 +1830,24 @@ static int mtk_dp_dt_parse(struct mtk_dp *mtk_dp,
- 	return ret;
- }
- 
-+static enum drm_connector_status mtk_dp_bdg_detect(struct drm_bridge *bridge)
-+{
-+	struct mtk_dp *mtk_dp = mtk_dp_from_bridge(bridge);
-+	enum drm_connector_status ret = connector_status_disconnected;
-+	u8 sink_count = 0;
-+
-+	if (mtk_dp_is_edp(mtk_dp))
-+		return connector_status_connected;
-+
-+	if (mtk_dp_plug_state_avoid_pulse(mtk_dp)) {
-+		drm_dp_dpcd_readb(&mtk_dp->aux, DP_SINK_COUNT, &sink_count);
-+		if (DP_GET_SINK_COUNT(sink_count))
-+			ret = connector_status_connected;
-+	}
-+
-+	return ret;
-+}
-+
- static struct edid *mtk_dp_get_edid(struct drm_bridge *bridge,
- 				    struct drm_connector *connector)
- {
-@@ -1748,7 +1861,8 @@ static struct edid *mtk_dp_get_edid(struct drm_bridge *bridge,
- 	drm_dp_dpcd_writeb(&mtk_dp->aux, DP_SET_POWER, DP_SET_POWER_D0);
- 	usleep_range(2000, 5000);
- 
--	new_edid = drm_get_edid(connector, &mtk_dp->aux.ddc);
-+	if (mtk_dp_plug_state(mtk_dp))
-+		new_edid = drm_get_edid(connector, &mtk_dp->aux.ddc);
- 
- 	if (!enabled)
- 		drm_bridge_chain_post_disable(bridge);
-@@ -2099,6 +2213,7 @@ static const struct drm_bridge_funcs mtk_dp_bridge_funcs = {
- 	.atomic_disable = mtk_dp_bridge_atomic_disable,
- 	.mode_valid = mtk_dp_bridge_mode_valid,
- 	.get_edid = mtk_dp_get_edid,
-+	.detect = mtk_dp_bdg_detect,
- };
- 
- static int mtk_dp_probe(struct platform_device *pdev)
-@@ -2120,9 +2235,15 @@ static int mtk_dp_probe(struct platform_device *pdev)
- 				     "failed to request dp irq resource\n");
- 
- 	mtk_dp->next_bridge = devm_drm_of_get_bridge(dev, dev->of_node, 1, 0);
--	if (IS_ERR(mtk_dp->next_bridge))
-+	if (IS_ERR(mtk_dp->next_bridge) &&
-+	    PTR_ERR(mtk_dp->next_bridge) == -ENODEV) {
-+		dev_info(dev,
-+			 "No panel connected in devicetree, continue as external DP\n");
-+		mtk_dp->next_bridge = NULL;
-+	} else if (IS_ERR(mtk_dp->next_bridge)) {
- 		return dev_err_probe(dev, PTR_ERR(mtk_dp->next_bridge),
- 				     "Failed to get bridge\n");
-+	}
- 
- 	ret = mtk_dp_dt_parse(mtk_dp, pdev);
- 	if (ret)
-@@ -2167,7 +2288,10 @@ static int mtk_dp_probe(struct platform_device *pdev)
- 
- 	mtk_dp->bridge.ops =
- 		DRM_BRIDGE_OP_DETECT | DRM_BRIDGE_OP_EDID | DRM_BRIDGE_OP_HPD;
--	mtk_dp->bridge.type = DRM_MODE_CONNECTOR_eDP;
-+	if (mtk_dp_is_edp(mtk_dp))
-+		mtk_dp->bridge.type = DRM_MODE_CONNECTOR_eDP;
-+	else
-+		mtk_dp->bridge.type = DRM_MODE_CONNECTOR_DisplayPort;
- 
- 	drm_bridge_add(&mtk_dp->bridge);
- 
-@@ -2194,6 +2318,12 @@ static int mtk_dp_suspend(struct device *dev)
- {
- 	struct mtk_dp *mtk_dp = dev_get_drvdata(dev);
- 
-+	if (mtk_dp_plug_state(mtk_dp)) {
-+		drm_dp_dpcd_writeb(&mtk_dp->aux, DP_SET_POWER, DP_SET_POWER_D3);
-+		/* Ensure the sink is off before shutting down power */
-+		usleep_range(2000, 3000);
-+	}
-+
- 	mtk_dp_power_disable(mtk_dp);
- 
- 	mtk_dp_hwirq_enable(mtk_dp, false);
-@@ -2221,6 +2351,7 @@ static SIMPLE_DEV_PM_OPS(mtk_dp_pm_ops, mtk_dp_suspend, mtk_dp_resume);
- 
- static const struct of_device_id mtk_dp_of_match[] = {
- 	{ .compatible = "mediatek,mt8195-edp-tx" },
-+	{ .compatible = "mediatek,mt8195-dp-tx" },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, mtk_dp_of_match);
--- 
-2.18.0
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
+> --
+>
+> From 6a454876c9a1886e3cf8e9b66dae19b326f8901a Mon Sep 17 00:00:00 2001
+> From: Roman Gushchin <roman.gushchin@linux.dev>
+> Date: Thu, 9 Jun 2022 10:03:20 -0700
+> Subject: [PATCH] mm: kmem: make mem_cgroup_from_obj() vmalloc()-safe
+>
+> Currently mem_cgroup_from_obj() is not working properly with objects
+> allocated using vmalloc(). It creates problems in some cases, when
+> it's called for static objects belonging to  modules or generally
+> allocated using vmalloc().
+>
+> This patch makes mem_cgroup_from_obj() safe to be called on objects
+> allocated using vmalloc().
+>
+> It also introduces mem_cgroup_from_slab_obj(), which is a faster
+> version to use in places when we know the object is either a slab
+> object or a generic slab page (e.g. when adding an object to a lru
+> list).
+>
+> Suggested-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+> Signed-off-by: Roman Gushchin <roman.gushchin@linux.dev>
+> ---
+>  include/linux/memcontrol.h |  6 ++++
+>  mm/list_lru.c              |  2 +-
+>  mm/memcontrol.c            | 71 +++++++++++++++++++++++++++-----------
+>  3 files changed, 57 insertions(+), 22 deletions(-)
+>
+> diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+> index 0d7584e2f335..4d31ce55b1c0 100644
+> --- a/include/linux/memcontrol.h
+> +++ b/include/linux/memcontrol.h
+> @@ -1761,6 +1761,7 @@ static inline int memcg_kmem_id(struct mem_cgroup *memcg)
+>  }
+>
+>  struct mem_cgroup *mem_cgroup_from_obj(void *p);
+> +struct mem_cgroup *mem_cgroup_from_slab_obj(void *p);
+>
+>  static inline void count_objcg_event(struct obj_cgroup *objcg,
+>                                      enum vm_event_item idx)
+> @@ -1858,6 +1859,11 @@ static inline struct mem_cgroup *mem_cgroup_from_obj(void *p)
+>         return NULL;
+>  }
+>
+> +static inline struct mem_cgroup *mem_cgroup_from_slab_obj(void *p)
+> +{
+> +       return NULL;
+> +}
+> +
+>  static inline void count_objcg_event(struct obj_cgroup *objcg,
+>                                      enum vm_event_item idx)
+>  {
+> diff --git a/mm/list_lru.c b/mm/list_lru.c
+> index ba76428ceece..a05e5bef3b40 100644
+> --- a/mm/list_lru.c
+> +++ b/mm/list_lru.c
+> @@ -71,7 +71,7 @@ list_lru_from_kmem(struct list_lru *lru, int nid, void *ptr,
+>         if (!list_lru_memcg_aware(lru))
+>                 goto out;
+>
+> -       memcg = mem_cgroup_from_obj(ptr);
+> +       memcg = mem_cgroup_from_slab_obj(ptr);
+>         if (!memcg)
+>                 goto out;
+>
+> diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+> index 4093062c5c9b..8c408d681377 100644
+> --- a/mm/memcontrol.c
+> +++ b/mm/memcontrol.c
+> @@ -783,7 +783,7 @@ void __mod_lruvec_kmem_state(void *p, enum node_stat_item idx, int val)
+>         struct lruvec *lruvec;
+>
+>         rcu_read_lock();
+> -       memcg = mem_cgroup_from_obj(p);
+> +       memcg = mem_cgroup_from_slab_obj(p);
+>
+>         /*
+>          * Untracked pages have no memcg, no lruvec. Update only the
+> @@ -2833,27 +2833,9 @@ int memcg_alloc_slab_cgroups(struct slab *slab, struct kmem_cache *s,
+>         return 0;
+>  }
+>
+> -/*
+> - * Returns a pointer to the memory cgroup to which the kernel object is charged.
+> - *
+> - * A passed kernel object can be a slab object or a generic kernel page, so
+> - * different mechanisms for getting the memory cgroup pointer should be used.
+> - * In certain cases (e.g. kernel stacks or large kmallocs with SLUB) the caller
+> - * can not know for sure how the kernel object is implemented.
+> - * mem_cgroup_from_obj() can be safely used in such cases.
+> - *
+> - * The caller must ensure the memcg lifetime, e.g. by taking rcu_read_lock(),
+> - * cgroup_mutex, etc.
+> - */
+> -struct mem_cgroup *mem_cgroup_from_obj(void *p)
+> +static __always_inline
+> +struct mem_cgroup *mem_cgroup_from_obj_folio(struct folio *folio, void *p)
+>  {
+> -       struct folio *folio;
+> -
+> -       if (mem_cgroup_disabled())
+> -               return NULL;
+> -
+> -       folio = virt_to_folio(p);
+> -
+>         /*
+>          * Slab objects are accounted individually, not per-page.
+>          * Memcg membership data for each individual object is saved in
+> @@ -2886,6 +2868,53 @@ struct mem_cgroup *mem_cgroup_from_obj(void *p)
+>         return page_memcg_check(folio_page(folio, 0));
+>  }
+>
+> +/*
+> + * Returns a pointer to the memory cgroup to which the kernel object is charged.
+> + *
+> + * A passed kernel object can be a slab object, vmalloc object or a generic
+> + * kernel page, so different mechanisms for getting the memory cgroup pointer
+> + * should be used.
+> + *
+> + * In certain cases (e.g. kernel stacks or large kmallocs with SLUB) the caller
+> + * can not know for sure how the kernel object is implemented.
+> + * mem_cgroup_from_obj() can be safely used in such cases.
+> + *
+> + * The caller must ensure the memcg lifetime, e.g. by taking rcu_read_lock(),
+> + * cgroup_mutex, etc.
+> + */
+> +struct mem_cgroup *mem_cgroup_from_obj(void *p)
+> +{
+> +       struct folio *folio;
+> +
+> +       if (mem_cgroup_disabled())
+> +               return NULL;
+> +
+> +       if (unlikely(is_vmalloc_addr(p)))
+> +               folio = page_folio(vmalloc_to_page(p));
+> +       else
+> +               folio = virt_to_folio(p);
+> +
+> +       return mem_cgroup_from_obj_folio(folio, p);
+> +}
+> +
+> +/*
+> + * Returns a pointer to the memory cgroup to which the kernel object is charged.
+> + * Similar to mem_cgroup_from_obj(), but faster and not suitable for objects,
+> + * allocated using vmalloc().
+> + *
+> + * A passed kernel object must be a slab object or a generic kernel page.
+> + *
+> + * The caller must ensure the memcg lifetime, e.g. by taking rcu_read_lock(),
+> + * cgroup_mutex, etc.
+> + */
+> +struct mem_cgroup *mem_cgroup_from_slab_obj(void *p)
+> +{
+> +       if (mem_cgroup_disabled())
+> +               return NULL;
+> +
+> +       return mem_cgroup_from_obj_folio(virt_to_folio(p), p);
+> +}
+> +
+>  static struct obj_cgroup *__get_obj_cgroup_from_memcg(struct mem_cgroup *memcg)
+>  {
+>         struct obj_cgroup *objcg = NULL;
+> --
+> 2.35.3
+
+[1] https://lkft.validation.linaro.org/scheduler/job/5156201
+
+--
+Linaro LKFT
+https://lkft.linaro.org
