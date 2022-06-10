@@ -2,121 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1EA0C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 13:40:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84CAFC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 13:42:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233651AbiFJNkn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 09:40:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46786 "EHLO
+        id S1345989AbiFJNmJ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 10 Jun 2022 09:42:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229516AbiFJNkh (ORCPT
+        with ESMTP id S245684AbiFJNmH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 09:40:37 -0400
-Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com [209.85.128.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBF2D3A71F;
-        Fri, 10 Jun 2022 06:40:35 -0700 (PDT)
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-30c143c41e5so272569497b3.3;
-        Fri, 10 Jun 2022 06:40:35 -0700 (PDT)
+        Fri, 10 Jun 2022 09:42:07 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1BCB2CE2F
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 06:42:06 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id t2so22810290pld.4
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 06:42:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=KmSVR4lZDux7jMqzZ5egDwaC7vwqVO8iWjyTpI9KDa8=;
+        b=IwEigTeRxHv+eJO2kblhKX0VSwzDZqbX/BEEi9BwfpxlirL/T2N7R02Dyx+tWn8o3f
+         sbr0Iq8tf+R50x86cWYa2d01DW101by3v99p+XKee1wmstSSnitQJ1FIGkQiJo66dbwj
+         dt9iOb27KMW8qlL71ToC7je3RRbC+l8Pz5idQ3QIOoRpDhohitBwgFziUa9cSnoAclMT
+         sEiyzLLvMW9+uQ5QMfQFAsrrHFB5EBXSDjg+HnJ5e/3Aa4nePETN0Z5zo6+yqJtIr1LH
+         PxygE795YkLDs3lKYLZMLisjjX8VLqUfxDvBO7uHgh4Z0b5Vaktgzz9pI4KI3oDbR1fa
+         MJTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uBdKtGW7fZxQ5+SFCWAo4vdz+hLcnONQN5dsbtogcvQ=;
-        b=EQDv10Q6xw+t2P4ruF4bxC1Uc+Tuwu75xeYNfsEf1JpfGugYU3q0xT9PnB++Vd9R1W
-         CT0XQYMZGfbyfn6c2yz6EH2aJjey8cqX39EWeRPTQYukDJs06q9TyqcSI8jDsO2bwTG8
-         3zQYvDfRuAFpOqKoCJUPrW8QsKaInDww0xFe+Rt42c7g67wcaXGSl153ed+udoHoo1I+
-         ab4qPgV1L1p+DC3e3NQXpityh16Pmp9TwCUT1DMICHrXRDF3CuWkbwTJ6efyWhAlpC/7
-         1n87jcseJYHoApnAbQ04afL8m2z/ZbQiPmJ/pDCMiJAcK6Zsoo/mOVmpcWitdD6WDqK4
-         MaNg==
-X-Gm-Message-State: AOAM530ZzpwS0w9hfst28oiFthTtnn/n2sReVHbMAsa8kVmZU/cHeUee
-        AEJTgFS/Rl6Flv5XR3Rnux1zo0yUhj4NvoU7ONE=
-X-Google-Smtp-Source: ABdhPJx9RtNllu+NXEiCLNeoJWKFqffkqoy+hzByxzxKYvlx2QwooTOEmnPA588AgZzx8m+n2clldb+8qAjVgl/ZBEY=
-X-Received: by 2002:a81:260a:0:b0:2f4:ca82:a42f with SMTP id
- m10-20020a81260a000000b002f4ca82a42fmr48706250ywm.149.1654868434983; Fri, 10
- Jun 2022 06:40:34 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=KmSVR4lZDux7jMqzZ5egDwaC7vwqVO8iWjyTpI9KDa8=;
+        b=MWfBjay2dRlVZar8ozhLlyGQRPTh+8UxnbklRSQkp4la8EZF5xlkdO/cG0LPyQEHad
+         uhXUJWiDuEeoH67A4W51NcWjbVTiu1SZ14F2LTKdsaVv7DZ1AtgYGWmaJ5BpLLVaPji/
+         SRPAlL5RFJdnjb4oKwsFSscN50jQ0HpoFVhy3YOVzI443dzmOJ+k3PvTOiucPr8FVM/6
+         qqRrPMXVHtIyRNzGdT0uqBvzUXzHlV/CIOGFIqNAGLhjl0ce+WYMGhl5jMpR+do/ODKZ
+         JPLPh/hZ/R35zhJL07ly8J5KNgkbPWToNX2guETDtYBdNi9VYW7IIxW2RDU+THlzjsa4
+         vO4w==
+X-Gm-Message-State: AOAM530KXfQlDkPC/eOIDgh9T9dbAOV8Xm0xWtSE6xFGISlKkaY1aUf9
+        +pOEzgq07ieyISeqXdkgKGM=
+X-Google-Smtp-Source: ABdhPJwSqR0nLnXzui6B0LIle86hHQTJO+gW5yr/cb38X0JBZBgs/ExvxkfQydQsBInhV5vbRJj4iw==
+X-Received: by 2002:a17:903:215:b0:15e:cae9:7622 with SMTP id r21-20020a170903021500b0015ecae97622mr45415597plh.28.1654868526179;
+        Fri, 10 Jun 2022 06:42:06 -0700 (PDT)
+Received: from [192.168.0.103] ([106.51.241.182])
+        by smtp.gmail.com with ESMTPSA id d9-20020a656b89000000b003fd7e217686sm11475912pgw.57.2022.06.10.06.42.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 10 Jun 2022 06:42:05 -0700 (PDT)
+Message-ID: <a7fea025-1919-b2d7-e69e-136983c2e386@gmail.com>
+Date:   Fri, 10 Jun 2022 19:12:02 +0530
 MIME-Version: 1.0
-References: <20220610120219.18988-1-andriy.shevchenko@linux.intel.com>
-In-Reply-To: <20220610120219.18988-1-andriy.shevchenko@linux.intel.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Fri, 10 Jun 2022 15:40:23 +0200
-Message-ID: <CAJZ5v0g3pHDNkVu6YqANO7yM4s_CPih0nBXcgz3OBmrRSjLh2A@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] driver core: Introduce device_find_any_child() helper
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.10.0
+Subject: Re: [PATCH 1/2] char: lp: ensure that index has not exceeded LP_NO
+Content-Language: en-US
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     arnd@arndb.de, linux-kernel@vger.kernel.org,
+        Shreenidhi Shedi <sshedi@vmware.com>
+References: <20220603130040.601673-1-sshedi@vmware.com>
+ <YqNG5H+JbNJMeOWq@kroah.com>
+From:   Shreenidhi Shedi <yesshedi@gmail.com>
+In-Reply-To: <YqNG5H+JbNJMeOWq@kroah.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 2:02 PM Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
->
-> There are several places in the kernel where this kind of functionality is
-> being used. Provide a generic helper for such cases.
->
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
-> v2: renamed method (Greg), refactored it (Rafael)
->  drivers/base/core.c    | 20 ++++++++++++++++++++
->  include/linux/device.h |  2 ++
->  2 files changed, 22 insertions(+)
->
-> diff --git a/drivers/base/core.c b/drivers/base/core.c
-> index 7cd789c4985d..a519307fda60 100644
-> --- a/drivers/base/core.c
-> +++ b/drivers/base/core.c
-> @@ -3832,6 +3832,26 @@ struct device *device_find_child_by_name(struct device *parent,
->  }
->  EXPORT_SYMBOL_GPL(device_find_child_by_name);
->
-> +static int match_any(struct device *dev, void *unused)
-> +{
-> +       return 1;
-> +}
-> +
-> +/**
-> + * device_find_any_child - device iterator for locating a child device, if any.
-> + * @parent: parent struct device
-> + *
-> + * This is similar to the device_find_child() function above, but it
-> + * returns a reference to a child device, if any.
-> + *
-> + * NOTE: you will need to drop the reference with put_device() after use.
-> + */
-> +struct device *device_find_any_child(struct device *parent)
-> +{
-> +       return device_find_child(parent, NULL, match_any);
-> +}
-> +EXPORT_SYMBOL_GPL(device_find_any_child);
+On 10/06/22 6:58 pm, Greg KH wrote:
+> On Fri, Jun 03, 2022 at 06:30:39PM +0530, Shreenidhi Shedi wrote:
+>> From: Shreenidhi Shedi <sshedi@vmware.com>
+>>
+>> After finishing the loop, index value can be equal to LP_NO and lp_table
+>> array is of size LP_NO, so this can end up in accessing an out of bound
+>> address in lp_register function.
+>>
+>> Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+>> ---
+>>  drivers/char/lp.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/char/lp.c b/drivers/char/lp.c
+>> index 0e22e3b0a..d474d02b6 100644
+>> --- a/drivers/char/lp.c
+>> +++ b/drivers/char/lp.c
+>> @@ -972,7 +972,7 @@ static void lp_attach(struct parport *port)
+>>  			if (port_num[i] == -1)
+>>  				break;
+>>
+>> -		if (!lp_register(i, port))
+>> +		if (i < LP_NO && !lp_register(i, port))
+>>  			lp_count++;
+> 
+> How can this ever be needed?  Look at the check further up for the check
+> of lp_count which prevents this from every going too large.
+> 
+> So how can an address be accessed out of bound here?
+> 
+> thanks,
+> 
+> greg k-h
 
-I would call it device_get_any_child() to indicate the reference
-counting, but that's a very minor nit.
+Thanks for the review. Assume lp_count is less than LP_NO now and we enter the for loop
+and for some reason for loop exits after i reaching the value LP_NO and right after that 
+we call lp_register() with i and I can be equal to LP_NO.
 
-Regardless of the above
-
-Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-
-> +
->  int __init devices_init(void)
->  {
->         devices_kset = kset_create_and_add("devices", &device_uevent_ops, NULL);
-> diff --git a/include/linux/device.h b/include/linux/device.h
-> index dc941997795c..424b55df0272 100644
-> --- a/include/linux/device.h
-> +++ b/include/linux/device.h
-> @@ -905,6 +905,8 @@ struct device *device_find_child(struct device *dev, void *data,
->                                  int (*match)(struct device *dev, void *data));
->  struct device *device_find_child_by_name(struct device *parent,
->                                          const char *name);
-> +struct device *device_find_any_child(struct device *parent);
-> +
->  int device_rename(struct device *dev, const char *new_name);
->  int device_move(struct device *dev, struct device *new_parent,
->                 enum dpm_order dpm_order);
-> --
-> 2.35.1
->
+-- 
+Shedi
