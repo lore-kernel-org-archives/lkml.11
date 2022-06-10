@@ -2,130 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62A04C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 20:38:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 606D5C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 20:38:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348082AbiFJUiR (ORCPT
+        id S1350472AbiFJUig (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 16:38:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48388 "EHLO
+        Fri, 10 Jun 2022 16:38:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346497AbiFJUiP (ORCPT
+        with ESMTP id S1350581AbiFJUi2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 16:38:15 -0400
-Received: from mail-il1-f171.google.com (mail-il1-f171.google.com [209.85.166.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ED68EC30C;
-        Fri, 10 Jun 2022 13:38:13 -0700 (PDT)
-Received: by mail-il1-f171.google.com with SMTP id u2so190201iln.2;
-        Fri, 10 Jun 2022 13:38:13 -0700 (PDT)
+        Fri, 10 Jun 2022 16:38:28 -0400
+Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC86B30E752
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 13:38:23 -0700 (PDT)
+Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-fdfe64231dso656713fac.1
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 13:38:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=OmNB8Tcgddvh+DStPNDRj/l3PH4AXfXE+UIaJzFaKDU=;
+        b=PeEQYbTqlBNmQVeOneHYbMQ2SNrnE9oRTTJBeeItlAIoqfZ+jTsaeM3pXbv4byuW2/
+         AfTroOiJeqAqHgr6g/W5/8NxXUIGHdQ7BxUq1EEr3ZV/U/uQjrGlxVpcIR3cc5hcxYdl
+         QtdINxF1F92WAg6BPLRNtQNPQFQiMlm1VhshM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4m3Bo0gVkhfyIGU9xra6MloozgwWOG3t7N6ZclZnQ/I=;
-        b=L4sGfIYPckBMlF7ZP3tzeiTkUORZIRsYWnGQVDe3QhQsz6CCxigihhbkFiWLDQcvoj
-         Ar+pJniGyzEGFKwNKW0DHNNTnHSm7wPsJrgc5pclEL/JkGVyFyvmBHXX5j+7VdtO3laO
-         B8jSs8KwNPJKRwMQJOjYEGZ+rarwHvzJjrI2owijXqD+yLq2x6+xlZYrCcEyWVnFaN6B
-         1tYa6NWzll4LyltauiTOKMvfu0XZY8smOsHpR84sNTMpWvGX8ulqLcvzKTeIpjWhv/sL
-         GOJN+a2HvNfV+aINx0YV20s3dQVoihlWFMkw8nmRcPl/EITO2uVJZ+NM8kvrx5a63jhm
-         UUHg==
-X-Gm-Message-State: AOAM531i8VcqDbvTszamjaOk+HJNipnfp58Xf4Y2KzrxH+qq4/b8E6qH
-        LGj9wdUYOTvJcgT/7PL4KQ==
-X-Google-Smtp-Source: ABdhPJyVB3wPO8qibfrXXcaLUISXcn2Swhm7rrrKY18ybttaAXPFa7pxNWCllTPtZVYk3Nc3HqhWMw==
-X-Received: by 2002:a92:cbcd:0:b0:2d1:ba4f:2f4f with SMTP id s13-20020a92cbcd000000b002d1ba4f2f4fmr25692107ilq.181.1654893492813;
-        Fri, 10 Jun 2022 13:38:12 -0700 (PDT)
-Received: from xps15.herring.priv ([64.188.179.251])
-        by smtp.googlemail.com with ESMTPSA id z20-20020a056638001400b003316f4b9b26sm16014jao.131.2022.06.10.13.38.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jun 2022 13:38:12 -0700 (PDT)
-From:   Rob Herring <robh@kernel.org>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Cc:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: mtd/partitions: Convert arm-firmware-suite to DT schema
-Date:   Fri, 10 Jun 2022 14:37:44 -0600
-Message-Id: <20220610203746.2191518-1-robh@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=OmNB8Tcgddvh+DStPNDRj/l3PH4AXfXE+UIaJzFaKDU=;
+        b=TsT4sKPDWzVD8r6eCWgqo+Bt4HSBoli+c1QDqR+XfdAx1MnP7GNau4krYDsPfFqPKd
+         3udnOUQFA4h5WUkcWeV6zgWmbLbqocpoycV6b4s4NxT12RulGkbd4Ri997xDOk+NKdGv
+         Q+fooft2eXYfOkV+rrd0qPlKGQcX4g8cBHezCuJf0oZ+LYBt0fHpamwPaLEdS0Fy1yfM
+         RU5ehIiT0S0tU7ravuJONi7n2u5KN0z7a64KdQfd4xzUikV024fXMz6iCtTYivso0H9S
+         GxGDwKyj5aWM911D+5TcaB0kdcQzYOes+KJpiqQJmzn8f27GaT+jTz0wgN2QCUbLYhlC
+         axWA==
+X-Gm-Message-State: AOAM532wykGIKMwF/L7FqrZuKB1ymWKQihLA2PDwqYuolTTjStXRRLSr
+        VJzWWkS+dVmPAkFyQXd0fZ7Eakwv88JZ+zFNSPHOsW0fRBA=
+X-Google-Smtp-Source: ABdhPJxrnMCKEY4AraCYzAprPhmiQ1YNHjc36TBp1WRgX1iN4BwAyAiw6GjZRAmfjgdlO1edLxRj4Tmv7M7qh5o0Mgk=
+X-Received: by 2002:a05:6870:b381:b0:fe:2004:b3b5 with SMTP id
+ w1-20020a056870b38100b000fe2004b3b5mr922317oap.63.1654893502377; Fri, 10 Jun
+ 2022 13:38:22 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Fri, 10 Jun 2022 13:38:21 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1654775566-21953-1-git-send-email-quic_dikshita@quicinc.com>
+References: <1654775566-21953-1-git-send-email-quic_dikshita@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Fri, 10 Jun 2022 13:38:21 -0700
+Message-ID: <CAE-0n50q5GJ_q9Pojjrh+34W+i6BXhxSDCS6M_6NLP0pyZYuQg@mail.gmail.com>
+Subject: Re: [PATCH] venus: Add support for SSR trigger using fault injection
+To:     Dikshita Agarwal <quic_dikshita@quicinc.com>,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
+Cc:     linux-arm-msm@vger.kernel.org, stanimir.varbanov@linaro.org,
+        quic_vgarodia@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the arm,arm-firmware-suite partition binding to DT schema
-format. Simple conversion as there's only a compatible property.
+Quoting Dikshita Agarwal (2022-06-09 04:52:46)
+> diff --git a/drivers/media/platform/qcom/venus/dbgfs.c b/drivers/media/platform/qcom/venus/dbgfs.c
+> index 52de47f..a0bfb9e 100644
+> --- a/drivers/media/platform/qcom/venus/dbgfs.c
+> +++ b/drivers/media/platform/qcom/venus/dbgfs.c
+> @@ -4,13 +4,31 @@
+>   */
+>
+>  #include <linux/debugfs.h>
+> +#include <linux/fault-inject.h>
+>
+>  #include "core.h"
+>
+> +#ifdef CONFIG_FAULT_INJECTION
+> +static DECLARE_FAULT_ATTR(venus_ssr_attr);
+> +#endif
+> +
+> +bool venus_fault_inject_ssr(void)
+> +{
+> +#ifdef CONFIG_FAULT_INJECTION
+> +       return should_fail(&venus_ssr_attr, 1);
+> +#else
+> +       return false;
+> +#endif
+> +}
 
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- .../mtd/partitions/arm,arm-firmware-suite.txt | 17 -----------
- .../partitions/arm,arm-firmware-suite.yaml    | 30 +++++++++++++++++++
- 2 files changed, 30 insertions(+), 17 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/mtd/partitions/arm,arm-firmware-suite.txt
- create mode 100644 Documentation/devicetree/bindings/mtd/partitions/arm,arm-firmware-suite.yaml
+It would be better to remove the ifdef in this function and define a
+static inline version that returns false when CONFIG_FAULT_INJECTION is
+disabled so that the compiler doesn't have to insert a function call to
+venus_fault_inject_ssr() when the config is disabled. It may also be
+good to avoid the jump when enabled by exporting the attribute to the
+irq handler file.
 
-diff --git a/Documentation/devicetree/bindings/mtd/partitions/arm,arm-firmware-suite.txt b/Documentation/devicetree/bindings/mtd/partitions/arm,arm-firmware-suite.txt
-deleted file mode 100644
-index d5c5616f6db5..000000000000
---- a/Documentation/devicetree/bindings/mtd/partitions/arm,arm-firmware-suite.txt
-+++ /dev/null
-@@ -1,17 +0,0 @@
--ARM AFS - ARM Firmware Suite Partitions
--=======================================
--
--The ARM Firmware Suite is a flash partitioning system found on the
--ARM reference designs: Integrator AP, Integrator CP, Versatile AB,
--Versatile PB, the RealView family, Versatile Express and Juno.
--
--Required properties:
--- compatible : (required) must be "arm,arm-firmware-suite"
--
--Example:
--
--flash@0 {
--	partitions {
--		compatible = "arm,arm-firmware-suite";
--	};
--};
-diff --git a/Documentation/devicetree/bindings/mtd/partitions/arm,arm-firmware-suite.yaml b/Documentation/devicetree/bindings/mtd/partitions/arm,arm-firmware-suite.yaml
-new file mode 100644
-index 000000000000..baf19ac0ea1f
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mtd/partitions/arm,arm-firmware-suite.yaml
-@@ -0,0 +1,30 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mtd/partitions/arm,arm-firmware-suite.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: ARM Firmware Suite (AFS) Partitions
-+
-+maintainers:
-+  - Linus Walleij <linus.walleij@linaro.org>
-+
-+description: |
-+  The ARM Firmware Suite is a flash partitioning system found on the
-+  ARM reference designs: Integrator AP, Integrator CP, Versatile AB,
-+  Versatile PB, the RealView family, Versatile Express and Juno.
-+
-+properties:
-+  compatible:
-+    const: arm,arm-firmware-suite
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    flash@0 {
-+        partitions {
-+            compatible = "arm,arm-firmware-suite";
-+        };
-+    };
-+...
--- 
-2.34.1
-
+> +
+>  void venus_dbgfs_init(struct venus_core *core)
+>  {
+>         core->root = debugfs_create_dir("venus", NULL);
+>         debugfs_create_x32("fw_level", 0644, core->root, &venus_fw_debug);
+> +
+> +#ifdef CONFIG_FAULT_INJECTION
+> +       fault_create_debugfs_attr("fail_ssr", core->root, &venus_ssr_attr);
+> +#endif
+>  }
+>
+>  void venus_dbgfs_deinit(struct venus_core *core)
