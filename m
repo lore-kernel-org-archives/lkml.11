@@ -2,96 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80E59C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 10:56:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 278FDCCA483
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 10:58:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349235AbiFJK4g (ORCPT
+        id S1349450AbiFJK6G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 06:56:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57188 "EHLO
+        Fri, 10 Jun 2022 06:58:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349153AbiFJK4S (ORCPT
+        with ESMTP id S1349248AbiFJK5n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 06:56:18 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CEBE30288F;
-        Fri, 10 Jun 2022 03:52:54 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id fu3so51223778ejc.7;
-        Fri, 10 Jun 2022 03:52:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=mzNIu/hJfU64bjzdbz9eCIuBSxxHQFir6w0YjzInoQI=;
-        b=Uo2m+Sq9lpnhslhNmuKaT8w9T5xrgYB59/nCxk55tltJ0faqdhoGWYiclga4c+rpll
-         ldCwlrImoyYCqZvDr/rgnulEWi5AWG4QDzv/LKtYEKE3TgtLF6IQzWfB9firfjochGoU
-         Xh6lbgPnSv9euIst4fqLogICoY+I10bYDx0BIoq4rfF3QlOZWuO1IxhG6glizb7gYRR1
-         mZIh70nUMPyelUIYCjMuXJ0WsweODwiZ5P9zPuPQCPbRjOFe0WHRbISqZPOyLCGKemmn
-         xNieXDw7RoQnhFmIyEqLCxeat52gC/Ge3ez6inUMIDZB7COg7+BiOeF/XJKOiYtWuPHy
-         2yjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=mzNIu/hJfU64bjzdbz9eCIuBSxxHQFir6w0YjzInoQI=;
-        b=T9+K14H49QWnVGeGJcGhLSaMSXhoRPiuS0TPRKbM53Vty+YEAZNr6ow4WZ2pCavtEC
-         UoVG0ZEKqjfizSSw5ZpsKx7plycB+tmLGMWr+T/96Vn939Crp3GtniLCgFQKuLE0zpDI
-         pvDpMIYaFtzUNmgIS6seH7X9tND6UBRYyvpzvECkry08I2vicHBPkh11Qeax611uw0UZ
-         JUCkwSwvSSjiMyNurSSmnnvBtxnKzMZfOapxR0ecIQIE8fZ0swSr4CCVcZUSmk2jSI/I
-         XtlOn4LZKeCgmHx3tso3eOUcboFiw96qONM+2t7L3yZdyfJl6VhAwcCdkRIekvEpBsj6
-         iOmA==
-X-Gm-Message-State: AOAM533MJxvqT8tPiZrwPxmuFYO55EdpTd28C5LInCzUQ6kXsJviv+my
-        bZBEsFLpigJp+i8Uj21Zq1k=
-X-Google-Smtp-Source: ABdhPJycsiR0DjteXV5+fJA+IKXDppw5/mfo6n9QK5UucCkXyrl+Z5+EpVBkoK2uWAGda/gzp2qWgg==
-X-Received: by 2002:a17:907:7202:b0:6fe:fcec:7b7b with SMTP id dr2-20020a170907720200b006fefcec7b7bmr39464058ejc.529.1654858372430;
-        Fri, 10 Jun 2022 03:52:52 -0700 (PDT)
-Received: from felia.fritz.box (200116b82696b000c87a6777df67efb1.dip.versatel-1u1.de. [2001:16b8:2696:b000:c87a:6777:df67:efb1])
-        by smtp.gmail.com with ESMTPSA id y22-20020aa7ca16000000b0042dcbc3f302sm16353114eds.36.2022.06.10.03.52.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jun 2022 03:52:51 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Conor Dooley <conor.dooley@microchip.com>,
-        Wolfram Sang <wsa@kernel.org>
-Cc:     linux-i2c@vger.kernel.org, Peter Korsgaard <peter@korsgaard.com>,
-        Andrew Lunn <andrew@lunn.ch>, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] MAINTAINERS: Rectify entry for OPENCORES I2C BUS DRIVER
-Date:   Fri, 10 Jun 2022 12:51:54 +0200
-Message-Id: <20220610105154.2358-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 10 Jun 2022 06:57:43 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430C72178B9;
+        Fri, 10 Jun 2022 03:55:30 -0700 (PDT)
+X-UUID: 55f0601a910640398ce8a765dfde1784-20220610
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:958443af-c5cf-411b-8bbc-fc564b166e46,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:2a19b09,CLOUDID:12d767e5-2ba2-4dc1-b6c5-11feb6c769e0,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 55f0601a910640398ce8a765dfde1784-20220610
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 214986410; Fri, 10 Jun 2022 18:55:25 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Fri, 10 Jun 2022 18:55:23 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Fri, 10 Jun 2022 18:55:23 +0800
+From:   Bo-Chen Chen <rex-bc.chen@mediatek.com>
+To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
+        <daniel@ffwll.ch>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <mripard@kernel.org>,
+        <tzimmermann@suse.de>, <matthias.bgg@gmail.com>, <deller@gmx.de>,
+        <airlied@linux.ie>
+CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
+        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
+        <angelogioacchino.delregno@collabora.com>, <ck.hu@mediatek.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-fbdev@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Bo-Chen Chen <rex-bc.chen@mediatek.com>
+Subject: [PATCH v11 02/10] drm/edid: Convert cea_sad helper struct to kernelDoc
+Date:   Fri, 10 Jun 2022 18:55:14 +0800
+Message-ID: <20220610105522.13449-3-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220610105522.13449-1-rex-bc.chen@mediatek.com>
+References: <20220610105522.13449-1-rex-bc.chen@mediatek.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 8ad69f490516 ("dt-bindings: i2c: convert ocores binding to yaml")
-converts i2c-ocores.txt to opencores,i2c-ocores.yaml, but then adjust its
-reference in MAINTAINERS to a slightly wrong new filename.
+From: Guillaume Ranquet <granquet@baylibre.com>
 
-Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
-broken reference.
+To illustrate the cea_sad helper struct more clear, we convert the
+driver comments to kernelDoc.
 
-Repair this file reference in OPENCORES I2C BUS DRIVER.
-
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+[Bo-Chen: Add commit message and modify reviewers' comments.]
+Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
-Conor, please ack.
-Wolfram, please pick this minor non-urgent clean-up patch for your -next tree.
+ include/drm/drm_edid.h | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fc5b74ad0141..02e91ac4ee04 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -14920,7 +14920,7 @@ M:	Peter Korsgaard <peter@korsgaard.com>
- M:	Andrew Lunn <andrew@lunn.ch>
- L:	linux-i2c@vger.kernel.org
- S:	Maintained
--F:	Documentation/devicetree/bindings/i2c/i2c-ocores.yaml
-+F:	Documentation/devicetree/bindings/i2c/opencores,i2c-ocores.yaml
- F:	Documentation/i2c/busses/i2c-ocores.rst
- F:	drivers/i2c/busses/i2c-ocores.c
- F:	include/linux/platform_data/i2c-ocores.h
+diff --git a/include/drm/drm_edid.h b/include/drm/drm_edid.h
+index b2756753370b..c2c43a4af681 100644
+--- a/include/drm/drm_edid.h
++++ b/include/drm/drm_edid.h
+@@ -359,12 +359,18 @@ struct edid {
+ 
+ #define EDID_PRODUCT_ID(e) ((e)->prod_code[0] | ((e)->prod_code[1] << 8))
+ 
+-/* Short Audio Descriptor */
++/**
++ * struct cea_sad - CEA Short Audio Descriptor.
++ * @format: See HDMI_AUDIO_CODING_TYPE_*.
++ * @channels: max number of channels - 1.
++ * @freq: See CEA_SAD_FREQ_*.
++ * @byte2: meaning depends on format.
++ */
+ struct cea_sad {
+ 	u8 format;
+-	u8 channels; /* max number of channels - 1 */
++	u8 channels;
+ 	u8 freq;
+-	u8 byte2; /* meaning depends on format */
++	u8 byte2;
+ };
+ 
+ struct drm_encoder;
 -- 
-2.17.1
+2.18.0
 
