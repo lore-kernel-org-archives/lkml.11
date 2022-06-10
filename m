@@ -2,131 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE028C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 10:28:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4574FC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 10:29:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344973AbiFJK2N (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 06:28:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50794 "EHLO
+        id S245164AbiFJK3T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 10 Jun 2022 06:29:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344629AbiFJK2H (ORCPT
+        with ESMTP id S245135AbiFJK3M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 06:28:07 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 07A21DFB7
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 03:27:59 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D2B6E12FC;
-        Fri, 10 Jun 2022 03:27:58 -0700 (PDT)
-Received: from bogus (e103737-lin.cambridge.arm.com [10.1.197.49])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B5DFF3F766;
-        Fri, 10 Jun 2022 03:27:56 -0700 (PDT)
-Date:   Fri, 10 Jun 2022 11:27:53 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Vincent Guittot <vincent.guittot@linaro.org>
-Cc:     Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        linux-kernel@vger.kernel.org, Atish Patra <atishp@atishpatra.org>,
-        Atish Patra <atishp@rivosinc.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Morten Rasmussen <morten.rasmussen@arm.com>,
-        Qing Wang <wangqing@vivo.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-riscv@lists.infradead.org, Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH v3 15/16] arch_topology: Set cluster identifier in each
- core/thread from /cpu-map
-Message-ID: <20220610102753.virkx47uyfsojol6@bogus>
-References: <20220525081416.3306043-10-sudeep.holla@arm.com>
- <20220525081416.3306043-11-sudeep.holla@arm.com>
- <20220525081416.3306043-12-sudeep.holla@arm.com>
- <20220525081416.3306043-13-sudeep.holla@arm.com>
- <20220525081416.3306043-14-sudeep.holla@arm.com>
- <20220525081416.3306043-15-sudeep.holla@arm.com>
- <20220525081416.3306043-16-sudeep.holla@arm.com>
- <947470ba-35fc-3c72-d01b-c0a7337216a2@arm.com>
- <20220606102159.dduxmvq4m2fm6gks@bogus>
- <CAKfTPtB8iPzEXipsJqNtd9-aJMKx-FAaiGMzOg58HgRQuo39iA@mail.gmail.com>
+        Fri, 10 Jun 2022 06:29:12 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5058441635
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 03:29:10 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id v1so41916352ejg.13
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 03:29:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=tLO8M+bBtsFeLQBJeKorjii5kkChBo5ctWVAnJ9k72s=;
+        b=iWa9dQh1aY0vk7XC0r8UEikGjxDa0uCh5Wc2lvho+xKfJiDj6HkxfBcDbx9gQzhv8X
+         7k329I4+2op+Pu02VnxThT1bk9bLwv/jDU9ts6khNIgfmUHsPm0vNn0CVwPmMP/NH0CW
+         Y0tfDdFeqzdGpnrBs6SwDOQHHMyzcAPxtt8X13eKJexaya4MpHXRhHeWJVLERwA1O4em
+         KcVwzVVu0yiSJMK3WhtxOP6o5c6qiRpPodSPoj1/ewTrTmMB/y+8EBrbV25KnRM8IAbe
+         cXUiVQWQUZDMpCctn3rko0yzLSGpVG6XN16cGeqeAq3Klacrt3fgbpV/NXXKnSmX45/8
+         8ItA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=tLO8M+bBtsFeLQBJeKorjii5kkChBo5ctWVAnJ9k72s=;
+        b=Tk3FRxvhK0X1G/qrO1dyw1xw3YC5F7/MqvnyngJSJSw/dF8RI931luB22e78RALyBT
+         5l75G/Qg5ZqqAfUdBUnPlcnKiqSbnwSbcCGQT69rePyeg/NUQL+thWNoelBQDpOrBPJQ
+         iEoSByVCi8cGIoLx6UI7CnQWH14KqFmbchw8PvV1W2kweALHPB+t5WxKkIGPSp3keC1y
+         7qtaYckQgxsyB6DXCw0J8NvDHDyVdzguO7xWYtanTMjpvYKkz2r0jpbodpayJsci9roh
+         A54oow0SzV2p+uIcm8h4VfKKuvvr+NEhRhzEV/zO0KDjT7rAWjcq+mIIl/23RrGVBSDo
+         azRg==
+X-Gm-Message-State: AOAM532KMaqQtJIYukBUkNH1Xa5Qe2bMh/fvFAIyJ35PiXR2j9KWS+lz
+        POQCBwkTcysfaxa8bQc66g4ZTQ==
+X-Google-Smtp-Source: ABdhPJzo4/uJou01xICnCHlFFG6i9dGDLudvClUxMGfQhm5qoPNHdvDugPnGWxs+wZCCnIrwagewCw==
+X-Received: by 2002:a17:907:9495:b0:6ff:14df:d2a with SMTP id dm21-20020a170907949500b006ff14df0d2amr39824681ejc.338.1654856948936;
+        Fri, 10 Jun 2022 03:29:08 -0700 (PDT)
+Received: from [192.168.0.202] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id p21-20020aa7cc95000000b0042fb17da833sm12259010edt.60.2022.06.10.03.29.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 10 Jun 2022 03:29:08 -0700 (PDT)
+Message-ID: <2edb2dbc-0f62-23cc-2f32-3d27d83a194e@linaro.org>
+Date:   Fri, 10 Jun 2022 12:29:07 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKfTPtB8iPzEXipsJqNtd9-aJMKx-FAaiGMzOg58HgRQuo39iA@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v9 2/2] dt-bindings:thermal: Add Sunplus schema
+Content-Language: en-US
+To:     =?UTF-8?B?6YOt5Yqb6LGq?= <lhjeff911@gmail.com>, rafael@kernel.org,
+        Daniel Lezcano <daniel.lezcano@linaro.org>, amitk@kernel.org,
+        rui.zhang@intel.com, robh+dt@kernel.org, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     "lh.kuo" <lh.kuo@sunplus.com>,
+        =?UTF-8?B?5ZGC6Iqz6aiwTHVXZWxscw==?= <wells.lu@sunplus.com>
+References: <CAGcXWkzSrEPPT2m=2trWN-BV-ix9TcHCvZYya5i54ei=EWGTZw@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAGcXWkzSrEPPT2m=2trWN-BV-ix9TcHCvZYya5i54ei=EWGTZw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 12:08:44PM +0200, Vincent Guittot wrote:
-> On Mon, 6 Jun 2022 at 12:22, Sudeep Holla <sudeep.holla@arm.com> wrote:
-> >
-
-[...]
-
-> > Why ? Are you suggesting that we shouldn't present the hardware cluster
-> > to the topology because of the above reason ? If so, sorry that is not a
-> > valid reason. We could add login to return NULL or appropriate value
-> > needed in cpu_clustergroup_mask id it matches MC level mask if we can't
-> > deal that in generic scheduler code. But the topology code can't be
-> > compromised for that reason as it is user visible.
+On 10/06/2022 03:32, 郭力豪 wrote:
+> Add bindings for Sunplus thermal driver
 > 
-> I tend to agree with Dietmar. The legacy use of cluster node in DT
-> refers to the dynamiQ or legacy b.L cluster which is also aligned to
-> the LLC and the MC scheduling level. The new cluster level that has
-> been introduced recently does not target this level but some
-> intermediate levels either inside like for the kupeng920 or the v9
-> complex or outside like for the ampere altra. So I would say that
-> there is one cluster node level in DT that refers to the same MC/LLC
-> level and only an additional child/parent cluster node should be used
-> to fill the clustergroup_mask.
->
+> Signed-off-by: Li-hao Kuo <lhjeff911@gmail.com>
 
-Again I completely disagree. Let us look at the problems separately.
-The hardware topology that some of the tools like lscpu and lstopo expects
-what the hardware looks like and not the scheduler's view of the hardware.
-So the topology masks that gets exposed to the user-space needs fixing
-even today. I have reports from various tooling people about the same.
-E.g. Juno getting exposed as dual socket system is utter non-sense.
+Thank you for your patch. There is something to discuss/improve.
 
-Yes scheduler uses most of the topology masks as is but that is not a must.
-There are these *group_mask functions that can implement what scheduler
-needs to be fed.
+> ---
+> Changes in v9:
+>  - Change the setting of compatible
+>  - Mosdify the setting of remove funciton.
 
-I am not sure why the 2 issues are getting mixed up and that is the main
-reason why I jumped into this to make sure the topology masks are
-not tampered based on the way it needs to be used for scheduler.
+Your subject misses space after "dt-bindings:". Look at other patches
+how they are named. Please fix it.
+Normally I would give conditional review, but I am afraid it you won't
+fix it, based on our previous history here. :(
 
-Both ACPI and DT on a platform must present exact same hardware topology
-to the user-space, there is no space for argument there.
+So sorry, but for such small change, I expect v10.
 
-> IIUC, we don't describe the dynamiQ level in ACPI which  uses cache
-> topology instead to define cpu_coregroup_mask whereas DT described the
-> dynamiQ instead of using cache topology. If you use cache topology
-> now, then you should skip the dynamiQ
->
-
-Yes, unless someone can work out a binding to represent that and convince
-DT maintainers ;).
-
-> Finally, even if CLS and MC have the same scheduling behavior for now,
-> they might ends up with different scheduling properties which would
-> mean that replacing MC level by CLS one for current SoC would become
-> wrong
->
-
-Again as I mentioned to Dietmar, that is something we can and must deal with
-in those *group_mask and not expect topology mask to be altered to meet
-CLS/MC or whatever sched domains needs. Sorry, that is my strong opinion
-as the topology is already user-space visible and (tooling) people are
-complaining that DT systems are broken and doesn't match ACPI systems.
-
-So unless someone gives me non-scheduler and topology specific reasons
-to change that, sorry but my opinion on this matter is not going to change ;).
-
-You will get this view of topology, find a way to manage with all those
-*group_mask functions. By the way it is already handled for ACPI systems,
-so if you are not happy with that, then that needs fixing as this change
-set just aligns the behaviour on similar ACPI system. So the Juno example
-is incorrect for the reason that the behaviour of scheduler there is different
-with DT and ACPI.
-
---
-Regards,
-Sudeep
+Best regards,
+Krzysztof
