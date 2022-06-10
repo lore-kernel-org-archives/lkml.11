@@ -2,192 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2134C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 09:15:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AD8AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 09:15:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348437AbiFJJP2 (ORCPT
+        id S1348602AbiFJJPn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 05:15:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39502 "EHLO
+        Fri, 10 Jun 2022 05:15:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348738AbiFJJNc (ORCPT
+        with ESMTP id S1348586AbiFJJPF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 05:13:32 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 796AD2EE10D;
-        Fri, 10 Jun 2022 02:11:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654852283; x=1686388283;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=3P92TjbxgWWzR31wO/9qZunS2kkje5uPblM6lB8tw0A=;
-  b=Pu5K8oppfXrSX7Dv7zuk/6/hXCEpjmTVOfvYD5gUG0kDFvudrPhRZqcN
-   CMbZVhbxDT7Kxt+B6lnwO/TWCrEem9OH4eYDzkBD8NIuiAuUTc3FK18t6
-   M7pFUDPskzpEk2+M4rjuBmE4k2IXEqBEVpYOvSnnlczDPsGS8A7SH6WEQ
-   Dr3iVODVQ3bhi1PkxNo4g8troKvk8OMulkGEAmZtVn/m0ZraOesk8STJP
-   oUSF0FHxAkgde6G7WBGTAGxsRAxdRbVjqlasvY1uszNJlsfbsxBe3/P1Y
-   2RKM7j4DQawkZZ9kBeJTcTaU/dwowGStZedTUq2gBn49gpPBZmYQUrUjn
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="258004016"
-X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
-   d="scan'208";a="258004016"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 02:11:20 -0700
-X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
-   d="scan'208";a="586110091"
-Received: from vrao2-mobl1.gar.corp.intel.com (HELO localhost) ([10.252.58.80])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 02:11:18 -0700
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     Akira Yokosawa <akiyks@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Miguel Ojeda <ojeda@kernel.org>, linux-kernel@vger.kernel.org,
-        Akira Yokosawa <akiyks@gmail.com>
-Subject: Re: [RFC PATCH 3/5] docs/doc-guide: Update guidelines for title
- adornments
-In-Reply-To: <732154bc-aa35-2326-2b64-87b6c4dd02e7@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <dccb5233-7f4f-1be6-d1f4-bbe9f42f88e0@gmail.com>
- <732154bc-aa35-2326-2b64-87b6c4dd02e7@gmail.com>
-Date:   Fri, 10 Jun 2022 12:11:15 +0300
-Message-ID: <871qvw2898.fsf@intel.com>
+        Fri, 10 Jun 2022 05:15:05 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E900A1D81BA
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 02:14:50 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-285-KXkgFt7gOaSUzoJhNxSJvA-1; Fri, 10 Jun 2022 10:14:48 +0100
+X-MC-Unique: KXkgFt7gOaSUzoJhNxSJvA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.36; Fri, 10 Jun 2022 10:14:45 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.036; Fri, 10 Jun 2022 10:14:45 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Jan Engelhardt' <jengelh@inai.de>
+CC:     'Bill Wendling' <morbo@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Bill Wendling <isanbard@gmail.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Jan Kara <jack@suse.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        "Florian Westphal" <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Eric Dumazet" <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>,
+        Ross Philipson <ross.philipson@oracle.com>,
+        Daniel Kiper <daniel.kiper@oracle.com>,
+        "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
+        "coreteam@netfilter.org" <coreteam@netfilter.org>,
+        Networking <netdev@vger.kernel.org>,
+        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+        clang-built-linux <llvm@lists.linux.dev>
+Subject: RE: [PATCH 00/12] Clang -Wformat warning fixes
+Thread-Topic: [PATCH 00/12] Clang -Wformat warning fixes
+Thread-Index: AQHYfFM1C3rJ7kSMAEGkdVTZFYHL+K1ISrPg///1DYCAABtWMA==
+Date:   Fri, 10 Jun 2022 09:14:45 +0000
+Message-ID: <724889aa6a8d4d41b8557733610c7657@AcuMS.aculab.com>
+References: <20220609221702.347522-1-morbo@google.com>
+ <20220609152527.4ad7862d4126e276e6f76315@linux-foundation.org>
+ <CAGG=3QXDt9AeCQOAp1311POFRSByJru4=Q=oFiQn3u2iZYk2_w@mail.gmail.com>
+ <01da36bfd13e421aadb2eff661e7a959@AcuMS.aculab.com>
+ <o5496n8r-451p-751-3258-97112opns7s8@vanv.qr>
+In-Reply-To: <o5496n8r-451p-751-3258-97112opns7s8@vanv.qr>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 09 Jun 2022, Akira Yokosawa <akiyks@gmail.com> wrote:
-> Existing guidelines predate the sub-directory wise document
-> management.
->
-> Update the guidelines to reflect the current state of affairs.
->
-> Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
-> Cc: Miguel Ojeda <ojeda@kernel.org>
-> ---
->  Documentation/doc-guide/sphinx.rst | 66 +++++++++++++++++++++++-------
->  1 file changed, 52 insertions(+), 14 deletions(-)
->
-> diff --git a/Documentation/doc-guide/sphinx.rst b/Documentation/doc-guide/sphinx.rst
-> index efcccab68286..f257c4785607 100644
-> --- a/Documentation/doc-guide/sphinx.rst
-> +++ b/Documentation/doc-guide/sphinx.rst
-> @@ -202,34 +202,72 @@ Here are some specific guidelines for the kernel documentation:
->  * Also update the content, not just the formatting, when converting
->    documentation.
->  
-> -* Please stick to this order of heading adornments:
-> +* Please stick to this relative order of section title adornments:
->  
-> -  1. ``=`` with overline for document title::
-> +  1. ``=`` with overline for 1st level titles::
->  
-> -       ==============
-> -       Document title
-> -       ==============
-> +       ===============
-> +       1st level title
-> +       ===============
->  
-> -  2. ``=`` for chapters::
-> +  2. ``=`` for 2nd level titles::
->  
-> -       Chapters
-> -       ========
-> +       2nd level title
-> +       ===============
->  
-> -  3. ``-`` for sections::
-> +  3. ``-`` for 3rd level titles::
->  
-> -       Section
-> -       -------
-> +       3rd level title
-> +       ---------------
->  
-> -  4. ``~`` for subsections::
-> +  4. ``~`` for 4th level titles::
->  
-> -       Subsection
-> -       ~~~~~~~~~~
-> +       4th level title
-> +       ~~~~~~~~~~~~~~~
->  
->    Although RST doesn't mandate a specific order ("Rather than imposing a fixed
->    number and order of section title adornment styles, the order enforced will be
->    the order as encountered."), having the higher levels the same overall makes
->    it easier to follow the documents.
->  
-> +  .. note::
-> +    - It is not easy to tell the levels (chapter, section, etc.) of title
-> +      adornments in a particular .rst file.  A title that appears first in
-> +      a .rst file can be at any level of document, chapter, section, or
-> +      subsection (or deeper) depending on the file's inclusion depth.
-> +
-> +    - The RST language does not have an explicit means to specify a "document
-> +      title".  Quote from the RST documentation\ [#rstdoc]_ with minor edit:
-> +
-> +	*Specifically, there is no way to indicate a document title and
-> +	subtitle explicitly in reStructuredText.  Instead, a lone top-level
-> +	section title can be treated as the document title.*
-> +
-> +      In the kernel documentation processing, the first title in a top-level
-> +      ``index.rst`` can be considered the document title.  In HTML, as each
-> +      .html output has its source .rst file, the title which happens to come
-> +      first is used as the title of the resulting HTML page.
-> +      Alternatively, it is possible to specify a page title by using the
-> +      directive "title".\ [#rstdirtitle]_
-> +
-> +    - There may be a 2nd or 3rd level adornment at the first title in a .rst
-> +      file.  This usage is often seen in .rst files that are derived and
-> +      split from a larger .rst file.  It is sufficient if relative order is
-> +      preserved.
-> +
-> +    .. [#rstdoc] https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html#document
-> +    .. [#rstdirtitle] https://docutils.sourceforge.io/docs/ref/rst/directives.html#metadata-document-title
-> +
-> +  .. warning::
-> +    For existing documents, manually updating title adornments just to meet
-> +    these guidelines is not recommended.  Such changes can be error-prone and
-> +    may break section hierarchy without being caught by reviewers.  They may
-> +    be justified if done in conjunction with a section reorganization or
-> +    similar.
-> +
-> +    It would be appreciated if adjustment of those adornments could be
-> +    automated in some way.
-> +
+RnJvbTogSmFuIEVuZ2VsaGFyZHQNCj4gU2VudDogMTAgSnVuZSAyMDIyIDA5OjMyDQo+IA0KPiAN
+Cj4gT24gRnJpZGF5IDIwMjItMDYtMTAgMTA6MTcsIERhdmlkIExhaWdodCB3cm90ZToNCj4gPj4N
+Cj4gPj4gQ2FsbGluZyBhICJwcmludGYiIHN0eWxlIGZ1bmN0aW9uIGlzIGFscmVhZHkgaW5zYW5l
+bHkgZXhwZW5zaXZlLiA6LSkgSQ0KPiA+PiB1bmRlcnN0YW5kIHRoYXQgaXQncyBub3Qgb2theSBi
+bGl0aGVseSB0byBpbmNyZWFzZSBydW50aW1lIHJlc291cmNlcw0KPiA+PiBzaW1wbHkgYmVjYXVz
+ZSBpdCdzIGFscmVhZHkgc2xvdywgYnV0IGluIHRoaXMgY2FzZSBpdCdzIHdvcnRod2hpbGUuDQo+
+ID4NCj4gPlllcCwgSU1ITyBkZWZpbml0ZWx5IHNob3VsZCBiZSBmaXhlZC4NCj4gPkl0IGlzIGV2
+ZW4gcG9zc2libGUgdGhhdCB1c2luZyAiJXMiIGlzIGZhc3RlciBiZWNhdXNlIHRoZSBwcmludGYN
+Cj4gPmNvZGUgZG9lc24ndCBoYXZlIHRvIHNjYW4gdGhlIHN0cmluZyBmb3IgZm9ybWF0IGVmZmVj
+dG9ycy4NCj4gDQo+IEkgc2VlIG5vIHNwZWNpYWwgaGFuZGxpbmc7IHRoZSB2c25wcmludGYgZnVu
+Y3Rpb24ganVzdCBsb29wcw0KPiBvdmVyIGZtdCBhcyB1c3VhbCBhbmQgSSBzZWUgbm8gc3BlY2lh
+bCBjYXNpbmcgb2YgZm10IGJ5DQo+IGUuZy4gc3RyY21wKGZtdCwgIiVzIinCoD09IDAgdG8gdGFr
+ZSBhIHNob3J0Y3V0Lg0KDQpDb25zaWRlciB0aGUgZGlmZmVyZW5jZSBiZXR3ZWVuOg0KCXByaW50
+ZigiZnViYXIiKTsNCmFuZA0KCXByaW50ZigiJXMiLCAiZnViYXIiKTsNCkluIHRoZSBmb3JtZXIg
+YWxsIG9mICJmdWJhciIgaXMgY2hlY2tlZCBmb3IgJyUnLg0KSW4gdGhlIGxhdHRlciBvbmx5IHRo
+ZSBsZW5ndGggb2YgImZ1YmFyIiBoYXMgdG8gYmUgY291bnRlZC4NCg0KRldJVyB0aGUgcGF0Y2gg
+ZGVzY3JpcHRpb24gc2hvdWxkIHByb2JhYmx5IGJ5Og0KCXVzZSAiJXMiIHdoZW4gZm9ybWF0dGlu
+ZyBhIHNpbmdsZSBzdHJpbmcuDQoob3Igc29tZXRoaW5nIHRvIHRoYXQgZWZmZWN0KS4NCg0KCURh
+dmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3Vu
+dCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3
+Mzg2IChXYWxlcykNCg==
 
-When I wrote the original guidelines, it was my subjective decision to
-steer towards using the same title adornment styles and ordering across
-the kernel documentation. I intentionally left out all the
-reStructuredText details about this, because the definitive
-documentation is the reStructuredText documentation we can refer to.
-
-While the "Nth level title" is a more precise description, I'm not sure
-it's actually helpful without describing how these levels should map to
-kernel documentation structure. (Not saying the original did that
-either, but then there wasn't much structure to speak of.)
-
-Improving the documentation on documentation is great, but I think it's
-a bad sign when length of the notes and warnings on something far exceed
-the length of the thing being documented. The bulk of the text should be
-helpful enough for people to DTRT, while leaving out exhaustive
-descriptions of all the details that should just be references to
-reStructuredText documentation.
-
-
-BR,
-Jani.
-
-
-
-
->  * For inserting fixed width text blocks (for code examples, use case
->    examples, etc.), use ``::`` for anything that doesn't really benefit
->    from syntax highlighting, especially short snippets. Use
-
--- 
-Jani Nikula, Intel Open Source Graphics Center
