@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7A85C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 08:24:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8716C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 08:24:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347373AbiFJIYp (ORCPT
+        id S1347653AbiFJIYs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 04:24:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48888 "EHLO
+        Fri, 10 Jun 2022 04:24:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347598AbiFJIYP (ORCPT
+        with ESMTP id S1347459AbiFJIYR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 04:24:15 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5F573EB9CA
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 01:21:10 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id i15so5466126plr.1
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 01:21:10 -0700 (PDT)
+        Fri, 10 Jun 2022 04:24:17 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 292503F3A6D
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 01:21:16 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id k5-20020a17090a404500b001e8875e6242so1474406pjg.5
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 01:21:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/vcF/QNpvPLcA4RHww4ViDk70wdKPxBVofdBW3sgq5c=;
-        b=p7V4YUibibj9AvSgBH2AE999cHg+ec4xuwtZHf4oCKGnASuR7Jk0TqhUUEF8XaOR+r
-         wxrU+j3QghaV8hAB+Mvm7zWzgiR8PrkF6FJiBDH3G6YzWYJr5ALY7k090vQONfMRnqGz
-         vZyYQPntTUBRfaqBoadikhkcg9ew+Deswu/DB5qzND4R/Re+hF6ZHZO7pRBGchYvuh31
-         0o8C8nuOLY+O9O1rY1t04DJ55Z74U3IQGI0+lPuUcillbKNVNihZ4TITwbccLshYVfHW
-         5RjBUvwS6JJEh/6dMcUm+pwOMB1QW/paW/1WuwqRkMabzSMgl2Nbdv3U1GxaUuZ7gb2I
-         hbhA==
+        bh=Qu+YHy83Y6tmpvXALib3V7ikNYvZhhUbou41agwSzJY=;
+        b=hAaG1te8hUjI0psrNR7K8hfEW9uhSKMW3cOyFinTGEJSgxqPz9AqHOXUQzmRnM2oHp
+         2dBOjc0rIQnDIkC+bynzLs0drVQLrz++spZIteOP4EOfj+KyttOR2/adAzkBC9TlUi97
+         WDrbT4EegTlUww461g1+caI39i6qmwbwb3XRVdZHnFAAeie0bS81825KDl6ljxLf6SbN
+         xh5MpokaeGq0r9LFbRe0egtZESOERsIVORsZGihsCcuQ4qsIZxEIMVTTpSlJYcKAenHR
+         jr5Zmxw9E2XrNRA9hHH0Ci/g/AtKxQqHaCWdv8FaAYGm1AVS9foDitVP1/x/VVPUUoI+
+         mgAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/vcF/QNpvPLcA4RHww4ViDk70wdKPxBVofdBW3sgq5c=;
-        b=BxiPuhZED8yA4Fho3BbXhWC7pSJK758QOnmAy0WoeR43ZjzXZUvzlbyB/r0id25WNw
-         XC74c/9z3ZXJjQjHoL5tSN7YLPAz7Jf2dfj/PUgw8neqUT2/ql3sY+13gI5tDf7vfaJo
-         xwsC9IHzmlax5DVGr4cBGfGFlpyUrGCz2evTqsSp1a2ahHlVc/vuiBfAUux0QbMTLo55
-         6tGa+DuZjTKu5teH+ZC14tuKMmZX0LssKzc1UmDye093c11MeVPhUJBvtyc6Wb8SpYss
-         MzPk0pWBCr5LFB/PRaFz0rvUAO1xApo99OadPvTYBk7jHhBP9Wxvf7/t/uW+0YjQz9qf
-         RZyQ==
-X-Gm-Message-State: AOAM533+NOmS99KYgy0mCWXhlgqKkWiMEELVNG1f62hUCkAIoz2RJRdX
-        YiqHqAv0UsYoSXrBb8SNANbZMA==
-X-Google-Smtp-Source: ABdhPJw7e/wORoEphD60Ma+eCczcirA3YOZoOwIoYuv97QFY+ER1reFifPnoU6cQu5aFzCmqGq8K8w==
-X-Received: by 2002:a17:90b:368b:b0:1e6:67a0:1c17 with SMTP id mj11-20020a17090b368b00b001e667a01c17mr7494284pjb.203.1654849269662;
-        Fri, 10 Jun 2022 01:21:09 -0700 (PDT)
+        bh=Qu+YHy83Y6tmpvXALib3V7ikNYvZhhUbou41agwSzJY=;
+        b=tfXbEsdYesFozzCXF2Xc/ZTPAlrQOmQUTNGOV7h6hegelO8ZozmAsADlEaj27uf6vG
+         Hpu9IpkyEDZUYaFVKVP03NOQjNQG02AbaKHIDpRJOUaxkv892Nv4MzNWy8P/5RK4FCX0
+         Jc0rIau01aWwmOGfhIfFpBqWgVxcgBaTFlCEVJZfCJkoz2VHEGDzmgzVnjq9naWj3bkI
+         Hz9RClxPuxxDNp35RW92G96F/Tk7bFir0DuXxBcZAC10Ga6aEsOKIbhPVaCTYSCubHd4
+         wAlCJOvGmGn3ao2NNVppu0XzcfGMcELachRGJUUHQV9jKHT/1fKJGd+xM6E8CeLM7X5A
+         Hl7Q==
+X-Gm-Message-State: AOAM533loFw972mvEfh2VsI274UMjQlcRoYY3PZd0U+YxQyFu1F11WWa
+        iR57QG6Pm/jVYCyfFFbQ4QNr2A==
+X-Google-Smtp-Source: ABdhPJzoW12NwKAawqpIckRDJg0AFfOjbC6Qfj0gkiTdVknPaIvLav11g12rXBp7TE7m2wZ5II9Epg==
+X-Received: by 2002:a17:90b:3c0b:b0:1ea:769d:4ab2 with SMTP id pb11-20020a17090b3c0b00b001ea769d4ab2mr3570152pjb.196.1654849275588;
+        Fri, 10 Jun 2022 01:21:15 -0700 (PDT)
 Received: from localhost ([122.162.234.2])
-        by smtp.gmail.com with ESMTPSA id w4-20020a17090aaf8400b001e0abbc3a74sm1092638pjq.5.2022.06.10.01.21.09
+        by smtp.gmail.com with ESMTPSA id l20-20020a170903005400b0015e8d4eb208sm17947276pla.82.2022.06.10.01.21.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jun 2022 01:21:09 -0700 (PDT)
+        Fri, 10 Jun 2022 01:21:15 -0700 (PDT)
 From:   Viresh Kumar <viresh.kumar@linaro.org>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
@@ -57,9 +57,9 @@ Cc:     Viresh Kumar <viresh.kumar@linaro.org>, linux-pm@vger.kernel.org,
         Vincent Guittot <vincent.guittot@linaro.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 2/8] OPP: Remove rate_not_available parameter to _opp_add()
-Date:   Fri, 10 Jun 2022 13:50:46 +0530
-Message-Id: <d141dc4605199de55c33e5ae06cc9aad8fe441b1.1654849214.git.viresh.kumar@linaro.org>
+Subject: [PATCH 4/8] OPP: Make dev_pm_opp_set_opp() independent of frequency
+Date:   Fri, 10 Jun 2022 13:50:48 +0530
+Message-Id: <d1afdc135885113c0ab0cc276787ef38323f074e.1654849214.git.viresh.kumar@linaro.org>
 X-Mailer: git-send-email 2.31.1.272.g89b43f80a514
 In-Reply-To: <cover.1654849214.git.viresh.kumar@linaro.org>
 References: <cover.1654849214.git.viresh.kumar@linaro.org>
@@ -69,99 +69,181 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-commit 32715be4fe95 ("opp: Fix adding OPP entries in a wrong order if
-rate is unavailable") removed the only user of this field, get rid of
-rest of it now.
+dev_pm_opp_set_opp() can be called for any device, it may or may not
+have a frequency value associated with it.
+
+If a frequency value isn't available, we pass 0 to _set_opp(). Make it
+optional instead by making _set_opp() accept a pointer instead, as the
+frequency value is anyway available in the OPP. This makes
+dev_pm_opp_set_opp() and _set_opp() completely independent of any
+special key value.
 
 Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 ---
- drivers/opp/core.c |  4 ++--
- drivers/opp/of.c   | 10 ++++------
- drivers/opp/opp.h  |  2 +-
- 3 files changed, 7 insertions(+), 9 deletions(-)
+ drivers/opp/core.c | 52 +++++++++++++++++++++++++++++++++-------------
+ drivers/opp/opp.h  |  4 ++--
+ 2 files changed, 40 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/opp/core.c b/drivers/opp/core.c
-index 404f43759066..fe447f41c99e 100644
+index 9f284dc0d9d7..6368ae2d7360 100644
 --- a/drivers/opp/core.c
 +++ b/drivers/opp/core.c
-@@ -1695,7 +1695,7 @@ void _required_opps_available(struct dev_pm_opp *opp, int count)
-  *  should be considered an error by the callers of _opp_add().
-  */
- int _opp_add(struct device *dev, struct dev_pm_opp *new_opp,
--	     struct opp_table *opp_table, bool rate_not_available)
-+	     struct opp_table *opp_table)
- {
- 	struct list_head *head;
- 	int ret;
-@@ -1774,7 +1774,7 @@ int _opp_add_v1(struct opp_table *opp_table, struct device *dev,
- 	new_opp->available = true;
- 	new_opp->dynamic = dynamic;
- 
--	ret = _opp_add(dev, new_opp, opp_table, false);
-+	ret = _opp_add(dev, new_opp, opp_table);
- 	if (ret) {
- 		/* Don't return error for duplicate OPPs */
- 		if (ret == -EBUSY)
-diff --git a/drivers/opp/of.c b/drivers/opp/of.c
-index e07fc31de416..bec9644a7260 100644
---- a/drivers/opp/of.c
-+++ b/drivers/opp/of.c
-@@ -808,8 +808,8 @@ static int _read_bw(struct dev_pm_opp *new_opp, struct opp_table *opp_table,
+@@ -766,19 +766,33 @@ static int _set_opp_voltage(struct device *dev, struct regulator *reg,
  	return ret;
  }
  
--static int _read_opp_key(struct dev_pm_opp *new_opp, struct opp_table *opp_table,
--			 struct device_node *np, bool *rate_not_available)
-+static int _read_opp_key(struct dev_pm_opp *new_opp,
-+			 struct opp_table *opp_table, struct device_node *np)
+-static inline int _generic_set_opp_clk_only(struct device *dev, struct clk *clk,
+-					    unsigned long freq)
++static inline int _generic_set_opp_clk_only(struct device *dev,
++		struct opp_table *opp_table, struct dev_pm_opp *opp, void *data)
  {
- 	bool found = false;
- 	u64 rate;
-@@ -825,7 +825,6 @@ static int _read_opp_key(struct dev_pm_opp *new_opp, struct opp_table *opp_table
- 		new_opp->rate = (unsigned long)rate;
- 		found = true;
- 	}
--	*rate_not_available = !!ret;
- 
- 	/*
- 	 * Bandwidth consists of peak and average (optional) values:
-@@ -881,13 +880,12 @@ static struct dev_pm_opp *_opp_add_static_v2(struct opp_table *opp_table,
- 	struct dev_pm_opp *new_opp;
- 	u32 val;
++	unsigned long *target = data;
++	unsigned long freq;
  	int ret;
--	bool rate_not_available = false;
  
- 	new_opp = _opp_allocate(opp_table);
- 	if (!new_opp)
- 		return ERR_PTR(-ENOMEM);
+ 	/* We may reach here for devices which don't change frequency */
+-	if (IS_ERR(clk))
++	if (IS_ERR(opp_table->clk))
+ 		return 0;
  
--	ret = _read_opp_key(new_opp, opp_table, np, &rate_not_available);
-+	ret = _read_opp_key(new_opp, opp_table, np);
- 	if (ret < 0) {
- 		dev_err(dev, "%s: opp key field not found\n", __func__);
- 		goto free_opp;
-@@ -920,7 +918,7 @@ static struct dev_pm_opp *_opp_add_static_v2(struct opp_table *opp_table,
- 	if (opp_table->is_genpd)
- 		new_opp->pstate = pm_genpd_opp_to_performance_state(dev, new_opp);
- 
--	ret = _opp_add(dev, new_opp, opp_table, rate_not_available);
-+	ret = _opp_add(dev, new_opp, opp_table);
+-	ret = clk_set_rate(clk, freq);
++	/* One of target and opp must be available */
++	if (target) {
++		freq = *target;
++	} else if (opp) {
++		freq = opp->rate;
++	} else {
++		WARN_ON(1);
++		return -EINVAL;
++	}
++
++	ret = clk_set_rate(opp_table->clk, freq);
  	if (ret) {
- 		/* Don't return error for duplicate OPPs */
- 		if (ret == -EBUSY)
+ 		dev_err(dev, "%s: failed to set clock rate: %d\n", __func__,
+ 			ret);
++	} else {
++		opp_table->rate_clk_single = freq;
+ 	}
+ 
+ 	return ret;
+@@ -972,7 +986,7 @@ static int _disable_opp_table(struct device *dev, struct opp_table *opp_table)
+ }
+ 
+ static int _set_opp(struct device *dev, struct opp_table *opp_table,
+-		    struct dev_pm_opp *opp, unsigned long freq)
++		    struct dev_pm_opp *opp, void *clk_data, bool forced)
+ {
+ 	struct dev_pm_opp *old_opp;
+ 	int scaling_down, ret;
+@@ -987,15 +1001,14 @@ static int _set_opp(struct device *dev, struct opp_table *opp_table,
+ 	old_opp = opp_table->current_opp;
+ 
+ 	/* Return early if nothing to do */
+-	if (old_opp == opp && opp_table->current_rate == freq &&
+-	    opp_table->enabled) {
++	if (!forced && old_opp == opp && opp_table->enabled) {
+ 		dev_dbg(dev, "%s: OPPs are same, nothing to do\n", __func__);
+ 		return 0;
+ 	}
+ 
+ 	dev_dbg(dev, "%s: switching OPP: Freq %lu -> %lu Hz, Level %u -> %u, Bw %u -> %u\n",
+-		__func__, opp_table->current_rate, freq, old_opp->level,
+-		opp->level, old_opp->bandwidth ? old_opp->bandwidth[0].peak : 0,
++		__func__, old_opp->rate, opp->rate, old_opp->level, opp->level,
++		old_opp->bandwidth ? old_opp->bandwidth[0].peak : 0,
+ 		opp->bandwidth ? opp->bandwidth[0].peak : 0);
+ 
+ 	scaling_down = _opp_compare_key(old_opp, opp);
+@@ -1028,7 +1041,7 @@ static int _set_opp(struct device *dev, struct opp_table *opp_table,
+ 		}
+ 	}
+ 
+-	ret = _generic_set_opp_clk_only(dev, opp_table->clk, freq);
++	ret = _generic_set_opp_clk_only(dev, opp_table, opp, clk_data);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -1064,7 +1077,6 @@ static int _set_opp(struct device *dev, struct opp_table *opp_table,
+ 	/* Make sure current_opp doesn't get freed */
+ 	dev_pm_opp_get(opp);
+ 	opp_table->current_opp = opp;
+-	opp_table->current_rate = freq;
+ 
+ 	return ret;
+ }
+@@ -1085,6 +1097,7 @@ int dev_pm_opp_set_rate(struct device *dev, unsigned long target_freq)
+ 	struct opp_table *opp_table;
+ 	unsigned long freq = 0, temp_freq;
+ 	struct dev_pm_opp *opp = NULL;
++	bool forced = false;
+ 	int ret;
+ 
+ 	opp_table = _find_opp_table(dev);
+@@ -1102,7 +1115,8 @@ int dev_pm_opp_set_rate(struct device *dev, unsigned long target_freq)
+ 		 * equivalent to a clk_set_rate()
+ 		 */
+ 		if (!_get_opp_count(opp_table)) {
+-			ret = _generic_set_opp_clk_only(dev, opp_table->clk, target_freq);
++			ret = _generic_set_opp_clk_only(dev, opp_table, NULL,
++							&target_freq);
+ 			goto put_opp_table;
+ 		}
+ 
+@@ -1123,12 +1137,22 @@ int dev_pm_opp_set_rate(struct device *dev, unsigned long target_freq)
+ 				__func__, freq, ret);
+ 			goto put_opp_table;
+ 		}
++
++		/*
++		 * An OPP entry specifies the highest frequency at which other
++		 * properties of the OPP entry apply. Even if the new OPP is
++		 * same as the old one, we may still reach here for a different
++		 * value of the frequency. In such a case, do not abort but
++		 * configure the hardware to the desired frequency forcefully.
++		 */
++		forced = opp_table->rate_clk_single != target_freq;
+ 	}
+ 
+-	ret = _set_opp(dev, opp_table, opp, freq);
++	ret = _set_opp(dev, opp_table, opp, &target_freq, forced);
+ 
+ 	if (target_freq)
+ 		dev_pm_opp_put(opp);
++
+ put_opp_table:
+ 	dev_pm_opp_put_opp_table(opp_table);
+ 	return ret;
+@@ -1156,7 +1180,7 @@ int dev_pm_opp_set_opp(struct device *dev, struct dev_pm_opp *opp)
+ 		return PTR_ERR(opp_table);
+ 	}
+ 
+-	ret = _set_opp(dev, opp_table, opp, opp ? opp->rate : 0);
++	ret = _set_opp(dev, opp_table, opp, NULL, false);
+ 	dev_pm_opp_put_opp_table(opp_table);
+ 
+ 	return ret;
 diff --git a/drivers/opp/opp.h b/drivers/opp/opp.h
-index 407eee9f10ab..4d8894ef2975 100644
+index 4d8894ef2975..131fc7c05db8 100644
 --- a/drivers/opp/opp.h
 +++ b/drivers/opp/opp.h
-@@ -226,7 +226,7 @@ struct opp_device *_add_opp_dev(const struct device *dev, struct opp_table *opp_
- struct dev_pm_opp *_opp_allocate(struct opp_table *opp_table);
- void _opp_free(struct dev_pm_opp *opp);
- int _opp_compare_key(struct dev_pm_opp *opp1, struct dev_pm_opp *opp2);
--int _opp_add(struct device *dev, struct dev_pm_opp *new_opp, struct opp_table *opp_table, bool rate_not_available);
-+int _opp_add(struct device *dev, struct dev_pm_opp *new_opp, struct opp_table *opp_table);
- int _opp_add_v1(struct opp_table *opp_table, struct device *dev, unsigned long freq, long u_volt, bool dynamic);
- void _dev_pm_opp_cpumask_remove_table(const struct cpumask *cpumask, int last_cpu);
- struct opp_table *_add_opp_table_indexed(struct device *dev, int index, bool getclk);
+@@ -138,7 +138,7 @@ enum opp_table_access {
+  * @clock_latency_ns_max: Max clock latency in nanoseconds.
+  * @parsed_static_opps: Count of devices for which OPPs are initialized from DT.
+  * @shared_opp: OPP is shared between multiple devices.
+- * @current_rate: Currently configured frequency.
++ * @rate_clk_single: Currently configured frequency for single clk.
+  * @current_opp: Currently configured OPP for the table.
+  * @suspend_opp: Pointer to OPP to be used during device suspend.
+  * @genpd_virt_dev_lock: Mutex protecting the genpd virtual device pointers.
+@@ -187,7 +187,7 @@ struct opp_table {
+ 
+ 	unsigned int parsed_static_opps;
+ 	enum opp_table_access shared_opp;
+-	unsigned long current_rate;
++	unsigned long rate_clk_single;
+ 	struct dev_pm_opp *current_opp;
+ 	struct dev_pm_opp *suspend_opp;
+ 
 -- 
 2.31.1.272.g89b43f80a514
 
