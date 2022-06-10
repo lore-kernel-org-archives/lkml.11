@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F11F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 17:06:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7667C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 17:06:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350050AbiFJRGZ (ORCPT
+        id S1350151AbiFJRGr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 13:06:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42260 "EHLO
+        Fri, 10 Jun 2022 13:06:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345333AbiFJRGN (ORCPT
+        with ESMTP id S1346775AbiFJRGP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 13:06:13 -0400
+        Fri, 10 Jun 2022 13:06:15 -0400
 Received: from mxout1.routing.net (mxout1.routing.net [IPv6:2a03:2900:1:a::a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F832C658;
-        Fri, 10 Jun 2022 10:06:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1CF719F8F;
+        Fri, 10 Jun 2022 10:06:13 -0700 (PDT)
 Received: from mxbox2.masterlogin.de (unknown [192.168.10.89])
-        by mxout1.routing.net (Postfix) with ESMTP id 689A7402BE;
-        Fri, 10 Jun 2022 17:06:09 +0000 (UTC)
+        by mxout1.routing.net (Postfix) with ESMTP id E0E68402D7;
+        Fri, 10 Jun 2022 17:06:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
-        s=20200217; t=1654880769;
+        s=20200217; t=1654880772;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=/OiDXiX3+ohOSCGU9q1Sj2B+8XnWjxvtMqaz4HJgYSs=;
-        b=XmJOFNXHvm0O9R/yZJ3s+zkpaajgyYfcSEhlMPgj87WKLVKmRJAkcl1f12yVTNMyAdJpQx
-        qqQw78dd3G2EunxEcisMrknH9NigjWBLFDIIUzouHuuJzijXcbZYvcHs8FN8w+vLkJ+AI5
-        x8uTV/ywYM19uPBJaJGGHQdT80MuKvs=
+        bh=uLlva8Emcc5RehlfDPvdMknMWn6EeajUkWuEMhCA/yw=;
+        b=MYF4NpavEXZUGNrlPUnY4d7VCGpcE+cCV1AJmIXmkPAFkEik6n9g5Rpl/QvrxjJXDVJM9w
+        EqMqKFYe18nc7NVPPmF4alYGD3yxTxlaqqqFOdDUSjPCB7buEAU1Dm0WM/CEvk60A7GPs1
+        JWJioWOeUjn1luaNGn0eBgLYxWNmpeY=
 Received: from frank-G5.. (fttx-pool-217.61.154.155.bambit.de [217.61.154.155])
-        by mxbox2.masterlogin.de (Postfix) with ESMTPSA id ED07B100863;
-        Fri, 10 Jun 2022 17:06:07 +0000 (UTC)
+        by mxbox2.masterlogin.de (Postfix) with ESMTPSA id 76410100394;
+        Fri, 10 Jun 2022 17:06:10 +0000 (UTC)
 From:   Frank Wunderlich <linux@fw-web.de>
 To:     linux-rockchip@lists.infradead.org,
         linux-mediatek@lists.infradead.org
@@ -56,105 +56,134 @@ Cc:     Frank Wunderlich <frank-w@public-files.de>,
         linux-kernel@vger.kernel.org, Greg Ungerer <gerg@kernel.org>,
         =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
         "Mauro Carvalho Chehab" <mchehab+samsung@kernel.org>
-Subject: [PATCH v4 2/6] net: dsa: mt7530: rework mt7530_hw_vlan_{add,del}
-Date:   Fri, 10 Jun 2022 19:05:37 +0200
-Message-Id: <20220610170541.8643-3-linux@fw-web.de>
+Subject: [PATCH v4 4/6] net: dsa: mt7530: get cpu-port via dp->cpu_dp instead of constant
+Date:   Fri, 10 Jun 2022 19:05:39 +0200
+Message-Id: <20220610170541.8643-5-linux@fw-web.de>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220610170541.8643-1-linux@fw-web.de>
 References: <20220610170541.8643-1-linux@fw-web.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Mail-ID: 4aec4d63-e3d2-46a1-a6e3-ac451d837153
+X-Mail-ID: 8b3b788e-848e-4a56-8530-0d42429e9387
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Frank Wunderlich <frank-w@public-files.de>
 
-Rework vlan_add/vlan_del functions in preparation for dynamic cpu port.
+Replace last occurences of hardcoded cpu-port by cpu_dp member of
+dsa_port struct.
 
-Currently BIT(MT7530_CPU_PORT) is added to new_members, even though
-mt7530_port_vlan_add() will be called on the CPU port too.
-
-Let DSA core decide when to call port_vlan_add for the CPU port, rather
-than doing it implicitly.
-
-We can do autonomous forwarding in a certain VLAN, but not add br0 to that
-VLAN and avoid flooding the CPU with those packets, if software knows it
-doesn't need to process them.
+Now the constant can be dropped.
 
 Suggested-by: Vladimir Oltean <olteanv@gmail.com>
 Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
 Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 ---
-v2: new patch
----
- drivers/net/dsa/mt7530.c | 30 ++++++++++++------------------
- 1 file changed, 12 insertions(+), 18 deletions(-)
+ drivers/net/dsa/mt7530.c | 27 ++++++++++++++++++++-------
+ drivers/net/dsa/mt7530.h |  1 -
+ 2 files changed, 20 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 2b02d823d497..c1922eaba67a 100644
+index 9c14e46692ee..835807911be0 100644
 --- a/drivers/net/dsa/mt7530.c
 +++ b/drivers/net/dsa/mt7530.c
-@@ -1527,11 +1527,11 @@ static void
- mt7530_hw_vlan_add(struct mt7530_priv *priv,
- 		   struct mt7530_hw_vlan_entry *entry)
+@@ -1038,6 +1038,7 @@ static int
+ mt7530_port_enable(struct dsa_switch *ds, int port,
+ 		   struct phy_device *phy)
  {
-+	struct dsa_port *dp = dsa_to_port(priv->ds, entry->port);
- 	u8 new_members;
- 	u32 val;
++	struct dsa_port *dp = dsa_to_port(ds, port);
+ 	struct mt7530_priv *priv = ds->priv;
  
--	new_members = entry->old_members | BIT(entry->port) |
--		      BIT(MT7530_CPU_PORT);
-+	new_members = entry->old_members | BIT(entry->port);
- 
- 	/* Validate the entry with independent learning, create egress tag per
- 	 * VLAN and joining the port as one of the port members.
-@@ -1542,22 +1542,20 @@ mt7530_hw_vlan_add(struct mt7530_priv *priv,
- 
- 	/* Decide whether adding tag or not for those outgoing packets from the
- 	 * port inside the VLAN.
--	 */
--	val = entry->untagged ? MT7530_VLAN_EGRESS_UNTAG :
--				MT7530_VLAN_EGRESS_TAG;
--	mt7530_rmw(priv, MT7530_VAWD2,
--		   ETAG_CTRL_P_MASK(entry->port),
--		   ETAG_CTRL_P(entry->port, val));
--
--	/* CPU port is always taken as a tagged port for serving more than one
-+	 * CPU port is always taken as a tagged port for serving more than one
- 	 * VLANs across and also being applied with egress type stack mode for
- 	 * that VLAN tags would be appended after hardware special tag used as
- 	 * DSA tag.
+ 	mutex_lock(&priv->reg_mutex);
+@@ -1046,7 +1047,11 @@ mt7530_port_enable(struct dsa_switch *ds, int port,
+ 	 * restore the port matrix if the port is the member of a certain
+ 	 * bridge.
  	 */
-+	if (dsa_port_is_cpu(dp))
-+		val = MT7530_VLAN_EGRESS_STACK;
-+	else if (entry->untagged)
-+		val = MT7530_VLAN_EGRESS_UNTAG;
-+	else
-+		val = MT7530_VLAN_EGRESS_TAG;
- 	mt7530_rmw(priv, MT7530_VAWD2,
--		   ETAG_CTRL_P_MASK(MT7530_CPU_PORT),
--		   ETAG_CTRL_P(MT7530_CPU_PORT,
--			       MT7530_VLAN_EGRESS_STACK));
-+		   ETAG_CTRL_P_MASK(entry->port),
-+		   ETAG_CTRL_P(entry->port, val));
- }
+-	priv->ports[port].pm |= PCR_MATRIX(BIT(MT7530_CPU_PORT));
++	if (dsa_port_is_user(dp)) {
++		struct dsa_port *cpu_dp = dp->cpu_dp;
++
++		priv->ports[port].pm |= PCR_MATRIX(BIT(cpu_dp->index));
++	}
+ 	priv->ports[port].enable = true;
+ 	mt7530_rmw(priv, MT7530_PCR_P(port), PCR_MATRIX_MASK,
+ 		   priv->ports[port].pm);
+@@ -1195,7 +1200,8 @@ mt7530_port_bridge_join(struct dsa_switch *ds, int port,
+ 			struct netlink_ext_ack *extack)
+ {
+ 	struct dsa_port *dp = dsa_to_port(ds, port), *other_dp;
+-	u32 port_bitmap = BIT(MT7530_CPU_PORT);
++	struct dsa_port *cpu_dp = dp->cpu_dp;
++	u32 port_bitmap = BIT(cpu_dp->index);
+ 	struct mt7530_priv *priv = ds->priv;
  
- static void
-@@ -1576,11 +1574,7 @@ mt7530_hw_vlan_del(struct mt7530_priv *priv,
- 		return;
+ 	mutex_lock(&priv->reg_mutex);
+@@ -1272,9 +1278,12 @@ mt7530_port_set_vlan_unaware(struct dsa_switch *ds, int port)
+ 	 * the CPU port get out of VLAN filtering mode.
+ 	 */
+ 	if (all_user_ports_removed) {
+-		mt7530_write(priv, MT7530_PCR_P(MT7530_CPU_PORT),
++		struct dsa_port *dp = dsa_to_port(ds, port);
++		struct dsa_port *cpu_dp = dp->cpu_dp;
++
++		mt7530_write(priv, MT7530_PCR_P(cpu_dp->index),
+ 			     PCR_MATRIX(dsa_user_ports(priv->ds)));
+-		mt7530_write(priv, MT7530_PVC_P(MT7530_CPU_PORT), PORT_SPEC_TAG
++		mt7530_write(priv, MT7530_PVC_P(cpu_dp->index), PORT_SPEC_TAG
+ 			     | PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
  	}
+ }
+@@ -1312,6 +1321,7 @@ mt7530_port_bridge_leave(struct dsa_switch *ds, int port,
+ 			 struct dsa_bridge bridge)
+ {
+ 	struct dsa_port *dp = dsa_to_port(ds, port), *other_dp;
++	struct dsa_port *cpu_dp = dp->cpu_dp;
+ 	struct mt7530_priv *priv = ds->priv;
  
--	/* If certain member apart from CPU port is still alive in the VLAN,
--	 * the entry would be kept valid. Otherwise, the entry is got to be
--	 * disabled.
--	 */
--	if (new_members && new_members != BIT(MT7530_CPU_PORT)) {
-+	if (new_members) {
- 		val = IVL_MAC | VTAG_EN | PORT_MEM(new_members) |
- 		      VLAN_VALID;
- 		mt7530_write(priv, MT7530_VAWD1, val);
+ 	mutex_lock(&priv->reg_mutex);
+@@ -1340,8 +1350,8 @@ mt7530_port_bridge_leave(struct dsa_switch *ds, int port,
+ 	 */
+ 	if (priv->ports[port].enable)
+ 		mt7530_rmw(priv, MT7530_PCR_P(port), PCR_MATRIX_MASK,
+-			   PCR_MATRIX(BIT(MT7530_CPU_PORT)));
+-	priv->ports[port].pm = PCR_MATRIX(BIT(MT7530_CPU_PORT));
++			   PCR_MATRIX(BIT(cpu_dp->index)));
++	priv->ports[port].pm = PCR_MATRIX(BIT(cpu_dp->index));
+ 
+ 	/* When a port is removed from the bridge, the port would be set up
+ 	 * back to the default as is at initial boot which is a VLAN-unaware
+@@ -1508,6 +1518,9 @@ static int
+ mt7530_port_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering,
+ 			   struct netlink_ext_ack *extack)
+ {
++	struct dsa_port *dp = dsa_to_port(ds, port);
++	struct dsa_port *cpu_dp = dp->cpu_dp;
++
+ 	if (vlan_filtering) {
+ 		/* The port is being kept as VLAN-unaware port when bridge is
+ 		 * set up with vlan_filtering not being set, Otherwise, the
+@@ -1515,7 +1528,7 @@ mt7530_port_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering,
+ 		 * for becoming a VLAN-aware port.
+ 		 */
+ 		mt7530_port_set_vlan_aware(ds, port);
+-		mt7530_port_set_vlan_aware(ds, MT7530_CPU_PORT);
++		mt7530_port_set_vlan_aware(ds, cpu_dp->index);
+ 	} else {
+ 		mt7530_port_set_vlan_unaware(ds, port);
+ 	}
+diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+index 71e36b69b96d..e509af95c354 100644
+--- a/drivers/net/dsa/mt7530.h
++++ b/drivers/net/dsa/mt7530.h
+@@ -8,7 +8,6 @@
+ 
+ #define MT7530_NUM_PORTS		7
+ #define MT7530_NUM_PHYS			5
+-#define MT7530_CPU_PORT			6
+ #define MT7530_NUM_FDB_RECORDS		2048
+ #define MT7530_ALL_MEMBERS		0xff
+ 
 -- 
 2.34.1
 
