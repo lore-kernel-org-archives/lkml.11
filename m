@@ -2,144 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBEF5CCA47B
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 21:03:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CDE2C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 21:04:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350751AbiFJVDB (ORCPT
+        id S1350659AbiFJVEu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 17:03:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47748 "EHLO
+        Fri, 10 Jun 2022 17:04:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346839AbiFJVC6 (ORCPT
+        with ESMTP id S1348020AbiFJVEp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 17:02:58 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FC421008;
-        Fri, 10 Jun 2022 14:02:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654894977; x=1686430977;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ITqyNN6aMfLgWrZqGcYWjoDoxlzkxWNBkOIz9CdtswQ=;
-  b=WykKd0jY4dJx2z7tstMKwRCvWaRs5dcgAPMhCphYJR9nZV85v3REbSiy
-   gE0k5YcR+v7/wNm/pph4SzfYgUJyRvHgG2pEs9YWQ6aSt0Ip6quqJosxi
-   I3pOgFIqXYpGJ+fE3I1BorHtQ6TlC7zBE3Yw3Y4fypIdm948edWkNdKwi
-   WURk9j54gwnzFGs2K7KKM0hX/a84kEr8CzV5wcMNpYlYCzzxsWCP2fDMo
-   OVCcsiHqIwqD7shTovx0s7eMHqHI1mdo4n+uYHslQeCtDtrjzh+yNZeRK
-   eWWfzrHikKv5PbEj0QAmtIaivC67DYJj3ZHHfs7QHy79Hy2xYMtFZ2Tyt
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10374"; a="303128029"
-X-IronPort-AV: E=Sophos;i="5.91,291,1647327600"; 
-   d="scan'208";a="303128029"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 14:02:56 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,291,1647327600"; 
-   d="scan'208";a="725144484"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 10 Jun 2022 14:02:52 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nzlmN-000IHB-VP;
-        Fri, 10 Jun 2022 21:02:51 +0000
-Date:   Sat, 11 Jun 2022 05:02:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Pavel Tikhomirov <ptikhomirov@virtuozzo.com>,
-        linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org,
-        Pavel Tikhomirov <ptikhomirov@virtuozzo.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Kees Cook <keescook@chromium.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        linux-ia64@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Subject: Re: [PATCH 1/2] Add CABA tree to task_struct
-Message-ID: <202206110409.b8UJYnuq-lkp@intel.com>
-References: <20220610163214.49974-2-ptikhomirov@virtuozzo.com>
+        Fri, 10 Jun 2022 17:04:45 -0400
+Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0985624BDB
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 14:04:44 -0700 (PDT)
+Received: by mail-oi1-x233.google.com with SMTP id v143so646148oie.13
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 14:04:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=6BSSJ/rWsXUBg5MMoeJBHI5sh4Vg+Gf+Lk7kJ6t8nrM=;
+        b=ldlk36TEpLb8bKM9kbq6yMC+kG1oiGHmPqVQxcVdRKo79hJxr7pqzJPr/BfNqZZJlT
+         XSswpqq4c+gHIsrn8uVopdU6inApeuSxfIzbubd0SWZLVr1Q/SD6zdImR0WiqMGuATFR
+         8QB4g9Dvv645HlH5d+XtOqkStx++qXkKgy4II=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=6BSSJ/rWsXUBg5MMoeJBHI5sh4Vg+Gf+Lk7kJ6t8nrM=;
+        b=w6QQNzvMYCoRMXwjUMOZq+UN6Q0AzrAN9WFqXSKOUw64FpZJehmwLuFEo/wMnUcH5j
+         w4dvTp4yIuANloiAn6idWi/FqqEQbE/3WvdRDV4hzspQS+pjuW8JstetI19mlIQ0P9zg
+         W9qWZHRvioUI2YBGoel0XkbKypMNOGrWjR6J9GmWUUZBjFkba9y/+ngaC7iFtR42p2fc
+         fzgyHhEp2Vphi9XzYfI/EC7TW4zbRODPurIFf3hIHD7tgFpmJlZaqvF4dZ+vHQDbp2h3
+         I9MRhoJFMnrnDr+L2CwwGa5N78KA791/iFJeWZ8owyvec6Y6cu69Z8bV+PpyK5kiZZix
+         sMXg==
+X-Gm-Message-State: AOAM530R1b6MrYPDpacGPOl4DfJRHDgrhgwVYiI8UFD1RySZc46xuEXu
+        vFPkVTWDXfkJiZmdRnaEmDs4coIJqZR2yCd/o22Qxg==
+X-Google-Smtp-Source: ABdhPJzGn0kc0KitEDzC39ApVuo0Gabefuaw+3AKA6iKU3xzQfk8aDXBAJ2dQY9eYenZKctLFWTXf3x1wQcbiYQgVe8=
+X-Received: by 2002:a05:6808:1703:b0:32e:851e:7f81 with SMTP id
+ bc3-20020a056808170300b0032e851e7f81mr924613oib.63.1654895083399; Fri, 10 Jun
+ 2022 14:04:43 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Fri, 10 Jun 2022 14:04:42 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220610163214.49974-2-ptikhomirov@virtuozzo.com>
+In-Reply-To: <1653687133-32331-1-git-send-email-quic_khsieh@quicinc.com>
+References: <1653687133-32331-1-git-send-email-quic_khsieh@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Fri, 10 Jun 2022 14:04:42 -0700
+Message-ID: <CAE-0n519jUEQK565OFVevvyoF49rgTazf4McjKmDS8mfDrWwyQ@mail.gmail.com>
+Subject: Re: [PATCH v4] drm/msm/dp: force link training for display resolution change
+To:     Kuogee Hsieh <quic_khsieh@quicinc.com>, agross@kernel.org,
+        airlied@linux.ie, bjorn.andersson@linaro.org, daniel@ffwll.ch,
+        dianders@chromium.org, dmitry.baryshkov@linaro.org,
+        robdclark@gmail.com, sean@poorly.run, vkoul@kernel.org
+Cc:     quic_abhinavk@quicinc.com, quic_aravindh@quicinc.com,
+        quic_sbillaka@quicinc.com, freedreno@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Pavel,
+Quoting Kuogee Hsieh (2022-05-27 14:32:13)
+> During display resolution changes display have to be disabled first
+> followed by display enabling with new resolution. Display disable
+> will turn off both pixel clock and main link clock so that main link
+> have to be re trained during display enable to have new video stream
 
-Thank you for the patch! Perhaps something to improve:
+s/re/re-/
 
-[auto build test WARNING on shuah-kselftest/next]
-[also build test WARNING on kees/for-next/execve tip/sched/core linus/master v5.19-rc1 next-20220610]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> flow again. At current implementation, display enable function manually
+> kicks up irq_hpd_handle which will read panel link status and start link
+> training if link status is not in sync state. However, there is rare
+> case that a particular panel links status keep staying in sync for
+> some period of time after main link had been shut down previously at
+> display disabled. Main link retraining will not be executed by
+> irq_hdp_handle() if the link status read from pane shows it is in
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Pavel-Tikhomirov/Introduce-CABA-helper-process-tree/20220611-003433
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest.git next
-config: i386-randconfig-a001 (https://download.01.org/0day-ci/archive/20220611/202206110409.b8UJYnuq-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/0875a2bed5ff95643c487dfcc28a550db06ea418
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Pavel-Tikhomirov/Introduce-CABA-helper-process-tree/20220611-003433
-        git checkout 0875a2bed5ff95643c487dfcc28a550db06ea418
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash fs/proc/
+s/pane/panel/
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+> sync state. If this was happen, then video stream of newer display
+> resolution will fail to be transmitted to panel due to main link is
+> not in sync between host and panel. This patch force main link always
+> be retrained during display enable procedure to prevent this rare
+> failed case from happening. Also this implementation are more
+> efficient than manual kicking off irq_hpd_handle function.
 
-All warnings (new ones prefixed by >>):
+The description makes it sound like the link status is not updated,
+sometimes. Isn't that the real issue here? Not that link training needs
+to be done again (which it always does apparently), but that disabling
+the display doesn't wait for the link to go down. Or disabling the link
+is causing some sort of glitch on the sink causing it to report the
+status as OK when it really isn't.
 
-   fs/proc/array.c: In function 'task_state':
->> fs/proc/array.c:157:15: warning: unused variable 'caba_pids' [-Wunused-variable]
-     157 |         pid_t caba_pids[MAX_PID_NS_LEVEL] = {};
-         |               ^~~~~~~~~
->> fs/proc/array.c:156:13: warning: unused variable 'caba_level' [-Wunused-variable]
-     156 |         int caba_level = 0;
-         |             ^~~~~~~~~~
->> fs/proc/array.c:155:21: warning: unused variable 'caba_pid' [-Wunused-variable]
-     155 |         struct pid *caba_pid;
-         |                     ^~~~~~~~
->> fs/proc/array.c:154:29: warning: unused variable 'caba' [-Wunused-variable]
-     154 |         struct task_struct *caba;
-         |                             ^~~~
+>
+> Changes in v2:
+> -- set force_link_train flag on DP only (is_edp == false)
+>
+> Changes in v3:
+> -- revise commit  text
+> -- add Fixes tag
+>
+> Changes in v4:
+> -- revise commit  text
+>
+> Fixes: 62671d2ef24b ("drm/msm/dp: fixes wrong connection state caused by failure of link train")
+> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
 
+> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+> index c388323..370348d 100644
+> --- a/drivers/gpu/drm/msm/dp/dp_display.c
+> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
+> @@ -1688,10 +1689,14 @@ void dp_bridge_enable(struct drm_bridge *drm_bridge)
+>
+>         state =  dp_display->hpd_state;
+>
+> -       if (state == ST_DISPLAY_OFF)
+> +       if (state == ST_DISPLAY_OFF) {
+>                 dp_display_host_phy_init(dp_display);
+>
+> -       dp_display_enable(dp_display, 0);
+> +               if (!dp->is_edp)
 
-vim +/caba_pids +157 fs/proc/array.c
+Does this assume eDP has one resolution? I don't understand why eDP is
+special here, especially if eDP has more than one resolution available
+it seems like we would want to retrain the link regardless.
 
-   143	
-   144	static inline void task_state(struct seq_file *m, struct pid_namespace *ns,
-   145					struct pid *pid, struct task_struct *p)
-   146	{
-   147		struct user_namespace *user_ns = seq_user_ns(m);
-   148		struct group_info *group_info;
-   149		int g, umask = -1;
-   150		struct task_struct *tracer;
-   151		const struct cred *cred;
-   152		pid_t ppid, tpid = 0, tgid, ngid;
-   153		unsigned int max_fds = 0;
- > 154		struct task_struct *caba;
- > 155		struct pid *caba_pid;
- > 156		int caba_level = 0;
- > 157		pid_t caba_pids[MAX_PID_NS_LEVEL] = {};
-   158	
-   159		rcu_read_lock();
-   160		ppid = pid_alive(p) ?
-   161			task_tgid_nr_ns(rcu_dereference(p->real_parent), ns) : 0;
-   162	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> +                       force_link_train = true;
+> +       }
+> +
+> +       dp_display_enable(dp_display, force_link_train);
+>
+>         rc = dp_display_post_enable(dp);
+>         if (rc) {
