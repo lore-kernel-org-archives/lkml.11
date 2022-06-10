@@ -2,89 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40F6AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 18:34:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DD72C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 18:35:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347842AbiFJSew (ORCPT
+        id S1350173AbiFJSfI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 14:34:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42214 "EHLO
+        Fri, 10 Jun 2022 14:35:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349791AbiFJSeh (ORCPT
+        with ESMTP id S1349792AbiFJSeh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 10 Jun 2022 14:34:37 -0400
-Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F3FF3A1A3;
-        Fri, 10 Jun 2022 11:34:35 -0700 (PDT)
-Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-12.nifty.com with ESMTP id 25AIX5TM020882;
-        Sat, 11 Jun 2022 03:33:06 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 25AIX5TM020882
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1654885987;
-        bh=dWrkbZ/zCsAQbt1ylsfirph76FCDu7eUxy+/dh5/pjo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EKhRJEaK3gX99ziov/rjxAhmo76ZnId9lzn3GpSIVc9AK8OtHMiqQlPqRY40Pll4s
-         wPGEtZv/GV70FNdJiqwh3lmynNvSm0E9xw0JWIqYuZ5G/Nitx5ImpaWkpMy/SNwCuu
-         fgIptFOsTMpS7zg0mm5qo19VSDSOLLICqmTAz6eJ/TKufDm1ReBHEh4Ks4qMtgfRKb
-         +lVoSCyxyjesKMHD760+vQ7DQ8tz4LkG5iQsoUaCcPn4vSIfndOU3RN9u/kLRy9R/3
-         NsCKJl97GxHzhgDQF7Sv3Oj9zAW8OtcQVEieSvGoP32j2EOJs9sFsE8tYvwF4zgWDY
-         N7ouJ1/AOlGFg==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        Nicolas Pitre <npitre@baylibre.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        linux-modules@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Alessio Igor Bogani <abogani@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Rusty Russell <rusty@rustcorp.com.au>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/7] modpost: fix section mismatch check for exported init/exit sections
-Date:   Sat, 11 Jun 2022 03:32:30 +0900
-Message-Id: <20220610183236.1272216-2-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220610183236.1272216-1-masahiroy@kernel.org>
-References: <20220610183236.1272216-1-masahiroy@kernel.org>
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 888193A197;
+        Fri, 10 Jun 2022 11:34:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=5ds5WQBITtKB6EEQtW4hoMd9Sg3HLa34Vavd3wlK3BM=; b=J+6nFrtPQRWqS0sBmw87Kkv/bJ
+        8Sz2jKPCtpG6GIG2+Q5erX23oNN8K5YTXCOJplN+4Gw3drhbTgmHoggZD70XobYEyXeYZXDdZtLO2
+        ptTD6vKuCHL1onHZ4Th6xYQFS8TTlm9Bj7KdOR3IgxxwJ4uSy5H8MixcxKagAGH/CIVO/9zzKGQB+
+        NkSvxpsU03UsXoy9Ss5kzlqXJyCD2Z8PsUT8tnfsH+OWPjsCpj1S6IURai8dA5G297qktZUxwQhNe
+        VrIpR+r50cJtBUcG3vXt1CdXJdl2Jf98gSOFCTlLIfeSFqljmMOM9OkEFElID0duHr42Y0ioKS4Ng
+        IsBHaA6Q==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nzjSi-00EeyM-DD; Fri, 10 Jun 2022 18:34:24 +0000
+Date:   Fri, 10 Jun 2022 19:34:24 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Kent Overstreet <kent.overstreet@gmail.com>
+Cc:     Yu Kuai <yukuai3@huawei.com>, akpm@linux-foundation.org,
+        axboe@kernel.dk, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, yi.zhang@huawei.com
+Subject: Re: [PATCH -next] mm/filemap: fix that first page is not mark
+ accessed in filemap_read()
+Message-ID: <YqOOsHecZUWlHEn/@casper.infradead.org>
+References: <20220602082129.2805890-1-yukuai3@huawei.com>
+ <YpkB1+PwIZ3AKUqg@casper.infradead.org>
+ <c49af4f7-5005-7cf1-8b58-a398294472ab@huawei.com>
+ <YqNWY46ZRoK6Cwbu@casper.infradead.org>
+ <YqNW8cYn9gM7Txg6@casper.infradead.org>
+ <c5f97e2f-8a48-2906-91a2-1d84629b3641@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c5f97e2f-8a48-2906-91a2-1d84629b3641@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit f02e8a6596b7 ("module: Sort exported symbols"),
-EXPORT_SYMBOL* is placed in the individual section ___ksymtab(_gpl)+<sym>
-(3 leading underscores instead of 2).
+On Fri, Jun 10, 2022 at 01:47:02PM -0400, Kent Overstreet wrote:
+> I think this is the fix we want - I think Yu basically had the right idea
+> and had the off by one fix, this should be clearer though:
+> 
+> Yu, can you confirm the fix?
+> 
+> -- >8 --
+> Subject: [PATCH] filemap: Fix off by one error when marking folios accessed
+> 
+> In filemap_read() we mark pages accessed as we read them - but we don't
+> want to do so redundantly, if the previous read already did so.
+> 
+> But there was an off by one error: we want to check if the current page
+> was the same as the last page we read from, but the last page we read
+> from was (ra->prev_pos - 1) >> PAGE_SHIFT.
+> 
+> Reported-by: Yu Kuai <yukuai3@huawei.com>
+> Signed-off-by: Kent Overstreet <kent.overstreet@gmail.com>
+> 
+> diff --git a/mm/filemap.c b/mm/filemap.c
+> index 9daeaab360..8d5c8043cb 100644
+> --- a/mm/filemap.c
+> +++ b/mm/filemap.c
+> @@ -2704,7 +2704,7 @@ ssize_t filemap_read(struct kiocb *iocb, struct
+> iov_iter *iter,
+>                  * mark it as accessed the first time.
+>                  */
+>                 if (iocb->ki_pos >> PAGE_SHIFT !=
+> -                   ra->prev_pos >> PAGE_SHIFT)
+> +                   (ra->prev_pos - 1) >> PAGE_SHIFT)
+>                         folio_mark_accessed(fbatch.folios[0]);
+> 
+>                 for (i = 0; i < folio_batch_count(&fbatch); i++) {
+> 
 
-Since then, modpost cannot detect the bad combination of EXPORT_SYMBOL
-and __init/__exit.
+This is going to mark the folio as accessed multiple times if it's
+a multi-page folio.  How about this one?
 
-Fix the .fromsec field.
 
-Fixes: f02e8a6596b7 ("module: Sort exported symbols")
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
----
-
- scripts/mod/modpost.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 29d5a841e215..620dc8c4c814 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -980,7 +980,7 @@ static const struct sectioncheck sectioncheck[] = {
- },
- /* Do not export init/exit functions or data */
- {
--	.fromsec = { "__ksymtab*", NULL },
-+	.fromsec = { "___ksymtab*", NULL },
- 	.bad_tosec = { INIT_SECTIONS, EXIT_SECTIONS, NULL },
- 	.mismatch = EXPORT_TO_INIT_EXIT,
- 	.symbol_white_list = { DEFAULT_SYMBOL_WHITE_LIST, NULL },
--- 
-2.32.0
-
+diff --git a/mm/filemap.c b/mm/filemap.c
+index 5f227b5420d7..a30587f2e598 100644
+--- a/mm/filemap.c
++++ b/mm/filemap.c
+@@ -2599,6 +2599,13 @@ static int filemap_get_pages(struct kiocb *iocb, struct iov_iter *iter,
+ 	return err;
+ }
+ 
++static inline bool pos_same_folio(loff_t pos1, loff_t pos2, struct folio *folio)
++{
++	unsigned int shift = folio_shift(folio);
++
++	return (pos1 >> shift == pos2 >> shift);
++}
++
+ /**
+  * filemap_read - Read data from the page cache.
+  * @iocb: The iocb to read.
+@@ -2670,11 +2677,11 @@ ssize_t filemap_read(struct kiocb *iocb, struct iov_iter *iter,
+ 		writably_mapped = mapping_writably_mapped(mapping);
+ 
+ 		/*
+-		 * When a sequential read accesses a page several times, only
++		 * When a read accesses the same folio several times, only
+ 		 * mark it as accessed the first time.
+ 		 */
+-		if (iocb->ki_pos >> PAGE_SHIFT !=
+-		    ra->prev_pos >> PAGE_SHIFT)
++		if (!pos_same_folio(iocb->ki_pos, ra->prev_pos - 1,
++							fbatch.folios[0]))
+ 			folio_mark_accessed(fbatch.folios[0]);
+ 
+ 		for (i = 0; i < folio_batch_count(&fbatch); i++) {
