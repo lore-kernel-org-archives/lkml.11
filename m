@@ -2,245 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9766AC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 14:36:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E291C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 14:36:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349685AbiFJOgf (ORCPT
+        id S1349662AbiFJOgy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 10:36:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58750 "EHLO
+        Fri, 10 Jun 2022 10:36:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349603AbiFJOgH (ORCPT
+        with ESMTP id S1349655AbiFJOgl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 10:36:07 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D5D5393C3
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 07:36:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654871766; x=1686407766;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=R6QXymG4GlH91ebp/ZT4U7nCHZ8Wto7mGw90OqLzgZc=;
-  b=C3UJLDeV6eomQkJXVsQL8vZydMweENwejzIN8yCUb83rDq2rGUTXkAbg
-   qVZ+LYF434mQ9kRcn2QohzToQ9mrII6j9kua7CSD50ligE/6BsvZFUbMc
-   IpGca6i1uAysZvlNhareFeb3cH7HnqsCu+2fhuKK/ajXUdr+ckthH+zn/
-   30SpArSHZKVe77MMAN+bVk8tnS6/1TO8vmwss3UhXSFSclL2h4xeET9gJ
-   YN7vKwWODREDKUwM7PGe4mHIk2C2qcbem8TxGVyavKwYX5ZDcxBHw00Gf
-   SSguZYZjGVSnBLKd/Kk3isxWOA0DYl9qOuz9AFRG1Xs43D7epO1cgiKSB
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10374"; a="278781422"
-X-IronPort-AV: E=Sophos;i="5.91,290,1647327600"; 
-   d="scan'208";a="278781422"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 07:35:34 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,290,1647327600"; 
-   d="scan'208";a="908939814"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga005.fm.intel.com with ESMTP; 10 Jun 2022 07:35:31 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 4C0E05D3; Fri, 10 Jun 2022 17:35:30 +0300 (EEST)
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     x86@kernel.org, Kostya Serebryany <kcc@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "H . J . Lu" <hjl.tools@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv3 5/8] x86/uaccess: Provide untagged_addr() and remove tags before address check
-Date:   Fri, 10 Jun 2022 17:35:24 +0300
-Message-Id: <20220610143527.22974-6-kirill.shutemov@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220610143527.22974-1-kirill.shutemov@linux.intel.com>
-References: <20220610143527.22974-1-kirill.shutemov@linux.intel.com>
+        Fri, 10 Jun 2022 10:36:41 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0A4A13FD6E;
+        Fri, 10 Jun 2022 07:36:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=SL6WDHTUHkdLCnhdaxfAT0gjsC7EVcgs4nlCTy2yQcs=; b=n0k3JrwAYZyCYAsOslLE2JxjQa
+        OsgsRLcb6Rf6lNXwqDwq/MtvzPQrIpz4fQVQjH/SYvErT8pwLpbK8c4eahqPJnzNpFWsxw5iAqGFH
+        vA+r4LewVXcMEUogpzRrQthPEucxjFGzRsJao+r0Xjl5IQkmF7X1Vy7n7Av+7Wpe+gQHJbmDmH/QF
+        qGTepPN0qZXlTJPInVVtJFS877dJoZV41ZbHAC/Cs3u/0d1TcbAXRMcwlz9xzsd42bX6hZDSs4y0L
+        FPphnfyls/1NxxJH1KIlo6akHSttgTUNu8fLRNjgvWsiLrsdADBUL8/5S7KreeJZDWn43z2oRzYgF
+        9zrcuZfA==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nzfkX-00EWMi-8G; Fri, 10 Jun 2022 14:36:33 +0000
+Date:   Fri, 10 Jun 2022 15:36:33 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Yu Kuai <yukuai3@huawei.com>, kent.overstreet@gmail.com
+Cc:     akpm@linux-foundation.org, axboe@kernel.dk,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, yi.zhang@huawei.com
+Subject: Re: [PATCH -next] mm/filemap: fix that first page is not mark
+ accessed in filemap_read()
+Message-ID: <YqNW8cYn9gM7Txg6@casper.infradead.org>
+References: <20220602082129.2805890-1-yukuai3@huawei.com>
+ <YpkB1+PwIZ3AKUqg@casper.infradead.org>
+ <c49af4f7-5005-7cf1-8b58-a398294472ab@huawei.com>
+ <YqNWY46ZRoK6Cwbu@casper.infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YqNWY46ZRoK6Cwbu@casper.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-untagged_addr() is a helper used by the core-mm to strip tag bits and
-get the address to the canonical shape. In only handles userspace
-addresses. The untagging mask is stored in mmu_context and will be set
-on enabling LAM for the process.
+On Fri, Jun 10, 2022 at 03:34:11PM +0100, Matthew Wilcox wrote:
+> On Mon, Jun 06, 2022 at 09:10:03AM +0800, Yu Kuai wrote:
+> > On 2022/06/03 2:30, Matthew Wilcox wrote:
+> > > On Thu, Jun 02, 2022 at 04:21:29PM +0800, Yu Kuai wrote:
+> > > > In filemap_read(), 'ra->prev_pos' is set to 'iocb->ki_pos + copied',
+> > > > while it should be 'iocb->ki_ops'.
+> > > 
+> > > Can you walk me through your reasoning which leads you to believe that
+> > > it should be ki_pos instead of ki_pos + copied?  As I understand it,
+> > > prev_pos is the end of the previous read, not the beginning of the
+> > > previous read.
+> > 
+> > Hi, Matthew
+> > 
+> > The main reason is the following judgement in flemap_read():
+> > 
+> > if (iocb->ki_pos >> PAGE_SHIFT !=	-> current page
+> >     ra->prev_pos >> PAGE_SHIFT)		-> previous page
+> >         folio_mark_accessed(fbatch.folios[0]);
+> > 
+> > Which means if current page is the same as previous page, don't mark
+> > page accessed. However, prev_pos is set to 'ki_pos + copied' during last
+> > read, which will cause 'prev_pos >> PAGE_SHIFT' to be current page
+> > instead of previous page.
+> > 
+> > I was thinking that if prev_pos is set to the begining of the previous
+> > read, 'prev_pos >> PAGE_SHIFT' will be previous page as expected. Set to
+> > the end of previous read is ok, however, I think the caculation of
+> > previous page should be '(prev_pos - 1) >> PAGE_SHIFT' instead.
+> 
+> OK, I think Kent broke this in 723ef24b9b37 ("mm/filemap/c: break
+> generic_file_buffered_read up into multiple functions").  Before:
+> 
+> -       prev_index = ra->prev_pos >> PAGE_SHIFT;
+> -       prev_offset = ra->prev_pos & (PAGE_SIZE-1);
+> ...
+> -               if (prev_index != index || offset != prev_offset)
+> -                       mark_page_accessed(page);
+> 
+> After:
+> +       if (iocb->ki_pos >> PAGE_SHIFT != ra->prev_pos >> PAGE_SHIFT)
+> +               mark_page_accessed(page);
+> 
+> So surely this should have been:
+> 
+> +       if (iocb->ki_pos != ra->prev_pos)
+> +               mark_page_accessed(page);
+> 
+> Kent, do you recall why you changed it the way you did?
 
-The tags must not be included into check whether it's okay to access the
-userspace address.
+Oh, and if this is the right diagnosis, then this is the fix for the
+current tree:
 
-Strip tags in access_ok().
++++ b/mm/filemap.c
+@@ -2673,8 +2673,7 @@ ssize_t filemap_read(struct kiocb *iocb, struct iov_iter *iter,
+                 * When a sequential read accesses a page several times, only
+                 * mark it as accessed the first time.
+                 */
+-               if (iocb->ki_pos >> PAGE_SHIFT !=
+-                   ra->prev_pos >> PAGE_SHIFT)
++               if (iocb->ki_pos != ra->prev_pos)
+                        folio_mark_accessed(fbatch.folios[0]);
 
-get_user() and put_user() don't use access_ok(), but check access
-against TASK_SIZE directly in assembly. Strip tags, before calling into
-the assembly helper.
+                for (i = 0; i < folio_batch_count(&fbatch); i++) {
 
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
----
- arch/x86/include/asm/mmu.h         |  1 +
- arch/x86/include/asm/mmu_context.h | 11 ++++++++
- arch/x86/include/asm/uaccess.h     | 44 ++++++++++++++++++++++++++++--
- arch/x86/kernel/process.c          |  3 ++
- 4 files changed, 56 insertions(+), 3 deletions(-)
-
-diff --git a/arch/x86/include/asm/mmu.h b/arch/x86/include/asm/mmu.h
-index d150e92163b6..59c617fc7c6f 100644
---- a/arch/x86/include/asm/mmu.h
-+++ b/arch/x86/include/asm/mmu.h
-@@ -41,6 +41,7 @@ typedef struct {
- #ifdef CONFIG_X86_64
- 	unsigned short flags;
- 	u64 lam_cr3_mask;
-+	u64 untag_mask;
- #endif
- 
- 	struct mutex lock;
-diff --git a/arch/x86/include/asm/mmu_context.h b/arch/x86/include/asm/mmu_context.h
-index e6eac047c728..05821534aadc 100644
---- a/arch/x86/include/asm/mmu_context.h
-+++ b/arch/x86/include/asm/mmu_context.h
-@@ -100,6 +100,12 @@ static inline u64 mm_cr3_lam_mask(struct mm_struct *mm)
- static inline void dup_lam(struct mm_struct *oldmm, struct mm_struct *mm)
- {
- 	mm->context.lam_cr3_mask = oldmm->context.lam_cr3_mask;
-+	mm->context.untag_mask = oldmm->context.untag_mask;
-+}
-+
-+static inline void mm_reset_untag_mask(struct mm_struct *mm)
-+{
-+	mm->context.untag_mask = -1UL;
- }
- 
- #else
-@@ -112,6 +118,10 @@ static inline u64 mm_cr3_lam_mask(struct mm_struct *mm)
- static inline void dup_lam(struct mm_struct *oldmm, struct mm_struct *mm)
- {
- }
-+
-+static inline void mm_reset_untag_mask(struct mm_struct *mm)
-+{
-+}
- #endif
- 
- #define enter_lazy_tlb enter_lazy_tlb
-@@ -138,6 +148,7 @@ static inline int init_new_context(struct task_struct *tsk,
- 		mm->context.execute_only_pkey = -1;
- 	}
- #endif
-+	mm_reset_untag_mask(mm);
- 	init_new_context_ldt(mm);
- 	return 0;
- }
-diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
-index 35f222aa66bf..ca754521a4db 100644
---- a/arch/x86/include/asm/uaccess.h
-+++ b/arch/x86/include/asm/uaccess.h
-@@ -6,6 +6,7 @@
-  */
- #include <linux/compiler.h>
- #include <linux/kasan-checks.h>
-+#include <linux/mm_types.h>
- #include <linux/string.h>
- #include <asm/asm.h>
- #include <asm/page.h>
-@@ -20,6 +21,32 @@ static inline bool pagefault_disabled(void);
- # define WARN_ON_IN_IRQ()
- #endif
- 
-+#ifdef CONFIG_X86_64
-+/*
-+ * Mask out tag bits from the address.
-+ *
-+ * Magic with the 'sign' allows to untag userspace pointer without any branches
-+ * while leaving kernel addresses intact.
-+ */
-+#define untagged_addr(mm, addr)	({					\
-+	u64 __addr = (__force u64)(addr);				\
-+	s64 sign = (s64)__addr >> 63;					\
-+	__addr ^= sign;							\
-+	__addr &= (mm)->context.untag_mask;				\
-+	__addr ^= sign;							\
-+	(__force __typeof__(addr))__addr;				\
-+})
-+
-+#define untagged_ptr(mm, ptr)	({					\
-+	u64 __ptrval = (__force u64)(ptr);				\
-+	__ptrval = untagged_addr(mm, __ptrval);				\
-+	(__force __typeof__(*(ptr)) *)__ptrval;				\
-+})
-+#else
-+#define untagged_addr(mm, addr)	(addr)
-+#define untagged_ptr(mm, ptr)	(ptr)
-+#endif
-+
- /**
-  * access_ok - Checks if a user space pointer is valid
-  * @addr: User space pointer to start of block to check
-@@ -40,7 +67,7 @@ static inline bool pagefault_disabled(void);
- #define access_ok(addr, size)					\
- ({									\
- 	WARN_ON_IN_IRQ();						\
--	likely(__access_ok(addr, size));				\
-+	likely(__access_ok(untagged_addr(current->mm, addr), size));	\
- })
- 
- #include <asm-generic/access_ok.h>
-@@ -125,7 +152,13 @@ extern int __get_user_bad(void);
-  * Return: zero on success, or -EFAULT on error.
-  * On error, the variable @x is set to zero.
-  */
--#define get_user(x,ptr) ({ might_fault(); do_get_user_call(get_user,x,ptr); })
-+#define get_user(x,ptr)							\
-+({									\
-+	__typeof__(*(ptr)) __user *__ptr_clean;				\
-+	__ptr_clean = untagged_ptr(current->mm, ptr);			\
-+	might_fault();							\
-+	do_get_user_call(get_user,x,__ptr_clean);			\
-+})
- 
- /**
-  * __get_user - Get a simple variable from user space, with less checking.
-@@ -222,7 +255,12 @@ extern void __put_user_nocheck_8(void);
-  *
-  * Return: zero on success, or -EFAULT on error.
-  */
--#define put_user(x, ptr) ({ might_fault(); do_put_user_call(put_user,x,ptr); })
-+#define put_user(x, ptr) ({						\
-+	__typeof__(*(ptr)) __user *__ptr_clean;				\
-+	__ptr_clean = untagged_ptr(current->mm, ptr);			\
-+	might_fault();							\
-+	do_put_user_call(put_user,x,__ptr_clean);			\
-+})
- 
- /**
-  * __put_user - Write a simple value into user space, with less checking.
-diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
-index 9b2772b7e1f3..18b2bfdf7b9b 100644
---- a/arch/x86/kernel/process.c
-+++ b/arch/x86/kernel/process.c
-@@ -47,6 +47,7 @@
- #include <asm/frame.h>
- #include <asm/unwind.h>
- #include <asm/tdx.h>
-+#include <asm/mmu_context.h>
- 
- #include "process.h"
- 
-@@ -367,6 +368,8 @@ void arch_setup_new_exec(void)
- 		task_clear_spec_ssb_noexec(current);
- 		speculation_ctrl_update(read_thread_flags());
- 	}
-+
-+	mm_reset_untag_mask(current->mm);
- }
- 
- #ifdef CONFIG_X86_IOPL_IOPERM
--- 
-2.35.1
 
