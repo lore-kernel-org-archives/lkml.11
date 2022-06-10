@@ -2,152 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ABAAC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 16:46:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82EC5C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 16:47:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345608AbiFJQqO (ORCPT
+        id S1349369AbiFJQrS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 12:46:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57692 "EHLO
+        Fri, 10 Jun 2022 12:47:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231317AbiFJQqL (ORCPT
+        with ESMTP id S235042AbiFJQrP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 12:46:11 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2072.outbound.protection.outlook.com [40.107.94.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94E883CEED0;
-        Fri, 10 Jun 2022 09:46:10 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LmcemmiB3/AFcWRsdXDvqmZDT4XgFao1sOf+Gm3nyNMIMVD9aEoI6e4m6qyLkciwEWi39GyLF7d27wzViCFp7dw1pnpgwKneRcO5teaDCVJqkGmVjn5Jao6ndPZEqd9JfRs0FbMHcXN+ChUFZ4J40Cy70NC2Js/2ZlECt/X/wvE4Y66OjDxrik9/g+WXGGpdDPkjMHeGQquNiJBGj8UwderI3Xz3TCDCJnRbcvN9ro3StNHwHaB2trESsa5RK1Bh/sr40qPYWcxb0YDFxSZJckhUzNviqO0I2oAGrn+R+hEJpxgk1sDnueiht3TGEHDhYZM3i+56J22dnikfpE5JYg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=T7NCsAvoDyVeqCF9razdFlAvyiiL7zr73Cy49T7EEKg=;
- b=VzXrebODerFx2B91UrwCwgYqG9gff1dmw2JL7DxBZOZugcpWEbUMitnleXv7YtnrOoShnF8fdRpKOEfVfMXEvZx2nvwZ90vRFT1meYd2c0QnGeeZsM93Bz6PE3Z1RIRPalhI5moULjSmbu/S0SjDnzb9Q74RJVVbi11h2NEJeAK9DqRE0Pyf78mBS+K/zdOOBkFilTTPJDSyJpDk1pGE/cl1fj6vViTi1MhxS4IPv/t0CccXhOftQCrUUaXLjmczgx/f6YjitX8WMgxillcq6QHU1KOO0U3YF7GHu9e8lrW4VOnK5ILp3LnrALeyEDOBO8uHkAsbfIrqNF2SS3I4lg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=T7NCsAvoDyVeqCF9razdFlAvyiiL7zr73Cy49T7EEKg=;
- b=iJiVA8KoUNB1DiEMRVT7raU7iS23NAdVzNFgYG21zFzOOO3A9/pd2WmIaYeXxkJ+VufDGb18MfCAfXMtL6p0jJTzjoVh3ATXy1vKHeZ7Ms8JEmd7FO9YUlGUCT20CY5iZXOXM2dMilMvyzz5+aADQU8Dr+J0F+jQg8eLwN0qWbY=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from BN8PR12MB3108.namprd12.prod.outlook.com (2603:10b6:408:40::20)
- by CH0PR12MB5170.namprd12.prod.outlook.com (2603:10b6:610:b9::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.12; Fri, 10 Jun
- 2022 16:46:06 +0000
-Received: from BN8PR12MB3108.namprd12.prod.outlook.com
- ([fe80::9dfa:d871:2068:662f]) by BN8PR12MB3108.namprd12.prod.outlook.com
- ([fe80::9dfa:d871:2068:662f%7]) with mapi id 15.20.5332.014; Fri, 10 Jun 2022
- 16:46:06 +0000
-Date:   Fri, 10 Jun 2022 16:46:02 +0000
-From:   Yazen Ghannam <yazen.ghannam@amd.com>
-To:     Mario Limonciello <mario.limonciello@amd.com>
-Cc:     Clemens Ladisch <clemens@ladisch.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Babu Moger <babu.moger@amd.com>,
-        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
-        <linux-kernel@vger.kernel.org>,
-        "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
-        linux-hwmon@vger.kernel.org
-Subject: Re: [PATCH v2 2/6] x86/amd_nb: Add Family 19h model 70h-7Fh IDs
-Message-ID: <YqN1Skf2eBr093IZ@yaz-fattaah>
-References: <20220602201137.1415-1-mario.limonciello@amd.com>
- <20220602201137.1415-3-mario.limonciello@amd.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220602201137.1415-3-mario.limonciello@amd.com>
-X-ClientProxiedBy: BL1PR13CA0008.namprd13.prod.outlook.com
- (2603:10b6:208:256::13) To BN8PR12MB3108.namprd12.prod.outlook.com
- (2603:10b6:408:40::20)
+        Fri, 10 Jun 2022 12:47:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD9DC5AA61;
+        Fri, 10 Jun 2022 09:47:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 41CF76209C;
+        Fri, 10 Jun 2022 16:47:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA460C34114;
+        Fri, 10 Jun 2022 16:47:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654879632;
+        bh=unW26iVyYOILA6DuPNhMgkqz6zXnh/Dl4Z1P604q0XE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bI+jfQHqCN+w9/Ncpm9bvQdUzee34qzXjHDa2uywgpRCIPWxDvsPRkMd0meCY2srw
+         ND7sExB1ciAap5ao9d4ObQk9k7DR/hSgmm29gA8DzwxH/bWW5s3dlU5kiX/Dx9S7/K
+         VqJyZy2+GbnL9dBc3MlAU96zKaVlN7JIeF+X5lTy6NjLbj9UGDeycEEFBRkfynC8CN
+         HoMT49tsk1Yjg8umLhbLIlLu7h02qM2/frdHi5mZv3ZK56ELOdLuB3arBYVnEU+NXX
+         gKbAkHssmNXSL0Dz6vHjDhExTFyX9Vid7B8/c+KsFMs0ahtf4jEHOkRuzbUiKRmGK5
+         rxf+aERRcPU1g==
+Date:   Fri, 10 Jun 2022 17:47:05 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Cc:     linus.walleij@linaro.org, brgl@bgdev.pl, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, wens@csie.org, jic23@kernel.org,
+        lee.jones@linaro.org, sre@kernel.org, gregkh@linuxfoundation.org,
+        lgirdwood@gmail.com, lars@metafoo.de, rafael@kernel.org,
+        quic_gurus@quicinc.com, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-pm@vger.kernel.org
+Subject: Re: [PATCH v2 02/17] regmap-irq: Add get_irq_reg to support unusual
+ register layouts
+Message-ID: <YqN1iTyyiRx4/CMf@sirena.org.uk>
+References: <20220607155324.118102-1-aidanmacdonald.0x0@gmail.com>
+ <20220607155324.118102-3-aidanmacdonald.0x0@gmail.com>
+ <YqDLflKTsYaupArl@sirena.org.uk>
+ <6YJcC5wyOg6x6Ny4Os8ujFbK2qB4alkU@localhost>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 44160e53-d69a-46ff-1a85-08da4b00b66d
-X-MS-TrafficTypeDiagnostic: CH0PR12MB5170:EE_
-X-Microsoft-Antispam-PRVS: <CH0PR12MB517050482820DCC311DADA6BF8A69@CH0PR12MB5170.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: aX+TIHmxwaCufJ2LTgEssCsPENV813o1okR194epzFLcUxjjQV/W8I3RElsPPMudstZYM2T9gVK5mEr07J9PqpEeauAZkmKXiTSYUpRwmykRZS8H2JhRdBeBl3+r8rDT5QAys+/BpmYKPzwOSf+WxR920patfjIGS8TBbSVCX2+8eZKaYfBEDXqzF2d1oDfXb9Xds3oNhys/fFQNWvSPuzX/UOspQoWdD86zImhdzECJIIQ2EVTG6rafBtEMO/BCuLbjZJhyoqhIHW9jCWqWrKJlmlZoJeU6qZ1r7IAzJnFNEvjkImJd2eGkaiEgayx8KC3SdxAo1UzJxyZqxbk0hNCmdRlprkE4gqUIQJ4u4kAOMqnWY/Y7cSFSwoBTRY7DDeYv7PtJ5q/W6lQT2yztflrqCMsezBuixTSJb8h7lBT25KP4ufdgpzGi2qC3UggodpHtbtxCToXW/eNnw0V/Ujd3+HpVeI1ZHoR/yCKQJ5eQO0xPkmuj4I3SHwbPiGy26JcIVxcUGBSktkY//9GV8iaFN8c2rJcWDRRyPubGO/eqXZN2wmUNP3mloYXKLvie6DeTD4fbJ8PzDwZ6Un2REoA6gYV1PVunxm/kqen4rUdRPQ3ZeL5OjIRTFlbV9HP3iuLaOKssBcE/b6S1R/Wnuw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3108.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(316002)(6862004)(6636002)(66946007)(5660300002)(8936002)(7416002)(4744005)(66476007)(6506007)(2906002)(44832011)(6486002)(508600001)(54906003)(6666004)(33716001)(9686003)(6512007)(26005)(86362001)(66556008)(8676002)(4326008)(38100700002)(186003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?lo/dwV9o5DsPJ0EFlF3GjsSxdgeHquOerhIGQtIG9fhSwk/dDHLEVaEBvqQW?=
- =?us-ascii?Q?M4mW2mG96T3mNhzIO/yD70Z1eyqTWHJoZZq9Enhmbt4Wha/e0w/wrAm78NyB?=
- =?us-ascii?Q?e4A8DDUv1sRBADi6kJh873DH6lJesPTlNTpXOa1uGYJcgUS94jCZCBBX69tG?=
- =?us-ascii?Q?+tbPGLjVhFoElZmsBcQAKC8EEb6Mt2mpkJ5R4w9RAXl7h8dArvU7VCvMMHsR?=
- =?us-ascii?Q?9laDvz7fVC8tfiNpIHSAhow7yVEB1qyRwLb+ADQkftetOVEa6kK8l2pEzA4D?=
- =?us-ascii?Q?CAQTEDT4tuWNsRz7QCap9Xeyxp6CONprRvfL7ESi/n3morXa/GGVSr6altdX?=
- =?us-ascii?Q?U6r5KKh8/yw91e+vRWBQLAnkoUnzBvUiZkIfrrM8Ch96R0jMFVylW2nC46Ib?=
- =?us-ascii?Q?PbuR6iPsz8oJB6dMp/MrN+MHOTQRJSlWmCokI9X1tksfDqEJ4hUeS4U5vbp8?=
- =?us-ascii?Q?sTak7RmfmNZgXf0QN5iXvJYJRkHP0UCUVgDYGkYZOxiECBeKw7Q1vtScJcIy?=
- =?us-ascii?Q?E3p4cl7r4QPhpqQbL+lm6qvhTBvYRRP0ZGVNGRtqJpxpSGZA7ZHqLlpSrJnO?=
- =?us-ascii?Q?fkA4U09ZkYQFTSoq64bZEco8dVEtSzZp4v3K4MIZuMBc1ltSwMMOCtuB+s02?=
- =?us-ascii?Q?suX2eEhoL6saYfiMuoOYTRPGiz8Ov1FxD5za/MFUJZPJw/sRmpbJc46EKwdQ?=
- =?us-ascii?Q?PcMV8orezBWqoZRaooK03ws3iFE1rcVARsMR5IFuELnNmqpH9xK+bEcz63x4?=
- =?us-ascii?Q?ST85HS94kAvazHQvNkHKeCQVFAfqpOSRJfFFCCAS/nIuQGpXWFhYoqVHc4S3?=
- =?us-ascii?Q?oVHQuxlRin4TuD+7OwTz1CSS9QyOwMtEgkuVTVZz6wSxbG8EYDUAf3mTRLqX?=
- =?us-ascii?Q?TnP1zJ3o+CBPMdQMs9qJa3qyQ9aeIibKZ8jXepzPZb2pOjOLzzMUqYS2S1bT?=
- =?us-ascii?Q?Aq1YEkQ13gZONq/BPKuIsZ7Q9iG2e0NPH9BtTGpAY/CiR30Olg/uL1lgC5iI?=
- =?us-ascii?Q?LyRD2qru3L9RI4FLZgkLVA7v1g12BYrHPtWWAB6QuyRQ/h2mjGYZpu7gaFRn?=
- =?us-ascii?Q?sSPeYp4cMiqE+2/bjBL7V9iZCjdGVvGJl01pAgT1susofD1BOatsQs8RitYB?=
- =?us-ascii?Q?87++0f03k9a2DstLdQBh+RvFCzgjWthUitXxkVRGjfGcoSy4OLpgV+ApLTUD?=
- =?us-ascii?Q?IK7InD2NtvtS5VQVjMNoNRkhz1mJMsTn9BwcCktRAmVoTB5A6TLnCRvPDj1j?=
- =?us-ascii?Q?lNis0xZiYFnnyx5gT66I8uflrU4QhhZ6WamnBf4iaX5SmV9I2I2a6IZKhtYR?=
- =?us-ascii?Q?WbEiW131ONqlE9NkVMjJYld77j4q/gCLxwMxrvN7Ku1meN1NgI1YlDVhJne3?=
- =?us-ascii?Q?1b0RN3Wc1GFQl6qTqYF97JR+h3JFaqJ9d7MxyGkljH5xPMe2vy7oITT8Xedz?=
- =?us-ascii?Q?9919WXehBPxFYvTQu9yZVLd0jrH3xcMq8vplgyTUyw/nI5nblO65tP/BCkuA?=
- =?us-ascii?Q?mWh6USfkZY4podMXqamCno/+MwgE7O8Ecu/q/2HZpyRL5oRv+TVLHnW2D4an?=
- =?us-ascii?Q?5An7UuX60xJMkq8QdNK3zlpfuG1zN41WzZzXXC/1fUKtxEVi0yRF8tuxXzqn?=
- =?us-ascii?Q?oj9lkKYs1IGUEkx5yb4h7NSsxKTDYYpM7371u//jSEf/gGqDTs0f6zUWPxz5?=
- =?us-ascii?Q?A7ROXhLZm/LRk6+soB2LIQBySZV60wx5vb+GYaQrjJR32daoPtwA7zRRJoue?=
- =?us-ascii?Q?1HGkDTCV9A=3D=3D?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 44160e53-d69a-46ff-1a85-08da4b00b66d
-X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3108.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jun 2022 16:46:06.0439
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oBFwXPGclLO31WcSfa8gsznEGIgQf57SeE8XLH1x4+JB3Y4wutxIeRBnqVXwfO/zGnt1Aktts3PReKkdmhbJvA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5170
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="U+ynXLAMuojBXMSJ"
+Content-Disposition: inline
+In-Reply-To: <6YJcC5wyOg6x6Ny4Os8ujFbK2qB4alkU@localhost>
+X-Cookie: Teachers have class.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 02, 2022 at 03:11:33PM -0500, Mario Limonciello wrote:
-> Add support for SMN communication on Family 19h Model 70h.
-> 
-> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-> ---
->  arch/x86/kernel/amd_nb.c | 4 ++++
->  include/linux/pci_ids.h  | 1 +
->  2 files changed, 5 insertions(+)
-> 
-> diff --git a/arch/x86/kernel/amd_nb.c b/arch/x86/kernel/amd_nb.c
-> index 60c7bd525237..15295f5d9aca 100644
-> --- a/arch/x86/kernel/amd_nb.c
-> +++ b/arch/x86/kernel/amd_nb.c
-> @@ -32,6 +32,8 @@
->  #define PCI_DEVICE_ID_AMD_19H_M40H_ROOT	0x14b5
->  #define PCI_DEVICE_ID_AMD_19H_M40H_DF_F4 0x167d
->  #define PCI_DEVICE_ID_AMD_19H_M50H_DF_F4 0x166e
-> +#define PCI_DEVICE_ID_AMD_19H_M70H_ROOT	0x14e8
-> +#define PCI_DEVICE_ID_AMD_19H_M70H_DF_F4 0x14f4
->
 
-The IDs are correct. But can you please group the "ROOT" IDs together
-including PCI_DEVICE_ID_AMD_19H_M40H_ROOT? Otherwise, looks good to me.
+--U+ynXLAMuojBXMSJ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Reviewed-by: Yazen Ghannam <yazen.ghannam@amd.com>
+On Fri, Jun 10, 2022 at 04:40:20PM +0100, Aidan MacDonald wrote:
+> Mark Brown <broonie@kernel.org> writes:
+> > On Tue, Jun 07, 2022 at 04:53:09PM +0100, Aidan MacDonald wrote:
 
-Thanks,
-Yazen
+> >> -	if (!chip->sub_reg_offsets || !chip->not_fixed_stride) {
+> >> +	if (chip->get_irq_reg) {
+> >> +		reg = chip->get_irq_reg(base_reg, i);
+> >> +	} else if (!chip->sub_reg_offsets || !chip->not_fixed_stride) {
+
+> > It seems like it would be cleaner and clearer to refactor things so that
+> > we always have a get_irq_reg() with standard chips getting given a
+> > default implementation which implements the current behaviour.
+
+> I don't think that is a good way to clean things up. I only intended
+> get_irq_reg() to be a quick hack to solve a problem; in my opinion it
+> would be a poor abstraction to base the API around.
+
+I'm not sure why you are proposing this change if you are so convinced
+it's a bad idea.  If you want to propose a different rework go ahead,
+but adding the new operation without any form of factoring out is an
+issue.  At first glance your suggestion looked plausible.
+
+--U+ynXLAMuojBXMSJ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKjdYgACgkQJNaLcl1U
+h9CDtwf/clBKHc7KCJ2ljj8ni+Y5o/BMRY1SoDObFay/XE+ilxSWGfKX6EgfFiWz
+827Zd2fpD+hDEiUTcOZeovGH6TavbS9+6H4PscGRcTC3wYqGFFbUj+LDCt25t+Pc
++dkx10P5yUA6EsSQ40HwGVREKokYmbZ4+MxOXK3nu5p8KRGuKtTcMq2VgnhbR0ub
+OIZL3uofaMioD/SuPX8ILI/T1DH71iIP192txH7nF3W0b2Cv7i17xq6um1i9JH5X
+W4mmtDYS7aYF6K96WzV5knlILV88uFyKSPzH3PMS4eXHeR/MqM5/hcluVTZ1Yvo6
+e3yquuxp8XZltPBuU3QID4j9daKkHw==
+=Rx1o
+-----END PGP SIGNATURE-----
+
+--U+ynXLAMuojBXMSJ--
