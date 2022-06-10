@@ -2,123 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30E64C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 14:31:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 258E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 14:33:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349605AbiFJObs (ORCPT
+        id S1344568AbiFJOdK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 10:31:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60878 "EHLO
+        Fri, 10 Jun 2022 10:33:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348475AbiFJOa5 (ORCPT
+        with ESMTP id S1349581AbiFJOcw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 10:30:57 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 855D613F1D;
-        Fri, 10 Jun 2022 07:30:56 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id c14so24892180pgu.13;
-        Fri, 10 Jun 2022 07:30:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=wPNc3YvhAKuZLbvOFj+YsMRBSINjKQKB6Tw7aOecxnY=;
-        b=eBE6qF4nlQl7Zl2Y4JN5Z1kvFZl/AvZg1ykYz2OKXqqlf6SNkATUGveE5RrTyXmiSp
-         RRld7jpaOGIFNJpMPHA158hfAMfiStGQYI064o9FNhVJmdU+wRZJ42aIxmNZW/epc5pe
-         fYGe3RBFCo0LxqlGUQKgds2G0BlrOkrLByI0ZFY0wZ/43XyaxOq3nQyibWRrVZnwc8pL
-         jr9470C59XLGlpAQTlAtnH9aq8R3AgPgy0avtBIKcIkRQABAw6m9oaFg248RhNohZ04J
-         hpgD4Y+i+2t4rbRcUHpDX6vOPpuVd5+emZXbqmxSd1utJtEQ1CYUEFVP46XPd3jueNQl
-         INig==
+        Fri, 10 Jun 2022 10:32:52 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0861715A774
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 07:32:08 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id x13-20020a0566022c4d00b0065491fa5614so13359466iov.9
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 07:32:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=wPNc3YvhAKuZLbvOFj+YsMRBSINjKQKB6Tw7aOecxnY=;
-        b=qqJerzY2777VP4gG+vVoVAcDXwuD/aeTvT4dy6udLi/bo3QJJJge2tAQoDG9HvhRrg
-         OhRTZmPtRKn58gq4d2vuFIpU9wAS7vqyGGNP4fAOxFVDYqcryBSShq5mYPmQhcUyPU/L
-         Glp97FpvL8FI7j15LpVTgaNDBEioLNRjNnDB6GmSm3Mlk4FYCPl2MXtnmIvoe9+wZ1l5
-         XZj4nL3t8JmHJwTNlNPSaFIYp068Mk95NwrbZvyoahs6Hz1ZJbMiU98oy722ChHxZjRw
-         WE4fa2mJb67Zq1CEfxamjCBaOpXpR6uPhzlUsottMZck9aNb0JPYoE/MVje2eB4YviyY
-         Wblg==
-X-Gm-Message-State: AOAM530b1irAxtJ+i7DVIvOif7ObfrgWUkLcAS/VA+XHAcqjoCsfxrdc
-        DUm4ofX5Tbzj6Od/sXaYBrE=
-X-Google-Smtp-Source: ABdhPJzCB3uljDqce/mdsq39xtZtFj4DHSmy8Fr2Uz/g4kc45x2vaMBQUmnrDT8/griTkJPSHdLmAg==
-X-Received: by 2002:a05:6a00:1705:b0:51c:26ae:569c with SMTP id h5-20020a056a00170500b0051c26ae569cmr25188270pfc.28.1654871456011;
-        Fri, 10 Jun 2022 07:30:56 -0700 (PDT)
-Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
-        by smtp.gmail.com with ESMTPSA id s6-20020a170902ea0600b0016232dbd01fsm18851339plg.292.2022.06.10.07.30.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jun 2022 07:30:55 -0700 (PDT)
-Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Max Staudt <max@enpas.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        netdev@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH v6 7/7] can: skb: drop tx skb if in listen only mode
-Date:   Fri, 10 Jun 2022 23:30:09 +0900
-Message-Id: <20220610143009.323579-8-mailhol.vincent@wanadoo.fr>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220610143009.323579-1-mailhol.vincent@wanadoo.fr>
-References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
- <20220610143009.323579-1-mailhol.vincent@wanadoo.fr>
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=dBwT/GewIb4u/iM9PTgYVKCQr4XeG2XuGw8gqgFMWzo=;
+        b=7Z72dWVnSEkOEkfPz/1Erc/WZbTHI9TaoBOYUuY0xeFtQMl6zfssxUsUsiZG3YgIe9
+         IJsnm18eARhLA5ib0S9Vfdl+Ke4ZcNIxvvN/13UdPoyqw8t5ymy2vorc01gLyWNrUV0j
+         h9zSkxckNgLsXnHj2KX7ysi90B+p47Qo3j0ybXa43ZWrBL5f2/8mBPWBgKOK9JBVCeEe
+         db9nBAVNeQuLl8JBOzNtPr7nAg1j24QUcuGlYyrznkM4qxjgYKgN8Z6o26dkk7N5Mpdq
+         N54s6BeyUVs7A6O/FjmgviWk4jiK9+zYE2GiW75kgRn3A08en5IPVxiMxP3eUZrK0quO
+         4i3w==
+X-Gm-Message-State: AOAM53046cHgK17VKj03HJ+PfVxqqz0a15wjEHzbKv9fSnbq6Wdu/XOx
+        P/oO7LuoHU1PKzvmaUwhHGenmiuULJMOuJNDklUJeX6tahXY
+X-Google-Smtp-Source: ABdhPJxZC7xLFJwZPQpK28/wlVTKx8U4aObsuf6r6sNYsMk+4XSkmM+KJia9oHhaqiBdSsxIr1q6P+1MUGVKAca5nBLajkDgIciS
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a92:ca08:0:b0:2d3:c490:40c3 with SMTP id
+ j8-20020a92ca08000000b002d3c49040c3mr26018727ils.167.1654871528295; Fri, 10
+ Jun 2022 07:32:08 -0700 (PDT)
+Date:   Fri, 10 Jun 2022 07:32:08 -0700
+In-Reply-To: <20220610141252.1266-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000097d22505e118cdbf@google.com>
+Subject: Re: [syzbot] KASAN: use-after-free Read in inet_bind2_bucket_find
+From:   syzbot <syzbot+98fd2d1422063b0f8c44@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Frames can be directly injected to a can driver via the packet
-socket. By doing so, it is possible to reach the
-net_device_ops::ndo_start_xmit function even if the driver is
-configured in listen only mode.
+Hello,
 
-Add a check in can_dropped_invalid_skb() to discard the skb if
-CAN_CTRLMODE_LISTENONLY is set.
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
----
- drivers/net/can/dev/skb.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+Reported-and-tested-by: syzbot+98fd2d1422063b0f8c44@syzkaller.appspotmail.com
 
-diff --git a/drivers/net/can/dev/skb.c b/drivers/net/can/dev/skb.c
-index dc9da76c0470..8bb62dd864c8 100644
---- a/drivers/net/can/dev/skb.c
-+++ b/drivers/net/can/dev/skb.c
-@@ -5,6 +5,7 @@
-  */
- 
- #include <linux/can/dev.h>
-+#include <linux/can/netlink.h>
- #include <linux/module.h>
- 
- #define MOD_DESC "CAN device driver interface"
-@@ -293,6 +294,7 @@ static bool can_skb_headroom_valid(struct net_device *dev, struct sk_buff *skb)
- bool can_dropped_invalid_skb(struct net_device *dev, struct sk_buff *skb)
- {
- 	const struct canfd_frame *cfd = (struct canfd_frame *)skb->data;
-+	struct can_priv *priv = netdev_priv(dev);
- 
- 	if (skb->protocol == htons(ETH_P_CAN)) {
- 		if (unlikely(skb->len != CAN_MTU ||
-@@ -306,8 +308,13 @@ bool can_dropped_invalid_skb(struct net_device *dev, struct sk_buff *skb)
- 		goto inval_skb;
- 	}
- 
--	if (!can_skb_headroom_valid(dev, skb))
-+	if (!can_skb_headroom_valid(dev, skb)) {
-+		goto inval_skb;
-+	} else if (priv->ctrlmode & CAN_CTRLMODE_LISTENONLY) {
-+		netdev_info_once(dev,
-+				 "interface in listen only mode, dropping skb\n");
- 		goto inval_skb;
-+	}
- 
- 	return false;
- 
--- 
-2.35.1
+Tested on:
 
+commit:         664a393a Merge tag 'input-for-v5.19-rc0' of git://git...
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+console output: https://syzkaller.appspot.com/x/log.txt?x=13c9c95ff00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=9b19cdd2d45cc221
+dashboard link: https://syzkaller.appspot.com/bug?extid=98fd2d1422063b0f8c44
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=11405720080000
+
+Note: testing is done by a robot and is best-effort only.
