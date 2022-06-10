@@ -2,97 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D92F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 03:45:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE45CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 03:46:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346248AbiFJDpr (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 23:45:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45924 "EHLO
+        id S241929AbiFJDqk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 9 Jun 2022 23:46:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241354AbiFJDpW (ORCPT
+        with ESMTP id S234635AbiFJDqi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 23:45:22 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A129387E3B;
-        Thu,  9 Jun 2022 20:45:21 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id u12-20020a17090a1d4c00b001df78c7c209so1108252pju.1;
-        Thu, 09 Jun 2022 20:45:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=/uH0Tg1zVcDlHNhyIIFBcnnUKdSwUfTJgB1DfUre/zI=;
-        b=m778EZofcp8jmVOVkAKDDP61gGR2HG8R0OXzo+MpDab171Mk1W3ub7xZw4Einp8RWe
-         patQ/hICpLAv7EnecP8O6G76Dp7U8HglbfIHajf8ihzzhSb2HJ5YIqyv1BsSxO7EdVgQ
-         R73K0wJbMVTQsOMKQEga30/qoSPzhwO6agjrNg6+vMYhMpu+Ib6vjmkE4eWNRtYUHsv+
-         ErXYDKR0nS1H6enG5kZR1VwXJfp0bDZRqP+KG51PuzLWOyOwgBPpIgJ+UDUqzJPPrbYa
-         1JR1sdY1hs2Qjdp7bQ4qrxey5RprDuLkyszvWKGcRQd60ckcKMJidKny6tEocO0oLDe6
-         wkGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=/uH0Tg1zVcDlHNhyIIFBcnnUKdSwUfTJgB1DfUre/zI=;
-        b=vJwJOQd1QEDp8ukHaw7B5UObYP3SWlOvqQPDx5NJIG0u8O6pw66J/TZQ69tMDGtJna
-         zo5TRLBHQvVMHR/DtUuVUNTfoaMODaL3QW73cG4dvQ4r8qmTJtu19h/QCUk4hPkybNTu
-         nsJZsw9hiVCIzizSwBLh1jcuEb+vJnXwwZYCj2p65HWFqSd8X8dugQZ7Lt1zl8btjjhe
-         nRErNuhw0MIlUgRJfS6IabbCUNxaRa45wtuS+cH2raARdunpaN5EosGck4c4YGEotyYI
-         UCv3kxXR4vJRzzyRpaps+tHd5qKNUoQw3k35PjKEc4kRYj4YpL/+GX/91oaOkzXITeUi
-         +xww==
-X-Gm-Message-State: AOAM530Cts8ydRVCiE1PZ8OE6y/xgWWh/PiWBBPuW9iKNPRRPcRSKzSH
-        62GKiy+TsGR8IlS2e0f3EqY=
-X-Google-Smtp-Source: ABdhPJys1yEG2SHw3qwtRRUfFmmb0j8fT9xupsIS8suAMdra/9NzHar2iteHWtU2X9V9SJmCDJ0Paw==
-X-Received: by 2002:a17:902:d409:b0:167:7425:caa8 with SMTP id b9-20020a170902d40900b001677425caa8mr25625352ple.72.1654832720895;
-        Thu, 09 Jun 2022 20:45:20 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.27])
-        by smtp.gmail.com with ESMTPSA id u30-20020a63b55e000000b003fc136f9a7dsm5908368pgo.38.2022.06.09.20.45.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 20:45:20 -0700 (PDT)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     edumazet@google.com
-Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        pabeni@redhat.com, imagedong@tencent.com, kafai@fb.com,
-        talalahmad@google.com, keescook@chromium.org,
-        dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH net-next v3 9/9] net: tcp: use LINUX_MIB_TCPABORTONLINGER in tcp_rcv_state_process()
-Date:   Fri, 10 Jun 2022 11:42:04 +0800
-Message-Id: <20220610034204.67901-10-imagedong@tencent.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220610034204.67901-1-imagedong@tencent.com>
-References: <20220610034204.67901-1-imagedong@tencent.com>
+        Thu, 9 Jun 2022 23:46:38 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45F064B1FC
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 20:46:33 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LK6KN4GnJz1K9BP;
+        Fri, 10 Jun 2022 11:44:40 +0800 (CST)
+Received: from dggpemm500016.china.huawei.com (7.185.36.25) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 10 Jun 2022 11:46:31 +0800
+Received: from huawei.com (10.67.174.33) by dggpemm500016.china.huawei.com
+ (7.185.36.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 10 Jun
+ 2022 11:46:31 +0800
+From:   "GONG, Ruiqi" <gongruiqi1@huawei.com>
+To:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Liao Chang <liaochang1@huawei.com>,
+        Li Zhengyu <lizhengyu3@huawei.com>
+CC:     <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        "Wang Weiyang" <wangweiyang2@huawei.com>,
+        Gong Ruiqi <gongruiqi1@huawei.com>
+Subject: [PATCH] RISC-V: Fix a linkage error related to CONFIG_KEXEC{,_FILE}
+Date:   Fri, 10 Jun 2022 19:46:59 +0800
+Message-ID: <20220610114659.1506718-1-gongruiqi1@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.33]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500016.china.huawei.com (7.185.36.25)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+Following files (currently compiled with CONFIG_KEXEC=y) are needed to
+be linked with kernel/kexec_core.o (compiled with CONFIG_KEXEC_CORE=y):
 
-The statistics for 'tp->linger2 < 0' in tcp_rcv_state_process() seems
-more accurate to be LINUX_MIB_TCPABORTONLINGER.
+  arch/riscv/kernel/kexec_relocate.o,
+  arch/riscv/kernel/crash_save_regs.o,
+  arch/riscv/kernel/machine_kexec.o
 
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
+But CONFIG_KEXEC_CORE can also be selected by CONFIG_KEXEC_FILE
+regardless of CONFIG_KEXEC, which causes the problem as the Link
+specifies.
+
+Fix this problem by changing the controling config of the above
+arch/riscv/kernel/*.o to be CONFIG_KEXEC_CORE, as how some other
+architectures do.
+
+Link: https://lore.kernel.org/all/202206100324.B0KDSd1C-lkp@intel.com/
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 6261586e0c91 ("RISC-V: Add kexec_file support")
+Signed-off-by: GONG, Ruiqi <gongruiqi1@huawei.com>
 ---
- net/ipv4/tcp_input.c | 2 +-
+ arch/riscv/kernel/Makefile | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 9b9247b34a6c..07b06c12fe87 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -6592,7 +6592,7 @@ enum skb_drop_reason tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+diff --git a/arch/riscv/kernel/Makefile b/arch/riscv/kernel/Makefile
+index c71d6591d539..33bb60a354cd 100644
+--- a/arch/riscv/kernel/Makefile
++++ b/arch/riscv/kernel/Makefile
+@@ -78,7 +78,7 @@ obj-$(CONFIG_SMP) += cpu_ops_sbi.o
+ endif
+ obj-$(CONFIG_HOTPLUG_CPU)	+= cpu-hotplug.o
+ obj-$(CONFIG_KGDB)		+= kgdb.o
+-obj-$(CONFIG_KEXEC)		+= kexec_relocate.o crash_save_regs.o machine_kexec.o
++obj-$(CONFIG_KEXEC_CORE)	+= kexec_relocate.o crash_save_regs.o machine_kexec.o
+ obj-$(CONFIG_KEXEC_FILE)	+= elf_kexec.o machine_kexec_file.o
+ obj-$(CONFIG_CRASH_DUMP)	+= crash_dump.o
  
- 		if (tp->linger2 < 0) {
- 			tcp_done(sk);
--			NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPABORTONDATA);
-+			NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPABORTONLINGER);
- 			return SKB_DROP_REASON_TCP_LINGER;
- 		}
- 		if (TCP_SKB_CB(skb)->end_seq != TCP_SKB_CB(skb)->seq &&
 -- 
-2.36.1
+2.25.1
 
