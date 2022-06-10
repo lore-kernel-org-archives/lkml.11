@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AC3BCCA47E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9E36CCA480
 	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 09:18:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349008AbiFJJSg (ORCPT
+        id S1349104AbiFJJSp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 05:18:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39560 "EHLO
+        Fri, 10 Jun 2022 05:18:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344071AbiFJJPR (ORCPT
+        with ESMTP id S1343678AbiFJJQM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 05:15:17 -0400
+        Fri, 10 Jun 2022 05:16:12 -0400
 Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 19F3E1F429D;
-        Fri, 10 Jun 2022 02:15:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6B6C1250244;
+        Fri, 10 Jun 2022 02:15:30 -0700 (PDT)
 Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id C5D2B16A4;
-        Fri, 10 Jun 2022 12:15:58 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com C5D2B16A4
+        by mail.baikalelectronics.com (Postfix) with ESMTP id 48BF816B0;
+        Fri, 10 Jun 2022 12:16:10 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 48BF816B0
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1654852558;
-        bh=2X2tj0g7BNrh6TEYb9Px1boK3zW3+LS2tBFfgKTpkMw=;
+        d=baikalelectronics.ru; s=mail; t=1654852570;
+        bh=t8xC/g0AeI6QYGkjn4ZUR5rnwRyuianyz03xk/t0oIA=;
         h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=qpBFX/4I3F9GwG6TqV2+bdl1hqy4urw/LVTfM37AtJbzwqWCtb5JlrMdrxp6jPdgo
-         H+8KweE5+/+5Z0LQOmqNOvsDiKe02mrDHMcB0suzSaYfGlVptLGnxHBhskxP+BhA6T
-         mqefWX5tDh6Dbjtc+gvqi7bOLavS045uESnwhkKg=
+        b=XXzrWDZBDPQCFr0bHhPTLiCwr7cApYfR+GEVa1PsF/CfAMDqeLNEHZxbVuOubZCua
+         GzSBVY2ZlunLpKXwVgngxtP4C7WvsVBQE87ux6u/ggnuReajTLQLpJ+pRKNtuKQq9C
+         bSjqJ0dgLT8EOnrwEkRvCj3XfI3Xs42cUbSOGFWU=
 Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 10 Jun 2022 12:15:06 +0300
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 10 Jun 2022 12:15:17 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
         Vinod Koul <vkoul@kernel.org>, Rob Herring <robh@kernel.org>,
@@ -42,11 +42,10 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
         =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
         <linux-pci@vger.kernel.org>, <dmaengine@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Gustavo Pimentel <Gustavo.Pimentel@synopsys.com>
-Subject: [PATCH v3 03/24] dmaengine: dw-edma: Convert ll/dt phys-address to PCIe bus/DMA address
-Date:   Fri, 10 Jun 2022 12:14:38 +0300
-Message-ID: <20220610091459.17612-4-Sergey.Semin@baikalelectronics.ru>
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v3 19/24] dmaengine: dw-edma: Use non-atomic io-64 methods
+Date:   Fri, 10 Jun 2022 12:14:54 +0300
+Message-ID: <20220610091459.17612-20-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20220610091459.17612-1-Sergey.Semin@baikalelectronics.ru>
 References: <20220610091459.17612-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -57,101 +56,191 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In accordance with the dw_edma_region.paddr field semantics it is supposed
-to be initialized with a memory base address visible by the DW eDMA
-controller. If the DMA engine is embedded into the DW PCIe Host/EP
-controller, then the address should belong to the Local CPU/Application
-memory. If eDMA is remotely accessible across the PCIe bus via the PCIe
-memory IOs, then the address needs to be a part of the PCIe bus memory
-space. The later case hasn't been well covered in the corresponding
-glue-driver. Since in general the PCIe memory space doesn't have to match
-the CPU memory space and the pci_dev.resource[] arrays contain the
-resources defined in the CPU memory space, a proper conversion needs to be
-performed, otherwise either the driver won't properly work or much worse
-the memory corruption will happen. The conversion can be done by means of
-the pci_bus_address() method. Let's use it to retrieve the LL, DT and CSRs
-PCIe memory ranges.
+Instead of splitting the 64-bits IOs up into two 32-bits ones it's
+possible to use an available set of the non-atomic readq/writeq methods
+implemented exactly for such cases. They are defined in the dedicated
+header files io-64-nonatomic-lo-hi.h/io-64-nonatomic-hi-lo.h. So in case
+if the 64-bits readq/writeq methods are unavailable on some platforms at
+consideration, the corresponding drivers can have any of these headers
+included and stop locally re-implementing the 64-bits IO accessors taking
+into account the non-atomic nature of the included methods. Let's do that
+in the DW eDMA driver too. Note by doing so we can discard the
+CONFIG_64BIT config ifdefs from the code. Also note that if a platform
+doesn't support 64-bit DBI IOs then the corresponding accessors will just
+directly call the lo_hi_readq()/lo_hi_writeq() methods.
 
-Note in addition to that we need to extend the dw_edma_region.paddr field
-size. The field normally contains a memory range base address to be set in
-the DW eDMA Linked-List pointer register or as a base address of the
-Linked-List data buffer. In accordance with [1] the LL range is supposed
-to be created in the Local CPU/Application memory, but depending on the DW
-eDMA utilization the memory can be created as a part of the PCIe bus
-address space (as in the case of the DW PCIe EP prototype kit). Thus in
-the former case the dw_edma_region.paddr field should have the dma_addr_t
-type, while in the later one - pci_bus_addr_t. Seeing the corresponding
-CSRs are always 64-bits wide let's convert the dw_edma_region.paddr field
-type to be u64 and let the client code logic to make sure it has a valid
-address visible by the DW eDMA controller. For instance the DW eDMA PCIe
-glue-driver initializes the field with the addresses from the PCIe bus
-memory space.
-
-[1] DesignWare Cores PCI Express Controller Databook - DWC PCIe Root Port,
-    v.5.40a, March 2019, p.1103
-
-Fixes: 41aaff2a2ac0 ("dmaengine: Add Synopsys eDMA IP PCIe glue-logic")
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 ---
- drivers/dma/dw-edma/dw-edma-pcie.c | 8 ++++----
- include/linux/dma/edma.h           | 2 +-
- 2 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/dma/dw-edma/dw-edma-v0-core.c | 71 +++++++++------------------
+ 1 file changed, 24 insertions(+), 47 deletions(-)
 
-diff --git a/drivers/dma/dw-edma/dw-edma-pcie.c b/drivers/dma/dw-edma/dw-edma-pcie.c
-index d6b5e2463884..04c95cba1244 100644
---- a/drivers/dma/dw-edma/dw-edma-pcie.c
-+++ b/drivers/dma/dw-edma/dw-edma-pcie.c
-@@ -231,7 +231,7 @@ static int dw_edma_pcie_probe(struct pci_dev *pdev,
- 			return -ENOMEM;
+diff --git a/drivers/dma/dw-edma/dw-edma-v0-core.c b/drivers/dma/dw-edma/dw-edma-v0-core.c
+index e6d611176891..4348d2323125 100644
+--- a/drivers/dma/dw-edma/dw-edma-v0-core.c
++++ b/drivers/dma/dw-edma/dw-edma-v0-core.c
+@@ -8,6 +8,8 @@
  
- 		ll_region->vaddr += ll_block->off;
--		ll_region->paddr = pdev->resource[ll_block->bar].start;
-+		ll_region->paddr = pci_bus_address(pdev, ll_block->bar);
- 		ll_region->paddr += ll_block->off;
- 		ll_region->sz = ll_block->sz;
+ #include <linux/bitfield.h>
  
-@@ -240,7 +240,7 @@ static int dw_edma_pcie_probe(struct pci_dev *pdev,
- 			return -ENOMEM;
++#include <linux/io-64-nonatomic-lo-hi.h>
++
+ #include "dw-edma-core.h"
+ #include "dw-edma-v0-core.h"
+ #include "dw-edma-v0-regs.h"
+@@ -53,8 +55,6 @@ static inline struct dw_edma_v0_regs __iomem *__dw_regs(struct dw_edma *dw)
+ 		SET_32(dw, rd_##name, value);		\
+ 	} while (0)
  
- 		dt_region->vaddr += dt_block->off;
--		dt_region->paddr = pdev->resource[dt_block->bar].start;
-+		dt_region->paddr = pci_bus_address(pdev, dt_block->bar);
- 		dt_region->paddr += dt_block->off;
- 		dt_region->sz = dt_block->sz;
+-#ifdef CONFIG_64BIT
+-
+ #define SET_64(dw, name, value)				\
+ 	writeq(value, &(__dw_regs(dw)->name))
+ 
+@@ -80,8 +80,6 @@ static inline struct dw_edma_v0_regs __iomem *__dw_regs(struct dw_edma *dw)
+ 		SET_64(dw, rd_##name, value);		\
+ 	} while (0)
+ 
+-#endif /* CONFIG_64BIT */
+-
+ #define SET_COMPAT(dw, name, value)			\
+ 	writel(value, &(__dw_regs(dw)->type.unroll.name))
+ 
+@@ -164,14 +162,13 @@ static inline u32 readl_ch(struct dw_edma *dw, enum dw_edma_dir dir, u16 ch,
+ #define SET_LL_32(ll, value) \
+ 	writel(value, ll)
+ 
+-#ifdef CONFIG_64BIT
+-
+ static inline void writeq_ch(struct dw_edma *dw, enum dw_edma_dir dir, u16 ch,
+ 			     u64 value, void __iomem *addr)
+ {
++	unsigned long flags;
++
+ 	if (dw->chip->mf == EDMA_MF_EDMA_LEGACY) {
+ 		u32 viewport_sel;
+-		unsigned long flags;
+ 
+ 		raw_spin_lock_irqsave(&dw->lock, flags);
+ 
+@@ -181,22 +178,25 @@ static inline void writeq_ch(struct dw_edma *dw, enum dw_edma_dir dir, u16 ch,
+ 
+ 		writel(viewport_sel,
+ 		       &(__dw_regs(dw)->type.legacy.viewport_sel));
++	}
++
++	if (dw->chip->flags & DW_EDMA_CHIP_32BIT_DBI)
++		lo_hi_writeq(value, addr);
++	else
+ 		writeq(value, addr);
+ 
++	if (dw->chip->mf == EDMA_MF_EDMA_LEGACY)
+ 		raw_spin_unlock_irqrestore(&dw->lock, flags);
+-	} else {
+-		writeq(value, addr);
+-	}
+ }
+ 
+ static inline u64 readq_ch(struct dw_edma *dw, enum dw_edma_dir dir, u16 ch,
+ 			   const void __iomem *addr)
+ {
+-	u32 value;
++	unsigned long flags;
++	u64 value;
+ 
+ 	if (dw->chip->mf == EDMA_MF_EDMA_LEGACY) {
+ 		u32 viewport_sel;
+-		unsigned long flags;
+ 
+ 		raw_spin_lock_irqsave(&dw->lock, flags);
+ 
+@@ -206,12 +206,15 @@ static inline u64 readq_ch(struct dw_edma *dw, enum dw_edma_dir dir, u16 ch,
+ 
+ 		writel(viewport_sel,
+ 		       &(__dw_regs(dw)->type.legacy.viewport_sel));
++	}
++
++	if (dw->chip->flags & DW_EDMA_CHIP_32BIT_DBI)
++		value = lo_hi_readq(addr);
++	else
+ 		value = readq(addr);
+ 
++	if (dw->chip->mf == EDMA_MF_EDMA_LEGACY)
+ 		raw_spin_unlock_irqrestore(&dw->lock, flags);
+-	} else {
+-		value = readq(addr);
+-	}
+ 
+ 	return value;
+ }
+@@ -225,8 +228,6 @@ static inline u64 readq_ch(struct dw_edma *dw, enum dw_edma_dir dir, u16 ch,
+ #define SET_LL_64(ll, value) \
+ 	writeq(value, ll)
+ 
+-#endif /* CONFIG_64BIT */
+-
+ /* eDMA management callbacks */
+ void dw_edma_v0_core_off(struct dw_edma *dw)
+ {
+@@ -325,19 +326,10 @@ static void dw_edma_v0_core_write_chunk(struct dw_edma_chunk *chunk)
+ 		/* Transfer size */
+ 		SET_LL_32(&lli[i].transfer_size, child->sz);
+ 		/* SAR */
+-		#ifdef CONFIG_64BIT
+-			SET_LL_64(&lli[i].sar.reg, child->sar);
+-		#else /* CONFIG_64BIT */
+-			SET_LL_32(&lli[i].sar.lsb, lower_32_bits(child->sar));
+-			SET_LL_32(&lli[i].sar.msb, upper_32_bits(child->sar));
+-		#endif /* CONFIG_64BIT */
++		SET_LL_64(&lli[i].sar.reg, child->sar);
+ 		/* DAR */
+-		#ifdef CONFIG_64BIT
+-			SET_LL_64(&lli[i].dar.reg, child->dar);
+-		#else /* CONFIG_64BIT */
+-			SET_LL_32(&lli[i].dar.lsb, lower_32_bits(child->dar));
+-			SET_LL_32(&lli[i].dar.msb, upper_32_bits(child->dar));
+-		#endif /* CONFIG_64BIT */
++		SET_LL_64(&lli[i].dar.reg, child->dar);
++
+ 		i++;
  	}
-@@ -256,7 +256,7 @@ static int dw_edma_pcie_probe(struct pci_dev *pdev,
- 			return -ENOMEM;
  
- 		ll_region->vaddr += ll_block->off;
--		ll_region->paddr = pdev->resource[ll_block->bar].start;
-+		ll_region->paddr = pci_bus_address(pdev, ll_block->bar);
- 		ll_region->paddr += ll_block->off;
- 		ll_region->sz = ll_block->sz;
+@@ -349,12 +341,7 @@ static void dw_edma_v0_core_write_chunk(struct dw_edma_chunk *chunk)
+ 	/* Channel control */
+ 	SET_LL_32(&llp->control, control);
+ 	/* Linked list */
+-	#ifdef CONFIG_64BIT
+-		SET_LL_64(&llp->llp.reg, chunk->ll_region.paddr);
+-	#else /* CONFIG_64BIT */
+-		SET_LL_32(&llp->llp.lsb, lower_32_bits(chunk->ll_region.paddr));
+-		SET_LL_32(&llp->llp.msb, upper_32_bits(chunk->ll_region.paddr));
+-	#endif /* CONFIG_64BIT */
++	SET_LL_64(&llp->llp.reg, chunk->ll_region.paddr);
+ }
  
-@@ -265,7 +265,7 @@ static int dw_edma_pcie_probe(struct pci_dev *pdev,
- 			return -ENOMEM;
- 
- 		dt_region->vaddr += dt_block->off;
--		dt_region->paddr = pdev->resource[dt_block->bar].start;
-+		dt_region->paddr = pci_bus_address(pdev, dt_block->bar);
- 		dt_region->paddr += dt_block->off;
- 		dt_region->sz = dt_block->sz;
+ void dw_edma_v0_core_start(struct dw_edma_chunk *chunk, bool first)
+@@ -417,18 +404,8 @@ void dw_edma_v0_core_start(struct dw_edma_chunk *chunk, bool first)
+ 		SET_CH_32(dw, chan->dir, chan->id, ch_control1,
+ 			  (DW_EDMA_V0_CCS | DW_EDMA_V0_LLE));
+ 		/* Linked list */
+-		if ((chan->dw->chip->flags & DW_EDMA_CHIP_32BIT_DBI) ||
+-		    !IS_ENABLED(CONFIG_64BIT)) {
+-			SET_CH_32(dw, chan->dir, chan->id, llp.lsb,
+-				  lower_32_bits(chunk->ll_region.paddr));
+-			SET_CH_32(dw, chan->dir, chan->id, llp.msb,
+-				  upper_32_bits(chunk->ll_region.paddr));
+-		} else {
+-		#ifdef CONFIG_64BIT
+-			SET_CH_64(dw, chan->dir, chan->id, llp.reg,
+-				  chunk->ll_region.paddr);
+-		#endif
+-		}
++		SET_CH_64(dw, chan->dir, chan->id, llp.reg,
++			  chunk->ll_region.paddr);
  	}
-diff --git a/include/linux/dma/edma.h b/include/linux/dma/edma.h
-index 8b134896c9ed..5ec7cf2f14fc 100644
---- a/include/linux/dma/edma.h
-+++ b/include/linux/dma/edma.h
-@@ -18,7 +18,7 @@
- struct dw_edma;
- 
- struct dw_edma_region {
--	phys_addr_t	paddr;
-+	u64		paddr;
- 	void __iomem	*vaddr;
- 	size_t		sz;
- };
+ 	/* Doorbell */
+ 	SET_RW_32(dw, chan->dir, doorbell,
 -- 
 2.35.1
 
