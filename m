@@ -2,126 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3979FCCA47E
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 07:24:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F0A3C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 07:25:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346924AbiFJHYR (ORCPT
+        id S1346885AbiFJHZS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 03:24:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40712 "EHLO
+        Fri, 10 Jun 2022 03:25:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346795AbiFJHXw (ORCPT
+        with ESMTP id S1346914AbiFJHYc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 03:23:52 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83B9321C3B3;
-        Fri, 10 Jun 2022 00:23:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654845830; x=1686381830;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=POm9JCNG8hbNwtmENSOZ9MbIkytxsFpCygdTnLttjFA=;
-  b=Qp0RU2LzOuzhubuY+egvd67s4UG2dJVeEIbXUyr6WJuWfiNhlAD7+Os1
-   /Wu0cPP+nNOUe1TWI6tuF1NQ/2b8PZCGlhw10i+Yzh+9QDbk1EYxUKIY5
-   WvTj73lM2NH67rxuJAjrcIcFr3u6Y/ufa53GmgOe9jhOE2+75uhyAMfkE
-   WOiDfSdbqVYSmyirMd6ShPK1X/iqQBwMZf8OjjQgniYUT5F7ZlACHi6fH
-   AkZFH2Hc7shOUbWW654F+wBv2UUVrwNt48q9ppgmKNmylaBUQiQrG+PIN
-   xGIj1O45crCZ94sGKxXxnwscTel0VOTuxpKrcCr7633dLaPVOpphQMkVb
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="302918958"
-X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
-   d="scan'208";a="302918958"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 00:23:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
-   d="scan'208";a="649685430"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by fmsmga004.fm.intel.com with ESMTP; 10 Jun 2022 00:23:44 -0700
-Date:   Fri, 10 Jun 2022 15:15:47 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Ivan Bornyakov <i.bornyakov@metrotek.ru>
-Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com, corbet@lwn.net,
-        Ivan Bornyakov <brnkv.i1@gmail.com>,
-        Conor.Dooley@microchip.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, system@metrotek.ru
-Subject: Re: [PATCH v17 2/4] docs: fpga: mgr: document parse_header() callback
-Message-ID: <20220610071547.GA655812@yilunxu-OptiPlex-7050>
-References: <20220609154752.20781-1-i.bornyakov@metrotek.ru>
- <20220609154752.20781-3-i.bornyakov@metrotek.ru>
+        Fri, 10 Jun 2022 03:24:32 -0400
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2057.outbound.protection.outlook.com [40.107.95.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB1931B9A7A;
+        Fri, 10 Jun 2022 00:24:27 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RzB0rCFsgQxp1C1X8oiPhA7i17vnSflGF30SSrUDzp3/Jgi8j2T+YcGY+nZvAgolSAgMUv4RE6NSjcY/ouT87/MHyf8qSJCD6cUa9EsJDrQ5X+TQpzzGIbwPkd4CY/Qb8/3/3BJGjIGmHTqAIqAtOnhc2HD7w4/fM1LtUVZYi+kLHFdNBqT3G82BIoqcQGMWhhQ/9sKWYq1GlfrsbHDMUV+UwGqNOHAvS1IE28HLdPfy/+0TU/L5+6DIcTGuOuZVyFXni6J5iahkHQsVNyFqynlD2GzagKf57NXi/Edf5uBxM6O/kb4KyjSnFm1a58uawnJ+H5plIGXfASxNhz8x6g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/LxTsjea6D5Hp/AQRsBDnDWiiCJ4WxEoD8x8UqArK2Q=;
+ b=GTJ3ujuBe952LQSnVKyfAA4SRaJRYMMbplZxEU5m/3w69NRGch17lyksqqmPGhuNN8XVjpIu/lSL4RBmU8OhHiKEQSWU2kI90pVS09WKEwWCDbR2qxIIgWYXijBoRhbZsepfwOgOoTJq0qC8PswqaFnq4u2qNaV0zSqOZ5PQ3lTBf+WHsceCpy/FpR6ghHwdbzI0bIQ7p9YxipsEhZE5fvEJxHFfQTryrDRt5T2Phmplb/pSmVAo9D7eFP0bviAswvS916liLcPV7TLrRWzL+3/sL18jfdWLIxlEQahnSTHljdZ7KDTZG9gFFLF+1V6iBxuQdKwQtgpohhoJfGp8EA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/LxTsjea6D5Hp/AQRsBDnDWiiCJ4WxEoD8x8UqArK2Q=;
+ b=hfLHMVXn8FfvKIJDj1GsxbnzGoYsirAALjTtGLNXtmxKR7aDJpZhTminqAKiUzFp6xqMby//gCzTNPqw0dfxNvpfNBj1N0uDj8Zw3gUTJwMnHdjd51VRRhax6lgz0w7pKdYK2OVF1Bjn9IVL6RZ4jvVroaYAOyDoFPjA9tarpmY=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com (2603:10b6:408:43::13)
+ by BL1PR12MB5189.namprd12.prod.outlook.com (2603:10b6:208:308::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.13; Fri, 10 Jun
+ 2022 07:24:26 +0000
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::e0fd:45cf:c701:2731]) by BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::e0fd:45cf:c701:2731%6]) with mapi id 15.20.5332.013; Fri, 10 Jun 2022
+ 07:24:25 +0000
+Message-ID: <c079243c-9084-b565-2320-20453815c79a@amd.com>
+Date:   Fri, 10 Jun 2022 09:24:19 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] dma-buf: Don't use typeof in va_arg
+Content-Language: en-US
+To:     Wan Jiabing <wanjiabing@vivo.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
+References: <20220610072019.3075023-1-wanjiabing@vivo.com>
+From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+In-Reply-To: <20220610072019.3075023-1-wanjiabing@vivo.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: VI1PR09CA0104.eurprd09.prod.outlook.com
+ (2603:10a6:803:78::27) To BN8PR12MB3587.namprd12.prod.outlook.com
+ (2603:10b6:408:43::13)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220609154752.20781-3-i.bornyakov@metrotek.ru>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 09589f81-332b-47df-a058-08da4ab23f7b
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5189:EE_
+X-Microsoft-Antispam-PRVS: <BL1PR12MB5189D12321449B1FCB00048E83A69@BL1PR12MB5189.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Dic+jkue90w0Lkvgw+GEhd5R3x2KGeOXyKvdSgE78Mb6YGTp8XDawBiKGlLQkl90x1UbijZ41P77sJnLELU1eiNke6UjMpTwDIAacrJQ+RmtgtWps09J5VJlAVh+P0Xfs/bmm+CMaQmqSAG+3xmaI0v15LMscIIVgCljY2qgkZ7PYEXhEj1vj33G/Q0OFBb77gtkjzPTXvBqb+Pvw6jEpMyhQqUzo3iWJ2H0yLb3TpPIWDNWTqRttTwrF4Y/NhRu2leRJQVcJbiYoI6azAHuHdJXhkOKv/TSJMMBlIEi1PSsgnh3n/E+JIaSu87uNMROS6MRhNWt1il7n5Tm5D264UWmC8B0Xm8PbYBIwSKhPL/DM/jp+f0YpxL+95afGL7WqLDYkU20rz3oshX9QJ7Kvxj54a8JxFIIWrvo4rsmDfZJzzkTrp75NICUw/PJ1mHofHYxuQ/7cWDj/v2gShfAOwmk/ROv9kA05tj7QuJq9wRlIxrn16qmrVfvKOLBn8MzGRt5JvmF+ib/MlO7Ngi75C8mWvQGLmRd4fmMRrrsMmh74MD/Tqz8V0Q5bOcZFTd/ppCVCSnmWTpNYbQFouAl3Kyw61IQtGJP0zFcaNKEQF2WehR703GJIeQvkjmlakhpwRd0vJeGRZ1I2rp82zYV8QysaMy3Htb6yb5D3nqkyKdsETjTiU98sFsWvBp6s+k7IjSSMzvmUj1Fb3KBqnylAtjkJ94qzI+muyjfpw/aPIJl5qogjRBl26e44Vdksbwn
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3587.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2616005)(86362001)(83380400001)(31696002)(110136005)(6506007)(6486002)(36756003)(5660300002)(316002)(8936002)(31686004)(66946007)(6512007)(2906002)(508600001)(38100700002)(186003)(26005)(8676002)(66556008)(66476007)(6666004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?R2k1WGZSakM0aGRBQWRPY0x2MDlNdnp4M0NLUDVkNFV6YU1RN0pyTnJISDBv?=
+ =?utf-8?B?aDYvYVB1S2pRTWZKQWI3N1ZPeFJ6aUcrWVh2UjBEYmsybU4zdDJWVitvZ2FT?=
+ =?utf-8?B?STZnT1FHd0ZlVmY4YXRreVRrcUgxUTY4eG9EcFJIQ2thcHUxVnYvVTZBMTVj?=
+ =?utf-8?B?WGVDdGhhK2U0Zm1DZ2lUM25wUXkyTnBtMWttL056K0NPb0FHMFRTbGx2TkhS?=
+ =?utf-8?B?bVBCQzQ1WXMvd0JNRWRRbWJFdEFHL2Y3MDFFcEFJWVYyc0t1UGNjUHRHcGdn?=
+ =?utf-8?B?dEx3R29XeTVnZXF4MGdFSGZHckpZQzFUdHJhckRIcHhpSENYWllkZ1ptbzlL?=
+ =?utf-8?B?N3k0M3dwVTFSRVREQW8vOVc0QmlRem1vS3NDTVQ1YllEcjlETEtjWDgvd3VQ?=
+ =?utf-8?B?bjk4UlRiNi84N3pDRWN5dzhueFJjMzFqc21ITy9yOFhzZUNxZTdGUktHZ3pj?=
+ =?utf-8?B?SmZkaURveEJjVWh1V0JmeFlTcmVycGRDVzNEdlB1Z1puMzZwaDJQZFpsUmhO?=
+ =?utf-8?B?VzdtRWV3d1lOcFlyM0xBNXlUUHVSeWw2a1pDNTkyZDVmWG9vdTF4WWtaclZn?=
+ =?utf-8?B?a2xMV0x2SFl5d1RHWElWbnFTRTdCVVRWcFROYnNKMGlFOXY5V0pIRnBLUjc2?=
+ =?utf-8?B?aW5GanYrUUtQM2tvSGRoNk9uYUovTnBrbjcvdDRHQzVaRHBRUGYvUDRSbkZ6?=
+ =?utf-8?B?MXlHVlUrbmNJUE1WaS9LdmI2TnZQYVlHZjJNZFNPbG5YeU9MTHJxRVVKSnVa?=
+ =?utf-8?B?ZXU5S2tMU1JIYXBtcE5zVWJGWUZNR1FqdWlyQzREN2YrN0ZIaWJXZlIxL2VG?=
+ =?utf-8?B?Z3VqKzIxMThXTjFGV0hPYUcwMkxGUDFjU0htdldMaE80UzRGSTVkUWthUnRq?=
+ =?utf-8?B?UkM3SlJFaTVHNUZPZzRmL0ZOelkzN1ZDN1pxQ0t0c3NscERlSUkzQ0xRenRn?=
+ =?utf-8?B?RCt5UVdMc1RXM2FHQkdWamhPbWp6dHhEQmdNTzVHTkdXMkdJOTZqemdQeGkr?=
+ =?utf-8?B?UlAyNDNxTGw0MFhTZ3JoMWIrSkRkYkhQZ1Q5VzJGbHlCaVlYUTEwcHJveW1R?=
+ =?utf-8?B?OUxpUXI4ZU4rdUJOT3VFdEpYUXB4MExWSlhwRFhOL2x3UlFKdzB3VXVKU2hL?=
+ =?utf-8?B?RG5HOFhFNkpTK1duSFQxaVUyZEZQRDhoYXpzVGRWSDFTVEZReVU5VnJzL2Ri?=
+ =?utf-8?B?QjgyL29SRkE4NGJhY25NYmplZ3R6RWQyUmMwNWpENk9sUXZKVTR4bmRyNUhU?=
+ =?utf-8?B?dkpFZXNXOHBNTkZKVlAyZEZMck9LdjNLd0h1akl6VWIxN29RZHhhMjlyeW02?=
+ =?utf-8?B?VU8rTy91NldOKyt5eE1UQXpOL25NVklKRm1EaWRQOGdhcmFJc3hOZDZWK1RH?=
+ =?utf-8?B?b1FGRzFCOTZUeXUyWHhoUUtaNWtGR1NKbzRKUFVWaERlTTBuYVBZbDY1QWhG?=
+ =?utf-8?B?ejVXRmxidmV2dnRqeXNUZ1dIRTVtWm9jVE82MzkvdVpoV0ZjeHhOeUV0RSs0?=
+ =?utf-8?B?MFlVQ3Y3c0J0ZWtuV3JhZHNHVmdLbnkvUkZramhNVy9NKzFZOE1CUDFnK1NO?=
+ =?utf-8?B?MnNxK1NYZTJqaHU1NlpOUWdhTzBjeTEzbElYZGszc0NVaGdiU09XYUJOTTl3?=
+ =?utf-8?B?VUkzZ3NxdklNelVoVDFRa0hvdDEycmc1eTZZMmFEaTZFdGpBaSs3aTFWclpU?=
+ =?utf-8?B?RTVkNkVmeUZnVUVtc2ZOVjNuKzFCUHlNUktEdkcyL0FtUkF2OGFyRkxCSGNm?=
+ =?utf-8?B?azcrUUY0NDNaVnhUNno2V2JIMHEwTlQwVGdNa2JuVElONmJuVmpxRGJOYnhB?=
+ =?utf-8?B?cHB5REhud2p0N2lidWVnZVVYQUxsbnNEYzRicG0vL2hSUEMrTCsvT21CTUpu?=
+ =?utf-8?B?SGlRakZydXIyY1BIaEhtRTBBYUR4Vm1ZVURwTmpHN3JPbjdESkQ1NXRkdU9i?=
+ =?utf-8?B?cVJ1cW1kUDFBUDN3Q0VaKzNrRG5Rem9JbDI0b20rK0U1aE9MUkxtandiem9u?=
+ =?utf-8?B?TVUvZnlXWGk5eU0rRHlJclkrQk96b1F2WTZ2RDhLZm50QzFFUzNaL1llczZD?=
+ =?utf-8?B?MGMxNDZDRHI5akZTby9KVGxWOTd1am9ENHY4M0kyMzRVMkhQTm5RWDRIRURV?=
+ =?utf-8?B?QnQ1RGxSdlJoMDRncXQzY1J0a1FmY1RVQmZ1R2Fha1VIaWoremJsaXZuSU1l?=
+ =?utf-8?B?QkJ0YVVxZS9Da2VTN0h4clZlb1lNSkVWRGxZbEswRlZseHo0YkxuTUhCRUtj?=
+ =?utf-8?B?WWdEYWtoaWt2ZG1mN2w5VzQwMXEzUDVnYzZHT1RuZjN6RmtGQUxack9DUzRH?=
+ =?utf-8?B?OTlXdWZ6cDlQSDBHa0dWNEZodWNJbTdOWUhrbytGUWlsOGZqOFVzZz09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 09589f81-332b-47df-a058-08da4ab23f7b
+X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3587.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jun 2022 07:24:25.8234
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: PcooZvNhIYs3zT25cJ4Q9WkUGRuTsCGCjT3oOpnxi18eqrdvgXIuZAlX26iW/xgy
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5189
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 09, 2022 at 06:47:50PM +0300, Ivan Bornyakov wrote:
-> Document newly introduced fpga_manager_ops callback parse_header() along
-> with header_size and data_size fields of struct fpga_image_info.
-> 
-> Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
+Am 10.06.22 um 09:20 schrieb Wan Jiabing:
+> Fix following coccicheck warning:
+> ./drivers/dma-buf/st-dma-fence-unwrap.c:75:39-45: ERROR: reference preceded by free on line 70
+>
+> Use 'struct dma_fence *' instead of 'typeof(*fences)' to avoid this
+> warning and also fix other 'typeof(*fences)' to make them consistent.
+
+Well that doesn't looks correct to me.
+
+*fence should be valid at this point, why does coccicheck things it is 
+freed?
+
+Regards,
+Christian.
+
+>
+> Fixes: 0c5064fa8d5a ("dma-buf: cleanup dma_fence_unwrap selftest v2")
+> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
 > ---
->  Documentation/driver-api/fpga/fpga-mgr.rst | 31 ++++++++++++++++------
->  1 file changed, 23 insertions(+), 8 deletions(-)
-> 
-> diff --git a/Documentation/driver-api/fpga/fpga-mgr.rst b/Documentation/driver-api/fpga/fpga-mgr.rst
-> index 42c01f396dce..db0852bd3ddc 100644
-> --- a/Documentation/driver-api/fpga/fpga-mgr.rst
-> +++ b/Documentation/driver-api/fpga/fpga-mgr.rst
-> @@ -79,14 +79,29 @@ do the programming sequence for this particular FPGA.  These ops return 0 for
->  success or negative error codes otherwise.
->  
->  The programming sequence is::
-> - 1. .write_init
-> - 2. .write or .write_sg (may be called once or multiple times)
-> - 3. .write_complete
-> -
-> -The .write_init function will prepare the FPGA to receive the image data.  The
-> -buffer passed into .write_init will be at most .initial_header_size bytes long;
-> -if the whole bitstream is not immediately available then the core code will
-> -buffer up at least this much before starting.
-> + 1. .parse_header
+>   drivers/dma-buf/st-dma-fence-unwrap.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/dma-buf/st-dma-fence-unwrap.c b/drivers/dma-buf/st-dma-fence-unwrap.c
+> index 4105d5ea8dde..1137a6d90b32 100644
+> --- a/drivers/dma-buf/st-dma-fence-unwrap.c
+> +++ b/drivers/dma-buf/st-dma-fence-unwrap.c
+> @@ -56,7 +56,7 @@ static struct dma_fence *mock_array(unsigned int num_fences, ...)
+>   
+>   	va_start(valist, num_fences);
+>   	for (i = 0; i < num_fences; ++i)
+> -		fences[i] = va_arg(valist, typeof(*fences));
+> +		fences[i] = va_arg(valist, struct dma_fence *);
+>   	va_end(valist);
+>   
+>   	array = dma_fence_array_create(num_fences, fences,
+> @@ -72,7 +72,7 @@ static struct dma_fence *mock_array(unsigned int num_fences, ...)
+>   error_put:
+>   	va_start(valist, num_fences);
+>   	for (i = 0; i < num_fences; ++i)
+> -		dma_fence_put(va_arg(valist, typeof(*fences)));
+> +		dma_fence_put(va_arg(valist, struct dma_fence *));
+>   	va_end(valist);
+>   	return NULL;
+>   }
 
-    1. .parse_header (optional, may be called once or multiple times)
-
-> + 2. .write_init
-> + 3. .write or .write_sg (may be called once or multiple times)
-> + 4. .write_complete
-> +
-> +The .parse_header function will set header_size and data_size to
-> +struct fpga_image_info. If header_size is set, .write function will get image
-> +buffer starting at header_size offset from the beginning. If data_size is set,
-> +.write function will get data_size bytes of the image buffer, otherwise .write
-> +will get data up to the end of image buffer. This will not affect .write_sg,
-> +.write_sg will still get whole image in sg_table form. If FPGA image is a
-
-							  If FPGA image is already mapped as a 
-
-Others look good to me.
-
-Thanks,
-Yilun
-
-> +single contiguous buffer, whole buffer will be passed into .parse_header.
-> +If image is in scatter-gather form, core code will buffer up at least
-> +.initial_header_size before the first call of .parse_header, if it is not
-> +enough, .parse_header should set desired size into info->header_size and
-> +return -EAGAIN, then it will be called again with greater part of image buffer
-> +on the input.
-> +
-> +The .write_init function will prepare the FPGA to receive the image data. The
-> +buffer passed into .write_init will be at least info->header_size bytes long,
-> +if it's defined, otherwise .initial_header_size; if the whole bitstream is not
-> +immediately available then the core code will buffer up at least this much
-> +before starting.
->  
->  The .write function writes a buffer to the FPGA. The buffer may be contain the
->  whole FPGA image or may be a smaller chunk of an FPGA image.  In the latter
-> -- 
-> 2.35.1
-> 
