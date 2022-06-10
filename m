@@ -2,94 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3905C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 07:15:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45B06C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 07:16:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346603AbiFJHPQ (ORCPT
+        id S1346576AbiFJHQg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 03:15:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40008 "EHLO
+        Fri, 10 Jun 2022 03:16:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244941AbiFJHPL (ORCPT
+        with ESMTP id S235299AbiFJHQ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 03:15:11 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1192194BDE
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 00:15:09 -0700 (PDT)
-X-UUID: c7881e8812cf4e198c58810b993b162f-20220610
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:2713b238-328a-4f95-b3a8-ba94f5fe33ea,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:0
-X-CID-META: VersionHash:2a19b09,CLOUDID:6c035fe5-2ba2-4dc1-b6c5-11feb6c769e0,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:0,BEC:nil
-X-UUID: c7881e8812cf4e198c58810b993b162f-20220610
-Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
-        (envelope-from <kuan-ying.lee@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 556457494; Fri, 10 Jun 2022 15:15:05 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Fri, 10 Jun 2022 15:15:04 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 10 Jun 2022 15:15:04 +0800
-From:   Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
-To:     Jan Kiszka <jan.kiszka@siemens.com>,
-        Kieran Bingham <kbingham@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-CC:     <chinwen.chang@mediatek.com>, <nicholas.tang@mediatek.com>,
-        <casper.li@mediatek.com>, <andrew.yang@mediatek.com>,
-        Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>
-Subject: [PATCH] scripts/gdb: change kernel config dumping method
-Date:   Fri, 10 Jun 2022 15:14:57 +0800
-Message-ID: <20220610071500.9656-1-Kuan-Ying.Lee@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Fri, 10 Jun 2022 03:16:29 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BCF02109C1;
+        Fri, 10 Jun 2022 00:16:24 -0700 (PDT)
+Received: from [192.168.0.2] (ip5f5aeb3f.dynamic.kabel-deutschland.de [95.90.235.63])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id D0BA161EA1923;
+        Fri, 10 Jun 2022 09:16:20 +0200 (CEST)
+Message-ID: <1472eccd-429b-0a18-565c-7de2e5ed44f2@molgen.mpg.de>
+Date:   Fri, 10 Jun 2022 09:16:20 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] Bluetooth: btmtksdio: Add in-band wakeup support
+Content-Language: en-US
+To:     Sean Wang <sean.wang@mediatek.com>
+Cc:     marcel@holtmann.org, johan.hedberg@gmail.com,
+        Soul.Huang@mediatek.com, YN.Chen@mediatek.com,
+        Leon.Yen@mediatek.com, Eric-SY.Chang@mediatek.com,
+        Deren.Wu@mediatek.com, km.lin@mediatek.com,
+        robin.chiu@mediatek.com, Eddie.Chen@mediatek.com,
+        ch.yeh@mediatek.com, posh.sun@mediatek.com, ted.huang@mediatek.com,
+        Eric.Liang@mediatek.com, Stella.Chang@mediatek.com,
+        Tom.Chou@mediatek.com, steve.lee@mediatek.com, jsiuda@google.com,
+        frankgor@google.com, abhishekpandit@google.com,
+        michaelfsun@google.com, mcchou@chromium.org, shawnku@google.com,
+        linux-bluetooth@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Yake Yang <yake.yang@mediatek.com>
+References: <742cdffcf110e1601257207fb2b0d3f426d4008c.1654819586.git.objelf@gmail.com>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <742cdffcf110e1601257207fb2b0d3f426d4008c.1654819586.git.objelf@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-MAGIC_START("IKCFG_ST") and MAGIC_END("IKCFG_ED") are moved out
-from the kernel_config_data variable [1].
+Dear Sean,
 
-Thus, we parse kernel_config_data directly instead of considering
-offset of MAGIC_START and MAGIC_END.
 
-[1] https://lore.kernel.org/lkml/1550108893-21226-1-git-send-email-yamada.masahiro@socionext.com/
+Thank you for the patch.
 
-Fixes: 13610aa908dc ("kernel/configs: use .incbin directive to embed config_data.gz")
-Signed-off-by: Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
----
- scripts/gdb/linux/config.py | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Am 10.06.22 um 02:17 schrieb sean.wang@mediatek.com:
+> From: Sean Wang <sean.wang@mediatek.com>
+> 
+> 'ce64b3e94919 ("Bluetooth: mt7921s: Support wake on bluetooth")'
+> have added the waken-on-bluetooth via dedicated GPIO.
 
-diff --git a/scripts/gdb/linux/config.py b/scripts/gdb/linux/config.py
-index 90e1565b1967..8843ab3cbadd 100644
---- a/scripts/gdb/linux/config.py
-+++ b/scripts/gdb/linux/config.py
-@@ -24,9 +24,9 @@ class LxConfigDump(gdb.Command):
-             filename = arg
- 
-         try:
--            py_config_ptr = gdb.parse_and_eval("kernel_config_data + 8")
--            py_config_size = gdb.parse_and_eval(
--                    "sizeof(kernel_config_data) - 1 - 8 * 2")
-+            py_config_ptr = gdb.parse_and_eval("&kernel_config_data")
-+            py_config_ptr_end = gdb.parse_and_eval("&kernel_config_data_end")
-+            py_config_size = py_config_ptr_end - py_config_ptr
-         except gdb.error as e:
-             raise gdb.GdbError("Can't find config, enable CONFIG_IKCONFIG?")
- 
--- 
-2.18.0
+Maybe:
 
+Commit ce64b3e94919 ("Bluetooth: mt7921s: Support wake on bluetooth") 
+adds the wake on bluethooth via a dedicated GPIO.
+
+> The patch extends the function to the waken-on-bluetooth via SDIO DAT1 pin
+> (inband wakeup) when the SDIO host driver is able to support.
+
+Maybe:
+
+Extend the wake-on-bluetooth to use the SDIO DAT1 pin (in-band wakeup), 
+when supported by the SDIO host driver.
+
+How did you test this? In what datasheet is it documented?
+
+> Co-developed-by: Yake Yang <yake.yang@mediatek.com>
+> Signed-off-by: Yake Yang <yake.yang@mediatek.com>
+> Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+> ---
+>   drivers/bluetooth/btmtksdio.c | 8 ++++++++
+>   1 file changed, 8 insertions(+)
+> 
+> diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
+> index d6700efcfe8c..9ed3af4ba51a 100644
+> --- a/drivers/bluetooth/btmtksdio.c
+> +++ b/drivers/bluetooth/btmtksdio.c
+> @@ -118,6 +118,7 @@ MODULE_DEVICE_TABLE(sdio, btmtksdio_table);
+>   #define BTMTKSDIO_FUNC_ENABLED		3
+>   #define BTMTKSDIO_PATCH_ENABLED		4
+>   #define BTMTKSDIO_HW_RESET_ACTIVE	5
+> +#define BTMTKSDIO_INBAND_WAKEUP		6
+>   
+>   struct mtkbtsdio_hdr {
+>   	__le16	len;
+> @@ -1294,6 +1295,9 @@ static bool btmtksdio_sdio_wakeup(struct hci_dev *hdev)
+>   		.wakeup_delay = cpu_to_le16(0x20),
+>   	};
+>   
+> +	if (test_bit(BTMTKSDIO_INBAND_WAKEUP, &bdev->tx_state))
+> +		return may_wakeup;
+> +
+>   	if (may_wakeup && bdev->data->chipid == 0x7921) {
+>   		struct sk_buff *skb;
+>   
+> @@ -1384,6 +1388,10 @@ static int btmtksdio_probe(struct sdio_func *func,
+>   	 */
+>   	pm_runtime_put_noidle(bdev->dev);
+>   
+> +	/* Mark if the mmc host can support waken by SDIO */
+
+Maybe:
+
+Mark if MMC host supports wake on bluetooth by SDIO
+
+> +	if (device_can_wakeup(func->card->host->parent))
+> +		set_bit(BTMTKSDIO_INBAND_WAKEUP, &bdev->tx_state);
+> +
+>   	err = device_init_wakeup(bdev->dev, true);
+>   	if (err)
+>   		bt_dev_err(hdev, "failed to initialize device wakeup");
+
+
+Kind regards,
+
+Paul
