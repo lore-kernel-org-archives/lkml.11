@@ -2,73 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1BE4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 00:43:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6330BCCA473
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 00:44:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345808AbiFJAnr (ORCPT
+        id S1345750AbiFJAoQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 20:43:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41900 "EHLO
+        Thu, 9 Jun 2022 20:44:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240009AbiFJAne (ORCPT
+        with ESMTP id S235447AbiFJAoN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 20:43:34 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 077693BF6C4;
-        Thu,  9 Jun 2022 17:43:33 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
-        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <heiko@sntech.de>)
-        id 1nzSk7-0001oS-8o; Fri, 10 Jun 2022 02:43:15 +0200
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     palmer@dabbelt.com, paul.walmsley@sifive.com
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        wefu@redhat.com, guoren@kernel.org, cmuellner@linux.com,
-        philipp.tomsich@vrull.eu, hch@lst.de, samuel@sholland.org,
-        atishp@atishpatra.org, anup@brainfault.org, mick@ics.forth.gr,
-        robh+dt@kernel.org, krzk+dt@kernel.org, devicetree@vger.kernel.org,
-        drew@beagleboard.org, Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH 1/3] dt-bindings: riscv: document cbom-block-size
-Date:   Fri, 10 Jun 2022 02:43:06 +0200
-Message-Id: <20220610004308.1903626-2-heiko@sntech.de>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220610004308.1903626-1-heiko@sntech.de>
-References: <20220610004308.1903626-1-heiko@sntech.de>
+        Thu, 9 Jun 2022 20:44:13 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7480A3BF6F5;
+        Thu,  9 Jun 2022 17:44:09 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LK2K13shsz4xZ0;
+        Fri, 10 Jun 2022 10:44:05 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1654821847;
+        bh=z5V4Kzg505bmetiWUu8deQBFvo/TnO9WAFuswm4qLfE=;
+        h=Date:From:To:Cc:Subject:From;
+        b=GAT56PA56PKZFF/+5hXfVt7MwON0elT30oY3ENoKyFkX4xuv5l1l7NEKKDLNW16wi
+         VSjtFWevJ47/SsbFQ7AO6zMdWnGGprmljgxDUYhbpE2XiGMz/UMPS0Qw4VwlcUJK7c
+         oqAqJ7FSrpZqfIr7ae0dLQsV+9hnKgmGeRDEZXwfCzmrZaHvmCaAnBer0RUxKIVO6/
+         kQcczSdCnUF/Q45sN/BUl4JCr61I9cOuxklu9HvqhxcTaRtZwvzZuS7PiWgU3BJpO/
+         QDdGgI3D+zu43ItuAvpzY/wDs7InvINHnoaU0RzqkZpY+woTlTsbdrijmbsVnk7JXh
+         FwaJDKwUz2bhg==
+Date:   Fri, 10 Jun 2022 10:44:03 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Intel Graphics <intel-gfx@lists.freedesktop.org>,
+        DRI <dri-devel@lists.freedesktop.org>
+Cc:     Christian =?UTF-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+        Jason Ekstrand <jason.ekstrand@collabora.com>,
+        Jason Ekstrand <jason.ekstrand@intel.com>,
+        Jason Ekstrand <jason@jlekstrand.net>,
+        =?UTF-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Simon Ser <contact@emersion.fr>
+Subject: linux-next: manual merge of the drm-misc tree with Linus' tree
+Message-ID: <20220610104403.02453bdb@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_//n1q_nVPZI353vHmpReO.BO";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Zicbom operates on a block-size defined for the cpu-core,
-which does not necessarily match other cache-sizes used.
+--Sig_//n1q_nVPZI353vHmpReO.BO
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-So add the necessary property for the system to know the core's
-block-size.
+Hi all,
 
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Reviewed-by: Anup Patel <anup@brainfault.org>
----
- Documentation/devicetree/bindings/riscv/cpus.yaml | 5 +++++
- 1 file changed, 5 insertions(+)
+Today's linux-next merge of the drm-misc tree got a conflict in:
 
-diff --git a/Documentation/devicetree/bindings/riscv/cpus.yaml b/Documentation/devicetree/bindings/riscv/cpus.yaml
-index d632ac76532e..873dd12f6e89 100644
---- a/Documentation/devicetree/bindings/riscv/cpus.yaml
-+++ b/Documentation/devicetree/bindings/riscv/cpus.yaml
-@@ -63,6 +63,11 @@ properties:
-       - riscv,sv48
-       - riscv,none
- 
-+  riscv,cbom-block-size:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      The blocksize in bytes for the Zicbom cache operations.
-+
-   riscv,isa:
-     description:
-       Identifies the specific RISC-V instruction set architecture
--- 
-2.35.1
+  include/uapi/linux/dma-buf.h
 
+between commit:
+
+  7c3e9fcad9c7 ("dma-buf: fix use of DMA_BUF_SET_NAME_{A,B} in userspace")
+
+from Linus' tree and commits:
+
+  20e10881a043 ("dma-buf: Add an API for exporting sync files (v14)")
+  594740497e99 ("dma-buf: Add an API for importing sync files (v10)")
+
+from the drm-misc tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc include/uapi/linux/dma-buf.h
+index b1523cb8ab30,30fb8834aa3c..000000000000
+--- a/include/uapi/linux/dma-buf.h
++++ b/include/uapi/linux/dma-buf.h
+@@@ -92,7 -174,9 +174,9 @@@ struct dma_buf_import_sync_file=20
+   * between them in actual uapi, they're just different numbers.
+   */
+  #define DMA_BUF_SET_NAME	_IOW(DMA_BUF_BASE, 1, const char *)
+ -#define DMA_BUF_SET_NAME_A	_IOW(DMA_BUF_BASE, 1, u32)
+ -#define DMA_BUF_SET_NAME_B	_IOW(DMA_BUF_BASE, 1, u64)
+ +#define DMA_BUF_SET_NAME_A	_IOW(DMA_BUF_BASE, 1, __u32)
+ +#define DMA_BUF_SET_NAME_B	_IOW(DMA_BUF_BASE, 1, __u64)
++ #define DMA_BUF_IOCTL_EXPORT_SYNC_FILE	_IOWR(DMA_BUF_BASE, 2, struct dma_=
+buf_export_sync_file)
++ #define DMA_BUF_IOCTL_IMPORT_SYNC_FILE	_IOW(DMA_BUF_BASE, 3, struct dma_b=
+uf_import_sync_file)
+ =20
+  #endif
+
+--Sig_//n1q_nVPZI353vHmpReO.BO
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKik9MACgkQAVBC80lX
+0Gz0UQf+If52KGnDNPV8aqFJ40yP0mwNtBGMkc6Nh2Qyi2ag1uUk/NE5ncbOwlo1
+bbV2b26RGai+ioUJwA3t0AXAfO+M/uSbeKmrBoAh5sLpavykLtVTi5zGltqNZ1Fi
+AqxE9tkOqJNxTCzpqY/VUcSNAnKx/L3b1orKI3YkqaPawWcrB5JSw6zkPXpM0pHl
+sMp77SSVQTxCpUT810jJ0AV3aaSVGnmol0GECQpB2qp4B6n6xaIwDu0o3k10oBlT
+t49weWXmCL4F0DDSsxwfPw6H8Xe+5DmVT+cNpXHkAOrwDfAgPutQ1nsnFMoCGdV9
+iKZ9B1PPTsyhQwzROCjeR8QCc5g0ag==
+=T98u
+-----END PGP SIGNATURE-----
+
+--Sig_//n1q_nVPZI353vHmpReO.BO--
