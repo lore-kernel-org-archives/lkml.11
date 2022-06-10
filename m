@@ -2,101 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FCECC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 05:50:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A50A2C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 05:51:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346312AbiFJFuZ (ORCPT
+        id S1346320AbiFJFv3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 01:50:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38914 "EHLO
+        Fri, 10 Jun 2022 01:51:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244606AbiFJFuN (ORCPT
+        with ESMTP id S233755AbiFJFv0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 01:50:13 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4C3EFDF;
-        Thu,  9 Jun 2022 22:50:12 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id r1so4736978plo.10;
-        Thu, 09 Jun 2022 22:50:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=vxvhQQF+LpnzG0OPsmcVTfh7ByjAVce/l+wkGfbGArM=;
-        b=NFhMzn0s/mJDv488GyWPSpoax0GndAHUQ1lTrr53AfkaSRRVfSB19b1pQe9qZcGlph
-         HISGTAlCzuB5ypUwqn9PXtK6bTIjTkIjj8i6gajhvoEsZ20bIoe4EqHQTAhXB4Xva4x5
-         Y0To4bWkuYWyDB4wg2Bm9x8IaltNwBIO4C54IP6rRFCFvnQ7sCHNm3d51rLmcv29GGK6
-         /kORDTpu2OX/aG9DhftPTvXJwRVPffZrotk+qKkUJA83yqx5Qtabw+inyY914l0UbhCU
-         L2fLXbOQqlWrlaTfnNOGSQFqf1VyiN2UKVOxJsTYw3i31eV2ZLf5OxWzLaYNboxtsIZV
-         ILUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=vxvhQQF+LpnzG0OPsmcVTfh7ByjAVce/l+wkGfbGArM=;
-        b=BjPa20Rm9JK42prGCVZJYqHjOcJDMCFyphkFHqdMnr10nQZ/iw/IN3EyuQT0CfrH3S
-         CyLVwuCIL1/x8Vq1+epsg9ZG7A2xqKL4kCOXE4waNLHUxtElLATUx3SRKKZaxhPKLSEe
-         KfppoRNZzWlbVTygHq9KLfor44qa3UrWU0bdC1eEShzrCInaOMKCmH41QovnTPj74J54
-         S7UECE14xAJZhz8szrnSwA1FhQuGR4WJ/0s/peGYSDH95HacwR86qKAxW8ewQ/pzEagK
-         KWbp4YCaU4vK7oNt7Lz9QOs5XuerphqQwAsIbB6hCqD7gRfQMM21Xxkhms2jKoCiYiA/
-         mZHg==
-X-Gm-Message-State: AOAM532wXF1g+BJ12gvEoe4wkZR0Me9mF5YN3I9RW0bnXRZ8gDDmLdn6
-        cu+gr32BSk1yoCns0cw3xUA=
-X-Google-Smtp-Source: ABdhPJzBLjFomAJHOI1wYcMswzoSAaZrTfsNtpQw5h6hCKVRFVtrsXsNryoAb7uiNieoVMJhTXserw==
-X-Received: by 2002:a17:903:2452:b0:166:4b6c:affb with SMTP id l18-20020a170903245200b001664b6caffbmr38070654pls.68.1654840212476;
-        Thu, 09 Jun 2022 22:50:12 -0700 (PDT)
-Received: from potin-quanta.dhcpserver.local (125-228-123-29.hinet-ip.hinet.net. [125.228.123.29])
-        by smtp.gmail.com with ESMTPSA id f11-20020aa7968b000000b0051b90ac6c15sm18553977pfk.125.2022.06.09.22.50.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 22:50:12 -0700 (PDT)
-From:   Potin Lai <potin.lai.pt@gmail.com>
-To:     Brendan Higgins <brendanhiggins@google.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Rob Herring <robh+dt@kernel.org>,
-        Rayn Chen <rayn_chen@aspeedtech.com>
-Cc:     Patrick Williams <patrick@stwcx.xyz>,
-        Potin Lai <potin.lai@quantatw.com>, linux-i2c@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        Potin Lai <potin.lai.pt@gmail.com>
-Subject: [PATCH v4 2/2] dt-bindings: aspeed-i2c: add properties for setting i2c clock duty cycle
-Date:   Fri, 10 Jun 2022 13:47:22 +0800
-Message-Id: <20220610054722.32229-3-potin.lai.pt@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220610054722.32229-1-potin.lai.pt@gmail.com>
-References: <20220610054722.32229-1-potin.lai.pt@gmail.com>
+        Fri, 10 Jun 2022 01:51:26 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4969E12B028
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 22:51:24 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id EE1CC220BF;
+        Fri, 10 Jun 2022 05:51:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1654840282; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=i1CE2gqZBO3aHwj3VKwM4ZfmOqqHUeaIHIP+GD1WsrY=;
+        b=FUUKGiWMV5dEvnqpKkNHQrBHmnQWISLLqTPhw0GAgfxoyW/5Dezd4JpfrOWdjzY7v+rra0
+        daj5KvJPsZUauo20vduZQEPVGDvl5FL8sQy0sOD1zuHLVJX0PbAO7xYRHP3fHc7U1ULUuS
+        B5Epp+Mbq3VG6cYeVah/vv3ck7qJVOU=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1654840282;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=i1CE2gqZBO3aHwj3VKwM4ZfmOqqHUeaIHIP+GD1WsrY=;
+        b=tQIxqyGYv5jOA7PSNs60+oy6IpiqbYl03Wcpf5OfVyuyyUEaZlLZ2LVL5/8+lclCXrNDPp
+        HTPNzd1JmxeG19Cw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id BB206132F1;
+        Fri, 10 Jun 2022 05:51:22 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id B+SeLNrbomKvEwAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Fri, 10 Jun 2022 05:51:22 +0000
+Message-ID: <97ef8e74-5d5d-2f6d-1be0-e566099e2853@suse.de>
+Date:   Fri, 10 Jun 2022 07:51:22 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] staging: olpc_dcon: mark driver as broken
+Content-Language: en-US
+To:     Javier Martinez Canillas <javierm@redhat.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        dri-devel@lists.freedesktop.org, Sam Ravnborg <sam@ravnborg.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Jerry Lin <wahahab11@gmail.com>, Helge Deller <deller@gmx.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Frederich <jfrederich@gmail.com>,
+        Jon Nettleton <jon.nettleton@gmail.com>,
+        linux-staging@lists.linux.dev
+References: <20220609223424.907174-1-javierm@redhat.com>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <20220609223424.907174-1-javierm@redhat.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------fCcYL6yVIILU5fq9llbNbYPZ"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce a new property for setting a minimum duty cycle for clock high.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------fCcYL6yVIILU5fq9llbNbYPZ
+Content-Type: multipart/mixed; boundary="------------uoErhsz0fH0XzfW7ZOt7uJrc";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Javier Martinez Canillas <javierm@redhat.com>,
+ linux-kernel@vger.kernel.org
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>, dri-devel@lists.freedesktop.org,
+ Sam Ravnborg <sam@ravnborg.org>, Geert Uytterhoeven <geert@linux-m68k.org>,
+ Jerry Lin <wahahab11@gmail.com>, Helge Deller <deller@gmx.de>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jens Frederich <jfrederich@gmail.com>,
+ Jon Nettleton <jon.nettleton@gmail.com>, linux-staging@lists.linux.dev
+Message-ID: <97ef8e74-5d5d-2f6d-1be0-e566099e2853@suse.de>
+Subject: Re: [PATCH] staging: olpc_dcon: mark driver as broken
+References: <20220609223424.907174-1-javierm@redhat.com>
+In-Reply-To: <20220609223424.907174-1-javierm@redhat.com>
 
-* i2c-clk-high-min-percent: a minimum percentage of clock high
+--------------uoErhsz0fH0XzfW7ZOt7uJrc
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-Signed-off-by: Potin Lai <potin.lai.pt@gmail.com>
----
- Documentation/devicetree/bindings/i2c/aspeed,i2c.yaml | 7 +++++++
- 1 file changed, 7 insertions(+)
+DQoNCkFtIDEwLjA2LjIyIHVtIDAwOjM0IHNjaHJpZWIgSmF2aWVyIE1hcnRpbmV6IENhbmls
+bGFzOg0KPiBUaGUgY29tbWl0IGVlY2IzZTRlNWQ5ZCAoInN0YWdpbmc6IG9scGNfZGNvbjog
+YWRkIE9MUEMgZGlzcGxheSBjb250cm9sbGVyDQo+IChEQ09OKSBzdXBwb3J0IikgYWRkZWQg
+dGhpcyBkcml2ZXIgaW4gMjAxMCwgYW5kIGhhcyBiZWVuIGluIHN0YWdpbmcgc2luY2UNCj4g
+dGhlbi4gSXQgd2FzIG1hcmtlZCBhcyBicm9rZW4gYXQgc29tZSBwb2ludCBiZWNhdXNlIGl0
+IGRpZG4ndCBldmVuIGJ1aWxkDQo+IGJ1dCB0aGF0IGdvdCByZW1vdmVkIG9uY2UgdGhlIGJ1
+aWxkIGlzc3VlcyB3ZXJlIGFkZHJlc3NlZC4NCj4gDQo+IEJ1dCBpdCBzZWVtcyB0aGF0IHRo
+ZSB3b3JrIHRvIG1vdmUgdGhpcyBkcml2ZXIgb3V0IG9mIHN0YWdpbmcgaGFzIHN0YWxsZWQs
+DQo+IHRoZSBsYXN0IG5vbi10cml2aWFsIGNoYW5nZSB0byBmaXggb25lIG9mIHRoZSBpdGVt
+cyBtZW50aW9uZWQgaW4gaXRzIHRvZG8NCj4gZmlsZSB3YXMgY29tbWl0IGU0MDIxOWQ1ZTRi
+MiAoInN0YWdpbmc6IG9scGNfZGNvbjogYWxsb3cgc2ltdWx0YW5lb3VzIFhPLTENCj4gYW5k
+IFhPLTEuNSBzdXBwb3J0IikgaW4gMjAxOS4NCj4gDQo+IEFuZCBldmVuIGlmIHdvcmsgdG8g
+ZGVzdGFnZSB0aGUgZHJpdmVyIGlzIHJlc3VtZWQsIHRoZSBmYmRldiBzdWJzeXN0ZW0gaGFz
+DQo+IGJlZW4gZGVwcmVjYXRlZCBmb3IgYSBsb25nIHRpbWUgYW5kIGluc3RlYWQgaXQgc2hv
+dWxkIGJlIHBvcnRlZCB0byBEUk0uDQo+IA0KPiBOb3cgdGhpcyBkcml2ZXIgaXMgcHJldmVu
+dGluZyB0byBsYW5kIGEga2VybmVsIHdpZGUgY2hhbmdlLCB0aGF0IG1ha2VzIHRoZQ0KPiBu
+dW1fcmVnaXN0ZXJlZF9mYiBzeW1ib2wgdG8gYmUgcHJpdmF0ZSB0byB0aGUgZmJtZW0uYyBm
+aWxlLg0KPiANCj4gU28gbGV0J3MganVzdCBtYXJrIHRoZSBkcml2ZXIgYXMgYnJva2VuLiBT
+b21lb25lIGNhbiB0aGVuIHdvcmsgb24gbWFraW5nDQo+IGl0IG5vdCBkZXBlbmQgb24gdGhl
+IG51bV9yZWdpc3RlcmVkX2ZiIHN5bWJvbCwgYWxsb3dpbmcgdG8gZHJvcCB0aGUgYnJva2Vu
+DQo+IGRlcGVuZGVuY3kgYWdhaW4uDQo+IA0KPiBTdWdnZXN0ZWQtYnk6IFNhbSBSYXZuYm9y
+ZyA8c2FtQHJhdm5ib3JnLm9yZz4NCj4gU2lnbmVkLW9mZi1ieTogSmF2aWVyIE1hcnRpbmV6
+IENhbmlsbGFzIDxqYXZpZXJtQHJlZGhhdC5jb20+DQoNCkFja2VkLWJ5OiBUaG9tYXMgWmlt
+bWVybWFubiA8dHppbW1lcm1hbm5Ac3VzZS5kZT4NCg0KPiAtLS0NCj4gDQo+ICAgZHJpdmVy
+cy9zdGFnaW5nL29scGNfZGNvbi9LY29uZmlnIHwgMiArLQ0KPiAgIDEgZmlsZSBjaGFuZ2Vk
+LCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2Ry
+aXZlcnMvc3RhZ2luZy9vbHBjX2Rjb24vS2NvbmZpZyBiL2RyaXZlcnMvc3RhZ2luZy9vbHBj
+X2Rjb24vS2NvbmZpZw0KPiBpbmRleCBkMWEwZGVhMDllZjAuLmQwYmEzNGNjMzJmNyAxMDA2
+NDQNCj4gLS0tIGEvZHJpdmVycy9zdGFnaW5nL29scGNfZGNvbi9LY29uZmlnDQo+ICsrKyBi
+L2RyaXZlcnMvc3RhZ2luZy9vbHBjX2Rjb24vS2NvbmZpZw0KPiBAQCAtMSw3ICsxLDcgQEAN
+Cj4gICAjIFNQRFgtTGljZW5zZS1JZGVudGlmaWVyOiBHUEwtMi4wDQo+ICAgY29uZmlnIEZC
+X09MUENfRENPTg0KPiAgIAl0cmlzdGF0ZSAiT25lIExhcHRvcCBQZXIgQ2hpbGQgRGlzcGxh
+eSBDT050cm9sbGVyIHN1cHBvcnQiDQo+IC0JZGVwZW5kcyBvbiBPTFBDICYmIEZCDQo+ICsJ
+ZGVwZW5kcyBvbiBPTFBDICYmIEZCICYmIEJST0tFTg0KPiAgIAlkZXBlbmRzIG9uIEkyQw0K
+PiAgIAlkZXBlbmRzIG9uIEdQSU9fQ1M1NTM1ICYmIEFDUEkNCj4gICAJc2VsZWN0IEJBQ0tM
+SUdIVF9DTEFTU19ERVZJQ0UNCg0KLS0gDQpUaG9tYXMgWmltbWVybWFubg0KR3JhcGhpY3Mg
+RHJpdmVyIERldmVsb3Blcg0KU1VTRSBTb2Z0d2FyZSBTb2x1dGlvbnMgR2VybWFueSBHbWJI
+DQpNYXhmZWxkc3RyLiA1LCA5MDQwOSBOw7xybmJlcmcsIEdlcm1hbnkNCihIUkIgMzY4MDks
+IEFHIE7DvHJuYmVyZykNCkdlc2Now6RmdHNmw7xocmVyOiBJdm8gVG90ZXYNCg==
 
-diff --git a/Documentation/devicetree/bindings/i2c/aspeed,i2c.yaml b/Documentation/devicetree/bindings/i2c/aspeed,i2c.yaml
-index ea643e6c3ef5..4ea6a112f299 100644
---- a/Documentation/devicetree/bindings/i2c/aspeed,i2c.yaml
-+++ b/Documentation/devicetree/bindings/i2c/aspeed,i2c.yaml
-@@ -49,6 +49,13 @@ properties:
-     description:
-       states that there is another master active on this bus
- 
-+  i2c-clk-high-min-percent:
-+    minimum: 1
-+    maximum: 100
-+    default: 50
-+    description:
-+      a minimum percentage of clock high
-+
- required:
-   - reg
-   - compatible
--- 
-2.17.1
+--------------uoErhsz0fH0XzfW7ZOt7uJrc--
 
+--------------fCcYL6yVIILU5fq9llbNbYPZ
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmKi29oFAwAAAAAACgkQlh/E3EQov+Dn
+ww//ZknGsqmIS/vMyC8OrM7AevAEYaiH4dsdI1FFONjUGV7fnL0XtS0T+raH2zM9Wxa9W2iV+bfx
+8dPMXynHw9gEZEKfOvxi0uNT0Lor8T5y1qqEajrQ3j4bFqLVumhaaA99aex8UyHlbw1+S0fp8zSe
+0cGo6PeGqR+8j7+lHrf9Q1vyQIWAqDrKLSXTcbPTGAtjA1WjHc04rm8Thh4+Xx8q4Arc2qE5KxzJ
+du+QENFVEaIpOXoGoMPsw/F/CacSQs51LfDkj/5JL7C002baEK95/cpl1nUh1kgUxtT8XrCc7bqp
+qCk6RSKJmKM7ZUb6ThaQ7SRjRoer1+c6UNSbgllg/Z5m+WB1fWF7cNdE7SVe78SL0RTLiTgbelvy
+iOu7Q/FsQByc6jUWk1X6gSd6p7LlVilL+Uf2EBudU2QokoTnXofQINkz/qYhH+9oZKnzgwAcl0K3
+SQuxkLTwVnVgJtw2VGOdFGgT/gZ3iwrIhOcXicGDhabAkupatvniE2gYL7ZIDlMhnZ2dnNjvW/bW
+GYucBrsAqVjSdvaPImAEuPK29imoKOCKLZnouqx75V2nvCxHuyG/e76DkVEy3N+uAe+57vf4EIyC
+sBU93Et8jYI9byGiFeRErZZloJmOeippt0NwEhSYGO8YNlUzPsImurPpj1neWGpHP+AbmhJ0z648
+fus=
+=oIn+
+-----END PGP SIGNATURE-----
+
+--------------fCcYL6yVIILU5fq9llbNbYPZ--
