@@ -2,150 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A7F2C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 03:41:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E850EC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 03:41:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346182AbiFJDla (ORCPT
+        id S1346192AbiFJDlk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 9 Jun 2022 23:41:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56482 "EHLO
+        Thu, 9 Jun 2022 23:41:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346077AbiFJDlO (ORCPT
+        with ESMTP id S1346186AbiFJDlh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 9 Jun 2022 23:41:14 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC0E22076B;
-        Thu,  9 Jun 2022 20:41:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654832473; x=1686368473;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=FJL02eXOJ6PqC8kbf/jCzhaldzTN2TIxSgiMk42PRXA=;
-  b=Lfq4p+ZcUMH4qT55KepU3CgVO/53lYnoe3Pv5FBxy9rdvPcJoBfW4YGN
-   hfC0jQQrCYqNBKP95cAXvb3xoXNbfxw2/6SncADpusmo6NUAD2Xb138RQ
-   sZO/F68c3MRmGAH3sKUKCeyq3kz/KHI1R0MfvYsR41vb5+0GiQislF3yX
-   WEvwBZgxd8Tzqs2+/Sa+soRcSHhe1uCE0panR439YiH+zEN+YI7vf7yX3
-   WPzsevgmmxvbxoNRkiW4Fqh2K0qjLTcGjwaDGBdm/OOi/SyzNR7E7/UcG
-   n0MyTk4XoCAopWGhrKwPOENWGfEASVQXk+uZ06cN8j2ccM7R9nBEdUOqu
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="278305274"
-X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
-   d="scan'208";a="278305274"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 20:41:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
-   d="scan'208";a="827994021"
-Received: from p12hl98bong5.png.intel.com ([10.158.65.178])
-  by fmsmga006.fm.intel.com with ESMTP; 09 Jun 2022 20:41:08 -0700
-From:   Ong Boon Leong <boon.leong.ong@intel.com>
-To:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Emilio Riva <emilio.riva@ericsson.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: [PATCH net-next v3 7/7] net: stmmac: make mdio register skips PHY scanning for fixed-link
-Date:   Fri, 10 Jun 2022 11:36:10 +0800
-Message-Id: <20220610033610.114084-8-boon.leong.ong@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220610033610.114084-1-boon.leong.ong@intel.com>
-References: <20220610033610.114084-1-boon.leong.ong@intel.com>
+        Thu, 9 Jun 2022 23:41:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B082C22CBFF
+        for <linux-kernel@vger.kernel.org>; Thu,  9 Jun 2022 20:41:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C74D61D0F
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 03:41:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7440C3411B;
+        Fri, 10 Jun 2022 03:41:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654832495;
+        bh=FOBgQxnOIG6Vjg4rMqHVi9/WCZ3QzT7QfFx2JmFock4=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=ffMcbXXfGBlVTAGcATiVCNOWXJbmiPXjoa6wQtIWoAbVI8Mi2ksQSxlaEEBMfDL+9
+         sZxE3gp2RQOegMk8SC3Cgj6Rd5i2MYADu/jmTcj9osq/fLKnNVaSTlPVV7Qz71sAwV
+         YCTMdoqaUiSLO9gqhWErSdH8yL8vsHXrf4+0m9dj8Pp+IPyerq/NkVhZShKEox4rXt
+         zuN1L/ux0nc5olNBUekj/JHIYgbkt7wDKOWTZpeiZ7WktCLXpiWqWeKKfwc3pP/Ey+
+         l+vuhaVBG0WFwtQz4Ew1Bs1+oBIqT49n4QReYezGDDK1a4IuGO/RTvM8fizRNoWoOi
+         EnNXwOwv6gOOw==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 50B815C05E4; Thu,  9 Jun 2022 20:41:35 -0700 (PDT)
+Date:   Thu, 9 Jun 2022 20:41:35 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Neeraj Upadhyay <quic_neeraju@quicinc.com>
+Cc:     frederic@kernel.org, josh@joshtriplett.org, rostedt@goodmis.org,
+        mathieu.desnoyers@efficios.com, jiangshanlai@gmail.com,
+        joel@joelfernandes.org, linux-kernel@vger.kernel.org,
+        boqun.feng@gmail.com, urezki@gmail.com
+Subject: Re: [PATCH] rcu/tree: Add comment to describe GP done condition in
+ fqs loop
+Message-ID: <20220610034135.GA1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220609071340.30375-1-quic_neeraju@quicinc.com>
+ <20220609202312.GW1790663@paulmck-ThinkPad-P17-Gen-1>
+ <2768ac0a-6f39-e6ba-cb57-33cb3b39de2a@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2768ac0a-6f39-e6ba-cb57-33cb3b39de2a@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-stmmac_mdio_register() lacks fixed-link consideration and only skip PHY
-scanning if it has done DT style PHY discovery. So, for DT or ACPI _DSD
-setting of fixed-link, the PHY scanning should not happen.
+On Fri, Jun 10, 2022 at 08:45:42AM +0530, Neeraj Upadhyay wrote:
+> 
+> 
+> On 6/10/2022 1:53 AM, Paul E. McKenney wrote:
+> > On Thu, Jun 09, 2022 at 12:43:40PM +0530, Neeraj Upadhyay wrote:
+> > > Add a comment to explain why !rcu_preempt_blocked_readers_cgp() condition
+> > > is required on root rnp node, for GP completion check in rcu_gp_fqs_loop().
+> > > 
+> > > Signed-off-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+> > 
+> > Thank you, Neeraj!  As usual, I could not resist the urge to wordsmith
+> > as shown below.  Could you please check to see if I messed something up?
+> 
+> Thanks!
+> > 
+> > 							Thanx, Paul
+> > 
+> > ------------------------------------------------------------------------
+> > 
+> > commit bdf3a744d3ad21336a390bfcc2e41de63f193eaf
+> > Author: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+> > Date:   Thu Jun 9 12:43:40 2022 +0530
+> > 
+> >      rcu/tree: Add comment to describe GP-done condition in fqs loop
+> >      Add a comment to explain why !rcu_preempt_blocked_readers_cgp() condition
+> >      is required on root rnp node, for GP completion check in rcu_gp_fqs_loop().
+> >      Signed-off-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+> >      Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+> > 
+> > diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+> > index a93c5f4d7e092..9a941e7ee6109 100644
+> > --- a/kernel/rcu/tree.c
+> > +++ b/kernel/rcu/tree.c
+> > @@ -2083,7 +2083,15 @@ static noinline_for_stack void rcu_gp_fqs_loop(void)
+> >   		rcu_gp_torture_wait();
+> >   		WRITE_ONCE(rcu_state.gp_state, RCU_GP_DOING_FQS);
+> >   		/* Locking provides needed memory barriers. */
+> > -		/* If grace period done, leave loop. */
+> > +		/*
+> > +		 * Exit the loop if the root rcu_node structure indicates that the grace period
+> > +		 * has ended, leave the loop.  The rcu_preempt_blocked_readers_cgp(rnp) check
+> 
+> We can remove ", leave the loop" ?
+> 
+> > +		 * is required only for single-node rcu_node trees because readers blocking
+> > +		 * the current grace period are queued only on leaf rcu_node structures.
+> > +		 * For multi-node trees, checking the root node's ->qsmask suffices, because a
+> > +		 * given root node's ->qsmask bit is cleared only when all CPUs and tasks from
+> 
+> Do we need to say "a given root node's" , we have only single RCU node in
+> the system, so we can just say, "because root node's ->qsmask bit is
+> cleared..." ?
+> 
+> > +		 * the corresponding leaf node have passed through their quiescent state.
+> 
+> Change "the corresponding leaf node" to "their corresponding leaf nodes" or
+> "the corresponding leaf nodes"?
 
-Tested-by: Emilio Riva <emilio.riva@ericsson.com>
-Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 11 ++++++-----
- drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c | 14 ++++++++++++++
- 2 files changed, 20 insertions(+), 5 deletions(-)
+And the winner is "the corresponding leaf nodes"!  Good catch, and
+thank you!
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 73cae2938f6..bc8edd88175 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1141,19 +1141,20 @@ static void stmmac_check_pcs_mode(struct stmmac_priv *priv)
-  */
- static int stmmac_init_phy(struct net_device *dev)
- {
-+	struct fwnode_handle *fwnode = of_fwnode_handle(priv->plat->phylink_node);
- 	struct stmmac_priv *priv = netdev_priv(dev);
--	struct device_node *node;
- 	int ret;
- 
--	node = priv->plat->phylink_node;
-+	if (!fwnode)
-+		fwnode = dev_fwnode(priv->device);
- 
--	if (node)
--		ret = phylink_of_phy_connect(priv->phylink, node, 0);
-+	if (fwnode)
-+		ret = phylink_fwnode_phy_connect(priv->phylink, fwnode, 0);
- 
- 	/* Some DT bindings do not set-up the PHY handle. Let's try to
- 	 * manually parse it
- 	 */
--	if (!node || ret) {
-+	if (!fwnode || ret) {
- 		int addr = priv->plat->phy_addr;
- 		struct phy_device *phydev;
- 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-index 03d3d1f7aa4..5f177ea8072 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-@@ -434,9 +434,11 @@ int stmmac_mdio_register(struct net_device *ndev)
- 	int err = 0;
- 	struct mii_bus *new_bus;
- 	struct stmmac_priv *priv = netdev_priv(ndev);
-+	struct fwnode_handle *fwnode = of_fwnode_handle(priv->plat->phylink_node);
- 	struct stmmac_mdio_bus_data *mdio_bus_data = priv->plat->mdio_bus_data;
- 	struct device_node *mdio_node = priv->plat->mdio_node;
- 	struct device *dev = ndev->dev.parent;
-+	struct fwnode_handle *fixed_node;
- 	int addr, found, max_addr;
- 
- 	if (!mdio_bus_data)
-@@ -490,6 +492,18 @@ int stmmac_mdio_register(struct net_device *ndev)
- 	if (priv->plat->has_xgmac)
- 		stmmac_xgmac2_mdio_read(new_bus, 0, MII_ADDR_C45);
- 
-+	/* If fixed-link is set, skip PHY scanning */
-+	if (!fwnode)
-+		fwnode = dev_fwnode(priv->device);
-+
-+	if (fwnode) {
-+		fixed_node = fwnode_get_named_child_node(fwnode, "fixed-link");
-+		if (fixed_node) {
-+			fwnode_handle_put(fixed_node);
-+			goto bus_register_done;
-+		}
-+	}
-+
- 	if (priv->plat->phy_node || mdio_node)
- 		goto bus_register_done;
- 
--- 
-2.25.1
+							Thanx, Paul
 
+> Thanks
+> Neeraj
+> 
+> > +		 */
+> >   		if (!READ_ONCE(rnp->qsmask) &&
+> >   		    !rcu_preempt_blocked_readers_cgp(rnp))
+> >   			break;
