@@ -2,273 +2,598 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C351DC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 13:59:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35B2DC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 10 Jun 2022 13:59:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349570AbiFJN5f (ORCPT
+        id S1344310AbiFJN7y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 09:57:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44122 "EHLO
+        Fri, 10 Jun 2022 09:59:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349494AbiFJN5L (ORCPT
+        with ESMTP id S1349986AbiFJN7i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 09:57:11 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 293BD19D605
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 06:56:09 -0700 (PDT)
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25ADoGHn016506;
-        Fri, 10 Jun 2022 13:54:32 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=n8T98L+a+X/tcAsJS6uEHxWawMoJAPBeztGnL9oF2oE=;
- b=mIaxfN/JRkBdPEFjqnnk/tfnWCAoiMJvmcySLXjIF0LV7Q+8NLHZtPlbnlYDOphFAAX6
- YgNRF63G1qymg/Rfs+Va3qOjgI6AOlM68dsKqsVuhOmTtNQK75ioku8bU7V6f9SAW+P6
- dEC1APNpnQc7buFFgLPfyIpYEpeSvAUFnCGd4Kvqkr1TIcecSx0sKXgo0icFzAo7AuQe
- 99gD4YDHeuzX5/0Kf48KStMynGgs3pX+f/s6A9HsZWf+svB0mI0hUVWNBquXuuZRLIDC
- hIfrHIzMMzm1hvBSDp4e56SQR0y/ThKOdMYnLA4rQ/zvgPW39FfVS6C6QvF3eNxov+1p tQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gm6q9gjjx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 10 Jun 2022 13:54:32 +0000
-Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25ADpn5p023398;
-        Fri, 10 Jun 2022 13:54:31 GMT
-Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gm6q9gjjm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 10 Jun 2022 13:54:31 +0000
-Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
-        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25ADaaaS001826;
-        Fri, 10 Jun 2022 13:54:30 GMT
-Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
-        by ppma03wdc.us.ibm.com with ESMTP id 3gfy1a935k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 10 Jun 2022 13:54:30 +0000
-Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
-        by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25ADsTZ37340482
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 10 Jun 2022 13:54:29 GMT
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A81C16A054;
-        Fri, 10 Jun 2022 13:54:29 +0000 (GMT)
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DCB666A04D;
-        Fri, 10 Jun 2022 13:54:21 +0000 (GMT)
-Received: from skywalker.ibmuc.com (unknown [9.43.90.151])
-        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Fri, 10 Jun 2022 13:54:21 +0000 (GMT)
-From:   "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-To:     linux-mm@kvack.org, akpm@linux-foundation.org
-Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
-        Greg Thelen <gthelen@google.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        David Rientjes <rientjes@google.com>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-Subject: [PATCH v6 11/13] mm/demotion: Update node_is_toptier to work with memory tiers
-Date:   Fri, 10 Jun 2022 19:22:27 +0530
-Message-Id: <20220610135229.182859-12-aneesh.kumar@linux.ibm.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220610135229.182859-1-aneesh.kumar@linux.ibm.com>
-References: <20220610135229.182859-1-aneesh.kumar@linux.ibm.com>
+        Fri, 10 Jun 2022 09:59:38 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B73F92044C8;
+        Fri, 10 Jun 2022 06:59:33 -0700 (PDT)
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LKMxG4WGqz67wgF;
+        Fri, 10 Jun 2022 21:58:10 +0800 (CST)
+Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 10 Jun 2022 15:59:31 +0200
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kpsingh@kernel.org>
+CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Roberto Sassu <roberto.sassu@huawei.com>
+Subject: [PATCH v3 2/2] selftests/bpf: Add test for bpf_verify_signature() helper
+Date:   Fri, 10 Jun 2022 15:59:16 +0200
+Message-ID: <20220610135916.1285509-3-roberto.sassu@huawei.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220610135916.1285509-1-roberto.sassu@huawei.com>
+References: <20220610135916.1285509-1-roberto.sassu@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: IfJBOki0lthPdqTpnEtpfbx5SEZ4TnTF
-X-Proofpoint-GUID: 0RXvcVzRo6lHsOe6QLXM6lpJ-Z_kEAP6
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-10_06,2022-06-09_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- impostorscore=0 phishscore=0 spamscore=0 mlxlogscore=999 adultscore=0
- bulkscore=0 priorityscore=1501 clxscore=1015 lowpriorityscore=0 mlxscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206100056
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.204.63.22]
+X-ClientProxiedBy: lhreml753-chm.china.huawei.com (10.201.108.203) To
+ fraeml714-chm.china.huawei.com (10.206.15.33)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With memory tiers support we can have memory only NUMA nodes
-in the top tier from which we want to avoid promotion tracking NUMA
-faults. Update node_is_toptier to work with memory tiers.
-All NUMA nodes are by default top tier nodes. With lower memory
-tiers added we consider all memory tiers above a memory tier having
-CPU NUMA nodes as top memory tier
+Ensure that signature verification is performed successfully from an eBPF
+program, with the new bpf_verify_signature() helper.
 
-Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+Generate a testing signature key and copy sign-file from scripts/ to the
+eBPF selftests directory (if exists), so that the test is selfcontained.
+
+Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
 ---
- include/linux/memory-tiers.h |  6 +++++
- include/linux/node.h         |  5 ----
- mm/huge_memory.c             |  1 +
- mm/memory-tiers.c            | 44 ++++++++++++++++++++++++++++++++++--
- mm/migrate.c                 |  1 +
- mm/mprotect.c                |  1 +
- 6 files changed, 51 insertions(+), 7 deletions(-)
+ tools/testing/selftests/bpf/Makefile          |  11 +-
+ tools/testing/selftests/bpf/config            |   1 +
+ .../selftests/bpf/prog_tests/verify_sig.c     | 200 ++++++++++++++++++
+ .../selftests/bpf/progs/test_verify_sig.c     | 160 ++++++++++++++
+ .../testing/selftests/bpf/verify_sig_setup.sh | 100 +++++++++
+ 5 files changed, 469 insertions(+), 3 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/verify_sig.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_verify_sig.c
+ create mode 100755 tools/testing/selftests/bpf/verify_sig_setup.sh
 
-diff --git a/include/linux/memory-tiers.h b/include/linux/memory-tiers.h
-index 47841379553c..de4098f6d5d5 100644
---- a/include/linux/memory-tiers.h
-+++ b/include/linux/memory-tiers.h
-@@ -39,6 +39,7 @@ int node_reset_memory_tier(int node, int tier);
- struct memory_tier *node_get_memory_tier(int node);
- void node_put_memory_tier(struct memory_tier *memtier);
- void node_get_allowed_targets(pg_data_t *pgdat, nodemask_t *targets);
-+bool node_is_toptier(int node);
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index 2d3c8c8f558a..238911b4e4b4 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -75,7 +75,7 @@ TEST_PROGS := test_kmod.sh \
+ 	test_xsk.sh
  
- #else
+ TEST_PROGS_EXTENDED := with_addr.sh \
+-	with_tunnels.sh ima_setup.sh \
++	with_tunnels.sh ima_setup.sh verify_sig_setup.sh \
+ 	test_xdp_vlan.sh test_bpftool.py
  
-@@ -52,6 +53,11 @@ static inline void node_get_allowed_targets(pg_data_t *pgdat, nodemask_t *target
- {
- 	*targets = NODE_MASK_NONE;
- }
+ # Compile but not part of 'make run_tests'
+@@ -84,7 +84,7 @@ TEST_GEN_PROGS_EXTENDED = test_sock_addr test_skb_cgroup_id_user \
+ 	test_lirc_mode2_user xdping test_cpp runqslower bench bpf_testmod.ko \
+ 	xdpxceiver xdp_redirect_multi
+ 
+-TEST_CUSTOM_PROGS = $(OUTPUT)/urandom_read
++TEST_CUSTOM_PROGS = $(OUTPUT)/urandom_read $(OUTPUT)/sign-file
+ 
+ # Emit succinct information message describing current building step
+ # $1 - generic step name (e.g., CC, LINK, etc);
+@@ -180,6 +180,10 @@ $(OUTPUT)/urandom_read: urandom_read.c urandom_read_aux.c $(OUTPUT)/liburandom_r
+ 		  liburandom_read.so $(LDLIBS)	       			       \
+ 		  -Wl,-rpath=. -Wl,--build-id=sha1 -o $@
+ 
++$(OUTPUT)/sign-file: ../../../../scripts/sign-file
++	$(call msg,SIGN-FILE,,$@)
++	$(Q)$(shell [ -f $< ] && cp -a $< $@)
 +
-+static inline bool node_is_toptier(int node)
+ $(OUTPUT)/bpf_testmod.ko: $(VMLINUX_BTF) $(wildcard bpf_testmod/Makefile bpf_testmod/*.[ch])
+ 	$(call msg,MOD,,$@)
+ 	$(Q)$(RM) bpf_testmod/bpf_testmod.ko # force re-compilation
+@@ -502,7 +506,8 @@ TRUNNER_EXTRA_SOURCES := test_progs.c cgroup_helpers.c trace_helpers.c	\
+ 			 cap_helpers.c
+ TRUNNER_EXTRA_FILES := $(OUTPUT)/urandom_read $(OUTPUT)/bpf_testmod.ko	\
+ 		       $(OUTPUT)/liburandom_read.so			\
+-		       ima_setup.sh					\
++		       $(OUTPUT)/sign-file				\
++		       ima_setup.sh verify_sig_setup.sh			\
+ 		       $(wildcard progs/btf_dump_test_case_*.c)
+ TRUNNER_BPF_BUILD_RULE := CLANG_BPF_BUILD_RULE
+ TRUNNER_BPF_CFLAGS := $(BPF_CFLAGS) $(CLANG_CFLAGS) -DENABLE_ATOMICS_TESTS
+diff --git a/tools/testing/selftests/bpf/config b/tools/testing/selftests/bpf/config
+index 3b3edc0fc8a6..64b0957d7742 100644
+--- a/tools/testing/selftests/bpf/config
++++ b/tools/testing/selftests/bpf/config
+@@ -57,3 +57,4 @@ CONFIG_FPROBE=y
+ CONFIG_IKCONFIG=y
+ CONFIG_IKCONFIG_PROC=y
+ CONFIG_MPTCP=y
++CONFIG_MODULE_SIG=y
+diff --git a/tools/testing/selftests/bpf/prog_tests/verify_sig.c b/tools/testing/selftests/bpf/prog_tests/verify_sig.c
+new file mode 100644
+index 000000000000..165ab1a8ad98
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/verify_sig.c
+@@ -0,0 +1,200 @@
++// SPDX-License-Identifier: GPL-2.0
++
++/*
++ * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
++ *
++ * Author: Roberto Sassu <roberto.sassu@huawei.com>
++ */
++
++#include <stdio.h>
++#include <errno.h>
++#include <stdlib.h>
++#include <unistd.h>
++#include <endian.h>
++#include <sys/stat.h>
++#include <sys/wait.h>
++#include <test_progs.h>
++
++#include "test_verify_sig.skel.h"
++
++#define MAX_DATA_SIZE 4096
++
++struct data {
++	u8 payload[MAX_DATA_SIZE];
++};
++
++static int _run_setup_process(const char *setup_dir, const char *cmd)
 +{
-+	return true;
++	int child_pid, child_status;
++
++	child_pid = fork();
++	if (child_pid == 0) {
++		execlp("./verify_sig_setup.sh", "./verify_sig_setup.sh", cmd,
++		       setup_dir, NULL);
++		exit(errno);
++
++	} else if (child_pid > 0) {
++		waitpid(child_pid, &child_status, 0);
++		return WEXITSTATUS(child_status);
++	}
++
++	return -EINVAL;
 +}
- #endif	/* CONFIG_TIERED_MEMORY */
- 
- #endif
-diff --git a/include/linux/node.h b/include/linux/node.h
-index 40d641a8bfb0..9ec680dd607f 100644
---- a/include/linux/node.h
-+++ b/include/linux/node.h
-@@ -185,9 +185,4 @@ static inline void register_hugetlbfs_with_node(node_registration_func_t reg,
- 
- #define to_node(device) container_of(device, struct node, dev)
- 
--static inline bool node_is_toptier(int node)
--{
--	return node_state(node, N_CPU);
--}
--
- #endif /* _LINUX_NODE_H_ */
-diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index a77c78a2b6b5..294873d4be2b 100644
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -35,6 +35,7 @@
- #include <linux/numa.h>
- #include <linux/page_owner.h>
- #include <linux/sched/sysctl.h>
-+#include <linux/memory-tiers.h>
- 
- #include <asm/tlb.h>
- #include <asm/pgalloc.h>
-diff --git a/mm/memory-tiers.c b/mm/memory-tiers.c
-index b2ed16dcfb03..0dae3114e22c 100644
---- a/mm/memory-tiers.c
-+++ b/mm/memory-tiers.c
-@@ -17,7 +17,7 @@ struct demotion_nodes {
- static void establish_migration_targets(void);
- static DEFINE_MUTEX(memory_tier_lock);
- static LIST_HEAD(memory_tiers);
--
-+static int top_tier_rank;
- /*
-  * node_demotion[] examples:
-  *
-@@ -126,7 +126,7 @@ static void memory_tier_device_release(struct device *dev)
- 	if (tier->dev.id >= MAX_STATIC_MEMORY_TIERS)
- 		ida_free(&memtier_dev_id, tier->dev.id);
- 
--	kfree(tier);
-+	kfree_rcu(tier);
- }
- 
- /*
-@@ -443,6 +443,31 @@ void node_get_allowed_targets(pg_data_t *pgdat, nodemask_t *targets)
- 	rcu_read_unlock();
- }
- 
-+bool node_is_toptier(int node)
++
++static int populate_data_item(const char *tmp_dir, struct data *data_item)
 +{
-+	bool toptier;
-+	pg_data_t *pgdat;
-+	struct memory_tier *memtier;
++	struct stat st;
++	char signed_file_template[] = "/tmp/signed_fileXXXXXX";
++	char path[PATH_MAX];
++	int ret, fd, child_status, child_pid;
 +
-+	pgdat = NODE_DATA(node);
-+	if (!pgdat)
-+		return false;
++	fd = mkstemp(signed_file_template);
++	if (fd == -1)
++		return -errno;
 +
-+	rcu_read_lock();
-+	memtier = rcu_dereference(pgdat->memtier);
-+	if (!memtier) {
-+		toptier = true;
++	ret = write(fd, "test", 4);
++
++	close(fd);
++
++	if (ret != 4) {
++		ret = -EIO;
 +		goto out;
 +	}
-+	if (memtier->rank >= top_tier_rank)
-+		toptier = true;
-+	else
-+		toptier = false;
++
++	child_pid = fork();
++
++	if (child_pid == -1) {
++		ret = -errno;
++		goto out;
++	}
++
++	if (child_pid == 0) {
++		snprintf(path, sizeof(path), "%s/signing_key.pem", tmp_dir);
++
++		return execlp("./sign-file", "./sign-file", "sha256",
++			      path, path, signed_file_template, NULL);
++	}
++
++	waitpid(child_pid, &child_status, 0);
++
++	ret = WEXITSTATUS(child_status);
++	if (ret)
++		goto out;
++
++	ret = stat(signed_file_template, &st);
++	if (ret == -1) {
++		ret = -errno;
++		goto out;
++	}
++
++	if (st.st_size > sizeof(data_item->payload) - sizeof(u32)) {
++		ret = -EINVAL;
++		goto out;
++	}
++
++	*(u32 *)data_item->payload = __cpu_to_be32(st.st_size);
++
++	fd = open(signed_file_template, O_RDONLY);
++	if (fd == -1) {
++		ret = -errno;
++		goto out;
++	}
++
++	ret = read(fd, data_item->payload + sizeof(u32), st.st_size);
++
++	close(fd);
++
++	if (ret != st.st_size) {
++		ret = -EIO;
++		goto out;
++	}
++
++	ret = 0;
 +out:
-+	rcu_read_unlock();
-+	return toptier;
++	unlink(signed_file_template);
++	return ret;
 +}
 +
- /**
-  * next_demotion_node() - Get the next node in the demotion path
-  * @node: The starting node to lookup the next node
-@@ -592,6 +617,21 @@ static void establish_migration_targets(void)
- 		} while (1);
- 	}
- build_lower_tier_mask:
-+	/*
-+	 * Promotion is allowed from a memory tier to higher
-+	 * memory tier only if the memory tier doesn't include
-+	 * compute. We want to  skip promotion from a memory tier,
-+	 * if any node that is  part of the memory tier have CPUs.
-+	 * Once we detect such a memory tier, we consider that tier
-+	 * as top tiper from which promotion is not allowed.
-+	 */
-+	list_for_each_entry_reverse(memtier, &memory_tiers, list) {
-+		nodes_and(used, node_states[N_CPU], memtier->nodelist);
-+		if (!nodes_empty(used)) {
-+			top_tier_rank = memtier->rank;
-+			break;
-+		}
++void test_verify_sig(void)
++{
++	char tmp_dir_template[] = "/tmp/verify_sigXXXXXX";
++	char *tmp_dir;
++	struct test_verify_sig *skel = NULL;
++	struct bpf_map *map;
++	struct data data;
++	struct stat st;
++	u32 saved_len;
++	int ret, zero = 0;
++
++	if (libbpf_probe_bpf_helper(BPF_PROG_TYPE_KPROBE,
++			BPF_FUNC_verify_signature, NULL) == -EOPNOTSUPP) {
++		printf("%s:SKIP:bpf_verify_signature() helper not supported\n",
++		       __func__);
++		test__skip();
++		return;
 +	}
- 	/*
- 	 * Now build the lower_tier mask for each node collecting node mask from
- 	 * all memory tier below it. This allows us to fallback demotion page
-diff --git a/mm/migrate.c b/mm/migrate.c
-index 0b554625a219..78615c48fc0f 100644
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -50,6 +50,7 @@
- #include <linux/memory.h>
- #include <linux/random.h>
- #include <linux/sched/sysctl.h>
-+#include <linux/memory-tiers.h>
- 
- #include <asm/tlbflush.h>
- 
-diff --git a/mm/mprotect.c b/mm/mprotect.c
-index ba5592655ee3..92a2fc0fa88b 100644
---- a/mm/mprotect.c
-+++ b/mm/mprotect.c
-@@ -31,6 +31,7 @@
- #include <linux/pgtable.h>
- #include <linux/sched/sysctl.h>
- #include <linux/userfaultfd_k.h>
-+#include <linux/memory-tiers.h>
- #include <asm/cacheflush.h>
- #include <asm/mmu_context.h>
- #include <asm/tlbflush.h>
++
++	if (stat("./sign-file", &st) == -1) {
++		printf("%s:SKIP:kernel modules are not signed\n", __func__);
++		test__skip();
++		return;
++	}
++
++	tmp_dir = mkdtemp(tmp_dir_template);
++	if (!ASSERT_OK_PTR(tmp_dir, "mkdtemp"))
++		return;
++
++	ret = _run_setup_process(tmp_dir, "setup");
++	if (!ASSERT_OK(ret, "_run_setup_process"))
++		goto close_prog;
++
++	skel = test_verify_sig__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "test_verify_sig__open_and_load"))
++		goto close_prog;
++
++	ret = test_verify_sig__attach(skel);
++	if (!ASSERT_OK(ret, "test_verify_sig__attach\n"))
++		goto close_prog;
++
++	map = bpf_object__find_map_by_name(skel->obj, "data_input");
++	if (!ASSERT_OK_PTR(map, "data_input not found"))
++		goto close_prog;
++
++	ret = populate_data_item(tmp_dir, &data);
++	if (!ASSERT_OK(ret, "populate_data_item\n"))
++		goto close_prog;
++
++	skel->bss->monitored_pid = getpid();
++	skel->bss->keyring_id = 0xffff;
++
++	ret = bpf_map_update_elem(bpf_map__fd(map), &zero, &data, BPF_ANY);
++	if (!ASSERT_OK(ret, "bpf_map_update_elem\n"))
++		goto close_prog;
++
++	skel->bss->monitored_pid = getpid();
++	/* Search the verification key in the primary keyring (should fail). */
++	skel->bss->keyring_id = 0;
++
++	ret = bpf_map_update_elem(bpf_map__fd(map), &zero, &data, BPF_ANY);
++	if (!ASSERT_LT(ret, 0, "bpf_map_update_elem data_input\n"))
++		goto close_prog;
++
++	saved_len = *(__u32 *)data.payload;
++	*(__u32 *)data.payload = sizeof(data.payload);
++	ret = bpf_map_update_elem(bpf_map__fd(map), &zero, &data, BPF_ANY);
++	if (!ASSERT_LT(ret, 0, "bpf_map_update_elem data_input\n"))
++		goto close_prog;
++
++	*(__u32 *)data.payload = saved_len;
++	data.payload[sizeof(__u32)] = 'a';
++	ret = bpf_map_update_elem(bpf_map__fd(map), &zero, &data, BPF_ANY);
++	ASSERT_LT(ret, 0, "bpf_map_update_elem data_input\n");
++close_prog:
++	_run_setup_process(tmp_dir, "cleanup");
++
++	if (!skel)
++		return;
++
++	skel->bss->monitored_pid = 0;
++	test_verify_sig__destroy(skel);
++}
+diff --git a/tools/testing/selftests/bpf/progs/test_verify_sig.c b/tools/testing/selftests/bpf/progs/test_verify_sig.c
+new file mode 100644
+index 000000000000..1c60c9b5c991
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_verify_sig.c
+@@ -0,0 +1,160 @@
++// SPDX-License-Identifier: GPL-2.0
++
++/*
++ * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
++ *
++ * Author: Roberto Sassu <roberto.sassu@huawei.com>
++ */
++
++#include <errno.h>
++#include <stdlib.h>
++#include <linux/bpf.h>
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_tracing.h>
++#include <bpf/bpf_endian.h>
++
++#define MAX_DATA_SIZE 4096
++
++#ifdef __BIG_ENDIAN__
++#define be32_to_cpu(x) (x)
++#else
++#define be32_to_cpu(x) ___bpf_swab32(x)
++#endif
++
++#define VERIFY_USE_SECONDARY_KEYRING (1UL)
++
++/* In stripped ARM and x86-64 modules, ~ is surprisingly rare. */
++#define MODULE_SIG_STRING "~Module signature appended~\n"
++
++typedef __u8 u8;
++typedef __u16 u16;
++typedef __u32 u32;
++typedef __u64 u64;
++
++enum pkey_id_type {
++	PKEY_ID_PGP,		/* OpenPGP generated key ID */
++	PKEY_ID_X509,		/* X.509 arbitrary subjectKeyIdentifier */
++	PKEY_ID_PKCS7,		/* Signature in PKCS#7 message */
++};
++
++/*
++ * Module signature information block.
++ *
++ * The constituents of the signature section are, in order:
++ *
++ *	- Signer's name
++ *	- Key identifier
++ *	- Signature data
++ *	- Information block
++ */
++struct module_signature {
++	u8	algo;		/* Public-key crypto algorithm [0] */
++	u8	hash;		/* Digest algorithm [0] */
++	u8	id_type;	/* Key identifier type [PKEY_ID_PKCS7] */
++	u8	signer_len;	/* Length of signer's name [0] */
++	u8	key_id_len;	/* Length of key identifier [0] */
++	u8	__pad[3];
++	__be32	sig_len;	/* Length of signature data */
++};
++
++u32 monitored_pid;
++u32 keyring_id;
++
++struct data {
++	u8 payload[MAX_DATA_SIZE];
++};
++
++struct {
++	__uint(type, BPF_MAP_TYPE_ARRAY);
++	__uint(max_entries, 1);
++	__type(key, __u32);
++	__type(value, struct data);
++} data_input SEC(".maps");
++
++char _license[] SEC("license") = "GPL";
++
++static int mod_check_sig(const struct module_signature *ms, size_t file_len)
++{
++	if (!ms)
++		return -ENOENT;
++
++	if (be32_to_cpu(ms->sig_len) >= file_len - sizeof(*ms))
++		return -EBADMSG;
++
++	if (ms->id_type != PKEY_ID_PKCS7)
++		return -ENOPKG;
++
++	if (ms->algo != 0 ||
++	    ms->hash != 0 ||
++	    ms->signer_len != 0 ||
++	    ms->key_id_len != 0 ||
++	    ms->__pad[0] != 0 ||
++	    ms->__pad[1] != 0 ||
++	    ms->__pad[2] != 0)
++		return -EBADMSG;
++
++	return 0;
++}
++
++SEC("lsm.s/bpf")
++int BPF_PROG(bpf, int cmd, union bpf_attr *attr, unsigned int size)
++{
++	const size_t marker_len = sizeof(MODULE_SIG_STRING) - 1;
++	char marker[sizeof(MODULE_SIG_STRING) - 1];
++	struct module_signature ms;
++	struct data *data_ptr;
++	u32 modlen;
++	u32 sig_len;
++	u64 value;
++	u8 *mod;
++	u32 pid;
++	int ret, zero = 0;
++
++	pid = bpf_get_current_pid_tgid() >> 32;
++	if (pid != monitored_pid)
++		return 0;
++
++	data_ptr = bpf_map_lookup_elem(&data_input, &zero);
++	if (!data_ptr)
++		return 0;
++
++	bpf_probe_read(&value, sizeof(value), &attr->value);
++
++	bpf_copy_from_user(data_ptr, sizeof(struct data),
++			   (void *)(unsigned long)value);
++
++	modlen = be32_to_cpu(*(u32 *)data_ptr->payload);
++	mod = data_ptr->payload + sizeof(u32);
++
++	if (modlen > sizeof(struct data) - sizeof(u32))
++		return -EINVAL;
++
++	if (modlen <= marker_len)
++		return -ENOENT;
++
++	modlen &= sizeof(struct data) - 1;
++	bpf_probe_read(marker, marker_len, (char *)mod + modlen - marker_len);
++
++	if (bpf_strncmp(marker, marker_len, MODULE_SIG_STRING))
++		return -ENOENT;
++
++	modlen -= marker_len;
++
++	if (modlen <= sizeof(ms))
++		return -EBADMSG;
++
++	bpf_probe_read(&ms, sizeof(ms), (char *)mod + (modlen - sizeof(ms)));
++
++	ret = mod_check_sig(&ms, modlen);
++	if (ret)
++		return ret;
++
++	sig_len = be32_to_cpu(ms.sig_len);
++	modlen -= sig_len + sizeof(ms);
++
++	modlen &= 0x3ff;
++	sig_len &= 0x3ff;
++
++	return bpf_verify_signature(mod, modlen, mod + modlen, sig_len,
++				    keyring_id + (PKEY_ID_PKCS7 << 16));
++}
+diff --git a/tools/testing/selftests/bpf/verify_sig_setup.sh b/tools/testing/selftests/bpf/verify_sig_setup.sh
+new file mode 100755
+index 000000000000..48cb55abc4a4
+--- /dev/null
++++ b/tools/testing/selftests/bpf/verify_sig_setup.sh
+@@ -0,0 +1,100 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++
++set -e
++set -u
++set -o pipefail
++
++VERBOSE="${SELFTESTS_VERBOSE:=0}"
++LOG_FILE="$(mktemp /tmp/verify_sig_setup.XXXX.log)"
++
++x509_genkey_content="\
++[ req ]
++default_bits = 2048
++distinguished_name = req_distinguished_name
++prompt = no
++string_mask = utf8only
++x509_extensions = myexts
++
++[ req_distinguished_name ]
++CN = eBPF Signature Verification Testing Key
++
++[ myexts ]
++basicConstraints=critical,CA:FALSE
++keyUsage=digitalSignature
++subjectKeyIdentifier=hash
++authorityKeyIdentifier=keyid
++"
++
++usage()
++{
++	echo "Usage: $0 <setup|cleanup <existing_tmp_dir>"
++	exit 1
++}
++
++setup()
++{
++	local tmp_dir="$1"
++
++	echo "${x509_genkey_content}" > ${tmp_dir}/x509.genkey
++
++	openssl req -new -nodes -utf8 -sha256 -days 36500 \
++			-batch -x509 -config ${tmp_dir}/x509.genkey \
++			-outform PEM -out ${tmp_dir}/signing_key.pem \
++			-keyout ${tmp_dir}/signing_key.pem 2>&1
++
++	openssl x509 -in ${tmp_dir}/signing_key.pem -out \
++		${tmp_dir}/signing_key.der -outform der
++
++	cat ${tmp_dir}/signing_key.der | keyctl padd asymmetric ebpf_testing_key @s
++}
++
++cleanup() {
++	local tmp_dir="$1"
++
++	keyctl unlink $(keyctl search @s asymmetric ebpf_testing_key) @s
++	rm -rf ${tmp_dir}
++}
++
++catch()
++{
++	local exit_code="$1"
++	local log_file="$2"
++
++	if [[ "${exit_code}" -ne 0 ]]; then
++		cat "${log_file}" >&3
++	fi
++
++	rm -f "${log_file}"
++	exit ${exit_code}
++}
++
++main()
++{
++	[[ $# -ne 2 ]] && usage
++
++	local action="$1"
++	local tmp_dir="$2"
++
++	[[ ! -d "${tmp_dir}" ]] && echo "Directory ${tmp_dir} doesn't exist" && exit 1
++
++	if [[ "${action}" == "setup" ]]; then
++		setup "${tmp_dir}"
++	elif [[ "${action}" == "cleanup" ]]; then
++		cleanup "${tmp_dir}"
++	else
++		echo "Unknown action: ${action}"
++		exit 1
++	fi
++}
++
++trap 'catch "$?" "${LOG_FILE}"' EXIT
++
++if [[ "${VERBOSE}" -eq 0 ]]; then
++	# Save the stderr to 3 so that we can output back to
++	# it incase of an error.
++	exec 3>&2 1>"${LOG_FILE}" 2>&1
++fi
++
++main "$@"
++rm -f "${LOG_FILE}"
 -- 
-2.36.1
+2.25.1
 
