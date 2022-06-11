@@ -2,323 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF826C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 07:14:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74DB5C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 07:20:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230314AbiFKHOi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 03:14:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55602 "EHLO
+        id S230199AbiFKHUS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 03:20:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230085AbiFKHOa (ORCPT
+        with ESMTP id S230051AbiFKHUR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 03:14:30 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9266B18382
-        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 00:14:28 -0700 (PDT)
-Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LKptn5Y1Qz1K9DF;
-        Sat, 11 Jun 2022 15:12:33 +0800 (CST)
-Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
- dggpeml500020.china.huawei.com (7.185.36.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 11 Jun 2022 15:14:26 +0800
-Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
- (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 11 Jun
- 2022 15:14:26 +0800
-From:   Kai Ye <yekai13@huawei.com>
-To:     <gregkh@linuxfoundation.org>,
-        <linux-accelerators@lists.ozlabs.org>,
-        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
-        <zhangfei.gao@linaro.org>, <wangzhou1@hisilicon.com>,
-        <yekai13@huawei.com>
-Subject: [PATCH 2/2] crypto: hisilicon/qm - defining the device isolation strategy
-Date:   Sat, 11 Jun 2022 15:08:08 +0800
-Message-ID: <20220611070808.49219-3-yekai13@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220611070808.49219-1-yekai13@huawei.com>
-References: <20220611070808.49219-1-yekai13@huawei.com>
+        Sat, 11 Jun 2022 03:20:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD2135FB9
+        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 00:20:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 58D2C60D57
+        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 07:20:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03364C34116;
+        Sat, 11 Jun 2022 07:20:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654932014;
+        bh=9rveE22F5xtfV5P9xuvluHy5z6lSISxGcOGWCcJpfP8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=e2BBEMwG/Slx/3Y+9f8CMaHHZtSJuQ11M0fR95GxEJWiqa5Lsgg5TMOmbjVu05cvq
+         TomIVygHEXnLG/EDx67fsyhd6Q4EiGjKLzeXGX+pN2AWUiwxbxDjnL+DTJWOypAucA
+         YouYMAOtiuJPuptWL4BZ2wPXvaY9eSg0amijwOMM=
+Date:   Sat, 11 Jun 2022 09:20:10 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Cc:     Bard Liao <yung-chuan.liao@linux.intel.com>,
+        alsa-devel@alsa-project.org, vkoul@kernel.org,
+        vinod.koul@linaro.org, linux-kernel@vger.kernel.org, tiwai@suse.de,
+        broonie@kernel.org, srinivas.kandagatla@linaro.org,
+        sanyog.r.kale@intel.com, bard.liao@intel.com
+Subject: Re: [PATCH 1/2] soundwire: intel: uniquify debug message
+Message-ID: <YqRCKtLGYlRQQ+DU@kroah.com>
+References: <20220610023537.27223-1-yung-chuan.liao@linux.intel.com>
+ <20220610023537.27223-2-yung-chuan.liao@linux.intel.com>
+ <YqLVwqx9/Pos8T06@kroah.com>
+ <b86e6cbd-3488-a239-d765-cf01bf0d4f70@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml100012.china.huawei.com (7.185.36.121)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <b86e6cbd-3488-a239-d765-cf01bf0d4f70@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Define the device isolation strategy by the device driver. if the
-AER error frequency exceeds the value of setting for a certain
-period of time, The device will not be available in user space. The VF
-device use the PF device isolation strategy. All the hardware errors
-are processed by PF driver.
+On Fri, Jun 10, 2022 at 10:06:58AM -0500, Pierre-Louis Bossart wrote:
+> 
+> 
+> On 6/10/22 00:25, Greg KH wrote:
+> > On Fri, Jun 10, 2022 at 10:35:36AM +0800, Bard Liao wrote:
+> >> From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+> >>
+> >> The same debug message is replicated multiple time, add __func__ to
+> >> figure out what link is ignored.
+> >>
+> >> Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+> >> Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+> >> Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
+> >> Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+> >> ---
+> >>  drivers/soundwire/intel.c | 28 ++++++++++++++--------------
+> >>  1 file changed, 14 insertions(+), 14 deletions(-)
+> >>
+> >> diff --git a/drivers/soundwire/intel.c b/drivers/soundwire/intel.c
+> >> index 505c5ef061e3..808e2f320052 100644
+> >> --- a/drivers/soundwire/intel.c
+> >> +++ b/drivers/soundwire/intel.c
+> >> @@ -1328,8 +1328,8 @@ int intel_link_startup(struct auxiliary_device *auxdev)
+> >>  
+> >>  	if (bus->prop.hw_disabled) {
+> >>  		dev_info(dev,
+> >> -			 "SoundWire master %d is disabled, ignoring\n",
+> >> -			 sdw->instance);
+> >> +			 "%s: SoundWire master %d is disabled, ignoring\n",
+> >> +			 __func__, sdw->instance);
+> > 
+> > This is not a debug message, please make it such if you want to have
+> > __func__  And even then, it's not needed as you can get that from the
+> > kernel automatically.
+> 
+> Sorry, I don't understand the feedback at all.
 
-Signed-off-by: Kai Ye <yekai13@huawei.com>
----
- drivers/crypto/hisilicon/qm.c | 149 +++++++++++++++++++++++++++++++---
- include/linux/hisi_acc_qm.h   |   8 ++
- 2 files changed, 145 insertions(+), 12 deletions(-)
+dev_info() is not a way to send debug messages.
 
-diff --git a/drivers/crypto/hisilicon/qm.c b/drivers/crypto/hisilicon/qm.c
-index b4ca2eb034d7..73c12714a36b 100644
---- a/drivers/crypto/hisilicon/qm.c
-+++ b/drivers/crypto/hisilicon/qm.c
-@@ -12,7 +12,6 @@
- #include <linux/pm_runtime.h>
- #include <linux/seq_file.h>
- #include <linux/slab.h>
--#include <linux/uacce.h>
- #include <linux/uaccess.h>
- #include <uapi/misc/uacce/hisi_qm.h>
- #include <linux/hisi_acc_qm.h>
-@@ -417,6 +416,16 @@ struct hisi_qm_resource {
- 	struct list_head list;
- };
- 
-+/**
-+ * struct qm_hw_err - structure of describes the device err
-+ * @list: hardware error list
-+ * @tick_stamp: timestamp when the error occurred
-+ */
-+struct qm_hw_err {
-+	struct list_head list;
-+	unsigned long long tick_stamp;
-+};
-+
- struct hisi_qm_hw_ops {
- 	int (*get_vft)(struct hisi_qm *qm, u32 *base, u32 *number);
- 	void (*qm_db)(struct hisi_qm *qm, u16 qn,
-@@ -3397,6 +3406,99 @@ static long hisi_qm_uacce_ioctl(struct uacce_queue *q, unsigned int cmd,
- 	return 0;
- }
- 
-+/**
-+ * qm_hw_err_isolate() - Try to isolate the uacce device with its VFs
-+ * @qm: The qm which we want to configure.
-+ *
-+ * according to user's configuration of isolation strategy. Warning: this
-+ * API should be called while there is no user on the device, or the users
-+ * on this device are suspended by slot resetting preparation of PCI AER.
-+ */
-+static int qm_hw_err_isolate(struct hisi_qm *qm)
-+{
-+	struct qm_hw_err *err, *tmp, *hw_err;
-+	struct qm_err_isolate *isolate;
-+	u32 count = 0;
-+
-+	isolate = &qm->isolate_data;
-+
-+#define SECONDS_PER_HOUR	3600
-+
-+	/* All the hw errs are processed by PF driver */
-+	if (qm->uacce->is_vf || atomic_read(&isolate->is_isolate) ||
-+		!isolate->hw_err_isolate_hz)
-+		return 0;
-+
-+	hw_err = kzalloc(sizeof(*hw_err), GFP_ATOMIC);
-+	if (!hw_err)
-+		return -ENOMEM;
-+	hw_err->tick_stamp = jiffies;
-+	list_for_each_entry_safe(err, tmp, &qm->uacce_hw_errs, list) {
-+		if ((hw_err->tick_stamp - err->tick_stamp) / HZ >
-+		    SECONDS_PER_HOUR) {
-+			list_del(&err->list);
-+			kfree(err);
-+		} else {
-+			count++;
-+		}
-+	}
-+	list_add(&hw_err->list, &qm->uacce_hw_errs);
-+
-+	if (count >= isolate->hw_err_isolate_hz)
-+		atomic_set(&isolate->is_isolate, 1);
-+
-+	return 0;
-+}
-+
-+static void qm_hw_err_destroy(struct hisi_qm *qm)
-+{
-+	struct qm_hw_err *err, *tmp;
-+
-+	list_for_each_entry_safe(err, tmp, &qm->uacce_hw_errs, list) {
-+		list_del(&err->list);
-+		kfree(err);
-+	}
-+}
-+
-+static enum uacce_dev_state hisi_qm_get_isolate_state(struct uacce_device *uacce)
-+{
-+	struct hisi_qm *qm = uacce->priv;
-+	struct hisi_qm *pf_qm;
-+
-+	if (uacce->is_vf) {
-+		pf_qm = pci_get_drvdata(pci_physfn(qm->pdev));
-+		qm->isolate_data.is_isolate = pf_qm->isolate_data.is_isolate;
-+	}
-+
-+	return atomic_read(&qm->isolate_data.is_isolate) ?
-+			UACCE_DEV_ISOLATE : UACCE_DEV_NORMAL;
-+}
-+
-+static int hisi_qm_isolate_strategy_write(struct uacce_device *uacce,
-+						const char *buf)
-+{
-+	struct hisi_qm *qm = uacce->priv;
-+	unsigned long val = 0;
-+
-+#define MAX_ISOLATE_STRATEGY	65535
-+
-+	/* must be set by PF */
-+	if (atomic_read(&qm->isolate_data.is_isolate) || uacce->is_vf)
-+		return -EINVAL;
-+
-+	if (kstrtoul(buf, 0, &val) < 0)
-+		return -EINVAL;
-+
-+	if (val > MAX_ISOLATE_STRATEGY)
-+		return -EINVAL;
-+
-+	qm->isolate_data.hw_err_isolate_hz = val;
-+	dev_info(&qm->pdev->dev,
-+		"the value of isolate_strategy is set to %lu.\n", val);
-+
-+	return 0;
-+}
-+
- static const struct uacce_ops uacce_qm_ops = {
- 	.get_available_instances = hisi_qm_get_available_instances,
- 	.get_queue = hisi_qm_uacce_get_queue,
-@@ -3405,9 +3507,22 @@ static const struct uacce_ops uacce_qm_ops = {
- 	.stop_queue = hisi_qm_uacce_stop_queue,
- 	.mmap = hisi_qm_uacce_mmap,
- 	.ioctl = hisi_qm_uacce_ioctl,
-+	.get_isolate_state = hisi_qm_get_isolate_state,
- 	.is_q_updated = hisi_qm_is_q_updated,
-+	.isolate_strategy_write = hisi_qm_isolate_strategy_write,
- };
- 
-+static void qm_remove_uacce(struct hisi_qm *qm)
-+{
-+	struct uacce_device *uacce = qm->uacce;
-+
-+	if (qm->use_sva) {
-+		qm_hw_err_destroy(qm);
-+		uacce_remove(uacce);
-+		qm->uacce = NULL;
-+	}
-+}
-+
- static int qm_alloc_uacce(struct hisi_qm *qm)
- {
- 	struct pci_dev *pdev = qm->pdev;
-@@ -3420,6 +3535,7 @@ static int qm_alloc_uacce(struct hisi_qm *qm)
- 	};
- 	int ret;
- 
-+	INIT_LIST_HEAD(&qm->uacce_hw_errs);
- 	ret = strscpy(interface.name, dev_driver_string(&pdev->dev),
- 		      sizeof(interface.name));
- 	if (ret < 0)
-@@ -3433,8 +3549,7 @@ static int qm_alloc_uacce(struct hisi_qm *qm)
- 		qm->use_sva = true;
- 	} else {
- 		/* only consider sva case */
--		uacce_remove(uacce);
--		qm->uacce = NULL;
-+		qm_remove_uacce(qm);
- 		return -EINVAL;
- 	}
- 
-@@ -5074,6 +5189,12 @@ static int qm_controller_reset_prepare(struct hisi_qm *qm)
- 		return ret;
- 	}
- 
-+	if (qm->use_sva) {
-+		ret = qm_hw_err_isolate(qm);
-+		if (ret)
-+			pci_err(pdev, "failed to isolate hw err!\n");
-+	}
-+
- 	ret = qm_wait_vf_prepare_finish(qm);
- 	if (ret)
- 		pci_err(pdev, "failed to stop by vfs in soft reset!\n");
-@@ -5401,19 +5522,24 @@ static int qm_controller_reset(struct hisi_qm *qm)
- 	ret = qm_soft_reset(qm);
- 	if (ret) {
- 		pci_err(pdev, "Controller reset failed (%d)\n", ret);
--		qm_reset_bit_clear(qm);
--		return ret;
-+		goto err_reset;
- 	}
- 
- 	ret = qm_controller_reset_done(qm);
--	if (ret) {
--		qm_reset_bit_clear(qm);
--		return ret;
--	}
-+	if (ret)
-+		goto err_reset;
- 
- 	pci_info(pdev, "Controller reset complete\n");
--
- 	return 0;
-+
-+err_reset:
-+	pci_err(pdev, "Controller reset failed (%d)\n", ret);
-+	qm_reset_bit_clear(qm);
-+
-+	/* if resetting fails, isolate the device */
-+	if (qm->use_sva && !qm->uacce->is_vf)
-+		atomic_set(&qm->isolate_data.is_isolate, 1);
-+	return ret;
- }
- 
- /**
-@@ -6186,8 +6312,7 @@ int hisi_qm_init(struct hisi_qm *qm)
- 
- err_alloc_uacce:
- 	if (qm->use_sva) {
--		uacce_remove(qm->uacce);
--		qm->uacce = NULL;
-+		qm_remove_uacce(qm);
- 	}
- err_irq_register:
- 	qm_irq_unregister(qm);
-diff --git a/include/linux/hisi_acc_qm.h b/include/linux/hisi_acc_qm.h
-index 6cabafffd0dd..757bb8df385e 100644
---- a/include/linux/hisi_acc_qm.h
-+++ b/include/linux/hisi_acc_qm.h
-@@ -8,6 +8,7 @@
- #include <linux/iopoll.h>
- #include <linux/module.h>
- #include <linux/pci.h>
-+#include <linux/uacce.h>
- 
- #define QM_QNUM_V1			4096
- #define QM_QNUM_V2			1024
-@@ -265,6 +266,11 @@ struct hisi_qm_list {
- 	void (*unregister_from_crypto)(struct hisi_qm *qm);
- };
- 
-+struct qm_err_isolate {
-+	u32 hw_err_isolate_hz;	/* user cfg freq which triggers isolation */
-+	atomic_t is_isolate;
-+};
-+
- struct hisi_qm {
- 	enum qm_hw_ver ver;
- 	enum qm_fun_type fun_type;
-@@ -329,6 +335,8 @@ struct hisi_qm {
- 	struct qm_shaper_factor *factor;
- 	u32 mb_qos;
- 	u32 type_rate;
-+	struct list_head uacce_hw_errs;
-+	struct qm_err_isolate isolate_data;
- };
- 
- struct hisi_qp_status {
--- 
-2.33.0
+If you want this to be only for debugging, use dev_dbg().  And when you
+use that, you get the __func__ location for free in the output already
+if you want that.
 
+> This message was added precisely to figure out why the expected
+> programming sequence was not followed, only to discover that we have
+> devices with spurious PCI wakes handled below. Without this added
+> difference with __func__, we wouldn't know if the issue happened during
+> the expected/regular programming sequence or not.
+
+Perhaps make the text unique then?  Why would an informational message
+need a function name.  Drivers should be quiet when all is going well.
+If something is not going well, dev_info() is not the kernel log level
+to be sending something out at.
+
+> >>  		return 0;
+> >>  	}
+> >>  
+> >> @@ -1489,8 +1489,8 @@ int intel_link_process_wakeen_event(struct auxiliary_device *auxdev)
+> >>  	bus = &sdw->cdns.bus;
+> >>  
+> >>  	if (bus->prop.hw_disabled || !sdw->startup_done) {
+> >> -		dev_dbg(dev, "SoundWire master %d is disabled or not-started, ignoring\n",
+> >> -			bus->link_id);
+> >> +		dev_dbg(dev, "%s: SoundWire master %d is disabled or not-started, ignoring\n",
+> >> +			__func__, bus->link_id);
+> >>  		return 0;
+> >>  	}
+> >>  
+> >> @@ -1549,8 +1549,8 @@ static int __maybe_unused intel_pm_prepare(struct device *dev)
+> >>  	int ret;
+> >>  
+> >>  	if (bus->prop.hw_disabled || !sdw->startup_done) {
+> >> -		dev_dbg(dev, "SoundWire master %d is disabled or not-started, ignoring\n",
+> >> -			bus->link_id);
+> >> +		dev_dbg(dev, "%s: SoundWire master %d is disabled or not-started, ignoring\n",
+> >> +			__func__, bus->link_id);
+> > 
+> > Not needed, it is provided automatically if you ask the kernel for this.
+> > Same for all other instances in this patch.
+> 
+> provided how? Your comment is a bit cryptic here.
+
+the dynamic debug code in the kernel already adds the function name
+where the message was sent from, if you want to know this in userspace.
+Please read the documentation for details (I think the key is the 'f'
+flag to be enabled in userspace).
+
+So adding __func__ to dev_dbg() calls are redundant and never needed.
+
+thanks,
+
+greg k-h
