@@ -2,105 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58C79C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 09:59:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5CF9C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 10:01:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231519AbiFKJ7L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 05:59:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56392 "EHLO
+        id S229704AbiFKKBV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 06:01:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229660AbiFKJ6y (ORCPT
+        with ESMTP id S231370AbiFKJ6b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 05:58:54 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D88F61DA57;
-        Sat, 11 Jun 2022 02:58:53 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id i29so1974839lfp.3;
-        Sat, 11 Jun 2022 02:58:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=GocDLkOsBawPMPs9zxnh8PppBX+pbvR6afOC4S31yoY=;
-        b=doW1z+6hB6tGbJaAuf6+XaOYEYEK6Z4PL2eTxqpdP4QCs5ULJq/efSF+oyq3Kta73a
-         RVY49pzTCOeqGp2LS6PbBst7Rm/T4MNaqJL8E3G3mZAAtkp5WzS530bJOiLOSArgenC8
-         gHV4237SNtmyRZ7b7r8cDqRJpLkrhoSahvX5QAIoCTISXslz3wYp76JIYw1R6ie3ktDe
-         BaGh1hECtRYvyqmJ6kUoCAymsjbX0HnxzyBXrv8AZ7lOvN70LG1lfwzAyycdkyCdmQAS
-         pUA9Yh80WnXbf2V/dDnvUiHsU2kkMQXyMVQV7bm+IvSR/YbbQmv3os2P/pnqg+oxjM5x
-         9/Aw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=GocDLkOsBawPMPs9zxnh8PppBX+pbvR6afOC4S31yoY=;
-        b=0SppDqUB/7m23GB/tHzihH01lgZ9tEzQgJwBZ/arZJYPZo2MnEe7BnQfINRt+Shb3M
-         zWe80ArrljkcPiGj1/gV+YCdvrWR2WPrslKE4yIcv2DMhRhiGBduazAH/rjf0wBMLoXV
-         2GT26iZWUMhnTyJToa01jsz9oI6ewdk0/SQUNbZu2xLRUmwMVJcr2gMnj0FoGvGyg43/
-         0l+wmFrXDOWT9SGLCPwf3cj3STdDe4DDSe7+T/Nt+L8XlKTSVTHX5nASEZIp8ggYxRiK
-         eqpCiAEnslqFevGmG2IyWapFr/q011CkRrjbVvB+7jZtZKlQxSpGH0is7apgsjtrwbzt
-         omVg==
-X-Gm-Message-State: AOAM532vxyCz2mh9PkrFgm81sOndAF803H1NnRDN1Uq7MD6BWZ2hjwKy
-        6hq60+vZzBsuFd6TKG5f/0A=
-X-Google-Smtp-Source: ABdhPJz7uF0meF9LfuCvFt6ei/jXgipBVoJLu6+lz1yX8HSTxLLS96KPAaoJdHDr0fQ15JO+Vjj15g==
-X-Received: by 2002:a05:6512:b95:b0:479:65bd:ac2f with SMTP id b21-20020a0565120b9500b0047965bdac2fmr13223105lfv.445.1654941532235;
-        Sat, 11 Jun 2022 02:58:52 -0700 (PDT)
-Received: from DESKTOP-GSFPEC9.localdomain (broadband-90-154-71-254.ip.moscow.rt.ru. [90.154.71.254])
-        by smtp.gmail.com with ESMTPSA id h18-20020a056512055200b004785060bad6sm200634lfl.201.2022.06.11.02.58.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Jun 2022 02:58:51 -0700 (PDT)
-From:   Konstantin Aladyshev <aladyshev22@gmail.com>
-Cc:     supreeth.venkatesh@amd.com, aladyshev22@gmail.com,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 4/4] ARM: dts: aspeed: ethanolx: Enable VUART
-Date:   Sat, 11 Jun 2022 12:58:28 +0300
-Message-Id: <20220611095828.1090-5-aladyshev22@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220611095828.1090-1-aladyshev22@gmail.com>
-References: <20220611095828.1090-1-aladyshev22@gmail.com>
+        Sat, 11 Jun 2022 05:58:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 734722CE26;
+        Sat, 11 Jun 2022 02:58:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F943B80735;
+        Sat, 11 Jun 2022 09:58:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 688B0C34116;
+        Sat, 11 Jun 2022 09:58:27 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="gXWVNKP7"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1654941506;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XE9MBbqS+h3xN0ixzva9wwx1qzz8nH5/3DdGftVBwA0=;
+        b=gXWVNKP7/GU1uwVANTXcllYD86W5e7LZGlPyme5gqPcU8RQyzpIuWIZ9ErbuBeQ+rsh0y8
+        2kje/2e5ZhuBpdf1uRu5mBibtpYHwr3LN2szLrYtHYy7hfwu6EyaC4np34HmchIRsFzHR+
+        NjaC79VPbA3GnAFUaTlTiL/cf5iUb3g=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id b60a435e (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Sat, 11 Jun 2022 09:58:25 +0000 (UTC)
+Date:   Sat, 11 Jun 2022 11:58:23 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: Re: [PATCH] powerpc/rng: wire up during setup_arch
+Message-ID: <YqRnPzVxK9HKROYi@zx2c4.com>
+References: <20220611081114.449165-1-Jason@zx2c4.com>
+ <956d2faa-4dae-fc75-2c03-387c77806f2b@csgroup.eu>
+ <f6e5a9c4-f39d-749f-d124-884f11a8edfb@csgroup.eu>
+ <YqRe3wHSuM6dcsCU@zx2c4.com>
+ <c0198572-5aa2-7d65-ade2-766d6733431d@csgroup.eu>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+In-Reply-To: <c0198572-5aa2-7d65-ade2-766d6733431d@csgroup.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable virtual UART for BMC<->Host communication.
+Hi Christophe,
 
-Signed-off-by: Konstantin Aladyshev <aladyshev22@gmail.com>
----
- arch/arm/boot/dts/aspeed-bmc-amd-ethanolx.dts | 7 +++++++
- 1 file changed, 7 insertions(+)
+On Sat, Jun 11, 2022 at 09:27:43AM +0000, Christophe Leroy wrote:
+> Le 11/06/2022 à 11:22, Jason A. Donenfeld a écrit :
+> > Hi Christophe,
+> > 
+> > On Sat, Jun 11, 2022 at 11:17:23AM +0200, Christophe Leroy wrote:
+> >> Also, you copied stable. Should you add a Fixes: tag so that we know
+> >> what it fixes ?
+> > 
+> > I suppose the fixes tag would be whatever introduced those files in the
+> > first place, so not all together useful. But if you want something, feel
+> > free to append these when applying the commit:
+> > 
+> > Fixes: a4da0d50b2a0 ("powerpc: Implement arch_get_random_long/int() for powernv")
+> > Fixes: a489043f4626 ("powerpc/pseries: Implement arch_get_random_long() based on H_RANDOM")
+> > Fixes: c25769fddaec ("powerpc/microwatt: Add support for hardware random number generator")
+> > 
+> 
+> Well it helps knowing on which stable version it applies.
+> 
+> Maybe it would be cleaner to send three patches ? After all they look 
 
-diff --git a/arch/arm/boot/dts/aspeed-bmc-amd-ethanolx.dts b/arch/arm/boot/dts/aspeed-bmc-amd-ethanolx.dts
-index 428fa9f673f9..90feac5ec628 100644
---- a/arch/arm/boot/dts/aspeed-bmc-amd-ethanolx.dts
-+++ b/arch/arm/boot/dts/aspeed-bmc-amd-ethanolx.dts
-@@ -5,6 +5,7 @@
- 
- #include "aspeed-g5.dtsi"
- #include <dt-bindings/gpio/aspeed-gpio.h>
-+#include <dt-bindings/interrupt-controller/irq.h>
- 
- / {
- 	model = "AMD EthanolX BMC";
-@@ -264,6 +265,12 @@ &lpc_ctrl {
- 	status = "okay";
- };
- 
-+&vuart {
-+	status = "okay";
-+	aspeed,lpc-io-reg = <0x3f8>;
-+	aspeed,lpc-interrupts = <4 IRQ_TYPE_LEVEL_HIGH>;
-+};
-+
- &pwm_tacho {
- 	status = "okay";
- 	pinctrl-names = "default";
--- 
-2.25.1
+Sounds like irritating paperwork to me.
 
+> like 3 independant changes with nothing in common at all.
+
+"Nothing in common"? I don't know about that.
+
+Anyway, sure, I'll do that and send a v2 series.
+
+Jason
