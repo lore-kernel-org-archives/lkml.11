@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23859CCA47D
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 08:47:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 204A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 08:47:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231690AbiFKIrg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 04:47:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57102 "EHLO
+        id S231706AbiFKIri (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 04:47:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231562AbiFKIrc (ORCPT
+        with ESMTP id S231479AbiFKIrc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 11 Jun 2022 04:47:32 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F6045F67
-        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 01:47:29 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LKry66MlRz1K96X;
-        Sat, 11 Jun 2022 16:45:34 +0800 (CST)
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 416861ADB1
+        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 01:47:30 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LKrz7716NzjWw6;
+        Sat, 11 Jun 2022 16:46:27 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 11 Jun
- 2022 16:47:26 +0800
+ 2022 16:47:28 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>
 CC:     <aarcange@redhat.com>, <willy@infradead.org>, <vbabka@suse.cz>,
@@ -29,10 +29,12 @@ CC:     <aarcange@redhat.com>, <willy@infradead.org>, <vbabka@suse.cz>,
         <david@redhat.com>, <surenb@google.com>, <peterx@redhat.com>,
         <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
         <linmiaohe@huawei.com>
-Subject: [PATCH 0/7] A few cleanup patches for khugepaged
-Date:   Sat, 11 Jun 2022 16:47:24 +0800
-Message-ID: <20220611084731.55155-1-linmiaohe@huawei.com>
+Subject: [PATCH 2/7] mm/khugepaged: stop swapping in page when VM_FAULT_RETRY occurs
+Date:   Sat, 11 Jun 2022 16:47:26 +0800
+Message-ID: <20220611084731.55155-3-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20220611084731.55155-1-linmiaohe@huawei.com>
+References: <20220611084731.55155-1-linmiaohe@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -44,26 +46,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi everyone,
-This series contains a few cleaup patches to remove unneeded return
-value, use helper macro, fix typos and so on. More details can be
-found in the respective changelogs. Thanks!
+When do_swap_page returns VM_FAULT_RETRY, we do not retry here and thus
+swap entry will remain in pagetable. This will result in later failure.
+So stop swapping in pages in this case to save cpu cycles.
 
-Miaohe Lin (7):
-  mm/khugepaged: remove unneeded shmem_huge_enabled() check
-  mm/khugepaged: stop swapping in page when VM_FAULT_RETRY occurs
-  mm/khugepaged: trivial typo and codestyle cleanup
-  mm/khugepaged: minor cleanup for collapse_file
-  mm/khugepaged: use helper macro __ATTR_RW
-  mm/khugepaged: remove unneeded return value of
-    khugepaged_add_pte_mapped_thp()
-  mm/khugepaged: try to free transhuge swapcache when possible
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+---
+ mm/khugepaged.c | 19 ++++++++-----------
+ 1 file changed, 8 insertions(+), 11 deletions(-)
 
- include/linux/swap.h |  5 +++
- mm/khugepaged.c      | 85 +++++++++++++++++++-------------------------
- mm/swap.h            |  5 ---
- 3 files changed, 41 insertions(+), 54 deletions(-)
-
+diff --git a/mm/khugepaged.c b/mm/khugepaged.c
+index 73570dfffcec..a8adb2d1e9c6 100644
+--- a/mm/khugepaged.c
++++ b/mm/khugepaged.c
+@@ -1003,19 +1003,16 @@ static bool __collapse_huge_page_swapin(struct mm_struct *mm,
+ 		swapped_in++;
+ 		ret = do_swap_page(&vmf);
+ 
+-		/* do_swap_page returns VM_FAULT_RETRY with released mmap_lock */
++		/*
++		 * do_swap_page returns VM_FAULT_RETRY with released mmap_lock.
++		 * Note we treat VM_FAULT_RETRY as VM_FAULT_ERROR here because
++		 * we do not retry here and swap entry will remain in pagetable
++		 * resulting in later failure.
++		 */
+ 		if (ret & VM_FAULT_RETRY) {
+ 			mmap_read_lock(mm);
+-			if (hugepage_vma_revalidate(mm, haddr, &vma)) {
+-				/* vma is no longer available, don't continue to swapin */
+-				trace_mm_collapse_huge_page_swapin(mm, swapped_in, referenced, 0);
+-				return false;
+-			}
+-			/* check if the pmd is still valid */
+-			if (mm_find_pmd(mm, haddr) != pmd) {
+-				trace_mm_collapse_huge_page_swapin(mm, swapped_in, referenced, 0);
+-				return false;
+-			}
++			trace_mm_collapse_huge_page_swapin(mm, swapped_in, referenced, 0);
++			return false;
+ 		}
+ 		if (ret & VM_FAULT_ERROR) {
+ 			trace_mm_collapse_huge_page_swapin(mm, swapped_in, referenced, 0);
 -- 
 2.23.0
 
