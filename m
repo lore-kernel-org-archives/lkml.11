@@ -2,125 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61920C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 14:21:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C62E4C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 14:24:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234987AbiFKOVE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 10:21:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56336 "EHLO
+        id S235149AbiFKOYV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 10:24:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230379AbiFKOVB (ORCPT
+        with ESMTP id S230379AbiFKOYS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 10:21:01 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4903226C0
-        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 07:21:01 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1o01yy-0002Mo-Ig; Sat, 11 Jun 2022 16:20:56 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 4CD9792E59;
-        Sat, 11 Jun 2022 14:20:55 +0000 (UTC)
-Date:   Sat, 11 Jun 2022 16:20:54 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Max Staudt <max@enpas.org>
-Cc:     Vincent Mailhol <vincent.mailhol@gmail.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Oliver Neukum <oneukum@suse.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7] can, tty: can327 CAN/ldisc driver for ELM327 based
- OBD-II adapters
-Message-ID: <20220611142054.qdn6if6tpw4j3ztq@pengutronix.de>
-References: <20220602213544.68273-1-max@enpas.org>
- <CAMZ6RqLLn3tE6kPd+yyHURsbBU_jVKN=u4=YvhZVyAf_NyRqCQ@mail.gmail.com>
- <20220611151551.5024f51e.max@enpas.org>
- <20220611133608.3zdfb3nnl5445kr7@pengutronix.de>
- <20220611161713.5303549d.max@enpas.org>
+        Sat, 11 Jun 2022 10:24:18 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAEBE13E21
+        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 07:24:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654957457; x=1686493457;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=w1h0A7J0J4M+DnIJPPwikbFcTQOnMkxoRnzDFoylYv0=;
+  b=GFRMfnyp+7cq25ENqt8Up6sLVxjUG32K1YBrz5wBN+bEgb1Y/BOTzAwe
+   iCaI9kmyLBpbcAqV9K88DuMQslXIFO5M19tIG3sFKRZPEedYAY9+hEP9Q
+   BtDL1YqZCr6J/hLbVdgua2S482//7IyWDBiuuudarwbYdMVoXqAsMTHKo
+   V6KxkzhYyAk2zZ8tERhrC8nEOOZtQLCTgdOahqeFB2p1K4v/umXAE5rgr
+   y7qjlEq7W44ZaR0HE6Ah1Y5DF1ns7KbyhUZLX7remUT6BVYAZ4PQPcZnm
+   XNIToIONVlWaYDfsLePYVdnszg303atu7gYngQGFP7CgKM656EuAqTzeB
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10375"; a="258325790"
+X-IronPort-AV: E=Sophos;i="5.91,293,1647327600"; 
+   d="scan'208";a="258325790"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2022 07:24:17 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,293,1647327600"; 
+   d="scan'208";a="672382675"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 11 Jun 2022 07:24:16 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o022B-000Ixl-RX;
+        Sat, 11 Jun 2022 14:24:15 +0000
+Date:   Sat, 11 Jun 2022 22:23:34 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [paulmck-rcu:dev.2022.06.08a] BUILD SUCCESS
+ 7a5900587bf50388df8734399141965a3956d0bb
+Message-ID: <62a4a566.a1aoDVsV7fSgqFaf%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="p6gkmby2djvklmw2"
-Content-Disposition: inline
-In-Reply-To: <20220611161713.5303549d.max@enpas.org>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev.2022.06.08a
+branch HEAD: 7a5900587bf50388df8734399141965a3956d0bb  fixup! rcu-tasks: Remove rcu_tasks_trace_postgp() wait for counter
 
---p6gkmby2djvklmw2
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+elapsed time: 1079m
 
-On 11.06.2022 16:17:13, Max Staudt wrote:
-> On Sat, 11 Jun 2022 15:36:08 +0200
-> Marc Kleine-Budde <mkl@pengutronix.de> wrote:
->=20
-> > What about this change?
-> >=20
-> > diff --git a/drivers/net/can/dev/netlink.c
-> > b/drivers/net/can/dev/netlink.c index 7633d98e3912..667ddd28fcdc
-> > 100644 --- a/drivers/net/can/dev/netlink.c
-> > +++ b/drivers/net/can/dev/netlink.c
-> > @@ -176,7 +176,8 @@ static int can_changelink(struct net_device *dev,
-> > struct nlattr *tb[],
-> >                  * directly via do_set_bitrate(). Bail out if neither
-> >                  * is given.
-> >                  */
-> > -               if (!priv->bittiming_const && !priv->do_set_bittiming)
-> > +               if (!priv->bittiming_const && !priv->do_set_bittiming
-> > &&
-> > +                   !priv->bitrate_const)
-> >                         return -EOPNOTSUPP;
-> > =20
-> >                 memcpy(&bt, nla_data(data[IFLA_CAN_BITTIMING]),
-> > sizeof(bt));
-> >=20
-> > If it works I'll make a patch and apply it to net-next/master so that
-> > you can base your series on this.
->=20
-> Yes, it seems to work fine, since the dummy function is empty, and it's
-> only ever used in this same function, and the pointer is guarded as
-> Vincent mentioned. So if a no-op do_set_bittiming() is okay, then not
-> having it at all is also okay.
+configs tested: 63
+configs skipped: 3
 
-Having a no-op do_set_bittiming() just to make can_changelink() happy is
-not intended. :D
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-> Yes, I'd appreciate you patching this, and I'll rebase upon it :)
+gcc tested configs:
+arm                              allmodconfig
+arm                              allyesconfig
+arm                                 defconfig
+arm64                               defconfig
+arm64                            allyesconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+alpha                               defconfig
+csky                                defconfig
+alpha                            allyesconfig
+nios2                            allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+h8300                            allyesconfig
+xtensa                           allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+s390                                defconfig
+s390                             allmodconfig
+parisc                              defconfig
+parisc64                            defconfig
+parisc                           allyesconfig
+s390                             allyesconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+i386                                defconfig
+i386                             allyesconfig
+sparc                               defconfig
+sparc                            allyesconfig
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                           allnoconfig
+powerpc                          allmodconfig
+i386                          randconfig-a014
+i386                          randconfig-a012
+i386                          randconfig-a016
+riscv                randconfig-r042-20220611
+arc                  randconfig-r043-20220611
+s390                 randconfig-r044-20220611
+riscv                               defconfig
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                    nommu_k210_defconfig
+riscv                             allnoconfig
+riscv                            allmodconfig
+riscv                            allyesconfig
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                              defconfig
+x86_64                                  kexec
+x86_64                           allyesconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                           rhel-8.3-syz
+x86_64                    rhel-8.3-kselftests
+x86_64                         rhel-8.3-kunit
 
-regards,
-Marc
+clang tested configs:
+i386                          randconfig-a013
+i386                          randconfig-a011
+i386                          randconfig-a015
+hexagon              randconfig-r045-20220611
+hexagon              randconfig-r041-20220611
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---p6gkmby2djvklmw2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKkpMQACgkQrX5LkNig
-0138AAgAss00uGJ7iR7grrxcSEMAzajBxZeFb4iM2ce4gEtDmUbJzciFHekhgq3f
-PV/0Pm5+sxKXli1SiD9YWhqZqmxXMV3L7VbafPMh1bw64mPaoLdqm4C3smlNraPd
-EmOZ5K0jKrfkxKkuCu9GU0aY4RKY1TAPHWgP5RMAlwuFXMcHtP2mh7R8paGpnaRP
-pgIMZ+oi+MKI6yLq4jyPskQYOxMlUEZYfavbvwKp0kehQre3DlVHNN2OEPlqz4EM
-XSfGoIlwmHorYwMA4ZKZ7fc3jw3/ojHTd/uYuqwFgkfSVsiLl+p94D1b3HYkZ98+
-g0rpnBcmDlWtFlyytKvChGYZ8NDyjw==
-=PnUB
------END PGP SIGNATURE-----
-
---p6gkmby2djvklmw2--
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
