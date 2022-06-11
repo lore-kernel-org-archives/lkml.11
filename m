@@ -2,276 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52C63C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 13:52:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76B0FC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 13:53:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233751AbiFKNwW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 09:52:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51066 "EHLO
+        id S231844AbiFKNxu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 09:53:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233574AbiFKNwU (ORCPT
+        with ESMTP id S233574AbiFKNxs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 09:52:20 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C7D01A38B;
-        Sat, 11 Jun 2022 06:52:10 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id q15so774954wmj.2;
-        Sat, 11 Jun 2022 06:52:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wemWetgqZtPAak9UOZsCzxeIqqnM7f9u1LT1EZmm0AA=;
-        b=IXckhRk9dBamy/3k8VsroC/1aDkvrqGzOEB5L+4viH34purDQNt3KtuN/MLyivRP1f
-         MHWVgY3iWhdkKNaiVjBDHqHnQW34iSrQP+MQtuor8GVZcLfjZkT544djNfNSFrkxVQwN
-         gnh2QN9AgKvuZf0FnKxwkNcln+4SfzFEyt6HqiRipJLYEj3XM/yti9Hh0K04OC0aUVD9
-         APn6TlL2/QPkFT3lIs3teb+0Rk/lkr2hBL/m50uzcZM0gq+GmOPVPvmS5yVBhkR46hCf
-         I/UTWFcqTGp/qv084bemDvFTtCgR8HW8njAdpUe0a2QyvYcjwv7hXycAff3C22PGn4Cp
-         ZSlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wemWetgqZtPAak9UOZsCzxeIqqnM7f9u1LT1EZmm0AA=;
-        b=StlkKWTjppCXkfsan6pluZjl3QqXd+CfqnvV1z4OFfifUWY484BJ3Gdadiu0FhSg7U
-         ovHJ+doiedZlXNuD1mSORhnC+QmqPDZKKF6xruFixcoOeTNfVDkGqZL5UBM1v2jfRfTO
-         WxzE+oXBCN+a2RVg7w9+gEKY+uI4ixlHRC36WaAaeATkNhd2QPYVqxmeE8XW1L+nW6n3
-         eutI5C+OpE9ft2nL+sLxfyLWh8gHlzv4xAbJviAhfoai1onK3Sx2uoAJaQLn3ySWiPEa
-         kx5KlWinWn0EtXttvAX/hmqMaG0tKiRX9raYY5VjBJnXJ18cxqWOa0MUHlOERRQRbA4O
-         7BvA==
-X-Gm-Message-State: AOAM533+goPCmR33yJYOrw4OTfJuToFR08lEuSe2AnwapLOwNnrSxC7j
-        GcfGQTi9E9PDde0rEN7pOg7aRot8mXw=
-X-Google-Smtp-Source: ABdhPJycO+r/EYhtyb9IIHZ0PRPblJucaFGjJrBITVdzY3qblPPpEgZ4tyz6NnNjNzbUnBd/S95LYw==
-X-Received: by 2002:a05:600c:1d1c:b0:39c:7ac8:1faa with SMTP id l28-20020a05600c1d1c00b0039c7ac81faamr5031020wms.202.1654955528462;
-        Sat, 11 Jun 2022 06:52:08 -0700 (PDT)
-Received: from localhost.localdomain (host-79-18-0-143.retail.telecomitalia.it. [79.18.0.143])
-        by smtp.gmail.com with ESMTPSA id r20-20020a05600c35d400b0039c1396b495sm2593224wmq.9.2022.06.11.06.52.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Jun 2022 06:52:07 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Nick Terrell <terrelln@fb.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Filipe Manana <fdmanana@kernel.org>,
-        Ira Weiny <ira.weiny@intel.com>
-Subject: [PATCH] btrfs: Replace kmap() with kmap_local_page() in zstd.c
-Date:   Sat, 11 Jun 2022 15:52:03 +0200
-Message-Id: <20220611135203.27992-1-fmdefrancesco@gmail.com>
-X-Mailer: git-send-email 2.36.1
+        Sat, 11 Jun 2022 09:53:48 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AAC33F88F;
+        Sat, 11 Jun 2022 06:53:46 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1o01Ye-0006jb-NG; Sat, 11 Jun 2022 15:53:44 +0200
+Message-ID: <84d01637-febb-f602-2d03-fe1600e85ae3@leemhuis.info>
+Date:   Sat, 11 Jun 2022 15:53:44 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: regression, 5.19.0-rc1 not powering off when hibernated
+Content-Language: en-US
+To:     Ken Moffat <zarniwhoop@ntlworld.com>, linux-kernel@vger.kernel.org,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+References: <YqE22nS9k2+AldI6@llamedos.localdomain>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+Cc:     Linux PM <linux-pm@vger.kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+In-Reply-To: <YqE22nS9k2+AldI6@llamedos.localdomain>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1654955626;91ad4d5f;
+X-HE-SMSGID: 1o01Ye-0006jb-NG
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The use of kmap() is being deprecated in favor of kmap_local_page(). With
-kmap_local_page(), the mapping is per thread, CPU local and not globally
-visible.
+Hi, this is your Linux kernel regression tracker.
 
-Therefore, use kmap_local_page() / kunmap_local() in zstd.c because in
-this file the mappings are per thread and are not visible in other
-contexts; meanwhile refactor zstd_compress_pages() to comply with nested
-local mapping / unmapping ordering rules.
+CCing the regression mailing list, as it should be in the loop for all
+regressions, as explained here:
+https://www.kernel.org/doc/html/latest/admin-guide/reporting-issues.html
+Also CCing the hibernation maintainers and Linux-pm.
 
-Tested with xfstests on a QEMU + KVM 32 bits VM with 4GB of RAM and
-HIGHMEM64G enabled.
+On 09.06.22 01:55, Ken Moffat wrote:
+> Up to 5.18.0 hibernation has worked ok on my ryzen 5 3400G : screen
+> blanks, disk activity for the write to swap, screen briefly has a
+> trashed display, machine powers off.  When powering up from
+> hibernation, after the saved files are loaded X starts with a
+> briefly trashed display before my desktop reappears.
+> 
+> But with 5.19.0-rc1 the screen is blank throughtout the hibernation,
+> and briefly when restoring (no complaint about that), but when
+> hibernating it no longer powers off and I have to hold the on/off
+> switch to power off.
+> 
+> Is this a known problem ?
 
-Cc: Filipe Manana <fdmanana@kernel.org>
-Suggested-by: Ira Weiny <ira.weiny@intel.com>
-Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
----
+Thanks for the report. Maybe the hibernation maintainers might know, but
+often issues like this are caused by other things like drivers. If they
+don#t have a idea, you likely need to do a bisection to get down to the
+change that introduced this regressions.
 
-Thanks to Ira Weiny for his invaluable help and persevering support.
-Thanks also to Filipe Manana for identifying a fundamental detail I had overlooked:
-https://lore.kernel.org/lkml/20220611093411.GA3779054@falcondesktop/ 
+Anyway: To be sure below issue doesn't fall through the cracks
+unnoticed, I'm adding it to regzbot, my Linux kernel regression tracking
+bot:
 
-tweed32:/usr/lib/xfstests # ./check -g compress
-FSTYP         -- btrfs
-PLATFORM      -- Linux/i686 tweed32 5.19.0-rc1-vanilla-debug+ #22 SMP PREEMPT_DYNAMIC Sat Jun 11 14:31:39 CEST 2022
-MKFS_OPTIONS  -- /dev/loop1
-MOUNT_OPTIONS -- /dev/loop1 /mnt/scratch
+#regzbot ^introduced v5.18..v5.19-rc1
+#regzbot title hibernate: Not powering off when hibernated
+#regzbot ignore-activity
 
-btrfs/024 1s ...  0s
-btrfs/026 3s ...  3s
-btrfs/037 1s ...  1s
-btrfs/038 1s ...  0s
-btrfs/041 0s ...  1s
-btrfs/062 34s ...  35s
-btrfs/063 18s ...  18s
-btrfs/067 33s ...  32s
-btrfs/068 10s ...  10s
-btrfs/070       [not run] btrfs and this test needs 5 or more disks in SCRATCH_DEV_POOL
-btrfs/071       [not run] btrfs and this test needs 5 or more disks in SCRATCH_DEV_POOL
-btrfs/072 33s ...  33s
-btrfs/073 17s ...  15s
-btrfs/074 36s ...  32s
-btrfs/076 0s ...  0s
-btrfs/103 1s ...  1s
-btrfs/106 1s ...  1s
-btrfs/109 1s ...  0s
-btrfs/113 0s ...  1s
-btrfs/138 43s ...  46s
-btrfs/149 1s ...  1s
-btrfs/183 1s ...  1s
-btrfs/205 1s ...  1s
-btrfs/234 3s ...  3s
-btrfs/246 0s ...  0s
-btrfs/251 1s ...  1s
-Ran: btrfs/024 btrfs/026 btrfs/037 btrfs/038 btrfs/041 btrfs/062 btrfs/063 btrfs/067 btrfs/068 btrfs/070 btrfs/071 btrfs/072 btrfs/073 btrfs/074 btrfs/076 btrfs/103 btrfs/106 btrfs/109 btrfs/113 btrfs/138 btrfs/149 btrfs/183 btrfs/205 btrfs/234 btrfs/246 btrfs/251
-Not run: btrfs/070 btrfs/071
-Passed all 26 tests
+This isn't a regression? This issue or a fix for it are already
+discussed somewhere else? It was fixed already? You want to clarify when
+the regression started to happen? Or point out I got the title or
+something else totally wrong? Then just reply -- ideally with also
+telling regzbot about it, as explained here:
+https://linux-regtracking.leemhuis.info/tracked-regression/
 
- fs/btrfs/zstd.c | 42 +++++++++++++++++++++++-------------------
- 1 file changed, 23 insertions(+), 19 deletions(-)
+Reminder for developers: When fixing the issue, add 'Link:' tags
+pointing to the report (the mail this one replied to), as the kernel's
+documentation call for; above page explains why this is important for
+tracked regressions.
 
-diff --git a/fs/btrfs/zstd.c b/fs/btrfs/zstd.c
-index 0fe31a6f6e68..4d50eb3edce5 100644
---- a/fs/btrfs/zstd.c
-+++ b/fs/btrfs/zstd.c
-@@ -391,6 +391,8 @@ int zstd_compress_pages(struct list_head *ws, struct address_space *mapping,
- 	*out_pages = 0;
- 	*total_out = 0;
- 	*total_in = 0;
-+	workspace->in_buf.src = NULL;
-+	workspace->out_buf.dst = NULL;
- 
- 	/* Initialize the stream */
- 	stream = zstd_init_cstream(&params, len, workspace->mem,
-@@ -403,7 +405,7 @@ int zstd_compress_pages(struct list_head *ws, struct address_space *mapping,
- 
- 	/* map in the first page of input data */
- 	in_page = find_get_page(mapping, start >> PAGE_SHIFT);
--	workspace->in_buf.src = kmap(in_page);
-+	workspace->in_buf.src = kmap_local_page(in_page);
- 	workspace->in_buf.pos = 0;
- 	workspace->in_buf.size = min_t(size_t, len, PAGE_SIZE);
- 
-@@ -415,7 +417,7 @@ int zstd_compress_pages(struct list_head *ws, struct address_space *mapping,
- 		goto out;
- 	}
- 	pages[nr_pages++] = out_page;
--	workspace->out_buf.dst = kmap(out_page);
-+	workspace->out_buf.dst = kmap_local_page(out_page);
- 	workspace->out_buf.pos = 0;
- 	workspace->out_buf.size = min_t(size_t, max_out, PAGE_SIZE);
- 
-@@ -450,9 +452,9 @@ int zstd_compress_pages(struct list_head *ws, struct address_space *mapping,
- 		if (workspace->out_buf.pos == workspace->out_buf.size) {
- 			tot_out += PAGE_SIZE;
- 			max_out -= PAGE_SIZE;
--			kunmap(out_page);
-+			kunmap_local(workspace->out_buf.dst);
- 			if (nr_pages == nr_dest_pages) {
--				out_page = NULL;
-+				workspace->out_buf.dst = NULL;
- 				ret = -E2BIG;
- 				goto out;
- 			}
-@@ -462,7 +464,7 @@ int zstd_compress_pages(struct list_head *ws, struct address_space *mapping,
- 				goto out;
- 			}
- 			pages[nr_pages++] = out_page;
--			workspace->out_buf.dst = kmap(out_page);
-+			workspace->out_buf.dst = kmap_local_page(out_page);
- 			workspace->out_buf.pos = 0;
- 			workspace->out_buf.size = min_t(size_t, max_out,
- 							PAGE_SIZE);
-@@ -477,15 +479,16 @@ int zstd_compress_pages(struct list_head *ws, struct address_space *mapping,
- 		/* Check if we need more input */
- 		if (workspace->in_buf.pos == workspace->in_buf.size) {
- 			tot_in += PAGE_SIZE;
--			kunmap(in_page);
-+			kunmap_local(workspace->out_buf.dst);
-+			kunmap_local((void *)workspace->in_buf.src);
- 			put_page(in_page);
--
- 			start += PAGE_SIZE;
- 			len -= PAGE_SIZE;
- 			in_page = find_get_page(mapping, start >> PAGE_SHIFT);
--			workspace->in_buf.src = kmap(in_page);
-+			workspace->in_buf.src = kmap_local_page(in_page);
- 			workspace->in_buf.pos = 0;
- 			workspace->in_buf.size = min_t(size_t, len, PAGE_SIZE);
-+			workspace->out_buf.dst = kmap_local_page(out_page);
- 		}
- 	}
- 	while (1) {
-@@ -510,9 +513,9 @@ int zstd_compress_pages(struct list_head *ws, struct address_space *mapping,
- 
- 		tot_out += PAGE_SIZE;
- 		max_out -= PAGE_SIZE;
--		kunmap(out_page);
-+		kunmap_local(workspace->out_buf.dst);
- 		if (nr_pages == nr_dest_pages) {
--			out_page = NULL;
-+			workspace->out_buf.dst = NULL;
- 			ret = -E2BIG;
- 			goto out;
- 		}
-@@ -522,7 +525,7 @@ int zstd_compress_pages(struct list_head *ws, struct address_space *mapping,
- 			goto out;
- 		}
- 		pages[nr_pages++] = out_page;
--		workspace->out_buf.dst = kmap(out_page);
-+		workspace->out_buf.dst = kmap_local_page(out_page);
- 		workspace->out_buf.pos = 0;
- 		workspace->out_buf.size = min_t(size_t, max_out, PAGE_SIZE);
- 	}
-@@ -538,12 +541,12 @@ int zstd_compress_pages(struct list_head *ws, struct address_space *mapping,
- out:
- 	*out_pages = nr_pages;
- 	/* Cleanup */
--	if (in_page) {
--		kunmap(in_page);
-+	if (workspace->out_buf.dst)
-+		kunmap_local(workspace->out_buf.dst);
-+	if (workspace->in_buf.src) {
-+		kunmap_local((void *)workspace->in_buf.src);
- 		put_page(in_page);
- 	}
--	if (out_page)
--		kunmap(out_page);
- 	return ret;
- }
- 
-@@ -567,7 +570,7 @@ int zstd_decompress_bio(struct list_head *ws, struct compressed_bio *cb)
- 		goto done;
- 	}
- 
--	workspace->in_buf.src = kmap(pages_in[page_in_index]);
-+	workspace->in_buf.src = kmap_local_page(pages_in[page_in_index]);
- 	workspace->in_buf.pos = 0;
- 	workspace->in_buf.size = min_t(size_t, srclen, PAGE_SIZE);
- 
-@@ -603,14 +606,15 @@ int zstd_decompress_bio(struct list_head *ws, struct compressed_bio *cb)
- 			break;
- 
- 		if (workspace->in_buf.pos == workspace->in_buf.size) {
--			kunmap(pages_in[page_in_index++]);
-+			kunmap_local((void *)workspace->in_buf.src);
-+			page_in_index++;
- 			if (page_in_index >= total_pages_in) {
- 				workspace->in_buf.src = NULL;
- 				ret = -EIO;
- 				goto done;
- 			}
- 			srclen -= PAGE_SIZE;
--			workspace->in_buf.src = kmap(pages_in[page_in_index]);
-+			workspace->in_buf.src = kmap_local_page(pages_in[page_in_index]);
- 			workspace->in_buf.pos = 0;
- 			workspace->in_buf.size = min_t(size_t, srclen, PAGE_SIZE);
- 		}
-@@ -619,7 +623,7 @@ int zstd_decompress_bio(struct list_head *ws, struct compressed_bio *cb)
- 	zero_fill_bio(cb->orig_bio);
- done:
- 	if (workspace->in_buf.src)
--		kunmap(pages_in[page_in_index]);
-+		kunmap_local((void *)workspace->in_buf.src);
- 	return ret;
- }
- 
--- 
-2.36.1
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
 
+P.S.: As the Linux kernel's regression tracker I deal with a lot of
+reports and sometimes miss something important when writing mails like
+this. If that's the case here, don't hesitate to tell me in a public
+reply, it's in everyone's interest to set the public record straight.
