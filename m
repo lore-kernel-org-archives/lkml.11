@@ -2,90 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC69BC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 13:50:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0889FC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 13:51:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233732AbiFKNu0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 09:50:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39828 "EHLO
+        id S233417AbiFKNvJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 09:51:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231378AbiFKNuX (ORCPT
+        with ESMTP id S231378AbiFKNvH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 09:50:23 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3DD5EBF0;
-        Sat, 11 Jun 2022 06:50:20 -0700 (PDT)
-Received: from p508fd9f0.dip0.t-ipconnect.de ([80.143.217.240] helo=phil.localnet)
-        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <heiko@sntech.de>)
-        id 1o01VC-0004TJ-AU; Sat, 11 Jun 2022 15:50:10 +0200
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     Rob Herring <robh+dt@kernel.org>,
+        Sat, 11 Jun 2022 09:51:07 -0400
+Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B882E1A38B;
+        Sat, 11 Jun 2022 06:51:05 -0700 (PDT)
+Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-3137316bb69so14734767b3.10;
+        Sat, 11 Jun 2022 06:51:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CIi/KR48LCf1Hz2Cz/+6pDezxkIjhX95zYaLpybh09Y=;
+        b=gKtsdoiImvMAjdt8jolYmLjjoL5nKmt7wFj2Hy/7Fo6Wc75aFcSpIfm9DWYwGvXN+u
+         gL7J63+aKiOgihEp6oFVgF5v9kIRxtOhj0zIGZYm7JqPBEgM4ZVhPumey4YVoJk6g1fN
+         Hlznvz3xCAOZJMHsbChoZprnCfXCpaHliMZDHOgcb1VkCW5zKMjGFfUC84cnjPwUWxYy
+         uSf4B6baXr5rBXWliYbL5Lngau/PiG+I4p3md9XiGcy6o8HOtxD4XPUmyrJcZEuZI/ux
+         n3nWCQ/qp8hmoG7R8FCkoH5U2Y4GXNXwK9jxif3RHqV7IOOwPlmNULU16p9iSAmvvvV6
+         9HsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CIi/KR48LCf1Hz2Cz/+6pDezxkIjhX95zYaLpybh09Y=;
+        b=5cRZqJ7yoRo8dTWNV0XAwMMpX6zgkgV5txqKW2Ym0BA9ZHCEobrwE2cnXiUerNxYle
+         0i5kD9WRpdq60QPCcT1joJBEhJFieTosampqOIode61P6nuOmkbG9nZBsOAPrQKAwWd6
+         b4UnYWcAqFZ2F0kTRJgvHPeiG5iqlDKEoENihZFG0PIwL0GtkLh6cA1ar5PhqmUhbvz2
+         rD0a42e8m8R1/HtVtKPQ58i97ZJt0c/TZkXMVyveFaiA42aXe/kU+6vWHqxgq2rHXZEB
+         TaYzlStfyTjvVqfSm4ZFlFX6dQP3+Nw1j4xy0yOT5YeQEtgSH2gD+nhO/8ivINNQQQAx
+         YNnw==
+X-Gm-Message-State: AOAM532t0yhwus5Aad0hLOixkVKIObEffxxas9x4xLNcmPc0TePAwsH6
+        ZiHjtocdCENE86puRKvY2JY03TmDHVbvh2df5n8=
+X-Google-Smtp-Source: ABdhPJyw0mX4zwcIWAZ5xfazDHvtqgj48NkNv3sycBKJaZXGBlQWdOiHMHgR1FUorl6uAIo6XP9y9mOeIj8U7uM5WvE=
+X-Received: by 2002:a81:5c5:0:b0:313:e5c5:53d5 with SMTP id
+ 188-20020a8105c5000000b00313e5c553d5mr3625440ywf.281.1654955464947; Sat, 11
+ Jun 2022 06:51:04 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220611065300.885212-1-frattaroli.nicolas@gmail.com>
+In-Reply-To: <20220611065300.885212-1-frattaroli.nicolas@gmail.com>
+From:   Peter Geis <pgwipeout@gmail.com>
+Date:   Sat, 11 Jun 2022 09:50:54 -0400
+Message-ID: <CAMdYzYpvtZf8q+7Fon-nj=XbjZ-XQdD-bnY0mdaBxELVad2Cgg@mail.gmail.com>
+Subject: Re: [PATCH v3 0/2] HDMI Audio on RK356x/Quartz64 Model A
+To:     Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiko Stuebner <heiko@sntech.de>,
         Michael Riesch <michael.riesch@wolfvision.net>,
-        Peter Geis <pgwipeout@gmail.com>
-Cc:     devicetree <devicetree@vger.kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Liang Chen <cl@rock-chips.com>,
+        devicetree <devicetree@vger.kernel.org>,
         arm-mail-list <linux-arm-kernel@lists.infradead.org>,
         "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] arm64: dts: rockchip: Fix SoQuartz CM4IO usb
-Date:   Sat, 11 Jun 2022 15:50:08 +0200
-Message-ID: <4178848.3VsfAaAtOV@phil>
-In-Reply-To: <CAMdYzYqJ2S8K2NCH1uQ2xDjTfLmePPv5TzgeXZa0EG6XdGQzBQ@mail.gmail.com>
-References: <20220610132601.160088-1-pgwipeout@gmail.com> <CAMdYzYqJ2S8K2NCH1uQ2xDjTfLmePPv5TzgeXZa0EG6XdGQzBQ@mail.gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Freitag, 10. Juni 2022, 16:44:23 CEST schrieb Peter Geis:
-> On Fri, Jun 10, 2022 at 9:26 AM Peter Geis <pgwipeout@gmail.com> wrote:
-> >
-> > The SoQuartz CM4-IO should support otg mode, however it currently
-> > defaults to device mode when otg is enabled. Force it to host mode to
-> > retain the previous behavior.
-> 
-> It would seem the role-switch issue is more widespread than originally
-> thought, affecting other boards where automatic control should work.
-> Please hold this patch while I investigate further.
+On Sat, Jun 11, 2022 at 2:53 AM Nicolas Frattaroli
+<frattaroli.nicolas@gmail.com> wrote:
+>
+> This enables HDMI audio on Quartz64 Model A, and the RK356x SoC in
+> general.
+>
+> i2s0 on the RK356x is connected to HDMI, and only has one DMA. I've
+> confirmed this with the TRM.
+>
+> To test this, one needs a video clock, i.e. there is no audio if your
+> screen is off. The framebuffer console or something else needs to be
+> running to get audio output.
 
-ok!
+Excellent work!
+Tested on Quartz64 Model A.
+Tested-by: Peter Geis <pgwipeout@gmail.com>
 
-I guess this also applies to
-	"arm64: dts: rockchip: Fix Quartz64-A dwc3 otg port behavior"?
-
-
-Heiko
-
-
-> >
-> > Fixes: bc405bb3eeee ("arm64: dts: rockchip: enable otg/drd operation of usb_host0_xhci in rk356x")
-> >
-> > Signed-off-by: Peter Geis <pgwipeout@gmail.com>
-> > ---
-> >  arch/arm64/boot/dts/rockchip/rk3566-soquartz-cm4.dts | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/arch/arm64/boot/dts/rockchip/rk3566-soquartz-cm4.dts b/arch/arm64/boot/dts/rockchip/rk3566-soquartz-cm4.dts
-> > index e00568a6be5c..56764fae9f9d 100644
-> > --- a/arch/arm64/boot/dts/rockchip/rk3566-soquartz-cm4.dts
-> > +++ b/arch/arm64/boot/dts/rockchip/rk3566-soquartz-cm4.dts
-> > @@ -169,6 +169,7 @@ &usb2phy0_otg {
-> >  };
-> >
-> >  &usb_host0_xhci {
-> > +       dr_mode = "host";
-> >         status = "okay";
-> >  };
-> >
-> > --
-> > 2.25.1
-> >
-> 
-
-
-
-
+>
+> Changes in v3:
+>  - rebased onto next-20220610
+>
+> Changes in v2:
+>  - reordered nodes in rk356x.dtsi to conform
+>  - reordered properties in rk356x.dtsi to conform
+>  - add Michael Riesch's Tested-by to rk356x.dtsi
+>
+> Nicolas Frattaroli (2):
+>   arm64: dts: rockchip: rk356x: Add HDMI audio nodes
+>   arm64: dts: rockchip: Enable HDMI audio on Quartz64 A
+>
+>  .../boot/dts/rockchip/rk3566-quartz64-a.dts   |  8 +++++
+>  arch/arm64/boot/dts/rockchip/rk356x.dtsi      | 33 +++++++++++++++++++
+>  2 files changed, 41 insertions(+)
+>
+> --
+> 2.36.1
+>
