@@ -2,134 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A640ECCA47E
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 00:59:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E85ABC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 01:12:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350679AbiFKA60 (ORCPT
+        id S1344416AbiFKBMS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 20:58:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56678 "EHLO
+        Fri, 10 Jun 2022 21:12:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344833AbiFKA6F (ORCPT
+        with ESMTP id S231406AbiFKBMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 20:58:05 -0400
-Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 482A469CD5
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 17:58:04 -0700 (PDT)
-Received: by mail-pl1-x64a.google.com with SMTP id s17-20020a170902ea1100b00168b7cad0efso366812plg.14
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 17:58:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=AVQRubkzoQn/ed1EYoJH5pfC/v1u5yrl7rOVcK+kmGE=;
-        b=VRiSwc2//odTKj+Eikd4OHXG3B/142UyF51ul2JgNOdEGUo27qch42urrIwYQjX4X0
-         W3gjMlZ1sC/ZFB3Bpv2KccjO+6a+Ac+T6bLDwX8aH3pdYjMTC3sSZlxtYuEr/xamNZDe
-         00w417jax+aMFmj9dabWcc49lg4BxoAYUQUp/Ub4Ut5gsAC/NlQSiHazeVfgNhoSEB/a
-         QemA8PXGPECUB1ZtbxB2aHZzNcGTy+qOID+luCycolJUSGx+NH6P7BFmCufYtVF7W6zN
-         +y6YQ6iySYfkV6AhhkZwNQ4SGYrH0kWRjb3JrFfKNZW/8sZoxxv0aXHbKqoYft+qR/dq
-         q3GQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=AVQRubkzoQn/ed1EYoJH5pfC/v1u5yrl7rOVcK+kmGE=;
-        b=7NKCmtJw7VdSj8ihXA9h7VmE6b/dFj63bLrx5YfNL1v63WrxihWjpNqNLm8OTAOTkU
-         ysHVM1NyE5KO6tgLe+lEQpKSQpvndspAAKZqnKDbXIQQHuXJOeHTThayV7ECQwfqc9JX
-         Ygdeh2NOUC9sOyPlXCUTsh8Bb3mqpTpIbgYNcr5sPHtc2OirhM5mkd63eRWmiUdZ/5Dt
-         UUg5xX23dMB5Y+a5KVmL1bgCyn+M7Q5ZoU3N9pRvF3y/XYesGwgwLqkIgipXGcdV5+Qe
-         Jzwi3Ln8HoCeuaEI2dF+y9AuT+f9Q4MTpvpTsOgPo2osPx6zZpQ6hnbjqMyZCdPfqihV
-         ukdQ==
-X-Gm-Message-State: AOAM532NBoweZBv4CA8Dg8AJW7A83qD0c+IrmHQcHkBXOZtLuc9u37nv
-        hczA8RdHEZ0j7WHoJS0i9Mws2CxHBEU=
-X-Google-Smtp-Source: ABdhPJz0VXKGAmbpeP1mI8hPMgAEsThaF7yFOUoQL4dG2YifgaHvI+1U0YLnaVaH7A8lar4qT043gNdIaI0=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90a:178f:b0:1e3:3ba:c185 with SMTP id
- q15-20020a17090a178f00b001e303bac185mr13438pja.1.1654909083306; Fri, 10 Jun
- 2022 17:58:03 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Sat, 11 Jun 2022 00:57:51 +0000
-In-Reply-To: <20220611005755.753273-1-seanjc@google.com>
-Message-Id: <20220611005755.753273-4-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220611005755.753273-1-seanjc@google.com>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH 3/7] Revert "KVM: x86/pmu: Accept 0 for absent PMU MSRs when
- host-initiated if !enable_pmu"
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Like Xu <likexu@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 10 Jun 2022 21:12:15 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8AB81001
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 18:12:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654909932; x=1686445932;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=YkVAY5kVjUVtusvqvweHGO+n+u3CHpxTEhAo9kaMLts=;
+  b=Oa3WAopZ1WAhrehEeMKkMuTv6F7OhHcwI5H0ml8EgxMsZl9UUa7AWml7
+   Uf+yz8f4JiRzNkQ+RuUCX6/gTr1+vlDpHI8dv6nVvq3J1NHcwl567cQ9t
+   FLA4Jt3g7PSd7Xt9i6v6J/AoW/h1D9qqoDEXjXgC6jdjC+Wibvk4RP/J+
+   HrjwrScKG4rSS7+mIBx39OQx36rFerYdDcFniWyY9gzVTq1b/Lrl/rqZ6
+   e+huviNLEHGVPGpP+T7w4JY9NT09USIOXI/AjteUPD/TKH4v1EajB52GH
+   M9zczzNzo3mBCZUX54EKX/UlI1sbxwDvgrufchybsOg0N4ZYOZMUIoDlr
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10374"; a="278923704"
+X-IronPort-AV: E=Sophos;i="5.91,292,1647327600"; 
+   d="scan'208";a="278923704"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 18:12:12 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,292,1647327600"; 
+   d="scan'208";a="610960174"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga008.jf.intel.com with ESMTP; 10 Jun 2022 18:12:08 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id 86459F8; Sat, 11 Jun 2022 04:12:12 +0300 (EEST)
+Date:   Sat, 11 Jun 2022 04:12:12 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "andreyknvl@gmail.com" <andreyknvl@gmail.com>,
+        "kcc@google.com" <kcc@google.com>,
+        "ak@linux.intel.com" <ak@linux.intel.com>,
+        "dvyukov@google.com" <dvyukov@google.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "ryabinin.a.a@gmail.com" <ryabinin.a.a@gmail.com>,
+        "Lutomirski, Andy" <luto@kernel.org>,
+        "glider@google.com" <glider@google.com>
+Subject: Re: [PATCHv3 6/8] x86/mm: Provide ARCH_GET_UNTAG_MASK and
+ ARCH_ENABLE_TAGGED_ADDR
+Message-ID: <20220611011212.ockffkv4h3fiwfdl@black.fi.intel.com>
+References: <20220610143527.22974-1-kirill.shutemov@linux.intel.com>
+ <20220610143527.22974-7-kirill.shutemov@linux.intel.com>
+ <c3b4f3ccf8ee547a588bf8a971064e4d62b6a44c.camel@intel.com>
+ <20220610180635.l44opq2votd3gxpl@black.fi.intel.com>
+ <5b56c88e477d879e5a0e3c15627cb05901a812f4.camel@intel.com>
+ <dda083610d4c8b8d8d0b09021345e9cc0cb35bbe.camel@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <dda083610d4c8b8d8d0b09021345e9cc0cb35bbe.camel@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Eating reads and writes to all "PMU" MSRs when there is no PMU is wildly
-broken as it results in allowing accesses to _any_ MSR on Intel CPUs
-as intel_is_valid_msr() returns true for all host_initiated accesses.
+On Fri, Jun 10, 2022 at 10:18:23PM +0000, Edgecombe, Rick P wrote:
+> On Fri, 2022-06-10 at 11:08 -0700, Edgecombe, Richard P wrote:
+> > On Fri, 2022-06-10 at 21:06 +0300, Kirill A. Shutemov wrote:
+> > > On Fri, Jun 10, 2022 at 04:16:01PM +0000, Edgecombe, Rick P wrote:
+> > > > On Fri, 2022-06-10 at 17:35 +0300, Kirill A. Shutemov wrote:
+> > > > > +static int prctl_enable_tagged_addr(unsigned long nr_bits)
+> > > > > +{
+> > > > > +       struct mm_struct *mm = current->mm;
+> > > > > +
+> > > > > +       /* Already enabled? */
+> > > > > +       if (mm->context.lam_cr3_mask)
+> > > > > +               return -EBUSY;
+> > > > > +
+> > > > > +       /* LAM has to be enabled before spawning threads */
+> > > > > +       if (get_nr_threads(current) > 1)
+> > > > > +               return -EBUSY;
+> > > > 
+> > > > Does this work for vfork()? I guess the idea is that locking is
+> > > > not
+> > > > needed below because there is only one thread with the MM, but
+> > > > with
+> > > > vfork() another task could operate on the MM, call fork(), etc.
+> > > > I'm
+> > > > not
+> > > > sure...
+> > > 
+> > > I'm not sure I follow. vfork() blocks parent process until child
+> > > exit
+> > > or
+> > > execve(). I don't see how it is a problem.
+> > 
+> > Oh yea, you're right.
+> 
+> Actually, I guess vfork() only suspends the calling thread. So what if
+> you had:
+> 1. Parent spawns a bunch of threads
+> 2. vforks()
+> 3. Child enables LAM (it only has one thread, so succeeds)
+> 4. Child exits()
+> 5. Parent has some threads with LAM, and some not
 
-A revert of commit d1c88a402056 ("KVM: x86: always allow host-initiated
-writes to PMU MSRs") will soon follow.
+I think it is in "Don't do that" territory. It is very similar to cases
+described in "Caveats" section of the vfork(2) man-page.
 
-This reverts commit 8e6a58e28b34e8d247e772159b8fa8f6bae39192.
+> It's some weird userspace that doesn't deserve to have things work for
+> it, but I wonder if it could open up little races around untagging. As
+> an example, KVM might have a super narrow race where it checks for tags
+> in memslots using addr != untagged_addr(addr) before checking
+> access_ok(addr, ...). See __kvm_set_memory_region(). If mm-
+> >context.untag_mask got set in the middle, tagged memslots could be
+> added.
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- arch/x86/kvm/pmu.c     |  8 --------
- arch/x86/kvm/svm/pmu.c | 11 +----------
- 2 files changed, 1 insertion(+), 18 deletions(-)
+Ultimately, a process which calls vfork(2) is in control of what happens
+to the new process until execve(2) or exit(2). So, yes it is very creative
+way to shoot yourself into leg, but I don't think it worth preventing.
 
-diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
-index 6a32092460d3..87483e503c46 100644
---- a/arch/x86/kvm/pmu.c
-+++ b/arch/x86/kvm/pmu.c
-@@ -442,19 +442,11 @@ static void kvm_pmu_mark_pmc_in_use(struct kvm_vcpu *vcpu, u32 msr)
- 
- int kvm_pmu_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- {
--	if (msr_info->host_initiated && !vcpu->kvm->arch.enable_pmu) {
--		msr_info->data = 0;
--		return 0;
--	}
--
- 	return static_call(kvm_x86_pmu_get_msr)(vcpu, msr_info);
- }
- 
- int kvm_pmu_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- {
--	if (msr_info->host_initiated && !vcpu->kvm->arch.enable_pmu)
--		return !!msr_info->data;
--
- 	kvm_pmu_mark_pmc_in_use(vcpu, msr_info->index);
- 	return static_call(kvm_x86_pmu_set_msr)(vcpu, msr_info);
- }
-diff --git a/arch/x86/kvm/svm/pmu.c b/arch/x86/kvm/svm/pmu.c
-index fe520b2649b5..256244b8f89c 100644
---- a/arch/x86/kvm/svm/pmu.c
-+++ b/arch/x86/kvm/svm/pmu.c
-@@ -182,16 +182,7 @@ static struct kvm_pmc *amd_rdpmc_ecx_to_pmc(struct kvm_vcpu *vcpu,
- static bool amd_is_valid_msr(struct kvm_vcpu *vcpu, u32 msr, bool host_initiated)
- {
- 	/* All MSRs refer to exactly one PMC, so msr_idx_to_pmc is enough.  */
--	if (!host_initiated)
--		return false;
--
--	switch (msr) {
--	case MSR_K7_EVNTSEL0 ... MSR_K7_PERFCTR3:
--	case MSR_F15H_PERF_CTL0 ... MSR_F15H_PERF_CTR5:
--		return true;
--	default:
--		return false;
--	}
-+	return false;
- }
- 
- static struct kvm_pmc *amd_msr_idx_to_pmc(struct kvm_vcpu *vcpu, u32 msr)
+And I'm not sure how the fix would look like.
+
 -- 
-2.36.1.476.g0c4daa206d-goog
-
+ Kirill A. Shutemov
