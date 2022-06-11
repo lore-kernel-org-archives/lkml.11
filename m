@@ -2,97 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E44A7CCA47C
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 17:24:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDE0CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 17:30:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238675AbiFKRYv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 13:24:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50964 "EHLO
+        id S229674AbiFKRac (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 13:30:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232372AbiFKRYt (ORCPT
+        with ESMTP id S229552AbiFKRaa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 13:24:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F403EAA9;
-        Sat, 11 Jun 2022 10:24:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9539BB80AE9;
-        Sat, 11 Jun 2022 17:24:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEFB1C34116;
-        Sat, 11 Jun 2022 17:24:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654968286;
-        bh=SDCYDjY3WJbmTI27Ho0/7Zfqxt3PHJ7jDyD8765WJCE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZtYi3BQBV3GRP8nI3TqjRnZmjlpZ2AtIMxOG/5riaE5t2Z5IZJYIBH/LwlaWYB+Bt
-         5EvFEBD2GUAMSS1++XM61sP0qhnz+573f3ECcuFOhiwikH5eiIkssBaiN7c8MACpqX
-         R4eRaJa/uwn9IBSOo+DbgTZ/i0ZcUYZ+cUwNib56pzWe+BDc7kVpscCyMzbsy3FrTu
-         /K1ehnbwBPstJ3fnwzUl3tHm8hQuxQyMdKIYTM8qcw3y49WBQ/L69UpIdfHcae31NN
-         29R1K/GuotB3t5WIWhf3KVC3pTXB7DyYjKpXL/g5ErM8avsTGEURUjO4Z4FBrpFzPq
-         WHv8kycFjH4HQ==
-Date:   Sat, 11 Jun 2022 18:33:54 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Claudiu Beznea <claudiu.beznea@microchip.com>
-Cc:     <eugen.hristev@microchip.com>, <lars@metafoo.de>,
-        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
-        <ludovic.desroches@atmel.com>, <linux-iio@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 03/16] iio: adc: at91-sama5d2_adc: exit from write_raw()
- when buffers are enabled
-Message-ID: <20220611183354.08788921@jic23-huawei>
-In-Reply-To: <20220609083213.1795019-4-claudiu.beznea@microchip.com>
-References: <20220609083213.1795019-1-claudiu.beznea@microchip.com>
-        <20220609083213.1795019-4-claudiu.beznea@microchip.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sat, 11 Jun 2022 13:30:30 -0400
+Received: from conssluserg-04.nifty.com (conssluserg-04.nifty.com [210.131.2.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C7D317AAB;
+        Sat, 11 Jun 2022 10:30:25 -0700 (PDT)
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49]) (authenticated)
+        by conssluserg-04.nifty.com with ESMTP id 25BHU9e9000538;
+        Sun, 12 Jun 2022 02:30:10 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-04.nifty.com 25BHU9e9000538
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1654968610;
+        bh=OSACDTzwM3nmDx5T3K9VpI7ucvHxYTzvbUngRQkLr+Y=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=TomygkbFlEnETUNK56J/VTJtdffuMsuPj8R/S5mjXn9ys966unGmeQpZ7SkIaFg6t
+         Y/kghcEfgqRC5UpAyZwgmjcNiPwddcuyjUPsim8J+JWK5Ea2/4l3ng1IOPceiZpsbV
+         HlWhPYG/JWBPCJMFoKAVQqqKxBjKaJwjzxE8TjUKu3dIeMBL12/KgfXFaoxqom4XJG
+         IMvmwWA74dFIJOPQ7sbECa4jwjBIoNa21cPi2Ka4U5lSNWZRXtfZzs+Sq6y4EKtYCX
+         JGrHcww7fgGvJdOgB8WoU71nxWsxbORLzYGl2Ad5TS6EXzyNMlzHhTGQv+2LRRpvHj
+         zCqOw7FC4LrAQ==
+X-Nifty-SrcIP: [209.85.221.49]
+Received: by mail-wr1-f49.google.com with SMTP id m24so2246292wrb.10;
+        Sat, 11 Jun 2022 10:30:09 -0700 (PDT)
+X-Gm-Message-State: AOAM5328zT8wuqXjVq9EPKrXKNaDAC58r4seERJ3hj0Em8Vbt1JLTBbk
+        CddWuJOtFmzooZp7V1eupj15OUqxtLG9piDbzjc=
+X-Google-Smtp-Source: ABdhPJxFQ4VR0rikIrQmnyzW5yFwMBQ21UyA+EWB6Z3mCZwhT0pwLKVeOIT4MNgfpM1Ic97A6mYaSh3bwWNFqX/h6fY=
+X-Received: by 2002:a5d:584f:0:b0:219:e106:3e02 with SMTP id
+ i15-20020a5d584f000000b00219e1063e02mr11475842wrf.461.1654968608246; Sat, 11
+ Jun 2022 10:30:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <165451871967.1941436.17828809503267245815.stgit@warthog.procyon.org.uk>
+ <CAK7LNAS-0kQOvt=7TNn0osf9JO5hZhSp9PaFFBsSx++2Pevc9g@mail.gmail.com>
+ <22a067fe-795f-d3ae-fac6-7baa75393349@digikod.net> <75918f49-5670-766a-09a2-f29aef95f2ca@digikod.net>
+In-Reply-To: <75918f49-5670-766a-09a2-f29aef95f2ca@digikod.net>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Sun, 12 Jun 2022 02:29:31 +0900
+X-Gmail-Original-Message-ID: <CAK7LNARZLL=EA61-j+x8YjujW6U1RKZtL8+qhi1hgFhma5vbzA@mail.gmail.com>
+Message-ID: <CAK7LNARZLL=EA61-j+x8YjujW6U1RKZtL8+qhi1hgFhma5vbzA@mail.gmail.com>
+Subject: Re: [PATCH] certs: Convert spaces in certs/Makefile to a tab
+To:     =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mic@digikod.net>
+Cc:     David Howells <dhowells@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jarkko Sakkinen <jarkko@kernel.org>, keyrings@vger.kernel.org,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 9 Jun 2022 11:32:00 +0300
-Claudiu Beznea <claudiu.beznea@microchip.com> wrote:
+On Fri, Jun 10, 2022 at 2:17 AM Micka=C3=ABl Sala=C3=BCn <mic@digikod.net> =
+wrote:
+>
+>
+>
+> On 09/06/2022 19:12, Micka=C3=ABl Sala=C3=BCn wrote:
+> >
+> > On 06/06/2022 18:49, Masahiro Yamada wrote:
+> >> On Mon, Jun 6, 2022 at 9:32 PM David Howells <dhowells@redhat.com> wro=
+te:
+> >>>
+> >>> There's a rule in certs/Makefile for which the command begins with ei=
+ght
+> >>> spaces.  This results in:
+> >>>
+> >>>          ../certs/Makefile:21: FORCE prerequisite is missing
+> >>>          ../certs/Makefile:21: *** missing separator.  Stop.
+> >>>
+> >>> Fix this by turning the spaces into a tab.
+> >>>
+> >>> Fixes: addf466389d9 ("certs: Check that builtin blacklist hashes are
+> >>> valid")
+> >>> Signed-off-by: David Howells <dhowells@redhat.com>
+> >>> cc: Micka=C3=ABl Sala=C3=BCn <mic@linux.microsoft.com>
+> >>> cc: Jarkko Sakkinen <jarkko@kernel.org>
+> >>> cc: keyrings@vger.kernel.org
+> >>
+> >>
+> >> Not only 8-space indentation, but also:
+> >>
+> >>    - config_filename does not exist
+> >>    - $(SYSTEM_BLACKLIST_HASH_LIST_SRCPREFIX) is always empty
+> >>    - $(SYSTEM_BLACKLIST_HASH_LIST_FILENAME) is always empty
+> >
+> > These are imported helpers (not only used for this hash list BTW), henc=
+e
+> > not defined in this Makefile.
+>
+> Well, they were defined in scripts/Kbuild.include but they are gone
+> since your commit b8c96a6b466c ("certs: simplify $(srctree)/ handling
+> and remove config_filename macro").
+>
+> I guess it just happens during the merge. We need to fix that.
 
-> When buffers are enabled conversion may start asynchronously thus
-> allowing changes on actual hardware could lead to bad behavior. Thus
-> do not allow changing oversampling ratio and sample frequency when
-> buffers are enabled.
+Today, I took a closer look at it.
+I volunteered to fix the build issues with some refactoring.
 
-Less than desirable behavior perhaps, but broken?  I don't see this
-as a fix from what you have mentioned - though I'm not against it.
-(just drop the fixes tag)
-It is an ABI change, but unlikely to be one any sane code hits.
-
-> 
-> Fixes: 5e1a1da0f8c9 ("iio: adc: at91-sama5d2_adc: add hw trigger and buffer support")
-> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-> ---
->  drivers/iio/adc/at91-sama5d2_adc.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
-> index a672a520cdc0..b76328da0cb2 100644
-> --- a/drivers/iio/adc/at91-sama5d2_adc.c
-> +++ b/drivers/iio/adc/at91-sama5d2_adc.c
-> @@ -1644,6 +1644,9 @@ static int at91_adc_write_raw(struct iio_dev *indio_dev,
->  {
->  	struct at91_adc_state *st = iio_priv(indio_dev);
->  
-> +	if (iio_buffer_enabled(indio_dev))
-> +		return -EBUSY;
-
-This is racy as nothing stops buffers being enabled after this point.
-Use the iio_device_claim_direct_mode() and release for this as they
-protect against the race.
+https://lore.kernel.org/keyrings/20220611172233.1494073-1-masahiroy@kernel.=
+org/T/#t
 
 
-> +
->  	switch (mask) {
->  	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
->  		if ((val != AT91_OSR_1SAMPLES) && (val != AT91_OSR_4SAMPLES) &&
 
+
+
+
+
+--=20
+Best Regards
+Masahiro Yamada
