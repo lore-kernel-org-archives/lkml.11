@@ -2,97 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75DB6C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 09:59:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B801C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 09:59:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231561AbiFKJ7G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 05:59:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56190 "EHLO
+        id S231628AbiFKJ7I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 05:59:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230153AbiFKJ6x (ORCPT
+        with ESMTP id S230255AbiFKJ6x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 11 Jun 2022 05:58:53 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01E392CE26;
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FF2AB845;
         Sat, 11 Jun 2022 02:58:51 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id d19so1458357lji.10;
-        Sat, 11 Jun 2022 02:58:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=EvmSxNb00VCJZUQ2SVU+l0KVfBWbEE6iTSA8RECXJz4=;
-        b=KL2vg4UZuzy67obhWaTWJBuajSoYfhOQYAY5P4hRszmFJC8cUkSfFCIdFkfOxDwdNX
-         z2p6kpn0otvnXicX9hx9BH+SlACWRNzctxinm8fmuus7jwQd5p04Hs7KxDjyKWO+6K+h
-         swDNJsxEd1+4+QkaOCSTIV9EvW755XLs/QGVtQvzD/2aI1MmnEL5bFh7qmha+e6L6VG9
-         BB9jXUXjbNlOwgw3qAdoV+7NxKVlyiPe2ETe7XGUaq/LyjaqGu1j6J10EvaXGGAmz5ZR
-         n/OqlkAMDkcglPYYBzs4QP3xNKgp/AnN/OidWIQFKYZpJkrUC++/ygZ6XpCt3v/y4b9+
-         0MPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=EvmSxNb00VCJZUQ2SVU+l0KVfBWbEE6iTSA8RECXJz4=;
-        b=I3QKpWVhlgVl7H8/UHN9x3vpZUYORzF1/4DXnz3w/w84oFQEBerUmkMc/XVCPpKdqx
-         knbhEAHxLKoFMcPSf4jvfRpE/pLc4ErNP1d4forT5RTqJB4xRggV3QbZBzxug3oY1EP6
-         vnW0PcxCiciehTbr2/RwPK6iJs/P5/euCWnZL+a9HyjtVDNVCSm/3o+c+55cGjCCFlpu
-         4bpqAiloXmPHyZOue9OLlJsuZFjNUMXQ+RYNnxy/ycwGZb2pSTfdjxHTu+Ie8+R5TIBO
-         eAlMJda1w0Lu0rnRO/xpDwG/h+8Q0wdRUG0ZHe4qIkhqn0h7jLRAebVEjLdVPPnR1aY2
-         Y66A==
-X-Gm-Message-State: AOAM533Cdb9Rhw+CfKBc5H1XyxDkNiQe2lOvXLmrOl9gCTL6ag7jhUSR
-        NiwK8Q1bfWq67nXGoJTIzlU=
-X-Google-Smtp-Source: ABdhPJzJ64OHPxj7ndZACeTnIHCmaj+7N9vf4CxAxpRkqiT63+cr41lK9Z7L4j4pQ8QHCZmQ/VIdpw==
-X-Received: by 2002:a2e:9587:0:b0:255:6e01:50d with SMTP id w7-20020a2e9587000000b002556e01050dmr26607779ljh.146.1654941529372;
-        Sat, 11 Jun 2022 02:58:49 -0700 (PDT)
-Received: from DESKTOP-GSFPEC9.localdomain (broadband-90-154-71-254.ip.moscow.rt.ru. [90.154.71.254])
-        by smtp.gmail.com with ESMTPSA id h18-20020a056512055200b004785060bad6sm200634lfl.201.2022.06.11.02.58.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Jun 2022 02:58:49 -0700 (PDT)
-From:   Konstantin Aladyshev <aladyshev22@gmail.com>
-Cc:     supreeth.venkatesh@amd.com, aladyshev22@gmail.com,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/4] ARM: dts: aspeed: ethanolx: Configure RTS/CTS for UART1
-Date:   Sat, 11 Jun 2022 12:58:26 +0300
-Message-Id: <20220611095828.1090-3-aladyshev22@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220611095828.1090-1-aladyshev22@gmail.com>
-References: <20220611095828.1090-1-aladyshev22@gmail.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654941531; x=1686477531;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=LoUQFEJVS8iKP4KHv45pEyco3cBp3wRIOlEANLpEqfM=;
+  b=bgqfdzNy1BveqUBhjYb6qcGV+ohpGMNQ46SREXJwgR9RUHpNzE2Ow7hG
+   URzohwV8QilFj0qNop1kR2MKQB/6VW2ZeeIOyDhXp8dTGWp1Jhs3Au2X3
+   m0ok7U9ptNXNrs/AaxrKA8xH5Oy86aeXbLXxN7qBsCLMu2yUyymDPufrE
+   JnbmCd1ySdNk9tvJX7YkQHvrv5e50aa+dwnSPz3AwrtbL/dP+PA8L9Da7
+   8+thFf7xqYYz1Q9tgCAnmwN67ZuBEtHDy2JzZh76mWTNWSrksEX3pRc+s
+   R4GIO4QpKT5vh3UEgeCW5KemWxH96VDQBeaiBlei1S+0QAG93VJ0fOhE9
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10374"; a="257694015"
+X-IronPort-AV: E=Sophos;i="5.91,293,1647327600"; 
+   d="scan'208";a="257694015"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2022 02:58:51 -0700
+X-IronPort-AV: E=Sophos;i="5.91,293,1647327600"; 
+   d="scan'208";a="638638184"
+Received: from jiaqingz-mobl.ccr.corp.intel.com (HELO [10.255.31.17]) ([10.255.31.17])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2022 02:58:49 -0700
+Message-ID: <bf66a840-594a-d90a-2ca6-595e95c09514@linux.intel.com>
+Date:   Sat, 11 Jun 2022 17:58:46 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 0/6] Configurable VLAN mode for NCSI driver
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Samuel Mendoza-Jonas <sam@mendozajonas.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        openbmc@lists.ozlabs.org
+References: <20220610165940.2326777-1-jiaqing.zhao@linux.intel.com>
+ <20220610130903.0386c0d9@kernel.org>
+ <3c9fa928-f416-3526-be23-12644d18db3b@linux.intel.com>
+ <20220610214506.74c3f89c@kernel.org>
+ <6f067302-74a8-702f-bf38-4477a805a528@linux.intel.com>
+ <20220610224407.4e58dc5a@kernel.org>
+From:   Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+In-Reply-To: <20220610224407.4e58dc5a@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-UART1 is used for connection to the main EPYC CPU. Besides the main
-TX/RX signals this connection has flow control signals RTS/CTS,
-therefore configure this pins on the BMC side.
 
-Signed-off-by: Konstantin Aladyshev <aladyshev22@gmail.com>
----
- arch/arm/boot/dts/aspeed-bmc-amd-ethanolx.dts | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+On 2022-06-11 13:44, Jakub Kicinski wrote:
+> On Sat, 11 Jun 2022 13:18:51 +0800 Jiaqing Zhao wrote:
+>> All ncsi devices uses the same driver as they uses same command set,
+>> so the driver doesn't know what modes are supported. And in current
+>> driver, the vlan related parameters are configured when registering
+>> the device, adding an ncsi-netlink command to do so seems to be
+>> unsuitable.
+> 
+> Maybe you could draw a diagram? NC-SI is a bit confusing.
 
-diff --git a/arch/arm/boot/dts/aspeed-bmc-amd-ethanolx.dts b/arch/arm/boot/dts/aspeed-bmc-amd-ethanolx.dts
-index 889b2fdd19cf..0354a7d8f9f5 100644
---- a/arch/arm/boot/dts/aspeed-bmc-amd-ethanolx.dts
-+++ b/arch/arm/boot/dts/aspeed-bmc-amd-ethanolx.dts
-@@ -79,7 +79,9 @@ &uart1 {
- 	status = "okay";
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_txd1_default
--		     &pinctrl_rxd1_default>;
-+		     &pinctrl_rxd1_default
-+		     &pinctrl_nrts1_default
-+		     &pinctrl_ncts1_default>;
- };
- 
- &uart5 {
--- 
-2.25.1
+Yes I admit NC-SI is confusing as its design is not as straightforward
+as the MAC-PHY structure. In NC-SI, there are two macs like below.
 
+        Packets + NCSI commands                        Packets
+    MAC-------------------------External controller MAC---------PHY
+
+The NCSI commands are used to set the behavior of the External controller
+MAC, like it's MAC address filter, VLAN filters. Those filtered packets
+will be transferred back to the MAC.
+
+Unlike PHY has standard registers to determine its model and capabilities,
+NC-SI seems does not have such way.
+>> And adding a netlink command requires extra application in userspace
+>> to switch the mode. In my opinion, it would be more user-friendly to
+>> make it usable on boot.
+> 
+> Unfortunately convenience is not reason to start adding system config
+> into DT.
+
+Currently there is already a DT config "use-ncsi" is used to choose using
+MDIO PHY or NCSI stack in the MAC driver with NCSI support like ftgmac100.
+That's why I choose adding another DT option here.
+
+>> Netdev also does not work as the ncsi device itself does not have
+>> its own netdev, the netdev comes from the mac device. For different
+>> vlan modes, the netdev feature set of its parent mac device are the
+>> same.
+> 
+> You say that, yet the command handling already takes into account the
+> VLAN list:
+> 
+> 	if (list_empty(&ndp->vlan_vids)) {
+> 
+> which come from the MAC netdev. What's wrong with setting the filtering
+> mode based on NETIF_F_HW_VLAN_CTAG_FILTER ?
+
+When configuring the mac driver, there might be two net_device_ops sets
+for MDIO or NC-SI. When using NC-SI, some features need to be delegated
+to the external controller MAC, like VLAN hardware filtering, different
+ndo_vlan_rx_{add,kill}_vid callbacks need to be assigned.
+
+The filtering mode is an optional mode defined in NC-SI spec, some
+devices does not support it. In this case, to support VLAN, I would
+personally in favor of using the "Any VLAN" mode to let the external
+MAC pass all packets to the internal one, and let the internal MAC
+handle it either with its own hardware filter or software filter. In
+this case, the VLAN list in NC-SI driver (used for setting the external
+MAC filter) is not used.
