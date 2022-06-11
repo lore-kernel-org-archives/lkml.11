@@ -2,72 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DB2ECCA47A
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 15:12:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A70E8CCA47A
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 15:15:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237922AbiFKPMS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 11:12:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45382 "EHLO
+        id S237939AbiFKPPz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 11:15:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231393AbiFKPMR (ORCPT
+        with ESMTP id S230056AbiFKPPy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 11:12:17 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60D27E5E;
-        Sat, 11 Jun 2022 08:12:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=exRU8msX6Y3QyHsCr7hN96t36OZdzWg/dTAY+I9xkAY=; b=Dx94jLIaFpDcAQfRCce7xl0Dzs
-        GdriFDkiHlR+O00+UkNjjNFwdmeIy7V8lQEEE9NX7/khx7JHyZoYMmjfqKqjFXlR1/obmdac3s7Qa
-        ch5K9aXrfr6HtDcw9SmYq5Hl0byXp+5gVtM4vH1faJn5AYPLGgii83qhirJjihWbYLp4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1o02mV-006WKA-4J; Sat, 11 Jun 2022 17:12:07 +0200
-Date:   Sat, 11 Jun 2022 17:12:07 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v3 2/3] net: phy: dp83td510: add cable testing
- support
-Message-ID: <YqSwx63kJQUlEVBH@lunn.ch>
-References: <20220608123236.792405-1-o.rempel@pengutronix.de>
- <20220608123236.792405-3-o.rempel@pengutronix.de>
+        Sat, 11 Jun 2022 11:15:54 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B356046651;
+        Sat, 11 Jun 2022 08:15:51 -0700 (PDT)
+Received: from p508fd9f0.dip0.t-ipconnect.de ([80.143.217.240] helo=phil.fritz.box)
+        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <heiko@sntech.de>)
+        id 1o02q5-0004vU-TT; Sat, 11 Jun 2022 17:15:49 +0200
+From:   Heiko Stuebner <heiko@sntech.de>
+To:     linux-arm-kernel@lists.infradead.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Olof Johansson <olof@lixom.net>, linux-kernel@vger.kernel.org,
+        arm@kernel.org, devicetree@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>, soc@kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-rockchip@lists.infradead.org
+Cc:     Heiko Stuebner <heiko@sntech.de>
+Subject: Re: [PATCH 1/3] arm64: dts: rockchip: adjust whitespace around '='
+Date:   Sat, 11 Jun 2022 17:15:45 +0200
+Message-Id: <165496044123.1951281.6460473932416038547.b4-ty@sntech.de>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220526204218.832029-1-krzysztof.kozlowski@linaro.org>
+References: <20220526204218.832029-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220608123236.792405-3-o.rempel@pengutronix.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> +	} else {
-> +		/* Most probably we have active link partner */
-> +		stat = ETHTOOL_A_CABLE_RESULT_CODE_UNSPEC;
-> +	}
+On Thu, 26 May 2022 22:42:16 +0200, Krzysztof Kozlowski wrote:
+> Fix whitespace coding style: use single space instead of tabs or
+> multiple spaces around '=' sign in property assignment.  No functional
+> changes (same DTB).
 
-So drivers will make a few attempts to get a valid result. Have you
-tried that?
+Applied, thanks!
 
-> +
-> +	*finished = true;
-> +
-> +	ethnl_cable_test_result(phydev, ETHTOOL_A_CABLE_PAIR_A, stat);
-> +
-> +	/* Reset state machine, otherwise at least other TDR attempts may
-> +	 * provide not reliable results.
-> +	 */
-> +	return phy_set_bits(phydev, MII_BMCR, BMCR_RESET);
+[1/3] arm64: dts: rockchip: adjust whitespace around '='
+      commit: 41d97397d08c83ebbac7a48ce31f6e2f5cc4de79
+[2/3] ARM: dts: rockchip: adjust whitespace around '='
+      commit: 4b076db78db48c67263ebde810a4475d9503713c
+[3/3] ARM: dts: rv1108: adjust whitespace around '='
+      merged into the ARM: dts: rockchip: patch, as the rv1108
+      also is just a Rockchip soc.
 
-I thought i made the comment that you should use the helper? The
-helper will wait around for the bit to clear indicating the PHY is
-ready for further configuration.
-
-      Andrew
+Best regards,
+-- 
+Heiko Stuebner <heiko@sntech.de>
