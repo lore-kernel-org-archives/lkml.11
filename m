@@ -2,133 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED5D9C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 20:49:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6986C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 20:49:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232115AbiFKUtP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 16:49:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46444 "EHLO
+        id S232124AbiFKUtS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 16:49:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229688AbiFKUtM (ORCPT
+        with ESMTP id S232097AbiFKUtO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 16:49:12 -0400
+        Sat, 11 Jun 2022 16:49:14 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ECAB327FEA
-        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 13:49:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 80604286E6
+        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 13:49:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654980548;
+        s=mimecast20190719; t=1654980551;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CcR0aKofOSCGCYosAm/fDhdf+hmatzPLZ0c9B4qN7K8=;
-        b=ccvC8VMMlVHktSKb6UICYmOm1SgiaH2ZrMZN42amIQ28DzBFWXvXe88fWZt7Au/MucAxpp
-        XUbqn9XuyxBgofLn2UG8yQea8351FiFwW+6F0u7NXDbSuRMY5R6tgCFUfTfHh+X2AndSlM
-        bYzMyFrPTI3heDtg/lf1EDTTSCTtt8s=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+         content-transfer-encoding:content-transfer-encoding;
+        bh=KEbYtgeCY5d2A+34Js+u4oC9j4ydleTr8OH6QnelxU8=;
+        b=f/gBQwwBn8D+cC5a6OJU8knQkhi/ykFjvE+D2QCXKIpr55NoqnlwqSKwh1cNw30j9uPDyR
+        I5dMWSSEtDmfnoGSZHyntLrNM9LGO8lF/VzMj4To/8HqLvJvZc9NpP2D/RkqeiAjkjvE08
+        vtM/U9GadGy4csKDPS7ov49zQbQKMdY=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-193-e6fvh4ZdPaW93X5vuONVMw-1; Sat, 11 Jun 2022 16:49:06 -0400
-X-MC-Unique: e6fvh4ZdPaW93X5vuONVMw-1
-Received: by mail-wm1-f71.google.com with SMTP id p24-20020a05600c1d9800b0039c51c2da19so2531225wms.0
-        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 13:49:06 -0700 (PDT)
+ us-mta-609-PibKsS3xNGm3iWsin3nDQw-1; Sat, 11 Jun 2022 16:49:02 -0400
+X-MC-Unique: PibKsS3xNGm3iWsin3nDQw-1
+Received: by mail-wm1-f69.google.com with SMTP id k5-20020a05600c0b4500b003941ca130f9so1365337wmr.0
+        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 13:49:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=CcR0aKofOSCGCYosAm/fDhdf+hmatzPLZ0c9B4qN7K8=;
-        b=bt0q62dWcclfI3gKsu1ICUWJz5OIBofZA4OAwa0zttWujyO8FhkJqz5nY+R0hlWs3e
-         l/RIx6PlEhtyECRFF/kca9HS/BHlMupSh1L59z6xdX6nKFf9P7gSAniTAmM5Ga0/Fx04
-         FRlzVtkb5ORqLjGj8WQwoCQnG3qqrDRNG3T59dZAhD35cmi8Y0Qymt8MahRx9v0tKekS
-         vb/CeLN+AmHVW/tlC1Q2eG8tC0diufPsKNiGBQ4YC9jSf3wTw9UFOcZ7U93xusbP0/D5
-         L0YqGYDWSaiTBqUvOUDecXnY/int63eAuyYDlwqb+yI9paS1muRPBtjW1au2gpwKb7kC
-         3YFQ==
-X-Gm-Message-State: AOAM5319Skaoxnh6dg6PkwviBN2xhc5awsVu7E/Fgd57zxS74RThGe5J
-        C/i9f3BRwwoRYsclC4cZcrML5DIN38zBsJocYpybZrCyJ7SzhMn9kEPtPOfFp2v8401tnL11zSE
-        GKhzDRZ/BMRmhZ/kG1882qM0=
-X-Received: by 2002:a05:6000:3c5:b0:219:d09:6fce with SMTP id b5-20020a05600003c500b002190d096fcemr18325871wrg.197.1654980545355;
-        Sat, 11 Jun 2022 13:49:05 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJybNY6Mydqdoa+x8UT/rxgTAmWTiQ9yFznUm8N5Ot/sTlJOQwm2A9g83GLDT7qk18aCHmI54Q==
-X-Received: by 2002:a05:6000:3c5:b0:219:d09:6fce with SMTP id b5-20020a05600003c500b002190d096fcemr18325860wrg.197.1654980545143;
-        Sat, 11 Jun 2022 13:49:05 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KEbYtgeCY5d2A+34Js+u4oC9j4ydleTr8OH6QnelxU8=;
+        b=JxJwwXrKdI66nBMK8m2LPk/bngOHansQf1JjcJGRYAif3WXaj1kRfHfr2x9MD+hFAS
+         UcGg+GcZS4IVrQ4DHpetaH+sII+qqsfosQ432RBjhMJ4fbm6zpR8df0aJc6idunh4guW
+         DNnDNI/FodwJh6cKjfH7A8DmB9Rx0uYgxlDxId80TiKkO4QqTBd6uxTph1ox0M0Pg3Sm
+         4XVCgkRBlV8DOmiu7GDzcEUuyNY5pJWoRFZ0cQ5Cyebiar+Wl5BuoD9LALEcJFhh9PeI
+         p8PhDFvyuQ6v4yhPaoCBbhVxZQgVlVYcjB8GQxTzTijY2SnRmACE2mM+cVf23q82aQ9I
+         YWJA==
+X-Gm-Message-State: AOAM532Y/pVH8eOhQHk49jYFqd44t7kuPYJ8fPFY8lBrD0l/DctFXgz+
+        DhD1wzw7np+gB04ITpvoOnbskH3dg0HTt3IM9gYkRHpKOjhmAd1Y0NlEvywDtaQDrS6UQOA1Fbl
+        WEklUBEjA3HxQRViDyYGwjIo=
+X-Received: by 2002:a5d:4845:0:b0:210:25fa:dc7c with SMTP id n5-20020a5d4845000000b0021025fadc7cmr49214325wrs.131.1654980541130;
+        Sat, 11 Jun 2022 13:49:01 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw48t8wKUPQYNAVF5n9sTc868ZFn15aSjSQu8D4WNlpoKkdHCO5/bj2xUhmGmbcBeQcf6rWaw==
+X-Received: by 2002:a5d:4845:0:b0:210:25fa:dc7c with SMTP id n5-20020a5d4845000000b0021025fadc7cmr49214317wrs.131.1654980540940;
+        Sat, 11 Jun 2022 13:49:00 -0700 (PDT)
 Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id h7-20020a05600016c700b0020c7ec0fdf4sm4082355wrf.117.2022.06.11.13.49.03
+        by smtp.gmail.com with ESMTPSA id d4-20020adffbc4000000b00219b4c01712sm3506635wrs.92.2022.06.11.13.49.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Jun 2022 13:49:04 -0700 (PDT)
+        Sat, 11 Jun 2022 13:49:00 -0700 (PDT)
 From:   Aaron Tomlin <atomlin@redhat.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@linux.intel.com, joro@8bytes.org, will@kernel.org,
         dwmw2@infradead.org, baolu.lu@linux.intel.com, hpa@zytor.com
 Cc:     iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
         atomlin@atomlin.com
-Subject: [RFC PATCH 3/3] iommu/vt-d: Show region type in arch_rmrr_sanity_check()
-Date:   Sat, 11 Jun 2022 21:48:59 +0100
-Message-Id: <20220611204859.234975-3-atomlin@redhat.com>
+Subject: [RFC PATCH 1/3] x86/boot/e820: Make __e820__mapped_all() external
+Date:   Sat, 11 Jun 2022 21:48:57 +0100
+Message-Id: <20220611204859.234975-1-atomlin@redhat.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220611204859.234975-1-atomlin@redhat.com>
-References: <20220611204859.234975-1-atomlin@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch will attempt to describe the region type in the event
-that a given RMRR entry is not within a reserved region.
+No functional change.
+
+This patch allows __e820__mapped_all() to be available for
+external use, in preparation to enhance the error message
+generated by arch_rmrr_sanity_check().
 
 Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
 ---
- arch/x86/include/asm/iommu.h | 9 ++++++---
- arch/x86/kernel/e820.c       | 5 +++--
- 2 files changed, 9 insertions(+), 5 deletions(-)
+ arch/x86/include/asm/e820/api.h | 1 +
+ arch/x86/kernel/e820.c          | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/iommu.h b/arch/x86/include/asm/iommu.h
-index bf1ed2ddc74b..d21366644520 100644
---- a/arch/x86/include/asm/iommu.h
-+++ b/arch/x86/include/asm/iommu.h
-@@ -17,12 +17,15 @@ arch_rmrr_sanity_check(struct acpi_dmar_reserved_memory *rmrr)
- {
- 	u64 start = rmrr->base_address;
- 	u64 end = rmrr->end_address + 1;
-+	struct e820_entry *entry;
+diff --git a/arch/x86/include/asm/e820/api.h b/arch/x86/include/asm/e820/api.h
+index e8f58ddd06d9..bf78daa08897 100644
+--- a/arch/x86/include/asm/e820/api.h
++++ b/arch/x86/include/asm/e820/api.h
+@@ -13,6 +13,7 @@ extern unsigned long pci_mem_start;
+ extern bool e820__mapped_raw_any(u64 start, u64 end, enum e820_type type);
+ extern bool e820__mapped_any(u64 start, u64 end, enum e820_type type);
+ extern bool e820__mapped_all(u64 start, u64 end, enum e820_type type);
++struct e820_entry *__e820__mapped_all(u64 start, u64 end, enum e820_type type);
  
--	if (e820__mapped_all(start, end, E820_TYPE_RESERVED))
-+	entry = __e820__mapped_all(start, end, 0);
-+
-+	if (entry && entry->type == E820_TYPE_RESERVED)
- 		return 0;
- 
--	pr_err(FW_BUG "No firmware reserved region can cover this RMRR [%#018Lx-%#018Lx], contact BIOS vendor for fixes\n",
--	       start, end - 1);
-+	pr_err(FW_BUG "No firmware reserved region can cover this RMRR [%s: %#018Lx-%#018Lx], contact BIOS vendor for fixes\n",
-+	       e820_type_to_string(entry), start, end - 1);
- 	return -EINVAL;
- }
- 
+ extern void e820__range_add   (u64 start, u64 size, enum e820_type type);
+ extern u64  e820__range_update(u64 start, u64 size, enum e820_type old_type, enum e820_type new_type);
 diff --git a/arch/x86/kernel/e820.c b/arch/x86/kernel/e820.c
-index 95b994cf80cd..165e9a444bb9 100644
+index f267205f2d5a..09b1c863a766 100644
 --- a/arch/x86/kernel/e820.c
 +++ b/arch/x86/kernel/e820.c
-@@ -1073,7 +1073,7 @@ void __init e820__finish_early_params(void)
- 
- const char *__init e820_type_to_string(struct e820_entry *entry)
+@@ -109,7 +109,7 @@ EXPORT_SYMBOL_GPL(e820__mapped_any);
+  * Note: this function only works correctly once the E820 table is sorted and
+  * not-overlapping (at least for the range specified), which is the case normally.
+  */
+-static struct e820_entry *__e820__mapped_all(u64 start, u64 end,
++struct e820_entry *__e820__mapped_all(u64 start, u64 end,
+ 					     enum e820_type type)
  {
--	switch (entry->type) {
-+	switch (entry && entry->type) {
- 	case E820_TYPE_RESERVED_KERN:	/* Fall-through: */
- 	case E820_TYPE_RAM:		return "System RAM";
- 	case E820_TYPE_ACPI:		return "ACPI Tables";
-@@ -1083,8 +1083,9 @@ const char *__init e820_type_to_string(struct e820_entry *entry)
- 	case E820_TYPE_PMEM:		return "Persistent Memory";
- 	case E820_TYPE_RESERVED:	return "Reserved";
- 	case E820_TYPE_SOFT_RESERVED:	return "Soft Reserved";
--	default:			return "Unknown E820 type";
-+	default:			break;
- 	}
-+	return "Unknown E820 type";
- }
- 
- static unsigned long __init e820_type_to_iomem_type(struct e820_entry *entry)
+ 	int i;
 -- 
 2.34.1
 
