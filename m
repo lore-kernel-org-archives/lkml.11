@@ -2,89 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C53D5C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 09:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A651C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 09:32:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232491AbiFKJbz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 05:31:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37448 "EHLO
+        id S232532AbiFKJcP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 05:32:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229745AbiFKJbx (ORCPT
+        with ESMTP id S229745AbiFKJcO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 05:31:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA5326B664
-        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 02:31:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6385B60B15
-        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 09:31:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28DF9C3411E;
-        Sat, 11 Jun 2022 09:31:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654939911;
-        bh=LNnn8VP3ISoWCNHD4Uu1SypzJBaQWj8L3bMqjcuZP8Y=;
-        h=From:To:Cc:Subject:Date:From;
-        b=bpUbdcvkBoz/tFrK7bc5FMFtC8Cz7sAfTGRCJ1BVE+KYeGWeOIyS2f1ib2vSonciV
-         rIpdOOjgo2RRm3FiRAuoM6KIMja2Nwpb2NW8+qY4/j2g38JvIPQ1oCrpdGckq0IuTv
-         pWOrTjEFV5jySkMIkLXXZAPHnk9Mt1+6Xrg2cgcsHQrYz7S2odO9dwNFv+06nIobza
-         ahzXsZMVbRwmUzPmnl1MAHWIYmeTV0SgtnOQi/+GfyMssGOsjwvXP+llU+fk+iY1IW
-         rH5OwuJ1FZ+JW0j0N9P1CDQvO3l/hCEU5mM9UxeGEKT7pjkt5HJJWKMqhU0dA21cic
-         TccR/bR+SNNdA==
-From:   abelvesa@kernel.org
-To:     Stephen Boyd <sboyd@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Dong Aisheng <aisheng.dong@nxp.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Abel Vesa <abelvesa@nxp.com>
-Subject: [PATCH] MAINTAINERS: Update Abel Vesa's email
-Date:   Sat, 11 Jun 2022 12:31:42 +0300
-Message-Id: <20220611093142.202271-1-abelvesa@kernel.org>
-X-Mailer: git-send-email 2.34.3
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Sat, 11 Jun 2022 05:32:14 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 953801CE;
+        Sat, 11 Jun 2022 02:32:11 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id B9D401E80D77;
+        Sat, 11 Jun 2022 17:31:16 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id cZ7eIsdfn8sV; Sat, 11 Jun 2022 17:31:14 +0800 (CST)
+Received: from localhost.localdomain (unknown [180.167.10.98])
+        (Authenticated sender: liqiong@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id 4F8361E80D70;
+        Sat, 11 Jun 2022 17:31:13 +0800 (CST)
+From:   Li Qiong <liqiong@nfschina.com>
+To:     Davidlohr Bueso <dave@stgolabs.net>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>
+Cc:     linux-kernel@vger.kernel.org, rcu@vger.kernel.org,
+        hukun@nfschina.com, qixu@nfschina.com, yuzhe@nfschina.com,
+        renyu@nfschina.com, Li Qiong <liqiong@nfschina.com>
+Subject: [PATCH] rcu: Handle failure of memory allocation functions
+Date:   Sat, 11 Jun 2022 17:30:55 +0800
+Message-Id: <20220611093055.1473-1-liqiong@nfschina.com>
+X-Mailer: git-send-email 2.11.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Abel Vesa <abelvesa@nxp.com>
+Add warning when these functions (eg:kmalloc,vmalloc) fail, handle the
+failure.
 
-Use Abel Vesa's kernel.org account in maintainer entry and mailmap.
-
-Signed-off-by: Abel Vesa <abelvesa@nxp.com>
+Signed-off-by: Li Qiong <liqiong@nfschina.com>
 ---
- .mailmap    | 2 ++
- MAINTAINERS | 2 +-
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ kernel/rcu/rcutorture.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/.mailmap b/.mailmap
-index b2967aab5359..dda0030573ca 100644
---- a/.mailmap
-+++ b/.mailmap
-@@ -10,6 +10,8 @@
- # Please keep this list dictionary sorted.
- #
- Aaron Durbin <adurbin@google.com>
-+Abel Vesa <abelvesa@kernel.org> <abel.vesa@nxp.com>
-+Abel Vesa <abelvesa@kernel.org> <abelvesa@gmail.com>
- Abhinav Kumar <quic_abhinavk@quicinc.com> <abhinavk@codeaurora.org>
- Adam Oldham <oldhamca@gmail.com>
- Adam Radford <aradford@gmail.com>
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 475e28365385..6af989d4cdd6 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -14317,7 +14317,7 @@ F:	drivers/iio/gyro/fxas21002c_i2c.c
- F:	drivers/iio/gyro/fxas21002c_spi.c
+diff --git a/kernel/rcu/rcutorture.c b/kernel/rcu/rcutorture.c
+index 7120165a9342..97f90e304ae3 100644
+--- a/kernel/rcu/rcutorture.c
++++ b/kernel/rcu/rcutorture.c
+@@ -1991,6 +1991,10 @@ static void rcu_torture_mem_dump_obj(void)
  
- NXP i.MX CLOCK DRIVERS
--M:	Abel Vesa <abel.vesa@nxp.com>
-+M:	Abel Vesa <abelvesa@kernel.org>
- L:	linux-clk@vger.kernel.org
- L:	linux-imx@nxp.com
- S:	Maintained
+ 	kcp = kmem_cache_create("rcuscale", 136, 8, SLAB_STORE_USER, NULL);
+ 	rhp = kmem_cache_alloc(kcp, GFP_KERNEL);
++	if (WARN_ON_ONCE(!rhp)) {
++		kmem_cache_destroy(kcp);
++		return;
++	}
+ 	pr_alert("mem_dump_obj() slab test: rcu_torture_stats = %px, &rhp = %px, rhp = %px, &z = %px\n", stats_task, &rhp, rhp, &z);
+ 	pr_alert("mem_dump_obj(ZERO_SIZE_PTR):");
+ 	mem_dump_obj(ZERO_SIZE_PTR);
+@@ -2007,6 +2011,8 @@ static void rcu_torture_mem_dump_obj(void)
+ 	kmem_cache_free(kcp, rhp);
+ 	kmem_cache_destroy(kcp);
+ 	rhp = kmalloc(sizeof(*rhp), GFP_KERNEL);
++	if (WARN_ON_ONCE(!rhp))
++		return;
+ 	pr_alert("mem_dump_obj() kmalloc test: rcu_torture_stats = %px, &rhp = %px, rhp = %px\n", stats_task, &rhp, rhp);
+ 	pr_alert("mem_dump_obj(kmalloc %px):", rhp);
+ 	mem_dump_obj(rhp);
+@@ -2014,6 +2020,8 @@ static void rcu_torture_mem_dump_obj(void)
+ 	mem_dump_obj(&rhp->func);
+ 	kfree(rhp);
+ 	rhp = vmalloc(4096);
++	if (WARN_ON_ONCE(!rhp))
++		return;
+ 	pr_alert("mem_dump_obj() vmalloc test: rcu_torture_stats = %px, &rhp = %px, rhp = %px\n", stats_task, &rhp, rhp);
+ 	pr_alert("mem_dump_obj(vmalloc %px):", rhp);
+ 	mem_dump_obj(rhp);
 -- 
-2.34.3
+2.11.0
 
