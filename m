@@ -2,115 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12EA8C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 17:42:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9D65C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 17:45:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233413AbiFKRmw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 13:42:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35802 "EHLO
+        id S231331AbiFKRpB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 13:45:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231331AbiFKRmu (ORCPT
+        with ESMTP id S229658AbiFKRo7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 13:42:50 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2AD357986;
-        Sat, 11 Jun 2022 10:42:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=cy4LqclDCzXO19Ll6jpbh9YluwE5VQrU+JF2sYO2jE0=; b=IxeQ9knTGfuPFY2EQO3cFHURNk
-        8Aq729adAtGTjemhV30dzAco9EIMZh7j/WvantcPtZcAMhMNIPxKuaGYOXVzVodW8cCJuFcGPJvdz
-        3QhZzc4YjmenhkYU1RNPeSB/3NQAUJLLXclhkJLs4g8y3YZhRxIr2xqWTvvmDLCWSIwJSDGoO3DUa
-        he3gxqAngeEH8UKmIFvz6Nw/8zGYCDk+w2n763osH8eOIwcEaK5uV3XAdM5oW25NaZpZG1a71zz9i
-        jzRYnpIMmls8+HfSypjUz43b/PCTd3Y7GlL9fnHttL5rcxmTekuN0llIvQl7xeqnMDThcspXRnPnR
-        mcBtAr5A==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o058D-00FPYV-Al; Sat, 11 Jun 2022 17:42:41 +0000
-Date:   Sat, 11 Jun 2022 18:42:41 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Yu Kuai <yukuai3@huawei.com>
-Cc:     Kent Overstreet <kent.overstreet@gmail.com>,
-        akpm@linux-foundation.org, axboe@kernel.dk,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, yi.zhang@huawei.com
-Subject: Re: [PATCH -next] mm/filemap: fix that first page is not mark
- accessed in filemap_read()
-Message-ID: <YqTUEZ+Pa24p09Uc@casper.infradead.org>
-References: <20220602082129.2805890-1-yukuai3@huawei.com>
- <YpkB1+PwIZ3AKUqg@casper.infradead.org>
- <c49af4f7-5005-7cf1-8b58-a398294472ab@huawei.com>
- <YqNWY46ZRoK6Cwbu@casper.infradead.org>
- <YqNW8cYn9gM7Txg6@casper.infradead.org>
- <c5f97e2f-8a48-2906-91a2-1d84629b3641@gmail.com>
- <YqOOsHecZUWlHEn/@casper.infradead.org>
- <dfa6d60d-0efd-f12d-9e71-a6cd24188bba@huawei.com>
+        Sat, 11 Jun 2022 13:44:59 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2006357B3C;
+        Sat, 11 Jun 2022 10:44:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8D724CE09D2;
+        Sat, 11 Jun 2022 17:44:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDDAAC34116;
+        Sat, 11 Jun 2022 17:44:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654969494;
+        bh=+CoBBCoe/KpGTA7h3kGWZ8vhCj+1Oix6HOVG6MCCe3s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=NkZLVpVZKBdcTD/IhQsPtQ7tk3qoS2mrNkYgq9z7MgwS1IlKbr/gR4pzcHRkwUAjB
+         Yn9oS71FEpV+miBQr0VaKqZKXNosA/YyP/TqMoNlNsEkF4X0CKTzONpaFFlQxoLvPl
+         rKCYUGx0afdJjOTJLHVI+5kOXSbEdlVjLgN9iYTTNsBOGDkHkTed90EDo4iuPi50o7
+         emNJ0BBVwkcZFmLg3k3N0ng9EOSV3ZrF5114szKPkPhHQ3Ym4NHSIGpNWIn2HgoI4k
+         NPq74A0TUKnJzFcbnF4mSoHY46+1lmq1Kc7TKY714U+6TO5HosHa/JmYd/PESCCHDe
+         G8KqgMYlb8Q4w==
+Date:   Sat, 11 Jun 2022 18:54:03 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc:     <eugen.hristev@microchip.com>, <lars@metafoo.de>,
+        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
+        <ludovic.desroches@atmel.com>, <linux-iio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 07/16] iio: adc: at91-sama5d2_adc: simplify the code in
+ at91_adc_read_info_raw()
+Message-ID: <20220611185403.3eaf9b65@jic23-huawei>
+In-Reply-To: <20220609083213.1795019-8-claudiu.beznea@microchip.com>
+References: <20220609083213.1795019-1-claudiu.beznea@microchip.com>
+        <20220609083213.1795019-8-claudiu.beznea@microchip.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <dfa6d60d-0efd-f12d-9e71-a6cd24188bba@huawei.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jun 11, 2022 at 04:23:42PM +0800, Yu Kuai wrote:
-> > This is going to mark the folio as accessed multiple times if it's
-> > a multi-page folio.  How about this one?
-> > 
-> Hi, Matthew
+On Thu, 9 Jun 2022 11:32:04 +0300
+Claudiu Beznea <claudiu.beznea@microchip.com> wrote:
+
+> Simplify a bit the code in at91_adc_read_info_raw() by reducing the
+> number of lines of code.
 > 
-> Thanks for the patch, it looks good to me.
+> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-Did you test it?  This is clearly a little subtle ;-)
+I'm not convinced this is worth while, but there are some lesser
+steps visible in this patch that probably are.
 
-> BTW, I still think the fix should be commit 06c0444290ce ("mm/filemap.c:
-> generic_file_buffered_read() now uses find_get_pages_contig").
+Given your earlier reorg to move at01_adc_adjust_val_osr() under the locks,
+you can now move the locks to the caller, thus not needing to handle them
+separately in all the exit paths.
 
-Hmm, yes.  That code also has problems, but they're more subtle and
-probably don't amount to much.
+> ---
+>  drivers/iio/adc/at91-sama5d2_adc.c | 35 +++++++++---------------------
+>  1 file changed, 10 insertions(+), 25 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
+> index b52f1020feaf..fbb98e216e70 100644
+> --- a/drivers/iio/adc/at91-sama5d2_adc.c
+> +++ b/drivers/iio/adc/at91-sama5d2_adc.c
+> @@ -1576,6 +1576,7 @@ static int at91_adc_read_info_raw(struct iio_dev *indio_dev,
+>  				  struct iio_chan_spec const *chan, int *val)
+>  {
+>  	struct at91_adc_state *st = iio_priv(indio_dev);
+> +	int (*fn)(struct at91_adc_state *, int, u16 *) = NULL;
+>  	u16 tmp_val;
+>  	int ret;
+>  
+> @@ -1583,29 +1584,18 @@ static int at91_adc_read_info_raw(struct iio_dev *indio_dev,
+>  	 * Keep in mind that we cannot use software trigger or touchscreen
+>  	 * if external trigger is enabled
+>  	 */
+> -	if (chan->type == IIO_POSITIONRELATIVE) {
+> -		ret = iio_device_claim_direct_mode(indio_dev);
+> -		if (ret)
+> -			return ret;
 
--       iocb->ki_pos += copied;
--
--       /*
--        * When a sequential read accesses a page several times,
--        * only mark it as accessed the first time.
--        */
--       if (iocb->ki_pos >> PAGE_SHIFT != ra->prev_pos >> PAGE_SHIFT)
--               mark_page_accessed(page);
--
--       ra->prev_pos = iocb->ki_pos;
+You can drop this out of the if statements as it happens in all paths.
+Or even better, move it to the caller..
 
-This will mark the page accessed when we _exit_ a page.  So reading
-512-bytes at a time from offset 0, we'll mark page 0 as accessed on the
-first read (because the prev_pos is initialised to -1).  Then on the
-eighth read, we'll mark page 0 as accessed again (because ki_pos will
-now be 4096 and prev_pos is 3584).  We'll then read chunks of page 1
-without marking it as accessed, until we're about to step into page 2.
+> -		mutex_lock(&st->lock);
+> -
+> -		ret = at91_adc_read_position(st, chan->channel,
+> -					     &tmp_val);
 
-Marking page 0 accessed twice is bad; it'll set the referenced bit the
-first time, and then the second time, it'll activate it.  So it'll be
-thought to be part of the workingset when it's really just been part of
-a streaming read.
+huh? ret not checked? 
 
-And the last page we read will never be marked accessed unless it
-happens to finish at the end of a page.
+> -		*val = tmp_val;
+> -		ret = at91_adc_adjust_val_osr(st, val);
+Sure this is duplicated, but meh it's only a few lines.
 
-Before Kent started his refactoring, I think it worked:
 
--       pgoff_t prev_index;
--       unsigned int prev_offset;
-...
--       prev_index = ra->prev_pos >> PAGE_SHIFT;
--       prev_offset = ra->prev_pos & (PAGE_SIZE-1);
-...
--               if (prev_index != index || offset != prev_offset)
--                       mark_page_accessed(page);
--               prev_index = index;
--               prev_offset = offset;
-...
--       ra->prev_pos = prev_index;
--       ra->prev_pos <<= PAGE_SHIFT;
--       ra->prev_pos |= prev_offset;
+> -		mutex_unlock(&st->lock);
+> -		iio_device_release_direct_mode(indio_dev);
 
-At least, I don't detect any bugs in this.
+this early release (compared to the long path) is the only bit really
+gets duplicated in all paths..
+
+> +	if (chan->type == IIO_POSITIONRELATIVE)
+> +		fn = at91_adc_read_position;
+> +	if (chan->type == IIO_PRESSURE)
+> +		fn = at91_adc_read_pressure;
+>  
+> +	ret = iio_device_claim_direct_mode(indio_dev);
+> +	if (ret)
+>  		return ret;
+> -	}
+> -	if (chan->type == IIO_PRESSURE) {
+this should always have been an else if () as the chan->type couldn't be both.
+
+> -		ret = iio_device_claim_direct_mode(indio_dev);
+> -		if (ret)
+> -			return ret;
+> -		mutex_lock(&st->lock);
+hence this lot can be shared with the above.
+
+> +	mutex_lock(&st->lock);
+>  
+> -		ret = at91_adc_read_pressure(st, chan->channel,
+> -					     &tmp_val);
+> +	if (fn) {
+> +		ret = fn(st, chan->channel, &tmp_val);
+>  		*val = tmp_val;
+>  		ret = at91_adc_adjust_val_osr(st, val);
+>  		mutex_unlock(&st->lock);
+> @@ -1616,11 +1606,6 @@ static int at91_adc_read_info_raw(struct iio_dev *indio_dev,
+>  
+>  	/* in this case we have a voltage channel */
+>  
+> -	ret = iio_device_claim_direct_mode(indio_dev);
+> -	if (ret)
+> -		return ret;
+> -	mutex_lock(&st->lock);
+> -
+>  	st->chan = chan;
+>  
+>  	at91_adc_cor(st, chan);
 
