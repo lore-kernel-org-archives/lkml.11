@@ -2,186 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB709C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 16:42:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5984EC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 16:44:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235613AbiFKQmL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 12:42:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44660 "EHLO
+        id S233583AbiFKQo2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 12:44:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233365AbiFKQmH (ORCPT
+        with ESMTP id S230518AbiFKQoZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 12:42:07 -0400
-Received: from mail.enpas.org (zhong.enpas.org [46.38.239.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1718B6266;
-        Sat, 11 Jun 2022 09:42:01 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        by mail.enpas.org (Postfix) with ESMTPSA id 13EA8100022;
-        Sat, 11 Jun 2022 16:42:00 +0000 (UTC)
-Date:   Sat, 11 Jun 2022 18:41:57 +0200
-From:   Max Staudt <max@enpas.org>
-To:     Vincent Mailhol <vincent.mailhol@gmail.com>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Oliver Neukum <oneukum@suse.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7] can, tty: can327 CAN/ldisc driver for ELM327 based
- OBD-II adapters
-Message-ID: <20220611184157.06271432.max@enpas.org>
-In-Reply-To: <CAMZ6RqLb3irjBrpiOv23Hg6vVpzK4d31Pvat2AOS3EC0+e_=3A@mail.gmail.com>
-References: <20220602213544.68273-1-max@enpas.org>
-        <CAMZ6RqLLn3tE6kPd+yyHURsbBU_jVKN=u4=YvhZVyAf_NyRqCQ@mail.gmail.com>
-        <20220611151551.5024f51e.max@enpas.org>
-        <CAMZ6RqLb3irjBrpiOv23Hg6vVpzK4d31Pvat2AOS3EC0+e_=3A@mail.gmail.com>
+        Sat, 11 Jun 2022 12:44:25 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DDF22182
+        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 09:44:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654965864; x=1686501864;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=4HitFCdBPXiYkZ3gaeuzkbNd/dxt9elajBwRomlnFn8=;
+  b=HVj1ClTaYjSg7RlA5XAs/WXL/sCj/hcnIxxrMCRRjBnQFgSvKtinj4yf
+   uTngob3XIZOEgptaaVU7IaDqhsnw/ArBrB+wISxTsUhhRWurmV5IseUz0
+   vKReiv+KINeufCT5iXhK9chhXob6eBG6smArrUrIR44SS+lD8W92DP7xv
+   0nCgPlxcDG56iScv0w0Fut74hyHJdbuFD9PaF9Q1JP/US1qji+L007MkH
+   k/ViM6tUz6bF7PSm18PgvbWoqVIIQVol1ntIPkr8RmfN+RgY/YsqbjsT1
+   Kg66dDhEACPzPA3i4wMcapm+x+ryixXKjlylRmNKtsNr0/drnKZ1K4q2L
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10375"; a="341937339"
+X-IronPort-AV: E=Sophos;i="5.91,293,1647327600"; 
+   d="scan'208";a="341937339"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2022 09:44:23 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,293,1647327600"; 
+   d="scan'208";a="611150072"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga008.jf.intel.com with ESMTP; 11 Jun 2022 09:44:22 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o04Dl-000J61-ON;
+        Sat, 11 Jun 2022 16:44:21 +0000
+Date:   Sun, 12 Jun 2022 00:43:23 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: [jic23-iio:testing 199/199]
+ drivers/iio/adc/intel_mrfld_adc.c:222:40: warning: 'mrfld_adc_id_table'
+ defined but not used
+Message-ID: <202206120003.GMmufF0x-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 11 Jun 2022 23:42:39 +0900
-Vincent Mailhol <vincent.mailhol@gmail.com> wrote:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git testing
+head:   8e3460e351d063ba81c3f50ed946dd825848d892
+commit: 8e3460e351d063ba81c3f50ed946dd825848d892 [199/199] iio: core: drop of.h from iio.h
+config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220612/202206120003.GMmufF0x-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/commit/?id=8e3460e351d063ba81c3f50ed946dd825848d892
+        git remote add jic23-iio https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
+        git fetch --no-tags jic23-iio testing
+        git checkout 8e3460e351d063ba81c3f50ed946dd825848d892
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/iio/adc/
 
-> > > Are elm327 and can327 synonymous?  
-> >
-> > No. ELM327 is the OBD interpreter chip, made by ELM Electronics,
-> > that my driver, can327, speaks to.
-> >
-> > If you have an idea for a catchier name, please let me know while
-> > it's not upstream yet ;)
-> >
-> > I only changed the driver name from elmcan to can327 because I
-> > wanted to emphasise that it's not something official done by ELM.  
-> 
-> I think it is common to name the driver after the hardware regardless
-> if it is official or not.
-> You have many drivers named after companies without their blessing
-> (random example: hid-nintendo, pretty sure Nintendo did not
-> participate in the making of this).
-> And it makes it easier to research.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-I agree, hence the original name. I don't want to pick a fight with
-anyone though, and a good alternative does exist (can327), so I prefer
-to play it safe, at least this time.
+All warnings (new ones prefixed by >>):
 
-IMHO, to anyone who knows what an ELM327 is and who is looking for this
-driver, the "327" in the name is very likely to hint at what it is. Not
-many CAN devices are called 327 ;)
-
-There are also several compatible parts with extended features, so
-locking in on the original chip's name may be counter productive anyway.
+   drivers/iio/adc/intel_mrfld_adc.c:222:40: error: array type has incomplete element type 'struct platform_device_id'
+     222 | static const struct platform_device_id mrfld_adc_id_table[] = {
+         |                                        ^~~~~~~~~~~~~~~~~~
+>> drivers/iio/adc/intel_mrfld_adc.c:222:40: warning: 'mrfld_adc_id_table' defined but not used [-Wunused-variable]
 
 
-> > > Nitpick but I would prefer ascending order: 1.3 then 1.4, then
-> > > 1.4b and so on.  
-> >
-> > Hm. Fair enough. In return, please let me explain my thinking -
-> > maybe you find it useful:
-> >
-> > With reverse ordering, you can start from the top, and then continue
-> > down the list until you hit your own device's version version. As
-> > you go further down, more limitations will accumulate, until you
-> > stop reading when reaching your device's version. Everything below
-> > can be ignored.
-> >
-> > Matter of preference indeed. If you insist, I'll change it around.  
-> 
-> Here, we enter the domain of taste and colours. I gave you my
-> preferences. Use it as an input and make the final decision. It is
-> already really great that you took time to write the documentation.
+vim +/mrfld_adc_id_table +222 drivers/iio/adc/intel_mrfld_adc.c
 
-Thanks! I'll think about it until I release v8.
+a7118662734a3f9 Vincent Pelletier 2019-03-26  221  
+a7118662734a3f9 Vincent Pelletier 2019-03-26 @222  static const struct platform_device_id mrfld_adc_id_table[] = {
+a7118662734a3f9 Vincent Pelletier 2019-03-26  223  	{ .name = "mrfld_bcove_adc" },
+a7118662734a3f9 Vincent Pelletier 2019-03-26  224  	{}
+a7118662734a3f9 Vincent Pelletier 2019-03-26  225  };
+a7118662734a3f9 Vincent Pelletier 2019-03-26  226  MODULE_DEVICE_TABLE(platform, mrfld_adc_id_table);
+a7118662734a3f9 Vincent Pelletier 2019-03-26  227  
 
+:::::: The code at line 222 was first introduced by commit
+:::::: a7118662734a3f97622d8274708cb61fd53d693a iio: adc: intel_mrfld_adc: Add Basin Cove ADC driver
 
-> > > > +At present, can327 does not evaluate this response and silently
-> > > > assumes +that all commands are recognized. It is structured such
-> > > > that it will +degrade gracefully when a command is unknown. See
-> > > > the sections above on +known limitations for details.  
-> > >
-> > > This information is repeted twice whithin a dozen of lines. When I
-> > > read it, it was still fresh in my memory. Removing this paragraph
-> > > won't hurt, I think.  
-> >
-> > The reason why I repeated it is for casual readers that don't read
-> > the entire document top to bottom. Or who may have done so, and
-> > then jump into the middle of it - e.g. only reading this
-> > "Communication example" section.  
-> 
-> This indeed applies to long documents. Yours is succinct enough not to
-> have this issue.
-> 
-> > Do you still want me to remove the dupe?  
-> 
-> Same as above, I won't force you. You can make an educated choice to
-> keep it or not based on the feedback I provided you.
+:::::: TO: Vincent Pelletier <plr.vincent@gmail.com>
+:::::: CC: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Okay. With the new section ordering, I'll shorten it to a mention, and
-refer to the known limitations below. I prefer to still mention it, as
-the actual description only comes later. Kind of like having to declare
-functions that are only defined after a call site.
-
-
-> > Thanks, will do. I may wait for your cleanup patches to appear,
-> > though.  
-> 
-> The v5 of my cleanup is already in the master branch of
-> linux-can-next:
-> https://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git/log/
-> 
-> But you might have a conflict on drivers/net/can/Kconfig so better to
-> wait for the v6 (or apply my patches manually if you are in a hurry).
-
-Your v6 just hit linux-can-next, so I'll rebase on that.
-
-
-> > > So here, you never loopback the skb. For what I understand, the
-> > > controller does not provide such loopback features.
-> > >
-> > > However, local loopback is a core part of SocketCAN Concept, c.f.:
-> > > https://docs.kernel.org/networking/can.html#local-loopback-of-sent-frames
-> > >  
-> >
-> > That part of the documentation links onto itself because two
-> > sections bear the same name :(  
-> 
-> Loopback doc links onto itself? Or should I say that it *loopbacks*
-> onto itself? Don't know if the pun is intended but find it funny.
-
-Kinda like googling "recursion" ;)
-
-What are the odds that this mistake happened for the loopback topic!
-
-No but seriously, there are two sections called "Local Loopback of Sent
-Frames", and while they are meant to reference each other, the one in
-local-loopback-of-sent-frames references itself
-(socketcan-local-loopback1) instead of socketcan-local-loopback2 .
-
-I'll send a patch...
-
-
-> Do as you prefer. If you do not want the mainstream release to be
-> further delayed, I think it is fully acceptable to go with the lazy
-> direct loopback as I suggested and then later on provide a new patch.
-
-I agree, I'd rather leave the code as-is now, and fix it incrementally.
-Especially since you've reviewed it so thoroughly, and I don't want to
-unravel this again, and it works well enough as-is. After all, the
-documentation does start by saying that there are no guarantees ;)
-
-Do you see any problem with leaving it as-is, i.e. not setting
-IFF_ECHO, and thus having the CAN stack do the the for us? As far as I
-can see, it is equivalent...
-
-
-> I am happy with your answers. I let you make the final call on all of
-> my nitpicks and do what you think is best. Because I am done with the
-> review please add the following to your next version:
-> Reviewed-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-
-Woohoo! 8 years after getting the hardware and working on it on and
-off, this project is nearing the finish line. Thank you!
-
-
-Max
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
