@@ -2,121 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1E54C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 17:23:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E44A7CCA47C
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 17:24:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239049AbiFKRX5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 13:23:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45648 "EHLO
+        id S238675AbiFKRYv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 13:24:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238179AbiFKRXn (ORCPT
+        with ESMTP id S232372AbiFKRYt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 13:23:43 -0400
-Received: from conuserg-09.nifty.com (conuserg-09.nifty.com [210.131.2.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C30783CA54;
-        Sat, 11 Jun 2022 10:23:37 -0700 (PDT)
-Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-09.nifty.com with ESMTP id 25BHMhjQ022692;
-        Sun, 12 Jun 2022 02:22:45 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-09.nifty.com 25BHMhjQ022692
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1654968166;
-        bh=A23KTIgin1aGL7tlLpcBM/pr60oqIzwLBoV8Wxeh2p0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Llyi0YLJ14b5QWQVQPqHLa7n2JvTbXAheXVqnQLLwV0dA7csg05zwWc8mLxmZ0bTj
-         rAV3r35WL7MPi6o487lTvAsb//1F7Y4OHCgePgTH/1I+q/IVsQZhWBgSB2yvhdP10e
-         YZmOYrv0zRp/1mQaUqky6+MZM3SdSr3Z778OEhDjM84ORNU5/nqSdtOdXt7dB7NP9f
-         sIlf0jfmyFU8xV0RBK52K66MsXzXjxfBObAHb7cgkwgAHL7vpN8KPUzR64FTmW0lou
-         DGiWioOnHdDVKsgy2fW8e6xGEgYUaUjVATsKAe7hwOOUHouugTZhBJH3DjyTuDrbR7
-         FIfgpRrAQ1IeQ==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        =?UTF-8?q?Micka=8F=AB=B3l=20Sala=8F=AB=E4n?= 
-        <mic@linux.microsoft.com>, Masahiro Yamada <masahiroy@kernel.org>,
-        David Woodhouse <dwmw2@infradead.org>,
-        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 4/4] certs: unify blacklist_hashes.c and blacklist_nohashes.c
-Date:   Sun, 12 Jun 2022 02:22:33 +0900
-Message-Id: <20220611172233.1494073-4-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220611172233.1494073-1-masahiroy@kernel.org>
-References: <20220611172233.1494073-1-masahiroy@kernel.org>
+        Sat, 11 Jun 2022 13:24:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F403EAA9;
+        Sat, 11 Jun 2022 10:24:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9539BB80AE9;
+        Sat, 11 Jun 2022 17:24:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEFB1C34116;
+        Sat, 11 Jun 2022 17:24:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654968286;
+        bh=SDCYDjY3WJbmTI27Ho0/7Zfqxt3PHJ7jDyD8765WJCE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZtYi3BQBV3GRP8nI3TqjRnZmjlpZ2AtIMxOG/5riaE5t2Z5IZJYIBH/LwlaWYB+Bt
+         5EvFEBD2GUAMSS1++XM61sP0qhnz+573f3ECcuFOhiwikH5eiIkssBaiN7c8MACpqX
+         R4eRaJa/uwn9IBSOo+DbgTZ/i0ZcUYZ+cUwNib56pzWe+BDc7kVpscCyMzbsy3FrTu
+         /K1ehnbwBPstJ3fnwzUl3tHm8hQuxQyMdKIYTM8qcw3y49WBQ/L69UpIdfHcae31NN
+         29R1K/GuotB3t5WIWhf3KVC3pTXB7DyYjKpXL/g5ErM8avsTGEURUjO4Z4FBrpFzPq
+         WHv8kycFjH4HQ==
+Date:   Sat, 11 Jun 2022 18:33:54 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc:     <eugen.hristev@microchip.com>, <lars@metafoo.de>,
+        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
+        <ludovic.desroches@atmel.com>, <linux-iio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 03/16] iio: adc: at91-sama5d2_adc: exit from write_raw()
+ when buffers are enabled
+Message-ID: <20220611183354.08788921@jic23-huawei>
+In-Reply-To: <20220609083213.1795019-4-claudiu.beznea@microchip.com>
+References: <20220609083213.1795019-1-claudiu.beznea@microchip.com>
+        <20220609083213.1795019-4-claudiu.beznea@microchip.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These two files are very similar. Unify them.
+On Thu, 9 Jun 2022 11:32:00 +0300
+Claudiu Beznea <claudiu.beznea@microchip.com> wrote:
 
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
+> When buffers are enabled conversion may start asynchronously thus
+> allowing changes on actual hardware could lead to bad behavior. Thus
+> do not allow changing oversampling ratio and sample frequency when
+> buffers are enabled.
 
- certs/Makefile             | 12 +++++-------
- certs/blacklist_hashes.c   |  1 -
- certs/blacklist_nohashes.c |  6 ------
- 3 files changed, 5 insertions(+), 14 deletions(-)
- delete mode 100644 certs/blacklist_nohashes.c
+Less than desirable behavior perhaps, but broken?  I don't see this
+as a fix from what you have mentioned - though I'm not against it.
+(just drop the fixes tag)
+It is an ABI change, but unlikely to be one any sane code hits.
 
-diff --git a/certs/Makefile b/certs/Makefile
-index df7aaeafd19c..7068d45db807 100644
---- a/certs/Makefile
-+++ b/certs/Makefile
-@@ -4,24 +4,22 @@
- #
- 
- obj-$(CONFIG_SYSTEM_TRUSTED_KEYRING) += system_keyring.o system_certificates.o common.o
--obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) += blacklist.o common.o
-+obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) += blacklist.o common.o blacklist_hashes.o
- obj-$(CONFIG_SYSTEM_REVOCATION_LIST) += revocation_certificates.o
--ifneq ($(CONFIG_SYSTEM_BLACKLIST_HASH_LIST),)
- 
- $(obj)/blacklist_hashes.o: $(obj)/blacklist_hash_list
- CFLAGS_blacklist_hashes.o := -I $(obj)
- 
- quiet_cmd_check_and_copy_blacklist_hash_list = GEN     $@
-       cmd_check_and_copy_blacklist_hash_list = \
-+	$(if $(CONFIG_SYSTEM_BLACKLIST_HASH_LIST), \
- 	$(AWK) -f $(srctree)/$(src)/check-blacklist-hashes.awk $(CONFIG_SYSTEM_BLACKLIST_HASH_LIST) >&2; \
--	cat $(CONFIG_SYSTEM_BLACKLIST_HASH_LIST) > $@
-+	{ cat $(CONFIG_SYSTEM_BLACKLIST_HASH_LIST); echo $(comma) NULL; } > $@, \
-+	echo NULL > $@)
- 
- $(obj)/blacklist_hash_list: $(CONFIG_SYSTEM_BLACKLIST_HASH_LIST) FORCE
- 	$(call if_changed,check_and_copy_blacklist_hash_list)
--obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) += blacklist_hashes.o
--else
--obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) += blacklist_nohashes.o
--endif
-+
- targets += blacklist_hash_list
- 
- quiet_cmd_extract_certs  = CERT    $@
-diff --git a/certs/blacklist_hashes.c b/certs/blacklist_hashes.c
-index 86d66fe11348..0c5476abebd9 100644
---- a/certs/blacklist_hashes.c
-+++ b/certs/blacklist_hashes.c
-@@ -3,5 +3,4 @@
- 
- const char __initconst *const blacklist_hashes[] = {
- #include "blacklist_hash_list"
--	, NULL
- };
-diff --git a/certs/blacklist_nohashes.c b/certs/blacklist_nohashes.c
-deleted file mode 100644
-index 753b703ef0ef..000000000000
---- a/certs/blacklist_nohashes.c
-+++ /dev/null
-@@ -1,6 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--#include "blacklist.h"
--
--const char __initconst *const blacklist_hashes[] = {
--	NULL
--};
--- 
-2.32.0
+> 
+> Fixes: 5e1a1da0f8c9 ("iio: adc: at91-sama5d2_adc: add hw trigger and buffer support")
+> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+> ---
+>  drivers/iio/adc/at91-sama5d2_adc.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
+> index a672a520cdc0..b76328da0cb2 100644
+> --- a/drivers/iio/adc/at91-sama5d2_adc.c
+> +++ b/drivers/iio/adc/at91-sama5d2_adc.c
+> @@ -1644,6 +1644,9 @@ static int at91_adc_write_raw(struct iio_dev *indio_dev,
+>  {
+>  	struct at91_adc_state *st = iio_priv(indio_dev);
+>  
+> +	if (iio_buffer_enabled(indio_dev))
+> +		return -EBUSY;
+
+This is racy as nothing stops buffers being enabled after this point.
+Use the iio_device_claim_direct_mode() and release for this as they
+protect against the race.
+
+
+> +
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+>  		if ((val != AT91_OSR_1SAMPLES) && (val != AT91_OSR_4SAMPLES) &&
 
