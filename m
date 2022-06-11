@@ -2,60 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0BA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 00:58:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80C28C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 00:59:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350949AbiFKA6v (ORCPT
+        id S1349425AbiFKA6W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 20:58:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57326 "EHLO
+        Fri, 10 Jun 2022 20:58:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348595AbiFKA6L (ORCPT
+        with ESMTP id S244632AbiFKA6C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 20:58:11 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2736169CEC
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 17:58:11 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id y2-20020a655b42000000b0040014afa54cso279538pgr.21
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 17:58:11 -0700 (PDT)
+        Fri, 10 Jun 2022 20:58:02 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 739E369CEC
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 17:58:00 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-30047b94aa8so7531487b3.1
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 17:58:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=ql1Sd9pF/0aevrNAhN/dPI6LOpxERHFTraDXP5pQQ+M=;
-        b=DEDudNDeQbi9BYH3iE/CYgy5GDEV9rOO4CJb9h/8tP2YrKiFrPFdtZY05MkDgIyeiD
-         o+b7ijnX2IhHEI9r/mdsqCtB1KpCT49EQLrLswhG6staT3WpC79S1T9lKKD3XD4pf9Et
-         uowg6fwG2Kan3bDR2t/IBibKniCS31inDVsyL2lGwyfF0biO1TgJr33mRRi7rlGvzNZZ
-         0eQWZWGLrFwuwK5+B1boY3SPJJylQpB1MAZLMndhb+ZrOsA/jhXfL80jJg3tv8sjUCk8
-         oTykfkM/FPON8GVOS1PeMEnt+rIthEcOVZvDHQ7eRIEZSeHW4tTnmeuGFTwAIqYv1Ibe
-         kgIQ==
+        bh=ijt7+eub9oOFtp9ZKwDKSShQmwiC3mYdxPWQo+7w/V0=;
+        b=CZo3Wg55wAw24hpJ1B1SQ6orfyhR8RTFfwitl9xkS/NJ3F44mFVb6naEtlw7oWEq8X
+         7IFBhJfFlQnhVrGAVQnF7hN3u+GNPOKYZXknBylCshX5PUJCIdovLjIL8R8NCISab/Oo
+         u1QiLkOMAiaQVPVvW29xllEnzzGmBn9Bs6x3w9hRKGQqd2WR71uWuNRLT9zMKH0tCDt5
+         RvEzqcqTATzcnSd5vXftFvIgGs+DMfhEEUmw6HzPwBwj+Rie9i9Gk3qDzk5tlrVXZVX9
+         BYJX0/O5RBrkKGv8n/X31BDIemrc//8scwgOPJWSvhp/sm+J/2h75MLkt/S1QbDfOjUr
+         i7OQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=ql1Sd9pF/0aevrNAhN/dPI6LOpxERHFTraDXP5pQQ+M=;
-        b=LnsqbK+0rK9Fs4cWcmKMQmkWkAgiWt5L90BtJEvr06e0ShFAoTNyXN/vZ+WdX6pjCN
-         Xj8qeICdW7Eqf2DBCXqp08n4M1TxfE5y9pXuLpFcgRnni7Vgt/21WLYSi2liUq/TMAzy
-         xdLz8HHJG1DXVD+25xeyqmgOLIEhnGVh0JGxkBqCqnIzT6USFF8HxCvObC1QV8qGbVDQ
-         kTvYpT+oCD3cDbXzJ7P94NMSFBNMVCyERivXcxmojWJV4jtpSCsaPFdFgq2ptkex4TK1
-         s2GvtrgOmEdCyRMcA6OMQy5psXc0MkzCqzZkER9b5nIeXEE/xxHYAXQlFAkQqhkmxgGx
-         7G1w==
-X-Gm-Message-State: AOAM533MJToHxHOOYcE2+HGcLxvYm684zMjt6QQyTsj13fvo9fGCL1vl
-        fftW13fvRxpG3fk2+bU1HcG0ueOez/M=
-X-Google-Smtp-Source: ABdhPJy5qpzI553uCL2+KmgXAhbnULI+Wzywy/Ign1YsEDFkvhxjWSV26vmO4i8KdM0PNo1tWRlVv1H06+I=
+        bh=ijt7+eub9oOFtp9ZKwDKSShQmwiC3mYdxPWQo+7w/V0=;
+        b=AtOxRZwjU64KrmS0TdiDMUibbBBz0gWfFPAm3UM9X1iXMKoDaHMmSG0LuNZYqTxUep
+         4JtXhEP64Ds8owvTFjtnMdUlNFg7CQvNFcpZhOOjJc3NWdixjeza42t/HRuAp+t9CikB
+         yujH7/nNub2L54EKggmwNi2Spicqaq3tQFhDqsYitNXweTV2di1k/186i5KhnBqnz57y
+         dimutvJmXrXQRA/Q1YCwFNfE2SMU3dYm5gHpd+nUSI/74QXEYth8ur1pIz7wmBAM/KCP
+         0LKyLGgHR2IOUoyrVjOy9TKtzuMcc1lVrXZU/Tn9QtuttjIkcR0hbNAip0Qbtu6KGhVK
+         Sk5Q==
+X-Gm-Message-State: AOAM531t+nNPhmoNu7hJjvu5+K0uuZMLWG8iYsZU9paXwB4X+uTQkDNe
+        FKWHyrVXS9vRv2I88WVLMnds4FqW6No=
+X-Google-Smtp-Source: ABdhPJwz8uLXZjKQObtkL3FAf54uju/7eJlkYc3rrbwhOr6f+NHUw9FTPqDgtwwwhX+0k40+qWPiDvi0ziA=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a62:ce4f:0:b0:51b:ac5c:4e49 with SMTP id
- y76-20020a62ce4f000000b0051bac5c4e49mr48265688pfg.81.1654909090550; Fri, 10
- Jun 2022 17:58:10 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a25:6041:0:b0:663:6f4c:b3b8 with SMTP id
+ u62-20020a256041000000b006636f4cb3b8mr31354240ybb.236.1654909079630; Fri, 10
+ Jun 2022 17:57:59 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Sat, 11 Jun 2022 00:57:55 +0000
+Date:   Sat, 11 Jun 2022 00:57:49 +0000
 In-Reply-To: <20220611005755.753273-1-seanjc@google.com>
-Message-Id: <20220611005755.753273-8-seanjc@google.com>
+Message-Id: <20220611005755.753273-2-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220611005755.753273-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH 7/7] KVM: x86: Ignore benign host writes to "unsupported"
- F15H_PERF_CTL MSRs
+Subject: [PATCH 1/7] KVM: x86: Give host userspace full control of MSR_IA32_MISC_ENABLES
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -69,30 +68,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ignore host userspace writes of '0' to F15H_PERF_CTL MSRs KVM reports
-in the MSR-to-save list, but the MSRs are ultimately unsupported.  All
-MSRs in said list must be writable by userspace, e.g. if userspace sends
-the list back at KVM without filtering out the MSRs it doesn't need.
+Give userspace full control of the read-only bits in MISC_ENABLES, i.e.
+do not modify bits on PMU refresh and do not preserve existing bits when
+userspace writes MISC_ENABLES.  With a few exceptions where KVM doesn't
+expose the necessary controls to userspace _and_ there is a clear cut
+association with CPUID, e.g. reserved CR4 bits, KVM does not own the vCPU
+and should not manipulate the vCPU model on behalf of "dummy user space".
 
-Note, reads of said MSRs already have the desired behavior.
+The argument that KVM is doing userspace a favor because "the order of
+setting vPMU capabilities and MSR_IA32_MISC_ENABLE is not strictly
+guaranteed" is specious, as attempting to configure MSRs on behalf of
+userspace inevitably leads to edge cases precisely because KVM does not
+prescribe a specific order of initialization.
 
+Example #1: intel_pmu_refresh() consumes and modifies the vCPU's
+MSR_IA32_PERF_CAPABILITIES, and so assumes userspace initializes config
+MSRs before setting the guest CPUID model.  If userspace sets CPUID
+first, then KVM will mark PEBS as available when arch.perf_capabilities
+is initialized with a non-zero PEBS format, thus creating a bad vCPU
+model if userspace later disables PEBS by writing PERF_CAPABILITIES.
+
+Example #2: intel_pmu_refresh() does not clear PERF_CAP_PEBS_MASK in
+MSR_IA32_PERF_CAPABILITIES if there is no vPMU, making KVM inconsistent
+in its desire to be consistent.
+
+Example #3: intel_pmu_refresh() does not clear MSR_IA32_MISC_ENABLE_EMON
+if KVM_SET_CPUID2 is called multiple times, first with a vPMU, then
+without a vPMU.  While slightly contrived, it's plausible a VMM could
+reflect KVM's default vCPU and then operate on KVM's copy of CPUID to
+later clear the vPMU settings, e.g. see KVM's selftests.
+
+Example #4: Enumerating an Intel vCPU on an AMD host will not call into
+intel_pmu_refresh() at any point, and so the BTS and PEBS "unavailable"
+bits will be left clear, without any way for userspace to set them.
+
+Keep the "R" behavior of the bit 7, "EMON available", for the guest.
+Unlike the BTS and PEBS bits, which are fully "RO", the EMON bit can be
+written with a different value, but that new value is ignored.
+
+Cc: Like Xu <likexu@tencent.com>
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/x86.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/kvm/vmx/pmu_intel.c |  5 -----
+ arch/x86/kvm/x86.c           | 24 +++++++++++-------------
+ 2 files changed, 11 insertions(+), 18 deletions(-)
 
+diff --git a/arch/x86/kvm/vmx/pmu_intel.c b/arch/x86/kvm/vmx/pmu_intel.c
+index 422f0a6562ac..3b324ce0b142 100644
+--- a/arch/x86/kvm/vmx/pmu_intel.c
++++ b/arch/x86/kvm/vmx/pmu_intel.c
+@@ -536,8 +536,6 @@ static void intel_pmu_refresh(struct kvm_vcpu *vcpu)
+ 	pmu->pebs_enable_mask = ~0ull;
+ 	pmu->pebs_data_cfg_mask = ~0ull;
+ 
+-	vcpu->arch.ia32_misc_enable_msr |= MSR_IA32_MISC_ENABLE_PMU_RO_MASK;
+-
+ 	entry = kvm_find_cpuid_entry(vcpu, 0xa, 0);
+ 	if (!entry || !vcpu->kvm->arch.enable_pmu)
+ 		return;
+@@ -548,8 +546,6 @@ static void intel_pmu_refresh(struct kvm_vcpu *vcpu)
+ 	if (!pmu->version)
+ 		return;
+ 
+-	vcpu->arch.ia32_misc_enable_msr |= MSR_IA32_MISC_ENABLE_EMON;
+-
+ 	pmu->nr_arch_gp_counters = min_t(int, eax.split.num_counters,
+ 					 kvm_pmu_cap.num_counters_gp);
+ 	eax.split.bit_width = min_t(int, eax.split.bit_width,
+@@ -611,7 +607,6 @@ static void intel_pmu_refresh(struct kvm_vcpu *vcpu)
+ 		bitmap_set(pmu->all_valid_pmc_idx, INTEL_PMC_IDX_FIXED_VLBR, 1);
+ 
+ 	if (vcpu->arch.perf_capabilities & PERF_CAP_PEBS_FORMAT) {
+-		vcpu->arch.ia32_misc_enable_msr &= ~MSR_IA32_MISC_ENABLE_PEBS_UNAVAIL;
+ 		if (vcpu->arch.perf_capabilities & PERF_CAP_PEBS_BASELINE) {
+ 			pmu->pebs_enable_mask = counter_mask;
+ 			pmu->reserved_bits &= ~ICL_EVENTSEL_ADAPTIVE;
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 655fb0b3bba4..2fc556ac8a70 100644
+index 2318a99139fa..5d1beb7d310e 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -3789,6 +3789,7 @@ int kvm_set_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 	case MSR_IA32_PEBS_ENABLE:
- 	case MSR_IA32_DS_AREA:
- 	case MSR_PEBS_DATA_CFG:
-+	case MSR_F15H_PERF_CTL0 ... MSR_F15H_PERF_CTR5:
- 		if (kvm_pmu_is_valid_msr(vcpu, msr))
- 			return kvm_pmu_set_msr(vcpu, msr_info);
- 		/*
+@@ -3550,21 +3550,17 @@ int kvm_set_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 		break;
+ 	case MSR_IA32_MISC_ENABLE: {
+ 		u64 old_val = vcpu->arch.ia32_misc_enable_msr;
+-		u64 pmu_mask = MSR_IA32_MISC_ENABLE_PMU_RO_MASK |
+-			MSR_IA32_MISC_ENABLE_EMON;
+ 
+-		/* RO bits */
+-		if (!msr_info->host_initiated &&
+-		    ((old_val ^ data) & MSR_IA32_MISC_ENABLE_PMU_RO_MASK))
+-			return 1;
++		if (!msr_info->host_initiated) {
++			/* RO bits */
++			if ((old_val ^ data) & MSR_IA32_MISC_ENABLE_PMU_RO_MASK)
++				return 1;
++
++			/* R bits, i.e. writes are ignored, but don't fault. */
++			data = data & ~MSR_IA32_MISC_ENABLE_EMON;
++			data |= old_val & MSR_IA32_MISC_ENABLE_EMON;
++		}
+ 
+-		/*
+-		 * For a dummy user space, the order of setting vPMU capabilities and
+-		 * initialising MSR_IA32_MISC_ENABLE is not strictly guaranteed, so to
+-		 * avoid inconsistent functionality we keep the vPMU bits unchanged here.
+-		 */
+-		data &= ~pmu_mask;
+-		data |= old_val & pmu_mask;
+ 		if (!kvm_check_has_quirk(vcpu->kvm, KVM_X86_QUIRK_MISC_ENABLE_NO_MWAIT) &&
+ 		    ((old_val ^ data)  & MSR_IA32_MISC_ENABLE_MWAIT)) {
+ 			if (!guest_cpuid_has(vcpu, X86_FEATURE_XMM3))
+@@ -11552,6 +11548,8 @@ void kvm_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
+ 		vcpu->arch.smbase = 0x30000;
+ 
+ 		vcpu->arch.msr_misc_features_enables = 0;
++		vcpu->arch.ia32_misc_enable_msr = MSR_IA32_MISC_ENABLE_PEBS_UNAVAIL |
++						  MSR_IA32_MISC_ENABLE_BTS_UNAVAIL;
+ 
+ 		__kvm_set_xcr(vcpu, 0, XFEATURE_MASK_FP);
+ 		__kvm_set_msr(vcpu, MSR_IA32_XSS, 0, true);
 -- 
 2.36.1.476.g0c4daa206d-goog
 
