@@ -2,90 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C62C2C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 02:14:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2481C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 02:14:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346873AbiFKCOA (ORCPT
+        id S1347115AbiFKCON (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 22:14:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55112 "EHLO
+        Fri, 10 Jun 2022 22:14:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229693AbiFKCN7 (ORCPT
+        with ESMTP id S1346959AbiFKCOK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 22:13:59 -0400
+        Fri, 10 Jun 2022 22:14:10 -0400
 Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 154A7240A9
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 19:13:58 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LKhBT220kzRhrQ;
-        Sat, 11 Jun 2022 10:10:41 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0EF96CAB4
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 19:14:09 -0700 (PDT)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LKhDp3H44zjXX8;
+        Sat, 11 Jun 2022 10:12:42 +0800 (CST)
+Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 11 Jun 2022 10:14:00 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600013.china.huawei.com
+ (7.193.23.68) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 11 Jun
- 2022 10:13:49 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>
-CC:     <joao.m.martins@oracle.com>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>, <linmiaohe@huawei.com>
-Subject: [PATCH v2] mm/page_alloc: minor clean up for memmap_init_compound()
-Date:   Sat, 11 Jun 2022 10:13:52 +0800
-Message-ID: <20220611021352.13529-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
+ 2022 10:13:59 +0800
+From:   Zhihao Cheng <chengzhihao1@huawei.com>
+To:     <richard@nod.at>, <miquel.raynal@bootlin.com>,
+        <s.hauer@pengutronix.de>, <vigneshr@ti.com>,
+        <Artem.Bityutskiy@nokia.com>
+CC:     <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <chengzhihao1@huawei.com>, <yukuai3@huawei.com>
+Subject: [PATCH] ubi: ubi_wl_put_peb: Fix infinite loop when wear-leveling work failed
+Date:   Sat, 11 Jun 2022 10:27:06 +0800
+Message-ID: <20220611022706.926980-1-chengzhihao1@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500002.china.huawei.com (7.192.104.244)
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600013.china.huawei.com (7.193.23.68)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit 5232c63f46fd ("mm: Make compound_pincount always available"),
-compound_pincount_ptr is stored at first tail page now. So we should call
-prep_compound_head() after the first tail page is initialized to take
-advantage of the likelihood of that tail struct page being cached given
-that we will read them right after in prep_compound_head().
+Following process will trigger an infinite loop in ubi_wl_put_peb():
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Cc: Joao Martins <joao.m.martins@oracle.com>
----
-v2:
-  Don't move prep_compound_head() outside loop per Joao.
----
- mm/page_alloc.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+	ubifs_bgt		ubi_bgt
+ubifs_leb_unmap
+  ubi_leb_unmap
+    ubi_eba_unmap_leb
+      ubi_wl_put_peb	wear_leveling_worker
+                          e1 = rb_entry(rb_first(&ubi->used)
+			  e2 = get_peb_for_wl(ubi)
+			  ubi_io_read_vid_hdr  // return err (flash fault)
+			  out_error:
+			    ubi->move_from = ubi->move_to = NULL
+			    wl_entry_destroy(ubi, e1)
+			      ubi->lookuptbl[e->pnum] = NULL
+      retry:
+        e = ubi->lookuptbl[pnum];	// return NULL
+	if (e == ubi->move_from) {	// NULL == NULL gets true
+	  goto retry;			// infinite loop !!!
 
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 4c7d99ee58b4..048df5d78add 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -6771,13 +6771,18 @@ static void __ref memmap_init_compound(struct page *head,
- 		set_page_count(page, 0);
+$ top
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     COMMAND
+  7676 root     20   0       0      0      0 R 100.0  0.0  ubifs_bgt0_0
+
+Fix it by:
+ 1) Letting ubi_wl_put_peb() returns directly if wearl leveling entry has
+    been removed from 'ubi->lookuptbl'.
+ 2) Using 'ubi->wl_lock' protecting wl entry deletion to preventing an
+    use-after-free problem for wl entry in ubi_wl_put_peb().
+
+Fetch a reproducer in [Link].
+
+Fixes: 43f9b25a9cdd7b1 ("UBI: bugfix: protect from volume removal")
+Fixes: ee59ba8b064f692 ("UBI: Fix stale pointers in ubi->lookuptbl")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216111
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+---
+ drivers/mtd/ubi/wl.c | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/mtd/ubi/wl.c b/drivers/mtd/ubi/wl.c
+index 55bae06cf408..c95bfbdfa475 100644
+--- a/drivers/mtd/ubi/wl.c
++++ b/drivers/mtd/ubi/wl.c
+@@ -973,11 +973,13 @@ static int wear_leveling_worker(struct ubi_device *ubi, struct ubi_work *wrk,
+ 	spin_lock(&ubi->wl_lock);
+ 	ubi->move_from = ubi->move_to = NULL;
+ 	ubi->move_to_put = ubi->wl_scheduled = 0;
++	ubi->lookuptbl[e1->pnum] = NULL;
++	ubi->lookuptbl[e2->pnum] = NULL;
+ 	spin_unlock(&ubi->wl_lock);
  
+ 	ubi_free_vid_buf(vidb);
+-	wl_entry_destroy(ubi, e1);
+-	wl_entry_destroy(ubi, e2);
++	kmem_cache_free(ubi_wl_entry_slab, e1);
++	kmem_cache_free(ubi_wl_entry_slab, e2);
+ 
+ out_ro:
+ 	ubi_ro_mode(ubi);
+@@ -1253,6 +1255,18 @@ int ubi_wl_put_peb(struct ubi_device *ubi, int vol_id, int lnum,
+ retry:
+ 	spin_lock(&ubi->wl_lock);
+ 	e = ubi->lookuptbl[pnum];
++	if (!e) {
++		/*
++		 * This wl entry has been removed for some errors by other
++		 * process (eg. wear leveling worker), corresponding process
++		 * (except __erase_worker, which cannot concurrent with
++		 * ubi_wl_put_peb) will set ubi ro_mode at the same time,
++		 * just ignore this wl entry.
++		 */
++		spin_unlock(&ubi->wl_lock);
++		up_read(&ubi->fm_protect);
++		return 0;
++	}
+ 	if (e == ubi->move_from) {
  		/*
--		 * The first tail page stores compound_mapcount_ptr() and
--		 * compound_order() and the second tail page stores
--		 * compound_pincount_ptr(). Call prep_compound_head() after
--		 * the first and second tail pages have been initialized to
--		 * not have the data overwritten.
-+		 * The first tail page stores compound_mapcount_ptr(),
-+		 * compound_order() and compound_pincount_ptr(). Call
-+		 * prep_compound_head() after the first tail page have
-+		 * been initialized to not have the data overwritten.
-+		 *
-+		 * Note the idea to make this right after we initialize
-+		 * the offending tail pages is trying to take advantage
-+		 * of the likelihood of those tail struct pages being
-+		 * cached given that we will read them right after in
-+		 * prep_compound_head().
- 		 */
--		if (pfn == head_pfn + 2)
-+		if (unlikely(pfn == head_pfn + 1))
- 			prep_compound_head(head, order);
- 	}
- }
+ 		 * User is putting the physical eraseblock which was selected to
 -- 
-2.23.0
+2.31.1
 
