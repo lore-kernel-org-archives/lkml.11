@@ -2,186 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A160BCCA47B
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 03:09:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 984AEC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 03:09:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349006AbiFKC4o (ORCPT
+        id S1349012AbiFKDJH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 22:56:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59764 "EHLO
+        Fri, 10 Jun 2022 23:09:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238847AbiFKC4k (ORCPT
+        with ESMTP id S1349195AbiFKDJD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 22:56:40 -0400
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B579441633
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 19:56:39 -0700 (PDT)
-Received: by mail-oi1-x234.google.com with SMTP id r206so1486476oib.8
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 19:56:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=jctRilESZhviTKf/9k9B8kFmXNclCH0IwN1Q3ytmaBU=;
-        b=RiO89JynyAWJauusXlni0Uw+tWhpwg6Zkd/CQF2VrK1+ef2N8wg3fHJ5mz1wKCoXks
-         75C9yB/WN8MCz6x126AgrvnPwX7AKFY26wYhjdwS4oGMWWvFyPWBiGe4m78KzswP+5xc
-         ciRy8KqsJ2OyOiZwOmOwBl1qCSUY1ppYXS48yE5/CSFUsteVQHDqrwd3oonh2cAmctsS
-         C5A0jAQ4he2iR630XM2YxQI4QiUvQ3GtK/JM88o41TqictJ97jdfFeIdmzwzIBTUAU62
-         XypxGesXdr9RRdzlRkeAU8hWe28YII5zuuiUMVXBO6LaJPsnUX2hKRZhyHnOtCL9gE1s
-         qC9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=jctRilESZhviTKf/9k9B8kFmXNclCH0IwN1Q3ytmaBU=;
-        b=LKFop8CkxOm6iDsIYehJJM6T06eV/S3EPCakejMrM/DmUwFxiErCPvZjQ6HZbrM4Li
-         hGlPT6Q36eTZT9BAVlKIkEfQ/NQDtT7GJUZM9Y7CyoGPOZuizDrIGGTyQNSXsfqst3i4
-         kIj8yYLGijXlyjN5qzkOgZXQYYLNAhnxnPf9lKWL+y2JqG0lXj122CxFj327e2MTq/4G
-         88UXwAZ/WJCLJ6ECPwJTKWBlcGEn/N00mge4db19YvKr61lmT04QwXCsdvmosUzRia4M
-         0XgZ5S+mF6Vvr0dODOo4LFeO60SDzZeLe0drl4oB1Z9z8/Sex9jxftBuQcYpcahzBPpR
-         7Yjg==
-X-Gm-Message-State: AOAM532K3QsdWj717MuNi9L5SvravSdz3mxulQL00cR0aJhx+UG9f1sF
-        nYX+uZRxAmkiy9asTuaRLLdJjMSXl8aahFACeHQ=
-X-Google-Smtp-Source: ABdhPJwagasm37nc90xZijauKcqv8CyeDsKyStRUZS9nTXaJal8nJwj3QxzCRfvTuFSFXt9jQfe2BKsFexjpeVvOW/o=
-X-Received: by 2002:aca:6c5:0:b0:325:5bce:bbc1 with SMTP id
- 188-20020aca06c5000000b003255bcebbc1mr1434585oig.221.1654916198714; Fri, 10
- Jun 2022 19:56:38 -0700 (PDT)
+        Fri, 10 Jun 2022 23:09:03 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6356646B
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 20:09:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654916942; x=1686452942;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=R9M8qLW2GZ8OavFL9qgrv5U4YwMqdH1bUiTEm6KSo5M=;
+  b=c3kk5PEpc1hE55DyPGoQtw00WNwmVDGkXizS6mjTCQY5muEY5Qb2+hzu
+   thGUYs002HAqi0ZD5gwKB3qYhSwMFBJgYNX4glbO9lWI6ugOKY/DHat9h
+   pBfJlH8njtcU2voUAprlx8XzDboO/Gal9q11UzOkld3LlsXu263gG3CW9
+   4uD4IrHvXW3oM9T+Bzj9ryGvxiZ7HsFV8tCpbdlz7I9Z+Zb83ns9Z1EOb
+   28hgcd+Zq1M0IZJyVup1PtSg4VsxNQXflnGCYynSg74fzbPA6TtyPksJS
+   UoCMA7wIRjMa5xzo1GLXvT9QYvW1slvhk85YoR0cXUBcTT0ArrCL/pBn9
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10374"; a="266577884"
+X-IronPort-AV: E=Sophos;i="5.91,292,1647327600"; 
+   d="scan'208";a="266577884"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 20:09:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,292,1647327600"; 
+   d="scan'208";a="638494905"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 10 Jun 2022 20:09:00 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nzrUh-000IUt-PR;
+        Sat, 11 Jun 2022 03:08:59 +0000
+Date:   Sat, 11 Jun 2022 11:08:19 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-linked-list 57/57]
+ fs/netfs/buffered_write.c:934:2: warning: #warning TRIGGER NEW FLUSH GROUP
+ FOR TESTING
+Message-ID: <202206111043.15uHwTqk-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220506034656.50038-1-jjm2473@gmail.com> <14b2ae23-2f7b-401a-dcee-cc6114849022@paragon-software.com>
- <CAP_9mL7O7YyW56HBorZ7727m22NjbQcfcu_J4_XOBoXigQvGCg@mail.gmail.com> <e40981eb-8243-4bb1-44ef-5393cc464c03@paragon-software.com>
-In-Reply-To: <e40981eb-8243-4bb1-44ef-5393cc464c03@paragon-software.com>
-From:   =?UTF-8?B?57uD5Lqu5paM?= <jjm2473@gmail.com>
-Date:   Sat, 11 Jun 2022 10:56:27 +0800
-Message-ID: <CAP_9mL45iewg0Y_cDYdNZbv11RZfJtcbOia_GU+9=9paXV7zaQ@mail.gmail.com>
-Subject: Re: [PATCH] fs/ntfs3: fix null pointer dereference in d_flags_for_inode
-To:     Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Cc:     ntfs3@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello.
+tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-linked-list
+head:   c19d336b7f0c53bd31e73f6d7d6c1524f0df55b8
+commit: c19d336b7f0c53bd31e73f6d7d6c1524f0df55b8 [57/57] netfs: Add a struct to group modifications together and flushed in order
+config: x86_64-randconfig-a011 (https://download.01.org/0day-ci/archive/20220611/202206111043.15uHwTqk-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/ammarfaizi2/linux-block/commit/c19d336b7f0c53bd31e73f6d7d6c1524f0df55b8
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-linked-list
+        git checkout c19d336b7f0c53bd31e73f6d7d6c1524f0df55b8
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash fs/netfs/
 
-If ntfs_file_inode_operations is ok for $Extend, that's fine with me.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-=E4=BA=8E2022=E5=B9=B46=E6=9C=881=E6=97=A5=E5=91=A8=E4=B8=89 00:34=E5=86=99=
-=E9=81=93=EF=BC=9A
->
-> Hello.
->
-> In the end of ntfs_read_mft function we must assign correct i_op:
-> inode->i_op =3D &ntfs_dir_inode_operations;
-> <...>
-> inode->i_op =3D &ntfs_link_inode_operations;
-> <...>
-> inode->i_op =3D &ntfs_file_inode_operations;
-> <...>
-> inode->i_op =3D &ntfs_special_inode_operations;
->
-> In this if .. else if .. else is an error:
-> records in $Extend doesn't get correct i_op.
-> This was fixed in my patch.
->
-> Line in beginning of ntfs_read_mft function
-> inode->i_op =3D NULL;
-> triggered null pointer dereference because
-> inode->i_op =3D &ntfs_file_inode_operations;
-> is missing for records in $Extend.
->
-> If I just remove inode->i_op =3D NULL,
-> then in i_op will be some previous value.
-> Sometimes this value is correct, sometimes it's not.
->
-> I'm thankful, that you've spent time to find and debug this issue.
-> This was reflected in line Reported-by: Liangbin Lian <jjm2473@gmail.com>
-> I hope I've made more clear my previous message.
->
->
-> On 5/28/22 16:42, =E7=BB=83=E4=BA=AE=E6=96=8C wrote:
-> > Hello.
-> > `inode->i_op` already initialized when inode alloc, this bug was
-> > introduced by `inode->i_op =3D NULL;`, just delete this line.
-> > Please check my patch, maybe it's a better one, I have tested it on my =
-project.
-> >
-> > On 5/26/22 18:23, Almaz Alexandrovich wrote:
-> >>
-> >> Hello.
-> >>
-> >> Thank you for reporting this bug.
-> >> The bug happens because we don't initialize i_op for records in $Exten=
-d.
-> >> We tested patch on our side, let me know if patch helps you too.
-> >>
-> >>       fs/ntfs3: Fix missing i_op in ntfs_read_mft
-> >>
-> >>       There is null pointer dereference because i_op =3D=3D NULL.
-> >>       The bug happens because we don't initialize i_op for records in =
-$Extend.
-> >>       Fixes: 82cae269cfa9 ("fs/ntfs3: Add initialization of super bloc=
-k")
-> >>
-> >>       Reported-by: Liangbin Lian <jjm2473@gmail.com>
-> >>       Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-s=
-oftware.com>
-> >>
-> >> diff --git a/fs/ntfs3/inode.c b/fs/ntfs3/inode.c
-> >> index 879952254071..b2cc1191be69 100644
-> >> --- a/fs/ntfs3/inode.c
-> >> +++ b/fs/ntfs3/inode.c
-> >> @@ -430,6 +430,7 @@ static struct inode *ntfs_read_mft(struct inode *i=
-node,
-> >>           } else if (fname && fname->home.low =3D=3D cpu_to_le32(MFT_R=
-EC_EXTEND) &&
-> >>                      fname->home.seq =3D=3D cpu_to_le16(MFT_REC_EXTEND=
-)) {
-> >>                   /* Records in $Extend are not a files or general dir=
-ectories. */
-> >> +               inode->i_op =3D &ntfs_file_inode_operations;
-> >>           } else {
-> >>                   err =3D -EINVAL;
-> >>                   goto out;
-> >>
-> >>
-> >> On 5/6/22 06:46, Liangbin Lian wrote:
-> >>> ntfs_read_mft may return inode with null i_op, cause null pointer der=
-eference in d_flags_for_inode (inode->i_op->get_link).
-> >>> Reproduce:
-> >>>    - sudo mount -t ntfs3 -o loop ntfs.img ntfs
-> >>>    - ls ntfs/'$Extend/$Quota'
-> >>>
-> >>> The call trace is shown below (striped):
-> >>>    BUG: kernel NULL pointer dereference, address: 0000000000000008
-> >>>    CPU: 0 PID: 577 Comm: ls Tainted: G           OE     5.16.0-0.bpo.=
-4-amd64 #1  Debian 5.16.12-1~bpo11+1
-> >>>    RIP: 0010:d_flags_for_inode+0x65/0x90
-> >>>    Call Trace:
-> >>>    ntfs_lookup
-> >>>    +--- dir_search_u
-> >>>    |    +--- ntfs_iget5
-> >>>    |         +--- ntfs_read_mft
-> >>>    +--- d_splice_alias
-> >>>         +--- __d_add
-> >>>              +--- d_flags_for_inode
-> >>>
-> >>> Signed-off-by: Liangbin Lian <jjm2473@gmail.com>
-> >>> ---
-> >>>    fs/ntfs3/inode.c | 1 -
-> >>>    1 file changed, 1 deletion(-)
-> >>>
-> >>> diff --git a/fs/ntfs3/inode.c b/fs/ntfs3/inode.c
-> >>> index 9eab11e3b..b68d26fa8 100644
-> >>> --- a/fs/ntfs3/inode.c
-> >>> +++ b/fs/ntfs3/inode.c
-> >>> @@ -45,7 +45,6 @@ static struct inode *ntfs_read_mft(struct inode *in=
-ode,
-> >>>        struct MFT_REC *rec;
-> >>>        struct runs_tree *run;
-> >>>
-> >>> -     inode->i_op =3D NULL;
-> >>>        /* Setup 'uid' and 'gid' */
-> >>>        inode->i_uid =3D sbi->options->fs_uid;
-> >>>        inode->i_gid =3D sbi->options->fs_gid;
+All warnings (new ones prefixed by >>):
+
+   In file included from include/linux/gfp.h:5,
+                    from include/linux/xarray.h:15,
+                    from include/linux/list_lru.h:14,
+                    from include/linux/fs.h:13,
+                    from fs/netfs/buffered_write.c:9:
+   include/linux/page-flags.h: In function 'PageHead':
+   include/linux/page-flags.h:788:27: warning: passing argument 1 of 'dump_page' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+     788 |         PF_POISONED_CHECK(page);
+         |                           ^~~~
+   include/linux/mmdebug.h:21:35: note: in definition of macro 'VM_BUG_ON_PAGE'
+      21 |                         dump_page(page, "VM_BUG_ON_PAGE(" __stringify(cond)")");\
+         |                                   ^~~~
+   include/linux/page-flags.h:370:17: note: in expansion of macro 'VM_BUG_ON_PGFLAGS'
+     370 |                 VM_BUG_ON_PGFLAGS(PagePoisoned(page), page);            \
+         |                 ^~~~~~~~~~~~~~~~~
+   include/linux/page-flags.h:788:9: note: in expansion of macro 'PF_POISONED_CHECK'
+     788 |         PF_POISONED_CHECK(page);
+         |         ^~~~~~~~~~~~~~~~~
+   include/linux/mmdebug.h:12:29: note: expected 'struct page *' but argument is of type 'const struct page *'
+      12 | void dump_page(struct page *page, const char *reason);
+         |                ~~~~~~~~~~~~~^~~~
+   fs/netfs/buffered_write.c: In function 'netfs_file_write_iter':
+>> fs/netfs/buffered_write.c:934:2: warning: #warning TRIGGER NEW FLUSH GROUP FOR TESTING [-Wcpp]
+     934 | #warning TRIGGER NEW FLUSH GROUP FOR TESTING
+         |  ^~~~~~~
+
+
+vim +934 fs/netfs/buffered_write.c
+
+   893	
+   894	/**
+   895	 * netfs_file_write_iter - write data to a file
+   896	 * @iocb:	IO state structure
+   897	 * @from:	iov_iter with data to write
+   898	 *
+   899	 * This is a wrapper around __generic_file_write_iter() to be used by most
+   900	 * filesystems. It takes care of syncing the file in case of O_SYNC file and
+   901	 * acquires i_mutex as needed.
+   902	 * Return:
+   903	 * * negative error code if no data has been written at all of
+   904	 *   vfs_fsync_range() failed for a synchronous write
+   905	 * * number of bytes written, even for truncated writes
+   906	 */
+   907	ssize_t netfs_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
+   908	{
+   909		struct file *file = iocb->ki_filp;
+   910		struct inode *inode = file->f_mapping->host;
+   911		struct netfs_inode *ctx = netfs_inode(inode);
+   912		ssize_t ret;
+   913	
+   914		_enter("%llx,%zx,%llx", iocb->ki_pos, iov_iter_count(from), i_size_read(inode));
+   915	
+   916		inode_lock(inode);
+   917		ret = generic_write_checks(iocb, from);
+   918		if (ret <= 0)
+   919			goto error_unlock;
+   920	
+   921		trace_netfs_write_iter(iocb, from);
+   922	
+   923		/* We can write back this queue in page reclaim */
+   924		current->backing_dev_info = inode_to_bdi(inode);
+   925		ret = file_remove_privs(file);
+   926		if (ret)
+   927			goto error;
+   928	
+   929		ret = file_update_time(file);
+   930		if (ret)
+   931			goto error;
+   932	
+   933		{
+ > 934	#warning TRIGGER NEW FLUSH GROUP FOR TESTING
+   935			static atomic_t jump;
+   936			ret = netfs_require_flush_group(inode, (atomic_inc_return(&jump) & 3) == 3);
+   937			if (ret < 0)
+   938				goto error;
+   939		}
+   940	
+   941		ret = netfs_flush_conflicting_writes(ctx, file, iocb->ki_pos,
+   942						     iov_iter_count(from), NULL);
+   943		if (ret < 0 && ret != -EAGAIN)
+   944			goto error;
+   945	
+   946		if (iocb->ki_flags & IOCB_DIRECT)
+   947			ret = netfs_direct_write_iter(iocb, from);
+   948		else
+   949			ret = netfs_perform_write(iocb, from);
+   950	
+   951	error:
+   952		inode_unlock(inode);
+   953		/* TODO: Wait for DSYNC region here. */
+   954		current->backing_dev_info = NULL;
+   955		return ret;
+   956	error_unlock:
+   957		inode_unlock(inode);
+   958		return ret;
+   959	}
+   960	EXPORT_SYMBOL(netfs_file_write_iter);
+   961	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
