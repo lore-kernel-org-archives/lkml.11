@@ -2,59 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E926C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 14:56:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EBB9CCA47A
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 15:00:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236789AbiFKO4h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 10:56:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40290 "EHLO
+        id S236930AbiFKPAG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 11:00:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234101AbiFKO4g (ORCPT
+        with ESMTP id S236868AbiFKPAE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 10:56:36 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 145BDB481
-        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 07:56:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=EesJp6Q28Dva5LrN482KPkK1Tg2M3LLR40lrcCvgAAk=; b=WMGh50naDvnyC2S29Ju83tWUBS
-        aEzMG9CJXl92X/gsKJ/OXv7EBMXs63k3gZkWiwavEUQAP2d24xo6/D3ReKv2dcJoMSMxQgQs+o0LD
-        AILEIcXZRk1OZZZw2FukdV8MKv4UyBBjUXFoW3RBMqmC+Q3b4nP5ENAHg8qq9fTf1U0atiy33QZTm
-        j6nsvfemD/IEUDObGwdIh5j8vLWLZTf9S0c/6EF7pqWiZLOZYVWBkO1+0QlkTk1g4HZeuC5Rv/uvi
-        dSQex/M7UvtgSHsmkF0kYUapzwb+n+/qldIAldWSIhK0aQFSDCBn+0iJzhT3zhgmBD2f1436NUzR+
-        WW10RAjA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o02X8-00FJxM-7v; Sat, 11 Jun 2022 14:56:14 +0000
-Date:   Sat, 11 Jun 2022 15:56:14 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Zhangfei Gao <zhangfei.gao@linaro.org>
-Cc:     Minchan Kim <minchan@kernel.org>,
-        John Hubbard <jhubbard@nvidia.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        shameerali.kolothum.thodi@huawei.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm: fix is_pinnable_page return value
-Message-ID: <YqStDm5sdDL6YXn8@casper.infradead.org>
-References: <20220611133442.15290-1-zhangfei.gao@linaro.org>
+        Sat, 11 Jun 2022 11:00:04 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9A7A4F1C4;
+        Sat, 11 Jun 2022 08:00:00 -0700 (PDT)
+Received: from p508fd9f0.dip0.t-ipconnect.de ([80.143.217.240] helo=phil.localnet)
+        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <heiko@sntech.de>)
+        id 1o02ag-0004qO-5R; Sat, 11 Jun 2022 16:59:54 +0200
+From:   Heiko Stuebner <heiko@sntech.de>
+To:     Peter Geis <pgwipeout@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        devicetree <devicetree@vger.kernel.org>,
+        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] arm64: dts: rockchip: Fix SoQuartz CM4IO usb
+Date:   Sat, 11 Jun 2022 16:59:53 +0200
+Message-ID: <8819229.G0QQBjFxQf@phil>
+In-Reply-To: <CAMdYzYqRcrawKc-GsTgwnPuJBJoKTn9Arfpj_Vjnt+3DeT7k9w@mail.gmail.com>
+References: <20220610132601.160088-1-pgwipeout@gmail.com> <4178848.3VsfAaAtOV@phil> <CAMdYzYqRcrawKc-GsTgwnPuJBJoKTn9Arfpj_Vjnt+3DeT7k9w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220611133442.15290-1-zhangfei.gao@linaro.org>
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jun 11, 2022 at 09:34:42PM +0800, Zhangfei Gao wrote:
-> Commit 1c563432588d ("mm: fix is_pinnable_page against a cma page")
-> Changes from
-> return !(is_zone_movable_page(page) || is_migrate_cma_page(page)) ||
->         is_zero_pfn(page_to_pfn(page));
-> to
-> return !(is_zone_movable_page(page) || is_zero_pfn(page_to_pfn(page)));
+Am Samstag, 11. Juni 2022, 15:53:41 CEST schrieb Peter Geis:
+> On Sat, Jun 11, 2022 at 9:50 AM Heiko Stuebner <heiko@sntech.de> wrote:
+> >
+> > Am Freitag, 10. Juni 2022, 16:44:23 CEST schrieb Peter Geis:
+> > > On Fri, Jun 10, 2022 at 9:26 AM Peter Geis <pgwipeout@gmail.com> wrote:
+> > > >
+> > > > The SoQuartz CM4-IO should support otg mode, however it currently
+> > > > defaults to device mode when otg is enabled. Force it to host mode to
+> > > > retain the previous behavior.
+> > >
+> > > It would seem the role-switch issue is more widespread than originally
+> > > thought, affecting other boards where automatic control should work.
+> > > Please hold this patch while I investigate further.
+> >
+> > ok!
+> >
+> > I guess this also applies to
+> >         "arm64: dts: rockchip: Fix Quartz64-A dwc3 otg port behavior"?
+> 
+> No, on Quartz64 Model A it can't work, the requisite pin isn't connected.
 
-Mailing lists can be read as well as written.
+ok, so I can pick that other patch up :-) .
 
-https://lore.kernel.org/linux-mm/165490039431.944052.12458624139225785964.stgit@omen/
+> I think I've found the problem, I've requested a few people to test a fix.
+> Do you have a Model B or SoQuartz to test against (or any other rk356x
+> board that has the id pin hooked up)?
+
+The rk356x in my boardfarm is a Quartz-B ... though an very early model,
+so hopefully nothing changed on the board since then.
+
+Although there is nothing connected to usb right now and I only have
+remote access this weekend, so any usb tests would need to wait till next
+week on my end.
+
+
+Heiko
+
+
+> 
+> Thanks,
+> Peter
+> 
+> >
+> >
+> > Heiko
+> >
+> >
+> > > >
+> > > > Fixes: bc405bb3eeee ("arm64: dts: rockchip: enable otg/drd operation of usb_host0_xhci in rk356x")
+> > > >
+> > > > Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+> > > > ---
+> > > >  arch/arm64/boot/dts/rockchip/rk3566-soquartz-cm4.dts | 1 +
+> > > >  1 file changed, 1 insertion(+)
+> > > >
+> > > > diff --git a/arch/arm64/boot/dts/rockchip/rk3566-soquartz-cm4.dts b/arch/arm64/boot/dts/rockchip/rk3566-soquartz-cm4.dts
+> > > > index e00568a6be5c..56764fae9f9d 100644
+> > > > --- a/arch/arm64/boot/dts/rockchip/rk3566-soquartz-cm4.dts
+> > > > +++ b/arch/arm64/boot/dts/rockchip/rk3566-soquartz-cm4.dts
+> > > > @@ -169,6 +169,7 @@ &usb2phy0_otg {
+> > > >  };
+> > > >
+> > > >  &usb_host0_xhci {
+> > > > +       dr_mode = "host";
+> > > >         status = "okay";
+> > > >  };
+> > > >
+> > > > --
+> > > > 2.25.1
+> > > >
+> > >
+> >
+> >
+> >
+> >
+> 
+
+
+
+
