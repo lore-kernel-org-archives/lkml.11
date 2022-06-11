@@ -2,75 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B13AC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 15:00:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32819C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 15:01:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237069AbiFKPAU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 11:00:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52616 "EHLO
+        id S237154AbiFKPBi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 11:01:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236868AbiFKPAT (ORCPT
+        with ESMTP id S233836AbiFKPBh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 11:00:19 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 866CF5A095
-        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 08:00:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654959618; x=1686495618;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=/sGcbr6Om4nizcD1B7N2v+rlnT2Bo4o8raxiJd14DwU=;
-  b=OAN6UGNalZqX5oKu1+WW/cEXQpBtnMHhsClrGyUFiUKllrljEs1oz2i2
-   d+8HtW6D9J70Cw1Jmyp9HLhwjgcN0ELbPS9TII0aBOZOFqmmOD07sesoD
-   BEAZeMt42FRhv93Qnjs8z0fKtJbfeLafINTAlCMNTb+SQt5EjclQWIZCX
-   lhrbZEc89XtqjPzoSxc4N5fWlz19mZEkvZfZZswfg6RjI7z/dXkFljv9f
-   dYvWMArJ3vnVQR375o5nt2PalOT5y7aRgb3yiUO7wA0olQrzWIOcWWt8U
-   XZoopLh2OcmeElwD9cE1WcExZC6nY84LDxArOcWUMaR1yNzL0g/3C5ubV
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10375"; a="257727943"
-X-IronPort-AV: E=Sophos;i="5.91,293,1647327600"; 
-   d="scan'208";a="257727943"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2022 08:00:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,293,1647327600"; 
-   d="scan'208";a="586796321"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 11 Jun 2022 08:00:17 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o02b2-000IzN-Pg;
-        Sat, 11 Jun 2022 15:00:16 +0000
-Date:   Sat, 11 Jun 2022 22:59:39 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Anup Patel <apatel@ventanamicro.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [avpatel:riscv_kvm_aia_v1 26/29] arch/riscv/kvm/aia.c:324:2-3:
- Unneeded semicolon
-Message-ID: <202206112231.Oz0t7IEP-lkp@intel.com>
+        Sat, 11 Jun 2022 11:01:37 -0400
+Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA689654A;
+        Sat, 11 Jun 2022 08:01:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=9vgJd/fIuQ4ZpHZzquMnxQ7TKWacR7xtAP6nZ+FYUdo=; b=P012lR2l7PYF8ZfC8IWYrypqWB
+        ExTyxhwihX2l96+mR6voO0mRqONRKn9SuYG2JuVxSkokpbeP32K3mxL+qy+eLoCJJuhVGaCmyGUvG
+        2fqf1sXk1Akn4upqTPKogZFsnSlcGUS3Hwq3f59OknwXzmt003+iNrJyi0VHThjSDwSCnvepD6qw3
+        2asfwp7bVY1y/l9Y0aHukinZ2wlpPJk0E449eHrdoSCquNe2jyzCnuBPLPEMgfJrWaa0QF+KhZcvr
+        OKFnACEdCx+uUzLzschL+y8LCtemRFI2TWE1iXCPzmAkELsfoHy0OoJzUagwr2pSbBkvjZ8fn4uDD
+        uzFwvXAA==;
+Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o02c0-0068m3-Ma; Sat, 11 Jun 2022 15:01:16 +0000
+Date:   Sat, 11 Jun 2022 15:01:16 +0000
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Mike Marshall <hubcap@omnibond.com>,
+        Gao Xiang <xiang@kernel.org>, linux-afs@lists.infradead.org,
+        v9fs-developer@lists.sourceforge.net, devel@lists.orangefs.org,
+        linux-erofs@lists.ozlabs.org, linux-cachefs@redhat.com,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: mainline build failure due to 6c77676645ad ("iov_iter: Fix
+ iter_xarray_get_pages{,_alloc}()")
+Message-ID: <YqSuPPM0rNQaRwlm@zeniv-ca.linux.org.uk>
+References: <YqRyL2sIqQNDfky2@debian>
+ <YqSGv6uaZzLxKfmG@zeniv-ca.linux.org.uk>
+ <YqSMmC/UuQpXdxtR@zeniv-ca.linux.org.uk>
+ <YqSQ++8UnEW0AJ2y@zeniv-ca.linux.org.uk>
+ <20220611140052.GA288528@roeck-us.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220611140052.GA288528@roeck-us.net>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/avpatel/linux.git riscv_kvm_aia_v1
-head:   9c50a2eb51ca70ba23cf9bc8cef121e8765b2c01
-commit: 4b5db34c607d39e59bdd3b0f37864643f5c31924 [26/29] RISC-V: KVM: Virtualize per-HART AIA CSRs
-config: riscv-randconfig-c024-20220611 (https://download.01.org/0day-ci/archive/20220611/202206112231.Oz0t7IEP-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 11.3.0
+On Sat, Jun 11, 2022 at 07:00:52AM -0700, Guenter Roeck wrote:
+> On Sat, Jun 11, 2022 at 12:56:27PM +0000, Al Viro wrote:
+> > On Sat, Jun 11, 2022 at 12:37:44PM +0000, Al Viro wrote:
+> > > On Sat, Jun 11, 2022 at 12:12:47PM +0000, Al Viro wrote:
+> > > 
+> > > 
+> > > > At a guess, should be
+> > > > 	return min((size_t)nr * PAGE_SIZE - offset, maxsize);
+> > > > 
+> > > > in both places.  I'm more than half-asleep right now; could you verify that it
+> > > > (as the last lines of both iter_xarray_get_pages() and iter_xarray_get_pages_alloc())
+> > > > builds correctly?
+> > > 
+> > > No, I'm misreading it - it's unsigned * unsigned long - unsigned vs. size_t.
+> > > On arm it ends up with unsigned long vs. unsigned int; functionally it *is*
+> > > OK (both have the same range there), but it triggers the tests.  Try 
+> > > 
+> > > 	return min_t(size_t, nr * PAGE_SIZE - offset, maxsize);
+> > > 
+> > > there (both places).
+> > 
+> > The reason we can't overflow on multiplication there, BTW, is that we have
+> > nr <= count, and count has come from weirdly open-coded
+> > 	DIV_ROUND_UP(size + offset, PAGE_SIZE)
+> 
+> That is often done to avoid possible overflows. Is size + offset
+> guaranteed to be smaller than ULONG_MAX ?
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-
-cocci warnings: (new ones prefixed by >>)
->> arch/riscv/kvm/aia.c:324:2-3: Unneeded semicolon
-   arch/riscv/kvm/aia.c:357:2-3: Unneeded semicolon
-   arch/riscv/kvm/aia.c:383:2-3: Unneeded semicolon
-   arch/riscv/kvm/aia.c:235:2-3: Unneeded semicolon
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+You'd need iter->count and maxsize argument to be within PAGE_SIZE of
+ULONG_MAX.  How would you populate that xarray, anyway?
