@@ -2,68 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82B66C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 02:19:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACD39C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 02:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348166AbiFKCTO (ORCPT
+        id S1348495AbiFKCXO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 22:19:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58240 "EHLO
+        Fri, 10 Jun 2022 22:23:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236391AbiFKCTN (ORCPT
+        with ESMTP id S236391AbiFKCXN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 22:19:13 -0400
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC95934EC6B
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 19:19:11 -0700 (PDT)
-Received: by mail-il1-f200.google.com with SMTP id i16-20020a056e021d1000b002d3bbe39232so510942ila.20
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 19:19:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=tHVTwt2PWD/vy8v6ZvoCr74jkGvVIE7FZgcQ84tt83I=;
-        b=KxCNTEUmXAD00y21cOqSjqGle8hhTdXxTmFjTmoaJXkl1StBpTyNX3fQX6fjrrSPBN
-         YA0zC4zmFBE/npNY9vTxJS5W2r4V2bCVYgjk8Zn1Zj9uTJif5MGpCLGrOjqJSaNEDwDH
-         gIe5wBoL4VlGBXIuOOTv3f6wz7mM5zpvfwlHsrXVFedJBwsc9tomqBQJIUhp6WVwtIK6
-         eke2AdVNnUmqVyJoxEzNZyMfKDeQiY3h+o8zbp3skUGPcmo47YVYI/VR+lL0m4L6lADo
-         y9Gb4se52Esj+wSd3zNukt5GhQ2dKf4kJTwFYYLphdB8uSvM62NlGdoHOsVqFpkgdARi
-         Ju3w==
-X-Gm-Message-State: AOAM530EzbZV3l99f2udAgY9xZK4fsEo0/EjCthwF8M/E/dMonkgAqWT
-        NHqm14SLW14Y25hbiOkMDLoyiYaqiEYFd3jfFLGdgpdLxPAN
-X-Google-Smtp-Source: ABdhPJxn8Jwh13gBFKkfTlnqFbBzUky0CWR7V7toMn7uWTyhXx8Vo3XDtLyog5dr+WDD/RfKZueOv4/JX/jlt1DLbZ1w/OjWq3Yb
+        Fri, 10 Jun 2022 22:23:13 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F8743F4A1F
+        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 19:23:11 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LKhQh5mTLzgYHn;
+        Sat, 11 Jun 2022 10:21:16 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
+ (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 11 Jun
+ 2022 10:23:09 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <akpm@linux-foundation.org>, <hughd@google.com>
+CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        <linmiaohe@huawei.com>
+Subject: [PATCH] mm/shmem.c: use helper transhuge_vma_enabled()
+Date:   Sat, 11 Jun 2022 10:23:14 +0800
+Message-ID: <20220611022314.21593-1-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-X-Received: by 2002:a5d:9948:0:b0:669:a41d:6ee8 with SMTP id
- v8-20020a5d9948000000b00669a41d6ee8mr6745950ios.24.1654913950865; Fri, 10 Jun
- 2022 19:19:10 -0700 (PDT)
-Date:   Fri, 10 Jun 2022 19:19:10 -0700
-In-Reply-To: <20220611015957.1549-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000002cde2f05e122ae55@google.com>
-Subject: Re: [syzbot] BUG: sleeping function called from invalid context in sk_psock_stop
-From:   syzbot <syzbot+140186ceba0c496183bc@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Use helper transhuge_vma_enabled() to check whether transhuge is enable
+on vma. Minor readability improvement.
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+---
+ mm/shmem.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Reported-and-tested-by: syzbot+140186ceba0c496183bc@syzkaller.appspotmail.com
+diff --git a/mm/shmem.c b/mm/shmem.c
+index 133c67057d41..59cc2e980c95 100644
+--- a/mm/shmem.c
++++ b/mm/shmem.c
+@@ -480,8 +480,7 @@ bool shmem_is_huge(struct vm_area_struct *vma,
+ 		return false;
+ 	if (shmem_huge == SHMEM_HUGE_DENY)
+ 		return false;
+-	if (vma && ((vma->vm_flags & VM_NOHUGEPAGE) ||
+-	    test_bit(MMF_DISABLE_THP, &vma->vm_mm->flags)))
++	if (vma && !transhuge_vma_enabled(vma, vma->vm_flags))
+ 		return false;
+ 	if (shmem_huge == SHMEM_HUGE_FORCE)
+ 		return true;
+-- 
+2.23.0
 
-Tested on:
-
-commit:         ff539ac7 Add linux-next specific files for 20220609
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-console output: https://syzkaller.appspot.com/x/log.txt?x=1462f61bf00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a5002042f00a8bce
-dashboard link: https://syzkaller.appspot.com/bug?extid=140186ceba0c496183bc
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=12a7d9bff00000
-
-Note: testing is done by a robot and is best-effort only.
