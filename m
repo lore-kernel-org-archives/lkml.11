@@ -2,155 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA06FC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 10:22:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7539EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 10:22:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231283AbiFKKWS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 06:22:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44794 "EHLO
+        id S231370AbiFKKW2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 06:22:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230460AbiFKKWO (ORCPT
+        with ESMTP id S231351AbiFKKWV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 06:22:14 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACE5F20B
-        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 03:22:12 -0700 (PDT)
+        Sat, 11 Jun 2022 06:22:21 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BB72238;
+        Sat, 11 Jun 2022 03:22:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654942932; x=1686478932;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=buMZVdJ8BGUT7xbz85AmyK6cpJHkEmZrdVd0CJQfm+M=;
-  b=iQFH5gwOY/D2CM2nDbvhJ5qKqn7+0cA/SinwkIp2LhshZrljeTZ/S2AM
-   g588ldTZUbrYCLRGbDQSTlWwfOlC2C2Knd0sG3/3KW5eV2jLuFQJDyAF4
-   5FehfYQFuQLg1YYTn3CBDuATSNGdvSKxY5QnlRS8YkKulfXGdlIp2J4qf
-   AxvUrVcvtUb7YLOOr4j32/yu4b6aqGTj6JOjY6Oe0HQ5PKOeO03ct0QIQ
-   XuAAlDr8IhFjAszgGn74ySgFCjm2nyWzlbEWhRTVDFI41HITVo7VI3m2i
-   /PFl37yI9ZNM556dfJghcBNjUf8n/8DM8t5oPu50k9CoxCQqun1NgTc2n
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10374"; a="275391519"
+  t=1654942938; x=1686478938;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=1FQ1UCouIaP6LU42YfbC0jlHmjtqheR5eWTCBmjbZqw=;
+  b=DusHGC6yGO1qUhnUDxIESPDV7Rs+T9kxhkeZU33xLyFvzpVju+Bpk3Av
+   p1J5Uvk5f97utBFrIc9q96olOCpPAFafvaAcui7LYsZOwEFGsAEnzgmkN
+   dwwBaAqFIJCAab9d6n+8pVv64O3vyei6/vGMzom84sbdaQ4sgMZ6YjWMd
+   MXNKlGPtEuZffrdF51z9LH7gfwRRdGRJqDHE34bf/1Kfs5Jxq98uPfVtx
+   Vuat/1SycgRaVPKkrApxqewZYD82BgwhXOhxIdQBbJ9G5Vw0Wvhp+vLRW
+   k8FxQALoKH7ThJsIDWa3Me/yeBsMzLPqdSdGNyMrOzAyLwzKODU5w6jTj
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10374"; a="339599367"
 X-IronPort-AV: E=Sophos;i="5.91,293,1647327600"; 
-   d="scan'208";a="275391519"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2022 03:22:12 -0700
+   d="scan'208";a="339599367"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2022 03:22:16 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,293,1647327600"; 
-   d="scan'208";a="616843803"
+   d="scan'208";a="556760939"
 Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 11 Jun 2022 03:22:10 -0700
+  by orsmga006.jf.intel.com with ESMTP; 11 Jun 2022 03:22:10 -0700
 Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1nzyFu-000InZ-4i;
+        id 1nzyFu-000InX-4C;
         Sat, 11 Jun 2022 10:22:10 +0000
-Date:   Sat, 11 Jun 2022 18:22:06 +0800
+Date:   Sat, 11 Jun 2022 18:22:03 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Kefeng Wang <wangkefeng.wang@huawei.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>
-Subject: drivers/message/fusion/mptctl.c:1492:9: warning: 'strncpy' output
- may be truncated copying 31 bytes from a string of length 31
-Message-ID: <202206111857.fA0M7H4s-lkp@intel.com>
+To:     Yosry Ahmed <yosryahmed@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Michal Hocko <mhocko@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        David Rientjes <rientjes@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, cgroups@vger.kernel.org,
+        Yosry Ahmed <yosryahmed@google.com>
+Subject: Re: [PATCH bpf-next v2 6/8] cgroup: bpf: enable bpf programs to
+ integrate with rstat
+Message-ID: <202206111842.O3viR9gq-lkp@intel.com>
+References: <20220610194435.2268290-7-yosryahmed@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220610194435.2268290-7-yosryahmed@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kefeng,
+Hi Yosry,
 
-FYI, the error/warning still remains.
+Thank you for the patch! Yet something to improve:
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   0885eacdc81f920c3e0554d5615e69a66504a28d
-commit: dd03762ab608e058c8f390ad9cf667e490089796 arm64: Enable KCSAN
-date:   6 months ago
-config: arm64-randconfig-r013-20220611 (https://download.01.org/0day-ci/archive/20220611/202206111857.fA0M7H4s-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.3.0
+[auto build test ERROR on bpf-next/master]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Yosry-Ahmed/bpf-rstat-cgroup-hierarchical-stats/20220611-034720
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+config: hexagon-randconfig-r012-20220611 (https://download.01.org/0day-ci/archive/20220611/202206111842.O3viR9gq-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project ff4abe755279a3a47cc416ef80dbc900d9a98a19)
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=dd03762ab608e058c8f390ad9cf667e490089796
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout dd03762ab608e058c8f390ad9cf667e490089796
+        # https://github.com/intel-lab-lkp/linux/commit/83f297e2b47dc41b511f071b9eadf38339387b41
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Yosry-Ahmed/bpf-rstat-cgroup-hierarchical-stats/20220611-034720
+        git checkout 83f297e2b47dc41b511f071b9eadf38339387b41
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/message/fusion/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash kernel/cgroup/
 
 If you fix the issue, kindly add following tag where applicable
 Reported-by: kernel test robot <lkp@intel.com>
 
-All warnings (new ones prefixed by >>):
+All error/warnings (new ones prefixed by >>):
 
-   drivers/message/fusion/mptctl.c: In function 'mptctl_hp_hostinfo':
-   drivers/message/fusion/mptctl.c:2329:33: warning: variable 'retval' set but not used [-Wunused-but-set-variable]
-    2329 |         int                     retval;
-         |                                 ^~~~~~
-   In function 'mptctl_readtest',
-       inlined from '__mptctl_ioctl.isra' at drivers/message/fusion/mptctl.c:661:10:
->> drivers/message/fusion/mptctl.c:1492:9: warning: 'strncpy' output may be truncated copying 31 bytes from a string of length 31 [-Wstringop-truncation]
-    1492 |         strncpy (karg.name, ioc->name, MPT_MAX_NAME);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> kernel/cgroup/rstat.c:161:22: warning: no previous prototype for function 'bpf_rstat_flush' [-Wmissing-prototypes]
+   __weak noinline void bpf_rstat_flush(struct cgroup *cgrp,
+                        ^
+   kernel/cgroup/rstat.c:161:17: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   __weak noinline void bpf_rstat_flush(struct cgroup *cgrp,
+                   ^
+                   static 
+>> kernel/cgroup/rstat.c:509:3: error: field designator 'sleepable_set' does not refer to any field in type 'const struct btf_kfunc_id_set'
+           .sleepable_set  = &bpf_rstat_sleepable_kfunc_ids,
+            ^
+   1 warning and 1 error generated.
 
 
-vim +/strncpy +1492 drivers/message/fusion/mptctl.c
+vim +509 kernel/cgroup/rstat.c
 
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1459  
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1460  /*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1461  /* MPT IOCTL Test function.
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1462   *
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1463   * Outputs:	None.
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1464   * Return:	0 if successful
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1465   *		-EFAULT if data unavailable
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1466   *		-ENODEV  if no such device/adapter
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1467   */
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1468  static int
-28d76df18f0ad5 Dan Carpenter   2020-01-14  1469  mptctl_readtest (MPT_ADAPTER *ioc, unsigned long arg)
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1470  {
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1471  	struct mpt_ioctl_test __user *uarg = (void __user *) arg;
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1472  	struct mpt_ioctl_test	 karg;
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1473  
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1474  	if (copy_from_user(&karg, uarg, sizeof(struct mpt_ioctl_test))) {
-29dd3609f2fc70 Eric Moore      2007-09-14  1475  		printk(KERN_ERR MYNAM "%s@%d::mptctl_readtest - "
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1476  			"Unable to read in mpt_ioctl_test struct @ %p\n",
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1477  				__FILE__, __LINE__, uarg);
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1478  		return -EFAULT;
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1479  	}
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1480  
-09120a8cd38dbd Prakash, Sathya 2007-07-24  1481  	dctlprintk(ioc, printk(MYIOC_s_DEBUG_FMT "mptctl_readtest called.\n",
-09120a8cd38dbd Prakash, Sathya 2007-07-24  1482  	    ioc->name));
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1483  	/* Fill in the data and return the structure to the calling
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1484  	 * program
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1485  	 */
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1486  
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1487  #ifdef MFCNT
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1488  	karg.chip_type = ioc->mfcnt;
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1489  #else
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1490  	karg.chip_type = ioc->pcidev->device;
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1491  #endif
-^1da177e4c3f41 Linus Torvalds  2005-04-16 @1492  	strncpy (karg.name, ioc->name, MPT_MAX_NAME);
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1493  	karg.name[MPT_MAX_NAME-1]='\0';
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1494  	strncpy (karg.product, ioc->prod_name, MPT_PRODUCT_LENGTH);
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1495  	karg.product[MPT_PRODUCT_LENGTH-1]='\0';
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1496  
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1497  	/* Copy the data from kernel memory to user memory
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1498  	 */
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1499  	if (copy_to_user((char __user *)arg, &karg, sizeof(struct mpt_ioctl_test))) {
-29dd3609f2fc70 Eric Moore      2007-09-14  1500  		printk(MYIOC_s_ERR_FMT "%s@%d::mptctl_readtest - "
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1501  			"Unable to write out mpt_ioctl_test struct @ %p\n",
-29dd3609f2fc70 Eric Moore      2007-09-14  1502  			ioc->name, __FILE__, __LINE__, uarg);
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1503  		return -EFAULT;
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1504  	}
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1505  
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1506  	return 0;
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1507  }
-^1da177e4c3f41 Linus Torvalds  2005-04-16  1508  
-
-:::::: The code at line 1492 was first introduced by commit
-:::::: 1da177e4c3f41524e886b7f1b8a0c1fc7321cac2 Linux-2.6.12-rc2
-
-:::::: TO: Linus Torvalds <torvalds@ppc970.osdl.org>
-:::::: CC: Linus Torvalds <torvalds@ppc970.osdl.org>
+   505	
+   506	static const struct btf_kfunc_id_set bpf_rstat_kfunc_set = {
+   507		.owner		= THIS_MODULE,
+   508		.check_set	= &bpf_rstat_check_kfunc_ids,
+ > 509		.sleepable_set	= &bpf_rstat_sleepable_kfunc_ids,
+   510	};
+   511	
 
 -- 
 0-DAY CI Kernel Test Service
