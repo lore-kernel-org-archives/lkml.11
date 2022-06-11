@@ -2,157 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC321CCA47C
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 18:19:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7253EC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 18:29:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229972AbiFKSTh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 14:19:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50678 "EHLO
+        id S230149AbiFKS35 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 14:29:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229458AbiFKSTf (ORCPT
+        with ESMTP id S229672AbiFKS34 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 14:19:35 -0400
-Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99B4D2661
-        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 11:19:34 -0700 (PDT)
-Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-100eb6f7782so3280824fac.2
-        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 11:19:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kali.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=r17snX+1CJhT3VmJw3mp5dS1V2P55fF3SOw7ALhy79o=;
-        b=Wm0Buxc1kpff5ZqSS5cNUYXQv33z8vgTxHCWjEm264FoGRHl7IufZbtu6B7zYx2cGa
-         r5L6ypdpMXTZfVJpyUYBiuMpkJD6gLQ6j2YApWr9uY9fBlbgyLhF2L+2CR3OO5UpiRWP
-         PcxZiX7SlnyyFrG/aqyNQuYlWDS8x6PQ5s5cA4GCSIOpWiUrQte6G5mC8Q0Yq1aG0o2C
-         PnBYnHbvco8hrrqjLURKvWb6kc7BDcxbSvJ5ClCgwsk+Zkf/g9V/gRaag0lbXxWmqyaP
-         VduAC8DpVUI7P5PLcBdTXj9AF1s0o+M7WKVwqV1XRzM3W+zM7biTsTvFWndHMtM3ijYp
-         5Kaw==
+        Sat, 11 Jun 2022 14:29:56 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 38A9331DF6
+        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 11:29:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654972193;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=pcxlPosDuNYZLF+xkyfBuM18/wNn6c4mtAX4pgyPBoM=;
+        b=ePeFudFCCDGY04ZeegNWbbFJghLadIh6+WKyk8exsido+JdRHV4+Y2yrX+dw7y39z7XnyY
+        UWUe49kNumxWFaq/Z73TP8uv79OhRmyGNZ6vqsEWCVxX3Gw7DNCVnSYTastVcgiujNEixZ
+        LnKOBUpO9j6DgN+7UGvNkymEoynvD8o=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-625-PF_55YNENt67CvBYqOhIhg-1; Sat, 11 Jun 2022 14:29:51 -0400
+X-MC-Unique: PF_55YNENt67CvBYqOhIhg-1
+Received: by mail-wm1-f69.google.com with SMTP id o2-20020a05600c510200b0039747b0216fso3235385wms.0
+        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 11:29:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=r17snX+1CJhT3VmJw3mp5dS1V2P55fF3SOw7ALhy79o=;
-        b=KtCLMTHrAyRfjTg849TP5P3YKrb6wfaTOytnV+Pzdz8D5JTePv+upHi/JBiYPRjTi/
-         6GGlROa20OAMSGH0xyYNE7weVQpF845QN1BGgfF4oZYCoraUmu8hh20hh+co9mMFxmT/
-         qFzFT8anv2ngKubVYGegKcSWVeU0OLJ9vldj4dASYD62mKfJ+M0uq88LWlFdvkeVsDcq
-         QjI6eA1w7gpnsvGOAdT/l9WrUViRKbRZTZEDRCyRUCx+rre7GyzOHpsRAykiPQd2CSrZ
-         GrWyx2U/Gg6V9K2iY3qkQkPOfbzHFx9gq3K3llS88W+aQmYapXpew++JYJuMIhFOML3c
-         T7AA==
-X-Gm-Message-State: AOAM533MpBsNzG4hQ5qoa/1GL56rh40t2AzjnuNG24/M3WHynCH/6U0d
-        t+CJJbkPmwtaZ2CverqnYxGOjhDn2JWH03rq
-X-Google-Smtp-Source: ABdhPJw9wW0v+7X7Ti52yfdwpcIcu2d7tm+laTtRoHNn9hqddgAfa+6is/cZbU1XYjRlUedi2U3EjA==
-X-Received: by 2002:a05:6870:e2cc:b0:f5:dca0:95dc with SMTP id w12-20020a056870e2cc00b000f5dca095dcmr3235200oad.160.1654971573965;
-        Sat, 11 Jun 2022 11:19:33 -0700 (PDT)
-Received: from [192.168.11.16] (cpe-173-173-107-246.satx.res.rr.com. [173.173.107.246])
-        by smtp.gmail.com with ESMTPSA id bx36-20020a0568081b2400b00325cda1ffa6sm1209993oib.37.2022.06.11.11.19.28
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=pcxlPosDuNYZLF+xkyfBuM18/wNn6c4mtAX4pgyPBoM=;
+        b=GVtdEFQr7GAy2VguElSW8zo0zGrNNohSfM534kmR0Z2j70NajUwqCO5xetIC42m9Im
+         YwB/H/KmkBZ/jPiYUnn7Wqqt+ODyLFDcQscaBFYquIwkFVGsfWgoEHqW9hWP05Q5rawn
+         HOXxKPtIPtS71ujz55l6UP8QB9zpYKoZXOJt2WhnvOC4kw70HZ94pOiwO7EMZDq7X/7v
+         u+aQyuDLHAzIW6QVZ4S+GdGWHPcWiXSPf9xht/ypaDHoOFNutA0uKX5TmoIDaxz3gfcs
+         bpxItgiW5jU60z0tot+jRnCbeFd5/I6hO+NySFEaWgBKDDxXkopaOhnRKENIq9Lft8RW
+         0gQA==
+X-Gm-Message-State: AOAM533juM7vBbsguMvI02zbGMa3O0eH9t/Uu9UQf1PQ2fC//wUrUTbO
+        Qv5cUSzdrqMqBhoIHdH0xHlv+A7a31i0Zp/2xYM89H0gkPpXfTrZi4SKTysjf5/a4tDDQX7wq4y
+        IviS83I7e9thX3bsZc/v10XX0
+X-Received: by 2002:a05:600c:3790:b0:39c:7dc2:aea0 with SMTP id o16-20020a05600c379000b0039c7dc2aea0mr6010385wmr.112.1654972190627;
+        Sat, 11 Jun 2022 11:29:50 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzrYrnw+ck5JXVgLSNaYccrM3xEoJFNJyTxJ1A7dw5yPRd/CG4ZB1PEvF7LgsNSXQjVrBQLWQ==
+X-Received: by 2002:a05:600c:3790:b0:39c:7dc2:aea0 with SMTP id o16-20020a05600c379000b0039c7dc2aea0mr6010368wmr.112.1654972190341;
+        Sat, 11 Jun 2022 11:29:50 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c719:c400:dc43:2462:b7e5:dd7e? (p200300cbc719c400dc432462b7e5dd7e.dip0.t-ipconnect.de. [2003:cb:c719:c400:dc43:2462:b7e5:dd7e])
+        by smtp.gmail.com with ESMTPSA id p24-20020a05600c1d9800b0039c8a22554bsm728282wms.27.2022.06.11.11.29.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 11 Jun 2022 11:19:30 -0700 (PDT)
-Message-ID: <03923830-c3ae-6ef8-890a-361341c18e95@kali.org>
-Date:   Sat, 11 Jun 2022 13:19:27 -0500
+        Sat, 11 Jun 2022 11:29:49 -0700 (PDT)
+Message-ID: <bb120b4a-e6f6-de81-35f0-9803acf9b0be@redhat.com>
+Date:   Sat, 11 Jun 2022 20:29:47 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.10.0
-Subject: Re: [PATCH] dmaengine: qcom: bam_dma: fix runtime PM underflow
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
 Content-Language: en-US
-To:     Caleb Connolly <caleb.connolly@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        linux-arm-msm@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220609195043.1544625-1-caleb.connolly@linaro.org>
-From:   Steev Klimaszewski <steev@kali.org>
-In-Reply-To: <20220609195043.1544625-1-caleb.connolly@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+To:     Alex Williamson <alex.williamson@redhat.com>,
+        akpm@linux-foundation.org, minchan@kernel.org
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        paulmck@kernel.org, jhubbard@nvidia.com, joaodias@google.com,
+        jgg@ziepe.ca
+References: <165490039431.944052.12458624139225785964.stgit@omen>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH] mm: Re-allow pinning of zero pfns
+In-Reply-To: <165490039431.944052.12458624139225785964.stgit@omen>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Caleb,
+On 11.06.22 00:35, Alex Williamson wrote:
+> The commit referenced below subtly and inadvertently changed the logic
+> to disallow pinning of zero pfns.  This breaks device assignment with
+> vfio and potentially various other users of gup.  Exclude the zero page
+> test from the negation.
 
-On 6/9/22 2:50 PM, Caleb Connolly wrote:
-> When PM runtime is disabled, pm_runtime_get() isn't called, but
-> pm_runtime_put() still is. Fix this by creating a matching wrapper
-> on pm_runtime_put_autosuspend().
->
-> Fixes: dbad41e7bb5f ("dmaengine: qcom: bam_dma: check if the runtime pm enabled")
-> Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
+I wonder which setups can reliably work with a long-term pin on a shared
+zeropage. In a MAP_PRIVATE mapping, any write access via the page tables
+will end up replacing the shared zeropage with an anonymous page.
+Something similar should apply in MAP_SHARED mappings, when lazily
+allocating disk blocks.
+
+In the future, we might trigger unsharing when taking a R/O pin for the
+shared zeropage, just like we do as of now upstream for shared anonymous
+pages (!PageAnonExclusive). And something similar could then be done
+when finding a !anon page in a MAP_SHARED mapping.
+
+> 
+> Fixes: 1c563432588d ("mm: fix is_pinnable_page against a cma page")
+
+Having that said, it indeed looks like that was an unintended change.
+
+Acked-by: David Hildenbrand <david@redhat.com>
+
+> Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
 > ---
->   drivers/dma/qcom/bam_dma.c | 18 +++++++++++++-----
->   1 file changed, 13 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/dma/qcom/bam_dma.c b/drivers/dma/qcom/bam_dma.c
-> index 87f6ca1541cf..a36dedee262e 100644
-> --- a/drivers/dma/qcom/bam_dma.c
-> +++ b/drivers/dma/qcom/bam_dma.c
-> @@ -566,6 +566,14 @@ static int bam_pm_runtime_get_sync(struct device *dev)
->   	return 0;
->   }
->   
-> +static int bam_pm_runtime_put_autosuspend(struct device *dev)
-> +{
-> +	if (pm_runtime_enabled(dev))
-> +		return pm_runtime_put_autosuspend(dev);
-> +
-> +	return 0;
-> +}
-> +
->   /**
->    * bam_free_chan - Frees dma resources associated with specific channel
->    * @chan: specified channel
-> @@ -617,7 +625,7 @@ static void bam_free_chan(struct dma_chan *chan)
->   
->   err:
->   	pm_runtime_mark_last_busy(bdev->dev);
-> -	pm_runtime_put_autosuspend(bdev->dev);
-> +	bam_pm_runtime_put_autosuspend(bdev->dev);
->   }
->   
->   /**
-> @@ -793,7 +801,7 @@ static int bam_pause(struct dma_chan *chan)
->   	bchan->paused = 1;
->   	spin_unlock_irqrestore(&bchan->vc.lock, flag);
->   	pm_runtime_mark_last_busy(bdev->dev);
-> -	pm_runtime_put_autosuspend(bdev->dev);
-> +	bam_pm_runtime_put_autosuspend(bdev->dev);
->   
->   	return 0;
->   }
-> @@ -819,7 +827,7 @@ static int bam_resume(struct dma_chan *chan)
->   	bchan->paused = 0;
->   	spin_unlock_irqrestore(&bchan->vc.lock, flag);
->   	pm_runtime_mark_last_busy(bdev->dev);
-> -	pm_runtime_put_autosuspend(bdev->dev);
-> +	bam_pm_runtime_put_autosuspend(bdev->dev);
->   
->   	return 0;
->   }
-> @@ -936,7 +944,7 @@ static irqreturn_t bam_dma_irq(int irq, void *data)
->   	}
->   
->   	pm_runtime_mark_last_busy(bdev->dev);
-> -	pm_runtime_put_autosuspend(bdev->dev);
-> +	bam_pm_runtime_put_autosuspend(bdev->dev);
->   
->   	return IRQ_HANDLED;
->   }
-> @@ -1111,7 +1119,7 @@ static void bam_start_dma(struct bam_chan *bchan)
->   			bam_addr(bdev, bchan->id, BAM_P_EVNT_REG));
->   
->   	pm_runtime_mark_last_busy(bdev->dev);
-> -	pm_runtime_put_autosuspend(bdev->dev);
-> +	bam_pm_runtime_put_autosuspend(bdev->dev);
->   }
->   
->   /**
-
-I've tested this patch here and no longer see the logs filling up with 
-messages about Runtime PM underflows.  Tested on the Lenovo Yoga C630.
+> 
+> At least I assume this was inadvertent...  If there's a better fix,
+> please run with it as I'm out of the office the 1st half of next
+> week and would like to see this fixed ASAP.  Thanks!
+> 
+>  include/linux/mm.h |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/mm.h b/include/linux/mm.h
+> index bc8f326be0ce..781fae17177d 100644
+> --- a/include/linux/mm.h
+> +++ b/include/linux/mm.h
+> @@ -1600,7 +1600,7 @@ static inline bool is_pinnable_page(struct page *page)
+>  	if (mt == MIGRATE_CMA || mt == MIGRATE_ISOLATE)
+>  		return false;
+>  #endif
+> -	return !(is_zone_movable_page(page) || is_zero_pfn(page_to_pfn(page)));
+> +	return !is_zone_movable_page(page) || is_zero_pfn(page_to_pfn(page));
+>  }
+>  #else
+>  static inline bool is_pinnable_page(struct page *page)
+> 
+> 
 
 
-Tested-by: Steev Klimaszewski <steev@kali.org>
+-- 
+Thanks,
+
+David / dhildenb
 
