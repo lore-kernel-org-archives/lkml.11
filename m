@@ -2,90 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94878C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 16:05:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A738EC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 16:12:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234792AbiFKQFu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 12:05:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49562 "EHLO
+        id S235079AbiFKQMR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 12:12:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233496AbiFKQFs (ORCPT
+        with ESMTP id S231174AbiFKQMO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 12:05:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4001F25294;
-        Sat, 11 Jun 2022 09:05:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CE56761154;
-        Sat, 11 Jun 2022 16:05:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62B78C3411B;
-        Sat, 11 Jun 2022 16:05:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654963546;
-        bh=uQGH4sFj2WRe9mI9K7xL+Xi4+jrmG0wytJBcXdI8uRQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uQoZcgbrqa+VUdd4CByAP1V/QOoNk0uKWLK6fHizwKfaUQ56FQatX5hiMZm9pHt3a
-         zxSc8cJVdPP80qAwZa+ug43Itb1GWDrMfYsf9KfTLKivwfxPmZOefIx2HzCmvNW2Rh
-         QFDcBXII0MAhRJkzG22OYte/6H1W5ve+FSE9JU1PRJT56E33YQTQVmBRdiSJ9ESbSr
-         IEQGVVcccWgQyB4lF1J0WfC3rySNci+YJezeOtoEkyAnoHQ+zni/wvhhVw8MEMi6jB
-         UC1uDSvYCTYI5f+wUglCBy2szRNC820DdyUHmHoeEhnug41SangzcLktq82wpJBlfT
-         YF23YnlJ3+rKA==
-Date:   Sat, 11 Jun 2022 17:14:55 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Olivier Moysan <olivier.moysan@foss.st.com>
-Cc:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>
-Subject: Re: [PATCH] iio: adc: stm32: fix maximum clock rate for stm32mp15x
-Message-ID: <20220611171455.13798411@jic23-huawei>
-In-Reply-To: <20220609095234.375925-1-olivier.moysan@foss.st.com>
-References: <20220609095234.375925-1-olivier.moysan@foss.st.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sat, 11 Jun 2022 12:12:14 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9117ABE;
+        Sat, 11 Jun 2022 09:12:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=bxg6oME6P+/xKVdg0UH1OZTEHoeeXwl7w9rgm0xrILk=; b=GpkQkm0IOqePVzg/8SbLkwyoki
+        GUZMbFBct50MYFqT7VyTM5qR5gy3PZi8+n0X92CjYA49aDgQBck6gQniTm0Yj6ymanKOofWwJHfRj
+        /T/mTvxaJo7X2vmQYlYt4WcmhaE2U3i1sYfClDA9r6KPooci80mOUSMJyKtCy5YUh5J4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1o03iP-006WjH-FD; Sat, 11 Jun 2022 18:11:57 +0200
+Date:   Sat, 11 Jun 2022 18:11:57 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michal Kubecek <mkubecek@suse.cz>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v1 1/1] net: phy: add remote fault support
+Message-ID: <YqS+zYHf6eHMWJlD@lunn.ch>
+References: <20220608093403.3999446-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220608093403.3999446-1-o.rempel@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 9 Jun 2022 11:52:34 +0200
-Olivier Moysan <olivier.moysan@foss.st.com> wrote:
+> diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+> index c67bf3060173..6c55c7f9b680 100644
+> --- a/drivers/net/phy/phy-c45.c
+> +++ b/drivers/net/phy/phy-c45.c
+> @@ -205,7 +205,7 @@ static int genphy_c45_baset1_an_config_aneg(struct phy_device *phydev)
+>  		break;
+>  	case MASTER_SLAVE_CFG_UNKNOWN:
+>  	case MASTER_SLAVE_CFG_UNSUPPORTED:
+> -		return 0;
+> +		break;
+>  	default:
+>  		phydev_warn(phydev, "Unsupported Master/Slave mode\n");
+>  		return -EOPNOTSUPP;
+> @@ -223,11 +223,16 @@ static int genphy_c45_baset1_an_config_aneg(struct phy_device *phydev)
+>  		break;
+>  	}
+>  
+> +	if (phydev->remote_fault_set >= REMOTE_FAULT_CFG_ERROR)
+> +		adv_l |= MDIO_AN_T1_ADV_L_REMOTE_FAULT;
+> +
+>  	adv_l |= linkmode_adv_to_mii_t1_adv_l_t(phydev->advertising);
+>  
+>  	ret = phy_modify_mmd_changed(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_L,
+> -				     (MDIO_AN_T1_ADV_L_FORCE_MS | MDIO_AN_T1_ADV_L_PAUSE_CAP
+> -				     | MDIO_AN_T1_ADV_L_PAUSE_ASYM), adv_l);
+> +				     (MDIO_AN_T1_ADV_L_FORCE_MS |
+> +				      MDIO_AN_T1_ADV_L_PAUSE_CAP |
+> +				      MDIO_AN_T1_ADV_L_PAUSE_ASYM |
+> +				      MDIO_AN_T1_ADV_L_REMOTE_FAULT), adv_l);
 
-> Change maximum STM32 ADC input clock rate to 36MHz, as specified
-> in STM32MP15x datasheets.
-> 
-> Fixes: d58c67d1d851 ("iio: adc: stm32-adc: add support for STM32MP1")
-No gap here as per the other patch. Fixed up whilst applying and marked
-for stable.
+Since this is part of config_aneg, i assume you have to trigger an
+renegotiation, which will put the link down for a while. Is that
+actually required? Can the fault indicator be set at runtime without a
+full auto-neg? I suppose for a fault indicator, it probably does not
+matter, there is a fault... But i'm wondering about future extensions
+which might want to send values when the link is up. I've seen some
+PHYs indicate their make/model, etc. What sort of API would be needed
+for that?
 
-Thanks,
+It might also be useful if we could send an event to userspace when
+the receive state changes, so there is no need to poll. I thought
+something link a linkstate message was broadcast under some
+conditions? That again my suggest ksetting is maybe not the best place
+for this?
 
-Jonathan
+I see no problem in exposing this information, but i would like to be
+sure we get the API correct.
 
-> 
-> Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
-> ---
->  drivers/iio/adc/stm32-adc-core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/adc/stm32-adc-core.c b/drivers/iio/adc/stm32-adc-core.c
-> index 142656232157..ce1a63a82034 100644
-> --- a/drivers/iio/adc/stm32-adc-core.c
-> +++ b/drivers/iio/adc/stm32-adc-core.c
-> @@ -805,7 +805,7 @@ static const struct stm32_adc_priv_cfg stm32h7_adc_priv_cfg = {
->  static const struct stm32_adc_priv_cfg stm32mp1_adc_priv_cfg = {
->  	.regs = &stm32h7_adc_common_regs,
->  	.clk_sel = stm32h7_adc_clk_sel,
-> -	.max_clk_rate_hz = 40000000,
-> +	.max_clk_rate_hz = 36000000,
->  	.has_syscfg = HAS_VBOOSTER | HAS_ANASWVDD,
->  	.num_irqs = 2,
->  };
-
+     Andrew
