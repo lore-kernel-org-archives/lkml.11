@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 422BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 10:48:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E6A9C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 10:48:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232608AbiFKKsq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 06:48:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58234 "EHLO
+        id S232591AbiFKKst (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 06:48:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230410AbiFKKsg (ORCPT
+        with ESMTP id S231823AbiFKKsg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 11 Jun 2022 06:48:36 -0400
 Received: from smtp.uniroma2.it (smtp.uniroma2.it [160.80.6.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6479330561;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 646C63055C;
         Sat, 11 Jun 2022 03:48:33 -0700 (PDT)
 Received: from localhost.localdomain ([160.80.103.126])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 25BAm7gM007213
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 25BAm7gK007213
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Sat, 11 Jun 2022 12:48:09 +0200
+        Sat, 11 Jun 2022 12:48:08 +0200
 From:   Andrea Mayer <andrea.mayer@uniroma2.it>
 To:     "David S. Miller" <davem@davemloft.net>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
@@ -31,12 +31,10 @@ Cc:     Stefano Salsano <stefano.salsano@uniroma2.it>,
         Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
         Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
         Andrea Mayer <andrea.mayer@uniroma2.it>
-Subject: [net-next v1 2/2] seg6: add NEXT-C-SID support for SRv6 End behavior
-Date:   Sat, 11 Jun 2022 12:47:50 +0200
-Message-Id: <20220611104750.2724-3-andrea.mayer@uniroma2.it>
+Subject: [net-next v1 0/2] seg6: add NEXT-C-SID support for SRv6 End behavior
+Date:   Sat, 11 Jun 2022 12:47:48 +0200
+Message-Id: <20220611104750.2724-1-andrea.mayer@uniroma2.it>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220611104750.2724-1-andrea.mayer@uniroma2.it>
-References: <20220611104750.2724-1-andrea.mayer@uniroma2.it>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
@@ -45,484 +43,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The NEXT-C-SID mechanism described in [1] offers the possibility of
-encoding several SRv6 segments within a single 128 bit SID address. Such
-a SID address is called a Compressed SID (C-SID) container. In this way,
-the length of the SID List can be drastically reduced.
+The Segment Routing (SR) architecture is based on loose source routing.
+A list of instructions, called segments, can be added to the packet headers to
+influence the forwarding and processing of the packets in an SR enabled network.
+In SRv6 (Segment Routing over IPv6 data plane) [1], the segment identifiers
+(SIDs) are IPv6 addresses (128 bits) and the segment list (SID List) is carried
+in the Segment Routing Header (SRH). A segment may correspond to a "behavior"
+that is executed by a node when the packet is received. The Linux kernel
+currently supports a subset of behaviors described in [2] (e.g., End, End.X,
+End.T and so on).
 
-A SID instantiated with the NEXT-C-SID flavor considers an IPv6 address
-logically structured in three main blocks: i) Locator-Block; ii)
-Locator-Node Function; iii) Argument.
+Some SRv6 scenarios (e.g., traffic-engineering, fast-rerouting, VPN, mobile
+network backhaul, etc.) may require a large number of segments (i.e. up to 15).
+Therefore, reducing the size of the SID List is useful to minimize the impact on
+MTU (Maximum Transfer Unit) and to enable SRv6 on legacy hardware devices with
+limited processing power that can suffer from long IPv6 headers.
 
-                        C-SID container
-+------------------------------------------------------------------+
-|     Locator-Block      |Loc-Node|            Argument            |
-|                        |Function|                                |
-+------------------------------------------------------------------+
-<--------- B -----------> <- NF -> <------------- A --------------->
+Draft-ietf-spring-srv6-srh-compression [3] extends the SRv6 architecture by
+providing different mechanisms for the efficient representation (i.e.
+compression) of the SID List.
 
-   (i) The Locator-Block can be any IPv6 prefix available to the provider;
+The NEXT-C-SID mechanism described in [3] offers the possibility of encoding
+several SRv6 segments within a single 128 bit SID address. Such a SID address is
+called a Compressed SID Container. In this way, the length of the SID List can
+be drastically reduced. In some cases, the SRH can be omitted, as the IPv6
+Destination Address can carry the whole Segment List, using its compressed
+representation.
 
-  (ii) The Locator-Node Function represents the node and the function to
-       be triggered when a packet is received on the node;
+The NEXT-C-SID mechanism relies on the "flavors" framework defined in [2]. The
+flavors represent additional operations that can modify or extend a subset of
+the existing behaviors.
 
- (iii) The Argument carries the remaining C-SIDs in the current C-SID
-       container.
+In this patchset we extend the SRv6 Subsystem in order to support the NEXT-C-SID
+mechanism.
 
-The NEXT-C-SID mechanism relies on the "flavors" framework defined in
-[2]. The flavors represent additional operations that can modify or
-extend a subset of the existing behaviors.
+In details the patchset is made of:
+ - patch 1/2: seg6: add netlink_ext_ack support in parsing SRv6 behavior attributes
+ - patch 2/2: seg6: add NEXT-C-SID support for SRv6 End behavior
 
-This patch introduces the support for flavors in SRv6 End behavior
-implementing the NEXT-C-SID one. An SRv6 End behavior with NEXT-C-SID
-flavor works as an End behavior but it is capable of processing the
-compressed SID List encoded in C-SID containers.
+The corresponding iproute2 patch for supporting the NEXT-C-SID in SRv6 End
+behavior is provided in a separated patchset.
 
-An SRv6 End behavior with NEXT-C-SID flavor can be configured to support
-user-provided Locator-Block and Locator-Node Function lengths. In this
-implementation, such lengths must be evenly divisible by 8 (i.e. must be
-byte-aligned), otherwise the kernel informs the user about invalid
-values with a meaningful error code and message through netlink_ext_ack.
+Comments, improvements and suggestions are always appreciated.
 
-If Locator-Block and/or Locator-Node Function lengths are not provided
-by the user during configuration of an SRv6 End behavior instance with
-NEXT-C-SID flavor, the kernel will choose their default values i.e.,
-32-bit Locator-Block and 16-bit Locator-Node Function.
+Thank you all,
+Andrea
 
-[1] - https://datatracker.ietf.org/doc/html/draft-ietf-spring-srv6-srh-compression
+[1] - https://datatracker.ietf.org/doc/html/rfc8754
 [2] - https://datatracker.ietf.org/doc/html/rfc8986
+[3] - https://datatracker.ietf.org/doc/html/draft-ietf-spring-srv6-srh-compression 
 
-Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
----
+Andrea Mayer (2):
+  seg6: add netlink_ext_ack support in parsing SRv6 behavior attributes
+  seg6: add NEXT-C-SID support for SRv6 End behavior
+
  include/uapi/linux/seg6_local.h |  24 +++
- net/ipv6/seg6_local.c           | 311 +++++++++++++++++++++++++++++++-
- 2 files changed, 332 insertions(+), 3 deletions(-)
+ net/ipv6/seg6_local.c           | 355 ++++++++++++++++++++++++++++++--
+ 2 files changed, 360 insertions(+), 19 deletions(-)
 
-diff --git a/include/uapi/linux/seg6_local.h b/include/uapi/linux/seg6_local.h
-index 332b18f318f8..7919940c84d0 100644
---- a/include/uapi/linux/seg6_local.h
-+++ b/include/uapi/linux/seg6_local.h
-@@ -28,6 +28,7 @@ enum {
- 	SEG6_LOCAL_BPF,
- 	SEG6_LOCAL_VRFTABLE,
- 	SEG6_LOCAL_COUNTERS,
-+	SEG6_LOCAL_FLAVORS,
- 	__SEG6_LOCAL_MAX,
- };
- #define SEG6_LOCAL_MAX (__SEG6_LOCAL_MAX - 1)
-@@ -110,4 +111,27 @@ enum {
- 
- #define SEG6_LOCAL_CNT_MAX (__SEG6_LOCAL_CNT_MAX - 1)
- 
-+/* SRv6 End* Flavor attributes */
-+enum {
-+	SEG6_LOCAL_FLV_UNSPEC,
-+	SEG6_LOCAL_FLV_OPERATION,
-+	SEG6_LOCAL_FLV_LCBLOCK_LEN,
-+	SEG6_LOCAL_FLV_LCNODE_FN_LEN,
-+	__SEG6_LOCAL_FLV_MAX,
-+};
-+
-+#define SEG6_LOCAL_FLV_MAX (__SEG6_LOCAL_FLV_MAX - 1)
-+
-+/* Designed flavor operations for SRv6 End* Behavior */
-+enum {
-+	SEG6_LOCAL_FLV_OP_UNSPEC,
-+	SEG6_LOCAL_FLV_OP_PSP,
-+	SEG6_LOCAL_FLV_OP_USP,
-+	SEG6_LOCAL_FLV_OP_USD,
-+	SEG6_LOCAL_FLV_OP_NEXT_CSID,
-+	__SEG6_LOCAL_FLV_OP_MAX
-+};
-+
-+#define SEG6_LOCAL_FLV_OP_MAX (__SEG6_LOCAL_FLV_OP_MAX - 1)
-+
- #endif
-diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
-index 5ea51ee2ef71..eb31c6c838e3 100644
---- a/net/ipv6/seg6_local.c
-+++ b/net/ipv6/seg6_local.c
-@@ -73,6 +73,39 @@ struct bpf_lwt_prog {
- 	char *name;
- };
- 
-+/* default length values (expressed in bits) for both Locator-Block and
-+ * Locator-Node Function.
-+ *
-+ * Both SEG6_LOCAL_LCBLOCK_DLEN and SEG6_LOCAL_LCNODE_FN_DLEN *must* be:
-+ *    i) greater than 0;
-+ *   ii) evenly divisible by 8. In other terms, the lengths of the
-+ *	 Locator-Block and Locator-Node Function must be byte-aligned (we can
-+ *	 relax this constraint in the future if really needed).
-+ *
-+ * Moreover, a third condition must hold:
-+ *  iii) SEG6_LOCAL_LCBLOCK_DLEN + SEG6_LOCAL_LCNODE_FN_DLEN <= 128.
-+ *
-+ * The correctness of SEG6_LOCAL_LCBLOCK_DLEN and SEG6_LOCAL_LCNODE_FN_DLEN
-+ * values are checked during the kernel compilation. If the compilation stops,
-+ * check the value of these parameters to see if they meet conditions (i), (ii)
-+ * and (iii).
-+ */
-+#define SEG6_LOCAL_LCBLOCK_DLEN		32
-+#define SEG6_LOCAL_LCNODE_FN_DLEN	16
-+
-+/* Supported Flavor operations are reported in this bitmask */
-+#define SEG6_LOCAL_FLV_SUPP_OPS	(BIT(SEG6_LOCAL_FLV_OP_NEXT_CSID))
-+
-+struct seg6_flavors_info {
-+	/* Flavor operations */
-+	__u32 flv_ops;
-+
-+	/* Locator-Block length, expressed in bits */
-+	__u8 lcblock_len;
-+	/* Locator-Node Function length, expressed in bits*/
-+	__u8 lcnode_func_len;
-+};
-+
- enum seg6_end_dt_mode {
- 	DT_INVALID_MODE	= -EINVAL,
- 	DT_LEGACY_MODE	= 0,
-@@ -136,6 +169,8 @@ struct seg6_local_lwt {
- #ifdef CONFIG_NET_L3_MASTER_DEV
- 	struct seg6_end_dt_info dt_info;
- #endif
-+	struct seg6_flavors_info flv_info;
-+
- 	struct pcpu_seg6_local_counters __percpu *pcpu_counters;
- 
- 	int headroom;
-@@ -270,8 +305,50 @@ int seg6_lookup_nexthop(struct sk_buff *skb,
- 	return seg6_lookup_any_nexthop(skb, nhaddr, tbl_id, false);
- }
- 
--/* regular endpoint function */
--static int input_action_end(struct sk_buff *skb, struct seg6_local_lwt *slwt)
-+static __u8 seg6_flv_lcblock_octects(const struct seg6_flavors_info *finfo)
-+{
-+	return finfo->lcblock_len >> 3;
-+}
-+
-+static __u8 seg6_flv_lcnode_func_octects(const struct seg6_flavors_info *finfo)
-+{
-+	return finfo->lcnode_func_len >> 3;
-+}
-+
-+static bool seg6_next_csid_is_arg_zero(const struct in6_addr *addr,
-+				       const struct seg6_flavors_info *finfo)
-+{
-+	__u8 fnc_octects = seg6_flv_lcnode_func_octects(finfo);
-+	__u8 blk_octects = seg6_flv_lcblock_octects(finfo);
-+	__u8 arg_octects;
-+	int i;
-+
-+	arg_octects = 16 - blk_octects - fnc_octects;
-+	for (i = 0; i < arg_octects; ++i) {
-+		if (addr->s6_addr[blk_octects + fnc_octects + i] != 0x00)
-+			return false;
-+	}
-+
-+	return true;
-+}
-+
-+/* assume that DA.Argument length > 0 */
-+static void seg6_next_csid_advance_arg(struct in6_addr *addr,
-+				       const struct seg6_flavors_info *finfo)
-+{
-+	__u8 fnc_octects = seg6_flv_lcnode_func_octects(finfo);
-+	__u8 blk_octects = seg6_flv_lcblock_octects(finfo);
-+
-+	/* advance DA.Argument */
-+	memmove((void *)&addr->s6_addr[blk_octects],
-+		(const void *)&addr->s6_addr[blk_octects + fnc_octects],
-+		16 - blk_octects - fnc_octects);
-+
-+	memset((void *)&addr->s6_addr[16 - fnc_octects], 0x00, fnc_octects);
-+}
-+
-+static int input_action_end_core(struct sk_buff *skb,
-+				 struct seg6_local_lwt *slwt)
- {
- 	struct ipv6_sr_hdr *srh;
- 
-@@ -290,6 +367,38 @@ static int input_action_end(struct sk_buff *skb, struct seg6_local_lwt *slwt)
- 	return -EINVAL;
- }
- 
-+static int end_next_csid_core(struct sk_buff *skb, struct seg6_local_lwt *slwt)
-+{
-+	const struct seg6_flavors_info *finfo = &slwt->flv_info;
-+	struct in6_addr *daddr = &ipv6_hdr(skb)->daddr;
-+
-+	if (seg6_next_csid_is_arg_zero(daddr, finfo))
-+		return input_action_end_core(skb, slwt);
-+
-+	/* update DA */
-+	seg6_next_csid_advance_arg(daddr, finfo);
-+
-+	seg6_lookup_nexthop(skb, NULL, 0);
-+
-+	return dst_input(skb);
-+}
-+
-+static bool seg6_next_csid_enabled(__u32 fops)
-+{
-+	return fops & BIT(SEG6_LOCAL_FLV_OP_NEXT_CSID);
-+}
-+
-+/* regular endpoint function */
-+static int input_action_end(struct sk_buff *skb, struct seg6_local_lwt *slwt)
-+{
-+	const struct seg6_flavors_info *finfo = &slwt->flv_info;
-+
-+	if (seg6_next_csid_enabled(finfo->flv_ops))
-+		return end_next_csid_core(skb, slwt);
-+
-+	return input_action_end_core(skb, slwt);
-+}
-+
- /* regular endpoint, and forward to specified nexthop */
- static int input_action_end_x(struct sk_buff *skb, struct seg6_local_lwt *slwt)
- {
-@@ -952,7 +1061,8 @@ static struct seg6_action_desc seg6_action_table[] = {
- 	{
- 		.action		= SEG6_LOCAL_ACTION_END,
- 		.attrs		= 0,
--		.optattrs	= SEG6_F_LOCAL_COUNTERS,
-+		.optattrs	= SEG6_F_LOCAL_COUNTERS |
-+				  SEG6_F_ATTR(SEG6_LOCAL_FLAVORS),
- 		.input		= input_action_end,
- 	},
- 	{
-@@ -1133,6 +1243,7 @@ static const struct nla_policy seg6_local_policy[SEG6_LOCAL_MAX + 1] = {
- 	[SEG6_LOCAL_OIF]	= { .type = NLA_U32 },
- 	[SEG6_LOCAL_BPF]	= { .type = NLA_NESTED },
- 	[SEG6_LOCAL_COUNTERS]	= { .type = NLA_NESTED },
-+	[SEG6_LOCAL_FLAVORS]	= { .type = NLA_NESTED },
- };
- 
- static int parse_nla_srh(struct nlattr **attrs, struct seg6_local_lwt *slwt,
-@@ -1552,6 +1663,190 @@ static void destroy_attr_counters(struct seg6_local_lwt *slwt)
- 	free_percpu(slwt->pcpu_counters);
- }
- 
-+static const
-+struct nla_policy seg6_local_flavors_policy[SEG6_LOCAL_FLV_MAX + 1] = {
-+	[SEG6_LOCAL_FLV_OPERATION]	= { .type = NLA_U32 },
-+	[SEG6_LOCAL_FLV_LCBLOCK_LEN]	= { .type = NLA_U8 },
-+	[SEG6_LOCAL_FLV_LCNODE_FN_LEN]	= { .type = NLA_U8 },
-+};
-+
-+/* check whether the lengths of the Locator-Block and Locator-Node Function
-+ * are compatible with the dimension of a C-SID container.
-+ */
-+static int seg6_chk_next_csid_cfg(__u8 block_len, __u8 func_len)
-+{
-+	/* Locator-Block and Locator-Node Function cannot exceed 128 bits */
-+	if (block_len + func_len > 128)
-+		return -EINVAL;
-+
-+	/* Locator-Block length must be greater than zero and evenly divisible
-+	 * by 8. There must be room for a Locator-Node Function, at least.
-+	 */
-+	if (block_len < 8 || block_len > 120 || (block_len & 0x07))
-+		return -EINVAL;
-+
-+	/* Locator-Node Function length must be greater than zero and evenly
-+	 * divisible by 8. There must be room for the Locator-Block.
-+	 */
-+	if (func_len < 8 || func_len > 120 || (func_len & 0x07))
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
-+static int seg6_parse_nla_next_csid_cfg(struct nlattr **tb,
-+					struct seg6_flavors_info *finfo,
-+					struct netlink_ext_ack *extack)
-+{
-+	__u8 func_len = SEG6_LOCAL_LCNODE_FN_DLEN;
-+	__u8 block_len = SEG6_LOCAL_LCBLOCK_DLEN;
-+	int rc;
-+
-+	if (tb[SEG6_LOCAL_FLV_LCBLOCK_LEN])
-+		block_len = nla_get_u8(tb[SEG6_LOCAL_FLV_LCBLOCK_LEN]);
-+
-+	if (tb[SEG6_LOCAL_FLV_LCNODE_FN_LEN])
-+		func_len = nla_get_u8(tb[SEG6_LOCAL_FLV_LCNODE_FN_LEN]);
-+
-+	rc = seg6_chk_next_csid_cfg(block_len, func_len);
-+	if (rc < 0) {
-+		NL_SET_ERR_MSG(extack,
-+			       "Invalid Locator Block/Node Function lengths");
-+		return rc;
-+	}
-+
-+	finfo->lcblock_len = block_len;
-+	finfo->lcnode_func_len = func_len;
-+
-+	return 0;
-+}
-+
-+static int parse_nla_flavors(struct nlattr **attrs, struct seg6_local_lwt *slwt,
-+			     struct netlink_ext_ack *extack)
-+{
-+	struct seg6_flavors_info *finfo = &slwt->flv_info;
-+	struct nlattr *tb[SEG6_LOCAL_FLV_MAX + 1];
-+	unsigned long fops;
-+	int rc;
-+
-+	rc = nla_parse_nested_deprecated(tb, SEG6_LOCAL_FLV_MAX,
-+					 attrs[SEG6_LOCAL_FLAVORS],
-+					 seg6_local_flavors_policy, NULL);
-+	if (rc < 0)
-+		return rc;
-+
-+	/* this attribute MUST always be present since it represents the Flavor
-+	 * operation(s) to carry out.
-+	 */
-+	if (!tb[SEG6_LOCAL_FLV_OPERATION])
-+		return -EINVAL;
-+
-+	fops = nla_get_u32(tb[SEG6_LOCAL_FLV_OPERATION]);
-+	if (~SEG6_LOCAL_FLV_SUPP_OPS & fops) {
-+		NL_SET_ERR_MSG(extack, "Unsupported Flavor operation(s)");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	finfo->flv_ops = fops;
-+
-+	if (seg6_next_csid_enabled(fops)) {
-+		/* Locator-Block and Locator-Node Function lengths can be
-+		 * provided by the user space. If not, default values are going
-+		 * to be applied.
-+		 */
-+		rc = seg6_parse_nla_next_csid_cfg(tb, finfo, extack);
-+		if (rc < 0)
-+			return rc;
-+	}
-+
-+	return 0;
-+}
-+
-+static int seg6_fill_nla_next_csid_cfg(struct sk_buff *skb,
-+				       struct seg6_flavors_info *finfo)
-+{
-+	if (nla_put_u8(skb, SEG6_LOCAL_FLV_LCBLOCK_LEN, finfo->lcblock_len))
-+		return -EMSGSIZE;
-+
-+	if (nla_put_u8(skb, SEG6_LOCAL_FLV_LCNODE_FN_LEN,
-+		       finfo->lcnode_func_len))
-+		return -EMSGSIZE;
-+
-+	return 0;
-+}
-+
-+static int put_nla_flavors(struct sk_buff *skb, struct seg6_local_lwt *slwt)
-+{
-+	struct seg6_flavors_info *finfo = &slwt->flv_info;
-+	__u32 fops = finfo->flv_ops;
-+	struct nlattr *nest;
-+	int rc;
-+
-+	nest = nla_nest_start(skb, SEG6_LOCAL_FLAVORS);
-+	if (!nest)
-+		return -EMSGSIZE;
-+
-+	if (nla_put_u32(skb, SEG6_LOCAL_FLV_OPERATION, fops)) {
-+		rc = -EMSGSIZE;
-+		goto err;
-+	}
-+
-+	if (seg6_next_csid_enabled(fops)) {
-+		rc = seg6_fill_nla_next_csid_cfg(skb, finfo);
-+		if (rc < 0)
-+			goto err;
-+	}
-+
-+	return nla_nest_end(skb, nest);
-+
-+err:
-+	nla_nest_cancel(skb, nest);
-+	return rc;
-+}
-+
-+static int seg6_cmp_nla_next_csid_cfg(struct seg6_flavors_info *finfo_a,
-+				      struct seg6_flavors_info *finfo_b)
-+{
-+	if (finfo_a->lcblock_len != finfo_b->lcblock_len)
-+		return 1;
-+
-+	if (finfo_a->lcnode_func_len != finfo_b->lcnode_func_len)
-+		return 1;
-+
-+	return 0;
-+}
-+
-+static int cmp_nla_flavors(struct seg6_local_lwt *a, struct seg6_local_lwt *b)
-+{
-+	struct seg6_flavors_info *finfo_a = &a->flv_info;
-+	struct seg6_flavors_info *finfo_b = &b->flv_info;
-+
-+	if (finfo_a->flv_ops != finfo_b->flv_ops)
-+		return 1;
-+
-+	if (seg6_next_csid_enabled(finfo_a->flv_ops)) {
-+		if (seg6_cmp_nla_next_csid_cfg(finfo_a, finfo_b))
-+			return 1;
-+	}
-+
-+	return 0;
-+}
-+
-+static int encap_size_flavors(struct seg6_local_lwt *slwt)
-+{
-+	struct seg6_flavors_info *finfo = &slwt->flv_info;
-+	int nlsize;
-+
-+	nlsize = nla_total_size(0) +	/* nest SEG6_LOCAL_FLAVORS */
-+		 nla_total_size(4);	/* SEG6_LOCAL_FLV_OPERATION */
-+
-+	if (seg6_next_csid_enabled(finfo->flv_ops))
-+		nlsize += nla_total_size(1) + /* SEG6_LOCAL_FLV_LCBLOCK_LEN */
-+			  nla_total_size(1);  /* SEG6_LOCAL_FLV_LCNODE_FN_LEN */
-+
-+	return nlsize;
-+}
-+
- struct seg6_action_param {
- 	int (*parse)(struct nlattr **attrs, struct seg6_local_lwt *slwt,
- 		     struct netlink_ext_ack *extack);
-@@ -1604,6 +1899,10 @@ static struct seg6_action_param seg6_action_params[SEG6_LOCAL_MAX + 1] = {
- 				    .put = put_nla_counters,
- 				    .cmp = cmp_nla_counters,
- 				    .destroy = destroy_attr_counters },
-+
-+	[SEG6_LOCAL_FLAVORS]	= { .parse = parse_nla_flavors,
-+				    .put = put_nla_flavors,
-+				    .cmp = cmp_nla_flavors },
- };
- 
- /* call the destroy() callback (if available) for each set attribute in
-@@ -1917,6 +2216,9 @@ static int seg6_local_get_encap_size(struct lwtunnel_state *lwt)
- 			  /* SEG6_LOCAL_CNT_ERRORS */
- 			  nla_total_size_64bit(sizeof(__u64));
- 
-+	if (attrs & SEG6_F_ATTR(SEG6_LOCAL_FLAVORS))
-+		nlsize += encap_size_flavors(slwt);
-+
- 	return nlsize;
- }
- 
-@@ -1972,6 +2274,9 @@ int __init seg6_local_init(void)
- 	 */
- 	BUILD_BUG_ON(SEG6_LOCAL_MAX + 1 > BITS_PER_TYPE(unsigned long));
- 
-+	BUILD_BUG_ON(seg6_chk_next_csid_cfg(SEG6_LOCAL_LCBLOCK_DLEN,
-+					    SEG6_LOCAL_LCNODE_FN_DLEN) != 0);
-+
- 	return lwtunnel_encap_add_ops(&seg6_local_ops,
- 				      LWTUNNEL_ENCAP_SEG6_LOCAL);
- }
 -- 
 2.20.1
 
