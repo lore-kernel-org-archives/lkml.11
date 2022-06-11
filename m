@@ -2,130 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2481C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 02:14:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87584C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 02:16:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347115AbiFKCON (ORCPT
+        id S1347609AbiFKCQw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 22:14:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56276 "EHLO
+        Fri, 10 Jun 2022 22:16:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346959AbiFKCOK (ORCPT
+        with ESMTP id S244605AbiFKCQv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 22:14:10 -0400
+        Fri, 10 Jun 2022 22:16:51 -0400
 Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0EF96CAB4
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 19:14:09 -0700 (PDT)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LKhDp3H44zjXX8;
-        Sat, 11 Jun 2022 10:12:42 +0800 (CST)
-Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 11 Jun 2022 10:14:00 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600013.china.huawei.com
- (7.193.23.68) with Microsoft SMTP Server (version=TLS1_2,
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D7572FE60E;
+        Fri, 10 Jun 2022 19:16:50 -0700 (PDT)
+Received: from kwepemi500023.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LKhHw0qD0zjX7G;
+        Sat, 11 Jun 2022 10:15:24 +0800 (CST)
+Received: from huawei.com (10.175.112.208) by kwepemi500023.china.huawei.com
+ (7.221.188.76) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 11 Jun
- 2022 10:13:59 +0800
-From:   Zhihao Cheng <chengzhihao1@huawei.com>
-To:     <richard@nod.at>, <miquel.raynal@bootlin.com>,
-        <s.hauer@pengutronix.de>, <vigneshr@ti.com>,
-        <Artem.Bityutskiy@nokia.com>
-CC:     <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <chengzhihao1@huawei.com>, <yukuai3@huawei.com>
-Subject: [PATCH] ubi: ubi_wl_put_peb: Fix infinite loop when wear-leveling work failed
-Date:   Sat, 11 Jun 2022 10:27:06 +0800
-Message-ID: <20220611022706.926980-1-chengzhihao1@huawei.com>
-X-Mailer: git-send-email 2.31.1
+ 2022 10:16:47 +0800
+From:   Peng Wu <wupeng58@huawei.com>
+To:     <lewis.hanly@microchip.com>, <conor.dooley@microchip.com>,
+        <broonie@kernel.org>
+CC:     <linux-riscv@lists.infradead.org>, <linux-spi@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <liwei391@huawei.com>,
+        <wupeng58@huawei.com>
+Subject: [PATCH] spi: micro: fix unreasonable clk_prepare_enable() on error in mchp_corespi_probe()
+Date:   Sat, 11 Jun 2022 02:11:17 +0000
+Message-ID: <20220611021117.40494-1-wupeng58@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600013.china.huawei.com (7.193.23.68)
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.208]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemi500023.china.huawei.com (7.221.188.76)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Following process will trigger an infinite loop in ubi_wl_put_peb():
+Fix the unreasonable clk_prepare_enable() with clk_disable_unprepare()
+before return from mchp_corespi_probe() in the error handling case.
 
-	ubifs_bgt		ubi_bgt
-ubifs_leb_unmap
-  ubi_leb_unmap
-    ubi_eba_unmap_leb
-      ubi_wl_put_peb	wear_leveling_worker
-                          e1 = rb_entry(rb_first(&ubi->used)
-			  e2 = get_peb_for_wl(ubi)
-			  ubi_io_read_vid_hdr  // return err (flash fault)
-			  out_error:
-			    ubi->move_from = ubi->move_to = NULL
-			    wl_entry_destroy(ubi, e1)
-			      ubi->lookuptbl[e->pnum] = NULL
-      retry:
-        e = ubi->lookuptbl[pnum];	// return NULL
-	if (e == ubi->move_from) {	// NULL == NULL gets true
-	  goto retry;			// infinite loop !!!
-
-$ top
-  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     COMMAND
-  7676 root     20   0       0      0      0 R 100.0  0.0  ubifs_bgt0_0
-
-Fix it by:
- 1) Letting ubi_wl_put_peb() returns directly if wearl leveling entry has
-    been removed from 'ubi->lookuptbl'.
- 2) Using 'ubi->wl_lock' protecting wl entry deletion to preventing an
-    use-after-free problem for wl entry in ubi_wl_put_peb().
-
-Fetch a reproducer in [Link].
-
-Fixes: 43f9b25a9cdd7b1 ("UBI: bugfix: protect from volume removal")
-Fixes: ee59ba8b064f692 ("UBI: Fix stale pointers in ubi->lookuptbl")
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216111
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Peng Wu <wupeng58@huawei.com>
 ---
- drivers/mtd/ubi/wl.c | 18 ++++++++++++++++--
- 1 file changed, 16 insertions(+), 2 deletions(-)
+ drivers/spi/spi-microchip-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/mtd/ubi/wl.c b/drivers/mtd/ubi/wl.c
-index 55bae06cf408..c95bfbdfa475 100644
---- a/drivers/mtd/ubi/wl.c
-+++ b/drivers/mtd/ubi/wl.c
-@@ -973,11 +973,13 @@ static int wear_leveling_worker(struct ubi_device *ubi, struct ubi_work *wrk,
- 	spin_lock(&ubi->wl_lock);
- 	ubi->move_from = ubi->move_to = NULL;
- 	ubi->move_to_put = ubi->wl_scheduled = 0;
-+	ubi->lookuptbl[e1->pnum] = NULL;
-+	ubi->lookuptbl[e2->pnum] = NULL;
- 	spin_unlock(&ubi->wl_lock);
+diff --git a/drivers/spi/spi-microchip-core.c b/drivers/spi/spi-microchip-core.c
+index 5b2aee30fa04..bf6847d95fe3 100644
+--- a/drivers/spi/spi-microchip-core.c
++++ b/drivers/spi/spi-microchip-core.c
+@@ -580,7 +580,7 @@ static int mchp_corespi_probe(struct platform_device *pdev)
  
- 	ubi_free_vid_buf(vidb);
--	wl_entry_destroy(ubi, e1);
--	wl_entry_destroy(ubi, e2);
-+	kmem_cache_free(ubi_wl_entry_slab, e1);
-+	kmem_cache_free(ubi_wl_entry_slab, e2);
+ error_release_hardware:
+ 	mchp_corespi_disable(spi);
+-	clk_prepare_enable(spi->clk);
++	clk_disable_unprepare(spi->clk);
+ error_release_master:
+ 	spi_master_put(master);
  
- out_ro:
- 	ubi_ro_mode(ubi);
-@@ -1253,6 +1255,18 @@ int ubi_wl_put_peb(struct ubi_device *ubi, int vol_id, int lnum,
- retry:
- 	spin_lock(&ubi->wl_lock);
- 	e = ubi->lookuptbl[pnum];
-+	if (!e) {
-+		/*
-+		 * This wl entry has been removed for some errors by other
-+		 * process (eg. wear leveling worker), corresponding process
-+		 * (except __erase_worker, which cannot concurrent with
-+		 * ubi_wl_put_peb) will set ubi ro_mode at the same time,
-+		 * just ignore this wl entry.
-+		 */
-+		spin_unlock(&ubi->wl_lock);
-+		up_read(&ubi->fm_protect);
-+		return 0;
-+	}
- 	if (e == ubi->move_from) {
- 		/*
- 		 * User is putting the physical eraseblock which was selected to
 -- 
-2.31.1
+2.17.1
 
