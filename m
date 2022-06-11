@@ -2,99 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C51BC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 01:17:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4582C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 01:20:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345376AbiFKBRE (ORCPT
+        id S1346341AbiFKBUP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 10 Jun 2022 21:17:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33718 "EHLO
+        Fri, 10 Jun 2022 21:20:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231406AbiFKBRB (ORCPT
+        with ESMTP id S231406AbiFKBUM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 10 Jun 2022 21:17:01 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E27B1001
-        for <linux-kernel@vger.kernel.org>; Fri, 10 Jun 2022 18:16:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654910219; x=1686446219;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=hxshhMDB7tsI1RW13+5wpLCz+J9Kkt4TLR1Bcn/0XzE=;
-  b=Ac5LGSnyM36fvVjI7WtqLGOjtLUjElzoFofdcfke8jOdvWvg6vHId23V
-   RdDYjF0kU2wQYE4RUQ77+j/sevq3O9JbJHrD2nETPQ+0DnmJ+gR0Y9VAv
-   B5351L9ikrPlJq0qsRwPfE31YatzDBAwivvQ+zlz7/lxQbUfxMa/R0gDn
-   dLY/wr99kwKEbAszbp2E/twwF69OunhuLhvuVuonzwpcJ0dDkOE3XC1+C
-   bwHEacH5nfIwaM488p2XfgszFX0onrKzxcYPtBBvFYXv2SeP53VvMxZ5R
-   voLx0TYkUzztMyYuaAOpusuUqcHg9DgScqKtw73m5qAeN+Cvutrwig9Wd
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10374"; a="275327763"
-X-IronPort-AV: E=Sophos;i="5.91,292,1647327600"; 
-   d="scan'208";a="275327763"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 18:16:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,292,1647327600"; 
-   d="scan'208";a="586494240"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 10 Jun 2022 18:16:57 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nzpkH-000IQH-BA;
-        Sat, 11 Jun 2022 01:16:57 +0000
-Date:   Sat, 11 Jun 2022 09:16:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mayuresh Chitale <mchitale@ventanamicro.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Anup Patel <anup@brainfault.org>
-Subject: [avpatel:virtio_rpmsg_bus_fix_v1 35/52]
- arch/riscv/kernel/setup.c:299:9: error: implicit declaration of function
- 'riscv_tlbflush_init'
-Message-ID: <202206110936.Fxp1OH6s-lkp@intel.com>
+        Fri, 10 Jun 2022 21:20:12 -0400
+X-Greylist: delayed 907 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 10 Jun 2022 18:20:09 PDT
+Received: from mx0.chaotikum.eu (mx0.chaotikum.eu [IPv6:2a01:4f8:c2c:ce71::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CDF62FE5E;
+        Fri, 10 Jun 2022 18:20:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=chaotikum.eu; s=20200128.mx0; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Jof2nISM3ArkpDI9yHxnFylLSJTIlGSe7rzFagU23O8=; b=nGTDfRdNL2WxLsaHrlAoZiSglV
+        SmE1ofdhqv0I6YHqNx5B9UsGmDTdCFdJ+POjXdXcacckbTiplJvHWZWRkW6n6ij8GeaBhchGxG08t
+        S0nUNcs+clGL36gU/MnRAMsyL22bESMOa1SgotbpiVab2YWhVmMt8tKiATobnSIjkBg4tZGXfv7bY
+        FMXnQwkHlfhJuhEYVRcvMRA9Vwb54BrizFPtI9g+Y/E9zTJqfeQt8Ol9lQ8I3uvkVpWcHU3t5jVXj
+        m/mCyzWKg1+O2RjXHFnzTfJf9fREFynmKv4aeuT9E7RbILJ0W+ZO51rstMUdp+3/fE7+6qMv8L4s5
+        nYvTKk0QJoB0VN9JC2F1vOhR7DZOWNCav4wmnneYnrtCQlP8TrgffFXJ6JuvEsDqlXN5DidE3I7wN
+        VBugA7wZZvuPnbHV3abPbxmWU0jL1QuobpdZaBwME01bb4ru/7PF8XiRaVMBdJUJ7JedD9pS7Z6JO
+        HR+HyeKzTkFYE0mDQN7YNhGPWx4QtO3moPzUkmMnBhbdPzaT9y45IhJEuD092+FfnhWfdgyNs0NFu
+        NbWCQbyrIoLZdRRfwbMVggT6eqaVgS4mx9Vyy9r7n+0AW+2SaAGih8sPrny6XOec1etMoUOBlzJ55
+        KKl418RSdHQkWPcdHg4V1MXV5dVjxprjjLSytKCDE=;
+Received: from [2001:4dd0:4f8e:0:7ddf:a8d0:8763:a125] (port=51080 helo=naboo.chaotikum.eu)
+        by mx0.chaotikum.eu with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <qsx@chaotikum.eu>)
+        id 1nzpY2-0006bX-A2; Sat, 11 Jun 2022 03:04:48 +0200
+From:   Thomas Schneider <qsx@chaotikum.eu>
+To:     "Daniel J. Ogorchock" <djogorchock@gmail.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Thomas Schneider <qsx@chaotikum.eu>
+Subject: [PATCH] HID: nintendo: Set phys property of input device based on HID phys
+Date:   Sat, 11 Jun 2022 03:03:59 +0200
+Message-Id: <20220611010359.115555-1-qsx@chaotikum.eu>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/avpatel/linux.git virtio_rpmsg_bus_fix_v1
-head:   390aaf641ff2f8919268d611e864227265c3f3f2
-commit: efaaec7bcbaf3346e07955be46d5e3c2bd662167 [35/52] riscv: mm: use svinval instructions instead of sfence.vma
-config: riscv-allnoconfig (https://download.01.org/0day-ci/archive/20220611/202206110936.Fxp1OH6s-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/avpatel/linux/commit/efaaec7bcbaf3346e07955be46d5e3c2bd662167
-        git remote add avpatel https://github.com/avpatel/linux.git
-        git fetch --no-tags avpatel virtio_rpmsg_bus_fix_v1
-        git checkout efaaec7bcbaf3346e07955be46d5e3c2bd662167
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/kernel/
+While the MAC address the uniq identifier is set to (cf. commit
+1425247383c5 ("HID: nintendo: set controller uniq to MAC")) is certainly
+unique, the physical location can be more helpful in user interfaces.  The
+underlying hid_device already provides a suitable value, so we can simply
+reuse this here.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Thomas Schneider <qsx@chaotikum.eu>
+---
+ drivers/hid/hid-nintendo.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-All errors (new ones prefixed by >>):
-
-   arch/riscv/kernel/setup.c: In function 'setup_arch':
->> arch/riscv/kernel/setup.c:299:9: error: implicit declaration of function 'riscv_tlbflush_init' [-Werror=implicit-function-declaration]
-     299 |         riscv_tlbflush_init();
-         |         ^~~~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
-
-
-vim +/riscv_tlbflush_init +299 arch/riscv/kernel/setup.c
-
-   297	
-   298		riscv_fill_hwcap();
- > 299		riscv_tlbflush_init();
-   300		apply_boot_alternatives();
-   301	}
-   302	
-
+diff --git a/drivers/hid/hid-nintendo.c b/drivers/hid/hid-nintendo.c
+index 2204de889739..df9cd5d883c0 100644
+--- a/drivers/hid/hid-nintendo.c
++++ b/drivers/hid/hid-nintendo.c
+@@ -1634,6 +1634,7 @@ static int joycon_input_create(struct joycon_ctlr *ctlr)
+ 	ctlr->input->id.version = hdev->version;
+ 	ctlr->input->uniq = ctlr->mac_addr_str;
+ 	ctlr->input->name = name;
++	ctlr->input->phys = hdev->phys;
+ 	input_set_drvdata(ctlr->input, ctlr);
+ 
+ 	/* set up sticks and buttons */
+@@ -1713,6 +1714,7 @@ static int joycon_input_create(struct joycon_ctlr *ctlr)
+ 	ctlr->imu_input->id.version = hdev->version;
+ 	ctlr->imu_input->uniq = ctlr->mac_addr_str;
+ 	ctlr->imu_input->name = imu_name;
++	ctlr->imu_input->phys = hdev->phys;
+ 	input_set_drvdata(ctlr->imu_input, ctlr);
+ 
+ 	/* configure imu axes */
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
+
