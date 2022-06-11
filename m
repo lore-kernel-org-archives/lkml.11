@@ -2,162 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B128AC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 09:56:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78157CCA47D
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 09:58:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229959AbiFKJ4a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 05:56:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49438 "EHLO
+        id S229705AbiFKJ6y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 05:58:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbiFKJ41 (ORCPT
+        with ESMTP id S229729AbiFKJ6v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 05:56:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08B6BEE15;
-        Sat, 11 Jun 2022 02:56:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 965DA60BA3;
-        Sat, 11 Jun 2022 09:56:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF641C3411E;
-        Sat, 11 Jun 2022 09:56:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654941386;
-        bh=G3SijAZJFwW8PPbomjAxbmJ1C1Qf1Qf77wWOoRRw+dg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=je5xCyBasUps0lw+zm8BT+55x7BMo8QBuhxo7JbtlactdaXmHz6lygNzLVrkm8nAX
-         HjEppJFc+QzCFrtWjpMbQ5TNT070wVV+inQya2B9+gtBdLCpCi5lhYrB8oioVSA00t
-         hIu1Oa3GrD0WLeAPrt7UP5jlkYHkU2fo87dm0Y2tsE2pbKenH7urJXTDUAgrXYtoWI
-         sACEfm3Hy0H/485yd2z03sytvQHGo5HqeAr0OHZgDGtUHNS7u3v0z9DoUqRmcgnTGS
-         yJ2Edt+EBxtqLD6Zk4/TW4K+j7AB4xUoNv3rGt0AT9EmLHGsWZAuNEVqCOGQlFxuD6
-         6hRDH3YDodvdQ==
-Date:   Sat, 11 Jun 2022 12:56:12 +0300
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     Wupeng Ma <mawupeng1@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        X86 ML <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Kees Cook <keescook@chromium.org>, songmuchun@bytedance.com,
-        Randy Dunlap <rdunlap@infradead.org>,
-        damien.lemoal@opensource.wdc.com,
-        Stephen Boyd <swboyd@chromium.org>,
-        Wei Liu <wei.liu@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>, gpiccoli@igalia.com,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        chenzhou10@huawei.com, vijayb@linux.microsoft.com,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-mm@kvack.org, linux-riscv@lists.infradead.org
-Subject: Re: [PATCH v3 0/6] introduce mirrored memory support for arm64
-Message-ID: <YqRmvJDiy2UQkEDu@kernel.org>
-References: <20220607093805.1354256-1-mawupeng1@huawei.com>
- <CAMj1kXH5r=CUoLCndBUsZ04_0UCJ2VqgJDdp2wbdNCtEx0Yxag@mail.gmail.com>
+        Sat, 11 Jun 2022 05:58:51 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BFE3B84F;
+        Sat, 11 Jun 2022 02:58:48 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id h23so1483981ljl.3;
+        Sat, 11 Jun 2022 02:58:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=V8fgBWB6Fwlc80DQzKSjfadMQq9+v7sFm69/tgJcyx8=;
+        b=b+UduNbJq6kwMAPQgOSuaelsP440nPLKh4mZNI3OJpp2oPfpLd8jEkPyeaqxDaKLJu
+         g2to7UoslpP80cXn6z2d3qsl+M/hHOAvRJNxZpCs24LeofPfHiZO5kHpvvjZIGxkidUt
+         1depfTDbzezsOVlDTMpTQ5C0hPJXeIA5R5ddm522GuKkCuuweAHHWKKnTWzz1hMK3iUb
+         4fatkiOpOUAXZLb1MLbF8mYVW6Bf7KtMWmyEzdGU0yfP+aqpDPVUWDs9bScFm+qRwCSI
+         zrspBZcGZteC4lgw0N1VXd5yhxOfzhGrcnHTEKm31qag+MEqbBH4aYVq5EHw2vATzIGs
+         07hw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=V8fgBWB6Fwlc80DQzKSjfadMQq9+v7sFm69/tgJcyx8=;
+        b=d2tnrjm+u9knNv3xz0OWqCFxz/nFIB9WIEMJSBpPP+UmTEEQS/VixWrfqA/6zt+UwS
+         Yrd6MGHFnR5CkcmCEt9mEDx/eHrBr0upn5kg/+TRJr4tDghoRO7HETcz4mFdDLZ9L9V5
+         QzRhVEKvpYci6d9zN8X56RBIfEFs5Ry/LGs+QuOoIvPMJVgIgipa/0e9GrMbxX1L++jb
+         hh0pK8eqSA06kmddXA8SFbVtyErZ3yXxH8026Ya9AIkRNzk8ukoVWWeO3CTgNFn5jclv
+         q+zFMGPk8sTApZNeG98zMEia3P26ANR7xSeSj6nBaFRTvmMc3gAaJPyeuHPI0vtVmj/l
+         9D5Q==
+X-Gm-Message-State: AOAM530sco2WPuWxQoAbk0OLQOpp88901Ic4QsUgXlobv0X2Hq9j/FeO
+        a19Es5ZBxuPIpj44Kgjocc6aCNNvDeL0/ZXP
+X-Google-Smtp-Source: ABdhPJwzkJ9Xi37kvu4X5cJKh8Gn6rL6I+HOKpwZclM9Wm2twJohgXGGrRlhPOPl63T2tv3oattPFg==
+X-Received: by 2002:a2e:8686:0:b0:255:8474:f3af with SMTP id l6-20020a2e8686000000b002558474f3afmr20805147lji.402.1654941526941;
+        Sat, 11 Jun 2022 02:58:46 -0700 (PDT)
+Received: from DESKTOP-GSFPEC9.localdomain (broadband-90-154-71-254.ip.moscow.rt.ru. [90.154.71.254])
+        by smtp.gmail.com with ESMTPSA id h18-20020a056512055200b004785060bad6sm200634lfl.201.2022.06.11.02.58.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 11 Jun 2022 02:58:46 -0700 (PDT)
+From:   Konstantin Aladyshev <aladyshev22@gmail.com>
+Cc:     supreeth.venkatesh@amd.com, aladyshev22@gmail.com,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/4] DTS changes for the AMD EthanolX CRB BMC
+Date:   Sat, 11 Jun 2022 12:58:24 +0300
+Message-Id: <20220611095828.1090-1-aladyshev22@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMj1kXH5r=CUoLCndBUsZ04_0UCJ2VqgJDdp2wbdNCtEx0Yxag@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 01:23:34PM +0200, Ard Biesheuvel wrote:
-> On Tue, 7 Jun 2022 at 11:16, Wupeng Ma <mawupeng1@huawei.com> wrote:
-> >
-> > From: Ma Wupeng <mawupeng1@huawei.com>
-> >
-> > Commit b05b9f5f9dcf ("x86, mirror: x86 enabling - find mirrored memory ranges")
-> > introduced mirrored memory support for x86. This support rely on UEFI to
-> > report mirrored memory address ranges.  See UEFI 2.5 spec pages 157-158:
-> >
-> >   http://www.uefi.org/sites/default/files/resources/UEFI%202_5.pdf
-> >
-> > Memory mirroring is a technique used to separate memory into two separate
-> > channels, usually on a memory device, like a server. In memory mirroring,
-> > one channel is copied to another to create redundancy. This method makes
-> > input/output (I/O) registers and memory appear with more than one address
-> > range because the same physical byte is accessible at more than one
-> > address. Using memory mirroring, higher memory reliability and a higher
-> > level of memory consolidation are possible.
-> >
-> > These EFI memory regions have various attributes, and the "mirrored"
-> > attribute is one of them. The physical memory region whose descriptors
-> > in EFI memory map has EFI_MEMORY_MORE_RELIABLE attribute (bit: 16) are
-> > mirrored. The address range mirroring feature of the kernel arranges such
-> > mirrored regions into normal zones and other regions into movable zones.
-> >
-> > Arm64 can support this too. So mirrored memory support is added to support
-> > arm64.
-> >
-> > The main purpose of this patch set is to introduce mirrored support for
-> > arm64 and we have already fixed the problems we had which is shown in
-> > patch #5 to patch #8 and try to bring total isolation in patch #9 which
-> > will disable mirror feature if kernelcore is not specified.
-> >
-> > In order to test this support in arm64:
-> > - patch this patch set
-> > - add kernelcore=mirror in kernel parameter
-> > - start you kernel
-> >
-> > Patch #1-#2 introduce mirrored memory support form arm64.
-> > Patch #3-#5 fix some bugs for arm64 if memory reliable is enabled.
-> > Patch #6 disable mirror feature if kernelcore is not specified.
-> >
-> > Thanks to Ard Biesheuvel's hard work [1], now kernel will perfer mirrored
-> > memory if kaslr is enabled.
-> >
-> > [1] https://lore.kernel.org/linux-arm-kernel/CAMj1kXEPVEzMgOM4+Yj6PxHA-jFuDOAUdDJSiSxy_XaP4P7LSw@mail.gmail.com/T/
-> >
-> > Changelog since v2:
-> > - remove efi_fake_mem support
-> > - remove Commit ("remove some redundant code in ia64 efi_init") since
-> >   efi_print_memmap() is not public
-> > - add mirror flag back on initrd memory
-> >
-> > Changelog since v1:
-> > - update changelog in cover letter
-> > - use PHYS_PFN in patch #7
-> >
-> > Ma Wupeng (6):
-> >   efi: Make efi_find_mirror() public
-> >   arm64/mirror: arm64 enabling - find mirrored memory ranges
-> >   mm: Ratelimited mirrored memory related warning messages
-> >   mm: Demote warning message in vmemmap_verify() to debug level
-> >   mm: Add mirror flag back on initrd memory
-> >   efi: Disable mirror feature if kernelcore is not specified
-> >
-> 
-> I have tested these changes on QEMU/arm64 with the patch below, and
-> things seem to work as expected. We have some minor issues to work out
-> but the general shape of this code is good.
-> 
-> As for the mm/ changes: does anyone mind if I take those through the
-> EFI tree as well?
+Several patches for the DTS of the BMC on the AMD EthanolX CRB.
 
-No objections from me.
+Konstantin Aladyshev (4):
+  ARM: dts: aspeed: ethanolx: Add correct label to flash device
+  ARM: dts: aspeed: ethanolx: Configure RTS/CTS for UART1
+  ARM: dts: aspeed: ethanolx: Use correct driver for the FRU EEPROM
+  ARM: dts: aspeed: ethanolx: Enable VUART
 
-> I don't think the EFI and -mm changes depend on each other, so they
-> can go into -mm separately as well.
+ arch/arm/boot/dts/aspeed-bmc-amd-ethanolx.dts | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
---
-Sincerely yours,
-Mike.
+-- 
+2.25.1
+
