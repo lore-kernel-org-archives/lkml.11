@@ -2,186 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40237C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 10:46:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF473C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 10:48:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232450AbiFKKqT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 06:46:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51468 "EHLO
+        id S232540AbiFKKsk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 06:48:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229609AbiFKKqS (ORCPT
+        with ESMTP id S229609AbiFKKsg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 06:46:18 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1C319FCC
-        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 03:46:16 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id c2so2129964lfk.0
-        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 03:46:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=va6/lF6L6Ng8zl2J0isVPUb8pv9qoi2tKiUrpBsODPA=;
-        b=DjLgzQ27Ee07ihrkEXtl7JW/IRmTqDJodYVSEyOl8ZIznuzFzBdk9oqZMHdorpBtr8
-         syS/0JO2bowlxuPY8zX3+ul0eLzNyIVUFRTW57NNCDGKVOwLkWkZJ8ov4yX9MljDw15s
-         B1cwl1nzokQ9zDokzpNPPERUAATQQF+MUCRKA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=va6/lF6L6Ng8zl2J0isVPUb8pv9qoi2tKiUrpBsODPA=;
-        b=WtmG2/aOftu2Std1HqG4hA0a205gv83wHIGoiR9ZCr7YC8Z8tJgRsLadnL6DZC1w1c
-         lmOd7Raub8GdW03uoGFdBx5HSF+z9kawF7/dfVFSlAqczP/jSnyu5ZZfQgJ/Wyxxlrli
-         f7b9zdRUNM6x56YUtYknSmvMlgj/tOQIOiKeHGEs5pxn0fC3L7jrPbiXCVoSGTSwHuEY
-         77YUoBzO8HXpy4M8AnqnpMQLQVwXFJxHx2lm8ba3G0IqFmHbjKS0tg9gMLoJ4M8ql3lv
-         1Wz/XTgDFc63pPxSLpyei8PTpEJjMUhWchZYBv69PZ5WOdU7NpvzjWzANXYkPql0cymR
-         JiQg==
-X-Gm-Message-State: AOAM5331n/XZImv6LKeXi4gBWGasemx/HVr/5u19doDPhmGZS1zAlrUv
-        KSOFRC9adkhMaZyNzgJvJYzexaAKUvE3/h0Jy7kCTDJ24aFD0w==
-X-Google-Smtp-Source: ABdhPJzJtG4lYlUf2mQAOQTuBTkStm+krM95435xBeb4XDhxoNaH5AszJsK/Afk5u/5zMnyGTUJON3/oX3bWoqpdPL8=
-X-Received: by 2002:a05:6512:10c5:b0:479:2de0:561c with SMTP id
- k5-20020a05651210c500b004792de0561cmr21354813lfg.536.1654944374938; Sat, 11
- Jun 2022 03:46:14 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220608165116.1575390-1-dario.binacchi@amarulasolutions.com>
- <20220608165116.1575390-6-dario.binacchi@amarulasolutions.com> <eae65531-bf9f-4e2e-97ca-a79a8aa833fc@hartkopp.net>
-In-Reply-To: <eae65531-bf9f-4e2e-97ca-a79a8aa833fc@hartkopp.net>
-From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Date:   Sat, 11 Jun 2022 12:46:04 +0200
-Message-ID: <CABGWkvroJG16AOu8BODhVu068jacjHWbkkY9TCF4PQ7rgANVXA@mail.gmail.com>
-Subject: Re: [PATCH v2 05/13] can: slcan: simplify the device de-allocation
-To:     Oliver Hartkopp <socketcan@hartkopp.net>
-Cc:     linux-kernel@vger.kernel.org,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        michael@amarulasolutions.com,
-        "David S. Miller" <davem@davemloft.net>,
+        Sat, 11 Jun 2022 06:48:36 -0400
+Received: from smtp.uniroma2.it (smtp.uniroma2.it [160.80.6.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E8069FF0;
+        Sat, 11 Jun 2022 03:48:33 -0700 (PDT)
+Received: from localhost.localdomain ([160.80.103.126])
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 25BAm7gL007213
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Sat, 11 Jun 2022 12:48:09 +0200
+From:   Andrea Mayer <andrea.mayer@uniroma2.it>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>
+Subject: [net-next v1 1/2] seg6: add netlink_ext_ack support in parsing SRv6 behavior attributes
+Date:   Sat, 11 Jun 2022 12:47:49 +0200
+Message-Id: <20220611104750.2724-2-andrea.mayer@uniroma2.it>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220611104750.2724-1-andrea.mayer@uniroma2.it>
+References: <20220611104750.2724-1-andrea.mayer@uniroma2.it>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+An SRv6 behavior instance can be set up using mandatory and/or optional
+attributes.
+In the setup phase, each supplied attribute is parsed and processed. If
+the parsing operation fails, the creation of the behavior instance stops
+and an error number/code is reported to the user. In many cases, it is
+challenging for the user to figure out exactly what happened by relying
+only on the error code.
 
-On Wed, Jun 8, 2022 at 10:38 PM Oliver Hartkopp <socketcan@hartkopp.net> wrote:
->
-> This patch (at least) needs some rework.
+For this reason, we add the support for netlink_ext_ack in parsing SRv6
+behavior attributes. In this way, when an SRv6 behavior attribute is
+parsed and an error occurs, the kernel can send a message to the
+userspace describing the error through a meaningful text message in
+addition to the classic error code.
 
-Any suggestions are welcome. And double-checking the patch, I already have some
-changes to put in version 3.
->
-> The patch cf124db566e6b036 ("net: Fix inconsistent teardown and release
-> of private netdev state.") from DaveM added some priv_destructor
->
->      dev->priv_destructor = sl_free_netdev;
->
-> which is not taken into account in this patch.
->
-> As written before I would like to discuss this change out of your patch
-> series "can: slcan: extend supported features" as it is no slcan feature
-> extension AND has to be synchronized with the drivers/net/slip/slip.c
-> implementation.
+Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
+---
+ net/ipv6/seg6_local.c | 44 +++++++++++++++++++++++++++----------------
+ 1 file changed, 28 insertions(+), 16 deletions(-)
 
-Why do you need to synchronize it with  drivers/net/slip/slip.c
-implementation ?
-
->
-> When it has not real benefit and introduces more code and may create
-> side effects, this beautification should probably be omitted at all.
->
-
-I totally agree with you. I would have already dropped it if this patch
-didn't make sense. But since I seem to have understood that this is
-not the case, I do not understand why it cannot be improved in this
-series.
-
-The cover letter highlighted positive reactions to the series because
-the module had been requiring these kinds of changes for quite
-some time. So, why not take the opportunity to finalize this patch in
-this series even if it doesn't extend the supported features ?
-
-Anyway, I have some changes and tests to run before submitting version 3.
-If I don't get any hints before then, I'll drop it from the series.
-
-Thanks and regards,
-Dario
-
-> Thanks,
-> Oliver
->
-> On 08.06.22 18:51, Dario Binacchi wrote:
-> > Since slcan_devs array contains the addresses of the created devices, I
-> > think it is more natural to use its address to remove it from the list.
-> > It is not necessary to store the index of the array that points to the
-> > device in the driver's private data.
-> >
-> > Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-> > ---
-> >
-> > (no changes since v1)
-> >
-> >   drivers/net/can/slcan.c | 15 ++++++++++-----
-> >   1 file changed, 10 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
-> > index 929cb55e08af..cf05c30b8da5 100644
-> > --- a/drivers/net/can/slcan.c
-> > +++ b/drivers/net/can/slcan.c
-> > @@ -432,11 +432,17 @@ static int slc_open(struct net_device *dev)
-> >
-> >   static void slc_dealloc(struct slcan *sl)
-> >   {
-> > -     int i = sl->dev->base_addr;
-> > +     unsigned int i;
-> >
-> > -     free_candev(sl->dev);
-> > -     if (slcan_devs)
-> > -             slcan_devs[i] = NULL;
-> > +     for (i = 0; i < maxdev; i++) {
-> > +             if (sl->dev == slcan_devs[i]) {
-> > +                     free_candev(sl->dev);
-> > +                     slcan_devs[i] = NULL;
-> > +                     return;
-> > +             }
-> > +     }
-> > +
-> > +     pr_err("slcan: can't free %s resources\n",  sl->dev->name);
-> >   }
-> >
-> >   static int slcan_change_mtu(struct net_device *dev, int new_mtu)
-> > @@ -533,7 +539,6 @@ static struct slcan *slc_alloc(void)
-> >
-> >       snprintf(dev->name, sizeof(dev->name), "slcan%d", i);
-> >       dev->netdev_ops = &slc_netdev_ops;
-> > -     dev->base_addr  = i;
-> >       sl = netdev_priv(dev);
-> >
-> >       /* Initialize channel control data */
-> >
-
-
-
+diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
+index 9fbe243a0e81..5ea51ee2ef71 100644
+--- a/net/ipv6/seg6_local.c
++++ b/net/ipv6/seg6_local.c
+@@ -1135,7 +1135,8 @@ static const struct nla_policy seg6_local_policy[SEG6_LOCAL_MAX + 1] = {
+ 	[SEG6_LOCAL_COUNTERS]	= { .type = NLA_NESTED },
+ };
+ 
+-static int parse_nla_srh(struct nlattr **attrs, struct seg6_local_lwt *slwt)
++static int parse_nla_srh(struct nlattr **attrs, struct seg6_local_lwt *slwt,
++			 struct netlink_ext_ack *extack)
+ {
+ 	struct ipv6_sr_hdr *srh;
+ 	int len;
+@@ -1192,7 +1193,8 @@ static void destroy_attr_srh(struct seg6_local_lwt *slwt)
+ 	kfree(slwt->srh);
+ }
+ 
+-static int parse_nla_table(struct nlattr **attrs, struct seg6_local_lwt *slwt)
++static int parse_nla_table(struct nlattr **attrs, struct seg6_local_lwt *slwt,
++			   struct netlink_ext_ack *extack)
+ {
+ 	slwt->table = nla_get_u32(attrs[SEG6_LOCAL_TABLE]);
+ 
+@@ -1226,7 +1228,8 @@ seg6_end_dt_info *seg6_possible_end_dt_info(struct seg6_local_lwt *slwt)
+ }
+ 
+ static int parse_nla_vrftable(struct nlattr **attrs,
+-			      struct seg6_local_lwt *slwt)
++			      struct seg6_local_lwt *slwt,
++			      struct netlink_ext_ack *extack)
+ {
+ 	struct seg6_end_dt_info *info = seg6_possible_end_dt_info(slwt);
+ 
+@@ -1262,7 +1265,8 @@ static int cmp_nla_vrftable(struct seg6_local_lwt *a, struct seg6_local_lwt *b)
+ 	return 0;
+ }
+ 
+-static int parse_nla_nh4(struct nlattr **attrs, struct seg6_local_lwt *slwt)
++static int parse_nla_nh4(struct nlattr **attrs, struct seg6_local_lwt *slwt,
++			 struct netlink_ext_ack *extack)
+ {
+ 	memcpy(&slwt->nh4, nla_data(attrs[SEG6_LOCAL_NH4]),
+ 	       sizeof(struct in_addr));
+@@ -1288,7 +1292,8 @@ static int cmp_nla_nh4(struct seg6_local_lwt *a, struct seg6_local_lwt *b)
+ 	return memcmp(&a->nh4, &b->nh4, sizeof(struct in_addr));
+ }
+ 
+-static int parse_nla_nh6(struct nlattr **attrs, struct seg6_local_lwt *slwt)
++static int parse_nla_nh6(struct nlattr **attrs, struct seg6_local_lwt *slwt,
++			 struct netlink_ext_ack *extack)
+ {
+ 	memcpy(&slwt->nh6, nla_data(attrs[SEG6_LOCAL_NH6]),
+ 	       sizeof(struct in6_addr));
+@@ -1314,7 +1319,8 @@ static int cmp_nla_nh6(struct seg6_local_lwt *a, struct seg6_local_lwt *b)
+ 	return memcmp(&a->nh6, &b->nh6, sizeof(struct in6_addr));
+ }
+ 
+-static int parse_nla_iif(struct nlattr **attrs, struct seg6_local_lwt *slwt)
++static int parse_nla_iif(struct nlattr **attrs, struct seg6_local_lwt *slwt,
++			 struct netlink_ext_ack *extack)
+ {
+ 	slwt->iif = nla_get_u32(attrs[SEG6_LOCAL_IIF]);
+ 
+@@ -1337,7 +1343,8 @@ static int cmp_nla_iif(struct seg6_local_lwt *a, struct seg6_local_lwt *b)
+ 	return 0;
+ }
+ 
+-static int parse_nla_oif(struct nlattr **attrs, struct seg6_local_lwt *slwt)
++static int parse_nla_oif(struct nlattr **attrs, struct seg6_local_lwt *slwt,
++			 struct netlink_ext_ack *extack)
+ {
+ 	slwt->oif = nla_get_u32(attrs[SEG6_LOCAL_OIF]);
+ 
+@@ -1367,7 +1374,8 @@ static const struct nla_policy bpf_prog_policy[SEG6_LOCAL_BPF_PROG_MAX + 1] = {
+ 				       .len = MAX_PROG_NAME },
+ };
+ 
+-static int parse_nla_bpf(struct nlattr **attrs, struct seg6_local_lwt *slwt)
++static int parse_nla_bpf(struct nlattr **attrs, struct seg6_local_lwt *slwt,
++			 struct netlink_ext_ack *extack)
+ {
+ 	struct nlattr *tb[SEG6_LOCAL_BPF_PROG_MAX + 1];
+ 	struct bpf_prog *p;
+@@ -1445,7 +1453,8 @@ nla_policy seg6_local_counters_policy[SEG6_LOCAL_CNT_MAX + 1] = {
+ };
+ 
+ static int parse_nla_counters(struct nlattr **attrs,
+-			      struct seg6_local_lwt *slwt)
++			      struct seg6_local_lwt *slwt,
++			      struct netlink_ext_ack *extack)
+ {
+ 	struct pcpu_seg6_local_counters __percpu *pcounters;
+ 	struct nlattr *tb[SEG6_LOCAL_CNT_MAX + 1];
+@@ -1544,7 +1553,8 @@ static void destroy_attr_counters(struct seg6_local_lwt *slwt)
+ }
+ 
+ struct seg6_action_param {
+-	int (*parse)(struct nlattr **attrs, struct seg6_local_lwt *slwt);
++	int (*parse)(struct nlattr **attrs, struct seg6_local_lwt *slwt,
++		     struct netlink_ext_ack *extack);
+ 	int (*put)(struct sk_buff *skb, struct seg6_local_lwt *slwt);
+ 	int (*cmp)(struct seg6_local_lwt *a, struct seg6_local_lwt *b);
+ 
+@@ -1637,7 +1647,8 @@ static void destroy_attrs(struct seg6_local_lwt *slwt)
+ }
+ 
+ static int parse_nla_optional_attrs(struct nlattr **attrs,
+-				    struct seg6_local_lwt *slwt)
++				    struct seg6_local_lwt *slwt,
++				    struct netlink_ext_ack *extack)
+ {
+ 	struct seg6_action_desc *desc = slwt->desc;
+ 	unsigned long parsed_optattrs = 0;
+@@ -1653,7 +1664,7 @@ static int parse_nla_optional_attrs(struct nlattr **attrs,
+ 		 */
+ 		param = &seg6_action_params[i];
+ 
+-		err = param->parse(attrs, slwt);
++		err = param->parse(attrs, slwt, extack);
+ 		if (err < 0)
+ 			goto parse_optattrs_err;
+ 
+@@ -1706,7 +1717,8 @@ static void seg6_local_lwtunnel_destroy_state(struct seg6_local_lwt *slwt)
+ 	ops->destroy_state(slwt);
+ }
+ 
+-static int parse_nla_action(struct nlattr **attrs, struct seg6_local_lwt *slwt)
++static int parse_nla_action(struct nlattr **attrs, struct seg6_local_lwt *slwt,
++			    struct netlink_ext_ack *extack)
+ {
+ 	struct seg6_action_param *param;
+ 	struct seg6_action_desc *desc;
+@@ -1750,14 +1762,14 @@ static int parse_nla_action(struct nlattr **attrs, struct seg6_local_lwt *slwt)
+ 
+ 			param = &seg6_action_params[i];
+ 
+-			err = param->parse(attrs, slwt);
++			err = param->parse(attrs, slwt, extack);
+ 			if (err < 0)
+ 				goto parse_attrs_err;
+ 		}
+ 	}
+ 
+ 	/* parse the optional attributes, if any */
+-	err = parse_nla_optional_attrs(attrs, slwt);
++	err = parse_nla_optional_attrs(attrs, slwt, extack);
+ 	if (err < 0)
+ 		goto parse_attrs_err;
+ 
+@@ -1801,7 +1813,7 @@ static int seg6_local_build_state(struct net *net, struct nlattr *nla,
+ 	slwt = seg6_local_lwtunnel(newts);
+ 	slwt->action = nla_get_u32(tb[SEG6_LOCAL_ACTION]);
+ 
+-	err = parse_nla_action(tb, slwt);
++	err = parse_nla_action(tb, slwt, extack);
+ 	if (err < 0)
+ 		goto out_free;
+ 
 -- 
+2.20.1
 
-Dario Binacchi
-
-Embedded Linux Developer
-
-dario.binacchi@amarulasolutions.com
-
-__________________________________
-
-
-Amarula Solutions SRL
-
-Via Le Canevare 30, 31100 Treviso, Veneto, IT
-
-T. +39 042 243 5310
-info@amarulasolutions.com
-
-www.amarulasolutions.com
