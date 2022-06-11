@@ -2,126 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F250ECCA47A
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 10:27:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F9B8C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 10:27:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231696AbiFKK1M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 06:27:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60520 "EHLO
+        id S231766AbiFKK1o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 06:27:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229877AbiFKK1K (ORCPT
+        with ESMTP id S229877AbiFKK1n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 06:27:10 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D8D117E32;
-        Sat, 11 Jun 2022 03:27:09 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id gl15so2384521ejb.4;
-        Sat, 11 Jun 2022 03:27:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KIxsSmffb8RfNqJlYqJ6d8OJHZPkWprEKP9BjZRzvY4=;
-        b=DmYimP8x9+fBNO5W9V+LPablLcvvdeYRzWgAyGF0whEQX/wYY7V7xjcwFUKEmTPA4c
-         mpZwcvHCTA94+Rc/oh9sohMYfnkdY/QD/+ajvNzddutXAIRnHGaHfEdUiT7A6kIGR8VB
-         3hxsumzh0hOJO2uOzb5Kf5O7TuaeHjmPiTjMisReEAEHaIb5TQzgYdsUZ05rGi1KmXYk
-         nvOvAaw+8EeVsJq8dqk6STcfHJxHMJn9cAwO+rqpoTQe4fhw6pMIwMxLREhi74AbadqK
-         GO5nNxLEUnaDjjnuSKthP4JbD0kjff9Fpuox0s56DCAGKppd1bJ7+lCMRw3hpOEQK3jb
-         +7zg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KIxsSmffb8RfNqJlYqJ6d8OJHZPkWprEKP9BjZRzvY4=;
-        b=sQqS6KWTdhhFzPntIjnW+GkqH8ANaINxKWyBoJkNK46iNYExtB2NtwVPZchB/17Q9R
-         Z93MFEFGkh83j5s9pNI18bVOp1wZ6po9qNx3ruMNnwxVAEVTfs35sV6xVfKG2aYIP8Qi
-         2HX5+wk0GrrQVp2Skj02UHbihxLeJ6wpOhIlC9bsVCICLD/xlOsoNCFjBPP5O4yC5/tT
-         emhhNt27xaU4JPEXrxiJpnO1NEoI2p8UES51KaRjnzJsBgorxzuVahptZk6+/xrh6WHo
-         IEDVoXtfRZcF6uojR0gncKf93AnCNWMsXtsPMvfJhQMzUpy3sPyQu136i8Y2NaBGPmm3
-         WFpw==
-X-Gm-Message-State: AOAM533VzGJkYhSARxADkSJJB8S6DWM76kZV2AENWoGoy+8A4Eo9TuV5
-        l99jtGebKfPcUf7bSdS59botTmL+xImYH7lm7pg=
-X-Google-Smtp-Source: ABdhPJxGPAH3/4MNl4wJEhbi2aKPLJTgIIWnYOFq1wyqCO3Loa4a3ZXM4nLfZG8DtQD+7/hhnXIHdoiPxgckHoYpOaE=
-X-Received: by 2002:a17:906:1193:b0:70d:cf39:a4db with SMTP id
- n19-20020a170906119300b0070dcf39a4dbmr38814493eja.44.1654943227473; Sat, 11
- Jun 2022 03:27:07 -0700 (PDT)
+        Sat, 11 Jun 2022 06:27:43 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA5FF46CBE
+        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 03:27:37 -0700 (PDT)
+X-UUID: 7c31f1b7d9594a21a4944d47d526e54e-20220611
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:d8de2fa8-8b75-48a0-a16f-78419e69c8db,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:5
+X-CID-META: VersionHash:2a19b09,CLOUDID:5c1385e7-1f03-4449-90ad-e6cb8f3d1399,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 7c31f1b7d9594a21a4944d47d526e54e-20220611
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <yf.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 57457508; Sat, 11 Jun 2022 18:27:27 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Sat, 11 Jun 2022 18:27:25 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sat, 11 Jun 2022 18:27:24 +0800
+From:   <yf.wang@mediatek.com>
+To:     <yong.wu@mediatek.com>
+CC:     <Libo.Kang@mediatek.com>, <iommu@lists.linux-foundation.org>,
+        <joro@8bytes.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>, <matthias.bgg@gmail.com>,
+        <ning.li@mediatek.com>, <robin.murphy@arm.com>, <will@kernel.org>,
+        <miles.chen@mediatek.com>, <wsd_upstream@mediatek.com>,
+        <yf.wang@mediatek.com>
+Subject: Re: [PATCH v5 2/2] iommu/mediatek: Allow page table PA up to 35bit
+Date:   Sat, 11 Jun 2022 18:20:38 +0800
+Message-ID: <20220611102038.10890-1-yf.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <1625ec1f4cded0f825d93743d3d03fcf83cad5aa.camel@mediatek.com>
+References: <1625ec1f4cded0f825d93743d3d03fcf83cad5aa.camel@mediatek.com>
 MIME-Version: 1.0
-References: <20220610175655.776153-1-colin.foster@in-advantage.com> <20220610175655.776153-2-colin.foster@in-advantage.com>
-In-Reply-To: <20220610175655.776153-2-colin.foster@in-advantage.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sat, 11 Jun 2022 12:26:31 +0200
-Message-ID: <CAHp75VfHG7pqvTLcBu=vqx9PzXVrJhxyu6XHr9xaiMmhqke-Tg@mail.gmail.com>
-Subject: Re: [PATCH v9 net-next 1/7] mfd: ocelot: add helper to get regmap
- from a resource
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        Terry Bowman <terry.bowman@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 7:57 PM Colin Foster
-<colin.foster@in-advantage.com> wrote:
->
-> Several ocelot-related modules are designed for MMIO / regmaps. As such,
-> they often use a combination of devm_platform_get_and_ioremap_resource and
-> devm_regmap_init_mmio.
->
-> Operating in an MFD might be different, in that it could be memory mapped,
-> or it could be SPI, I2C... In these cases a fallback to use IORESOURCE_REG
-> instead of IORESOURCE_MEM becomes necessary.
->
-> When this happens, there's redundant logic that needs to be implemented in
-> every driver. In order to avoid this redundancy, utilize a single function
-> that, if the MFD scenario is enabled, will perform this fallback logic.
+On Thu, 2022-05-19 at 14:58 +0800, Yong Wu wrote:
+> On Mon, 2022-05-16 at 22:16 +0800, yf.wang@mediatek.com wrote:
+> > From: Yunfei Wang <yf.wang@mediatek.com>
+> > 
+> > Add the quirk IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT support, so that
+> > allows
+> > page table PA up to 35bit, not only in ZONE_DMA32.
+> 
+> Comment why this is needed.
+> 
+> e.g. For single normal zone.
+> 
 
-...
 
-> +#include <linux/err.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/regmap.h>
+Hi Yong,
 
-Since it's header the rule of thumb is to include headers this one is
-a direct user of. Here I see missed
-types.h
+There is no DMA32 zone in some mediatek smartphone chip for single
+normal zone.
 
-Also missed forward declarations
+The level 1 and level 2 pgtable are both allocated in ZONE_DMA32,
+and may have two possible problem:
+1.The level 2 pgtable is allocated in ZONE_DMA32 with atomic flag,
+ and it may fail if ZONE_DMA32 memory is used out.
+2.Single memory feature will make ZONE_DMA32 empty, and cause level
+ 1 and level 2 pgtable PA more than 32bit.
 
-struct resource;
+Solution:
+Add the quirk IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT support, so that
+level 1 and level 2 pgtable can support at most 35bit PA.
 
-...
+I had updated the commit message in V7 version.
 
-> +       if (!IS_ERR(regs))
 
-Why not positive conditional?
+> >  		data->m4u_dom = dom;
+> > -		writel(dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
+> > -		       data->base + REG_MMU_PT_BASE_ADDR);
+> > +
+> > +		/* Bits[6:3] are invalid for mediatek platform */
+> > +		if (MTK_IOMMU_HAS_FLAG(data->plat_data,
+> > PGTABLE_PA_35_EN))
+> > +			regval = (dom->cfg.arm_v7s_cfg.ttbr &
+> > MMU_PT_ADDR_MASK) |
+> > +				 (dom->cfg.arm_v7s_cfg.ttbr &
+> > MMU_PT_ADDR_2_0_MASK);
+> 
+> The bits[2:0] has already handled in ARM_V7S_TTBR_35BIT_PA of
+> patch[1/2], we need calculate it again here?
+> 
+> 1) Extend arm_v7s_cfg.ttbr to u64, then we could put the special ttbr
+> logical into our file.
+> 
+> 2) if 1) is not allowed, We have to put this in v7s.
+> if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT) {
+>        cfg->arm_v7s_cfg.ttbr = (paddr & GENMASK(31, 7)) |
+> upper_32_bits(paddr);
+>        return &data->iop;
+> }
+> 
+> This need Robin/Will confirm.
+> 
 
-> +               *map = devm_regmap_init_mmio(&pdev->dev, regs, config);
-> +       else
-> +               *map = ERR_PTR(ENODEV);
 
-Missed -.
+Hi Yong,
 
--- 
-With Best Regards,
-Andy Shevchenko
+V7 version had extended arm_v7s_cfg.ttbr to u64, then put the special
+ttbr logical into MediaTek file.
+
+
+> > +		else
+> > +			regval = dom->cfg.arm_v7s_cfg.ttbr &
+> > MMU_PT_ADDR_MASK;
+> 
+> Save this value to our data. then we don't need calculate it again in
+> the resume cb.   
+> 
+
+Hi Yong,
+
+V8 version will Save the special ttbr to mtk_iommu_domain avoid
+calculate it again.
+
+Thanks,
+Yunfei.
