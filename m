@@ -2,114 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0021C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 09:38:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A2CBC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 09:46:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232555AbiFKJij (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 05:38:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33672 "EHLO
+        id S229807AbiFKJqW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 05:46:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232546AbiFKJid (ORCPT
+        with ESMTP id S229494AbiFKJqR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 05:38:33 -0400
-Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com [210.131.2.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A941532ECA
-        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 02:38:32 -0700 (PDT)
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50]) (authenticated)
-        by conssluserg-02.nifty.com with ESMTP id 25B9cJqT013061
-        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 18:38:20 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 25B9cJqT013061
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1654940300;
-        bh=dvQLqE9CD0Sc31TfKaAdiORJwqPYnVIClrdVtOr8MuU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=VQRRIgL3RaBwbAb8zlsjU/+y8z7S4bPBtkzV2F3eoVaSN2nqeiiouM3JjXiSZwPif
-         QrU11WA67/+x5QVZKqO8abfFxTxi9/K0zSLaujSd+f0t9XdHrKR/d7soaLwqc9mtUl
-         zNc9BaGaqIYr6DKiwp2p/YpKKy0QHEPfqfnbod0wI16QgGPIr6geIpNmJFNSoFKuZM
-         DjMhbcVfKcy+XPHyM64ao1YZQDhOzSRP+h36+NzP1yHrB8i30j94oXxeWyIeWGCkDK
-         hsQrBwU71+Mpny5s4+LmQyQCQ9CwvHcxbq557kQmVmb1FWMcQJuNpv5LAdwyOPmXqu
-         a9b28AwXa41qA==
-X-Nifty-SrcIP: [209.85.128.50]
-Received: by mail-wm1-f50.google.com with SMTP id z9so582025wmf.3
-        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 02:38:19 -0700 (PDT)
-X-Gm-Message-State: AOAM531sefQuD4CoFHhnGurqsWN4eyPtEEJ6DWRjOJo+osMLmDrEuqqg
-        6Jf++7GQXUmy52UNJ3QY7zPe2qAiPlpvcE9VLNg=
-X-Google-Smtp-Source: ABdhPJzZVNw7ql3vh1nekhMh6vBUEJO0ZE52meBw8QyxqYw1a6qL2nlFf1hcJ8FXJAo3pYzjIBY6d+gFSFhDl6mYWUo=
-X-Received: by 2002:a05:600c:35c2:b0:39b:fa1f:4f38 with SMTP id
- r2-20020a05600c35c200b0039bfa1f4f38mr4083537wmq.22.1654940298310; Sat, 11 Jun
- 2022 02:38:18 -0700 (PDT)
+        Sat, 11 Jun 2022 05:46:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A37A1EC43
+        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 02:46:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1BE8F60B15
+        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 09:46:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06F74C34116;
+        Sat, 11 Jun 2022 09:46:13 +0000 (UTC)
+Date:   Sat, 11 Jun 2022 10:46:10 +0100
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Patrick Wang <patrick.wang.shcn@gmail.com>
+Cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, yee.lee@mediatek.com
+Subject: Re: [PATCH v3 3/3] mm: kmemleak: check physical address when scan
+Message-ID: <YqRkYtT+Z1r2Y76s@arm.com>
+References: <20220609124950.1694394-1-patrick.wang.shcn@gmail.com>
+ <20220609124950.1694394-4-patrick.wang.shcn@gmail.com>
+ <YqI44Q20oJNVl+QV@arm.com>
+ <957f5626-2c89-f53a-2156-bbde2bb545f2@gmail.com>
 MIME-Version: 1.0
-References: <20220610071500.9656-1-Kuan-Ying.Lee@mediatek.com>
-In-Reply-To: <20220610071500.9656-1-Kuan-Ying.Lee@mediatek.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Sat, 11 Jun 2022 18:37:41 +0900
-X-Gmail-Original-Message-ID: <CAK7LNATknxrmnAXKkz-XzkGn1kprPiQLrjKSdp4wKCRhPczcmA@mail.gmail.com>
-Message-ID: <CAK7LNATknxrmnAXKkz-XzkGn1kprPiQLrjKSdp4wKCRhPczcmA@mail.gmail.com>
-Subject: Re: [PATCH] scripts/gdb: change kernel config dumping method
-To:     Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
-Cc:     Jan Kiszka <jan.kiszka@siemens.com>,
-        Kieran Bingham <kbingham@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        chinwen.chang@mediatek.com, nicholas.tang@mediatek.com,
-        casper.li@mediatek.com, andrew.yang@mediatek.com,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <957f5626-2c89-f53a-2156-bbde2bb545f2@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 4:15 PM Kuan-Ying Lee
-<Kuan-Ying.Lee@mediatek.com> wrote:
->
-> MAGIC_START("IKCFG_ST") and MAGIC_END("IKCFG_ED") are moved out
-> from the kernel_config_data variable [1].
->
-> Thus, we parse kernel_config_data directly instead of considering
-> offset of MAGIC_START and MAGIC_END.
->
-> [1] https://lore.kernel.org/lkml/1550108893-21226-1-git-send-email-yamada.masahiro@socionext.com/
->
-> Fixes: 13610aa908dc ("kernel/configs: use .incbin directive to embed config_data.gz")
-> Signed-off-by: Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
+On Sat, Jun 11, 2022 at 11:46:27AM +0800, Patrick Wang wrote:
+> I've received an auto build test WARNING from kernel test robot:
+> 
+>    mm/kmemleak.c: In function 'scan_object':
+>   >> arch/powerpc/include/asm/page.h:215:42: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+>        215 | #define __va(x) ((void *)(unsigned long)((phys_addr_t)(x) + VIRT_PHYS_OFFSET))
+>            |                                          ^
+>      mm/kmemleak.c:1403:19: note: in expansion of macro '__va'
+>       1403 |                   __va((void *)object->pointer) :
+>            |                   ^~~~
 
+Ah, yes, arm32 has the same issue with phys_addr_t defined as u64 in
+some configurations while long is 32-bit.
 
-Thanks for the fix.
+> So I will replace __va((void *)object->pointer)
+> to __va((phys_addr_t)object->pointer) for fixing this warning,
 
-Applied to linux-kbuild/fixes.
-
-
-
-
-> ---
->  scripts/gdb/linux/config.py | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/scripts/gdb/linux/config.py b/scripts/gdb/linux/config.py
-> index 90e1565b1967..8843ab3cbadd 100644
-> --- a/scripts/gdb/linux/config.py
-> +++ b/scripts/gdb/linux/config.py
-> @@ -24,9 +24,9 @@ class LxConfigDump(gdb.Command):
->              filename = arg
->
->          try:
-> -            py_config_ptr = gdb.parse_and_eval("kernel_config_data + 8")
-> -            py_config_size = gdb.parse_and_eval(
-> -                    "sizeof(kernel_config_data) - 1 - 8 * 2")
-> +            py_config_ptr = gdb.parse_and_eval("&kernel_config_data")
-> +            py_config_ptr_end = gdb.parse_and_eval("&kernel_config_data_end")
-> +            py_config_size = py_config_ptr_end - py_config_ptr
->          except gdb.error as e:
->              raise gdb.GdbError("Can't find config, enable CONFIG_IKCONFIG?")
->
-> --
-> 2.18.0
->
-
+It makes sense.
 
 -- 
-Best Regards
-Masahiro Yamada
+Catalin
