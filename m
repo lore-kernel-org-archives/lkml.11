@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66FC1C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 09:59:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A39A9C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 09:59:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229691AbiFKJ67 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 05:58:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56038 "EHLO
+        id S231221AbiFKJ7E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 05:59:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229641AbiFKJ6v (ORCPT
+        with ESMTP id S230207AbiFKJ6x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 05:58:51 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B75691D324;
-        Sat, 11 Jun 2022 02:58:49 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id p18so1987846lfr.1;
-        Sat, 11 Jun 2022 02:58:49 -0700 (PDT)
+        Sat, 11 Jun 2022 05:58:53 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3126B84F;
+        Sat, 11 Jun 2022 02:58:52 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id e4so1501142ljl.1;
+        Sat, 11 Jun 2022 02:58:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=C93TNgs3tEMkjRGIc4zQyQSLHKj4wajnsAJdSQ715T4=;
-        b=TC/HfOrVTyr9dht911B6WyEVEETgffYiwjSdsWhhNbTnqcUq/GmMnj85tfMJpHKJ54
-         8lTzTeJR1UQqQbJHSYxhunhJ1eaaS7dnT1NbiiMzzsgRDBKSjyvDJyCX6OwXzmmhHmh7
-         OcdG1D00tvereTAB6g317kOi36zTyygl1wiNErlzuIMhO3Dj8DapgNDRihg/tNuI3ds2
-         GrQ00+6wMB5J3loW4lWEVflR1QmKYbb627zhLEwgST10z2U5Q2wGWPYmNUAoCZZUWUi2
-         9y+Up1t5iqr8N0GanPfJiV2q/pHD8+I2JKuuecwTYih4E2G0N2YBuALQMclz2s05+H4d
-         c2+g==
+        bh=qqG1jqR6TJ+ossn/Taa42wkdLkXZRIkBpKhqix1o0Nk=;
+        b=I3jVrJeQfeeEUpRXX4j3bFLN0JDYjpr2/5CF5Ik1W8de2CQMNAm+DQ8l6O1LxRezCl
+         GO7TAEVgwFdIyUxbkSZLBQQHjW5fbDzNuW6cGfVBRkFFOGXg1qUGscG1EiBXj/Wl3huE
+         YuvsuRlKxsEPGE3Vt5q8+Sw42lqCnFmfeYGCZJFaa2PyufPGXbvbYxTPYy2C4WxHkRs7
+         Jw/k4KuQogmXlcH2SnSQC1wHD7JdEYymLagxxUuXNYWqzIR5LOOptL92cp1tO6Cg/I+1
+         R1+B+04LJC13sj0LyVR5KGxpSaD1k7M2iPIhk0tT2uLZgrQjWgzod6uPTCXPWAh3c1/P
+         CZYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=C93TNgs3tEMkjRGIc4zQyQSLHKj4wajnsAJdSQ715T4=;
-        b=5alDOfaTwS2H5NEyyFPo3Rz2tNfzbC1wiPDxy4TO/A6PCFQmpmmEKGoXxfktq9TEOv
-         /jW130JMZf8gJ+wfH84zgVevsx6JgQsHq+qJodjAgIwsN9w24wUdztqzET+hWgB16o1Y
-         UDCfz09XYAi3mY48bulxVKqrRVqFP9vx3TV6A1GbOI3S7L21+Ip4yBBXM2sUhwYc5hsf
-         CkaYhMGPJ3kJ9vg5Q9vdhW4Eas2WDjVN9xfb1F6TMm41fOEqbd4KeTkH9xjs53ZK4/Jl
-         guYzmuoUwQkxj5bCaYPuyj7G53nWtlgpbDCafcWaV/v3I1Zq3bdm8Tx7jNxBG4GEN5y0
-         rsWw==
-X-Gm-Message-State: AOAM532bIkooRFXpCLVohxEUsJL4vQ6RU0Rqfua6q9JOcLXLQehtmmEI
-        Wc/LTcf8ux+rZ6CxfiER+lg=
-X-Google-Smtp-Source: ABdhPJyW9Vpw8JSAMpHkEpi5Oft1TkEZC/FsxY6pbNdui2qL9dmT/mecCiJCFx6hLubZ/sI+6Y9bFg==
-X-Received: by 2002:ac2:4bd3:0:b0:479:3cfb:72e5 with SMTP id o19-20020ac24bd3000000b004793cfb72e5mr19651571lfq.516.1654941528155;
-        Sat, 11 Jun 2022 02:58:48 -0700 (PDT)
+        bh=qqG1jqR6TJ+ossn/Taa42wkdLkXZRIkBpKhqix1o0Nk=;
+        b=tx1GlbNZNudCwPIs9Wn/uWpGwxEYo4OpsYsRyxfoNCb1MklJV7ptZINpZ0aaA24x0t
+         EG/U8Ogdp4zjop/wD7FPZK4qztHgBSV0tENl6wIdeTTdefREtsi4+VwbCw70T7s0KjDu
+         INont7f8ZRSCWVTl+wXrEQvFO48BPfr9BWSOnCfrXGtvyd4hmMiE+4/c+cbOaRxoQ5wG
+         S2UlbfgWmAQxygwMhrBoUXP3z0DVSrzL8yVg2++iIv1O24N5dlbmc0PYHkrzpC853j+2
+         282XS5jLebI6WDv1ZCUdWQyTmtV2kf3K5DBeWhD0zb68FJ1AH3FDpPW5BHJX6CMvSeo/
+         wMTw==
+X-Gm-Message-State: AOAM53218XsYZakMc17jcEq7MzzOtMTOwWmrtbC+fvyyd313XtBtFHNy
+        kBAdPVwGIcJQ3LSEgJYVf7A=
+X-Google-Smtp-Source: ABdhPJxbCZOKur9tOGLWFf7ulXImGftDF4a+Z/DYBqIigxmKroh1yds8o/DKWkS8ynJgTeWngkHLfg==
+X-Received: by 2002:a2e:3112:0:b0:24f:132a:fd71 with SMTP id x18-20020a2e3112000000b0024f132afd71mr64922689ljx.522.1654941531058;
+        Sat, 11 Jun 2022 02:58:51 -0700 (PDT)
 Received: from DESKTOP-GSFPEC9.localdomain (broadband-90-154-71-254.ip.moscow.rt.ru. [90.154.71.254])
-        by smtp.gmail.com with ESMTPSA id h18-20020a056512055200b004785060bad6sm200634lfl.201.2022.06.11.02.58.47
+        by smtp.gmail.com with ESMTPSA id h18-20020a056512055200b004785060bad6sm200634lfl.201.2022.06.11.02.58.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Jun 2022 02:58:47 -0700 (PDT)
+        Sat, 11 Jun 2022 02:58:50 -0700 (PDT)
 From:   Konstantin Aladyshev <aladyshev22@gmail.com>
 Cc:     supreeth.venkatesh@amd.com, aladyshev22@gmail.com,
         Rob Herring <robh+dt@kernel.org>,
@@ -56,9 +56,9 @@ Cc:     supreeth.venkatesh@amd.com, aladyshev22@gmail.com,
         Andrew Jeffery <andrew@aj.id.au>, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/4] ARM: dts: aspeed: ethanolx: Add correct label to flash device
-Date:   Sat, 11 Jun 2022 12:58:25 +0300
-Message-Id: <20220611095828.1090-2-aladyshev22@gmail.com>
+Subject: [PATCH 3/4] ARM: dts: aspeed: ethanolx: Use correct driver for the FRU EEPROM
+Date:   Sat, 11 Jun 2022 12:58:27 +0300
+Message-Id: <20220611095828.1090-4-aladyshev22@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220611095828.1090-1-aladyshev22@gmail.com>
 References: <20220611095828.1090-1-aladyshev22@gmail.com>
@@ -69,26 +69,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The OpenBMC code update infrastructure requires BMC firmware flash
-drive to have a label "bmc".
+The AMD EthanolX CRB uses 24LC128 chip as FRU EEPROM. To bind correct
+driver for this device "24c128" compatible string should be used in DTS.
 
 Signed-off-by: Konstantin Aladyshev <aladyshev22@gmail.com>
 ---
- arch/arm/boot/dts/aspeed-bmc-amd-ethanolx.dts | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm/boot/dts/aspeed-bmc-amd-ethanolx.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/arm/boot/dts/aspeed-bmc-amd-ethanolx.dts b/arch/arm/boot/dts/aspeed-bmc-amd-ethanolx.dts
-index 6406a0f080ee..889b2fdd19cf 100644
+index 0354a7d8f9f5..428fa9f673f9 100644
 --- a/arch/arm/boot/dts/aspeed-bmc-amd-ethanolx.dts
 +++ b/arch/arm/boot/dts/aspeed-bmc-amd-ethanolx.dts
-@@ -58,6 +58,7 @@ &fmc {
- 	flash@0 {
- 		status = "okay";
- 		m25p,fast-read;
-+		label = "bmc";
- 		#include "openbmc-flash-layout.dtsi"
+@@ -163,7 +163,7 @@ &i2c2 {
+ &i2c3 {
+ 	status = "okay";
+ 	eeprom@50 {
+-		compatible = "atmel,24c256";
++		compatible = "atmel,24c128";
+ 		reg = <0x50>;
+ 		pagesize = <64>;
  	};
- };
 -- 
 2.25.1
 
