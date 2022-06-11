@@ -2,111 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6986C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 20:49:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CCB7CCA47A
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 20:49:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232124AbiFKUtS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 16:49:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46582 "EHLO
+        id S232195AbiFKUtm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 16:49:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232097AbiFKUtO (ORCPT
+        with ESMTP id S230154AbiFKUth (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 16:49:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 80604286E6
-        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 13:49:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654980551;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=KEbYtgeCY5d2A+34Js+u4oC9j4ydleTr8OH6QnelxU8=;
-        b=f/gBQwwBn8D+cC5a6OJU8knQkhi/ykFjvE+D2QCXKIpr55NoqnlwqSKwh1cNw30j9uPDyR
-        I5dMWSSEtDmfnoGSZHyntLrNM9LGO8lF/VzMj4To/8HqLvJvZc9NpP2D/RkqeiAjkjvE08
-        vtM/U9GadGy4csKDPS7ov49zQbQKMdY=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-609-PibKsS3xNGm3iWsin3nDQw-1; Sat, 11 Jun 2022 16:49:02 -0400
-X-MC-Unique: PibKsS3xNGm3iWsin3nDQw-1
-Received: by mail-wm1-f69.google.com with SMTP id k5-20020a05600c0b4500b003941ca130f9so1365337wmr.0
-        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 13:49:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KEbYtgeCY5d2A+34Js+u4oC9j4ydleTr8OH6QnelxU8=;
-        b=JxJwwXrKdI66nBMK8m2LPk/bngOHansQf1JjcJGRYAif3WXaj1kRfHfr2x9MD+hFAS
-         UcGg+GcZS4IVrQ4DHpetaH+sII+qqsfosQ432RBjhMJ4fbm6zpR8df0aJc6idunh4guW
-         DNnDNI/FodwJh6cKjfH7A8DmB9Rx0uYgxlDxId80TiKkO4QqTBd6uxTph1ox0M0Pg3Sm
-         4XVCgkRBlV8DOmiu7GDzcEUuyNY5pJWoRFZ0cQ5Cyebiar+Wl5BuoD9LALEcJFhh9PeI
-         p8PhDFvyuQ6v4yhPaoCBbhVxZQgVlVYcjB8GQxTzTijY2SnRmACE2mM+cVf23q82aQ9I
-         YWJA==
-X-Gm-Message-State: AOAM532Y/pVH8eOhQHk49jYFqd44t7kuPYJ8fPFY8lBrD0l/DctFXgz+
-        DhD1wzw7np+gB04ITpvoOnbskH3dg0HTt3IM9gYkRHpKOjhmAd1Y0NlEvywDtaQDrS6UQOA1Fbl
-        WEklUBEjA3HxQRViDyYGwjIo=
-X-Received: by 2002:a5d:4845:0:b0:210:25fa:dc7c with SMTP id n5-20020a5d4845000000b0021025fadc7cmr49214325wrs.131.1654980541130;
-        Sat, 11 Jun 2022 13:49:01 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw48t8wKUPQYNAVF5n9sTc868ZFn15aSjSQu8D4WNlpoKkdHCO5/bj2xUhmGmbcBeQcf6rWaw==
-X-Received: by 2002:a5d:4845:0:b0:210:25fa:dc7c with SMTP id n5-20020a5d4845000000b0021025fadc7cmr49214317wrs.131.1654980540940;
-        Sat, 11 Jun 2022 13:49:00 -0700 (PDT)
-Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id d4-20020adffbc4000000b00219b4c01712sm3506635wrs.92.2022.06.11.13.49.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Jun 2022 13:49:00 -0700 (PDT)
-From:   Aaron Tomlin <atomlin@redhat.com>
-To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, joro@8bytes.org, will@kernel.org,
-        dwmw2@infradead.org, baolu.lu@linux.intel.com, hpa@zytor.com
-Cc:     iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        atomlin@atomlin.com
-Subject: [RFC PATCH 1/3] x86/boot/e820: Make __e820__mapped_all() external
-Date:   Sat, 11 Jun 2022 21:48:57 +0100
-Message-Id: <20220611204859.234975-1-atomlin@redhat.com>
-X-Mailer: git-send-email 2.34.1
+        Sat, 11 Jun 2022 16:49:37 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E00E931372
+        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 13:49:36 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1o0835-0005kG-E0; Sat, 11 Jun 2022 22:49:35 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 725F892FE9;
+        Sat, 11 Jun 2022 20:49:34 +0000 (UTC)
+Date:   Sat, 11 Jun 2022 22:49:33 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 0/2] can: etas_es58x: cleanups on struct es58x_device
+Message-ID: <20220611204933.ztf3tuwr72mowutr@pengutronix.de>
+References: <20220611162037.1507-1-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="35fdasoia5asrz2r"
+Content-Disposition: inline
+In-Reply-To: <20220611162037.1507-1-mailhol.vincent@wanadoo.fr>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-No functional change.
 
-This patch allows __e820__mapped_all() to be available for
-external use, in preparation to enhance the error message
-generated by arch_rmrr_sanity_check().
+--35fdasoia5asrz2r
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
----
- arch/x86/include/asm/e820/api.h | 1 +
- arch/x86/kernel/e820.c          | 2 +-
- 2 files changed, 2 insertions(+), 1 deletion(-)
+On 12.06.2022 01:20:35, Vincent Mailhol wrote:
+> This series contains two clean up patches toward struct es58x_device
+> of the CAN etas_es58x driver. The first one removes the field
+> rx_max_packet_size which value can actually be retrieved from the
+> helper function usb_maxpacket(). The second one fixes the signedness
+> of the TX and RX pipes.
+>=20
+> No functional changes.
 
-diff --git a/arch/x86/include/asm/e820/api.h b/arch/x86/include/asm/e820/api.h
-index e8f58ddd06d9..bf78daa08897 100644
---- a/arch/x86/include/asm/e820/api.h
-+++ b/arch/x86/include/asm/e820/api.h
-@@ -13,6 +13,7 @@ extern unsigned long pci_mem_start;
- extern bool e820__mapped_raw_any(u64 start, u64 end, enum e820_type type);
- extern bool e820__mapped_any(u64 start, u64 end, enum e820_type type);
- extern bool e820__mapped_all(u64 start, u64 end, enum e820_type type);
-+struct e820_entry *__e820__mapped_all(u64 start, u64 end, enum e820_type type);
- 
- extern void e820__range_add   (u64 start, u64 size, enum e820_type type);
- extern u64  e820__range_update(u64 start, u64 size, enum e820_type old_type, enum e820_type new_type);
-diff --git a/arch/x86/kernel/e820.c b/arch/x86/kernel/e820.c
-index f267205f2d5a..09b1c863a766 100644
---- a/arch/x86/kernel/e820.c
-+++ b/arch/x86/kernel/e820.c
-@@ -109,7 +109,7 @@ EXPORT_SYMBOL_GPL(e820__mapped_any);
-  * Note: this function only works correctly once the E820 table is sorted and
-  * not-overlapping (at least for the range specified), which is the case normally.
-  */
--static struct e820_entry *__e820__mapped_all(u64 start, u64 end,
-+struct e820_entry *__e820__mapped_all(u64 start, u64 end,
- 					     enum e820_type type)
- {
- 	int i;
--- 
-2.34.1
+Applied to linux-can-next/testing.
 
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--35fdasoia5asrz2r
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKk/9sACgkQrX5LkNig
+011BcQf9H6Y7Nba+v8y5LOeF13X7eS1vQxt1Wk6bV/t7XnfANhkhdjzBH6dCaMu3
+WuPat3HzETAQqaVDCTlY1tN736nfhoTjPfz+qEN21owTQl86GTc4oZzRJbGNNHWx
+i2L06YqbwgUTBijR7DGaooAmqooHOX+/kxqHRWHZ1mPNKyn6uTe+JPgICAb4UMD1
+/OWkCnvpMVtHSnB/Pn7OCdRyMRMiZXA3O16koyhoGWSI2+SRG4ihNDPqlP6eJvGC
+B5J4/b8LEo0ZY2bhjWKcYEFFVa7rmyirQVmaI5/xTE9HI8109EUPB7zVXlv0Ggqe
+6ySsueKKzkAUERsNt3CcyyQdzRpzKQ==
+=FGYU
+-----END PGP SIGNATURE-----
+
+--35fdasoia5asrz2r--
