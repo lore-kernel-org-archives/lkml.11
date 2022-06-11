@@ -2,159 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 249DAC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 16:15:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F684C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 16:20:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233510AbiFKQPV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 12:15:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42268 "EHLO
+        id S233657AbiFKQUy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 12:20:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238157AbiFKQNY (ORCPT
+        with ESMTP id S231649AbiFKQUu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 12:13:24 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DCDD3A199
-        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 09:13:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654964003; x=1686500003;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=z+2A82oSq6ecsMu+o3oeRM1Du1Le9TaCuspirF24Mbw=;
-  b=Sr4mrJNRp1fLe9BpSE2oKoMFPt9Ph8cvdV4xHgXar/HVKtxFD+K9C+eF
-   62pnLIQjvA5xceArSfczPN2RX8fCLqFnK7qgJrzPPZ8xHOT33EcL+nKlL
-   xnrjXydejQEJ+AeNs2sjOCGSd8l2Ttc/icuf2EnmIyVe16/k48JoAddsD
-   XGQTDcAcke6ENn5xTahmyxsU0pgbFvoyrRwmVfLBhUE+SCyMRjJLGfeD4
-   0E2CRqCzAZj2ArDdtVuvJVTSKOAB1F5eNFacwVAqNUT2Y/YyRI0/RHCg8
-   8RgWcc7pLJC/pSPFEbTwnbXl89HhL9SrWhNiBvWPn2Ke2PcpwjxHEbUAQ
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10375"; a="258339402"
-X-IronPort-AV: E=Sophos;i="5.91,293,1647327600"; 
-   d="scan'208";a="258339402"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2022 09:13:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,293,1647327600"; 
-   d="scan'208";a="534510057"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 11 Jun 2022 09:13:21 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o03jk-000J3j-Br;
-        Sat, 11 Jun 2022 16:13:20 +0000
-Date:   Sun, 12 Jun 2022 00:12:22 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jonathan McDowell <noodles@fb.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Mimi Zohar <zohar@linux.ibm.com>, Baoquan He <bhe@redhat.com>
-Subject: [daveh-devel:testme 2/2] drivers/of/kexec.c:126:5: warning: no
- previous prototype for 'ima_get_kexec_buffer'
-Message-ID: <202206120045.FwSlNqBY-lkp@intel.com>
+        Sat, 11 Jun 2022 12:20:50 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7943EBB;
+        Sat, 11 Jun 2022 09:20:49 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id q18so1658960pln.12;
+        Sat, 11 Jun 2022 09:20:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ig7GHUec0B14LkIn8gR94Hl1yo4+P+uoDJpl1B2ma+A=;
+        b=OXkmP0wc3uOg7pBxnOdbppFJolfovMtAE4ogms9k2TchBab+kIXehe3LVfFweIzINq
+         Fw3e/4Deh3ZjvRp9AK72xOA9w/VBnGrjFwGq5HdG52SLvoo+YyJprdpkhxjT7r21HrYL
+         bB9+iinrflmgr065ugNDwO9lwJKIu0vjj57IgycJg6/Qrm68rtEkpP26KA3y3r9OpOTe
+         FZCR+R57bgvcDVDIij/IgPnGEQaDb0LoZB1xAwbsJQ8R8o18PgRXgWExgLLbFTw96S1i
+         zLQrZcqxHIZtEdwxCEFVgkuId4cAccjRUrfgvhpDZ48JTl8C5GjMB8fOuuVuo17Sda2S
+         EUQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=Ig7GHUec0B14LkIn8gR94Hl1yo4+P+uoDJpl1B2ma+A=;
+        b=jtg5xdEVIN5ckCNjA3S9sAIq8a886/SulFYTuf9um16SLp2tZNgji/abRAWHzEJh7l
+         YWJ+66MkD5FWRKJ4rggRBDbifzbnsH+1vGXudyJiavv8qrXRKNmIPd74ZFXM1INh0SQe
+         Tmdd5aqCMVxIyo2kzCX675E5ogQCNZXiJqviHKZn8PAefOcp/F/BUjBwU3b9TSQ3DLxm
+         wbuWPP8xHUBq7GyeTd7gKQdHh4h0mbCUGGsyZ7ifiuFreLAIbvehJ+cePONhljqKyrKF
+         TxL5t0mG+Tnz1wZUk2Y92c6Q6Og/CqOmn7QvfHiS1T3KqcHQ/QToDULIlu0MUHrdqzZ8
+         /f2A==
+X-Gm-Message-State: AOAM533sG2gseAyb5SpKpsmZGvjhbqRlsCVAY3GpFV1/eWi9xD0iwu46
+        8FFKJ/dOZ4Ax+JrA75MkRxVnpE98jGcT+A==
+X-Google-Smtp-Source: ABdhPJx25Q1K2yss82Bk9pHn/IZ4OZWXnRmnv+CmysSLFaitaXuPTeX5+aAqpwvFpRAcrDl6Vbezyw==
+X-Received: by 2002:a17:902:d2d1:b0:167:4c33:d5d3 with SMTP id n17-20020a170902d2d100b001674c33d5d3mr43247956plc.81.1654964448914;
+        Sat, 11 Jun 2022 09:20:48 -0700 (PDT)
+Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
+        by smtp.gmail.com with ESMTPSA id je9-20020a170903264900b0015e8d4eb2e3sm1692469plb.301.2022.06.11.09.20.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 11 Jun 2022 09:20:48 -0700 (PDT)
+Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: [PATCH 0/2] can: etas_es58x: cleanups on struct es58x_device
+Date:   Sun, 12 Jun 2022 01:20:35 +0900
+Message-Id: <20220611162037.1507-1-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/daveh/devel.git testme
-head:   a217a1ebac788fd28ccf79499e9e12e5519d70b7
-commit: a217a1ebac788fd28ccf79499e9e12e5519d70b7 [2/2] x86/kexec: Carry forward IMA measurement log on kexec
-config: parisc-randconfig-r023-20220611 (https://download.01.org/0day-ci/archive/20220612/202206120045.FwSlNqBY-lkp@intel.com/config)
-compiler: hppa-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/daveh/devel.git/commit/?id=a217a1ebac788fd28ccf79499e9e12e5519d70b7
-        git remote add daveh-devel https://git.kernel.org/pub/scm/linux/kernel/git/daveh/devel.git
-        git fetch --no-tags daveh-devel testme
-        git checkout a217a1ebac788fd28ccf79499e9e12e5519d70b7
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=parisc SHELL=/bin/bash drivers/of/
+This series contains two clean up patches toward struct es58x_device
+of the CAN etas_es58x driver. The first one removes the field
+rx_max_packet_size which value can actually be retrieved from the
+helper function usb_maxpacket(). The second one fixes the signedness
+of the TX and RX pipes.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+No functional changes.
 
-All warnings (new ones prefixed by >>):
+Vincent Mailhol (2):
+  can: etas_es58x: replace es58x_device::rx_max_packet_size by
+    usb_maxpacket()
+  can: etas_es58x: fix signedness of USB RX and TX pipes
 
->> drivers/of/kexec.c:126:5: warning: no previous prototype for 'ima_get_kexec_buffer' [-Wmissing-prototypes]
-     126 | int ima_get_kexec_buffer(void **addr, size_t *size)
-         |     ^~~~~~~~~~~~~~~~~~~~
->> drivers/of/kexec.c:153:5: warning: no previous prototype for 'ima_free_kexec_buffer' [-Wmissing-prototypes]
-     153 | int ima_free_kexec_buffer(void)
-         |     ^~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/ima_get_kexec_buffer +126 drivers/of/kexec.c
-
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  118  
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  119  /**
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  120   * ima_get_kexec_buffer - get IMA buffer from the previous kernel
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  121   * @addr:	On successful return, set to point to the buffer contents.
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  122   * @size:	On successful return, set to the buffer size.
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  123   *
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  124   * Return: 0 on success, negative errno on error.
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  125   */
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21 @126  int ima_get_kexec_buffer(void **addr, size_t *size)
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  127  {
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  128  	int ret, len;
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  129  	unsigned long tmp_addr;
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  130  	size_t tmp_size;
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  131  	const void *prop;
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  132  
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  133  	if (!IS_ENABLED(CONFIG_HAVE_IMA_KEXEC))
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  134  		return -ENOTSUPP;
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  135  
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  136  	prop = of_get_property(of_chosen, "linux,ima-kexec-buffer", &len);
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  137  	if (!prop)
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  138  		return -ENOENT;
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  139  
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  140  	ret = do_get_kexec_buffer(prop, len, &tmp_addr, &tmp_size);
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  141  	if (ret)
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  142  		return ret;
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  143  
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  144  	*addr = __va(tmp_addr);
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  145  	*size = tmp_size;
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  146  
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  147  	return 0;
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  148  }
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  149  
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  150  /**
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  151   * ima_free_kexec_buffer - free memory used by the IMA buffer
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  152   */
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21 @153  int ima_free_kexec_buffer(void)
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  154  {
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  155  	int ret;
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  156  	unsigned long addr;
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  157  	size_t size;
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  158  	struct property *prop;
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  159  
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  160  	if (!IS_ENABLED(CONFIG_HAVE_IMA_KEXEC))
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  161  		return -ENOTSUPP;
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  162  
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  163  	prop = of_find_property(of_chosen, "linux,ima-kexec-buffer", NULL);
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  164  	if (!prop)
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  165  		return -ENOENT;
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  166  
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  167  	ret = do_get_kexec_buffer(prop->value, prop->length, &addr, &size);
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  168  	if (ret)
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  169  		return ret;
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  170  
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  171  	ret = of_remove_property(of_chosen, prop);
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  172  	if (ret)
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  173  		return ret;
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  174  
-3ecc68349bbab6 Mike Rapoport           2021-11-05  175  	return memblock_phys_free(addr, size);
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  176  }
-fee3ff99bc6760 Lakshmi Ramasubramanian 2021-02-21  177  
-
-:::::: The code at line 126 was first introduced by commit
-:::::: fee3ff99bc67604fba77f19da0106f3ec52b1956 powerpc: Move arch independent ima kexec functions to drivers/of/kexec.c
-
-:::::: TO: Lakshmi Ramasubramanian <nramas@linux.microsoft.com>
-:::::: CC: Rob Herring <robh@kernel.org>
+ drivers/net/can/usb/etas_es58x/es58x_core.c | 5 ++---
+ drivers/net/can/usb/etas_es58x/es58x_core.h | 6 ++----
+ 2 files changed, 4 insertions(+), 7 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
+
