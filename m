@@ -2,188 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB22EC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 16:44:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 569C5C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 16:45:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235659AbiFKQod (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 12:44:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56496 "EHLO
+        id S236044AbiFKQo6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 12:44:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231217AbiFKQo0 (ORCPT
+        with ESMTP id S230518AbiFKQoy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 12:44:26 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8C1F2624
-        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 09:44:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654965864; x=1686501864;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=WWax4Pxd/xlLWgN6LOWzJK2g5hNw5C+MhLB7NSAY3jU=;
-  b=jSxMl2UDhjJIUropb2LZMxKsFk3RbR8/07UuBzDcj2heFmM65no3dB+l
-   LUYU5ToD+/qTODw5ZJOKzLitpXSFQ+J1D52st1QlH4jfbv++Y9KDa3u8g
-   tTNIvZuHxfW3X0l0yyPOT2w+CQJcUB3v9znwEjEYcsedi2W1XvX5GbJqw
-   NV5nALu042fUf6ENSLJpyi0hjD5GlFYfqqEflbp3kJwMsCuNpues0hcoR
-   99PyVkTmzmFx7vKpGpwWuIMO+pR8vohYVzOP4p4AnIwUigDvH/Nl24w6N
-   RVsZ0UCBvv2m1hMd0N80blmuXITn6vEJLSZRlh5qQbVoyHFxYXz43o6JJ
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10375"; a="275441217"
-X-IronPort-AV: E=Sophos;i="5.91,293,1647327600"; 
-   d="scan'208";a="275441217"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2022 09:44:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,293,1647327600"; 
-   d="scan'208";a="828824240"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 11 Jun 2022 09:44:22 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o04Dl-000J5t-MR;
-        Sat, 11 Jun 2022 16:44:21 +0000
-Date:   Sun, 12 Jun 2022 00:43:22 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Vitor Massaru Iha <vitor@massaru.org>,
-        Daniel Latypov <dlatypov@google.com>,
-        David Gow <davidgow@google.com>
-Subject: lib/overflow_kunit.c:644:1: warning: the frame size of 2832 bytes is
- larger than 1024 bytes
-Message-ID: <202206120046.YKeKzlVN-lkp@intel.com>
+        Sat, 11 Jun 2022 12:44:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27E5D140DE;
+        Sat, 11 Jun 2022 09:44:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8013361197;
+        Sat, 11 Jun 2022 16:44:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75F21C34116;
+        Sat, 11 Jun 2022 16:44:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654965891;
+        bh=ghuGRd/Z1xd0bQJRFUBDaFRmlY9Al7Fa1PVRTFvEztg=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Ah79EYQQ1Lbel4/ydfUhCZ/zH3iHLyB0lO3GeVQrrnCIpp9P3C2QYzPFcsm1ln4jE
+         NEePSWFqfrEOcShIgX7UDuXNZRVDGC1ZqxwVj9/WgdGDAjJNLErFT+TSv773A+rxwT
+         I79HiiyXW734tJKW6sNCJOwVXVlNX0gVtndY8EXNWoumak3oJBoYbwwgOuauWklXi+
+         kaCiwJGTmS9Q+kaDwp6RT1nlbgztPuWVewUTJjlEsky3lKt9ivHcwK/yY4nR6UbbLN
+         EgC2oSflm8T1enM8WPtQXqBsK7QlEsmbIB0hzoaBkcoQoFljx3cSLJUJf28GYOlZOt
+         vTAyJBg9dykBw==
+Message-ID: <6410890e-333d-5f0e-52f2-1041667c80f8@kernel.org>
+Date:   Sat, 11 Jun 2022 10:44:50 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.1
+Subject: Re: [REGRESSION] connection timeout with routes to VRF
+Content-Language: en-US
+To:     Jan Luebbe <jluebbe@lasnet.de>,
+        Robert Shearman <robertshearman@gmail.com>,
+        Andy Roulin <aroulin@nvidia.com>
+Cc:     Mike Manning <mvrmanning@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        regressions@lists.linux.dev,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <a54c149aed38fded2d3b5fdb1a6c89e36a083b74.camel@lasnet.de>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <a54c149aed38fded2d3b5fdb1a6c89e36a083b74.camel@lasnet.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kees,
+On 6/11/22 5:14 AM, Jan Luebbe wrote:
+> Hi,
+> 
+> TL;DR: We think we have found a regression in the handling of VRF route leaking
+> caused by "net: allow binding socket in a VRF when there's an unbound socket"
+> (3c82a21f4320).
 
-First bad commit (maybe != root cause):
+This is the 3rd report in the past few months about this commit.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   0885eacdc81f920c3e0554d5615e69a66504a28d
-commit: 617f55e20743fc50c989b498f9dee289eb644cfd lib: overflow: Convert to Kunit
-date:   3 months ago
-config: powerpc-buildonly-randconfig-r006-20220611 (https://download.01.org/0day-ci/archive/20220612/202206120046.YKeKzlVN-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=617f55e20743fc50c989b498f9dee289eb644cfd
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 617f55e20743fc50c989b498f9dee289eb644cfd
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash
+...
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+> 
+> Our minimized test case looks like this:
+>  ip rule add pref 32765 from all lookup local
+>  ip rule del pref 0 from all lookup local
+>  ip link add red type vrf table 1000
+>  ip link set red up
+>  ip route add vrf red unreachable default metric 8192
+>  ip addr add dev red 172.16.0.1/24
+>  ip route add 172.16.0.0/24 dev red
+>  ip vrf exec red socat -dd TCP-LISTEN:1234,reuseaddr,fork SYSTEM:"echo connected" &
+>  sleep 1
+>  nc 172.16.0.1 1234 < /dev/null
+> 
 
-All warnings (new ones prefixed by >>):
+...
+Thanks for the detailed analysis and reproducer.
 
-   lib/overflow_kunit.c:191:19: warning: 's64_tests' defined but not used [-Wunused-const-variable=]
-     191 | DEFINE_TEST_ARRAY(s64) = {
-         |                   ^~~
-   lib/overflow_kunit.c:24:11: note: in definition of macro 'DEFINE_TEST_ARRAY'
-      24 |         } t ## _tests[]
-         |           ^
-   lib/overflow_kunit.c:94:19: warning: 'u64_tests' defined but not used [-Wunused-const-variable=]
-      94 | DEFINE_TEST_ARRAY(u64) = {
-         |                   ^~~
-   lib/overflow_kunit.c:24:11: note: in definition of macro 'DEFINE_TEST_ARRAY'
-      24 |         } t ## _tests[]
-         |           ^
-   lib/overflow_kunit.c: In function 'overflow_size_helpers_test':
->> lib/overflow_kunit.c:644:1: warning: the frame size of 2832 bytes is larger than 1024 bytes [-Wframe-larger-than=]
-     644 | }
-         | ^
-   lib/overflow_kunit.c: In function 'overflow_shift_test':
-   lib/overflow_kunit.c:451:1: warning: the frame size of 7232 bytes is larger than 1024 bytes [-Wframe-larger-than=]
-     451 | }
-         | ^
+> 
+> The partial revert
+> diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
+> index 98e1ec1a14f0..41e7f20d7e51 100644
+> --- a/include/net/inet_hashtables.h
+> +++ b/include/net/inet_hashtables.h
+> @@ -310,8 +310,9 @@ static inline struct sock *inet_lookup_listener(struct net *net,
+>  #define INET_MATCH(__sk, __net, __cookie, __saddr, __daddr, __ports, __dif, __sdif) \
+>         (((__sk)->sk_portpair == (__ports))                     &&      \
+>          ((__sk)->sk_addrpair == (__cookie))                    &&      \
+> -        (((__sk)->sk_bound_dev_if == (__dif))                  ||      \
+> -         ((__sk)->sk_bound_dev_if == (__sdif)))                &&      \
+> +        (!(__sk)->sk_bound_dev_if      ||                              \
+> +          ((__sk)->sk_bound_dev_if == (__dif))                 ||      \
+> +          ((__sk)->sk_bound_dev_if == (__sdif)))               &&      \
+>          net_eq(sock_net(__sk), (__net)))
+>  #else /* 32-bit arch */
+>  #define INET_ADDR_COOKIE(__name, __saddr, __daddr) \
+> @@ -321,8 +322,9 @@ static inline struct sock *inet_lookup_listener(struct net *net,
+>         (((__sk)->sk_portpair == (__ports))             &&              \
+>          ((__sk)->sk_daddr      == (__saddr))           &&              \
+>          ((__sk)->sk_rcv_saddr  == (__daddr))           &&              \
+> -        (((__sk)->sk_bound_dev_if == (__dif))          ||              \
+> -         ((__sk)->sk_bound_dev_if == (__sdif)))        &&              \
+> +        (!(__sk)->sk_bound_dev_if      ||                              \
+> +          ((__sk)->sk_bound_dev_if == (__dif))         ||              \
+> +          ((__sk)->sk_bound_dev_if == (__sdif)))       &&              \
+>          net_eq(sock_net(__sk), (__net)))
+>  #endif /* 64-bit arch */
+> 
+> restores the original behavior when applied on v5.18. This doesn't apply
+> directly on master, as the macro was replaced by an inline function in "inet:
+> add READ_ONCE(sk->sk_bound_dev_if) in INET_MATCH()" (4915d50e300e).
+> 
+> I have to admit I don't quite understand 3c82a21f4320, so I'm not sure how to
+> proceed. What would be broken by the partial revert above? Are there better ways
+> to configure routing into the VRF than simply "ip route add 172.16.0.0/24 dev
+> red" that still work?
+> 
+> Thanks,
+> Jan
+> 
+> #regzbot introduced: 3c82a21f4320
+> 
+> 
+> 
 
-
-vim +644 lib/overflow_kunit.c
-
-e1be43d9b5d0d1 lib/test_overflow.c  Kees Cook 2021-09-18  577  
-e1be43d9b5d0d1 lib/test_overflow.c  Kees Cook 2021-09-18  578  	var = 4;
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  579  	check_one_size_helper(20,	size_mul, var++, 5);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  580  	check_one_size_helper(20,	size_mul, 4, var++);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  581  	check_one_size_helper(0,	size_mul, 0, 3);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  582  	check_one_size_helper(0,	size_mul, 3, 0);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  583  	check_one_size_helper(6,	size_mul, 2, 3);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  584  	check_one_size_helper(SIZE_MAX,	size_mul, SIZE_MAX,  1);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  585  	check_one_size_helper(SIZE_MAX,	size_mul, SIZE_MAX,  3);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  586  	check_one_size_helper(SIZE_MAX,	size_mul, SIZE_MAX, -3);
-e1be43d9b5d0d1 lib/test_overflow.c  Kees Cook 2021-09-18  587  
-e1be43d9b5d0d1 lib/test_overflow.c  Kees Cook 2021-09-18  588  	var = 4;
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  589  	check_one_size_helper(9,	size_add, var++, 5);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  590  	check_one_size_helper(9,	size_add, 4, var++);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  591  	check_one_size_helper(9,	size_add, 9, 0);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  592  	check_one_size_helper(9,	size_add, 0, 9);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  593  	check_one_size_helper(5,	size_add, 2, 3);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  594  	check_one_size_helper(SIZE_MAX, size_add, SIZE_MAX,  1);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  595  	check_one_size_helper(SIZE_MAX, size_add, SIZE_MAX,  3);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  596  	check_one_size_helper(SIZE_MAX, size_add, SIZE_MAX, -3);
-e1be43d9b5d0d1 lib/test_overflow.c  Kees Cook 2021-09-18  597  
-e1be43d9b5d0d1 lib/test_overflow.c  Kees Cook 2021-09-18  598  	var = 4;
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  599  	check_one_size_helper(1,	size_sub, var--, 3);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  600  	check_one_size_helper(1,	size_sub, 4, var--);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  601  	check_one_size_helper(1,	size_sub, 3, 2);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  602  	check_one_size_helper(9,	size_sub, 9, 0);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  603  	check_one_size_helper(SIZE_MAX, size_sub, 9, -3);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  604  	check_one_size_helper(SIZE_MAX, size_sub, 0, 9);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  605  	check_one_size_helper(SIZE_MAX, size_sub, 2, 3);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  606  	check_one_size_helper(SIZE_MAX, size_sub, SIZE_MAX,  0);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  607  	check_one_size_helper(SIZE_MAX, size_sub, SIZE_MAX, 10);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  608  	check_one_size_helper(SIZE_MAX, size_sub, 0,  SIZE_MAX);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  609  	check_one_size_helper(SIZE_MAX, size_sub, 14, SIZE_MAX);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  610  	check_one_size_helper(SIZE_MAX - 2, size_sub, SIZE_MAX - 1,  1);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  611  	check_one_size_helper(SIZE_MAX - 4, size_sub, SIZE_MAX - 1,  3);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  612  	check_one_size_helper(1,		size_sub, SIZE_MAX - 1, -3);
-e1be43d9b5d0d1 lib/test_overflow.c  Kees Cook 2021-09-18  613  
-e1be43d9b5d0d1 lib/test_overflow.c  Kees Cook 2021-09-18  614  	var = 4;
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  615  	check_one_size_helper(4 * sizeof(*obj->data),
-e1be43d9b5d0d1 lib/test_overflow.c  Kees Cook 2021-09-18  616  			      flex_array_size, obj, data, var++);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  617  	check_one_size_helper(5 * sizeof(*obj->data),
-e1be43d9b5d0d1 lib/test_overflow.c  Kees Cook 2021-09-18  618  			      flex_array_size, obj, data, var++);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  619  	check_one_size_helper(0, flex_array_size, obj, data, 0 + unconst);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  620  	check_one_size_helper(sizeof(*obj->data),
-230f6fa2c1db6a lib/test_overflow.c  Kees Cook 2022-02-09  621  			      flex_array_size, obj, data, 1 + unconst);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  622  	check_one_size_helper(7 * sizeof(*obj->data),
-230f6fa2c1db6a lib/test_overflow.c  Kees Cook 2022-02-09  623  			      flex_array_size, obj, data, 7 + unconst);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  624  	check_one_size_helper(SIZE_MAX,
-230f6fa2c1db6a lib/test_overflow.c  Kees Cook 2022-02-09  625  			      flex_array_size, obj, data, -1 + unconst);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  626  	check_one_size_helper(SIZE_MAX,
-230f6fa2c1db6a lib/test_overflow.c  Kees Cook 2022-02-09  627  			      flex_array_size, obj, data, SIZE_MAX - 4 + unconst);
-e1be43d9b5d0d1 lib/test_overflow.c  Kees Cook 2021-09-18  628  
-e1be43d9b5d0d1 lib/test_overflow.c  Kees Cook 2021-09-18  629  	var = 4;
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  630  	check_one_size_helper(sizeof(*obj) + (4 * sizeof(*obj->data)),
-e1be43d9b5d0d1 lib/test_overflow.c  Kees Cook 2021-09-18  631  			      struct_size, obj, data, var++);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  632  	check_one_size_helper(sizeof(*obj) + (5 * sizeof(*obj->data)),
-e1be43d9b5d0d1 lib/test_overflow.c  Kees Cook 2021-09-18  633  			      struct_size, obj, data, var++);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  634  	check_one_size_helper(sizeof(*obj), struct_size, obj, data, 0 + unconst);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  635  	check_one_size_helper(sizeof(*obj) + sizeof(*obj->data),
-230f6fa2c1db6a lib/test_overflow.c  Kees Cook 2022-02-09  636  			      struct_size, obj, data, 1 + unconst);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  637  	check_one_size_helper(SIZE_MAX,
-230f6fa2c1db6a lib/test_overflow.c  Kees Cook 2022-02-09  638  			      struct_size, obj, data, -3 + unconst);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  639  	check_one_size_helper(SIZE_MAX,
-230f6fa2c1db6a lib/test_overflow.c  Kees Cook 2022-02-09  640  			      struct_size, obj, data, SIZE_MAX - 3 + unconst);
-e1be43d9b5d0d1 lib/test_overflow.c  Kees Cook 2021-09-18  641  
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  642  	kunit_info(test, "%d overflow size helper tests finished\n", count);
-617f55e20743fc lib/overflow_kunit.c Kees Cook 2022-02-16  643  #undef check_one_size_helper
-e1be43d9b5d0d1 lib/test_overflow.c  Kees Cook 2021-09-18 @644  }
-e1be43d9b5d0d1 lib/test_overflow.c  Kees Cook 2021-09-18  645  
-
-:::::: The code at line 644 was first introduced by commit
-:::::: e1be43d9b5d0d1310dbd90185a8e5c7145dde40f overflow: Implement size_t saturating arithmetic helpers
-
-:::::: TO: Kees Cook <keescook@chromium.org>
-:::::: CC: Kees Cook <keescook@chromium.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Andy Roulin suggested the same fix to the same problem a few weeks back.
+Let's do it along with a test case in fcnl-test.sh which covers all of
+these vrf permutations.
