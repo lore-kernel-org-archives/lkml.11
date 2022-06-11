@@ -2,657 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7B19C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 14:43:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5D4BCCA47A
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 14:45:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235979AbiFKOm6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 10:42:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42116 "EHLO
+        id S235762AbiFKOpX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 10:45:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235808AbiFKOmx (ORCPT
+        with ESMTP id S232950AbiFKOpV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 10:42:53 -0400
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AD2AC2B;
-        Sat, 11 Jun 2022 07:42:51 -0700 (PDT)
-Received: by mail-yb1-xb34.google.com with SMTP id p13so3189271ybm.1;
-        Sat, 11 Jun 2022 07:42:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lm9kDQoqpr00PgYpDKqXiCUY7RhRDRhYenExRVY2988=;
-        b=Y5eUp7qW5VXOFF5LMhno5k+0g6OCGJAx7ZSKoS+EFokpL8ssrfBPBu4AhrdHlZb2rD
-         rCPBBjzXQ2rZu3ajHLk9MrbOphAEev7vam5skkuRAAueM1EsTktFxegvaT8vUC9ais80
-         fsw2+gClHawq378xf++XB7oG0dl68+/3FkMSegDYC7CdAEmxzM3KtLLpHkMY5TJNoHTN
-         SEB/1rRvRTp4Y2aPDeB2QRzdTMo0DX6GAXGkac5wqi27W/R5Di2uSnLFPhDk0y+MPMnu
-         sWW3eBekx59oxObv3oI6ybhVdbzpeq2qWuyF/TEsAEhAvAOGPlny6/m/rHj8sInJDytO
-         119Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lm9kDQoqpr00PgYpDKqXiCUY7RhRDRhYenExRVY2988=;
-        b=w7bhDRqUA2sB9JOXet1zZa4JBhEcWTaFIdmtfDcVXexxSEGFWYS8frWHCqKT9H0701
-         iLKFKAdXQmrVE41GUprNZLMUeB/0y9aeVpBvfpu1UGFQuvVMj8pBIbY40moAju7tqm8g
-         wraCJaJCuvirJPFoL25iklW9hqO3VnmGzHBvL+ieNLWqqFxHMiisPBpPadY3LRLIyZ8X
-         2lJwtm/DI2h8p1k1zL9kUCwl8KrRq1l9EZaZ/lMLq91bUlk+ohjZWDKNO6LQ+VB0IUmY
-         BekdXEci1kYSw2xik+jBrnYgwu3UKtVn8UCQAwS0x/mqWhAyR6bYiKudMcV6wLfjVNCI
-         RHNQ==
-X-Gm-Message-State: AOAM531aCisY+pok7A5x47j/3nEgHPiI/snuG8CPIkkwB4U5ZtNVb7uI
-        lNRkCUE1gBAOmpv537pOoZ8fsBTP3KCE9I6uM5acD0WFSl1W1g==
-X-Google-Smtp-Source: ABdhPJz51HE6/JaAEaQGIvim9MRXAf82h2aaT5phvWos9QfgQ0jiogTJwOW/aBLGxFPxVCq0QLvP1qN4YOBQR7BpEtk=
-X-Received: by 2002:a25:ad58:0:b0:65c:e3e5:e813 with SMTP id
- l24-20020a25ad58000000b0065ce3e5e813mr49414247ybe.151.1654958570256; Sat, 11
- Jun 2022 07:42:50 -0700 (PDT)
+        Sat, 11 Jun 2022 10:45:21 -0400
+Received: from FRA01-PR2-obe.outbound.protection.outlook.com (mail-eopbgr120072.outbound.protection.outlook.com [40.107.12.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAD342661;
+        Sat, 11 Jun 2022 07:45:19 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=b3pAXL2uTng/m30AO8V01ylzuWg/UMf5jjs2aaimSEp0w5zAobUYnvHR/OrrCTtKCDv7wogw+tgJQ1Ct00Y08n+DkPWwI4zzgM4E8oGhYOZ5kJU3Hv9YEcluERfhIZCdVciceTqtSFiB7/+MZlqHGMBFQvv7L2CDtpag3+Ev9LMMKKZZ/p03aDr2+28CA/JKOg7027nZPyPL+3cJMDvMqlE/Rkhe0dVfaiDW2p+MjDfwGMBLLH98V3U6Xk7bZXHUcOvr+w/NGoE4hxkqRFPBUVBSt8kl38A1d2HMJ5ACMMNQFvwrQj+qaWRwMVVQios0aqxAmiQsLNWPTb9NNPMB+A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Vmi3xEUId5CvbF8YGez8aKBnj6HDWQzVoLDoFZxVuqc=;
+ b=IBMPezXHb7GDltP8Vy2/XeeHacVT9pzouVQCbg0h5H1zNjQ26J8SbTojAm0w9cVyWT7PElYaA3wd+Cyu4p5JheipbMqpYxQ+0uJlcv4Sq10GnS1T47cTNsh35E7w4j7iE5BplVTLV9rl3U3PDH5oU6anUVO+K3sOzBkO4k7Iu2lSL4eE8YGlxYWCxqZKN0Uetl4RQHlJSn/Y9inqUBvf6swDdQTW2Hy+Q1ERAvIaTK4V0dsZwrvAuY95FBYt9aQu0r0QOQP4doSpUXJkUoWK0O/z2ruX2VCTCH9kXeudhRfXJj6pqWF39/5wByqtO2fc773aO38GLr+n+A/kMK0WuQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=csgroup.eu; dmarc=pass action=none header.from=csgroup.eu;
+ dkim=pass header.d=csgroup.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=csgroup.eu;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Vmi3xEUId5CvbF8YGez8aKBnj6HDWQzVoLDoFZxVuqc=;
+ b=66bPNt4NhP6yAONy8j1A4w+5b6qfW8kqDPUpld1P2SQxMi4Qd62eWettgf2uHppveR0U2GtqKK7wj7WaQIaPmn03GSv4Tr44Gtb8ZOaJjrpdUIwhWiwllAhBJwuVrz9G8dHoSr/JpN9NTjigY//+ch1vOndCFdocWqMWbLOrWEPHGObmrDvTNimaze877zri4QnwI8/ri8+1PYDNumqFQNYYGZqE0axWb6R0xEoaHh11AL31hj5aRx5m1aA1WJ2rsC/VAFAA0819jwXwiQMkHFxtavx71Jy6b6H1JkDjOjHpVQhV5abV7oNw2vNPP8WJ5KPJYzGCOyXIPuzYOhg1vQ==
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
+ by MR1P264MB3905.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:2d::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.12; Sat, 11 Jun
+ 2022 14:45:17 +0000
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::b15e:862f:adf7:5356]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::b15e:862f:adf7:5356%6]) with mapi id 15.20.5332.016; Sat, 11 Jun 2022
+ 14:45:17 +0000
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+CC:     "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: Re: [PATCH v2 3/3] powerpc/pseries: wire up rng during setup_arch
+Thread-Topic: [PATCH v2 3/3] powerpc/pseries: wire up rng during setup_arch
+Thread-Index: AQHYfXrAlqnTbTsIrEKs940sVKmKdK1KSMcA
+Date:   Sat, 11 Jun 2022 14:45:17 +0000
+Message-ID: <80cca718-d637-b48a-ddb3-e6931cd08c24@csgroup.eu>
+References: <20220611100447.5066-1-Jason@zx2c4.com>
+ <20220611100447.5066-4-Jason@zx2c4.com>
+In-Reply-To: <20220611100447.5066-4-Jason@zx2c4.com>
+Accept-Language: fr-FR, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=csgroup.eu;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c1f0d302-efbb-47cc-b443-08da4bb900b4
+x-ms-traffictypediagnostic: MR1P264MB3905:EE_
+x-microsoft-antispam-prvs: <MR1P264MB39053B028BDB8B09DF7D86C5EDA99@MR1P264MB3905.FRAP264.PROD.OUTLOOK.COM>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: l34EVjxsB5lFOEDFYsG/4eql71kXIz4W+ZsAa/mGgz8pEPWP0X8Yz8/H0WZ+Wp2VFXNpUp9J4t2wOk7xvKVRNQA3yQXqvN9TlCRbLDTlKhkCJZmBqSJOq3f8q+ZlIC5Btqt6UHsf7T3JhO2LG5U08fdnvhPxUP3koqm7EtSMWzyzQaRxli0YEPlf5nH/Puy6e55VmwwWxjha+1TUi/m4/ctPHIJ0Y7wIiQpV41lCrXLbR2e2o9ASYgFahwvUD3jNiEmi2XbJM97MnaFprpNoB4qP36pP4gi/DhfaBYaCZpOzhGXRzwudSs/WYMOFFYf1H8Q9j4irGwZnTJ327ijp921Llpy6EX6OPnO23q/DwFa8bEVSCqUaLwGj2cv9SjYVL6OxUHMMi9NTuPROeUZ9NT9vSbF0nk24GGWRqOHl6VyGtKt9zkSeo4CMjE8KcCYHgPt2mbSUubp6EMwL0XxdHHS+J+XKt71TJUmlVLhVcfLeQyfzTrmSOY3v9eYOI2fj21sMElzvLbhxW0xwC0WuQEZ9mHDs9mYZkCxsNT8Ua99ZDJiCPwLc3BTFE8BzQNJdlkfZD2HnOfrxGAqsYRoGVpkyhe00TcdNBQBQZ0N3c/JzP0tUxiawIXF42kzXqYBYrVG0MQdITZbjWSIF00urP4k3r6jZBGIIsrwjDp5kS9zMDNQFmFuAfHE3VV54ZvRL/BTAs/56pfLdkZXES9WWLtE2MWFcMV0VvvUBvU2CueXIP3/nvqfzfuedMLgH33iaObstvnzenP0RaoiF4T7GhQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(4326008)(64756008)(8676002)(76116006)(91956017)(31686004)(44832011)(36756003)(66446008)(66476007)(66556008)(8936002)(316002)(5660300002)(66946007)(71200400001)(6486002)(6506007)(110136005)(2906002)(508600001)(38070700005)(6512007)(26005)(122000001)(38100700002)(66574015)(186003)(86362001)(2616005)(83380400001)(31696002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?Q3RKa2NlV0ZKTXVZeFprMjJta0ZUTW9qYW53QWNhVWV3SnhjYVFJSE42OEl3?=
+ =?utf-8?B?T3NwZkVYOXpDMC90aWhCWVNRbGNoUTA3RjZuZlEzZkdNZjFiZzNlS1FTTG5V?=
+ =?utf-8?B?TUI2bE80NWRqdG1vb0JEb2lLZXJoS1QrOGlRdjV3d3hOWWFjYlFLeFdqZi8r?=
+ =?utf-8?B?bjZmRlV1NExWNzdod0JTVmx1T1RQdDJ5MlVkdFY2dWhrRURZRGxoSXhoQVhW?=
+ =?utf-8?B?UG9wcWd5THZGRUxSYnh1TW1meDZ0aXBEWnN5YXlIQmRyRzUyeU1VMmNyRHRv?=
+ =?utf-8?B?cFpFSlpRWHEybHRoNnVTVXNTbTFOMXVQem16bVJKeTlTQWJaOVRDZEl1NGFF?=
+ =?utf-8?B?d1F6L0lMM2xYc3hqd0F6L1grU1NjYi91dmZUVWwrMHYzMy9CeER6dS83eXNt?=
+ =?utf-8?B?RHl4aC9DSlAyZGRnY21IblR6TzF2NXRJSTB3WEgrd0t0c3NEL2FGbG9keU9M?=
+ =?utf-8?B?aWRwdnlhTk1tc09OYXRKNmNRY0tyeWhpeXRXcVV6Y2NDUE1Lb0dpdTNOUlRI?=
+ =?utf-8?B?ditRMVBGSDhPdy93ZE8vNFFDV0hRUmJoUE84cys4QWxnRUNPRGlXczNFbG41?=
+ =?utf-8?B?NzRJS3NMQXBzV1ZZczhVT0dUdmdWVngrTkdiY3N2Yjd6c1ppbzdnQVorbStO?=
+ =?utf-8?B?cjU5aEs2eWdhRjMxM24wblRaUmcyTldkdk0zblczajB2elJSZ0ZMdjd2UURl?=
+ =?utf-8?B?SnBSQVhYbStUaTRDNDM4MW0rVUpnc29ybFNwL1JQZFZMdmkvTjBCS2NVT3ZU?=
+ =?utf-8?B?ZThWb1BFYlRZYUJkYUI3MEIxZHdhNG9OQTNhdDZXL1o4VjFLVkJaMFZUQ3pD?=
+ =?utf-8?B?Ti91eTR5Um9Nb0p5Rzh3S09xR0VqRXdvTEp4Ri9yV0pHOGszRTB5RG1zMVZD?=
+ =?utf-8?B?Nm9sRDQrWFVxdG12VHBNazhIY3ZCRTFPRU1qSmY3RlRXb3dDY0VJYnpWUUxY?=
+ =?utf-8?B?RFNuOFlYVkJRVlk1ZTE2TWFLckFKRnM3Yjk3ZUxsdTZtZzh3cGljclRlVEFC?=
+ =?utf-8?B?cjlGeit0aStOOWJ3VWhORFVZWDhYcGZna1ovUTVIVG5BMnZtVXNzS0ZFaERZ?=
+ =?utf-8?B?NW9CZEk2UTgvYTVpTHVQa2xMaFFub3lHOGlVWVVCbHlJQnRnSi9xbytITG1t?=
+ =?utf-8?B?Sitrb0pHbWZlY005cEErTEMvMkNhKzV5dEZwSkFmVjVEQmZ0Q0FQcWhTbWFR?=
+ =?utf-8?B?WjBLMTFDUk1USEVjM1FmVGpwUnhvY1ltVjJMNWJETUpBSlMxQmJDR0QvcDdZ?=
+ =?utf-8?B?UXJiZUJrVlhJemlGTVNsdVRlbW1PWjlrMldqWSthUVlWc3NERG5mTFRnaldH?=
+ =?utf-8?B?N2lrRGJuZis0RUpVaXFaM1N1c2ZJUzFsYThibDlLYitFWS9OcVU1UFJxSTZi?=
+ =?utf-8?B?WDdpbXNBYzVPOXZXaDR0dDNWVTlJMWJzSlJPelZ2YnZKVmNNbTdGREZMbkN1?=
+ =?utf-8?B?eit2RFlSdXRkcEZRNGQ4Wk4wTVZWMWx2VitETVZDSGVrMXB1VFZXaGdOZHZX?=
+ =?utf-8?B?dEtHMWVic0EySkNCcEc5ZG82UExZVThNaUVxRndVdEJxUkJ4Yng4WjhkMkhI?=
+ =?utf-8?B?SUViK2tzR3kvZ1k2c2ZPcERSSkcyUVFMcnhxeTJpUkxFWTREQjJUemxaOGtR?=
+ =?utf-8?B?b0VuVEdXbnJsZUQ1WGxkalhlL3hock1xUVRnSUZCWUhLZk9kRWxXY2g1TThJ?=
+ =?utf-8?B?c09qTDVOVXcrMGtqSjE3NHNFUlErWStOR2VsUjZZRVgyYytaWlJqMnF3SGFV?=
+ =?utf-8?B?dDdYeXRaUEo5VDAxTDZSenVoOHFkMy9oa0wwNzFMVW9PVWYxNkhvQVhvUnJZ?=
+ =?utf-8?B?SGJ3VFBuNk5BZCs3Mmd6RHBxQURna2dqVHU3Zy9aV083clcycG9TZmx2SzFv?=
+ =?utf-8?B?VXkxVWxPZTZoaW1tSmJUVXNmVzJIM1YrdEZDTmpOeFRvUWlueE4ydG5ZcnBG?=
+ =?utf-8?B?TTZXNWlncWluamZzcGV2OWl3M0UzUVo1NUJjTk84NkNHRjdNclpGV3phN1Q5?=
+ =?utf-8?B?WURmallpVExJcmhSUUJib3hRdkZMblVEaFdwOU0yU0NxaEEyUUJ2V2VMVGI0?=
+ =?utf-8?B?cFNJQ3UrQkNBUFQzOGJ0SUFBZmpaemVmOHBYYWZHYjF2a2VHbUJZbkcxelNk?=
+ =?utf-8?B?S2g0b2Y0OUYxdkFjRmhEUVBQVmFpdG5qTDYyRDFudUdrUTdhbjZGQkRrSWpQ?=
+ =?utf-8?B?ZzM0cUxpNGpMTkoyd2JXUlVtdjlQUXNacVRnNUd2bCtQODFGZHRZU2V4NHox?=
+ =?utf-8?B?NVI0QnhQWHVtTDM2L3VyR21JUFJQbmNPeitLakFpdzJYaVVWSldybDcrZmNQ?=
+ =?utf-8?B?Qk9kblpsRmFidDBlZXlybUk1UTh6RlAwdjZJUStXTFE1VDVXQjZVUXd0V3RX?=
+ =?utf-8?Q?Z1jPvTycyjy+tdFnK/QEtxTXUTlLETvrlasqJ?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <514D34F46C44BF4F9AEF4883489243E6@FRAP264.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20220602213544.68273-1-max@enpas.org> <CAMZ6RqLLn3tE6kPd+yyHURsbBU_jVKN=u4=YvhZVyAf_NyRqCQ@mail.gmail.com>
- <20220611151551.5024f51e.max@enpas.org>
-In-Reply-To: <20220611151551.5024f51e.max@enpas.org>
-From:   Vincent Mailhol <vincent.mailhol@gmail.com>
-Date:   Sat, 11 Jun 2022 23:42:39 +0900
-Message-ID: <CAMZ6RqLb3irjBrpiOv23Hg6vVpzK4d31Pvat2AOS3EC0+e_=3A@mail.gmail.com>
-Subject: Re: [PATCH v7] can, tty: can327 CAN/ldisc driver for ELM327 based
- OBD-II adapters
-To:     Max Staudt <max@enpas.org>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Oliver Neukum <oneukum@suse.com>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: csgroup.eu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: c1f0d302-efbb-47cc-b443-08da4bb900b4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jun 2022 14:45:17.8909
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ktGh4X06IzZfPAl6f1WfeMglAQ9Adhw7xIxiG3NAoGmq4VTKg7Nzk4LKs7nNHLQidE7Wp/SQ2X+PTrm0zyA9AG1bLzVkRPyUbDC3nzDNDoY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MR1P264MB3905
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat. 11 Jun 2022 at 22:15, Max Staudt <max@enpas.org> wrote:
-> @Marc, Wolfgang - one SocketCAN design question about bitrate setting at
-> the end. I'd appreciate your opinion on my dummy do_set_bittiming().
->
-> Comments for Vincent below.
->
->
->
-> On Sat, 4 Jun 2022 00:12:39 +0900
-> Vincent Mailhol <vincent.mailhol@gmail.com> wrote:
->
-> > Hi Max,
-> >
-> > I gave a final deep look into your driver. I found a few things which
-> > went through the cracks of my previous reviews. But overall, it start
-> > to look good. Well done and looking forward for the v8.
->
-> Thank you for your continued support! :)
->
->
-> > Are elm327 and can327 synonymous?
->
-> No. ELM327 is the OBD interpreter chip, made by ELM Electronics, that
-> my driver, can327, speaks to.
->
-> If you have an idea for a catchier name, please let me know while it's
-> not upstream yet ;)
->
-> I only changed the driver name from elmcan to can327 because I wanted to
-> emphasise that it's not something official done by ELM.
-
-I think it is common to name the driver after the hardware regardless
-if it is official or not.
-You have many drivers named after companies without their blessing
-(random example: hid-nintendo, pretty sure Nintendo did not
-participate in the making of this).
-And it makes it easier to research.
-
-> > Not sure if there is a convention of how many empty lines there should
-> > be before a new section in a .rst file. However, three new lines seems
-> > above average (had a quick peek, other .rst files usually use one or
-> > two new lines).
->
-> Not sure either. I find it easier to read with extra visual cues, and
-> to provide them to others.
->
-> If there are no complaints, I'd prefer keep it as-is.
->
->
-> > Information about baudrate parameters is given twice. You could
-> > combine the two paragraphs not to repeat yourself.
->
-> Good idea, will do.
->
->
-> > > +The line discipline can be attached on a command prompt as
-> > > follows:: +
-> > > +    sudo ldattach \
-> > > +           --debug \
-> > > +           --speed 38400 \
-> > > +           --eightbits \
-> > > +           --noparity \
-> > > +           --onestopbit \
-> > > +           --iflag -ICRNL,INLCR,-IXOFF \
-> > > +           30 \
-> > > +           /dev/ttyUSB0
-> > > +
-> > > +To change the ELM327's serial settings, please refer to its data
-> > > +sheet. This needs to be done before attaching the line discipline.
-> > > +
-> > > +Once the ldisc is attached, the CAN interface starts out
-> > > unconfigured. +Set the speed before starting it:
-> >
-> > Shouldn't you use a double column :: here to indicate that the next
-> > block is a piece of code?
->
-> Whoops. Yes, I should. Thanks!
->
->
-> > > +    # The interface needs to be down to change parameters
-> > > +    sudo ip link set can0 down
-> > > +    sudo ip link set can0 type can bitrate 500000
-> > > +    sudo ip link set can0 up
-> > > +
-> > > +500000 bit/s is a common rate for OBD-II diagnostics.
-> > > +If you're connecting straight to a car's OBD port, this is the
-> > > speed +that most cars (but not all!) expect.
-> > > +
-> > > +After this, you can set out as usual with candump, cansniffer, etc.
-> > > +
-> > > +
-> > > +
-> > > +Known limitations of the controller
-> > > +------------------------------------
-> > > +
-> > > +- Clone devices ("v1.5" and others)
-> > > +
-> > > +  Sending RTR frames is not supported and will be dropped silently.
-> > > +
-> > > +  Receiving RTR with DLC 8 will appear to be a regular frame with
-> > > +  the last received frame's DLC and payload.
-> > > +
-> > > +  "``AT CSM``" not supported, thus no ACK-ing frames while
-> > > listening:
-> > > +  "``AT MA``" will always be silent. However, immediately after
-> > > +  sending a frame, the ELM327 will be in "receive reply" mode, in
-> > > +  which it *does* ACK any received frames. Once the bus goes silent
-> > > +  or an error occurs (such as BUFFER FULL), the ELM327 will end
-> > > reply
-> > > +  reception mode on its own and can327 will fall back to "``AT
-> > > MA``"
-> > > +  in order to keep monitoring the bus.
-> >
-> > Maybe two sentences of what is an AT command would be helpful? It is
-> > the Hayes command set, isn't it?
-> > https://en.wikipedia.org/wiki/Hayes_command_set
->
-> It is not Hayes, not at all. Why they chose the AT prefix, I do not
-> know. Modems use it to auto-detect the terminal's speed, while the
-> ELM327 does not. Its baud rate is changed with yet another one of these
-> ATxx commands, after which you need to adapt your terminal's baud rate
-> accordingly.
->
-> Please just see the "AT" prefix as a fixed part of the commands you can
-> send it, with no further meaning. It's like prefixing every magic
-> incantation by "abracadabra" or something.
-
-Thanks for the explanations. Make sense.
-
->
-> > Also, a quick memo of what the acronym CSM and MA mean would be great
-> > (so that we do not need to have to constantly cross check the
-> > datasheet).
->
-> Good idea!
->
->
-> > > +
-> > > +- All versions
-> > > +
-> > > +  No full duplex operation is supported. The driver will switch
-> > > +  between input/output mode as quickly as possible.
-> > > +
-> > > +  The length of outgoing RTR frames cannot be set. In fact, some
-> > > +  clones (tested with one identifying as "``v1.5``") are unable to
-> > "> +  send RTR frames at all.
-> > > +
-> > > +  We don't have a way to get real-time notifications on CAN errors.
-> > > +  While there is a command (``AT CS``) to retrieve some basic
-> > > stats,
-> > > +  we don't poll it as it would force us to interrupt reception
-> > > mode. +
-> > > +
-> > > +- Versions prior to 1.4b
-> > > +
-> > > +  These versions do not send CAN ACKs when in monitoring mode (AT
-> > > MA).
-> > > +  However, they do send ACKs while waiting for a reply immediately
-> > > +  after sending a frame. The driver maximizes this time to make the
-> > > +  controller as useful as possible.
-> > > +
-> > > +  Starting with version 1.4b, the ELM327 supports the "``AT CSM``"
-> > > +  command, and the "listen-only" CAN option will take effect.
-> > > +
-> > > +
-> > > +- Versions prior to 1.4
-> > > +
-> > > +  These chips do not support the "``AT PB``" command, and thus
-> > > cannot
-> > > +  change bitrate or SFF/EFF mode on-the-fly. This will have to be
-> > > +  programmed by the user before attaching the line discipline. See
-> > > the
-> > > +  data sheet for details.
-> > > +
-> > > +
-> > > +- Versions prior to 1.3
-> > > +
-> > > +  These chips cannot be used at all with can327. They do not
-> > > support
-> > > +  the "``AT D1``" command, which is necessary to avoid parsing
-> > > conflicts
-> > > +  on incoming data, as well as distinction of RTR frame lengths.
-> > > +
-> > > +  Specifically, this allows for easy distinction of SFF and EFF
-> > > +  frames, and to check whether frames are complete. While it is
-> > > possible
-> > > +  to deduce the type and length from the length of the line the
-> > > ELM327
-> > > +  sends us, this method fails when the ELM327's UART output buffer
-> > > +  overruns. It may abort sending in the middle of the line, which
-> > > will
-> > > +  then be mistaken for something else.
-> >
-> > Nitpick but I would prefer ascending order: 1.3 then 1.4, then 1.4b
-> > and so on.
->
-> Hm. Fair enough. In return, please let me explain my thinking - maybe
-> you find it useful:
->
-> With reverse ordering, you can start from the top, and then continue
-> down the list until you hit your own device's version version. As you
-> go further down, more limitations will accumulate, until you stop
-> reading when reaching your device's version. Everything below can be
-> ignored.
->
-> Matter of preference indeed. If you insist, I'll change it around.
-
-Here, we enter the domain of taste and colours. I gave you my
-preferences. Use it as an input and make the final decision. It is
-already really great that you took time to write the documentation.
-
-> > > +Communication example
-> > > +----------------------
-> > > +
-> > > +This is a short and incomplete introduction on how to talk to an
-> > > ELM327. +
-> > > +
-> > > +The ELM327 has two modes:
-> > > +
-> > > +- Command mode
-> > > +- Reception mode
-> > > +
-> > > +In command mode, it expects one command per line, terminated by CR.
-> > > +By default, the prompt is a "``>``", after which a command can be
-> > > +entered::
-> > > +
-> > > +    >ATE1
-> > > +    OK
-> > > +    >
-> > > +
-> > > +The init script in the driver switches off several configuration
-> > > options +that are only meaningful in the original OBD scenario the
-> > > chip is meant +for, and are actually a hindrance for can327.
-> > > +
-> > > +
-> > > +When a command is not recognized, such as by an older version of
-> > > the +ELM327, a question mark is printed as a response instead of
-> > > OK:: +
-> > > +    >ATUNKNOWN
-> > > +    ?
-> > > +    >
-> > > +
-> > > +At present, can327 does not evaluate this response and silently
-> > > assumes +that all commands are recognized. It is structured such
-> > > that it will +degrade gracefully when a command is unknown. See the
-> > > sections above on +known limitations for details.
-> >
-> > This information is repeted twice whithin a dozen of lines. When I
-> > read it, it was still fresh in my memory. Removing this paragraph
-> > won't hurt, I think.
->
-> The reason why I repeated it is for casual readers that don't read the
-> entire document top to bottom. Or who may have done so, and then jump
-> into the middle of it - e.g. only reading this "Communication example"
-> section.
-
-This indeed applies to long documents. Yours is succinct enough not to
-have this issue.
-
-> Do you still want me to remove the dupe?
-
-Same as above, I won't force you. You can make an educated choice to
-keep it or not based on the feedback I provided you.
-
-> > > +When a CAN frame is to be sent, the target address is configured,
-> > > after +which the frame is sent as a command that consists of the
-> > > data's hex +dump::
-> > > +
-> > > +    >ATSH123
-> > > +    OK
-> > > +    >DEADBEEF12345678
-> > > +    OK
-> > > +    >
-> > > +
-> > > +The above interaction sends the frame "``DE AD BE EF 12 34 56
-> > > 78``" with +the 11 bit CAN ID ``0x123``.
-> >
-> > Use the standard terminology:
-> > 11 bit CAN ID -> SFF (standard frame format)
-> >
-> > ...
-> >
-> > Use the standard terminology:
-> > 29 bit CAN frames -> EFF (extended frame format)
->
-> Done.
->
->
-> > > +can327 uses to tell the two apart::
-> > > +
-> > > +    12 34 56 78 8 DEADBEEF12345678
-> > > +
-> > > +The ELM327 will receive both 11 and 29 bit frames - the current CAN
-> > > +config (``ATPB``) does not matter.
-> > > +
-> > > +
-> > > +If the ELM327's internal UART sending buffer runs full, it will
-> > > abort +the monitoring mode, print "BUFFER FULL" and drop back into
-> > > command +mode. Note that in this case, unlike with other error
-> > > messages, the +error message may appear on the same line as the
-> > > last (usually +incomplete) data frame::
-> > > +
-> > > +    12 34 56 78 8 DEADBEEF123 BUFFER FULL
-> >
-> > Would be beneficial to put this section before the "known limitations"
-> > one. It gives some nice context and help to better understand the
-> > topics raised and reading this first really
->
-> True, good point.
->
->
-> > > diff --git a/Documentation/networking/device_drivers/can/index.rst
-> > > b/Documentation/networking/device_drivers/can/index.rst index
-> > > 58b6e0ad3030..c4f724db4908 100644 ---
-> > > a/Documentation/networking/device_drivers/can/index.rst +++
-> > > b/Documentation/networking/device_drivers/can/index.rst @@ -10,6
-> > > +10,7 @@ Contents: .. toctree::
-> > >     :maxdepth: 2
-> > >
-> > > +   can327
-> > >     freescale/flexcan
-> >
-> > This part of the patch does not apply. It conflicts with
-> > https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=5f02ecbe08d6a3434a14b92bee98adec76e8808e
-> >
-> > Please rebase on the latest version on net-next.
->
-> Thanks, will do. I may wait for your cleanup patches to appear, though.
-
-The v5 of my cleanup is already in the master branch of linux-can-next:
-https://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git/log/
-
-But you might have a conflict on drivers/net/can/Kconfig so better to
-wait for the v6 (or apply my patches manually if you are in a hurry).
-
->
-> > > +#include <linux/init.h>
-> > > +#include <linux/module.h>
-> > > +#include <linux/moduleparam.h>
-> >
-> > linux/moduleparam.h is not needed, right? Please make sure to clean up
-> > unused headers.
->
-> Oh, true, the dreaded module parameter that was removed in v3.
->
-> I'll clean up.
->
-> BTW, in case anyone is wondering - no user of the out-of-tree version
-> has complained about this module parameter going missing, so it was
-> indeed unnecessary!
->
->
-> > > +#include <linux/atomic.h>
-> > > +#include <linux/bitops.h>
-> > > +#include <linux/ctype.h>
-> > > +#include <linux/delay.h>
-> > > +#include <linux/errno.h>
-> > > +#include <linux/if_ether.h>
-> > > +#include <linux/kernel.h>
-> > > +#include <linux/list.h>
-> > > +#include <linux/lockdep.h>
-> > > +#include <linux/netdevice.h>
-> > > +#include <linux/skbuff.h>
-> > > +#include <linux/spinlock.h>
-> > > +#include <linux/string.h>
-> > > +#include <linux/tty.h>
-> > > +#include <linux/tty_ldisc.h>
-> > > +#include <linux/workqueue.h>
-> > > +
-> > > +#include <uapi/linux/tty.h>
-> > > +
-> > > +#include <linux/can.h>
-> > > +#include <linux/can/dev.h>
-> > > +#include <linux/can/error.h>
-> > > +#include <linux/can/led.h>
-> >
-> > Rebase on net-next (or can-next) and remove CAN LED. c.f.:
-> > https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=6c1e423a3c84953edcf91ff03ab97829b287184a
->
-> Done. Thanks!
->
->
-> > > +static int elm327_parse_frame(struct can327 *elm, size_t len)
-> > > +{
-> > > +       struct can_frame *frame;
-> > > +       struct sk_buff *skb;
-> > > +       int hexlen;
-> > > +       int datastart;
-> > > +       int i;
-> > > +
-> > > +       lockdep_assert_held(&elm->lock);
-> > > +
-> > > +       skb = alloc_can_skb(elm->dev, &frame);
-> > > +       if (!skb)
-> > > +               return -ENOMEM;
-> > > +
-> > > +       /* Find first non-hex and non-space character:
-> > > +        *  - In the simplest case, there is none.
-> > > +        *  - For RTR frames, 'R' is the first non-hex character.
-> > > +        *  - An error message may replace the end of the data line.
-> > > +        */
-> > > +       for (hexlen = 0; hexlen <= len; hexlen++) {
-> > > +               if (hex_to_bin(elm->rxbuf[hexlen]) < 0 &&
-> > > +                   elm->rxbuf[hexlen] != ' ') {
-> > > +                       break;
-> > > +               }
-> > > +       }
-> > > +
-> > > +       /* Sanity check whether the line is really a clean hexdump,
-> > > +        * or terminated by an error message, or contains garbage.
-> > > +        */
-> > > +       if (hexlen < len &&
-> > > +           !isdigit(elm->rxbuf[hexlen]) &&
-> > > +           !isupper(elm->rxbuf[hexlen]) &&
-> > > +           '<' != elm->rxbuf[hexlen] &&
-> > > +           ' ' != elm->rxbuf[hexlen]) {
-> > > +               /* The line is likely garbled anyway, so bail.
-> > > +                * The main code will restart listening.
-> > > +                */
-> > > +               return -ENODATA;
-> >
-> > Here (and on other return statement of this function), I think you
-> > have a memory leak on skb. You probably need a goto label to free the
-> > skb when error occurs.
->
-> Oh no, you're right! Thank you so much for spotting this.
->
-> This happened during the transition to use alloc_can_skb(). I used to
-> have a CAN frame on the stack, so no leak could happen.
->
-> I've checked the other sites where I retrofitted alloc_can_* as well,
-> all is good now.
->
->
-> > > +/* Send a can_frame to a TTY. */
-> > > +static netdev_tx_t can327_netdev_start_xmit(struct sk_buff *skb,
-> > > +                                           struct net_device *dev)
-> > > +{
-> > > +       struct can327 *elm = netdev_priv(dev);
-> > > +       struct can_frame *frame = (struct can_frame *)skb->data;
-> > > +
-> > > +       if (can_dropped_invalid_skb(dev, skb))
-> > > +               return NETDEV_TX_OK;
-> > > +
-> > > +       /* This check will be part of can_dropped_invalid_skb()
-> > > +        * in future kernels.
-> > > +        */
-> > > +       if (elm->can.ctrlmode & CAN_CTRLMODE_LISTENONLY)
-> > > +               goto out;
-> > > +
-> > > +       /* We shouldn't get here after a hardware fault:
-> > > +        * can_bus_off() calls netif_carrier_off()
-> > > +        */
-> > > +       if (elm->uart_side_failure) {
-> > > +               WARN_ON_ONCE(elm->uart_side_failure);
-> > > +               goto out;
-> > > +       }
-> > > +
-> > > +       netif_stop_queue(dev);
-> > > +
-> > > +       /* BHs are already disabled, so no spin_lock_bh().
-> > > +        * See Documentation/networking/netdevices.txt
-> > > +        */
-> > > +       spin_lock(&elm->lock);
-> > > +       elm327_send_frame(elm, frame);
-> > > +       spin_unlock(&elm->lock);
-> > > +
-> > > +       dev->stats.tx_packets++;
-> > > +       dev->stats.tx_bytes += frame->len;
-> > > +
-> > > +       can_led_event(dev, CAN_LED_EVENT_TX);
-> > > +
-> > > +out:
-> > > +       kfree_skb(skb);
-> > > +       return NETDEV_TX_OK;
-> >
-> > So here, you never loopback the skb. For what I understand, the
-> > controller does not provide such loopback features.
-> >
-> > However, local loopback is a core part of SocketCAN Concept, c.f.:
-> > https://docs.kernel.org/networking/can.html#local-loopback-of-sent-frames
->
-> That part of the documentation links onto itself because two sections
-> bear the same name :(
-
-Loopback doc links onto itself? Or should I say that it *loopbacks*
-onto itself? Don't know if the pun is intended but find it funny.
-
-> So both sections together confirm that the CAN core performs the local
-> echo for me, because I never set IFF_ECHO. That's what I have been
-> building on - just like slcan. can327 can't provide exact information
-> anyway. Since even reception won't work until transmission is done
-> (ELM327 provides a half-duplex interface on its UART), it won't reorder
-> events.
->
-> Okay, thinking deeper, I can think of *one* race case: Something flowing
-> into the UART RX buffer while the UART TX buffer is being constructed.
-> The ELM327 needs to be taken out of reception mode, and put into sending
-> mode. The echo packet should be delayed until reception mode is
-> successfully terminated and thus all UART RX data up until then is
-> parsed (and any CAN frames are piped into SocketCAN).
->
-> I'll see to fixing this. This is nagging me now.
->
->
-> > It is still better to loopback even if you can not know for sure if
-> > the transmission is successfull.
-> > The easiest way to loopback your skb by using can_put_echo_skb() and
-> > then can_get_echo_skb() right away, similar to what cc770 does:
-> > https://elixir.bootlin.com/linux/latest/source/drivers/net/can/cc770/cc770.c#L698
-> >
-> > If you do so, do not forget to adjust your call to alloc_candev() to
-> > add room for one echo skb.
->
-> See above.
-
-Do as you prefer. If you do not want the mainstream release to be
-further delayed, I think it is fully acceptable to go with the lazy
-direct loopback as I suggested and then later on provide a new patch.
-
->
-> > > +/* ELM327 can only handle bitrates that are integer divisors of
-> > > 500 kHz,
-> > > + * or 7/8 of that. Divisors are 1 to 64.
-> > > + * Currently we don't implement support for 7/8 rates.
-> > > + */
-> > > +static const u32 can327_bitrate_const[64] = {
-> >
-> > Nitpick but I preffer not to specify the size and let the compiler do
-> > it for me: static const u32 can327_bitrate_const[] = {
-> >
-> > If you are worried about the size, you can always do:
-> > static_assert(sizeof(can327_bitrate_const) == 64);
->
-> Nah, no worries here, I don't remember why I did this so I'll remove
-> the size :)
->
->
-> >
-> > > +        7812,  7936,  8064,  8196,  8333,  8474,  8620,  8771,
-> > > +        8928,  9090,  9259,  9433,  9615,  9803, 10000, 10204,
-> > > +       10416, 10638, 10869, 11111, 11363, 11627, 11904, 12195,
-> > > +       12500, 12820, 13157, 13513, 13888, 14285, 14705, 15151,
-> > > +       15625, 16129, 16666, 17241, 17857, 18518, 19230, 20000,
-> > > +       20833, 21739, 22727, 23809, 25000, 26315, 27777, 29411,
-> > > +       31250, 33333, 35714, 38461, 41666, 45454, 50000, 55555,
-> > > +       62500, 71428, 83333, 100000, 125000, 166666, 250000, 500000
-> > > +};
-> > > +
-> > > +/* Dummy needed to use bitrate_const */
-> > > +static int can327_do_set_bittiming(struct net_device *netdev)
-> > > +{
-> > > +       return 0;
-> > > +}
-> >
-> > Is this dummy function really needed? If think that access to
-> > can_priv::do_set_bittiming is always garded. Setting it to NULL should
-> > be OK. c.f.:
-> > https://elixir.bootlin.com/linux/latest/source/drivers/net/can/dev/netlink.c#L198
->
-> drivers/net/can/dev/netlink.c - can_changelink():
->
->         /* Calculate bittiming parameters based on
->          * bittiming_const if set, otherwise pass bitrate
->          * directly via do_set_bitrate(). Bail out if neither
->          * is given.
->          */
->         if (!priv->bittiming_const && !priv->do_set_bittiming)
->                 return -EOPNOTSUPP;
->
-> can327 has neither of these two, so I provide a dummy for one.
->
-> What should I do instead?
-
-If the issue is on the API, fix the API!
-You nailed the issue and Marc fixed it!
-
-> While at it, a comment in elm327_init mentioned bittiming_const - that
-> was from the pre-bitrate_const (< v4.11) times, and I've now updated it
-> to mention bitrate_const instead.
->
->
->
-> Thank you for the thorough review!
-
-And thanks for taking time to fix it.
-
-I am happy with your answers. I let you make the final call on all of
-my nitpicks and do what you think is best. Because I am done with the
-review please add the following to your next version:
-Reviewed-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+DQoNCkxlIDExLzA2LzIwMjIgw6AgMTI6MDQsIEphc29uIEEuIERvbmVuZmVsZCBhIMOpY3JpdMKg
+Og0KPiBUaGUgcGxhdGZvcm0ncyBSTkcgbXVzdCBiZSBhdmFpbGFibGUgYmVmb3JlIHJhbmRvbV9p
+bml0KCkgaW4gb3JkZXIgdG8gYmUNCj4gdXNlZnVsIGZvciBpbml0aWFsIHNlZWRpbmcsIHdoaWNo
+IGluIHR1cm4gbWVhbnMgdGhhdCBpdCBuZWVkcyB0byBiZQ0KPiBjYWxsZWQgZnJvbSBzZXR1cF9h
+cmNoKCksIHJhdGhlciB0aGFuIGZyb20gYW4gaW5pdCBjYWxsLiBGb3J0dW5hdGVseSwNCj4gZWFj
+aCBwbGF0Zm9ybSBhbHJlYWR5IGhhcyBhIHNldHVwX2FyY2ggZnVuY3Rpb24gcG9pbnRlciwgd2hp
+Y2ggbWVhbnMNCj4gaXQncyBlYXN5IHRvIHdpcmUgdGhpcyB1cCBmb3IgZWFjaCBvZiB0aGUgdGhy
+ZWUgcGxhdGZvcm1zIHRoYXQgaGF2ZSBhbg0KPiBSTkcuIFRoaXMgY29tbWl0IGFsc28gcmVtb3Zl
+cyBzb21lIG5vaXN5IGxvZyBtZXNzYWdlcyB0aGF0IGRvbid0IGFkZA0KPiBtdWNoLg0KPiANCj4g
+Q2M6IHN0YWJsZUB2Z2VyLmtlcm5lbC5vcmcNCj4gQ2M6IE1pY2hhZWwgRWxsZXJtYW4gPG1wZUBl
+bGxlcm1hbi5pZC5hdT4NCj4gQ2M6IENocmlzdG9waGUgTGVyb3kgPGNocmlzdG9waGUubGVyb3lA
+Y3Nncm91cC5ldT4NCj4gRml4ZXM6IGE0ODkwNDNmNDYyNiAoInBvd2VycGMvcHNlcmllczogSW1w
+bGVtZW50IGFyY2hfZ2V0X3JhbmRvbV9sb25nKCkgYmFzZWQgb24gSF9SQU5ET00iKQ0KPiBTaWdu
+ZWQtb2ZmLWJ5OiBKYXNvbiBBLiBEb25lbmZlbGQgPEphc29uQHp4MmM0LmNvbT4NCj4gLS0tDQo+
+ICAgYXJjaC9wb3dlcnBjL3BsYXRmb3Jtcy9wc2VyaWVzL3JuZy5jICAgfCAxMSArKy0tLS0tLS0t
+LQ0KPiAgIGFyY2gvcG93ZXJwYy9wbGF0Zm9ybXMvcHNlcmllcy9zZXR1cC5jIHwgIDMgKysrDQo+
+ICAgMiBmaWxlcyBjaGFuZ2VkLCA1IGluc2VydGlvbnMoKyksIDkgZGVsZXRpb25zKC0pDQo+IA0K
+PiBkaWZmIC0tZ2l0IGEvYXJjaC9wb3dlcnBjL3BsYXRmb3Jtcy9wc2VyaWVzL3JuZy5jIGIvYXJj
+aC9wb3dlcnBjL3BsYXRmb3Jtcy9wc2VyaWVzL3JuZy5jDQo+IGluZGV4IDYyNjg1NDU5NDdiOC4u
+ZDM5YmZjZTM5YWExIDEwMDY0NA0KPiAtLS0gYS9hcmNoL3Bvd2VycGMvcGxhdGZvcm1zL3BzZXJp
+ZXMvcm5nLmMNCj4gKysrIGIvYXJjaC9wb3dlcnBjL3BsYXRmb3Jtcy9wc2VyaWVzL3JuZy5jDQo+
+IEBAIC0yNCwxOSArMjQsMTIgQEAgc3RhdGljIGludCBwc2VyaWVzX2dldF9yYW5kb21fbG9uZyh1
+bnNpZ25lZCBsb25nICp2KQ0KPiAgIAlyZXR1cm4gMDsNCj4gICB9DQo+ICAgDQo+IC1zdGF0aWMg
+X19pbml0IGludCBybmdfaW5pdCh2b2lkKQ0KPiArX19pbml0IHZvaWQgcHNlcmllc19ybmdfaW5p
+dCh2b2lkKQ0KPiAgIHsNCj4gICAJc3RydWN0IGRldmljZV9ub2RlICpkbjsNCj4gLQ0KDQpUaGVy
+ZSBtdXN0IGJlIGEgZW1wdHkgbGluZSBiZXR3ZWVuIGRlY2xhcmF0aW9ucyBhbmQgY29kZS4NCg0K
+PiAgIAlkbiA9IG9mX2ZpbmRfY29tcGF0aWJsZV9ub2RlKE5VTEwsIE5VTEwsICJpYm0scmFuZG9t
+Iik7DQo+ICAgCWlmICghZG4pDQo+IC0JCXJldHVybiAtRU5PREVWOw0KPiAtDQo+IC0JcHJfaW5m
+bygiUmVnaXN0ZXJpbmcgYXJjaCByYW5kb20gaG9vay5cbiIpOw0KPiAtDQo+ICsJCXJldHVybjsN
+Cj4gICAJcHBjX21kLmdldF9yYW5kb21fc2VlZCA9IHBzZXJpZXNfZ2V0X3JhbmRvbV9sb25nOw0K
+PiAtDQo+ICAgCW9mX25vZGVfcHV0KGRuKTsNCj4gLQlyZXR1cm4gMDsNCj4gICB9DQo+IC1tYWNo
+aW5lX3N1YnN5c19pbml0Y2FsbChwc2VyaWVzLCBybmdfaW5pdCk7DQo+IGRpZmYgLS1naXQgYS9h
+cmNoL3Bvd2VycGMvcGxhdGZvcm1zL3BzZXJpZXMvc2V0dXAuYyBiL2FyY2gvcG93ZXJwYy9wbGF0
+Zm9ybXMvcHNlcmllcy9zZXR1cC5jDQo+IGluZGV4IGFmYjA3NDI2OWI0Mi4uN2YzZWUyNjU4MTYz
+IDEwMDY0NA0KPiAtLS0gYS9hcmNoL3Bvd2VycGMvcGxhdGZvcm1zL3BzZXJpZXMvc2V0dXAuYw0K
+PiArKysgYi9hcmNoL3Bvd2VycGMvcGxhdGZvcm1zL3BzZXJpZXMvc2V0dXAuYw0KPiBAQCAtNzc5
+LDYgKzc3OSw4IEBAIHN0YXRpYyByZXNvdXJjZV9zaXplX3QgcHNlcmllc19wY2lfaW92X3Jlc291
+cmNlX2FsaWdubWVudChzdHJ1Y3QgcGNpX2RldiAqcGRldiwNCj4gICB9DQo+ICAgI2VuZGlmDQo+
+ICAgDQo+ICtfX2luaXQgdm9pZCBwc2VyaWVzX3JuZ19pbml0KHZvaWQpOw0KPiArDQoNClByb3Rv
+dHlwZSBoYXMgdG8gZ28gaW4gYSBoZWFkZXIgZmlsZSwgYW5kIHNob3VsZCBiZSBwU2VyaWVzIG1h
+eWJlIA0KYWxsdGhvdWdoIGNhbWVsQ2FzZSBpbiB0aHJvdyB1cCBvbi4NCg0KPiAgIHN0YXRpYyB2
+b2lkIF9faW5pdCBwU2VyaWVzX3NldHVwX2FyY2godm9pZCkNCj4gICB7DQo+ICAgCXNldF9hcmNo
+X3BhbmljX3RpbWVvdXQoMTAsIEFSQ0hfUEFOSUNfVElNRU9VVCk7DQo+IEBAIC04MzksNiArODQx
+LDcgQEAgc3RhdGljIHZvaWQgX19pbml0IHBTZXJpZXNfc2V0dXBfYXJjaCh2b2lkKQ0KPiAgIAl9
+DQo+ICAgDQo+ICAgCXBwY19tZC5wY2liaW9zX3Jvb3RfYnJpZGdlX3ByZXBhcmUgPSBwc2VyaWVz
+X3Jvb3RfYnJpZGdlX3ByZXBhcmU7DQo+ICsJcHNlcmllc19ybmdfaW5pdCgpOw0KPiAgIH0NCj4g
+ICANCj4gICBzdGF0aWMgdm9pZCBwc2VyaWVzX3BhbmljKGNoYXIgKnN0cik=
