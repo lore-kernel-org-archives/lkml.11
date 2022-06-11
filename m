@@ -2,98 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A738EC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 16:12:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12E45C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 16:13:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235079AbiFKQMR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 12:12:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36380 "EHLO
+        id S239382AbiFKQNs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 12:13:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231174AbiFKQMO (ORCPT
+        with ESMTP id S233959AbiFKQNX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 12:12:14 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9117ABE;
-        Sat, 11 Jun 2022 09:12:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=bxg6oME6P+/xKVdg0UH1OZTEHoeeXwl7w9rgm0xrILk=; b=GpkQkm0IOqePVzg/8SbLkwyoki
-        GUZMbFBct50MYFqT7VyTM5qR5gy3PZi8+n0X92CjYA49aDgQBck6gQniTm0Yj6ymanKOofWwJHfRj
-        /T/mTvxaJo7X2vmQYlYt4WcmhaE2U3i1sYfClDA9r6KPooci80mOUSMJyKtCy5YUh5J4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1o03iP-006WjH-FD; Sat, 11 Jun 2022 18:11:57 +0200
-Date:   Sat, 11 Jun 2022 18:11:57 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michal Kubecek <mkubecek@suse.cz>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v1 1/1] net: phy: add remote fault support
-Message-ID: <YqS+zYHf6eHMWJlD@lunn.ch>
-References: <20220608093403.3999446-1-o.rempel@pengutronix.de>
+        Sat, 11 Jun 2022 12:13:23 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87E8E39815
+        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 09:13:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654964002; x=1686500002;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=ML5pdHk40QEa1TxA5mVW1n6giskH9h6L4ibWC8gVMBA=;
+  b=ZVwpJqfFbFFj4GneYSLSs8et1ULvlcbRC3H4pjmnhn98w6hog3G6pW30
+   zg6vUVszd2C1lgabsgRgha4A32Y4SGr3+mrK3TLzCrQzbP9AaI8ZXvO3X
+   4bvonKGpNtXiJOHjXGEcEyAbuT42pwrfFAP6JXNh/x3MOkafUfKLfB6KD
+   yfvF4Ahk89922JO8FpicgF4NLazLotj8yfYLRQO0SLwWoV9N4NYGX7WEs
+   iUkGE423y0vHm4pt3RXiOXcZaKP3N3rSfHmGSywLWBv9TcVP+6l6M4Nuf
+   5dO5w/v2atZNMG6+e1mZCzrqx5KDISS43zZ6Ov/gYC7qYMQjA9kTnf3Ut
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10375"; a="258339400"
+X-IronPort-AV: E=Sophos;i="5.91,293,1647327600"; 
+   d="scan'208";a="258339400"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2022 09:13:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,293,1647327600"; 
+   d="scan'208";a="567290238"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 11 Jun 2022 09:13:21 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o03jk-000J3m-D5;
+        Sat, 11 Jun 2022 16:13:20 +0000
+Date:   Sun, 12 Jun 2022 00:12:25 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: arch/arm/mm/copypage-feroceon.c:65:6: warning: no previous prototype
+ for 'feroceon_copy_user_highpage'
+Message-ID: <202206120025.LnzrdX8M-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220608093403.3999446-1-o.rempel@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
-> index c67bf3060173..6c55c7f9b680 100644
-> --- a/drivers/net/phy/phy-c45.c
-> +++ b/drivers/net/phy/phy-c45.c
-> @@ -205,7 +205,7 @@ static int genphy_c45_baset1_an_config_aneg(struct phy_device *phydev)
->  		break;
->  	case MASTER_SLAVE_CFG_UNKNOWN:
->  	case MASTER_SLAVE_CFG_UNSUPPORTED:
-> -		return 0;
-> +		break;
->  	default:
->  		phydev_warn(phydev, "Unsupported Master/Slave mode\n");
->  		return -EOPNOTSUPP;
-> @@ -223,11 +223,16 @@ static int genphy_c45_baset1_an_config_aneg(struct phy_device *phydev)
->  		break;
->  	}
->  
-> +	if (phydev->remote_fault_set >= REMOTE_FAULT_CFG_ERROR)
-> +		adv_l |= MDIO_AN_T1_ADV_L_REMOTE_FAULT;
-> +
->  	adv_l |= linkmode_adv_to_mii_t1_adv_l_t(phydev->advertising);
->  
->  	ret = phy_modify_mmd_changed(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_L,
-> -				     (MDIO_AN_T1_ADV_L_FORCE_MS | MDIO_AN_T1_ADV_L_PAUSE_CAP
-> -				     | MDIO_AN_T1_ADV_L_PAUSE_ASYM), adv_l);
-> +				     (MDIO_AN_T1_ADV_L_FORCE_MS |
-> +				      MDIO_AN_T1_ADV_L_PAUSE_CAP |
-> +				      MDIO_AN_T1_ADV_L_PAUSE_ASYM |
-> +				      MDIO_AN_T1_ADV_L_REMOTE_FAULT), adv_l);
+Hi Arnd,
 
-Since this is part of config_aneg, i assume you have to trigger an
-renegotiation, which will put the link down for a while. Is that
-actually required? Can the fault indicator be set at runtime without a
-full auto-neg? I suppose for a fault indicator, it probably does not
-matter, there is a fault... But i'm wondering about future extensions
-which might want to send values when the link is up. I've seen some
-PHYs indicate their make/model, etc. What sort of API would be needed
-for that?
+First bad commit (maybe != root cause):
 
-It might also be useful if we could send an event to userspace when
-the receive state changes, so there is no need to poll. I thought
-something link a linkstate message was broadcast under some
-conditions? That again my suggest ksetting is maybe not the best place
-for this?
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   0885eacdc81f920c3e0554d5615e69a66504a28d
+commit: 7036440eab3e2d47a775d4616909f8235488d714 ARM: omap1: enable multiplatform
+date:   8 days ago
+config: arm-randconfig-r004-20220611 (https://download.01.org/0day-ci/archive/20220612/202206120025.LnzrdX8M-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=7036440eab3e2d47a775d4616909f8235488d714
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 7036440eab3e2d47a775d4616909f8235488d714
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash arch/arm/mach-lpc32xx/ arch/arm/mach-versatile/ arch/arm/mm/ drivers/cpufreq/
 
-I see no problem in exposing this information, but i would like to be
-sure we get the API correct.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-     Andrew
+All warnings (new ones prefixed by >>):
+
+>> arch/arm/mm/copypage-feroceon.c:65:6: warning: no previous prototype for 'feroceon_copy_user_highpage' [-Wmissing-prototypes]
+      65 | void feroceon_copy_user_highpage(struct page *to, struct page *from,
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> arch/arm/mm/copypage-feroceon.c:78:6: warning: no previous prototype for 'feroceon_clear_user_highpage' [-Wmissing-prototypes]
+      78 | void feroceon_clear_user_highpage(struct page *page, unsigned long vaddr)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--
+>> arch/arm/mach-lpc32xx/serial.c:63:6: warning: no previous prototype for 'lpc32xx_loopback_set' [-Wmissing-prototypes]
+      63 | void lpc32xx_loopback_set(resource_size_t mapbase, int state)
+         |      ^~~~~~~~~~~~~~~~~~~~
+--
+>> arch/arm/mach-versatile/versatile.c:56:14: warning: no previous prototype for 'mmc_status' [-Wmissing-prototypes]
+      56 | unsigned int mmc_status(struct device *dev)
+         |              ^~~~~~~~~~
+--
+>> drivers/cpufreq/davinci-cpufreq.c:151:12: warning: no previous prototype for 'davinci_cpufreq_init' [-Wmissing-prototypes]
+     151 | int __init davinci_cpufreq_init(void)
+         |            ^~~~~~~~~~~~~~~~~~~~
+
+
+vim +/feroceon_copy_user_highpage +65 arch/arm/mm/copypage-feroceon.c
+
+d73e60b7144a86 Russell King  2008-10-31   64  
+063b0a4207e43a Russell King  2008-10-31  @65  void feroceon_copy_user_highpage(struct page *to, struct page *from,
+f00a75c094c340 Russell King  2009-10-05   66  	unsigned long vaddr, struct vm_area_struct *vma)
+063b0a4207e43a Russell King  2008-10-31   67  {
+063b0a4207e43a Russell King  2008-10-31   68  	void *kto, *kfrom;
+063b0a4207e43a Russell King  2008-10-31   69  
+5472e862de2bc4 Cong Wang     2011-11-25   70  	kto = kmap_atomic(to);
+5472e862de2bc4 Cong Wang     2011-11-25   71  	kfrom = kmap_atomic(from);
+2725898fc9bb21 Russell King  2009-10-05   72  	flush_cache_page(vma, vaddr, page_to_pfn(from));
+063b0a4207e43a Russell King  2008-10-31   73  	feroceon_copy_user_page(kto, kfrom);
+5472e862de2bc4 Cong Wang     2011-11-25   74  	kunmap_atomic(kfrom);
+5472e862de2bc4 Cong Wang     2011-11-25   75  	kunmap_atomic(kto);
+063b0a4207e43a Russell King  2008-10-31   76  }
+063b0a4207e43a Russell King  2008-10-31   77  
+303c6443659bc1 Russell King  2008-10-31  @78  void feroceon_clear_user_highpage(struct page *page, unsigned long vaddr)
+d73e60b7144a86 Russell King  2008-10-31   79  {
+5472e862de2bc4 Cong Wang     2011-11-25   80  	void *ptr, *kaddr = kmap_atomic(page);
+43ae286b7d4d8c Nicolas Pitre 2008-11-04   81  	asm volatile ("\
+43ae286b7d4d8c Nicolas Pitre 2008-11-04   82  	mov	r1, %2				\n\
+d73e60b7144a86 Russell King  2008-10-31   83  	mov	r2, #0				\n\
+d73e60b7144a86 Russell King  2008-10-31   84  	mov	r3, #0				\n\
+d73e60b7144a86 Russell King  2008-10-31   85  	mov	r4, #0				\n\
+d73e60b7144a86 Russell King  2008-10-31   86  	mov	r5, #0				\n\
+d73e60b7144a86 Russell King  2008-10-31   87  	mov	r6, #0				\n\
+d73e60b7144a86 Russell King  2008-10-31   88  	mov	r7, #0				\n\
+d73e60b7144a86 Russell King  2008-10-31   89  	mov	ip, #0				\n\
+d73e60b7144a86 Russell King  2008-10-31   90  	mov	lr, #0				\n\
+303c6443659bc1 Russell King  2008-10-31   91  1:	stmia	%0, {r2-r7, ip, lr}		\n\
+d73e60b7144a86 Russell King  2008-10-31   92  	subs	r1, r1, #1			\n\
+303c6443659bc1 Russell King  2008-10-31   93  	mcr	p15, 0, %0, c7, c14, 1		@ clean and invalidate D line\n\
+43ae286b7d4d8c Nicolas Pitre 2008-11-04   94  	add	%0, %0, #32			\n\
+d73e60b7144a86 Russell King  2008-10-31   95  	bne	1b				\n\
+303c6443659bc1 Russell King  2008-10-31   96  	mcr	p15, 0, r1, c7, c10, 4		@ drain WB"
+43ae286b7d4d8c Nicolas Pitre 2008-11-04   97  	: "=r" (ptr)
+43ae286b7d4d8c Nicolas Pitre 2008-11-04   98  	: "0" (kaddr), "I" (PAGE_SIZE / 32)
+303c6443659bc1 Russell King  2008-10-31   99  	: "r1", "r2", "r3", "r4", "r5", "r6", "r7", "ip", "lr");
+5472e862de2bc4 Cong Wang     2011-11-25  100  	kunmap_atomic(kaddr);
+d73e60b7144a86 Russell King  2008-10-31  101  }
+d73e60b7144a86 Russell King  2008-10-31  102  
+
+:::::: The code at line 65 was first introduced by commit
+:::::: 063b0a4207e43acbeff3d4b09f43e750e0212b48 [ARM] copypage: provide our own copy_user_highpage()
+
+:::::: TO: Russell King <rmk@dyn-67.arm.linux.org.uk>
+:::::: CC: Russell King <rmk+kernel@arm.linux.org.uk>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
