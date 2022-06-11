@@ -2,215 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDBCEC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 18:07:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E6E9C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 18:07:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233782AbiFKSHO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 14:07:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60064 "EHLO
+        id S234860AbiFKSH0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 14:07:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229688AbiFKSHJ (ORCPT
+        with ESMTP id S234278AbiFKSHX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 14:07:09 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 808056C55C;
-        Sat, 11 Jun 2022 11:07:07 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id 25so2533733edw.8;
-        Sat, 11 Jun 2022 11:07:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=TUqRlKRoE9aIbbU4h+MYAoDxFTivbQhtgPpMRCTQ/50=;
-        b=Sv4NMZPVTsRK4kn4MOK4Odc/SDaRiJcfpZPetRiKBHM9aTlUzS37ZBW7z4/jAYXH3d
-         ca3ISCGO+ipIbvfoNFiT3vZWE0tF8W7+cc/hS7JldJ1t8TIOzHVgxih+sOs7fKbfeL2r
-         9KPYtHcZ29eHbqi2qj6XlP7NiA1V0JSPsDiCX5bNBr+loG3fW0Jqtou0Kw/HUwV1qyri
-         Xoo6AgJZNxJmHHJe13QHkNhayoMIrfmDbw928I0OUC19XEfok3djwsI1Qbx2jo/vIPLF
-         VbPxrBURuoCTtTZCFD+NoBzovzXcEQ95gGfSDTJMSKxk7hRQf9ruRDY4qvpU7DQEzVVc
-         omUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=TUqRlKRoE9aIbbU4h+MYAoDxFTivbQhtgPpMRCTQ/50=;
-        b=C4k0SnYFf+OZykZPkwr8qG30qAKzA5Klbmy7yogOPqeaCc1DNrKFpORBdy+qdcMexq
-         QgCq1EUqhjEU6JV/BNFWDLwpz4fS4Nq3BOJjWIbHMhkmcdcl0FKAsoWqsjxh1qeCmCl3
-         jHTOw3fdAwgV2Yg4gTwCHo+yiqcl+3ZUCslsCWPe62mxS8uJx2c6SmAeWYnB9+pXFsSe
-         9l11STQXPUh7XeNBw5FGxXeR5MW0nNJBp3DV2wQnpFEgFkcKgbqR3lFnsuQZZ2LC/1QD
-         MUFk9brNRcqAd5VaJV7uoGFG93Y/RmC/Nk3wF8EAc15cN2vOYCeQ8ntw7dduq/Rs07iR
-         C6ug==
-X-Gm-Message-State: AOAM533Iyxqsh6h/s4hcISl2/0wb4RR8JVwrd7bdV+uPFNPr8D1B6/rM
-        D6KgUD82j1YJ9tqh/of9Hq73At6Ek6/WWw==
-X-Google-Smtp-Source: ABdhPJwO73AXLA4uNmIh/O9IIqTIq37jMZLUGyJkTeTp7kruz9HoFN6jJPoCdEBgkThPEo6HAJkcKQ==
-X-Received: by 2002:a05:6402:34cc:b0:431:67ed:96a0 with SMTP id w12-20020a05640234cc00b0043167ed96a0mr34329668edc.372.1654970825959;
-        Sat, 11 Jun 2022 11:07:05 -0700 (PDT)
-Received: from standask-GA-A55M-S2HP ([188.123.113.247])
-        by smtp.gmail.com with ESMTPSA id d13-20020a170906640d00b006fee28d459csm1308455ejm.224.2022.06.11.11.07.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Jun 2022 11:07:05 -0700 (PDT)
-Date:   Sat, 11 Jun 2022 20:07:03 +0200
-From:   Stanislav Jakubek <stano.jakubek@gmail.com>
-To:     Manivannan Sadhasivam <mani@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        linux-unisoc@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] dt-bindings: interrupt-controller: Convert
- rda,8810pl-intc to YAML
-Message-ID: <20220611180703.GA24988@standask-GA-A55M-S2HP>
+        Sat, 11 Jun 2022 14:07:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B0DD1929E;
+        Sat, 11 Jun 2022 11:07:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C4466120B;
+        Sat, 11 Jun 2022 18:07:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C115C34116;
+        Sat, 11 Jun 2022 18:07:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654970841;
+        bh=if2s9G1Ax2BNvHiItUquxbYsizofOQR/sGlUL2Ao4no=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nHoyyDhxr1VW9+AdFXDn4Zjtwxxo+8HxEJKJKwfVr8otx6sRmwlhDGEX8VPEAiyKa
+         T6ADzGPhOgxJsZRpSDdBGLXTyVMsYU/b4FQ1VBty6Y2O398CPl4vJX6lSALmWfHcPo
+         6CDVGVr0qrVGQ24EM0UjAwgSYHp47M+6x+7koLL+5aM1/IPRIwc/Y/cJtmdU4QmYAL
+         iGAXMK1+EwKFmnH6nsD6aUqecdl5cr1iIL/nJeY5RJxV9chn9PITM5Qdkz0HpEp6pM
+         kKswRq9Ymi0s23s6IS8EccCJeVTMg+qU9tnAl2azjD2B/+8xTZxLuAVYaF0xDktAHO
+         dDwnV/xIS+WxQ==
+Date:   Sat, 11 Jun 2022 19:16:29 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc:     <eugen.hristev@microchip.com>, <lars@metafoo.de>,
+        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
+        <ludovic.desroches@atmel.com>, <linux-iio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 00/16] iio: adc: at91-sama5d2_adc: add support for
+ temperature sensor
+Message-ID: <20220611191629.2a0f6d2f@jic23-huawei>
+In-Reply-To: <20220609083213.1795019-1-claudiu.beznea@microchip.com>
+References: <20220609083213.1795019-1-claudiu.beznea@microchip.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert RDA Micro interrupt controller bindings to DT schema format.
+On Thu, 9 Jun 2022 11:31:57 +0300
+Claudiu Beznea <claudiu.beznea@microchip.com> wrote:
 
-Signed-off-by: Stanislav Jakubek <stano.jakubek@gmail.com>
----
+> Hi,
+> 
+> The following series add support for temperature sensor available on
+> SAMA7G5.
+> 
+> Temperature sensor available on SAMA7G5 provides 2 outputs VTEMP and VBG.
+> VTEMP is proportional to the absolute temperature voltage and VBG is a
+> quasi-temperature independent voltage. Both are necessary in computing
+> the temperature (for better accuracy). Also, for better accuracy the
+> following settings were imposed when measusing the temperature:
+> oversampling rate of 256, sampling frequency of 10MHz, a startup time of
+> 512 ticks, MR.tracktim=0xf, EMR.trackx=0x3.
+> 
+> For computing the temperature measured by ADC calibration data is
+> necessary. This is provided via OTP memory available on SAMA7G5.
+> 
+> Patches 1/16-3/16 provides some fixes.
+> Patches 3/16-12/16 prepares for the addition of temperature sensor
+> support.
+> Patch 13/16 adds the temperature sensor support.
+> 
+> Along with temperature sensor support I took the chance and added
+> runtime PM support in this series, too (handled in patch 15/16).
+> 
+> The rest of patches in this series are minor cleanups.
+> 
+> Thank you,
+> Claudiu Beznea
 
-Changes in v2:
-  - drop the interrupt sources header file
+Hi CLaudiu,
 
- .../interrupt-controller/rda,8810pl-intc.txt  | 61 -------------------
- .../interrupt-controller/rda,8810pl-intc.yaml | 43 +++++++++++++
- MAINTAINERS                                   |  2 +-
- 3 files changed, 44 insertions(+), 62 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/interrupt-controller/rda,8810pl-intc.txt
- create mode 100644 Documentation/devicetree/bindings/interrupt-controller/rda,8810pl-intc.yaml
+Those patches I haven't replied to individually look good to me.
 
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/rda,8810pl-intc.txt b/Documentation/devicetree/bindings/interrupt-controller/rda,8810pl-intc.txt
-deleted file mode 100644
-index e0062aebf025..000000000000
---- a/Documentation/devicetree/bindings/interrupt-controller/rda,8810pl-intc.txt
-+++ /dev/null
-@@ -1,61 +0,0 @@
--RDA Micro RDA8810PL Interrupt Controller
--
--The interrupt controller in RDA8810PL SoC is a custom interrupt controller
--which supports up to 32 interrupts.
--
--Required properties:
--
--- compatible: Should be "rda,8810pl-intc".
--- reg: Specifies base physical address of the registers set.
--- interrupt-controller: Identifies the node as an interrupt controller.
--- #interrupt-cells: Specifies the number of cells needed to encode an
--  interrupt source. The value shall be 2.
--
--The interrupt sources are as follows:
--
--ID	Name
--------------
--0:	PULSE_DUMMY
--1:	I2C
--2:	NAND_NFSC
--3:	SDMMC1
--4:	SDMMC2
--5:	SDMMC3
--6:	SPI1
--7:	SPI2
--8:	SPI3
--9:	UART1
--10:	UART2
--11:	UART3
--12:	GPIO1
--13:	GPIO2
--14:	GPIO3
--15:	KEYPAD
--16:	TIMER
--17:	TIMEROS
--18:	COMREG0
--19:	COMREG1
--20:	USB
--21:	DMC
--22:	DMA
--23:	CAMERA
--24:	GOUDA
--25:	GPU
--26:	VPU_JPG
--27:	VPU_HOST
--28:	VOC
--29:	AUIFC0
--30:	AUIFC1
--31:	L2CC
--
--Example:
--		apb@20800000 {
--			compatible = "simple-bus";
--			...
--			intc: interrupt-controller@0 {
--				compatible = "rda,8810pl-intc";
--				reg = <0x0 0x1000>;
--				interrupt-controller;
--				#interrupt-cells = <2>;
--			};
--		};
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/rda,8810pl-intc.yaml b/Documentation/devicetree/bindings/interrupt-controller/rda,8810pl-intc.yaml
-new file mode 100644
-index 000000000000..96d6285d0087
---- /dev/null
-+++ b/Documentation/devicetree/bindings/interrupt-controller/rda,8810pl-intc.yaml
-@@ -0,0 +1,43 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/interrupt-controller/rda,8810pl-intc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: RDA Micro RDA8810PL interrupt controller
-+
-+maintainers:
-+  - Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-+
-+allOf:
-+  - $ref: /schemas/interrupt-controller.yaml#
-+
-+properties:
-+  compatible:
-+    const: rda,8810pl-intc
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupt-controller: true
-+
-+  '#interrupt-cells':
-+    const: 2
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupt-controller
-+  - '#interrupt-cells'
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    intc: interrupt-controller@0 {
-+      compatible = "rda,8810pl-intc";
-+      reg = <0x0 0x1000>;
-+      interrupt-controller;
-+      #interrupt-cells = <2>;
-+    };
-+...
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f0a90b256b26..58a35519b7c4 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2590,7 +2590,7 @@ L:	linux-unisoc@lists.infradead.org (moderated for non-subscribers)
- S:	Maintained
- F:	Documentation/devicetree/bindings/arm/rda.yaml
- F:	Documentation/devicetree/bindings/gpio/gpio-rda.yaml
--F:	Documentation/devicetree/bindings/interrupt-controller/rda,8810pl-intc.txt
-+F:	Documentation/devicetree/bindings/interrupt-controller/rda,8810pl-intc.yaml
- F:	Documentation/devicetree/bindings/serial/rda,8810pl-uart.yaml
- F:	Documentation/devicetree/bindings/timer/rda,8810pl-timer.yaml
- F:	arch/arm/boot/dts/rda8810pl-*
--- 
-2.25.1
+Thanks,
+
+Jonathan
+
+> 
+> Claudiu Beznea (16):
+>   iio: adc: at91-sama5d2_adc: fix AT91_SAMA5D2_MR_TRACKTIM_MAX
+>   iio: adc: at91-sama5d2_adc: lock around oversampling and sample freq
+>   iio: adc: at91-sama5d2_adc: exit from write_raw() when buffers are
+>     enabled
+>   iio: adc: at91-sama5d2_adc: handle different EMR.OSR for different hw
+>     versions
+>   iio: adc: at91-sama5d2_adc: adjust osr based on specific platform data
+>   iio: adc: at91-sama5d2_adc: add 64 and 256 oversampling ratio
+>   iio: adc: at91-sama5d2_adc: simplify the code in
+>     at91_adc_read_info_raw()
+>   iio: adc: at91-sama5d2_adc: move oversampling storage in its function
+>   iio: adc: at91-sama5d2_adc: update trackx on emr
+>   iio: adc: at91-sama5d2_adc: add startup and tracktim as parameter for
+>     at91_adc_setup_samp_freq()
+>   iio: adc: at91-sama5d2_adc: add locking parameter to
+>     at91_adc_read_info_raw()
+>   dt-bindings: iio: adc: at91-sama5d2_adc: add id for temperature
+>     channel
+>   iio: adc: at91-sama5d2_adc: add support for temperature sensor
+>   iio: adc: at91-sama5d2_adc: add empty line after functions
+>   iio: adc: at91-sama5d2_adc: add runtime pm support
+>   iio: adc: at91-sama5d2_adc: use pm_ptr()
+> 
+>  drivers/iio/adc/at91-sama5d2_adc.c            | 633 +++++++++++++++---
+>  .../dt-bindings/iio/adc/at91-sama5d2_adc.h    |   3 +
+>  2 files changed, 548 insertions(+), 88 deletions(-)
+> 
 
