@@ -2,195 +2,242 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1204C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 13:41:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 157F5C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 11 Jun 2022 13:41:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233581AbiFKNld (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 09:41:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39846 "EHLO
+        id S233718AbiFKNlt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 09:41:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231393AbiFKNlc (ORCPT
+        with ESMTP id S231393AbiFKNlr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 09:41:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C6FCB2F;
-        Sat, 11 Jun 2022 06:41:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9189BB80B51;
-        Sat, 11 Jun 2022 13:41:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71D40C34116;
-        Sat, 11 Jun 2022 13:41:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654954888;
-        bh=3E8V+Y/yWmCjrt9LqOYei7eYzA3X29NTZvx+kCzyhhc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=j+r9oQfnFLkuSNzbrMs5l526KP3kWGt9UpJGLoVW+EpWcqvKrMYYz2g10k2vfaSJM
-         xmj+wUu5q3JcQySkDowFQymHNnKPzh47thUzkEisYJbQxTwbl5CnqGKjzgDq//tloo
-         MvvBFMpC/0cVL29P3Rr33cwYV1q0Z0CF98qahZELKG2ynBGyVu3N7/hf+TTMTjr1Gu
-         R1HhuNR0TKe809cxizvLUcH9yVtysywMFqWFjXyBtu6XdI25svw0YTU+SXRUxPtHh5
-         t+njqOCJqVqqCv5bxzic+SQLXW7PBaK5NjVJMD0SYSoBX+HCm1bsRphEJDFgJhNpjG
-         FdtX2dFiapouA==
-Date:   Sat, 11 Jun 2022 14:50:34 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Laight <David.Laight@aculab.com>,
-        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH 04/49] iio: fix opencoded for_each_set_bit()
-Message-ID: <20220611145034.07efd279@jic23-huawei>
-In-Reply-To: <20220604164113.2ed4f681@jic23-huawei>
-References: <20220210224933.379149-1-yury.norov@gmail.com>
-        <20220210224933.379149-5-yury.norov@gmail.com>
-        <2d5e9096-e40d-13af-234a-539108df1c50@wanadoo.fr>
-        <20220604164113.2ed4f681@jic23-huawei>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sat, 11 Jun 2022 09:41:47 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43DBDB2F;
+        Sat, 11 Jun 2022 06:41:46 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1o01Mz-0003Hv-Qn; Sat, 11 Jun 2022 15:41:41 +0200
+Message-ID: <a32f84e1-33d1-08ea-8912-cf2311532df8@leemhuis.info>
+Date:   Sat, 11 Jun 2022 15:41:41 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: Regression: at24 eeprom writing times out on sama5d3
+Content-Language: en-US
+To:     linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+References: <074b39c5-55fc-2bc1-072d-aef1070e284d@axentia.se>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <074b39c5-55fc-2bc1-072d-aef1070e284d@axentia.se>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1654954906;31ae75de;
+X-HE-SMSGID: 1o01Mz-0003Hv-Qn
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 4 Jun 2022 16:41:13 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+[TLDR: I'm adding this regression report to the list of tracked
+regressions; all text from me you find below is based on a few templates
+paragraphs you might have encountered already already in similar form.]
 
-> On Fri, 11 Feb 2022 18:17:37 +0100
-> Christophe JAILLET <christophe.jaillet@wanadoo.fr> wrote:
->=20
-> > Le 10/02/2022 =C3=A0 23:48, Yury Norov a =C3=A9crit=C2=A0: =20
-> > > iio_simple_dummy_trigger_h() is mostly an opencoded for_each_set_bit(=
-).
-> > > Using for_each_set_bit() make code much cleaner, and more effective.
-> > >=20
-> > > Signed-off-by: Yury Norov <yury.norov-Re5JQEeQqe8AvxtiuMwx3w@public.g=
-mane.org>
-> > > ---
-> > >   drivers/iio/dummy/iio_simple_dummy_buffer.c | 48 ++++++++----------=
----
-> > >   1 file changed, 19 insertions(+), 29 deletions(-)
-> > >=20
-> > > diff --git a/drivers/iio/dummy/iio_simple_dummy_buffer.c b/drivers/ii=
-o/dummy/iio_simple_dummy_buffer.c
-> > > index d81c2b2dad82..3bc1b7529e2a 100644
-> > > --- a/drivers/iio/dummy/iio_simple_dummy_buffer.c
-> > > +++ b/drivers/iio/dummy/iio_simple_dummy_buffer.c
-> > > @@ -45,41 +45,31 @@ static irqreturn_t iio_simple_dummy_trigger_h(int=
- irq, void *p)
-> > >   {
-> > >   	struct iio_poll_func *pf =3D p;
-> > >   	struct iio_dev *indio_dev =3D pf->indio_dev;
-> > > +	int i =3D 0, j;
-> > >   	u16 *data;
-> > >  =20
-> > >   	data =3D kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
-> > >   	if (!data)
-> > >   		goto done;
-> > >  =20
-> > > -	if (!bitmap_empty(indio_dev->active_scan_mask, indio_dev->masklengt=
-h)) {
-> > > -		/*
-> > > -		 * Three common options here:
-> > > -		 * hardware scans: certain combinations of channels make
-> > > -		 *   up a fast read.  The capture will consist of all of them.
-> > > -		 *   Hence we just call the grab data function and fill the
-> > > -		 *   buffer without processing.
-> > > -		 * software scans: can be considered to be random access
-> > > -		 *   so efficient reading is just a case of minimal bus
-> > > -		 *   transactions.
-> > > -		 * software culled hardware scans:
-> > > -		 *   occasionally a driver may process the nearest hardware
-> > > -		 *   scan to avoid storing elements that are not desired. This
-> > > -		 *   is the fiddliest option by far.
-> > > -		 * Here let's pretend we have random access. And the values are
-> > > -		 * in the constant table fakedata.
-> > > -		 */
-> > > -		int i, j;
-> > > -
-> > > -		for (i =3D 0, j =3D 0;
-> > > -		     i < bitmap_weight(indio_dev->active_scan_mask,
-> > > -				       indio_dev->masklength);
-> > > -		     i++, j++) {
-> > > -			j =3D find_next_bit(indio_dev->active_scan_mask,
-> > > -					  indio_dev->masklength, j);
-> > > -			/* random access read from the 'device' */
-> > > -			data[i] =3D fakedata[j];
-> > > -		}
-> > > -	}
-> > > +	/*
-> > > +	 * Three common options here:
-> > > +	 * hardware scans: certain combinations of channels make
-> > > +	 *   up a fast read.  The capture will consist of all of them.
-> > > +	 *   Hence we just call the grab data function and fill the
-> > > +	 *   buffer without processing.
-> > > +	 * software scans: can be considered to be random access
-> > > +	 *   so efficient reading is just a case of minimal bus
-> > > +	 *   transactions.
-> > > +	 * software culled hardware scans:
-> > > +	 *   occasionally a driver may process the nearest hardware
-> > > +	 *   scan to avoid storing elements that are not desired. This
-> > > +	 *   is the fiddliest option by far.
-> > > +	 * Here let's pretend we have random access. And the values are
-> > > +	 * in the constant table fakedata.
-> > > +	 */   =20
-> >=20
-> > Nitpicking: you could take advantage of the tab you save to use the ful=
-l=20
-> > width of the line and save some lines of code. =20
->=20
-> Tweaked whilst applying.
->=20
-> Sorry this one took so long. I marked it as a patch that I'd revisit if a=
-nd
-> tidy up if there was no v2 sent, but then managed to forget about it until
-> I came to do a clean out of patchwork today.
->=20
-> Anyhow, now applied to the togreg branch of iio.git - initially pushed out
-> as testing for 0-day to see if we missed anything.
+Hi, this is your Linux kernel regression tracker.
 
-And dropped again during a rebase as a different version has gone upstream
-through a pull request to Linus.
+On 09.06.22 16:28, Peter Rosin wrote:
+> Hi!
+> 
+> I have not actually bisected this issue but reverting the effects of
+> patch a4bd8da893a3 ("ARM: dts: at91: sama5d3: add i2c gpio pinctrl")
+> makes the problem go away.
 
-Whilst I have no strong opinion on that in general, I am a little grumpy
-that a version was merged that was never posted to the mailing lists (that
-I can find on lore.kernel.org.)  Sure the changes were minor and easy to ve=
-rify
-as harmless, but none the less they should have been posted.
+To be sure below issue doesn't fall through the cracks unnoticed, I'm
+adding it to regzbot, my Linux kernel regression tracking bot:
 
-Jonathan
+#regzbot ^introduced a4bd8da893a3
+#regzbot title i2c: at24 eeprom writing times out on sama5d3
+#regzbot ignore-activity
+#regzbot monitor:
+https://lore.kernel.org/all/20210727111554.1338832-1-codrin.ciubotariu@microchip.com/
 
->=20
-> Thanks,
->=20
-> Jonathan
->=20
-> >=20
-> > Just my 2c.
-> >=20
-> > CJ
-> >=20
-> >  =20
-> > > +	for_each_set_bit(j, indio_dev->active_scan_mask, indio_dev->masklen=
-gth)
-> > > +		data[i++] =3D fakedata[j];
-> > >  =20
-> > >   	iio_push_to_buffers_with_timestamp(indio_dev, data,
-> > >   					   iio_get_time_ns(indio_dev));   =20
-> >  =20
->=20
+This isn't a regression? This issue or a fix for it are already
+discussed somewhere else? It was fixed already? You want to clarify when
+the regression started to happen? Or point out I got the title or
+something else totally wrong? Then just reply -- ideally with also
+telling regzbot about it, as explained here:
+https://linux-regtracking.leemhuis.info/tracked-regression/
+
+Reminder for developers: When fixing the issue, add 'Link:' tags
+pointing to the report (the mail this one replied to), as the kernel's
+documentation call for; above page explains why this is important for
+tracked regressions.
+
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+
+P.S.: As the Linux kernel's regression tracker I deal with a lot of
+reports and sometimes miss something important when writing mails like
+this. If that's the case here, don't hesitate to tell me in a public
+reply, it's in everyone's interest to set the public record straight.
+
+
+
+> I.e. I need something like this in my dts
+> 
+> &i2c2 {
+> 	status = "okay";
+> 
+> 	pinctrl-names = "default";
+> 	/delete-property/ pinctrl-1;
+> 	/delete-property/ sda-gpios;
+> 	/delete-property/ scl-gpios;
+> 
+> 	eeprom@50 {
+> 		compatible = "st,24c64", "atmel,24c64";
+> 		reg = <0x50>;
+> 		wp-gpios = <&filter_gpio 7 GPIO_ACTIVE_HIGH>;
+> 	};
+> };
+> 
+> for multi-page eeprom writes to not time out (a page is 32 bytes on this
+> eeprom).
+> 
+> For reference, the current defaults for this SoC/I2C-bus, that I modify,
+> are:
+> 
+> 	pinctrl-names = "default", "gpio";
+> 	pinctrl-0 = <&pinctrl_i2c2>;
+> 	pinctrl-1 = <&pinctrl_i2c2_gpio>;
+> 	sda-gpios = <&pioA 18 GPIO_ACTIVE_HIGH>;
+> 	scl-gpios = <&pioA 19 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+> 
+> I suspect that the underlying reason is that the bus recovery takes
+> too long and that the at24 eeprom driver gives up prematurely. I doubt
+> that this is chip specific, but I don't know that.
+> 
+> I can work around the issue in user space with by writing in 4 byte
+> chunks, like so
+> 
+> dd if=source.file of=/sys/bus/i2c/devices/2-0050/eeprom obs=4
+> 
+> but that is really ugly and gets slow too, about 20 seconds to program
+> the full 8kB eeprom. With the above in my dts it takes a second or
+> so (a bit more with dynamic debug active).
+> 
+> 
+> If I run
+> 
+> dd if=source.file of=/sys/bus/i2c/devices/2-0050/eeprom
+> 
+> with a source.file of 8kB and the upstream dts properties in place, I can
+> collect the following debug output from at24, i2c-core and i2c-at91:
+> 
+> Jun  9 15:56:34 me20 kernel: i2c i2c-2: at91_xfer: processing 1 messages:
+> Jun  9 15:56:34 me20 kernel: at91_i2c f801c000.i2c: transfer: write 34 bytes.
+> Jun  9 15:56:34 me20 kernel: at91_i2c f801c000.i2c: transfer complete
+> Jun  9 15:56:34 me20 kernel: at24 2-0050: write 32@0 --> 0 (-23170)
+> Jun  9 15:56:34 me20 kernel: i2c i2c-2: at91_xfer: processing 1 messages:
+> Jun  9 15:56:34 me20 kernel: at91_i2c f801c000.i2c: transfer: write 34 bytes.
+> Jun  9 15:56:34 me20 kernel: at91_i2c f801c000.i2c: received nack
+> Jun  9 15:56:34 me20 kernel: i2c i2c-2: Trying i2c bus recovery
+> Jun  9 15:56:34 me20 kernel: at24 2-0050: write 32@32 --> -121 (-23169)
+> Jun  9 15:56:34 me20 kernel: i2c i2c-2: at91_xfer: processing 1 messages:
+> Jun  9 15:56:34 me20 kernel: at91_i2c f801c000.i2c: transfer: write 34 bytes.
+> Jun  9 15:56:34 me20 kernel: at91_i2c f801c000.i2c: transfer complete
+> Jun  9 15:56:34 me20 kernel: at24 2-0050: write 32@32 --> 0 (-23168)
+> Jun  9 15:56:34 me20 kernel: i2c i2c-2: at91_xfer: processing 1 messages:
+> Jun  9 15:56:34 me20 kernel: at91_i2c f801c000.i2c: transfer: write 34 bytes.
+> Jun  9 15:56:34 me20 kernel: at91_i2c f801c000.i2c: received nack
+> Jun  9 15:56:34 me20 kernel: i2c i2c-2: Trying i2c bus recovery
+> Jun  9 15:56:34 me20 kernel: at24 2-0050: write 32@64 --> -121 (-23168)
+> Jun  9 15:56:34 me20 kernel: i2c i2c-2: at91_xfer: processing 1 messages:
+> Jun  9 15:56:34 me20 kernel: at91_i2c f801c000.i2c: transfer: write 34 bytes.
+> Jun  9 15:56:34 me20 kernel: at91_i2c f801c000.i2c: transfer complete
+> Jun  9 15:56:34 me20 kernel: at24 2-0050: write 32@64 --> 0 (-23167)
+> Jun  9 15:56:34 me20 kernel: i2c i2c-2: at91_xfer: processing 1 messages:
+> Jun  9 15:56:34 me20 kernel: at91_i2c f801c000.i2c: transfer: write 34 bytes.
+> Jun  9 15:56:34 me20 kernel: at91_i2c f801c000.i2c: received nack
+> Jun  9 15:56:34 me20 kernel: i2c i2c-2: Trying i2c bus recovery
+> Jun  9 15:56:34 me20 kernel: at24 2-0050: write 32@96 --> -121 (-23167)
+> Jun  9 15:56:34 me20 kernel: i2c i2c-2: at91_xfer: processing 1 messages:
+> Jun  9 15:56:34 me20 kernel: at91_i2c f801c000.i2c: transfer: write 34 bytes.
+> Jun  9 15:56:34 me20 kernel: at91_i2c f801c000.i2c: controller timed out
+> Jun  9 15:56:34 me20 kernel: i2c i2c-2: Trying i2c bus recovery
+> Jun  9 15:56:34 me20 kernel: at24 2-0050: write 32@96 --> -110 (-23155)
+> Jun  9 15:56:34 me20 kernel: i2c i2c-2: at91_xfer: processing 1 messages:
+> Jun  9 15:56:34 me20 kernel: at91_i2c f801c000.i2c: transfer: write 34 bytes.
+> Jun  9 15:56:34 me20 kernel: at91_i2c f801c000.i2c: controller timed out
+> Jun  9 15:56:34 me20 kernel: i2c i2c-2: Trying i2c bus recovery
+> Jun  9 15:56:34 me20 kernel: at24 2-0050: write 32@96 --> -110 (-23143)
+> 
+> And then there is no more action. I.e. only a couple of 32 byte pages
+> are written.
+> 
+> With the above mentioned dts override in place I instead get this, which is
+> a lot more sensible:
+> 
+> Jun  9 15:48:53 me20 kernel: i2c i2c-2: at91_xfer: processing 1 messages:
+> Jun  9 15:48:53 me20 kernel: at91_i2c f801c000.i2c: transfer: write 34 bytes.
+> Jun  9 15:48:53 me20 kernel: at91_i2c f801c000.i2c: transfer complete
+> Jun  9 15:48:53 me20 kernel: at24 2-0050: write 32@0 --> 0 (753629)
+> Jun  9 15:48:53 me20 kernel: i2c i2c-2: at91_xfer: processing 1 messages:
+> Jun  9 15:48:53 me20 kernel: at91_i2c f801c000.i2c: transfer: write 34 bytes.
+> Jun  9 15:48:53 me20 kernel: at91_i2c f801c000.i2c: received nack
+> Jun  9 15:48:53 me20 kernel: at24 2-0050: write 32@32 --> -121 (753629)
+> Jun  9 15:48:53 me20 kernel: i2c i2c-2: at91_xfer: processing 1 messages:
+> Jun  9 15:48:53 me20 kernel: at91_i2c f801c000.i2c: transfer: write 34 bytes.
+> Jun  9 15:48:53 me20 kernel: at91_i2c f801c000.i2c: transfer complete
+> Jun  9 15:48:53 me20 kernel: at24 2-0050: write 32@32 --> 0 (753630)
+> Jun  9 15:48:53 me20 kernel: i2c i2c-2: at91_xfer: processing 1 messages:
+> Jun  9 15:48:53 me20 kernel: at91_i2c f801c000.i2c: transfer: write 34 bytes.
+> Jun  9 15:48:53 me20 kernel: at91_i2c f801c000.i2c: received nack
+> Jun  9 15:48:53 me20 kernel: at24 2-0050: write 32@64 --> -121 (753630)
+> Jun  9 15:48:53 me20 kernel: i2c i2c-2: at91_xfer: processing 1 messages:
+> Jun  9 15:48:53 me20 kernel: at91_i2c f801c000.i2c: transfer: write 34 bytes.
+> Jun  9 15:48:53 me20 kernel: at91_i2c f801c000.i2c: transfer complete
+> Jun  9 15:48:53 me20 kernel: at24 2-0050: write 32@64 --> 0 (753631)
+> Jun  9 15:48:53 me20 kernel: i2c i2c-2: at91_xfer: processing 1 messages:
+> Jun  9 15:48:53 me20 kernel: at91_i2c f801c000.i2c: transfer: write 34 bytes.
+> Jun  9 15:48:53 me20 kernel: at91_i2c f801c000.i2c: received nack
+> Jun  9 15:48:53 me20 kernel: at24 2-0050: write 32@96 --> -121 (753631)
+> Jun  9 15:48:53 me20 kernel: i2c i2c-2: at91_xfer: processing 1 messages:
+> Jun  9 15:48:53 me20 kernel: at91_i2c f801c000.i2c: transfer: write 34 bytes.
+> Jun  9 15:48:53 me20 kernel: at91_i2c f801c000.i2c: transfer complete
+> Jun  9 15:48:53 me20 kernel: at24 2-0050: write 32@96 --> 0 (753632)
+> Jun  9 15:48:53 me20 kernel: i2c i2c-2: at91_xfer: processing 1 messages:
+> Jun  9 15:48:53 me20 kernel: at91_i2c f801c000.i2c: transfer: write 34 bytes.
+> Jun  9 15:48:53 me20 kernel: at91_i2c f801c000.i2c: received nack
+> Jun  9 15:48:53 me20 kernel: at24 2-0050: write 32@128 --> -121 (753632)
+> Jun  9 15:48:53 me20 kernel: i2c i2c-2: at91_xfer: processing 1 messages:
+> Jun  9 15:48:53 me20 kernel: at91_i2c f801c000.i2c: transfer: write 34 bytes.
+> Jun  9 15:48:53 me20 kernel: at91_i2c f801c000.i2c: transfer complete
+> Jun  9 15:48:53 me20 kernel: at24 2-0050: write 32@128 --> 0 (753633)
+> Jun  9 15:48:53 me20 kernel: i2c i2c-2: at91_xfer: processing 1 messages:
+> Jun  9 15:48:53 me20 kernel: at91_i2c f801c000.i2c: transfer: write 34 bytes.
+> Jun  9 15:48:53 me20 kernel: at91_i2c f801c000.i2c: received nack
+> Jun  9 15:48:53 me20 kernel: at24 2-0050: write 32@160 --> -121 (753633)
+> Jun  9 15:48:53 me20 kernel: i2c i2c-2: at91_xfer: processing 1 messages:
+> Jun  9 15:48:53 me20 kernel: at91_i2c f801c000.i2c: transfer: write 34 bytes.
+> Jun  9 15:48:53 me20 kernel: at91_i2c f801c000.i2c: transfer complete
+> Jun  9 15:48:53 me20 kernel: at24 2-0050: write 32@160 --> 0 (753634)
+> ... snip ...
+> Jun  9 15:48:55 me20 kernel: i2c i2c-2: at91_xfer: processing 1 messages:
+> Jun  9 15:48:55 me20 kernel: at91_i2c f801c000.i2c: transfer: write 34 bytes.
+> Jun  9 15:48:55 me20 kernel: at91_i2c f801c000.i2c: received nack
+> Jun  9 15:48:55 me20 kernel: at24 2-0050: write 32@8128 --> -121 (753883)
+> Jun  9 15:48:55 me20 kernel: i2c i2c-2: at91_xfer: processing 1 messages:
+> Jun  9 15:48:55 me20 kernel: at91_i2c f801c000.i2c: transfer: write 34 bytes.
+> Jun  9 15:48:55 me20 kernel: at91_i2c f801c000.i2c: transfer complete
+> Jun  9 15:48:55 me20 kernel: at24 2-0050: write 32@8128 --> 0 (753884)
+> Jun  9 15:48:55 me20 kernel: i2c i2c-2: at91_xfer: processing 1 messages:
+> Jun  9 15:48:55 me20 kernel: at91_i2c f801c000.i2c: transfer: write 34 bytes.
+> Jun  9 15:48:55 me20 kernel: at91_i2c f801c000.i2c: received nack
+> Jun  9 15:48:55 me20 kernel: at24 2-0050: write 32@8160 --> -121 (753884)
+> Jun  9 15:48:55 me20 kernel: i2c i2c-2: at91_xfer: processing 1 messages:
+> Jun  9 15:48:55 me20 kernel: at91_i2c f801c000.i2c: transfer: write 34 bytes.
+> Jun  9 15:48:55 me20 kernel: at91_i2c f801c000.i2c: transfer complete
+> Jun  9 15:48:55 me20 kernel: at24 2-0050: write 32@8160 --> 0 (753885)
+> 
+> Cheers,
+> Peter
 
