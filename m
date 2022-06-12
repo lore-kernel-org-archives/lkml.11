@@ -2,111 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22E63C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 07:35:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E1BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 07:51:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234676AbiFLHfg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 03:35:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54068 "EHLO
+        id S234741AbiFLHvG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 03:51:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230273AbiFLHfc (ORCPT
+        with ESMTP id S234689AbiFLHvE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 03:35:32 -0400
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D101039BA0
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 00:35:29 -0700 (PDT)
-Received: by mail-il1-f197.google.com with SMTP id i16-20020a056e021d1000b002d3bbe39232so2540349ila.20
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 00:35:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=1Xgh0uMJ75AgI9MjY81mi9Hj4ZGB8BF+ScF7gj9/dZs=;
-        b=XZjt1UhZeYzFlZIlRz9ZXjpeZZeDdWiA+/wqCCKmeDZKctmLpgYG3SMojLdv7rEjvZ
-         9MyBqKiEBZHtOTUC9tZ0e0pmWi3tTU8ldIfb7O4zzTiTjmWCiKSk6wqyQXMW4ULrmIoA
-         9WibWcD8rEjxHkY+3KkyoIGuNRx1rJOQwGfOETR9+dkYBJGAZRLXHGAp0yFrQOhoNJnk
-         ywHDtxjHbMiBTfXtS9vYjV+2Lu2bgrJLvlYudSFkGlb+Lb0fTsACwcfqg7ycwdrvGdrA
-         l9gfNAdSslvNoHiTNpX3snNf5NX/LEb0t2/ZkAmZEQx0PkIjXsHyzgZ3FXwNkDwLcdtf
-         utsg==
-X-Gm-Message-State: AOAM530s1yEI6btTCk4KnvvOL03DQy5DJmShFMCI9KdCVQzY4eBTZUL1
-        EfYRMtJmX0oD5ah/AwAhlZYqugyM46JsKx4Mg81U8xdfwTOF
-X-Google-Smtp-Source: ABdhPJyFszkRlznaIKtJRNsItp2ig/3Ynjfye5LPspwE2oE45vUhET4fVhR5gtyI6VgYzWK2bJ0wpu5vhofFsGPNvpaD7ZJzJB39
+        Sun, 12 Jun 2022 03:51:04 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BD8752508
+        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 00:51:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655020264; x=1686556264;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=TzSM/syRVB9OKcoZne0iYLG1ONwo1yKGF3iAMljSy8c=;
+  b=DoS6IbsjikYCZEuQ/Bx3OX3EFR78vMOaAmllyRCsNf9m3wM9z02c9ilg
+   50G/B33dz0gTSX6zYJI9wOvCUmBvrqixH/uuoaWCNqRZXobs5nukjaVQY
+   r576GkQcu91isltIeCiJWwynYTJfqLPWB2+mt/ktERyi6rYMUyJyqOple
+   I6WLy7pcRt1xJeHeFQ9PE0kyX8zbRxK54BRqHCnjRfPghuuMcvwU5wwl5
+   z0FbEFgk6Qv3CkKt774Y2ZQ0kQGeiOy6kcAdSSNlQYXKpmw7cpOzaHqOt
+   4cJBy9XgKyyO48Uh8VjxkUsqOXcjpju3jMNQRaHhUtJWnNCs/WAwN86aO
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10375"; a="276782653"
+X-IronPort-AV: E=Sophos;i="5.91,294,1647327600"; 
+   d="scan'208";a="276782653"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2022 00:51:03 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,294,1647327600"; 
+   d="scan'208";a="611306730"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga008.jf.intel.com with ESMTP; 12 Jun 2022 00:51:01 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o0INA-000JlF-Rz;
+        Sun, 12 Jun 2022 07:51:00 +0000
+Date:   Sun, 12 Jun 2022 15:50:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jonathan McDowell <noodles@fb.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Mimi Zohar <zohar@linux.ibm.com>, Baoquan He <bhe@redhat.com>
+Subject: [daveh-devel:testme 2/2] arch/x86/kernel/setup.c:367:15: warning: no
+ previous prototype for function 'ima_free_kexec_buffer'
+Message-ID: <202206121517.ww6IZORM-lkp@intel.com>
 MIME-Version: 1.0
-X-Received: by 2002:a92:c24c:0:b0:2d1:cdd0:1959 with SMTP id
- k12-20020a92c24c000000b002d1cdd01959mr28765647ilo.39.1655019329229; Sun, 12
- Jun 2022 00:35:29 -0700 (PDT)
-Date:   Sun, 12 Jun 2022 00:35:29 -0700
-In-Reply-To: <0000000000000a5eae05d8947adb@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000003719fc05e13b37e3@google.com>
-Subject: Re: [syzbot] WARNING in handle_exception_nmi (2)
-From:   syzbot <syzbot+4688c50a9c8e68e7aaa1@syzkaller.appspotmail.com>
-To:     bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com,
-        jmattson@google.com, joro@8bytes.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mingo@redhat.com,
-        pbonzini@redhat.com, seanjc@google.com,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        vkuznets@redhat.com, wanpengli@tencent.com, x86@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/daveh/devel.git testme
+head:   a217a1ebac788fd28ccf79499e9e12e5519d70b7
+commit: a217a1ebac788fd28ccf79499e9e12e5519d70b7 [2/2] x86/kexec: Carry forward IMA measurement log on kexec
+config: i386-randconfig-a004 (https://download.01.org/0day-ci/archive/20220612/202206121517.ww6IZORM-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 6466c9abf3674bade1f6ee859f24ebc7aaf9cd88)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/daveh/devel.git/commit/?id=a217a1ebac788fd28ccf79499e9e12e5519d70b7
+        git remote add daveh-devel https://git.kernel.org/pub/scm/linux/kernel/git/daveh/devel.git
+        git fetch --no-tags daveh-devel testme
+        git checkout a217a1ebac788fd28ccf79499e9e12e5519d70b7
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash arch/x86/kernel/
 
-HEAD commit:    7a68065eb9cd Merge tag 'gpio-fixes-for-v5.19-rc2' of git:/..
-git tree:       upstream
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=177df408080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=20ac3e0ebf0db3bd
-dashboard link: https://syzkaller.appspot.com/bug?extid=4688c50a9c8e68e7aaa1
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12087173f00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16529343f00000
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+4688c50a9c8e68e7aaa1@syzkaller.appspotmail.com
+All warnings (new ones prefixed by >>):
 
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 3609 at arch/x86/kvm/vmx/vmx.c:4896 handle_exception_nmi+0xfdc/0x1190 arch/x86/kvm/vmx/vmx.c:4896
-Modules linked in:
-CPU: 0 PID: 3609 Comm: syz-executor169 Not tainted 5.19.0-rc1-syzkaller-00303-g7a68065eb9cd #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:handle_exception_nmi+0xfdc/0x1190 arch/x86/kvm/vmx/vmx.c:4896
-Code: 0f 84 c8 f3 ff ff e8 33 5c 58 00 48 89 ef c7 85 84 0d 00 00 00 00 00 00 e8 21 35 ec ff 41 89 c4 e9 af f3 ff ff e8 14 5c 58 00 <0f> 0b e9 69 f6 ff ff e8 08 5c 58 00 be f5 ff ff ff bf 01 00 00 00
-RSP: 0018:ffffc9000309faf8 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffff88801ba1d880 RSI: ffffffff8122171c RDI: 0000000000000001
-RBP: ffff88807cd88000 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000001 R12: 00000000a0000975
-R13: ffff88807cd88248 R14: 0000000000000000 R15: 0000000080000300
-FS:  0000555556c8d300(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000000000 CR3: 00000000229ca000 CR4: 00000000003526e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 00000000b8fecd19 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- __vmx_handle_exit arch/x86/kvm/vmx/vmx.c:6174 [inline]
- vmx_handle_exit+0x498/0x1950 arch/x86/kvm/vmx/vmx.c:6191
- vcpu_enter_guest arch/x86/kvm/x86.c:10361 [inline]
- vcpu_run arch/x86/kvm/x86.c:10450 [inline]
- kvm_arch_vcpu_ioctl_run+0x4208/0x66f0 arch/x86/kvm/x86.c:10654
- kvm_vcpu_ioctl+0x570/0xf30 arch/x86/kvm/../../../virt/kvm/kvm_main.c:3944
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:870 [inline]
- __se_sys_ioctl fs/ioctl.c:856 [inline]
- __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7f56efaee199
-Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffc37353158 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f56efaee199
-RDX: 0000000000000000 RSI: 000000000000ae80 RDI: 0000000000000005
-RBP: 00007f56efab1bf0 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f56efab1c80
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
+>> arch/x86/kernel/setup.c:367:15: warning: no previous prototype for function 'ima_free_kexec_buffer' [-Wmissing-prototypes]
+   int __meminit ima_free_kexec_buffer(void)
+                 ^
+   arch/x86/kernel/setup.c:367:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int __meminit ima_free_kexec_buffer(void)
+   ^
+   static 
+>> arch/x86/kernel/setup.c:385:12: warning: no previous prototype for function 'ima_get_kexec_buffer' [-Wmissing-prototypes]
+   int __init ima_get_kexec_buffer(void **addr, size_t *size)
+              ^
+   arch/x86/kernel/setup.c:385:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int __init ima_get_kexec_buffer(void **addr, size_t *size)
+   ^
+   static 
+   2 warnings generated.
 
+
+vim +/ima_free_kexec_buffer +367 arch/x86/kernel/setup.c
+
+   365	
+   366	#if defined(CONFIG_IMA) && !defined(CONFIG_OF_FLATTREE)
+ > 367	int __meminit ima_free_kexec_buffer(void)
+   368	{
+   369		int rc;
+   370	
+   371		if (ima_kexec_buffer_size == 0)
+   372			return -ENOENT;
+   373	
+   374		rc = memblock_phys_free(ima_kexec_buffer_phys,
+   375					ima_kexec_buffer_size);
+   376		if (rc)
+   377			return rc;
+   378	
+   379		ima_kexec_buffer_phys = 0;
+   380		ima_kexec_buffer_size = 0;
+   381	
+   382		return 0;
+   383	}
+   384	
+ > 385	int __init ima_get_kexec_buffer(void **addr, size_t *size)
+   386	{
+   387		if (ima_kexec_buffer_size == 0)
+   388			return -ENOENT;
+   389	
+   390		*addr = __va(ima_kexec_buffer_phys);
+   391		*size = ima_kexec_buffer_size;
+   392	
+   393		return 0;
+   394	}
+   395	#endif
+   396	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
