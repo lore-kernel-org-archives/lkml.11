@@ -2,88 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CBA8C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 07:23:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41358C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 07:33:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231420AbiFLHKr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 03:10:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41526 "EHLO
+        id S234632AbiFLHdh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 03:33:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229664AbiFLHKq (ORCPT
+        with ESMTP id S229559AbiFLHdf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 03:10:46 -0400
-Received: from mail-pj1-f67.google.com (mail-pj1-f67.google.com [209.85.216.67])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C10BB606D5
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 00:10:44 -0700 (PDT)
-Received: by mail-pj1-f67.google.com with SMTP id e24so3019069pjt.0
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 00:10:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=575NP7awIhloB41yOKYfL1oPbvMoxjfZLNv5WIm33CA=;
-        b=1IVVJqstUwN8h5BHqH+cb7iSc7tG7/rCLq7I06kcNvkg9k/oo168Cx4UFgJQaXcJwu
-         wFRDKezUwIIfv5LHDVLcRn7s72C7fCfKqurKZ6cZPbASfhjomKEP4w8cpDnVdo01Sx5Y
-         KlCwmxTtHQ+IU5VmGt6pnfoD78kfDbVlpWyxIjFaH0s4nUPm4nFqYNillrMjasaFDuok
-         OgZeVkS13365XUEMWxpCM7oyLKy4UWxNAOlGCa9HCK8ObwqHroEe6DbMKj2Ic+MA48qq
-         y9O96v/P8dkjCXGDs0dZVai7/CoHy5MmPni7r2IYxV5ZJRZy/bm1ukIuO0B4cNNhPy/R
-         AImA==
-X-Gm-Message-State: AOAM531fLCwyK7pUWpWGQtCGD7VGE6u1LlB8MrHwsvC8LXj8vZXjQAAg
-        PqEyR202qW0QCGhTVeyT7w==
-X-Google-Smtp-Source: ABdhPJzoE+CXw9vc1vid3JqssiUm4iIZU4qXVsrJmajlMKSoOEZug3tM5zxr9jo/zJKkgXwhkvws+Q==
-X-Received: by 2002:a17:902:d103:b0:166:3e44:cfca with SMTP id w3-20020a170902d10300b001663e44cfcamr52298111plw.141.1655017844231;
-        Sun, 12 Jun 2022 00:10:44 -0700 (PDT)
-Received: from localhost.localdomain ([156.146.53.107])
-        by smtp.gmail.com with ESMTPSA id z191-20020a6333c8000000b0040175983762sm2770428pgz.37.2022.06.12.00.10.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Jun 2022 00:10:43 -0700 (PDT)
-From:   sunliming <sunliming@kylinos.cn>
-To:     noodles@fb.com, dave.hansen@linux.intel.com, bhe@redhat.com,
-        robh+dt@kernel.org, frowand.list@gmail.com
-Cc:     linux-kernel@vger.kernel.org, sunliming@kylinos.cn,
-        kelulanainsley@gmail.com, kernel test robot <lkp@intel.com>
-Subject: [PATCH] of: Add missing function declarations
-Date:   Sun, 12 Jun 2022 15:10:35 +0800
-Message-Id: <20220612071035.1178320-1-sunliming@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Sun, 12 Jun 2022 03:33:35 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4005539811;
+        Sun, 12 Jun 2022 00:33:31 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id A63431E80D89;
+        Sun, 12 Jun 2022 15:32:29 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id D6JU9v0rtj7Y; Sun, 12 Jun 2022 15:32:27 +0800 (CST)
+Received: from localhost.localdomain (unknown [180.167.10.98])
+        (Authenticated sender: liqiong@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id 56DFD1E80C8B;
+        Sun, 12 Jun 2022 15:32:26 +0800 (CST)
+From:   Li Qiong <liqiong@nfschina.com>
+To:     Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Cc:     linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org,
+        hukun@nfschina.com, qixu@nfschina.com, yuzhe@nfschina.com,
+        renyu@nfschina.com, Li Qiong <liqiong@nfschina.com>
+Subject: [PATCH] ata: handle failure of devm_ioremap()
+Date:   Sun, 12 Jun 2022 15:32:22 +0800
+Message-Id: <20220612073222.18974-1-liqiong@nfschina.com>
+X-Mailer: git-send-email 2.11.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fixes the following w1 warning:
+As the possible failure of the devm_ioremap(), the return value
+could be NULL. Therefore it should be better to check it and
+print error message, return '-ENOMEM' error code.
 
-drivers/of/kexec.c:126:5: warning: no previous prototype for 'ima_get_kexec_buffer' [-Wmissing-prototypes]
-drivers/of/kexec.c:153:5: warning: no previous prototype for 'ima_free_kexec_buffer' [-Wmissing-prototypes
-
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: sunliming <sunliming@kylinos.cn>
+Signed-off-by: Li Qiong <liqiong@nfschina.com>
 ---
- include/linux/of.h | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/ata/pata_pxa.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/include/linux/of.h b/include/linux/of.h
-index f0a5d6b10c5a..3a166a1c4ef6 100644
---- a/include/linux/of.h
-+++ b/include/linux/of.h
-@@ -844,6 +844,16 @@ static inline phys_addr_t of_dma_get_max_cpu_address(struct device_node *np)
- 	return PHYS_ADDR_MAX;
- }
+diff --git a/drivers/ata/pata_pxa.c b/drivers/ata/pata_pxa.c
+index 985f42c4fd70..cd1a8f37f920 100644
+--- a/drivers/ata/pata_pxa.c
++++ b/drivers/ata/pata_pxa.c
+@@ -228,6 +228,11 @@ static int pxa_ata_probe(struct platform_device *pdev)
+ 	ap->ioaddr.bmdma_addr	= devm_ioremap(&pdev->dev, dma_res->start,
+ 						resource_size(dma_res));
  
-+static inline int ima_get_kexec_buffer(void **addr, size_t *size)
-+{
-+        return -ENOSYS;
-+}
++	if (!ap->ioaddr.cmd_addr || !ap->ioaddr.ctl_addr || !ap->ioaddr.bmdma_addr) {
++		dev_err(&pdev->dev, "failed to map ap->ioaddr\n");
++		return -ENOMEM;
++	}
 +
-+static inline int ima_free_kexec_buffer(void **addr, size_t *size)
-+{
-+        return -ENOSYS;
-+}
-+
- #define of_match_ptr(_ptr)	NULL
- #define of_match_node(_matches, _node)	NULL
- #endif /* CONFIG_OF */
+ 	/*
+ 	 * Adjust register offsets
+ 	 */
 -- 
-2.25.1
+2.11.0
 
