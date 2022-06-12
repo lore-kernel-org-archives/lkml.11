@@ -2,123 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53DF1C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 23:09:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA140C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 23:22:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237693AbiFLXJ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 19:09:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43932 "EHLO
+        id S237735AbiFLXWi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 19:22:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231327AbiFLXJ0 (ORCPT
+        with ESMTP id S235972AbiFLXWg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 19:09:26 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01C743B002
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 16:09:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655075366; x=1686611366;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=BiMk322ckNOUCUFzTA+jboAqgWdVgtD60ZpgYQ4+lqc=;
-  b=AqPRUJcfI1yB74rIY4cL1S2HuXIHmy5c7sz4EUOFrJNWfrK94BgmFrWB
-   YhvWqDCjy56CF9VX1ET9+yJRIAhuba2STXqaGggYuSvjQJ81mUoGMpUxw
-   TDeb0c1oQaYLE2atM2922rJoKR5VTeD285kXl+v8Nsa0CLqgoyvTrT+5I
-   QHrmTWMSq6KsjBLqVHKYOmiuEUX0a9PlMUo2sQa2IlloNZYZ9/C9U/oxk
-   Mq+sotdjPShMmspxFUFDbOHt4DWlNhKzDO1b+u08dNiYqdgagIq8nn7Fr
-   r3QVM6/7mEcdDkG73cKq1fY50q0mIhhXtBOj+q+DzDL4HOGMiDpQiIdVz
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10376"; a="342096608"
-X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
-   d="scan'208";a="342096608"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2022 16:09:24 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
-   d="scan'208";a="829389303"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 12 Jun 2022 16:09:23 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o0Whu-000KIv-Ge;
-        Sun, 12 Jun 2022 23:09:22 +0000
-Date:   Mon, 13 Jun 2022 07:08:34 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Watson Chow <watson.chow@avnet.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Mark Brown <broonie@kernel.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: drivers/regulator/max20086-regulator.c:288:34: warning:
- 'max20086_dt_ids' defined but not used
-Message-ID: <202206130733.bcMd66i2-lkp@intel.com>
+        Sun, 12 Jun 2022 19:22:36 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33D154707E;
+        Sun, 12 Jun 2022 16:22:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1655076132;
+        bh=NCg0owc1+e7i6CzrGr7pXzriqT7EIvm5beku5O6o7jk=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=T1j5k1bilErWHYt0TUu0m2fA0QEyXeQL98uDRj3DK3wfVrQlF8XEfPK6GY4W/ACRE
+         H4QX3W8YX/IDz69Fvqyf/W4m3OApnk1/at++k89USPSUDKzU3p2supyY0r7i67fQK6
+         Olboxh4IyU7KnWKLZRKgUxDin2Zf1vdpAg0ihvr4=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from esprimo-mx.users.agdsn.de ([141.30.226.129]) by mail.gmx.net
+ (mrgmx005 [212.227.17.190]) with ESMTPSA (Nemesis) id
+ 1N5VHM-1ngD4I1Ha6-016vNA; Mon, 13 Jun 2022 01:22:12 +0200
+From:   Armin Wolf <W_Armin@gmx.de>
+To:     pali@kernel.org
+Cc:     jdelvare@suse.com, linux@roeck-us.net, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] hwmon: (dell-smm) Add Dell G5 5590 to DMI table
+Date:   Mon, 13 Jun 2022 01:22:08 +0200
+Message-Id: <20220612232208.27901-1-W_Armin@gmx.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:lvN5PFNqrRdbqRUoWptpSHnZLEW7j/SnKX98ucjMjFjepgOIIpn
+ KjgN4A70Qoj9p0ShD/1x2qNBen8anP97cA4vEpFQYBO6KUnPH7p6mAYL947ewuoS5OZj6zS
+ 0+wuRc09CNNdHSkx428ktWU48dZ6AT8u9g1yDeW0TUHYHFHWtYeorZU59JtnMaOzN+dRK23
+ QeTmAfYmu1ZC7UiNddwdw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:3FRBnyiUyfE=:/vWwwmEXW8/6oyCdbOtMAX
+ E/JvRNNJu2ZMVZmHh4G4Z8q+agwNFQsqE/c63y9+guRUtQPfmjL2nnX+o7wkQXLMVF189+Vam
+ ZaevL88thSXFXOBwIL2OTOaogagDbzVUUQ/PfJe90y4f9z+lqMYu1i9fjzth+6UGRU6Ye0vGY
+ x/oYOMhw7riXdcVy1xj+OX3WXuvU6pyElPdHDBcVn1B8ZUb+5sUOi6rvYrtmnMM1D0MGxMP3O
+ s8DKb98AY5twRqtssL2i+ZHWrTFWTBYLm+OUoiLsN/Hbxe1cQPAHg68KCtc+l5Yf5Qo7OScr6
+ TTnEXo7+5WqnH35UCqaT1QlBxJFOaJlP4iNA9oZsmxSLGKgrei/pPLnW7JA6LtlcoQvwItqxg
+ Jo4F5fXrFUHvJEeNf91pR19yL5sfWO/cmP/lVHcc0ghPhyPBET64cmHp1QKsO2ST3mXvh4yvP
+ nfxKigNeUB89YFRoKfnZrSBpfDMf3siBJbZBSi1UY2jk/G7c9nvc9Wt8V80Gs5QZVow38GHr5
+ YPK3MsSHd3B6MYtbrvkS3VP2+ds7PUef9Da8xk6x1RALFjWWJZMhPHEaEFUpH0ytE+kBAPffm
+ /i90N10j5Sx5N68yXB2aXgnYPXhGzGWwUZJHdhYfjPTwzxLt9QXxA/v3MGr2qBHVS8upVcT0P
+ laXMSX9YL32vjaxyJiWyiv8MEmiRCc4LFxaQpc+ddNXQaKndmxoRbhF1OhlxD38oEUVw95Yun
+ 7nb7G1gr7MHMVrvofo3zxv3F5dLsWnwUTKoy50qyGqqAP6j1iwqJAUNCLoTdUjw9OAhFK0Uvb
+ a0nHTXRfeloG6NdhZ+sNE6PJvepL5xImD+ez0QOs+tkJGyWI9teIdqWYFGqNELqrEHFAzbCXH
+ 5ezX4V0OK+WBlKL5R4ioOd0helzsiPyYhCqbncnU/fVNavYqSnziF5MWhTr7XPvmwCL/yJa7L
+ WMLZt/gKFG0oC7ZIy6Z7ZRQ0AaZXf1C6QrIHSH2dLuKJzSHEwII2KdGzR7q+iURaXd8x2C7TP
+ 0hBiWR1rh69Q2FureFdBdPg8TD5nVGHHgP3Ddvsa0YKumSQj5QAf07T01+WDw8jo2IMWMdBeJ
+ WvawnBGPo212lk5qIrQ5CQeD9YPUbZj4sp6fFg808NQRa6yeRcQs+tphg==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Watson,
+According to Bug 215983 at bugzilla.kernel.org,
+the Dell G5 5590 supports the SMM interface and
+can thus be loaded with ignore_dmi being set.
+Add the model the DMI table to allow for
+automatic loadig on this model.
 
-FYI, the error/warning still remains.
+Compile-tested only.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   997952851843935024962b51fc36c61b3c2d1ed4
-commit: bfff546aae50ae68ed395bf0e0848188d27b0ba3 regulator: Add MAX20086-MAX20089 driver
-date:   5 months ago
-config: i386-randconfig-r012-20220613 (https://download.01.org/0day-ci/archive/20220613/202206130733.bcMd66i2-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=bfff546aae50ae68ed395bf0e0848188d27b0ba3
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout bfff546aae50ae68ed395bf0e0848188d27b0ba3
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/regulator/
+Signed-off-by: Armin Wolf <W_Armin@gmx.de>
+=2D--
+ drivers/hwmon/dell-smm-hwmon.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+diff --git a/drivers/hwmon/dell-smm-hwmon.c b/drivers/hwmon/dell-smm-hwmon=
+.c
+index 16c10ac84a91..d419885dd771 100644
+=2D-- a/drivers/hwmon/dell-smm-hwmon.c
++++ b/drivers/hwmon/dell-smm-hwmon.c
+@@ -1131,6 +1131,13 @@ static const struct i8k_config_data i8k_config_data=
+[] __initconst =3D {
+ };
 
-All warnings (new ones prefixed by >>):
+ static const struct dmi_system_id i8k_dmi_table[] __initconst =3D {
++	{
++		.ident =3D "Dell G5 5590",
++		.matches =3D {
++			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "G5 5590"),
++		},
++	},
+ 	{
+ 		.ident =3D "Dell Inspiron",
+ 		.matches =3D {
+=2D-
+2.30.2
 
->> drivers/regulator/max20086-regulator.c:288:34: warning: 'max20086_dt_ids' defined but not used [-Wunused-const-variable=]
-     288 | static const struct of_device_id max20086_dt_ids[] = {
-         |                                  ^~~~~~~~~~~~~~~
-
-
-vim +/max20086_dt_ids +288 drivers/regulator/max20086-regulator.c
-
-   287	
- > 288	static const struct of_device_id max20086_dt_ids[] = {
-   289		{
-   290			.compatible = "maxim,max20086",
-   291			.data = &(const struct max20086_chip_info) {
-   292				.id = MAX20086_DEVICE_ID_MAX20086,
-   293				.num_outputs = 4,
-   294			}
-   295		}, {
-   296			.compatible = "maxim,max20087",
-   297			.data = &(const struct max20086_chip_info) {
-   298				.id = MAX20086_DEVICE_ID_MAX20087,
-   299				.num_outputs = 4,
-   300			}
-   301		}, {
-   302			.compatible = "maxim,max20088",
-   303			.data = &(const struct max20086_chip_info) {
-   304				.id = MAX20086_DEVICE_ID_MAX20088,
-   305				.num_outputs = 2,
-   306			}
-   307		}, {
-   308			.compatible = "maxim,max20089",
-   309			.data = &(const struct max20086_chip_info) {
-   310				.id = MAX20086_DEVICE_ID_MAX20089,
-   311				.num_outputs = 2,
-   312			}
-   313		},
-   314		{ /* Sentinel */ },
-   315	};
-   316	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
