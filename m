@@ -2,299 +2,299 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 156E4C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 16:40:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C141C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 17:03:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231864AbiFLQkI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 12:40:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37788 "EHLO
+        id S232445AbiFLRDQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 13:03:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229473AbiFLQkF (ORCPT
+        with ESMTP id S229687AbiFLRDP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 12:40:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E393E1839E;
-        Sun, 12 Jun 2022 09:40:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D36660FBA;
-        Sun, 12 Jun 2022 16:40:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B96DDC34115;
-        Sun, 12 Jun 2022 16:40:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655052002;
-        bh=Xn/ixlJG6/c6tH5N7rI3NzTGuLWavqpfoz8W2lZkvdI=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=sYAsqi/3j5Z4GCn3cArS9fH8B+f8lr6B0O1z2newgr5qdXxBE+zV+P/iQYPms+4I1
-         RVSWeCWmclZzQIKrNgdHyTMl1uFelPmE/sL2RItTCas5dPsUiSm8youldX2sXnBFlu
-         OV54dgR555KBs/Nd7N+L0lmAfa8rQj3GVo8YMLnd5HwdH37pwQ1hHR9lI/F/B+fF8S
-         9kAdoLYL26OU/l32qfFkZqLA+VvsfeeHwyXDrfo7i6Gg8/Fu8TRRw+0gpNlEqgm+lX
-         S4WPo4fjJ9OLgKhW0K9K/bwmkf4XSSc2GIhohhsqY6O1U5I/afRAU0ICFcYmvP168J
-         sT++Uu6oeqwSQ==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 526575C02F9; Sun, 12 Jun 2022 09:40:02 -0700 (PDT)
-Date:   Sun, 12 Jun 2022 09:40:02 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>
-Cc:     Zhangfei Gao <zhangfei.gao@linaro.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        rcu@vger.kernel.org, Lai Jiangshan <jiangshanlai@gmail.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Shameerali Kolothum Thodi 
-        <shameerali.kolothum.thodi@huawei.com>, mtosatti@redhat.com,
-        pbonzini@redhat.com, sheng.yang@intel.com
-Subject: Re: Commit 282d8998e997 (srcu: Prevent expedited GPs and blocking
- readers from consuming CPU) cause qemu boot slow
-Message-ID: <20220612164002.GA1242564@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20615615-0013-5adc-584f-2b1d5c03ebfc@linaro.org>
- <20220611165956.GO1790663@paulmck-ThinkPad-P17-Gen-1>
- <tencent_80D2801BC03B7006BB2230B6A1D5C69B9209@qq.com>
- <20220612133631.GQ1790663@paulmck-ThinkPad-P17-Gen-1>
- <tencent_2B7B5B8DBE69330DA041AEE36C1029826905@qq.com>
- <20220612162029.GR1790663@paulmck-ThinkPad-P17-Gen-1>
+        Sun, 12 Jun 2022 13:03:15 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2528412773;
+        Sun, 12 Jun 2022 10:03:13 -0700 (PDT)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25CFjexx009764;
+        Sun, 12 Jun 2022 17:02:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : reply-to : references : mime-version : content-type
+ : in-reply-to; s=pp1; bh=TJtJylOP7ogjKCrysXoMjriFf1a5dRJ/YnNa7fGEQzI=;
+ b=XE82b6HJkQHkmzqb56N3lcNC+ZVNtzYy4Sr27Ec3PSxT+HXs8gFN3sQZ07EDdEaug0Fs
+ zroWopWuvpxmcMRVNoFF8Gj/kp5EgZ85WNqjk72KsOC5sTdgwimxP4qaCGAn9Q0oG2eO
+ hLgIXIrFY5eEswABhxf1+gWifgazE5qSc2GO1Edx3h9PPsUz6BIZcbKCgywEcAUzKAZ1
+ txn00KuEWJVmYd1loSTZ8up7s67Df5EjMkblFEmdH0jN4lA3TIGP1fqOXM8xA9D0lSAo
+ o5DtDl5Ve48KpdXNpuXClBBoMGzF5Clw3aVC1yvCB6rFktz26TwKC8KepqUwUwAIkp8y FA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gn4p4h6qp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 12 Jun 2022 17:02:59 +0000
+Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25CGmdWW021429;
+        Sun, 12 Jun 2022 17:02:59 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gn4p4h6qf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 12 Jun 2022 17:02:59 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25CGom8L018675;
+        Sun, 12 Jun 2022 17:02:57 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma03ams.nl.ibm.com with ESMTP id 3gmjp99n8x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 12 Jun 2022 17:02:56 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25CH2roN18284908
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sun, 12 Jun 2022 17:02:53 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C0B3AA4051;
+        Sun, 12 Jun 2022 17:02:53 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C0DDFA4040;
+        Sun, 12 Jun 2022 17:02:51 +0000 (GMT)
+Received: from in.ibm.com (unknown [9.43.31.82])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Sun, 12 Jun 2022 17:02:51 +0000 (GMT)
+Date:   Sun, 12 Jun 2022 22:32:48 +0530
+From:   Mahesh J Salgaonkar <mahesh@linux.ibm.com>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Nathan Lynch <nathanl@linux.ibm.com>,
+        Tyrel Datwyler <tyreld@linux.ibm.com>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@ozlabs.org>,
+        "Oliver O'Halloran" <oohall@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH v6] PCI hotplug: rpaphp: Error out on busy status from
+ get-sensor-state
+Message-ID: <20220612170248.l6ftaneqjfof2jrc@in.ibm.com>
+Reply-To: mahesh@linux.ibm.com
+References: <165099464934.1658371.1526973220374528897.stgit@jupiter>
+ <20220428204740.GA42242@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220612162029.GR1790663@paulmck-ThinkPad-P17-Gen-1>
+In-Reply-To: <20220428204740.GA42242@bhelgaas>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Qeq_uA94OiD7W3Co2q7WRTwHeo6m-oVC
+X-Proofpoint-ORIG-GUID: qVO4gMlyd9cg7qO6huB_tlqlL05oakLp
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-12_07,2022-06-09_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 clxscore=1011
+ malwarescore=0 impostorscore=0 mlxscore=0 mlxlogscore=999 spamscore=0
+ lowpriorityscore=0 suspectscore=0 adultscore=0 priorityscore=1501
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206120084
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jun 12, 2022 at 09:20:29AM -0700, Paul E. McKenney wrote:
-> On Sun, Jun 12, 2022 at 10:59:30PM +0800, zhangfei.gao@foxmail.com wrote:
-> > Hi, Paul
+On 2022-04-28 15:47:40 Thu, Bjorn Helgaas wrote:
+> On Tue, Apr 26, 2022 at 11:07:39PM +0530, Mahesh Salgaonkar wrote:
+> > When certain PHB HW failure causes phyp to recover PHB, it marks the PE
+> > state as temporarily unavailable until recovery is complete. This also
+> > triggers an EEH handler in Linux which needs to notify drivers, and perform
+> > recovery. But before notifying the driver about the PCI error it uses
+> > get_adapter_state()->get-sensor-state() operation of the hotplug_slot to
+> > determine if the slot contains a device or not. if the slot is empty, the
+>                                                   If
+> > recovery is skipped entirely.
 > > 
-> > On 2022/6/12 下午9:36, Paul E. McKenney wrote:
-> > > On Sun, Jun 12, 2022 at 03:40:30PM +0800, zhangfei.gao@foxmail.com wrote:
-> > > > Hi, Paul
-> > > > 
-> > > > On 2022/6/12 上午12:59, Paul E. McKenney wrote:
-> > > > > On Sun, Jun 12, 2022 at 12:32:59AM +0800, Zhangfei Gao wrote:
-> > > > > > Hi, Paul
-> > > > > > 
-> > > > > > When verifying qemu with acpi rmr feature on v5.19-rc1, the guest kernel
-> > > > > > stuck for several minutes.
-> > > > > Stuck for several minutes but then continues normally?  Or stuck for
-> > > > > several minutes before you kill qemu?
-> > > > qemu boot stuck for several minutes, then guest can bootup normally, just
-> > > > slower.
-> > > > > And I have to ask...  What happened without the ACPI RMR feature?
-> > > > If no ACPI, qemu boot quickly without stuck.
-> > > > build/aarch64-softmmu/qemu-system-aarch64 -machine
-> > > > virt,gic-version=3,iommu=smmuv3 \
-> > > > -enable-kvm -cpu host -m 1024 \
-> > > > -kernel Image -initrd mini-rootfs.cpio.gz -nographic -append \
-> > > > "rdinit=init console=ttyAMA0 earlycon=pl011,0x9000000 kpti=off"
-> > > > 
-> > > > Adding acpi=force & -bios QEMU_EFI.fd, qemu boot stuck for several minutes.
-> > > > 
-> > > > By the way, my hardware platform is aarch64.
-> > > Thank you for the information!  The problem is excessive delay rather
-> > > than a hang, and it is configuration-dependent.  Good to know!
-> > > 
-> > > > Only change this can solve the stuck issue.
-> > > > 
-> > > > --- a/kernel/rcu/srcutree.c
-> > > > +++ b/kernel/rcu/srcutree.c
-> > > > @@ -524,6 +524,10 @@ static unsigned long srcu_get_delay(struct srcu_struct
-> > > > *ssp)
-> > > >   {
-> > > >          unsigned long jbase = SRCU_INTERVAL;
-> > > > 
-> > > > +       if (ULONG_CMP_LT(READ_ONCE(ssp->srcu_gp_seq),
-> > > > READ_ONCE(ssp->srcu_gp_seq_needed_exp)))
-> > > > +               return 0;
-> > > > +       return SRCU_INTERVAL;
-> > > I am glad that you have a workaround for this problem, but this change
-> > > would re-introduce the problem that commit 282d8998e997 ("srcu: Prevent
-> > > expedited GPs and blocking readers from consuming CPU") was intended
-> > > to fix.  For one example, your change can prevent kernel live patching
-> > > from applying a patch.  So something else is needed.
-> > Understand, it is just debug where has issue.
-> > > 
-> > > Does changing the value of SRCU_MAX_INTERVAL to (say) 3 decrease the delay
-> > > significantly?  (This is not a fix, either, but instead a debug check.)
-> > No use.
+> > However on certain PHB failures, the rtas call get-sensor-state() returns
+> > extended busy error (9902) until PHB is recovered by phyp. Once PHB is
+> > recovered, the get-sensor-state() returns success with correct presence
+> > status. The RTAS call interface rtas_get_sensor() loops over the rtas call
+> > on extended delay return code (9902) until the return value is either
+> > success (0) or error (-1). This causes the EEH handler to get stuck for ~6
+> > seconds before it could notify that the pci error has been detected and
+> > stop any active operations. Hence with running I/O traffic, during this 6
+> > seconds, the network driver continues its operation and hits a timeout
+> > (netdev watchdog). On timeouts, network driver go into ffdc capture mode
 > 
-> OK, that indicates that you have a very large number of invocations
-> of synchronize_srcu() or synchronize_srcu_expedited() instead of only
-> a few that take a very long time each.
-> 
-> > > Your change always returns zero if another SRCU grace period is needed.
-> > > Let's look at the callers of srcu_get_delay():
-> > > 
-> > > o	cleanup_srcu_struct() uses it to check whether there is an
-> > > 	expedited grace period pending, leaking the srcu_struct if so.
-> > > 	This should not affect boot delay.  (Unless you are invoking
-> > > 	init_srcu_struct() and cleanup_srcu_struct() really really
-> > > 	often.)
-> > > 
-> > > o	srcu_gp_end() uses it to determine whether or not to allow
-> > > 	a one-jiffy delay before invoking callbacks at the end of
-> > > 	a grace period.
-> > > 
-> > > o	srcu_funnel_gp_start() uses it to determine whether or not to
-> > > 	allow a one-jiffy delay before starting the process of checking
-> > > 	for the end of an SRCU grace period.
-> > > 
-> > > o	try_check_zero() uses it to add an additional short delay
-> > > 	(instead of a long delay) between checks of reader state.
-> > > 
-> > > o	process_srcu() uses it to calculate the long delay between
-> > > 	checks of reader state.
-> > > 
-> > > These add one-jiffy delays, except for process_srcu(), which adds a delay
-> > > of up to 10 jiffies.  Even given HZ=100 (as opposed to the HZ=1000 that
-> > > I normally use), this requires thousands of such delays to add up to the
-> > > several minutes that you are seeing.  (In theory, the delays could also
-> > > be due to SRCU readers, except that in that case adjusting timeouts in
-> > > the grace-period processing would not make things go faster.)
-> > > 
-> > > So, does acpi=force & -bios QEMU_EFI.fd add SRCU grace periods?  If so,
-> > > it would be very good make sure that this code is using SRCU efficiently.
-> > > One way to check would be to put a printk() into synchronize_srcu(),
-> > > though maintaining a counter and printing (say) every 1000th invocation
-> > > might be easier on the console output.
-> > 
-> > good idea.
-> 
-> Glad you like it.  ;-)
-> 
-> > > > > > And on 5.18, there is no such problem.
-> > > > > > 
-> > > > > > After revert this patch, the issue solved.
-> > > > > > Commit 282d8998e997 (srcu: Prevent expedited GPs and blocking readers from
-> > > > > > consuming CPU)
-> > > > > > 
-> > > > > > 
-> > > > > > qemu cmd:
-> > > > > > build/aarch64-softmmu/qemu-system-aarch64 -machine
-> > > > > > virt,gic-version=3,iommu=smmuv3 \
-> > > > > > -enable-kvm -cpu host -m 1024 \
-> > > > > > -kernel Image -initrd mini-rootfs.cpio.gz -nographic -append \
-> > > > > > "rdinit=init console=ttyAMA0 earlycon=pl011,0x9000000 kpti=off acpi=force" \
-> > > > > > -bios QEMU_EFI.fd
-> > > > > > 
-> > > > > > log:
-> > > > > > InstallProtocolInterface: 5B1B31A1-9562-11D2-8E3F-00A0C969723B 7AA4D040
-> > > > > > add-symbol-file /home/linaro/work/edk2/Build/ArmVirtQemu-AARCH64/DEBUG_GCC48/AARCH64/NetworkPkg/IScsiDxe/IScsiDxe/DEBUG/IScsiDxe.dll
-> > > > > > 0x75459000
-> > > > > > Loading driver at 0x00075458000 EntryPoint=0x00075459058 IScsiDxe.efi
-> > > > > > InstallProtocolInterface: BC62157E-3E33-4FEC-9920-2D3B36D750DF 7AA4DE98
-> > > > > > ProtectUefiImageCommon - 0x7AA4D040
-> > > > > >     - 0x0000000075458000 - 0x000000000003F000
-> > > > > > SetUefiImageMemoryAttributes - 0x0000000075458000 - 0x0000000000001000
-> > > > > > (0x0000000000004008)
-> > > > > > SetUefiImageMemoryAttributes - 0x0000000075459000 - 0x000000000003B000
-> > > > > > (0x0000000000020008)
-> > > > > > SetUefiImageMemoryAttributes - 0x0000000075494000 - 0x0000000000003000
-> > > > > > (0x0000000000004008)
-> > > > > > InstallProtocolInterface: 18A031AB-B443-4D1A-A5C0-0C09261E9F71 754952C8
-> > > > > > InstallProtocolInterface: 107A772C-D5E1-11D4-9A46-0090273FC14D 75495358
-> > > > > > InstallProtocolInterface: 6A7A5CFF-E8D9-4F70-BADA-75AB3025CE14 75495370
-> > > > > > InstallProtocolInterface: 18A031AB-B443-4D1A-A5C0-0C09261E9F71 754952F8
-> > > > > > InstallProtocolInterface: 107A772C-D5E1-11D4-9A46-0090273FC14D 75495358
-> > > > > > InstallProtocolInterface: 6A7A5CFF-E8D9-4F70-BADA-75AB3025CE14 75495370
-> > > > > > InstallProtocolInterface: 59324945-EC44-4C0D-B1CD-9DB139DF070C 75495348
-> > > > > > InstallProtocolInterface: 09576E91-6D3F-11D2-8E39-00A0C969723B 754953E8
-> > > > > > InstallProtocolInterface: 330D4706-F2A0-4E4F-A369-B66FA8D54385 7AA4D728
-> > > > > > 
-> > > > > > 
-> > > > > > Not sure it is either reported or solved.
-> > > > > This is the first I have heard of it, so thank you for reporting it.
-> > > > > 
-> > > > > Do you have a way of collecting something sysrq-t output?
-> > > > Do you mean "echo t > /proc/sysrq-trigger",
-> > > > There are too much output and kernel dump can not stop.
-> > > OK.  What other tools do you have to work out what is happening during
-> > > temporary hangs such as this one?
-> > > 
-> > > The question to be answered: "Is there usually at least one task waiting
-> > > in synchronize_srcu() during these hangs, and if so, which srcu_struct
-> > > is passed to those synchronize_srcu() calls?"
-> > 
-> > As you suggested, add print in __synchronize_srcu, 1000 times print once.
-> > 
-> > With acpi=force & -bios QEMU_EFI.fd
-> > 
-> > When qemu stuck in
-> > InstallProtocolInterface: 5B1B31A1-9562-11D2-8E3F-00A0C969723B 7AA4D040
-> > add-symbol-file /home/linaro/work/edk2/Build/ArmVirtQemu-AARCH64/DEBUG_GCC48/AARCH64/NetworkPkg/IScsiDxe/IScsiDxe/DEBUG/IScsiDxe.dll
-> > 0x75459000
-> > 
-> > The print in  __synchronize_srcu is print from 0 t0 9001.
-> 
-> Now that is what I call a large number of calls!
-> 
-> > [   94.271350] gzf __synchronize_srcu loop=1001
-> > ....
-> > 
-> > [  222.621659]  __synchronize_srcu loop=9001
-> > [  222.621664] CPU: 96 PID: 2294 Comm: qemu-system-aar Not tainted
-> > 5.19.0-rc1-15071-g697f40b5235f-dirty #615
-> > [  222.621666] Hardware name: Huawei TaiShan 200 (Model 2280)/BC82AMDD, BIOS
-> > 2280-V2 CS V5.B133.01 03/25/2021
-> > [  222.621667] Call trace:
-> > [  222.621668]  dump_backtrace+0xe4/0xf0
-> > [  222.621670] show_stack+0x20/0x70
-> > [  222.621672] dump_stack_lvl+0x8c/0xb8
-> > [  222.621674]  dump_stack+0x18/0x34
-> > [  222.621676] __synchronize_srcu+0x120/0x128
-> > [  222.621678] synchronize_srcu_expedited+0x2c/0x40
-> > [  222.621680] kvm_swap_active_memslots+0x130/0x198
-> > [  222.621683] kvm_activate_memslot+0x40/0x68
-> > [  222.621684]  kvm_set_memslot+0x184/0x3b0
-> > [  222.621686]  __kvm_set_memory_region+0x288/0x438
-> > [  222.621688] kvm_set_memory_region+0x3c/0x60
-> 
-> This is KVM setting up one mapping in your IORT RMR memory, correct?
-> (As in I/O remapping table reserved memory regions.)
-> 
-> > [  222.621689]  kvm_vm_ioctl+0x5a0/0x13e0
-> 
-> And this ioctl() is qemu telling KVM to do so, correct?
-> 
-> > [  222.621691]  __arm64_sys_ioctl+0xb0/0xf8
-> > [  222.621693]  invoke_syscall+0x4c/0x110
-> > [  222.621696] el0_svc_common.constprop.0+0x68/0x128
-> > [  222.621698]  do_el0_svc+0x34/0xc0
-> > [  222.621701]  el0_svc+0x30/0x98
-> > [  222.621704]  el0t_64_sync_handler+0xb8/0xc0
-> > [  222.621706]  el0t_64_sync+0x18c/0x190
-> > 
-> > 
-> > If no acpi=force, no print at all, 1000 times one print.
-> 
-> OK, this certainly explains the slowdown, both from adding the IORT RMR
-> and from the commit that you bisected to.  The answers to a few questions
-> might help illuminate a path towards a fix:
-> 
-> Do these reserved memory regions really need to be allocated separately?
-> (For example, are they really all non-contiguous?  If not, that is, if
-> there are a lot of contiguous memory regions, could you sort the IORT
-> by address and do one ioctl() for each set of contiguous memory regions?)
-> 
-> Are all of these reserved memory regions set up before init is spawned?
-> 
-> Are all of these reserved memory regions set up while there is only a
-> single vCPU up and running?
-> 
-> Is the SRCU grace period really needed in this case?  (I freely confess
-> to not being all that familiar with KVM.)
+> I assume ffdc == First Failure Data Capture (please expand and remove
+> the redundant "capture")  Is this a powerpc thing?  "ffdc" doesn't
+> occur in drivers/net, so I don't know what network driver this refers
+> to.
 
-Oh, and there was a similar many-requests problem with networking many
-years ago.  This was solved by adding a new syscall/ioctl()/whatever
-that permitted many requests to be presented to the kernel with a single
-system call.
+Sorry for delay in response.
 
-Could a new ioctl() be introduced that requested a large number
-of these memory regions in one go so as to make each call to
-synchronize_rcu_expedited() cover a useful fraction of your 9000+
-requests?  Adding a few of the KVM guys on CC for their thoughts.
+What I meant by ffdc here is that bnx2 driver calls bnx2x_panic_dump()
+soon after netdev watchdog timeout, and starts dumping additional debug
+information to console.
 
-							Thanx, Paul
+======
+[ 9416.991596] bnx2x: [bnx2x_panic_dump:930(enP19p1s0f1)]begin crash dump -----------------
+[ 9416.991599] bnx2x: [bnx2x_panic_dump:940(enP19p1s0f1)]def_idx(0x438)  def_att_idx(0x4)  attn_state(0x0)  spq_prod_idx(0x42) next_stats_cnt(0x413)
+[ 9416.991604] bnx2x: [bnx2x_panic_dump:945(enP19p1s0f1)]DSB: attn bits(0x0)  ack(0x100)  id(0x0)  idx(0x4)
+[ 9416.991608] bnx2x: [bnx2x_panic_dump:946(enP19p1s0f1)]     def (0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x43c 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0)  igu_sb_id(0xff)  igu_seg_id(0xff) pf_id(0xff)  vnic_id(0xff)  vf_id(0xff)  vf_valid (0xff) state(0xff)
+[...]
+[...]
+[ 9417.778071] bnx2x: [bnx2x_mc_assert:751(enP19p1s0f1)]USTORM_ASSERT_INDEX 0x2f = 0xffffffff 0xffffffff 0xffffffff 0xffffffff
+[ 9417.778077] bnx2x: [bnx2x_mc_assert:751(enP19p1s0f1)]USTORM_ASSERT_INDEX 0x30 = 0xffffffff 0xffffffff 0xffffffff 0xffffffff
+[ 9417.778083] bnx2x: [bnx2x_mc_assert:751(enP19p1s0f1)]USTORM_ASSERT_INDEX 0x31 = 0xffffffff 0xffffffff 0xffffffff 0xffffffff
+[ 9417.778086] bnx2x: [bnx2x_mc_assert:763(enP19p1s0f1)]Chip Revision: everest3, FW Version: 7_13_15
+[ 9417.778091] bnx2x: [bnx2x_panic_dump:1202(enP19p1s0f1)]end crash dump -----------------
+======
+
+> 
+> > and reset path assuming the PCI device is in fatal condition. This
+> > sometimes causes EEH recovery to fail. This impacts the ssh connection and
+> > leads to the system being inaccessible.
+> > 
+> > ------------
+> > [52732.244731] DEBUG: ibm_read_slot_reset_state2()
+> > [52732.244762] DEBUG: ret = 0, rets[0]=5, rets[1]=1, rets[2]=4000, rets[3]=>
+> > [52732.244798] DEBUG: in eeh_slot_presence_check
+> > [52732.244804] DEBUG: error state check
+> > [52732.244807] DEBUG: Is slot hotpluggable
+> > [52732.244810] DEBUG: hotpluggable ops ?
+> > [52732.244953] DEBUG: Calling ops->get_adapter_status
+> > [52732.244958] DEBUG: calling rpaphp_get_sensor_state
+> > [52736.564262] ------------[ cut here ]------------
+> > [52736.564299] NETDEV WATCHDOG: enP64p1s0f3 (tg3): transmit queue 0 timed o>
+> > [52736.564324] WARNING: CPU: 1442 PID: 0 at net/sched/sch_generic.c:478 dev>
+> > [...]
+> > [52736.564505] NIP [c000000000c32368] dev_watchdog+0x438/0x440
+> > [52736.564513] LR [c000000000c32364] dev_watchdog+0x434/0x440
+> > ------------
+> > 
+> > To avoid this issue, fix the pci hotplug driver (rpaphp) to return an error
+> > if the slot presence state can not be detected immediately while PE is in
+> > EEH recovery state. Current implementation uses rtas_get_sensor() API which
+> > blocks the slot check state until rtas call returns success. Change
+> > rpaphp_get_sensor_state() to invoke rtas_call(get-sensor-state) directly
+> > only if the respective pe is in EEH recovery state, and take actions based
+> > on rtas return status.
+> 
+> I'm not too clear on what the problem is.  I guess you don't want the
+> netdev watchdog timeout.  Is the NIC still operating?  It's just the
+> PHB leading to the NIC that has an issue?
+
+Yes, NIC stops functioning. Since EEH handler delays the reporting of
+PCI error to driver, it starts its own recovery while pHyp is still
+recovering the PHB.  As part of recovery, driver tries to reset the
+device and it keeps failing since every PCI read/write returns ff's. And
+when EEH recovery kicks-in, the driver is unable to recover the device.
+To get the NIC working again it needs a reboot or re-assign the I/O
+adapter from HMC. Hence, it becomes important to inform driver about the
+PCI error detection as early as possible. This way driver is aware of PCI
+error and waits for EEH handler's next action for successful recovery.
+This way driver does not try its own recovery to mess things up while
+pHyp is still recovering the PHB.
+
+[ 9531.168587] EEH: Beginning: 'slot_reset'
+[ 9531.168601] PCI 0013:01:00.0#10000: EEH: Invoking bnx2x->slot_reset()
+[...]
+[ 9614.110094] bnx2x: [bnx2x_func_stop:9129(enP19p1s0f0)]FUNC_STOP ramrod failed. Running a dry transaction
+[ 9614.110300] bnx2x: [bnx2x_igu_int_disable:902(enP19p1s0f0)]BUG! Proper val not read from IGU!
+[ 9629.178067] bnx2x: [bnx2x_fw_command:3055(enP19p1s0f0)]FW failed to respond!
+[ 9629.178085] bnx2x 0013:01:00.0 enP19p1s0f0: bc 7.10.4
+[ 9629.178091] bnx2x: [bnx2x_fw_dump_lvl:789(enP19p1s0f0)]Cannot dump MCP info while in PCI error
+[ 9644.241813] bnx2x: [bnx2x_io_slot_reset:14245(enP19p1s0f0)]IO slot reset --> driver unload
+[...]
+[ 9644.241819] PCI 0013:01:00.0#10000: EEH: bnx2x driver reports: 'disconnect'
+[ 9644.241823] PCI 0013:01:00.1#10000: EEH: Invoking bnx2x->slot_reset()
+[ 9644.241827] bnx2x: [bnx2x_io_slot_reset:14229(enP19p1s0f1)]IO slot reset initializing...
+[ 9644.241916] bnx2x 0013:01:00.1: enabling device (0140 -> 0142)
+[ 9644.258604] bnx2x: [bnx2x_io_slot_reset:14245(enP19p1s0f1)]IO slot reset --> driver unload
+[ 9644.258612] PCI 0013:01:00.1#10000: EEH: bnx2x driver reports: 'disconnect'
+[ 9644.258615] EEH: Finished:'slot_reset' with aggregate recovery state:'disconnect'
+[ 9644.258620] EEH: Unable to recover from failure from PHB#13-PE#10000.
+[ 9644.261811] EEH: Beginning: 'error_detected(permanent failure)'
+[...]
+[ 9644.261823] EEH: Finished:'error_detected(permanent failure)'
+
+> 
+> Apparently the remedy is to return -ENODEV (from SLOT_NOT_USABLE ==
+> -9002) from rpaphp_get_sensor_state() instead of doing the retries.
+> It would be good to explain why *that* is safe.
+
+This remedy is only for PE which is in EEH recovery mode. In all other
+cases there is no functionality change. This way EEH handler will not be
+blocked on rpaphp_get_sensor_state() and can immediately notify driver
+about the PCI error and stop any active operations.
+
+> 
+> > In normal cases (non-EEH case) rpaphp_get_sensor_state() will continue to
+> > invoke rtas_get_sensor() as it was earlier with no change in existing
+> > behavior.
+> 
+> Nits:
+> Follow historical convention in subject line.
+> s/phyp/pHyp/   (or whatever the normal styling is)
+> s/pe/PE/       (used inconsistently above and in comment)
+> s/rtas/RTAS/   (Michael mentioned this already, but I guess you missed some)
+> s/pci/PCI/
+> s/ffdc/First Failure Data Capture/   (or the correct expansion)
+> Make similar changes in the comment below.
+> 
+
+Sure, will do.
+
+[...]
+> > +}
+> > +
+> > +/*
+> > + * get_adapter_status() can be called by the EEH handler during EEH recovery.
+> > + * On certain PHB failures, the rtas call get-sensor-state() returns extended
+> > + * busy error (9902) until PHB is recovered by phyp. The rtas call interface
+> > + * rtas_get_sensor() loops over the rtas call on extended delay return code
+> > + * (9902) until the return value is either success (0) or error (-1). This
+> > + * causes the EEH handler to get stuck for ~6 seconds before it could notify
+> > + * that the pci error has been detected and stop any active operations. This
+> > + * sometimes causes EEH recovery to fail. To avoid this issue, invoke
+> > + * rtas_call(get-sensor-state) directly if the respective pe is in EEH recovery
+> > + * state and return -EBUSY error based on rtas return status. This will help
+> > + * the EEH handler to notify the driver about the pci error immediately and
+> > + * successfully proceed with EEH recovery steps.
+> > + */
+> > +static int __rpaphp_get_sensor_state(struct slot *slot, int *state)
+> > +{
+> > +	int rc;
+> > +#ifdef CONFIG_EEH
+> > +	int token = rtas_token("get-sensor-state");
+> > +	struct pci_dn *pdn;
+> > +	struct eeh_pe *pe;
+> > +	struct pci_controller *phb = PCI_DN(slot->dn)->phb;
+> > +
+> > +	if (token == RTAS_UNKNOWN_SERVICE)
+> > +		return -ENOENT;
+> > +
+> > +	/*
+> > +	 * Fallback to existing method for empty slot or pe isn't in EEH
+> > +	 * recovery.
+> > +	 */
+> > +	if (list_empty(&PCI_DN(phb->dn)->child_list))
+> > +		goto fallback;
+> > +
+> > +	pdn = list_first_entry(&PCI_DN(phb->dn)->child_list,
+> > +			       struct pci_dn, list);
+> 
+> I guess you don't need locking to ensure that child_list doesn't
+> become empty between the list_empty() and the list_first_entry()?
+
+Maybe I can switch to use of list_first_entry_or_null() ?
+
+> I didn't see locking at other places that traverse it, but it's not
+> obvious to me what protects it.
+> 
+> > +	pe = eeh_dev_to_pe(pdn->edev);
+> > +	if (pe && (pe->state & EEH_PE_RECOVERING)) {
+> > +		rc = rtas_call(token, 2, 2, state, DR_ENTITY_SENSE,
+> > +			       slot->index);
+> > +		if (rc)
+> > +			rc = rtas_to_errno(rc);
+> > +		return rc;
+> 
+> I'd probably make rtas_to_errno(0) return 0, then do:
+> 
+>   return rtas_to_errno(rc);
+> 
+
+Agree.
+
+Thanks,
+-Mahesh.
