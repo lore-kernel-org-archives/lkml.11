@@ -2,77 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E594C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 00:33:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AD2BC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 01:05:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229530AbiFLAdw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 20:33:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44318 "EHLO
+        id S231951AbiFLBFb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 21:05:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232842AbiFLAdn (ORCPT
+        with ESMTP id S229445AbiFLBF3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 20:33:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B76F93DDC7;
-        Sat, 11 Jun 2022 17:33:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6ADB1B80B74;
-        Sun, 12 Jun 2022 00:33:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 368F6C34116;
-        Sun, 12 Jun 2022 00:33:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654994020;
-        bh=YK+v++7aHXh6ZVsNGPhoQ32la+K/dqkHHmiEfw1ISHg=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=Hh6uL5u9xn3vFbB7R+vcU+f8l+A2htz8iUC8hP7V9VGu2rmdOC8N8sZ8oXs3LK42M
-         QNj0xZyYREMyzdCEYboJOaCxEWkEYZ8JD1ElOEENCEYqGb74xgiTdg1EY4odTQdwbc
-         zBGbR+qS0GadrEnC1JQni46mScY/n01yG/I5hmjWcQOpgtc9jl2cInzhZtVmY3uT+1
-         T3p0S2BKDXu/6cIeXcdsInzM+bvvTbkcTsJGvm9yMzNZzQl1hJgVlBvwdGNYXeL2t8
-         sDGoRWACJMAVz2yoaga6ZP0+Ionzq3Z1viWp7C2+e0X+aPLneP25IKXDRwAjQq3n3l
-         5WObU+CphcP4Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2315FE737F0;
-        Sun, 12 Jun 2022 00:33:40 +0000 (UTC)
-Subject: Re: [GIT PULL] virtio,vdpa: fixes
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220611034848-mutt-send-email-mst@kernel.org>
-References: <20220611034848-mutt-send-email-mst@kernel.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220611034848-mutt-send-email-mst@kernel.org>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
-X-PR-Tracked-Commit-Id: eacea844594ff338db06437806707313210d4865
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: abe71eb32f3051f461d2975c674c0857549d0b93
-Message-Id: <165499402013.23172.7490053891155613764.pr-tracker-bot@kernel.org>
-Date:   Sun, 12 Jun 2022 00:33:40 +0000
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dan.carpenter@oracle.com, elic@nvidia.com, fam.zheng@bytedance.com,
-        gautam.dawar@xilinx.com, jasowang@redhat.com,
-        johannes@sipsolutions.net, liubo03@inspur.com, mst@redhat.com,
-        oliver.sang@intel.com, pilgrimtao@gmail.com, si-wei.liu@oracle.com,
-        stable@vger.kernel.org,
-        syzbot+5b59d6d459306a556f54@syzkaller.appspotmail.com,
-        vincent.whitchurch@axis.com, wangxiang@cdjrlc.com,
-        xieyongji@bytedance.com
+        Sat, 11 Jun 2022 21:05:29 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8206E67D08
+        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 18:05:26 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id n10so4761974ejk.5
+        for <linux-kernel@vger.kernel.org>; Sat, 11 Jun 2022 18:05:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eaJ9A311TrSfFnoNHlPLqCJLl63tuzS6qi1yW9Cp5w8=;
+        b=kTQHVU0bpZYPKroMPjv6y78xV/6snZ6DHzneUBLVERu3DtZRvjpU/FYrmEcT8qombK
+         BVdXn0Wm7BouKKZ8jsgpDceZcCvo+AXYhKzWEMt5onU9HS5HRZA2R5FjJVzwoGOBeQ0w
+         aFDhgV6O+zuM7BEu3gUFUGyQ0PCpZqhG9i+DxX+E/l5farDku9r0xAq3jS/ZALdMWTvb
+         pSJubGLKy458RbjnBvarQtaHeznQR2kC/DI33H4eoYLt9j4NySaJNOdOAAk8gm6HDgnr
+         IuqCCU8PoDSGFI+Jcw9GIf04BC4X9R3aME9HWnenv5lHaIkafttu3UBhPoGSMp2VmpSW
+         WPiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eaJ9A311TrSfFnoNHlPLqCJLl63tuzS6qi1yW9Cp5w8=;
+        b=zuohoX2uDlx+r+t9NorvId88WF6OrnFXuwcXihcQ6dUxJeZOOupddhUUaogFiyCRa/
+         JKfvvYgEinArZk4K/r/rDhS1DMLaW1MF3wqYWlUIWLdjh9kDzaWrpwNm5bCfnx9xRYQB
+         ULqAbbm1eaRtOXPctu1fDbkq9aBC0t8X0J3cvtW+4Wz6u9JELcIQmFPDc6+bynvmqSKm
+         Is+fMt/KiCTJFKm7JdznBSLJ1hG16GeU5kNslbxczwPemb+UOXjt1JtmxZCLcGoJsDpm
+         EYa14+kyKtqQmNg/o+TzGOA7/THhXEvU+UjvbG97WtlTQMy8MOqR23hmCuNMf0zX8Lkh
+         eC1g==
+X-Gm-Message-State: AOAM530AO8qT5cJT2F1cuBHYl6enGVHSzZnH76E/tKHXyhLna4xKyUAm
+        LAt0F7rJb93YKhhZ+ad29kY=
+X-Google-Smtp-Source: ABdhPJzxFval4Qok9pFwMRhEYeMibBtrQ4zyJ0h+CNNl8lq5obSDpSrDc91u949sx/WfmEzXFK7EQg==
+X-Received: by 2002:a17:906:5352:b0:712:3916:e92 with SMTP id j18-20020a170906535200b0071239160e92mr6681677ejo.756.1654995925004;
+        Sat, 11 Jun 2022 18:05:25 -0700 (PDT)
+Received: from nam-dell.fritz.box ([2a02:8109:afbf:ed88:b802:84b6:a3f8:7c89])
+        by smtp.gmail.com with ESMTPSA id u20-20020a509514000000b0042dd1d3d571sm2312297eda.26.2022.06.11.18.05.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 11 Jun 2022 18:05:24 -0700 (PDT)
+From:   Nam Cao <namcaov@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     phil@philpotter.co.uk, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org, Nam Cao <namcaov@gmail.com>
+Subject: [PATCH 0/2] Clean up some macros
+Date:   Sun, 12 Jun 2022 03:05:12 +0200
+Message-Id: <cover.1654994517.git.namcaov@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sat, 11 Jun 2022 03:48:48 -0400:
+Replace some macros with standard ones. Remove some useless macros.
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+Nam Cao (2):
+  staging: r8188eu: simplify some macros
+  staging: r8188eu: replace FIELD_OFFSET with offsetof
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/abe71eb32f3051f461d2975c674c0857549d0b93
-
-Thank you!
+ drivers/staging/r8188eu/core/rtw_mlme_ext.c   |  4 +--
+ .../r8188eu/include/Hal8188ERateAdaptive.h    | 10 +++---
+ drivers/staging/r8188eu/include/basic_types.h | 33 -------------------
+ drivers/staging/r8188eu/os_dep/ioctl_linux.c  |  4 +--
+ 4 files changed, 9 insertions(+), 42 deletions(-)
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.25.1
+
