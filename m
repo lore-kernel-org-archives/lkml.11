@@ -2,137 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E645C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 18:34:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA54BC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 18:37:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233294AbiFLSds (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 14:33:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38434 "EHLO
+        id S233228AbiFLShj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 14:37:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232911AbiFLSdO (ORCPT
+        with ESMTP id S230478AbiFLShh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 14:33:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D7A92DAF
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 11:33:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655058792;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XR7KB+0VWMpvWvXRkdA4FDcU+xomfv79CCDTuY4yKdw=;
-        b=CJbD2Zg1VsdjtH6iIZRnG+/Yu6+MzU8ZqF1HmjJUM4fcUjgT7TjwEUPQJhlWZAdS5WdmQg
-        8cwAdEwo7B0/ZQ/F6xfSZDZisLgFKzGv1q56S5JrYNX/8wbHUjRQAFC8916qjhyKatQMEo
-        sjPUrslsqY3HnheAkmxF6aLB1KDgYaY=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-373-XB4a8fA1NSuW2fTRQfxo-Q-1; Sun, 12 Jun 2022 14:33:09 -0400
-X-MC-Unique: XB4a8fA1NSuW2fTRQfxo-Q-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2B9133C02B7F;
-        Sun, 12 Jun 2022 18:33:09 +0000 (UTC)
-Received: from llong.com (unknown [10.22.8.63])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E76E440C1247;
-        Sun, 12 Jun 2022 18:33:08 +0000 (UTC)
-From:   Waiman Long <longman@redhat.com>
-To:     Catalin Marinas <catalin.marinas@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Waiman Long <longman@redhat.com>
-Subject: [PATCH 2/3] mm/kmemleak: Skip unlikely objects in kmemleak_scan() without taking lock
-Date:   Sun, 12 Jun 2022 14:33:00 -0400
-Message-Id: <20220612183301.981616-3-longman@redhat.com>
-In-Reply-To: <20220612183301.981616-1-longman@redhat.com>
-References: <20220612183301.981616-1-longman@redhat.com>
+        Sun, 12 Jun 2022 14:37:37 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21622532E2;
+        Sun, 12 Jun 2022 11:37:34 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id a15so5741374lfb.9;
+        Sun, 12 Jun 2022 11:37:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=nC0UTP8DRXmynVdBku/6hOPWOfi7VmddW1Od6mn5ECQ=;
+        b=GM8IQb6uDiETDnSJH8HJW7XwCKF964hAwlaV8Q/SOybZDkFwDcihd4BWzTbus6vSwV
+         zt+QPBw9/BCA91OFsUiVQ8JTaqNmHFT6Tdk1paoTJQ8uRBH0k0ci332kp4Gs4sXpQC/5
+         pmm2Rw6RGmQ1IzwsRqBB9UrMseUy5ebTlTIUXubsE3lFPRrLNcn15NKs1j/fjYM0L4HV
+         x3GtmCS4CVmeMFrJ6n3W82+nHXSsPy73NRJFAt/wywBA8VNK/y+GPcJN3rc0Ee7kJO6B
+         CP3MGy4Ap3X+s53K0MgFRzooc++eOPsG8L1es/4TdNOak8ljPrNHy1TAzIDwSUxCHquW
+         aWeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=nC0UTP8DRXmynVdBku/6hOPWOfi7VmddW1Od6mn5ECQ=;
+        b=LN+ZKHAwtB4XNmpHDdO6Uqwi9dPPb1LRTc0DaejtyC+IQN54PZFP2/IdYMGBJ25k8Q
+         1+6XS9Of5NYLT/o88JkQa3ULpQLBKkcmJqPwPsQ68hLRQHEnWd8AQLAYrmhrM2EZOoJq
+         FuoWpxHR+FLBOJZxdODrr5530WuHcoKLOPd52Qe8gQOe4OVRGtLKggCbleVAXJcOZ2qN
+         72xmpYVUX/+fyQMeZD5YMGH0vwZxYn/9tiF6LhrdJzoMQ/nxtciMpcTXZMMRNh73A3yk
+         OpypTJXB4mOKBQu2MPApSCFKivcqwjWtBDpmtb5E51FAaIO5nDEj6j5jmn5alIGel/Ex
+         jJ1g==
+X-Gm-Message-State: AOAM5329rA0hh9YcpAcM1/tlzptSN+BNqx16fV/mND4XofWVlXpU1YdS
+        lQSPRQECQMqfiMvHBXzgxp2wo9zEWRs=
+X-Google-Smtp-Source: ABdhPJw9Q5IRxDV1xO1UNwdlc4gnU2JESARv7pgIPp/+IrgH9XdkqD2rwvKYTXJT9fGaZ08Ug8rBvQ==
+X-Received: by 2002:a05:6512:693:b0:479:892:3091 with SMTP id t19-20020a056512069300b0047908923091mr32966652lfe.122.1655059051704;
+        Sun, 12 Jun 2022 11:37:31 -0700 (PDT)
+Received: from [192.168.1.103] ([178.176.73.3])
+        by smtp.gmail.com with ESMTPSA id h9-20020ac24d29000000b004791b687257sm687885lfk.237.2022.06.12.11.37.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 12 Jun 2022 11:37:31 -0700 (PDT)
+Subject: Re: [PATCH v2] ata: pata_pxa: handle failure of devm_ioremap()
+To:     Li Qiong <liqiong@nfschina.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Cc:     linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yuzhe@nfschina.com, renyu@nfschina.com
+References: <20220612073222.18974-1-liqiong@nfschina.com>
+ <20220612125700.11740-1-liqiong@nfschina.com>
+From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Message-ID: <fbbed055-fa60-cdee-589b-5d8c12672e94@gmail.com>
+Date:   Sun, 12 Jun 2022 21:37:29 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+In-Reply-To: <20220612125700.11740-1-liqiong@nfschina.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are 3 RCU-based object iteration loops in kmemleak_scan(). Because
-of the need to take RCU read lock, we can't insert cond_resched() into
-the loop like other parts of the function. As there can be millions of
-objects to be scanned, it takes a while to iterate all of them. The
-kmemleak functionality is usually enabled in a debug kernel which is
-much slower than a non-debug kernel. With sufficient number of kmemleak
-objects, the time to iterate them all may exceed 22s causing soft lockup.
+On 6/12/22 3:57 PM, Li Qiong wrote:
 
-  watchdog: BUG: soft lockup - CPU#3 stuck for 22s! [kmemleak:625]
+> As the possible failure of the devm_ioremap(), the return value
+> could be NULL. Therefore it should be better to check it and
+> print error message, return '-ENOMEM' error code.
+> 
+> Signed-off-by: Li Qiong <liqiong@nfschina.com>
+> Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+> ---
+> v2:
+> - add driver's name (pata_pxa) to subject.
+> ---
+>  drivers/ata/pata_pxa.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/drivers/ata/pata_pxa.c b/drivers/ata/pata_pxa.c
+> index 985f42c4fd70..cd1a8f37f920 100644
+> --- a/drivers/ata/pata_pxa.c
+> +++ b/drivers/ata/pata_pxa.c
+> @@ -228,6 +228,11 @@ static int pxa_ata_probe(struct platform_device *pdev)
+>  	ap->ioaddr.bmdma_addr	= devm_ioremap(&pdev->dev, dma_res->start,
+>  						resource_size(dma_res));
 
-In this particular bug report, the soft lockup happen in the 2nd
-iteration loop.
+   Looking again into this driver, this statement doesn't make sense: dma_res
+points to a DMA resource, calling devm_ioremap() on it is just wrong... and
+'ap->ioaddr.bmdma_addr' doesn;t seem to be used anyways...
 
-In the 2nd and 3rd loops, most of the objects are checked and then
-skipped under the object lock. Only a selected fews are modified. Those
-objects certainly need lock protection. However, the lock/unlock
-operation is slow especially with interrupt disabling and enabling
-included.
-
-We can actually do some basic check like color_white() without taking
-the lock and skip the object accordingly. Of course, this kind of check
-is racy and may miss objects that are being modified concurrently. The
-cost of missed objects, however, is just that they will be discovered in
-the next scan instead. The advantage of doing so is that iteration can
-be done much faster especially with LOCKDEP enabled in a debug kernel.
-
-With a debug kernel running on a 2-socket 96-thread x86-64 system
-(HZ=1000), the 2nd and 3rd iteration loops speedup with this patch on
-the first kmemleak_scan() call after bootup is shown in the table below.
-
-                   Before patch                    After patch
-  Loop #    # of objects  Elapsed time     # of objects  Elapsed time
-  ------    ------------  ------------     ------------  ------------
-    2        2,599,850      2.392s          2,596,364       0.266s
-    3        2,600,176      2.171s          2,597,061       0.260s
-
-This patch reduces loop iteration times by about 88%. This will greatly
-reduce the chance of a soft lockup happening in the 2nd or 3rd iteration
-loops.
-
-Signed-off-by: Waiman Long <longman@redhat.com>
----
- mm/kmemleak.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
-
-diff --git a/mm/kmemleak.c b/mm/kmemleak.c
-index dad9219c972c..7dd64139a7c7 100644
---- a/mm/kmemleak.c
-+++ b/mm/kmemleak.c
-@@ -1508,6 +1508,13 @@ static void kmemleak_scan(void)
- 	 */
- 	rcu_read_lock();
- 	list_for_each_entry_rcu(object, &object_list, object_list) {
-+		/*
-+		 * This is racy but we can save the overhead of lock/unlock
-+		 * calls. The missed objects, if any, should be caught in
-+		 * the next scan.
-+		 */
-+		if (!color_white(object))
-+			continue;
- 		raw_spin_lock_irq(&object->lock);
- 		if (color_white(object) && (object->flags & OBJECT_ALLOCATED)
- 		    && update_checksum(object) && get_object(object)) {
-@@ -1535,6 +1542,13 @@ static void kmemleak_scan(void)
- 	 */
- 	rcu_read_lock();
- 	list_for_each_entry_rcu(object, &object_list, object_list) {
-+		/*
-+		 * This is racy but we can save the overhead of lock/unlock
-+		 * calls. The missed objects, if any, should be caught in
-+		 * the next scan.
-+		 */
-+		if (!color_white(object))
-+			continue;
- 		raw_spin_lock_irq(&object->lock);
- 		if (unreferenced_object(object) &&
- 		    !(object->flags & OBJECT_REPORTED)) {
--- 
-2.31.1
-
+MBR, Sergey
