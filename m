@@ -2,74 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFF88C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 22:08:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E75EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 22:19:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235950AbiFLWIM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 18:08:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59158 "EHLO
+        id S237103AbiFLWRp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 18:17:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230101AbiFLWIJ (ORCPT
+        with ESMTP id S237283AbiFLWQp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 18:08:09 -0400
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2A1D4706C
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 15:08:08 -0700 (PDT)
-Received: by mail-il1-f200.google.com with SMTP id i18-20020a926d12000000b002d1b13b896cso3453749ilc.7
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 15:08:08 -0700 (PDT)
+        Sun, 12 Jun 2022 18:16:45 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 615A0522D8
+        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 15:16:43 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id j20so4404330ljg.8
+        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 15:16:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ragnatech-se.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=sunDVi/ticftrmGFGD0ymqsOh72W45vWbx1D2LbSq4s=;
+        b=asLN9hjKyM34whmshERovu7s3c3BhM+F7MTfEN9BXMNwm1aDR0HpuRBlKYUTUT4uS9
+         egeaexlIXxY7Pgglt35XChh8Q/5MDS6Z3frnxjAHtGBhFJGIF+ZMgGspG/NxBw3mc2HO
+         rEd0Jafy0ABL8PJYkhUXHSy+IpekdZIb+DwejUuxiW6DfKyvC/iJUT/5kKtZImgYn3G1
+         uCJ2nhmt8p6buatbjH+gbDaDx2h847+C+G7mivFkULwRwatyRMNMMRp0zzhKUhTzIVLc
+         IDZVCiOxGzvDqpNEkmtHc+HcO+F2nK4RcN6XCeAQP4rWHCEvVi8bAprDmngpmZ0M4dmo
+         RB6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=qsYh4wsra1/+8GV1O0hVa5h4gAvGFc0J5bHW5EhnYG4=;
-        b=JBkXX4i/731gA0KiYdJFgmasWNUm+9CKdkYunJAbnCqm5Z02SyAO+1ZhjRXEGgyNcK
-         dqP9iD7/UoVIlShHgEhFrBqUXzVVoLmVtP7vBMcbgl35Sthy0hTscSgna9Uc/n2sLKUt
-         lnq6UL0n7vh7xVy+fVaVMTBHxdEpsOn+jN3ugHiO1ysbHgCWIqNjpU2nCdq+x1KUQGgV
-         J+FTI20pX7ufh7GAVifHn4AWGVzRM2BLtiEo5gWiPv5l2PX11TNSSO2XCfx7hbnTgy6N
-         DNiWeohS/0JXx5wT0K+Ba0sPvN6sujo8Y3mhP1uQyS70qSf6kbJUFHB5eWtCWiD89XRF
-         Kp/w==
-X-Gm-Message-State: AOAM532h3Wz1Y+0OcJSaFJ2kuDsVcOmEn7+vDV3BZt1RNqcMCzvUoA/E
-        EtvpOkragD21EsSecV5iWCg9mCUm4sRlvlR2iCyfr/hDzSxA
-X-Google-Smtp-Source: ABdhPJyDeEO5zaGjQm5TP28UECdnszqBMOD3jtdvy4S10o2j0i7IoiRcZuvwddcJUp9oaLdNaDvm9g5oTitC8nx3O0SB4yttEGr0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=sunDVi/ticftrmGFGD0ymqsOh72W45vWbx1D2LbSq4s=;
+        b=gCjWWTgpd+mopDO613mi23IjlM33hgTyR8UzM191FQRvUM7QEyMBzxVtfSL006S2OV
+         QEj7+oQOe3tQmb2sPXXMHhnAah8xGqadVxG+b1JAeE7+CramJQr0Vqd5w36N8WzfJx54
+         FOhqp1B978F+3ab6oMOJe9Xo3AjyS2iX3Ew6DwLLIwc+zeJ3FkUlFl2o7MZFjWEEBkb3
+         YIsC40ivQZGJkojGWce7SCaubm/cqwobJ9Lo0JSMz9EpSjEfym7Xt+0hg3l594nurbXT
+         VQBefAufW3a5IEDApaVrduGp0OFkLtg8/C+rzzaLHoxEMI/1RdEYgiYEBfLDMm/EbawR
+         Mrww==
+X-Gm-Message-State: AOAM533TJzLe/G2nSanG+0BTG6iOPM0/vrmnn6GcKAjWvSPpCRd72vWp
+        OaCAMN8DLscBed1povFbFPntHQ==
+X-Google-Smtp-Source: ABdhPJyiW858OSRKNb3DyVbWavm4PLqO5MZ0BncdZxJ3DWEye/I3ZGfWCBKVqmVWhgfOznBLaDYK2w==
+X-Received: by 2002:a2e:6a0d:0:b0:255:7341:145 with SMTP id f13-20020a2e6a0d000000b0025573410145mr28908880ljc.360.1655072201580;
+        Sun, 12 Jun 2022 15:16:41 -0700 (PDT)
+Received: from localhost (h-85-24-188-65.A463.priv.bahnhof.se. [85.24.188.65])
+        by smtp.gmail.com with ESMTPSA id z10-20020a0565120c0a00b00477cc59e376sm741820lfu.161.2022.06.12.15.16.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 12 Jun 2022 15:16:41 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 00:16:40 +0200
+From:   Niklas =?iso-8859-1?Q?S=F6derlund?= 
+        <niklas.soderlund@ragnatech.se>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc:     linux-renesas-soc@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] dt-bindings: thermal: rcar-gen3-thermal: use
+ positive logic
+Message-ID: <YqZlyBH349VIdQDI@oden.dyn.berto.se>
+References: <20220610201701.7946-1-wsa+renesas@sang-engineering.com>
 MIME-Version: 1.0
-X-Received: by 2002:a92:c24a:0:b0:2d3:e79f:2fc1 with SMTP id
- k10-20020a92c24a000000b002d3e79f2fc1mr30135664ilo.250.1655071688169; Sun, 12
- Jun 2022 15:08:08 -0700 (PDT)
-Date:   Sun, 12 Jun 2022 15:08:08 -0700
-In-Reply-To: <000000000000c0517405e13dc59e@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000000d20dc05e14768b5@google.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in __vma_adjust
-From:   syzbot <syzbot+68771c0e74f7bb7804e5@syzkaller.appspotmail.com>
-To:     Liam.Howlett@Oracle.com, akpm@linux-foundation.org,
-        liam.howlett@oracle.com, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, syzkaller-bugs@googlegroups.com,
-        willy@infradead.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220610201701.7946-1-wsa+renesas@sang-engineering.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-syzbot has bisected this issue to:
+Hi Wolfram,
 
-commit d3ccd17e7c9647b956d415acdf3e3fde7ae9e20c
-Author: Liam R. Howlett <Liam.Howlett@Oracle.com>
-Date:   Thu Jun 9 20:57:09 2022 +0000
+Thanks for your patch.
 
-    mm: start tracking VMAs with maple tree
+On 2022-06-10 22:17:00 +0200, Wolfram Sang wrote:
+> When handling the V3U/r8a779a0 exception, avoid using 'not:' because
+> then its subschemas are far away in the 'else:' branch. Keep them
+> together using positive logic.
+> 
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11463853f00000
-start commit:   6d0c80680317 Add linux-next specific files for 20220610
-git tree:       linux-next
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=13463853f00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=15463853f00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a30d6e3e814e5931
-dashboard link: https://syzkaller.appspot.com/bug?extid=68771c0e74f7bb7804e5
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12e632bbf00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=103df80ff00000
+Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
 
-Reported-by: syzbot+68771c0e74f7bb7804e5@syzkaller.appspotmail.com
-Fixes: d3ccd17e7c96 ("mm: start tracking VMAs with maple tree")
+> ---
+> 
+> Changes since v2:
+> * new patch
+> 
+> Tested with:
+> make dtbs_check DT_SCHEMA_FILES=thermal/rcar-gen3-thermal.yaml
+> 
+>  .../bindings/thermal/rcar-gen3-thermal.yaml   | 21 +++++++++----------
+>  1 file changed, 10 insertions(+), 11 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/thermal/rcar-gen3-thermal.yaml b/Documentation/devicetree/bindings/thermal/rcar-gen3-thermal.yaml
+> index 1368d90da0e8..72dc7eb27f8d 100644
+> --- a/Documentation/devicetree/bindings/thermal/rcar-gen3-thermal.yaml
+> +++ b/Documentation/devicetree/bindings/thermal/rcar-gen3-thermal.yaml
+> @@ -57,31 +57,30 @@ required:
+>    - "#thermal-sensor-cells"
+>  
+>  if:
+> -  not:
+> -    properties:
+> -      compatible:
+> -        contains:
+> -          enum:
+> -            - renesas,r8a779a0-thermal
+> +  properties:
+> +    compatible:
+> +      contains:
+> +        enum:
+> +          - renesas,r8a779a0-thermal
+>  then:
+>    properties:
+>      reg:
+> -      minItems: 2
+>        items:
+> +        - description: TSC0 registers
+>          - description: TSC1 registers
+>          - description: TSC2 registers
+>          - description: TSC3 registers
+> -  required:
+> -    - interrupts
+> +        - description: TSC4 registers
+>  else:
+>    properties:
+>      reg:
+> +      minItems: 2
+>        items:
+> -        - description: TSC0 registers
+>          - description: TSC1 registers
+>          - description: TSC2 registers
+>          - description: TSC3 registers
+> -        - description: TSC4 registers
+> +  required:
+> +    - interrupts
+>  
+>  additionalProperties: false
+>  
+> -- 
+> 2.35.1
+> 
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+-- 
+Kind Regards,
+Niklas Söderlund
