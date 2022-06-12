@@ -2,88 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BC10C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 08:58:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90DF4C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 09:00:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235138AbiFLI6o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 04:58:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56526 "EHLO
+        id S235176AbiFLJAB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 05:00:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235287AbiFLI6m (ORCPT
+        with ESMTP id S235156AbiFLI77 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 04:58:42 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 108803FBCD
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 01:58:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=8949V5CkqyzJmj/F28orMCphXAq0WN6FhR9kVZMtcgQ=;
-        t=1655024321; x=1656233921; b=nhagWru/09LdxRa962Zudz0HTQ5L+kd3ndJwl/+yVFnD6C1
-        1HqMioOOIU7Cfa6EeFZH6+Rv3MmVykO5Til+bFxDxOtlb917RtqoroOyOYtCtDZqw7nwN42DxR1tk
-        Pjw8W0ud84oTK6wjSO/AaAXWDYQWcwSsSsC0tVTnqziLRRE2AfkcTaDrNghqGwAjecu5EzFF5nvPP
-        vEnoFKs5msOW7TmyWw5T6cgnV5LOcQCa//zce0AZW9Fp06lxOXnn+gR11kvuTvODHJE1tS3HVkCNQ
-        h7a/B9n845fYPVNTVuBqSaGQg030La0fjng2wI5wnU6a2u+LcN68sX5kCS3VHEuQ==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1o0JQL-003NzK-1O;
-        Sun, 12 Jun 2022 10:58:21 +0200
-Message-ID: <726db8fdf6c7fc271a825badbf1b07a5eebe6d36.camel@sipsolutions.net>
-Subject: Re: [PATCH] um: virt-pci: set device ready in probe()
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>
-Cc:     Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        kernel@axis.com, Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Jason Wang <jasowang@redhat.com>, linux-um@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Date:   Sun, 12 Jun 2022 10:58:20 +0200
-In-Reply-To: <20220610203029-mutt-send-email-mst@kernel.org>
-References: <20220610151203.3492541-1-vincent.whitchurch@axis.com>
-         <20220610203029-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.2 (3.44.2-1.fc36) 
+        Sun, 12 Jun 2022 04:59:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAF6050003;
+        Sun, 12 Jun 2022 01:59:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7D17AB80B49;
+        Sun, 12 Jun 2022 08:59:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11EDBC34115;
+        Sun, 12 Jun 2022 08:59:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655024395;
+        bh=2uqxVJ6jg6AwdHG0+C7+HQBXmirKuPi56pYKZPGKkCU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Gr6stL0vss5dlzJyCOgtqr6VGyPaDsNrheFDEXSHs4p0Y/J51CfagmXK44//qr6DU
+         pp3e8S/1AaBzYzeChlGrrUH1/YCxJ1kTIJG2Bau2VTAZRLfgISEEvcHjq62AUQLuif
+         aDahCJU85DqqJ8YCKrZbLG6fzfXDLslBJz7rUv0JLavzErW48xbQF/mE/cZpZt6Y3L
+         faECM0YTXIRSYqhUfaLwB+Glon1bsXQ2pTU7iJJK1wvTYFRZvb/PW4PVc0YEn4zaQm
+         jrrnue0D2aYHK0Hk8gHvo8LQrTQEXoZ5Pivq5uioAo7f6QGUrJFMn+lyI8Mpxl084u
+         DK8h2a1MntWFg==
+Date:   Sun, 12 Jun 2022 10:08:54 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Cixi Geng <gengcixi@gmail.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Cixi Geng <cixi.geng1@unisoc.com>, linux-iio@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>
+Subject: Re: [PATCH v1 1/1] iio: adc: sc27xx_adc: Re-use generic struct
+ u32_fract
+Message-ID: <20220612100854.22e2c441@jic23-huawei>
+In-Reply-To: <CAF12kFueRHQJy2t6xitqfYwsY0kPagDSH289QKp0y0W0HzsshA@mail.gmail.com>
+References: <20220530180910.2533-1-andriy.shevchenko@linux.intel.com>
+        <20220603180347.2b0d0f08@jic23-huawei>
+        <CAF12kFueRHQJy2t6xitqfYwsY0kPagDSH289QKp0y0W0HzsshA@mail.gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-malware-bazaar: not-scanned
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-06-10 at 20:34 -0400, Michael S. Tsirkin wrote:
->=20
-> Also fixes this commit:
->=20
-> commit 68f5d3f3b6543266b29e047cfaf9842333019b4c
-> Author: Johannes Berg <johannes.berg@intel.com>
-> Date:   Fri Mar 5 13:19:58 2021 +0100
->=20
->     um: add PCI over virtio emulation driver
+On Mon, 6 Jun 2022 11:12:15 +0800
+Cixi Geng <gengcixi@gmail.com> wrote:
 
-Hm, why? It worked before the harden change.
+> Jonathan Cameron <jic23@kernel.org> =E4=BA=8E2022=E5=B9=B46=E6=9C=884=E6=
+=97=A5=E5=91=A8=E5=85=AD 01:44=E5=86=99=E9=81=93=EF=BC=9A
+> >
+> > On Mon, 30 May 2022 21:09:10 +0300
+> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > =20
+> > > Instead of custom data type re-use generic struct u32_fract. =20
+> >
+> > There isn't a custom data type  - I'll reword this whilst applying
+> > if there is no reason for a v2.
+> > =20
+> > > No changes intended. =20
+> >
+> > functional changes
+> > =20
+> > >
+> > > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com> =20
+> > Given they have been active recently I'd ideally like Cixi Geng
+> > to take a quick glance at this before I apply it. =20
+> Acked-by: Cixi Geng <cixi.geng1@unisoc.com>
 
-> BTW Johannes I think you need to spec this device and get
-> an ID - what's the plan for that? Current hack of punting
-> this to userspace isn't really any good long term.
+Applied to the togreg branch of iio.git and will be pushed out initially
+as testing for 0-day to take a look.
 
-Yeah, agree, it dropped off my radar (and the process is a bit
-cumbersome IMHO).
+Thanks,
 
-But I'm not quite sure what you mean wrt. "punting to userspace", here
-in the virt-pci code I'm punting to the Kconfig :-)
+Jonathan
 
-Did you just mix that up, or was there some additional userspace thing
-you're thinking of?
+> >
+> > Thanks,
+> >
+> > Jonathan
+> > =20
+> > > ---
+> > >  drivers/iio/adc/sc27xx_adc.c | 15 +++++++--------
+> > >  1 file changed, 7 insertions(+), 8 deletions(-)
+> > >
+> > > diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_ad=
+c.c
+> > > index e9ff2d6a8a57..f8421cbba8fa 100644
+> > > --- a/drivers/iio/adc/sc27xx_adc.c
+> > > +++ b/drivers/iio/adc/sc27xx_adc.c
+> > > @@ -579,15 +579,14 @@ static int sc27xx_adc_read(struct sc27xx_adc_da=
+ta *data, int channel,
+> > >       return ret;
+> > >  }
+> > >
+> > > -static void sc27xx_adc_volt_ratio(struct sc27xx_adc_data *data,
+> > > -                               int channel, int scale,
+> > > -                               u32 *div_numerator, u32 *div_denomina=
+tor)
+> > > +static void sc27xx_adc_volt_ratio(struct sc27xx_adc_data *data, int =
+channel, int scale,
+> > > +                               struct u32_fract *fract)
+> > >  {
+> > >       u32 ratio;
+> > >
+> > >       ratio =3D data->var_data->get_ratio(channel, scale);
+> > > -     *div_numerator =3D ratio >> SC27XX_RATIO_NUMERATOR_OFFSET;
+> > > -     *div_denominator =3D ratio & SC27XX_RATIO_DENOMINATOR_MASK;
+> > > +     fract->numerator =3D ratio >> SC27XX_RATIO_NUMERATOR_OFFSET;
+> > > +     fract->denominator =3D ratio & SC27XX_RATIO_DENOMINATOR_MASK;
+> > >  }
+> > >
+> > >  static int adc_to_volt(struct sc27xx_adc_linear_graph *graph,
+> > > @@ -615,7 +614,7 @@ static int sc27xx_adc_to_volt(struct sc27xx_adc_l=
+inear_graph *graph,
+> > >  static int sc27xx_adc_convert_volt(struct sc27xx_adc_data *data, int=
+ channel,
+> > >                                  int scale, int raw_adc)
+> > >  {
+> > > -     u32 numerator, denominator;
+> > > +     struct u32_fract fract;
+> > >       u32 volt;
+> > >
+> > >       /*
+> > > @@ -637,9 +636,9 @@ static int sc27xx_adc_convert_volt(struct sc27xx_=
+adc_data *data, int channel,
+> > >               break;
+> > >       }
+> > >
+> > > -     sc27xx_adc_volt_ratio(data, channel, scale, &numerator, &denomi=
+nator);
+> > > +     sc27xx_adc_volt_ratio(data, channel, scale, &fract);
+> > >
+> > > -     return DIV_ROUND_CLOSEST(volt * denominator, numerator);
+> > > +     return DIV_ROUND_CLOSEST(volt * fract.denominator, fract.numera=
+tor);
+> > >  }
+> > >
+> > >  static int sc27xx_adc_read_processed(struct sc27xx_adc_data *data, =
+=20
+> > =20
 
-The only userspace thing I can think of it is in virtio_uml where you
-have the ID on the command-line, but that's because it implements the
-virtio device bus over vhost-user which doesn't have ID discoverability
-in the protocol. That could also be fixed I guess, but it's a bit of a
-chicken & egg problem, if you don't have the ID and discovering it were
-not supported, you'd end up with an unusable device unless you specified
-the ID, in which case you don't need to discover it...
-
-johannes
