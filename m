@@ -2,65 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69342C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 23:02:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C696CCA473
+	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 23:09:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237610AbiFLXC3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 19:02:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46536 "EHLO
+        id S237641AbiFLXI4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 19:08:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232947AbiFLXC2 (ORCPT
+        with ESMTP id S231327AbiFLXIy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 19:02:28 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0FDF26108
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 16:02:26 -0700 (PDT)
+        Sun, 12 Jun 2022 19:08:54 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B032B3B002
+        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 16:08:53 -0700 (PDT)
 From:   John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1655074944;
+        s=2020; t=1655075330;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=GjKZ+LQkKXZaIY72unLROm2RmMm/98TrNKDzBYh55HY=;
-        b=QFBhyi09gvtgmNpodSmZHpLhVm19IQDsrPWaS29a9x7F56NeE+OzmHo9x/A9S4H1XdIUg5
-        ZbmK+Wy0jpr4Dgk0Yex+NdfqzrCNaIWi1SSGPMLygIzNoVKR/ULiECPhxYgSFirtHouvXD
-        VBopQ1NfYfoXznJbcZmiKVU60qUvmGDZhxtyPFoiPY2Sb6QvRJ6VKPHuGozdimcp21UwsR
-        8Cc3uS95cQcz9r26hz2ucvyc41BAWu+c93jpl2JCGy18eO5JxUJ/thDaerf11Qi3x7wNyY
-        lA7vH2OaBe8shvd4ALPPC9bNeTrGiyrABNdPccjPMTchvVLXPhWt9VEBrx05EA==
+        bh=gh5KW0h/PquKzD84oAIRkbBhQi66jp8WkKcHulSua/k=;
+        b=LXRJF3x32FhyA3KD2v/tpwHJZ61XnyDuon/HeOW2u5ZMLOTqik6VSrL5eMhJhdZdrTR8mf
+        khCYaXg/hy6GQb2fEKIak2SibfZLEd3U+iQerihw/ft1rxI7NMtX/7vx9DdjWpIDmGf6F9
+        PPApFVl2NPDi59PiV8oJforvOe/wPzZCtVN5cD/GDhutTYj9eOnwob/VHcNimthL4WBh6f
+        HFViIeucTXfQtMk4xa0y9qfnoOfO3u4YGYjKJqkBM97pcRU8bGjYi52bEd9olLBPgcFEPw
+        uGQQI/Vq0yBac6gtYkQwc9K2NeuEUypt8T4DJCvWoCyspxO3DBoEoHC54e7myQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1655074944;
+        s=2020e; t=1655075330;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=GjKZ+LQkKXZaIY72unLROm2RmMm/98TrNKDzBYh55HY=;
-        b=xaJ8o0jiQdqz1Cf3Sdk3m4i448g+KNCZL7Kr7OIv0X2C/6pYAqtyVR5xRwMeVqYNPqh8KX
-        Nttn1qWMX30IbrDQ==
-To:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Petr Mladek <pmladek@suse.com>
-Cc:     Peter Geis <pgwipeout@gmail.com>,
+        bh=gh5KW0h/PquKzD84oAIRkbBhQi66jp8WkKcHulSua/k=;
+        b=Ro1qFTeELgknkRgH+JuRQwicT7B0kuI9sG4e58oqvTVmKYYWYtwCa550ecBRWeX9964ai2
+        rshj6ISbP3Fj7xCg==
+To:     Peter Geis <pgwipeout@gmail.com>
+Cc:     Petr Mladek <pmladek@suse.com>,
         Sergey Senozhatsky <senozhatsky@chromium.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>
 Subject: Re: [BUG] Threaded printk breaks early debugging
-In-Reply-To: <YqVZ4CyWTiDgngkA@google.com>
+In-Reply-To: <CAMdYzYr-Wo713Y4qjboTpoK6GcrYfKCfRJAEizwXw6-=dymVzg@mail.gmail.com>
 References: <CAMdYzYpF4FNTBPZsEFeWRuEwSies36QM_As8osPWZSr2q-viEA@mail.gmail.com>
- <87y1y48spg.fsf@jogness.linutronix.de> <YqVZ4CyWTiDgngkA@google.com>
-Date:   Mon, 13 Jun 2022 01:08:23 +0206
-Message-ID: <8735g9mqo0.fsf@jogness.linutronix.de>
+ <87y1y48spg.fsf@jogness.linutronix.de>
+ <CAMdYzYr-Wo713Y4qjboTpoK6GcrYfKCfRJAEizwXw6-=dymVzg@mail.gmail.com>
+Date:   Mon, 13 Jun 2022 01:14:50 +0206
+Message-ID: <87zgihlbst.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-06-12, Sergey Senozhatsky <senozhatsky@chromium.org> wrote:
-> Should a situation when we have only one online CPU be enough of a
-> reason to do direct printing? Otherwise we might not have CPUs to
-> wakeup khtread on, e.g. when CPU that printk is in atomic section for
-> too long.
+On 2022-06-10, Peter Geis <pgwipeout@gmail.com> wrote:
+> This might be a side effect of the fact that this is on a low powered
+> arm64 board. I noticed with threading enabled during large bursts the
+> console drops an excessive amount of messages. It's especially
+> apparent during the handover from earlycon to the normal console.
 
-IMHO, no. Especially in that situation, we do not want printk causing
-that atomic section to become even longer. If the machine has entered
-normal operation, we want printk out of the way.
+I guess you have a very small kernel buffer and are generating unusually
+high amounts of messages? Is there a reason you cannot use a larger
+buffer?
+
+Or maybe you are generating a constant amount of messages that a serial
+port could never keep up with unless it was interfering with the system
+in such a way as to slow everything down? This is exactly what printk
+should _not_ be used for.
 
 John Ogness
