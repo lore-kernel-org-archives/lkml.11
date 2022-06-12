@@ -2,111 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 288ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 13:08:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E507C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 13:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237002AbiFLNIj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 09:08:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55782 "EHLO
+        id S237043AbiFLNXN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 09:23:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237020AbiFLNI3 (ORCPT
+        with ESMTP id S236994AbiFLNXJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 09:08:29 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C07E662C1;
-        Sun, 12 Jun 2022 06:08:27 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id e9so3341120pju.5;
-        Sun, 12 Jun 2022 06:08:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=AXjEz0ZJVP6RCJfwrLWHDoBIgeQ4dlHx7CyRl+zYPvk=;
-        b=ReG7pBXLCgZg56XhjnEJOOhygmDATEs1X5XKmJOxTs7Rw4Wz7DJemFRikqI6KAOeL1
-         pqtFdTnd7spZLjIJXXkWrTkqL0M3JKwu2i7iJewiBFPZee+2Kgy4p9Ni3vm+csZOcoFF
-         NEzJNwujS1dxbe34HQoQnb32XElfemGKqTOjD03vA6saVW8JOjiAxbKgsqAm9oSS6K2I
-         wDoiwJ13ILobSjDGhpxKig5Jqtb+CXTBLEIv2l6pWmkBN6nMSL4tPLyHC2IRakeeee47
-         9Fw/RaMS7WHiadrcKXthHYQtz2Vvx0uVREiWlmGQJGu46rktTLETy6jKVaBzDYiMNdal
-         eIEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition
-         :content-transfer-encoding:in-reply-to;
-        bh=AXjEz0ZJVP6RCJfwrLWHDoBIgeQ4dlHx7CyRl+zYPvk=;
-        b=b4iOy3srS9ujUUV+MjwtpooagMybG1Apw+XzkxfeyUoTc8j2tuxGYBWrv3ye/T61vD
-         gvarkPO5KaYFKnwiRdfJeO4TkuK3Ca/CxFA4k6WXtEiZq82tngx0sSzFF8o8RHUNRLck
-         TXWKJDMPAI+HhdGdrjXTJ7ovvufrGYSKpCCgiqPXM16WljJbcw9AoAiWanQait1r5w9/
-         tu/dp93FWO+c+HEm/NpjLJlG1gHRth63W+W2weeW1O1V2i+7zgtCk89ncMO6/SXMWeKZ
-         X8Bq2p2I38a7QkNbRei3GR5iiWucG1s4QqXN5JPgYosXrigEBLIZ/s735iXlzSrhyacY
-         SOQA==
-X-Gm-Message-State: AOAM530bJW7S4JiY4GAevsIfgxkUDg3ZrrLVSUT/wYZfje+qbc1Mwx9k
-        VYRc4dBGoI8+CmohFXa6KvU=
-X-Google-Smtp-Source: ABdhPJxpR3XPXtwZX7CQg7M18tvgIDMCR7/pVE8gt2Hz/rE3Xm3aAiGlT8N2Ux1fxKmN8TLJXZm2dQ==
-X-Received: by 2002:a17:902:cf05:b0:156:9d:ca01 with SMTP id i5-20020a170902cf0500b00156009dca01mr53435456plg.111.1655039307230;
-        Sun, 12 Jun 2022 06:08:27 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id z28-20020a62d11c000000b0051bc44f26d9sm3234879pfg.23.2022.06.12.06.08.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Jun 2022 06:08:25 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Sun, 12 Jun 2022 06:08:23 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Armin Wolf <W_Armin@gmx.de>
-Cc:     pali@kernel.org, jdelvare@suse.com, linux-hwmon@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] hwmon: (dell-smm) Add Dell XPS 13 7390 to fan control
- whitelist
-Message-ID: <20220612130823.GA515166@roeck-us.net>
-References: <20220612041806.11367-1-W_Armin@gmx.de>
+        Sun, 12 Jun 2022 09:23:09 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A98C2F03B
+        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 06:23:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id EC6B3CE0930
+        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 13:23:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1F83C34115;
+        Sun, 12 Jun 2022 13:23:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655040183;
+        bh=0weVAGbcwRL32E/exKQbawtLkyMMFCwF+cP6B34Yq0k=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=mUfsnRXlQerGGg8u3tDaTaDr5PYIahxuLMG8yL/WfouV9tyJgTWYqTWiCYAOd+PJL
+         HA3gtH+34spaHTjw07N/Ro8LEGbTCbIt0UUm/R9oKdZcuTlO1EjZS/hrrmVRXeFXxp
+         eeA+NPIu3/GnQkyLvuSd6kNCjE/xHv2Z3UAd+2bd1IrsiTT9Ji1QfR8Y95zP/jDciL
+         syGmb38Daw4vRmN/dSSI/kb+hXt98+G7QUhCkHmnOWk4iTZf2Zu6/agzRrzs89ckl7
+         k1tJGw6fDQDfq59ImeMuXrkxRaeyXqMhz9kQKx0wowLoEWBbmKHUeQhnJJvF3ISpSl
+         SvCsjLYcMHdLA==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 7C36F5C02F9; Sun, 12 Jun 2022 06:23:02 -0700 (PDT)
+Date:   Sun, 12 Jun 2022 06:23:02 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     john.ogness@linutronix.de
+Cc:     linux-kernel@vger.kernel.org, frederic@kernel.org, pmladek@suse.com
+Subject: Re: [BUG] 8e274732115f ("printk: extend console_lock for per-console
+ locking")
+Message-ID: <20220612132302.GA873785@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220610205038.GA3050413@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220612041806.11367-1-W_Armin@gmx.de>
+In-Reply-To: <20220610205038.GA3050413@paulmck-ThinkPad-P17-Gen-1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jun 12, 2022 at 06:18:06AM +0200, Armin Wolf wrote:
-> A user reported that the program dell-bios-fan-control
-> worked on his Dell XPS 13 7390 to switch off automatic
-> fan control.
-> Since it uses the same mechanism as the dell_smm_hwmon
-> module, add this model to the fan control whitelist.
+On Fri, Jun 10, 2022 at 01:50:38PM -0700, Paul E. McKenney wrote:
+> Hello, John,
 > 
-> Compile-tested only.
+> I have started getting rcutorture shutdown-time hangs when running
+> against recent mainline, and bisected back to the 8e274732115f ("printk:
+> extend console_lock for per-console locking") commit.  These hangs go
+> away (or at least their probability drops dramatically) if I build with
+> CONFIG_PREEMPTION=n -and- CONFIG_NO_HZ=y (not n!), at least assuming
+> that I also boot with "nohz_full=0-N".
 > 
-> Signed-off-by: Armin Wolf <W_Armin@gmx.de>
-> Acked-by: Pali Rohár <pali@kernel.org>
+> Attempts to debug using rcutorture's "--gdb" argument result in
+> "[Inferior 1 (process 1) exited normally]", but with the same truncated
+> console-log output as when running without "--gdb".  This suggests
+> that the kernel really did run to completion and halt as expected,
+> but that the shutdown-time printk() output was lost.  Furthermore, if I
+> use the gdb "hbreak" command to set a breakpoint at kernel_power_off(),
+> it really does hit that breakpoint.  This would not happen in the case
+> of a kernel hang.
+> 
+> So, given that I can hit that breakpoint, what should I ask gdb to
+> show me?
+> 
+> Alternatively, this reproduces on a variety of x86 platforms, so you
+> should be able reproduce it as follows [1]:
+> 
+> 	git checkout v5.19-rc1
+> 	tools/testing/selftests/rcutorture/bin/kvm.sh --allcpus --duration 2 --configs "TREE01" --gdb "CONFIG_DEBUG_INFO_NONE=n CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y" --trust-make
+> 
+> This builds a kernel, boots it, and then tells you how to launch gdb
+> (presumably in some other window).  Once you give launch gdb and give
+> it the suggested commands, the kernel runs for two minutes under qemu,
+> then shuts down.  I used the following gdb commands to set the breakpoint
+> and run the kernel:
+> 
+> 	target remote :1234  # suggested by the rcutorture script
+> 	hbreak kernel_power_off  # added by me
+> 	continue  # suggested by the rcutorture script
+> 
+> Or leave out the "gdb" if you prefer some other debugging approach.
 
-Applied to hwmon-next.
+And the patch below takes care of things in (admittedly quite light)
+testing thus far.  What it does is add ten seconds of pure delay before
+rcutorture shuts down the system.  Presumably, this delay gives printk()
+the time that it needs to flush its buffers.  In the configurations
+that I have tested thus far, anyway.
 
-Thanks,
-Guenter
+So what should I be doing instead?
 
-> ---
->  drivers/hwmon/dell-smm-hwmon.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> --
-> 2.30.2
-> 
-> diff --git a/drivers/hwmon/dell-smm-hwmon.c b/drivers/hwmon/dell-smm-hwmon.c
-> index 071aa6f4e109..16c10ac84a91 100644
-> --- a/drivers/hwmon/dell-smm-hwmon.c
-> +++ b/drivers/hwmon/dell-smm-hwmon.c
-> @@ -1365,6 +1365,14 @@ static const struct dmi_system_id i8k_whitelist_fan_control[] __initconst = {
->  		},
->  		.driver_data = (void *)&i8k_fan_control_data[I8K_FAN_34A3_35A3],
->  	},
-> +	{
-> +		.ident = "Dell XPS 13 7390",
-> +		.matches = {
-> +			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
-> +			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "XPS 13 7390"),
-> +		},
-> +		.driver_data = (void *)&i8k_fan_control_data[I8K_FAN_34A3_35A3],
-> +	},
->  	{ }
->  };
+o	console_flush_on_panic() seems like strong medicine, but might
+	be the right thing to do.  The bit about proceeding even though
+	it failed to acquire the lock doesn't look good for non-panic use.
+
+o	printk_trigger_flush() has an attractive name, but it looks
+	like it only just starts the flush rather than waiting for it
+	to finish.
+
+o	pr_flush(1000, true) looks quite interesting, and also seems to
+	work in a few quick tests, so I will continue playing with that.
+
+Right now, I am putting this immediately before the kernel/torture.c
+call to kernel_power_off().  I could argue that kernel_power_off()
+should flush the printk() buffers as part of a "clean system power_off",
+to quote the kernel_power_off() header comment.  Or is there some reason
+why kernel_power_off() should leave printk() buffers unflushed?
+
+							Thanx, Paul
+
+------------------------------------------------------------------------
+
+diff --git a/kernel/torture.c b/kernel/torture.c
+index 789aeb0e1159c..bbdec930ea21f 100644
+--- a/kernel/torture.c
++++ b/kernel/torture.c
+@@ -651,6 +651,7 @@ static int torture_shutdown(void *arg)
+ 		VERBOSE_TOROUT_STRING("No torture_shutdown_hook(), skipping.");
+ 	if (ftrace_dump_at_shutdown)
+ 		rcu_ftrace_dump(DUMP_ALL);
++	schedule_timeout_uninterruptible(HZ * 10);
+ 	kernel_power_off();	/* Shut down the system. */
+ 	return 0;
+ }
