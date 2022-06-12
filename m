@@ -2,156 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90DF4C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 09:00:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D20CC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 09:00:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235176AbiFLJAB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 05:00:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35766 "EHLO
+        id S235213AbiFLJAf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 05:00:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235156AbiFLI77 (ORCPT
+        with ESMTP id S235179AbiFLJAd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 04:59:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAF6050003;
-        Sun, 12 Jun 2022 01:59:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7D17AB80B49;
-        Sun, 12 Jun 2022 08:59:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11EDBC34115;
-        Sun, 12 Jun 2022 08:59:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655024395;
-        bh=2uqxVJ6jg6AwdHG0+C7+HQBXmirKuPi56pYKZPGKkCU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Gr6stL0vss5dlzJyCOgtqr6VGyPaDsNrheFDEXSHs4p0Y/J51CfagmXK44//qr6DU
-         pp3e8S/1AaBzYzeChlGrrUH1/YCxJ1kTIJG2Bau2VTAZRLfgISEEvcHjq62AUQLuif
-         aDahCJU85DqqJ8YCKrZbLG6fzfXDLslBJz7rUv0JLavzErW48xbQF/mE/cZpZt6Y3L
-         faECM0YTXIRSYqhUfaLwB+Glon1bsXQ2pTU7iJJK1wvTYFRZvb/PW4PVc0YEn4zaQm
-         jrrnue0D2aYHK0Hk8gHvo8LQrTQEXoZ5Pivq5uioAo7f6QGUrJFMn+lyI8Mpxl084u
-         DK8h2a1MntWFg==
-Date:   Sun, 12 Jun 2022 10:08:54 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Cixi Geng <gengcixi@gmail.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Cixi Geng <cixi.geng1@unisoc.com>, linux-iio@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>
-Subject: Re: [PATCH v1 1/1] iio: adc: sc27xx_adc: Re-use generic struct
- u32_fract
-Message-ID: <20220612100854.22e2c441@jic23-huawei>
-In-Reply-To: <CAF12kFueRHQJy2t6xitqfYwsY0kPagDSH289QKp0y0W0HzsshA@mail.gmail.com>
-References: <20220530180910.2533-1-andriy.shevchenko@linux.intel.com>
-        <20220603180347.2b0d0f08@jic23-huawei>
-        <CAF12kFueRHQJy2t6xitqfYwsY0kPagDSH289QKp0y0W0HzsshA@mail.gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+        Sun, 12 Jun 2022 05:00:33 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1732B50E27
+        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 02:00:32 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id q15so1478984wmj.2
+        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 02:00:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fastly.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=bL3IO7tvytV66ahctRHmGVdmaVmcbUuZxI0XVWFQ8ZA=;
+        b=JHL9c5Jj8+TTgAFrBdAvWEfZKv/K76qtcJfx/EIfmB2r7S2U8DofeGOLyDw8HLYCoZ
+         iEyWEAXSFpm/02ixoec9XeOeaeTauxgSIFJq3A3rcSBMTDyAGP8TcAI/kR3QMrDLsAlY
+         mNAl2/obbnT6h7TqFa+zV3mokxklPGO+7gk9o=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=bL3IO7tvytV66ahctRHmGVdmaVmcbUuZxI0XVWFQ8ZA=;
+        b=Ff28NO4Qf5H4ynvTOwXuV/qRZXL4DuLcQuaDgMzGcUzf3boECGpRILdFV/9QH/MQUh
+         UOe1Itq5eUXQ3NN4O/d2Bg5cqlnxUdQi+r6nsKGIUx1zl69mw+L1NE8H3ltW/5jlIKpy
+         JNvmJkCkwfmL+d8vTh6dwClko34kBaW5U74/+jNRhREZb0lrotJLd2Qat5grVdNw2QCW
+         KtBreNxSz3rBZfHkeVrCDPCIjBgp3dkhtpg+EMNhCQDqY9XqiLAW42S0NCJfRMlWN7fU
+         ttWF4fd1zrR2Fg/davNsgBVWV6CHEAHKk1XJv0wl48lUKg2p66NUWPONtbcpR9pxtPg6
+         03vw==
+X-Gm-Message-State: AOAM531Ub3EWEignppmEsY7DMFKsGveCRlBD7xswsZZlyGYCdL0mxuJP
+        zLwLB3Tculm0SyxNSgc5v5SxLA==
+X-Google-Smtp-Source: ABdhPJz0MlOR5KOLHLztCe2inGcdIr3aFFxK6MlpKbF7oSDls4p59MWNYfguvq+Ya6qA/rIGL5MZww==
+X-Received: by 2002:a05:600c:2e48:b0:39c:55ba:e4e9 with SMTP id q8-20020a05600c2e4800b0039c55bae4e9mr8398234wmf.180.1655024430554;
+        Sun, 12 Jun 2022 02:00:30 -0700 (PDT)
+Received: from localhost.localdomain ([178.130.153.185])
+        by smtp.gmail.com with ESMTPSA id d34-20020a05600c4c2200b0039c5b4ab1b0sm4798603wmp.48.2022.06.12.02.00.25
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 12 Jun 2022 02:00:28 -0700 (PDT)
+From:   Joe Damato <jdamato@fastly.com>
+To:     x86@kernel.org, Alexander Viro <viro@zeniv.linux.org.uk>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        David Ahern <dsahern@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     Joe Damato <jdamato@fastly.com>
+Subject: [RFC,net-next,x86 v2 0/8] Nontemporal copies in sendmsg path
+Date:   Sun, 12 Jun 2022 01:57:49 -0700
+Message-Id: <1655024280-23827-1-git-send-email-jdamato@fastly.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 6 Jun 2022 11:12:15 +0800
-Cixi Geng <gengcixi@gmail.com> wrote:
+Greetings:
 
-> Jonathan Cameron <jic23@kernel.org> =E4=BA=8E2022=E5=B9=B46=E6=9C=884=E6=
-=97=A5=E5=91=A8=E5=85=AD 01:44=E5=86=99=E9=81=93=EF=BC=9A
-> >
-> > On Mon, 30 May 2022 21:09:10 +0300
-> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> > =20
-> > > Instead of custom data type re-use generic struct u32_fract. =20
-> >
-> > There isn't a custom data type  - I'll reword this whilst applying
-> > if there is no reason for a v2.
-> > =20
-> > > No changes intended. =20
-> >
-> > functional changes
-> > =20
-> > >
-> > > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com> =20
-> > Given they have been active recently I'd ideally like Cixi Geng
-> > to take a quick glance at this before I apply it. =20
-> Acked-by: Cixi Geng <cixi.geng1@unisoc.com>
+Welcome to RFC v2.
 
-Applied to the togreg branch of iio.git and will be pushed out initially
-as testing for 0-day to take a look.
+This is my first series that touches more than 1 subsystem; hope I got the
+various subject lines and to/cc-lists correct.
+
+Based on the feedback on RFC v1 [1], I've made a few changes:
+
+- Removed the indirect calls.
+- Simplified the code a bit by pushing logic down to a wrapper around
+  copyin.
+- Added support for the 'MSG_NTCOPY' flag to udp, udp-lite, tcp, and unix.
+
+I think this series is much closer to a v1 that can be submit for
+consideration, but wanted to test the waters with an RFC first :)
+
+This new set of code allows applications to request non-temporal copies on
+individual calls to sendmsg for several socket types, not just unix.
+
+The result is that:
+
+1. Users don't need to specify no cache copy for the entire interface as
+   they had been doing previously with ethtool. There is more fine grained
+   control of which sendmsgs are non-temporal. I think it makes sense for
+   this to be application specific (vs interface-wide) since applications
+   will have a better idea of which copy is appropriate.
+
+2. Previously, the ethool bit for enabling no-cache-copy only seems to have
+   affected TCP sockets, IIUC. This series supports UDP, UDP-Lite, TCP, and
+   Unix. This means the behavior and accessibility of non-temporal copies
+   is normalized bit more than it had been previously.
+
+The performance results on my AMD Zen2 test system are identical to the
+previous RFC, so I've included those results below.
+
+As you'll see below, NT copies in the unix write path have a large
+measureable impact on certain application architectures and CPUs.
+
+Initial benchmarks are extremely encouraging. I wrote a simple C program to
+benchmark this patchset, the program:
+  - Creates a unix socket pair
+  - Forks a child process
+  - The parent process writes to the unix socket using MSG_NTCOPY, or not,
+    depending on the command line flags
+  - The child process uses splice to move the data from the unix socket to
+    a pipe buffer, followed by a second splice call to move the data from
+    the pipe buffer to a file descriptor opened on /dev/null.
+  - taskset is used when launching the benchmark to ensure the parent and
+    child run on appropriate CPUs for various scenarios
+
+The source of the test program is available for examination [2] and results
+for three benchmarks I ran are provided below.
+
+Test system: AMD EPYC 7662 64-Core Processor,
+	     64 cores / 128 threads,
+	     512kb L2 per core shared by sibling CPUs,
+	     16mb L3 per NUMA zone,
+	     AMD specific settings: NPS=1 and L3 as NUMA enabled 
+
+Test: 1048576 byte object,
+      100,000 iterations,
+      512kb pipe buffer size,
+      512kb unix socket send buffer size
+
+Sample command lines for running the tests provided below. Note that the
+command line shows how to run a "normal" copy benchmark. To run the
+benchmark in MSG_NTCOPY mode, change command line argument 3 from 0 to 1.
+
+Test pinned to CPUs 1 and 2 which do *not* share an L2 cache, but do share
+an L3.
+
+Command line for "normal" copy:
+% time taskset -ac 1,2 ./unix-nt-bench 1048576 100000 0 524288 524288
+
+Mode			real time (sec.)		throughput (Mb/s)
+"Normal" copy		10.630				78,928
+MSG_NTCOPY		7.429				112,935 
+
+Same test as above, but pinned to CPUs 1 and 65 which share an L2 (512kb)
+and L3 cache (16mb).
+
+Command line for "normal" copy:
+% time taskset -ac 1,65 ./unix-nt-bench 1048576 100000 0 524288 524288
+
+Mode			real time (sec.)		throughput (Mb/s)
+"Normal" copy		12.532				66,941
+MSG_NTCOPY		9.445				88,826	
+
+Same test as above, pinned to CPUs 1 and 65, but with 128kb unix send
+buffer and pipe buffer sizes (to avoid spilling L2).
+
+Command line for "normal" copy:
+% time taskset -ac 1,65 ./unix-nt-bench 1048576 100000 0 131072 131072
+
+Mode			real time (sec.)		throughput (Mb/s)
+"Normal" copy		12.451				67,377
+MSG_NTCOPY		9.451				88,768
 
 Thanks,
+Joe
 
-Jonathan
+[1]: https://patchwork.kernel.org/project/netdevbpf/cover/1652241268-46732-1-git-send-email-jdamato@fastly.com/
+[2]: https://gist.githubusercontent.com/jdamato-fsly/03a2f0cd4e71ebe0fef97f7f2980d9e5/raw/19cfd3aca59109ebf5b03871d952ea1360f3e982/unix-nt-copy-bench.c
 
-> >
-> > Thanks,
-> >
-> > Jonathan
-> > =20
-> > > ---
-> > >  drivers/iio/adc/sc27xx_adc.c | 15 +++++++--------
-> > >  1 file changed, 7 insertions(+), 8 deletions(-)
-> > >
-> > > diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_ad=
-c.c
-> > > index e9ff2d6a8a57..f8421cbba8fa 100644
-> > > --- a/drivers/iio/adc/sc27xx_adc.c
-> > > +++ b/drivers/iio/adc/sc27xx_adc.c
-> > > @@ -579,15 +579,14 @@ static int sc27xx_adc_read(struct sc27xx_adc_da=
-ta *data, int channel,
-> > >       return ret;
-> > >  }
-> > >
-> > > -static void sc27xx_adc_volt_ratio(struct sc27xx_adc_data *data,
-> > > -                               int channel, int scale,
-> > > -                               u32 *div_numerator, u32 *div_denomina=
-tor)
-> > > +static void sc27xx_adc_volt_ratio(struct sc27xx_adc_data *data, int =
-channel, int scale,
-> > > +                               struct u32_fract *fract)
-> > >  {
-> > >       u32 ratio;
-> > >
-> > >       ratio =3D data->var_data->get_ratio(channel, scale);
-> > > -     *div_numerator =3D ratio >> SC27XX_RATIO_NUMERATOR_OFFSET;
-> > > -     *div_denominator =3D ratio & SC27XX_RATIO_DENOMINATOR_MASK;
-> > > +     fract->numerator =3D ratio >> SC27XX_RATIO_NUMERATOR_OFFSET;
-> > > +     fract->denominator =3D ratio & SC27XX_RATIO_DENOMINATOR_MASK;
-> > >  }
-> > >
-> > >  static int adc_to_volt(struct sc27xx_adc_linear_graph *graph,
-> > > @@ -615,7 +614,7 @@ static int sc27xx_adc_to_volt(struct sc27xx_adc_l=
-inear_graph *graph,
-> > >  static int sc27xx_adc_convert_volt(struct sc27xx_adc_data *data, int=
- channel,
-> > >                                  int scale, int raw_adc)
-> > >  {
-> > > -     u32 numerator, denominator;
-> > > +     struct u32_fract fract;
-> > >       u32 volt;
-> > >
-> > >       /*
-> > > @@ -637,9 +636,9 @@ static int sc27xx_adc_convert_volt(struct sc27xx_=
-adc_data *data, int channel,
-> > >               break;
-> > >       }
-> > >
-> > > -     sc27xx_adc_volt_ratio(data, channel, scale, &numerator, &denomi=
-nator);
-> > > +     sc27xx_adc_volt_ratio(data, channel, scale, &fract);
-> > >
-> > > -     return DIV_ROUND_CLOSEST(volt * denominator, numerator);
-> > > +     return DIV_ROUND_CLOSEST(volt * fract.denominator, fract.numera=
-tor);
-> > >  }
-> > >
-> > >  static int sc27xx_adc_read_processed(struct sc27xx_adc_data *data, =
-=20
-> > =20
+Joe Damato (8):
+  arch, x86, uaccess: Add nontemporal copy functions
+  iov_iter: Introduce iter_copy_type
+  iov_iter: add copyin_iovec helper
+  net: Add MSG_NTCOPY sendmsg flag
+  net: unix: Support MSG_NTCOPY
+  net: ip: Support MSG_NTCOPY
+  net: udplite: Support MSG_NTCOPY
+  net: tcp: Support MSG_NTCOPY
+
+ arch/x86/include/asm/uaccess_64.h |  6 ++++++
+ include/linux/socket.h            |  9 +++++++++
+ include/linux/uaccess.h           |  6 ++++++
+ include/linux/uio.h               | 17 +++++++++++++++++
+ include/net/sock.h                |  2 +-
+ include/net/udplite.h             |  1 +
+ lib/iov_iter.c                    | 25 ++++++++++++++++++++-----
+ net/ipv4/ip_output.c              |  1 +
+ net/ipv4/tcp.c                    |  2 ++
+ net/unix/af_unix.c                |  4 ++++
+ 10 files changed, 67 insertions(+), 6 deletions(-)
+
+-- 
+2.7.4
 
