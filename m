@@ -2,125 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF8DAC43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 15:46:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DFCDC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 15:54:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237740AbiFLPoz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 11:44:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48438 "EHLO
+        id S237771AbiFLPyd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 11:54:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232165AbiFLPoy (ORCPT
+        with ESMTP id S230437AbiFLPyc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 11:44:54 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B30EE2ED63
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 08:44:53 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id j7so3545401pjn.4
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 08:44:53 -0700 (PDT)
+        Sun, 12 Jun 2022 11:54:32 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4EB036329;
+        Sun, 12 Jun 2022 08:54:30 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id bg6so6861765ejb.0;
+        Sun, 12 Jun 2022 08:54:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=sDXoUvF9HvlqoQcYGACYQ/XDUHt968ekXwv/rzATOLg=;
-        b=uYODikCP+VbMeXAeEkPfiA0/WPN47Gy8epeNTvX4VPR2T9patprusHUG4n0DD+88S6
-         L4MLSE8fLQzbNjPb9FApack4csETvvbZVFtpVI3fBAOCn/99ahV56lZTzPJMucV4FuFg
-         gcktDO51ig0rLKU3JSEm5n0t7X9UI/me+uvROdyhblDRomOf1j+RhVDOvUqZCQnVnqpO
-         ntNAJhRg89EH/2TpoZcnaStdB8ybLLvVDrr/IYhyyGUsME99RFklvLvFKIOcYgHDA63G
-         cabmuMvQjNfRSQsRA4JR15IgLuAGPIABm54VfNnayT7FT+CLWZJWiTwnHA5WzVVzwQPa
-         dVdA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fgRDXCG0152Z3tFDn2gSPrHtara3Cv/otakf5tLuBg8=;
+        b=bKKJa3yTkzViWR9SYaKXSbaSBhzt4NWlst6pZhou6xHjuwAuCAVDMPsgZorewuVY/A
+         LBP+qx0Y3f8GjqZ63quFAqx84tof3XZB0cChOUbRJvtDgHofl0AWieEBXGSUlT6wGwID
+         TuhUSYAufWyRrwU3Q0F/E5uMr8hL9QhxCJqM6g4UxsbQIx6pnAQzea2emEGvnKUGUqzw
+         8H0u+ZjuDI7qeK1IwkRwE295OYNuKHfaIKWUOQDtgTzzJWFbDq7OaFy4H6MHeTFhN35j
+         S8bX+mlaAf1tNkdBJ0Mf4EFricO0bEe6KBfc1+W1dxj1nCekiBT2k8muiUNYaPOhdP6U
+         J6hw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sDXoUvF9HvlqoQcYGACYQ/XDUHt968ekXwv/rzATOLg=;
-        b=kTqaQlSDPUADEZFHljen7BpBoZJ7ytMhTs+ZLfCi8JitwZdTp1N659LMA/OUsjN+dY
-         9G83p7NOHrmHWTBl7/z3lkeykqwAl51gQcOrVFrJ9LzNvRe0mmV9m+5WvPBNr3pLAuxr
-         SwteBtL+QqAQfGoH4UAoB93X+hIlAWBvMF0Mf98UKB0/ZRL1BqJxwREdXIl56GSyRRbi
-         lys5hmuy8zeEGODEececYIJnrT8XeiDJWtHvvul1Y8XdFoX9KGB6Tm0fibkvoqz7J5vf
-         6a25EsqS0DTMOXpJrCNXnlFE+Nr9XtHS+BRh5YNHyM3vXldfRoeIJ4NBm3ZWPd8vhDqF
-         Q1GQ==
-X-Gm-Message-State: AOAM5336nKEmRCWLXPqohXSXUqsx5LYzehXJiJ6E4hFPjZ18UE4phfE4
-        xAP9QKzYtaWTQPHXXoBxytVM33992bViiA==
-X-Google-Smtp-Source: ABdhPJxCoE6EY4u6oA+K5cxA2kNS0LpB6DJ9qb0GGxknSxzY5UxyIDF2pHUD34LJmFweEv5WPDQxGA==
-X-Received: by 2002:a17:902:ac8f:b0:163:fbb7:b057 with SMTP id h15-20020a170902ac8f00b00163fbb7b057mr55066011plr.67.1655048693203;
-        Sun, 12 Jun 2022 08:44:53 -0700 (PDT)
-Received: from localhost ([2408:8207:18da:2310:f58b:e20:6b56:4b57])
-        by smtp.gmail.com with ESMTPSA id d10-20020a170903208a00b001689e31ff9dsm3243826plc.9.2022.06.12.08.44.52
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fgRDXCG0152Z3tFDn2gSPrHtara3Cv/otakf5tLuBg8=;
+        b=qCzkHld1Vqxr5MQj3ujN07FjSouC1G1+TwKQLxiiB1dFJ4y7wuRCpZgFVDmaq9v2MM
+         gxUeuG0ieTqX/gnEGe136dXNBIH6ntVMotFBwRr5+G+A/1ai49eAEWeuInXnFg9jJgiV
+         mVePzhUShFLy1gJGM5Rb24mDxITNHOl1OlSyIMoWgXFx1KKQi3rqc4/vI51/c25EWNkZ
+         dDb1qHo1L7kvlc3pdITyZPPle+k2LJlYyH6tLdi7wu627vZo+0tId35MsEHsE3XCetr2
+         /6tCIj6vToO+fI0DwY4/fSIul9VqaKf+uQi71DnkAUPhDUy1fTJ79I10hDk1/3idCRnB
+         eo7w==
+X-Gm-Message-State: AOAM531Q8sSAd+N5VlB3p2FH7UPO7VfBSJz8RVPyLJCa35zWb+QzVLM4
+        kUrUZZ9TAP5FoBivKWMN4s0=
+X-Google-Smtp-Source: ABdhPJwxbSdECkbBuOQJjUIZERJaR0TEJtWoXqbo0LfKbmT+uXP9XNPSyMZm98oHFA6EIt/82xSd+A==
+X-Received: by 2002:a17:906:1f09:b0:70d:b470:1aaa with SMTP id w9-20020a1709061f0900b0070db4701aaamr45775524ejj.758.1655049269268;
+        Sun, 12 Jun 2022 08:54:29 -0700 (PDT)
+Received: from localhost.localdomain (84-72-105-84.dclient.hispeed.ch. [84.72.105.84])
+        by smtp.gmail.com with ESMTPSA id o1-20020a1709064f8100b006f3ef214de7sm2609459eju.77.2022.06.12.08.54.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Jun 2022 08:44:52 -0700 (PDT)
-Date:   Sun, 12 Jun 2022 23:44:47 +0800
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     akpm@linux-foundation.org, joao.m.martins@oracle.com,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] mm/page_alloc: minor clean up for
- memmap_init_compound()
-Message-ID: <YqYJ771HRncznTy1@FVFYT0MHHV2J.googleapis.com>
-References: <20220611021352.13529-1-linmiaohe@huawei.com>
+        Sun, 12 Jun 2022 08:54:28 -0700 (PDT)
+From:   Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+To:     Philipp Zabel <p.zabel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        Liang Chen <cl@rock-chips.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Cc:     Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
+        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
+Subject: [PATCH v5 0/3] Enable JPEG Encoder on RK3566/RK3568
+Date:   Sun, 12 Jun 2022 17:53:43 +0200
+Message-Id: <20220612155346.16288-1-frattaroli.nicolas@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220611021352.13529-1-linmiaohe@huawei.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jun 11, 2022 at 10:13:52AM +0800, Miaohe Lin wrote:
-> Since commit 5232c63f46fd ("mm: Make compound_pincount always available"),
-> compound_pincount_ptr is stored at first tail page now. So we should call
-> prep_compound_head() after the first tail page is initialized to take
-> advantage of the likelihood of that tail struct page being cached given
-> that we will read them right after in prep_compound_head().
-> 
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> Cc: Joao Martins <joao.m.martins@oracle.com>
-> ---
-> v2:
->   Don't move prep_compound_head() outside loop per Joao.
-> ---
->  mm/page_alloc.c | 17 +++++++++++------
->  1 file changed, 11 insertions(+), 6 deletions(-)
-> 
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index 4c7d99ee58b4..048df5d78add 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -6771,13 +6771,18 @@ static void __ref memmap_init_compound(struct page *head,
->  		set_page_count(page, 0);
->  
->  		/*
-> -		 * The first tail page stores compound_mapcount_ptr() and
-> -		 * compound_order() and the second tail page stores
-> -		 * compound_pincount_ptr(). Call prep_compound_head() after
-> -		 * the first and second tail pages have been initialized to
-> -		 * not have the data overwritten.
-> +		 * The first tail page stores compound_mapcount_ptr(),
-> +		 * compound_order() and compound_pincount_ptr(). Call
-> +		 * prep_compound_head() after the first tail page have
-> +		 * been initialized to not have the data overwritten.
-> +		 *
-> +		 * Note the idea to make this right after we initialize
-> +		 * the offending tail pages is trying to take advantage
-> +		 * of the likelihood of those tail struct pages being
-> +		 * cached given that we will read them right after in
-> +		 * prep_compound_head().
->  		 */
-> -		if (pfn == head_pfn + 2)
-> +		if (unlikely(pfn == head_pfn + 1))
->  			prep_compound_head(head, order);
+Hello,
 
-For me it is weird not to put this out of the loop. I saw the reason
-is because of the caching suggested by Joao. But I think this is not
-a hot path and putting it out of the loop may be more intuitive at least
-for me.  Maybe this optimization is unnecessary (maybe I am wrong).
-And it will be consistent with prep_compound_page() (at least it does
-not do the similar optimization) if we drop this optimization.
+this is v5 of my RK356x JPEG encoder patch set. It enables the Hantro
+hardware encoder of the RK3566 and RK3568 line of SoCs, with JPEG being
+the only format the driver currently supports encoding for.
 
-Hi Joao,
+The first patch adds a new binding, the rockchip,rk3568-vepu binding, to
+describe this kind of hardware. The reason for going with a new binding
+instead of modifying the vpu binding as the previous versions did is
+that the vpu binding is getting quite long, and Ezequiel Garcia suggested
+(on IRC) that we could document encoder only instances in their own
+binding. This makes sense to me, especially considering that RK3588 will
+have more Hantro instances like this to document.
 
-I am wondering is it a significant optimization for zone device memory?
-I found this code existed from the 1st version you introduced.  So
-I suspect maybe you have some numbers, would you like to share with us?
+The second patch makes the actual driver changes to support this variant.
 
-Thanks.
+The third and final patch makes the necessary device tree changes for
+the rk356x device tree file to add both the node for the encoder and
+its MMU.
+
+The series has been tested on a PINE64 Quartz64 Model A with an RK3566
+SoC using GStreamer.
+
+Regards,
+Nicolas Frattaroli
+
+Changes in v5:
+ - rename rockchip-vepu.yaml to rockchip,rk3568-vepu.yaml
+ - fix #address-cells/#size-cells in bindings example
+ - fix indentation in bindings example
+
+Changes in v4:
+ - bindings: move vepu to its own binding, also add it to MAINTAINERS
+ - driver: rename a stray rk3568_jpeg_enc_codec_ops to
+   rk3568_vepu_codec_ops
+ - devicetree: remove interrupt-names property
+ - rebase onto linux-next
+
+Changes in v3:
+ - bindings: change consts to an enum
+ - bindings: add check to make sure devices with a -vepu compatible only
+   have the vepu interrupt
+
+Changes in v2:
+ - rename compatible as it's not JPEG only
+ - rename device tree nodes as it's not JPEG only
+ - reword commits as it's not JPEG only
+ - get rid of a whole bunch of redundant struct definitions, as, you
+   guessed it, it's not JPEG only
+
+
+Nicolas Frattaroli (3):
+  media: dt-binding: media: Add rk3568-vepu binding
+  media: hantro: Add support for RK356x encoder
+  arm64: dts: rockchip: Add Hantro encoder node to rk356x
+
+ .../bindings/media/rockchip,rk3568-vepu.yaml  | 69 +++++++++++++++++++
+ MAINTAINERS                                   |  1 +
+ arch/arm64/boot/dts/rockchip/rk356x.dtsi      | 20 ++++++
+ drivers/staging/media/hantro/hantro_drv.c     |  1 +
+ drivers/staging/media/hantro/hantro_hw.h      |  1 +
+ .../staging/media/hantro/rockchip_vpu_hw.c    | 25 +++++++
+ 6 files changed, 117 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/media/rockchip,rk3568-vepu.yaml
+
+-- 
+2.36.1
 
