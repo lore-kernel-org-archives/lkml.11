@@ -2,106 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E497C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 09:01:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A676C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 09:05:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235584AbiFLJBK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 05:01:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41074 "EHLO
+        id S235233AbiFLJFw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 05:05:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235287AbiFLJA7 (ORCPT
+        with ESMTP id S231250AbiFLJFv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 05:00:59 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5864E51E6E
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 02:00:55 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id m125-20020a1ca383000000b0039c63fe5f64so1625334wme.0
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 02:00:55 -0700 (PDT)
+        Sun, 12 Jun 2022 05:05:51 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E653619D;
+        Sun, 12 Jun 2022 02:05:48 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id m20so5708721ejj.10;
+        Sun, 12 Jun 2022 02:05:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fastly.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=oZewD39xI/d3cA2lrYzrzbuReF/vvOH6OKqzVd89Vi0=;
-        b=I7WHh5fScRUlNuotdc665LoLnMNVifFMFBlEzjUFcKf9gROoXJ845rIiW1Qk+PTxiR
-         PtbBonb26DI70Kx2ARKOD7D1WUmUHI/gQp3TkURjBlfMVEc24tG55CXut6lZKgTXhGkZ
-         xV/ndMmtPSnsvL4UM8x/2vxsNs0Yfbu6sQJzs=
+        d=googlemail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=p5/W6Lg7ZVRQY4aBYu6sgvVILEtgCF93h3bLCt2TIuY=;
+        b=WCsRsSXipZzbMX6EyL5gU2NWxKUWCBKsmiJ0Ej8ZSiGaPdd5EQzv1nBf2CZGsfAcbP
+         EQ9+FsfsKUwTGVFjHA2X+5DJuWx+ptZEm2lIn/9avOXpjB8ef8vdauJTmR830blojReI
+         c6zezFcsxjGNxTaOX49ZKU9pWsMhDrUuvRo9ZfYC9MnzWSnmU8hiZHdkNNo3KzxzVLFR
+         3bf8fcrQSWk5HQ/7Wy+j7RuzU0ZYX6JMErqsssQeEsxIGaSlDwTGMP1jzTK5K8tAwfSM
+         am+u+/J4MIYcIO8GuaD0tBPxuzxG6QgJ6tfFgzbyuQjsIlkBDOMz+mS4YevuDJbawrN1
+         RhEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=oZewD39xI/d3cA2lrYzrzbuReF/vvOH6OKqzVd89Vi0=;
-        b=DupWr0NLqD8BH9KR+QT53BFnfnPHe+KhIFS0pBopY/2ushpqa5cH0i38P2u4mbQ3K/
-         wzqR2ZdGhyM3Np9b5lv/wBnB5GEXLE7gu3+nejX318pBNmhCGouI2k1B1f52sViHVEX1
-         EVuhz85zPylbHoBS0ceP265pREAelPCq3h2goJiDH2rjpJySVo+yymVz1PnSZNT2sUue
-         mp98ojtSU0sQ7xY14b0fOYSgxlmVy9TdEMSgR0FNajiAjfMt6NioXrec1jUBDa+BCQ8X
-         shGOLy/8TKZ8ycyye9lLDI1xyw5dZR9002YXyA87ZHWiKNgsPbO7xeOjbboXVXIMJ+5Q
-         QjvA==
-X-Gm-Message-State: AOAM5324rov4YJanotiBFr6YEZBvQ08uNhQREX7qMwzzMebEGY3u+PaU
-        hHUMfxytml3ZKcfQ2ayYMDPmaQ==
-X-Google-Smtp-Source: ABdhPJyRc2I34omfc6W/l7b3YpL+JA18yp8NmiSPvr3XlLpY4Wwvv7Z0CdG4SFGFbc7ui5FdZrlNTQ==
-X-Received: by 2002:a05:600c:1ca0:b0:39c:4dbd:e9ed with SMTP id k32-20020a05600c1ca000b0039c4dbde9edmr8452040wms.40.1655024453936;
-        Sun, 12 Jun 2022 02:00:53 -0700 (PDT)
-Received: from localhost.localdomain ([178.130.153.185])
-        by smtp.gmail.com with ESMTPSA id d34-20020a05600c4c2200b0039c5b4ab1b0sm4798603wmp.48.2022.06.12.02.00.51
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 12 Jun 2022 02:00:53 -0700 (PDT)
-From:   Joe Damato <jdamato@fastly.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Joe Damato <jdamato@fastly.com>
-Subject: [RFC,net-next v2 8/8] net: tcp: Support MSG_NTCOPY
-Date:   Sun, 12 Jun 2022 01:57:57 -0700
-Message-Id: <1655024280-23827-9-git-send-email-jdamato@fastly.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1655024280-23827-1-git-send-email-jdamato@fastly.com>
-References: <1655024280-23827-1-git-send-email-jdamato@fastly.com>
+         :references:mime-version:content-transfer-encoding;
+        bh=p5/W6Lg7ZVRQY4aBYu6sgvVILEtgCF93h3bLCt2TIuY=;
+        b=49eby5GRUOwVqbTiP2BFxYHORBaJE8f5i9Lzb6TzeaHazCe/R0gTqWBnaedv+6bBKe
+         eUSLdcPeGSaAuzo4n9NDSRq4wjWYfcLuJlg5ldr4maeXkNpAXAN+ySnHgLM2TrRUKKLb
+         6tkByKJEPpzDK6ATVSyld1wAfkeoCt0cxI7GXHlHXYgN2B1RvCAnonpdVwZcB0zYe9yJ
+         o5Q58rlk+DfQjA4R1PWJ/p4LvnW+o8oJT/rhDHpl3z161zFm3xeKazx4VEmCrl+e+RIY
+         TUMZri4L7yV9WBdh/bLytCUhkU/a+KqUVHyHoVkpmeQtagDfujxKUpxPYukxowZVj7qI
+         ssEg==
+X-Gm-Message-State: AOAM530XNnWhf7mL5ccXYRZ97jrc+cnvr59aXRuAWPph/jrBKHMwByfw
+        7tAsqb750QekqRFWncRRvuI=
+X-Google-Smtp-Source: ABdhPJyMTVzfqW6BTypBHblaN9sRLPDDdltQ9kcFG0ekxD+sju3JjLgGT4QAb9eHN0UYWTKGJn12sA==
+X-Received: by 2002:a17:906:7791:b0:712:1c42:777a with SMTP id s17-20020a170906779100b007121c42777amr11647473ejm.68.1655024747371;
+        Sun, 12 Jun 2022 02:05:47 -0700 (PDT)
+Received: from strolchi.home.s3e.de (p3ee2bf2d.dip0.t-ipconnect.de. [62.226.191.45])
+        by smtp.gmail.com with ESMTPSA id o18-20020aa7c7d2000000b004335e08d6c9sm2860075eds.33.2022.06.12.02.05.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 12 Jun 2022 02:05:47 -0700 (PDT)
+From:   stefan.seyfried@googlemail.com
+To:     kenneth.t.chan@gmail.com
+Cc:     platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] fix panasonic-laptop hotkey regression
+Date:   Sun, 12 Jun 2022 11:05:05 +0200
+Message-Id: <20220612090507.20648-1-stefan.seyfried@googlemail.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20200821181433.17653-8-kenneth.t.chan@gmail.com>
+References: <20200821181433.17653-8-kenneth.t.chan@gmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Support non-temporal copies in the TCP sendmsg path. Previously, the only
-way to enable non-temporal copies was to enable them for the entire
-interface (via ethtool).
+Hi Kenneth,
 
-This change allows user programs to request non-temporal copies for
-specific sendmsg calls.
+commit ed83c9171829 broke the hotkeys on my Toughbook CF-51, this adds a
+module option to make them work again.
+The first patch in the series is a small cleanup to allow the actual fix
+to be much more obvious.
 
-Signed-off-by: Joe Damato <jdamato@fastly.com>
----
- include/net/sock.h | 2 +-
- net/ipv4/tcp.c     | 2 ++
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ drivers/platform/x86/panasonic-laptop.c | 19 ++++++++++++++-----
+ 1 file changed, 14 insertions(+), 5 deletions(-)
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 0063e84..b666ecd 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -2200,7 +2200,7 @@ static inline int skb_do_copy_data_nocache(struct sock *sk, struct sk_buff *skb,
- 		if (!csum_and_copy_from_iter_full(to, copy, &csum, from))
- 			return -EFAULT;
- 		skb->csum = csum_block_add(skb->csum, csum, offset);
--	} else if (sk->sk_route_caps & NETIF_F_NOCACHE_COPY) {
-+	} else if (sk->sk_route_caps & NETIF_F_NOCACHE_COPY || iov_iter_copy_is_nt(from)) {
- 		if (!copy_from_iter_full_nocache(to, copy, from))
- 			return -EFAULT;
- 	} else if (!copy_from_iter_full(to, copy, from))
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 14ebb4e..5b36e00 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1201,6 +1201,8 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
- 
- 	flags = msg->msg_flags;
- 
-+	msg_set_iter_copy_type(msg);
-+
- 	if (flags & MSG_ZEROCOPY && size && sock_flag(sk, SOCK_ZEROCOPY)) {
- 		skb = tcp_write_queue_tail(sk);
- 		uarg = msg_zerocopy_realloc(sk, size, skb_zcopy(skb));
--- 
-2.7.4
 
