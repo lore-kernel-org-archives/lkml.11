@@ -2,99 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06395C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 17:41:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87035C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 17:45:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231772AbiFLRlX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 13:41:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53064 "EHLO
+        id S232349AbiFLRoy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 13:44:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231233AbiFLRlQ (ORCPT
+        with ESMTP id S232684AbiFLRol (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 13:41:16 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC46C5DA6C;
-        Sun, 12 Jun 2022 10:41:15 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id a10so3698656pju.3;
-        Sun, 12 Jun 2022 10:41:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=X6BJIvmW0nAM/rdDTrxImV1gJDMQBIx+HHhMyoZbXj0=;
-        b=VePaCp4WTk52eQPlsdGdj1sEDkrzFDEkktTLgnzTAUURmN5dzumLqNzKwcRyno9pe5
-         R6uBdesg/HyOjALj1N4q5Swbx8MCK6m4oNXcrgj5Roy9AJ0JLzYbxXz2FImMdHTI6LMj
-         YEaSj4RW/x41CQcePmC7BDegynpKSQdHW4hIiSgJlRQ1A6uhMTh/989NOlO24IW9Q4T3
-         uGDDPJdrVezaC8CcdStqLRbb9sjYIJtvpFpLdqCBj3XGkfloa212yArOs52hvS/4ULw2
-         wCjeFFj5FlGFBu4IlEOBnXS2gTjd4BrYn3CVNY8i9vTl3yIhcVBSyqJ6Whas/i608wIv
-         WnAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=X6BJIvmW0nAM/rdDTrxImV1gJDMQBIx+HHhMyoZbXj0=;
-        b=oZgLIRWUTE7vL7ceCAUJurNuPuPlKENDzgpVfazdGsKJvTOG3vW2Jf9M20V5wa7YL+
-         UlcnCQdooIReSyEMW7Mn6FCO2sETj5G/oTkhG3AODX9zYzU+F//434cAcXA5177XlbNK
-         ASt5Al0oZdRqQXqJj0e0aCwEuL3/crPLYZt+ZC7g8tbJ7/h8gVrU6DQFELKdAQnE6IbV
-         A/yqYSmcOQHg1DrBomF2kOo0B46ON63DVusRzZaz/Ih+6noCze+F9J+9dAxMVVXaiab7
-         ooNFxABI0PcSNB+qcrLfykLmf9isjdWIiT8EEhO/HG3AlfWK3iRu1vvxk4ogQyMq7RYP
-         re7Q==
-X-Gm-Message-State: AOAM532rC2L23oFkyjrzsoO5p2M/lOR9hwE6Cs+fxlRxIjf5GBJPFgM9
-        sQGP39TPhAbCd7Y/dg/+iyY=
-X-Google-Smtp-Source: ABdhPJzBosxXhKrvrzX2QKVBSw1ncXUS2xzRvYGYYn1HUUFZZjRpHFAXUpJBCyp7VuGguxOQyA9x9A==
-X-Received: by 2002:a17:902:ea08:b0:163:ec68:ae08 with SMTP id s8-20020a170902ea0800b00163ec68ae08mr24218342plg.52.1655055675292;
-        Sun, 12 Jun 2022 10:41:15 -0700 (PDT)
-Received: from localhost (2603-800c-1a02-1bae-a7fa-157f-969a-4cde.res6.spectrum.com. [2603:800c:1a02:1bae:a7fa:157f:969a:4cde])
-        by smtp.gmail.com with ESMTPSA id iz4-20020a170902ef8400b00162037fbb68sm3312522plb.215.2022.06.12.10.41.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Jun 2022 10:41:14 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Sun, 12 Jun 2022 07:41:13 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Shuah Khan <shuah@kernel.org>, cgroups@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <guro@fb.com>, Phil Auld <pauld@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
-Subject: Re: [PATCH v11 3/8] cgroup/cpuset: Allow no-task partition to have
- empty cpuset.cpus.effective
-Message-ID: <YqYlOQjKtQCBsQuT@slm.duckdns.org>
-References: <20220510153413.400020-1-longman@redhat.com>
- <20220510153413.400020-4-longman@redhat.com>
- <YqYlCRywdgSYtwKk@slm.duckdns.org>
+        Sun, 12 Jun 2022 13:44:41 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 410182AE9;
+        Sun, 12 Jun 2022 10:44:40 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4LLhsf32Ccz9tNH;
+        Sun, 12 Jun 2022 19:44:38 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id DLjIN45qxVvO; Sun, 12 Jun 2022 19:44:38 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4LLhsf1zGZz9tNF;
+        Sun, 12 Jun 2022 19:44:38 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 2BCF08B76E;
+        Sun, 12 Jun 2022 19:44:38 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id fXQi2qBzO0kf; Sun, 12 Jun 2022 19:44:38 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (po16064.idsi0.si.c-s.fr [192.168.6.194])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id EA97E8B76D;
+        Sun, 12 Jun 2022 19:44:37 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 25CHiToY082475
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Sun, 12 Jun 2022 19:44:30 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 25CHiTin082474;
+        Sun, 12 Jun 2022 19:44:29 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Luis Chamberlain <mcgrof@kernel.org>, linux-modules@vger.kernel.org
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 2/2] module: Increase readability of module_kallsyms_lookup_name()
+Date:   Sun, 12 Jun 2022 19:44:26 +0200
+Message-Id: <a0c6c8bf6e56c1ef19e1703f762e42e27d5de7bd.1655055854.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <ad08695b528a812c83ff563d3bcaf3f7038fecb0.1655055854.git.christophe.leroy@csgroup.eu>
+References: <ad08695b528a812c83ff563d3bcaf3f7038fecb0.1655055854.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YqYlCRywdgSYtwKk@slm.duckdns.org>
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1655055865; l=2069; s=20211009; h=from:subject:message-id; bh=UfRo/pGq3a9kCG9vy69xGUCYVC9crc9vfJMw2h/1Hsw=; b=BfuDxmdxvR1Z63KIR8gMXFT1O9XBWLEt1H88R+UddFxsMs3VO1yuFw6uV4s8bi++OZqOHTayuQtZ auECBIzwBHu1+MT5Y/inHFM91NACrowqANntJeSpqYs9samoT3/f
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jun 12, 2022 at 07:40:25AM -1000, Tejun Heo wrote:
-> Hello,
-> 
-> Sorry about the long delay.
-> 
-> On Tue, May 10, 2022 at 11:34:08AM -0400, Waiman Long wrote:
-> > Once a partition with empty "cpuset.cpus.effective" is formed, no
-> > new task can be moved into it until "cpuset.cpus.effective" becomes
-> > non-empty.
-> 
-> This is always true due to no-tasks-in-intermediate-cgroups requirement,
-> right?
+module_kallsyms_lookup_name() has several exit conditions but
+can't return immediately due to preempt_disable().
 
-or rather, I should have asked, why does this need an explicit check?
+Refactor module_kallsyms_lookup_name() to allow returning from
+anywhere, and reduce depth.
 
-Thanks.
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ kernel/module/kallsyms.c | 38 ++++++++++++++++++++++++--------------
+ 1 file changed, 24 insertions(+), 14 deletions(-)
 
+diff --git a/kernel/module/kallsyms.c b/kernel/module/kallsyms.c
+index fe3636bde605..df0150c467d4 100644
+--- a/kernel/module/kallsyms.c
++++ b/kernel/module/kallsyms.c
+@@ -448,29 +448,39 @@ unsigned long find_kallsyms_symbol_value(struct module *mod, const char *name)
+ 	return 0;
+ }
+ 
+-/* Look for this name: can be of form module:name. */
+-unsigned long module_kallsyms_lookup_name(const char *name)
++static unsigned long __module_kallsyms_lookup_name(const char *name)
+ {
+ 	struct module *mod;
+ 	char *colon;
+-	unsigned long ret = 0;
+ 
+-	/* Don't lock: we're in enough trouble already. */
+-	preempt_disable();
+ 	colon = strnchr(name, MODULE_NAME_LEN, ':');
+ 	if (colon) {
+ 		mod = find_module_all(name, colon - name, false);
+ 		if (mod)
+-			ret = find_kallsyms_symbol_value(mod, colon + 1);
+-	} else {
+-		list_for_each_entry_rcu(mod, &modules, list) {
+-			if (mod->state == MODULE_STATE_UNFORMED)
+-				continue;
+-			ret = find_kallsyms_symbol_value(mod, name);
+-			if (ret)
+-				break;
+-		}
++			return find_kallsyms_symbol_value(mod, colon + 1);
++		return 0;
+ 	}
++
++	list_for_each_entry_rcu(mod, &modules, list) {
++		unsigned long ret;
++
++		if (mod->state == MODULE_STATE_UNFORMED)
++			continue;
++		ret = find_kallsyms_symbol_value(mod, name);
++		if (ret)
++			return ret;
++	}
++	return 0;
++}
++
++/* Look for this name: can be of form module:name. */
++unsigned long module_kallsyms_lookup_name(const char *name)
++{
++	unsigned long ret;
++
++	/* Don't lock: we're in enough trouble already. */
++	preempt_disable();
++	ret = __module_kallsyms_lookup_name(name);
+ 	preempt_enable();
+ 	return ret;
+ }
 -- 
-tejun
+2.35.3
+
