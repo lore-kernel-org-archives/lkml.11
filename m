@@ -2,592 +2,244 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBBCDC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 08:54:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38E21C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 08:56:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231637AbiFLIyl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 04:54:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42758 "EHLO
+        id S234732AbiFLI4k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 04:56:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235087AbiFLIyf (ORCPT
+        with ESMTP id S231422AbiFLI4j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 04:54:35 -0400
-Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67743517C8
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 01:54:33 -0700 (PDT)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id 0C2D3C024; Sun, 12 Jun 2022 10:54:32 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1655024072; bh=V3ZAHrADP+/Qo2GtwYzTC79HVkVXcWQv2SINJiNJxKM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ELwRADv994wBKmMqWSMrGk4e40UphT0L8S1+X1/3wplCTzODeJnNWgiTEHJZt5vqN
-         +4KczPfWZCYASc5nTUkzA4gEV3HEtf71bXdo3PqdfnqCcOfUIfIHkCNp2Rwgx/RLMY
-         gOGSya6rHkPMY4jCr5nbZOeTz2TEx5fzChJYUcRSKHEMBNKqiqjMWu67L6FQD7rKlJ
-         Hnszv7pitWx5yQ5rFVZeEliWuoMW21N1kH7BAEOHgPZXluBjvnyltXJRJ8s1LRM+8E
-         sdNiUrBfyvhU3ANiTVgG0JVXq6oz59wHMOd6pmgaILjlaSYCGwGlvuSpEtGsgjiHjc
-         ZACNeiEkBsfnA==
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id 46050C01C;
-        Sun, 12 Jun 2022 10:54:26 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1655024071; bh=V3ZAHrADP+/Qo2GtwYzTC79HVkVXcWQv2SINJiNJxKM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aRu4SoD4lXPaRdB2d2Pd/PLCfN1zsIiJ2zZzIi9O21JLMozc/rXWdOvuX7a1889CE
-         IZPTgIgodp/xuU579oDwf5sekGXEzi5bmkZmrR1UtTc2ZYi1z0obAkFAB+5xuSmaZn
-         rhRGRmA2x0tzeaCMpbFwWH6Hb1Yci9lTvulqlx4X1AwNNMKH5jovq8rwbU0XMF35Cn
-         XwGbACmqODOifnlTje65qE3Pv/A5LiA9YRtQOqfqndJasv7bpaCHQerI2MwuO3VSbl
-         eeVJPALtb5XbzKZ6BE12UuYZMav6XhwGZZ0yeKAEGfmi+T52NkvlTRfnjOwy9NVKqd
-         JzOP4lwn/rrtA==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 61f62a1a;
-        Sun, 12 Jun 2022 08:54:17 +0000 (UTC)
-From:   Dominique Martinet <asmadeus@codewreck.org>
-To:     Christian Schoenebeck <linux_oss@crudebyte.com>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Dominique Martinet <asmadeus@codewreck.org>
-Cc:     v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org
-Subject: [PATCH 06/06] 9p fid refcount: cleanup p9_fid_put calls
-Date:   Sun, 12 Jun 2022 17:53:29 +0900
-Message-Id: <20220612085330.1451496-7-asmadeus@codewreck.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220612085330.1451496-1-asmadeus@codewreck.org>
-References: <20220612085330.1451496-1-asmadeus@codewreck.org>
+        Sun, 12 Jun 2022 04:56:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01CCD517C9;
+        Sun, 12 Jun 2022 01:56:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 92B7B60C5D;
+        Sun, 12 Jun 2022 08:56:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60A71C34115;
+        Sun, 12 Jun 2022 08:56:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655024196;
+        bh=Y1CJayICREMSriN8RdWEDk+137GltQqS9cugwfP9YHI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=JD/zs9QoVOdnGm0A7lY76NNR+oQfA5Xc3kcWv/koWAnAN0BHwi2Bj0vUWRQAtgv6V
+         NPFsFxwaL1zdFAncbEnUtCmJyz0lAkkXMdM4hYhy7gAE3IQ3bzSwFzMXqmBplCF49S
+         WA6s6H/8yXdy47CCku9tSOSWoWWOx5cFvlF/lPVwnQnT8KZ3lnITVzKWPTlekxzHpg
+         x9nMckt6WOSavfZ+Wjy8Efnp4XpV1DJMEjzyy9RuL4p1R5Av3k/gqR+TsZnuv64Ois
+         ODH8+hTviVrqxsktS44v86Ue6Qni5V7rdxIcW3sECjG4Ew4VcylIn+9B6sH8y7FnFO
+         gV6FxqRKriqFQ==
+Date:   Sun, 12 Jun 2022 10:05:37 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Jagath Jog J <jagathjog1996@gmail.com>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC 2/2] iio: accel: bma400: Add support for single and double
+ tap events
+Message-ID: <20220612100537.476ffe70@jic23-huawei>
+In-Reply-To: <CAM+2Eu+krxxTcN+F7F69X4z=Rz2=zpUx2WLgJMgs9XApWhnMjQ@mail.gmail.com>
+References: <20220529040153.4878-1-jagathjog1996@gmail.com>
+        <20220529040153.4878-3-jagathjog1996@gmail.com>
+        <20220604160153.504e96ae@jic23-huawei>
+        <CAM+2Eu+krxxTcN+F7F69X4z=Rz2=zpUx2WLgJMgs9XApWhnMjQ@mail.gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Simplify p9_fid_put cleanup path in many 9p functions since the function
-is noop on null or error fids.
+On Wed, 8 Jun 2022 00:14:08 +0530
+Jagath Jog J <jagathjog1996@gmail.com> wrote:
 
-Also make the *_add_fid() helpers "steal" the fid by nulling its
-pointer, so put after them will be noop.
+>  Hi Jonathan,
+> 
+> On Sat, Jun 4, 2022 at 8:22 PM Jonathan Cameron <jic23@kernel.org> wrote:
+> >
+> > On Sun, 29 May 2022 09:31:53 +0530
+> > Jagath Jog J <jagathjog1996@gmail.com> wrote:
+> >  
+> > > Add support for single and double tap events based on the tap threshold
+> > > value and minimum quite time value between the taps. INT1 pin is used to
+> > > interrupt and event is pushed to userspace.
+> > >
+> > > Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>  
+> >
+> > Hi Jagath,
+> >
+> > A few comments inline.
+> >
+> > Thanks,
+> >
+> > Jonathan
+> >  
+> > > ---
+> > >  drivers/iio/accel/bma400.h      |  11 ++
+> > >  drivers/iio/accel/bma400_core.c | 186 ++++++++++++++++++++++++++++++--
+> > >  2 files changed, 188 insertions(+), 9 deletions(-)
+> > >
+> > > diff --git a/drivers/iio/accel/bma400.h b/drivers/iio/accel/bma400.h
+> > > index e8f802a82300..7331474433fa 100644
+> > > --- a/drivers/iio/accel/bma400.h
+> > > +++ b/drivers/iio/accel/bma400.h
+> > > @@ -40,6 +40,7 @@
+> > >  #define BMA400_INT_STAT1_REG        0x0f
+> > >  #define BMA400_INT_STAT2_REG        0x10
+> > >  #define BMA400_INT12_MAP_REG        0x23
+> > > +#define BMA400_INT_ENG_OVRUN_MSK    BIT(4)
+> > >
+> > >  /* Temperature register */
+> > >  #define BMA400_TEMP_DATA_REG        0x11
+> > > @@ -105,6 +106,16 @@
+> > >  #define BMA400_INT_GEN2_MSK         BIT(3)
+> > >  #define BMA400_GEN_HYST_MSK         GENMASK(1, 0)
+> > >
+> > > +/* TAP config registers */
+> > > +#define BMA400_TAP_CONFIG           0x57
+> > > +#define BMA400_TAP_CONFIG1          0x58
+> > > +#define BMA400_S_TAP_MSK            BIT(2)
+> > > +#define BMA400_D_TAP_MSK            BIT(3)
+> > > +#define BMA400_INT_S_TAP_MSK        BIT(10)
+> > > +#define BMA400_INT_D_TAP_MSK        BIT(11)
+> > > +#define BMA400_TAP_SEN_MSK          GENMASK(2, 0)
+> > > +#define BMA400_TAP_QUITE_MSK        GENMASK(3, 2)
+> > > +
+> > >  /*
+> > >   * BMA400_SCALE_MIN macro value represents m/s^2 for 1 LSB before
+> > >   * converting to micro values for +-2g range.
+> > > diff --git a/drivers/iio/accel/bma400_core.c b/drivers/iio/accel/bma400_core.c
+> > > index 517920400df1..2385883707f2 100644
+> > > --- a/drivers/iio/accel/bma400_core.c
+> > > +++ b/drivers/iio/accel/bma400_core.c
+> > > @@ -88,6 +88,7 @@ struct bma400_data {
+> > >       bool step_event_en;
+> > >       bool activity_event_en;
+> > >       unsigned int generic_event_en;
+> > > +     unsigned int tap_event_en;
+> > >       /* Correct time stamp alignment */
+> > >       struct {
+> > >               __le16 buff[3];
+> > > @@ -216,6 +217,19 @@ static const struct iio_event_spec bma400_accel_event[] = {
+> > >                                      BIT(IIO_EV_INFO_HYSTERESIS) |
+> > >                                      BIT(IIO_EV_INFO_ENABLE),
+> > >       },
+> > > +     {
+> > > +             .type = IIO_EV_TYPE_GESTURE,
+> > > +             .dir = IIO_EV_DIR_SINGLETAP,
+> > > +             .mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
+> > > +                                    BIT(IIO_EV_INFO_ENABLE),
+> > > +     },
+> > > +     {
+> > > +             .type = IIO_EV_TYPE_GESTURE,
+> > > +             .dir = IIO_EV_DIR_DOUBLETAP,
+> > > +             .mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
+> > > +                                    BIT(IIO_EV_INFO_PERIOD) |  
+> >
+> > Feels like period isn't well defined for this case.  So probably needs a specific
+> > ABI entry and period might not be best choice...  However, period has no logical
+> > other meaning in this case (what does 'amount of time a double tap has been true for before
+> > event mean?') so I think it is fine to use it, as long as ABI docs exist to say what it's
+> > meaning is for this case.
+> >  
+> > > +                                    BIT(IIO_EV_INFO_ENABLE),
+> > > +     },
+> > >  };
+> > >
+> > >  #define BMA400_ACC_CHANNEL(_index, _axis) { \
+> > > @@ -407,6 +421,14 @@ static int bma400_set_accel_output_data_rate(struct bma400_data *data,
+> > >       unsigned int val;
+> > >       int ret;
+> > >
+> > > +     /*
+> > > +      * No need to change ODR when tap event is enabled because  
+> >
+> > Do not change ODR...
+> >
+> >  
+> > > +      * tap interrupt is operating with the data rate of 200Hz.
+> > > +      * See datasheet page 124.
+> > > +      */
+> > > +     if (data->tap_event_en)
+> > > +             return -EBUSY;
+> > > +
+> > >       if (hz >= BMA400_ACC_ODR_MIN_WHOLE_HZ) {
+> > >               if (uhz || hz > BMA400_ACC_ODR_MAX_HZ)
+> > >                       return -EINVAL;
+> > > @@ -1012,6 +1034,10 @@ static int bma400_read_event_config(struct iio_dev *indio_dev,
+> > >               case IIO_EV_DIR_FALLING:
+> > >                       return FIELD_GET(BMA400_INT_GEN2_MSK,
+> > >                                        data->generic_event_en);
+> > > +             case IIO_EV_DIR_SINGLETAP:
+> > > +                     return FIELD_GET(BMA400_S_TAP_MSK, data->tap_event_en);
+> > > +             case IIO_EV_DIR_DOUBLETAP:
+> > > +                     return FIELD_GET(BMA400_D_TAP_MSK, data->tap_event_en);
+> > >               default:
+> > >                       return -EINVAL;
+> > >               }
+> > > @@ -1101,6 +1127,74 @@ static int bma400_activity_event_en(struct bma400_data *data,
+> > >       return 0;
+> > >  }
+> > >
+> > > +static int bma400_tap_event_enable(struct bma400_data *data,
+> > > +                                enum iio_event_direction dir, int state)
+> > > +{
+> > > +     int ret;
+> > > +     unsigned int mask, field_value;
+> > > +
+> > > +     if (data->power_mode == POWER_MODE_SLEEP)
+> > > +             return -EBUSY;  
+> >
+> > There are existing examples of this in driver, but I can't immediately
+> > see how we end up in sleep mode.  Perhaps a comment on why this might happen?  
+> 
+> Currently, only during the driver unwinding the device is put into sleep mode.
+> I should be checking whether the device is in normal mode or not since
+> the tap interrupts only in normal mode. I will change this.
+> 
+> >  
+> > > +
+> > > +     /*
+> > > +      * acc_filt1 is the data source for the tap interrupt and it is
+> > > +      * operating on an input data rate of 200Hz.
+> > > +      */
+> > > +     if (!data->tap_event_en) {  
+> >
+> > Feels like checking the wrong thing.  If we need 200Hz, check if the
+> > data rate is at 200Hz rather than if the tap_event is not enabled.
+> > Obviously same result, but one seems more obvious.  
+> 
+> if (!data->tap_event_en)
+> As I mentioned in the previous mail this checking is to make sure
+> not to execute bma400_set_accel_output_data_rate() function
+> while disabling the tap event.
+Add more to the comment.  I'll think a bit more on this in next version.
+> 
+> >
+> > Also if bma400_set_accel_output_data_rate() is effectively a noop when
+> > the data rate is unchanged (and it should be with regmap caching) then
+> > maybe just call it unconditionally?
+> >
+> > This might be a nasty surprise for other users though - so if buffered
+> > output is in use, maybe just don't allow the rate change, even if
+> > that means not enabling tap detection.  
+> 
+> In this case, if the tap is enabled before the buffer do I need to disable
+> the tap events before enabling buffer?
+> I have tested tap events with continuous trigger buffer read but only
+> thing is, it is not possible to change the data rate.
+Another option is to just fail the buffer start if if a different frequency
+is requested or fail to start the tap detection in the first place
+if sampling_frequency isn't set correctly.  (spit out a message to the
+log though as it's a bit of an odd corner case!)
 
-This should lead to no change of behaviour
+Jonathan
 
-Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
----
- fs/9p/fid.c            | 24 +++++++++++------
- fs/9p/fid.h            |  4 +--
- fs/9p/vfs_file.c       |  5 ++--
- fs/9p/vfs_inode.c      | 61 +++++++++++++++++-------------------------
- fs/9p/vfs_inode_dotl.c | 58 +++++++++++++--------------------------
- fs/9p/vfs_super.c      |  2 +-
- 6 files changed, 64 insertions(+), 90 deletions(-)
-
-diff --git a/fs/9p/fid.c b/fs/9p/fid.c
-index d792499349c4..289a85eae2ae 100644
---- a/fs/9p/fid.c
-+++ b/fs/9p/fid.c
-@@ -31,11 +31,15 @@ static inline void __add_fid(struct dentry *dentry, struct p9_fid *fid)
-  * @fid: fid to add
-  *
-  */
--void v9fs_fid_add(struct dentry *dentry, struct p9_fid *fid)
-+void v9fs_fid_add(struct dentry *dentry, struct p9_fid **pfid)
- {
-+	struct p9_fid *fid = *pfid;
-+
- 	spin_lock(&dentry->d_lock);
- 	__add_fid(dentry, fid);
- 	spin_unlock(&dentry->d_lock);
-+
-+	*pfid = NULL;
- }
- 
- /**
-@@ -72,11 +76,15 @@ static struct p9_fid *v9fs_fid_find_inode(struct inode *inode, kuid_t uid)
-  *
-  */
- 
--void v9fs_open_fid_add(struct inode *inode, struct p9_fid *fid)
-+void v9fs_open_fid_add(struct inode *inode, struct p9_fid **pfid)
- {
-+	struct p9_fid *fid = *pfid;
-+
- 	spin_lock(&inode->i_lock);
- 	hlist_add_head(&fid->ilist, (struct hlist_head *)&inode->i_private);
- 	spin_unlock(&inode->i_lock);
-+
-+	*pfid = NULL;
- }
- 
- 
-@@ -189,13 +197,13 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct dentry *dentry,
- 		else
- 			uname = v9ses->uname;
- 
--		root_fid = p9_client_attach(v9ses->clnt, NULL, uname, uid,
--					    v9ses->aname);
--		if (IS_ERR(root_fid))
--			return root_fid;
-+		fid = p9_client_attach(v9ses->clnt, NULL, uname, uid,
-+				       v9ses->aname);
-+		if (IS_ERR(fid))
-+			return fid;
- 
--		p9_fid_get(root_fid);
--		v9fs_fid_add(dentry->d_sb->s_root, root_fid);
-+		root_fid = p9_fid_get(fid);
-+		v9fs_fid_add(dentry->d_sb->s_root, &fid);
- 	}
- 	/* If we are root ourself just return that */
- 	if (dentry->d_sb->s_root == dentry)
-diff --git a/fs/9p/fid.h b/fs/9p/fid.h
-index 3168dfad510e..8a4e8cd12ca2 100644
---- a/fs/9p/fid.h
-+++ b/fs/9p/fid.h
-@@ -13,9 +13,9 @@ static inline struct p9_fid *v9fs_parent_fid(struct dentry *dentry)
- {
- 	return v9fs_fid_lookup(dentry->d_parent);
- }
--void v9fs_fid_add(struct dentry *dentry, struct p9_fid *fid);
-+void v9fs_fid_add(struct dentry *dentry, struct p9_fid **fid);
- struct p9_fid *v9fs_writeback_fid(struct dentry *dentry);
--void v9fs_open_fid_add(struct inode *inode, struct p9_fid *fid);
-+void v9fs_open_fid_add(struct inode *inode, struct p9_fid **fid);
- static inline struct p9_fid *clone_fid(struct p9_fid *fid)
- {
- 	return IS_ERR(fid) ? fid :  p9_client_walk(fid, 0, NULL, 1);
-diff --git a/fs/9p/vfs_file.c b/fs/9p/vfs_file.c
-index 8276f3af35d7..aec43ba83799 100644
---- a/fs/9p/vfs_file.c
-+++ b/fs/9p/vfs_file.c
-@@ -69,9 +69,10 @@ int v9fs_file_open(struct inode *inode, struct file *file)
- 		if ((file->f_flags & O_APPEND) &&
- 			(!v9fs_proto_dotu(v9ses) && !v9fs_proto_dotl(v9ses)))
- 			generic_file_llseek(file, 0, SEEK_END);
-+
-+		file->private_data = fid;
- 	}
- 
--	file->private_data = fid;
- 	mutex_lock(&v9inode->v_mutex);
- 	if ((v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE) &&
- 	    !v9inode->writeback_fid &&
-@@ -95,7 +96,7 @@ int v9fs_file_open(struct inode *inode, struct file *file)
- 	if (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE)
- 		fscache_use_cookie(v9fs_inode_cookie(v9inode),
- 				   file->f_mode & FMODE_WRITE);
--	v9fs_open_fid_add(inode, fid);
-+	v9fs_open_fid_add(inode, &fid);
- 	return 0;
- out_error:
- 	p9_fid_put(file->private_data);
-diff --git a/fs/9p/vfs_inode.c b/fs/9p/vfs_inode.c
-index 38186d1a1440..1b11a92208fd 100644
---- a/fs/9p/vfs_inode.c
-+++ b/fs/9p/vfs_inode.c
-@@ -398,10 +398,8 @@ void v9fs_evict_inode(struct inode *inode)
- 
- 	fscache_relinquish_cookie(v9fs_inode_cookie(v9inode), false);
- 	/* clunk the fid stashed in writeback_fid */
--	if (v9inode->writeback_fid) {
--		p9_fid_put(v9inode->writeback_fid);
--		v9inode->writeback_fid = NULL;
--	}
-+	p9_fid_put(v9inode->writeback_fid);
-+	v9inode->writeback_fid = NULL;
- }
- 
- static int v9fs_test_inode(struct inode *inode, void *data)
-@@ -632,14 +630,12 @@ v9fs_create(struct v9fs_session_info *v9ses, struct inode *dir,
- 	if (IS_ERR(ofid)) {
- 		err = PTR_ERR(ofid);
- 		p9_debug(P9_DEBUG_VFS, "p9_client_walk failed %d\n", err);
--		p9_fid_put(dfid);
--		return ERR_PTR(err);
-+		goto error;
- 	}
- 
- 	err = p9_client_fcreate(ofid, name, perm, mode, extension);
- 	if (err < 0) {
- 		p9_debug(P9_DEBUG_VFS, "p9_client_fcreate failed %d\n", err);
--		p9_fid_put(dfid);
- 		goto error;
- 	}
- 
-@@ -650,8 +646,6 @@ v9fs_create(struct v9fs_session_info *v9ses, struct inode *dir,
- 			err = PTR_ERR(fid);
- 			p9_debug(P9_DEBUG_VFS,
- 				   "p9_client_walk failed %d\n", err);
--			fid = NULL;
--			p9_fid_put(dfid);
- 			goto error;
- 		}
- 		/*
-@@ -662,21 +656,17 @@ v9fs_create(struct v9fs_session_info *v9ses, struct inode *dir,
- 			err = PTR_ERR(inode);
- 			p9_debug(P9_DEBUG_VFS,
- 				   "inode creation failed %d\n", err);
--			p9_fid_put(dfid);
- 			goto error;
- 		}
--		v9fs_fid_add(dentry, fid);
-+		v9fs_fid_add(dentry, &fid);
- 		d_instantiate(dentry, inode);
- 	}
- 	p9_fid_put(dfid);
- 	return ofid;
- error:
--	if (ofid)
--		p9_fid_put(ofid);
--
--	if (fid)
--		p9_fid_put(fid);
--
-+	p9_fid_put(dfid);
-+	p9_fid_put(ofid);
-+	p9_fid_put(fid);
- 	return ERR_PTR(err);
- }
- 
-@@ -803,9 +793,9 @@ struct dentry *v9fs_vfs_lookup(struct inode *dir, struct dentry *dentry,
- 	res = d_splice_alias(inode, dentry);
- 	if (!IS_ERR(fid)) {
- 		if (!res)
--			v9fs_fid_add(dentry, fid);
-+			v9fs_fid_add(dentry, &fid);
- 		else if (!IS_ERR(res))
--			v9fs_fid_add(res, fid);
-+			v9fs_fid_add(res, &fid);
- 		else
- 			p9_fid_put(fid);
- 	}
-@@ -846,7 +836,6 @@ v9fs_vfs_atomic_open(struct inode *dir, struct dentry *dentry,
- 						v9fs_proto_dotu(v9ses)));
- 	if (IS_ERR(fid)) {
- 		err = PTR_ERR(fid);
--		fid = NULL;
- 		goto error;
- 	}
- 
-@@ -881,7 +870,7 @@ v9fs_vfs_atomic_open(struct inode *dir, struct dentry *dentry,
- 	if (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE)
- 		fscache_use_cookie(v9fs_inode_cookie(v9inode),
- 				   file->f_mode & FMODE_WRITE);
--	v9fs_open_fid_add(inode, fid);
-+	v9fs_open_fid_add(inode, &fid);
- 
- 	file->f_mode |= FMODE_CREATED;
- out:
-@@ -889,8 +878,7 @@ v9fs_vfs_atomic_open(struct inode *dir, struct dentry *dentry,
- 	return err;
- 
- error:
--	if (fid)
--		p9_fid_put(fid);
-+	p9_fid_put(fid);
- 	goto out;
- }
- 
-@@ -938,9 +926,9 @@ v9fs_vfs_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
- 	struct inode *old_inode;
- 	struct inode *new_inode;
- 	struct v9fs_session_info *v9ses;
--	struct p9_fid *oldfid, *dfid;
--	struct p9_fid *olddirfid;
--	struct p9_fid *newdirfid;
-+	struct p9_fid *oldfid = NULL, *dfid = NULL;
-+	struct p9_fid *olddirfid = NULL;
-+	struct p9_fid *newdirfid = NULL;
- 	struct p9_wstat wstat;
- 
- 	if (flags)
-@@ -957,21 +945,22 @@ v9fs_vfs_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
- 
- 	dfid = v9fs_parent_fid(old_dentry);
- 	olddirfid = clone_fid(dfid);
--	if (dfid && !IS_ERR(dfid))
--		p9_fid_put(dfid);
-+	p9_fid_put(dfid);
-+	dfid = NULL;
- 
- 	if (IS_ERR(olddirfid)) {
- 		retval = PTR_ERR(olddirfid);
--		goto done;
-+		goto error;
- 	}
- 
- 	dfid = v9fs_parent_fid(new_dentry);
- 	newdirfid = clone_fid(dfid);
- 	p9_fid_put(dfid);
-+	dfid = NULL;
- 
- 	if (IS_ERR(newdirfid)) {
- 		retval = PTR_ERR(newdirfid);
--		goto clunk_olddir;
-+		goto error;
- 	}
- 
- 	down_write(&v9ses->rename_sem);
-@@ -982,7 +971,7 @@ v9fs_vfs_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
- 			retval = p9_client_rename(oldfid, newdirfid,
- 						  new_dentry->d_name.name);
- 		if (retval != -EOPNOTSUPP)
--			goto clunk_newdir;
-+			goto error_locked;
- 	}
- 	if (old_dentry->d_parent != new_dentry->d_parent) {
- 		/*
-@@ -991,14 +980,14 @@ v9fs_vfs_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
- 
- 		p9_debug(P9_DEBUG_ERROR, "old dir and new dir are different\n");
- 		retval = -EXDEV;
--		goto clunk_newdir;
-+		goto error_locked;
- 	}
- 	v9fs_blank_wstat(&wstat);
- 	wstat.muid = v9ses->uname;
- 	wstat.name = new_dentry->d_name.name;
- 	retval = p9_client_wstat(oldfid, &wstat);
- 
--clunk_newdir:
-+error_locked:
- 	if (!retval) {
- 		if (new_inode) {
- 			if (S_ISDIR(new_inode->i_mode))
-@@ -1019,12 +1008,10 @@ v9fs_vfs_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
- 		d_move(old_dentry, new_dentry);
- 	}
- 	up_write(&v9ses->rename_sem);
-+
-+error:
- 	p9_fid_put(newdirfid);
--
--clunk_olddir:
- 	p9_fid_put(olddirfid);
--
--done:
- 	p9_fid_put(oldfid);
- 	return retval;
- }
-diff --git a/fs/9p/vfs_inode_dotl.c b/fs/9p/vfs_inode_dotl.c
-index 09b124fe349c..5cfa4b4f070f 100644
---- a/fs/9p/vfs_inode_dotl.c
-+++ b/fs/9p/vfs_inode_dotl.c
-@@ -238,7 +238,7 @@ v9fs_vfs_atomic_open_dotl(struct inode *dir, struct dentry *dentry,
- 	struct inode *inode;
- 	struct p9_fid *fid = NULL;
- 	struct v9fs_inode *v9inode;
--	struct p9_fid *dfid, *ofid, *inode_fid;
-+	struct p9_fid *dfid = NULL, *ofid = NULL, *inode_fid = NULL;
- 	struct v9fs_session_info *v9ses;
- 	struct posix_acl *pacl = NULL, *dacl = NULL;
- 	struct dentry *res = NULL;
-@@ -274,7 +274,6 @@ v9fs_vfs_atomic_open_dotl(struct inode *dir, struct dentry *dentry,
- 	if (IS_ERR(ofid)) {
- 		err = PTR_ERR(ofid);
- 		p9_debug(P9_DEBUG_VFS, "p9_client_walk failed %d\n", err);
--		p9_fid_put(dfid);
- 		goto out;
- 	}
- 
-@@ -286,38 +285,34 @@ v9fs_vfs_atomic_open_dotl(struct inode *dir, struct dentry *dentry,
- 	if (err) {
- 		p9_debug(P9_DEBUG_VFS, "Failed to get acl values in creat %d\n",
- 			 err);
--		p9_fid_put(dfid);
--		goto error;
-+		goto out;
- 	}
- 	err = p9_client_create_dotl(ofid, name, v9fs_open_to_dotl_flags(flags),
- 				    mode, gid, &qid);
- 	if (err < 0) {
- 		p9_debug(P9_DEBUG_VFS, "p9_client_open_dotl failed in creat %d\n",
- 			 err);
--		p9_fid_put(dfid);
--		goto error;
-+		goto out;
- 	}
- 	v9fs_invalidate_inode_attr(dir);
- 
- 	/* instantiate inode and assign the unopened fid to the dentry */
- 	fid = p9_client_walk(dfid, 1, &name, 1);
--	p9_fid_put(dfid);
- 	if (IS_ERR(fid)) {
- 		err = PTR_ERR(fid);
- 		p9_debug(P9_DEBUG_VFS, "p9_client_walk failed %d\n", err);
--		fid = NULL;
--		goto error;
-+		goto out;
- 	}
- 	inode = v9fs_get_new_inode_from_fid(v9ses, fid, dir->i_sb);
- 	if (IS_ERR(inode)) {
- 		err = PTR_ERR(inode);
- 		p9_debug(P9_DEBUG_VFS, "inode creation failed %d\n", err);
--		goto error;
-+		goto out;
- 	}
- 	/* Now set the ACL based on the default value */
- 	v9fs_set_create_acl(inode, fid, dacl, pacl);
- 
--	v9fs_fid_add(dentry, fid);
-+	v9fs_fid_add(dentry, &fid);
- 	d_instantiate(dentry, inode);
- 
- 	v9inode = V9FS_I(inode);
-@@ -336,7 +331,7 @@ v9fs_vfs_atomic_open_dotl(struct inode *dir, struct dentry *dentry,
- 		if (IS_ERR(inode_fid)) {
- 			err = PTR_ERR(inode_fid);
- 			mutex_unlock(&v9inode->v_mutex);
--			goto err_clunk_old_fid;
-+			goto out;
- 		}
- 		v9inode->writeback_fid = (void *) inode_fid;
- 	}
-@@ -344,25 +339,20 @@ v9fs_vfs_atomic_open_dotl(struct inode *dir, struct dentry *dentry,
- 	/* Since we are opening a file, assign the open fid to the file */
- 	err = finish_open(file, dentry, generic_file_open);
- 	if (err)
--		goto err_clunk_old_fid;
-+		goto out;
- 	file->private_data = ofid;
- 	if (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE)
- 		fscache_use_cookie(v9fs_inode_cookie(v9inode),
- 				   file->f_mode & FMODE_WRITE);
--	v9fs_open_fid_add(inode, ofid);
-+	v9fs_open_fid_add(inode, &ofid);
- 	file->f_mode |= FMODE_CREATED;
- out:
-+	p9_fid_put(dfid);
-+	p9_fid_put(ofid);
-+	p9_fid_put(fid);
- 	v9fs_put_acl(dacl, pacl);
- 	dput(res);
- 	return err;
--
--error:
--	if (fid)
--		p9_fid_put(fid);
--err_clunk_old_fid:
--	if (ofid)
--		p9_fid_put(ofid);
--	goto out;
- }
- 
- /**
-@@ -400,7 +390,6 @@ static int v9fs_vfs_mkdir_dotl(struct user_namespace *mnt_userns,
- 	if (IS_ERR(dfid)) {
- 		err = PTR_ERR(dfid);
- 		p9_debug(P9_DEBUG_VFS, "fid lookup failed %d\n", err);
--		dfid = NULL;
- 		goto error;
- 	}
- 
-@@ -422,7 +411,6 @@ static int v9fs_vfs_mkdir_dotl(struct user_namespace *mnt_userns,
- 		err = PTR_ERR(fid);
- 		p9_debug(P9_DEBUG_VFS, "p9_client_walk failed %d\n",
- 			 err);
--		fid = NULL;
- 		goto error;
- 	}
- 
-@@ -435,10 +423,9 @@ static int v9fs_vfs_mkdir_dotl(struct user_namespace *mnt_userns,
- 				 err);
- 			goto error;
- 		}
--		v9fs_fid_add(dentry, fid);
-+		v9fs_fid_add(dentry, &fid);
- 		v9fs_set_create_acl(inode, fid, dacl, pacl);
- 		d_instantiate(dentry, inode);
--		fid = NULL;
- 		err = 0;
- 	} else {
- 		/*
-@@ -457,8 +444,7 @@ static int v9fs_vfs_mkdir_dotl(struct user_namespace *mnt_userns,
- 	inc_nlink(dir);
- 	v9fs_invalidate_inode_attr(dir);
- error:
--	if (fid)
--		p9_fid_put(fid);
-+	p9_fid_put(fid);
- 	v9fs_put_acl(dacl, pacl);
- 	p9_fid_put(dfid);
- 	return err;
-@@ -743,7 +729,6 @@ v9fs_vfs_symlink_dotl(struct user_namespace *mnt_userns, struct inode *dir,
- 			err = PTR_ERR(fid);
- 			p9_debug(P9_DEBUG_VFS, "p9_client_walk failed %d\n",
- 				 err);
--			fid = NULL;
- 			goto error;
- 		}
- 
-@@ -755,9 +740,8 @@ v9fs_vfs_symlink_dotl(struct user_namespace *mnt_userns, struct inode *dir,
- 				 err);
- 			goto error;
- 		}
--		v9fs_fid_add(dentry, fid);
-+		v9fs_fid_add(dentry, &fid);
- 		d_instantiate(dentry, inode);
--		fid = NULL;
- 		err = 0;
- 	} else {
- 		/* Not in cached mode. No need to populate inode with stat */
-@@ -770,9 +754,7 @@ v9fs_vfs_symlink_dotl(struct user_namespace *mnt_userns, struct inode *dir,
- 	}
- 
- error:
--	if (fid)
--		p9_fid_put(fid);
--
-+	p9_fid_put(fid);
- 	p9_fid_put(dfid);
- 	return err;
- }
-@@ -866,7 +848,6 @@ v9fs_vfs_mknod_dotl(struct user_namespace *mnt_userns, struct inode *dir,
- 	if (IS_ERR(dfid)) {
- 		err = PTR_ERR(dfid);
- 		p9_debug(P9_DEBUG_VFS, "fid lookup failed %d\n", err);
--		dfid = NULL;
- 		goto error;
- 	}
- 
-@@ -891,7 +872,6 @@ v9fs_vfs_mknod_dotl(struct user_namespace *mnt_userns, struct inode *dir,
- 		err = PTR_ERR(fid);
- 		p9_debug(P9_DEBUG_VFS, "p9_client_walk failed %d\n",
- 			 err);
--		fid = NULL;
- 		goto error;
- 	}
- 
-@@ -905,9 +885,8 @@ v9fs_vfs_mknod_dotl(struct user_namespace *mnt_userns, struct inode *dir,
- 			goto error;
- 		}
- 		v9fs_set_create_acl(inode, fid, dacl, pacl);
--		v9fs_fid_add(dentry, fid);
-+		v9fs_fid_add(dentry, &fid);
- 		d_instantiate(dentry, inode);
--		fid = NULL;
- 		err = 0;
- 	} else {
- 		/*
-@@ -923,8 +902,7 @@ v9fs_vfs_mknod_dotl(struct user_namespace *mnt_userns, struct inode *dir,
- 		d_instantiate(dentry, inode);
- 	}
- error:
--	if (fid)
--		p9_fid_put(fid);
-+	p9_fid_put(fid);
- 	v9fs_put_acl(dacl, pacl);
- 	p9_fid_put(dfid);
- 
-diff --git a/fs/9p/vfs_super.c b/fs/9p/vfs_super.c
-index bf350fad9500..2d9ee073d12c 100644
---- a/fs/9p/vfs_super.c
-+++ b/fs/9p/vfs_super.c
-@@ -184,7 +184,7 @@ static struct dentry *v9fs_mount(struct file_system_type *fs_type, int flags,
- 	retval = v9fs_get_acl(inode, fid);
- 	if (retval)
- 		goto release_sb;
--	v9fs_fid_add(root, fid);
-+	v9fs_fid_add(root, &fid);
- 
- 	p9_debug(P9_DEBUG_VFS, " simple set mount, return 0\n");
- 	return dget(sb->s_root);
--- 
-2.35.1
+> 
+> Thanks,
+> Jagath
 
