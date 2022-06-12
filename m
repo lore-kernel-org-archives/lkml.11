@@ -2,67 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D67A9C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 18:40:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1F7DC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 18:40:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233740AbiFLSkw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 14:40:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49688 "EHLO
+        id S233397AbiFLSk4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 14:40:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233322AbiFLSkt (ORCPT
+        with ESMTP id S233333AbiFLSku (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 14:40:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68BC259967;
-        Sun, 12 Jun 2022 11:40:48 -0700 (PDT)
+        Sun, 12 Jun 2022 14:40:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2605759969;
+        Sun, 12 Jun 2022 11:40:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 050DC6101C;
-        Sun, 12 Jun 2022 18:40:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5FAC8C3411D;
+        by ams.source.kernel.org (Postfix) with ESMTPS id B8E87B80D03;
         Sun, 12 Jun 2022 18:40:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8A67EC34115;
+        Sun, 12 Jun 2022 18:40:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655059247;
-        bh=2KZn07GBeR+9deDA4wywPy95VracK2cBdvXt2GNbF84=;
+        s=k20201202; t=1655059246;
+        bh=+6WFW3Npj4ctuN/nDgdVIAVE1iKAVuuIgGpK1R++zHo=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=oi7CNsd6xbUkpMPHok5RJQ6joirKIvak1Klc48D86PPnRrM+xWml/dWbMgMgVVo5i
-         6Rd2wIkJHZHGBLl1L0BozBw1YGwa0HeJQUxBGnSGlejQwJdlMYKx5umDz5euV6qfVS
-         IPJ6jJSEB7lVKNfjKd9Y46+T7REvfokfGP3LbGIWsmzQDaJXWa9GOD1PjzfqfkWcWZ
-         HHdYisK3pvu6lu13R87YEL7S4Erp4L7waYz3B3ulMuDQktjCYCD9/3YV139aYrzfpq
-         28MKZBEYFqRhnfGolmCy6iYJD83YJzLXIBn3bHsiPYEe0RRvNevY26KpUeKtPJUvgB
-         SbAV6QTphWt+Q==
+        b=oTvpuYGLFaIajr+TC8pD8Pt5J4TDMK+AH68A9xL8D+qY1W57B2UkRP6CfVYAQd7x1
+         X0QuizcOT/faDJMfCV1We0qr7Rbbzmx+FBUKo6I3HvkY3BkVtEdc5ZiXPEog0z6mrN
+         o0yvTvfSg5JR0KAwHJgxFfhJavfqItNFz780kakC9VTlzmGqCdrV8bjK6TqDYW3wGF
+         NO30nKT7mELr+6s2T9m/tSyJ0jikBZazbv8Xk+usXEiC1SU8N9IQftEynPaa6Wn5T3
+         8xAWFrwmV9iAkliuft1w5x1jLEVEtI/pLZvRpeQpbfZqav8kr3ih5RgD6vsmNuFdEU
+         VGprQHzZKnrEw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4CCACE737E6;
-        Sun, 12 Jun 2022 18:40:47 +0000 (UTC)
-Subject: Re: [GIT PULL] Kbuild fixes for v5.19-rc2
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7786AE737ED;
+        Sun, 12 Jun 2022 18:40:46 +0000 (UTC)
+Subject: Re: [GIT PULL] smb3 client fixes
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <CAK7LNASHyyT+tw-G8iNWt0sHmMUKr816sCXKfLpo-_GhVa=9WQ@mail.gmail.com>
-References: <CAK7LNASHyyT+tw-G8iNWt0sHmMUKr816sCXKfLpo-_GhVa=9WQ@mail.gmail.com>
-X-PR-Tracked-List-Id: <linux-kbuild.vger.kernel.org>
-X-PR-Tracked-Message-Id: <CAK7LNASHyyT+tw-G8iNWt0sHmMUKr816sCXKfLpo-_GhVa=9WQ@mail.gmail.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git tags/kbuild-fixes-v5.19
-X-PR-Tracked-Commit-Id: 1f7a6cf6b07c74a17343c2559cd5f5018a245961
+In-Reply-To: <CAH2r5msLEuGjB+JQBHF34AG+hx4szrzYsT1A=mj7Rmn7Y_r5FQ@mail.gmail.com>
+References: <CAH2r5msLEuGjB+JQBHF34AG+hx4szrzYsT1A=mj7Rmn7Y_r5FQ@mail.gmail.com>
+X-PR-Tracked-List-Id: <linux-cifs.vger.kernel.org>
+X-PR-Tracked-Message-Id: <CAH2r5msLEuGjB+JQBHF34AG+hx4szrzYsT1A=mj7Rmn7Y_r5FQ@mail.gmail.com>
+X-PR-Tracked-Remote: git://git.samba.org/sfrench/cifs-2.6.git tags/5.19-rc1-smb3-client-fixes
+X-PR-Tracked-Commit-Id: 4c14d7043fede258957d7b01da0cad2d9fe3a205
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: e3b8e2de19e18e4297c0dd747d56ecdc4ff96928
-Message-Id: <165505924731.24195.18010323738696600238.pr-tracker-bot@kernel.org>
-Date:   Sun, 12 Jun 2022 18:40:47 +0000
-To:     Masahiro Yamada <masahiroy@kernel.org>
+X-PR-Merge-Commit-Id: 2275c6babfa53278c90b7915441c61392dd687cc
+Message-Id: <165505924648.24195.8158480621712933168.pr-tracker-bot@kernel.org>
+Date:   Sun, 12 Jun 2022 18:40:46 +0000
+To:     Steve French <smfrench@gmail.com>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+        CIFS <linux-cifs@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sun, 12 Jun 2022 04:39:16 +0900:
+The pull request you sent on Sat, 11 Jun 2022 11:38:45 -0500:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.git tags/kbuild-fixes-v5.19
+> git://git.samba.org/sfrench/cifs-2.6.git tags/5.19-rc1-smb3-client-fixes
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/e3b8e2de19e18e4297c0dd747d56ecdc4ff96928
+https://git.kernel.org/torvalds/c/2275c6babfa53278c90b7915441c61392dd687cc
 
 Thank you!
 
