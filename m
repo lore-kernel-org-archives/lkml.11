@@ -2,130 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CB93C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 15:22:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0371C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 15:26:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237475AbiFLPWV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 11:22:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33832 "EHLO
+        id S237452AbiFLP0O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 11:26:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231444AbiFLPWT (ORCPT
+        with ESMTP id S231373AbiFLP0M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 11:22:19 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1B635C647;
-        Sun, 12 Jun 2022 08:22:16 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4LLdjM2M0vz9tND;
-        Sun, 12 Jun 2022 17:22:15 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id MGK4W9O8n3tt; Sun, 12 Jun 2022 17:22:15 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4LLdjM1KYnz9tFn;
-        Sun, 12 Jun 2022 17:22:15 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 16F5B8B76D;
-        Sun, 12 Jun 2022 17:22:15 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id oxDVUVRfU13z; Sun, 12 Jun 2022 17:22:14 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (po16064.idsi0.si.c-s.fr [192.168.6.194])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id C5B1D8B767;
-        Sun, 12 Jun 2022 17:22:14 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 25CFM4IU065415
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Sun, 12 Jun 2022 17:22:04 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 25CFM4e6065406;
-        Sun, 12 Jun 2022 17:22:04 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Luis Chamberlain <mcgrof@kernel.org>, linux-modules@vger.kernel.org
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>
-Subject: [PATCH v2] module: Fix selfAssignment cppcheck warning
-Date:   Sun, 12 Jun 2022 17:21:56 +0200
-Message-Id: <3c3041d4815d6d6ad5f7ab78b202e192210f6694.1655047308.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.35.3
+        Sun, 12 Jun 2022 11:26:12 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82CF5E0C8;
+        Sun, 12 Jun 2022 08:26:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1655047571; x=1686583571;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=Q0onuyl5eTrkYqFlMMv+/M78rN5v5VPQYnAPHZB5rCM=;
+  b=hNhS8io2Jt1g6wJG0d0Df4uOYMkEgpquUUWMD22X+rHtx3ytuvkJjg+n
+   PKe0oYCBkydT4EbKyqnCdYNFU43M0AZA/yJtOw0oWTYn/hqF0htBXPVAd
+   ldYaGD57PdFbpBuyk6cxGd/mEDzYuWxaRuG6S6T3nS5g72yctPungppT0
+   vqDLWVfzfaZrzqe6b6p1rHopVIvyVhaoZEmIifDLeBk7zK7boN+yetjEm
+   5cyvKVLLY9ZtLwa68LgeRVlEsbdLXZVddGxKa02OQDa7GlscGmjmy/OLa
+   TQpFKfpxcCN5P0WApuGiHjsSIP5uQlLRgxUnoayEawrO/e1Swx0p5qu7u
+   g==;
+X-IronPort-AV: E=Sophos;i="5.91,294,1647327600"; 
+   d="scan'208";a="99654529"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Jun 2022 08:26:10 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Sun, 12 Jun 2022 08:26:10 -0700
+Received: from kavya-HP-Compaq-6000-Pro-SFF-PC.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Sun, 12 Jun 2022 08:26:06 -0700
+From:   Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
+To:     <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <claudiu.beznea@microchip.com>, <UNGLinuxDriver@microchip.com>
+CC:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <Kavyasree.Kotagiri@microchip.com>
+Subject: [PATCH v3 0/3] Add support for lan966x flexcom chip-select configuration
+Date:   Sun, 12 Jun 2022 20:56:01 +0530
+Message-ID: <20220612152604.24280-1-kavyasree.kotagiri@microchip.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1655047314; l=2803; s=20211009; h=from:subject:message-id; bh=Ii/yRThss71Bh4QygDM4O7u+M5n7yYzdy6Xemv6OwBE=; b=sBCb5++zfZ+8U6lLVTW6wHL9t5iNaRkN8TCF0oVoSHpDYk+a9/fQhS7cQX23FFb0ik7hf31AbMgA TK2VgtDtD1tPFU1ul0O/fCGqj2mApAXEf6BMtPn8eHRG8cfFJI3q
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-cppcheck reports the following warnings:
+This patch series converts atmel-flexcom bindings into json-schema format.
+Adds support for lan966x flexcom chip-select configurations and its
+DT bindings.
 
-kernel/module/main.c:1455:26: warning: Redundant assignment of 'mod->core_layout.size' to itself. [selfAssignment]
-   mod->core_layout.size = strict_align(mod->core_layout.size);
-                         ^
-kernel/module/main.c:1489:26: warning: Redundant assignment of 'mod->init_layout.size' to itself. [selfAssignment]
-   mod->init_layout.size = strict_align(mod->init_layout.size);
-                         ^
-kernel/module/main.c:1493:26: warning: Redundant assignment of 'mod->init_layout.size' to itself. [selfAssignment]
-   mod->init_layout.size = strict_align(mod->init_layout.size);
-                         ^
-kernel/module/main.c:1504:26: warning: Redundant assignment of 'mod->init_layout.size' to itself. [selfAssignment]
-   mod->init_layout.size = strict_align(mod->init_layout.size);
-                         ^
-kernel/module/main.c:1459:26: warning: Redundant assignment of 'mod->data_layout.size' to itself. [selfAssignment]
-   mod->data_layout.size = strict_align(mod->data_layout.size);
-                         ^
-kernel/module/main.c:1463:26: warning: Redundant assignment of 'mod->data_layout.size' to itself. [selfAssignment]
-   mod->data_layout.size = strict_align(mod->data_layout.size);
-                         ^
-kernel/module/main.c:1467:26: warning: Redundant assignment of 'mod->data_layout.size' to itself. [selfAssignment]
-   mod->data_layout.size = strict_align(mod->data_layout.size);
-                         ^
+v2 -> v3:
+ - changed IRQ flag in dt-bindings example.
+ - added reg property specific to lan66x which is missed in v2.
+ - used goto label for clk_disable in error cases.
 
-This is due to strict_align() being a no-op when
-CONFIG_STRICT_MODULE_RWX is not selected.
+v1 -> v2:
+ - minor fix in title of dt-bindings.
+ - Modified new dt properties usage in atmel,flexcom.yaml.
+ - Used GENMASK and macros for maximum allowed values.
+ - Use u32 values for flexcom chipselects instead of strings.
+ - disable clock in case of errors.
 
-Transform strict_align() macro into an inline function. It will
-allow type checking and avoid the selfAssignment warning.
+Kavyasree Kotagiri (3):
+  dt-bindings: mfd: atmel,flexcom: Convert to json-schema
+  dt-bindings: mfd: atmel,flexcom: Add new compatible string for lan966x
+  mfd: atmel-flexcom: Add support for lan966x flexcom chip-select
+    configuration
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- kernel/module/internal.h | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ .../bindings/mfd/atmel,flexcom.yaml           | 174 ++++++++++++++++++
+ .../devicetree/bindings/mfd/atmel-flexcom.txt |  63 -------
+ drivers/mfd/atmel-flexcom.c                   |  94 +++++++++-
+ 3 files changed, 267 insertions(+), 64 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/mfd/atmel,flexcom.yaml
+ delete mode 100644 Documentation/devicetree/bindings/mfd/atmel-flexcom.txt
 
-diff --git a/kernel/module/internal.h b/kernel/module/internal.h
-index bc5507ab8450..ec104c2950c3 100644
---- a/kernel/module/internal.h
-+++ b/kernel/module/internal.h
-@@ -11,6 +11,7 @@
- #include <linux/mutex.h>
- #include <linux/rculist.h>
- #include <linux/rcupdate.h>
-+#include <linux/mm.h>
- 
- #ifndef ARCH_SHF_SMALL
- #define ARCH_SHF_SMALL 0
-@@ -30,11 +31,13 @@
-  * to ensure complete separation of code and data, but
-  * only when CONFIG_STRICT_MODULE_RWX=y
-  */
--#ifdef CONFIG_STRICT_MODULE_RWX
--# define strict_align(X) PAGE_ALIGN(X)
--#else
--# define strict_align(X) (X)
--#endif
-+static inline unsigned int strict_align(unsigned int size)
-+{
-+	if (IS_ENABLED(CONFIG_STRICT_MODULE_RWX))
-+		return PAGE_ALIGN(size);
-+	else
-+		return size;
-+}
- 
- extern struct mutex module_mutex;
- extern struct list_head modules;
 -- 
-2.35.3
+2.17.1
 
