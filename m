@@ -2,55 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78577C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 12:39:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08C69C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 12:50:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236779AbiFLMjL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 08:39:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48522 "EHLO
+        id S236793AbiFLMtN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 08:49:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231135AbiFLMjK (ORCPT
+        with ESMTP id S231135AbiFLMtK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 08:39:10 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 750522A43C
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 05:39:09 -0700 (PDT)
+        Sun, 12 Jun 2022 08:49:10 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D7D462A3D
+        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 05:49:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655037549; x=1686573549;
+  t=1655038149; x=1686574149;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=HpQNDuVbOnkLUQPeWilQh0raXkL3WdgqSTevyTYrtug=;
-  b=NMV9x9cOcMqoSB3RbqGEr14lizs/dzjk1I7UGcDv7Fw/BPBP0z68q3MK
-   SuI0TbCORjtVTYTrsGMJaMRn5Ebc8tx1f7R1hQ4oVJc91K91jBeph7AN1
-   fMS+Lo0jFy1kM8Xi8qwx6aNXWV1vVh/TWDQCqA8pqYmvnlZF0aufrEwN6
-   ofwaMMQjnqbfuiyimEN7yTQ5Bh3/RDZNiUlLncYMvskMhj6anrSLDlgzm
-   Qq2R4/p/Lurk068+HS6ofJxFxEcKBwFN1Q+QaZ4/Pz3MsC1cs43ZfwLlo
-   ielkJlNZfLYdprnavK0JdnKiBruU3UymoWPMfX75JlatntsawffEHpLo4
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10375"; a="258479088"
+  bh=1UfxJ/4PxtKCS1GyskBJ35N4/akDZ2e7tjGbpMByFm0=;
+  b=Crrlfz6rLLvzo8DMgrMCjTb6U6RbYA8HtYWEn54CbChepieIpymbId00
+   qwAJPHP/ozf+kIogbUvKCXuqoADyOs3unbCi1OB53wApwbKRn/zEyyvgS
+   1z8+pkJuy1iEL0+fvQTJrvuZrB81Ah43H/YRrWxWRvTNnaZeXhSlF0B6B
+   p9j7G/bEiUQVsI/ct4t5A6M6jGCPyGQYnwfKf799I2i+jNQM71TIB5tmK
+   EcaE73m+rOaaeFuyVa7blV3hOXRlX0kGEWVZqpLoXYBFxSxbXWGmyWg6H
+   Zz8kzr1i7VifdEXuVmCKVriR/Mw7/Rc1r36koHnWquaDMHdIODh2x4ffn
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10375"; a="342039400"
 X-IronPort-AV: E=Sophos;i="5.91,294,1647327600"; 
-   d="scan'208";a="258479088"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2022 05:39:09 -0700
+   d="scan'208";a="342039400"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2022 05:49:09 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,294,1647327600"; 
-   d="scan'208";a="639172430"
+   d="scan'208";a="829206875"
 Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 12 Jun 2022 05:39:07 -0700
+  by fmsmga006.fm.intel.com with ESMTP; 12 Jun 2022 05:49:07 -0700
 Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1o0Mry-000Jun-My;
-        Sun, 12 Jun 2022 12:39:06 +0000
-Date:   Sun, 12 Jun 2022 20:38:32 +0800
+        id 1o0N1f-000JvJ-1m;
+        Sun, 12 Jun 2022 12:49:07 +0000
+Date:   Sun, 12 Jun 2022 20:48:52 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Marek Vasut <marex@denx.de>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
         Andrzej Hajda <andrzej.hajda@intel.com>
-Subject: [drm-misc:for-linux-next 7/10]
- drivers/gpu/drm/bridge/tc358775.c:544:7: warning: variable 'dsi_lanes' is
- used uninitialized whenever 'if' condition is false
-Message-ID: <202206122022.NpZvuwCU-lkp@intel.com>
+Subject: [drm-misc:for-linux-next 10/10]
+ drivers/gpu/drm/rcar-du/rcar_mipi_dsi.c:683:13: warning: unused variable
+ 'data_lanes'
+Message-ID: <202206122009.urQLG05k-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -60,113 +59,60 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 tree:   git://anongit.freedesktop.org/drm/drm-misc for-linux-next
 head:   d643daaf1694b7565fbe3982b630e1c7b95f1600
-commit: 56426faa1492289ff794620c4ed8c1847a420d0a [7/10] drm/bridge: tc358775: Convert to drm_of_get_data_lanes_count_ep
-config: hexagon-randconfig-r045-20220612 (https://download.01.org/0day-ci/archive/20220612/202206122022.NpZvuwCU-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 6466c9abf3674bade1f6ee859f24ebc7aaf9cd88)
+commit: d643daaf1694b7565fbe3982b630e1c7b95f1600 [10/10] drm/bridge: rcar: Convert to drm_of_get_data_lanes_count_ep
+config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220612/202206122009.urQLG05k-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
 reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
         git remote add drm-misc git://anongit.freedesktop.org/drm/drm-misc
         git fetch --no-tags drm-misc for-linux-next
-        git checkout 56426faa1492289ff794620c4ed8c1847a420d0a
+        git checkout d643daaf1694b7565fbe3982b630e1c7b95f1600
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/gpu/drm/bridge/ drivers/gpu/drm/msm/
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/gpu/drm/rcar-du/
 
 If you fix the issue, kindly add following tag where applicable
 Reported-by: kernel test robot <lkp@intel.com>
 
 All warnings (new ones prefixed by >>):
 
->> drivers/gpu/drm/bridge/tc358775.c:544:7: warning: variable 'dsi_lanes' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-                   if (parent) {
-                       ^~~~~~
-   drivers/gpu/drm/bridge/tc358775.c:551:6: note: uninitialized use occurs here
-           if (dsi_lanes < 0)
-               ^~~~~~~~~
-   drivers/gpu/drm/bridge/tc358775.c:544:3: note: remove the 'if' if its condition is always true
-                   if (parent) {
-                   ^~~~~~~~~~~~
-   drivers/gpu/drm/bridge/tc358775.c:540:6: warning: variable 'dsi_lanes' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-           if (endpoint) {
-               ^~~~~~~~
-   drivers/gpu/drm/bridge/tc358775.c:551:6: note: uninitialized use occurs here
-           if (dsi_lanes < 0)
-               ^~~~~~~~~
-   drivers/gpu/drm/bridge/tc358775.c:540:2: note: remove the 'if' if its condition is always true
-           if (endpoint) {
-           ^~~~~~~~~~~~~~
-   drivers/gpu/drm/bridge/tc358775.c:532:15: note: initialize the variable 'dsi_lanes' to silence this warning
-           int dsi_lanes;
-                        ^
-                         = 0
-   2 warnings generated.
+   drivers/gpu/drm/rcar-du/rcar_mipi_dsi.c: In function 'rcar_mipi_dsi_parse_dt':
+>> drivers/gpu/drm/rcar-du/rcar_mipi_dsi.c:683:13: warning: unused variable 'data_lanes' [-Wunused-variable]
+     683 |         u32 data_lanes[4];
+         |             ^~~~~~~~~~
+>> drivers/gpu/drm/rcar-du/rcar_mipi_dsi.c:682:29: warning: unused variable 'ep' [-Wunused-variable]
+     682 |         struct device_node *ep;
+         |                             ^~
 
 
-vim +544 drivers/gpu/drm/bridge/tc358775.c
+vim +/data_lanes +683 drivers/gpu/drm/rcar-du/rcar_mipi_dsi.c
 
-b26975593b17c2 Vinay Simha BN 2020-07-10  526  
-b26975593b17c2 Vinay Simha BN 2020-07-10  527  static int tc358775_parse_dt(struct device_node *np, struct tc_data *tc)
-b26975593b17c2 Vinay Simha BN 2020-07-10  528  {
-b26975593b17c2 Vinay Simha BN 2020-07-10  529  	struct device_node *endpoint;
-b26975593b17c2 Vinay Simha BN 2020-07-10  530  	struct device_node *parent;
-b26975593b17c2 Vinay Simha BN 2020-07-10  531  	struct device_node *remote;
-56426faa149228 Marek Vasut    2022-05-24  532  	int dsi_lanes;
-b26975593b17c2 Vinay Simha BN 2020-07-10  533  
-b26975593b17c2 Vinay Simha BN 2020-07-10  534  	/*
-b26975593b17c2 Vinay Simha BN 2020-07-10  535  	 * To get the data-lanes of dsi, we need to access the dsi0_out of port1
-b26975593b17c2 Vinay Simha BN 2020-07-10  536  	 *  of dsi0 endpoint from bridge port0 of d2l_in
-b26975593b17c2 Vinay Simha BN 2020-07-10  537  	 */
-b26975593b17c2 Vinay Simha BN 2020-07-10  538  	endpoint = of_graph_get_endpoint_by_regs(tc->dev->of_node,
-b26975593b17c2 Vinay Simha BN 2020-07-10  539  						 TC358775_DSI_IN, -1);
-b26975593b17c2 Vinay Simha BN 2020-07-10  540  	if (endpoint) {
-b26975593b17c2 Vinay Simha BN 2020-07-10  541  		/* dsi0_out node */
-b26975593b17c2 Vinay Simha BN 2020-07-10  542  		parent = of_graph_get_remote_port_parent(endpoint);
-b26975593b17c2 Vinay Simha BN 2020-07-10  543  		of_node_put(endpoint);
-b26975593b17c2 Vinay Simha BN 2020-07-10 @544  		if (parent) {
-b26975593b17c2 Vinay Simha BN 2020-07-10  545  			/* dsi0 port 1 */
-56426faa149228 Marek Vasut    2022-05-24  546  			dsi_lanes = drm_of_get_data_lanes_count_ep(parent, 1, -1, 1, 4);
-b26975593b17c2 Vinay Simha BN 2020-07-10  547  			of_node_put(parent);
-b26975593b17c2 Vinay Simha BN 2020-07-10  548  		}
-b26975593b17c2 Vinay Simha BN 2020-07-10  549  	}
-b26975593b17c2 Vinay Simha BN 2020-07-10  550  
-56426faa149228 Marek Vasut    2022-05-24  551  	if (dsi_lanes < 0)
-56426faa149228 Marek Vasut    2022-05-24  552  		return dsi_lanes;
-b26975593b17c2 Vinay Simha BN 2020-07-10  553  
-56426faa149228 Marek Vasut    2022-05-24  554  	tc->num_dsi_lanes = dsi_lanes;
-b26975593b17c2 Vinay Simha BN 2020-07-10  555  
-b26975593b17c2 Vinay Simha BN 2020-07-10  556  	tc->host_node = of_graph_get_remote_node(np, 0, 0);
-b26975593b17c2 Vinay Simha BN 2020-07-10  557  	if (!tc->host_node)
-b26975593b17c2 Vinay Simha BN 2020-07-10  558  		return -ENODEV;
-b26975593b17c2 Vinay Simha BN 2020-07-10  559  
-b26975593b17c2 Vinay Simha BN 2020-07-10  560  	of_node_put(tc->host_node);
-b26975593b17c2 Vinay Simha BN 2020-07-10  561  
-b26975593b17c2 Vinay Simha BN 2020-07-10  562  	tc->lvds_link = SINGLE_LINK;
-b26975593b17c2 Vinay Simha BN 2020-07-10  563  	endpoint = of_graph_get_endpoint_by_regs(tc->dev->of_node,
-b26975593b17c2 Vinay Simha BN 2020-07-10  564  						 TC358775_LVDS_OUT1, -1);
-b26975593b17c2 Vinay Simha BN 2020-07-10  565  	if (endpoint) {
-b26975593b17c2 Vinay Simha BN 2020-07-10  566  		remote = of_graph_get_remote_port_parent(endpoint);
-b26975593b17c2 Vinay Simha BN 2020-07-10  567  		of_node_put(endpoint);
-b26975593b17c2 Vinay Simha BN 2020-07-10  568  
-b26975593b17c2 Vinay Simha BN 2020-07-10  569  		if (remote) {
-b26975593b17c2 Vinay Simha BN 2020-07-10  570  			if (of_device_is_available(remote))
-b26975593b17c2 Vinay Simha BN 2020-07-10  571  				tc->lvds_link = DUAL_LINK;
-b26975593b17c2 Vinay Simha BN 2020-07-10  572  			of_node_put(remote);
-b26975593b17c2 Vinay Simha BN 2020-07-10  573  		}
-b26975593b17c2 Vinay Simha BN 2020-07-10  574  	}
-b26975593b17c2 Vinay Simha BN 2020-07-10  575  
-b26975593b17c2 Vinay Simha BN 2020-07-10  576  	dev_dbg(tc->dev, "no.of dsi lanes: %d\n", tc->num_dsi_lanes);
-b26975593b17c2 Vinay Simha BN 2020-07-10  577  	dev_dbg(tc->dev, "operating in %d-link mode\n",	tc->lvds_link);
-b26975593b17c2 Vinay Simha BN 2020-07-10  578  
-b26975593b17c2 Vinay Simha BN 2020-07-10  579  	return 0;
-b26975593b17c2 Vinay Simha BN 2020-07-10  580  }
-b26975593b17c2 Vinay Simha BN 2020-07-10  581  
+155358310f013c LUU HOAI    2020-02-25  675  
+155358310f013c LUU HOAI    2020-02-25  676  /* -----------------------------------------------------------------------------
+155358310f013c LUU HOAI    2020-02-25  677   * Probe & Remove
+155358310f013c LUU HOAI    2020-02-25  678   */
+155358310f013c LUU HOAI    2020-02-25  679  
+155358310f013c LUU HOAI    2020-02-25  680  static int rcar_mipi_dsi_parse_dt(struct rcar_mipi_dsi *dsi)
+155358310f013c LUU HOAI    2020-02-25  681  {
+155358310f013c LUU HOAI    2020-02-25 @682  	struct device_node *ep;
+155358310f013c LUU HOAI    2020-02-25 @683  	u32 data_lanes[4];
+155358310f013c LUU HOAI    2020-02-25  684  	int ret;
+155358310f013c LUU HOAI    2020-02-25  685  
+d643daaf1694b7 Marek Vasut 2022-05-24  686  	ret = drm_of_get_data_lanes_count_ep(dsi->dev->of_node, 1, 0, 1, 4);
+155358310f013c LUU HOAI    2020-02-25  687  	if (ret < 0) {
+155358310f013c LUU HOAI    2020-02-25  688  		dev_err(dsi->dev, "missing or invalid data-lanes property\n");
+d643daaf1694b7 Marek Vasut 2022-05-24  689  		return ret;
+155358310f013c LUU HOAI    2020-02-25  690  	}
+155358310f013c LUU HOAI    2020-02-25  691  
+155358310f013c LUU HOAI    2020-02-25  692  	dsi->num_data_lanes = ret;
+155358310f013c LUU HOAI    2020-02-25  693  	return 0;
+155358310f013c LUU HOAI    2020-02-25  694  }
+155358310f013c LUU HOAI    2020-02-25  695  
 
-:::::: The code at line 544 was first introduced by commit
-:::::: b26975593b17c2c7188b96dba6fe9fff14480538 display/drm/bridge: TC358775 DSI/LVDS driver
+:::::: The code at line 683 was first introduced by commit
+:::::: 155358310f013c23c2e5533e007afc7310c9a964 drm: rcar-du: Add R-Car DSI driver
 
-:::::: TO: Vinay Simha BN <simhavcs@gmail.com>
-:::::: CC: Sam Ravnborg <sam.ravnborg@gmail.com>
+:::::: TO: LUU HOAI <hoai.luu.ub@renesas.com>
+:::::: CC: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 
 -- 
 0-DAY CI Kernel Test Service
