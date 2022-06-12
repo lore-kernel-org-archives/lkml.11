@@ -2,89 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AB64C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 03:56:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A12D9C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 04:03:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233146AbiFLD4w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 23:56:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48308 "EHLO
+        id S233325AbiFLEDQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 00:03:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229528AbiFLD4u (ORCPT
+        with ESMTP id S229528AbiFLEDN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 23:56:50 -0400
-Received: from mail-pg1-f194.google.com (mail-pg1-f194.google.com [209.85.215.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA4A83B2B1;
-        Sat, 11 Jun 2022 20:56:49 -0700 (PDT)
-Received: by mail-pg1-f194.google.com with SMTP id y187so2750408pgd.3;
-        Sat, 11 Jun 2022 20:56:49 -0700 (PDT)
+        Sun, 12 Jun 2022 00:03:13 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B18123982B;
+        Sat, 11 Jun 2022 21:03:12 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id s12so5128616ejx.3;
+        Sat, 11 Jun 2022 21:03:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pbFRE+VCdz/Mvat4l03Ru/M9ljAjH7/8wgRe5uPLKmA=;
+        b=JylIYtTShS/QVxxbVK6KZgGdN2BZID9npboqy/8nxih8wIBzeXClsDxln2BxALdDKo
+         s/rdJm9lAJOmYNN48gAD4YprUguICzlGaD2n5L+7N8UDtwFkb10xOgcJROs17fds/p0C
+         djKJtLrvwes1nNTxMct5KgVOoJHnvlGqfRffcNGB3xI2tq12ydBIJQHokfeodlOA/OOS
+         dYL3kFDEUOlRW3hG09rOFTU1ut9Ig2Vy409NhFVaCYhKZGXtR2Br5lyBBBhkA4Dy49q6
+         TzI1y3h5cFKs45EFz7cIirMCXSqmb9Tt9rLTkz+gaZA4p2T4AjtpmqQTeePPu2QxhL0S
+         e16Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZoaSUf1WFSjsOvPzlBjVzQMptxVWTVe23Qs0wJkHTIY=;
-        b=SdrhLUozjMkTO9thtIlaq7kMIP6XZF0IyCAzxR5hUcJRPtRABi3yyMxPjUcRLShXBf
-         5cJ6H+8Mjf5JKUWAyykMJBAKQpcdtltEK79njJLDTggHV5IDYoTAf47cmImeIkHS9sYO
-         nRebN9Snl8zJ0Fh5nPY5efX0MbFRJ4fN+rL/8n3hPxJJwqNYc4+wIVu/nVimiwcP1F5o
-         ibqHW4oijQ0sH4CK5EyEnrZY9GJFw+aavqrzlE+jBcU3aHfcgzGGUrdiyxOzCoM2kofS
-         C7nlpY6BtaY7Z6wEz9KeEAU+N4mnrHk3U4qY+nUtKvo4bKzH5zboqs45OKvx9LEI8mdF
-         JpWA==
-X-Gm-Message-State: AOAM530Z2yvV14wdWiSUWxlpV8wnhq+R/01oZGQd/FlFiwbU9XgYb5ZH
-        rOtm4XNGDLJHGBRCfX2FhWZkOOWohw==
-X-Google-Smtp-Source: ABdhPJxWn0fONySkSmipTk9dtvqhSDx6JppTqnAeeFggbEXAeWpX+9KP/0coNM8gSDD66P2C7jyj3w==
-X-Received: by 2002:a63:2160:0:b0:3fc:b8ac:1976 with SMTP id s32-20020a632160000000b003fcb8ac1976mr47086037pgm.453.1655006208625;
-        Sat, 11 Jun 2022 20:56:48 -0700 (PDT)
-Received: from localhost.localdomain ([156.146.53.107])
-        by smtp.gmail.com with ESMTPSA id n15-20020aa7984f000000b0051bd3d55773sm2370518pfq.63.2022.06.11.20.56.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Jun 2022 20:56:48 -0700 (PDT)
-From:   sunliming <sunliming@kylinos.cn>
-To:     isaku.yamahata@intel.com, pbonzini@redhat.com, seanjc@google.com,
-        mingo@kernel.org
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sunliming@kylinos.cn, kelulanainsley@gmail.com, x86@kernel.org,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH] KVM: x86/mmu: Remove unused "type" of split_page_type()
-Date:   Sun, 12 Jun 2022 11:56:41 +0800
-Message-Id: <20220612035641.1161945-1-sunliming@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pbFRE+VCdz/Mvat4l03Ru/M9ljAjH7/8wgRe5uPLKmA=;
+        b=flLrjLdRaiAQgM3Mc9ju5vCDgn6aR2ZkPPYoiOmu7XFMjopWbE0uJeUrz1PMvDlb8g
+         kMoFkeGd7lcVPHcTvEc/Mh4aM6yX6NT77LnnIqxFc72U5eIjzADWC/plMcK0/zCSZBIy
+         AgYuhu/7aSW7JmWMwEF7oiQw3Mdk7dcn7Nib6HmZbTK34ilvApyuP0yOBMMhRe3KgjRi
+         MB4IL747iIBhD1CynATIvcn4ubSRuUkU429OchsWfZB6QqSrfqo6kORBtSwtwq0AK4Jv
+         /qInlFtv27HGeYKMplioiBTBRrk1dcu23WDNRXlU/SeT8B5xfSwUbSrnXDRDTwSky+CI
+         bAcw==
+X-Gm-Message-State: AOAM530+3cWZt40z033rjF/9ePiCEjv/GH38iNPjWNqxLlIjyxPP9s/X
+        EHAPVB1EuUlWgF76qMDi0EXWV3uHgieuyzM2vLU=
+X-Google-Smtp-Source: ABdhPJy9n/qDVUSTdlF1vXGTql2S/bTRtKA5PHOMP6KIlAgDuGmiLNoP/0JDATNBnLXZHa3pJmlXULj0phEuLoDftkE=
+X-Received: by 2002:a17:907:1c19:b0:711:e5f9:2ec7 with SMTP id
+ nc25-20020a1709071c1900b00711e5f92ec7mr23267565ejc.518.1655006591088; Sat, 11
+ Jun 2022 21:03:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220529180428.2577832-1-robdclark@gmail.com>
+In-Reply-To: <20220529180428.2577832-1-robdclark@gmail.com>
+From:   Chia-I Wu <olvaffe@gmail.com>
+Date:   Sat, 11 Jun 2022 21:02:59 -0700
+Message-ID: <CAPaKu7QDoZiPRDAptk7+cfv3Da+oXU7f0f4m6LQiwfzd=x=TuA@mail.gmail.com>
+Subject: Re: [PATCH v2] drm/msm/adreno: Allow larger address space size
+To:     Rob Clark <robdclark@gmail.com>
+Cc:     ML dri-devel <dri-devel@lists.freedesktop.org>,
+        freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        Connor Abbott <cwabbott0@gmail.com>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Rob Clark <robdclark@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Akhil P Oommen <quic_akhilpo@quicinc.com>,
+        Jordan Crouse <jordan@cosmicpenguin.net>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Vladimir Lypak <vladimir.lypak@gmail.com>,
+        Emma Anholt <emma@anholt.net>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The variable 'type' in split_page_type() is set but not used, so remove
-it.
-
-Fixes the following w1 warning:
-
-arch/x86/kvm/mmu/mmu.c:982:28: warning: variable 'type' set but not used [-Wunused-but-set-variable]
-
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: sunliming <sunliming@kylinos.cn>
----
- arch/x86/kvm/mmu/mmu.c | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 7b3df91a93cf..f4d577335f94 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -979,14 +979,12 @@ static void split_page_type(gfn_t gfn, struct kvm_memory_slot *slot,
- 			    enum pg_level level)
- {
- 	struct kvm_page_attr *page_attr = page_attr_slot(gfn, slot, level);
--	enum kvm_page_type type;
- 	gfn_t base_gfn;
- 
- 	if (WARN_ON_ONCE(!kvm_page_type_valid(page_attr) || level <= PG_LEVEL_4K))
- 		return;
- 
- 	base_gfn = gfn & ~(KVM_PAGES_PER_HPAGE(level) - 1);
--	type = page_attr->type;
- 
- 	/*
- 	 * Set the type to KVM_PAGE_TYPE_MIXED in advance since when a large
--- 
-2.25.1
-
+On Sun, May 29, 2022 at 11:04 AM Rob Clark <robdclark@gmail.com> wrote:
+>
+> From: Rob Clark <robdclark@chromium.org>
+>
+> The restriction to 4G was strictly to work around 64b math bug in some
+> versions of SQE firmware.  This appears to be fixed in a650+ SQE fw, so
+> allow a larger address space size on these devices.
+>
+> Also, add a modparam override for debugging and igt.
+>
+> v2: Send the right version of the patch (ie. the one that actually
+>     compiles)
+>
+> Signed-off-by: Rob Clark <robdclark@chromium.org>
+Reviewed-by: Chia-I Wu <olvaffe@gmail.com>
