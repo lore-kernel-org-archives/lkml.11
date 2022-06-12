@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2314AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 14:49:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC0BDC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 14:49:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237258AbiFLOtb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 10:49:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59722 "EHLO
+        id S237276AbiFLOtf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 10:49:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232395AbiFLOtT (ORCPT
+        with ESMTP id S236089AbiFLOtU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 10:49:19 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D6B3C08
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 07:49:15 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id n28so4230535edb.9
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 07:49:15 -0700 (PDT)
+        Sun, 12 Jun 2022 10:49:20 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11DE534B85
+        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 07:49:19 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id u12so6566896eja.8
+        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 07:49:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pqrs.dk; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rSYb7WFjE8zoNskNTn4KK0LTbD3WJCu9gXFXTJhr6NA=;
-        b=DpKtqRz965ab2i6y6lqT1h829jS37b9OM/X/HXYgxukSHjmHIso7zrHx2DNMvrGrbM
-         VXYrVXtBo7mNpOLdw3oONOrdh3if/xAl00j+2USQGua7DTIBh0weFfBbNQ6Xkqi7I30d
-         Sfc/jNM4SrtaeuXWdPhYm/ZoscHgexojfwbCo=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=jc9EKbluzjQbPf5iJBQyy57Za56oj94XsJi9//DUTBs=;
+        b=QAe6zVMMuPfsOQVPhxjW7XQINSyvokcP1UXdDMRe3lQrtwNAX48p8aTaJq+fVtUi2W
+         tdKGv1ukA3ximfBZb+wbyixuIibc+PNndOgm0dQmTnezjVki/HaSY3bW2E63Ce9htt6q
+         OyI2DQuX5UQ6ukHBMmmH6YcQHHH2f0dbWFjOM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rSYb7WFjE8zoNskNTn4KK0LTbD3WJCu9gXFXTJhr6NA=;
-        b=Fk0mq1MII6GBTMnetaoaM2Idz2/d0GRXv1abIwEyxwuCZ8g0ZxM6M2SOPdYFlIsaXk
-         +cD0bymTgIlwT7DszJHUckFg+pbeYnGRMOMnbHWOrOxPjZ94UnADehX6axm7yVFFQRkF
-         nBBLYT/lXIY1DTRRTovYxbUT3J5aCYpCMKWLSiv8JkqdAu9WmEbwtZd8AgIPlNlm2AMu
-         DU+vpreY1P+ZTdImvf94Vx7v5jynXow8kCVoPYMu0Y+vxgjyWNqCe25x/jPKUOGjbmCp
-         CwjEdPH/SiOlH3N0KckRR3m78gHSC8BLh/SBg2u5MCWi53k6BvzlgchQLTZBL6QAY+hC
-         1n6g==
-X-Gm-Message-State: AOAM533XRzn49/zGA4SoM1QjZnHt71AV3M+kC1nZbxcEGTOwrV5YbH33
-        z6gf4TFGx2UzFJ9zTyGqbBgzmw==
-X-Google-Smtp-Source: ABdhPJz6VW1bBC6PVZCZNV8EQxR11CGCL5uV9+5wD8r+5bBipMpMJseYJtMpdQiGB8ZncgAbn2qkYQ==
-X-Received: by 2002:a05:6402:50d2:b0:431:53c8:2356 with SMTP id h18-20020a05640250d200b0043153c82356mr41780544edb.300.1655045354020;
-        Sun, 12 Jun 2022 07:49:14 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=jc9EKbluzjQbPf5iJBQyy57Za56oj94XsJi9//DUTBs=;
+        b=DW8pkoa0Y7ZOokLQYBun1qPvj39KsT0hsjriMop/cXE6GeCyIhbVw4NBNGwqVun0mN
+         89RMHduuQRt3n1oDHxTbu+6GIUg94a9lYCk4KwtFk0UftbBHOHjKp1rhYbdSc4EePCGt
+         KmTxEvnV3WI80yOO1TXftzY/g1QH5IRF8v72jLYoXTxL50TvJBUfJffdH+uLXs5qYTa5
+         NrlB5aTJIzPFnGjqrNqXALnR2MMgn35Xz+yyemxSIk2eGx377xvLB+2EfL2RBDuF8uNK
+         pF/uTrDLZdGP9txnCCJR120fvdXsfFmQGBTUseErid8vMsRN/jF+spJ5vJ+Ieu//towq
+         Oxww==
+X-Gm-Message-State: AOAM531s1ylsB+yZjvgT04m3Eg6hUrSXjGCoWVBimlkSWCeYVowic1mv
+        XATFLsHt2KMjWlymPcGrrIIbWQ==
+X-Google-Smtp-Source: ABdhPJyvv3bZy0x8EdZVGn713v6ewfo8zGpqATwhEb2GGbMj9l6HERl46xAPhCd2QbNHUwuDFardFg==
+X-Received: by 2002:a17:907:da2:b0:711:f408:f098 with SMTP id go34-20020a1709070da200b00711f408f098mr20945715ejc.208.1655045357616;
+        Sun, 12 Jun 2022 07:49:17 -0700 (PDT)
 Received: from localhost.localdomain (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
-        by smtp.gmail.com with ESMTPSA id cm20-20020a0564020c9400b004316f94ec4esm3257076edb.66.2022.06.12.07.49.11
+        by smtp.gmail.com with ESMTPSA id cm20-20020a0564020c9400b004316f94ec4esm3257076edb.66.2022.06.12.07.49.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Jun 2022 07:49:13 -0700 (PDT)
+        Sun, 12 Jun 2022 07:49:17 -0700 (PDT)
 From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
 To:     Andrzej Hajda <andrzej.hajda@intel.com>,
         Neil Armstrong <narmstrong@baylibre.com>,
@@ -54,14 +54,16 @@ To:     Andrzej Hajda <andrzej.hajda@intel.com>,
         Jernej Skrabec <jernej.skrabec@gmail.com>,
         David Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        Archit Taneja <architt@codeaurora.org>
+        Archit Taneja <architt@codeaurora.org>,
+        Hans Verkuil <hans.verkuil@cisco.com>
 Cc:     =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
         dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH RESEND 0/2] drm: bridge: adv7511: two fixes for CEC
-Date:   Sun, 12 Jun 2022 16:48:52 +0200
-Message-Id: <20220612144854.2223873-1-alvin@pqrs.dk>
+Subject: [PATCH RESEND 2/2] drm: bridge: adv7511: unregister cec i2c device after cec adapter
+Date:   Sun, 12 Jun 2022 16:48:54 +0200
+Message-Id: <20220612144854.2223873-3-alvin@pqrs.dk>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220612144854.2223873-1-alvin@pqrs.dk>
+References: <20220612144854.2223873-1-alvin@pqrs.dk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -71,21 +73,72 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-Previously sent back in March, see here:
+cec_unregister_adapter() assumes that the underlying adapter ops are
+callable. For example, if the CEC adapter currently has a valid physical
+address, then the unregistration procedure will invalidate the physical
+address by setting it to f.f.f.f. Whence the following kernel oops
+observed after removing the adv7511 module:
 
-https://lore.kernel.org/dri-devel/20220319145939.978087-1-alvin@pqrs.dk/
+    Unable to handle kernel execution of user memory at virtual address 0000000000000000
+    Internal error: Oops: 86000004 [#1] PREEMPT_RT SMP
+    Call trace:
+     0x0
+     adv7511_cec_adap_log_addr+0x1ac/0x1c8 [adv7511]
+     cec_adap_unconfigure+0x44/0x90 [cec]
+     __cec_s_phys_addr.part.0+0x68/0x230 [cec]
+     __cec_s_phys_addr+0x40/0x50 [cec]
+     cec_unregister_adapter+0xb4/0x118 [cec]
+     adv7511_remove+0x60/0x90 [adv7511]
+     i2c_device_remove+0x34/0xe0
+     device_release_driver_internal+0x114/0x1f0
+     driver_detach+0x54/0xe0
+     bus_remove_driver+0x60/0xd8
+     driver_unregister+0x34/0x60
+     i2c_del_driver+0x2c/0x68
+     adv7511_exit+0x1c/0x67c [adv7511]
+     __arm64_sys_delete_module+0x154/0x288
+     invoke_syscall+0x48/0x100
+     el0_svc_common.constprop.0+0x48/0xe8
+     do_el0_svc+0x28/0x88
+     el0_svc+0x1c/0x50
+     el0t_64_sync_handler+0xa8/0xb0
+     el0t_64_sync+0x15c/0x160
+    Code: bad PC value
+    ---[ end trace 0000000000000000 ]---
 
-No changes besides rebasing on today's drm-misc-fixes.
+Protect against this scenario by unregistering i2c_cec after
+unregistering the CEC adapter. Duly disable the CEC clock afterwards
+too.
 
-Alvin Šipraga (2):
-  drm: bridge: adv7511: fix CEC power down control register offset
-  drm: bridge: adv7511: unregister cec i2c device after cec adapter
-
- drivers/gpu/drm/bridge/adv7511/adv7511.h     | 5 +----
- drivers/gpu/drm/bridge/adv7511/adv7511_cec.c | 4 ++--
+Fixes: 3b1b975003e4 ("drm: adv7511/33: add HDMI CEC support")
+Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+---
  drivers/gpu/drm/bridge/adv7511/adv7511_drv.c | 5 ++---
- 3 files changed, 5 insertions(+), 9 deletions(-)
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
+index 5bb9300040dd..023c0ad132e0 100644
+--- a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
++++ b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
+@@ -1339,9 +1339,6 @@ static int adv7511_remove(struct i2c_client *i2c)
+ {
+ 	struct adv7511 *adv7511 = i2c_get_clientdata(i2c);
+ 
+-	i2c_unregister_device(adv7511->i2c_cec);
+-	clk_disable_unprepare(adv7511->cec_clk);
+-
+ 	adv7511_uninit_regulators(adv7511);
+ 
+ 	drm_bridge_remove(&adv7511->bridge);
+@@ -1349,6 +1346,8 @@ static int adv7511_remove(struct i2c_client *i2c)
+ 	adv7511_audio_exit(adv7511);
+ 
+ 	cec_unregister_adapter(adv7511->cec_adap);
++	i2c_unregister_device(adv7511->i2c_cec);
++	clk_disable_unprepare(adv7511->cec_clk);
+ 
+ 	i2c_unregister_device(adv7511->i2c_packet);
+ 	i2c_unregister_device(adv7511->i2c_edid);
 -- 
 2.36.1
 
