@@ -2,58 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53B99C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 00:32:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C369CCA47F
+	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 00:33:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232805AbiFLAcm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 11 Jun 2022 20:32:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37452 "EHLO
+        id S232981AbiFLAdp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 11 Jun 2022 20:33:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229861AbiFLAck (ORCPT
+        with ESMTP id S232885AbiFLAdn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 11 Jun 2022 20:32:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49CF0A18E;
-        Sat, 11 Jun 2022 17:32:37 -0700 (PDT)
+        Sat, 11 Jun 2022 20:33:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01CBB3DDF2;
+        Sat, 11 Jun 2022 17:33:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 09E2C612E6;
-        Sun, 12 Jun 2022 00:32:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 148A0C34116;
-        Sun, 12 Jun 2022 00:32:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9165EB80B73;
+        Sun, 12 Jun 2022 00:33:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 47B9EC3411C;
+        Sun, 12 Jun 2022 00:33:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654993956;
-        bh=SbaZao137SQ+bA002Q19kZBk98FaoMb6B+SK3mHqPQw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=C0Aw7bmtG+rYjVLWOrI9ujvEiijVY+p6Pa2WUQlN1rbcQL7SmAzIlJLnOzKQ0kpcH
-         GQRkTxidsa/Uv/+Y19tzHgnF0lR8uRHU23j7tsNEyV07PaATDdnZEElDs9Lu59hDAf
-         AdqBMFi4ZGJIEBFyHM570DGKAvVDkJcBJlPTBUrCgw3g6FseYS+2jrWjyhd+OmsHdz
-         2D9nzolwGcYkBOC9nKhxZzz4KvNALxnS92fKqDJj+CJ5B9pvbMgfL3kfSmfwEVATxk
-         arqMltNBnPD8HFMM7UiMxkC4l4ZS4m+NnvQ0dO6yIaXIzEAgms/ztFe+bKcePEnDVQ
-         fjsNztr9w84Ag==
-Date:   Sun, 12 Jun 2022 08:32:30 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Li Yang <leoyang.li@nxp.com>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] arm64: dts: fsl: ls1012a: fix Micron SPI NOR compatible
-Message-ID: <20220612003230.GL254723@dragon>
-References: <20220521164638.91410-1-krzysztof.kozlowski@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220521164638.91410-1-krzysztof.kozlowski@linaro.org>
+        s=k20201202; t=1654994020;
+        bh=buLTWx2Jh9iWTHCfilb1zuCO9rv7g/ztJ2zF9KV26Hw=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=Sc+aJv2j0PK3025YGnyjCsF7b2ZczdN5/ADvN/9s22lj1v95zS3SrHhwJ1gvMHbZS
+         s/Zv49h6oH5boA84mWp/u1dfWWd2zSW9ZMvh1uonG4DB+6RR6jo5eefTgz22x6zXg+
+         RFheFxJFQKDV2rrGtzeDQ6srepomz652H3vnf9NATkHRQwDpk+4oNlTtnHCpC/IDTg
+         EnZKV61Vc+ZPCM7FPeUSZaUf5PtO6Iyys2GYTlG4/mDmzRlSVvsmgQkVY7lhnfu5cc
+         oywwS0zdcuTPaxuYt377qWa6E92aoBfUgR4Ys1iBRSmSMLIoTcUGEL5PWOK1jb+P4M
+         D0/HypsCemfTQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2F392E737F4;
+        Sun, 12 Jun 2022 00:33:40 +0000 (UTC)
+Subject: Re: [GIT PULL] SCSI fixes for 5.19-rc1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <7373802fc26a9a41b2dd4f5c05f993f574365029.camel@HansenPartnership.com>
+References: <7373802fc26a9a41b2dd4f5c05f993f574365029.camel@HansenPartnership.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <7373802fc26a9a41b2dd4f5c05f993f574365029.camel@HansenPartnership.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/jejb/scsi.git scsi-fixes
+X-PR-Tracked-Commit-Id: ec1e8adcbdf661c57c395bca342945f4f815add7
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: cecb3540b89ef2b586d07c1bd69408e251791b76
+Message-Id: <165499402018.23172.11406827094090410009.pr-tracker-bot@kernel.org>
+Date:   Sun, 12 Jun 2022 00:33:40 +0000
+To:     James Bottomley <James.Bottomley@HansenPartnership.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, May 21, 2022 at 06:46:38PM +0200, Krzysztof Kozlowski wrote:
-> The proper compatible for Micron n25q128a11 SPI NOR flash should include
-> vendor-prefix.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+The pull request you sent on Sat, 11 Jun 2022 08:22:17 -0400:
 
-Applied, thanks!
+> git://git.kernel.org/pub/scm/linux/kernel/git/jejb/scsi.git scsi-fixes
+
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/cecb3540b89ef2b586d07c1bd69408e251791b76
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
