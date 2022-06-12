@@ -2,133 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E507C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 13:23:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2693CCA47D
+	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 13:30:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237043AbiFLNXN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 09:23:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44072 "EHLO
+        id S237078AbiFLNan (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 09:30:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236994AbiFLNXJ (ORCPT
+        with ESMTP id S237028AbiFLNal (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 09:23:09 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A98C2F03B
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 06:23:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Sun, 12 Jun 2022 09:30:41 -0400
+X-Greylist: delayed 480 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 12 Jun 2022 06:30:37 PDT
+Received: from box.trvn.ru (box.trvn.ru [194.87.146.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB0802A426;
+        Sun, 12 Jun 2022 06:30:35 -0700 (PDT)
+Received: from authenticated-user (box.trvn.ru [194.87.146.52])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EC6B3CE0930
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 13:23:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1F83C34115;
-        Sun, 12 Jun 2022 13:23:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655040183;
-        bh=0weVAGbcwRL32E/exKQbawtLkyMMFCwF+cP6B34Yq0k=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=mUfsnRXlQerGGg8u3tDaTaDr5PYIahxuLMG8yL/WfouV9tyJgTWYqTWiCYAOd+PJL
-         HA3gtH+34spaHTjw07N/Ro8LEGbTCbIt0UUm/R9oKdZcuTlO1EjZS/hrrmVRXeFXxp
-         eeA+NPIu3/GnQkyLvuSd6kNCjE/xHv2Z3UAd+2bd1IrsiTT9Ji1QfR8Y95zP/jDciL
-         syGmb38Daw4vRmN/dSSI/kb+hXt98+G7QUhCkHmnOWk4iTZf2Zu6/agzRrzs89ckl7
-         k1tJGw6fDQDfq59ImeMuXrkxRaeyXqMhz9kQKx0wowLoEWBbmKHUeQhnJJvF3ISpSl
-         SvCsjLYcMHdLA==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 7C36F5C02F9; Sun, 12 Jun 2022 06:23:02 -0700 (PDT)
-Date:   Sun, 12 Jun 2022 06:23:02 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     john.ogness@linutronix.de
-Cc:     linux-kernel@vger.kernel.org, frederic@kernel.org, pmladek@suse.com
-Subject: Re: [BUG] 8e274732115f ("printk: extend console_lock for per-console
- locking")
-Message-ID: <20220612132302.GA873785@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220610205038.GA3050413@paulmck-ThinkPad-P17-Gen-1>
+        by box.trvn.ru (Postfix) with ESMTPSA id A0F6A41D02;
+        Sun, 12 Jun 2022 18:22:29 +0500 (+05)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=trvn.ru; s=mail;
+        t=1655040150; bh=JOkJsHQ8Upb4FyLfzTx3Lu+8a51dlZfBR2yQApmu4c0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Ppk47qDiq+RBFhkrroWtPgpiTMQ68IoKvUI+R1/ADUdvI5sLvLNLwlWirBqgS8Wjf
+         cqByJV+b6RsuMQMgCys3ZsEj39DQEKoLfDxcOIy4wTf4yUIAYJCWy0k1bqLGTicmoE
+         ClzOLtcSCGQOETRlhjbNx3kjt/C5TM23u9I42uHZLFbPpbE38zBdf2txY1meSOexbX
+         vtknwPJlVgWKeNUGXflVny21ZJDOAgNrtV6n37oEZKIV54JyDvmxFMrxJySmD3jugd
+         Zbr5N6Y/auO5MV3EVJADu4hbo2GSmSTcm5ya4gcU59vRcRgqLz9xROUwlSqJBZvcnB
+         44u6slriJ770Q==
+From:   Nikita Travkin <nikita@trvn.ru>
+To:     thierry.reding@gmail.com, lee.jones@linaro.org
+Cc:     u.kleine-koenig@pengutronix.de, robh+dt@kernel.org,
+        sboyd@kernel.org, krzk@kernel.org, linus.walleij@linaro.org,
+        masneyb@onstation.org, sean.anderson@seco.com,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.or,
+        linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        Nikita Travkin <nikita@trvn.ru>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v7 1/2] dt-bindings: pwm: Document clk based PWM controller
+Date:   Sun, 12 Jun 2022 18:22:02 +0500
+Message-Id: <20220612132203.290726-2-nikita@trvn.ru>
+In-Reply-To: <20220612132203.290726-1-nikita@trvn.ru>
+References: <20220612132203.290726-1-nikita@trvn.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220610205038.GA3050413@paulmck-ThinkPad-P17-Gen-1>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 01:50:38PM -0700, Paul E. McKenney wrote:
-> Hello, John,
-> 
-> I have started getting rcutorture shutdown-time hangs when running
-> against recent mainline, and bisected back to the 8e274732115f ("printk:
-> extend console_lock for per-console locking") commit.  These hangs go
-> away (or at least their probability drops dramatically) if I build with
-> CONFIG_PREEMPTION=n -and- CONFIG_NO_HZ=y (not n!), at least assuming
-> that I also boot with "nohz_full=0-N".
-> 
-> Attempts to debug using rcutorture's "--gdb" argument result in
-> "[Inferior 1 (process 1) exited normally]", but with the same truncated
-> console-log output as when running without "--gdb".  This suggests
-> that the kernel really did run to completion and halt as expected,
-> but that the shutdown-time printk() output was lost.  Furthermore, if I
-> use the gdb "hbreak" command to set a breakpoint at kernel_power_off(),
-> it really does hit that breakpoint.  This would not happen in the case
-> of a kernel hang.
-> 
-> So, given that I can hit that breakpoint, what should I ask gdb to
-> show me?
-> 
-> Alternatively, this reproduces on a variety of x86 platforms, so you
-> should be able reproduce it as follows [1]:
-> 
-> 	git checkout v5.19-rc1
-> 	tools/testing/selftests/rcutorture/bin/kvm.sh --allcpus --duration 2 --configs "TREE01" --gdb "CONFIG_DEBUG_INFO_NONE=n CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y" --trust-make
-> 
-> This builds a kernel, boots it, and then tells you how to launch gdb
-> (presumably in some other window).  Once you give launch gdb and give
-> it the suggested commands, the kernel runs for two minutes under qemu,
-> then shuts down.  I used the following gdb commands to set the breakpoint
-> and run the kernel:
-> 
-> 	target remote :1234  # suggested by the rcutorture script
-> 	hbreak kernel_power_off  # added by me
-> 	continue  # suggested by the rcutorture script
-> 
-> Or leave out the "gdb" if you prefer some other debugging approach.
+Add YAML devicetree binding for clk based PWM controller
 
-And the patch below takes care of things in (admittedly quite light)
-testing thus far.  What it does is add ten seconds of pure delay before
-rcutorture shuts down the system.  Presumably, this delay gives printk()
-the time that it needs to flush its buffers.  In the configurations
-that I have tested thus far, anyway.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Nikita Travkin <nikita@trvn.ru>
+--
+Changes in v2:
+ - fix the file name.
+Changes in v4:
+ - Use generic node name in the dt bindings example.
+Changes in v5:
+ - make compatible required
+---
+ .../devicetree/bindings/pwm/clk-pwm.yaml      | 46 +++++++++++++++++++
+ 1 file changed, 46 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pwm/clk-pwm.yaml
 
-So what should I be doing instead?
+diff --git a/Documentation/devicetree/bindings/pwm/clk-pwm.yaml b/Documentation/devicetree/bindings/pwm/clk-pwm.yaml
+new file mode 100644
+index 000000000000..ec1768291503
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/clk-pwm.yaml
+@@ -0,0 +1,46 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/clk-pwm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Clock based PWM controller
++
++maintainers:
++  - Nikita Travkin <nikita@trvn.ru>
++
++description: |
++  Some systems have clocks that can be exposed to external devices.
++  (e.g. by muxing them to GPIO pins)
++  It's often possible to control duty-cycle of such clocks which makes them
++  suitable for generating PWM signal.
++
++allOf:
++  - $ref: pwm.yaml#
++
++properties:
++  compatible:
++    const: clk-pwm
++
++  clocks:
++    description: Clock used to generate the signal.
++    maxItems: 1
++
++  "#pwm-cells":
++    const: 2
++
++unevaluatedProperties: false
++
++required:
++  - compatible
++  - clocks
++
++examples:
++  - |
++    pwm {
++      compatible = "clk-pwm";
++      #pwm-cells = <2>;
++      clocks = <&gcc 0>;
++      pinctrl-names = "default";
++      pinctrl-0 = <&pwm_clk_flash_default>;
++    };
+-- 
+2.35.3
 
-o	console_flush_on_panic() seems like strong medicine, but might
-	be the right thing to do.  The bit about proceeding even though
-	it failed to acquire the lock doesn't look good for non-panic use.
-
-o	printk_trigger_flush() has an attractive name, but it looks
-	like it only just starts the flush rather than waiting for it
-	to finish.
-
-o	pr_flush(1000, true) looks quite interesting, and also seems to
-	work in a few quick tests, so I will continue playing with that.
-
-Right now, I am putting this immediately before the kernel/torture.c
-call to kernel_power_off().  I could argue that kernel_power_off()
-should flush the printk() buffers as part of a "clean system power_off",
-to quote the kernel_power_off() header comment.  Or is there some reason
-why kernel_power_off() should leave printk() buffers unflushed?
-
-							Thanx, Paul
-
-------------------------------------------------------------------------
-
-diff --git a/kernel/torture.c b/kernel/torture.c
-index 789aeb0e1159c..bbdec930ea21f 100644
---- a/kernel/torture.c
-+++ b/kernel/torture.c
-@@ -651,6 +651,7 @@ static int torture_shutdown(void *arg)
- 		VERBOSE_TOROUT_STRING("No torture_shutdown_hook(), skipping.");
- 	if (ftrace_dump_at_shutdown)
- 		rcu_ftrace_dump(DUMP_ALL);
-+	schedule_timeout_uninterruptible(HZ * 10);
- 	kernel_power_off();	/* Shut down the system. */
- 	return 0;
- }
