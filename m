@@ -2,173 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72944C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 11:59:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E58BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 12:03:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236477AbiFLL6Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 07:58:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46058 "EHLO
+        id S236514AbiFLMDa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 08:03:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236435AbiFLL6P (ORCPT
+        with ESMTP id S231336AbiFLMD1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 07:58:15 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EB6012762
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 04:58:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655035091; x=1686571091;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Zc2fQ1DQs6hOo+7bC7Stci3yT/NodzkSleYAFJQhRFo=;
-  b=kIy1pA2a1SBxCv8tPHydbj5t6jPik+19qf+6oAgttlVFvKc+3DGVncyG
-   xQ+DMVIh1lF/5KQr8BRskidQ1bBV+Do4F9FUmP2IecVhUWSWxoD7vvywY
-   B30DcsCJmwmiaMaEwfuqIOVHU2tKOwpNY7tShBPMHj1CZveXbPUyZ9+zK
-   uaN3bVrHto1ylcq1tzdx8VCF4cVgDv/IK0yOB8wDtISaPSvIkyBkDup27
-   nZna6kW33Q2A+ffN+hdxDGrJ/Jw6uwNdK41t+K6b90tjVbYjuNcVSGXPN
-   sYezvy+E+iVH/lgng4/WWBNk/hbdjQSj/F0Qo1FRVPCNEsRLAotpf0alN
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10375"; a="258473337"
-X-IronPort-AV: E=Sophos;i="5.91,294,1647327600"; 
-   d="scan'208";a="258473337"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2022 04:58:09 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,294,1647327600"; 
-   d="scan'208";a="672764530"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 12 Jun 2022 04:58:06 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o0MEI-000Jto-6e;
-        Sun, 12 Jun 2022 11:58:06 +0000
-Date:   Sun, 12 Jun 2022 19:57:32 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Huanpeng Xin <xinhuanpeng9@gmail.com>, akpm@linux-foundation.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, xinhuanpeng <xinhuanpeng@xiaomi.com>
-Subject: Re: [PATCH] mm: add a new emergency page migratetype.
-Message-ID: <202206121954.0XdxzVrV-lkp@intel.com>
-References: <20220606032709.11800-1-xinhuanpeng9@gmail.com>
+        Sun, 12 Jun 2022 08:03:27 -0400
+Received: from mail.enpas.org (zhong.enpas.org [IPv6:2a03:4000:2:537::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 74F3F27B0A;
+        Sun, 12 Jun 2022 05:03:24 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        by mail.enpas.org (Postfix) with ESMTPSA id D783BFF9E2;
+        Sun, 12 Jun 2022 12:03:22 +0000 (UTC)
+Date:   Sun, 12 Jun 2022 14:03:20 +0200
+From:   Max Staudt <max@enpas.org>
+To:     Vincent Mailhol <vincent.mailhol@gmail.com>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Oliver Neukum <oneukum@suse.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7] can, tty: can327 CAN/ldisc driver for ELM327 based
+ OBD-II adapters
+Message-ID: <20220612140217.6ad6d2f9.max@enpas.org>
+In-Reply-To: <CAMZ6RqKzO7ya3Z-fx+FZ5vAsOy0B9Ec8TRagjysJEK0i4Z3asw@mail.gmail.com>
+References: <20220602213544.68273-1-max@enpas.org>
+ <CAMZ6RqLLn3tE6kPd+yyHURsbBU_jVKN=u4=YvhZVyAf_NyRqCQ@mail.gmail.com>
+ <20220611151551.5024f51e.max@enpas.org>
+ <CAMZ6RqLb3irjBrpiOv23Hg6vVpzK4d31Pvat2AOS3EC0+e_=3A@mail.gmail.com>
+ <20220611184157.06271432.max@enpas.org>
+ <CAMZ6RqKzO7ya3Z-fx+FZ5vAsOy0B9Ec8TRagjysJEK0i4Z3asw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220606032709.11800-1-xinhuanpeng9@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Huanpeng,
+On Sun, 12 Jun 2022 10:33:51 +0900
+Vincent Mailhol <vincent.mailhol@gmail.com> wrote:
 
-Thank you for the patch! Yet something to improve:
+> > I agree, hence the original name. I don't want to pick a fight with
+> > anyone though, and a good alternative does exist (can327), so I
+> > prefer to play it safe, at least this time.
+> >
+> > IMHO, to anyone who knows what an ELM327 is and who is looking for
+> > this driver, the "327" in the name is very likely to hint at what
+> > it is. Not many CAN devices are called 327 ;)
+> >
+> > There are also several compatible parts with extended features, so
+> > locking in on the original chip's name may be counter productive
+> > anyway.  
+> 
+> Generally speaking, I would be worried if everyone started to rename
+> the drivers. What if I named my driver can58x instead of es58x and
+> what if Marc named his driver can251xfd instead of mcp251xfd? Things
+> will start to be really confusing.
 
-[auto build test ERROR on akpm-mm/mm-everything]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Huanpeng-Xin/mm-add-a-new-emergency-page-migratetype/20220606-113050
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-everything
-config: hexagon-randconfig-r026-20220612 (https://download.01.org/0day-ci/archive/20220612/202206121954.0XdxzVrV-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project ff4abe755279a3a47cc416ef80dbc900d9a98a19)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/c3dbdae8f54c1335f2cb92b379a6eab1253500c8
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Huanpeng-Xin/mm-add-a-new-emergency-page-migratetype/20220606-113050
-        git checkout c3dbdae8f54c1335f2cb92b379a6eab1253500c8
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All error/warnings (new ones prefixed by >>):
-
->> mm/page_alloc.c:2940:12: warning: format specifies type 'int' but the argument has type 'unsigned long' [-Wformat]
-                                                   nid, zone->nr_reserved_emergency);
-                                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/printk.h:528:37: note: expanded from macro 'pr_warn'
-           printk(KERN_WARNING pr_fmt(fmt), ##__VA_ARGS__)
-                                      ~~~     ^~~~~~~~~~~
-   include/linux/printk.h:475:60: note: expanded from macro 'printk'
-   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
-                                                       ~~~    ^~~~~~~~~~~
-   include/linux/printk.h:447:19: note: expanded from macro 'printk_index_wrap'
-                   _p_func(_fmt, ##__VA_ARGS__);                           \
-                           ~~~~    ^~~~~~~~~~~
-   mm/page_alloc.c:2948:10: warning: format specifies type 'int' but the argument has type 'unsigned long' [-Wformat]
-                                   nid, zone->nr_reserved_emergency);
-                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/printk.h:548:34: note: expanded from macro 'pr_info'
-           printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-                                   ~~~     ^~~~~~~~~~~
-   include/linux/printk.h:475:60: note: expanded from macro 'printk'
-   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
-                                                       ~~~    ^~~~~~~~~~~
-   include/linux/printk.h:447:19: note: expanded from macro 'printk_index_wrap'
-                   _p_func(_fmt, ##__VA_ARGS__);                           \
-                           ~~~~    ^~~~~~~~~~~
->> mm/page_alloc.c:4215:10: error: no member named 'high_zoneidx' in 'struct alloc_context'; did you mean 'highest_zoneidx'?
-           if (ac->high_zoneidx >= ZONE_NORMAL) {
-                   ^~~~~~~~~~~~
-                   highest_zoneidx
-   mm/internal.h:226:17: note: 'highest_zoneidx' declared here
-           enum zone_type highest_zoneidx;
-                          ^
->> mm/page_alloc.c:4238:33: error: too few arguments to function call, expected 3, have 2
-                           zone_statistics(z->zone, zone);
-                           ~~~~~~~~~~~~~~~              ^
-   mm/page_alloc.c:3697:20: note: 'zone_statistics' declared here
-   static inline void zone_statistics(struct zone *preferred_zone, struct zone *z,
-                      ^
-   2 warnings and 2 errors generated.
+Agreed. FWIW, I suggested can-* in the same vein as hid-*, which would
+group CAN drivers together. It would then be can-mcp251xfd rather than
+can251xfd. Anyway, no, I don't suggest renaming existing drivers, as
+that'd be a hassle.
 
 
-vim +4215 mm/page_alloc.c
+> But I did a quick search. Several clones also use the name can327. So
+> in your particular case, I think this renaming is kind of acceptable.
 
-  4204	
-  4205	#ifdef CONFIG_EMERGENCY_MEMORY
-  4206	/*
-  4207	 * get_emergency_page_from_freelist allocates pages in reserved memory
-  4208	 * in the migration type MIGRATE_EMERGENCY.
-  4209	 */
-  4210	static struct page *get_emergency_page_from_freelist(gfp_t gfp_mask, unsigned int order,
-  4211				int alloc_flags, const struct alloc_context *ac, int migratetype)
-  4212	{
-  4213		struct page *page = NULL;
-  4214	
-> 4215		if (ac->high_zoneidx >= ZONE_NORMAL) {
-  4216			struct zoneref *z = ac->preferred_zoneref;
-  4217			struct pglist_data *pgdat = NODE_DATA(zonelist_node_idx(z));
-  4218			struct zone *zone = &pgdat->node_zones[ZONE_NORMAL];
-  4219			unsigned long flags;
-  4220	
-  4221			if (cpusets_enabled() &&
-  4222				(alloc_flags & ALLOC_CPUSET) &&
-  4223				!__cpuset_zone_allowed(zone, gfp_mask))
-  4224				return NULL;
-  4225	
-  4226			spin_lock_irqsave(&zone->lock, flags);
-  4227			do {
-  4228				page = __rmqueue_smallest(zone, order, migratetype);
-  4229			} while (page && check_new_pages(page, order));
-  4230	
-  4231			spin_unlock(&zone->lock);
-  4232	
-  4233			if (page) {
-  4234				__mod_zone_freepage_state(zone, -(1 << order),
-  4235							  get_pcppage_migratetype(page));
-  4236	
-  4237				__count_zid_vm_events(PGALLOC, page_zonenum(page), 1 << order);
-> 4238				zone_statistics(z->zone, zone);
-  4239				prep_new_page(page, order, gfp_mask, alloc_flags);
-  4240			}
-  4241			local_irq_restore(flags);
-  4242		}
-  4243	
-  4244		return page;
-  4245	
+Okay, thanks!
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Since you deem can327 acceptable, let's leave it as it is.
+
+
+As for this particular driver, I got unlucky with my device because it
+can do more than CAN, yet I wanted the driver name to show that the
+driver implements *only* CAN. Had I called it "elm327", it would have
+been confusing to the casual user as to what the driver is really for:
+CAN? K-Line? OBD? All of them? Hence why I always squeezed "can" into
+the name somehow. It's an edge case, really.
+
+For non-edge cases, thanks for alleviating my concerns about company
+names etc. in driver names.
+
+
+> > > Do as you prefer. If you do not want the mainstream release to be
+> > > further delayed, I think it is fully acceptable to go with the
+> > > lazy direct loopback as I suggested and then later on provide a
+> > > new patch.  
+> >
+> > I agree, I'd rather leave the code as-is now, and fix it
+> > incrementally. Especially since you've reviewed it so thoroughly,
+> > and I don't want to unravel this again, and it works well enough
+> > as-is. After all, the documentation does start by saying that there
+> > are no guarantees ;)
+> >
+> > Do you see any problem with leaving it as-is, i.e. not setting
+> > IFF_ECHO, and thus having the CAN stack do the the for us? As far
+> > as I  
+>                                                  ^^^
+> do the what?
+> > can see, it is equivalent...  
+> 
+> It seems a part of your answer is missing. I do not get what
+> alternative solution you are considering instead of using IFF_ECHO.
+> 
+> What I propose should be a three line fix: add the IFF_ECHO, use the
+> can_put_echo_skb() and the can_get_echo_skb().
+
+The alternative solution is to leave it as-is: Iff IFF_ECHO is unset,
+then in net/can/af_can.c - can_send() the CAN stack generates echo
+frames for us.
+
+It seems you weren't aware of this functionality, hence the
+misunderstanding.
+
+(except that I missed the RTR detail, see below)
+
+
+> If leaving it as-is, can327 will behave differently than the other
+> drivers. For example, candump will only record the RX frames when
+> users expect to see both TX and RX. So that's my real concern.
+
+Nope, it's not at all like this - candump shows the own sent packets
+just fine!
+
+This is one of the first things I ensured when I started the driver. I
+wouldn't release a driver like that as it would drive me crazy as a
+user.
+
+Several other drivers don't provice IFF_ECHO - slcan, vxcan. And vcan
+has it configurable. An interesting one is found in usb/ucan.c which
+provides echo, but doesn't set IFF_ECHO. I suppose candump will show
+sent packets twice when using ucan?
+
+
+> The other thing is that the can_put_echo_skb() and can_get_echo_skb()
+> do some other operations. For example, can_get_echo_skb() returns a
+> length of zero for the RTR frames. If you do not use those helper
+> functions, you have to do the check by hand and only increment
+> stats->tx_bytes if the frame is not an RTR one.
+> 
+> If you leave it as is, then just fix the RTR length e.g. like that:
+> https://elixir.bootlin.com/linux/v5.18/source/drivers/net/can/vcan.c#L95
+
+Oh, I missed this detail. Very good point, thanks!
+
+I'll apply the vcan RTR fix for now (ugly, but minimal code change), and
+it can be removed once "proper" echo support is implemented in can327.
+
+
+Okay, I think all my questions are handled now.
+
+Thanks again!
+
+Max
