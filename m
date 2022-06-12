@@ -2,109 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED5FDC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 12:50:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEAA8CCA473
+	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 12:52:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236826AbiFLMtO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 08:49:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59722 "EHLO
+        id S236842AbiFLMw1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 08:52:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233295AbiFLMtL (ORCPT
+        with ESMTP id S233295AbiFLMwZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 08:49:11 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4CC962BCC
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 05:49:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655038149; x=1686574149;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Wyw1SzrVB8IJKOlV176J9ZCu92I0WyZttvi9HwS1CE0=;
-  b=AwM4Rwx2Jw3/ESyn9dTTgvgf1MDugNjSc4rLVaYdFB5kqRfENcAPE1LS
-   /myAVY46c7hBu0xi1BftxO+zTO/Wp3rT8yzSry5qRCvSQrQZxIASFSa9w
-   ClKaNZgM/S1eu8Y74K/QggFMqEIhxSjOzywNKsuGKMw5gkRZdb/gyAW3e
-   vEFu8p6PPx+etXpf6ubc1QDOw7n1L+Z665B3Wtws9Gdpy6uD4M5/w/S3f
-   6ZvTc2ovWvCkNS7Gy2Q+z44d0qdC4shgWqgyeBHBo6MU2vGVg2i6kWYG1
-   DB6Ywb7FlLCeD/986qsdjW6/s0ahNh15+qypTf8Jyk8BoY+ruZ+S5dRIf
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10375"; a="278078565"
-X-IronPort-AV: E=Sophos;i="5.91,294,1647327600"; 
-   d="scan'208";a="278078565"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2022 05:49:09 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,294,1647327600"; 
-   d="scan'208";a="611363071"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 12 Jun 2022 05:49:07 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o0N1f-000JvO-3w;
-        Sun, 12 Jun 2022 12:49:07 +0000
-Date:   Sun, 12 Jun 2022 20:48:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [jic23-iio:testing 199/204]
- drivers/iio/adc/intel_mrfld_adc.c:222:58: error: array has incomplete
- element type 'const struct platform_device_id'
-Message-ID: <202206122000.ehsJVvx5-lkp@intel.com>
+        Sun, 12 Jun 2022 08:52:25 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE8455FAC;
+        Sun, 12 Jun 2022 05:52:21 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id B64775FD03;
+        Sun, 12 Jun 2022 15:52:18 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1655038338;
+        bh=wixm2Rk3ic4J0glv59q+AQGDmb1p23TVRzAMNVKa8X8=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=DFad4pMIWTyl1FWRlH1mHFZdZvFjmRsluP2D9DlxmovnCQWTKHBdjld++nmjuiHwE
+         wgdI7jD94Gl0/1QMRlmzv0LOHsGS0O95pyrtNtwC/U+m9KRNiCOygaO1w6QKr4KOV0
+         Ep2OUBkxvByxnMR/ejTsK0//FLGNu0cpa8QLYsY4e8V63v1CfbX3QMUDwaJsR0Cdtn
+         P2XpSIXzrD5joFryT8CWuVEjkMoVnH0z6dCMtWDfqTb6hYIOL5wrlIRi4G85O0+alS
+         nV44cYWl9TgJQXudWvxotpmpcfqUsP2onDd3omIBkXCwV9ik+rHMTyBJCYzkbzctgJ
+         E9L1VCBI/AeuA==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Sun, 12 Jun 2022 15:52:17 +0300 (MSK)
+From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+CC:     "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
+        "stephan@gerhold.net" <stephan@gerhold.net>
+Subject: Re: [PATCH v2 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
+ driver
+Thread-Topic: [PATCH v2 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
+ driver
+Thread-Index: AQHYcGNscv5GHcvjkkaBriw+oOvmsq1Lb3aAgAAz8YA=
+Date:   Sun, 12 Jun 2022 12:51:34 +0000
+Message-ID: <20220612125213.dguu4wj2mk6373sk@CAB-WSD-L081021.sigma.sbrf.ru>
+References: <20220525181532.6805-1-ddrokosov@sberdevices.ru>
+ <20220525181532.6805-3-ddrokosov@sberdevices.ru>
+ <9e232b74-6fb0-fd89-a043-71d5faf92cc6@wanadoo.fr>
+In-Reply-To: <9e232b74-6fb0-fd89-a043-71d5faf92cc6@wanadoo.fr>
+Accept-Language: ru-RU, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <7316D7130744C4469C17EB27A044CCA9@sberdevices.ru>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/06/12 08:04:00 #19750220
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git testing
-head:   20b4fa69eeaa2b6389ff83662a96c8f0f1f414ab
-commit: 8e3460e351d063ba81c3f50ed946dd825848d892 [199/204] iio: core: drop of.h from iio.h
-config: x86_64-randconfig-a012 (https://download.01.org/0day-ci/archive/20220612/202206122000.ehsJVvx5-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 6466c9abf3674bade1f6ee859f24ebc7aaf9cd88)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/commit/?id=8e3460e351d063ba81c3f50ed946dd825848d892
-        git remote add jic23-iio https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git
-        git fetch --no-tags jic23-iio testing
-        git checkout 8e3460e351d063ba81c3f50ed946dd825848d892
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/iio/adc/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/iio/adc/intel_mrfld_adc.c:222:58: error: array has incomplete element type 'const struct platform_device_id'
-   static const struct platform_device_id mrfld_adc_id_table[] = {
-                                                            ^
-   include/linux/platform_device.h:21:8: note: forward declaration of 'struct platform_device_id'
-   struct platform_device_id;
-          ^
-   1 error generated.
-
-
-vim +222 drivers/iio/adc/intel_mrfld_adc.c
-
-a7118662734a3f Vincent Pelletier 2019-03-26  221  
-a7118662734a3f Vincent Pelletier 2019-03-26 @222  static const struct platform_device_id mrfld_adc_id_table[] = {
-a7118662734a3f Vincent Pelletier 2019-03-26  223  	{ .name = "mrfld_bcove_adc" },
-a7118662734a3f Vincent Pelletier 2019-03-26  224  	{}
-a7118662734a3f Vincent Pelletier 2019-03-26  225  };
-a7118662734a3f Vincent Pelletier 2019-03-26  226  MODULE_DEVICE_TABLE(platform, mrfld_adc_id_table);
-a7118662734a3f Vincent Pelletier 2019-03-26  227  
-
-:::::: The code at line 222 was first introduced by commit
-:::::: a7118662734a3f97622d8274708cb61fd53d693a iio: adc: intel_mrfld_adc: Add Basin Cove ADC driver
-
-:::::: TO: Vincent Pelletier <plr.vincent@gmail.com>
-:::::: CC: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+SGVsbG8gQ2hyaXN0b3BoZSwNCg0KT24gU3VuLCBKdW4gMTIsIDIwMjIgYXQgMTE6NDY6MTlBTSAr
+MDIwMCwgQ2hyaXN0b3BoZSBKQUlMTEVUIHdyb3RlOg0KPiBMZSAyNS8wNS8yMDIyIMOgIDIwOjE1
+LCBEbWl0cnkgUm9rb3NvdiBhIMOpY3JpdMKgOg0KPiA+ICtzdGF0aWMgaW50IG1zYTMxMV9wcm9i
+ZShzdHJ1Y3QgaTJjX2NsaWVudCAqaTJjKQ0KPiA+ICt7DQo+ID4gKwlzdHJ1Y3QgbXNhMzExX3By
+aXYgKm1zYTMxMTsNCj4gPiArCXN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXY7DQo+ID4gKwlzdHJ1
+Y3QgZGV2aWNlICpkZXYgPSAmaTJjLT5kZXY7DQo+ID4gKwlpbnQgZXJyOw0KPiA+ICsNCj4gPiAr
+CWluZGlvX2RldiA9IGRldm1faWlvX2RldmljZV9hbGxvYyhkZXYsIHNpemVvZigqbXNhMzExKSk7
+DQo+ID4gKwlpZiAoIWluZGlvX2RldikNCj4gPiArCQlyZXR1cm4gZGV2X2Vycl9wcm9iZShkZXYs
+IC1FTk9NRU0sDQo+ID4gKwkJCQkgICAgICJpaW8gZGV2aWNlIGFsbG9jYXRpb24gZmFpbGVkXG4i
+KTsNCj4gPiArDQo+ID4gKwltc2EzMTEgPSBpaW9fcHJpdihpbmRpb19kZXYpOw0KPiA+ICsJbXNh
+MzExLT5pMmMgPSBpMmM7DQo+ID4gKwlpMmNfc2V0X2NsaWVudGRhdGEoaTJjLCBpbmRpb19kZXYp
+Ow0KPiA+ICsNCj4gPiArCWVyciA9IG1zYTMxMV9yZWdtYXBfaW5pdChtc2EzMTEpOw0KPiA+ICsJ
+aWYgKGVycikNCj4gPiArCQlyZXR1cm4gZXJyOw0KPiA+ICsNCj4gPiArCW11dGV4X2luaXQoJm1z
+YTMxMS0+bG9jayk7DQo+ID4gKw0KPiA+ICsJZXJyID0gZGV2bV9wbV9ydW50aW1lX2VuYWJsZShk
+ZXYpOw0KPiA+ICsJaWYgKGVycikNCj4gPiArCQlyZXR1cm4gZGV2X2Vycl9wcm9iZShkZXYsIGVy
+ciwNCj4gPiArCQkJCSAgICAgImNhbm5vdCBlbmFibGUgcnVudGltZSBQTSAoJWQpXG4iLCBlcnIp
+Ow0KPiA+ICsNCj4gDQo+IE5pdDogZGV2X2Vycl9wcm9iZSgpIGFscmVhZHkgcHJpbnQgdGhlICdl
+cnInIChpbiBhIGh1bWFuIHJlYWRhYmxlIG1hbmVyKSwgc28NCj4gdW5sZXNzIHRoZSBjb2RlIGl0
+c2VsZiBpcyBvZiBhbnkgaW50ZXJlc3QsIGl0IGNhbiBiZSByZW1vdmVkOg0KPiANCj4gaS5lLjoN
+Cj4gKwkJcmV0dXJuIGRldl9lcnJfcHJvYmUoZGV2LCBlcnIsDQo+ICsJCQkJICAgICAiY2Fubm90
+IGVuYWJsZSBydW50aW1lIFBNIik7DQo+IA0KPiBUaGlzIHBhdHRlcm4gaXMgdXNlZCBpbiBtYW55
+IHBsYWNlcy4NCg0KVGhhbmsgeW91IGZvciBwb2ludGluZyB0aGlzISBJdCdzIGEgcmVhbGx5IGhl
+bHBmdWwgZGV2X2Vycl9wcm9iZSgpIHRyYWl0Lg0KSSdsbCB1c2UgaXQgaW4gdGhlIHYzIHBhdGNo
+c2V0Lg0KDQotLSANClRoYW5rIHlvdSwNCkRtaXRyeQ==
