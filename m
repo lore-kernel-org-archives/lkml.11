@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86CB2C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 21:41:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B603C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 12 Jun 2022 21:41:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232729AbiFLVlf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 17:41:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55166 "EHLO
+        id S236896AbiFLVlm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 17:41:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236875AbiFLVkx (ORCPT
+        with ESMTP id S237223AbiFLVlF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 17:40:53 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AA43193EB
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 14:40:20 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id g7so4931355eda.3
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 14:40:20 -0700 (PDT)
+        Sun, 12 Jun 2022 17:41:05 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E87502AE0E
+        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 14:40:28 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id kq6so7662572ejb.11
+        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 14:40:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=amarulasolutions.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=s1QllzXGCUo8JTE+hOZVBSnNVj6x3XTlbwu5/oui3J8=;
-        b=j683OfaqxoBiWn1BiwfjXqUk2WaqfT4QdfjP+wHvLbHubm2YMyvvz0S1/wEvj+zBh+
-         ZJBgSWvHufKlrA0lDhg2S9Gv7/UcrTbeEc6XgSDrfup5cgRcQep+VPjI5gJPmYypelj7
-         ZBhwEL2jGYTlNsCdrSo+5Srx/Cjp6dLGXP+/M=
+        bh=P8N6mZ+VdIxDHB3ERFZNuvKgcE/qcXFBtcxLWjsi6yU=;
+        b=qYQO15I8ouBWG3nzQVKzDy0l5yfrVKs2RfJvILCb7ee/vE9KuIwTO/uxK2j5jv0no9
+         E66rq0iKFVjF1W3vdr9JDgUdIIPrajXRxgvtUz0AOk3gJOCodQfUhtdaCBs70zf1+4i2
+         0f8o7DJFbrFzIxC6izhz/jXCYZ3QCeKkATWJE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=s1QllzXGCUo8JTE+hOZVBSnNVj6x3XTlbwu5/oui3J8=;
-        b=eZHwEQMgx0EFFCxoBZ2V7u5LOzzMk7R+kWyzsjbqB0wSVufZ/DiZ/7mswjMy0CYrX7
-         rcikuxHrvYKGrzOZDLGLgsfSg3qi10TJpjPwj1nsLpJs0ArVJrjYTNyqb+9AETt0+nT2
-         tTpnGRObTiKWipokO6R98vW4lqoO1OKn0i6JnQAX8OewF5LskaqlDWfoF9Uij6amBCp+
-         tMWGM2d1X/r+TfEJWrXt/WM0ZwaR8Rc/KdK7SfkzSSRdPzh9CY3B6r7HS/cFRdfzYRXL
-         DqhOOyzeArlp2Nht5tDeoMqO3WvdWjVrERgBGgqrftnH39vhaVKkXrRpSK91oXIYlcfN
-         fk+A==
-X-Gm-Message-State: AOAM5301uAu/n/ARFAgD6FtP/qJl2+u16atmrCBo9L4m5r8tb6b/Adv4
-        Cl8sW8iAT/enmnyt9+Zq3/eAS9Jk3zM5Eg==
-X-Google-Smtp-Source: ABdhPJyCUKwRYN+7NoivIrBty///I6QyiekWSDvpNJazbHFWFe2uUq1To40HAXF68dITPwjP/KiumQ==
-X-Received: by 2002:aa7:c34d:0:b0:42d:ce57:5df2 with SMTP id j13-20020aa7c34d000000b0042dce575df2mr61797916edr.315.1655070018727;
-        Sun, 12 Jun 2022 14:40:18 -0700 (PDT)
+        bh=P8N6mZ+VdIxDHB3ERFZNuvKgcE/qcXFBtcxLWjsi6yU=;
+        b=3Cmgvu9TEzfAPQt+vkfzDQlP2JWp0FdIXKAPXz+XUUlesHleheqZnVF6y+ezTSC916
+         rGHRxY5NOobRhKjqAcUv1J5ivtf9e8Ocau67EXJdJuBKcw50l0jMdZxprv3waj++vzXL
+         ZcGg/UeHBQm38nvaJkeM0sOyVdf6tR6jt+aYqh5L9dTXh96NG+jJWg/WV8ZQWI7LlvHD
+         hHN/APfGFFdkaqaurGsCiX397kJ7ggxRreX3fC2v3d3xRCgdEr42nWnksRLjZy3hz32Z
+         hb8frYTAoTD9wdO9DiDNBHt7l7cnqEkTJXGFH3Lb2I8M3Ogct4ZzC4FfKRSAfXtCnBno
+         1Cmg==
+X-Gm-Message-State: AOAM532eL74IeAQ/4dwKES8ttU9FW23z4GVlHPJ2Kfxi4vn8zTZ1btAb
+        X5hDBLNdfSR64j1bAVyfOYkWDVmoXwnvpg==
+X-Google-Smtp-Source: ABdhPJyUeiYzT1GYIfPFtuWvZIsAAUx4pBf+/bipXCF0qgcMdvrgIdqg9PmRTntQVDLBlBuOwtPYxA==
+X-Received: by 2002:a17:906:6947:b0:711:a86b:6780 with SMTP id c7-20020a170906694700b00711a86b6780mr37988734ejs.686.1655070028311;
+        Sun, 12 Jun 2022 14:40:28 -0700 (PDT)
 Received: from dario-ThinkPad-T14s-Gen-2i.homenet.telecomitalia.it (host-80-116-90-174.pool80116.interbusiness.it. [80.116.90.174])
-        by smtp.gmail.com with ESMTPSA id u10-20020a1709061daa00b00711d546f8a8sm2909398ejh.139.2022.06.12.14.40.14
+        by smtp.gmail.com with ESMTPSA id u10-20020a1709061daa00b00711d546f8a8sm2909398ejh.139.2022.06.12.14.40.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Jun 2022 14:40:18 -0700 (PDT)
+        Sun, 12 Jun 2022 14:40:27 -0700 (PDT)
 From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     michael@amarulasolutions.com,
@@ -62,9 +62,9 @@ Cc:     michael@amarulasolutions.com,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
         Wolfgang Grandegger <wg@grandegger.com>,
         linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v3 10/13] can: slcan: move driver into separate sub directory
-Date:   Sun, 12 Jun 2022 23:39:24 +0200
-Message-Id: <20220612213927.3004444-11-dario.binacchi@amarulasolutions.com>
+Subject: [PATCH v3 12/13] can: slcan: extend the protocol with error info
+Date:   Sun, 12 Jun 2022 23:39:26 +0200
+Message-Id: <20220612213927.3004444-13-dario.binacchi@amarulasolutions.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220612213927.3004444-1-dario.binacchi@amarulasolutions.com>
 References: <20220612213927.3004444-1-dario.binacchi@amarulasolutions.com>
@@ -74,50 +74,172 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch moves the slcan driver into a separate directory, a later
-patch will add more files.
+It extends the protocol to receive the adapter CAN communication errors
+and forward them to the netdev upper levels.
 
 Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+
 ---
 
-(no changes since v1)
+(no changes since v2)
 
- drivers/net/can/Makefile                        | 2 +-
- drivers/net/can/slcan/Makefile                  | 6 ++++++
- drivers/net/can/{slcan.c => slcan/slcan-core.c} | 0
- 3 files changed, 7 insertions(+), 1 deletion(-)
- create mode 100644 drivers/net/can/slcan/Makefile
- rename drivers/net/can/{slcan.c => slcan/slcan-core.c} (100%)
+Changes in v2:
+- Protect decoding against the case the len value is longer than the
+  received data.
+- Continue error handling even if no skb can be allocated.
 
-diff --git a/drivers/net/can/Makefile b/drivers/net/can/Makefile
-index 0af85983634c..210354df273c 100644
---- a/drivers/net/can/Makefile
-+++ b/drivers/net/can/Makefile
-@@ -5,7 +5,7 @@
+ drivers/net/can/slcan/slcan-core.c | 130 ++++++++++++++++++++++++++++-
+ 1 file changed, 129 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/can/slcan/slcan-core.c b/drivers/net/can/slcan/slcan-core.c
+index 3df35ae8f040..48077edb9497 100644
+--- a/drivers/net/can/slcan/slcan-core.c
++++ b/drivers/net/can/slcan/slcan-core.c
+@@ -175,8 +175,118 @@ int slcan_enable_err_rst_on_open(struct net_device *ndev, bool on)
+   *			STANDARD SLCAN DECAPSULATION			 *
+   ************************************************************************/
  
- obj-$(CONFIG_CAN_VCAN)		+= vcan.o
- obj-$(CONFIG_CAN_VXCAN)		+= vxcan.o
--obj-$(CONFIG_CAN_SLCAN)		+= slcan.o
-+obj-$(CONFIG_CAN_SLCAN)		+= slcan/
++static void slc_bump_err(struct slcan *sl)
++{
++	struct net_device *dev = sl->dev;
++	struct sk_buff *skb;
++	struct can_frame *cf;
++	char *cmd = sl->rbuff;
++	bool rx_errors = false, tx_errors = false;
++	int i, len;
++
++	if (*cmd != 'e')
++		return;
++
++	cmd += SLC_CMD_LEN;
++	/* get len from sanitized ASCII value */
++	len = *cmd++;
++	if (len >= '0' && len < '9')
++		len -= '0';
++	else
++		return;
++
++	skb = alloc_can_err_skb(dev, &cf);
++
++	if (skb)
++		cf->can_id |= CAN_ERR_PROT | CAN_ERR_BUSERROR;
++
++	for (i = 0; i < len; i++, cmd++) {
++		switch (*cmd) {
++		case 'a':
++			netdev_dbg(dev, "ACK error\n");
++			tx_errors = true;
++			if (skb) {
++				cf->can_id |= CAN_ERR_ACK;
++				cf->data[3] = CAN_ERR_PROT_LOC_ACK;
++			}
++
++			break;
++		case 'b':
++			netdev_dbg(dev, "Bit0 error\n");
++			tx_errors = true;
++			if (skb)
++				cf->data[2] |= CAN_ERR_PROT_BIT0;
++
++			break;
++		case 'B':
++			netdev_dbg(dev, "Bit1 error\n");
++			tx_errors = true;
++			if (skb)
++				cf->data[2] |= CAN_ERR_PROT_BIT1;
++
++			break;
++		case 'c':
++			netdev_dbg(dev, "CRC error\n");
++			rx_errors = true;
++			if (skb) {
++				cf->data[2] |= CAN_ERR_PROT_BIT;
++				cf->data[3] = CAN_ERR_PROT_LOC_CRC_SEQ;
++			}
++
++			break;
++		case 'f':
++			netdev_dbg(dev, "Form Error\n");
++			rx_errors = true;
++			if (skb)
++				cf->data[2] |= CAN_ERR_PROT_FORM;
++
++			break;
++		case 'o':
++			netdev_dbg(dev, "Rx overrun error\n");
++			dev->stats.rx_over_errors++;
++			dev->stats.rx_errors++;
++			if (skb) {
++				cf->can_id |= CAN_ERR_CRTL;
++				cf->data[1] = CAN_ERR_CRTL_RX_OVERFLOW;
++			}
++
++			break;
++		case 'O':
++			netdev_dbg(dev, "Tx overrun error\n");
++			dev->stats.tx_errors++;
++			if (skb) {
++				cf->can_id |= CAN_ERR_CRTL;
++				cf->data[1] = CAN_ERR_CRTL_TX_OVERFLOW;
++			}
++
++			break;
++		case 's':
++			netdev_dbg(dev, "Stuff error\n");
++			rx_errors = true;
++			if (skb)
++				cf->data[2] |= CAN_ERR_PROT_STUFF;
++
++			break;
++		default:
++			if (skb)
++				dev_kfree_skb(skb);
++
++			return;
++		}
++	}
++
++	if (rx_errors)
++		dev->stats.rx_errors++;
++
++	if (tx_errors)
++		dev->stats.tx_errors++;
++
++	if (skb)
++		netif_rx(skb);
++}
++
+ /* Send one completely decapsulated can_frame to the network layer */
+-static void slc_bump(struct slcan *sl)
++static void slc_bump_frame(struct slcan *sl)
+ {
+ 	struct sk_buff *skb;
+ 	struct can_frame *cf;
+@@ -255,6 +365,24 @@ static void slc_bump(struct slcan *sl)
+ 	dev_kfree_skb(skb);
+ }
  
- obj-y				+= dev/
- obj-y				+= rcar/
-diff --git a/drivers/net/can/slcan/Makefile b/drivers/net/can/slcan/Makefile
-new file mode 100644
-index 000000000000..2e84f7bf7617
---- /dev/null
-+++ b/drivers/net/can/slcan/Makefile
-@@ -0,0 +1,6 @@
-+# SPDX-License-Identifier: GPL-2.0
++static void slc_bump(struct slcan *sl)
++{
++	switch (sl->rbuff[0]) {
++	case 'r':
++		fallthrough;
++	case 't':
++		fallthrough;
++	case 'R':
++		fallthrough;
++	case 'T':
++		return slc_bump_frame(sl);
++	case 'e':
++		return slc_bump_err(sl);
++	default:
++		return;
++	}
++}
 +
-+obj-$(CONFIG_CAN_SLCAN) += slcan.o
-+
-+slcan-objs :=
-+slcan-objs += slcan-core.o
-diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan/slcan-core.c
-similarity index 100%
-rename from drivers/net/can/slcan.c
-rename to drivers/net/can/slcan/slcan-core.c
+ /* parse tty input stream */
+ static void slcan_unesc(struct slcan *sl, unsigned char s)
+ {
 -- 
 2.32.0
 
