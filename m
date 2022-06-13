@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 106FAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:26:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 171D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:26:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244454AbiFMK0g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:26:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45620 "EHLO
+        id S244516AbiFMK0l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:26:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245361AbiFMKYe (ORCPT
+        with ESMTP id S245439AbiFMKYl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:24:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38727205FB;
-        Mon, 13 Jun 2022 03:18:55 -0700 (PDT)
+        Mon, 13 Jun 2022 06:24:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52DFBDEEB;
+        Mon, 13 Jun 2022 03:19:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CBFAC6066C;
-        Mon, 13 Jun 2022 10:18:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDE67C34114;
-        Mon, 13 Jun 2022 10:18:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E24DB60AE6;
+        Mon, 13 Jun 2022 10:19:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA524C34114;
+        Mon, 13 Jun 2022 10:19:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115534;
-        bh=agnz51hOJwQlbz3bP/HVXLEFh+xK1woCpBP81eDI+uE=;
+        s=korg; t=1655115545;
+        bh=UXNWwokMFBEXV9YK4jvGcZ5ekW+m7+NpJOTBgQ5x0mQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fDH48Fb6YQzX7aS3ktZJwdzkyfzNW6VVm+MboPC6BvIZUukVgn4dxKkd1LLrHPRl/
-         S6scg5gkMuuAO05IDGMdz/qsXDMFc4Kp9PnJx4K2TkpRJB/yYbPUa6huGLNwq90TNd
-         AkR5Cy/d9kmnDdP8NIAfgH+A2nUOCmFalEbOp3rU=
+        b=f8GdETM9jM9Ua8jozdDFeDZnObF4HVA3DlC4g0v5ExDf9fu3DHQYe5wBFbk9ZK9eA
+         hk2Rak73sJrswLxqiYUUC+89lkU+QF5jzRExs50dAFmW/HoF1N6TRsEFNMNNEgbsjV
+         HsF8OKnMl4dv01QZJejyE03J0UVm6Rb4qnilVAXQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
-        Niels Dossche <dossche.niels@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 111/167] usb: usbip: add missing device lock on tweak configuration cmd
-Date:   Mon, 13 Jun 2022 12:09:45 +0200
-Message-Id: <20220613094906.856505720@linuxfoundation.org>
+        stable@vger.kernel.org, Xiao Yang <yangx.jy@fujitsu.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 4.9 105/167] RDMA/rxe: Generate a completion for unsupported/invalid opcode
+Date:   Mon, 13 Jun 2022 12:09:39 +0200
+Message-Id: <20220613094905.390238755@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -49,49 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Xiao Yang <yangx.jy@fujitsu.com>
 
-[ Upstream commit d088fabace2ca337b275d1d4b36db4fe7771e44f ]
+commit 2f917af777011c88e977b9b9a5d00b280d3a59ce upstream.
 
-The function documentation of usb_set_configuration says that its
-callers should hold the device lock. This lock is held for all
-callsites except tweak_set_configuration_cmd. The code path can be
-executed for example when attaching a remote USB device.
-The solution is to surround the call by the device lock.
+Current rxe_requester() doesn't generate a completion when processing an
+unsupported/invalid opcode. If rxe driver doesn't support a new opcode
+(e.g. RDMA Atomic Write) and RDMA library supports it, an application
+using the new opcode can reproduce this issue. Fix the issue by calling
+"goto err;".
 
-This bug was found using my experimental own-developed static analysis
-tool, which reported the missing lock on v5.17.2. I manually verified
-this bug report by doing code review as well. I runtime checked that
-the required lock is not held. I compiled and runtime tested this on
-x86_64 with a USB mouse. After applying this patch, my analyser no
-longer reports this potential bug.
-
-Fixes: 2c8c98158946 ("staging: usbip: let client choose device configuration")
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Link: https://lore.kernel.org/r/20220412165055.257113-1-dossche.niels@gmail.com
+Fixes: 8700e3e7c485 ("Soft RoCE driver")
+Link: https://lore.kernel.org/r/20220410113513.27537-1-yangx.jy@fujitsu.com
+Signed-off-by: Xiao Yang <yangx.jy@fujitsu.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/usbip/stub_rx.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/infiniband/sw/rxe/rxe_req.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/usb/usbip/stub_rx.c b/drivers/usb/usbip/stub_rx.c
-index d47176f9c310..dd6228a51d0d 100644
---- a/drivers/usb/usbip/stub_rx.c
-+++ b/drivers/usb/usbip/stub_rx.c
-@@ -151,7 +151,9 @@ static int tweak_set_configuration_cmd(struct urb *urb)
- 	req = (struct usb_ctrlrequest *) urb->setup_packet;
- 	config = le16_to_cpu(req->wValue);
+--- a/drivers/infiniband/sw/rxe/rxe_req.c
++++ b/drivers/infiniband/sw/rxe/rxe_req.c
+@@ -677,7 +677,7 @@ next_wqe:
+ 	opcode = next_opcode(qp, wqe, wqe->wr.opcode);
+ 	if (unlikely(opcode < 0)) {
+ 		wqe->status = IB_WC_LOC_QP_OP_ERR;
+-		goto exit;
++		goto err;
+ 	}
  
-+	usb_lock_device(sdev->udev);
- 	err = usb_set_configuration(sdev->udev, config);
-+	usb_unlock_device(sdev->udev);
- 	if (err && err != -ENODEV)
- 		dev_err(&sdev->udev->dev, "can't set config #%d, error %d\n",
- 			config, err);
--- 
-2.35.1
-
+ 	mask = rxe_opcode[opcode].mask;
 
 
