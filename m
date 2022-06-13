@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2964EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:21:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47FA0C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:21:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352668AbiFMLVo (ORCPT
+        id S1352701AbiFMLVr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:21:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46500 "EHLO
+        Mon, 13 Jun 2022 07:21:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353571AbiFMLQD (ORCPT
+        with ESMTP id S1353581AbiFMLQE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:16:03 -0400
+        Mon, 13 Jun 2022 07:16:04 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD11D3879C;
-        Mon, 13 Jun 2022 03:38:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EE6B12D37;
+        Mon, 13 Jun 2022 03:38:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 44AB860FFD;
-        Mon, 13 Jun 2022 10:38:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 515DFC3411C;
-        Mon, 13 Jun 2022 10:38:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A9F160EF5;
+        Mon, 13 Jun 2022 10:38:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16688C34114;
+        Mon, 13 Jun 2022 10:38:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116702;
-        bh=JMZKYbB7nCqXYW9xB1J1ggXlqAWMiEs1FHKhNL29CG0=;
+        s=korg; t=1655116705;
+        bh=hKaaFKKJkTwL/NOcTKoKRquAfxInXdQEATkMxPCLz1A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BpbNKXRwjqkx8k9+BEOcK4F/hDFHKmkX1+I7/MLYnfl82+xjusUfObXDD4iYC3D72
-         HzNDqKfp4jTxihlwpbsut6+2GfyGJhsMsd/C1J+xSrOUqDXD39N6q7kmT0bjMPW0lP
-         jNEdaadJu1z/ArFe/2tMyurGP3LV1GCXSU085n0A=
+        b=rq1j4FL80GSxdzLYT0/pIJ42s47ObnE7FvxLAv885P/q4VfTmEVaPSaxVEXGBvzZV
+         9ZZF/QsmIm7+PIRwJuUmaxJEWpjG6hHB0lYHR0AvhDNH+ytPpRYW725N/mi4gNt6ZY
+         dhUyATHeeEVaCbPHMJ9svRCA3WydsdqXulCH7PA8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Dongliang Mu <mudongliangabcd@gmail.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 142/411] sctp: read sk->sk_bound_dev_if once in sctp_rcv()
-Date:   Mon, 13 Jun 2022 12:06:55 +0200
-Message-Id: <20220613094932.928407326@linuxfoundation.org>
+Subject: [PATCH 5.4 143/411] media: ov7670: remove ov7670_power_off from ov7670_remove
+Date:   Mon, 13 Jun 2022 12:06:56 +0200
+Message-Id: <20220613094932.958553028@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -53,47 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit a20ea298071f46effa3aaf965bf9bb34c901db3f ]
+[ Upstream commit 5bf19572e31375368f19edd2dbb2e0789518bb99 ]
 
-sctp_rcv() reads sk->sk_bound_dev_if twice while the socket
-is not locked. Another cpu could change this field under us.
+In ov7670_probe, it always invokes ov7670_power_off() no matter
+the execution is successful or failed. So we cannot invoke it
+agiain in ov7670_remove().
 
-Fixes: 0fd9a65a76e8 ("[SCTP] Support SO_BINDTODEVICE socket option on incoming packets.")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Neil Horman <nhorman@tuxdriver.com>
-Cc: Vlad Yasevich <vyasevich@gmail.com>
-Cc: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fix this by removing ov7670_power_off from ov7670_remove.
+
+Fixes: 030f9f682e66 ("media: ov7670: control clock along with power")
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sctp/input.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/media/i2c/ov7670.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/net/sctp/input.c b/net/sctp/input.c
-index 9616b600a876..c306cb25f524 100644
---- a/net/sctp/input.c
-+++ b/net/sctp/input.c
-@@ -92,6 +92,7 @@ int sctp_rcv(struct sk_buff *skb)
- 	struct sctp_chunk *chunk;
- 	union sctp_addr src;
- 	union sctp_addr dest;
-+	int bound_dev_if;
- 	int family;
- 	struct sctp_af *af;
- 	struct net *net = dev_net(skb->dev);
-@@ -169,7 +170,8 @@ int sctp_rcv(struct sk_buff *skb)
- 	 * If a frame arrives on an interface and the receiving socket is
- 	 * bound to another interface, via SO_BINDTODEVICE, treat it as OOTB
- 	 */
--	if (sk->sk_bound_dev_if && (sk->sk_bound_dev_if != af->skb_iif(skb))) {
-+	bound_dev_if = READ_ONCE(sk->sk_bound_dev_if);
-+	if (bound_dev_if && (bound_dev_if != af->skb_iif(skb))) {
- 		if (transport) {
- 			sctp_transport_put(transport);
- 			asoc = NULL;
+diff --git a/drivers/media/i2c/ov7670.c b/drivers/media/i2c/ov7670.c
+index b42b289faaef..154776d0069e 100644
+--- a/drivers/media/i2c/ov7670.c
++++ b/drivers/media/i2c/ov7670.c
+@@ -2000,7 +2000,6 @@ static int ov7670_remove(struct i2c_client *client)
+ 	v4l2_async_unregister_subdev(sd);
+ 	v4l2_ctrl_handler_free(&info->hdl);
+ 	media_entity_cleanup(&info->sd.entity);
+-	ov7670_power_off(sd);
+ 	return 0;
+ }
+ 
 -- 
 2.35.1
 
