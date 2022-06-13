@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21C64C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAE79C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383073AbiFMOPQ (ORCPT
+        id S1382961AbiFMOO7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:15:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43798 "EHLO
+        Mon, 13 Jun 2022 10:14:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382028AbiFMOFE (ORCPT
+        with ESMTP id S1381676AbiFMOEk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:05:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89AFA93449;
-        Mon, 13 Jun 2022 04:40:17 -0700 (PDT)
+        Mon, 13 Jun 2022 10:04:40 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EA182C64D;
+        Mon, 13 Jun 2022 04:39:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3AE8F612A8;
-        Mon, 13 Jun 2022 11:40:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47D5CC34114;
-        Mon, 13 Jun 2022 11:40:15 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7E7B4CE1174;
+        Mon, 13 Jun 2022 11:39:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 680E3C34114;
+        Mon, 13 Jun 2022 11:39:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120415;
-        bh=9WJw4ELdbzbiHeCqGWRljac6AwMwvdo0pSocOeweelI=;
+        s=korg; t=1655120390;
+        bh=bDrYDOHNgYhO6FPo+JxBPzduYAj0DNlg6EhLq6ri5ys=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZxTAafVDAGQJJ3NnZ1jfS1wKxb2WHIjle3RaIh+hZ3EpdIjQgg5hcrM0fuAycuZYN
-         +p3zvMg26461xer6pPt7J93OLgRcNIzNghUdZeu/88yOqJocd3uqVkEyBlPByXBkvj
-         ddLAI/YPhYQOwJZCGt2eHbmib/UNl/wuVApXW3nc=
+        b=oAf7YoHlzKnlfKj50yuFYG0iqyPgkfmLRYm8Znf/rHxw9zEjwvshiQh8YoATIP128
+         whaqdzWAfIaMJzRQMkgq95aWQiWHOnYBEFtRuZwE/hgtD/Ir0hTgvmRJYY37EJ74Gq
+         V9gvq/FhE18LUg6o4wBSRl9BWQMJ/rpR8rnKd8BU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        stable@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Daniel Gibson <daniel@gibson.sh>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 025/298] firmware: stratix10-svc: fix a missing check on list iterator
-Date:   Mon, 13 Jun 2022 12:08:39 +0200
-Message-Id: <20220613094925.693738115@linuxfoundation.org>
+Subject: [PATCH 5.17 008/298] tty: n_tty: Restore EOF push handling behavior
+Date:   Mon, 13 Jun 2022 12:08:22 +0200
+Message-Id: <20220613094925.174585656@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -49,58 +52,121 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Daniel Gibson <daniel@gibson.sh>
 
-[ Upstream commit 5a0793ac66ac0e254d292f129a4d6c526f9f2aff ]
+[ Upstream commit 65a8b287023da68c4550deab5c764e6891cf1caf ]
 
-The bug is here:
-	pmem->vaddr = NULL;
+TTYs in ICANON mode have a special case that allows "pushing" a line
+without a regular EOL character (like newline), by using EOF (the EOT
+character - ASCII 0x4) as a pseudo-EOL. It is silently discarded, so
+the reader of the PTS will receive the line *without* EOF or any other
+terminating character.
 
-The list iterator 'pmem' will point to a bogus position containing
-HEAD if the list is empty or no element is found. This case must
-be checked before any use of the iterator, otherwise it will
-lead to a invalid memory access.
+This special case has an edge case: What happens if the readers buffer
+is the same size as the line (without EOF)? Will they be able to tell
+if the whole line is received, i.e. if the next read() will return more
+of the same line or the next line?
 
-To fix this bug, just gen_pool_free/set NULL/list_del() and return
-when found, otherwise list_del HEAD and return;
+There are two possibilities,  that both have (dis)advantages:
 
-Fixes: 7ca5ce896524f ("firmware: add Intel Stratix10 service layer driver")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Link: https://lore.kernel.org/r/20220414035609.2239-1-xiam0nd.tong@gmail.com
+1. The next read() returns 0. FreeBSD (13.0) and OSX (10.11) do this.
+   Advantage: The reader can interpret this as "the line is over".
+   Disadvantage: read() returning 0 means EOF, the reader could also
+   interpret it as "there's no more data" and stop reading or even
+   close the PT.
+
+2. The next read() returns the next line, the EOF is silently discarded.
+   Solaris (or at least OpenIndiana 2021.10) does this, Linux has done
+   do this since commit 40d5e0905a03 ("n_tty: Fix EOF push handling");
+   this behavior was recently broken by commit 359303076163 ("tty:
+   n_tty: do not look ahead for EOL character past the end of the buffer").
+   Advantage: read() won't return 0 (EOF), reader less likely to be
+   confused (and things like `while(read(..)>0)` don't break)
+   Disadvantage: The reader can't really know if the read() continues
+   the last line (that filled the whole read buffer) or starts a
+   new line.
+
+As both options are defensible (and are used by other Unix-likes), it's
+best to stick to the "old" behavior since "n_tty: Fix EOF push handling"
+of 2013, i.e. silently discard that EOF.
+
+This patch - that I actually got from Linus for testing and only
+modified slightly - restores that behavior by skipping an EOF
+character if it's the next character after reading is done.
+
+Based on a patch from Linus Torvalds.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215611
+Fixes: 359303076163 ("tty: n_tty: do not look ahead for EOL character past the end of the buffer")
+Cc: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Reviewed-and-tested-by: Daniel Gibson <daniel@gibson.sh>
+Acked-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Daniel Gibson <daniel@gibson.sh>
+Link: https://lore.kernel.org/r/20220329235810.452513-2-daniel@gibson.sh
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/stratix10-svc.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/tty/n_tty.c | 38 +++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 37 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/firmware/stratix10-svc.c b/drivers/firmware/stratix10-svc.c
-index c4bf934e3553..33ab24cfd600 100644
---- a/drivers/firmware/stratix10-svc.c
-+++ b/drivers/firmware/stratix10-svc.c
-@@ -941,17 +941,17 @@ EXPORT_SYMBOL_GPL(stratix10_svc_allocate_memory);
- void stratix10_svc_free_memory(struct stratix10_svc_chan *chan, void *kaddr)
- {
- 	struct stratix10_svc_data_mem *pmem;
--	size_t size = 0;
- 
- 	list_for_each_entry(pmem, &svc_data_mem, node)
- 		if (pmem->vaddr == kaddr) {
--			size = pmem->size;
--			break;
-+			gen_pool_free(chan->ctrl->genpool,
-+				       (unsigned long)kaddr, pmem->size);
-+			pmem->vaddr = NULL;
-+			list_del(&pmem->node);
-+			return;
- 		}
- 
--	gen_pool_free(chan->ctrl->genpool, (unsigned long)kaddr, size);
--	pmem->vaddr = NULL;
--	list_del(&pmem->node);
-+	list_del(&svc_data_mem);
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index efc72104c840..bdc314aeab88 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -1975,6 +1975,35 @@ static bool canon_copy_from_read_buf(struct tty_struct *tty,
+ 	return ldata->read_tail != canon_head;
  }
- EXPORT_SYMBOL_GPL(stratix10_svc_free_memory);
  
++/*
++ * If we finished a read at the exact location of an
++ * EOF (special EOL character that's a __DISABLED_CHAR)
++ * in the stream, silently eat the EOF.
++ */
++static void canon_skip_eof(struct tty_struct *tty)
++{
++	struct n_tty_data *ldata = tty->disc_data;
++	size_t tail, canon_head;
++
++	canon_head = smp_load_acquire(&ldata->canon_head);
++	tail = ldata->read_tail;
++
++	// No data?
++	if (tail == canon_head)
++		return;
++
++	// See if the tail position is EOF in the circular buffer
++	tail &= (N_TTY_BUF_SIZE - 1);
++	if (!test_bit(tail, ldata->read_flags))
++		return;
++	if (read_buf(ldata, tail) != __DISABLED_CHAR)
++		return;
++
++	// Clear the EOL bit, skip the EOF char.
++	clear_bit(tail, ldata->read_flags);
++	smp_store_release(&ldata->read_tail, ldata->read_tail + 1);
++}
++
+ /**
+  * job_control		-	check job control
+  * @tty: tty
+@@ -2045,7 +2074,14 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
+ 	 */
+ 	if (*cookie) {
+ 		if (ldata->icanon && !L_EXTPROC(tty)) {
+-			if (canon_copy_from_read_buf(tty, &kb, &nr))
++			/*
++			 * If we have filled the user buffer, see
++			 * if we should skip an EOF character before
++			 * releasing the lock and returning done.
++			 */
++			if (!nr)
++				canon_skip_eof(tty);
++			else if (canon_copy_from_read_buf(tty, &kb, &nr))
+ 				return kb - kbuf;
+ 		} else {
+ 			if (copy_from_read_buf(tty, &kb, &nr))
 -- 
 2.35.1
 
