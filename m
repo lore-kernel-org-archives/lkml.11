@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A2CBCCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA43ACCA485
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:34:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383701AbiFMOb5 (ORCPT
+        id S1384347AbiFMOdz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:31:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34030 "EHLO
+        Mon, 13 Jun 2022 10:33:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383933AbiFMO2c (ORCPT
+        with ESMTP id S1385033AbiFMOac (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:28:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E56915839;
-        Mon, 13 Jun 2022 04:47:24 -0700 (PDT)
+        Mon, 13 Jun 2022 10:30:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66128A7E3E;
+        Mon, 13 Jun 2022 04:48:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 82607B80EA7;
-        Mon, 13 Jun 2022 11:47:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD840C341C5;
-        Mon, 13 Jun 2022 11:47:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 45CB2B80EDE;
+        Mon, 13 Jun 2022 11:47:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A325CC34114;
+        Mon, 13 Jun 2022 11:47:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120840;
-        bh=2RdyjOpU/bVFs6TeY0Oges0DITMvHapRKBYEgmiqFB8=;
+        s=korg; t=1655120854;
+        bh=rnyRN8uJNieEChc6O58lyP6uWMUtgSC8w2CYZauwB94=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EGlI3DzkvStIcZN4WlzVZleTdbyXeFbUvdhOKCEgo0dHOK4YFMFzAZC8YoZL0mrlN
-         3dLBcM3dPLQbqVulFe9ubnM01we+nXFcZC3RFQnqeKHyLkzaL0XqU9P4nZ/UI42wLx
-         VLP+Y1rew8K285tSz6ozyHzuAUUHgmzGz6erfrWM=
+        b=HAR45XppdIlFBmDQI7Wo1tW9kmgcFZMb8bUmqEANlWWBeAOUELaPIxSlyb0H9mxc/
+         zIzZiW/UggwAAPgnEVmuCS1QY2D842d1GjoeObw9je3njZhxWxS9GdSWf3V+RUAMvv
+         V6VDk7vVBqOjCtpjXf6V2WXegOC8Kix7pIhyTdg0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 177/298] net: dsa: lantiq_gswip: Fix refcount leak in gswip_gphy_fw_list
-Date:   Mon, 13 Jun 2022 12:11:11 +0200
-Message-Id: <20220613094930.303287409@linuxfoundation.org>
+Subject: [PATCH 5.17 182/298] net: mdio: unexport __init-annotated mdio_bus_init()
+Date:   Mon, 13 Jun 2022 12:11:16 +0200
+Message-Id: <20220613094930.451844213@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,41 +53,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-[ Upstream commit 0737e018a05e2aa352828c52bdeed3b02cff2930 ]
+[ Upstream commit 35b42dce619701f1300fb8498dae82c9bb1f0263 ]
 
-Every iteration of for_each_available_child_of_node() decrements
-the reference count of the previous node.
-when breaking early from a for_each_available_child_of_node() loop,
-we need to explicitly call of_node_put() on the gphy_fw_np.
-Add missing of_node_put() to avoid refcount leak.
+EXPORT_SYMBOL and __init is a bad combination because the .init.text
+section is freed up after the initialization. Hence, modules cannot
+use symbols annotated __init. The access to a freed symbol may end up
+with kernel panic.
 
-Fixes: 14fceff4771e ("net: dsa: Add Lantiq / Intel DSA driver for vrx200")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220605072335.11257-1-linmq006@gmail.com
+modpost used to detect it, but it has been broken for a decade.
+
+Recently, I fixed modpost so it started to warn it again, then this
+showed up in linux-next builds.
+
+There are two ways to fix it:
+
+  - Remove __init
+  - Remove EXPORT_SYMBOL
+
+I chose the latter for this case because the only in-tree call-site,
+drivers/net/phy/phy_device.c is never compiled as modular.
+(CONFIG_PHYLIB is boolean)
+
+Fixes: 90eff9096c01 ("net: phy: Allow splitting MDIO bus/device support from PHYs")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/lantiq_gswip.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/phy/mdio_bus.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
-index 8acec33a4702..9d8db457599c 100644
---- a/drivers/net/dsa/lantiq_gswip.c
-+++ b/drivers/net/dsa/lantiq_gswip.c
-@@ -2021,8 +2021,10 @@ static int gswip_gphy_fw_list(struct gswip_priv *priv,
- 	for_each_available_child_of_node(gphy_fw_list_np, gphy_fw_np) {
- 		err = gswip_gphy_fw_probe(priv, &priv->gphy_fw[i],
- 					  gphy_fw_np, i);
--		if (err)
-+		if (err) {
-+			of_node_put(gphy_fw_np);
- 			goto remove_gphy;
-+		}
- 		i++;
- 	}
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index 58d602985877..8a2dbe849866 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -1046,7 +1046,6 @@ int __init mdio_bus_init(void)
  
+ 	return ret;
+ }
+-EXPORT_SYMBOL_GPL(mdio_bus_init);
+ 
+ #if IS_ENABLED(CONFIG_PHYLIB)
+ void mdio_bus_exit(void)
 -- 
 2.35.1
 
