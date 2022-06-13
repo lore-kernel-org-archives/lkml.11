@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BCE3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:30:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 876A9C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:30:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354467AbiFMM2X (ORCPT
+        id S1355035AbiFMM21 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:28:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34328 "EHLO
+        Mon, 13 Jun 2022 08:28:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355482AbiFMMX4 (ORCPT
+        with ESMTP id S1355465AbiFMMX4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 08:23:56 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A056527B1C;
-        Mon, 13 Jun 2022 04:05:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E68BC27B07;
+        Mon, 13 Jun 2022 04:05:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BD68614A1;
-        Mon, 13 Jun 2022 11:05:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49BA0C3411C;
-        Mon, 13 Jun 2022 11:05:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8359261435;
+        Mon, 13 Jun 2022 11:05:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97F18C3411E;
+        Mon, 13 Jun 2022 11:05:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118303;
-        bh=xZMuTpWursdJJdYloy8uMjAmfjbR/M9GPbci0Jb3eq4=;
+        s=korg; t=1655118301;
+        bh=QI3AuAZvr75V5aJQHl56NIamTjjLOnw/1y4LERXWWoI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Dn1ayOHNR6q29BSUqutlCNWmd8NV2BweRtv6P763POj6qGoqDZUkGmGkabGG71m4w
-         N7yVTyfdpcVhxo7yfBG84eclpMslAlnLU7CJ6rPoLbTAnwHSVTU9YuV5+lzZv+HWLO
-         D06wp6dXCtfpbBWGDNSMQ1T4nrC67vWGLNXGWX2Y=
+        b=ILqZDHDqUJ2zd3qKT824WgWe4bxzPMqOeHGZPwnVA/CGOSuJCWSrDe5QJZkz1rcse
+         cLriIpqaJI4FJAd+SZClJDPVVadYIdAwWgsQkM8oLULGYJlh1WWOc4MdQ07uYjyTPY
+         pqUMVytzF2jiRpnlxLVSPZqbz78dEd4gd1yHQR0A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
-        Hangyu Hua <hbh25y@gmail.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 009/172] usb: usbip: fix a refcount leak in stub_probe()
-Date:   Mon, 13 Jun 2022 12:09:29 +0200
-Message-Id: <20220613094852.630058915@linuxfoundation.org>
+        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 026/172] serial: sifive: Report actual baud base rather than fixed 115200
+Date:   Mon, 13 Jun 2022 12:09:46 +0200
+Message-Id: <20220613094856.690320361@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -49,47 +49,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Maciej W. Rozycki <macro@orcam.me.uk>
 
-[ Upstream commit 9ec4cbf1cc55d126759051acfe328d489c5d6e60 ]
+[ Upstream commit 0a7ff843d507ce2cca2c3b7e169ee56e28133530 ]
 
-usb_get_dev() is called in stub_device_alloc(). When stub_probe() fails
-after that, usb_put_dev() needs to be called to release the reference.
+The base baud value reported is supposed to be the highest baud rate
+that can be set for a serial port.  The SiFive FU740-C000 SOC's on-chip
+UART supports baud rates of up to 1/16 of the input clock rate, which is
+the bus clock `tlclk'[1], often at 130MHz in the case of the HiFive
+Unmatched board.
 
-Fix this by moving usb_put_dev() to sdev_free error path handling.
+However the sifive UART driver reports a fixed value of 115200 instead:
 
-Find this by code review.
+10010000.serial: ttySIF0 at MMIO 0x10010000 (irq = 1, base_baud = 115200) is a SiFive UART v0
+10011000.serial: ttySIF1 at MMIO 0x10011000 (irq = 2, base_baud = 115200) is a SiFive UART v0
 
-Fixes: 3ff67445750a ("usbip: fix error handling in stub_probe()")
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Link: https://lore.kernel.org/r/20220412020257.9767-1-hbh25y@gmail.com
+even though we already support setting higher baud rates, e.g.:
+
+$ tty
+/dev/ttySIF1
+$ stty speed
+230400
+
+The baud base value is computed by the serial core by dividing the UART
+clock recorded in `struct uart_port' by 16, which is also the minimum
+value of the clock divider supported, so correct the baud base value
+reported by setting the UART clock recorded to the input clock rate
+rather than 115200:
+
+10010000.serial: ttySIF0 at MMIO 0x10010000 (irq = 1, base_baud = 8125000) is a SiFive UART v0
+10011000.serial: ttySIF1 at MMIO 0x10011000 (irq = 2, base_baud = 8125000) is a SiFive UART v0
+
+
+[1] "SiFive FU740-C000 Manual", v1p3, SiFive, Inc., August 13, 2021,
+    Section 16.9 "Baud Rate Divisor Register (div)", pp.143-144
+
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Fixes: 1f1496a923b6 ("riscv: Fix sifive serial driver")
+Link: https://lore.kernel.org/r/alpine.DEB.2.21.2204291656280.9383@angie.orcam.me.uk
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/usbip/stub_dev.c | 2 +-
+ drivers/tty/serial/sifive.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/usb/usbip/stub_dev.c b/drivers/usb/usbip/stub_dev.c
-index d8d3892e5a69..3c6d452e3bf4 100644
---- a/drivers/usb/usbip/stub_dev.c
-+++ b/drivers/usb/usbip/stub_dev.c
-@@ -393,7 +393,6 @@ static int stub_probe(struct usb_device *udev)
+diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c
+index 214bf3086c68..24036a02a424 100644
+--- a/drivers/tty/serial/sifive.c
++++ b/drivers/tty/serial/sifive.c
+@@ -999,7 +999,7 @@ static int sifive_serial_probe(struct platform_device *pdev)
+ 	/* Set up clock divider */
+ 	ssp->clkin_rate = clk_get_rate(ssp->clk);
+ 	ssp->baud_rate = SIFIVE_DEFAULT_BAUD_RATE;
+-	ssp->port.uartclk = ssp->baud_rate * 16;
++	ssp->port.uartclk = ssp->clkin_rate;
+ 	__ssp_update_div(ssp);
  
- err_port:
- 	dev_set_drvdata(&udev->dev, NULL);
--	usb_put_dev(udev);
- 
- 	/* we already have busid_priv, just lock busid_lock */
- 	spin_lock(&busid_priv->busid_lock);
-@@ -408,6 +407,7 @@ static int stub_probe(struct usb_device *udev)
- 	put_busid_priv(busid_priv);
- 
- sdev_free:
-+	usb_put_dev(udev);
- 	stub_device_free(sdev);
- 
- 	return rc;
+ 	platform_set_drvdata(pdev, ssp);
 -- 
 2.35.1
 
