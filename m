@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23700C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:51:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07326C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:51:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347044AbiFMKvZ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:51:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58904 "EHLO
+        id S240778AbiFMKvg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:51:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348312AbiFMKtQ (ORCPT
+        with ESMTP id S1345030AbiFMKsL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:49:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 915A82DD61;
-        Mon, 13 Jun 2022 03:26:54 -0700 (PDT)
+        Mon, 13 Jun 2022 06:48:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 222142C65B;
+        Mon, 13 Jun 2022 03:26:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3AE9DB80EA4;
-        Mon, 13 Jun 2022 10:26:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3CE3C34114;
-        Mon, 13 Jun 2022 10:26:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C2586B80E92;
+        Mon, 13 Jun 2022 10:26:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27C08C34114;
+        Mon, 13 Jun 2022 10:26:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116012;
-        bh=YHjvGl6ychesEsr7+fE6a8S92nWp+f9c5YIk2ncoTWM=;
+        s=korg; t=1655115962;
+        bh=yezBWBIj2lDVCShdvT7sJfdI2ltpm1U6UJxUTLHm4jA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pL4qnCZatVxfxou6bW6n4W3a65F4gi+tae4XhRzacOulA0ljIovt119yqlpbQqkec
-         JezyztolgFP6QRLxXEapDTVQyTpGxGfsLBUlgSsXYqrrG2JOWy+3mlLJZJ8RBxxqWv
-         EWG5lae1jOVAZFkgOREUfxgm3IgttATBH81BZOvY=
+        b=qQxH7rLwt5VhV/QUQDfjK9FCiWOOIxEo8cBs+ysAhzzy8eqIbPlYYnglshoZZ+fUs
+         lcJCwKOUYMlTdjxpjgETr9lgsQBlBpbSSvghS6YujCFHZjI9MZLjzuJVZLudpBo9tB
+         cfENLsiggMquKcQjosvDxrtkQeEXb/GO5ESAF6r8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 4.14 108/218] ext4: avoid cycles in directory h-tree
-Date:   Mon, 13 Jun 2022 12:09:26 +0200
-Message-Id: <20220613094923.835766646@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 095/218] powerpc/fsl_rio: Fix refcount leak in fsl_rio_setup
+Date:   Mon, 13 Jun 2022 12:09:13 +0200
+Message-Id: <20220613094923.429816231@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -49,81 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 3ba733f879c2a88910744647e41edeefbc0d92b2 upstream.
+[ Upstream commit fcee96924ba1596ca80a6770b2567ca546f9a482 ]
 
-A maliciously corrupted filesystem can contain cycles in the h-tree
-stored inside a directory. That can easily lead to the kernel corrupting
-tree nodes that were already verified under its hands while doing a node
-split and consequently accessing unallocated memory. Fix the problem by
-verifying traversed block numbers are unique.
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220518093332.13986-2-jack@suse.cz
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: abc3aeae3aaa ("fsl-rio: Add two ports and rapidio message units support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220512123724.62931-1-linmq006@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/namei.c |   22 +++++++++++++++++++---
- 1 file changed, 19 insertions(+), 3 deletions(-)
+ arch/powerpc/sysdev/fsl_rio.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/fs/ext4/namei.c
-+++ b/fs/ext4/namei.c
-@@ -747,12 +747,14 @@ static struct dx_frame *
- dx_probe(struct ext4_filename *fname, struct inode *dir,
- 	 struct dx_hash_info *hinfo, struct dx_frame *frame_in)
- {
--	unsigned count, indirect;
-+	unsigned count, indirect, level, i;
- 	struct dx_entry *at, *entries, *p, *q, *m;
- 	struct dx_root *root;
- 	struct dx_frame *frame = frame_in;
- 	struct dx_frame *ret_err = ERR_PTR(ERR_BAD_DX_DIR);
- 	u32 hash;
-+	ext4_lblk_t block;
-+	ext4_lblk_t blocks[EXT4_HTREE_LEVEL];
- 
- 	memset(frame_in, 0, EXT4_HTREE_LEVEL * sizeof(frame_in[0]));
- 	frame->bh = ext4_read_dirblock(dir, 0, INDEX);
-@@ -808,6 +810,8 @@ dx_probe(struct ext4_filename *fname, st
+diff --git a/arch/powerpc/sysdev/fsl_rio.c b/arch/powerpc/sysdev/fsl_rio.c
+index 5011ffea4e4b..c48ebe677962 100644
+--- a/arch/powerpc/sysdev/fsl_rio.c
++++ b/arch/powerpc/sysdev/fsl_rio.c
+@@ -509,8 +509,10 @@ int fsl_rio_setup(struct platform_device *dev)
+ 	if (rc) {
+ 		dev_err(&dev->dev, "Can't get %pOF property 'reg'\n",
+ 				rmu_node);
++		of_node_put(rmu_node);
+ 		goto err_rmu;
  	}
- 
- 	dxtrace(printk("Look up %x", hash));
-+	level = 0;
-+	blocks[0] = 0;
- 	while (1) {
- 		count = dx_get_count(entries);
- 		if (!count || count > dx_get_limit(entries)) {
-@@ -849,15 +853,27 @@ dx_probe(struct ext4_filename *fname, st
- 			       dx_get_block(at)));
- 		frame->entries = entries;
- 		frame->at = at;
--		if (!indirect--)
-+
-+		block = dx_get_block(at);
-+		for (i = 0; i <= level; i++) {
-+			if (blocks[i] == block) {
-+				ext4_warning_inode(dir,
-+					"dx entry: tree cycle block %u points back to block %u",
-+					blocks[level], block);
-+				goto fail;
-+			}
-+		}
-+		if (++level > indirect)
- 			return frame;
-+		blocks[level] = block;
- 		frame++;
--		frame->bh = ext4_read_dirblock(dir, dx_get_block(at), INDEX);
-+		frame->bh = ext4_read_dirblock(dir, block, INDEX);
- 		if (IS_ERR(frame->bh)) {
- 			ret_err = (struct dx_frame *) frame->bh;
- 			frame->bh = NULL;
- 			goto fail;
- 		}
-+
- 		entries = ((struct dx_node *) frame->bh->b_data)->entries;
- 
- 		if (dx_get_limit(entries) != dx_node_limit(dir)) {
++	of_node_put(rmu_node);
+ 	rmu_regs_win = ioremap(rmu_regs.start, resource_size(&rmu_regs));
+ 	if (!rmu_regs_win) {
+ 		dev_err(&dev->dev, "Unable to map rmu register window\n");
+-- 
+2.35.1
+
 
 
