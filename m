@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6002DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:34:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68C81CCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:34:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383480AbiFMObl (ORCPT
+        id S1383621AbiFMObq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:31:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52196 "EHLO
+        Mon, 13 Jun 2022 10:31:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382830AbiFMOZ7 (ORCPT
+        with ESMTP id S1383639AbiFMO0z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:25:59 -0400
+        Mon, 13 Jun 2022 10:26:55 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89BF24A3D2;
-        Mon, 13 Jun 2022 04:47:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 610446164;
+        Mon, 13 Jun 2022 04:47:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C2D0761425;
-        Mon, 13 Jun 2022 11:47:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3C6AC34114;
-        Mon, 13 Jun 2022 11:47:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 40C90612A8;
+        Mon, 13 Jun 2022 11:47:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49611C34114;
+        Mon, 13 Jun 2022 11:47:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120829;
-        bh=yRje9zJj6k4Qpu7HfECVlAhlL7PYsk56cdaU6S3uQd0=;
+        s=korg; t=1655120834;
+        bh=DP0GBlWS01HNg1sxk93PKkBpvry1tx4tPZCsHh7VcgQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k5sMlRsbyaQhtQsl7dQ5UnU53shZ3I361q4lzxcqMd0h3zpS8knsj+7c+4y9IS7Yd
-         U/gM0L2dOLDyxtJuoA4h0fdgjXvP0m3GactqiuU9W86gLz2DBwYevhY8JWzRiqUxgH
-         onQ7H5Z10je7w5SKScsNBWyTk0IWqyPtO0lahNhU=
+        b=0n2+bJWQIRBNfzofJyWDOAGSKNtLr07p10S2PKNRPl+MJJlmw5V0xhplEblzAKhoj
+         gL84wpfGkMTAZ9xoX1wifhsJhMGYwmywxRzwyDooaJKmktDw9ySEta85dEIBaYdjK6
+         RZvlqSxND384SlTvbD5e7I1qU1GLDFnVPI3+fSvo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jeff Xie <xiehuan09@gmail.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        stable@vger.kernel.org, Jan Beulich <jbeulich@suse.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 138/298] tracing: Make tp_printk work on syscall tracepoints
-Date:   Mon, 13 Jun 2022 12:10:32 +0200
-Message-Id: <20220613094929.128988826@linuxfoundation.org>
+Subject: [PATCH 5.17 175/298] x86: drop bogus "cc" clobber from __try_cmpxchg_user_asm()
+Date:   Mon, 13 Jun 2022 12:11:09 +0200
+Message-Id: <20220613094930.241839176@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,114 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeff Xie <xiehuan09@gmail.com>
+From: Jan Beulich <jbeulich@suse.com>
 
-[ Upstream commit cb1c45fb68b8a4285ccf750842b1136f26cfe267 ]
+[ Upstream commit 1df931d95f4dc1c11db1123e85d4e08156e46ef9 ]
 
-Currently the tp_printk option has no effect on syscall tracepoint.
-When adding the kernel option parameter tp_printk, then:
+As noted (and fixed) a couple of times in the past, "=@cc<cond>" outputs
+and clobbering of "cc" don't work well together. The compiler appears to
+mean to reject such, but doesn't - in its upstream form - quite manage
+to yet for "cc". Furthermore two similar macros don't clobber "cc", and
+clobbering "cc" is pointless in asm()-s for x86 anyway - the compiler
+always assumes status flags to be clobbered there.
 
-echo 1 > /sys/kernel/debug/tracing/events/syscalls/enable
-
-When running any application, no trace information is printed on the
-terminal.
-
-Now added printk for syscall tracepoints.
-
-Link: https://lkml.kernel.org/r/20220410145025.681144-1-xiehuan09@gmail.com
-
-Signed-off-by: Jeff Xie <xiehuan09@gmail.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Fixes: 989b5db215a2 ("x86/uaccess: Implement macros for CMPXCHG on user addresses")
+Signed-off-by: Jan Beulich <jbeulich@suse.com>
+Message-Id: <485c0c0b-a3a7-0b7c-5264-7d00c01de032@suse.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/trace_syscalls.c | 35 +++++++++++------------------------
- 1 file changed, 11 insertions(+), 24 deletions(-)
+ arch/x86/include/asm/uaccess.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/trace/trace_syscalls.c b/kernel/trace/trace_syscalls.c
-index f755bde42fd0..b69e207012c9 100644
---- a/kernel/trace/trace_syscalls.c
-+++ b/kernel/trace/trace_syscalls.c
-@@ -154,7 +154,7 @@ print_syscall_enter(struct trace_iterator *iter, int flags,
- 			goto end;
- 
- 		/* parameter types */
--		if (tr->trace_flags & TRACE_ITER_VERBOSE)
-+		if (tr && tr->trace_flags & TRACE_ITER_VERBOSE)
- 			trace_seq_printf(s, "%s ", entry->types[i]);
- 
- 		/* parameter values */
-@@ -296,9 +296,7 @@ static void ftrace_syscall_enter(void *data, struct pt_regs *regs, long id)
- 	struct trace_event_file *trace_file;
- 	struct syscall_trace_enter *entry;
- 	struct syscall_metadata *sys_data;
--	struct ring_buffer_event *event;
--	struct trace_buffer *buffer;
--	unsigned int trace_ctx;
-+	struct trace_event_buffer fbuffer;
- 	unsigned long args[6];
- 	int syscall_nr;
- 	int size;
-@@ -321,20 +319,16 @@ static void ftrace_syscall_enter(void *data, struct pt_regs *regs, long id)
- 
- 	size = sizeof(*entry) + sizeof(unsigned long) * sys_data->nb_args;
- 
--	trace_ctx = tracing_gen_ctx();
--
--	event = trace_event_buffer_lock_reserve(&buffer, trace_file,
--			sys_data->enter_event->event.type, size, trace_ctx);
--	if (!event)
-+	entry = trace_event_buffer_reserve(&fbuffer, trace_file, size);
-+	if (!entry)
- 		return;
- 
--	entry = ring_buffer_event_data(event);
-+	entry = ring_buffer_event_data(fbuffer.event);
- 	entry->nr = syscall_nr;
- 	syscall_get_arguments(current, regs, args);
- 	memcpy(entry->args, args, sizeof(unsigned long) * sys_data->nb_args);
- 
--	event_trigger_unlock_commit(trace_file, buffer, event, entry,
--				    trace_ctx);
-+	trace_event_buffer_commit(&fbuffer);
- }
- 
- static void ftrace_syscall_exit(void *data, struct pt_regs *regs, long ret)
-@@ -343,9 +337,7 @@ static void ftrace_syscall_exit(void *data, struct pt_regs *regs, long ret)
- 	struct trace_event_file *trace_file;
- 	struct syscall_trace_exit *entry;
- 	struct syscall_metadata *sys_data;
--	struct ring_buffer_event *event;
--	struct trace_buffer *buffer;
--	unsigned int trace_ctx;
-+	struct trace_event_buffer fbuffer;
- 	int syscall_nr;
- 
- 	syscall_nr = trace_get_syscall_nr(current, regs);
-@@ -364,20 +356,15 @@ static void ftrace_syscall_exit(void *data, struct pt_regs *regs, long ret)
- 	if (!sys_data)
- 		return;
- 
--	trace_ctx = tracing_gen_ctx();
--
--	event = trace_event_buffer_lock_reserve(&buffer, trace_file,
--			sys_data->exit_event->event.type, sizeof(*entry),
--			trace_ctx);
--	if (!event)
-+	entry = trace_event_buffer_reserve(&fbuffer, trace_file, sizeof(*entry));
-+	if (!entry)
- 		return;
- 
--	entry = ring_buffer_event_data(event);
-+	entry = ring_buffer_event_data(fbuffer.event);
- 	entry->nr = syscall_nr;
- 	entry->ret = syscall_get_return_value(current, regs);
- 
--	event_trigger_unlock_commit(trace_file, buffer, event, entry,
--				    trace_ctx);
-+	trace_event_buffer_commit(&fbuffer);
- }
- 
- static int reg_event_syscall_enter(struct trace_event_file *file,
+diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
+index 1c14bcce88f2..729ecf1e546c 100644
+--- a/arch/x86/include/asm/uaccess.h
++++ b/arch/x86/include/asm/uaccess.h
+@@ -466,7 +466,7 @@ do {									\
+ 		       [ptr] "+m" (*_ptr),				\
+ 		       [old] "+a" (__old)				\
+ 		     : [new] ltype (__new)				\
+-		     : "memory", "cc");					\
++		     : "memory");					\
+ 	if (unlikely(__err))						\
+ 		goto label;						\
+ 	if (unlikely(!success))						\
 -- 
 2.35.1
 
