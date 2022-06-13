@@ -2,65 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E835C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:42:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC70BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:42:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242320AbiFMRmB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 13:42:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46992 "EHLO
+        id S235913AbiFMRmJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 13:42:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343712AbiFMRkB (ORCPT
+        with ESMTP id S243059AbiFMRiz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 13:40:01 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2563289A1
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:10:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        from:to:cc:subject:date:message-id:mime-version
-        :content-transfer-encoding; s=k1; bh=nBeTiRbyM+2esDUqM5Tgskkvqkg
-        sZczEfbjH1Zw52CE=; b=CamQ1NsgzhCbMcoZvjvr27uR4Ucb8Ekv24g+gGgEJM8
-        hW6X2L/Jt/3whJpIYPpvJwRAi7e+r7VUlIFyIkfGYbUGZnNAD2OUMgQL2C1duH2E
-        XdZYWq2m2zAOM7sAsSZHDHvAlaBHOaWkpCNOW4rwlgCpX01442v/fuEoF+25hKts
-        =
-Received: (qmail 1304388 invoked from network); 13 Jun 2022 15:10:12 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 13 Jun 2022 15:10:12 +0200
-X-UD-Smtp-Session: l3s3148p1@iQwZAlThGm9ZD+yY
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     linux-renesas-soc@vger.kernel.org
-Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: serial: renesas,hscif: Document r8a779f0 bindings
-Date:   Mon, 13 Jun 2022 15:10:07 +0200
-Message-Id: <20220613131007.10027-1-wsa+renesas@sang-engineering.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 13 Jun 2022 13:38:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B6814AF4C;
+        Mon, 13 Jun 2022 06:06:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CDB060C4A;
+        Mon, 13 Jun 2022 13:06:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E803C3411B;
+        Mon, 13 Jun 2022 13:06:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655125588;
+        bh=wtPCz3OyedMcP/w7PQBeu2r2iV5lXm28OqwqVJ/Rk/o=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hFGeokSDqmiWwRfrmobGSxacikejyYxTAfhHQo8kmW24MQ9fFA/W894Cx26yugOgO
+         g02ZA5AZx6TMxyyqPSu4JDXijzAEnZ2Lv1vTZYqNu4YAlf4BVzrCxAhlSDxs9oKG/s
+         DgcHVQ4WEjIpg/eClDj69JxNWIcEKUb35d01G0Eg6gmLLeK0iO315uKAfTzb+SKDL+
+         carh9pH+5wXp6azNMwzXVWVhnGWvtfzVj1YJG+/STkDuU2zBjLDDvyqeybssx8Hw4n
+         wZ91Cbh6E+o65sO/vmIp60Chf/sGg6gSqA62ZrkrvxgeWmy5MogMqosV76TjI+I2mx
+         vEnpNrw5btqLg==
+Date:   Mon, 13 Jun 2022 14:06:22 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Jerome NEANNE <jneanne@baylibre.com>
+Cc:     lgirdwood@gmail.com, robh+dt@kernel.org, nm@ti.com,
+        kristo@kernel.org, will@kernel.org, lee.jones@linaro.org,
+        khilman@baylibre.com, narmstrong@baylibre.com, msp@baylibre.com,
+        j-keerthy@ti.com, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [RFC PATCH 5/5] arm64: dts: ti: Add TI TPS65219 PMIC support for
+ AM642 SK board.
+Message-ID: <Yqc2Tix9jOJtB+CV@sirena.org.uk>
+References: <20220613090604.9975-1-jneanne@baylibre.com>
+ <20220613090604.9975-6-jneanne@baylibre.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="zZx7sPWxeWiq9OR6"
+Content-Disposition: inline
+In-Reply-To: <20220613090604.9975-6-jneanne@baylibre.com>
+X-Cookie: innovate, v.:
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
----
- Documentation/devicetree/bindings/serial/renesas,hscif.yaml | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/serial/renesas,hscif.yaml b/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
-index 87180d95cd4c..1957b9d782e8 100644
---- a/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
-+++ b/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
-@@ -57,6 +57,7 @@ properties:
-       - items:
-           - enum:
-               - renesas,hscif-r8a779a0     # R-Car V3U
-+              - renesas,hscif-r8a779f0     # R-Car S4-8
-               - renesas,hscif-r8a779g0     # R-Car V4H
-           - const: renesas,rcar-gen4-hscif # R-Car Gen4
-           - const: renesas,hscif           # generic HSCIF compatible UART
--- 
-2.35.1
+--zZx7sPWxeWiq9OR6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
+On Mon, Jun 13, 2022 at 11:06:04AM +0200, Jerome NEANNE wrote:
+
+> +			buck2_reg: buck2 {
+> +				regulator-name = "VCC1V8";
+> +				regulator-min-microvolt = <1700000>;
+> +				regulator-max-microvolt = <1800000>;
+> +				regulator-boot-on;
+> +				regulator-always-on;
+> +			};
+
+The supply labelled 1V8 can vary between 1.7V and 1.8V?  That at least
+deserves a comment.
+
+You should only set boot-on for supplies where it is not possible to
+read the current state.
+
+--zZx7sPWxeWiq9OR6
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKnNk4ACgkQJNaLcl1U
+h9A8AAf+L8/jIRuPSPB7WEwuvEuJ13zFfAdSdkMFCAWLTK6QyiPEMnzqfLIRjv/1
+hDvwENyNnso8OH0+ftQsyFZvzUtyzyjwptKfuc8zjf9q0fd6ljrljacZ9NB97m2M
+qztrTCanjB5npgomVdS3LW8kvgs1C5v3a7P15btIo+k8coGasstcwsJNi3pe5I1P
+gESkfUjNRiEQOMhOGvn6j6YB5xEAzkTx2/ZowtjlCECwm2bgM627HoGI1C/SKRN6
+/rGqtD3KvtdhnCxV9PinczxJeVVc2P77IUQ+3q+8ikpb3pkz+k+PXAJ5pPT2WED7
+9TMqmOv6LyxOdaizBKUQzWLRYm6hmg==
+=TolR
+-----END PGP SIGNATURE-----
+
+--zZx7sPWxeWiq9OR6--
