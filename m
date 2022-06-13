@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B1F3CCA48B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6677BCCA48C
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:39:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355579AbiFMLjQ (ORCPT
+        id S1355689AbiFMLja (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:39:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50598 "EHLO
+        Mon, 13 Jun 2022 07:39:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354830AbiFMLaM (ORCPT
+        with ESMTP id S1355014AbiFMLaY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:30:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE1983FBDE;
-        Mon, 13 Jun 2022 03:45:49 -0700 (PDT)
+        Mon, 13 Jun 2022 07:30:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0040240A28;
+        Mon, 13 Jun 2022 03:46:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 48A2361248;
-        Mon, 13 Jun 2022 10:45:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55AF1C34114;
-        Mon, 13 Jun 2022 10:45:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A312AB80D3C;
+        Mon, 13 Jun 2022 10:46:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00F17C34114;
+        Mon, 13 Jun 2022 10:46:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117148;
-        bh=/lWHFpte0nQhGTo7XI8GUdlZRuC2Mn0hannG7wMM4LU=;
+        s=korg; t=1655117176;
+        bh=6U78QIlckGBSaUPxamqdHWvKqZoyaE/nHXH6NUubhOM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JSK5jsaarZ7GpSYuiETkUSEGJMSCVAcwJGNtubVqVcZXhWapn9ZuWYUh+du8r7U/6
-         2hhPejOBz8aLn3/w7qGdl14KaEZklsvCdseOCMQGcjTHqD0SnBmKt2GZCopPlnJd3R
-         4jhPVPRqCcDxYheGVeJpyB4PSYjRFikAsxseJTDM=
+        b=VhWzAxlhS1HGg9+KQtZkrvJeeEiKlAq4SXk4BJYzqcR2nyD5VYZoXEIf4om9MOHAk
+         viknSP4YNe8IGVLnSfEFnDNlRUC0fFzHdGVwljMHAVoDREY1hDOJG7qVM2yGr7iE4H
+         V8wd2+G14UfRkfopmz+FRXalZdM1+eJs+CUaEiXY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Heiko Stuebner <heiko@sntech.de>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 303/411] soc: rockchip: Fix refcount leak in rockchip_grf_init
-Date:   Mon, 13 Jun 2022 12:09:36 +0200
-Message-Id: <20220613094937.839141064@linuxfoundation.org>
+Subject: [PATCH 5.4 324/411] net: ethernet: mtk_eth_soc: out of bounds read in mtk_hwlro_get_fdir_entry()
+Date:   Mon, 13 Jun 2022 12:09:57 +0200
+Message-Id: <20220613094938.447413129@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,42 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 9b59588d8be91c96bfb0371e912ceb4f16315dbf ]
+[ Upstream commit e7e7104e2d5ddf3806a28695670f21bef471f1e1 ]
 
-of_find_matching_node_and_match returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() to avoid refcount leak.
+The "fsp->location" variable comes from user via ethtool_get_rxnfc().
+Check that it is valid to prevent an out of bounds read.
 
-Fixes: 4c58063d4258 ("soc: rockchip: add driver handling grf setup")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220516072013.19731-1-linmq006@gmail.com
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Fixes: 7aab747e5563 ("net: ethernet: mediatek: add ethtool functions to configure RX flows of HW LRO")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/rockchip/grf.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/soc/rockchip/grf.c b/drivers/soc/rockchip/grf.c
-index 494cf2b5bf7b..343ff61ccccb 100644
---- a/drivers/soc/rockchip/grf.c
-+++ b/drivers/soc/rockchip/grf.c
-@@ -148,12 +148,14 @@ static int __init rockchip_grf_init(void)
- 		return -ENODEV;
- 	if (!match || !match->data) {
- 		pr_err("%s: missing grf data\n", __func__);
-+		of_node_put(np);
- 		return -EINVAL;
- 	}
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index 3351d4f9363a..5dce4cd60f58 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -1962,6 +1962,9 @@ static int mtk_hwlro_get_fdir_entry(struct net_device *dev,
+ 	struct ethtool_rx_flow_spec *fsp =
+ 		(struct ethtool_rx_flow_spec *)&cmd->fs;
  
- 	grf_info = match->data;
- 
- 	grf = syscon_node_to_regmap(np);
-+	of_node_put(np);
- 	if (IS_ERR(grf)) {
- 		pr_err("%s: could not get grf syscon\n", __func__);
- 		return PTR_ERR(grf);
++	if (fsp->location >= ARRAY_SIZE(mac->hwlro_ip))
++		return -EINVAL;
++
+ 	/* only tcp dst ipv4 is meaningful, others are meaningless */
+ 	fsp->flow_type = TCP_V4_FLOW;
+ 	fsp->h_u.tcp_ip4_spec.ip4dst = ntohl(mac->hwlro_ip[fsp->location]);
 -- 
 2.35.1
 
