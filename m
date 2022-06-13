@@ -2,112 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAEBAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 09:31:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5443C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 09:31:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234858AbiFMJbo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 05:31:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47678 "EHLO
+        id S235055AbiFMJbv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 05:31:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234476AbiFMJbk (ORCPT
+        with ESMTP id S234726AbiFMJbn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 05:31:40 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64D89186D8;
-        Mon, 13 Jun 2022 02:31:37 -0700 (PDT)
-Received: from fraeml734-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LM5p33Dsxz67bVy;
-        Mon, 13 Jun 2022 17:27:55 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml734-chm.china.huawei.com (10.206.15.215) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 13 Jun 2022 11:31:34 +0200
-Received: from [10.195.33.253] (10.195.33.253) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 13 Jun 2022 10:31:33 +0100
-Message-ID: <53fa2856-54f2-c075-2eed-4f05c3459597@huawei.com>
-Date:   Mon, 13 Jun 2022 10:34:41 +0100
+        Mon, 13 Jun 2022 05:31:43 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74DCE18B0A
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 02:31:41 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id s1so6318269wra.9
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 02:31:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/OqFsaupcKkbN5ZhwB7cTTOB/jJJt4KZYzQeTPC35+8=;
+        b=4FIRDPlyNK+WMh7PnfjoRzqlLl6R8KV6uBkS/FTTx0qa70c8hfiqGl6hXSnxRKX4g5
+         M2td+xg4QJnj+FOdx0QYC/F4PW/x9pGstgIMkvb/2FpiaMbxw1+rzbaZK2FrF+hW4NTb
+         y5F4eHtHLtCifjnZAfhL6VCr+RXXM8dV1h3FML7iQJ6vmkiZvvI8AzeSZtvGSCHUgG6o
+         kB5zQBUTJ4yylxGEnVe9GJ57fuyClEacPwME303K79FAzK29Zy4rPhFsD+hLjZkTT100
+         TIoN1irlZbmAyzA4JMLK2A2Vpv5bzPvU1cx9Gj+Cz6C3+CL/LFLV9pakLe+Ga74LTxDG
+         jAIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/OqFsaupcKkbN5ZhwB7cTTOB/jJJt4KZYzQeTPC35+8=;
+        b=MIPQcKQ7UzSL5WDMsfEDYrFp9ByCKWHmxJ81vmOVXGghd9ABXAykxycfRpXrGKvTz2
+         Yq3gR8j9J2t4QKjT2lcFEeyar259X+Pw4q8g1QwKxC0LD8gHdNYX1zbYhlbVHLmqRr/I
+         cAQntTaHeOpsfHbj+egWqvV2AqXj2yrpbE5Do2uyNX8/9/+qxmD88jVMiquLBCK7rIZZ
+         ABo+zeWqO+MHnfIZJ03J+EOtfv0l2RTwKlTgGbL+gJPcYCP44URa8rd0ndNm0grKarmy
+         TdADq7CtgNu6aig+20CbgO/LOTIFaRtw7gbBer7Crb8DElqNtcaGHmRtnrXs3Y899Q3D
+         CQew==
+X-Gm-Message-State: AOAM531pWVtk+ty9NQGrUiA2O+RGFD90aRBAL9qwybVuVTlx8mrc4mbJ
+        GXKK1f7e6PUzKtD7KN8r6H0SCfdb0nmI7wfAFBKTtg==
+X-Google-Smtp-Source: ABdhPJyJxuBV/uJZZhzzNbRjrZxQLROU+4Ucqqbti5noEvVDrdiFWuCWiOyFcxZFCb/sBhiP8wYqX4LQ++GrBZJzJPc=
+X-Received: by 2002:a05:6000:1f18:b0:20f:e61b:520e with SMTP id
+ bv24-20020a0560001f1800b0020fe61b520emr56401364wrb.214.1655112699798; Mon, 13
+ Jun 2022 02:31:39 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH RFC v2 03/18] scsi: core: Implement reserved command
- handling
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        <axboe@kernel.dk>, <jejb@linux.ibm.com>,
-        <martin.petersen@oracle.com>, <brking@us.ibm.com>, <hare@suse.de>,
-        <hch@lst.de>
-CC:     <linux-block@vger.kernel.org>, <linux-ide@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
-        <chenxiang66@hisilicon.com>
-References: <1654770559-101375-1-git-send-email-john.garry@huawei.com>
- <1654770559-101375-4-git-send-email-john.garry@huawei.com>
- <b4a0ede5-95a3-4388-e808-7627b5484d01@opensource.wdc.com>
- <7f80f3b6-84f6-de48-4e69-4562c96e62c5@huawei.com>
- <e4b108ba-cbc9-5237-f873-2fcea94f2b85@opensource.wdc.com>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <e4b108ba-cbc9-5237-f873-2fcea94f2b85@opensource.wdc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.195.33.253]
-X-ClientProxiedBy: lhreml746-chm.china.huawei.com (10.201.108.196) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+References: <20220613085307.260256-1-alexandre.ghiti@canonical.com>
+In-Reply-To: <20220613085307.260256-1-alexandre.ghiti@canonical.com>
+From:   Anup Patel <anup@brainfault.org>
+Date:   Mon, 13 Jun 2022 15:01:28 +0530
+Message-ID: <CAAhSdy1gr_WvCJUMXMwtZUux9qBsW-b_LGFg4=tdnkv5b538sg@mail.gmail.com>
+Subject: Re: [PATCH -fixes v2] riscv: Fix missing PAGE_PFN_MASK
+To:     Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>
+Cc:     =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>,
+        Guo Ren <guoren@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Atish Patra <atishp@atishpatra.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
+        KVM General <kvm@vger.kernel.org>,
+        "open list:KERNEL VIRTUAL MACHINE FOR RISC-V (KVM/riscv)" 
+        <kvm-riscv@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/06/2022 10:06, Damien Le Moal wrote:
->>> We cannot have more than 32 tags.
->> We may have 32 regular tags and 1 reserved tag for SATA.
-> Right. But that is the messy part though. That extra 1 tag is actually not
-> a tag since all internal commands are non-NCQ commands that do not need a
-> tag...
+On Mon, Jun 13, 2022 at 2:23 PM Alexandre Ghiti
+<alexandre.ghiti@canonical.com> wrote:
+>
+> There are a bunch of functions that use the PFN from a page table entry
+> that end up with the svpbmt upper-bits because they are missing the newly
+> introduced PAGE_PFN_MASK which leads to wrong addresses conversions and
+> then crash: fix this by adding this mask.
+>
+> Fixes: 100631b48ded ("riscv: Fix accessing pfn bits in PTEs for non-32bit variants")
+> Signed-off-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
 
-But apart from SATA, libsas LLDDs do need a real tag for the libata 
-internal command.
+Looks good to me.
 
-> 
-> I am working on command duration limits support currently. This feature
-> set has a new horrendous "improvement": a command can be aborted by the
-> device if it fails its duration limit, but the abort is done with a good
-> status + sense data available bit set so that the device queue is not
-> aborted entirely like with a regular NCQ command error.
-> 
-> For such aborted commands, the command sense data is set to
-> "COMPLETED/DATA UNAVAILABLE". In this case, the host needs to go read the
-> new "successful NCQ sense data log" to check that the command sense is
-> indeed "COMPLETED/DATA UNAVAILABLE". And to go read that log page without
-> stalling the device queue, we would need an internal NCQ (queuable) command.
-> 
-> Currently, that is not possible to do cleanly as there are no guarantees
-> we can get a free tag (there is a race between block layer tag allocation
-> and libata internal tag counting). So a reserved tag for that would be
-> nice. We would end up with 31 IO tags at most + 1 reserved tag for NCQ
-> commands + ATA_TAG_INTERNAL for non-NCQ. That last one would be rendered
-> rather useless. But that also means that we kind-of go back to the days
-> when Linux showed ATA drives max QD of 31...
+Reviewed-by: Anup Patel <anup@brainfault.org>
 
-So must the ATA_TAG_INTERNAL qc always be available for non-NCQ action 
-like EH, and that is why you cannot reuse for this internal NCQ 
-(queuable) command?
+@Palmer let me know if you want me to take this through the KVM repo.
 
-> 
-> I am still struggling with this particular use case and trying to make it
-> fit with your series. Trying out different things right now.
-> 
+Regards,
+Anup
 
-ok
-
-> 
->>> I think keeping can_queue as the max queue depth with at most
->>> nr_reserved_cmds tags reserved is better.
->> Maybe the wording in the comment can be improved as it originally
->> focused on SAS HBAs where there are no special rules for tagset depth or
->> how the tagset should be carved up to handle regular and reserved commands.
-> Indeed. And that would be for HBAs that do*not*  use libsas/libata.
-> Otherwise, the NCQ vs non-NCQ reserved tag mess is there.
-> 
-
-Thanks,
-John
+> ---
+>  arch/riscv/include/asm/pgtable-64.h | 12 ++++++------
+>  arch/riscv/include/asm/pgtable.h    |  6 +++---
+>  arch/riscv/kvm/mmu.c                |  2 +-
+>  3 files changed, 10 insertions(+), 10 deletions(-)
+>
+> diff --git a/arch/riscv/include/asm/pgtable-64.h b/arch/riscv/include/asm/pgtable-64.h
+> index 5c2aba5efbd0..dc42375c2357 100644
+> --- a/arch/riscv/include/asm/pgtable-64.h
+> +++ b/arch/riscv/include/asm/pgtable-64.h
+> @@ -175,7 +175,7 @@ static inline pud_t pfn_pud(unsigned long pfn, pgprot_t prot)
+>
+>  static inline unsigned long _pud_pfn(pud_t pud)
+>  {
+> -       return pud_val(pud) >> _PAGE_PFN_SHIFT;
+> +       return __page_val_to_pfn(pud_val(pud));
+>  }
+>
+>  static inline pmd_t *pud_pgtable(pud_t pud)
+> @@ -278,13 +278,13 @@ static inline p4d_t pfn_p4d(unsigned long pfn, pgprot_t prot)
+>
+>  static inline unsigned long _p4d_pfn(p4d_t p4d)
+>  {
+> -       return p4d_val(p4d) >> _PAGE_PFN_SHIFT;
+> +       return __page_val_to_pfn(p4d_val(p4d));
+>  }
+>
+>  static inline pud_t *p4d_pgtable(p4d_t p4d)
+>  {
+>         if (pgtable_l4_enabled)
+> -               return (pud_t *)pfn_to_virt(p4d_val(p4d) >> _PAGE_PFN_SHIFT);
+> +               return (pud_t *)pfn_to_virt(__page_val_to_pfn(p4d_val(p4d)));
+>
+>         return (pud_t *)pud_pgtable((pud_t) { p4d_val(p4d) });
+>  }
+> @@ -292,7 +292,7 @@ static inline pud_t *p4d_pgtable(p4d_t p4d)
+>
+>  static inline struct page *p4d_page(p4d_t p4d)
+>  {
+> -       return pfn_to_page(p4d_val(p4d) >> _PAGE_PFN_SHIFT);
+> +       return pfn_to_page(__page_val_to_pfn(p4d_val(p4d)));
+>  }
+>
+>  #define pud_index(addr) (((addr) >> PUD_SHIFT) & (PTRS_PER_PUD - 1))
+> @@ -347,7 +347,7 @@ static inline void pgd_clear(pgd_t *pgd)
+>  static inline p4d_t *pgd_pgtable(pgd_t pgd)
+>  {
+>         if (pgtable_l5_enabled)
+> -               return (p4d_t *)pfn_to_virt(pgd_val(pgd) >> _PAGE_PFN_SHIFT);
+> +               return (p4d_t *)pfn_to_virt(__page_val_to_pfn(pgd_val(pgd)));
+>
+>         return (p4d_t *)p4d_pgtable((p4d_t) { pgd_val(pgd) });
+>  }
+> @@ -355,7 +355,7 @@ static inline p4d_t *pgd_pgtable(pgd_t pgd)
+>
+>  static inline struct page *pgd_page(pgd_t pgd)
+>  {
+> -       return pfn_to_page(pgd_val(pgd) >> _PAGE_PFN_SHIFT);
+> +       return pfn_to_page(__page_val_to_pfn(pgd_val(pgd)));
+>  }
+>  #define pgd_page(pgd)  pgd_page(pgd)
+>
+> diff --git a/arch/riscv/include/asm/pgtable.h b/arch/riscv/include/asm/pgtable.h
+> index 1d1be9d9419c..5dbd6610729b 100644
+> --- a/arch/riscv/include/asm/pgtable.h
+> +++ b/arch/riscv/include/asm/pgtable.h
+> @@ -261,7 +261,7 @@ static inline pgd_t pfn_pgd(unsigned long pfn, pgprot_t prot)
+>
+>  static inline unsigned long _pgd_pfn(pgd_t pgd)
+>  {
+> -       return pgd_val(pgd) >> _PAGE_PFN_SHIFT;
+> +       return __page_val_to_pfn(pgd_val(pgd));
+>  }
+>
+>  static inline struct page *pmd_page(pmd_t pmd)
+> @@ -590,14 +590,14 @@ static inline pmd_t pmd_mkinvalid(pmd_t pmd)
+>         return __pmd(pmd_val(pmd) & ~(_PAGE_PRESENT|_PAGE_PROT_NONE));
+>  }
+>
+> -#define __pmd_to_phys(pmd)  (pmd_val(pmd) >> _PAGE_PFN_SHIFT << PAGE_SHIFT)
+> +#define __pmd_to_phys(pmd)  (__page_val_to_pfn(pmd_val(pmd)) << PAGE_SHIFT)
+>
+>  static inline unsigned long pmd_pfn(pmd_t pmd)
+>  {
+>         return ((__pmd_to_phys(pmd) & PMD_MASK) >> PAGE_SHIFT);
+>  }
+>
+> -#define __pud_to_phys(pud)  (pud_val(pud) >> _PAGE_PFN_SHIFT << PAGE_SHIFT)
+> +#define __pud_to_phys(pud)  (__page_val_to_pfn(pud_val(pud)) << PAGE_SHIFT)
+>
+>  static inline unsigned long pud_pfn(pud_t pud)
+>  {
+> diff --git a/arch/riscv/kvm/mmu.c b/arch/riscv/kvm/mmu.c
+> index 1c00695ebee7..9826073fbc67 100644
+> --- a/arch/riscv/kvm/mmu.c
+> +++ b/arch/riscv/kvm/mmu.c
+> @@ -54,7 +54,7 @@ static inline unsigned long gstage_pte_index(gpa_t addr, u32 level)
+>
+>  static inline unsigned long gstage_pte_page_vaddr(pte_t pte)
+>  {
+> -       return (unsigned long)pfn_to_virt(pte_val(pte) >> _PAGE_PFN_SHIFT);
+> +       return (unsigned long)pfn_to_virt(__page_val_to_pfn(pte_val(pte)));
+>  }
+>
+>  static int gstage_page_size_to_level(unsigned long page_size, u32 *out_level)
+> --
+> 2.34.1
+>
