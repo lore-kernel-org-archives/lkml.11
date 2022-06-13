@@ -2,700 +2,248 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D44F5C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:18:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A9CDC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:19:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244929AbiFMSSC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:18:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34550 "EHLO
+        id S245056AbiFMSTw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:19:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234072AbiFMSRe (ORCPT
+        with ESMTP id S236871AbiFMSTj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 14:17:34 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BF9545522C;
-        Mon, 13 Jun 2022 07:16:01 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 55FF323A;
-        Mon, 13 Jun 2022 07:16:01 -0700 (PDT)
-Received: from [192.168.99.12] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 176A93F792;
-        Mon, 13 Jun 2022 07:15:59 -0700 (PDT)
-Message-ID: <c421ed20-f422-0c96-23d6-2ac964755e9f@foss.arm.com>
-Date:   Mon, 13 Jun 2022 15:15:51 +0100
+        Mon, 13 Jun 2022 14:19:39 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5F8C46B0D
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 07:24:02 -0700 (PDT)
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25DDYwX6003921;
+        Mon, 13 Jun 2022 14:23:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : content-type : content-transfer-encoding :
+ mime-version; s=corp-2021-07-09;
+ bh=NzmFIbnKv22ty7ltcxa7/OTLNnbN0elfoCpA4jthQ2M=;
+ b=norvfExqmj1FkZ8nd8xzaxuDQplaZh7b1V+xPQzgGOC950dViVuchaTOTdb28cQjdtvG
+ naJyToRuxjQ0ut48fFUPAK7p0vIGf04LUqrBDDt+PKjlmfO3P/tvyusCykR/Jhhp3ewA
+ F7CsLX5TZZZm0r2yn3kAzyy4FpoAvCUGezcVr2hCqspj7CrJUfzSdXi/ReymxAXvXmT5
+ vzTJ4TwJgZoekCG9YKqksN7LIYc8AUxWZyCl7a+ZhWZUk/CzBTEhAPvrJqCg0+MD+sbX
+ 8rUleucfhEfls291CccAHu0opN+xTxUfcUOhh9oQ5bryH546y5cA8ZA095iB7AIBCUEO zA== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gmjx9b718-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 13 Jun 2022 14:23:59 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 25DEK6Ca039743;
+        Mon, 13 Jun 2022 14:23:58 GMT
+Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2101.outbound.protection.outlook.com [104.47.70.101])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3gp6me0n7t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 13 Jun 2022 14:23:57 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MrTVW8IBktAJ3l9ujJF/r4Oe+j6DXoZw+KKL93xn5indMh1ZKw4Zq11CfJb3UfwpK1tfg1pGPihkUW0uAZKAQOaShYxonGD+SXi37FL7WpbLmika/crgjFF7ODX4JCOboLOQjA+dqovlfArurrcNh2RVclL/CqeSzeJgyOdwSxd+hWc2YQyBqOox3Smu5SGqMz5nShk6zCbU4gHlaVLwl9VFu9YIjWG4oAFJoEevXiOrGeoXBekyIsuDSJpyqBo2GE5GI98CQ/eGJkGA8R6qy76BXA3HdoYEc5mje0TrUYejbLHwixNb7p+4lrZpIf9C4qarVIfjIWmNx2815DMFjw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=h3waqdCkkMOHneC9zOnr+j6f1VB9cYBF4drepi70XQw=;
+ b=hYuUMwohT+LmFPnDAVKCH/ArtzeFYEQbbBRjiNY9guVTnG7HuwUpQd1Lq56ZRGaIHoT50bqd2JJtIVWQpVvYgPe2C0zmWmWofLkQM5MqxgD04g1Yep67LvraghjNevVL4c2hKzgz59KoCKY3sfumHEKS917A+Q2epF8RBPF7MiElv9boGBk8iegGgdrGPem4Tzp/zTeNtUuc60Av/rOiFqGYrjiO5Y6d72x/wgA19U7NpaR90AppQQ+WnJ0CkX34l0YUweSn6bnMJ8qrOnZ/kisajqx1EbfDIHFFnzszwzuhaVHCgnIVFEirqEDcgscZPRvKZYZKXrFgK+0c++df0w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=h3waqdCkkMOHneC9zOnr+j6f1VB9cYBF4drepi70XQw=;
+ b=mKcCC8pQa+nEBoIAbWBMEqSa37dMcX0jRRQMC1qqO0QyD0qxjKouttF2oOaLq165pwmNAm4plWFkSEgEUf8CG+YRZE6ZkbflKyfeop0j/Hzqz7M78JW7WEugM9x1LAdzl7cUIjvehhC0UIofSsCY6Q/zILeC6xrPsa6frHAOsI4=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by BN0PR10MB4888.namprd10.prod.outlook.com
+ (2603:10b6:408:115::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.13; Mon, 13 Jun
+ 2022 14:23:56 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::5020:9b82:5917:40b]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::5020:9b82:5917:40b%6]) with mapi id 15.20.5332.020; Mon, 13 Jun 2022
+ 14:23:56 +0000
+Date:   Mon, 13 Jun 2022 17:23:21 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     kbuild@lists.01.org, Alex Deucher <alexander.deucher@amd.com>
+Cc:     lkp@intel.com, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Guchun Chen <guchun.chen@amd.com>
+Subject: drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c:1133
+ amdgpu_discovery_reg_base_init() error: testing array offset
+ 'adev->vcn.num_vcn_inst' after use.
+Message-ID: <202206120158.qKV3o9Lh-lkp@intel.com>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JNAP275CA0005.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4c::10)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 3/3] perf test: Add coresight tests to guage quality of
- data generated
-Content-Language: en-US
-To:     Leo Yan <leo.yan@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, coresight@lists.linaro.org,
-        suzuki.poulose@arm.com, mathieu.poirier@linaro.org,
-        mike.leach@linaro.org, linux-perf-users@vger.kernel.org,
-        acme@kernel.org
-References: <20220309122859.31487-1-carsten.haitzler@foss.arm.com>
- <20220309122859.31487-3-carsten.haitzler@foss.arm.com>
- <20220410083041.GA184647@leoy-ThinkPad-X240s>
- <050209c2-c784-e255-4e75-5c8674c5cfe0@foss.arm.com>
- <20220526082039.GA795802@leoy-ThinkPad-X240s>
-From:   Carsten Haitzler <carsten.haitzler@foss.arm.com>
-Organization: Arm Ltd.
-In-Reply-To: <20220526082039.GA795802@leoy-ThinkPad-X240s>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 29d79b7a-110e-4ffc-466e-08da4d485940
+X-MS-TrafficTypeDiagnostic: BN0PR10MB4888:EE_
+X-Microsoft-Antispam-PRVS: <BN0PR10MB488895EC219B462B722C37298EAB9@BN0PR10MB4888.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: smuEL4FWhwU/IomAGT4vh2GyHcxej/jNXy95hvG0UcPrrnNR9RhuQilIuruHUrX1+N1tq6Xw5P7+yI27DdZI3Mk+t2qgfK8DOD01xabsFL2PcZp/PN5RJwb5D7EXUvUs3tJAqeu/AnXUxXZSfw5r/5lZIPlWA0zI3y6yNZWQdAZbjNRHyu+jvV1R75XfihdBqDrzLNLLpCq1IDl3BNOL+2jLPYm+jXSsVHNUvlykR4TD88LEYhihlBd4XIlXK0X8fahc1u5G2Mu9j2kgmHUbLLFgQdaEs06VOaKBw9uZUnJtZYhFlKDK/oDJsG5AVXjp9VKxc9pcMKD/nDH6Gn/Go/HgMmVQzjm/8kesMoEhDZSf89WsGTTduvw0lR7RPhP0sW7/eXVo4WpWYQomMFcjfdJE83NZw0ZKcmzW/pwfqMDCEUmueYbw3v7acYxinazFLLsYk9tnaK1lM5WbLW+LPYk53oPfq0hb13rd997nImVufqzj0YtlKnuOrAp0KS3OjqOzg/1rtlMkoOszSCLepCSQ0FZ3ZovPVmpjrRQsiJteOEPZ+rwfY5M4f5SMZhdXuIxBAwd1SFJIIC5rYqFheMLR+Xk4COm/Er8UxewcvilHObHqOHwRBlDmnhQVzXiOf9518dw442XchSnTN10dMznSXbDYHPEr1QYnOiFHWKal1ddl55BxwroX2Cu8UAJOdheBc45MAKdZaG9cIIf8ZNtOdR7SyMxNEVxoaPWr5KXhLyUKX8W3TGWLQL49e0KsW5kxCkpA0tNRDV9hvtCtxcMeIPI9bwo1Pzd9+LpQqbteieNQjQn9nDkJSBqOEO2M4YJvZSpk3Pv9NGFin6qYPg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(36756003)(316002)(86362001)(186003)(1076003)(66574015)(6916009)(44832011)(5660300002)(6486002)(83380400001)(966005)(4326008)(8676002)(66556008)(66476007)(2906002)(66946007)(4001150100001)(6666004)(38350700002)(52116002)(26005)(38100700002)(9686003)(8936002)(508600001)(6506007)(6512007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?QlcFkfb3AkvBLZl2mm+F03zo5yIqInmEqIOHggLWVWDts6LREOuzvZAMUT?=
+ =?iso-8859-1?Q?cYjcVQyD6MncE8HRzU7xWAD46MDdXNKJElAnZIgfvvOHW13yrUpxidTRHi?=
+ =?iso-8859-1?Q?nUXhew+DE2MKzJf4qdA5MkfL9jWBi8GNZxpLBVXbuQX690gcMvass2yYOj?=
+ =?iso-8859-1?Q?qx4o7Rcb8g8ZaPVefOujs67FsCAVJWxT5H0kBiY2XVR8iI53YITrM71WMl?=
+ =?iso-8859-1?Q?cmtPSJaHzkk2EvCqUdsLXaX43TzGdDiOVMCb91pqjcinWc57V2sPto1cNo?=
+ =?iso-8859-1?Q?DLYmOmFMl97vrnghacmZkTSoBMrpIM+XWeuZlA4qGl08/b0KNUQYM5zu3N?=
+ =?iso-8859-1?Q?ziRHEhbTw59cNnIKaWQMLKxSO2irPoy1DhZ1MiKYRRMhZ6WNWoKB946tNW?=
+ =?iso-8859-1?Q?LRJ0TatcVmOgXdvL2f1GW/cig8mPRwwqdO54Nh9dGuGcd6JPiZC47nzRdc?=
+ =?iso-8859-1?Q?3qrOMaNLOmYeuDrYqJLB438Uv2KenRSpRYI0Iay0HM953kTuZdnwVeViNZ?=
+ =?iso-8859-1?Q?1jKWiO41Sb6Vc/RvtY6qHRYzJvw+B3bVA5QefdI1P8DiMu+9TahauY4T+h?=
+ =?iso-8859-1?Q?3xkLeWaqr/b+0wXePcv8ZflcuGQ575jkLmaw5TOACbPygGk75BEc8T5dGD?=
+ =?iso-8859-1?Q?7B1IQpM5j1ozjQcydKzum8gU9FTmhx3FXLsFOeLEKuPLVWerSCVTD1JUOG?=
+ =?iso-8859-1?Q?m8V3nqFt6Iq0NnWgq7NZXjyIME+fWeYmPQZphaBkaggOYOLSh24eCuevww?=
+ =?iso-8859-1?Q?Hkd0SZTHGd0gpen4XhGulnwsNuA1OBxfK+0bsZaK5tPvjQjxXiSm4inr45?=
+ =?iso-8859-1?Q?ZHX0PaVyk1ruqVfcUvJ1kBKVo0HrivUWpy0A/jLR7Y3/HPQynBDeD0GOtW?=
+ =?iso-8859-1?Q?jl00zwMRaEE/yCYdGjyOKaiQpRDANe6OKCpJbOWQ2Ah0c6VDZplVzvEvmG?=
+ =?iso-8859-1?Q?vAyQk0j3O+C80CkPaiqllwu2FEaOLrMw5oAn6NQYsvZCZOOxzeyHQGVpnp?=
+ =?iso-8859-1?Q?FJ/OlGgYnPBwfPSv3kZ8li88G4hlpelC5ynvROAxAM53nTAzj5I2zNf05q?=
+ =?iso-8859-1?Q?/W8e8i/i/MQUwruATRnHmNuaI7pnFhdkl1azGZi0Zk+23FFP2AaKdx30hC?=
+ =?iso-8859-1?Q?u+AdMtF+ahC/zDYzuiK5r/v4BoD1+o3ODpKTufDvU4kpjM91gemCsADOsG?=
+ =?iso-8859-1?Q?pjSAeml4ZUr94aHCKntFkVbLjAEP2qYA7HqjTEbWK794J+VIR900bIGBeu?=
+ =?iso-8859-1?Q?9tw2ZSZ+4ptUNEackdUffHrQ/u7FnhnhzCgV7zEC8OAmslAChN4wyeiaUf?=
+ =?iso-8859-1?Q?N+TBGlIK8AMSdFldsyQtQVGqfKKMVnXndtVyiCxnFirx8ZjRXFN1z8zAaF?=
+ =?iso-8859-1?Q?i1A9qe53exyKKFzm7DnR+ZGjD7ejFOc2U+HJXdzvidCkG89bLRFyrgBQDT?=
+ =?iso-8859-1?Q?yWMR2Hd95x0YOid1S4CIImXKblZJ0JivaLO4/thxb9o/i8MC+nw17tBrt0?=
+ =?iso-8859-1?Q?NA1aWXE6cRKDjSnC82BdRvtvTnZEKjsK6EmHZj798LhZSISma9VqtrSJCz?=
+ =?iso-8859-1?Q?+Bc20sT5dIRI/4Ut86ck1kDV9VO4XT53Es+d3O9jzOJJh6CcAnzYrdHII1?=
+ =?iso-8859-1?Q?giWkKvhTLNzz7naF8iJ4zBNdwvXAD+IhSa2rrOaDoFZjVv8RthORF9Qjv9?=
+ =?iso-8859-1?Q?Ixw25G0zrw6WDN7JYhiqld8IS7G6uRivmtLk160ZHIhmRB7Jm+5ETWgZU+?=
+ =?iso-8859-1?Q?sQVWh4uJlc8DCWSsblhE+pSe7Rw7+G6KX8cuF52HJJCLqsN8L690PqHxr9?=
+ =?iso-8859-1?Q?Aqk6OgVh/wxwjusp+PNHsGT9bcfzBaQ=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 29d79b7a-110e-4ffc-466e-08da4d485940
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jun 2022 14:23:56.0621
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: jxz+Q/0Pjqg6MBJ/jQnK5TIl3AGdmljp+/UnHMqe6EAvUGycrFk04xyx6KEdn1FuXDgjNakSTNtGN11wWEET2ZMWgxF6qf7Ssas2aDxy+AU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR10MB4888
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.874
+ definitions=2022-06-13_06:2022-06-13,2022-06-13 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 phishscore=0
+ malwarescore=0 spamscore=0 bulkscore=0 adultscore=0 suspectscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206130065
+X-Proofpoint-ORIG-GUID: gAXRd-hEXWjaCskNEHI3hAxjeRvMVP2K
+X-Proofpoint-GUID: gAXRd-hEXWjaCskNEHI3hAxjeRvMVP2K
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   0885eacdc81f920c3e0554d5615e69a66504a28d
+commit: a0ccc717c4ab3ef572f023fdceffb4b6df496a0d drm/amdgpu/discovery: validate VCN and SDMA instances
+config: parisc-randconfig-m031-20220608 (https://download.01.org/0day-ci/archive/20220612/202206120158.qKV3o9Lh-lkp@intel.com/config)
+compiler: hppa-linux-gcc (GCC) 11.3.0
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+
+New smatch warnings:
+drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c:1133 amdgpu_discovery_reg_base_init() error: testing array offset 'adev->vcn.num_vcn_inst' after use.
+
+Old smatch warnings:
+drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c:1454 amdgpu_discovery_get_vcn_info() error: buffer overflow 'adev->vcn.vcn_codec_disable_mask' 2 <= 3
+
+vim +1133 drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c
+
+e24d0e91b33676 Alex Deucher    2022-03-30  1065  static int amdgpu_discovery_reg_base_init(struct amdgpu_device *adev)
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1066  {
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1067  	struct binary_header *bhdr;
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1068  	struct ip_discovery_header *ihdr;
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1069  	struct die_header *dhdr;
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1070  	struct ip *ip;
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1071  	uint16_t die_offset;
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1072  	uint16_t ip_offset;
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1073  	uint16_t num_dies;
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1074  	uint16_t num_ips;
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1075  	uint8_t num_base_address;
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1076  	int hw_ip;
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1077  	int i, j, k;
+dffa11b4f74b15 Monk Liu        2020-03-04  1078  	int r;
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1079  
+dffa11b4f74b15 Monk Liu        2020-03-04  1080  	r = amdgpu_discovery_init(adev);
+dffa11b4f74b15 Monk Liu        2020-03-04  1081  	if (r) {
+dffa11b4f74b15 Monk Liu        2020-03-04  1082  		DRM_ERROR("amdgpu_discovery_init failed\n");
+dffa11b4f74b15 Monk Liu        2020-03-04  1083  		return r;
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1084  	}
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1085  
+72de33f8f7ba0f Alex Deucher    2020-07-29  1086  	bhdr = (struct binary_header *)adev->mman.discovery_bin;
+72de33f8f7ba0f Alex Deucher    2020-07-29  1087  	ihdr = (struct ip_discovery_header *)(adev->mman.discovery_bin +
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1088  			le16_to_cpu(bhdr->table_list[IP_DISCOVERY].offset));
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1089  	num_dies = le16_to_cpu(ihdr->num_dies);
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1090  
+437298b833996d Xiaojie Yuan    2019-03-27  1091  	DRM_DEBUG("number of dies: %d\n", num_dies);
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1092  
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1093  	for (i = 0; i < num_dies; i++) {
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1094  		die_offset = le16_to_cpu(ihdr->die_info[i].die_offset);
+72de33f8f7ba0f Alex Deucher    2020-07-29  1095  		dhdr = (struct die_header *)(adev->mman.discovery_bin + die_offset);
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1096  		num_ips = le16_to_cpu(dhdr->num_ips);
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1097  		ip_offset = die_offset + sizeof(*dhdr);
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1098  
+437298b833996d Xiaojie Yuan    2019-03-27  1099  		if (le16_to_cpu(dhdr->die_id) != i) {
+437298b833996d Xiaojie Yuan    2019-03-27  1100  			DRM_ERROR("invalid die id %d, expected %d\n",
+437298b833996d Xiaojie Yuan    2019-03-27  1101  					le16_to_cpu(dhdr->die_id), i);
+437298b833996d Xiaojie Yuan    2019-03-27  1102  			return -EINVAL;
+437298b833996d Xiaojie Yuan    2019-03-27  1103  		}
+437298b833996d Xiaojie Yuan    2019-03-27  1104  
+437298b833996d Xiaojie Yuan    2019-03-27  1105  		DRM_DEBUG("number of hardware IPs on die%d: %d\n",
+437298b833996d Xiaojie Yuan    2019-03-27  1106  				le16_to_cpu(dhdr->die_id), num_ips);
+437298b833996d Xiaojie Yuan    2019-03-27  1107  
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1108  		for (j = 0; j < num_ips; j++) {
+72de33f8f7ba0f Alex Deucher    2020-07-29  1109  			ip = (struct ip *)(adev->mman.discovery_bin + ip_offset);
+5039f5298880f7 Ernst Sjöstrand 2021-09-26  1110  
+5039f5298880f7 Ernst Sjöstrand 2021-09-26  1111  			if (amdgpu_discovery_validate_ip(ip))
+5039f5298880f7 Ernst Sjöstrand 2021-09-26  1112  				goto next_ip;
+5039f5298880f7 Ernst Sjöstrand 2021-09-26  1113  
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1114  			num_base_address = ip->num_base_address;
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1115  
+437298b833996d Xiaojie Yuan    2019-03-27  1116  			DRM_DEBUG("%s(%d) #%d v%d.%d.%d:\n",
+437298b833996d Xiaojie Yuan    2019-03-27  1117  				  hw_id_names[le16_to_cpu(ip->hw_id)],
+437298b833996d Xiaojie Yuan    2019-03-27  1118  				  le16_to_cpu(ip->hw_id),
+437298b833996d Xiaojie Yuan    2019-03-27  1119  				  ip->number_instance,
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1120  				  ip->major, ip->minor,
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1121  				  ip->revision);
+f39f5bb1c9d68d Xiaojie Yuan    2019-06-20  1122  
+baf3f8f3740625 Alex Deucher    2021-11-30  1123  			if (le16_to_cpu(ip->hw_id) == VCN_HWID) {
+c40bdfb2ffa4cf Leslie Shi      2021-12-08  1124  				/* Bit [5:0]: original revision value
+baf3f8f3740625 Alex Deucher    2021-11-30  1125  				 * Bit [7:6]: en/decode capability:
+baf3f8f3740625 Alex Deucher    2021-11-30  1126  				 *     0b00 : VCN function normally
+baf3f8f3740625 Alex Deucher    2021-11-30  1127  				 *     0b10 : encode is disabled
+baf3f8f3740625 Alex Deucher    2021-11-30  1128  				 *     0b01 : decode is disabled
+baf3f8f3740625 Alex Deucher    2021-11-30  1129  				 */
+c40bdfb2ffa4cf Leslie Shi      2021-12-08  1130  				adev->vcn.vcn_config[adev->vcn.num_vcn_inst] =
+                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-On 5/26/22 09:20, Leo Yan wrote:
-> Hi Carsten,
-> 
-> Sorry for late response.
-> 
-> On Thu, Apr 21, 2022 at 06:38:33PM +0100, Carsten Haitzler wrote:
-> 
-> [...]
-> 
->>> Very big change...  Why squash all patches form previous verion to this
->>> single one big patch?  Usually the format with small patches is much
->>> better for reviewing.
->>
->> I was asked to re-jig the tree and in doing so I also ended up cutting down
->> the size a lot so this just makes more sense together as a "here are the
->> tests" as adding infra without any tests makes no sense and the tests
->> themelves are self-contained in their own directories and source files and
->> "drivign scripts" thus it's essentially patch 1 appended to patch 2 to patch
->> 3 etc. and still broken up in the patch file by file.
-> 
-> I am not sure if I understand the meaning, seems to me you could
-> organize the patch series like:
-> 
-> - Patch for common files (e.g. script lib/coresight.sh or some
->    Makefile changes);
-> - Patches for enabling test cases, E.g.:
->    patch for asm_pure_loop;
->    patch for thread loop (include unroll loop);
->    patch for memcpy;
-> - Patch for documentation.
+c40bdfb2ffa4cf Leslie Shi      2021-12-08  1131  					ip->revision & 0xc0;
+baf3f8f3740625 Alex Deucher    2021-11-30  1132  				ip->revision &= ~0xc0;
+a0ccc717c4ab3e Alex Deucher    2022-05-16 @1133  				if (adev->vcn.num_vcn_inst < AMDGPU_MAX_VCN_INSTANCES)
+                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+If "adev->vcn.num_vcn_inst >= AMDGPU_MAX_VCN_INSTANCES" then the memory
+has already been corrupted.
 
-Each of those last patches are simple a patch with added "fluff" to add 
-a line to a makefile each time then entire new files. A single patch set 
-already divides each of these into their own files in the same patch are 
-already divided - the only difference is - do you get the added fluff 
-fiddling to add files to the makefile or just have them all added at 
-once and the rest is already broken up. If you scroll through a patch 
-with 3 files, or have 3 patches with 1 file in each - it's the same in 
-the end. It's divided either way, but creating a patch set where one 
-patch after the other adds a new test and each adds a line to the same 
-makefle is a more work as I can't just git add/commit the test files to 
-each patch. I have to first remove all tests. Then add the parent 
-makefile for the tools with 1 line in it for 1 tool and 1 set of patch 
-scripts. I then have to add the next one and edit this parent makefile 
-to add one line and so on - where it actually makes the total size of 
-all the patches bigger as this makefile that lists all the child dirs 
-keeps being modified only to just add a single line added to it and the 
-rest is all stand-alone new files anyway. As all the changes to this 
-parent makefile all modify the same context, they can't be  separated 
-out and cherry-picked as they then get conflicts in the context anyways 
-so the patches can't be chosen separately without resolving conflicts 
-anyway, thus to me it makes no sense to do all the extra work for a 
-bigger total patch set that can't be split out without conflicts anyway...
+7cbe08a930a132 Alex Deucher    2021-08-09  1134  					adev->vcn.num_vcn_inst++;
+a0ccc717c4ab3e Alex Deucher    2022-05-16  1135  				else
+a0ccc717c4ab3e Alex Deucher    2022-05-16  1136  					dev_err(adev->dev, "Too many VCN instances: %d vs %d\n",
+a0ccc717c4ab3e Alex Deucher    2022-05-16  1137  						adev->vcn.num_vcn_inst + 1,
+a0ccc717c4ab3e Alex Deucher    2022-05-16  1138  						AMDGPU_MAX_VCN_INSTANCES);
+baf3f8f3740625 Alex Deucher    2021-11-30  1139  			}
 
-But I kind of give up. It seems there is a view (that I don't understand 
-as over-all the data is more complex and larger to review when broken 
-out) that more data in N patches is preferable to less data in a single 
-patch (even though it's all broken out into different file blocks in the 
-same patch so you scroll down and basically in essence "cat *.patch" and 
-"cat onefile.patch" produce the same thing other than the "add one more 
-line to this makefile"). I'll break it up - it just is more busy-work to 
-create a bigger overall patch set with more changes to look at overall.
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
 
-> If this is not comfortable for you, at least we can use three patches:
-> 
-> - Patch for common file (e.g. script lib/coresight.sh);
-> - Patch for test cases;
-> - Patch for documentation.
-
-The documentation I can see breaking out - though that wants to be moved 
-somewhere else in the tree now and not alongside the perf tool. I 
-generally go for the view of documentation belongs with the thing it 
-documents and if there is new information to document, it belongs with 
-the patch introducing what it documents. :)
-
-> [...]
-> 
->>>> +If you see these above, then your system is tracing coresight data
->>>> +correctly.
->>>> +
->>>> +To compile perf with coresight support in the perf directory do
->>>> +
->>>> +    make CORESIGHT=1
->>>
->>> It is inaccurate that if we don't mention openCSD lib.
->>
->> Do you mean I need to mention that you need the opencsd library installed
->> too?
-> 
-> Yes, otherwise, users might directly build perf without opencsd lib,
-> then finally they cannot use perf with Arm CoreSight.
-
-OK - sure. Will document that OpenCSD is needed and where to possibly 
-get it (git, packages etc.).
-
->>>> +This will compile the perf tool with coresight support as well as
->>>> +build some small test binaries for perf test. This requires you also
->>>> +be compiling for 64bit Arm (ARM64/aarch64). The tools run as part of
->>>> +perf coresight tracing are in tests/shell/tools/coresight.
->>>
->>> For build perf tool, I think above paragraphs are duplicate with the
->>> document Documentation/trace/coresight/coresight.rst.  Can we simply
->>> say:
->>>
->>> "The details for building perf tool with support Arm Coresight can be
->>> found in the "HOWTO.md" file of the openCSD gitHub repository:
->>> https://github.com/Linaro/opencsd.
->>
->> I can. I put this here as I didn't go clone OpencCSD first but used my
->> distro OpenCSD packages and thus of course didn't have the documentation in
->> front of me. I spent some time wondering why it wasn't building with
->> coresight support even though it detected OpenCSD when I compiled... I
->> didn't expect to have to go to some separate project git repository and read
->> docs there on how to build the perf tool here in the kernel. I wrote this
->> because it was an actual problem I hit and it's a lot less frustrating to
->> "end users" to give them the information they need in the relevant place
->> they need it instead of sending them around to other project trees. Building
->> perf with coresight support is handled by the perf tree int he kernel, not
->> OpenCSD, thus IMHO that is where the documentation belongs - alongside the
->> thing that determines how to build something.
-> 
-> Understand.
-
-I'll move this over to the place that Matthieu and you mention 
-(Documentation/trace/coresight), but I do think this kind of information 
-is necessary as above, so thanks. :)
-
->>> And "HOWTO.md" file gives the information and examples for how to use
->>> perf tool to record and report Coresight trace data.  It's the
->>> prerequisite for this perf Coresight test."
->>>
->>>> +You will also want coresight support enabled in your kernel config.
->>>> +Ensure it is enabled with:
->>>> +
->>>> +    CONFIG_CORESIGHT=y
->>>> +
->>>> +There are various other coresight options you probably also want
->>>> +enabled like:
->>>> +
->>>> +    CONFIG_CORESIGHT_LINKS_AND_SINKS=y
->>>> +    CONFIG_CORESIGHT_LINK_AND_SINK_TMC=y
->>>> +    CONFIG_CORESIGHT_CATU=y
->>>> +    CONFIG_CORESIGHT_SINK_TPIU=y
->>>> +    CONFIG_CORESIGHT_SINK_ETBV10=y
->>>> +    CONFIG_CORESIGHT_SOURCE_ETM4X=y
->>>> +    CONFIG_CORESIGHT_STM=y
->>>> +    CONFIG_CORESIGHT_CPU_DEBUG=y
->>>> +    CONFIG_CORESIGHT_CTI=y
->>>> +    CONFIG_CORESIGHT_CTI_INTEGRATION_REGS=y
->>>> +
->>>> +Please refer to the kernel configuration help for more information.
->>>
->>> I prefer to remove these kernel configuration since they are not
->>> inconsistent on different platforms (e.g. ETBV10, ETM4X, etc), and
->>> some configurations might not necessary (e.g. CPU_DEBUG).
->>
->> Certainly there should be some documentation on which kernel configs you
->> might want to turn on then? Imagine someone new comes along and doesn't have
->> any idea what to possible enable at all and manages to build perf with
->> coresight support (as above) then finds it doesn't work because they didn't
->> enable enough config in the kernel? Sure - could probably trim these down a
->> bit but the point here is to alert the user to there being a range of
->> coresight config options that you need to turn on that you likely will find
->> are not turned on. They certainly are not turned on on distro kernels and a
->> lot of the time when you have a platform that already boots/works you start
->> with your distro kernel config file because you want everything enabled so
->> it actually boots. I've learned the hard way to do this as you manage to
->> forget to turn on some MMC driver or some other feature and your boot hangs
->> or doesn't find rootfs etc.
-> 
-> So far, we will have two documents in Linux kernel:
-> 
-> - Documentation/trace/coresight/coresight.rst;
-> - tools/perf/Documentation/arm-coresight.txt.
-> 
-> We need to avoid overlap between these two files.  I think we could use
-> the file Documentation/trace/coresight/coresight.rst to focus on
-> CoreSight driver module relates stuffs and
-> tools/perf/Documentation/arm-coresight.txt is more about the perf
-> usages.
-
-That's the case here with this patch set. To me - I would look for the 
-perf docs where I put them - in the perf documentation directory, not 
-somewhere else.
-
-> But, the file Documentation/trace/coresight/coresight.rst doesn't give
-> any info for kernel configs, I think which would be a better place to
-> give information for building kernel modules.
-
-Correct. I do think you're right. I think that the "core docs" should 
-give this information and the perf tool docs should at least reference 
-these so you know to look there. I think I should at least put a stub 
-doc in the perf tool doc tree to tell someone to go look at the "core 
-docs" for more information.
-
->> What would you recommend then as a "turn these on and coresight will almost
->> certainly work for you on your given hardware " then?
-> 
-> This would be fine.  Alternatively, we could add a section in the file
-> Documentation/trace/coresight/coresight.rst to describe how to build
-> CoreSight modules.
-
-I think that is good/best and then "link" the docs so someone knows 
-where to look for more information.
-
-> How you think for this?   I also would like to get suggestions from
-> CoreSight maintainers Suzuki/Mathieu/Mike.
-> 
-> [...]
-> 
->>> Please update based on the latest test case names, at my side, I can
->>> see the testing case like:
->>>
->>>          Coresight / ASM Pure Loop
->>>          Coresight / Memcpy 16k 10 Threads
->>>          Coresight / Thread Loop 10 Threads - Check TID
->>>          Coresight / Thread Loop 2 Threads - Check TID
->>>          Coresight / Unroll Loop Thread 10
->>
->> Oh sorry - yeah. I wrote the docs based on the earlier tests. Will fix.
-> 
-> Thanks.
-> 
->>>> +
->>>> +These perf record tests will not run if the tool binaries do not exist
->>>> +in tests/shell/tools/coresight/*/ and will be skipped. If you do not
->>>> +have coresight support in hardware then either do not build perf with
->>>> +coresight support or remove these binaries in order to not have these
->>>> +tests fail and have them skip instead.
->>>> +
->>>> +These tests will log historical results in the current working
->>>> +directory (e.g. tools/perf) and will be named stats-*.csv like:
->>>> +
->>>> +    stats-asm_pure_loop-out.csv
->>>> +    stats-bubble_sort-random.csv
->>>> +    ...
->>>> +
->>>> +These statistic files log some aspects of the AUX data sections in
->>>> +the perf data output counting some numbers of certain encodings (a
->>>> +good way to know that it's working in a very simple way). One problem
->>>> +with coresight is that given a large enough amount of data needing to
->>>> +be logged, some of it can be lost due to the processor not waking up
->>>> +in time to read out all the data from buffers etc.. You will notice
->>>> +that the amount of data collected can vary a lot per run of perf test.
->>>> +If you wish to see how this changes over time, simply run perf test
->>>> +multiple times and all these csv files will have more and more data
->>>> +appended to it that you can later examine, graph and otherwise use to
->>>> +figure out if things have become worse or better.
->>>
->>> I am confused by this narrative.  Does it try to remind that the final
->>> testing result (pass or fail) is not stable?  Or should we run for
->>> multiple times so have more chance to capture issues?
->>
->> That is correct. I thought I was clear that it's lossy. That is actually the
->> case. I have tests here that actually fail because there is no data
->> collected from some threads at all (missing CID blocks for some of the
->> threads that run in the test). The point is to have tests that may be
->> failing now but in future will improve. I lowered the minimum bar to pass
->> for most tests to have "at least just a little data" but most tests show
->> highly variable amount of captured data. the csv files are there to
->> over-time give you a good idea of the stability of the captured data.
-> 
-> Okay, this would be fine for me.  Though I am a bit worry that later if
-> users report a failure, then how we can tell them this is a bug or it's
-> just tracing quality issue?
-
-Well this is kind of both a bug and a quality issue. Reality is I have 
-tests that literally get no information in the perf trace for some 
-threads. Reality is we have what I'd call "Quality of trace" bugs and I 
-was doing these test as a way of beginning to explore that and quantify 
-it as that is not something the existing tests were doing. We want to 
-have tests that in future with new designs show the quality bug to be 
-fixed. It's kind of test driven development. Expose the quality bug, 
-document it as such and then in future show it to be fixed when that 
-happens (v9 should fix this...). I probably should document this as such 
-(as a quality bug and why such failures are to be expected) so I'll add 
-that to my TODO to make sure it's clear that these tests might fail and 
-it's a quality issue (I mention the CSV files that are generated as a 
-way to over-time track that quality).
-
-> [...]
-> 
->>>> diff --git a/tools/perf/tests/shell/coresight/asm_pure_loop/.gitignore b/tools/perf/tests/shell/coresight/asm_pure_loop/.gitignore
->>>> new file mode 100644
->>>> index 000000000000..468673ac32e8
->>>> --- /dev/null
->>>> +++ b/tools/perf/tests/shell/coresight/asm_pure_loop/.gitignore
->>>> @@ -0,0 +1 @@
->>>> +asm_pure_loop
->>>
->>> Do we really need there '.gitignore' files under the folder
->>> 'tools/perf/tests/shell/coresight/'.
->>
->> Where would you rather have them to ignore the generated binary tools?
-> 
-> It's interesting that I wanted to find a case to object you, so I tried
-> to check the folder linux/samples/bpf, but it does use .gitignore file
-> to ignore built binaries :)
-> 
-> Adding .gitignore is in practice and this would be fine for me.
-
-:)
-
->>>> diff --git a/tools/perf/tests/shell/coresight/asm_pure_loop/Makefile b/tools/perf/tests/shell/coresight/asm_pure_loop/Makefile
->>>> new file mode 100644
->>>> index 000000000000..10c5a60cb71c
->>>> --- /dev/null
->>>> +++ b/tools/perf/tests/shell/coresight/asm_pure_loop/Makefile
->>>> @@ -0,0 +1,30 @@
->>>> +# SPDX-License-Identifier: GPL-2.0
->>>> +# Carsten Haitzler <carsten.haitzler@arm.com>, 2021
->>>> +
->>>> +include ../Makefile.miniconfig
->>>> +
->>>> +BIN=asm_pure_loop
->>>> +LIB=
->>>
->>> Remove the unused variable 'LIB='.
->>
->> I have this because I wanted to have a simple template to be able to re-use
->> for more tests over time. It's so much easier to maintain and extend if
->> every makefile and tool follow a similar pattern and you can almost copy &
->> paste between them as they don't have "exceptions". You really want me to
->> remove this?
-> 
-> It's fine to keep it.  Could you add a comment for this?
-
-No problems! Can do.
-
-> To be honest, I am not experienced for bash shell script, so I have no
-> idea why write like this way.  If you think this is very common usage
-> in shell, then you could keep it and don't need to add comment.
-
-Well this is a makefile above (not shell), but having done lots of 
-makefile and other higher level make tooling (autotools, cmake, meson) 
-and having to maintain larger trees with "We build the same kind of 
-thing N times but each module/tool needs slightly different 
-linking/includes/tooling" ... I have learned the value of using 
-templates that are the same but sometimes you have empty fields or 
-fields that change. When you have to fix/change a "design pattern" issue 
-it's easier to do when the files share more in common and it's easier 
-for someone to start a new tool/module/subdir by taking an existing 
-template and just modifying it as needed and everything they need is 
-there. It really makes maintenance so much easier in the long-run as you 
-expand the set of things something builds. Design patterns in your build 
-system really help. :)
-
-> [...]
-> 
-> 
->>> There have four sub folders under tools/perf/tests/shell/coresight:
->>>
->>>     asm_pure_loop
->>>     memcpy_thread
->>>     thread_loop
->>>     unroll_loop_thread
->>>
->>> And every folder has its own Makefile and every Makefile is quite
->>> close to each other.  I am just wandering if it's possible to
->>> remove the 4 Makefiles in these four sub folders, and simply use
->>> tools/perf/tests/shell/coresight/Makefile as the central place to
->>> build these assistant programs.
->>
->> I did this so it's easier to etxent over time. having a single parent
->> makefile that over time accumulates little ugly "if's" and exceptions makes
->> longer-term maintenance and extending harder. I did it this way to make this
->> easy - make a copy of a dir - add that dir to a parent makefile then modify
->> the makefile as needed (but only as needed).
-> 
-> Okay, let's keep the saperate makefiles.
-
-:)
-
->>>> diff --git a/tools/perf/tests/shell/coresight/asm_pure_loop/asm_pure_loop.S b/tools/perf/tests/shell/coresight/asm_pure_loop/asm_pure_loop.S
->>>> new file mode 100644
->>>> index 000000000000..75cf084a927d
->>>> --- /dev/null
->>>> +++ b/tools/perf/tests/shell/coresight/asm_pure_loop/asm_pure_loop.S
->>>> @@ -0,0 +1,28 @@
->>>> +/* SPDX-License-Identifier: GPL-2.0 */
->>>> +/* Tamas Zsoldos <tamas.zsoldos@arm.com>, 2021 */
->>>> +
->>>> +.globl _start
->>>> +_start:
->>>> +	mov	x0, 0x0000ffff
->>>> +	mov	x1, xzr
->>>> +loop:
->>>> +	nop
->>>> +	nop
->>>> +	cbnz	x1, noskip
->>>> +	nop
->>>> +	nop
->>>> +	adrp	x2, skip
->>>> +	add 	x2, x2, :lo12:skip
->>>> +	br	x2
->>>> +	nop
->>>> +	nop
->>>> +noskip:
->>>> +	nop
->>>> +	nop
->>>> +skip:
->>>> +	sub	x0, x0, 1
->>>> +	cbnz	x0, loop
->>>> +
->>>> +	mov	x0, #0
->>>> +	mov	x8, #93 // __NR_exit syscall
->>>> +	svc	#0
->>>
->>> I tested the case "ASM Pure Loop" on my Juno board, and it complaints:
->>>
->>> root@debian:/mnt/export/arm-linux-kernel/tools/perf# ./perf test -v 76
->>>    76: Coresight / ASM Pure Loop                                       :
->>> --- start ---
->>> test child forked, pid 9063
->>> failed to mmap with 12 (Cannot allocate memory)
->>> test child finished with -1
->>> ---- end ----
->>> Coresight / ASM Pure Loop: FAILED!
->>>
->>> Since I only setup the 1GB memory for the Linux kernel, it fails to
->>> allocate AUX ring buffer with the size 256MB.  So I manully change
->>> the buffer size to 8MB in tools/perf/tests/shell/lib/coresight.sh:
->>>
->>>     PERFRECMEM="-m ,8M"
->>>
->>> So finally I can see the test case is passed:
->>
->> This is artificial isn't it? limiting to 1GB. You certainly have far more
->> memory than that available. My testse were on a system with 4GB and I had no
->> issues.
-> 
-> Please see below comment.
-> 
->>> root@debian:/mnt/export/arm-linux-kernel/tools/perf# ./perf test -v 76
->>>    76: Coresight / ASM Pure Loop                                       :
->>> --- start ---
->>> test child forked, pid 9481
->>> -m ,8M -e cs_etm//u
->>> [ perf record: Woken up 1 times to write data ]
->>> [ perf record: Captured and wrote 0.681 MB ./perf-asm_pure_loop-out.data ]
->>> test child finished with 0
->>> ---- end ----
->>> Coresight / ASM Pure Loop: Ok
->>>
->>> Do you think we really need to use 256MiB as the AUX buffer size?
->>> IIRC, it means we allocate 256MiB per CPU for this case, on the other
->>> hand, you could see the final perf data file size is small (0.681
->>> MiB).
->>>
->>> Seems to me, it's not necessary to allocate so big buffer for
->>> the test, and I tried to run below 4 cases with 8MiB, all of them can
->>> pass the testing :)
->>
->> I didn't think anyone with a system with coresight support that would be
->> running perf record locally would only have 1GB of ram... I knew junos had
->> 8GB and my dragonboard has 4GB ... so I know I was on the smaller side. I
->> thought a larger buffer == safer results (less chance of needing to write
->> out the buffer during capture). Admittdly I used 256Mb when my tests ran for
->> much longer and collected more data. I can try drop to 8 or 16gb and see.
-> 
-> Yes, my Juno board has 8GB but I also have DB410c with 1GB with quad
-> coes [1].  I am still concern for 256MB buffer size, it's not friendly for
-> embedded system, and even not good for server.  For example, if we run
-> this testing on Arm server with 96 cores (like Hisilicon D06 board),
-> then we need the buffer size is:
-> 
->    256MiB * 96 = 16GiB
-
-A bit more actually 24M - but I see you correct this already in a 
-following mail, but your point remains the same. :)
-
-> I agree usually 16GiB is not a problem for server, but seems to me
-> it doesn't make much sense to consume huge memory resource for the
-> testing.
-
-Even 24GB is not a problem IMHO if you have 96 cores, but ... I see your 
-point.
-
-> In other words, if set 8MiB (or 16MiB, 32MiB) buffer size and doesn't
-> see testing result regression, I think this would be good to decrease
-> the buffer size.
-
-I'll drop it down to something less - sure. Maybe between 16-64M and 
-that should mean everything you have there is able to do this without 
-issues. 1GB with 8 cores would only need 512M for buffers - you have a 
-lot left over. So 64M or less would be just fine I think (and with 4 
-cores... even more headroom).
-
-> [1] https://www.96boards.org/product/dragonboard410c/
-> 
-> [...]
-> 
->>>> diff --git a/tools/perf/tests/shell/coresight_asm_pure_loop.sh b/tools/perf/tests/shell/coresight_asm_pure_loop.sh
->>>> new file mode 100755
->>>> index 000000000000..3f0dbefcad50
->>>> --- /dev/null
->>>> +++ b/tools/perf/tests/shell/coresight_asm_pure_loop.sh
->>>> @@ -0,0 +1,18 @@
->>>> +#!/bin/sh -e
->>>> +# Coresight / ASM Pure Loop
->>>> +
->>>> +# SPDX-License-Identifier: GPL-2.0
->>>> +# Carsten Haitzler <carsten.haitzler@arm.com>, 2021
->>>> +
->>>> +TEST="asm_pure_loop"
->>>> +. $(dirname $0)/lib/coresight.sh
->>>> +ARGS=""
->>>> +DATV="out"
->>>> +DATA="$DATD/perf-$TEST-$DATV.data"
->>>> +
->>>> +perf record $PERFRECOPT -o "$DATA" "$BIN" $ARGS
->>>> +
->>>> +perf_dump_aux_verify "$DATA" 10 10 10
->>>> +
->>>> +err=$?
->>>> +exit $err
->>>
->>> Can we organize the shell scripts by moving them into the folder
->>> tools/perf/tests/shell/coresight?
->>
->> We can - but it comes with a fair few more changes.
->>
->>>     coresight_asm_pure_loop.sh
->>>     coresight_memcpy_thread_16k_10.sh
->>>     coresight_thread_loop_check_tid_10.sh
->>>     coresight_thread_loop_check_tid_2.sh
->>>     coresight_unroll_loop_thread_10.sh
->>>
->>> And we even can consider to move script test_arm_coresight.sh into
->>> the folder tools/perf/tests/shell/coresight and change its
->>> name as 'coresight_smoke_test.sh'.
->>
->> Indeed these other tests I left alone for now and had not thought about how
->> to marry these together yet - leaving this for another day and another patch
->> set rather than this patch set itself. That was my thoguht. I was trying to
->> make an "Easier to extend by just dropping a test into a dir" setup here to
->> make maintenance and expansion easier over time (and thus encourage testing
->> by having a simple repeatable test infra to duplicate). I ended up with a
->> dir per test tool you need to build and a driver script in the tests/shell
->> dir. I think this is certainly worth considering but perhaps as a separate
->> set of work to marry these?
-> 
-> Okay, it would be fine to use separate set for moving the script
-> test_arm_coresight.sh, which is a simple case.
-
-I think that breaking out test_arm_coresight.sh into sub-tests that are 
-stand-alone is better. I've had to deal with test suites that have one 
-test case and that test fails/succeeds BUT this test case actually tests 
-30+ API calls or something like that and one of those fail. Which one? 
-You don't immediately know. You have to now go digging through log files 
-to find out. Breaking this out into less efficient but easier to see 
-"one test per thing you test" is much better and long-run really saves 
-time and headaches, but this is "let's do this another day" but it is 
-why I am over-engineering the tests with the view that these will expand 
-in number and move over such tests.
-
->> I piggybacked on the existing shell test infra but added a fair few more
->> scripts. To do what you suggest I'd need to modify the core shell test code
->> to walk subdirs recursively then looking for child scripts. The problem is
->> how does perf test's shell handling know about the coresight subdir vs the
->> lib subdir?
-> 
-> Yeah, now I understand your point.  How about file layout like below?
-> 
->    tools/perf/tests/shell/coresight_test_hub.sh
->    tools/perf/tests/shell/coresight/coresight_asm_pure_loop.sh
->    tools/perf/tests/shell/coresight/coresight_memcpy_thread_16k_10.sh
->    tools/perf/tests/shell/coresight/coresight_thread_loop_check_tid_10.sh
->    tools/perf/tests/shell/coresight/coresight_thread_loop_check_tid_2.sh
->    tools/perf/tests/shell/coresight/coresight_unroll_loop_thread_10.sh
-> 
-> So we use tools/perf/tests/shell/coresight_test_hub.sh as an interface
-> to hook with Perf test infrastructure, and then hub.sh file calls
-> testing scripts under the sub folder.  Seems to me, this is also
-> friendly for later's extension.
-
-Aaaaah here I disagree. The current test infra will only see 
-"coresight_test_hub.sh" and then that all passes, fails or skips as a 
-single test (see above). ub-tests are hidden when you do "perf test". 
-I've had to deal with this before and it is (IMHO) a horrible way to go 
-as you spend time then re-running the tests by hand and digging through 
-other logs to see what failed rather than the toplevel tests indicating 
-right there pass, fail or skip. Over time it becomes a time-sink to hunt 
-these and mystifies new people who don't know where to dig for the 
-specific failure.
-
-To break them up like you want into subdirs then requires me to go to 
-perf test (builtin-script.c) and change how the walking of test subdirs 
-works with shells. It seems to have some legacy code in there that walks 
-some "lang" dirs with "bin" dirs in them that seemingly do not exist 
-today in the kernel tree. The right way to do this if you want to break 
-this out into a coresight dir would be to modify how perf test walks 
-dirs and builds the list of tests. I'd have to walk all subdirs then 
-specifically filter for tests it knows will exist (executable, end in 
-.sh, maybe be named like parentdir/parentdir_XXX.sh like your above 
-suggestion of coresight/coresight_XXX.sh etc.). This now involves 
-re-jigging a lot more code and abstracting the walking into a single 
-function that walks once then stores the data in an array of struct 
-pef_shell_test or such which now is filtered (and sorted which we should 
-do which we don't now), and thus clean this all up, remove the 
-(seemingly) legacy lang/bin dir walk code (I need to dig through history 
-to find out where this came in and why it was there) and so on.
-
-This certainly then makes this set of patches bigger and I need to break 
-out this "revamp" of the walking of test shell scripts a preparation 
-patch, but just saying: It certainly raises the bar for work and I don't 
-think having a single parent .sh that then walks all the children and 
-produces a single test output is right. I could popen this test and read 
-the output to generate multiple output tests but, IMHO, that is worse 
-and more complex than fixing the tree walk above to build an index of 
-all shell tests once etc. like:
-
-struct script_file {
-    char *dir;
-    char *file;
-    char *label;
-}
-
-struct script_file *list_script_files(void);
-
-... so we run this whenever we want a list of shell tests and just 
-iterate over it until a NULL member (dir, file, label are all NULL). 
-Simple and does the job but moves all the walking into a single function 
-instead of there being like 3 of them now.
-
->> Both contain *.sh shell scripts - the difference is the ones in
->> lib are not executable. Is this sufficiently different? I could also open
->> them to check the have #!/bin/... as the first line. Hardcoding just a
->> single coresight subdir just feels wrong and hacky to me, thus the generic
->> recursion solution I suggest here.
-> 
-> Agreed.  I also don't prefer this way.
-> 
->> I can definitely see how extending to subdirs would make supporting testing
->> cleaner and divide things into their own domains (dirs).
-> 
-> Thanks a lot for the work!  The test cases are good for me (but I would
-> say Mike is the best person for reviewing testing trace data quaility),
-> I just want to make sure it's not hard for later maintenance.
-
-Sure. Let me at least make a start on the shell-test walk code and 
-cleaning it up. I've just been staring at this and trying to find a 
-"better way" but I'm pretty much at "Do it my current way with no subdir 
-and keep the patch simple" or "Make this a more complex a patch to try 
-streamline the code and abstract the shell tests better and include 
-sub-dir walking" as I describe above. Long term I think this is actually 
-a very good idea to clean this up and allow tests then in general to go 
-into domain-specific subdirs. It just brings forward this kind of work 
-ahead of getting extra tests in. I can't really see another sensible option.
