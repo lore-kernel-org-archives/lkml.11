@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D409C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:11:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59C71C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:11:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349501AbiFMMLS (ORCPT
+        id S1349973AbiFMMLY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:11:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54234 "EHLO
+        Mon, 13 Jun 2022 08:11:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359042AbiFMMFL (ORCPT
+        with ESMTP id S1358977AbiFMMFD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:05:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B44B525C48;
-        Mon, 13 Jun 2022 03:58:42 -0700 (PDT)
+        Mon, 13 Jun 2022 08:05:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ED2250E31;
+        Mon, 13 Jun 2022 03:58:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6FE9AB80D3A;
-        Mon, 13 Jun 2022 10:58:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA2A3C34114;
-        Mon, 13 Jun 2022 10:58:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 703E161257;
+        Mon, 13 Jun 2022 10:58:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F1D2C34114;
+        Mon, 13 Jun 2022 10:58:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117920;
-        bh=UyTGTZOw/Ev9o5JpBoq+FIzadi3yCuLzcQ0l8Ah+elw=;
+        s=korg; t=1655117905;
+        bh=88S4UqxzOaOPnauPhayDirdJ9qnG1tlVJt8mICmGb1U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mC5M1XozrAGeem8jY2FIlQVNzhcO70bhbMbaSGELLeIvfBsWVbMst3DJJ0Mp3EZ6s
-         7H9byXSq6Wrui3KjFIVSukixoHSZHZK18QzOCkEByNrHZ6YOj2dTx0nyAMqg8tmD18
-         qMaLE7zssI+g4vpJVe8fvthfyk0EZ+gQVkGdsf5Y=
+        b=aJ1ddicuGtZLminLaNJzn/t4rRsAQNuhWrcp/GsWI63kyiUR6pT4Ng9a4/HZ08apP
+         B/DhslwHGyyuj3vxOOCvXhVWNt2QsE12UcGCxtA3K9wJGDp/3hcC4Wn3lPPOvAFObQ
+         U2XD30rtlppFkCEzj8NJXwoqdS6uFJpSuq6qKsgc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Christian Lamparter <chunkeey@gmail.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>
-Subject: [PATCH 4.19 178/287] carl9170: tx: fix an incorrect use of list iterator
-Date:   Mon, 13 Jun 2022 12:10:02 +0200
-Message-Id: <20220613094929.267955726@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 4.19 159/287] scsi: ufs: qcom: Add a readl() to make sure ref_clk gets enabled
+Date:   Mon, 13 Jun 2022 12:09:43 +0200
+Message-Id: <20220613094928.700931655@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -50,44 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-commit 54a6f29522da3c914da30e50721dedf51046449a upstream.
+commit 8eecddfca30e1651dc1c74531ed5eef21dcce7e3 upstream.
 
-If the previous list_for_each_entry_continue_rcu() don't exit early
-(no goto hit inside the loop), the iterator 'cvif' after the loop
-will be a bogus pointer to an invalid structure object containing
-the HEAD (&ar->vif_list). As a result, the use of 'cvif' after that
-will lead to a invalid memory access (i.e., 'cvif->id': the invalid
-pointer dereference when return back to/after the callsite in the
-carl9170_update_beacon()).
+In ufs_qcom_dev_ref_clk_ctrl(), it was noted that the ref_clk needs to be
+stable for at least 1us. Even though there is wmb() to make sure the write
+gets "completed", there is no guarantee that the write actually reached the
+UFS device. There is a good chance that the write could be stored in a
+Write Buffer (WB). In that case, even though the CPU waits for 1us, the
+ref_clk might not be stable for that period.
 
-The original intention should have been to return the valid 'cvif'
-when found in list, NULL otherwise. So just return NULL when no
-entry found, to fix this bug.
+So lets do a readl() to make sure that the previous write has reached the
+UFS device before udelay().
 
+Also, the wmb() after writel_relaxed() is not really needed. Both writel()
+and readl() are ordered on all architectures and the CPU won't speculate
+instructions after readl() due to the in-built control dependency with read
+value on weakly ordered architectures. So it can be safely removed.
+
+Link: https://lore.kernel.org/r/20220504084212.11605-4-manivannan.sadhasivam@linaro.org
+Fixes: f06fcc7155dc ("scsi: ufs-qcom: add QUniPro hardware support and power optimizations")
 Cc: stable@vger.kernel.org
-Fixes: 1f1d9654e183c ("carl9170: refactor carl9170_update_beacon")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Acked-by: Christian Lamparter <chunkeey@gmail.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220328122820.1004-1-xiam0nd.tong@gmail.com
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/ath/carl9170/tx.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/scsi/ufs/ufs-qcom.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/drivers/net/wireless/ath/carl9170/tx.c
-+++ b/drivers/net/wireless/ath/carl9170/tx.c
-@@ -1554,6 +1554,9 @@ static struct carl9170_vif_info *carl917
- 					goto out;
- 			}
- 		} while (ar->beacon_enabled && i--);
-+
-+		/* no entry found in list */
-+		return NULL;
- 	}
+--- a/drivers/scsi/ufs/ufs-qcom.c
++++ b/drivers/scsi/ufs/ufs-qcom.c
+@@ -910,8 +910,11 @@ static void ufs_qcom_dev_ref_clk_ctrl(st
  
- out:
+ 		writel_relaxed(temp, host->dev_ref_clk_ctrl_mmio);
+ 
+-		/* ensure that ref_clk is enabled/disabled before we return */
+-		wmb();
++		/*
++		 * Make sure the write to ref_clk reaches the destination and
++		 * not stored in a Write Buffer (WB).
++		 */
++		readl(host->dev_ref_clk_ctrl_mmio);
+ 
+ 		/*
+ 		 * If we call hibern8 exit after this, we need to make sure that
 
 
