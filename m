@@ -2,124 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE0BEC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:04:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0B29C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:07:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234469AbiFMREq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 13:04:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51598 "EHLO
+        id S238575AbiFMRHQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 13:07:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245154AbiFMRDl (ORCPT
+        with ESMTP id S239560AbiFMRGi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 13:03:41 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C052C6E5A
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 05:04:03 -0700 (PDT)
-X-UUID: 7463ad46ea3f4f5ea78982a347fa1f4f-20220613
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.6,REQID:049ffec7-9613-4c0e-89a5-e7576225fc14,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:10,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:15
-X-CID-META: VersionHash:b14ad71,CLOUDID:0fa58c37-84c0-4f9a-9fbd-acd4a0e9ad0f,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:3,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: 7463ad46ea3f4f5ea78982a347fa1f4f-20220613
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <yong.wu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 87006132; Mon, 13 Jun 2022 20:03:57 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Mon, 13 Jun 2022 20:03:56 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Mon, 13 Jun 2022 20:03:55 +0800
-Message-ID: <e15deedee3a412e8496be1867725f7e62e396551.camel@mediatek.com>
-Subject: Re: [PATCH v8 2/3] iommu/mediatek: Rename MTK_IOMMU_TLB_ADDR to
- MTK_IOMMU_ADDR
-From:   Yong Wu <yong.wu@mediatek.com>
-To:     <yf.wang@mediatek.com>
-CC:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        "open list:MEDIATEK IOMMU DRIVER" <iommu@lists.linux-foundation.org>,
-        "moderated list:MEDIATEK IOMMU DRIVER" 
-        <linux-mediatek@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        <wsd_upstream@mediatek.com>, Libo Kang <Libo.Kang@mediatek.com>,
-        Miles Chen <miles.chen@mediatek.com>,
-        Ning Li <ning.li@mediatek.com>
-Date:   Mon, 13 Jun 2022 20:03:55 +0800
-In-Reply-To: <20220611102656.10954-3-yf.wang@mediatek.com>
-References: <20220611102656.10954-1-yf.wang@mediatek.com>
-         <20220611102656.10954-3-yf.wang@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Mon, 13 Jun 2022 13:06:38 -0400
+Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35DB12559B;
+        Mon, 13 Jun 2022 05:05:56 -0700 (PDT)
+Received: by mail-qk1-f182.google.com with SMTP id l192so1663867qke.13;
+        Mon, 13 Jun 2022 05:05:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cwLyOilx9WOqvNt/3Yiyfo9fY3D0D5JL9svjFDzxcJc=;
+        b=mirG+pXYdWmT/wWIEW46KPdRMH8MivKaZ/dKt1JgRO4IcipqNlZQ2fZ+lvJssw66K9
+         kZCeOmE02qq1pT/JNuUZOu4KUo15Psce3yKzggqVi4b5QVxin9vPhWbOZC6t63c3MUv4
+         NqTHZlyocexLMKY3KjjTXcsxJGvVnDN+c+CwhcYNcdlX94ZGvcvZvEIhYVO9/SaLbpxr
+         Snqw13uQY7lDllq0/K5/9gbDyKQvGUATXyrqxCII6zdUedpYp+ogfa5DBwc2WoEwJ23J
+         rj6fRmY7d2qR4WjRRgfjmaF6gfmFmmwjpyyTci7tfzindOYDw+RlFPC4kXBtNXB5rlaq
+         rolw==
+X-Gm-Message-State: AOAM533EyBjxxtZPjbdXEB4TZeVC2nQVnM5O5p59Af+zByw3vXqzxK/S
+        k3KRcny8Q05L7HVNy4j+XyO0o11rij4z1Q==
+X-Google-Smtp-Source: ABdhPJyG1Z+ss0PDfZyxXSVEb2nP2BBLomzlw8szdGzyWol2HPyjMMZZUVT5aABs6ygf5y2cuJmc3w==
+X-Received: by 2002:ae9:f107:0:b0:69c:232b:bf39 with SMTP id k7-20020ae9f107000000b0069c232bbf39mr38809443qkg.310.1655121954596;
+        Mon, 13 Jun 2022 05:05:54 -0700 (PDT)
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com. [209.85.128.178])
+        by smtp.gmail.com with ESMTPSA id ca21-20020a05622a1f1500b00304e5839734sm4874647qtb.55.2022.06.13.05.05.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Jun 2022 05:05:54 -0700 (PDT)
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-30c143c41e5so49016067b3.3;
+        Mon, 13 Jun 2022 05:05:54 -0700 (PDT)
+X-Received: by 2002:a0d:d481:0:b0:30c:44f1:2721 with SMTP id
+ w123-20020a0dd481000000b0030c44f12721mr64775617ywd.283.1655121953732; Mon, 13
+ Jun 2022 05:05:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+References: <4dcd5c4ef92318dfa3298eb0c03945a8ce9b5833.1654942925.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <4dcd5c4ef92318dfa3298eb0c03945a8ce9b5833.1654942925.git.christophe.jaillet@wanadoo.fr>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 13 Jun 2022 14:05:41 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWT+sFoa9spFk1FYZb=Kyck8gPL4gRU5E8YOhdmmGAZxA@mail.gmail.com>
+Message-ID: <CAMuHMdWT+sFoa9spFk1FYZb=Kyck8gPL4gRU5E8YOhdmmGAZxA@mail.gmail.com>
+Subject: Re: [PATCH] media: rcar_drif: Remove useless license text when
+ SPDX-License-Identifier is already used
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 2022-06-11 at 18:26 +0800, yf.wang@mediatek.com wrote:
-> From: Yunfei Wang <yf.wang@mediatek.com>
-> 
-> Rename MTK_IOMMU_TLB_ADDR to MTK_IOMMU_ADDR, and update
-> MTK_IOMMU_ADDR
-> definition for better generality.
+On Sat, Jun 11, 2022 at 12:28 PM Christophe JAILLET
+<christophe.jaillet@wanadoo.fr> wrote:
+> An SPDX-License-Identifier is already in place. There is no need to
+> duplicate part of the corresponding license.
+>
+> This is a left-over from commit adeb69705682 ("media: rcar_drif: convert to
+> SPDX identifiers")
+>
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-Comment more about why you need this.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Prepare for supporting TTBR up to 35bit which also need this macro.
-Currently it is dma_addr_t while ttbr is phys_addr_t, thus change the
-type to "unsigned long long" for generality.
+Gr{oetje,eeting}s,
 
-Anyway,
+                        Geert
 
-Reviewed-by: Yong Wu <yong.wu@mediatek.com>
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-> 
-> Signed-off-by: Ning Li <ning.li@mediatek.com>
-> Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
-> ---
->  drivers/iommu/mtk_iommu.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index bb9dd92c9898..3d62399e8865 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -265,8 +265,8 @@ static const struct iommu_ops mtk_iommu_ops;
->  
->  static int mtk_iommu_hw_init(const struct mtk_iommu_data *data,
-> unsigned int bankid);
->  
-> -#define MTK_IOMMU_TLB_ADDR(iova) ({					
-> \
-> -	dma_addr_t _addr = iova;					\
-> +#define MTK_IOMMU_ADDR(addr) ({					
-> 	\
-> +	unsigned long long _addr = addr;				\
->  	((lower_32_bits(_addr) & GENMASK(31, 12)) |
-> upper_32_bits(_addr));\
->  })
->  
-> @@ -381,8 +381,8 @@ static void
-> mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
->  		writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
->  			       base + data->plat_data->inv_sel_reg);
->  
-> -		writel_relaxed(MTK_IOMMU_TLB_ADDR(iova), base +
-> REG_MMU_INVLD_START_A);
-> -		writel_relaxed(MTK_IOMMU_TLB_ADDR(iova + size - 1),
-> +		writel_relaxed(MTK_IOMMU_ADDR(iova), base +
-> REG_MMU_INVLD_START_A);
-> +		writel_relaxed(MTK_IOMMU_ADDR(iova + size - 1),
->  			       base + REG_MMU_INVLD_END_A);
->  		writel_relaxed(F_MMU_INV_RANGE, base +
-> REG_MMU_INVALIDATE);
->  
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
