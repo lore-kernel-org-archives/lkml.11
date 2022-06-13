@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9678CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:22:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E1B5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:23:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349802AbiFMTWy (ORCPT
+        id S1349825AbiFMTW6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:22:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48294 "EHLO
+        Mon, 13 Jun 2022 15:22:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349162AbiFMTVj (ORCPT
+        with ESMTP id S1349185AbiFMTVk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 15:21:39 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5246211A1D
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:18:11 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id g16-20020a17090a7d1000b001ea9f820449so4774000pjl.5
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:18:11 -0700 (PDT)
+        Mon, 13 Jun 2022 15:21:40 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9675326FD
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:18:14 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id c196so6329546pfb.1
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:18:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=xzqDsv8rtz2ntmcXP4PLB6njoMFSh8lVBgrQ9sAi0RI=;
-        b=LkveocfuKKqxyt9m9cKzjRpx55OA9njIHmeO7J/rmpVv/eQ7lyZNJbx2vLCJR1IKQ+
-         eiaz9Ohld7Dk02cgTBzZ6oAIlH0qIqmrHEzsxnT/e+CLn9HVwpbuXImqNpeYUpHBiXVy
-         FRzlEWlJLhN6/cs1vp9fNR2mWDM5h75IBgPJe15tQ+onkyTJCZfmO8lBvleiRrsz0Bda
-         M1H6pW0r2rgNWQ0MvvGh1I4Cf8GkbcZOSzcXxs8nJbBTS1z0ap+2SkNDATbYgRfqHhgh
-         qNyDeMuPO4W4t2W0oG5EQPonrMF2moXpJ7CLGup3ilMPoH16dgLCAGJf/XUVJUQiqAZN
-         P6mw==
+        bh=VP4KQHv/fOTk1uSuALx0rQHJbV2oSTFRWBWAJzpP+gE=;
+        b=ypBkktvD0AWy15WiMJmTTqief/l8LnhS6sft/yvTkNe4TXAbwY1giPwzMIVIlJMj/T
+         CG0DiU0Z9HAOIWlLTwxcdY65JSdAp96GOdfzUr/xEWTSzSFhCYTBrG9vvKHr4mjlCQzG
+         uu/fL66iivcNZjZC6w4MChZkLTr4NCqQXa6kL9NujPJj97GqO3wp9KmQxP7on8qHnn2p
+         sbNONY8N5/rEqCFcw4KnIxPtZ9Ffzwd2mCAr0X1rJ+n6ZG48MYenk6NkgJvEFvXQuns0
+         Ch55V77MnQKOMUlXWtkUMewKXmb0zyHXOF4FVJvRjUbSxMb3+UGHXQmXg2WhFFfCTK13
+         v8SQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=xzqDsv8rtz2ntmcXP4PLB6njoMFSh8lVBgrQ9sAi0RI=;
-        b=cKJ6FgVfXNjNzKXe8VhABRp+5HgCTtfzGB7EXCn/KCDT3YAUmBz+XeMgrtYKMNXLlA
-         ZHjNBV29z/Er62oF49mb40a695xZTouKd8xsTN8uWWwg1U+IH7QuDixbtxkh8GAZDErl
-         mCnqdUYI8FzQ1WXppeeQRAdrgzoiSmPl/+kFhl+18VaFzZ48+ohzNvRAY2HsKotAneDp
-         vO+pB/epU92iBEnzxLr4DRo4OinhJNn1KpHxNiZCGvehZgtSRU4egAb7ahf0/q3mcED0
-         ZP31uoHAObdfqO3AFDwPS4Uxjv/6V3Sv4sbr9TC5pnFnJBYnhMRlVRhVvmPB2nkI26XN
-         NTxQ==
-X-Gm-Message-State: AJIora+fUFHJ4V2FAPgj863PZrO8Dr09hoVlt/8kSA+5APYzh/F+16g0
-        j7rLjmkwTjL4xpPgPd3lHep96A==
-X-Google-Smtp-Source: AGRyM1tbugpngnjnsVxDW/H2h+O7cqrQ4cPBWb75KKvzvcsQ4VozsdbIv0BdVetKwulfcfrTLtHVPw==
-X-Received: by 2002:a17:90b:3701:b0:1ea:9f82:59ef with SMTP id mg1-20020a17090b370100b001ea9f8259efmr810334pjb.239.1655140690712;
-        Mon, 13 Jun 2022 10:18:10 -0700 (PDT)
+        bh=VP4KQHv/fOTk1uSuALx0rQHJbV2oSTFRWBWAJzpP+gE=;
+        b=2ceGp6hTivxVEn6AdfE/4C83OfJ9/fY3YFTouiIOc2DXKtcki4UXlAPX5SkFmUW23W
+         ZQ0I9EMRlWDhA72djxoEl87Oq5pTXE4XNwe/0K1j+hpF0MVVnaxzloTM42SAThNEJbqh
+         WO7ivQh7eb5CvgFlEqikRx565wpwMil3cyVleGgSfU5gkFO9vnyVSVvhK4utFIHXrgxz
+         mOfql2uRy+3DNINM88Gi5t+GmR9BgNXeoty3LVksDykq2pPk9lXoH0GU9vCDIxx06EJJ
+         P++DWERkpzWxiW5+YNTaDQ9owUi+uTmla/CVVskwPCvI7ky8rLr6Dhv6jGvtY1NUoQww
+         fu/Q==
+X-Gm-Message-State: AOAM533WSt9XkS/kH40lTYnQmJSo/9XEkdTilKzqEktpTDpQdOKk4EUT
+        BOv/w27XDV1VGj4nJSPko3Z2hQ==
+X-Google-Smtp-Source: ABdhPJwWO6p1O1jMAWb63Gp7Nr1Qe4p+1PNjRbbTIJ63//BsAb8NehROChTlbDkjmUEAREnOZIhpEQ==
+X-Received: by 2002:a63:a0e:0:b0:3fd:a62e:fa5f with SMTP id 14-20020a630a0e000000b003fda62efa5fmr588604pgk.126.1655140694122;
+        Mon, 13 Jun 2022 10:18:14 -0700 (PDT)
 Received: from localhost.localdomain ([192.77.111.2])
-        by smtp.gmail.com with ESMTPSA id u17-20020a62d451000000b0050dc762812csm5646641pfl.6.2022.06.13.10.18.09
+        by smtp.gmail.com with ESMTPSA id u17-20020a62d451000000b0050dc762812csm5646641pfl.6.2022.06.13.10.18.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 10:18:10 -0700 (PDT)
+        Mon, 13 Jun 2022 10:18:13 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com
@@ -57,9 +57,9 @@ Cc:     mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
         quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
         elder@kernel.org, netdev@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 4/6] net: ipa: simplify TX completion statistics
-Date:   Mon, 13 Jun 2022 12:17:57 -0500
-Message-Id: <20220613171759.578856-5-elder@linaro.org>
+Subject: [PATCH net-next 6/6] net: ipa: rework gsi_channel_tx_update()
+Date:   Mon, 13 Jun 2022 12:17:59 -0500
+Message-Id: <20220613171759.578856-7-elder@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220613171759.578856-1-elder@linaro.org>
 References: <20220613171759.578856-1-elder@linaro.org>
@@ -69,60 +69,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a TX request is issued, its channel's accumulated byte and
-transaction counts are recorded.  This currently does *not* take
-into account the transaction being committed.
-
-Later, when the transaction completes, the number of bytes and
-transactions that have completed since the transaction was committed
-are reported to the network stack.  The transaction and its byte
-count are accounted for at that time.
-
-Instead, record the transaction and its bytes in the counts recorded
-at commit time.  This avoids the need to do so when the transaction
-completes, and provides a (small) simplification of that code.
+Rename gsi_channel_tx_update() to be gsi_trans_tx_completed(), and
+pass it just the transaction pointer, deriving the channel from the
+transaction.  Update the comments above the function to provide a
+more concise description of how statistics for TX endpoints are
+maintained and used.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/gsi.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+ drivers/net/ipa/gsi.c | 54 ++++++++++++++++++++-----------------------
+ 1 file changed, 25 insertions(+), 29 deletions(-)
 
 diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
-index 1091ac23567d5..4f8187c543824 100644
+index c2cafd9247a70..df8af1f00fc8b 100644
 --- a/drivers/net/ipa/gsi.c
 +++ b/drivers/net/ipa/gsi.c
-@@ -995,11 +995,11 @@ void gsi_trans_tx_committed(struct gsi_trans *trans)
- {
- 	struct gsi_channel *channel = &trans->gsi->channel[trans->channel_id];
- 
--	trans->trans_count = channel->trans_count;
--	trans->byte_count = channel->byte_count;
--
- 	channel->trans_count++;
- 	channel->byte_count += trans->len;
-+
-+	trans->trans_count = channel->trans_count;
-+	trans->byte_count = channel->byte_count;
+@@ -1021,40 +1021,36 @@ void gsi_trans_tx_queued(struct gsi_trans *trans)
  }
  
- void gsi_trans_tx_queued(struct gsi_trans *trans)
-@@ -1047,13 +1047,11 @@ void gsi_trans_tx_queued(struct gsi_trans *trans)
- static void
- gsi_channel_tx_update(struct gsi_channel *channel, struct gsi_trans *trans)
+ /**
+- * gsi_channel_tx_update() - Report completed TX transfers
+- * @channel:	Channel that has completed transmitting packets
+- * @trans:	Last transation known to be complete
+- *
+- * Compute the number of transactions and bytes that have been transferred
+- * over a TX channel since the given transaction was committed.  Report this
+- * information to the network stack.
+- *
+- * At the time a transaction is committed, we record its channel's
+- * committed transaction and byte counts *in the transaction*.
+- * Completions are signaled by the hardware with an interrupt, and
+- * we can determine the latest completed transaction at that time.
+- *
+- * The difference between the byte/transaction count recorded in
+- * the transaction and the count last time we recorded a completion
+- * tells us exactly how much data has been transferred between
+- * completions.
+- *
+- * Calling this each time we learn of a newly-completed transaction
+- * allows us to provide accurate information to the network stack
+- * about how much work has been completed by the hardware at a given
+- * point in time.
++ * gsi_trans_tx_completed() - Report completed TX transactions
++ * @trans:	TX channel transaction that has completed
++ *
++ * Report that a transaction on a TX channel has completed.  At the time a
++ * transaction is committed, we record *in the transaction* its channel's
++ * committed transaction and byte counts.  Transactions are completed in
++ * order, and the difference between the channel's byte/transaction count
++ * when the transaction was committed and when it completes tells us
++ * exactly how much data has been transferred while the transaction was
++ * pending.
++ *
++ * We report this information to the network stack, which uses it to manage
++ * the rate at which data is sent to hardware.
+  */
+-static void
+-gsi_channel_tx_update(struct gsi_channel *channel, struct gsi_trans *trans)
++static void gsi_trans_tx_completed(struct gsi_trans *trans)
  {
--	u64 byte_count = trans->byte_count + trans->len;
--	u64 trans_count = trans->trans_count + 1;
-+	u64 trans_count = trans->trans_count - channel->compl_trans_count;
-+	u64 byte_count = trans->byte_count - channel->compl_byte_count;
+-	u64 trans_count = trans->trans_count - channel->compl_trans_count;
+-	u64 byte_count = trans->byte_count - channel->compl_byte_count;
++	u32 channel_id = trans->channel_id;
++	struct gsi *gsi = trans->gsi;
++	struct gsi_channel *channel;
++	u32 trans_count;
++	u32 byte_count;
++
++	channel = &gsi->channel[channel_id];
++	trans_count = trans->trans_count - channel->compl_trans_count;
++	byte_count = trans->byte_count - channel->compl_byte_count;
  
--	byte_count -= channel->compl_byte_count;
--	channel->compl_byte_count += byte_count;
--	trans_count -= channel->compl_trans_count;
  	channel->compl_trans_count += trans_count;
-+	channel->compl_byte_count += byte_count;
+ 	channel->compl_byte_count += byte_count;
  
- 	ipa_gsi_channel_tx_completed(channel->gsi, gsi_channel_id(channel),
- 				     trans_count, byte_count);
+-	ipa_gsi_channel_tx_completed(channel->gsi, gsi_channel_id(channel),
+-				     trans_count, byte_count);
++	ipa_gsi_channel_tx_completed(gsi, channel_id, trans_count, byte_count);
+ }
+ 
+ /* Channel control interrupt handler */
+@@ -1504,7 +1500,7 @@ static struct gsi_trans *gsi_channel_update(struct gsi_channel *channel)
+ 	 * up the network stack.
+ 	 */
+ 	if (channel->toward_ipa)
+-		gsi_channel_tx_update(channel, trans);
++		gsi_trans_tx_completed(trans);
+ 	else
+ 		gsi_evt_ring_rx_update(evt_ring, index);
+ 
 -- 
 2.34.1
 
