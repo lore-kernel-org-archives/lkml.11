@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91855C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:46:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07031C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:46:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354973AbiFMMqq (ORCPT
+        id S1355100AbiFMMqx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:46:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56286 "EHLO
+        Mon, 13 Jun 2022 08:46:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356099AbiFMMjS (ORCPT
+        with ESMTP id S1357482AbiFMMjv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:39:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8945F338AF;
-        Mon, 13 Jun 2022 04:09:45 -0700 (PDT)
+        Mon, 13 Jun 2022 08:39:51 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 234045DE66;
+        Mon, 13 Jun 2022 04:10:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 34A59B80E93;
-        Mon, 13 Jun 2022 11:09:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 884BCC34114;
-        Mon, 13 Jun 2022 11:09:42 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A4189CE1177;
+        Mon, 13 Jun 2022 11:10:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4AE7C34114;
+        Mon, 13 Jun 2022 11:10:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118582;
-        bh=aT6YvPhoPElGUTTysLZKWXB1UMLXmkhkzGyEYMZj38o=;
+        s=korg; t=1655118602;
+        bh=Bav6yYv2JQfTFKQm+zlGPDOdoptDBC3wShkTDJSMD2o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n5GgPanfCMb72SJsrUf4P4L2CVqqdYKfpIuzByPX7K4MIZ+/A7pODz1junZFqfF1Y
-         uOnSb2caYUiDtk4h9fiRv9/TXggIFpkah6l4MJm5ERlKrYJosCqIzkzRjSUt9+zyt3
-         qzwWy4n/zytaaMvjdS/6Lt7ZYdaeM1XPLmIpZbP4=
+        b=XwAFXpA9UJbpJMkVMJQ0k/VjDdzIh7rKth5OMn2uiDLyyLJmFkJA8zR144i4GShjI
+         NC68TGYYAjQlKX2tFmvj9CvakknFAB5KrZ9eiRMS3AwLTApEhxeim15nsuD2PqiqCI
+         XptrPdfxi3WYZIvP85CAkOrkyWX+uOa5vWB9A0M8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 113/172] iio: dummy: iio_simple_dummy: check the return value of kstrdup()
-Date:   Mon, 13 Jun 2022 12:11:13 +0200
-Message-Id: <20220613094917.461131766@linuxfoundation.org>
+        stable@vger.kernel.org, Donald Buczek <buczek@molgen.mpg.de>,
+        Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 135/172] md: protect md_unregister_thread from reentrancy
+Date:   Mon, 13 Jun 2022 12:11:35 +0200
+Message-Id: <20220613094921.539779086@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -50,86 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+From: Guoqing Jiang <guoqing.jiang@cloud.ionos.com>
 
-[ Upstream commit ba93642188a6fed754bf7447f638bc410e05a929 ]
+[ Upstream commit 1e267742283a4b5a8ca65755c44166be27e9aa0f ]
 
-kstrdup() is also a memory allocation-related function, it returns NULL
-when some memory errors happen. So it is better to check the return
-value of it so to catch the memory error in time. Besides, there should
-have a kfree() to clear up the allocation if we get a failure later in
-this function to prevent memory leak.
+Generally, the md_unregister_thread is called with reconfig_mutex, but
+raid_message in dm-raid doesn't hold reconfig_mutex to unregister thread,
+so md_unregister_thread can be called simulitaneously from two call sites
+in theory.
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
-Link: https://lore.kernel.org/r/tencent_C920CFCC33B9CC1C63141FE1334A39FF8508@qq.com
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Then after previous commit which remove the protection of reconfig_mutex
+for md_unregister_thread completely, the potential issue could be worse
+than before.
+
+Let's take pers_lock at the beginning of function to ensure reentrancy.
+
+Reported-by: Donald Buczek <buczek@molgen.mpg.de>
+Signed-off-by: Guoqing Jiang <guoqing.jiang@linux.dev>
+Signed-off-by: Song Liu <song@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/dummy/iio_simple_dummy.c | 20 ++++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
+ drivers/md/md.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iio/dummy/iio_simple_dummy.c b/drivers/iio/dummy/iio_simple_dummy.c
-index c0b7ef900735..c24f609c2ade 100644
---- a/drivers/iio/dummy/iio_simple_dummy.c
-+++ b/drivers/iio/dummy/iio_simple_dummy.c
-@@ -575,10 +575,9 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
- 	 */
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index 7a9701adee73..5bd1edbb415b 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -7970,17 +7970,22 @@ EXPORT_SYMBOL(md_register_thread);
  
- 	swd = kzalloc(sizeof(*swd), GFP_KERNEL);
--	if (!swd) {
--		ret = -ENOMEM;
--		goto error_kzalloc;
--	}
-+	if (!swd)
-+		return ERR_PTR(-ENOMEM);
+ void md_unregister_thread(struct md_thread **threadp)
+ {
+-	struct md_thread *thread = *threadp;
+-	if (!thread)
+-		return;
+-	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
+-	/* Locking ensures that mddev_unlock does not wake_up a
++	struct md_thread *thread;
 +
- 	/*
- 	 * Allocate an IIO device.
- 	 *
-@@ -590,7 +589,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
- 	indio_dev = iio_device_alloc(parent, sizeof(*st));
- 	if (!indio_dev) {
- 		ret = -ENOMEM;
--		goto error_ret;
-+		goto error_free_swd;
- 	}
- 
- 	st = iio_priv(indio_dev);
-@@ -616,6 +615,10 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
- 	 *    indio_dev->name = spi_get_device_id(spi)->name;
++	/*
++	 * Locking ensures that mddev_unlock does not wake_up a
+ 	 * non-existent thread
  	 */
- 	indio_dev->name = kstrdup(name, GFP_KERNEL);
-+	if (!indio_dev->name) {
-+		ret = -ENOMEM;
-+		goto error_free_device;
+ 	spin_lock(&pers_lock);
++	thread = *threadp;
++	if (!thread) {
++		spin_unlock(&pers_lock);
++		return;
 +	}
+ 	*threadp = NULL;
+ 	spin_unlock(&pers_lock);
  
- 	/* Provide description of available channels */
- 	indio_dev->channels = iio_dummy_channels;
-@@ -632,7 +635,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
- 
- 	ret = iio_simple_dummy_events_register(indio_dev);
- 	if (ret < 0)
--		goto error_free_device;
-+		goto error_free_name;
- 
- 	ret = iio_simple_dummy_configure_buffer(indio_dev);
- 	if (ret < 0)
-@@ -649,11 +652,12 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
- 	iio_simple_dummy_unconfigure_buffer(indio_dev);
- error_unregister_events:
- 	iio_simple_dummy_events_unregister(indio_dev);
-+error_free_name:
-+	kfree(indio_dev->name);
- error_free_device:
- 	iio_device_free(indio_dev);
--error_ret:
-+error_free_swd:
- 	kfree(swd);
--error_kzalloc:
- 	return ERR_PTR(ret);
++	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
+ 	kthread_stop(thread->tsk);
+ 	kfree(thread);
  }
- 
 -- 
 2.35.1
 
