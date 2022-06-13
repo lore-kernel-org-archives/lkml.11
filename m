@@ -2,39 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 377D7C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 06:49:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AAEFC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 06:50:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238439AbiFMGt4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 02:49:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59188 "EHLO
+        id S238479AbiFMGuA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 02:50:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237720AbiFMGsz (ORCPT
+        with ESMTP id S237803AbiFMGs4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 02:48:55 -0400
+        Mon, 13 Jun 2022 02:48:56 -0400
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ED931581B;
-        Sun, 12 Jun 2022 23:48:53 -0700 (PDT)
-X-UUID: 42f531b43e3a4355b674f5f6bbd5cdef-20220613
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91AF215827;
+        Sun, 12 Jun 2022 23:48:54 -0700 (PDT)
+X-UUID: 852b16fdbd084e3fa7b56955cdeaf3a3-20220613
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:353ba3d0-a0e9-4b12-ac16-fdbf83731228,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:-5
-X-CID-META: VersionHash:2a19b09,CLOUDID:87715ac6-12ba-4305-bfdf-9aefbdc32516,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:0,BEC:nil
-X-UUID: 42f531b43e3a4355b674f5f6bbd5cdef-20220613
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+X-CID-O-INFO: VERSION:1.1.5,REQID:e1b1ec7c-91a3-4f45-aac3-02461839e6e2,OB:20,L
+        OB:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,A
+        CTION:release,TS:90
+X-CID-INFO: VERSION:1.1.5,REQID:e1b1ec7c-91a3-4f45-aac3-02461839e6e2,OB:20,LOB
+        :0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,A
+        CTION:quarantine,TS:90
+X-CID-META: VersionHash:2a19b09,CLOUDID:11725ac6-12ba-4305-bfdf-9aefbdc32516,C
+        OID:ef7ad5cd4226,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:0,BEC:nil
+X-UUID: 852b16fdbd084e3fa7b56955cdeaf3a3-20220613
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
         (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 755631472; Mon, 13 Jun 2022 14:48:44 +0800
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1925287180; Mon, 13 Jun 2022 14:48:46 +0800
 Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Mon, 13 Jun 2022 14:48:43 +0800
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Mon, 13 Jun 2022 14:48:44 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 13 Jun 2022 14:48:43 +0800
+ Transport; Mon, 13 Jun 2022 14:48:44 +0800
 From:   Bo-Chen Chen <rex-bc.chen@mediatek.com>
 To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
         <daniel@ffwll.ch>, <robh+dt@kernel.org>,
@@ -49,9 +52,9 @@ CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>,
         Bo-Chen Chen <rex-bc.chen@mediatek.com>
-Subject: [PATCH v11 03/12] drm/mediatek: dpi: implement a CK/DE pol toggle in SoC config
-Date:   Mon, 13 Jun 2022 14:48:32 +0800
-Message-ID: <20220613064841.10481-4-rex-bc.chen@mediatek.com>
+Subject: [PATCH v11 12/12] drm/mediatek: dpi: Add matrix_sel helper
+Date:   Mon, 13 Jun 2022 14:48:41 +0800
+Message-ID: <20220613064841.10481-13-rex-bc.chen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220613064841.10481-1-rex-bc.chen@mediatek.com>
 References: <20220613064841.10481-1-rex-bc.chen@mediatek.com>
@@ -64,90 +67,74 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Guillaume Ranquet <granquet@baylibre.com>
 
-Dp_intf does not support CK/DE polarity because the polarity information
-is not used for eDP and DP while dp_intf is only for eDP and DP.
-Therefore, we add a bit of flexibility to support SoCs without CK/DE pol
-support.
+Add a mtk_dpi_matrix_sel() helper to update the DPI_MATRIX_SET
+register depending on the color format.
 
 Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-[Bo-Chen: Add modification reason in commit message.]
 Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
 ---
- drivers/gpu/drm/mediatek/mtk_dpi.c | 22 +++++++++++++++++-----
- 1 file changed, 17 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/mediatek/mtk_dpi.c      | 21 +++++++++++++++++++++
+ drivers/gpu/drm/mediatek/mtk_dpi_regs.h |  3 +++
+ 2 files changed, 24 insertions(+)
 
 diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
-index ce8c5eefe5f1..15218c1e8c11 100644
+index 9668bd5dd14a..dc355a512963 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
 +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
-@@ -125,6 +125,7 @@ struct mtk_dpi_conf {
- 	bool edge_sel_en;
- 	const u32 *output_fmts;
- 	u32 num_output_fmts;
-+	bool is_ck_de_pol;
- 	const struct mtk_dpi_yc_limit *limit;
- };
- 
-@@ -211,13 +212,20 @@ static void mtk_dpi_config_pol(struct mtk_dpi *dpi,
- 			       struct mtk_dpi_polarities *dpi_pol)
- {
- 	unsigned int pol;
-+	unsigned int mask;
- 
--	pol = (dpi_pol->ck_pol == MTK_DPI_POLARITY_RISING ? 0 : CK_POL) |
--	      (dpi_pol->de_pol == MTK_DPI_POLARITY_RISING ? 0 : DE_POL) |
--	      (dpi_pol->hsync_pol == MTK_DPI_POLARITY_RISING ? 0 : HSYNC_POL) |
-+	mask = HSYNC_POL | VSYNC_POL;
-+	pol = (dpi_pol->hsync_pol == MTK_DPI_POLARITY_RISING ? 0 : HSYNC_POL) |
- 	      (dpi_pol->vsync_pol == MTK_DPI_POLARITY_RISING ? 0 : VSYNC_POL);
--	mtk_dpi_mask(dpi, DPI_OUTPUT_SETTING, pol,
--		     CK_POL | DE_POL | HSYNC_POL | VSYNC_POL);
-+	if (dpi->conf->is_ck_de_pol) {
-+		mask |= CK_POL | DE_POL;
-+		pol |= (dpi_pol->ck_pol == MTK_DPI_POLARITY_RISING ?
-+			0 : CK_POL) |
-+		       (dpi_pol->de_pol == MTK_DPI_POLARITY_RISING ?
-+			0 : DE_POL);
-+	}
-+
-+	mtk_dpi_mask(dpi, DPI_OUTPUT_SETTING, pol, mask);
+@@ -387,6 +387,25 @@ static void mtk_dpi_config_disable_edge(struct mtk_dpi *dpi)
+ 		mtk_dpi_mask(dpi, dpi->conf->reg_h_fre_con, 0, EDGE_SEL_EN);
  }
  
- static void mtk_dpi_config_3d(struct mtk_dpi *dpi, bool en_3d)
-@@ -799,6 +807,7 @@ static const struct mtk_dpi_conf mt8173_conf = {
- 	.max_clock_khz = 300000,
- 	.output_fmts = mt8173_output_fmts,
- 	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
-+	.is_ck_de_pol = true,
- 	.limit = &mtk_dpi_limit,
- };
++static void mtk_dpi_matrix_sel(struct mtk_dpi *dpi, enum mtk_dpi_out_color_format format)
++{
++	u32 matrix_sel = 0;
++
++	switch (format) {
++	case MTK_DPI_COLOR_FORMAT_YCBCR_422:
++	case MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL:
++	case MTK_DPI_COLOR_FORMAT_YCBCR_444:
++	case MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL:
++	case MTK_DPI_COLOR_FORMAT_XV_YCC:
++		if (dpi->mode.hdisplay <= 720)
++			matrix_sel = 0x2;
++		break;
++	default:
++		break;
++	}
++	mtk_dpi_mask(dpi, DPI_MATRIX_SET, matrix_sel, INT_MATRIX_SEL_MASK);
++}
++
+ static void mtk_dpi_config_color_format(struct mtk_dpi *dpi,
+ 					enum mtk_dpi_out_color_format format)
+ {
+@@ -394,6 +413,7 @@ static void mtk_dpi_config_color_format(struct mtk_dpi *dpi,
+ 	    (format == MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL)) {
+ 		mtk_dpi_config_yuv422_enable(dpi, false);
+ 		mtk_dpi_config_csc_enable(dpi, true);
++		mtk_dpi_matrix_sel(dpi, format);
+ 		if (dpi->conf->swap_input_support)
+ 			mtk_dpi_config_swap_input(dpi, false);
+ 		mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_BGR);
+@@ -401,6 +421,7 @@ static void mtk_dpi_config_color_format(struct mtk_dpi *dpi,
+ 		   (format == MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL)) {
+ 		mtk_dpi_config_yuv422_enable(dpi, true);
+ 		mtk_dpi_config_csc_enable(dpi, true);
++		mtk_dpi_matrix_sel(dpi, format);
+ 		if (dpi->conf->swap_input_support)
+ 			mtk_dpi_config_swap_input(dpi, true);
+ 		mtk_dpi_config_channel_swap(dpi, MTK_DPI_OUT_CHANNEL_SWAP_RGB);
+diff --git a/drivers/gpu/drm/mediatek/mtk_dpi_regs.h b/drivers/gpu/drm/mediatek/mtk_dpi_regs.h
+index f7f0272dbd6a..96c117202d0d 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dpi_regs.h
++++ b/drivers/gpu/drm/mediatek/mtk_dpi_regs.h
+@@ -230,4 +230,7 @@
+ #define EDGE_SEL_EN			BIT(5)
+ #define H_FRE_2N			BIT(25)
  
-@@ -809,6 +818,7 @@ static const struct mtk_dpi_conf mt2701_conf = {
- 	.max_clock_khz = 150000,
- 	.output_fmts = mt8173_output_fmts,
- 	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
-+	.is_ck_de_pol = true,
- 	.limit = &mtk_dpi_limit,
- };
- 
-@@ -818,6 +828,7 @@ static const struct mtk_dpi_conf mt8183_conf = {
- 	.max_clock_khz = 100000,
- 	.output_fmts = mt8183_output_fmts,
- 	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
-+	.is_ck_de_pol = true,
- 	.limit = &mtk_dpi_limit,
- };
- 
-@@ -827,6 +838,7 @@ static const struct mtk_dpi_conf mt8192_conf = {
- 	.max_clock_khz = 150000,
- 	.output_fmts = mt8183_output_fmts,
- 	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
-+	.is_ck_de_pol = true,
- 	.limit = &mtk_dpi_limit,
- };
- 
++#define DPI_MATRIX_SET		0xB4
++#define INT_MATRIX_SEL_MASK	(0x1F << 0)
++
+ #endif /* __MTK_DPI_REGS_H */
 -- 
 2.18.0
 
