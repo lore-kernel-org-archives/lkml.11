@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1936AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEBC9C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382218AbiFMON3 (ORCPT
+        id S1382152AbiFMONU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:13:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52986 "EHLO
+        Mon, 13 Jun 2022 10:13:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382598AbiFMOGG (ORCPT
+        with ESMTP id S1382393AbiFMOFt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:06:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 666F695DED;
-        Mon, 13 Jun 2022 04:41:01 -0700 (PDT)
+        Mon, 13 Jun 2022 10:05:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE50B954A5;
+        Mon, 13 Jun 2022 04:40:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8060AB80D31;
-        Mon, 13 Jun 2022 11:40:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6759C34114;
-        Mon, 13 Jun 2022 11:40:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6709561454;
+        Mon, 13 Jun 2022 11:40:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72D29C341C6;
+        Mon, 13 Jun 2022 11:40:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120458;
-        bh=28hVbwrBlTsfQv2+VKD9WOmazeddOyy/E8ouUEiCXM0=;
+        s=korg; t=1655120437;
+        bh=4vviVn1+C2VUpSO971tgRUItAVlhTOzZO6vrIeqv1ME=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EdrUK/DfVPSvIoc+43Sxwpo/btJT0LsxbGDGafhP8yVWeu5lemA6K13iIzSKpQwN1
-         LCC/7mG2plleM1ASQSgYBnjyOWU4XM2SzCScXx7+u1aJnq5K9Yi6dkQvvXNfDopgn6
-         +VpNamEKVUlaXzvARfM2uItaecH5rqP0753oZdB4=
+        b=2Kom8vuyp6ypdewAWVguhWFdtaEHfA95jXIqE+rrq9p2deGQmhFk8RJjzCqGbWVBb
+         baVzuV6yKRZ/EqbNAUtlABbPNMMhFAz778mBfN9y8I8O8NGNvn/0eDsmB3S8JxGs9m
+         G5oN4khC/hsmJJocO6Nz+KOyMCcWuWZPK/Lxym8s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        stable@vger.kernel.org, Cixi Geng <cixi.geng1@unisoc.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 017/298] staging: fieldbus: Fix the error handling path in anybuss_host_common_probe()
-Date:   Mon, 13 Jun 2022 12:08:31 +0200
-Message-Id: <20220613094925.451631622@linuxfoundation.org>
+Subject: [PATCH 5.17 032/298] iio: adc: sc27xx: fix read big scale voltage not right
+Date:   Mon, 13 Jun 2022 12:08:46 +0200
+Message-Id: <20220613094925.906266113@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,36 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Cixi Geng <cixi.geng1@unisoc.com>
 
-[ Upstream commit 7079b3483a17be2cfba64cbd4feb1b7ae07f1ea7 ]
+[ Upstream commit ad930a75613282400179361e220e58b87386b8c7 ]
 
-If device_register() fails, device_unregister() should not be called
-because it will free some resources that are not allocated.
-put_device() should be used instead.
+Fix wrong configuration value of SC27XX_ADC_SCALE_MASK and
+SC27XX_ADC_SCALE_SHIFT by spec documetation.
 
-Fixes: 308ee87a2f1e ("staging: fieldbus: anybus-s: support HMS Anybus-S bus")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/5401a519608d6e1a4e7435c20f4f20b0c5c36c23.1650610082.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 5df362a6cf49c (iio: adc: Add Spreadtrum SC27XX PMICs ADC support)
+Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
+Reviewed-by: Baolin Wang <baolin.wang7@gmail.com>
+Link: https://lore.kernel.org/r/20220419142458.884933-3-gengcixi@gmail.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/fieldbus/anybuss/host.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/adc/sc27xx_adc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/fieldbus/anybuss/host.c b/drivers/staging/fieldbus/anybuss/host.c
-index a344410e48fe..cd86b9c9e345 100644
---- a/drivers/staging/fieldbus/anybuss/host.c
-+++ b/drivers/staging/fieldbus/anybuss/host.c
-@@ -1384,7 +1384,7 @@ anybuss_host_common_probe(struct device *dev,
- 		goto err_device;
- 	return cd;
- err_device:
--	device_unregister(&cd->client->dev);
-+	put_device(&cd->client->dev);
- err_kthread:
- 	kthread_stop(cd->qthread);
- err_reset:
+diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
+index 00098caf6d9e..aee076c8e2b1 100644
+--- a/drivers/iio/adc/sc27xx_adc.c
++++ b/drivers/iio/adc/sc27xx_adc.c
+@@ -36,8 +36,8 @@
+ 
+ /* Bits and mask definition for SC27XX_ADC_CH_CFG register */
+ #define SC27XX_ADC_CHN_ID_MASK		GENMASK(4, 0)
+-#define SC27XX_ADC_SCALE_MASK		GENMASK(10, 8)
+-#define SC27XX_ADC_SCALE_SHIFT		8
++#define SC27XX_ADC_SCALE_MASK		GENMASK(10, 9)
++#define SC27XX_ADC_SCALE_SHIFT		9
+ 
+ /* Bits definitions for SC27XX_ADC_INT_EN registers */
+ #define SC27XX_ADC_IRQ_EN		BIT(0)
 -- 
 2.35.1
 
