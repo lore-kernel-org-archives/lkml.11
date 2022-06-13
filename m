@@ -2,46 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3592CCA48B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7E37CCA48D
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:09:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352169AbiFMLJ0 (ORCPT
+        id S1352244AbiFMLJi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:09:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44986 "EHLO
+        Mon, 13 Jun 2022 07:09:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351807AbiFMLFF (ORCPT
+        with ESMTP id S1351803AbiFMLFF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:05:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E27E21E3A;
-        Mon, 13 Jun 2022 03:34:06 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9195C27CE6;
+        Mon, 13 Jun 2022 03:34:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 213CD60F9A;
-        Mon, 13 Jun 2022 10:34:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E127C34114;
-        Mon, 13 Jun 2022 10:34:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F06E0B80E5C;
+        Mon, 13 Jun 2022 10:34:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68A3DC34114;
+        Mon, 13 Jun 2022 10:34:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116445;
-        bh=W1rxrgY1omqOAcJgHBorCOi3gQNKyeOhyyumCTZCslQ=;
+        s=korg; t=1655116442;
+        bh=a8W1Xyi5UJaRH3cOEV6KFlvHU+44TiyfFTT5jZ3JfqY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=esnDaE9SJqOVWUpqpNHdWXd5gg/o3ELHFsBSK7twaGF201NRYzwZZoQRiO+NRSlVe
-         I2Lg08WlPNbZJCa1YlCyBaN2ZGzGe4wXah/LUc6FtvARq/7URuNaaUkJO4GM+psVQq
-         2MyWn5KOrIpu0tQm1aDad+oOuj30raQYn/vod8Bg=
+        b=Kz4Zba+De0GvwXV9oCD/9HgS3mU51H0vAerO5IpMnMhRCPZvIbEFM1I9MKOGhxZLS
+         5yJvxGEhKkcvNYpb1Elq0yYUBm4ys3qfo4JPA7X9KbaL4b4N3WReF/tRYCRp5hXIMm
+         6fJMpENBc/A/xtHioBcenpA+oMttF3Ip6zwfKuvY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, bumwoo lee <bw365.lee@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
+        stable@vger.kernel.org, Miles Chen <miles.chen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Zhiqiang Lin <zhiqiang.lin@mediatek.com>,
+        CK Hu <ck.hu@mediatek.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 192/218] extcon: Modify extcon device to be created after driver data is set
-Date:   Mon, 13 Jun 2022 12:10:50 +0200
-Message-Id: <20220613094926.441352876@linuxfoundation.org>
+Subject: [PATCH 5.4 087/411] drm/mediatek: Fix mtk_cec_mask()
+Date:   Mon, 13 Jun 2022 12:06:00 +0200
+Message-Id: <20220613094931.290014397@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,98 +55,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: bumwoo lee <bw365.lee@samsung.com>
+From: Miles Chen <miles.chen@mediatek.com>
 
-[ Upstream commit 5dcc2afe716d69f5112ce035cb14f007461ff189 ]
+[ Upstream commit 2c5d69b0a141e1e98febe3111e6f4fd8420493a5 ]
 
-Currently, someone can invoke the sysfs such as state_show()
-intermittently before dev_set_drvdata() is done.
-And it can be a cause of kernel Oops because of edev is Null at that time.
-So modified the driver registration to after setting drviver data.
+In current implementation, mtk_cec_mask() writes val into target register
+and ignores the mask. After talking to our hdmi experts, mtk_cec_mask()
+should read a register, clean only mask bits, and update (val | mask) bits
+to the register.
 
-- Oops's backtrace.
-
-Backtrace:
-[<c067865c>] (state_show) from [<c05222e8>] (dev_attr_show)
-[<c05222c0>] (dev_attr_show) from [<c02c66e0>] (sysfs_kf_seq_show)
-[<c02c6648>] (sysfs_kf_seq_show) from [<c02c496c>] (kernfs_seq_show)
-[<c02c4938>] (kernfs_seq_show) from [<c025e2a0>] (seq_read)
-[<c025e11c>] (seq_read) from [<c02c50a0>] (kernfs_fop_read)
-[<c02c5064>] (kernfs_fop_read) from [<c0231cac>] (__vfs_read)
-[<c0231c5c>] (__vfs_read) from [<c0231ee0>] (vfs_read)
-[<c0231e34>] (vfs_read) from [<c0232464>] (ksys_read)
-[<c02323f0>] (ksys_read) from [<c02324fc>] (sys_read)
-[<c02324e4>] (sys_read) from [<c00091d0>] (__sys_trace_return)
-
-Signed-off-by: bumwoo lee <bw365.lee@samsung.com>
-Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
+Link: https://patchwork.kernel.org/project/linux-mediatek/patch/20220315232301.2434-1-miles.chen@mediatek.com/
+Fixes: 8f83f26891e1 ("drm/mediatek: Add HDMI support")
+Signed-off-by: Miles Chen <miles.chen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Zhiqiang Lin <zhiqiang.lin@mediatek.com>
+Cc: CK Hu <ck.hu@mediatek.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/extcon/extcon.c | 29 +++++++++++++++++------------
- 1 file changed, 17 insertions(+), 12 deletions(-)
+ drivers/gpu/drm/mediatek/mtk_cec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/extcon/extcon.c b/drivers/extcon/extcon.c
-index e9fe3e3bac2b..81a552654cc7 100644
---- a/drivers/extcon/extcon.c
-+++ b/drivers/extcon/extcon.c
-@@ -1241,19 +1241,14 @@ int extcon_dev_register(struct extcon_dev *edev)
- 		edev->dev.type = &edev->extcon_dev_type;
- 	}
+diff --git a/drivers/gpu/drm/mediatek/mtk_cec.c b/drivers/gpu/drm/mediatek/mtk_cec.c
+index cb29b649fcdb..12bf93769497 100644
+--- a/drivers/gpu/drm/mediatek/mtk_cec.c
++++ b/drivers/gpu/drm/mediatek/mtk_cec.c
+@@ -84,7 +84,7 @@ static void mtk_cec_mask(struct mtk_cec *cec, unsigned int offset,
+ 	u32 tmp = readl(cec->regs + offset) & ~mask;
  
--	ret = device_register(&edev->dev);
--	if (ret) {
--		put_device(&edev->dev);
--		goto err_dev;
--	}
--
- 	spin_lock_init(&edev->lock);
--	edev->nh = devm_kcalloc(&edev->dev, edev->max_supported,
--				sizeof(*edev->nh), GFP_KERNEL);
--	if (!edev->nh) {
--		ret = -ENOMEM;
--		device_unregister(&edev->dev);
--		goto err_dev;
-+	if (edev->max_supported) {
-+		edev->nh = kcalloc(edev->max_supported, sizeof(*edev->nh),
-+				GFP_KERNEL);
-+		if (!edev->nh) {
-+			ret = -ENOMEM;
-+			goto err_alloc_nh;
-+		}
- 	}
+ 	tmp |= val & mask;
+-	writel(val, cec->regs + offset);
++	writel(tmp, cec->regs + offset);
+ }
  
- 	for (index = 0; index < edev->max_supported; index++)
-@@ -1264,6 +1259,12 @@ int extcon_dev_register(struct extcon_dev *edev)
- 	dev_set_drvdata(&edev->dev, edev);
- 	edev->state = 0;
- 
-+	ret = device_register(&edev->dev);
-+	if (ret) {
-+		put_device(&edev->dev);
-+		goto err_dev;
-+	}
-+
- 	mutex_lock(&extcon_dev_list_lock);
- 	list_add(&edev->entry, &extcon_dev_list);
- 	mutex_unlock(&extcon_dev_list_lock);
-@@ -1271,6 +1272,9 @@ int extcon_dev_register(struct extcon_dev *edev)
- 	return 0;
- 
- err_dev:
-+	if (edev->max_supported)
-+		kfree(edev->nh);
-+err_alloc_nh:
- 	if (edev->max_supported)
- 		kfree(edev->extcon_dev_type.groups);
- err_alloc_groups:
-@@ -1331,6 +1335,7 @@ void extcon_dev_unregister(struct extcon_dev *edev)
- 	if (edev->max_supported) {
- 		kfree(edev->extcon_dev_type.groups);
- 		kfree(edev->cables);
-+		kfree(edev->nh);
- 	}
- 
- 	put_device(&edev->dev);
+ void mtk_cec_set_hpd_event(struct device *dev,
 -- 
 2.35.1
 
