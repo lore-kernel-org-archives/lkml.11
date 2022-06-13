@@ -2,150 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47748CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:24:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74C03C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:26:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238414AbiFMIYx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 04:24:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56990 "EHLO
+        id S239447AbiFMIZt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 04:25:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239984AbiFMIYo (ORCPT
+        with ESMTP id S232021AbiFMIZr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 04:24:44 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54D5D1EC49;
-        Mon, 13 Jun 2022 01:24:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655108683; x=1686644683;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=XxfMmKGx5lg0H3QCQcKZ44rxWFGSB/vBnlrLxfiWKuk=;
-  b=KZ8ZDxwJ0mqTZY/XIXe99RLftUvGUlpCKWfEtsbQ1dvKol//hy4iXuJi
-   +Xwn6Y+3t/wGM8JwIRSeOdPUOYdPBIl7PLl1T5AR9zEBhJpTr4qrwh5ec
-   1+qLYVgRPnIPRdh4FunE6VtgaUlwGf2UbWhSlEurneaJ7UAS5I+P8fpAI
-   0=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 13 Jun 2022 01:24:43 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 01:24:43 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 13 Jun 2022 01:24:42 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 13 Jun 2022 01:24:38 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_rohkumar@quicinc.com>, <srinivas.kandagatla@linaro.org>,
-        <dianders@chromium.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
-Subject: [PATCH v15 4/4] arm64: dts: qcom: sc7280-herobrine: Add lpi pinmux properties for CRD 3.0/3.1
-Date:   Mon, 13 Jun 2022 13:54:05 +0530
-Message-ID: <1655108645-1517-5-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1655108645-1517-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1655108645-1517-1-git-send-email-quic_srivasam@quicinc.com>
-MIME-Version: 1.0
+        Mon, 13 Jun 2022 04:25:47 -0400
+Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01olkn2033.outbound.protection.outlook.com [40.92.98.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 725091EAFD;
+        Mon, 13 Jun 2022 01:25:46 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EfJT5atsdFm9SHEqI53/AkzBeHn0wFvX33zwEYITiJGYzzWrZLGJ2LTELQNx74PyFp7cKi3WKJPolrFodV9U7GzZKshMDWWv5kV6RrBig+wDJ20Fz0tnH9UKpRqC/Q878CpjRvB/45gMW2/H6/0wgoZSWR1fyyXxtKDtyDkQ7XWkH8fohbH30U2yJfFHnnxvpHfnmZHbTVs9JqvmMuLosEcfYZKC8BPz0AXbpAO/wbf4xtZ5zksmrtv7BL9r0uTsEilJQ3VICGrzviI91BiW6coo6Lc/JYqTGufGIrm8Ma0k/EOFc7I0FkzMIsDaRekgWaUlV7PGUxJ5ZQlF4yU58A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=AiTxWXEyoAPs/I+rjR5y33VsDXZiYz5yhqB9YfuxFa0=;
+ b=F+4GlfZlD7SxEKIQXaaE/D1shdWU+qR57qeDBtFAckHKz/fAUNZDAmtZQl4mz7aY0qxO4d72Tya7lh6MsaZk2tmMmtVgVtKtmGAN3benWLHfDSefFJzXMnXXm9uLs0M9YtU6EQe1rI0kKCOqMu9sWR/T9OAM3/ct96gKjFaYQuCsCk/0kDusywjpGm8e68LNiv4YmRM0rlNG3qhFuAsPqsJQ4/JTS0YbuDkykXo1FOCNG6aLPrAonMTBWIhj/oupVldFUWq8Key26OVVXdiXauLAZZeuL2k/N9uULEg/penDooJ0jQJDsCand0YBYRIAWF2Ca9q2egphnZLbyXfB5w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AiTxWXEyoAPs/I+rjR5y33VsDXZiYz5yhqB9YfuxFa0=;
+ b=cTrf+FISk2K4DLq966fORUjLSxvmEgSWOs22iBwzmlvwmZ218cJhZWEhgH1+bCsGOshw7I2Qd1EO05dwo/fAWGOHcPkuitbnXi9cqRh/sptGTWEBbgbWK7CoesFb+AlFq7yrZqQvTluHkF3TW6XaNUKSXWwGxLZ0dQMjQHWxVrsSkRFnek7bZWwEDl5Gw3jBt3wGAEV0z9VRCoAuWnGtUNrIjoJ072pNtZffYdYyl9dpfqOioz4LUJ5EuUqIjyBbk8HfHNcROvqjlqPP2LAYWVoWTwietdZ/E/6tmhlUPO5Wyuju2HNcyzDEhRZ5jKuvpEPw9xXHDezPgJVr0V5RPg==
+Received: from TYWP286MB2601.JPNP286.PROD.OUTLOOK.COM (2603:1096:400:248::14)
+ by TYCP286MB1426.JPNP286.PROD.OUTLOOK.COM (2603:1096:400:c1::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.12; Mon, 13 Jun
+ 2022 08:25:43 +0000
+Received: from TYWP286MB2601.JPNP286.PROD.OUTLOOK.COM
+ ([fe80::9cb3:323f:e99e:39c1]) by TYWP286MB2601.JPNP286.PROD.OUTLOOK.COM
+ ([fe80::9cb3:323f:e99e:39c1%9]) with mapi id 15.20.5332.020; Mon, 13 Jun 2022
+ 08:25:43 +0000
+From:   Riwen Lu <luriwen@hotmail.com>
+To:     rafael@kernel.org, lenb@kernel.org, robert.moore@intel.com
+Cc:     linux-acpi@vger.kernel.org, devel@acpica.org,
+        linux-kernel@vger.kernel.org, Riwen Lu <luriwen@kylinos.cn>
+Subject: [PATCH v1] ACPI/processor: Remove unused function acpi_processor_get_limit_info()
+Date:   Mon, 13 Jun 2022 16:25:26 +0800
+Message-ID: <TYWP286MB2601D57F678AAC931003178EB1AB9@TYWP286MB2601.JPNP286.PROD.OUTLOOK.COM>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+X-TMN:  [tqLLVWLLWj+3y5T+uQi1L+8haBgY1PpHz+adaV2iekQ=]
+X-ClientProxiedBy: SGBP274CA0005.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b0::17)
+ To TYWP286MB2601.JPNP286.PROD.OUTLOOK.COM (2603:1096:400:248::14)
+X-Microsoft-Original-Message-ID: <20220613082526.3746201-1-luriwen@hotmail.com>
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 825e42b7-8eaf-48d8-419a-08da4d164ea8
+X-MS-TrafficTypeDiagnostic: TYCP286MB1426:EE_
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: WFBwbpnuoMFnJd8uYn1bmrVjoBLiHv1Vo2KIKNx96xdAa2efZ5Yv0THhqtr7Pmug6SaYYjvENeCHIqZA+klWk64IURNRNiVBIFFLSgEhvCY4+d5LPrW8T8k0h2YOs/tMrvyQfo5yUdN+Zdt4WESmkMkRCoKaouIEwS60XNkWrFHO8O3yeruNuFX7pCrbuqlXjbPM8tpO+tPbK5SwpSDeAYPAAUdoGZ+YSDKX+bb8qwHlW1NjEeinUOl8WpGu26okpgkBzFQE0Mllyp80joGMOedkviTNDBCo4LXPeQyVD51RRuaw83G+N9ezKYyoNfrk8Oro0B/YSL2+XQBw/B7zZLxeNcJRknkejRJYPjO712bqbX6Ae7IkkXDqzW0as9ZXpfRcjgXGXLw9GfmNBlf9e4I/L8B23eARw9SloQkKL8Sjtke/0hFTNTpxSvrcWOxIjaLGBh2yBjx8tGZnFVjtNky3nZWa/JhiI1vH4fXYG3ivfBTeJJUcykzi+FqDU1ma+Mj9TKOIbHKIPuf6fDekZwSiRgYVvn7SeQS4F1RHtde67iQGvX0qnmS20Q++Blm2kX7SH3z02kirKlDSXkw3aw==
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?deYAQ/b7hlCKyMeRUar12gRol6W4d2RaRN4rduEURHbTh42OzoxVKnSXAmu4?=
+ =?us-ascii?Q?b2MObBuB0k2H/0uL5jVU7qbG0c3mK5Gu1hX8uVfgCTCjAIinRTdyPGO8L3l5?=
+ =?us-ascii?Q?21Eq0llVjynO9zoAc6sTYDVeo86mKENdx01nhUYGjqZd8chAxkZmn5Koybgr?=
+ =?us-ascii?Q?VF/eTnMURDG4RVMOizXgn/BbBwssaifPrQKnJK1fZ+n0XffZbdfkTiRNfiQ9?=
+ =?us-ascii?Q?z1kum/EqU48mSVmgm9x3Z9xIWeawwoM0FY/+r0f7ijJotKz29J41qt+tGw3z?=
+ =?us-ascii?Q?ep7+zwx5aFwuIArlnScJSWCdp6TfWv/jAUdO17C3R9hf7hLhlVddjBCLoUo3?=
+ =?us-ascii?Q?MVS3iRoGz6LZwmcmYHxn58cn1C6g3oHGmhRpkYHvJCPjy6fhsWbRV9tVPK24?=
+ =?us-ascii?Q?hGDRXX+Jt4cyQLuJ0xU0Igtmp85xF342BioMU89+Q7gtmozOLTrG6cJFRwci?=
+ =?us-ascii?Q?iHLWSGb8ZvXqkHZQtbM8IWb4d8DUK6G2TH33TBhXSjE1sKcgDa6cAf+m1rAR?=
+ =?us-ascii?Q?dM6N7pRuOrT/6YqKmbfJ04rqCAT/yXfxJhusem+UILsNl4U9bOAdWruAAbZY?=
+ =?us-ascii?Q?gxBkrD9E0e5LU5zax1zJOU8f6nft8OeqOqCfiKXzyZC6QgC5KOIMh7m1Ckgy?=
+ =?us-ascii?Q?4oNpLYqJ5NrzZriaqO4XAYR4Pfbuh8CbGzTNMo1ZvYu2p1nIKPRsqcac6T+n?=
+ =?us-ascii?Q?CM49KRNJ4KrAKfRH03lo1VMwH+otlOeAI/jHFKd8ATv3Fj2+qtgdtRVwoSq9?=
+ =?us-ascii?Q?duO7BiagK4t+vVoVTO3ad/yQ+i4fjJRX+IOnVVdhAILogaCBNZa2uzc7Jefa?=
+ =?us-ascii?Q?SnGnG1G2/zBkFGknyJIl3W0QXRFXZFI5v/eA16dlrO8zIzwA4E1gSYEN5XOO?=
+ =?us-ascii?Q?1YnJwK9i8SEytoiQ0b0jdgUQKy0+jxUbksmmCilti3XgzmauB46bM7xg7D5T?=
+ =?us-ascii?Q?fddPha58C3B5v5LinGyK3A0FmAihw0KnFOgEgn62OJYLRUGma9oUa3946G0k?=
+ =?us-ascii?Q?72k16PrbAA68CQL1CnOrmqCv+dby+HPVgYeCqi4hm7k22SUHJCPaP4WUmq1s?=
+ =?us-ascii?Q?aBUNhq5OAtzvfOZBRFJbQWjgneA+5cvIavrHABsMnhSXLEqcGMZoRjzbMCnc?=
+ =?us-ascii?Q?/G96sad1/lp0CelnrKGeYi98JTCgindVPYrp7TyMOyJBrcC9ogWayYpEqi6M?=
+ =?us-ascii?Q?2cVSOZ2566uUdnn8TcE2KiNJw0NjXotIxZP0hC3Qh9dX8LcKEDAGkXemvTAM?=
+ =?us-ascii?Q?6oWfRUPbuN5YXUF/n7Bba/WvRtH68RSaclQnDE0GnyWsrXxYbKC2c/9Ibi2C?=
+ =?us-ascii?Q?uNFoKQ9MLixqx6e4xmPrh+WYExF/klkfGU99EdlxcpIr42j8VAf9HQGBOsCe?=
+ =?us-ascii?Q?5VkL0GoM4yzA+TDkk+sQFfSSAnN1wNipIUmsghyeNw2o9/nrrchUN46HsSyn?=
+ =?us-ascii?Q?q2kCXg82bSo=3D?=
+X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-05f45.templateTenant
+X-MS-Exchange-CrossTenant-Network-Message-Id: 825e42b7-8eaf-48d8-419a-08da4d164ea8
+X-MS-Exchange-CrossTenant-AuthSource: TYWP286MB2601.JPNP286.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jun 2022 08:25:43.7478
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCP286MB1426
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add LPASS LPI pinctrl properties, which are required for Audio
-functionality on herobrine based platforms of rev5+
-(aka CRD 3.0/3.1) boards.
+From: Riwen Lu <luriwen@kylinos.cn>
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+Commit 22e7551eb6fd ("ACPI / processor: Remove acpi_processor_get_limit_info()"),
+left behind this, remove it.
+
+Signed-off-by: Riwen Lu <luriwen@kylinos.cn>
 ---
- arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts | 61 +++++++++++++++++++++++
- 1 file changed, 61 insertions(+)
+ include/acpi/processor.h | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-index 53feaed..d92575e 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-+++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
-@@ -144,6 +144,67 @@ ap_ts_pen_1v8: &i2c13 {
-  * - If a pin is totally internal to Qcard then it gets Qcard name.
-  * - If a pin is not hooked up on Qcard, it gets no name.
-  */
-+&lpass_dmic01_clk {
-+	drive-strength = <8>;
-+	bias-disable;
-+};
-+
-+&lpass_dmic01_clk_sleep {
-+	drive-strength = <2>;
-+};
-+
-+&lpass_dmic01_data {
-+	bias-pull-down;
-+};
-+
-+&lpass_dmic23_clk {
-+	drive-strength = <8>;
-+	bias-disable;
-+};
-+
-+&lpass_dmic23_clk_sleep {
-+	drive-strength = <2>;
-+};
-+
-+&lpass_dmic23_data {
-+	bias-pull-down;
-+};
-+
-+&lpass_rx_swr_clk {
-+	drive-strength = <2>;
-+	slew-rate = <1>;
-+	bias-disable;
-+};
-+
-+&lpass_rx_swr_clk_sleep {
-+	bias-pull-down;
-+};
-+
-+&lpass_rx_swr_data {
-+	drive-strength = <2>;
-+	slew-rate = <1>;
-+	bias-bus-hold;
-+};
-+
-+&lpass_rx_swr_data_sleep {
-+	bias-pull-down;
-+};
-+
-+&lpass_tx_swr_clk {
-+	drive-strength = <2>;
-+	slew-rate = <1>;
-+	bias-disable;
-+};
-+
-+&lpass_tx_swr_clk_sleep {
-+	bias-pull-down;
-+};
-+
-+&lpass_tx_swr_data {
-+	drive-strength = <2>;
-+	slew-rate = <1>;
-+	bias-bus-hold;
-+};
+diff --git a/include/acpi/processor.h b/include/acpi/processor.h
+index 194027371928..1d44b84da22c 100644
+--- a/include/acpi/processor.h
++++ b/include/acpi/processor.h
+@@ -441,7 +441,6 @@ static inline int acpi_processor_hotplug(struct acpi_processor *pr)
+ #endif /* CONFIG_ACPI_PROCESSOR_IDLE */
  
- &pm8350c_gpios {
- 	gpio-line-names = "FLASH_STROBE_1",		/* 1 */
+ /* in processor_thermal.c */
+-int acpi_processor_get_limit_info(struct acpi_processor *pr);
+ extern const struct thermal_cooling_device_ops processor_cooling_ops;
+ #if defined(CONFIG_ACPI_CPU_FREQ_PSS) & defined(CONFIG_CPU_FREQ)
+ void acpi_thermal_cpufreq_init(struct cpufreq_policy *policy);
 -- 
-2.7.4
+2.25.1
 
