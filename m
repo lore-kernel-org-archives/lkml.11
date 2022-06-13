@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E79D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:50:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 860ADC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:51:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345922AbiFMKuw (ORCPT
+        id S1346061AbiFMKvC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:50:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57678 "EHLO
+        Mon, 13 Jun 2022 06:51:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347727AbiFMKtE (ORCPT
+        with ESMTP id S1347936AbiFMKtH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:49:04 -0400
+        Mon, 13 Jun 2022 06:49:07 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEDC62409A;
-        Mon, 13 Jun 2022 03:26:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A61C2D1FD;
+        Mon, 13 Jun 2022 03:26:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 70E5D60F03;
-        Mon, 13 Jun 2022 10:26:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8390EC385A9;
-        Mon, 13 Jun 2022 10:26:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE3B660F0F;
+        Mon, 13 Jun 2022 10:26:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E70F0C34114;
+        Mon, 13 Jun 2022 10:26:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115992;
-        bh=uHiXHh8rpvQZR0e8uQogm4N/r9NIltAJEfxRp7gm8KY=;
+        s=korg; t=1655115998;
+        bh=REuaWyW5uskEwir9+iUVh14ktdiKIXAINWSm23//9Ks=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pye4gRM6qxTYV51DcfcNgwntJtfL0ndjGggS9vd/ww3PcviC3KrSVJpAUGd60pm64
-         eyymxaS65sdpz+h9ouBqakm8r/CzkuZ7RJQnfmDMRliZQmwxdpRqA5Ib41ElxUJxnC
-         JW9A6OXJrJmmsAUE07DK2znInZ/2CB+Mek12afaU=
+        b=uydgBWH5bHQGcG12IWVa5jSmIrJdwtFVJ1vmSVpNb88gnRyWTE01cTO2alQZWUX0V
+         B1y13iqS54B02XorXmzu8dKQj2RguXTBR+9NaJTzyaFscafQYRC32lE2oULnLAJ0RI
+         OHeN7WA+eZCJJFb6uzSD6dMuclokH3nNn90qn3VQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 4.14 113/218] scsi: ufs: qcom: Add a readl() to make sure ref_clk gets enabled
-Date:   Mon, 13 Jun 2022 12:09:31 +0200
-Message-Id: <20220613094923.990867838@linuxfoundation.org>
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Gregory Greenman <gregory.greenman@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH 4.14 103/218] iwlwifi: mvm: fix assert 1F04 upon reconfig
+Date:   Mon, 13 Jun 2022 12:09:21 +0200
+Message-Id: <20220613094923.678228913@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -51,51 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+From: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
 
-commit 8eecddfca30e1651dc1c74531ed5eef21dcce7e3 upstream.
+commit 9d096e3d3061dbf4ee10e2b59fc2c06e05bdb997 upstream.
 
-In ufs_qcom_dev_ref_clk_ctrl(), it was noted that the ref_clk needs to be
-stable for at least 1us. Even though there is wmb() to make sure the write
-gets "completed", there is no guarantee that the write actually reached the
-UFS device. There is a good chance that the write could be stored in a
-Write Buffer (WB). In that case, even though the CPU waits for 1us, the
-ref_clk might not be stable for that period.
+When we reconfig we must not send the MAC_POWER command that relates to
+a MAC that was not yet added to the firmware.
 
-So lets do a readl() to make sure that the previous write has reached the
-UFS device before udelay().
+Ignore those in the iterator.
 
-Also, the wmb() after writel_relaxed() is not really needed. Both writel()
-and readl() are ordered on all architectures and the CPU won't speculate
-instructions after readl() due to the in-built control dependency with read
-value on weakly ordered architectures. So it can be safely removed.
-
-Link: https://lore.kernel.org/r/20220504084212.11605-4-manivannan.sadhasivam@linaro.org
-Fixes: f06fcc7155dc ("scsi: ufs-qcom: add QUniPro hardware support and power optimizations")
 Cc: stable@vger.kernel.org
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+Signed-off-by: Gregory Greenman <gregory.greenman@intel.com>
+Link: https://lore.kernel.org/r/20220517120044.ed2ffc8ce732.If786e19512d0da4334a6382ea6148703422c7d7b@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/ufs/ufs-qcom.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/power.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/scsi/ufs/ufs-qcom.c
-+++ b/drivers/scsi/ufs/ufs-qcom.c
-@@ -915,8 +915,11 @@ static void ufs_qcom_dev_ref_clk_ctrl(st
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/power.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/power.c
+@@ -611,6 +611,9 @@ static void iwl_mvm_power_get_vifs_itera
+ 	struct iwl_power_vifs *power_iterator = _data;
+ 	bool active = mvmvif->phy_ctxt && mvmvif->phy_ctxt->id < NUM_PHY_CTX;
  
- 		writel_relaxed(temp, host->dev_ref_clk_ctrl_mmio);
- 
--		/* ensure that ref_clk is enabled/disabled before we return */
--		wmb();
-+		/*
-+		 * Make sure the write to ref_clk reaches the destination and
-+		 * not stored in a Write Buffer (WB).
-+		 */
-+		readl(host->dev_ref_clk_ctrl_mmio);
- 
- 		/*
- 		 * If we call hibern8 exit after this, we need to make sure that
++	if (!mvmvif->uploaded)
++		return;
++
+ 	switch (ieee80211_vif_type_p2p(vif)) {
+ 	case NL80211_IFTYPE_P2P_DEVICE:
+ 		break;
 
 
