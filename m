@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97710C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:25:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27E0AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:25:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243435AbiFMKX1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:23:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44014 "EHLO
+        id S242449AbiFMKZH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:25:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241989AbiFMKWl (ORCPT
+        with ESMTP id S242924AbiFMKXD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:22:41 -0400
+        Mon, 13 Jun 2022 06:23:03 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C0961FCFB;
-        Mon, 13 Jun 2022 03:17:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6E6520191;
+        Mon, 13 Jun 2022 03:17:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AEBD6066C;
-        Mon, 13 Jun 2022 10:17:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DB5AC3411C;
-        Mon, 13 Jun 2022 10:17:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 636DE60765;
+        Mon, 13 Jun 2022 10:17:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EC76C34114;
+        Mon, 13 Jun 2022 10:17:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115472;
-        bh=yQaSjnJx43yFK8oDB8LXKvE+rIhRgPudwBeneeFl5Iw=;
+        s=korg; t=1655115475;
+        bh=v08BkH7BAVYVN+ff+HIyV6Hzd31WVjJQmaTDV3f3l+k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0QatUJ3cdxuaxnu2pM7tjywigLDKE3vg++EPUkAV0ifXL8rUfnbcFQFXRoHyqupjU
-         kERysvpRFOTt8jpoa4NifAOWTzqoGDMHACGUkVPzq2T+Vqps29cFpmq3FJo31aBavj
-         XQ47mvU3n3s2yh9U+lYRLtSSgrYRFvvaAoR8l5cE=
+        b=HQyichGEo5y2q6wpENyne5EY1+qQyDNHVjX2OuaqnlgBK+d/ilM7UC4xln21WBaVe
+         cYkOZ6AfzZMGsbNRTPaHrwID05D2d8B5VobFTpTpch+BySIA2KVO7vf7Qk2/s+/ZkA
+         ghTHFinRaxCQg5dL94YHJWmqnUHJO2DndKPtnGm0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Song Liu <song@kernel.org>
-Subject: [PATCH 4.9 089/167] md: fix an incorrect NULL check in md_reload_sb
-Date:   Mon, 13 Jun 2022 12:09:23 +0200
-Message-Id: <20220613094901.752890280@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 4.9 090/167] RDMA/hfi1: Fix potential integer multiplication overflow errors
+Date:   Mon, 13 Jun 2022 12:09:24 +0200
+Message-Id: <20220613094902.010851477@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -48,57 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
 
-commit 64c54d9244a4efe9bc6e9c98e13c4bbb8bb39083 upstream.
+commit f93e91a0372c922c20d5bee260b0f43b4b8a1bee upstream.
 
-The bug is here:
-	if (!rdev || rdev->desc_nr != nr) {
+When multiplying of different types, an overflow is possible even when
+storing the result in a larger type. This is because the conversion is
+done after the multiplication. So arithmetic overflow and thus in
+incorrect value is possible.
 
-The list iterator value 'rdev' will *always* be set and non-NULL
-by rdev_for_each_rcu(), so it is incorrect to assume that the
-iterator value will be NULL if the list is empty or no element
-found (In fact, it will be a bogus pointer to an invalid struct
-object containing the HEAD). Otherwise it will bypass the check
-and lead to invalid memory access passing the check.
-
-To fix the bug, use a new variable 'iter' as the list iterator,
-while using the original variable 'pdev' as a dedicated pointer to
-point to the found element.
+Correct an instance of this in the inter packet delay calculation.  Fix by
+ensuring one of the operands is u64 which will promote the other to u64 as
+well ensuring no overflow.
 
 Cc: stable@vger.kernel.org
-Fixes: 70bcecdb1534 ("md-cluster: Improve md_reload_sb to be less error prone")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Signed-off-by: Song Liu <song@kernel.org>
+Fixes: 7724105686e7 ("IB/hfi1: add driver files")
+Link: https://lore.kernel.org/r/20220520183712.48973.29855.stgit@awfm-01.cornelisnetworks.com
+Reviewed-by: Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>
+Signed-off-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/md.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/infiniband/hw/hfi1/init.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/md/md.c
-+++ b/drivers/md/md.c
-@@ -8882,16 +8882,18 @@ static int read_rdev(struct mddev *mddev
- 
- void md_reload_sb(struct mddev *mddev, int nr)
- {
--	struct md_rdev *rdev;
-+	struct md_rdev *rdev = NULL, *iter;
- 	int err;
- 
- 	/* Find the rdev */
--	rdev_for_each_rcu(rdev, mddev) {
--		if (rdev->desc_nr == nr)
-+	rdev_for_each_rcu(iter, mddev) {
-+		if (iter->desc_nr == nr) {
-+			rdev = iter;
- 			break;
-+		}
- 	}
- 
--	if (!rdev || rdev->desc_nr != nr) {
-+	if (!rdev) {
- 		pr_warn("%s: %d Could not find rdev with nr %d\n", __func__, __LINE__, nr);
- 		return;
- 	}
+--- a/drivers/infiniband/hw/hfi1/init.c
++++ b/drivers/infiniband/hw/hfi1/init.c
+@@ -371,7 +371,7 @@ void set_link_ipg(struct hfi1_pportdata
+ 	u16 shift, mult;
+ 	u64 src;
+ 	u32 current_egress_rate; /* Mbits /sec */
+-	u32 max_pkt_time;
++	u64 max_pkt_time;
+ 	/*
+ 	 * max_pkt_time is the maximum packet egress time in units
+ 	 * of the fabric clock period 1/(805 MHz).
 
 
