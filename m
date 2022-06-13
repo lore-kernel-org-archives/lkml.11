@@ -2,114 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 727B1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:35:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3391AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:35:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343539AbiFMSfO (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:35:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38776 "EHLO
+        id S231388AbiFMSfq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:35:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245665AbiFMSet (ORCPT
+        with ESMTP id S245511AbiFMSf2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 14:34:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 12E2925DA
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 08:44:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655135047;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oeK3BFcDjZ1AnYOq+FMGXhylJkvr/lrSWSvcbsIlUS4=;
-        b=gXCDzrnIkZgYSsj2V6aUCDCIlNq2L2WDV/sFvhn8rFclbM+SVcLq8nxkobpd8SotISp2TV
-        8p8090hhyZHfhfUKnWG2QIEWuG/AhtbKn1NcSlnJhpuKt0z3mJt8nlt1p4k4JbM8hcjVCe
-        zUSwQTznY70m57/LJe1co2UfQUQnlmQ=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-562-3hQRyorcO7OhJPm1kKzLrw-1; Mon, 13 Jun 2022 11:44:02 -0400
-X-MC-Unique: 3hQRyorcO7OhJPm1kKzLrw-1
-Received: by mail-wm1-f70.google.com with SMTP id k15-20020a7bc40f000000b0039c4b7f7d09so3385040wmi.8
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 08:44:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=oeK3BFcDjZ1AnYOq+FMGXhylJkvr/lrSWSvcbsIlUS4=;
-        b=Z5vA5+ov1tZmj6Sgc1oTz/p3dGrKR9xzhB4DD8VglF3QYRvzg95H/bqOjtNUvPSG0g
-         DY00EYOB0+b/RLlIfVB2c1vAQfBTqg8ZEXfLDPBEe8BEgP6EOuPxLHc13Vh6IKyQgVYL
-         eqm6sS/RH8qsIRSP4hpi9aykVWg2O3ETSGzvaUa7oUlkuphpj4eoZBRuKg8vNtw7TRbL
-         TNJ2rsWUx+GHkDhbDIQGGC+CpwtDVfiu3x4Vtw0O6YiDpp89aOK1o7UpXKKDCpGztCIh
-         lLnJeeghBw+gSJdr+XtUUWghvIQeGGScVGlsVSAN4uHfKs2JmXy4pQanN0fYZQLTGr7T
-         SXZQ==
-X-Gm-Message-State: AJIora/PMUYT6SO8hvLfevMMd91v2xPH6hcuyJimwQJdVpdfrA1wkiw2
-        8QYiCKDzmmYX+B/mkeQqpTxt7EY8iOmTBOXX6d4WhJSpDDPXMGKWGAmzH3KBNJ5ZurCO4DZsMfB
-        xZLk45f2FtLkKJ4v7AvvcbNWQ
-X-Received: by 2002:adf:ecce:0:b0:219:e5a7:64a8 with SMTP id s14-20020adfecce000000b00219e5a764a8mr493360wro.278.1655135040390;
-        Mon, 13 Jun 2022 08:44:00 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tRjfskr6PEaDYRe4I9B1t8zXM5Oc3051P05GSjpoCuJIeMq5V5pHRA1qUCjTJC/99IbGcYyQ==
-X-Received: by 2002:adf:ecce:0:b0:219:e5a7:64a8 with SMTP id s14-20020adfecce000000b00219e5a764a8mr493338wro.278.1655135040161;
-        Mon, 13 Jun 2022 08:44:00 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c706:bd00:963c:5455:c10e:fa6f? (p200300cbc706bd00963c5455c10efa6f.dip0.t-ipconnect.de. [2003:cb:c706:bd00:963c:5455:c10e:fa6f])
-        by smtp.gmail.com with ESMTPSA id o19-20020a1c4d13000000b0039c60e33702sm9697655wmh.16.2022.06.13.08.43.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Jun 2022 08:43:59 -0700 (PDT)
-Message-ID: <96894c79-1201-e8b8-a49d-b83ae4765f9d@redhat.com>
-Date:   Mon, 13 Jun 2022 17:43:58 +0200
+        Mon, 13 Jun 2022 14:35:28 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D1AE6439;
+        Mon, 13 Jun 2022 08:42:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1655134972; x=1686670972;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=m8YDmG7CVT6t+y4DSNge1YApMVBVkN5F0wgxXF4G1vY=;
+  b=GkvQlMNowfxqLWzbnndmKWBVBmDaRoTR4/HwZaMXNJ6R81d2Ko6RHw3L
+   67u+/aaWpJ3F6B8fX7BNWhoAplRMGkklANHvxUZR7p+bItDyiJcqMDEu0
+   TOF3YPOfQVYTBHkDh+80A9penvjZetUtJyr4kQvpzRV2/whWobq2qbXhS
+   g=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 13 Jun 2022 08:42:52 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 08:42:51 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 13 Jun 2022 08:42:51 -0700
+Received: from [10.110.74.141] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 13 Jun
+ 2022 08:42:49 -0700
+Message-ID: <b12a3e95-44b2-7075-2b77-f382f0d38cf7@quicinc.com>
+Date:   Mon, 13 Jun 2022 08:42:48 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] mm: Remove unwanted initialization in
- vmemmap_populate_compound_pages()
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v4] drm/msm/dp: force link training for display resolution
+ change
 Content-Language: en-US
-To:     Gautam Menghani <gautammenghani201@gmail.com>,
-        akpm@linux-foundation.org
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-References: <20220612182320.160651-1-gautammenghani201@gmail.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220612182320.160651-1-gautammenghani201@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Stephen Boyd <swboyd@chromium.org>, <agross@kernel.org>,
+        <airlied@linux.ie>, <bjorn.andersson@linaro.org>,
+        <daniel@ffwll.ch>, <dianders@chromium.org>,
+        <dmitry.baryshkov@linaro.org>, <robdclark@gmail.com>,
+        <sean@poorly.run>, <vkoul@kernel.org>
+CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
+        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <1653687133-32331-1-git-send-email-quic_khsieh@quicinc.com>
+ <CAE-0n519jUEQK565OFVevvyoF49rgTazf4McjKmDS8mfDrWwyQ@mail.gmail.com>
+From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
+In-Reply-To: <CAE-0n519jUEQK565OFVevvyoF49rgTazf4McjKmDS8mfDrWwyQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12.06.22 20:23, Gautam Menghani wrote:
-> Remove unwanted initialization for the variable 'next'. This fixes the
-> clang scan warning: Value stored to 'next' during its initialization is 
-> never read [deadcode.DeadStores]
-> 
 
-Nit: s/unwanted/unnecessary/
+On 6/10/2022 2:04 PM, Stephen Boyd wrote:
+> Quoting Kuogee Hsieh (2022-05-27 14:32:13)
+>> During display resolution changes display have to be disabled first
+>> followed by display enabling with new resolution. Display disable
+>> will turn off both pixel clock and main link clock so that main link
+>> have to be re trained during display enable to have new video stream
+> s/re/re-/
+>
+>> flow again. At current implementation, display enable function manually
+>> kicks up irq_hpd_handle which will read panel link status and start link
+>> training if link status is not in sync state. However, there is rare
+>> case that a particular panel links status keep staying in sync for
+>> some period of time after main link had been shut down previously at
+>> display disabled. Main link retraining will not be executed by
+>> irq_hdp_handle() if the link status read from pane shows it is in
+> s/pane/panel/
+>
+>> sync state. If this was happen, then video stream of newer display
+>> resolution will fail to be transmitted to panel due to main link is
+>> not in sync between host and panel. This patch force main link always
+>> be retrained during display enable procedure to prevent this rare
+>> failed case from happening. Also this implementation are more
+>> efficient than manual kicking off irq_hpd_handle function.
+> The description makes it sound like the link status is not updated,
+> sometimes. Isn't that the real issue here? Not that link training needs
+> to be done again (which it always does apparently), but that disabling
+> the display doesn't wait for the link to go down. Or disabling the link
+> is causing some sort of glitch on the sink causing it to report the
+> status as OK when it really isn't.
 
-Reviewed-by: David Hildenbrand <david@redhat.com>
+As soon as mainlink teared down, sink has to reflect the mainlink at out 
+of synch state in real time.
 
-> Signed-off-by: Gautam Menghani <gautammenghani201@gmail.com>
-> ---
->  mm/sparse-vmemmap.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/mm/sparse-vmemmap.c b/mm/sparse-vmemmap.c
-> index f4fa61dbbee3..3008aa7859e0 100644
-> --- a/mm/sparse-vmemmap.c
-> +++ b/mm/sparse-vmemmap.c
-> @@ -737,7 +737,7 @@ static int __meminit vmemmap_populate_compound_pages(unsigned long start_pfn,
->  
->  	size = min(end - start, pgmap_vmemmap_nr(pgmap) * sizeof(struct page));
->  	for (addr = start; addr < end; addr += size) {
-> -		unsigned long next = addr, last = addr + size;
-> +		unsigned long next, last = addr + size;
->  
->  		/* Populate the head page vmemmap page */
->  		pte = vmemmap_populate_address(addr, node, NULL, NULL);
+link re-training always required for display resolution changes since 
+resolution changes will involve link configuration changes, such as 2 
+lanes change to 1 changes or 5.7G link rate changes to 2.7G or vise 
+versa. Therefore there is no need to check sinker's main link status to 
+decide re training is required or not.
 
 
--- 
-Thanks,
 
-David / dhildenb
-
+>> Changes in v2:
+>> -- set force_link_train flag on DP only (is_edp == false)
+>>
+>> Changes in v3:
+>> -- revise commit  text
+>> -- add Fixes tag
+>>
+>> Changes in v4:
+>> -- revise commit  text
+>>
+>> Fixes: 62671d2ef24b ("drm/msm/dp: fixes wrong connection state caused by failure of link train")
+>> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+>> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+>> index c388323..370348d 100644
+>> --- a/drivers/gpu/drm/msm/dp/dp_display.c
+>> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
+>> @@ -1688,10 +1689,14 @@ void dp_bridge_enable(struct drm_bridge *drm_bridge)
+>>
+>>          state =  dp_display->hpd_state;
+>>
+>> -       if (state == ST_DISPLAY_OFF)
+>> +       if (state == ST_DISPLAY_OFF) {
+>>                  dp_display_host_phy_init(dp_display);
+>>
+>> -       dp_display_enable(dp_display, 0);
+>> +               if (!dp->is_edp)
+> Does this assume eDP has one resolution? I don't understand why eDP is
+> special here, especially if eDP has more than one resolution available
+> it seems like we would want to retrain the link regardless.
+>
+>> +                       force_link_train = true;
+>> +       }
+>> +
+>> +       dp_display_enable(dp_display, force_link_train);
+>>
+>>          rc = dp_display_post_enable(dp);
+>>          if (rc) {
