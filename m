@@ -2,176 +2,232 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62B0CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 22:05:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7282CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 22:06:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232925AbiFMWFo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 18:05:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44058 "EHLO
+        id S233943AbiFMWGc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 18:06:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229671AbiFMWFl (ORCPT
+        with ESMTP id S232149AbiFMWG3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 18:05:41 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AAFD2B27F;
-        Mon, 13 Jun 2022 15:05:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655157941; x=1686693941;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=kfqQdWnf8nyGKmbShbH1jqXSRauX6cTReT0/HMkfsR8=;
-  b=DB2grbv2a66FGh3sN/KNWlxZ+i3pw8QobhqhF0Ve8QJZW4zuRGJsRlO7
-   31pafMvg1WilufMbZeybNrhK1laRhEr9wkcFwLR38p8vEba7ca+oEX+TT
-   gT1B6iozSXYu+3jrZi+mYNc+T2q6nGA3/D42zmYzrUm0lQLwMpjt9jOGV
-   X7Khk8t40b5Xu4CjSiqv3C32OYwSefglwXrYPwQ+cHWnyFehE1pk1vtlI
-   93B971mrXGExxSDvbMJgsAg1fJ3sQtda5d2T5I9lqVKzuixU7zURn06lF
-   kF9JuDNIZwWlNJohaFGv2l9kKdRSD4obSNkfvHmEUnrLUVwA0+AFzHyKZ
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="364755169"
-X-IronPort-AV: E=Sophos;i="5.91,298,1647327600"; 
-   d="scan'208";a="364755169"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 15:05:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,298,1647327600"; 
-   d="scan'208";a="726475615"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by fmsmga001.fm.intel.com with ESMTP; 13 Jun 2022 15:05:40 -0700
-Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Mon, 13 Jun 2022 15:05:40 -0700
-Received: from orsmsx609.amr.corp.intel.com (10.22.229.22) by
- ORSMSX608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Mon, 13 Jun 2022 15:05:39 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx609.amr.corp.intel.com (10.22.229.22) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Mon, 13 Jun 2022 15:05:39 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.101)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Mon, 13 Jun 2022 15:05:39 -0700
+        Mon, 13 Jun 2022 18:06:29 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67FEB2BB02
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 15:06:28 -0700 (PDT)
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25DJdPde004107;
+        Mon, 13 Jun 2022 22:06:09 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : in-reply-to : references : date : message-id : content-type :
+ mime-version; s=corp-2021-07-09;
+ bh=rAuHnYn60m9mg4RNOdl75QDZoQIy4nVQkrOTtPufOes=;
+ b=yokKmYSbBQYGD9hOT7+Oy39BYVoI5hfBxYMB7SGy9GsZsH9HY6f+TA3S84iNBFwIU+7l
+ 71N/XL6MMJh9cVo8HdndBiOIHK7yehAp5eN32eqXm+GJCcl6NciHUybDOWZ7EB/TFF/1
+ aWlcfykva/AB49o8/JvpQ1J1jM6tBFQwjmynQIDH6vgyK0DR2ZwQki1tSHRqJw9AFSwR
+ 89TVfG3lYk9PlaD92+1utsP7a2jNGRtDlFIMBo9p0mVrp/0td4WMlRgV8PUXS6TBEi8v
+ IisQWFYjQyzXEMziAPVeoIQ2yG036TXPFuWl1+8o5vqDwJ92g9pOPXIZRCH3VnAQGudH yA== 
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gmhu2mavv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 13 Jun 2022 22:06:08 +0000
+Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 25DM4Ysf034944;
+        Mon, 13 Jun 2022 22:06:07 GMT
+Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2100.outbound.protection.outlook.com [104.47.70.100])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3gpdhugbyk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 13 Jun 2022 22:06:06 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZajYrBppHv+DXyTsjELokrbMnmn2W2j6lIC5IP+9JlgXMXphpocZVjyujmm152nGdkpMep4R9tGWlTL4bTCaNwFWJ2TZ+NT/6VFMFKmg1Bh710SzxDGFitmmFPTM9Bp7Dt4DKxHfSgdLDZteoNemLynJPB2a0lJme/uzvWC39ZcFctZZpvdsUWsFH1b4p9Hv6BeOTHWArcfXD5gOl1P+KfU3Hun/wv2R6FgDWlGzuoHqUeOuNigzWCojx2EfDsMvU3A0BVgTTDrYR8BnuZr3vcQTtd7rhEdJQvofeUFpvGZqGOwtfdSXOsoZkw71toSDpL83J/lPAu4J8TyJYsJlJw==
+ b=hahiQulVo03NwbKi+vBaQMnwlbG5nMHweaOAoB6rMuZ+e+NJh4tSMa55ilI/xt7cL/a+Hs2du9kA6dQ2xWA9Vo5sYK2fHKybnhc2PeRieTBPROkEejbAd95bYGS1c8Vqvfn89oGP82la9DelvS3HWMg+hx6EzZMC03s/BcmsD0wLmjx7biuqtpj/m/lht8dB/jt0wHzOwvgsS1Rc6T85LVakzYOXXplGXYX92kM/3y4tMNzEkUpwX3pGTr6saYkJjasK61YilXYiCBr6/HXYRhzvaNDEwdiaDi8M1yX1Ag6WDYQkXolfZjt7Phnyts5v9+dAso3U6xdKilIm2cJDKw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=G4/fJH8U7c0osbyonKmjt7NGcwIKFuupZWWRS/IMlG0=;
- b=cii81jrmete3V/shLN0F3yz6ySUucoHbCCpYkHjE5I50AWN5sCpc9UCa5Gsb+R61/3qvNUKK5WxMAbHkEMyYMLjh5E7BnI4EpXTPSWr7p3s+GWruQCC0skJBHiRkzSyyfzU9APmxIYP6KYV0zk5ml8WoQuKOZO4a/DsdR20b4aa1S4o8Dktvp4fDtkuVDzw2aCklRuyhCX2+b4eh4KujdS3snCQXKxeHFOUnFtrLFJCJy98iMnC/YaFgkAIXBE1HwSifv0Rw55N89Sepn5ti3RKAexBzQlPJ3wdWONVrXnnb2dyFrqn6lk6eOKwte3TuXYESfYyaPCNWVv9IGSGRYw==
+ bh=rAuHnYn60m9mg4RNOdl75QDZoQIy4nVQkrOTtPufOes=;
+ b=Lw6TdMbF0UNQ6lSUumiEUNCon46gfTknGO89HOhJ95tE/P602dXveywyMYCtKlov9UDIpMLKIrIKOPvzTFu9daC55LjCTrlV/XhpVozJiM1C5nDhhfmAmIobrZogW9OTdhTL/ZbtyhOh9ODG3ljReiVG4DIBwF1Pv2uaA9QF9umIgnj3tY2sfc0gM0SOP+yxkBOxGpipiwC+eaxu0R1ZNHF5G+y16X9wiqPzWTEazrytT4l7/uTL7agXFeEcOq0qjyhoROsv5C5Rc5eAqlgZboXxquhNP+ufcD8emujeMbYX/6viLCoSmQtXFfuXnPkbijTTlPtzBASVTKOBU3BhBQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from BYAPR11MB3320.namprd11.prod.outlook.com (2603:10b6:a03:18::25)
- by BYAPR11MB2935.namprd11.prod.outlook.com (2603:10b6:a03:82::24) with
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rAuHnYn60m9mg4RNOdl75QDZoQIy4nVQkrOTtPufOes=;
+ b=Pizo1bU1ScXOdxD56Di07BhNNuuYOYc3qO4xUBRoAlaVCyZx10doFaakMTWOp69ZFXB8y3s1e6GID4A4D3xGdsfvVNm+u310t38iZmbnWceGKEpCrEv+To9ta3SWvjx7KG2x5N7iSvTByFbRFZ2i317C5Jo5CrmlOqrrW66KmYU=
+Received: from CH2PR10MB4166.namprd10.prod.outlook.com (2603:10b6:610:78::20)
+ by SN6PR10MB2975.namprd10.prod.outlook.com (2603:10b6:805:d2::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.20; Mon, 13 Jun
- 2022 22:05:32 +0000
-Received: from BYAPR11MB3320.namprd11.prod.outlook.com
- ([fe80::a4e0:2e7e:45de:a62]) by BYAPR11MB3320.namprd11.prod.outlook.com
- ([fe80::a4e0:2e7e:45de:a62%6]) with mapi id 15.20.5332.020; Mon, 13 Jun 2022
- 22:05:32 +0000
-Message-ID: <948bc7f4-f1c0-9b79-0eac-df8659b22753@intel.com>
-Date:   Mon, 13 Jun 2022 15:05:30 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [RFC PATCH 0/6] User pkey minor bug fixes
-Content-Language: en-US
-To:     <ira.weiny@intel.com>, <linux-api@vger.kernel.org>
-CC:     <x86@kernel.org>, <linuxppc-dev@lists.ozlabs.org>,
-        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        <linux-kselftest@vger.kernel.org>
-References: <20220610233533.3649584-1-ira.weiny@intel.com>
-From:   Sohil Mehta <sohil.mehta@intel.com>
-In-Reply-To: <20220610233533.3649584-1-ira.weiny@intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BY5PR13CA0013.namprd13.prod.outlook.com
- (2603:10b6:a03:180::26) To BYAPR11MB3320.namprd11.prod.outlook.com
- (2603:10b6:a03:18::25)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.13; Mon, 13 Jun
+ 2022 22:00:01 +0000
+Received: from CH2PR10MB4166.namprd10.prod.outlook.com
+ ([fe80::4d84:324a:aeaf:8f2b]) by CH2PR10MB4166.namprd10.prod.outlook.com
+ ([fe80::4d84:324a:aeaf:8f2b%7]) with mapi id 15.20.5332.020; Mon, 13 Jun 2022
+ 22:00:01 +0000
+From:   Stephen Brennan <stephen.s.brennan@oracle.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Baoquan He <bhe@redhat.com>, linux-kernel@vger.kernel.org,
+        kexec@lists.infradead.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Dave Young <dyoung@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Bixuan Cui <cuibixuan@huawei.com>,
+        David Vernet <void@manifault.com>,
+        Vivek Goyal <vgoyal@redhat.com>,
+        Sami Tolvanen <samitolvanen@google.com>
+Subject: Re: [PATCH 0/2] Expose kallsyms data in vmcoreinfo note
+In-Reply-To: <20220613142609.3e4be0f2f45671341450232d@linux-foundation.org>
+References: <20220517000508.777145-1-stephen.s.brennan@oracle.com>
+ <20220613142609.3e4be0f2f45671341450232d@linux-foundation.org>
+Date:   Mon, 13 Jun 2022 14:59:44 -0700
+Message-ID: <87edzsrzqn.fsf@oracle.com>
+Content-Type: text/plain
+X-ClientProxiedBy: SN4PR0401CA0016.namprd04.prod.outlook.com
+ (2603:10b6:803:21::26) To CH2PR10MB4166.namprd10.prod.outlook.com
+ (2603:10b6:610:78::20)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: bc619bae-ba1e-437c-758e-08da4d88d5b0
-X-MS-TrafficTypeDiagnostic: BYAPR11MB2935:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR11MB293574AAF82559844777CE0CE5AB9@BYAPR11MB2935.namprd11.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: b2b41c45-b724-4c72-4695-08da4d881082
+X-MS-TrafficTypeDiagnostic: SN6PR10MB2975:EE_
+X-Microsoft-Antispam-PRVS: <SN6PR10MB2975EC4483C98C9C8D832B92DBAB9@SN6PR10MB2975.namprd10.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8fnE2FD+5/VBPfo5PzRsbhpgaRXrFKrV8OQjaxGTtWjcJkYEFMpnxLoegtsZMgDHjy3QxJZEw3yJFW39CtYIr7lc4P5JwV7/ASJ28yUAe9DEhVjRxq73oBehp21LNM6UV+HNnxPuJ8Flde8dBeLdB3kFUz39bWjKJN6S1tN12VQSSCBmIOTuJB1dvxnwDT2xUH88xOXpUmbinJCYcGz5Vx0JM68/5bqiVCEPqnmkOAcobBEIJTlo/4Qj7uL7j3+h6SgwVILz7jlOVBWQO06JryjGoZwhrJCwhVIw47IeFkSI2f4xE/HvebSn65W+rcgwQ4ZOrbbmkndzcI99YfDToSto0+sb/SxVgEdrNrWBkFCI8MqQN71oeQrRtRYeKdrAKkrWbkPGU0GDkDw1hKQ3xW1nhmd25tUZxz41kUokqtFIUYp3kDROfc8Zot+QRAsQpjDh2GuLc/i9wh/AE7TV1orFDXu5i/BAG5vxYA1vNVmPhFvCCtIn4hSc58vayBxTMYd3MailBaf56SvoWEnik1z+CM9ZR5sgjyTZVCD1AFATx4oqDfyO3mkgHapUVtoJ0tCqxOQcCrg8iZXedDJyBUF+BVdDJ8yO73mJt+J5h1iRlHD2/pxRgn30UY8c7D5ExkFt+SMxFkn29vW1e46y3KMvwauiCncbiKQEvqje9oj71dRif0LzTF9mLHTHvs+ASawj6zaYYAakv52Oy4GXxjxnSD6HUl/XdtpQvsf2aEw=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3320.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(508600001)(2906002)(66946007)(6486002)(8676002)(66556008)(316002)(53546011)(86362001)(31686004)(6512007)(6506007)(26005)(66476007)(4326008)(31696002)(38100700002)(36756003)(83380400001)(186003)(2616005)(8936002)(5660300002)(82960400001)(4744005)(44832011)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: jUTOROqGw25KOqDasg1zr4zKwJN2yqoQeW0Pz0ASNol9R6E7Mo08CpNH2jvCDm62Lb8NtXupSIrETpUHY900l5phqUMgwSBFhs4QkyIYuUmBp71K8/cZxcXH1yAiJUKvFy8pqnhQr5Sc1GoGeNRcxSkeSsA8m16JeHwDPyJUsoNK6T6o2ItSZzKxtnsdSqOXvYLoiRdHvAyZyb0YUQn0F6jkJRPYUDuTECOeW/qy/ZklijvX+pjLkexW57qK6OsZUjdpK0m9xM3b63t+mtbzneNf4KWEYdKsLaOCDa+1OUCljkOWMGAQukKtIrT3695tolPGSjUQhiZT7DledFula67oVk7FplU2PsLfcMIrpIX7HRJaJaOEETG14U93scYymQOoZuzd4CunUfFHrssHoqnuNtztRdS+MrGqTmqtPcrQofJvK+Vw7ID1fDBO5YQpRYEnPVRgShdrjwZKiL2VOmvxMqWenSO4TmYwl/dCD5xrWcssvZTL2tlq7+PDXLh139bJlRYEPakYSRvqILa33z680peboZjz7+1B1jYmhMv49QTKMhQY1RnLKh9cThSvGse9bgrRXbc/mUn5MzyB35QRFdX6xCwa+im//JeAyoQa81ygXRi8HIJ9TTDRoWvgM8GQIDKYhL2GjZcjUhz99LPH61l+/SNJCAekilmvwXk1uy5wM19AND8nMRk5od0FxlYFKopZrt79SKlo1rGjY6LI+J4THE1BNlo6WRZ4i+iOo97/cE/pwRCjx+3rtJNPQbJmIV/el5FUjDQj6aKCcg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR10MB4166.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(6506007)(6666004)(66946007)(8936002)(6916009)(2906002)(6486002)(316002)(6512007)(26005)(38100700002)(966005)(54906003)(508600001)(5660300002)(7416002)(2616005)(36756003)(186003)(4326008)(83380400001)(8676002)(66476007)(86362001)(66556008);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TkZQcHNJV1lwRVpXZW0vWW5IakFINDhTMnYzWkJpMVpwKytPUWtZcEd0OUhP?=
- =?utf-8?B?N090MUlqdndHVGtIWW1Wb281S2c5VHZJdW1pVkFTUUIzSlN0dk01dnFxN2ha?=
- =?utf-8?B?amRuRXJxQ1k4c3pmQmNOQUlhajdtQ2FPTjZLY0lNbFI2L3E4U29RVEJCQ2p3?=
- =?utf-8?B?TTUxRWhqVGVTOGZlbjhwV2p0V0Q1cFJ5Q1FnaDhuZUw3d3F6QW5HM1A4emkz?=
- =?utf-8?B?QXN6S3lFU1dML0xISGt0WlZaMVhNNG0wS1UwbHJ1YWU2dlV5SWRRdnowbFVj?=
- =?utf-8?B?QzQ4M3pwL0p3TkFpUlM4ZEY3WVFPSlJmdDdnN2VCVFEvN2R4T1dtemt0bUJo?=
- =?utf-8?B?RGl3SENFY1dOMWtsYmhLTHdFdm9MaHp3Z00xOGw1c1dna2Z0QmpnWUxFQnhL?=
- =?utf-8?B?ZlprbkE5eGlUOXhKSVE4MkFOZDRZdUNIWnhyQlA4RHFHcjlOYldxQWZ0cHJt?=
- =?utf-8?B?Z2Y5MVFmdEJJQVY4VHNLaEU5c21iaDkzU2IrVk43eEtTRHAvUHIzOHhNZkNL?=
- =?utf-8?B?WUloZ0tTWW5ISC90b0N2SkdyclhQcFp0ckRMcmhpQ3VDSUpqR0xvTWdVV0NU?=
- =?utf-8?B?dVZrMldzclBadDJBcW9IY1JoNFc4NmpXL1M2cGhBeVRpcEFxREwwMmRscWtQ?=
- =?utf-8?B?SzBTc1RBeTdkS3V4WTRRbllKOXZxZ2w3azBkYWhqc2lMaHVDTThIKzhPK1V6?=
- =?utf-8?B?RTJWR3N0MmovUmJ5QWZubitFV2pvVnI3ZXJaRFVwbGFCeGV1V3pwZUVhNkVT?=
- =?utf-8?B?ZlhMcUpCc2haWUdOdEpObXlnNTRVYm02Ty9kRWxJRDdjVnVrd1BWZStLSzNp?=
- =?utf-8?B?ZU5JaG15QnNmYm1oUG55MU9tamVxSmNveUhqN2swQXFUVTJqQVVNaHBwZGJZ?=
- =?utf-8?B?L0xzSlY1Z3V2VUV6QnFXR1ZNa2pUVU13MXpidVFtaXNETHRndDkrOHhxdHVN?=
- =?utf-8?B?VGM5b0wxSnhJcUgvWlpMTU9wOFhFelEzcFVlSGJWM2lSRnB1aFhZUXZveXM0?=
- =?utf-8?B?dEpRbUVIMjl2MkhseW0xcnMraitSTzlwYW83cHFJYWtIVkw5cHYvUElVbkZZ?=
- =?utf-8?B?M1FDZW9PL2NuYWRPM1pOSGlSMU5HZW5NTTl2WWJHRmkyeGdZUWh6RDYxdHc3?=
- =?utf-8?B?OUQwbnhHNk9BdU9mNVZqWHNpUlhrQlh2Vzc5UzZ0bktienUrYmd5NkpnT203?=
- =?utf-8?B?ZktLOVlYVUNObkVFSzJjZzRXNXVlekN1ZzE3VEVYWG5NVTZyMEV1VXo2U0hE?=
- =?utf-8?B?b003U2FLd0JiTEc3SGFVRkMwaUNub3JNRTFoT2Jta1hPb1RGb3RuY0h5akt2?=
- =?utf-8?B?VDMxTUZCQ1gwaThaTEJMMmdXalRYa3dickxENDNMTElRelVMWXdjQlR5NmFF?=
- =?utf-8?B?aTc3d2M5TzlqL1NTWFlLM0V2eHk3T21CVkVralRQOTMwbkhXdjQ4amtMZ3VG?=
- =?utf-8?B?SSs5WmtuRjNic1g5bkxYa3B5U0NkNUNmdFREdTVNbG9nSWRibXNvaWxPN1Vr?=
- =?utf-8?B?amdZMUlaQXhGZFkwenU2VE03Y1lNa2U4SllOVTRoTW1NTDVvZFJkUHRaYlhh?=
- =?utf-8?B?VE13UFl6LzFYNnhQd0NsSkFJV2VCMm91OU1zOG9vN0FPRk4xVCtZNkMvaC9Y?=
- =?utf-8?B?d3F3Mzd1Tlh5MXNRRE1od2RTTDNCeDJHTFJySXZvVDFsZE5vN05GZy83VFdQ?=
- =?utf-8?B?Y0VDNWVhb0prOEh5RkROeXZtK0hhVnFDajJUYUp5UUVlRVROYzY5T0dUYjJr?=
- =?utf-8?B?emdrZGlzWko1UHh2cVkxY29VNjlZWkQxRXpHSXdMcWtQUmZxRmJTTElLd3Zj?=
- =?utf-8?B?eHhERmFNdlJGcTVUMTJBZndCdUNYbUxLbFEwZ0o1UTAzbi8wZis1U25TM0w1?=
- =?utf-8?B?OGQ4ajg4RSt3RWozVEVwc1dzYWZzeGtLRDM1ODJiMjloTHJBdHhGeXBUTFJm?=
- =?utf-8?B?ZFJxamtrZHBkYzM1c0FFNkZRVjNrUkpzYXVKVEtMcHhsZjFRSzdPeFl5bmdm?=
- =?utf-8?B?cE1FbEt6Y1RQYmQ0bUpVQUlxYXd2L2dTY1JaSVdmbEx0MUoxWVhGdXJiN1d5?=
- =?utf-8?B?STNHcUd0dnM0NlZLT1F6eXg5clFxcDB1R0k2bmZYYVp1WitucG9NcTBnaHlx?=
- =?utf-8?B?WkhYbmplaHZ6ZUF1ak5pcDRtVHdmNlFHOVVMS0dCUzBDUDhDRlBPL29tWTY0?=
- =?utf-8?B?R29idVpvODlCVlVudEwyUk1TdnRUdE81dGJEek9hYU90UXJMbFNLTzBiNGxt?=
- =?utf-8?B?dXJsbWRmYk5EVmR1RTZvY0NSN2JIbUt4SUhpQkkxcExUZWQwQmdBR0tZWjRK?=
- =?utf-8?B?NFg2elFCZ2J4UFZRTC9OVENacHY4WEwxKy9xV0hDUXJqbXMxdlA3UT09?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: bc619bae-ba1e-437c-758e-08da4d88d5b0
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3320.namprd11.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?tUSgBJrEljWxtU6U61QG6sBOTh/dkz/1X0KIVakxMS5v6diZEAWZLXoLsgVX?=
+ =?us-ascii?Q?JObs67iQUNxFG6kAcG0hQt/OSz0bP9hnEXlzOUqLRB1OAespRnNkaKY7dBly?=
+ =?us-ascii?Q?ucV3kANUqTkOJXaGYPfgIUnPLawU087dOqVbWLsFqZVwK52em18eEiV2Kn5A?=
+ =?us-ascii?Q?Jb5ciuTH2xPI+KGWad783MxLJG6LkqrQx25TkDuKQ9FPMjJc9brBU6+W43vJ?=
+ =?us-ascii?Q?NLEmUylMmq+eHl3NLXwFbpT9c51H5Ca1T+Y0Atug0Mdln9FUbYvn5DQs+g6D?=
+ =?us-ascii?Q?0vMOGJZ/44yE8CCcZ8IHKZqtoyHQRUfkDGQZSd44LtVxlyL/DYa6/1/cwOOE?=
+ =?us-ascii?Q?yvTiYmqR5VMYbtJAs/jIZlFiAqB8Pp/YSKmw3TibCQsUr8ue3VIACKT8xswg?=
+ =?us-ascii?Q?5GNxGZUffiVbllpeKdzfeEHhQdTOmz9sWuNqUWI8Z+U1C7T+5zod/lhPYhEj?=
+ =?us-ascii?Q?ggNfTdu7Zhd+09JxS6lPZAdYrPh4CURD4Sd8UMATDYs54LzNZ6+4Tbni2K4U?=
+ =?us-ascii?Q?bFjihlAioqQYa4ENxDEde1MZLJLWhpNvO/MPzUsmgRxq9sRXBUoTDMHsuSic?=
+ =?us-ascii?Q?Fo6kc7LqeeFCvUEnPYIrU5jAEdva4MVCubzkCfrUvGd7AugF8RO6v2GBoK31?=
+ =?us-ascii?Q?HzFxiD2GY60KBOzygWon62BuZ6HVLSzfV2biSCdH4Fv2D+d1KP0QWIgmFWH8?=
+ =?us-ascii?Q?sYD1b0cktK/wUHe8eSr5dti3TE7jGT3KTQ3RBsKzQRnazEQ9fP98GRlgEU3t?=
+ =?us-ascii?Q?eRscPMP2ns9RZ37GTHNXnbiq+8b/i/1eUadslNF3MjoY1lDQpw0a8WI5BU+k?=
+ =?us-ascii?Q?QfX+bxnjJiH+XvP26D5kjrbXeyi68uarMJsMFSeBD2r1hXfr8HMu44Y3uq6H?=
+ =?us-ascii?Q?h9BiKQbuqV4mI7ROMw7njRbD0oNpNlUh4PjnWxags4/E01UBYk9XXY2qNgc7?=
+ =?us-ascii?Q?PAsn0saL7rF4fd0UH+/3QgQvBQ24DZAiv/j9eafIi5CBINVFUhyGFOCpGN0c?=
+ =?us-ascii?Q?2TjxB+1lsgsadFPya3M0keeYj+iA5Lg6mxlHhqkipwf0NAgtRRQ+OBGaqr1r?=
+ =?us-ascii?Q?frzpT5/PMAfH5Qvruq5BraPavUWx57/K5bEg0OzZvbrBVYNIdfANWAB0j0eZ?=
+ =?us-ascii?Q?wwQay2/ao/7O4u6LcBfDVXSbmPHtkMLg9lHraHQqhaXPCWcUloj++Jx3Z2qQ?=
+ =?us-ascii?Q?GxEL9/xFcHW/39Mah62xJSs/JeT0dlHANBbcHqbuzD6c1A6zQoVDCgREffZn?=
+ =?us-ascii?Q?zOZfzfVD6/F9YwNXBKR+RAYl5gvh6RGI+ToAQIGWai9z/va9uf6jJ6YEen60?=
+ =?us-ascii?Q?mw7ai3yAaitjC/RLi9U4ihOSEZzDpRKkSMay8TlfDne9tMtqKIs3ADeF9x54?=
+ =?us-ascii?Q?pQS/5wPsy35Oj4uvhAaBzjGODr94dYtI2Rkf+bWY9h8LZlFZq521QKxbR4CN?=
+ =?us-ascii?Q?92lyfdZHL/Da1ExI77L0t6D5vqVQS5U7iPkflVfMMy+25u2X47epzvh2oCKx?=
+ =?us-ascii?Q?X6IbNbGHf6JPFT6k7bWG+vyM9QqIDwjkmr9K4HZ0fVTEYAqj6EnXf0h3ZpOZ?=
+ =?us-ascii?Q?ekaLZUycQBXWWMU8FQ/T6iITBKP08zak+/HMc3prAd0YVQjQGCE7Rc3bW97P?=
+ =?us-ascii?Q?Zr9TEYneq/V07Qg0NvRCiP/+Aest5MJ9WrwXTpTIrE5KUU9FhkJCeNDdNuN4?=
+ =?us-ascii?Q?lfNIf51tqeqTRVkfJ60iV4+TLz3WbzN75YJW2wVoQlRtE0cPeJUZlKQdpJYp?=
+ =?us-ascii?Q?FcE/e5zt2M5JTPLvI6AR0faj4vmEb1s=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b2b41c45-b724-4c72-4695-08da4d881082
+X-MS-Exchange-CrossTenant-AuthSource: CH2PR10MB4166.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jun 2022 22:05:32.3755
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jun 2022 22:00:01.5929
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: glKFweOdkMjJyP0pg7K2iSXu7Z43FlHsvJx7LR1bvZVpkVfJ6z6S/AWwHtiCsPepCkOERaedan5Lj4uywvpWsQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB2935
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-UserPrincipalName: rlYjkvI5+3gs0tmfp1RKqoLVi+LOs0qxYiTWjLaEwsH29hDZqrG44r/JH5S/5URLnr3j98FZb53+9D8/adGdJY0Nw6fkJY5ASoTQNV//mq0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR10MB2975
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.874
+ definitions=2022-06-13_09:2022-06-13,2022-06-13 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 suspectscore=0
+ phishscore=0 adultscore=0 mlxscore=0 bulkscore=0 spamscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206130086
+X-Proofpoint-GUID: hMRV-kFWFo7kDfVEw_KBx-EBIMhTEj7g
+X-Proofpoint-ORIG-GUID: hMRV-kFWFo7kDfVEw_KBx-EBIMhTEj7g
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/10/2022 4:35 PM, ira.weiny@intel.com wrote:
+Andrew Morton <akpm@linux-foundation.org> writes:
+> On Mon, 16 May 2022 17:05:06 -0700 Stephen Brennan <stephen.s.brennan@oracle.com> wrote:
+>
+>> The kernel can be configured to contain a lot of introspection or
+>> debugging information built-in, such as ORC for unwinding stack traces,
+>> BTF for type information, and of course kallsyms. Debuggers could use
+>> this information to navigate a core dump or live system, but they need
+>> to be able to find it.
+>> 
+>> This patch series adds the necessary symbols into vmcoreinfo, which
+>> would allow a debugger to find and interpret the kallsyms table. Using
+>> the kallsyms data, the debugger can then lookup any symbol, allowing it
+>> to find ORC, BTF, or any other useful data.
+>> 
+>> This would allow a live kernel, or core dump, to be debugged without
+>> any DWARF debuginfo. This is useful for many cases: the debuginfo may
+>> not have been generated, or you may not want to deploy the large files
+>> everywhere you need them.
+>
+> Am trying to understand the value of all of this.  Can you explain
+> further why carrying the dwarf info is problematic?  How problematic
+> are these large files?
 
-> 
-> glibc says it returns ENOSYS if the system does not support pkeys but I don't
-> see where ENOSYS is returned?  AFAICS it just returns what the kernel returns.
-> So it is probably up to user of glibc.
-> 
+The primary value I see in this is that it unlocks data that's already
+present in core dumps. Most distribution kernels already have
+CONFIG_KALLSYMS_ALL, but you can't reliably find the symbol table in a
+core dump without a change like this. Most distribution kernels already
+have a fair amount of type information via BTF already built-in (though
+as I mention below, there's a bit more that would be useful). So this
+change can unlock that data, and make core dumps self-describing: you
+can open one up at any time without extra debuginfo, and start reading
+symbols and data values out of memory.
 
-Implementation of the pkeys system calls is arch specific and 
-conditional. See kernel/sys_ni.c
+As far as the DWARF, I do find it unwieldy, we're talking about file
+sizes ranging from 500 MiB to a 1 GiB or maybe a bit more. This isn't
+huge for on-disk storage. But for things like OS images, it's pretty
+hefty just for the off-chance that you need debugging.
 
-glibc is probably talking about ENOSYS being returned when the 
-architecture doesn't have support or the CONFIG option is disabled on 
-supported architectures.
+A bigger concern than the size of the files is that, we frequently deal
+with customers who, due to some sort of requirements, have a policy
+against installing debuginfo packages on production machine. When they
+inevitably ask folks like me to help debug the kernel on their "no
+debuginfo" machines, I'd like to be able to just get my job done using
+the info already there, rather than battling them over debuginfo.
 
-Thanks,
-Sohil
+There's also some corner cases. I've definitely taken a core dump on my
+personal machine, only to find that the debuginfo had been deleted due
+to a kernel package upgrade, so the core dump was useless. And some
+distributions build kernels with no debuginfo packages. This can suit
+all of those possibilities without undue overhead.
+
+>> I've demonstrated a proof of concept for this at LSF/MM+BPF during a
+>> lighting talk. Using a work-in-progress branch of the drgn debugger, and
+>> an extended set of BTF generated by a patched version of dwarves, I've
+>> been able to open a core dump without any DWARF info and do basic tasks
+>> such as enumerating slab caches, block devices, tasks, and doing
+>> backtraces. I hope this series can be a first step toward a new
+>> possibility of "DWARFless debugging".
+>> 
+>> Related discussion around the BTF side of this:
+>> https://lore.kernel.org/bpf/586a6288-704a-f7a7-b256-e18a675927df@oracle.com/T/#u
+>> 
+>> Some work-in-progress branches using this feature:
+>> https://github.com/brenns10/dwarves/tree/remove_percpu_restriction_1
+>> https://github.com/brenns10/drgn/tree/kallsyms_plus_btf
+>
+> What's the story on using gdb with this?
+
+There is no story with GDB as of yet. I was already familiar with the
+code of drgn when I started down this path, so that's what I used. Drgn
+happens to have a very extensible type system which made it quite simple
+to do. I'd love to see support for doing this with GDB, and might look
+into the feasibility of it, but it's not on my roadmap right now.
+
+That said, the drgn work is moving ahead nicely, much of this code has
+moved from a "work-in-progress branch" to pull requests which are in
+review. I have every intention of seeing those changes through.
+
+Thanks for taking a look at this. I'm happy to answer more questions or
+clarify anytihng you want.
+
+Stephen
