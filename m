@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3086ECCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D937BCCA47B
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:20:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377508AbiFMNUm (ORCPT
+        id S1376943AbiFMNTo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:20:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42366 "EHLO
+        Mon, 13 Jun 2022 09:19:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359375AbiFMNJu (ORCPT
+        with ESMTP id S1376268AbiFMNKq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:09:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35EF8393CD;
-        Mon, 13 Jun 2022 04:20:31 -0700 (PDT)
+        Mon, 13 Jun 2022 09:10:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 152155E77C;
+        Mon, 13 Jun 2022 04:21:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C0841B80E59;
-        Mon, 13 Jun 2022 11:20:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D7CBC34114;
-        Mon, 13 Jun 2022 11:20:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2520560F95;
+        Mon, 13 Jun 2022 11:21:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30E4DC34114;
+        Mon, 13 Jun 2022 11:21:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119228;
-        bh=9SZb2OlcDWkzks0xoNShZDQ/ZyVUi3/K0dKgoFwWqt0=;
+        s=korg; t=1655119300;
+        bh=3TszrS3lAtEjZ2rupo4rzyU9qtS2/kAgbkhSgz7ytFE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nsw/sJlE0OiZSqvrIKLj/S/kaLZkaj3iOhbSwJSplh6AveQAYPOawaqQNnMoGO83y
-         ltEaLO//pK4RYNpw4Evw+tmuRiaoIvzjJQ81AQAFvTtilJJpH8HfKqav+vOGFZRV2f
-         mTADUdprPXVt017c2la1wRU29Wycpbw7jZKJ7Bfw=
+        b=BbOodqTBlKRnH9Vcrmc6YRXmeqXrOaTQ8u3EdgeJkXO/mZj4xFsHolpXlQ8S3Fjms
+         9M2BOg7xG4/gXJmb0c5rMptDiR5+ndiRifIN3io6UFLTmkwvGh3MEPD2WVgmxwhMAX
+         8paLAk6kYywAPRWw+bVhYN6mtL2s+PuyygL1tIgo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, bumwoo lee <bw365.lee@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
+        stable@vger.kernel.org, Michal Kubecek <mkubecek@suse.cz>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 186/247] extcon: Modify extcon device to be created after driver data is set
-Date:   Mon, 13 Jun 2022 12:11:28 +0200
-Message-Id: <20220613094928.594008232@linuxfoundation.org>
+Subject: [PATCH 5.15 195/247] Revert "net: af_key: add check for pfkey_broadcast in function pfkey_process"
+Date:   Mon, 13 Jun 2022 12:11:37 +0200
+Message-Id: <20220613094928.864524800@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,98 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: bumwoo lee <bw365.lee@samsung.com>
+From: Michal Kubecek <mkubecek@suse.cz>
 
-[ Upstream commit 5dcc2afe716d69f5112ce035cb14f007461ff189 ]
+[ Upstream commit 9c90c9b3e50e16d03c7f87d63e9db373974781e0 ]
 
-Currently, someone can invoke the sysfs such as state_show()
-intermittently before dev_set_drvdata() is done.
-And it can be a cause of kernel Oops because of edev is Null at that time.
-So modified the driver registration to after setting drviver data.
+This reverts commit 4dc2a5a8f6754492180741facf2a8787f2c415d7.
 
-- Oops's backtrace.
+A non-zero return value from pfkey_broadcast() does not necessarily mean
+an error occurred as this function returns -ESRCH when no registered
+listener received the message. In particular, a call with
+BROADCAST_PROMISC_ONLY flag and null one_sk argument can never return
+zero so that this commit in fact prevents processing any PF_KEY message.
+One visible effect is that racoon daemon fails to find encryption
+algorithms like aes and refuses to start.
 
-Backtrace:
-[<c067865c>] (state_show) from [<c05222e8>] (dev_attr_show)
-[<c05222c0>] (dev_attr_show) from [<c02c66e0>] (sysfs_kf_seq_show)
-[<c02c6648>] (sysfs_kf_seq_show) from [<c02c496c>] (kernfs_seq_show)
-[<c02c4938>] (kernfs_seq_show) from [<c025e2a0>] (seq_read)
-[<c025e11c>] (seq_read) from [<c02c50a0>] (kernfs_fop_read)
-[<c02c5064>] (kernfs_fop_read) from [<c0231cac>] (__vfs_read)
-[<c0231c5c>] (__vfs_read) from [<c0231ee0>] (vfs_read)
-[<c0231e34>] (vfs_read) from [<c0232464>] (ksys_read)
-[<c02323f0>] (ksys_read) from [<c02324fc>] (sys_read)
-[<c02324e4>] (sys_read) from [<c00091d0>] (__sys_trace_return)
+Excluding -ESRCH return value would fix this but it's not obvious that
+we really want to bail out here and most other callers of
+pfkey_broadcast() also ignore the return value. Also, as pointed out by
+Steffen Klassert, PF_KEY is kind of deprecated and newer userspace code
+should use netlink instead so that we should only disturb the code for
+really important fixes.
 
-Signed-off-by: bumwoo lee <bw365.lee@samsung.com>
-Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
+v2: add a comment explaining why is the return value ignored
+
+Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/extcon/extcon.c | 29 +++++++++++++++++------------
- 1 file changed, 17 insertions(+), 12 deletions(-)
+ net/key/af_key.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/extcon/extcon.c b/drivers/extcon/extcon.c
-index 9eb92997f3ae..f305503ec27e 100644
---- a/drivers/extcon/extcon.c
-+++ b/drivers/extcon/extcon.c
-@@ -1232,19 +1232,14 @@ int extcon_dev_register(struct extcon_dev *edev)
- 		edev->dev.type = &edev->extcon_dev_type;
- 	}
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index 339d95df19d3..d93bde657359 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -2826,10 +2826,12 @@ static int pfkey_process(struct sock *sk, struct sk_buff *skb, const struct sadb
+ 	void *ext_hdrs[SADB_EXT_MAX];
+ 	int err;
  
--	ret = device_register(&edev->dev);
--	if (ret) {
--		put_device(&edev->dev);
--		goto err_dev;
--	}
--
- 	spin_lock_init(&edev->lock);
--	edev->nh = devm_kcalloc(&edev->dev, edev->max_supported,
--				sizeof(*edev->nh), GFP_KERNEL);
--	if (!edev->nh) {
--		ret = -ENOMEM;
--		device_unregister(&edev->dev);
--		goto err_dev;
-+	if (edev->max_supported) {
-+		edev->nh = kcalloc(edev->max_supported, sizeof(*edev->nh),
-+				GFP_KERNEL);
-+		if (!edev->nh) {
-+			ret = -ENOMEM;
-+			goto err_alloc_nh;
-+		}
- 	}
+-	err = pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
+-			      BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
+-	if (err)
+-		return err;
++	/* Non-zero return value of pfkey_broadcast() does not always signal
++	 * an error and even on an actual error we may still want to process
++	 * the message so rather ignore the return value.
++	 */
++	pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
++			BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
  
- 	for (index = 0; index < edev->max_supported; index++)
-@@ -1255,6 +1250,12 @@ int extcon_dev_register(struct extcon_dev *edev)
- 	dev_set_drvdata(&edev->dev, edev);
- 	edev->state = 0;
- 
-+	ret = device_register(&edev->dev);
-+	if (ret) {
-+		put_device(&edev->dev);
-+		goto err_dev;
-+	}
-+
- 	mutex_lock(&extcon_dev_list_lock);
- 	list_add(&edev->entry, &extcon_dev_list);
- 	mutex_unlock(&extcon_dev_list_lock);
-@@ -1262,6 +1263,9 @@ int extcon_dev_register(struct extcon_dev *edev)
- 	return 0;
- 
- err_dev:
-+	if (edev->max_supported)
-+		kfree(edev->nh);
-+err_alloc_nh:
- 	if (edev->max_supported)
- 		kfree(edev->extcon_dev_type.groups);
- err_alloc_groups:
-@@ -1322,6 +1326,7 @@ void extcon_dev_unregister(struct extcon_dev *edev)
- 	if (edev->max_supported) {
- 		kfree(edev->extcon_dev_type.groups);
- 		kfree(edev->cables);
-+		kfree(edev->nh);
- 	}
- 
- 	put_device(&edev->dev);
+ 	memset(ext_hdrs, 0, sizeof(ext_hdrs));
+ 	err = parse_exthdrs(skb, hdr, ext_hdrs);
 -- 
 2.35.1
 
