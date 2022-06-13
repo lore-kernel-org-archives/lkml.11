@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70176C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:36:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18235C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:36:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377775AbiFMNf7 (ORCPT
+        id S1377793AbiFMNgD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:35:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52002 "EHLO
+        Mon, 13 Jun 2022 09:36:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377822AbiFMNaN (ORCPT
+        with ESMTP id S1377862AbiFMNaV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:30:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27E116D966;
-        Mon, 13 Jun 2022 04:25:08 -0700 (PDT)
+        Mon, 13 Jun 2022 09:30:21 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29F196E8C8;
+        Mon, 13 Jun 2022 04:25:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F3F860B6E;
-        Mon, 13 Jun 2022 11:25:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8453AC3411F;
-        Mon, 13 Jun 2022 11:25:06 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id DD1C9CE110D;
+        Mon, 13 Jun 2022 11:25:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFEA2C3411E;
+        Mon, 13 Jun 2022 11:25:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119506;
-        bh=Xif9hvYlf02tsdey62zzIn1m8uFjEkOGkwTMmL8npt4=;
+        s=korg; t=1655119504;
+        bh=u3g6ye2lF1PUMaUH3OK098oauGnVr/Y/SqRnFmjCthM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k/loGXAmDEl7XRe18/4ZiXKzrPdUdmgnXkZAdVxLY7ZyigNLJ8RtmB92XlkULzWrv
-         1o8RRbfPHwvtwU8xm/2GMh8pM61N/WnUoLXwUsEKAkpXk7d1/f0c/FcF2I6vXWGa5n
-         GkONnReUPx0em99jNEcip35+xxc9YQ9p6ewp4NPw=
+        b=P1+bBFlKjO0ob4Dn1ZmUccCVO/lZpPhj7yvTApMcIdMEjXYG0gvFBWzOOsLo4G11Z
+         0qHPSxUZT6yADIuMtt5hobed5QIPG6r/6mbyOzMa68JxQD5DNRzG+qvPvwIKycxILm
+         cS78wJd1lsUjpce5XrOhv1CLOsr0tqgqqIuEpqUw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Cixi Geng <cixi.geng1@unisoc.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 038/339] rpmsg: qcom_smd: Fix returning 0 if irq_of_parse_and_map() fails
-Date:   Mon, 13 Jun 2022 12:07:43 +0200
-Message-Id: <20220613094927.674529251@linuxfoundation.org>
+Subject: [PATCH 5.18 037/339] iio: adc: sc27xx: Fine tune the scale calibration values
+Date:   Mon, 13 Jun 2022 12:07:42 +0200
+Message-Id: <20220613094927.644650258@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,35 +50,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Cixi Geng <cixi.geng1@unisoc.com>
 
-[ Upstream commit 59d6f72f6f9c92fec8757d9e29527da828e9281f ]
+[ Upstream commit 5a7a184b11c6910f47600ff5cbbee34168f701a8 ]
 
-irq_of_parse_and_map() returns 0 on failure, so this should not be
-passed further as error return code.
+Small adjustment the scale calibration value for the sc2731,
+use new name sc2731_[big|small]_scale_graph_calib, and remove
+the origin [big|small]_scale_graph_calib struct for unused.
 
-Fixes: 1a358d350664 ("rpmsg: qcom_smd: Fix irq_of_parse_and_map() return value")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220423093932.32136-1-krzysztof.kozlowski@linaro.org
+Fixes: 8ba0dbfd07a35 (iio: adc: sc27xx: Add ADC scale calibration)
+Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
+Link: https://lore.kernel.org/r/20220419142458.884933-4-gengcixi@gmail.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rpmsg/qcom_smd.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/adc/sc27xx_adc.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/rpmsg/qcom_smd.c b/drivers/rpmsg/qcom_smd.c
-index 6ccfa12abd10..1957b27c4cf3 100644
---- a/drivers/rpmsg/qcom_smd.c
-+++ b/drivers/rpmsg/qcom_smd.c
-@@ -1409,7 +1409,7 @@ static int qcom_smd_parse_edge(struct device *dev,
- 	irq = irq_of_parse_and_map(node, 0);
- 	if (!irq) {
- 		dev_err(dev, "required smd interrupt missing\n");
--		ret = irq;
-+		ret = -EINVAL;
- 		goto put_node;
- 	}
+diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
+index aee076c8e2b1..cfe003cc4f0b 100644
+--- a/drivers/iio/adc/sc27xx_adc.c
++++ b/drivers/iio/adc/sc27xx_adc.c
+@@ -103,14 +103,14 @@ static struct sc27xx_adc_linear_graph small_scale_graph = {
+ 	100, 341,
+ };
  
+-static const struct sc27xx_adc_linear_graph big_scale_graph_calib = {
+-	4200, 856,
+-	3600, 733,
++static const struct sc27xx_adc_linear_graph sc2731_big_scale_graph_calib = {
++	4200, 850,
++	3600, 728,
+ };
+ 
+-static const struct sc27xx_adc_linear_graph small_scale_graph_calib = {
+-	1000, 833,
+-	100, 80,
++static const struct sc27xx_adc_linear_graph sc2731_small_scale_graph_calib = {
++	1000, 838,
++	100, 84,
+ };
+ 
+ static int sc27xx_adc_get_calib_data(u32 calib_data, int calib_adc)
+@@ -130,11 +130,11 @@ static int sc27xx_adc_scale_calibration(struct sc27xx_adc_data *data,
+ 	size_t len;
+ 
+ 	if (big_scale) {
+-		calib_graph = &big_scale_graph_calib;
++		calib_graph = &sc2731_big_scale_graph_calib;
+ 		graph = &big_scale_graph;
+ 		cell_name = "big_scale_calib";
+ 	} else {
+-		calib_graph = &small_scale_graph_calib;
++		calib_graph = &sc2731_small_scale_graph_calib;
+ 		graph = &small_scale_graph;
+ 		cell_name = "small_scale_calib";
+ 	}
 -- 
 2.35.1
 
