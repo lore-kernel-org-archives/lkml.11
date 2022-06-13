@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 814DBCCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6C04CCA480
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:20:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376413AbiFMNSp (ORCPT
+        id S1376497AbiFMNTA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:18:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41664 "EHLO
+        Mon, 13 Jun 2022 09:19:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359477AbiFMNJ5 (ORCPT
+        with ESMTP id S1359490AbiFMNJ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:09:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87F0E20187;
-        Mon, 13 Jun 2022 04:20:53 -0700 (PDT)
+        Mon, 13 Jun 2022 09:09:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6072F3A1AB;
+        Mon, 13 Jun 2022 04:20:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39734B80EAB;
-        Mon, 13 Jun 2022 11:20:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E636C34114;
-        Mon, 13 Jun 2022 11:20:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EAC35B80D3A;
+        Mon, 13 Jun 2022 11:20:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5436FC34114;
+        Mon, 13 Jun 2022 11:20:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119251;
-        bh=PD9e8Q2ln03IrdWmHwh9Oq+TnF2LvQdLrZsDfZ77aVg=;
+        s=korg; t=1655119256;
+        bh=UZ5Dc/FfKOsM7z4voa90CsZSNexUen7lsXLITcFOEA0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BSN6qTyXkkYlcfjDp2UgET03Tgk2P7ulC/JCICbx3D1b8mTOCVHAYSjZ5OBIJo4/3
-         EUAgNvBJpp5bUnpyaVRpVL+tJJl83s//5EeeOueRvuiQqWxQiKFSTquKBCd+rLbfat
-         vXl8BBN0fEwH6PlmDBu/db6yzx+oUtvUhf3gSWX0=
+        b=OHm6Jz7ZBPj0lBT5i7taaK8dTi6QL5E508dQpc0hzZOd/xf1HifYAI0OGpSksq8/c
+         imM6BUYQ5iUaXdFxJ3V7UkM8uqiq1Nspx3K2zhuX2iqJvYLOhBj5pJp0zhZVVI4hT/
+         eHjiH7crnlE/t44BkVikS2vycr/FjT4O40TOR0Ik=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-        Denis Ciocca <denis.ciocca@st.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 167/247] iio: st_sensors: Add a local lock for protecting odr
-Date:   Mon, 13 Jun 2022 12:11:09 +0200
-Message-Id: <20220613094928.023172711@linuxfoundation.org>
+Subject: [PATCH 5.15 169/247] drivers: staging: rtl8723bs: Fix deadlock in rtw_surveydone_event_callback()
+Date:   Mon, 13 Jun 2022 12:11:11 +0200
+Message-Id: <20220613094928.083747391@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -52,121 +49,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miquel Raynal <miquel.raynal@bootlin.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 474010127e2505fc463236470908e1ff5ddb3578 ]
+[ Upstream commit cc7ad0d77b51c872d629bcd98aea463a3c4109e7 ]
 
-Right now the (framework) mlock lock is (ab)used for multiple purposes:
-1- protecting concurrent accesses over the odr local cache
-2- avoid changing samplig frequency whilst buffer is running
+There is a deadlock in rtw_surveydone_event_callback(),
+which is shown below:
 
-Let's start by handling situation #1 with a local lock.
+   (Thread 1)                  |      (Thread 2)
+                               | _set_timer()
+rtw_surveydone_event_callback()|  mod_timer()
+ spin_lock_bh() //(1)          |  (wait a time)
+ ...                           | rtw_scan_timeout_handler()
+ del_timer_sync()              |  spin_lock_bh() //(2)
+ (wait timer to stop)          |  ...
 
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Cc: Denis Ciocca <denis.ciocca@st.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/r/20220207143840.707510-7-miquel.raynal@bootlin.com
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+We hold pmlmepriv->lock in position (1) of thread 1 and use
+del_timer_sync() to wait timer to stop, but timer handler
+also need pmlmepriv->lock in position (2) of thread 2.
+As a result, rtw_surveydone_event_callback() will block forever.
+
+This patch extracts del_timer_sync() from the protection of
+spin_lock_bh(), which could let timer handler to obtain
+the needed lock. What`s more, we change spin_lock_bh() in
+rtw_scan_timeout_handler() to spin_lock_irq(). Otherwise,
+spin_lock_bh() will also cause deadlock() in timer handler.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220409061836.60529-1-duoming@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../iio/common/st_sensors/st_sensors_core.c   | 24 ++++++++++++++-----
- include/linux/iio/common/st_sensors.h         |  3 +++
- 2 files changed, 21 insertions(+), 6 deletions(-)
+ drivers/staging/rtl8723bs/core/rtw_mlme.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-index 0bbb090b108c..aff981551617 100644
---- a/drivers/iio/common/st_sensors/st_sensors_core.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-@@ -71,16 +71,18 @@ static int st_sensors_match_odr(struct st_sensor_settings *sensor_settings,
- 
- int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr)
- {
--	int err;
-+	int err = 0;
- 	struct st_sensor_odr_avl odr_out = {0, 0};
- 	struct st_sensor_data *sdata = iio_priv(indio_dev);
- 
-+	mutex_lock(&sdata->odr_lock);
-+
- 	if (!sdata->sensor_settings->odr.mask)
--		return 0;
-+		goto unlock_mutex;
- 
- 	err = st_sensors_match_odr(sdata->sensor_settings, odr, &odr_out);
- 	if (err < 0)
--		goto st_sensors_match_odr_error;
-+		goto unlock_mutex;
- 
- 	if ((sdata->sensor_settings->odr.addr ==
- 					sdata->sensor_settings->pw.addr) &&
-@@ -103,7 +105,9 @@ int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr)
- 	if (err >= 0)
- 		sdata->odr = odr_out.hz;
- 
--st_sensors_match_odr_error:
-+unlock_mutex:
-+	mutex_unlock(&sdata->odr_lock);
-+
- 	return err;
- }
- EXPORT_SYMBOL(st_sensors_set_odr);
-@@ -365,6 +369,8 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
- 	struct st_sensors_platform_data *of_pdata;
- 	int err = 0;
- 
-+	mutex_init(&sdata->odr_lock);
-+
- 	/* If OF/DT pdata exists, it will take precedence of anything else */
- 	of_pdata = st_sensors_dev_probe(indio_dev->dev.parent, pdata);
- 	if (IS_ERR(of_pdata))
-@@ -558,18 +564,24 @@ int st_sensors_read_info_raw(struct iio_dev *indio_dev,
- 		err = -EBUSY;
- 		goto out;
- 	} else {
-+		mutex_lock(&sdata->odr_lock);
- 		err = st_sensors_set_enable(indio_dev, true);
--		if (err < 0)
-+		if (err < 0) {
-+			mutex_unlock(&sdata->odr_lock);
- 			goto out;
-+		}
- 
- 		msleep((sdata->sensor_settings->bootime * 1000) / sdata->odr);
- 		err = st_sensors_read_axis_data(indio_dev, ch, val);
--		if (err < 0)
-+		if (err < 0) {
-+			mutex_unlock(&sdata->odr_lock);
- 			goto out;
-+		}
- 
- 		*val = *val >> ch->scan_type.shift;
- 
- 		err = st_sensors_set_enable(indio_dev, false);
-+		mutex_unlock(&sdata->odr_lock);
+diff --git a/drivers/staging/rtl8723bs/core/rtw_mlme.c b/drivers/staging/rtl8723bs/core/rtw_mlme.c
+index cf79bec916c5..2c20bf26b10e 100644
+--- a/drivers/staging/rtl8723bs/core/rtw_mlme.c
++++ b/drivers/staging/rtl8723bs/core/rtw_mlme.c
+@@ -749,7 +749,9 @@ void rtw_surveydone_event_callback(struct adapter	*adapter, u8 *pbuf)
  	}
- out:
- 	mutex_unlock(&indio_dev->mlock);
-diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-index 8bdbaf3f3796..69f4a1f6b536 100644
---- a/include/linux/iio/common/st_sensors.h
-+++ b/include/linux/iio/common/st_sensors.h
-@@ -238,6 +238,7 @@ struct st_sensor_settings {
-  * @hw_irq_trigger: if we're using the hardware interrupt on the sensor.
-  * @hw_timestamp: Latest timestamp from the interrupt handler, when in use.
-  * @buffer_data: Data used by buffer part.
-+ * @odr_lock: Local lock for preventing concurrent ODR accesses/changes
-  */
- struct st_sensor_data {
- 	struct device *dev;
-@@ -263,6 +264,8 @@ struct st_sensor_data {
- 	s64 hw_timestamp;
  
- 	char buffer_data[ST_SENSORS_MAX_BUFFER_SIZE] ____cacheline_aligned;
-+
-+	struct mutex odr_lock;
- };
+ 	if (check_fwstate(pmlmepriv, _FW_UNDER_SURVEY)) {
++		spin_unlock_bh(&pmlmepriv->lock);
+ 		del_timer_sync(&pmlmepriv->scan_to_timer);
++		spin_lock_bh(&pmlmepriv->lock);
+ 		_clr_fwstate_(pmlmepriv, _FW_UNDER_SURVEY);
+ 	}
  
- #ifdef CONFIG_IIO_BUFFER
+@@ -1584,11 +1586,11 @@ void rtw_scan_timeout_handler(struct timer_list *t)
+ 						  mlmepriv.scan_to_timer);
+ 	struct	mlme_priv *pmlmepriv = &adapter->mlmepriv;
+ 
+-	spin_lock_bh(&pmlmepriv->lock);
++	spin_lock_irq(&pmlmepriv->lock);
+ 
+ 	_clr_fwstate_(pmlmepriv, _FW_UNDER_SURVEY);
+ 
+-	spin_unlock_bh(&pmlmepriv->lock);
++	spin_unlock_irq(&pmlmepriv->lock);
+ 
+ 	rtw_indicate_scan_done(adapter, true);
+ }
 -- 
 2.35.1
 
