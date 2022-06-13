@@ -2,233 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 152EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:30:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68CCBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:30:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351959AbiFMVak (ORCPT
+        id S1349315AbiFMVan (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 17:30:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57842 "EHLO
+        Mon, 13 Jun 2022 17:30:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353152AbiFMV3W (ORCPT
+        with ESMTP id S1353143AbiFMV3T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 17:29:22 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C83F0393
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:25:33 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id b1-20020a631b41000000b003fd9e4765f4so3921012pgm.10
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:25:33 -0700 (PDT)
+        Mon, 13 Jun 2022 17:29:19 -0400
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 865BE388
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:25:32 -0700 (PDT)
+Received: by mail-io1-xd30.google.com with SMTP id y79so7496444iof.2
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:25:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Kj1m4/hp4yXa0MCKZFilZvFRZAcbfqXBAQSF/QNTX0I=;
-        b=Ejx7pQeJpfGG0NaTdJvphAGp4nv3Ihs+s1AJftLby+RDwLbq4kgntxJuqvoKueo8hx
-         54rII6yXHK1HDJLoL27lmAg6Gwxs7HF+a3ym+KNQ1iJoz7SGrB85nWOH0hONhmj0qCMp
-         whi/Ro+Gsr2v38mem6shBBdglqIXrMBlo991Eo8vUytdJhwVRIAigHdnznxg2Nci3HEn
-         ru93AOURfwT6gVAHQg26kGqkhaHgD3YW3+PpylZzhAOm57FKdVxrD36AWjxE/aSZmhOb
-         8j7bqHKQMY6bDvQvgczyM6YQ6Dtc3aSEFeg0kd8/FQUA00qoHJifBIY2Lqo5wmJ2FmM3
-         GfOQ==
+        bh=5NnE+Xgzg7AJlz/AVhS5h85z464OyTQxoGvdET9a4HY=;
+        b=dGPjzDX0wzDFKyXDAUW16dsPz49CqHJLXNBHBiPeOgaE5d8xIbI0bX7Mtw+wOV7ghH
+         YdkHbi8kLXpQAGTQENTv5yw/FQizJyoXOIltRHJDFSNGf7ugFCFAHx/drsOJszoBvwES
+         3p+trjrQuIZ1rUqPy7JNsgwyvKgJewjazkJ2c=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=Kj1m4/hp4yXa0MCKZFilZvFRZAcbfqXBAQSF/QNTX0I=;
-        b=jQ29LZ0TG/KGY+RUpKIHUBpInHO4Kam1Qdx89W/m8Hg/jPIM1K9i9ceTgKUJeu/EBc
-         BWy7AyhLn2BO8z2MbaDhsC591313M2FXXfb+KNod+1bnfeUuGdpDAu4yY9AZK++lqYDC
-         QiIFHZ1vtjnCwkzIBtYl26B5UfanBAOpz+1N2SAO03/Di34ryK+ndP4U3BRTLOqXwNqm
-         RDshTi9jzv8n+Rx2DFo3K5jq0b2+zF9pcjJBQhfDRzkA+PWliU5eSvMt43h2cFMQW+FS
-         hwuR/quhjvbUOH+j2Ok/Xpj9uq+p9IZEJfddMrLSn1IG7C4VL0j5YuOtfxBqQwY6yePX
-         CZSw==
-X-Gm-Message-State: AJIora92a+5buO8M4IeIBuKmEW3V+P5fLqmgizr9lOTA2PjsXuEnGQnu
-        sJFYNIH0lqa9tIcEgMzTsbk0Q2nKn+Lr
-X-Google-Smtp-Source: AGRyM1smgvIZPd4Fy0LJ7U8fw816XS0spLgdGPVjYHUYW8dPHNfQ3e1xW40sIVmdC2nvZP1ZeTLY6Y+cAqme
-X-Received: from sweer.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:e45])
- (user=bgardon job=sendgmr) by 2002:a17:903:1d2:b0:168:e3b9:e62b with SMTP id
- e18-20020a17090301d200b00168e3b9e62bmr981167plh.115.1655155533185; Mon, 13
- Jun 2022 14:25:33 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 21:25:17 +0000
-In-Reply-To: <20220613212523.3436117-1-bgardon@google.com>
-Message-Id: <20220613212523.3436117-5-bgardon@google.com>
-Mime-Version: 1.0
-References: <20220613212523.3436117-1-bgardon@google.com>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH v9 04/10] KVM: selftests: Clean up coding style in binary
- stats test
-From:   Ben Gardon <bgardon@google.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, Peter Xu <peterx@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        David Matlack <dmatlack@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        David Dunn <daviddunn@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        Junaid Shahid <junaids@google.com>,
-        Ben Gardon <bgardon@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5NnE+Xgzg7AJlz/AVhS5h85z464OyTQxoGvdET9a4HY=;
+        b=n+oyut6UXdf34ldHS3BQ7mRQo/Z5KzluAqGUn5P38vVJqAo7tgdQfloX5UAGKh0emD
+         HHnhcj0JFaYtbTNFD3Hq5jzQ4O9SIgsacyS/BWw9GgSXrHKDOxuVU/bQLGKG/cpb63AU
+         +vdAie5/c9sjzUFK+pKjlxJz+OkrfwboF+98c+/Cso8JfsYF0sDZSBhLA2lol7y4U3Wl
+         TrHueNAfejcHMyrScE55p1wOYDWCXBxJERU5XKrn3025P9Y2n0HFieneGMw9tSzPTDvQ
+         l8XyGZFmwICdJ+fYQkeiyWCPi7Ua9oUxxDyxjzJtGpwhVipNLVunWh+n4Q6qczQ5/gmv
+         dXBg==
+X-Gm-Message-State: AOAM533AatcXXl0zxOq/y/skKyrhw1ul3ru3ZwgWmQBqCRnTE4RUPBHH
+        W/+pbRaR4ZKJ2/bge4Z1Mya56Mp5A/zVHIcfsxXtrw==
+X-Google-Smtp-Source: ABdhPJyIxaI4vfZUSuU/ut9uN+5eC6ns20NayC9QlK+nuCJcAcU7BG8to5jvy1RRIeWa4opwhwvNAExigeFrGbuL6o8=
+X-Received: by 2002:a05:6602:13c3:b0:669:cb19:6fe6 with SMTP id
+ o3-20020a05660213c300b00669cb196fe6mr818734iov.177.1655155531829; Mon, 13 Jun
+ 2022 14:25:31 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220530174326.1381-1-andriy.shevchenko@linux.intel.com> <20220603180618.4b643391@jic23-huawei>
+In-Reply-To: <20220603180618.4b643391@jic23-huawei>
+From:   Gwendal Grignou <gwendal@chromium.org>
+Date:   Mon, 13 Jun 2022 14:25:21 -0700
+Message-ID: <CAPUE2usmrREACn+bjRfMyNvF1aeozJq+tHCQY6XT7KMXvp94Bg@mail.gmail.com>
+Subject: Re: [PATCH v1 1/1] iio: proximity: sx_common: Allow IIO core to take
+ care of firmware node
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+The reason we have the code ACPI_COMPANION_SET and dev.of_node set (by
+commit 74a53a959028e ("iio:proximity:sx_common: Fix device property
+parsing on DT systems") from Stephen is we are getting device propery
+in ->get_default_reg(), which is called in sx_common_init_device(),
+before devm_iio_device_register().
 
-Fix a variety of code style violations and/or inconsistencies in the
-binary stats test.  The 80 char limit is a soft limit and can and should
-be ignored/violated if doing so improves the overall code readability.
+We have the same code path in other driver, like adc/stm32-adc.c,
+where indio_dev->dev.of_node is set manually to be able to set the
+resolution based on device tree properties.
 
-Specifically, provide consistent indentation and don't split expressions
-at arbitrary points just to honor the 80 char limit.
+Gwendal.
 
-Opportunistically expand/add comments to call out the more subtle aspects
-of the code.
-
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Reviewed-by: David Matlack <dmatlack@google.com>
-Signed-off-by: Ben Gardon <bgardon@google.com>
----
- .../selftests/kvm/kvm_binary_stats_test.c     | 79 +++++++++++--------
- 1 file changed, 45 insertions(+), 34 deletions(-)
-
-diff --git a/tools/testing/selftests/kvm/kvm_binary_stats_test.c b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-index 9d3b9a0ce2ef..3002fab2bbf1 100644
---- a/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-+++ b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
-@@ -40,27 +40,31 @@ static void stats_test(int stats_fd)
- 	/* Read kvm stats id string */
- 	id = malloc(header.name_size);
- 	TEST_ASSERT(id, "Allocate memory for id string");
-+
- 	ret = read(stats_fd, id, header.name_size);
- 	TEST_ASSERT(ret == header.name_size, "Read id string");
- 
- 	/* Check id string, that should start with "kvm" */
- 	TEST_ASSERT(!strncmp(id, "kvm", 3) && strlen(id) < header.name_size,
--				"Invalid KVM stats type, id: %s", id);
-+		    "Invalid KVM stats type, id: %s", id);
- 
- 	/* Sanity check for other fields in header */
- 	if (header.num_desc == 0) {
- 		printf("No KVM stats defined!");
- 		return;
- 	}
--	/* Check overlap */
--	TEST_ASSERT(header.desc_offset > 0 && header.data_offset > 0
--			&& header.desc_offset >= sizeof(header)
--			&& header.data_offset >= sizeof(header),
--			"Invalid offset fields in header");
-+	/*
-+	 * The descriptor and data offsets must be valid, they must not overlap
-+	 * the header, and the descriptor and data blocks must not overlap each
-+	 * other.  Note, the data block is rechecked after its size is known.
-+	 */
-+	TEST_ASSERT(header.desc_offset && header.desc_offset >= sizeof(header) &&
-+		    header.data_offset && header.data_offset >= sizeof(header),
-+		    "Invalid offset fields in header");
-+
- 	TEST_ASSERT(header.desc_offset > header.data_offset ||
--			(header.desc_offset + size_desc * header.num_desc <=
--							header.data_offset),
--			"Descriptor block is overlapped with data block");
-+		    (header.desc_offset + size_desc * header.num_desc <= header.data_offset),
-+		    "Descriptor block is overlapped with data block");
- 
- 	/* Read kvm stats descriptors */
- 	stats_desc = read_stats_descriptors(stats_fd, &header);
-@@ -68,14 +72,17 @@ static void stats_test(int stats_fd)
- 	/* Sanity check for fields in descriptors */
- 	for (i = 0; i < header.num_desc; ++i) {
- 		pdesc = get_stats_descriptor(stats_desc, i, &header);
-+
- 		/* Check type,unit,base boundaries */
--		TEST_ASSERT((pdesc->flags & KVM_STATS_TYPE_MASK)
--				<= KVM_STATS_TYPE_MAX, "Unknown KVM stats type");
--		TEST_ASSERT((pdesc->flags & KVM_STATS_UNIT_MASK)
--				<= KVM_STATS_UNIT_MAX, "Unknown KVM stats unit");
--		TEST_ASSERT((pdesc->flags & KVM_STATS_BASE_MASK)
--				<= KVM_STATS_BASE_MAX, "Unknown KVM stats base");
--		/* Check exponent for stats unit
-+		TEST_ASSERT((pdesc->flags & KVM_STATS_TYPE_MASK) <= KVM_STATS_TYPE_MAX,
-+			    "Unknown KVM stats type");
-+		TEST_ASSERT((pdesc->flags & KVM_STATS_UNIT_MASK) <= KVM_STATS_UNIT_MAX,
-+			    "Unknown KVM stats unit");
-+		TEST_ASSERT((pdesc->flags & KVM_STATS_BASE_MASK) <= KVM_STATS_BASE_MAX,
-+			    "Unknown KVM stats base");
-+
-+		/*
-+		 * Check exponent for stats unit
- 		 * Exponent for counter should be greater than or equal to 0
- 		 * Exponent for unit bytes should be greater than or equal to 0
- 		 * Exponent for unit seconds should be less than or equal to 0
-@@ -86,47 +93,51 @@ static void stats_test(int stats_fd)
- 		case KVM_STATS_UNIT_NONE:
- 		case KVM_STATS_UNIT_BYTES:
- 		case KVM_STATS_UNIT_CYCLES:
--			TEST_ASSERT(pdesc->exponent >= 0,
--					"Unsupported KVM stats unit");
-+			TEST_ASSERT(pdesc->exponent >= 0, "Unsupported KVM stats unit");
- 			break;
- 		case KVM_STATS_UNIT_SECONDS:
--			TEST_ASSERT(pdesc->exponent <= 0,
--					"Unsupported KVM stats unit");
-+			TEST_ASSERT(pdesc->exponent <= 0, "Unsupported KVM stats unit");
- 			break;
- 		}
- 		/* Check name string */
- 		TEST_ASSERT(strlen(pdesc->name) < header.name_size,
--				"KVM stats name(%s) too long", pdesc->name);
-+			    "KVM stats name(%s) too long", pdesc->name);
- 		/* Check size field, which should not be zero */
--		TEST_ASSERT(pdesc->size, "KVM descriptor(%s) with size of 0",
--				pdesc->name);
-+		TEST_ASSERT(pdesc->size,
-+			    "KVM descriptor(%s) with size of 0", pdesc->name);
- 		/* Check bucket_size field */
- 		switch (pdesc->flags & KVM_STATS_TYPE_MASK) {
- 		case KVM_STATS_TYPE_LINEAR_HIST:
- 			TEST_ASSERT(pdesc->bucket_size,
--			    "Bucket size of Linear Histogram stats (%s) is zero",
--			    pdesc->name);
-+				    "Bucket size of Linear Histogram stats (%s) is zero",
-+				    pdesc->name);
- 			break;
- 		default:
- 			TEST_ASSERT(!pdesc->bucket_size,
--			    "Bucket size of stats (%s) is not zero",
--			    pdesc->name);
-+				    "Bucket size of stats (%s) is not zero",
-+				    pdesc->name);
- 		}
- 		size_data += pdesc->size * sizeof(*stats_data);
- 	}
--	/* Check overlap */
--	TEST_ASSERT(header.data_offset >= header.desc_offset
--		|| header.data_offset + size_data <= header.desc_offset,
--		"Data block is overlapped with Descriptor block");
-+
-+	/*
-+	 * Now that the size of the data block is known, verify the data block
-+	 * doesn't overlap the descriptor block.
-+	 */
-+	TEST_ASSERT(header.data_offset >= header.desc_offset ||
-+		    header.data_offset + size_data <= header.desc_offset,
-+		    "Data block is overlapped with Descriptor block");
-+
- 	/* Check validity of all stats data size */
- 	TEST_ASSERT(size_data >= header.num_desc * sizeof(*stats_data),
--			"Data size is not correct");
-+		    "Data size is not correct");
-+
- 	/* Check stats offset */
- 	for (i = 0; i < header.num_desc; ++i) {
- 		pdesc = get_stats_descriptor(stats_desc, i, &header);
- 		TEST_ASSERT(pdesc->offset < size_data,
--			"Invalid offset (%u) for stats: %s",
--			pdesc->offset, pdesc->name);
-+			    "Invalid offset (%u) for stats: %s",
-+			    pdesc->offset, pdesc->name);
- 	}
- 
- 	/* Allocate memory for stats data */
--- 
-2.36.1.476.g0c4daa206d-goog
-
+On Fri, Jun 3, 2022 at 9:57 AM Jonathan Cameron <jic23@kernel.org> wrote:
+>
+> On Mon, 30 May 2022 20:43:26 +0300
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+>
+> > IIO core correctly will take care of firmware node if it's not set in
+> > the driver. Drop ACPI and OF specifics from the driver and allow IIO
+> > core to handle this.
+> >
+> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Looks fine to me.  As such I'll apply it now, but Gwendal, you've
+> been active with this driver recently so if you have time to sanity check
+> that would be great.  Once I've caught up with new stuff I plan to check
+> where we are with your various series on this driver.
+>
+> Thanks,
+>
+> Jonathan
+>
+> > ---
+> >  drivers/iio/proximity/sx_common.c | 3 ---
+> >  1 file changed, 3 deletions(-)
+> >
+> > diff --git a/drivers/iio/proximity/sx_common.c b/drivers/iio/proximity/sx_common.c
+> > index 8ad814d96b7e..6bb68c1835da 100644
+> > --- a/drivers/iio/proximity/sx_common.c
+> > +++ b/drivers/iio/proximity/sx_common.c
+> > @@ -5,7 +5,6 @@
+> >   * Common part of most Semtech SAR sensor.
+> >   */
+> >
+> > -#include <linux/acpi.h>
+> >  #include <linux/bitops.h>
+> >  #include <linux/byteorder/generic.h>
+> >  #include <linux/delay.h>
+> > @@ -520,8 +519,6 @@ int sx_common_probe(struct i2c_client *client,
+> >       if (ret)
+> >               return dev_err_probe(dev, ret, "error reading WHOAMI\n");
+> >
+> > -     ACPI_COMPANION_SET(&indio_dev->dev, ACPI_COMPANION(dev));
+> > -     indio_dev->dev.of_node = client->dev.of_node;
+> >       indio_dev->modes = INDIO_DIRECT_MODE;
+> >
+> >       indio_dev->channels =  data->chip_info->iio_channels;
+>
