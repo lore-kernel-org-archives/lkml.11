@@ -2,132 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBE1AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 07:16:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E33DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 07:17:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239050AbiFMHQt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 03:16:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41650 "EHLO
+        id S239116AbiFMHRC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 03:17:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231834AbiFMHQr (ORCPT
+        with ESMTP id S239129AbiFMHQ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 03:16:47 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 261D91A824;
-        Mon, 13 Jun 2022 00:16:46 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id a29so7429112lfk.2;
-        Mon, 13 Jun 2022 00:16:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=buxqDOApbU3iWiCJpKcyX6L2RFQXu0xedhgWabGDF/Y=;
-        b=GAKALYciW0y2QOTLFrqdt7PBg3TAA5HKJHXgZLsLCiOxWXd1xx2sO5wooqJdzGdLxd
-         HKLQByqKQf++zSSKLpVSQEHbxACET4DJIhjto+PQrW8MIGNBA1l22fAq8zAu5a0gYI42
-         x49q6Nj7VXy4LhTWhE87qw3gqinxJZ6SeTuKwP/cqPdBa3dpFnUp4r81VYTGKOYpPuPg
-         a/PybB/saG8GpU7r9IQn/Zod6zYdvwPBsGpMS6DLGdSV6xF6ihlk3w8KtUTvMITMPFUy
-         OvmOoDt4OXc2f1Gg1OoBM4Ad+/a/Pxpz3DN2+Jw+NY5Z/MY39gWzafDnmeFs+tOMGzK4
-         EZqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=buxqDOApbU3iWiCJpKcyX6L2RFQXu0xedhgWabGDF/Y=;
-        b=a6y+3LnOsT+cNSzT80DC4NYBt9Qgnv9i9Kf0TaqJZ/606WzzKvcQAGpSXuUN+fQkOd
-         NfOPmrQEUOZDpIYEdrPp+yB7bpohI1Bo9xtA8CiuXMNZ6VUh0osGv2zEQqZby2IEszk+
-         N1e6QnmwtXMefPAMgmKyEBrUI0MOHNi+1FD0KIKt0F47+fBSiPqdFTrs/XD4sjGH4dna
-         9ooQRKXE7AxeJOLhhoA2ZPIxketHv7xvmmanpQ0HiJsUmZjv6dteyFkfY3ra2ZwCWAI8
-         XhmMjZaug1T26zLY4kpKcgGbOVbN3PtPmoXuB0KLnQQpz68lasOU0LnEJLAjqZSQ5Dda
-         p64Q==
-X-Gm-Message-State: AOAM531rFL5yycWp6xbcRS6R2e5VOHzCZX3lbD+hDydB+6vXsNx+SIaq
-        N67qFo4FaGrOsTu6tL7BVfv67ipIs3jh5jHt5SQ=
-X-Google-Smtp-Source: ABdhPJztUvaIJiyyz/qpSniEl7gEI70W2eqQCEj/oJAsctZd0PsOvAXKEMDSh3jw4ZyybkEAkZuB+NDScf1ujTsP6Jc=
-X-Received: by 2002:a05:6512:1052:b0:479:1f92:13b4 with SMTP id
- c18-20020a056512105200b004791f9213b4mr27626523lfb.200.1655104604518; Mon, 13
- Jun 2022 00:16:44 -0700 (PDT)
+        Mon, 13 Jun 2022 03:16:57 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A3D81ADAB;
+        Mon, 13 Jun 2022 00:16:52 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LM2rZ4tCvzgYpR;
+        Mon, 13 Jun 2022 15:14:54 +0800 (CST)
+Received: from [10.174.178.185] (10.174.178.185) by
+ canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 13 Jun 2022 15:16:49 +0800
+Subject: Re: [PATCH -next] ext4: Fix warning in ext4_da_release_space
+To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
+        <linux-ext4@vger.kernel.org>
+References: <20220520025540.3189247-1-yebin10@huawei.com>
+CC:     <linux-kernel@vger.kernel.org>, <jack@suse.cz>
+From:   yebin <yebin10@huawei.com>
+Message-ID: <62A6E461.9060209@huawei.com>
+Date:   Mon, 13 Jun 2022 15:16:49 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:38.0) Gecko/20100101
+ Thunderbird/38.1.0
 MIME-Version: 1.0
-References: <20220608095623.22327-1-tmaimon77@gmail.com> <20220608095623.22327-12-tmaimon77@gmail.com>
- <91549b70-08fc-ed6f-c48e-5bcb70ea63d0@linaro.org> <CAP6Zq1j2VZno4w4w0QCYwHnRaVqiM=DnNSmND1vOGDs_wfi2zw@mail.gmail.com>
- <8e02ad54-5dad-aee7-6fa8-70c72f93bf5e@linaro.org>
-In-Reply-To: <8e02ad54-5dad-aee7-6fa8-70c72f93bf5e@linaro.org>
-From:   Tomer Maimon <tmaimon77@gmail.com>
-Date:   Mon, 13 Jun 2022 10:16:33 +0300
-Message-ID: <CAP6Zq1j2FgMmX9NJRoDMCsRLnF0RTETSTuMv8rEhr3FGLvY7yw@mail.gmail.com>
-Subject: Re: [PATCH v2 11/20] reset: npcm: using syscon instead of device data
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Avi Fishman <avifishman70@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Robert Hancock <robert.hancock@calian.com>,
-        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Lubomir Rintel <lkundrak@v3.sk>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220520025540.3189247-1-yebin10@huawei.com>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.185]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
+ping...
 
-I will make sure to add backward compatibility in the reset driver in
-the next version.
+On 2022/5/20 10:55, Ye Bin wrote:
+> We got issue as follows:
+> WARNING: CPU: 2 PID: 1936 at fs/ext4/inode.c:1511 ext4_da_release_space+0x1b9/0x266
+> Modules linked in:
+> CPU: 2 PID: 1936 Comm: dd Not tainted 5.10.0+ #344
+> RIP: 0010:ext4_da_release_space+0x1b9/0x266
+> RSP: 0018:ffff888127307848 EFLAGS: 00010292
+> RAX: 0000000000000000 RBX: 0000000000000001 RCX: ffffffff843f67cc
+> RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffed1024e60ed9
+> RBP: ffff888124dc8140 R08: 0000000000000083 R09: ffffed1075da6d23
+> R10: ffff8883aed36917 R11: ffffed1075da6d22 R12: ffff888124dc83f0
+> R13: ffff888124dc844c R14: ffff888124dc8168 R15: 000000000000000c
+> FS:  00007f6b7247d740(0000) GS:ffff8883aed00000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00007ffc1a0b7dd8 CR3: 00000001065ce000 CR4: 00000000000006e0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>   ext4_es_remove_extent+0x187/0x230
+>   mpage_release_unused_pages+0x3af/0x470
+>   ext4_writepages+0xb9b/0x1160
+>   do_writepages+0xbb/0x1e0
+>   __filemap_fdatawrite_range+0x1b1/0x1f0
+>   file_write_and_wait_range+0x80/0xe0
+>   ext4_sync_file+0x13d/0x800
+>   vfs_fsync_range+0x75/0x140
+>   do_fsync+0x4d/0x90
+>   __x64_sys_fsync+0x1d/0x30
+>   do_syscall_64+0x33/0x40
+>   entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>
+> Above issue may happens as follows:
+> 	process1                        process2
+> ext4_da_write_begin
+>    ext4_da_reserve_space
+>      ext4_es_insert_delayed_block[1/1]
+>                                      ext4_da_write_begin
+> 				      ext4_es_insert_delayed_block[0/1]
+> ext4_writepages
+>    ****Delayed block allocation failed****
+>    mpage_release_unused_pages
+>      ext4_es_remove_extent[1/1]
+>        ext4_da_release_space [reserved 0]
+>
+> ext4_da_write_begin
+>    ext4_es_scan_clu(inode, &ext4_es_is_delonly, lblk)
+>     ->As there exist [0, 1] extent, so will return true
+>                                     ext4_writepages
+> 				   ****Delayed block allocation failed****
+>                                       mpage_release_unused_pages
+> 				       ext4_es_remove_extent[0/1]
+> 				         ext4_da_release_space [reserved 1]
+> 					   ei->i_reserved_data_blocks [1->0]
+>
+>    ext4_es_insert_delayed_block[1/1]
+>
+> ext4_writepages
+>    ****Delayed block allocation failed****
+>    mpage_release_unused_pages
+>    ext4_es_remove_extent[1/1]
+>     ext4_da_release_space [reserved 1]
+>      ei->i_reserved_data_blocks[0, -1]
+>      ->As ei->i_reserved_data_blocks already is zero but to_free is 1,
+>      will trigger warning.
+>
+> To solve above issue, introduce i_clu_lock to protect insert delayed
+> block and remove block under cluster delay allocate mode.
+>
+> Signed-off-by: Ye Bin <yebin10@huawei.com>
+> ---
+>   fs/ext4/ext4.h           |  3 +++
+>   fs/ext4/extents_status.c |  5 +++++
+>   fs/ext4/inode.c          | 11 +++++++++--
+>   fs/ext4/super.c          |  1 +
+>   4 files changed, 18 insertions(+), 2 deletions(-)
+>
+> diff --git a/fs/ext4/ext4.h b/fs/ext4/ext4.h
+> index bcd3b9bf8069..47c88ac4d4a8 100644
+> --- a/fs/ext4/ext4.h
+> +++ b/fs/ext4/ext4.h
+> @@ -1169,6 +1169,9 @@ struct ext4_inode_info {
+>   	__u32 i_csum_seed;
+>   
+>   	kprojid_t i_projid;
+> +
+> +	/* Protect concurrent add cluster delayed block and remove block */
+> +	struct mutex i_clu_lock;
+>   };
+>   
+>   /*
+> diff --git a/fs/ext4/extents_status.c b/fs/ext4/extents_status.c
+> index 9a3a8996aacf..dd679014db98 100644
+> --- a/fs/ext4/extents_status.c
+> +++ b/fs/ext4/extents_status.c
+> @@ -1433,6 +1433,7 @@ static int __es_remove_extent(struct inode *inode, ext4_lblk_t lblk,
+>   int ext4_es_remove_extent(struct inode *inode, ext4_lblk_t lblk,
+>   			  ext4_lblk_t len)
+>   {
+> +	struct ext4_sb_info *sbi = EXT4_SB(inode->i_sb);
+>   	ext4_lblk_t end;
+>   	int err = 0;
+>   	int reserved = 0;
+> @@ -1455,9 +1456,13 @@ int ext4_es_remove_extent(struct inode *inode, ext4_lblk_t lblk,
+>   	 * so that we are sure __es_shrink() is done with the inode before it
+>   	 * is reclaimed.
+>   	 */
+> +	if (sbi->s_cluster_ratio != 1)
+> +		mutex_lock(&EXT4_I(inode)->i_clu_lock);
+>   	write_lock(&EXT4_I(inode)->i_es_lock);
+>   	err = __es_remove_extent(inode, lblk, end, &reserved);
+>   	write_unlock(&EXT4_I(inode)->i_es_lock);
+> +	if (sbi->s_cluster_ratio != 1)
+> +		mutex_unlock(&EXT4_I(inode)->i_clu_lock);
+>   	ext4_es_print_tree(inode);
+>   	ext4_da_release_space(inode, reserved);
+>   	return err;
+> diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+> index 01c9e4f743ba..1109d77ad60b 100644
+> --- a/fs/ext4/inode.c
+> +++ b/fs/ext4/inode.c
+> @@ -1649,17 +1649,22 @@ static int ext4_insert_delayed_block(struct inode *inode, ext4_lblk_t lblk)
+>   			goto errout;
+>   		reserved = true;
+>   	} else {   /* bigalloc */
+> +		mutex_lock(&EXT4_I(inode)->i_clu_lock);
+>   		if (!ext4_es_scan_clu(inode, &ext4_es_is_delonly, lblk)) {
+>   			if (!ext4_es_scan_clu(inode,
+>   					      &ext4_es_is_mapped, lblk)) {
+>   				ret = ext4_clu_mapped(inode,
+>   						      EXT4_B2C(sbi, lblk));
+> -				if (ret < 0)
+> +				if (ret < 0) {
+> +					mutex_unlock(&EXT4_I(inode)->i_clu_lock);
+>   					goto errout;
+> +				}
+>   				if (ret == 0) {
+>   					ret = ext4_da_reserve_space(inode);
+> -					if (ret != 0)   /* ENOSPC */
+> +					if (ret != 0) {   /* ENOSPC */
+> +						mutex_unlock(&EXT4_I(inode)->i_clu_lock);
+>   						goto errout;
+> +					}
+>   					reserved = true;
+>   				} else {
+>   					allocated = true;
+> @@ -1671,6 +1676,8 @@ static int ext4_insert_delayed_block(struct inode *inode, ext4_lblk_t lblk)
+>   	}
+>   
+>   	ret = ext4_es_insert_delayed_block(inode, lblk, allocated);
+> +	if (sbi->s_cluster_ratio != 1)
+> +		mutex_unlock(&EXT4_I(inode)->i_clu_lock);
+>   	if (ret && reserved)
+>   		ext4_da_release_space(inode, 1);
+>   
+> diff --git a/fs/ext4/super.c b/fs/ext4/super.c
+> index c5021ca0a28a..aa6f2a68bf41 100644
+> --- a/fs/ext4/super.c
+> +++ b/fs/ext4/super.c
+> @@ -1347,6 +1347,7 @@ static struct inode *ext4_alloc_inode(struct super_block *sb)
+>   	INIT_WORK(&ei->i_rsv_conversion_work, ext4_end_io_rsv_work);
+>   	ext4_fc_init_inode(&ei->vfs_inode);
+>   	mutex_init(&ei->i_fc_lock);
+> +	mutex_init(&ei->i_clu_lock);
+>   	return &ei->vfs_inode;
+>   }
+>   
 
-Thanks,
-
-Tomer
-
-
-On Fri, 10 Jun 2022 at 12:53, Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 09/06/2022 23:37, Tomer Maimon wrote:
-> > Hi Krzysztof
-> >
-> > Sorry but I didn't ignore your comment.
-> >
-> > For not breaking exciting boards I add the following patch in V2
-> > https://lore.kernel.org/linux-arm-kernel/20220608095623.22327-11-tmaimon77@gmail.com/
->
-> No, it does not solve it.
-> 1. Patchset goes via separate trees (DTS are always separate), so it is
-> not bisectable. One of the branches/trees will have broken DTS.
->
-> 2. All out of tree DTSes are broken. This is expressed as ABI and - with
-> some reasonable exceptions - you should not break it.
-> https://elixir.bootlin.com/linux/v5.19-rc1/source/Documentation/devicetree/bindings/ABI.rst
->
-> You have to keep backwards compatibility, so parse/handle both versions
-> of DTS.
->
->
-> Best regards,
-> Krzysztof
