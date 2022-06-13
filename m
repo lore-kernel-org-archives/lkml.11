@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD597C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:20:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EA94C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:20:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382052AbiFMOUd (ORCPT
+        id S1382240AbiFMOUh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:20:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60062 "EHLO
+        Mon, 13 Jun 2022 10:20:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382587AbiFMOOY (ORCPT
+        with ESMTP id S1382755AbiFMOOr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:14:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6048311449;
-        Mon, 13 Jun 2022 04:42:24 -0700 (PDT)
+        Mon, 13 Jun 2022 10:14:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DC2243EF7;
+        Mon, 13 Jun 2022 04:42:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A1CD2613EF;
-        Mon, 13 Jun 2022 11:42:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD093C34114;
-        Mon, 13 Jun 2022 11:42:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 974CE61367;
+        Mon, 13 Jun 2022 11:42:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2DBCC34114;
+        Mon, 13 Jun 2022 11:42:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120521;
-        bh=MmEcz32WGpDQ1XGs9HpivkxtIhXGi+0MIUA1+ysAprg=;
+        s=korg; t=1655120549;
+        bh=b1lknIl+kFp+TIevhQfI3vvWhmS8MpjztMwtA0fOh50=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y5eKrB3OZ6Jz3hxvBK2Yf7QmwOXYZ1FGvHoiolM0m053+yBKO0QCvM6FZigkX9TjS
-         7qRc9y3EI9rfFgN/saWXHWqvDyoasOtbxt6KNtbujhjKInAdJV6NbpK3+rsZ5uTYU6
-         NyuEqq8mcXpX0S3aQ2/JqTLNFX3A8dn0M4u9ECtA=
+        b=bzQdXipovZuH0TDaUnZcefdG377kePoOC67NlQAbaKFf6yv+3PnDuZRb1O6vrksNC
+         gm8Khgwp2BYUHurnoCUOdAhbok6onQ0CkgW1uNU7aVVej9zmxFdH5Zn31PuaGWFKnn
+         4x9dXZuDM3dY3Pjqvn2BkE7Zm8q93ewF2IXIbJAM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 039/298] serial: sifive: Report actual baud base rather than fixed 115200
-Date:   Mon, 13 Jun 2022 12:08:53 +0200
-Message-Id: <20220613094926.122940977@linuxfoundation.org>
+        stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
+        Jan Kara <jack@suse.cz>, Ming Lei <ming.lei@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 073/298] blk-mq: dont touch ->tagset in blk_mq_get_sq_hctx
+Date:   Mon, 13 Jun 2022 12:09:27 +0200
+Message-Id: <20220613094927.162000910@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -49,63 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej W. Rozycki <macro@orcam.me.uk>
+From: Ming Lei <ming.lei@redhat.com>
 
-[ Upstream commit 0a7ff843d507ce2cca2c3b7e169ee56e28133530 ]
+[ Upstream commit 5d05426e2d5fd7df8afc866b78c36b37b00188b7 ]
 
-The base baud value reported is supposed to be the highest baud rate
-that can be set for a serial port.  The SiFive FU740-C000 SOC's on-chip
-UART supports baud rates of up to 1/16 of the input clock rate, which is
-the bus clock `tlclk'[1], often at 130MHz in the case of the HiFive
-Unmatched board.
+blk_mq_run_hw_queues() could be run when there isn't queued request and
+after queue is cleaned up, at that time tagset is freed, because tagset
+lifetime is covered by driver, and often freed after blk_cleanup_queue()
+returns.
 
-However the sifive UART driver reports a fixed value of 115200 instead:
+So don't touch ->tagset for figuring out current default hctx by the mapping
+built in request queue, so use-after-free on tagset can be avoided. Meantime
+this way should be fast than retrieving mapping from tagset.
 
-10010000.serial: ttySIF0 at MMIO 0x10010000 (irq = 1, base_baud = 115200) is a SiFive UART v0
-10011000.serial: ttySIF1 at MMIO 0x10011000 (irq = 2, base_baud = 115200) is a SiFive UART v0
-
-even though we already support setting higher baud rates, e.g.:
-
-$ tty
-/dev/ttySIF1
-$ stty speed
-230400
-
-The baud base value is computed by the serial core by dividing the UART
-clock recorded in `struct uart_port' by 16, which is also the minimum
-value of the clock divider supported, so correct the baud base value
-reported by setting the UART clock recorded to the input clock rate
-rather than 115200:
-
-10010000.serial: ttySIF0 at MMIO 0x10010000 (irq = 1, base_baud = 8125000) is a SiFive UART v0
-10011000.serial: ttySIF1 at MMIO 0x10011000 (irq = 2, base_baud = 8125000) is a SiFive UART v0
-
-
-[1] "SiFive FU740-C000 Manual", v1p3, SiFive, Inc., August 13, 2021,
-    Section 16.9 "Baud Rate Divisor Register (div)", pp.143-144
-
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Fixes: 1f1496a923b6 ("riscv: Fix sifive serial driver")
-Link: https://lore.kernel.org/r/alpine.DEB.2.21.2204291656280.9383@angie.orcam.me.uk
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: "yukuai (C)" <yukuai3@huawei.com>
+Cc: Jan Kara <jack@suse.cz>
+Fixes: b6e68ee82585 ("blk-mq: Improve performance of non-mq IO schedulers with multiple HW queues")
+Signed-off-by: Ming Lei <ming.lei@redhat.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220522122350.743103-1-ming.lei@redhat.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/sifive.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ block/blk-mq.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c
-index b79900d0e91a..fff0b7916f3d 100644
---- a/drivers/tty/serial/sifive.c
-+++ b/drivers/tty/serial/sifive.c
-@@ -998,7 +998,7 @@ static int sifive_serial_probe(struct platform_device *pdev)
- 	/* Set up clock divider */
- 	ssp->clkin_rate = clk_get_rate(ssp->clk);
- 	ssp->baud_rate = SIFIVE_DEFAULT_BAUD_RATE;
--	ssp->port.uartclk = ssp->baud_rate * 16;
-+	ssp->port.uartclk = ssp->clkin_rate;
- 	__ssp_update_div(ssp);
- 
- 	platform_set_drvdata(pdev, ssp);
+diff --git a/block/blk-mq.c b/block/blk-mq.c
+index 0aa20df31e36..6afe0cd128ac 100644
+--- a/block/blk-mq.c
++++ b/block/blk-mq.c
+@@ -2114,8 +2114,7 @@ static bool blk_mq_has_sqsched(struct request_queue *q)
+  */
+ static struct blk_mq_hw_ctx *blk_mq_get_sq_hctx(struct request_queue *q)
+ {
+-	struct blk_mq_hw_ctx *hctx;
+-
++	struct blk_mq_ctx *ctx = blk_mq_get_ctx(q);
+ 	/*
+ 	 * If the IO scheduler does not respect hardware queues when
+ 	 * dispatching, we just don't bother with multiple HW queues and
+@@ -2123,8 +2122,8 @@ static struct blk_mq_hw_ctx *blk_mq_get_sq_hctx(struct request_queue *q)
+ 	 * just causes lock contention inside the scheduler and pointless cache
+ 	 * bouncing.
+ 	 */
+-	hctx = blk_mq_map_queue_type(q, HCTX_TYPE_DEFAULT,
+-				     raw_smp_processor_id());
++	struct blk_mq_hw_ctx *hctx = blk_mq_map_queue(q, 0, ctx);
++
+ 	if (!blk_mq_hctx_stopped(hctx))
+ 		return hctx;
+ 	return NULL;
 -- 
 2.35.1
 
