@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12C66CCA485
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3BF0CCA486
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382485AbiFMOOT (ORCPT
+        id S1382437AbiFMOOQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:14:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52016 "EHLO
+        Mon, 13 Jun 2022 10:14:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381239AbiFMOEN (ORCPT
+        with ESMTP id S1381202AbiFMOEM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:04:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B53FA9156F;
-        Mon, 13 Jun 2022 04:38:55 -0700 (PDT)
+        Mon, 13 Jun 2022 10:04:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B6509155B;
+        Mon, 13 Jun 2022 04:38:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 70F7FB80EC6;
-        Mon, 13 Jun 2022 11:38:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C81AAC34114;
-        Mon, 13 Jun 2022 11:38:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1353B60B6E;
+        Mon, 13 Jun 2022 11:38:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2496AC34114;
+        Mon, 13 Jun 2022 11:38:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120333;
-        bh=URr56cRJookzc1q9Jh6GC+bIL0PYgFldU7IMSJ8bFoo=;
+        s=korg; t=1655120330;
+        bh=Srf1cCaajTI4Ocw83msU6nuxMRhe1iUnjgiGvE1VwVY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0TEOg6pDwjs7wuKvONDDDe9iPB5RCmhGi/WhTp8V3pp/c/isZ7hTSyqFPRORepFx6
-         B4hZ9KeKIzzS3bI/uPQ+8iRPJ6iiny06J1k0Loo2XenVSnvbfm6Gs5nXVuxk0p6VwE
-         kzUWf+gPvy/AH1WgDlkS76Crhd67y/ZU9yU0IIQ8=
+        b=tg/S6MUtmBYIsOgR8IQ6gHTJB3Z2mfSZnqfU+w4xsH85oGnplNk3fqNfjQrkrtszY
+         LWsY3wY7rHUd67n5qHiS6b428FLFSYs1i8T548bb8h9lnjV7qwgvpGdwVSlMDb3F4Z
+         i883Rn9/oYKplhuIiwhU4JS7rvcvx0I3MMpNrk8M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.18 335/339] random: avoid checking crng_ready() twice in random_init()
-Date:   Mon, 13 Jun 2022 12:12:40 +0200
-Message-Id: <20220613094936.896840412@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.18 326/339] powerpc: Dont select HAVE_IRQ_EXIT_ON_IRQ_STACK
+Date:   Mon, 13 Jun 2022 12:12:31 +0200
+Message-Id: <20220613094936.633413037@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,47 +48,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-commit 9b29b6b20376ab64e1b043df6301d8a92378e631 upstream.
+commit 1346d00e1bdfd4067f92bc14e8a6131a01de4190 upstream.
 
-The current flow expands to:
+The HAVE_IRQ_EXIT_ON_IRQ_STACK option tells generic code that irq_exit()
+is called while still running on the hard irq stack (hardirq_ctx[] in
+the powerpc code).
 
-    if (crng_ready())
-       ...
-    else if (...)
-        if (!crng_ready())
-            ...
+Selecting the option means the generic code will *not* switch to the
+softirq stack before running softirqs, because the code is already
+running on the (mostly empty) hard irq stack.
 
-The second crng_ready() call is redundant, but can't so easily be
-optimized out by the compiler.
+But since commit 1b1b6a6f4cc0 ("powerpc: handle irq_enter/irq_exit in
+interrupt handler wrappers"), irq_exit() is now called on the regular task
+stack, not the hard irq stack.
 
-This commit simplifies that to:
+That's because previously irq_exit() was called in __do_irq() which is
+run on the hard irq stack, but now it is called in
+interrupt_async_exit_prepare() which is called from do_irq() constructed
+by the wrapper macro, which is after the switch back to the task stack.
 
-    if (crng_ready()
-        ...
-    else if (...)
-        ...
+So drop HAVE_IRQ_EXIT_ON_IRQ_STACK from the Kconfig. This will mean an
+extra stack switch when processing some interrupts, but should
+significantly reduce the likelihood of stack overflow.
 
-Fixes: 560181c27b58 ("random: move initialization functions out of hot pages")
-Cc: stable@vger.kernel.org
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+It also means the softirq stack will be used for running softirqs from
+other interrupts that don't use the hard irq stack, eg. timer interrupts.
+
+Fixes: 1b1b6a6f4cc0 ("powerpc: handle irq_enter/irq_exit in interrupt handler wrappers")
+Cc: stable@vger.kernel.org # v5.12+
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220525032639.1947280-1-mpe@ellerman.id.au
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/Kconfig |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -842,7 +842,7 @@ int __init random_init(const char *comma
- 	if (crng_ready())
- 		crng_reseed();
- 	else if (trust_cpu)
--		credit_init_bits(arch_bytes * 8);
-+		_credit_init_bits(arch_bytes * 8);
- 
- 	return 0;
- }
+--- a/arch/powerpc/Kconfig
++++ b/arch/powerpc/Kconfig
+@@ -218,7 +218,6 @@ config PPC
+ 	select HAVE_HARDLOCKUP_DETECTOR_PERF	if PERF_EVENTS && HAVE_PERF_EVENTS_NMI && !HAVE_HARDLOCKUP_DETECTOR_ARCH
+ 	select HAVE_HW_BREAKPOINT		if PERF_EVENTS && (PPC_BOOK3S || PPC_8xx)
+ 	select HAVE_IOREMAP_PROT
+-	select HAVE_IRQ_EXIT_ON_IRQ_STACK
+ 	select HAVE_IRQ_TIME_ACCOUNTING
+ 	select HAVE_KERNEL_GZIP
+ 	select HAVE_KERNEL_LZMA			if DEFAULT_UIMAGE
 
 
