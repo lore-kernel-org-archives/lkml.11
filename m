@@ -2,84 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08BE2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:58:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E772C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:58:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237916AbiFMU5v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:57:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36464 "EHLO
+        id S1351370AbiFMU6S (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 16:58:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352330AbiFMUyZ (ORCPT
+        with ESMTP id S1352344AbiFMUyZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 16:54:25 -0400
-Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93E412AE2E;
-        Mon, 13 Jun 2022 13:23:03 -0700 (PDT)
-Received: by mail-oi1-f176.google.com with SMTP id h187so9102394oif.4;
-        Mon, 13 Jun 2022 13:23:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pWsit0XtntT6J2RTRZ0ujYWmdRDTbMZCbVmpGrfCYhA=;
-        b=DrGzYq5D9Y2CcEeM9Bd5UjW9DU11eGCY1W7+VI4JU2LyajBxb/5/JtUN1lT8z+QMUg
-         FveTy5nLgT5QNfemLV9Bx5PqsLqKesflDx7D1yzMw+P9W31CZxt6TH7qcdpqunEquvbM
-         192aDNy1EW1FWJmtsoHit0rRI+UnXHcJHH37mG4Mb9Yqc54ZBbYWMd1b9ot1HpMZU++X
-         rQfGH0YSdwX/qKzVIARuruKvVwZUn1hTCIQ4zlIiRzIkmqo5io+WOV51VLhoj2XIqlaK
-         qiHhcUiwzTdnsM56n097+hnSTcKkElH1oBuXUvbYQHhdOT4PF11nbNr1dGtXeAVGHlEL
-         HoDQ==
-X-Gm-Message-State: AOAM532kgN9CnIiKntm9V3/eEYkfvwrIyTbpk5Em4gvP4fmy3h3ACHPy
-        uCsw0Wjh3JcgyccOrbzu/g==
-X-Google-Smtp-Source: ABdhPJzo2BcmC/VIfVQzsrFJ8doyeGKwKmqH/pmvy+HKvx0w6Zh7cJYQumivPmCaX4tpdaBO6WF6gQ==
-X-Received: by 2002:a05:6808:11c7:b0:2f9:f96c:d0ee with SMTP id p7-20020a05680811c700b002f9f96cd0eemr266770oiv.134.1655151782945;
-        Mon, 13 Jun 2022 13:23:02 -0700 (PDT)
-Received: from robh.at.kernel.org ([2607:fb90:20d2:bb97:4381:7341:60ed:a4a1])
-        by smtp.gmail.com with ESMTPSA id go13-20020a056870da0d00b000f324b1e645sm4504754oab.22.2022.06.13.13.23.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 13:23:02 -0700 (PDT)
-Received: (nullmailer pid 453 invoked by uid 1000);
-        Mon, 13 Jun 2022 20:10:43 -0000
-Date:   Mon, 13 Jun 2022 14:10:43 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 07/18] PCI: dwc: Add braces to the multi-line if-else
- statements
-Message-ID: <20220613201043.GC4188875-robh@kernel.org>
-References: <20220610082535.12802-1-Sergey.Semin@baikalelectronics.ru>
- <20220610082535.12802-8-Sergey.Semin@baikalelectronics.ru>
+Received: from m12-15.163.com (m12-15.163.com [220.181.12.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1740EBC28
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:23:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=sz+nf
+        NuzmTuxAWdpxnGUivML8lc4W2sa69qotAWBC68=; b=TaY8MJTgTCcfzI3ZkpTFM
+        oxuciPRCVace/WcUpPU4vPH61SIaIZdWjcLbY12EolRjR3hGBgFj28fQ4sm/ik2U
+        kffJ68iXugbX6wuHrrdZdd27lvN/7A1319TA6E1q4YMhq95nGJxR3HJO4nfktMds
+        bs2W+GTXCKNMJwQfFnh6cI=
+Received: from localhost.localdomain (unknown [1.203.64.79])
+        by smtp11 (Coremail) with SMTP id D8CowAAHBP50nKdirxuRHg--.24745S4;
+        Tue, 14 Jun 2022 04:22:37 +0800 (CST)
+From:   jingyuwang <jingyuwang_vip@163.com>
+To:     akpm@linux-foundation.org, rostedt@goodmis.org,
+        mhiramat@kernel.org, vbabka@suse.cz, ahalaney@redhat.com,
+        Jason@zx2c4.com, mark-pk.tsai@mediatek.com
+Cc:     linux-kernel@vger.kernel.org, jingyuwang <jingyuwang_vip@163.com>
+Subject: [PATCH] Fix the following checkpatch error:
+Date:   Tue, 14 Jun 2022 04:22:10 +0800
+Message-Id: <20220613202210.31759-1-jingyuwang_vip@163.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220610082535.12802-8-Sergey.Semin@baikalelectronics.ru>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: D8CowAAHBP50nKdirxuRHg--.24745S4
+X-Coremail-Antispam: 1Uf129KBjvdXoWrZr4UCFy8Jw4UAFy5JrW8WFg_yoW3GFc_G3
+        Z3Xr18JanrCFW2kr1FvF48try8Xw18XFnrGrn7CFyUA3WxXw1rKws7Gr1ayryxWr1akr98
+        X3W5AayYyr17CjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRpT5lPUUUUU==
+X-Originating-IP: [1.203.64.79]
+X-CM-SenderInfo: 5mlqw5xxzd0whbyl1qqrwthudrp/xtbBaQ0fF1XlyIsGKAAAsx
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 11:25:23AM +0300, Serge Semin wrote:
-> In accordance with [1] if there is at least one multi-line if-else
-> clause in the statement, then each clause will need to be surrounded by
-> the braces. The driver code violates that coding style rule in a few
-> places. Let's fix it.
-> 
-> [1] Documentation/process/coding-style.rst
-> 
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> ---
->  drivers/pci/controller/dwc/pcie-designware-ep.c | 4 ++--
->  drivers/pci/controller/dwc/pcie-designware.c    | 3 ++-
->  2 files changed, 4 insertions(+), 3 deletions(-)
+./scripts/checkpatch.pl --no-tree -f init/main.c
+ERROR: Use of const init definition must use __initconst
++static const char *initcall_level_names[] __initdata = {
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: jingyuwang <jingyuwang_vip@163.com>
+---
+ init/main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/init/main.c b/init/main.c
+index 0ee39cdcfcac..dc6188a3dd4e 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -1336,7 +1336,7 @@ static initcall_entry_t *initcall_levels[] __initdata = {
+ };
+ 
+ /* Keep these in sync with initcalls in include/linux/init.h */
+-static const char *initcall_level_names[] __initdata = {
++static const char *initcall_level_names[] __initconst = {
+ 	"pure",
+ 	"core",
+ 	"postcore",
+-- 
+2.34.1
+
