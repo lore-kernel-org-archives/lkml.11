@@ -2,133 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C495DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:29:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48C51C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:29:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242509AbiFMS3b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:29:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53534 "EHLO
+        id S245495AbiFMS3t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:29:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241854AbiFMS1o (ORCPT
+        with ESMTP id S245636AbiFMS3W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 14:27:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E8C41FE4DF;
-        Mon, 13 Jun 2022 07:51:38 -0700 (PDT)
+        Mon, 13 Jun 2022 14:29:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9031FB227E;
+        Mon, 13 Jun 2022 07:44:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B1162B8105B;
-        Mon, 13 Jun 2022 14:51:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A9FFC3411B;
-        Mon, 13 Jun 2022 14:51:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CA76B61363;
+        Mon, 13 Jun 2022 14:44:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85710C34114;
+        Mon, 13 Jun 2022 14:44:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655131895;
-        bh=TLxFZAPhXdD/lskt5ABL7Yyvc76typsZSU+wq7k76S8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=nC33P0zIEEDZN6u3S/HZm0+GRAnfXvOGbb7rQDH01pkLftaiZTdzsxZu7Xyebbpin
-         7iZJl7IWnGkRJAfwOIqc8K+j8IwSTaK3F0MHmyUTMc7CgLJgR4VJD+UGpyJJkhrqLX
-         pWeZakRI7cH0l9gg+YPdjnVNTfJ5uxNC/QoxSM1Q4+DGXBNKSm7+Cr0t5ee2RguLg7
-         uVqQjAJeEaO0Ka+V0HlIZAym1GivjWVzSNmIneaDGM/5HviE+hY2yp+gPqKFauvgmz
-         O4OH3HWNBRR1vFg6SRwbt3uLYW5nw58tlPFvpBRcH5bh9uz1ym1TUrI00o4VTDPc5K
-         zXFrxSWwbIgGA==
-Date:   Mon, 13 Jun 2022 09:51:33 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Meng Tang <tangmeng@uniontech.com>
-Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org, bhelgaas@google.com,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Subject: Re: [PATCH 5.10 1/2] commit 1d71eb53e451 ("Revert "PCI: Make
- pci_enable_ptm() private"")
-Message-ID: <20220613145133.GA701092@bhelgaas>
+        s=k20201202; t=1655131474;
+        bh=mVPcnBqff4Qg8JmFyDlY5tck7ujgQlmYljTopZhsfwA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=npBL6noPLhOvqurAUFEXI06PVTFaowFh/a1v2bfo0Vhw+B1slp+Dnnj4lvQs79T6X
+         AjC24IR/OAJcjmJe822xBWn2hBBLxKE094kCn5JPa+Enqw8rWaQ+5z3XBuNHeG+qyk
+         IxnjO0S23IAU1LiHKcMRLaGfGCWJF2aZZPk4VVW+qHskXyqPAh9TbS3QaQJdt0tMHi
+         d9d1WfAhe0uGInHm2u/QYz3Gp5/eV8zmiZvvR6kkprYfdQZZoGuETNcYoMAM3bPtAk
+         aZXtqWRzHByo9LPNNrU6Epwl+4SZSLR70CvLFWdGk3CWR94CnXC/UwNYPm604Jw64j
+         ajGguXDVI04fg==
+Date:   Mon, 13 Jun 2022 16:44:30 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Cc:     linux-i2c@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] MAINTAINERS: add include/dt-bindings/i2c to I2C
+ SUBSYSTEM HOST DRIVERS
+Message-ID: <YqdNTgCNGT0Y5y2T@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>, linux-i2c@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220613114614.21510-1-lukas.bulwahn@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="3qqK9zQnklREXAWN"
 Content-Disposition: inline
-In-Reply-To: <20220613111907.25490-1-tangmeng@uniontech.com>
+In-Reply-To: <20220613114614.21510-1-lukas.bulwahn@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 07:19:06PM +0800, Meng Tang wrote:
-> From: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-> 
-> Make pci_enable_ptm() accessible from the drivers.
-> 
-> Exposing this to the driver enables the driver to use the
-> 'ptm_enabled' field of 'pci_dev' to check if PTM is enabled or not.
-> 
-> This reverts commit ac6c26da29c1 ("PCI: Make pci_enable_ptm() private").
-> 
-> In the 5.10 kernel version, even to the latest confirmed version,
-> the following error will still be reported when I225-V network card
-> is used.
-> 
-> kernel: [    1.031581] igc: probe of 0000:01:00.0 failed with error -2
-> kernel: [    1.066574] igc: probe of 0000:02:00.0 failed with error -2
-> kernel: [    1.096152] igc: probe of 0000:03:00.0 failed with error -2
-> kernel: [    1.127251] igc: probe of 0000:04:00.0 failed with error -2
-> 
-> Even though I confirmed that 7c496de538eebd8212dc2a3c9a468386b2640d4
-> and 47bca7de6a4fb8dcb564c7ca4d885c91ed19e03 have been merged into the
-> kernel 5.10, the bug is still occurred, and the
-> "commit 1b5d73fb8624 ("igc: Enable PCIe PTM")" can fixes it.
-> 
-> And this patch is the pre-patch of
-> 1b5d73fb862414106cf270a1a7300ce8ae77de83.
 
-I guess the point of this is to backport 1d71eb53e451 ("Revert "PCI:
-Make pci_enable_ptm() private"") to a v5.10 stable kernel?
+--3qqK9zQnklREXAWN
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-If so, I would think you'd want to send this to
-stable@vger.kernel.org.
+On Mon, Jun 13, 2022 at 01:46:14PM +0200, Lukas Bulwahn wrote:
+> Maintainers of the directory Documentation/devicetree/bindings/i2c
+> are also the maintainers of the corresponding directory
+> include/dt-bindings/i2c.
+>=20
+> Add the file entry for include/dt-bindings/i2c to the appropriate
+> section in MAINTAINERS.
+>=20
+> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 
-> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-> Signed-off-by: Meng Tang <tangmeng@uniontech.com>
-> ---
->  drivers/pci/pci.h   | 3 ---
->  include/linux/pci.h | 7 +++++++
->  2 files changed, 7 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-> index a96dc6f53076..4084764bf0b1 100644
-> --- a/drivers/pci/pci.h
-> +++ b/drivers/pci/pci.h
-> @@ -585,11 +585,8 @@ static inline void pcie_ecrc_get_policy(char *str) { }
->  
->  #ifdef CONFIG_PCIE_PTM
->  void pci_ptm_init(struct pci_dev *dev);
-> -int pci_enable_ptm(struct pci_dev *dev, u8 *granularity);
->  #else
->  static inline void pci_ptm_init(struct pci_dev *dev) { }
-> -static inline int pci_enable_ptm(struct pci_dev *dev, u8 *granularity)
-> -{ return -EINVAL; }
->  #endif
->  
->  struct pci_dev_reset_methods {
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index bc5a1150f072..692ce678c5f1 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -1599,6 +1599,13 @@ static inline bool pci_aer_available(void) { return false; }
->  
->  bool pci_ats_disabled(void);
->  
-> +#ifdef CONFIG_PCIE_PTM
-> +int pci_enable_ptm(struct pci_dev *dev, u8 *granularity);
-> +#else
-> +static inline int pci_enable_ptm(struct pci_dev *dev, u8 *granularity)
-> +{ return -EINVAL; }
-> +#endif
-> +
->  void pci_cfg_access_lock(struct pci_dev *dev);
->  bool pci_cfg_access_trylock(struct pci_dev *dev);
->  void pci_cfg_access_unlock(struct pci_dev *dev);
-> -- 
-> 2.20.1
-> 
-> 
-> 
+Applied to for-current, thanks!
+
+
+--3qqK9zQnklREXAWN
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmKnTU4ACgkQFA3kzBSg
+KbbBHA/+Mb15/3R9zbn9P90XoGh7h9cFJqnCEDQELBlPGUXBfErYrpLpNeH2wnee
+2nXy9uZX/DZSNTCmPOzpzvb+DbZeF82xqf1XJohVFs+6NyWQxjETu9+/ink5UAet
+plEeZVBSLvhjXl/kC55cJTxMKa94pNx5isIYfG7gaXBMpFqt+Pm6ecqkUe2WxFu5
+h8T/PIw8QzjsKI+Z7Oap53QzrdomAu5GHfU+O/PjRVmL+DDTIbzJKyw9Oq4QB4S5
+h0zyIrgl2WZBjioX0GKO92H8tRiWLzyLSB5OLcff9H3WkNt7iOhEtlU1nMO9jzyg
+6Bk1872XyT0WR653s/yH27nC3aFvA0ggz4mU9YNLxdzuUwbrRhNXpHM0+340RNNL
+F8budrCM2EbepLjG8qBt6kQUKowamTOVyOSSr3E0PVmDvQryzliJ/HbSoBIE0+2J
+sCnNdzSBreQ17hOShTHkiKkENrSILErFvd+DHKbw5wRLyTnlGu60+QK0BSX8dR7m
+Q3dGbZgVZMdHmX/MQuphIARJU7X3lcunObFvbpV4HZUigKB0gNRPivmb2yvwVenB
+aQ4NnVMK2HEm4BSLmOG/Ddvc6Jowpof7kzq+AUz+z46C6EojK0sWDPA8v6Eh428j
+nOToyzaj+B+lndhZqATTfGFUMEDSpnUlgQCXTODZiZWV7+MHLbA=
+=YW+Z
+-----END PGP SIGNATURE-----
+
+--3qqK9zQnklREXAWN--
