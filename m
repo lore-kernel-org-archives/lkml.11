@@ -2,88 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4955FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:28:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4232CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:31:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233896AbiFMU1w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:27:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60424 "EHLO
+        id S1351172AbiFMUaF (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 16:30:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345157AbiFMU1h (ORCPT
+        with ESMTP id S1351428AbiFMU3B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:27:37 -0400
-Received: from mail-oa1-x2c.google.com (mail-oa1-x2c.google.com [IPv6:2001:4860:4864:20::2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A353821AD
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:13:15 -0700 (PDT)
-Received: by mail-oa1-x2c.google.com with SMTP id 586e51a60fabf-10113b4c2b5so7992499fac.6
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:13:15 -0700 (PDT)
+        Mon, 13 Jun 2022 16:29:01 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7AC31220;
+        Mon, 13 Jun 2022 12:17:12 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id y13-20020a17090a154d00b001eaaa3b9b8dso4025033pja.2;
+        Mon, 13 Jun 2022 12:17:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=59iOTb9C5iIFD3pY81jPzaOjRkQpRQo7Lt/w0TkxO48=;
-        b=FpxUBD51CiHAKOeGqpklOh5Ow5SvTmTMO8jd405lg8yOJe0EiDFsWNiuthzA3Oa/g3
-         sluWIdAdyPqnVga4RvARmofmhsCPBBbcak4wLapAsF5zUM84QuiIJmh5vUOldqtkfs1m
-         8V21hczpuTdOAH78l+s6Kh0q3WeoDHkyRMUS6MxTx6g96jzhgpdrVc+peSnx0x0JgaZi
-         nF7L1rfk2y9YL3I+9aVIaYD9yXpxsWPY+paqOzcqZw+/l8leT8puUnBnzB0KJSK4PydZ
-         YBzFF8wwKWT++DE9TUAC+e1wAJpInCghas4GLkd54Oc7vKgQh3OYuuRqGxdhWi29pZaW
-         /GjA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=lQOC14y4MZzJxPCQl/yXRuGSNmghINjCYKOzFd5gwho=;
+        b=epjxtcjcwG/Snjgc00FI/wsGY9USfAOJiWuZ8JtSXPQbVNpuZdYsO/NTwH0yOessa5
+         LEKAG8TNyliuOSRfzLb6gE0B9V07tvQ2is4QPX8QMJklOim3sw9UE/6mcepl0j/P2Iv6
+         LSUSjqXhyTlIY9ZGS9bs/p7cgwHiGHx9Au3sY+yRNwyGxza5zJXJX6mkSTpCgpaivasv
+         N/i+3JHgPhXeRg/78ilmc7YQCAbIHy+E5DWB2Tl7sUyTSNOFOmN34i45CL36haUQ7il9
+         a35TWQO4WyeVWzlF1Q4kC5hmKHyM4IU2ClxbfSqualVPwxjYTSFhe7ihg/7FlINlgzzL
+         lmSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=59iOTb9C5iIFD3pY81jPzaOjRkQpRQo7Lt/w0TkxO48=;
-        b=OMjyFQhh3RAvpbQk+lN0wWlFZKp1N2pdbrmvBx6K4QgaBWCnFJTM29fP3bTvUqr+o8
-         8RaTJuwMppQf7RzYgUU3rEFnfyoNUwE/6j+k7zYakKPopc26ve6yWfjE4u8ucm4lWImA
-         wRqUops2gkn3TuHve7GLO1mw/Bh+MqiwEH7cuEQcRrr5t9PxBGSjN60eSFtPOHJtwJJj
-         km0LDc84z+NKOMe4cCRlM6VJ11U50ZrAP7JrmWIO8p2ZEHE3y7SDX4eP3l0Hx1JrSzpp
-         hxV9xyYTtVcrsh9hKkeqyN5cSygAKHtqLFjuLuqeDlbln0Z3MgaK8ei+YpGe5P8H7wJ+
-         dVMA==
-X-Gm-Message-State: AJIora/io/citTlrv5eb+dt0miBuKJeWmeNSLGQAahTZrSX/PUBwChge
-        fhEZqm7wZcgFE/qyez4GlG+t2yKRi+cawIx3CunQoVLCCGk=
-X-Google-Smtp-Source: AGRyM1s73puJCrtGkUEy5OiKImTYc1ObXO22srAmr077PbyB8Ony740NrQdyXuYC3vrSPHVxdOG1vqVIvms5OkogJ3A=
-X-Received: by 2002:a05:6870:d60d:b0:f3:2e4f:4907 with SMTP id
- a13-20020a056870d60d00b000f32e4f4907mr158765oaq.13.1655147594719; Mon, 13 Jun
- 2022 12:13:14 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220613161942.1586791-1-seanjc@google.com> <20220613161942.1586791-2-seanjc@google.com>
-In-Reply-To: <20220613161942.1586791-2-seanjc@google.com>
-From:   Jim Mattson <jmattson@google.com>
-Date:   Mon, 13 Jun 2022 12:13:03 -0700
-Message-ID: <CALMp9eRBNqPrBMi_XDMMK8HpdoYRUfoe_jSVZAW80wSxWbDJVA@mail.gmail.com>
-Subject: Re: [PATCH 1/4] KVM: selftests: Add a missing apostrophe in comment
- to show ownership
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Andrew Jones <drjones@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=lQOC14y4MZzJxPCQl/yXRuGSNmghINjCYKOzFd5gwho=;
+        b=SJb1Q1UFnUhzcjnhoRvjxQbNrJH1QfMM19s2PYrRn2Dk6qs6xmI//jHz0VUbXO0cOM
+         nkHaOunGxV0d1FtepGqvmS8o2VAI7K7nIJrNUPoqrRYuk3CWUavFk6J6SGjSN76PMvMF
+         YWzSS/a1Wr/kgWukgsFub2iXR9QIUYfmoBsliedNHGYrXMmxsVZCkErHSgBFCVm/5eko
+         B+wgv9CWfxxHv1oweEMuyGl35YpJgvgtQSLJlYBpH8JUOvb4k9NZ5XvRzwabNC7KESff
+         T36lRVMiLAwAmBfUzslOPz62FRSI0QF7zMxowv/e37cUxLfJqxUEudo5wFW1e0dzLem9
+         wQgQ==
+X-Gm-Message-State: AJIora8FGrn1xagGAmOM7WlkfGlUTsFAq4O0nYg9Hqc8hti4EfO3rjDD
+        8eaa2Tk+uTGTqpG6unuqKrE=
+X-Google-Smtp-Source: AGRyM1tOapWyhSzo/TkqUJjdozKyAxImRRTFlesS7pjKe2JM78uZfMkr7IDAd+ieuZ8q9BKICpMExg==
+X-Received: by 2002:a17:902:e552:b0:163:6a5e:4e0d with SMTP id n18-20020a170902e55200b001636a5e4e0dmr630897plf.66.1655147831940;
+        Mon, 13 Jun 2022 12:17:11 -0700 (PDT)
+Received: from localhost.localdomain ([60.243.255.226])
+        by smtp.gmail.com with ESMTPSA id x15-20020a17090abc8f00b001e310303275sm5567202pjr.54.2022.06.13.12.17.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 12:17:11 -0700 (PDT)
+From:   Jagath Jog J <jagathjog1996@gmail.com>
+To:     jic23@kernel.org, andy.shevchenko@gmail.com
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1 0/2] iio: Add single and double tap events support
+Date:   Tue, 14 Jun 2022 00:47:04 +0530
+Message-Id: <20220613191706.31239-1-jagathjog1996@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 12:01 PM Sean Christopherson <seanjc@google.com> wrote:
->
-> Add an apostrophe in a comment about it being the caller's, not callers,
-> responsibility to free an object.
->
-> Reported-by: Andrew Jones <drjones@redhat.com>
-> Fixes: 768e9a61856b ("KVM: selftests: Purge vm+vcpu_id == vcpu silliness")
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-> ---
->  tools/testing/selftests/kvm/lib/kvm_util.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-> index 39f2f5f1338f..0c550fb0dab2 100644
-> --- a/tools/testing/selftests/kvm/lib/kvm_util.c
-> +++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-> @@ -1434,7 +1434,7 @@ void vcpu_run_complete_io(struct kvm_vcpu *vcpu)
->  /*
->   * Get the list of guest registers which are supported for
->   * KVM_GET_ONE_REG/KVM_SET_ONE_REG ioctls.  Returns a kvm_reg_list pointer,
-> - * it is the callers responsibility to free the list.
-> + * it is the caller's responsibility to free the list.
->   */
-Shouldn't that be callers'? Or are you assuming there is only ever
-going to be one caller?
+This patch series adds new event type for tap called gesture and direction
+is used to differentiate single and double tap. This series adds single
+and double tap support for bma400 accelerometer device driver.
+
+Changes since RFC
+1. Corrected the "quite" typo to "quiet".
+2. Added proper reference and name of the section from datasheet.
+3. Changed the ABI documentation to make it more generic.
+4. Added ABI documentation for double tap quiet period.
+5. Added available list by registering new event attribute for tap
+   threshold values and double tap quiet period values.
+6. Sending both single and double tap events separately.
+8. Removed checking for tap enabled while changing data rate.
+9. Returning invalid with error message if the input data rate is not
+   200Hz while enabling tap interrupts.
+7. Added datasheet reference for interrupt engine overrun.
+
+Jagath Jog J (2):
+  iio: Add new event type gesture and use direction for single and
+    double tap
+  iio: accel: bma400: Add support for single and double tap events
+
+ Documentation/ABI/testing/sysfs-bus-iio |  24 +++
+ drivers/iio/accel/bma400.h              |  11 ++
+ drivers/iio/accel/bma400_core.c         | 210 ++++++++++++++++++++++--
+ drivers/iio/industrialio-event.c        |   5 +-
+ include/uapi/linux/iio/types.h          |   3 +
+ tools/iio/iio_event_monitor.c           |   8 +-
+ 6 files changed, 249 insertions(+), 12 deletions(-)
+
+
+base-commit: 9c50b2e70d55e088400b828d441b42254eae94b4
+-- 
+2.17.1
+
