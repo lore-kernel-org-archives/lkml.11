@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6A4EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:46:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B672C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:46:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236492AbiFMKqu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:46:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36776 "EHLO
+        id S1344066AbiFMKq5 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:46:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346172AbiFMKnc (ORCPT
+        with ESMTP id S1346174AbiFMKnc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 06:43:32 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61FCADEE3;
-        Mon, 13 Jun 2022 03:24:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FDCDDEE6;
+        Mon, 13 Jun 2022 03:24:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 207EDB80E92;
-        Mon, 13 Jun 2022 10:24:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71FFBC34114;
-        Mon, 13 Jun 2022 10:24:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C047DB80E90;
+        Mon, 13 Jun 2022 10:24:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3622BC3411C;
+        Mon, 13 Jun 2022 10:24:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115880;
-        bh=5mBlhkjwWXgi0xMQF9pdIdex1IHSBgSikstvXevTeC4=;
+        s=korg; t=1655115883;
+        bh=iSQaP7QYj6K6JwdrL57o8gwJDN1LTXxUkwCqnvwZYzs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wSihxK+4BHquMYv2p2pki4HC6lM9D2b51JswTo3SYMlecdoQdNVYjpxE2toP+2/KC
-         etoOnIpr8js4mf5DYLVLB54yiHxeEshFUjuA8GJloH5pR6zXsJpjqMF1xoXYkGAXsR
-         qWDgl62Xl9UieXpqrilwB8LPsKZwiWvvQjZT2Bhk=
+        b=YlWYD9Fx072BV+4Wl3qMDS0GiwXEcaMSJGvDooAgzJ3+aK3u10g9OYj/CC89OHY56
+         5pUYD616p+UaBtFuoTpQ2B6wjCwqOevCoNDj6LvDqL4CuTfggcoc+x3peByBRvpQQW
+         YJJ8lgYNGfF7YAAJyADNAb7RLVd+aF9+LPeckOVY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+2bef95d3ab4daa10155b@syzkaller.appspotmail.com,
-        Ying Hsu <yinghsu@chromium.org>,
-        Joseph Hwang <josephsih@chromium.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 075/218] Bluetooth: fix dangling sco_conn and use-after-free in sco_sock_timeout
-Date:   Mon, 13 Jun 2022 12:08:53 +0200
-Message-Id: <20220613094922.663875866@linuxfoundation.org>
+        stable@vger.kernel.org, Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 065/218] x86: Fix return value of __setup handlers
+Date:   Mon, 13 Jun 2022 12:08:43 +0200
+Message-Id: <20220613094921.869494296@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -52,84 +50,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ying Hsu <yinghsu@chromium.org>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 7aa1e7d15f8a5b65f67bacb100d8fc033b21efa2 ]
+[ Upstream commit 12441ccdf5e2f5a01a46e344976cbbd3d46845c9 ]
 
-Connecting the same socket twice consecutively in sco_sock_connect()
-could lead to a race condition where two sco_conn objects are created
-but only one is associated with the socket. If the socket is closed
-before the SCO connection is established, the timer associated with the
-dangling sco_conn object won't be canceled. As the sock object is being
-freed, the use-after-free problem happens when the timer callback
-function sco_sock_timeout() accesses the socket. Here's the call trace:
+__setup() handlers should return 1 to obsolete_checksetup() in
+init/main.c to indicate that the boot option has been handled. A return
+of 0 causes the boot option/value to be listed as an Unknown kernel
+parameter and added to init's (limited) argument (no '=') or environment
+(with '=') strings. So return 1 from these x86 __setup handlers.
 
-dump_stack+0x107/0x163
-? refcount_inc+0x1c/
-print_address_description.constprop.0+0x1c/0x47e
-? refcount_inc+0x1c/0x7b
-kasan_report+0x13a/0x173
-? refcount_inc+0x1c/0x7b
-check_memory_region+0x132/0x139
-refcount_inc+0x1c/0x7b
-sco_sock_timeout+0xb2/0x1ba
-process_one_work+0x739/0xbd1
-? cancel_delayed_work+0x13f/0x13f
-? __raw_spin_lock_init+0xf0/0xf0
-? to_kthread+0x59/0x85
-worker_thread+0x593/0x70e
-kthread+0x346/0x35a
-? drain_workqueue+0x31a/0x31a
-? kthread_bind+0x4b/0x4b
-ret_from_fork+0x1f/0x30
+Examples:
 
-Link: https://syzkaller.appspot.com/bug?extid=2bef95d3ab4daa10155b
-Reported-by: syzbot+2bef95d3ab4daa10155b@syzkaller.appspotmail.com
-Fixes: e1dee2c1de2b ("Bluetooth: fix repeated calls to sco_sock_kill")
-Signed-off-by: Ying Hsu <yinghsu@chromium.org>
-Reviewed-by: Joseph Hwang <josephsih@chromium.org>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+  Unknown kernel command line parameters "apicpmtimer
+    BOOT_IMAGE=/boot/bzImage-517rc8 vdso=1 ring3mwait=disable", will be
+    passed to user space.
+
+  Run /sbin/init as init process
+   with arguments:
+     /sbin/init
+     apicpmtimer
+   with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc8
+     vdso=1
+     ring3mwait=disable
+
+Fixes: 2aae950b21e4 ("x86_64: Add vDSO for x86-64 with gettimeofday/clock_gettime/getcpu")
+Fixes: 77b52b4c5c66 ("x86: add "debugpat" boot option")
+Fixes: e16fd002afe2 ("x86/cpufeature: Enable RING3MWAIT for Knights Landing")
+Fixes: b8ce33590687 ("x86_64: convert to clock events")
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Link: https://lore.kernel.org/r/20220314012725.26661-1-rdunlap@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/sco.c | 21 +++++++++++++--------
- 1 file changed, 13 insertions(+), 8 deletions(-)
+ arch/x86/entry/vdso/vma.c   | 2 +-
+ arch/x86/kernel/apic/apic.c | 2 +-
+ arch/x86/kernel/cpu/intel.c | 2 +-
+ arch/x86/mm/pat.c           | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
-index 5c411118b30d..22761a404e0d 100644
---- a/net/bluetooth/sco.c
-+++ b/net/bluetooth/sco.c
-@@ -563,19 +563,24 @@ static int sco_sock_connect(struct socket *sock, struct sockaddr *addr, int alen
- 	    addr->sa_family != AF_BLUETOOTH)
- 		return -EINVAL;
+diff --git a/arch/x86/entry/vdso/vma.c b/arch/x86/entry/vdso/vma.c
+index 2ab8628aef10..63ed146abef0 100644
+--- a/arch/x86/entry/vdso/vma.c
++++ b/arch/x86/entry/vdso/vma.c
+@@ -328,7 +328,7 @@ int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
+ static __init int vdso_setup(char *s)
+ {
+ 	vdso64_enabled = simple_strtoul(s, NULL, 0);
+-	return 0;
++	return 1;
+ }
+ __setup("vdso=", vdso_setup);
+ #endif
+diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
+index 76f2bbba92f9..488e0853a44d 100644
+--- a/arch/x86/kernel/apic/apic.c
++++ b/arch/x86/kernel/apic/apic.c
+@@ -167,7 +167,7 @@ static __init int setup_apicpmtimer(char *s)
+ {
+ 	apic_calibrate_pmtmr = 1;
+ 	notsc_setup(NULL);
+-	return 0;
++	return 1;
+ }
+ __setup("apicpmtimer", setup_apicpmtimer);
+ #endif
+diff --git a/arch/x86/kernel/cpu/intel.c b/arch/x86/kernel/cpu/intel.c
+index 3a5ea741701b..541e190c3f0e 100644
+--- a/arch/x86/kernel/cpu/intel.c
++++ b/arch/x86/kernel/cpu/intel.c
+@@ -71,7 +71,7 @@ static bool ring3mwait_disabled __read_mostly;
+ static int __init ring3mwait_disable(char *__unused)
+ {
+ 	ring3mwait_disabled = true;
+-	return 0;
++	return 1;
+ }
+ __setup("ring3mwait=disable", ring3mwait_disable);
  
--	if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND)
--		return -EBADFD;
-+	lock_sock(sk);
-+	if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND) {
-+		err = -EBADFD;
-+		goto done;
-+	}
- 
--	if (sk->sk_type != SOCK_SEQPACKET)
--		return -EINVAL;
-+	if (sk->sk_type != SOCK_SEQPACKET) {
-+		err = -EINVAL;
-+		goto done;
-+	}
- 
- 	hdev = hci_get_route(&sa->sco_bdaddr, &sco_pi(sk)->src, BDADDR_BREDR);
--	if (!hdev)
--		return -EHOSTUNREACH;
-+	if (!hdev) {
-+		err = -EHOSTUNREACH;
-+		goto done;
-+	}
- 	hci_dev_lock(hdev);
- 
--	lock_sock(sk);
--
- 	/* Set destination address and psm */
- 	bacpy(&sco_pi(sk)->dst, &sa->sco_bdaddr);
+diff --git a/arch/x86/mm/pat.c b/arch/x86/mm/pat.c
+index fe7d57a8fb60..49aeb4e73a35 100644
+--- a/arch/x86/mm/pat.c
++++ b/arch/x86/mm/pat.c
+@@ -74,7 +74,7 @@ int pat_debug_enable;
+ static int __init pat_debug_setup(char *str)
+ {
+ 	pat_debug_enable = 1;
+-	return 0;
++	return 1;
+ }
+ __setup("debugpat", pat_debug_setup);
  
 -- 
 2.35.1
