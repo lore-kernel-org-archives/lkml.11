@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D2AEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:24:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8725C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:24:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353219AbiFMLXW (ORCPT
+        id S1353267AbiFMLXY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:23:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46524 "EHLO
+        Mon, 13 Jun 2022 07:23:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353706AbiFMLQO (ORCPT
+        with ESMTP id S1353703AbiFMLQO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:16:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2520C13E02;
-        Mon, 13 Jun 2022 03:39:26 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 286AD13E00;
+        Mon, 13 Jun 2022 03:39:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D767AB80E94;
-        Mon, 13 Jun 2022 10:39:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45D40C34114;
-        Mon, 13 Jun 2022 10:39:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B8B2260FFD;
+        Mon, 13 Jun 2022 10:39:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD3ACC34114;
+        Mon, 13 Jun 2022 10:39:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116763;
-        bh=2D9KikUe9oTYeuBe7GwvUaWVp/nisnI0acN44yzsfe8=;
+        s=korg; t=1655116758;
+        bh=H+6XSFESsu3j17+OL3yTMd1DwPEEmFwLDglx60VInyM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hOUjWI1zVvUjjjPMhkseE4KhijVoZFtcfAVtRITK0PNaN1DACY8KD6sgyS6vZkcjG
-         B2XGG/5VbBhCk2QqAqD+Xd8yAyp/YT9td+jssVnCE8hjwNTGOESiAcFbyi87sU/ErN
-         Y+UHE6ARKjY2Ys7ofETd+0D6Sew6UmlK7bFIPP7c=
+        b=IrcWbhRJQ26biglJANTi7JmPC97f2Hh0Gwjx4fLYE6+Wpp5NSU8PhGVsnZvBqFS+m
+         qytlqTEoSKLFZFR1YdQnZ5h7/RoGZDoe40brBi+pzX371+6bLy7XDApKWB5wVuMJlx
+         zWKwNAGlKMx1d669sJN222K+y1qQBvv0dFXN1kAI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Frederic Barrat <fbarrat@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org,
+        Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
+        Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 168/411] misc: ocxl: fix possible double free in ocxl_file_register_afu
-Date:   Mon, 13 Jun 2022 12:07:21 +0200
-Message-Id: <20220613094933.698473941@linuxfoundation.org>
+Subject: [PATCH 5.4 163/411] can: xilinx_can: mark bit timing constants as const
+Date:   Mon, 13 Jun 2022 12:07:16 +0200
+Message-Id: <20220613094933.549758697@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -51,40 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-[ Upstream commit 950cf957fe34d40d63dfa3bf3968210430b6491e ]
+[ Upstream commit ae38fda02996d43d9fb09f16e81e0008704dd524 ]
 
-info_release() will be called in device_unregister() when info->dev's
-reference count is 0. So there is no need to call ocxl_afu_put() and
-kfree() again.
+This patch marks the bit timing constants as const.
 
-Fix this by adding free_minor() and return to err_unregister error path.
-
-Fixes: 75ca758adbaf ("ocxl: Create a clear delineation between ocxl backend & frontend")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Acked-by: Frederic Barrat <fbarrat@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220418085758.38145-1-hbh25y@gmail.com
+Fixes: c223da689324 ("can: xilinx_can: Add support for CANFD FD frames")
+Link: https://lore.kernel.org/all/20220317203119.792552-1-mkl@pengutronix.de
+Cc: Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
+Cc: Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/ocxl/file.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/can/xilinx_can.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/misc/ocxl/file.c b/drivers/misc/ocxl/file.c
-index 4d1b44de1492..c742ab02ae18 100644
---- a/drivers/misc/ocxl/file.c
-+++ b/drivers/misc/ocxl/file.c
-@@ -558,7 +558,9 @@ int ocxl_file_register_afu(struct ocxl_afu *afu)
+diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
+index 008d3d492bd1..be3811311db2 100644
+--- a/drivers/net/can/xilinx_can.c
++++ b/drivers/net/can/xilinx_can.c
+@@ -239,7 +239,7 @@ static const struct can_bittiming_const xcan_bittiming_const_canfd = {
+ };
  
- err_unregister:
- 	ocxl_sysfs_unregister_afu(info); // safe to call even if register failed
-+	free_minor(info);
- 	device_unregister(&info->dev);
-+	return rc;
- err_put:
- 	ocxl_afu_put(afu);
- 	free_minor(info);
+ /* AXI CANFD Data Bittiming constants as per AXI CANFD 1.0 specs */
+-static struct can_bittiming_const xcan_data_bittiming_const_canfd = {
++static const struct can_bittiming_const xcan_data_bittiming_const_canfd = {
+ 	.name = DRIVER_NAME,
+ 	.tseg1_min = 1,
+ 	.tseg1_max = 16,
+@@ -265,7 +265,7 @@ static const struct can_bittiming_const xcan_bittiming_const_canfd2 = {
+ };
+ 
+ /* AXI CANFD 2.0 Data Bittiming constants as per AXI CANFD 2.0 spec */
+-static struct can_bittiming_const xcan_data_bittiming_const_canfd2 = {
++static const struct can_bittiming_const xcan_data_bittiming_const_canfd2 = {
+ 	.name = DRIVER_NAME,
+ 	.tseg1_min = 1,
+ 	.tseg1_max = 32,
 -- 
 2.35.1
 
