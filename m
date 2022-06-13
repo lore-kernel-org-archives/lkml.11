@@ -2,103 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BC01C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 16:10:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01DAFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 16:12:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243476AbiFMQKD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 12:10:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51822 "EHLO
+        id S242543AbiFMQMV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 12:12:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243280AbiFMQJ3 (ORCPT
+        with ESMTP id S236451AbiFMQMB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 12:09:29 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430ED1ABA54;
-        Mon, 13 Jun 2022 07:02:10 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 6CDF121B9C;
-        Mon, 13 Jun 2022 14:02:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1655128928; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=dH96i6OHzwC4qIcatlfFaUeHgKDc3G4KvUuOT69KD6U=;
-        b=jKmUvylV66P3EkHqBQvMGTtVkWvt3Wx/VA/PZBaOos9trJT4344bWhR6bLjSmrFKY20UEl
-        StmiA+zFdv2T74AbHfLh2YLHX7k3Vg9sqDrqaSJPEgdZHIWaU5wTS00B0KEGoy5/XNqkFT
-        UQXWzd05W3OVdfDU/9WRQ8W9KcenvM0=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 19BF0134CF;
-        Mon, 13 Jun 2022 14:02:08 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id soFdBWBDp2JROgAAMHmgww
-        (envelope-from <mkoutny@suse.com>); Mon, 13 Jun 2022 14:02:08 +0000
-Date:   Mon, 13 Jun 2022 16:02:06 +0200
-From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
-To:     Tejun Heo <tj@kernel.org>
-Cc:     Waiman Long <longman@redhat.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Shuah Khan <shuah@kernel.org>, cgroups@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <guro@fb.com>, Phil Auld <pauld@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Marcelo Tosatti <mtosatti@redhat.com>
-Subject: Re: [PATCH v11 3/8] cgroup/cpuset: Allow no-task partition to have
- empty cpuset.cpus.effective
-Message-ID: <20220613140206.GA6910@blackbody.suse.cz>
-References: <20220510153413.400020-1-longman@redhat.com>
- <20220510153413.400020-4-longman@redhat.com>
- <YqYlCRywdgSYtwKk@slm.duckdns.org>
- <YqYlOQjKtQCBsQuT@slm.duckdns.org>
- <ce3106c1-a3c4-b449-bafc-6940d672bd94@redhat.com>
- <YqanEZZooeZwtutA@slm.duckdns.org>
+        Mon, 13 Jun 2022 12:12:01 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F4D52C110;
+        Mon, 13 Jun 2022 07:05:15 -0700 (PDT)
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
+        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <heiko@sntech.de>)
+        id 1o0kgr-0000p1-1u; Mon, 13 Jun 2022 16:05:13 +0200
+From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To:     palmer@dabbelt.com, palmer@rivosinc.com,
+        linux-riscv@lists.infradead.org
+Cc:     Conor.Dooley@microchip.com, linux-i2c@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lee.jones@linaro.org, robh+dt@kernel.org,
+        linux-mmc@vger.kernel.org, paul.walmsley@sifive.com,
+        atulkhare@rivosinc.com, support.opensource@diasemi.com,
+        andrew@lunn.ch, krzysztof.kozlowski@linaro.org,
+        stwiss.opensource@diasemi.com, linux-riscv@lists.infradead.org,
+        aou@eecs.berkeley.edu, ulf.hansson@linaro.org,
+        krzysztof.kozlowski+dt@linaro.org, Conor.Dooley@microchip.com
+Subject: Re: [PATCH v3 4/4] riscv: dts: sifive: "fix" pmic watchdog node name
+Date:   Mon, 13 Jun 2022 16:05:12 +0200
+Message-ID: <2247394.ElGaqSPkdT@diego>
+In-Reply-To: <ee29eefa-9206-b84a-e27c-4e4388865db0@microchip.com>
+References: <20220606201343.514391-1-mail@conchuod.ie> <20220606201343.514391-5-mail@conchuod.ie> <ee29eefa-9206-b84a-e27c-4e4388865db0@microchip.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="/04w6evG8XlLl3ft"
-Content-Disposition: inline
-In-Reply-To: <YqanEZZooeZwtutA@slm.duckdns.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Am Montag, 13. Juni 2022, 15:33:49 CEST schrieb Conor.Dooley@microchip.com:
+> 
+> On 06/06/2022 21:13, Conor Dooley wrote:
+> > From: Conor Dooley <conor.dooley@microchip.com>
+> > 
+> > After converting the pmic watchdog binding to yaml, dtbs_check complains
+> > that the node name doesn't match the binding. "Fix" it.
+> 
+> Hey Palmer,
+> The three dt-binding changes were accepted - do I need to poke SiFive to
+> ack the dts change or are you fine just taking it?
 
---/04w6evG8XlLl3ft
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+I don't think a node-name has relevance to vendor decisions ;-) .
 
-On Sun, Jun 12, 2022 at 04:55:13PM -1000, Tejun Heo <tj@kernel.org> wrote:
-> But how would that happen? A lot of other things would break too if that
-> were to happen.
+Looking at bindings/watchdog/watchdog.yaml we clearly see that
+the node name is always watchdog or watchdog@foo, so this change
+is clearly correct.
 
-cpuset is a threaded controller where the internal-node-constraint does
-not hold. So the additional condition for cpuset migrations is IMO
-warranted (and needed if there's no "fall up").
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
 
-Michal
 
---/04w6evG8XlLl3ft
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+> Thanks,
+> Conor.
+> 
+> > 
+> > Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> > Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+> > ---
+> >   arch/riscv/boot/dts/sifive/hifive-unmatched-a00.dts | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/arch/riscv/boot/dts/sifive/hifive-unmatched-a00.dts b/arch/riscv/boot/dts/sifive/hifive-unmatched-a00.dts
+> > index c4ed9efdff03..1f386b07a832 100644
+> > --- a/arch/riscv/boot/dts/sifive/hifive-unmatched-a00.dts
+> > +++ b/arch/riscv/boot/dts/sifive/hifive-unmatched-a00.dts
+> > @@ -90,7 +90,7 @@ rtc {
+> >   			compatible = "dlg,da9063-rtc";
+> >   		};
+> >   
+> > -		wdt {
+> > +		watchdog {
+> >   			compatible = "dlg,da9063-watchdog";
+> >   		};
+> >   
+> _______________________________________________
+> linux-riscv mailing list
+> linux-riscv@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-riscv
+> 
 
------BEGIN PGP SIGNATURE-----
 
-iHUEARYIAB0WIQTrXXag4J0QvXXBmkMkDQmsBEOquQUCYqdDXAAKCRAkDQmsBEOq
-uVxRAPwMiG5QiY65xj/WyfY3nCUyKyx+lDQh6bCpufc5IIQORgD9FIrNztTt7lmR
-ic79LsvKPERP5RiY2PezetNtf5xH9wA=
-=VnhP
------END PGP SIGNATURE-----
 
---/04w6evG8XlLl3ft--
+
