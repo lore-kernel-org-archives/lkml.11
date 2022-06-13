@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7915C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDC1CCCA480
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:49:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356196AbiFMLs1 (ORCPT
+        id S1356349AbiFMLs4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:48:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41660 "EHLO
+        Mon, 13 Jun 2022 07:48:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356781AbiFMLpC (ORCPT
+        with ESMTP id S1356748AbiFMLpA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:45:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AACF0E46;
-        Mon, 13 Jun 2022 03:51:14 -0700 (PDT)
+        Mon, 13 Jun 2022 07:45:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0C3D2E9D4;
+        Mon, 13 Jun 2022 03:51:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A20B0B80E56;
-        Mon, 13 Jun 2022 10:51:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDD56C34114;
-        Mon, 13 Jun 2022 10:51:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C5F3612C3;
+        Mon, 13 Jun 2022 10:51:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 284B1C34114;
+        Mon, 13 Jun 2022 10:51:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117471;
-        bh=Swyo9kPE4Q9+YBx8+848IwPjmWR8lTv5QeR8J+CHChA=;
+        s=korg; t=1655117468;
+        bh=L3ps+AhSwW8NxBqDmuBa42/GqvPVehaDJ41x2KRZtoA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NqRvotWlTO5DjzMoFEL9Ub8jbswqqJA+z44mekK31zl568xDJhEHRcT1eFf2/JD+e
-         86ZQrpQ7uVqlYRpJEmAx250qiieabcEA1rBnT/nfsfpwj/RXSuIGshIGTToJ0i7kU1
-         xPCznI2hPSuOTOrgVfF4TJT06HY/Ote5vFUuLpv4=
+        b=THwyW7iEq/YcoB+MdDGLDGL5H1N4I8Ky8kUz6e1HDKXPiMkhtHCDn8UyfPSubAKqe
+         OTTo7YB/QkZtpD8EPO89IGONb0zdU/HuBmrgcRmdJvGjv1NUzU5NyjniWtHCTlzTEr
+         qzag79u4JJ/f38qBln1z7dr+0JvEAcD3fs8n4hNk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tejun Heo <tj@kernel.org>,
-        Hao Luo <haoluo@google.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 383/411] kernfs: Separate kernfs_pr_cont_buf and rename_lock.
-Date:   Mon, 13 Jun 2022 12:10:56 +0200
-Message-Id: <20220613094940.149851134@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 045/287] PM / devfreq: rk3399_dmc: Disable edev on remove()
+Date:   Mon, 13 Jun 2022 12:07:49 +0200
+Message-Id: <20220613094925.233704378@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
+References: <20220613094923.832156175@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,140 +50,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hao Luo <haoluo@google.com>
+From: Brian Norris <briannorris@chromium.org>
 
-[ Upstream commit 1a702dc88e150487c9c173a249b3d236498b9183 ]
+[ Upstream commit 2fccf9e6050e0e3b8b4cd275d41daf7f7fa22804 ]
 
-Previously the protection of kernfs_pr_cont_buf was piggy backed by
-rename_lock, which means that pr_cont() needs to be protected under
-rename_lock. This can cause potential circular lock dependencies.
+Otherwise we hit an unablanced enable-count when unbinding the DFI
+device:
 
-If there is an OOM, we have the following call hierarchy:
+[ 1279.659119] ------------[ cut here ]------------
+[ 1279.659179] WARNING: CPU: 2 PID: 5638 at drivers/devfreq/devfreq-event.c:360 devfreq_event_remove_edev+0x84/0x8c
+...
+[ 1279.659352] Hardware name: Google Kevin (DT)
+[ 1279.659363] pstate: 80400005 (Nzcv daif +PAN -UAO -TCO BTYPE=--)
+[ 1279.659371] pc : devfreq_event_remove_edev+0x84/0x8c
+[ 1279.659380] lr : devm_devfreq_event_release+0x1c/0x28
+...
+[ 1279.659571] Call trace:
+[ 1279.659582]  devfreq_event_remove_edev+0x84/0x8c
+[ 1279.659590]  devm_devfreq_event_release+0x1c/0x28
+[ 1279.659602]  release_nodes+0x1cc/0x244
+[ 1279.659611]  devres_release_all+0x44/0x60
+[ 1279.659621]  device_release_driver_internal+0x11c/0x1ac
+[ 1279.659629]  device_driver_detach+0x20/0x2c
+[ 1279.659641]  unbind_store+0x7c/0xb0
+[ 1279.659650]  drv_attr_store+0x2c/0x40
+[ 1279.659663]  sysfs_kf_write+0x44/0x58
+[ 1279.659672]  kernfs_fop_write_iter+0xf4/0x190
+[ 1279.659684]  vfs_write+0x2b0/0x2e4
+[ 1279.659693]  ksys_write+0x80/0xec
+[ 1279.659701]  __arm64_sys_write+0x24/0x30
+[ 1279.659714]  el0_svc_common+0xf0/0x1d8
+[ 1279.659724]  do_el0_svc_compat+0x28/0x3c
+[ 1279.659738]  el0_svc_compat+0x10/0x1c
+[ 1279.659746]  el0_sync_compat_handler+0xa8/0xcc
+[ 1279.659758]  el0_sync_compat+0x188/0x1c0
+[ 1279.659768] ---[ end trace cec200e5094155b4 ]---
 
- -> cpuset_print_current_mems_allowed()
-   -> pr_cont_cgroup_name()
-     -> pr_cont_kernfs_name()
-
-pr_cont_kernfs_name() will grab rename_lock and call printk. So we have
-the following lock dependencies:
-
- kernfs_rename_lock -> console_sem
-
-Sometimes, printk does a wakeup before releasing console_sem, which has
-the dependence chain:
-
- console_sem -> p->pi_lock -> rq->lock
-
-Now, imagine one wants to read cgroup_name under rq->lock, for example,
-printing cgroup_name in a tracepoint in the scheduler code. They will
-be holding rq->lock and take rename_lock:
-
- rq->lock -> kernfs_rename_lock
-
-Now they will deadlock.
-
-A prevention to this circular lock dependency is to separate the
-protection of pr_cont_buf from rename_lock. In principle, rename_lock
-is to protect the integrity of cgroup name when copying to buf. Once
-pr_cont_buf has got its content, rename_lock can be dropped. So it's
-safe to drop rename_lock after kernfs_name_locked (and
-kernfs_path_from_node_locked) and rely on a dedicated pr_cont_lock
-to protect pr_cont_buf.
-
-Acked-by: Tejun Heo <tj@kernel.org>
-Signed-off-by: Hao Luo <haoluo@google.com>
-Link: https://lore.kernel.org/r/20220516190951.3144144-1-haoluo@google.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/kernfs/dir.c | 31 +++++++++++++++++++------------
- 1 file changed, 19 insertions(+), 12 deletions(-)
+ drivers/devfreq/rk3399_dmc.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/fs/kernfs/dir.c b/fs/kernfs/dir.c
-index 7d4af6cea2a6..99ee657596b5 100644
---- a/fs/kernfs/dir.c
-+++ b/fs/kernfs/dir.c
-@@ -19,7 +19,15 @@
- 
- DEFINE_MUTEX(kernfs_mutex);
- static DEFINE_SPINLOCK(kernfs_rename_lock);	/* kn->parent and ->name */
--static char kernfs_pr_cont_buf[PATH_MAX];	/* protected by rename_lock */
-+/*
-+ * Don't use rename_lock to piggy back on pr_cont_buf. We don't want to
-+ * call pr_cont() while holding rename_lock. Because sometimes pr_cont()
-+ * will perform wakeups when releasing console_sem. Holding rename_lock
-+ * will introduce deadlock if the scheduler reads the kernfs_name in the
-+ * wakeup path.
-+ */
-+static DEFINE_SPINLOCK(kernfs_pr_cont_lock);
-+static char kernfs_pr_cont_buf[PATH_MAX];	/* protected by pr_cont_lock */
- static DEFINE_SPINLOCK(kernfs_idr_lock);	/* root->ino_idr */
- 
- #define rb_to_kn(X) rb_entry((X), struct kernfs_node, rb)
-@@ -230,12 +238,12 @@ void pr_cont_kernfs_name(struct kernfs_node *kn)
+diff --git a/drivers/devfreq/rk3399_dmc.c b/drivers/devfreq/rk3399_dmc.c
+index e795ad2b3f6b..eefda6edc89c 100644
+--- a/drivers/devfreq/rk3399_dmc.c
++++ b/drivers/devfreq/rk3399_dmc.c
+@@ -411,6 +411,8 @@ static int rk3399_dmcfreq_remove(struct platform_device *pdev)
  {
- 	unsigned long flags;
+ 	struct rk3399_dmcfreq *dmcfreq = dev_get_drvdata(&pdev->dev);
  
--	spin_lock_irqsave(&kernfs_rename_lock, flags);
-+	spin_lock_irqsave(&kernfs_pr_cont_lock, flags);
- 
--	kernfs_name_locked(kn, kernfs_pr_cont_buf, sizeof(kernfs_pr_cont_buf));
-+	kernfs_name(kn, kernfs_pr_cont_buf, sizeof(kernfs_pr_cont_buf));
- 	pr_cont("%s", kernfs_pr_cont_buf);
- 
--	spin_unlock_irqrestore(&kernfs_rename_lock, flags);
-+	spin_unlock_irqrestore(&kernfs_pr_cont_lock, flags);
- }
- 
- /**
-@@ -249,10 +257,10 @@ void pr_cont_kernfs_path(struct kernfs_node *kn)
- 	unsigned long flags;
- 	int sz;
- 
--	spin_lock_irqsave(&kernfs_rename_lock, flags);
-+	spin_lock_irqsave(&kernfs_pr_cont_lock, flags);
- 
--	sz = kernfs_path_from_node_locked(kn, NULL, kernfs_pr_cont_buf,
--					  sizeof(kernfs_pr_cont_buf));
-+	sz = kernfs_path_from_node(kn, NULL, kernfs_pr_cont_buf,
-+				   sizeof(kernfs_pr_cont_buf));
- 	if (sz < 0) {
- 		pr_cont("(error)");
- 		goto out;
-@@ -266,7 +274,7 @@ void pr_cont_kernfs_path(struct kernfs_node *kn)
- 	pr_cont("%s", kernfs_pr_cont_buf);
- 
- out:
--	spin_unlock_irqrestore(&kernfs_rename_lock, flags);
-+	spin_unlock_irqrestore(&kernfs_pr_cont_lock, flags);
- }
- 
- /**
-@@ -870,13 +878,12 @@ static struct kernfs_node *kernfs_walk_ns(struct kernfs_node *parent,
- 
- 	lockdep_assert_held(&kernfs_mutex);
- 
--	/* grab kernfs_rename_lock to piggy back on kernfs_pr_cont_buf */
--	spin_lock_irq(&kernfs_rename_lock);
-+	spin_lock_irq(&kernfs_pr_cont_lock);
- 
- 	len = strlcpy(kernfs_pr_cont_buf, path, sizeof(kernfs_pr_cont_buf));
- 
- 	if (len >= sizeof(kernfs_pr_cont_buf)) {
--		spin_unlock_irq(&kernfs_rename_lock);
-+		spin_unlock_irq(&kernfs_pr_cont_lock);
- 		return NULL;
- 	}
- 
-@@ -888,7 +895,7 @@ static struct kernfs_node *kernfs_walk_ns(struct kernfs_node *parent,
- 		parent = kernfs_find_ns(parent, name, ns);
- 	}
- 
--	spin_unlock_irq(&kernfs_rename_lock);
-+	spin_unlock_irq(&kernfs_pr_cont_lock);
- 
- 	return parent;
- }
++	devfreq_event_disable_edev(dmcfreq->edev);
++
+ 	/*
+ 	 * Before remove the opp table we need to unregister the opp notifier.
+ 	 */
 -- 
 2.35.1
 
