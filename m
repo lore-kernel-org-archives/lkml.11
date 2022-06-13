@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6BD4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:01:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9248C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:01:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380616AbiFMOA7 (ORCPT
+        id S1380626AbiFMOBC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:00:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34878 "EHLO
+        Mon, 13 Jun 2022 10:01:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380491AbiFMNy3 (ORCPT
+        with ESMTP id S1380505AbiFMNyi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:54:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05BBB7DE3F;
+        Mon, 13 Jun 2022 09:54:38 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FE9D443E2;
         Mon, 13 Jun 2022 04:35:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B4CD36124E;
-        Mon, 13 Jun 2022 11:35:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C47FBC385A5;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 23B81CE1232;
         Mon, 13 Jun 2022 11:35:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11B3EC36AFF;
+        Mon, 13 Jun 2022 11:35:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120110;
-        bh=Hcs8FT5zKCSoZoDm28Ri/cAMUxhfgMLbbzBG4k2m+vI=;
+        s=korg; t=1655120107;
+        bh=4aYV3+qesPToYmG7/6BMlAecFB2vSBxvku6tOzoYkcc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DGWG9QAwHOyhPKa3KoB8nNUS9rR2aSoCRY8QIyUtaA9HZQzs36voGJ9AXy8LYwYok
-         Lc00zPDAc63N6M//Qiz1WQ333kEO9bwJn6tSmw+N765gtDlIjSTLZKMBkBZfs0vB9o
-         hfC/+eFpZ/6gL9A2yirEfykb4sfAaEQGBk0xVXRQ=
+        b=qnquiUfNFIyox0w45cE4n4y/FtbCT+xoi7Yo84gblPvEf3ojGVTHvp6JyHON5pBlz
+         B8/Et8FvGNXkJUSl6snk4b+1yFiiQnYmGX3tHuDikjBNlj73A6OsnjbxpgPYnJwPat
+         GLti8tFa65U4guobirfFIxSTWrHmEIhDuqxSGcgE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yufan Chen <wiz.chen@gmail.com>,
-        Hyunchul Lee <hyc.lee@gmail.com>,
-        Namjae Jeon <linkinjeon@kernel.org>,
-        Steve French <stfrench@microsoft.com>,
+        stable@vger.kernel.org, Liu Xinpeng <liuxp11@chinatelecom.cn>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 254/339] ksmbd: smbd: fix connection dropped issue
-Date:   Mon, 13 Jun 2022 12:11:19 +0200
-Message-Id: <20220613094934.355953766@linuxfoundation.org>
+Subject: [PATCH 5.18 253/339] watchdog: wdat_wdt: Stop watchdog when rebooting the system
+Date:   Mon, 13 Jun 2022 12:11:18 +0200
+Message-Id: <20220613094934.325985974@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -52,40 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hyunchul Lee <hyc.lee@gmail.com>
+From: Liu Xinpeng <liuxp11@chinatelecom.cn>
 
-[ Upstream commit 5366afc4065075a4456941fbd51c33604d631ee5 ]
+[ Upstream commit 27fdf84510a1374748904db43f6755f912736d92 ]
 
-When there are bursty connection requests,
-RDMA connection event handler is deferred and
-Negotiation requests are received even if
-connection status is NEW.
+Executing reboot command several times on the machine "Dell
+PowerEdge R740", UEFI security detection stopped machine
+with the following prompt:
 
-To handle it, set the status to CONNECTED
-if Negotiation requests are received.
+UEFI0082: The system was reset due to a timeout from the watchdog
+timer. Check the System Event Log (SEL) or crash dumps from
+Operating Sysstem to identify the source that triggered the
+watchdog timer reset. Update the firmware or driver for the
+identified device.
 
-Reported-by: Yufan Chen <wiz.chen@gmail.com>
-Signed-off-by: Hyunchul Lee <hyc.lee@gmail.com>
-Tested-by: Yufan Chen <wiz.chen@gmail.com>
-Acked-by: Namjae Jeon <linkinjeon@kernel.org>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+iDRAC has warning event: "The watchdog timer reset the system".
+
+This patch fixes this issue by adding the reboot notifier.
+
+Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Link: https://lore.kernel.org/r/1650984810-6247-3-git-send-email-liuxp11@chinatelecom.cn
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ksmbd/transport_rdma.c | 1 +
+ drivers/watchdog/wdat_wdt.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/fs/ksmbd/transport_rdma.c b/fs/ksmbd/transport_rdma.c
-index e646d79554b8..3f5d13571694 100644
---- a/fs/ksmbd/transport_rdma.c
-+++ b/fs/ksmbd/transport_rdma.c
-@@ -569,6 +569,7 @@ static void recv_done(struct ib_cq *cq, struct ib_wc *wc)
- 		}
- 		t->negotiation_requested = true;
- 		t->full_packet_received = true;
-+		t->status = SMB_DIRECT_CS_CONNECTED;
- 		enqueue_reassembly(t, recvmsg, 0);
- 		wake_up_interruptible(&t->wait_status);
- 		break;
+diff --git a/drivers/watchdog/wdat_wdt.c b/drivers/watchdog/wdat_wdt.c
+index 195c8c004b69..4fac8148a8e6 100644
+--- a/drivers/watchdog/wdat_wdt.c
++++ b/drivers/watchdog/wdat_wdt.c
+@@ -462,6 +462,7 @@ static int wdat_wdt_probe(struct platform_device *pdev)
+ 		return ret;
+ 
+ 	watchdog_set_nowayout(&wdat->wdd, nowayout);
++	watchdog_stop_on_reboot(&wdat->wdd);
+ 	return devm_watchdog_register_device(dev, &wdat->wdd);
+ }
+ 
 -- 
 2.35.1
 
