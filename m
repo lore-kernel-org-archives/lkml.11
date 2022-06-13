@@ -2,142 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A642C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:29:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C495DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:29:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245477AbiFMS3S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:29:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55160 "EHLO
+        id S242509AbiFMS3b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:29:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343993AbiFMS2o (ORCPT
+        with ESMTP id S241854AbiFMS1o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 14:28:44 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 293BDB225B
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 07:44:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=IEfVO3p8TtmbkhfyAZCfpHMcYnsk1901oHfnPETiUxk=; b=lA+oiSffR4bHoAK/vJesjSm3LC
-        iOXSHmhjhGvnJAPG5VrcmU/ECoQobY1YDOf98/cIA4KhDXRObEFXNGAW7DP+8fL9RoPxjxvtAomHS
-        mfZkq4xsCGyya7Jqtd8gAMt3nLYBBPwVHs3OxkLhk/ht34YAqqXjqQKcL67rS4qgfA68kpi1r+40Z
-        0sJvOyEP/EqWHHdKbmk6kdispjZe7A1Mp2eF7DQXxg07UNTjT3+LjdemvLPa34rKTNqc6lqZqxDx+
-        Q+jebNIZgh0VZ9oW9g9T6rA6A6aMasi7QOJG84qV822lzyCaNl/DgqZexFYzMLCtv2wEY27JKLtc7
-        cxfTlEKA==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o0lII-007aoc-TQ; Mon, 13 Jun 2022 14:43:55 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id EAE333002BE;
-        Mon, 13 Jun 2022 16:43:52 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id D1E8D284A2B0D; Mon, 13 Jun 2022 16:43:52 +0200 (CEST)
-Date:   Mon, 13 Jun 2022 16:43:52 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Ravi Bangoria <ravi.bangoria@amd.com>
-Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com,
-        jolsa@redhat.com, namhyung@kernel.org, songliubraving@fb.com,
-        eranian@google.com, alexey.budankov@linux.intel.com,
-        ak@linux.intel.com, mark.rutland@arm.com, megha.dey@intel.com,
-        frederic@kernel.org, maddy@linux.ibm.com, irogers@google.com,
-        kim.phillips@amd.com, linux-kernel@vger.kernel.org,
-        santosh.shukla@amd.com
-Subject: Re: [RFC v2] perf: Rewrite core context handling
-Message-ID: <YqdNKJllCVMci3ov@hirez.programming.kicks-ass.net>
-References: <20220113134743.1292-1-ravi.bangoria@amd.com>
- <YqdLH+ZU/sf4n0pa@hirez.programming.kicks-ass.net>
+        Mon, 13 Jun 2022 14:27:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E8C41FE4DF;
+        Mon, 13 Jun 2022 07:51:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1162B8105B;
+        Mon, 13 Jun 2022 14:51:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A9FFC3411B;
+        Mon, 13 Jun 2022 14:51:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655131895;
+        bh=TLxFZAPhXdD/lskt5ABL7Yyvc76typsZSU+wq7k76S8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=nC33P0zIEEDZN6u3S/HZm0+GRAnfXvOGbb7rQDH01pkLftaiZTdzsxZu7Xyebbpin
+         7iZJl7IWnGkRJAfwOIqc8K+j8IwSTaK3F0MHmyUTMc7CgLJgR4VJD+UGpyJJkhrqLX
+         pWeZakRI7cH0l9gg+YPdjnVNTfJ5uxNC/QoxSM1Q4+DGXBNKSm7+Cr0t5ee2RguLg7
+         uVqQjAJeEaO0Ka+V0HlIZAym1GivjWVzSNmIneaDGM/5HviE+hY2yp+gPqKFauvgmz
+         O4OH3HWNBRR1vFg6SRwbt3uLYW5nw58tlPFvpBRcH5bh9uz1ym1TUrI00o4VTDPc5K
+         zXFrxSWwbIgGA==
+Date:   Mon, 13 Jun 2022 09:51:33 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Meng Tang <tangmeng@uniontech.com>
+Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, kuba@kernel.org, bhelgaas@google.com,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Subject: Re: [PATCH 5.10 1/2] commit 1d71eb53e451 ("Revert "PCI: Make
+ pci_enable_ptm() private"")
+Message-ID: <20220613145133.GA701092@bhelgaas>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YqdLH+ZU/sf4n0pa@hirez.programming.kicks-ass.net>
+In-Reply-To: <20220613111907.25490-1-tangmeng@uniontech.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 04:35:11PM +0200, Peter Zijlstra wrote:
+On Mon, Jun 13, 2022 at 07:19:06PM +0800, Meng Tang wrote:
+> From: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+> 
+> Make pci_enable_ptm() accessible from the drivers.
+> 
+> Exposing this to the driver enables the driver to use the
+> 'ptm_enabled' field of 'pci_dev' to check if PTM is enabled or not.
+> 
+> This reverts commit ac6c26da29c1 ("PCI: Make pci_enable_ptm() private").
+> 
+> In the 5.10 kernel version, even to the latest confirmed version,
+> the following error will still be reported when I225-V network card
+> is used.
+> 
+> kernel: [    1.031581] igc: probe of 0000:01:00.0 failed with error -2
+> kernel: [    1.066574] igc: probe of 0000:02:00.0 failed with error -2
+> kernel: [    1.096152] igc: probe of 0000:03:00.0 failed with error -2
+> kernel: [    1.127251] igc: probe of 0000:04:00.0 failed with error -2
+> 
+> Even though I confirmed that 7c496de538eebd8212dc2a3c9a468386b2640d4
+> and 47bca7de6a4fb8dcb564c7ca4d885c91ed19e03 have been merged into the
+> kernel 5.10, the bug is still occurred, and the
+> "commit 1b5d73fb8624 ("igc: Enable PCIe PTM")" can fixes it.
+> 
+> And this patch is the pre-patch of
+> 1b5d73fb862414106cf270a1a7300ce8ae77de83.
 
-> @@ -3652,17 +3697,28 @@ static noinline int visit_groups_merge(s
->  			.size = ARRAY_SIZE(itrs),
->  		};
->  		/* Events not within a CPU context may be on any CPU. */
-> -		__heap_add(&event_heap, perf_event_groups_first(groups, -1, NULL));
-> +		__heap_add(&event_heap, perf_event_groups_first(groups, -1, pmu, NULL));
->  	}
->  	evt = event_heap.data;
+I guess the point of this is to backport 1d71eb53e451 ("Revert "PCI:
+Make pci_enable_ptm() private"") to a v5.10 stable kernel?
+
+If so, I would think you'd want to send this to
+stable@vger.kernel.org.
+
+> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+> Signed-off-by: Meng Tang <tangmeng@uniontech.com>
+> ---
+>  drivers/pci/pci.h   | 3 ---
+>  include/linux/pci.h | 7 +++++++
+>  2 files changed, 7 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+> index a96dc6f53076..4084764bf0b1 100644
+> --- a/drivers/pci/pci.h
+> +++ b/drivers/pci/pci.h
+> @@ -585,11 +585,8 @@ static inline void pcie_ecrc_get_policy(char *str) { }
 >  
-> -	__heap_add(&event_heap, perf_event_groups_first(groups, cpu, NULL));
-> +	__heap_add(&event_heap, perf_event_groups_first(groups, cpu, pmu, NULL));
->  
->  #ifdef CONFIG_CGROUP_PERF
->  	for (; css; css = css->parent)
-> -		__heap_add(&event_heap, perf_event_groups_first(groups, cpu, css->cgroup));
-> +		__heap_add(&event_heap, perf_event_groups_first(groups, cpu, pmu, css->cgroup));
+>  #ifdef CONFIG_PCIE_PTM
+>  void pci_ptm_init(struct pci_dev *dev);
+> -int pci_enable_ptm(struct pci_dev *dev, u8 *granularity);
+>  #else
+>  static inline void pci_ptm_init(struct pci_dev *dev) { }
+> -static inline int pci_enable_ptm(struct pci_dev *dev, u8 *granularity)
+> -{ return -EINVAL; }
 >  #endif
 >  
-> +	if (event_heap.nr) {
-> +		/*
-> +		 * XXX: For now, visit_groups_merge() gets called with pmu
-> +		 * pointer never NULL. But these functions needs to be called
-> +		 * once for each pmu if I implement pmu=NULL optimization.
-> +		 */
-> +		__link_epc((*evt)->pmu_ctx);
-> +		perf_assert_pmu_disabled((*evt)->pmu_ctx->pmu);
-> +	}
+>  struct pci_dev_reset_methods {
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index bc5a1150f072..692ce678c5f1 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -1599,6 +1599,13 @@ static inline bool pci_aer_available(void) { return false; }
+>  
+>  bool pci_ats_disabled(void);
+>  
+> +#ifdef CONFIG_PCIE_PTM
+> +int pci_enable_ptm(struct pci_dev *dev, u8 *granularity);
+> +#else
+> +static inline int pci_enable_ptm(struct pci_dev *dev, u8 *granularity)
+> +{ return -EINVAL; }
+> +#endif
 > +
-> +
->  	min_heapify_all(&event_heap, &perf_min_heap);
->  
->  	while (event_heap.nr) {
-
-> @@ -3741,39 +3799,67 @@ static int merge_sched_in(struct perf_ev
->  	return 0;
->  }
->  
-> -static void
-> -ctx_pinned_sched_in(struct perf_event_context *ctx,
-> -		    struct perf_cpu_context *cpuctx)
-> +static void ctx_pinned_sched_in(struct perf_event_context *ctx, struct pmu *pmu)
->  {
-> +	struct perf_event_pmu_context *pmu_ctx;
->  	int can_add_hw = 1;
->  
-> -	if (ctx != &cpuctx->ctx)
-> -		cpuctx = NULL;
-> -
-> -	visit_groups_merge(cpuctx, &ctx->pinned_groups,
-> -			   smp_processor_id(),
-> -			   merge_sched_in, &can_add_hw);
-> +	if (pmu) {
-> +		visit_groups_merge(ctx, &ctx->pinned_groups,
-> +				   smp_processor_id(), pmu,
-> +				   merge_sched_in, &can_add_hw);
-> +	} else {
-> +		/*
-> +		 * XXX: This can be optimized for per-task context by calling
-> +		 * visit_groups_merge() only once with:
-> +		 *   1) pmu=NULL
-> +		 *   2) Ignoring pmu in perf_event_groups_cmp() when it's NULL
-> +		 *   3) Making can_add_hw a per-pmu variable
-> +		 *
-> +		 * Though, it can not be opimized for per-cpu context because
-> +		 * per-cpu rb-tree consist of pmu-subtrees and pmu-subtrees
-> +		 * consist of cgroup-subtrees. i.e. a cgroup events of same
-> +		 * cgroup but different pmus are seperated out into respective
-> +		 * pmu-subtrees.
-> +		 */
-> +		list_for_each_entry(pmu_ctx, &ctx->pmu_ctx_list, pmu_ctx_entry) {
-> +			can_add_hw = 1;
-> +			visit_groups_merge(ctx, &ctx->pinned_groups,
-> +					   smp_processor_id(), pmu_ctx->pmu,
-> +					   merge_sched_in, &can_add_hw);
-> +		}
-> +	}
->  }
-
-I'm not sure I follow.. task context can have multiple PMUs just the
-same as CPU context can, that's more or less the entire point of the
-patch.
+>  void pci_cfg_access_lock(struct pci_dev *dev);
+>  bool pci_cfg_access_trylock(struct pci_dev *dev);
+>  void pci_cfg_access_unlock(struct pci_dev *dev);
+> -- 
+> 2.20.1
+> 
+> 
+> 
