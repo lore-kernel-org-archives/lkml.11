@@ -2,264 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 324F7C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:22:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C064C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:22:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349640AbiFMTWj (ORCPT
+        id S1349683AbiFMTWr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:22:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44724 "EHLO
+        Mon, 13 Jun 2022 15:22:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347036AbiFMTVf (ORCPT
+        with ESMTP id S1343931AbiFMTVg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 15:21:35 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7A062018E
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:18:07 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id t3-20020a17090a510300b001ea87ef9a3dso6578389pjh.4
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:18:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=WtNMojkay1TGl3veVsLBCL1IdXBJpZKRASa03E0Bjrk=;
-        b=bD24dxGKfFGeICbVrf9DLa7VMCKl7hRiega5n95H/eRXArWOFPAijUtmC8XnhIs344
-         MVS8fyo8pPj1M5rKcmAnIfOYtcwbNMqSL9vZYMTaVwB7idEGvuS5UPOwdvUVHTkf7WJI
-         Qp+dfmBTkTqZbhSL4lQM14CfJl2WjLkE+csJXn8gFOLD75H8Swz0u6USqEWWaVkjm6Ir
-         2/OhGrtbDgC1d6vVjwqGaPGgaD0FDt3cs/mmmwQIbZgb6rkSPupDSE0bCOBWjBmYkjIU
-         tIYwarv0ZUhF0HKlinhT4RsfcZbijiu0esNDtQvbMFuiey8l6572d2ljoHbCPNklFv7j
-         cTrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WtNMojkay1TGl3veVsLBCL1IdXBJpZKRASa03E0Bjrk=;
-        b=rtqGWvI+2mZSb7K4FD9X+nkzxnq+C5D4PNyqc56wrgrGsfcz3ECaacen7J2ilDW6k6
-         w9gwVzhJD4b2q9OM7HnABgTB03aeNJ3/G95qm6fUq8PLfSIxxEhRNcsQXhJ8mKh/0BT9
-         a2PRhcIFG1slVEgf7lRoeCdd4LLWgjcsf6cKdxnkWqp5mtpHSnjd95VWOrfgzMs33B/p
-         vMYfGi1Tc5gHEeGbbZfL9ksV1gPx/dm8hHEbt72sHEFrXHgPZxffuNQtROW2E/UjZ9jg
-         xGQr5i8j1Xcte2pyWHR1o9LYtY64GE4TUUiBprRycv5aORo9+MZOiLsEZ8cgxvl9JMcx
-         FsSg==
-X-Gm-Message-State: AJIora+eZitxb2a7u4QLIj8KmgOSO0d3hXIDADTW3Id7cjEoFdD8z/b9
-        odgO6RLDTsZFuLSlmB8UdVlsQQ==
-X-Google-Smtp-Source: AGRyM1v/xmb1YOfRGIydVrWS4Zge68b0oTo5AEN1qZItO+KXP82nbbG7O45y1BuRTZIM0E+/iHssfA==
-X-Received: by 2002:a17:902:bf45:b0:15c:df47:3d6 with SMTP id u5-20020a170902bf4500b0015cdf4703d6mr347304pls.58.1655140687192;
-        Mon, 13 Jun 2022 10:18:07 -0700 (PDT)
-Received: from localhost.localdomain ([192.77.111.2])
-        by smtp.gmail.com with ESMTPSA id u17-20020a62d451000000b0050dc762812csm5646641pfl.6.2022.06.13.10.18.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 10:18:06 -0700 (PDT)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
-        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
-        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
-        elder@kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 2/6] net: ipa: rename two transaction fields
-Date:   Mon, 13 Jun 2022 12:17:55 -0500
-Message-Id: <20220613171759.578856-3-elder@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220613171759.578856-1-elder@linaro.org>
-References: <20220613171759.578856-1-elder@linaro.org>
+        Mon, 13 Jun 2022 15:21:36 -0400
+Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C455E110B;
+        Mon, 13 Jun 2022 10:18:08 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id 0A335736;
+        Mon, 13 Jun 2022 17:18:08 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 0A335736
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1655140688; bh=c6lIsFQ+NWEImD41NwrKBPBx7AxmBW0WsXXocbKtZ3Q=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=HPiyOJpDMdEGGeZSyRLvvB0lyI08Vz4LJhuP+R8C6aAeLLjgfB0h/TyvkVu5v1LNL
+         XGicJSLAO9iuy+kEuNncqAVlORTHKxOHXvePMI4oZimAdvcTzuzhPRp9OcwVjs/tm0
+         H+CprU+qGn9dwV+ZAIgc12wSx6cPwDUpNHh7z09L012UqYilubpMCXmP3m7gcosqUm
+         b9crKXu+FvsgH2vJJHJD1AuTEtCIbfk+j1+HxulpJHI2tH+wALlcVc2/jkxLyYErST
+         +NJbsqqRLtdOq8LNy4shyWHQNXusfw6k2/lIOKeGWL15jMDjRu+aSc402EA0GCyEaD
+         27PPFWsecTDSQ==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@corigine.com>,
+        linux-doc@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, oss-drivers@corigine.com,
+        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@corigine.com>
+Subject: Re: [PATCH v2] scripts: kernel-doc: Always increment warnings counter
+In-Reply-To: <20220613090510.3088294-1-niklas.soderlund@corigine.com>
+References: <20220613090510.3088294-1-niklas.soderlund@corigine.com>
+Date:   Mon, 13 Jun 2022 11:18:07 -0600
+Message-ID: <87h74o1nzk.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are two fields in a GSI transaction that keep track of TRE
-counts.  The first represents the number of TREs reserved for the
-transaction in the TRE ring; that's currently named "tre_count".
-The second is the number of TREs that are actually *used* by the
-transaction at the time it is committed.
+Niklas S=C3=B6derlund <niklas.soderlund@corigine.com> writes:
 
-Rename the "tre_count" field to be "rsvd_count", to make its meaning
-a little more specific.  The "_count" is present in the name mainly
-to avoid interpreting it as a reserved (not-to-be-used) field.  This
-name also distinguishes it from the "tre_count" field associated
-with a channel.
+> Some warnings do not increment the warnings counter making the behavior
+> of running kernel-doc with -Werror unlogical as some warnings will be
+> generated but not treated as errors.
+>
+> Fix this by creating a helper function that always incrementing the
+> warnings counter every time a warning is emitted. There is one location
+> in get_sphinx_version() where a warning is not touched as it concerns
+> the execution environment of the kernel-doc and not the documentation
+> being processed.
+>
+> Incrementing the counter only have effect when running kernel-doc in
+> either verbose mode (-v or environment variable KBUILD_VERBOSE) or when
+> treating warnings as errors (-Werror or environment variable
+> KDOC_WERROR). In both cases the number of warnings printed is printed to
+> stderr and for the later the exit code of kernel-doc is non-zero if
+> warnings where encountered.
+>
+> Simple test case to demo one of the warnings,
+>
+>     $ cat test.c
+>     /**
+>      * foo() - Description
+>      */
+>     int bar();
+>
+>     # Without this change
+>     $ ./scripts/kernel-doc -Werror -none test.c
+>     test.c:4: warning: expecting prototype for foo(). Prototype was for
+>     bar() instead
+>
+>     # With this change
+>     $ ./scripts/kernel-doc -Werror -none test.c
+>     test.c:4: warning: expecting prototype for foo(). Prototype was for
+>     bar() instead
+>     1 warnings as Errors
+>
+> Signed-off-by: Niklas S=C3=B6derlund <niklas.soderlund@corigine.com>
+> ---
+> * Changes since v1
+> - Added a helper emit_warning() to print the message and increment the
+>   counter instead of adding statements to increment the counter where it
+>   was missing.
 
-Rename the "used" field to be "used_count", to match the convention
-used for reserved TREs.
+Thanks for making this change.  Anything that rationalizes this horrific
+script even a little bit is more than welcome.
 
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/gsi_trans.c | 41 +++++++++++++++++++------------------
- drivers/net/ipa/gsi_trans.h |  8 ++++----
- 2 files changed, 25 insertions(+), 24 deletions(-)
+I've applied the patch, thanks.
 
-diff --git a/drivers/net/ipa/gsi_trans.c b/drivers/net/ipa/gsi_trans.c
-index e3f3c736c7409..986857eb39296 100644
---- a/drivers/net/ipa/gsi_trans.c
-+++ b/drivers/net/ipa/gsi_trans.c
-@@ -355,7 +355,7 @@ struct gsi_trans *gsi_channel_trans_alloc(struct gsi *gsi, u32 channel_id,
- 	trans = gsi_trans_pool_alloc(&trans_info->pool, 1);
- 	trans->gsi = gsi;
- 	trans->channel_id = channel_id;
--	trans->tre_count = tre_count;
-+	trans->rsvd_count = tre_count;
- 	init_completion(&trans->completion);
- 
- 	/* Allocate the scatterlist and (if requested) info entries. */
-@@ -405,17 +405,17 @@ void gsi_trans_free(struct gsi_trans *trans)
- 	/* Releasing the reserved TREs implicitly frees the sgl[] and
- 	 * (if present) info[] arrays, plus the transaction itself.
- 	 */
--	gsi_trans_tre_release(trans_info, trans->tre_count);
-+	gsi_trans_tre_release(trans_info, trans->rsvd_count);
- }
- 
- /* Add an immediate command to a transaction */
- void gsi_trans_cmd_add(struct gsi_trans *trans, void *buf, u32 size,
- 		       dma_addr_t addr, enum ipa_cmd_opcode opcode)
- {
--	u32 which = trans->used++;
-+	u32 which = trans->used_count++;
- 	struct scatterlist *sg;
- 
--	WARN_ON(which >= trans->tre_count);
-+	WARN_ON(which >= trans->rsvd_count);
- 
- 	/* Commands are quite different from data transfer requests.
- 	 * Their payloads come from a pool whose memory is allocated
-@@ -446,9 +446,9 @@ int gsi_trans_page_add(struct gsi_trans *trans, struct page *page, u32 size,
- 	struct scatterlist *sg = &trans->sgl[0];
- 	int ret;
- 
--	if (WARN_ON(trans->tre_count != 1))
-+	if (WARN_ON(trans->rsvd_count != 1))
- 		return -EINVAL;
--	if (WARN_ON(trans->used))
-+	if (WARN_ON(trans->used_count))
- 		return -EINVAL;
- 
- 	sg_set_page(sg, page, size, offset);
-@@ -456,7 +456,7 @@ int gsi_trans_page_add(struct gsi_trans *trans, struct page *page, u32 size,
- 	if (!ret)
- 		return -ENOMEM;
- 
--	trans->used++;	/* Transaction now owns the (DMA mapped) page */
-+	trans->used_count++;	/* Transaction now owns the (DMA mapped) page */
- 
- 	return 0;
- }
-@@ -465,25 +465,26 @@ int gsi_trans_page_add(struct gsi_trans *trans, struct page *page, u32 size,
- int gsi_trans_skb_add(struct gsi_trans *trans, struct sk_buff *skb)
- {
- 	struct scatterlist *sg = &trans->sgl[0];
--	u32 used;
-+	u32 used_count;
- 	int ret;
- 
--	if (WARN_ON(trans->tre_count != 1))
-+	if (WARN_ON(trans->rsvd_count != 1))
- 		return -EINVAL;
--	if (WARN_ON(trans->used))
-+	if (WARN_ON(trans->used_count))
- 		return -EINVAL;
- 
- 	/* skb->len will not be 0 (checked early) */
- 	ret = skb_to_sgvec(skb, sg, 0, skb->len);
- 	if (ret < 0)
- 		return ret;
--	used = ret;
-+	used_count = ret;
- 
--	ret = dma_map_sg(trans->gsi->dev, sg, used, trans->direction);
-+	ret = dma_map_sg(trans->gsi->dev, sg, used_count, trans->direction);
- 	if (!ret)
- 		return -ENOMEM;
- 
--	trans->used += used;	/* Transaction now owns the (DMA mapped) skb */
-+	/* Transaction now owns the (DMA mapped) skb */
-+	trans->used_count += used_count;
- 
- 	return 0;
- }
-@@ -559,7 +560,7 @@ static void __gsi_trans_commit(struct gsi_trans *trans, bool ring_db)
- 	u32 avail;
- 	u32 i;
- 
--	WARN_ON(!trans->used);
-+	WARN_ON(!trans->used_count);
- 
- 	/* Consume the entries.  If we cross the end of the ring while
- 	 * filling them we'll switch to the beginning to finish.
-@@ -569,8 +570,8 @@ static void __gsi_trans_commit(struct gsi_trans *trans, bool ring_db)
- 	cmd_opcode = channel->command ? &trans->cmd_opcode[0] : NULL;
- 	avail = tre_ring->count - tre_ring->index % tre_ring->count;
- 	dest_tre = gsi_ring_virt(tre_ring, tre_ring->index);
--	for_each_sg(trans->sgl, sg, trans->used, i) {
--		bool last_tre = i == trans->used - 1;
-+	for_each_sg(trans->sgl, sg, trans->used_count, i) {
-+		bool last_tre = i == trans->used_count - 1;
- 		dma_addr_t addr = sg_dma_address(sg);
- 		u32 len = sg_dma_len(sg);
- 
-@@ -583,7 +584,7 @@ static void __gsi_trans_commit(struct gsi_trans *trans, bool ring_db)
- 		gsi_trans_tre_fill(dest_tre, addr, len, last_tre, bei, opcode);
- 		dest_tre++;
- 	}
--	tre_ring->index += trans->used;
-+	tre_ring->index += trans->used_count;
- 
- 	if (channel->toward_ipa) {
- 		/* We record TX bytes when they are sent */
-@@ -611,7 +612,7 @@ static void __gsi_trans_commit(struct gsi_trans *trans, bool ring_db)
- /* Commit a GSI transaction */
- void gsi_trans_commit(struct gsi_trans *trans, bool ring_db)
- {
--	if (trans->used)
-+	if (trans->used_count)
- 		__gsi_trans_commit(trans, ring_db);
- 	else
- 		gsi_trans_free(trans);
-@@ -620,7 +621,7 @@ void gsi_trans_commit(struct gsi_trans *trans, bool ring_db)
- /* Commit a GSI transaction and wait for it to complete */
- void gsi_trans_commit_wait(struct gsi_trans *trans)
- {
--	if (!trans->used)
-+	if (!trans->used_count)
- 		goto out_trans_free;
- 
- 	refcount_inc(&trans->refcount);
-@@ -638,7 +639,7 @@ void gsi_trans_complete(struct gsi_trans *trans)
- {
- 	/* If the entire SGL was mapped when added, unmap it now */
- 	if (trans->direction != DMA_NONE)
--		dma_unmap_sg(trans->gsi->dev, trans->sgl, trans->used,
-+		dma_unmap_sg(trans->gsi->dev, trans->sgl, trans->used_count,
- 			     trans->direction);
- 
- 	ipa_gsi_trans_complete(trans);
-diff --git a/drivers/net/ipa/gsi_trans.h b/drivers/net/ipa/gsi_trans.h
-index 020c3b32de1d7..b5f80250ca006 100644
---- a/drivers/net/ipa/gsi_trans.h
-+++ b/drivers/net/ipa/gsi_trans.h
-@@ -33,8 +33,8 @@ struct gsi_trans_pool;
-  * @gsi:	GSI pointer
-  * @channel_id: Channel number transaction is associated with
-  * @cancelled:	If set by the core code, transaction was cancelled
-- * @tre_count:	Number of TREs reserved for this transaction
-- * @used:	Number of TREs *used* (could be less than tre_count)
-+ * @rsvd_count:	Number of TREs reserved for this transaction
-+ * @used_count:	Number of TREs *used* (could be less than rsvd_count)
-  * @len:	Total # of transfer bytes represented in sgl[] (set by core)
-  * @data:	Preserved but not touched by the core transaction code
-  * @cmd_opcode:	Array of command opcodes (command channel only)
-@@ -56,8 +56,8 @@ struct gsi_trans {
- 
- 	bool cancelled;			/* true if transaction was cancelled */
- 
--	u8 tre_count;			/* # TREs requested */
--	u8 used;			/* # entries used in sgl[] */
-+	u8 rsvd_count;			/* # TREs requested */
-+	u8 used_count;			/* # entries used in sgl[] */
- 	u32 len;			/* total # bytes across sgl[] */
- 
- 	union {
--- 
-2.34.1
-
+jon
