@@ -2,45 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE200C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF437C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:43:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355934AbiFMLmz (ORCPT
+        id S1355941AbiFMLnC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:42:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43082 "EHLO
+        Mon, 13 Jun 2022 07:43:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355060AbiFMLhI (ORCPT
+        with ESMTP id S1355184AbiFMLhn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:37:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7EC945064;
-        Mon, 13 Jun 2022 03:48:16 -0700 (PDT)
+        Mon, 13 Jun 2022 07:37:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A5DA45537;
+        Mon, 13 Jun 2022 03:48:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E82860FDB;
-        Mon, 13 Jun 2022 10:48:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D39CC34114;
-        Mon, 13 Jun 2022 10:48:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6BB58B80D41;
+        Mon, 13 Jun 2022 10:48:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D114CC34114;
+        Mon, 13 Jun 2022 10:48:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117295;
-        bh=6kkjtfCyfPoYBDHlyShtWXsEIIe4ji9MKuIrYfI44CM=;
+        s=korg; t=1655117298;
+        bh=l+AybNHC05BqQuQ3Dkj3uvVIIyZwvXV3Ggmj5WIMdqE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OnS37yOBHeDzU4vqAM77QCifXmtc5GsOMJzkkuGZL9tAx+RrGMtAna4VPpfTmC4fK
-         CGUsahPLZjir+yBnSSSyTtIn//RUOkFfZ5roqSi9JUe4ksGdArydrvAqRbAIF++GHd
-         KNYuDSWIwdMQ6ypU2wwzcY9SeTOQyhvcvFpeV+FU=
+        b=h8PEI0tHYxh2pcLQdqt56YM7zHDZfvsdNBLYeliW/alsc2mBrbP7+h9ydngW3Elie
+         5xl5rhXjtxKo7cu1nz3Ico32nDqId+uJzU+zEQrNryx9JFOXmYQeafVtbwIZmQfQMB
+         fAfvN1LS+HyhS0wQgw8FSRpo6kvWgQAzWZ6j4EiU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 350/411] netfilter: nf_tables: memleak flow rule from commit path
-Date:   Mon, 13 Jun 2022 12:10:23 +0200
-Message-Id: <20220613094939.199850634@linuxfoundation.org>
+Subject: [PATCH 4.19 016/287] ACPICA: Avoid cache flush inside virtual machines
+Date:   Mon, 13 Jun 2022 12:07:20 +0200
+Message-Id: <20220613094924.347873511@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
+References: <20220613094923.832156175@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,44 +53,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 
-[ Upstream commit 9dd732e0bdf538b1b76dc7c157e2b5e560ff30d3 ]
+[ Upstream commit e2efb6359e620521d1e13f69b2257de8ceaa9475 ]
 
-Abort path release flow rule object, however, commit path does not.
-Update code to destroy these objects before releasing the transaction.
+While running inside virtual machine, the kernel can bypass cache
+flushing. Changing sleep state in a virtual machine doesn't affect the
+host system sleep state and cannot lead to data loss.
 
-Fixes: c9626a2cbdb2 ("netfilter: nf_tables: add hardware offload support")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Before entering sleep states, the ACPI code flushes caches to prevent
+data loss using the WBINVD instruction.  This mechanism is required on
+bare metal.
+
+But, any use WBINVD inside of a guest is worthless.  Changing sleep
+state in a virtual machine doesn't affect the host system sleep state
+and cannot lead to data loss, so most hypervisors simply ignore it.
+Despite this, the ACPI code calls WBINVD unconditionally anyway.
+It's useless, but also normally harmless.
+
+In TDX guests, though, WBINVD stops being harmless; it triggers a
+virtualization exception (#VE).  If the ACPI cache-flushing WBINVD
+were left in place, TDX guests would need handling to recover from
+the exception.
+
+Avoid using WBINVD whenever running under a hypervisor.  This both
+removes the useless WBINVDs and saves TDX from implementing WBINVD
+handling.
+
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
+Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lkml.kernel.org/r/20220405232939.73860-30-kirill.shutemov@linux.intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_tables_api.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/x86/include/asm/acenv.h | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index b51c192105fc..58a7d89719b1 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -6570,6 +6570,9 @@ static void nft_commit_release(struct nft_trans *trans)
- 		nf_tables_chain_destroy(&trans->ctx);
- 		break;
- 	case NFT_MSG_DELRULE:
-+		if (trans->ctx.chain->flags & NFT_CHAIN_HW_OFFLOAD)
-+			nft_flow_rule_destroy(nft_trans_flow_rule(trans));
-+
- 		nf_tables_rule_destroy(&trans->ctx, nft_trans_rule(trans));
- 		break;
- 	case NFT_MSG_DELSET:
-@@ -6891,6 +6894,9 @@ static int nf_tables_commit(struct net *net, struct sk_buff *skb)
- 			nf_tables_rule_notify(&trans->ctx,
- 					      nft_trans_rule(trans),
- 					      NFT_MSG_NEWRULE);
-+			if (trans->ctx.chain->flags & NFT_CHAIN_HW_OFFLOAD)
-+				nft_flow_rule_destroy(nft_trans_flow_rule(trans));
-+
- 			nft_trans_destroy(trans);
- 			break;
- 		case NFT_MSG_DELRULE:
+diff --git a/arch/x86/include/asm/acenv.h b/arch/x86/include/asm/acenv.h
+index 1b010a859b8b..6de59a4f723c 100644
+--- a/arch/x86/include/asm/acenv.h
++++ b/arch/x86/include/asm/acenv.h
+@@ -16,7 +16,19 @@
+ 
+ /* Asm macros */
+ 
+-#define ACPI_FLUSH_CPU_CACHE()	wbinvd()
++/*
++ * ACPI_FLUSH_CPU_CACHE() flushes caches on entering sleep states.
++ * It is required to prevent data loss.
++ *
++ * While running inside virtual machine, the kernel can bypass cache flushing.
++ * Changing sleep state in a virtual machine doesn't affect the host system
++ * sleep state and cannot lead to data loss.
++ */
++#define ACPI_FLUSH_CPU_CACHE()					\
++do {								\
++	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))	\
++		wbinvd();					\
++} while (0)
+ 
+ int __acpi_acquire_global_lock(unsigned int *lock);
+ int __acpi_release_global_lock(unsigned int *lock);
 -- 
 2.35.1
 
