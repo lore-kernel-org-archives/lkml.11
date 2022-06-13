@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20648C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:52:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EBC1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:52:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380015AbiFMNwb (ORCPT
+        id S1380021AbiFMNwl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:52:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49730 "EHLO
+        Mon, 13 Jun 2022 09:52:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379189AbiFMNrT (ORCPT
+        with ESMTP id S1379247AbiFMNrn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:47:19 -0400
+        Mon, 13 Jun 2022 09:47:43 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98AB91FCF6;
-        Mon, 13 Jun 2022 04:32:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4624B222B0;
+        Mon, 13 Jun 2022 04:32:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7D939B80D3A;
-        Mon, 13 Jun 2022 11:32:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C027AC3411E;
-        Mon, 13 Jun 2022 11:32:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65D70B80E59;
+        Mon, 13 Jun 2022 11:32:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C69ADC3411C;
+        Mon, 13 Jun 2022 11:32:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119973;
-        bh=voYXGHQ0EmEGqrT//5SsbK1zE1x2gYhf/na/v6VV+DU=;
+        s=korg; t=1655119976;
+        bh=rnyRN8uJNieEChc6O58lyP6uWMUtgSC8w2CYZauwB94=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kyrNTr8jC/ltR9QvS36TYuusW92Owa7Bk5yXv1hWv4P4z88BlfOhPcH5UMQbhYauF
-         zdMbFfJeVRMpdSh0fDwi+YPqJ5VK3cxz+5dZwOpPYjTrA8ZlWwB/I8r5RIrUTsJYMr
-         DeZUojAOrXggBbUoDAN+tjY1uOL9uKWeFTesnEpA=
+        b=o9rBv3zhL1rJBd9z/Me6YyQpdn1nf4ZVgFAd8fh77X9d/jOBnvJ0mmxQDdAVEpVPa
+         blNPLkBF7+Kc8o2h5bsTIchYJKZUZvVrsodCsL3Xu0XxZZf7bEqqEi+IUpbwA66N1x
+         Y3sARP1ghwkAj5Rw2bqYZl443EdRL2287m3vkXTQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
-        NeilBrown <neilb@suse.de>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
+        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 205/339] SUNRPC: Fix the calculation of xdr->end in xdr_get_next_encode_buffer()
-Date:   Mon, 13 Jun 2022 12:10:30 +0200
-Message-Id: <20220613094932.882613530@linuxfoundation.org>
+Subject: [PATCH 5.18 206/339] net: mdio: unexport __init-annotated mdio_bus_init()
+Date:   Mon, 13 Jun 2022 12:10:31 +0200
+Message-Id: <20220613094932.911618579@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,46 +53,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-[ Upstream commit 6c254bf3b637dd4ef4f78eb78c7447419c0161d7 ]
+[ Upstream commit 35b42dce619701f1300fb8498dae82c9bb1f0263 ]
 
-I found that NFSD's new NFSv3 READDIRPLUS XDR encoder was screwing up
-right at the end of the page array. xdr_get_next_encode_buffer() does
-not compute the value of xdr->end correctly:
+EXPORT_SYMBOL and __init is a bad combination because the .init.text
+section is freed up after the initialization. Hence, modules cannot
+use symbols annotated __init. The access to a freed symbol may end up
+with kernel panic.
 
- * The check to see if we're on the final available page in xdr->buf
-   needs to account for the space consumed by @nbytes.
+modpost used to detect it, but it has been broken for a decade.
 
- * The new xdr->end value needs to account for the portion of @nbytes
-   that is to be encoded into the previous buffer.
+Recently, I fixed modpost so it started to warn it again, then this
+showed up in linux-next builds.
 
-Fixes: 2825a7f90753 ("nfsd4: allow encoding across page boundaries")
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
-Reviewed-by: NeilBrown <neilb@suse.de>
-Reviewed-by: J. Bruce Fields <bfields@fieldses.org>
+There are two ways to fix it:
+
+  - Remove __init
+  - Remove EXPORT_SYMBOL
+
+I chose the latter for this case because the only in-tree call-site,
+drivers/net/phy/phy_device.c is never compiled as modular.
+(CONFIG_PHYLIB is boolean)
+
+Fixes: 90eff9096c01 ("net: phy: Allow splitting MDIO bus/device support from PHYs")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/xdr.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/phy/mdio_bus.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/net/sunrpc/xdr.c b/net/sunrpc/xdr.c
-index df194cc07035..b57cf9df4de8 100644
---- a/net/sunrpc/xdr.c
-+++ b/net/sunrpc/xdr.c
-@@ -979,7 +979,11 @@ static __be32 *xdr_get_next_encode_buffer(struct xdr_stream *xdr,
- 	 */
- 	xdr->p = (void *)p + frag2bytes;
- 	space_left = xdr->buf->buflen - xdr->buf->len;
--	xdr->end = (void *)p + min_t(int, space_left, PAGE_SIZE);
-+	if (space_left - nbytes >= PAGE_SIZE)
-+		xdr->end = (void *)p + PAGE_SIZE;
-+	else
-+		xdr->end = (void *)p + space_left - frag1bytes;
-+
- 	xdr->buf->page_len += frag2bytes;
- 	xdr->buf->len += nbytes;
- 	return p;
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index 58d602985877..8a2dbe849866 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -1046,7 +1046,6 @@ int __init mdio_bus_init(void)
+ 
+ 	return ret;
+ }
+-EXPORT_SYMBOL_GPL(mdio_bus_init);
+ 
+ #if IS_ENABLED(CONFIG_PHYLIB)
+ void mdio_bus_exit(void)
 -- 
 2.35.1
 
