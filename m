@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C736C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:07:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EDFCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:07:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351469AbiFMLHZ (ORCPT
+        id S1351679AbiFMLH0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:07:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54162 "EHLO
+        Mon, 13 Jun 2022 07:07:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351202AbiFMK7U (ORCPT
+        with ESMTP id S1351182AbiFMK7R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:59:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F3D27140;
-        Mon, 13 Jun 2022 03:32:49 -0700 (PDT)
+        Mon, 13 Jun 2022 06:59:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E977126AC1;
+        Mon, 13 Jun 2022 03:32:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 32A8160FAD;
-        Mon, 13 Jun 2022 10:32:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FA46C34114;
-        Mon, 13 Jun 2022 10:32:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 100B1B80EA7;
+        Mon, 13 Jun 2022 10:32:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 668E1C34114;
+        Mon, 13 Jun 2022 10:32:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116367;
-        bh=KBx7M6GVVtSJjrkKmfF0jiF6x0MeYg2p7U09nMlZ5Cw=;
+        s=korg; t=1655116364;
+        bh=6poQA8HptYF9vPIgarkR6mmoUzdWP/wv3YOZWLj7vEM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mtqb6W4Lm7lLqwJG7jwW+MZs7UtCQC48FqqAr93bf6NNMmIjJHkTB/I59uCIZDH3o
-         ebdTCTSslJw6fk9kTM5w2PuBE7ll3ks2b83pgarsIywqE0BXcZolvIbGMsXrnOmqSJ
-         Ry3d5ZBnJCSZhZjHN59UzYRzOvWlRN9RE4gIpR94=
+        b=x5p3WGICda3zUxUnLUTw1Q25wqfRrVntLFJmcy3i1V/+2aQCkGtm0acQnE5jbMtsk
+         AcpUQW9VFUzaoTvb0HU5p8lfLxRK85N2HEioRIWGasL/IFQFKP8dsCMXnRgSJeZBJb
+         HE1mL1P98Ur0b7QoYkfi2QPiVjOl6xSiJ+S/zFdE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <yujie.liu@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 058/411] ASoC: max98357a: remove dependency on GPIOLIB
-Date:   Mon, 13 Jun 2022 12:05:31 +0200
-Message-Id: <20220613094930.255519077@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Lucas Tanure <tanureal@opensource.cirrus.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 168/218] i2c: cadence: Increase timeout per message if necessary
+Date:   Mon, 13 Jun 2022 12:10:26 +0200
+Message-Id: <20220613094925.697851112@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,49 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Lucas Tanure <tanureal@opensource.cirrus.com>
 
-[ Upstream commit 21ca3274333f5c1cbbf9d91e5b33f4f2463859b2 ]
+[ Upstream commit 96789dce043f5bff8b7d62aa28d52a7c59403a84 ]
 
-commit dcc2c012c7691 ("ASoC: Fix gpiolib dependencies") removed a
-series of unnecessary dependencies on GPIOLIB when the gpio was
-optional.
+Timeout as 1 second sets an upper limit on the length
+of the transfer executed, but there is no maximum length
+of a write or read message set in i2c_adapter_quirks for
+this controller.
 
-A similar simplification seems valid for max98357a, so remove the
-dependency as well. This will avoid the following warning
+This upper limit affects devices that require sending
+large firmware blobs over I2C.
 
-   WARNING: unmet direct dependencies detected for SND_SOC_MAX98357A
-     Depends on [n]: SOUND [=y] && !UML && SND [=y] && SND_SOC [=y] && GPIOLIB [=n]
-     Selected by [y]:
-     - SND_SOC_INTEL_SOF_CS42L42_MACH [=y] && SOUND [=y] && !UML &&
-       SND [=y] && SND_SOC [=y] && SND_SOC_INTEL_MACH [=y] &&
-       (SND_SOC_SOF_HDA_LINK [=y] || SND_SOC_SOF_BAYTRAIL [=n]) && I2C
-       [=y] && ACPI [=y] && SND_HDA_CODEC_HDMI [=y] &&
-       SND_SOC_SOF_HDA_AUDIO_CODEC [=y] && (MFD_INTEL_LPSS [=y] ||
-       COMPILE_TEST [=n])
+To remove that limitation, calculate the minimal time
+necessary, plus some wiggle room, for every message and
+use it instead of the default one second, if more than
+one second.
 
-Reported-by: kernel test robot <yujie.liu@intel.com>
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Link: https://lore.kernel.org/r/20220517172647.468244-2-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
+Acked-by: Michal Simek <michal.simek@xilinx.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/i2c/busses/i2c-cadence.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
-index 466dc67799f4..dfc536cd9d2f 100644
---- a/sound/soc/codecs/Kconfig
-+++ b/sound/soc/codecs/Kconfig
-@@ -759,7 +759,6 @@ config SND_SOC_MAX98095
+diff --git a/drivers/i2c/busses/i2c-cadence.c b/drivers/i2c/busses/i2c-cadence.c
+index c5475bb4fae6..2150afdcc083 100644
+--- a/drivers/i2c/busses/i2c-cadence.c
++++ b/drivers/i2c/busses/i2c-cadence.c
+@@ -511,7 +511,7 @@ static void cdns_i2c_master_reset(struct i2c_adapter *adap)
+ static int cdns_i2c_process_msg(struct cdns_i2c *id, struct i2c_msg *msg,
+ 		struct i2c_adapter *adap)
+ {
+-	unsigned long time_left;
++	unsigned long time_left, msg_timeout;
+ 	u32 reg;
  
- config SND_SOC_MAX98357A
- 	tristate "Maxim MAX98357A CODEC"
--	depends on GPIOLIB
+ 	id->p_msg = msg;
+@@ -536,8 +536,16 @@ static int cdns_i2c_process_msg(struct cdns_i2c *id, struct i2c_msg *msg,
+ 	else
+ 		cdns_i2c_msend(id);
  
- config SND_SOC_MAX98371
-        tristate
++	/* Minimal time to execute this message */
++	msg_timeout = msecs_to_jiffies((1000 * msg->len * BITS_PER_BYTE) / id->i2c_clk);
++	/* Plus some wiggle room */
++	msg_timeout += msecs_to_jiffies(500);
++
++	if (msg_timeout < adap->timeout)
++		msg_timeout = adap->timeout;
++
+ 	/* Wait for the signal of completion */
+-	time_left = wait_for_completion_timeout(&id->xfer_done, adap->timeout);
++	time_left = wait_for_completion_timeout(&id->xfer_done, msg_timeout);
+ 	if (time_left == 0) {
+ 		cdns_i2c_master_reset(adap);
+ 		dev_err(id->adap.dev.parent,
 -- 
 2.35.1
 
