@@ -2,95 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7BF0CCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 06:35:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62488C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 06:35:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234797AbiFMGfe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 02:35:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38380 "EHLO
+        id S235032AbiFMGfh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 02:35:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231356AbiFMGf3 (ORCPT
+        with ESMTP id S231917AbiFMGfa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 02:35:29 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C020ABC9C
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 23:35:27 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id h192so4734196pgc.4
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 23:35:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ejoz2DCbggYc1zBmQNGGZRqPtrQj0ureLICOuzJFZmU=;
-        b=OxTUnNdHpp50SMsYqQOIYKSwtagFzLBUmMmPY9dFZ+mCEDI0GK+/N644JE0MVvRWuD
-         oi1jkSH30j46ZX061wTIpMoKjsckKkkuG/UTdIMbtVUUrwrWj6v0vGxlZ5xKHU3UMk9T
-         MrG7FrNRnF7cqn36SdxWn026hu4EX/7nFvs5WuiE7CM50W17zGVGpz84tR9HpKEl3rAP
-         ebelIoFS5Lhto5GBs76E3lrxeLiAqiWUJpaQk8EmX7YkGPsQrbcXln9b+NRDLz4b96yY
-         iO0CKZxjNJq7XR6NnOJoSyQDAR3SBeko1QHhxk3M5dWxw7EsjElP96SoYkXgUEZRLgbb
-         1vjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ejoz2DCbggYc1zBmQNGGZRqPtrQj0ureLICOuzJFZmU=;
-        b=Obm/RdU2/d16p7wrzuHw2ybQObqNhhx5LDGmb72vH47QDkeiD2ccV5m+pXyyIq/Y5o
-         0JL8Ega1QLyZUslO0H9hvp9Sfcv74upjXugi0p71jiIep1uwmfX4myZbYFgt50kpOA31
-         oBxVj1n7K1ffM7L+ZQMObKmA5vKkujIpukU+wJ80GUEdiPFLkOq3eSYD9ibIxiM0h78j
-         mI0P0JKzO/2z9RNaQX9OtDCVI835C/EJv7tZlV6MFkU+5+Ctk+fC/r27Mwg0z/kGrwRl
-         qe0V9OWHEvGzlg+f8fQjGz61bdxTybSZCb1P6rlmpcaz7U4zvGWGp1pFm0auwKmDZKyX
-         MrEQ==
-X-Gm-Message-State: AOAM531lCFLV0FYkMt8mvDH8+pAtu+UWSn6KhxcxRM3mSe1MlP6/5oR4
-        lPP1xqYd/XTdHKAwyFrQoV5yVA==
-X-Google-Smtp-Source: ABdhPJymj2CTUZcvnfpi7YZkMigHH98usV2DwWdiEfXKQZqUz6w1sAVIilmQqx44Ffhe7JQCx6y0YA==
-X-Received: by 2002:a63:5723:0:b0:3fd:d8b4:c19f with SMTP id l35-20020a635723000000b003fdd8b4c19fmr31492536pgb.137.1655102127199;
+        Mon, 13 Jun 2022 02:35:30 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6892BC81;
         Sun, 12 Jun 2022 23:35:27 -0700 (PDT)
-Received: from FVFYT0MHHV2J.bytedance.net ([139.177.225.255])
-        by smtp.gmail.com with ESMTPSA id v3-20020aa799c3000000b0051bc538baadsm4366554pfi.184.2022.06.12.23.35.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Jun 2022 23:35:26 -0700 (PDT)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     mike.kravetz@oracle.com, david@redhat.com,
-        akpm@linux-foundation.org, corbet@lwn.net
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH 0/6] Simplify hugetlb vmemmap and improve its readability
-Date:   Mon, 13 Jun 2022 14:35:06 +0800
-Message-Id: <20220613063512.17540-1-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.1 (Apple Git-133)
+Received: from kwepemi500014.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LM1wp1jX5zgYXn;
+        Mon, 13 Jun 2022 14:33:30 +0800 (CST)
+Received: from huawei.com (10.67.174.157) by kwepemi500014.china.huawei.com
+ (7.221.188.232) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 13 Jun
+ 2022 14:35:25 +0800
+From:   Li Zhengyu <lizhengyu3@huawei.com>
+To:     <quic_tdas@quicinc.com>, <sboyd@kernel.org>
+CC:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-clk@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] clk: qcom: clk-rpmh: Remove redundant if statement
+Date:   Mon, 13 Jun 2022 14:33:27 +0800
+Message-ID: <20220613063327.89320-1-lizhengyu3@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.67.174.157]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemi500014.china.huawei.com (7.221.188.232)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series aims to simplify hugetlb vmemmap and improve its readability
-and is based on next-20220610.
+By the clk framework already reference counts prepare/unprepare,
+this if statement should be never true.
 
-Muchun Song (6):
-  mm: hugetlb_vmemmap: delete hugetlb_optimize_vmemmap_enabled()
-  mm: hugetlb_vmemmap: optimize vmemmap_optimize_mode handling
-  mm: hugetlb_vmemmap: introduce the name HVO
-  mm: hugetlb_vmemmap: move vmemmap code related to HugeTLB to
-    hugetlb_vmemmap.c
-  mm: hugetlb_vmemmap: replace early_param() with core_param()
-  mm: hugetlb_vmemmap: improve hugetlb_vmemmap code readability
+Signed-off-by: Li Zhengyu <lizhengyu3@huawei.com>
+---
+Previous threads: 
+https://lore.kernel.org/all/20220531094539.252642-1-lizhengyu3@huawei.com/
 
- Documentation/admin-guide/kernel-parameters.txt |   7 +-
- Documentation/admin-guide/mm/hugetlbpage.rst    |   3 +-
- Documentation/admin-guide/sysctl/vm.rst         |   3 +-
- arch/arm64/mm/flush.c                           |  13 +-
- fs/Kconfig                                      |  13 +-
- include/linux/hugetlb.h                         |   7 +-
- include/linux/mm.h                              |   7 -
- include/linux/page-flags.h                      |  16 +-
- mm/hugetlb.c                                    |  11 +-
- mm/hugetlb_vmemmap.c                            | 592 ++++++++++++++++++------
- mm/hugetlb_vmemmap.h                            |  43 +-
- mm/sparse-vmemmap.c                             | 391 ----------------
- 12 files changed, 509 insertions(+), 597 deletions(-)
+ drivers/clk/qcom/clk-rpmh.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-
-base-commit: 6d0c806803170f120f8cb97b321de7bd89d3a791
+diff --git a/drivers/clk/qcom/clk-rpmh.c b/drivers/clk/qcom/clk-rpmh.c
+index aed907982344..249146947923 100644
+--- a/drivers/clk/qcom/clk-rpmh.c
++++ b/drivers/clk/qcom/clk-rpmh.c
+@@ -195,10 +195,6 @@ static int clk_rpmh_aggregate_state_send_command(struct clk_rpmh *c,
+ {
+ 	int ret;
+ 
+-	/* Nothing required to be done if already off or on */
+-	if (enable == c->state)
+-		return 0;
+-
+ 	c->state = enable ? c->valid_state_mask : 0;
+ 	c->aggr_state = c->state | c->peer->state;
+ 	c->peer->aggr_state = c->aggr_state;
 -- 
-2.11.0
+2.17.1
 
