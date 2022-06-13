@@ -2,99 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5531BCCA483
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:12:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4097CCA482
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:12:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239695AbiFMILq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 04:11:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36244 "EHLO
+        id S239785AbiFMIMS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 04:12:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239632AbiFMILP (ORCPT
+        with ESMTP id S239550AbiFMILe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 04:11:15 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C9DC1E3EC
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 01:11:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=kQFuI5WIRgEaLqqCH7f6vg31Muj2sr6SY+iwmeaTlAk=; b=hfS+fEIhq4+wL9VkrEjtrb2sBc
-        GD2kFn6Wy5AzTLkDRZqZd1zkqEZ5t0tQHZWDJaldPpBwbE7dv4+CVCro1QSVxN1SQDYXXf5kNLUbQ
-        scRWzJVQIyVoMMD/G4nYo1GtdURU++YcijicgXISemALtDLz+PhASppmvHoRE0Wx6EVs2fVB/9jWN
-        +Uh8qYJLPdwheh9utkj3MG+QGQptxsRrX4mGz/tHgGYrIhbPKeXg/zEpXl77BtCOvZxZfjXDkCPjR
-        9GHT3eH6OP7CAg+jHVPlSF37LCrW/WRnQg1lkRqoHjZ+OJBKs/SeeG8s0KzjYxD9nOk/6X3uPxmmG
-        Cdux/mJw==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o0fA7-007VK4-GF; Mon, 13 Jun 2022 08:11:04 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 0EED3300472;
-        Mon, 13 Jun 2022 10:11:03 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id ED02928498CA5; Mon, 13 Jun 2022 10:11:02 +0200 (CEST)
-Date:   Mon, 13 Jun 2022 10:11:02 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        linux-kernel@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
+        Mon, 13 Jun 2022 04:11:34 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DF6D1E3EA;
+        Mon, 13 Jun 2022 01:11:32 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LM43g22Gxz1K9Vw;
+        Mon, 13 Jun 2022 16:09:35 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 13 Jun 2022 16:11:06 +0800
+Received: from thunder-town.china.huawei.com (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 13 Jun 2022 16:11:04 +0800
+From:   Zhen Lei <thunder.leizhen@huawei.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        <x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        <devicetree@vger.kernel.org>, Dave Young <dyoung@redhat.com>,
+        Baoquan He <bhe@redhat.com>, Vivek Goyal <vgoyal@redhat.com>,
+        <kexec@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
         Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH] locking/lockdep: Use sched_clock() for random numbers.
-Message-ID: <YqbxFn7EORqg7nXR@hirez.programming.kicks-ass.net>
-References: <YoNn3pTkm5+QzE5k@linutronix.de>
- <YoNwp+9ko89Tf1ep@zx2c4.com>
- <YoNx9w1QocBY/P0I@zx2c4.com>
- <YoOQLJeQtpY9gHMm@linutronix.de>
+        <linux-arm-kernel@lists.infradead.org>,
+        Jonathan Corbet <corbet@lwn.net>, <linux-doc@vger.kernel.org>
+CC:     Zhen Lei <thunder.leizhen@huawei.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Feng Zhou <zhoufeng.zf@bytedance.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Chen Zhou <dingguo.cz@antgroup.com>,
+        "John Donnelly" <John.p.donnelly@oracle.com>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>
+Subject: [PATCH 4/5] arm64: kdump: Decide when to reserve crash memory in reserve_crashkernel()
+Date:   Mon, 13 Jun 2022 16:09:31 +0800
+Message-ID: <20220613080932.663-5-thunder.leizhen@huawei.com>
+X-Mailer: git-send-email 2.26.0.windows.1
+In-Reply-To: <20220613080932.663-1-thunder.leizhen@huawei.com>
+References: <20220613080932.663-1-thunder.leizhen@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YoOQLJeQtpY9gHMm@linutronix.de>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, May 17, 2022 at 02:08:12PM +0200, Sebastian Andrzej Siewior wrote:
-> On 2022-05-17 11:59:19 [+0200], Jason A. Donenfeld wrote:
-> > On Tue, May 17, 2022 at 11:53:43AM +0200, Jason A. Donenfeld wrote:
-> > > Hi Sebastian,
-> 
-> Hi Jason,
-> 
-> > > Interesting RT consideration. I hope there aren't too many of these
-> > > special cases that would necessitate a general mechanism. Fingers
-> > > crossed this is the only one.
-> 
-> lockdep is special here. Haven't seen other explosions so far ;)
-> 
-> > > On Tue, May 17, 2022 at 11:16:14AM +0200, Sebastian Andrzej Siewior wrote:
-> > > > -			cookie.val = 1 + (prandom_u32() >> 16);
-> > > > +			cookie.val = 1 + (sched_clock() & 0xffff);
-> > > >  			hlock->pin_count += cookie.val;
-> > >  
-> > > I have no idea what the requirements here are. What would happen if you
-> > > just did atomic_inc_return(&some_global) instead? That'd be faster
-> > > anyhow, and it's not like 16 bits gives you much variance anyway...
-> 
-> it might work I guess. PeterZ? Would this_cpu_inc_return() work?
+After the kexec completes data loading, the crash memory must be set to be
+inaccessible, to prevent the current kernel from damaging the data of the
+crash kernel. But for some platforms, the DMA zones is not known until the
+dtb or acpi table is parsed, but by then the linear mapping has been
+created, all are forced to be page-level mapping.
 
-Probably. But sched_clock() is plenty fine enough. No need to waste
-space on a variable.
+To optimize the system performance (reduce the TLB miss rate) when
+crashkernel=X,high is used. The reservation of crash memory is divided
+into two phases: reserve crash high memory before paging_init() is called
+and crash low memory after it. We only perform page mapping for the crash
+high memory.
 
-> 
-> > Also, what is that `1 +` doing there? If the intention is to make sure
-> > this is non-zero, you might want the mask to be 0xfffe? Or you're
-> > counting on the assigned type being a u32 so it all overflows into the
-> > next zone the way you want it? Kinda weird.
-> 
-> hmm. It used to be 1 before prandom_u32() was introduced and the point
-> is probably to have a cookie != 0. val and pin_count are both unsigned
-> int/ 32bit so that overflow doesn't matter.
+commit 031495635b46 ("arm64: Do not defer reserve_crashkernel() for
+platforms with no DMA memory zones") has caused reserve_crashkernel() to
+be called in two places: before or after paging_init(), which is
+controlled by whether CONFIG_ZONE_DMA/DMA32 is enabled. Just move the
+control into reserve_crashkernel(), prepare for the optimizations
+mentioned above.
 
-Right, must not be 0.
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+---
+ arch/arm64/mm/init.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
+
+diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+index 8539598f9e58b4d..fb24efbc46f5ef4 100644
+--- a/arch/arm64/mm/init.c
++++ b/arch/arm64/mm/init.c
+@@ -90,6 +90,9 @@ phys_addr_t __ro_after_init arm64_dma_phys_limit;
+ phys_addr_t __ro_after_init arm64_dma_phys_limit = PHYS_MASK + 1;
+ #endif
+ 
++#define DMA_PHYS_LIMIT_UNKNOWN		0
++#define DMA_PHYS_LIMIT_KNOWN		1
++
+ /* Current arm64 boot protocol requires 2MB alignment */
+ #define CRASH_ALIGN			SZ_2M
+ 
+@@ -131,18 +134,23 @@ static int __init reserve_crashkernel_low(unsigned long long low_size)
+  * line parameter. The memory reserved is used by dump capture kernel when
+  * primary kernel is crashing.
+  */
+-static void __init reserve_crashkernel(void)
++static void __init reserve_crashkernel(int dma_state)
+ {
+ 	unsigned long long crash_base, crash_size;
+ 	unsigned long long crash_low_size = 0;
+ 	unsigned long long crash_max = CRASH_ADDR_LOW_MAX;
+ 	char *cmdline = boot_command_line;
++	int dma_enabled = IS_ENABLED(CONFIG_ZONE_DMA) || IS_ENABLED(CONFIG_ZONE_DMA32);
+ 	int ret;
+ 	bool fixed_base;
+ 
+ 	if (!IS_ENABLED(CONFIG_KEXEC_CORE))
+ 		return;
+ 
++	if ((!dma_enabled && (dma_state != DMA_PHYS_LIMIT_UNKNOWN)) ||
++	     (dma_enabled && (dma_state != DMA_PHYS_LIMIT_KNOWN)))
++		return;
++
+ 	/* crashkernel=X[@offset] */
+ 	ret = parse_crashkernel(cmdline, memblock_phys_mem_size(),
+ 				&crash_size, &crash_base);
+@@ -413,8 +421,7 @@ void __init arm64_memblock_init(void)
+ 
+ 	early_init_fdt_scan_reserved_mem();
+ 
+-	if (!IS_ENABLED(CONFIG_ZONE_DMA) && !IS_ENABLED(CONFIG_ZONE_DMA32))
+-		reserve_crashkernel();
++	reserve_crashkernel(DMA_PHYS_LIMIT_UNKNOWN);
+ 
+ 	high_memory = __va(memblock_end_of_DRAM() - 1) + 1;
+ }
+@@ -462,8 +469,7 @@ void __init bootmem_init(void)
+ 	 * request_standard_resources() depends on crashkernel's memory being
+ 	 * reserved, so do it here.
+ 	 */
+-	if (IS_ENABLED(CONFIG_ZONE_DMA) || IS_ENABLED(CONFIG_ZONE_DMA32))
+-		reserve_crashkernel();
++	reserve_crashkernel(DMA_PHYS_LIMIT_KNOWN);
+ 
+ 	memblock_dump_all();
+ }
+-- 
+2.25.1
+
