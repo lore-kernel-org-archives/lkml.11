@@ -2,137 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B38FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:22:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97F57C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:22:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236416AbiFMKWY convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:22:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45830 "EHLO
+        id S243334AbiFMKWc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:22:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242941AbiFMKUm (ORCPT
+        with ESMTP id S243172AbiFMKUu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:20:42 -0400
-Received: from de-smtp-delivery-113.mimecast.com (de-smtp-delivery-113.mimecast.com [194.104.111.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 70A50108
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 03:17:19 -0700 (PDT)
-Received: from CHE01-GV0-obe.outbound.protection.outlook.com
- (mail-gv0che01lp2044.outbound.protection.outlook.com [104.47.22.44]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- de-mta-2-yYJeCvqFNeC3c_16aEaG1A-2; Mon, 13 Jun 2022 12:17:15 +0200
-X-MC-Unique: yYJeCvqFNeC3c_16aEaG1A-2
-Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:2e::8) by
- ZRAP278MB0223.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:2c::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5332.13; Mon, 13 Jun 2022 10:17:13 +0000
-Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
- ([fe80::2879:acb:62c8:4987]) by ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
- ([fe80::2879:acb:62c8:4987%8]) with mapi id 15.20.5332.020; Mon, 13 Jun 2022
- 10:17:13 +0000
-Date:   Mon, 13 Jun 2022 12:17:12 +0200
-From:   Francesco Dolcini <francesco.dolcini@toradex.com>
-To:     Richard Zhu <hongxing.zhu@nxp.com>, l.stach@pengutronix.de,
-        bhelgaas@google.com, robh@kernel.org
-Cc:     broonie@kernel.org, lorenzo.pieralisi@arm.com, festevam@gmail.com,
-        francesco.dolcini@toradex.com, linux-pci@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, linux-imx@nxp.com
-Subject: Re: [PATCH v10 5/7] PCI: imx6: Turn off regulator when the system is
- in suspend mode
-Message-ID: <20220613101712.GA20538@francesco-nb.int.toradex.com>
-References: <1655110538-10914-1-git-send-email-hongxing.zhu@nxp.com>
- <1655110538-10914-6-git-send-email-hongxing.zhu@nxp.com>
-In-Reply-To: <1655110538-10914-6-git-send-email-hongxing.zhu@nxp.com>
-X-ClientProxiedBy: MR1P264CA0068.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:501:3f::33) To ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:2e::8)
+        Mon, 13 Jun 2022 06:20:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C1921E18;
+        Mon, 13 Jun 2022 03:17:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B8AF9B80E5C;
+        Mon, 13 Jun 2022 10:17:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C4B2C34114;
+        Mon, 13 Jun 2022 10:17:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655115456;
+        bh=3zyHo8E2lTCNCDsARKLRjHsXBpTO5uFQeK4ZbSZk0rs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=oi1ZERJ336p1pwujH6RBnzq8hQdcG+msTT/ylMNO+hsDE+TMgYNwdq8CqX8uOFOol
+         q2QWjP/zSniwz+bBLO7MxRNvuefH0oO4zDcwfDDuMKGHtCkb8gKZnTjChS3CrABGvI
+         SqemY+EuyxRRDBpL5lSVitwLW92Y9jW9Z3bT8dHg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 4.9 080/167] ext4: verify dir block before splitting it
+Date:   Mon, 13 Jun 2022 12:09:14 +0200
+Message-Id: <20220613094859.679175410@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
+References: <20220613094840.720778945@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 763b0922-782e-40d8-c3cc-08da4d25e26b
-X-MS-TrafficTypeDiagnostic: ZRAP278MB0223:EE_
-X-Microsoft-Antispam-PRVS: <ZRAP278MB0223C73A8AEF48B6973EF486E2AB9@ZRAP278MB0223.CHEP278.PROD.OUTLOOK.COM>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0
-X-Microsoft-Antispam-Message-Info: Vg2CAPYW3ymHcXhSA0A91/6QE55HZj25mVlZsG3CvluhnilgTuZ/NTRWS4woUQaFg/2nRkMuexosL4QhocxhXZslwhZacJCk6NfeIGCBy6vFi3RF95AsEw31azPWqtj2thDrMR6Ikyl6LWHPYeK2eue4jjYSj1Mj7LVrqhrfBNOHivNQ2W/W+7QTmXYksl205OlCyvweNsEOS92MaY/uoqd6Ui7qYoB7hCxMAoa9jcgnufq9dn2/sMbILHXmT52ej9FuBnQrxTLThG+ZiDKVslwP+xP0r4WQUQiUCJH7PPHfu5BFfAnQXY9ghP3Lr+A2vxT2xm5CGtzMiiC6mV/+jv1G63DSniX4o3SB9qHPr8sleEUDI0y2c6PGJKT3ddhIuNwHIjqDEn5n9ZyaJzMy1g+XAH+mrHhG058+wctqRxS4aK8Lp70YiCNNZAcVVQgXe9lTD6j5op0JoLnWAwLVOLVlObpht3V76n3/7WGEmkyWy/C3lFdAgzY6M+Z7XYYjarXV/cA6ZCixbStdY8O3mFCYM8qNcTt3iQRDx9PO5gjCZt3dIWOn21mxXbpMXwF9oDy3Bww0C1isSV+5914mSIXOyrScrF7KVrSRjkzShNBsNf7NpNHnf2VzuwI30LAqLVXIVs0iEFem4aZNhiPQfiCayngu7hI09upJY6SofIcWTWgxyrngZcQSYLo6gJs4sMjT/cX8uWMStb614rAeYg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(346002)(39840400004)(366004)(8936002)(6512007)(6486002)(66556008)(15650500001)(33656002)(2906002)(38100700002)(8676002)(86362001)(508600001)(186003)(52116002)(4744005)(41300700001)(5660300002)(26005)(7416002)(83380400001)(38350700002)(6506007)(1076003)(44832011)(316002)(66946007)(66476007)(4326008);DIR:OUT;SFP:1102
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4VlI591WYg+1FfvVyaQx6qS3zALb7YqXh9sJu3B53R4r7W+FeG6xHqDrXs11?=
- =?us-ascii?Q?A2TiRTXIkrQD7NWGuSEv669VY9uLHA7PJLpJqI8w8v/nJJrCl0ubhze3A+1g?=
- =?us-ascii?Q?KzWlKwwt7Pomd3rWzuCix8gPkSjKgIXAJYzuPQMQSrK+SNq5DratNcOxS5c0?=
- =?us-ascii?Q?cYoTF9gphfaJO5CIYZ/M56px2xDVRLsXkSYbrVAI433e8/7FYvdgucYhFGNT?=
- =?us-ascii?Q?4ytj/Bs2UwAz8SIl71j6CY+lNajhvR7xrp/hIk5Lc+O+JIarbiUswdx/jDFr?=
- =?us-ascii?Q?cnh6EwIM0sW7LcHBjBK0sszKC1Ym6jaEEL1Otnss0gkTe9ng36iaMa6jeCnN?=
- =?us-ascii?Q?KTIlzW5Z+V2WoJcx0bVt7uwHJs3IjprAtoQoC+YFutG0w2A+PHBF8cs2aOzg?=
- =?us-ascii?Q?QB82G0xRXwzpTEwypI4rBIYhUBCnPu4dGJ4TtOmiZkI6jRMV703M+J10ufIc?=
- =?us-ascii?Q?ebLrT4ahLKpFDj61cG3ATJf19WISH7edPu5575B7xeELdn04PnBF8SJWx7bb?=
- =?us-ascii?Q?mkYy239OVEQXpB0xN781GhicGTwtXT2dwJ6Ua3Qhml+Gnd904GpYilB91vDl?=
- =?us-ascii?Q?/ldqRZcrxvbvqxoqWjWqUV6aeahskfh6nmCn7qDQytmGXHU9H8+Jq3sLxdgb?=
- =?us-ascii?Q?eSq9e29giZuSrYTzpbj7kA6J9B0SnzDI0UXBwQ0SpPkL+fCVdZ1BMgVVCrGY?=
- =?us-ascii?Q?bkXV9qmgBxRPS7bWOffsm4YrnukpLashjafJPnEEwiKy5S5P4gWlnQrMWbS7?=
- =?us-ascii?Q?SLoxBeno1oNncFjweFLWEOed3zis5nHy9AFTwTiY+gscsPOIY/jCSnaxIopI?=
- =?us-ascii?Q?c4zwXNrNTiRGy2Md2zn68K16/RVP/vQcO3TNzakoOa1t+NhH99FbcGoONG/z?=
- =?us-ascii?Q?XosdEuDO3CSnOWkTJPg3sdwIjrg7LMDLC8uMs/MUKQf1hc2Od4K2S5NMicqu?=
- =?us-ascii?Q?Bs+0+xGsuvpJKlBZr4LWLQdaWYILgtQMUC+OBQDu8w0yutMTEyjIRWiDJ6x9?=
- =?us-ascii?Q?9a+POjVaRjwobGFCU1tTmCevmZ9/ZhHynPX0/y4NW2mkT8O/ZUWbd3pvAlpZ?=
- =?us-ascii?Q?W4eaZxQA5PIzIAnZMjFCLDT9g4XI7djpJImXkz24nCThH+rd2fOE6gdBpRjv?=
- =?us-ascii?Q?Hywo+K90pVCA52y8ujG77ZVuNhymWVQocbw97p4rw3A1oFTWhDiKDhZBLjgm?=
- =?us-ascii?Q?a3arx2Bvt4b9FyiNVpNHludyovj2ZxxROsmKq3YLi13tv6VSpCPCWdPAZjeY?=
- =?us-ascii?Q?HIFxeS/35+nMcy9pZ+6ob4K1G42vfhQfm6Ht/J8rWRC4mrW/iYUGmJxBtId4?=
- =?us-ascii?Q?glwBnPBEgVDnxKV/UFhZmHi/+q1/MiB4KFQa35U5TgiIUm7u5Ab9ndyyoDoB?=
- =?us-ascii?Q?ozarzouHXe+fJDqWKWjIS7HBBTfe8EvNZL8KKvc6S4YAaKU//ZZRzWijR2/N?=
- =?us-ascii?Q?9vJX/KSPY/1IaWKiyBkkT5bFgo4X5MD+4v+VohvOE6eGvUQrharHZBrLz7ES?=
- =?us-ascii?Q?znNhvIORb57SdP6NnF3Z2mB6LrjDh/vVdyxJN40lirpl8Qe9ZTXrC3D9cN1q?=
- =?us-ascii?Q?xFbodh+YOUXZRRDy7hMt6xRk1/A0D3fm2T2Cc9CSQINjTw9504zmfLoLGCQD?=
- =?us-ascii?Q?E4JQ5ZCmCCB/b9QoEMr/fB421zMe9vQ8XE5l12NXXKKs1TwAF+7k+49wOr+T?=
- =?us-ascii?Q?gvYwczsU4Q3QcuqL47oTqaogDKGzwIDbKWCSuJd3jXnVHd30mryRKcrmJBgj?=
- =?us-ascii?Q?VEkZVoz7SnZy0qhfayY+p30wY5CANtw=3D?=
-X-OriginatorOrg: toradex.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 763b0922-782e-40d8-c3cc-08da4d25e26b
-X-MS-Exchange-CrossTenant-AuthSource: ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jun 2022 10:17:13.4813
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: uMGpOyuf8LtQ06OWla6ptR9BvGW/SN26cYXDKl5jbbkuoAQ8/GimVWdEaBv7lgL4OKjYmM6TjgnLlN0sZpPF8MaybFSnVsl+yBf1SHdxJ9U=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZRAP278MB0223
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CDE13A77 smtp.mailfrom=francesco.dolcini@toradex.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: toradex.com
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 04:55:36PM +0800, Richard Zhu wrote:
-> The driver should undo any enables it did itself. The regulator disable
-> shouldn't be basing decisions on regulator_is_enabled().
-> 
-> Move the regulator_disable to the suspend function, turn off regulator
-> when the system is in suspend mode.
+From: Jan Kara <jack@suse.cz>
 
-According to the documentation:
+commit 46c116b920ebec58031f0a78c5ea9599b0d2a371 upstream.
 
-  vpcie-supply:
-    description: Should specify the regulator in charge of PCIe port power.
-      The regulator will be enabled when initializing the PCIe host and
-      disabled either as part of the init process or when shutting down
-      the host (optional required).
+Before splitting a directory block verify its directory entries are sane
+so that the splitting code does not access memory it should not.
 
-Is this really what we want to do (remove power in suspend, enable
-it on resume)? On our boards this powers a PCIe device connected to the host
-port, that sound fair according to the binding documentation for it.
-Am I wrong?
+Cc: stable@vger.kernel.org
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220518093332.13986-1-jack@suse.cz
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/ext4/namei.c |   32 +++++++++++++++++++++-----------
+ 1 file changed, 21 insertions(+), 11 deletions(-)
 
-We do have issues with PCIe not working anymore after suspend/resume,
-wondering (I did not have time to properly dig into it) if this is the
-root cause.
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -270,9 +270,9 @@ static struct dx_frame *dx_probe(struct
+ 				 struct dx_hash_info *hinfo,
+ 				 struct dx_frame *frame);
+ static void dx_release(struct dx_frame *frames);
+-static int dx_make_map(struct inode *dir, struct ext4_dir_entry_2 *de,
+-		       unsigned blocksize, struct dx_hash_info *hinfo,
+-		       struct dx_map_entry map[]);
++static int dx_make_map(struct inode *dir, struct buffer_head *bh,
++		       struct dx_hash_info *hinfo,
++		       struct dx_map_entry *map_tail);
+ static void dx_sort_map(struct dx_map_entry *map, unsigned count);
+ static struct ext4_dir_entry_2 *dx_move_dirents(char *from, char *to,
+ 		struct dx_map_entry *offsets, int count, unsigned blocksize);
+@@ -1185,15 +1185,23 @@ static inline int search_dirblock(struct
+  * Create map of hash values, offsets, and sizes, stored at end of block.
+  * Returns number of entries mapped.
+  */
+-static int dx_make_map(struct inode *dir, struct ext4_dir_entry_2 *de,
+-		       unsigned blocksize, struct dx_hash_info *hinfo,
++static int dx_make_map(struct inode *dir, struct buffer_head *bh,
++		       struct dx_hash_info *hinfo,
+ 		       struct dx_map_entry *map_tail)
+ {
+ 	int count = 0;
+-	char *base = (char *) de;
++	struct ext4_dir_entry_2 *de = (struct ext4_dir_entry_2 *)bh->b_data;
++	unsigned int buflen = bh->b_size;
++	char *base = bh->b_data;
+ 	struct dx_hash_info h = *hinfo;
+ 
+-	while ((char *) de < base + blocksize) {
++	if (ext4_has_metadata_csum(dir->i_sb))
++		buflen -= sizeof(struct ext4_dir_entry_tail);
++
++	while ((char *) de < base + buflen) {
++		if (ext4_check_dir_entry(dir, NULL, de, bh, base, buflen,
++					 ((char *)de) - base))
++			return -EFSCORRUPTED;
+ 		if (de->name_len && de->inode) {
+ 			ext4fs_dirhash(de->name, de->name_len, &h);
+ 			map_tail--;
+@@ -1203,8 +1211,7 @@ static int dx_make_map(struct inode *dir
+ 			count++;
+ 			cond_resched();
+ 		}
+-		/* XXX: do we need to check rec_len == 0 case? -Chris */
+-		de = ext4_next_entry(de, blocksize);
++		de = ext4_next_entry(de, dir->i_sb->s_blocksize);
+ 	}
+ 	return count;
+ }
+@@ -1755,8 +1762,11 @@ static struct ext4_dir_entry_2 *do_split
+ 
+ 	/* create map in the end of data2 block */
+ 	map = (struct dx_map_entry *) (data2 + blocksize);
+-	count = dx_make_map(dir, (struct ext4_dir_entry_2 *) data1,
+-			     blocksize, hinfo, map);
++	count = dx_make_map(dir, *bh, hinfo, map);
++	if (count < 0) {
++		err = count;
++		goto journal_error;
++	}
+ 	map -= count;
+ 	dx_sort_map(map, count);
+ 	/* Ensure that neither split block is over half full */
 
-Francesco
 
