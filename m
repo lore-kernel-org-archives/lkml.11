@@ -2,176 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1235FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:32:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 402C2C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:32:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237962AbiFMRcQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 13:32:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40260 "EHLO
+        id S241756AbiFMRcy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 13:32:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241453AbiFMRbq (ORCPT
+        with ESMTP id S241363AbiFMRcQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 13:31:46 -0400
-Received: from outbound-smtp60.blacknight.com (outbound-smtp60.blacknight.com [46.22.136.244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9A5365400
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 05:57:05 -0700 (PDT)
-Received: from mail.blacknight.com (pemlinmail06.blacknight.ie [81.17.255.152])
-        by outbound-smtp60.blacknight.com (Postfix) with ESMTPS id 6B2AAFA76F
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:57:04 +0100 (IST)
-Received: (qmail 28904 invoked from network); 13 Jun 2022 12:57:04 -0000
-Received: from unknown (HELO morpheus.112glenside.lan) (mgorman@techsingularity.net@[84.203.198.246])
-  by 81.17.254.9 with ESMTPA; 13 Jun 2022 12:57:03 -0000
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@kernel.org>,
-        Hugh Dickins <hughd@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Mel Gorman <mgorman@techsingularity.net>
-Subject: [PATCH 3/7] mm/page_alloc: Split out buddy removal code from rmqueue into separate helper
-Date:   Mon, 13 Jun 2022 13:56:18 +0100
-Message-Id: <20220613125622.18628-4-mgorman@techsingularity.net>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220613125622.18628-1-mgorman@techsingularity.net>
-References: <20220613125622.18628-1-mgorman@techsingularity.net>
+        Mon, 13 Jun 2022 13:32:16 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 759BE3525C;
+        Mon, 13 Jun 2022 05:55:59 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id w27so6993576edl.7;
+        Mon, 13 Jun 2022 05:55:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=eTQgrOtNKXeuE24E4z1BZTvFXtuq4jZXbc2fnCBYhC4=;
+        b=Nj4MPAUCb8OsNfEZnsGGbUCGhFTknfSsE2F2y/SD3ys8pENJtRCBqv0QGE5MeJqZKf
+         4ujqAiYBhiFAQIIMPaygZHU0/g+3YknfQZZNi4Zk1JY22jEvvgIxbsyGHQl/L5VMCTv+
+         PhibmZ6Q8zOwiyhaUUxlLced1et9/+osLVbICikxeqZICFXFHZtDonOd+BrKN251SWnv
+         dxbwERu7dgYthvRMX8FfmxERfODU787Zqp6sW7mpxaFLu2txINVkCxHxdrUWAlAktt3B
+         5jBGTrYKi//rCcqiMtbP1tfziE+slRshLlGSrrgWkutmG5+D2MFut4UwQ9MF72FkL5M7
+         IRPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=eTQgrOtNKXeuE24E4z1BZTvFXtuq4jZXbc2fnCBYhC4=;
+        b=5ZDEipQaL0rIPJwEMV8LCu5GO+LFGB0BV3reYVan/Daj8VZVo+RK3PPvrdlpSK7BZw
+         79PAysxVCrrZLnz2JA2oaGsMhYnWdSZw4kwuvf77lEIEOpIv/5mvZ0Ynr8Of+aOfnTqP
+         hJMSj45tRTdCG/6DKYhpeQXQ73kR/UURlYDKGeANmEj+L/5sKlu6z7J4fPBo/wPpV+1g
+         IhVaaX8SH0qWP8Vh0W508QAIPmxlvqKT3xxxnWXa6CKTay7dlXxu14LxFp8LO6PhJbgO
+         mWYoLiYLHAPxFenVVkXo8huIiP+FqeC5pO1myAt1Ls7yWxEAGVrKDm/al1rTz3VBrBr5
+         zBAg==
+X-Gm-Message-State: AOAM533T4ApCOt10bUFXaiCRm2xa3MCBYrmOP2i70jwSnNkhdEnarhlZ
+        K+6cvk/yMrr/rMyMaYbeyVU=
+X-Google-Smtp-Source: ABdhPJyT0uwBN5ukf/MuNShwizt1LoZp0+Oby2zBTUXp3fSO81I8QLT2dBcsK6cZgTnu+DBQ4P/AYA==
+X-Received: by 2002:a05:6402:1e92:b0:42d:dc34:e233 with SMTP id f18-20020a0564021e9200b0042ddc34e233mr65598749edf.386.1655124957390;
+        Mon, 13 Jun 2022 05:55:57 -0700 (PDT)
+Received: from [192.168.178.21] (p57b0b659.dip0.t-ipconnect.de. [87.176.182.89])
+        by smtp.gmail.com with ESMTPSA id v20-20020a1709060b5400b0070662b3b792sm3765548ejg.222.2022.06.13.05.55.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Jun 2022 05:55:56 -0700 (PDT)
+Message-ID: <34daa8ab-a9f4-8f7b-0ea7-821bc36b9497@gmail.com>
+Date:   Mon, 13 Jun 2022 14:55:54 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 03/13] mm: shmem: provide oom badness for shmem files
+Content-Language: en-US
+To:     Michal Hocko <mhocko@suse.com>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        intel-gfx@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
+        nouveau@lists.freedesktop.org, linux-tegra@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        alexander.deucher@amd.com, daniel@ffwll.ch,
+        viro@zeniv.linux.org.uk, akpm@linux-foundation.org,
+        hughd@google.com, andrey.grodzovsky@amd.com
+References: <YqIB0bavUeU8Abwl@dhcp22.suse.cz>
+ <d4a19481-7a9f-19bf-c270-d89baa0970fc@amd.com>
+ <YqIMmK18mb/+s5de@dhcp22.suse.cz>
+ <3f7d3d96-0858-fb6d-07a3-4c18964f888e@gmail.com>
+ <YqMuq/ZrV8loC3jE@dhcp22.suse.cz>
+ <2e7e050e-04eb-0c0a-0675-d7f1c3ae7aed@amd.com>
+ <YqNSSFQELx/LeEHR@dhcp22.suse.cz>
+ <288528c3-411e-fb25-2f08-92d4bb9f1f13@gmail.com>
+ <Yqbq/Q5jz2ou87Jx@dhcp22.suse.cz>
+ <b8b9aba5-575e-8a34-e627-79bef4ed7f97@amd.com>
+ <YqcpZY3Xx7Mk2ROH@dhcp22.suse.cz>
+From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>
+In-Reply-To: <YqcpZY3Xx7Mk2ROH@dhcp22.suse.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a preparation page to allow the buddy removal code to be reused in
-a later patch.
+Am 13.06.22 um 14:11 schrieb Michal Hocko:
+> [SNIP]
+>>>> Alternative I could try to track the "owner" of a buffer (e.g. a shmem
+>>>> file), but then it can happen that one processes creates the object and
+>>>> another one is writing to it and actually allocating the memory.
+>>> If you can enforce that the owner is really responsible for the
+>>> allocation then all should be fine. That would require MAP_POPULATE like
+>>> semantic and I suspect this is not really feasible with the existing
+>>> userspace. It would be certainly hard to enforce for bad players.
+>> I've tried this today and the result was: "BUG: Bad rss-counter state
+>> mm:000000008751d9ff type:MM_FILEPAGES val:-571286".
+>>
+>> The problem is once more that files are not informed when the process
+>> clones. So what happened is that somebody called fork() with an mm_struct
+>> I've accounted my pages to. The result is just that we messed up the
+>> rss_stats and  the the "BUG..." above.
+>>
+>> The key difference between normal allocated pages and the resources here is
+>> just that we are not bound to an mm_struct in any way.
+> It is not really clear to me what exactly you have tried.
 
-No functional change.
+I've tried to track the "owner" of a driver connection by keeping a 
+reference to the mm_struct who created this connection inside our file 
+private and then use add_mm_counter() to account all the allocations of 
+the driver to this mm_struct.
 
-Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
-Tested-by: Minchan Kim <minchan@kernel.org>
-Acked-by: Minchan Kim <minchan@kernel.org>
-Reviewed-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
----
- mm/page_alloc.c | 81 ++++++++++++++++++++++++++++---------------------
- 1 file changed, 47 insertions(+), 34 deletions(-)
+This works to the extend that now the right process is killed in an OOM 
+situation. The problem with this approach is that the driver is not 
+informed about operations like fork() or clone(), so what happens is 
+that after a fork()/clone() we have an unbalanced rss-counter.
 
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index febd97f4a2fc..44d198af4b35 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -3637,6 +3637,43 @@ static inline void zone_statistics(struct zone *preferred_zone, struct zone *z,
- #endif
- }
- 
-+static __always_inline
-+struct page *rmqueue_buddy(struct zone *preferred_zone, struct zone *zone,
-+			   unsigned int order, unsigned int alloc_flags,
-+			   int migratetype)
-+{
-+	struct page *page;
-+	unsigned long flags;
-+
-+	do {
-+		page = NULL;
-+		spin_lock_irqsave(&zone->lock, flags);
-+		/*
-+		 * order-0 request can reach here when the pcplist is skipped
-+		 * due to non-CMA allocation context. HIGHATOMIC area is
-+		 * reserved for high-order atomic allocation, so order-0
-+		 * request should skip it.
-+		 */
-+		if (order > 0 && alloc_flags & ALLOC_HARDER)
-+			page = __rmqueue_smallest(zone, order, MIGRATE_HIGHATOMIC);
-+		if (!page) {
-+			page = __rmqueue(zone, order, migratetype, alloc_flags);
-+			if (!page) {
-+				spin_unlock_irqrestore(&zone->lock, flags);
-+				return NULL;
-+			}
-+		}
-+		__mod_zone_freepage_state(zone, -(1 << order),
-+					  get_pcppage_migratetype(page));
-+		spin_unlock_irqrestore(&zone->lock, flags);
-+	} while (check_new_pages(page, order));
-+
-+	__count_zid_vm_events(PGALLOC, page_zonenum(page), 1 << order);
-+	zone_statistics(preferred_zone, zone, 1);
-+
-+	return page;
-+}
-+
- /* Remove page from the per-cpu list, caller must protect the list */
- static inline
- struct page *__rmqueue_pcplist(struct zone *zone, unsigned int order,
-@@ -3717,9 +3754,14 @@ struct page *rmqueue(struct zone *preferred_zone,
- 			gfp_t gfp_flags, unsigned int alloc_flags,
- 			int migratetype)
- {
--	unsigned long flags;
- 	struct page *page;
- 
-+	/*
-+	 * We most definitely don't want callers attempting to
-+	 * allocate greater than order-1 page units with __GFP_NOFAIL.
-+	 */
-+	WARN_ON_ONCE((gfp_flags & __GFP_NOFAIL) && (order > 1));
-+
- 	if (likely(pcp_allowed_order(order))) {
- 		/*
- 		 * MIGRATE_MOVABLE pcplist could have the pages on CMA area and
-@@ -3733,35 +3775,10 @@ struct page *rmqueue(struct zone *preferred_zone,
- 		}
- 	}
- 
--	/*
--	 * We most definitely don't want callers attempting to
--	 * allocate greater than order-1 page units with __GFP_NOFAIL.
--	 */
--	WARN_ON_ONCE((gfp_flags & __GFP_NOFAIL) && (order > 1));
--
--	do {
--		page = NULL;
--		spin_lock_irqsave(&zone->lock, flags);
--		/*
--		 * order-0 request can reach here when the pcplist is skipped
--		 * due to non-CMA allocation context. HIGHATOMIC area is
--		 * reserved for high-order atomic allocation, so order-0
--		 * request should skip it.
--		 */
--		if (order > 0 && alloc_flags & ALLOC_HARDER)
--			page = __rmqueue_smallest(zone, order, MIGRATE_HIGHATOMIC);
--		if (!page) {
--			page = __rmqueue(zone, order, migratetype, alloc_flags);
--			if (!page)
--				goto failed;
--		}
--		__mod_zone_freepage_state(zone, -(1 << order),
--					  get_pcppage_migratetype(page));
--		spin_unlock_irqrestore(&zone->lock, flags);
--	} while (check_new_pages(page, order));
--
--	__count_zid_vm_events(PGALLOC, page_zonenum(page), 1 << order);
--	zone_statistics(preferred_zone, zone, 1);
-+	page = rmqueue_buddy(preferred_zone, zone, order, alloc_flags,
-+							migratetype);
-+	if (unlikely(!page))
-+		return NULL;
- 
- out:
- 	/* Separate test+clear to avoid unnecessary atomics */
-@@ -3772,10 +3789,6 @@ struct page *rmqueue(struct zone *preferred_zone,
- 
- 	VM_BUG_ON_PAGE(page && bad_range(zone, page), page);
- 	return page;
--
--failed:
--	spin_unlock_irqrestore(&zone->lock, flags);
--	return NULL;
- }
- 
- #ifdef CONFIG_FAIL_PAGE_ALLOC
--- 
-2.35.3
+Let me maybe get back to the initial question: We have resources which 
+are not related to the virtual address space of a process, how should we 
+tell the OOM killer about them?
 
+Thanks for all the input so far,
+Christian.
