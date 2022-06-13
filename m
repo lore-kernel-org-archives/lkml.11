@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30A81C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:11:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2D37C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:11:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352314AbiFMLLo (ORCPT
+        id S1351803AbiFMLLt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:11:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60254 "EHLO
+        Mon, 13 Jun 2022 07:11:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352126AbiFMLJX (ORCPT
+        with ESMTP id S1352142AbiFMLJZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:09:23 -0400
+        Mon, 13 Jun 2022 07:09:25 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE38033E95;
-        Mon, 13 Jun 2022 03:35:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED1B33E99;
+        Mon, 13 Jun 2022 03:35:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D8E4560FFD;
-        Mon, 13 Jun 2022 10:35:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8E24C34114;
-        Mon, 13 Jun 2022 10:35:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B873D61122;
+        Mon, 13 Jun 2022 10:35:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2807C34114;
+        Mon, 13 Jun 2022 10:35:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116522;
-        bh=c7Bux8gORtIUyKX+nEOcBp7LJR8TG4CjpwtkMuws2Hw=;
+        s=korg; t=1655116525;
+        bh=IC84TqljcIL/QqTwXYGux9EhL/ILW395JAYkF4KSeAc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T03hT7vrhiomwPXK/4Z0JEZHOAS+pESDPF2lk8CNexO2c9LdZnc/iJXbDh56/GuT8
-         FjgqNpg038EzXetNIJU5zXMLrx1s/24St1Nu0lJb3RFbvgFTrF1Yot0nMPqn3syIoi
-         ZHoUKttTFc6khp5h6ayHvryvzWblt2DPELaVf9p4=
+        b=FvdIv7gdZqXLwEbssyS9IKv2nEmTncTSmXM12igfpSX+OSaEd3Kgb5Z82nMgniWub
+         o588n44XjUqpT37TDHx7NHfp8FfEkZvznYprHc9bAJbLBCBGQYMCSiZ5P6N2UvKa5P
+         k7eSLa39DbynegYwXwg1/9g8ZaBjLbYIt6oHnkeg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Liviu Dudau <liviu.dudau@arm.com>,
+        stable@vger.kernel.org,
+        Chengming Zhou <zhouchengming@bytedance.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Ben Segall <bsegall@google.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 092/411] drm/komeda: Fix an undefined behavior bug in komeda_plane_add()
-Date:   Mon, 13 Jun 2022 12:06:05 +0200
-Message-Id: <20220613094931.440825663@linuxfoundation.org>
+Subject: [PATCH 5.4 101/411] sched/fair: Fix cfs_rq_clock_pelt() for throttled cfs_rq
+Date:   Mon, 13 Jun 2022 12:06:14 +0200
+Message-Id: <20220613094931.707582001@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,56 +53,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Chengming Zhou <zhouchengming@bytedance.com>
 
-[ Upstream commit f5e284bb74ab296f98122673c7ecd22028b2c200 ]
+[ Upstream commit 64eaf50731ac0a8c76ce2fedd50ef6652aabc5ff ]
 
-In komeda_plane_add(), komeda_get_layer_fourcc_list() is assigned to
-formats and used in drm_universal_plane_init().
-drm_universal_plane_init() passes formats to
-__drm_universal_plane_init(). __drm_universal_plane_init() further
-passes formats to memcpy() as src parameter, which could lead to an
-undefined behavior bug on failure of komeda_get_layer_fourcc_list().
+Since commit 23127296889f ("sched/fair: Update scale invariance of PELT")
+change to use rq_clock_pelt() instead of rq_clock_task(), we should also
+use rq_clock_pelt() for throttled_clock_task_time and throttled_clock_task
+accounting to get correct cfs_rq_clock_pelt() of throttled cfs_rq. And
+rename throttled_clock_task(_time) to be clock_pelt rather than clock_task.
 
-Fix this bug by adding a check of formats.
-
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
-
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
-Builds with CONFIG_DRM_KOMEDA=m show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Fixes: 61f1c4a8ab75 ("drm/komeda: Attach komeda_dev to DRM-KMS")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Liviu Dudau <liviu.dudau@arm.com>
-Link: https://lore.kernel.org/dri-devel/20211201033704.32054-1-zhou1615@umn.edu
+Fixes: 23127296889f ("sched/fair: Update scale invariance of PELT")
+Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Ben Segall <bsegall@google.com>
+Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
+Link: https://lore.kernel.org/r/20220408115309.81603-1-zhouchengming@bytedance.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/arm/display/komeda/komeda_plane.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ kernel/sched/fair.c  | 8 ++++----
+ kernel/sched/pelt.h  | 4 ++--
+ kernel/sched/sched.h | 4 ++--
+ 3 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/gpu/drm/arm/display/komeda/komeda_plane.c b/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
-index a5f57b38d193..bc3f42e915e9 100644
---- a/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
-+++ b/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
-@@ -264,6 +264,10 @@ static int komeda_plane_add(struct komeda_kms_dev *kms,
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 87d9fad9d01d..d2a68ae7596e 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -4485,8 +4485,8 @@ static int tg_unthrottle_up(struct task_group *tg, void *data)
  
- 	formats = komeda_get_layer_fourcc_list(&mdev->fmt_tbl,
- 					       layer->layer_type, &n_formats);
-+	if (!formats) {
-+		kfree(kplane);
-+		return -ENOMEM;
-+	}
+ 	cfs_rq->throttle_count--;
+ 	if (!cfs_rq->throttle_count) {
+-		cfs_rq->throttled_clock_task_time += rq_clock_task(rq) -
+-					     cfs_rq->throttled_clock_task;
++		cfs_rq->throttled_clock_pelt_time += rq_clock_pelt(rq) -
++					     cfs_rq->throttled_clock_pelt;
  
- 	err = drm_universal_plane_init(&kms->base, plane,
- 			get_possible_crtcs(kms, c->pipeline),
+ 		/* Add cfs_rq with already running entity in the list */
+ 		if (cfs_rq->nr_running >= 1)
+@@ -4503,7 +4503,7 @@ static int tg_throttle_down(struct task_group *tg, void *data)
+ 
+ 	/* group is entering throttled state, stop time */
+ 	if (!cfs_rq->throttle_count) {
+-		cfs_rq->throttled_clock_task = rq_clock_task(rq);
++		cfs_rq->throttled_clock_pelt = rq_clock_pelt(rq);
+ 		list_del_leaf_cfs_rq(cfs_rq);
+ 	}
+ 	cfs_rq->throttle_count++;
+@@ -4932,7 +4932,7 @@ static void sync_throttle(struct task_group *tg, int cpu)
+ 	pcfs_rq = tg->parent->cfs_rq[cpu];
+ 
+ 	cfs_rq->throttle_count = pcfs_rq->throttle_count;
+-	cfs_rq->throttled_clock_task = rq_clock_task(cpu_rq(cpu));
++	cfs_rq->throttled_clock_pelt = rq_clock_pelt(cpu_rq(cpu));
+ }
+ 
+ /* conditionally throttle active cfs_rq's from put_prev_entity() */
+diff --git a/kernel/sched/pelt.h b/kernel/sched/pelt.h
+index afff644da065..43e2a47489fa 100644
+--- a/kernel/sched/pelt.h
++++ b/kernel/sched/pelt.h
+@@ -127,9 +127,9 @@ static inline u64 rq_clock_pelt(struct rq *rq)
+ static inline u64 cfs_rq_clock_pelt(struct cfs_rq *cfs_rq)
+ {
+ 	if (unlikely(cfs_rq->throttle_count))
+-		return cfs_rq->throttled_clock_task - cfs_rq->throttled_clock_task_time;
++		return cfs_rq->throttled_clock_pelt - cfs_rq->throttled_clock_pelt_time;
+ 
+-	return rq_clock_pelt(rq_of(cfs_rq)) - cfs_rq->throttled_clock_task_time;
++	return rq_clock_pelt(rq_of(cfs_rq)) - cfs_rq->throttled_clock_pelt_time;
+ }
+ #else
+ static inline u64 cfs_rq_clock_pelt(struct cfs_rq *cfs_rq)
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index fe755c1a0af9..b8a3db59e326 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -570,8 +570,8 @@ struct cfs_rq {
+ 	s64			runtime_remaining;
+ 
+ 	u64			throttled_clock;
+-	u64			throttled_clock_task;
+-	u64			throttled_clock_task_time;
++	u64			throttled_clock_pelt;
++	u64			throttled_clock_pelt_time;
+ 	int			throttled;
+ 	int			throttle_count;
+ 	struct list_head	throttled_list;
 -- 
 2.35.1
 
