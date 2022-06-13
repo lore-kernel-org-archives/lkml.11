@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E66DCCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:06:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5DEDC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:06:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351451AbiFMLGH (ORCPT
+        id S1350185AbiFMLGN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:06:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49672 "EHLO
+        Mon, 13 Jun 2022 07:06:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349243AbiFMK5C (ORCPT
+        with ESMTP id S1349581AbiFMK5W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:57:02 -0400
+        Mon, 13 Jun 2022 06:57:22 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6244255A4;
-        Mon, 13 Jun 2022 03:32:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F82725C68;
+        Mon, 13 Jun 2022 03:32:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0CEA2B80E95;
-        Mon, 13 Jun 2022 10:32:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6696DC385A5;
-        Mon, 13 Jun 2022 10:32:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 73165B80EA8;
+        Mon, 13 Jun 2022 10:32:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1A80C34114;
+        Mon, 13 Jun 2022 10:32:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116328;
-        bh=/h6cBU8QbiQoc47uzdPgeaoCFoAxZe7i4+1F5I3Diko=;
+        s=korg; t=1655116334;
+        bh=3sEpLrvvO/uTRcRbh2J/sUJLoAvJDDtp0BA43wGp+94=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pXiAP01dUNjBY9z45I4I55b6UwgPd17XO2QryK7VyvTCmOSZtOWuE/9AtwW0C9QF2
-         rI5QCwgfLnK6DVN4oGELirErhx61cf5yLtXsvy2nHcDVFkizLBlv/qBpt8asIpCj/E
-         80YVhL/+EI3JCMD+L+CXdLG8QjImJmR7mbTimxCA=
+        b=R4A6SSTuVujUh2WBLNA9bg83E2/v3TY4K3XOD7N9v2srhFGhDr4q/pf1Xn1kqXS+i
+         9Ab/gUJIkF6HbiB/I2Bn4sevPaZx8Bez+W6MvEC2/JwdEoJx49PVSnUPBUtAvqTHUT
+         egoN2AJRSnQ9Iivl6ouaOhdsT8GyQvEOZZ3WWOrQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 171/218] video: fbdev: pxa3xx-gcu: release the resources correctly in pxa3xx_gcu_probe/remove()
-Date:   Mon, 13 Jun 2022 12:10:29 +0200
-Message-Id: <20220613094925.791144604@linuxfoundation.org>
+        stable@vger.kernel.org, Kinglong Mee <kinglongmee@gmail.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 172/218] xprtrdma: treat all calls not a bcall when bc_serv is NULL
+Date:   Mon, 13 Jun 2022 12:10:30 +0200
+Message-Id: <20220613094925.821320025@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -49,64 +51,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Kinglong Mee <kinglongmee@gmail.com>
 
-[ Upstream commit d87ad457f7e1b8d2492ca5b1531eb35030a1cc8f ]
+[ Upstream commit 11270e7ca268e8d61b5d9e5c3a54bd1550642c9c ]
 
-In pxa3xx_gcu_probe(), the sequence of error lable is wrong, it will
-leads some resource leaked, so adjust the sequence to handle the error
-correctly, and if pxa3xx_gcu_add_buffer() fails, pxa3xx_gcu_free_buffers()
-need be called.
-In pxa3xx_gcu_remove(), add missing clk_disable_unpreprare().
+When a rdma server returns a fault format reply, nfs v3 client may
+treats it as a bcall when bc service is not exist.
 
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+The debug message at rpcrdma_bc_receive_call are,
+
+[56579.837169] RPC:       rpcrdma_bc_receive_call: callback XID
+00000001, length=20
+[56579.837174] RPC:       rpcrdma_bc_receive_call: 00 00 00 01 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 04
+
+After that, rpcrdma_bc_receive_call will meets NULL pointer as,
+
+[  226.057890] BUG: unable to handle kernel NULL pointer dereference at
+00000000000000c8
+...
+[  226.058704] RIP: 0010:_raw_spin_lock+0xc/0x20
+...
+[  226.059732] Call Trace:
+[  226.059878]  rpcrdma_bc_receive_call+0x138/0x327 [rpcrdma]
+[  226.060011]  __ib_process_cq+0x89/0x170 [ib_core]
+[  226.060092]  ib_cq_poll_work+0x26/0x80 [ib_core]
+[  226.060257]  process_one_work+0x1a7/0x360
+[  226.060367]  ? create_worker+0x1a0/0x1a0
+[  226.060440]  worker_thread+0x30/0x390
+[  226.060500]  ? create_worker+0x1a0/0x1a0
+[  226.060574]  kthread+0x116/0x130
+[  226.060661]  ? kthread_flush_work_fn+0x10/0x10
+[  226.060724]  ret_from_fork+0x35/0x40
+...
+
+Signed-off-by: Kinglong Mee <kinglongmee@gmail.com>
+Reviewed-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/pxa3xx-gcu.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ net/sunrpc/xprtrdma/rpc_rdma.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/video/fbdev/pxa3xx-gcu.c b/drivers/video/fbdev/pxa3xx-gcu.c
-index 933619da1a94..4febbe21b9b5 100644
---- a/drivers/video/fbdev/pxa3xx-gcu.c
-+++ b/drivers/video/fbdev/pxa3xx-gcu.c
-@@ -662,6 +662,7 @@ static int pxa3xx_gcu_probe(struct platform_device *pdev)
- 	for (i = 0; i < 8; i++) {
- 		ret = pxa3xx_gcu_add_buffer(dev, priv);
- 		if (ret) {
-+			pxa3xx_gcu_free_buffers(dev, priv);
- 			dev_err(dev, "failed to allocate DMA memory\n");
- 			goto err_disable_clk;
- 		}
-@@ -677,15 +678,15 @@ static int pxa3xx_gcu_probe(struct platform_device *pdev)
- 			SHARED_SIZE, irq);
- 	return 0;
+diff --git a/net/sunrpc/xprtrdma/rpc_rdma.c b/net/sunrpc/xprtrdma/rpc_rdma.c
+index 991d5a96f35b..030bf17a20b6 100644
+--- a/net/sunrpc/xprtrdma/rpc_rdma.c
++++ b/net/sunrpc/xprtrdma/rpc_rdma.c
+@@ -974,6 +974,7 @@ rpcrdma_is_bcall(struct rpcrdma_xprt *r_xprt, struct rpcrdma_rep *rep,
+ 		 __be32 xid, __be32 proc)
+ #if defined(CONFIG_SUNRPC_BACKCHANNEL)
+ {
++	struct rpc_xprt *xprt = &r_xprt->rx_xprt;
+ 	struct xdr_stream *xdr = &rep->rr_stream;
+ 	__be32 *p;
  
--err_free_dma:
--	dma_free_coherent(dev, SHARED_SIZE,
--			priv->shared, priv->shared_phys);
-+err_disable_clk:
-+	clk_disable_unprepare(priv->clk);
+@@ -997,6 +998,10 @@ rpcrdma_is_bcall(struct rpcrdma_xprt *r_xprt, struct rpcrdma_rep *rep,
+ 	if (*p != cpu_to_be32(RPC_CALL))
+ 		return false;
  
- err_misc_deregister:
- 	misc_deregister(&priv->misc_dev);
- 
--err_disable_clk:
--	clk_disable_unprepare(priv->clk);
-+err_free_dma:
-+	dma_free_coherent(dev, SHARED_SIZE,
-+			  priv->shared, priv->shared_phys);
- 
- 	return ret;
- }
-@@ -698,6 +699,7 @@ static int pxa3xx_gcu_remove(struct platform_device *pdev)
- 	pxa3xx_gcu_wait_idle(priv);
- 	misc_deregister(&priv->misc_dev);
- 	dma_free_coherent(dev, SHARED_SIZE, priv->shared, priv->shared_phys);
-+	clk_disable_unprepare(priv->clk);
- 	pxa3xx_gcu_free_buffers(dev, priv);
- 
- 	return 0;
++	/* No bc service. */
++	if (xprt->bc_serv == NULL)
++		return false;
++
+ 	/* Now that we are sure this is a backchannel call,
+ 	 * advance to the RPC header.
+ 	 */
 -- 
 2.35.1
 
