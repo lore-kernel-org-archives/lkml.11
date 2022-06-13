@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4706C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:42:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 212ADC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347233AbiFMMmW (ORCPT
+        id S1350752AbiFMMmd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:42:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50004 "EHLO
+        Mon, 13 Jun 2022 08:42:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355653AbiFMMjP (ORCPT
+        with ESMTP id S1355359AbiFMMjH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:39:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 096B43388C;
-        Mon, 13 Jun 2022 04:09:16 -0700 (PDT)
+        Mon, 13 Jun 2022 08:39:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFDE45DD15;
+        Mon, 13 Jun 2022 04:08:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 990D96062B;
-        Mon, 13 Jun 2022 11:09:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7F01C34114;
-        Mon, 13 Jun 2022 11:09:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BCF160907;
+        Mon, 13 Jun 2022 11:08:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CCADC34114;
+        Mon, 13 Jun 2022 11:08:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118555;
-        bh=c1AB+XbePk8ulWNOw7j8RQe1KAN3ETCnKQhtQ248d0w=;
+        s=korg; t=1655118532;
+        bh=A57Kn9yHKSruzqPikY/KKRTooadEtFehntpAzkDeDag=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J7BUbTMLOGA0eNfgo8QYviGcHDOsqIfJyXiS+OAywWQfv14Oi2f4U2AeaGlM0xgPI
-         QZxKDXJ4JGnqQYx7M6SdzkzsFK7shwjLHXzLGBivOZyx3i6gOp4OxXrzD6J52N83s5
-         0es4zcC66nnJ+AsNms4UXx6P6AdSkpkctrqPPxV4=
+        b=lW28sc894HO5WD4pzuGZMeH8aCZwSygINUfoAZSKQKxV9tpdGFQ9csWh0FUyjDNLZ
+         4DoiK1nCOZR498GoBmEbiy1idqDqPYXCC6yqO+LuRK/izvJwKsvm3yun0t+aicQbME
+         d/yVK44UNRWsilAr7ycxrlM0D9ahYZgTKR4nu8J8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Huang Guobin <huangguobin4@huawei.com>,
+        stable@vger.kernel.org, Erhard Furtner <erhard_f@mailbox.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 118/172] tty: Fix a possible resource leak in icom_probe
-Date:   Mon, 13 Jun 2022 12:11:18 +0200
-Message-Id: <20220613094918.726933472@linuxfoundation.org>
+Subject: [PATCH 5.10 093/172] powerpc/kasan: Force thread size increase with KASAN
+Date:   Mon, 13 Jun 2022 12:10:53 +0200
+Message-Id: <20220613094912.790337258@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -50,35 +51,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Huang Guobin <huangguobin4@huawei.com>
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-[ Upstream commit ee157a79e7c82b01ae4c25de0ac75899801f322c ]
+[ Upstream commit 3e8635fb2e072672cbc650989ffedf8300ad67fb ]
 
-When pci_read_config_dword failed, call pci_release_regions() and
-pci_disable_device() to recycle the resource previously allocated.
+KASAN causes increased stack usage, which can lead to stack overflows.
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
-Link: https://lore.kernel.org/r/20220331091005.3290753-1-huangguobin4@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The logic in Kconfig to suggest a larger default doesn't work if a user
+has CONFIG_EXPERT enabled and has an existing .config with a smaller
+value.
+
+Follow the lead of x86 and arm64, and force the thread size to be
+increased when KASAN is enabled.
+
+That also has the effect of enlarging the stack for 64-bit KASAN builds,
+which is also desirable.
+
+Fixes: edbadaf06710 ("powerpc/kasan: Fix stack overflow by increasing THREAD_SHIFT")
+Reported-by: Erhard Furtner <erhard_f@mailbox.org>
+Reported-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+[mpe: Use MIN_THREAD_SHIFT as suggested by Christophe]
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220601143114.133524-1-mpe@ellerman.id.au
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/icom.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/Kconfig                   |  1 -
+ arch/powerpc/include/asm/thread_info.h | 10 ++++++++--
+ 2 files changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
-index 94c8281ddb5f..74b325c344da 100644
---- a/drivers/tty/serial/icom.c
-+++ b/drivers/tty/serial/icom.c
-@@ -1503,7 +1503,7 @@ static int icom_probe(struct pci_dev *dev,
- 	retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg);
- 	if (retval) {
- 		dev_err(&dev->dev, "PCI Config read FAILED\n");
--		return retval;
-+		goto probe_exit0;
- 	}
+diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+index 5afa0ebd78ca..78dd6be8b31d 100644
+--- a/arch/powerpc/Kconfig
++++ b/arch/powerpc/Kconfig
+@@ -786,7 +786,6 @@ config THREAD_SHIFT
+ 	range 13 15
+ 	default "15" if PPC_256K_PAGES
+ 	default "14" if PPC64
+-	default "14" if KASAN
+ 	default "13"
+ 	help
+ 	  Used to define the stack size. The default is almost always what you
+diff --git a/arch/powerpc/include/asm/thread_info.h b/arch/powerpc/include/asm/thread_info.h
+index 46a210b03d2b..6de3517bea94 100644
+--- a/arch/powerpc/include/asm/thread_info.h
++++ b/arch/powerpc/include/asm/thread_info.h
+@@ -14,10 +14,16 @@
  
- 	pci_write_config_dword(dev, PCI_COMMAND,
+ #ifdef __KERNEL__
+ 
+-#if defined(CONFIG_VMAP_STACK) && CONFIG_THREAD_SHIFT < PAGE_SHIFT
++#ifdef CONFIG_KASAN
++#define MIN_THREAD_SHIFT	(CONFIG_THREAD_SHIFT + 1)
++#else
++#define MIN_THREAD_SHIFT	CONFIG_THREAD_SHIFT
++#endif
++
++#if defined(CONFIG_VMAP_STACK) && MIN_THREAD_SHIFT < PAGE_SHIFT
+ #define THREAD_SHIFT		PAGE_SHIFT
+ #else
+-#define THREAD_SHIFT		CONFIG_THREAD_SHIFT
++#define THREAD_SHIFT		MIN_THREAD_SHIFT
+ #endif
+ 
+ #define THREAD_SIZE		(1 << THREAD_SHIFT)
 -- 
 2.35.1
 
