@@ -2,149 +2,409 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B31FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:31:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C68B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:31:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233557AbiFMUbj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:31:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33872 "EHLO
+        id S231962AbiFMUbp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 16:31:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231575AbiFMUaR (ORCPT
+        with ESMTP id S1351431AbiFMU3B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:30:17 -0400
-Received: from mail-vs1-xe2d.google.com (mail-vs1-xe2d.google.com [IPv6:2607:f8b0:4864:20::e2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1347251327
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:20:38 -0700 (PDT)
-Received: by mail-vs1-xe2d.google.com with SMTP id i186so6825540vsc.9
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:20:38 -0700 (PDT)
+        Mon, 13 Jun 2022 16:29:01 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF8F2344EA;
+        Mon, 13 Jun 2022 12:17:17 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id gc3-20020a17090b310300b001e33092c737so6886389pjb.3;
+        Mon, 13 Jun 2022 12:17:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KNf+Ql/j9M3Vn23KbuohSdFzXJiSMm4FbEkJFMkKX04=;
-        b=LFD5f5sGzeRtIHpKCfZF5wyqKqG9bfNsj60uXrN7M1R800Eu/YEdpUvb+X/6ArMBxW
-         Ku4q3Q8JCrCQTy/4/lL8iTtejcGpM5xZGS70hxdwKfJB6rQX+4h7sqMk3+/tsxmo3ex4
-         jN3O0CzCqLLdmbxGM8dWsgJ6CiqkB0/A2dzGZKxHwqBMWYQr8XoVivSwoQCVU6bty/k5
-         679ip2+IHOsWfc6TYV6iCERLi8u72VacjBPrVSyd3r3lDt1u9NeDyC7/WNWLI5Wvv4Yd
-         yK4tIN45bP9H8vdItANiRJ0UFtTyToSY2dWApATFmfNgJ5lLKhn0OgPh3QXOihRozuvQ
-         IGGg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=U0nu/Lbz3jIPv5ubLcBGfGJo1SZcv+Q5JQfZcLaxt+U=;
+        b=TfZsSIzvJvH48aZCLDJRUWMQiJGIn/n4ZGyrF6gEflbQI427Y3kYXzCln2aGbWT/k2
+         xjLUiM/EKq8oKehUkzeIJzzyuX+T4rH1YHFBO/fsg9aslHCjfQhKvQKKtoFyX1Xprymi
+         vYVKrVKazu1sqq3T9snA4H42GLb3oYNhN7R8yU/6quLE4krPkN5cQ4/Obggfta/xOPNp
+         6mTUCdHBHYC2YyhDLJ7AS9NC2f+8FJ7jtooV6qKTqqzyLJ9CyYhwNMjnmAkn0LuBIveL
+         OgSMFNBczR7THCYp6blzd2aTeUUNY8LuU+PV7MvyE3/K30YCG4FKpxoGSWzWwjC0FEhk
+         NfOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KNf+Ql/j9M3Vn23KbuohSdFzXJiSMm4FbEkJFMkKX04=;
-        b=RLhCF6QD/m5M8cFdyepfDqZYAA1xXAkI1FMX4ZEySGBIVru2BX9LKKTW6/X71vmH8J
-         XhQm1extSU2qXkAVuk/AHt7X2S8poYkCN2HmERc7sWJas7cjMtUW76fDyzWrMquHj3YL
-         q6utpC0HEubkkLx7oTqbM+ArNEFJy0WFkzyjdWsUsxvDK4S7cbP+Vyw9QDAQQQPLKl9v
-         Vyfr3K9CB1Qk+L96+H6j1IjGMR6WYRiODJ3fEYomdzm8mXjKLq1dOD1ri4mYab02/fe+
-         VtXj2HMgGxsOVbubpX1MzoSNqhyyvDP3wykRxOrrZ23Uui/H8ck78OhKse6EILTWZZ3n
-         4VWQ==
-X-Gm-Message-State: AJIora9mLZCT+vwn9JDe1MBHFWsUbIAHAHLAroGIUvQsCbxcS7jJsA1j
-        cYgGPLIa1sFV7lPqMRe+SmGWaM0PPhrYKScGmG6ou/bM6Sw=
-X-Google-Smtp-Source: AGRyM1sna9Eq4Osr5KmST24hrtbVcR20wkRP0EMEDMdi9yusF90SuIPxvSPYkdr5Ll1OxtmtIw4/8zG9xxDp0VS2veo=
-X-Received: by 2002:a05:6102:2328:b0:349:ed98:2b96 with SMTP id
- b8-20020a056102232800b00349ed982b96mr525017vsa.57.1655148037073; Mon, 13 Jun
- 2022 12:20:37 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220613112937.65428-1-wang.yi59@zte.com.cn>
-In-Reply-To: <20220613112937.65428-1-wang.yi59@zte.com.cn>
-From:   Yury Norov <yury.norov@gmail.com>
-Date:   Mon, 13 Jun 2022 12:20:26 -0700
-Message-ID: <CAAH8bW8wD_hsOqtWa-g_1SNWNi7GHzsu9RvL8feY069JPKFWBA@mail.gmail.com>
-Subject: Re: [PATCH] bitmap: fix a unproper remap when mpol_rebind_nodemask()
-To:     Yi Wang <wang.yi59@zte.com.cn>
-Cc:     andriy.shevchenko@linux.intel.com, linux@rasmusvillemoes.dk,
-        linux-kernel@vger.kernel.org, xue.zhihong@zte.com.cn,
-        wang.liang82@zte.com.cn
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=U0nu/Lbz3jIPv5ubLcBGfGJo1SZcv+Q5JQfZcLaxt+U=;
+        b=zV4onZiTRsSoCGWr7dwL1bN8/4KjijkR8PzmC2VPHfr/UF1kfNQJKyaMvYhuXNz982
+         qZ2ihorCmWbd624ANjAHiPGg0+A4i6Qfqol29xKh7Xlxo/1o0b74TQVo8/DyR0cmM6nH
+         h9ax2ua2GJz9u0MDWVy+bm6rfxZIJHeLvdfFEMkjohU0rxjIVL+CdqmxwlELAEzYF7n3
+         Ivw74Drnbds0Q4lZ0AAnSOcDngMne20uyBtR0bSCdr3i8Uk7yD1oiUcMC2RMTnpx8MQb
+         pMbYrLkm+uvZubvTfrCXgyQJXoHiqsEhDcHlq008ByTWlgEuWjllg0t/5Oafd4/6QKwy
+         70QA==
+X-Gm-Message-State: AJIora9oujFm0/UjvTHQgzXG17TqH1aYIg8jVV1pp/apHI7p8g44YyAO
+        5n5EYcuwvJTyES2+q/9OgIhND9QmtG0=
+X-Google-Smtp-Source: AGRyM1vwr/AZKlmqe7GSETQ6Rf4cDJiQZUDSqMeQXtEWJVwKwEdwtBPPWn5CxfGOdy8Ms4+WKI1Wxw==
+X-Received: by 2002:a17:902:e88e:b0:163:ee82:ffb with SMTP id w14-20020a170902e88e00b00163ee820ffbmr819112plg.142.1655147837070;
+        Mon, 13 Jun 2022 12:17:17 -0700 (PDT)
+Received: from localhost.localdomain ([60.243.255.226])
+        by smtp.gmail.com with ESMTPSA id x15-20020a17090abc8f00b001e310303275sm5567202pjr.54.2022.06.13.12.17.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 12:17:16 -0700 (PDT)
+From:   Jagath Jog J <jagathjog1996@gmail.com>
+To:     jic23@kernel.org, andy.shevchenko@gmail.com
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1 2/2] iio: accel: bma400: Add support for single and double tap events
+Date:   Tue, 14 Jun 2022 00:47:06 +0530
+Message-Id: <20220613191706.31239-3-jagathjog1996@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220613191706.31239-1-jagathjog1996@gmail.com>
+References: <20220613191706.31239-1-jagathjog1996@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 4:31 AM Yi Wang <wang.yi59@zte.com.cn> wrote:
->
-> Consider one situation:
->
-> The app have two vmas which mbind() to node 1 and node3 respectively,
-> and its cpuset.mems is 0-3, now set its cpuset.mems to 1,3, according
-> to current bitmap_remap(), we got:
->
->     1 => 3
->     3 => 3
->
-> This maybe confused because node 1,3 have already in the new settiing
-> region but both nodes are binded to the same node 3 now.
->
-> Actually we found the situation on a very old libvirt and qemu, but
-> this can be easily reproduced in the current kernel, so we try to fix
-> it.
->
-> A possible fix way is to ignore the bits in @src have already existed
-> in @new.
->
-> Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
-> ---
->  lib/bitmap.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/lib/bitmap.c b/lib/bitmap.c
-> index b18e31ea6e66..b77bf1b3852e 100644
-> --- a/lib/bitmap.c
-> +++ b/lib/bitmap.c
-> @@ -1006,8 +1006,8 @@ unsigned int bitmap_ord_to_pos(const unsigned long *buf, unsigned int ord, unsig
->   * @dst point to the same location, then this routine copies @src
->   * to @dst.
->   *
-> - * The positions of unset bits in @old are mapped to themselves
-> - * (the identify map).
-> + * The positions of unset bits in @old or bits in @src have already
-> + * existed in @new are mapped to themselves (the identify map).
->   *
->   * Apply the above specified mapping to @src, placing the result in
->   * @dst, clearing any bits previously set in @dst.
-> @@ -1033,7 +1033,7 @@ void bitmap_remap(unsigned long *dst, const unsigned long *src,
->         for_each_set_bit(oldbit, src, nbits) {
->                 int n = bitmap_pos_to_ord(old, oldbit, nbits);
->
-> -               if (n < 0 || w == 0)
-> +               if (n < 0 || w == 0 || test_bit(oldbit, new))
->                         set_bit(oldbit, dst);   /* identity map */
->                 else
->                         set_bit(bitmap_ord_to_pos(new, n % w, nbits), dst);
-> --
-> 2.33.0.rc0.dirty
+Add support for single and double tap events based on the tap threshold
+value and minimum quiet time value between the taps. The INT1 pin is used
+to interrupt and event is pushed to userspace.
 
-Regarding the original problem - can you please confirm that
-it's reproduced on current kernels, show the execution path etc.
-From what I see on modern kernel, the only user of nodes_remap()
-is mpol_rebind_nodemask(). Is that the correct path?
+Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
+---
+ drivers/iio/accel/bma400.h      |  11 ++
+ drivers/iio/accel/bma400_core.c | 210 ++++++++++++++++++++++++++++++--
+ 2 files changed, 211 insertions(+), 10 deletions(-)
 
-Anyways, as per name, bitmap_remap() is intended to change bit
-positions, and it doesn't look wrong if it does so.
+diff --git a/drivers/iio/accel/bma400.h b/drivers/iio/accel/bma400.h
+index e8f802a82300..d05edd9b009a 100644
+--- a/drivers/iio/accel/bma400.h
++++ b/drivers/iio/accel/bma400.h
+@@ -40,6 +40,7 @@
+ #define BMA400_INT_STAT1_REG        0x0f
+ #define BMA400_INT_STAT2_REG        0x10
+ #define BMA400_INT12_MAP_REG        0x23
++#define BMA400_INT_ENG_OVRUN_MSK    BIT(4)
+ 
+ /* Temperature register */
+ #define BMA400_TEMP_DATA_REG        0x11
+@@ -105,6 +106,16 @@
+ #define BMA400_INT_GEN2_MSK         BIT(3)
+ #define BMA400_GEN_HYST_MSK         GENMASK(1, 0)
+ 
++/* TAP config registers */
++#define BMA400_TAP_CONFIG           0x57
++#define BMA400_TAP_CONFIG1          0x58
++#define BMA400_S_TAP_MSK            BIT(2)
++#define BMA400_D_TAP_MSK            BIT(3)
++#define BMA400_INT_S_TAP_MSK        BIT(10)
++#define BMA400_INT_D_TAP_MSK        BIT(11)
++#define BMA400_TAP_SEN_MSK          GENMASK(2, 0)
++#define BMA400_TAP_QUIET_MSK        GENMASK(3, 2)
++
+ /*
+  * BMA400_SCALE_MIN macro value represents m/s^2 for 1 LSB before
+  * converting to micro values for +-2g range.
+diff --git a/drivers/iio/accel/bma400_core.c b/drivers/iio/accel/bma400_core.c
+index c31bdd9b168e..f8945dc0de04 100644
+--- a/drivers/iio/accel/bma400_core.c
++++ b/drivers/iio/accel/bma400_core.c
+@@ -29,6 +29,7 @@
+ #include <linux/iio/trigger.h>
+ #include <linux/iio/trigger_consumer.h>
+ #include <linux/iio/triggered_buffer.h>
++#include <linux/iio/sysfs.h>
+ 
+ #include "bma400.h"
+ 
+@@ -88,6 +89,7 @@ struct bma400_data {
+ 	bool step_event_en;
+ 	bool activity_event_en;
+ 	unsigned int generic_event_en;
++	unsigned int tap_event_en;
+ 	/* Correct time stamp alignment */
+ 	struct {
+ 		__le16 buff[3];
+@@ -216,6 +218,36 @@ static const struct iio_event_spec bma400_accel_event[] = {
+ 				       BIT(IIO_EV_INFO_HYSTERESIS) |
+ 				       BIT(IIO_EV_INFO_ENABLE),
+ 	},
++	{
++		.type = IIO_EV_TYPE_GESTURE,
++		.dir = IIO_EV_DIR_SINGLETAP,
++		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
++				       BIT(IIO_EV_INFO_ENABLE),
++	},
++	{
++		.type = IIO_EV_TYPE_GESTURE,
++		.dir = IIO_EV_DIR_DOUBLETAP,
++		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
++				       BIT(IIO_EV_INFO_PERIOD) |
++				       BIT(IIO_EV_INFO_ENABLE),
++	},
++};
++
++/* List of sensitivity values available to configure tap interrupts */
++static IIO_CONST_ATTR(in_accel_gesture_value_available, "0 1 2 3 4 5 6 7");
++
++/* List of minimum quiet time before and after double tap, in data samples. */
++static IIO_CONST_ATTR(in_accel_gesture_doubletap_period_available,
++		      "60 80 100 120");
++
++static struct attribute *bma400_event_attributes[] = {
++	&iio_const_attr_in_accel_gesture_value_available.dev_attr.attr,
++	&iio_const_attr_in_accel_gesture_doubletap_period_available.dev_attr.attr,
++	NULL
++};
++
++static const struct attribute_group bma400_event_attribute_group = {
++	.attrs = bma400_event_attributes,
+ };
+ 
+ #define BMA400_ACC_CHANNEL(_index, _axis) { \
+@@ -1012,6 +1044,10 @@ static int bma400_read_event_config(struct iio_dev *indio_dev,
+ 		case IIO_EV_DIR_FALLING:
+ 			return FIELD_GET(BMA400_INT_GEN2_MSK,
+ 					 data->generic_event_en);
++		case IIO_EV_DIR_SINGLETAP:
++			return FIELD_GET(BMA400_S_TAP_MSK, data->tap_event_en);
++		case IIO_EV_DIR_DOUBLETAP:
++			return FIELD_GET(BMA400_D_TAP_MSK, data->tap_event_en);
+ 		default:
+ 			return -EINVAL;
+ 		}
+@@ -1101,6 +1137,80 @@ static int bma400_activity_event_en(struct bma400_data *data,
+ 	return 0;
+ }
+ 
++static int bma400_tap_event_en(struct bma400_data *data,
++			       enum iio_event_direction dir, int state)
++{
++	int ret;
++	unsigned int mask, field_value;
++
++	/*
++	 * Tap interrupts can be configured only in normal mode.
++	 * See table in section 4.3 "Power modes - performance modes" of
++	 * datasheet v1.2.
++	 */
++	if (data->power_mode != POWER_MODE_NORMAL)
++		return -EINVAL;
++
++	/*
++	 * Tap interrupts are operating with the data rate of 200Hz.
++	 * See section 4.7 "Tap sensing interrupt" in datasheet v1.2.
++	 */
++	if (data->sample_freq.hz != 200) {
++		dev_err(data->dev, "Invalid data rate for tap interrupts.\n");
++		return -EINVAL;
++	}
++
++	ret = regmap_update_bits(data->regmap, BMA400_INT12_MAP_REG,
++				 BMA400_S_TAP_MSK,
++				 FIELD_PREP(BMA400_S_TAP_MSK, state));
++	if (ret)
++		return ret;
++
++	switch (dir) {
++	case IIO_EV_DIR_SINGLETAP:
++		mask = BMA400_S_TAP_MSK;
++		set_mask_bits(&field_value, BMA400_S_TAP_MSK,
++			      FIELD_PREP(BMA400_S_TAP_MSK, state));
++		break;
++	case IIO_EV_DIR_DOUBLETAP:
++		mask = BMA400_D_TAP_MSK;
++		set_mask_bits(&field_value, BMA400_D_TAP_MSK,
++			      FIELD_PREP(BMA400_D_TAP_MSK, state));
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	ret = regmap_update_bits(data->regmap, BMA400_INT_CONFIG1_REG, mask,
++				 field_value);
++	if (ret)
++		return ret;
++
++	set_mask_bits(&data->tap_event_en, mask, field_value);
++
++	return 0;
++}
++
++static int bma400_disable_adv_interrupt(struct bma400_data *data)
++{
++	int ret;
++
++	ret = regmap_write(data->regmap, BMA400_INT_CONFIG0_REG, 0);
++	if (ret)
++		return ret;
++
++	ret = regmap_write(data->regmap, BMA400_INT_CONFIG1_REG, 0);
++	if (ret)
++		return ret;
++
++	data->tap_event_en = 0;
++	data->generic_event_en = 0;
++	data->step_event_en = 0;
++	data->activity_event_en = 0;
++
++	return 0;
++}
++
+ static int bma400_write_event_config(struct iio_dev *indio_dev,
+ 				     const struct iio_chan_spec *chan,
+ 				     enum iio_event_type type,
+@@ -1111,10 +1221,20 @@ static int bma400_write_event_config(struct iio_dev *indio_dev,
+ 
+ 	switch (chan->type) {
+ 	case IIO_ACCEL:
+-		mutex_lock(&data->mutex);
+-		ret = bma400_activity_event_en(data, dir, state);
+-		mutex_unlock(&data->mutex);
+-		return ret;
++		switch (type) {
++		case IIO_EV_TYPE_MAG:
++			mutex_lock(&data->mutex);
++			ret = bma400_activity_event_en(data, dir, state);
++			mutex_unlock(&data->mutex);
++			return ret;
++		case IIO_EV_TYPE_GESTURE:
++			mutex_lock(&data->mutex);
++			ret = bma400_tap_event_en(data, dir, state);
++			mutex_unlock(&data->mutex);
++			return ret;
++		default:
++			return -EINVAL;
++		}
+ 	case IIO_STEPS:
+ 		mutex_lock(&data->mutex);
+ 		ret = bma400_steps_event_enable(data, state);
+@@ -1159,8 +1279,8 @@ static int bma400_read_event_value(struct iio_dev *indio_dev,
+ 	struct bma400_data *data = iio_priv(indio_dev);
+ 	int ret, reg;
+ 
+-	switch (chan->type) {
+-	case IIO_ACCEL:
++	switch (type) {
++	case IIO_EV_TYPE_MAG:
+ 		reg = get_gen_config_reg(dir);
+ 		if (reg < 0)
+ 			return -EINVAL;
+@@ -1196,6 +1316,25 @@ static int bma400_read_event_value(struct iio_dev *indio_dev,
+ 		default:
+ 			return -EINVAL;
+ 		}
++	case IIO_EV_TYPE_GESTURE:
++		switch (info) {
++		case IIO_EV_INFO_VALUE:
++			ret = regmap_read(data->regmap, BMA400_TAP_CONFIG,
++					  val);
++			if (ret)
++				return ret;
++			*val = FIELD_GET(BMA400_TAP_SEN_MSK, *val);
++			return IIO_VAL_INT;
++		case IIO_EV_INFO_PERIOD:
++			ret = regmap_read(data->regmap, BMA400_TAP_CONFIG1,
++					  val);
++			if (ret)
++				return ret;
++			*val = FIELD_GET(BMA400_TAP_QUIET_MSK, *val);
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
++		}
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -1209,10 +1348,10 @@ static int bma400_write_event_value(struct iio_dev *indio_dev,
+ 				    int val, int val2)
+ {
+ 	struct bma400_data *data = iio_priv(indio_dev);
+-	int reg, ret;
++	int reg, ret, quiet_period;
+ 
+-	switch (chan->type) {
+-	case IIO_ACCEL:
++	switch (type) {
++	case IIO_EV_TYPE_MAG:
+ 		reg = get_gen_config_reg(dir);
+ 		if (reg < 0)
+ 			return -EINVAL;
+@@ -1228,7 +1367,6 @@ static int bma400_write_event_value(struct iio_dev *indio_dev,
+ 		case IIO_EV_INFO_PERIOD:
+ 			if (val < 1 || val > 65535)
+ 				return -EINVAL;
+-
+ 			mutex_lock(&data->mutex);
+ 			put_unaligned_be16(val, &data->duration);
+ 			ret = regmap_bulk_write(data->regmap,
+@@ -1248,6 +1386,31 @@ static int bma400_write_event_value(struct iio_dev *indio_dev,
+ 		default:
+ 			return -EINVAL;
+ 		}
++	case IIO_EV_TYPE_GESTURE:
++		switch (info) {
++		case IIO_EV_INFO_VALUE:
++			if (val < 0 || val > 7)
++				return -EINVAL;
++
++			return regmap_update_bits(data->regmap,
++						  BMA400_TAP_CONFIG,
++						  BMA400_TAP_SEN_MSK,
++						  FIELD_PREP(BMA400_TAP_SEN_MSK,
++							     val));
++
++		case IIO_EV_INFO_PERIOD:
++			quiet_period = (val / 20) - 3;
++			if (quiet_period < 0 || quiet_period > 3)
++				return -EINVAL;
++
++			return regmap_update_bits(data->regmap,
++						  BMA400_TAP_CONFIG1,
++						  BMA400_TAP_QUIET_MSK,
++						  FIELD_PREP(BMA400_TAP_QUIET_MSK,
++							     quiet_period));
++		default:
++			return -EINVAL;
++		}
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -1287,6 +1450,7 @@ static const struct iio_info bma400_info = {
+ 	.write_event_config = bma400_write_event_config,
+ 	.write_event_value = bma400_write_event_value,
+ 	.read_event_value = bma400_read_event_value,
++	.event_attrs = &bma400_event_attribute_group,
+ };
+ 
+ static const struct iio_trigger_ops bma400_trigger_ops = {
+@@ -1350,6 +1514,32 @@ static irqreturn_t bma400_interrupt(int irq, void *private)
+ 	if (ret || !data->status)
+ 		goto unlock_err;
+ 
++	/*
++	 * Disable all advance interrupts if interrupt engine overrun occurs.
++	 * See section 4.7 "Interrupt engine overrun" in datasheet v1.2.
++	 */
++	if (FIELD_GET(BMA400_INT_ENG_OVRUN_MSK, le16_to_cpu(data->status))) {
++		bma400_disable_adv_interrupt(data);
++		dev_err(data->dev, "Interrupt engine overrun\n");
++		goto unlock_err;
++	}
++
++	if (FIELD_GET(BMA400_INT_S_TAP_MSK, le16_to_cpu(data->status)))
++		iio_push_event(indio_dev,
++			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0,
++						  IIO_MOD_X_OR_Y_OR_Z,
++						  IIO_EV_TYPE_GESTURE,
++						  IIO_EV_DIR_SINGLETAP),
++			       timestamp);
++
++	if (FIELD_GET(BMA400_INT_D_TAP_MSK, le16_to_cpu(data->status)))
++		iio_push_event(indio_dev,
++			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0,
++						  IIO_MOD_X_OR_Y_OR_Z,
++						  IIO_EV_TYPE_GESTURE,
++						  IIO_EV_DIR_DOUBLETAP),
++			       timestamp);
++
+ 	if (FIELD_GET(BMA400_INT_GEN1_MSK, le16_to_cpu(data->status)))
+ 		ev_dir = IIO_EV_DIR_RISING;
+ 
+-- 
+2.17.1
 
-This is not how the function is supposed to work. For example,
-        old: 00111000
-        new: 00011100
-
-means:
-        old: 00111 000
-             || \\\|||
-        new: 000 11100
-
-And after this patch it would be:
-        old: 001 11000
-             || \|||||
-        new: 000 11100
-
-Which is not the same, right?
-
-If mpol_rebind() wants to keep previous relations, then according to
-the comment:
- * The positions of unset bits in @old are mapped to themselves
- * (the identify map).
-
-, you can just clear @old bits that already have good relations
-you'd like to preserve.
-
-Thanks,
-Yury
