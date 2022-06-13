@@ -2,55 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6DF5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:25:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57C48C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:25:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354853AbiFMMZX (ORCPT
+        id S1354982AbiFMMZ0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:25:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56368 "EHLO
+        Mon, 13 Jun 2022 08:25:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354834AbiFMMXt (ORCPT
+        with ESMTP id S1354838AbiFMMXt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 08:23:49 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC070313B7;
-        Mon, 13 Jun 2022 04:03:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A456531503;
+        Mon, 13 Jun 2022 04:03:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 898B661346;
-        Mon, 13 Jun 2022 11:03:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74E96C34114;
-        Mon, 13 Jun 2022 11:03:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4110961346;
+        Mon, 13 Jun 2022 11:03:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50BA5C34114;
+        Mon, 13 Jun 2022 11:03:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118228;
-        bh=2dtuheeVdguv1+pHOVnES2o8OWcNdyAXEgBjl6K44bs=;
+        s=korg; t=1655118230;
+        bh=rTedGpa5/EhXqQZ4NIj9g5c5W+M75eVrMdnFXJ9YVpY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bq+rjlAOn9WENaPwlzltqF96jplz3bDKf8U2PrbdjzZMf/T8i+JwPnqlNzTHXjqet
-         PpPoW2ImjwReNGnNbtaC/rcvdfcTdB+IKRZ3BWj30QvgQogLZkYlJMitv2gfb40P1l
-         CIZwGWmsC80NbbAH/yOcqIpCaC+GMbODQ87Bm4Bk=
+        b=Y0FLwhy0hsrh/MBBE0HzaH8k/kzYtGN6T88y36ibIr7QhbDRm3vhninL7oBHOjxHl
+         89djMLlkgy+kmsSuQe0wdggxRcKSwVOrnCEUP1RrlDUfitWIMyZcvcPj/729Iz74Y8
+         H7lcLfrYV9kMm75gLv1N2ZZXnl4o6A1/6M48K7wY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Kees Cook <keescook@chromium.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-mips@vger.kernel.org, Manuel Lauss <manuel.lauss@gmail.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 001/172] pcmcia: db1xxx_ss: restrict to MIPS_DB1XXX boards
-Date:   Mon, 13 Jun 2022 12:09:21 +0200
-Message-Id: <20220613094850.542011822@linuxfoundation.org>
+        stable@vger.kernel.org, Tokunori Ikegami <ikegami.t@gmail.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH 4.19 287/287] mtd: cfi_cmdset_0002: Use chip_ready() for write on S29GL064N
+Date:   Mon, 13 Jun 2022 12:11:51 +0200
+Message-Id: <20220613094932.695550590@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
-References: <20220613094850.166931805@linuxfoundation.org>
+In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
+References: <20220613094923.832156175@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -58,48 +50,138 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Tokunori Ikegami <ikegami.t@gmail.com>
 
-[ Upstream commit 3928cf08334ed895a31458cbebd8d4ec6d84c080 ]
+commit 0a8e98305f63deaf0a799d5cf5532cc83af035d1 upstream.
 
-When the MIPS_ALCHEMY board selection is MIPS_XXS1500 instead of
-MIPS_DB1XXX, the PCMCIA driver 'db1xxx_ss' has build errors due
-to missing DB1XXX symbols. The PCMCIA driver should be restricted
-to MIPS_DB1XXX instead of MIPS_ALCHEMY to fix this build error.
+Since commit dfeae1073583("mtd: cfi_cmdset_0002: Change write buffer to
+check correct value") buffered writes fail on S29GL064N. This is
+because, on S29GL064N, reads return 0xFF at the end of DQ polling for
+write completion, where as, chip_good() check expects actual data
+written to the last location to be returned post DQ polling completion.
+Fix is to revert to using chip_good() for S29GL064N which only checks
+for DQ lines to settle down to determine write completion.
 
-ERROR: modpost: "bcsr_read" [drivers/pcmcia/db1xxx_ss.ko] undefined!
-ERROR: modpost: "bcsr_mod" [drivers/pcmcia/db1xxx_ss.ko] undefined!
-
-Fixes: 42a4f17dc356 ("MIPS: Alchemy: remove SOC_AU1X00 in favor of MIPS_ALCHEMY")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: linux-mips@vger.kernel.org
-Acked-by: Manuel Lauss <manuel.lauss@gmail.com>
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/b687c259-6413-26c9-d4c9-b3afa69ea124@pengutronix.de/
+Fixes: dfeae1073583("mtd: cfi_cmdset_0002: Change write buffer to check correct value")
+Cc: stable@vger.kernel.org
+Signed-off-by: Tokunori Ikegami <ikegami.t@gmail.com>
+Acked-by: Vignesh Raghavendra <vigneshr@ti.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220323170458.5608-3-ikegami.t@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pcmcia/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mtd/chips/cfi_cmdset_0002.c |   42 +++++++++++++++++++++++++++++-------
+ include/linux/mtd/cfi.h             |    1 
+ 2 files changed, 35 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/pcmcia/Kconfig b/drivers/pcmcia/Kconfig
-index 82d10b6661c7..73508fca520c 100644
---- a/drivers/pcmcia/Kconfig
-+++ b/drivers/pcmcia/Kconfig
-@@ -151,7 +151,7 @@ config TCIC
+--- a/drivers/mtd/chips/cfi_cmdset_0002.c
++++ b/drivers/mtd/chips/cfi_cmdset_0002.c
+@@ -49,6 +49,10 @@
+ #define SST49LF008A		0x005a
+ #define AT49BV6416		0x00d6
  
- config PCMCIA_ALCHEMY_DEVBOARD
- 	tristate "Alchemy Db/Pb1xxx PCMCIA socket services"
--	depends on MIPS_ALCHEMY && PCMCIA
-+	depends on MIPS_DB1XXX && PCMCIA
- 	help
- 	  Enable this driver of you want PCMCIA support on your Alchemy
- 	  Db1000, Db/Pb1100, Db/Pb1500, Db/Pb1550, Db/Pb1200, DB1300
--- 
-2.35.1
-
++enum cfi_quirks {
++	CFI_QUIRK_DQ_TRUE_DATA = BIT(0),
++};
++
+ static int cfi_amdstd_read (struct mtd_info *, loff_t, size_t, size_t *, u_char *);
+ static int cfi_amdstd_write_words(struct mtd_info *, loff_t, size_t, size_t *, const u_char *);
+ static int cfi_amdstd_write_buffers(struct mtd_info *, loff_t, size_t, size_t *, const u_char *);
+@@ -365,6 +369,15 @@ static void fixup_s29ns512p_sectors(stru
+ 		mtd->name);
+ }
+ 
++static void fixup_quirks(struct mtd_info *mtd)
++{
++	struct map_info *map = mtd->priv;
++	struct cfi_private *cfi = map->fldrv_priv;
++
++	if (cfi->mfr == CFI_MFR_AMD && cfi->id == 0x0c01)
++		cfi->quirks |= CFI_QUIRK_DQ_TRUE_DATA;
++}
++
+ /* Used to fix CFI-Tables of chips without Extended Query Tables */
+ static struct cfi_fixup cfi_nopri_fixup_table[] = {
+ 	{ CFI_MFR_SST, 0x234a, fixup_sst39vf }, /* SST39VF1602 */
+@@ -403,6 +416,7 @@ static struct cfi_fixup cfi_fixup_table[
+ #if !FORCE_WORD_WRITE
+ 	{ CFI_MFR_ANY, CFI_ID_ANY, fixup_use_write_buffers },
+ #endif
++	{ CFI_MFR_ANY, CFI_ID_ANY, fixup_quirks },
+ 	{ 0, 0, NULL }
+ };
+ static struct cfi_fixup jedec_fixup_table[] = {
+@@ -761,6 +775,18 @@ static int __xipram chip_ready(struct ma
+ 	return map_word_equal(map, t, *expected);
+ }
+ 
++static int __xipram chip_good(struct map_info *map, unsigned long addr,
++			      map_word *expected)
++{
++	struct cfi_private *cfi = map->fldrv_priv;
++	map_word *datum = expected;
++
++	if (cfi->quirks & CFI_QUIRK_DQ_TRUE_DATA)
++		datum = NULL;
++
++	return chip_ready(map, addr, datum);
++}
++
+ static int get_chip(struct map_info *map, struct flchip *chip, unsigned long adr, int mode)
+ {
+ 	DECLARE_WAITQUEUE(wait, current);
+@@ -1611,11 +1637,11 @@ static int __xipram do_write_oneword(str
+ 		}
+ 
+ 		/*
+-		 * We check "time_after" and "!chip_ready" before checking
+-		 * "chip_ready" to avoid the failure due to scheduling.
++		 * We check "time_after" and "!chip_good" before checking
++		 * "chip_good" to avoid the failure due to scheduling.
+ 		 */
+ 		if (time_after(jiffies, timeo) &&
+-		    !chip_ready(map, adr, &datum)) {
++		    !chip_good(map, adr, &datum)) {
+ 			xip_enable(map, chip, adr);
+ 			printk(KERN_WARNING "MTD %s(): software timeout\n", __func__);
+ 			xip_disable(map, chip, adr);
+@@ -1623,7 +1649,7 @@ static int __xipram do_write_oneword(str
+ 			break;
+ 		}
+ 
+-		if (chip_ready(map, adr, &datum))
++		if (chip_good(map, adr, &datum))
+ 			break;
+ 
+ 		/* Latency issues. Drop the lock, wait a while and retry */
+@@ -1867,13 +1893,13 @@ static int __xipram do_write_buffer(stru
+ 		}
+ 
+ 		/*
+-		 * We check "time_after" and "!chip_ready" before checking
+-		 * "chip_ready" to avoid the failure due to scheduling.
++		 * We check "time_after" and "!chip_good" before checking
++		 * "chip_good" to avoid the failure due to scheduling.
+ 		 */
+-		if (time_after(jiffies, timeo) && !chip_ready(map, adr, &datum))
++		if (time_after(jiffies, timeo) && !chip_good(map, adr, &datum))
+ 			break;
+ 
+-		if (chip_ready(map, adr, &datum)) {
++		if (chip_good(map, adr, &datum)) {
+ 			xip_enable(map, chip, adr);
+ 			goto op_done;
+ 		}
+--- a/include/linux/mtd/cfi.h
++++ b/include/linux/mtd/cfi.h
+@@ -293,6 +293,7 @@ struct cfi_private {
+ 	map_word sector_erase_cmd;
+ 	unsigned long chipshift; /* Because they're of the same type */
+ 	const char *im_name;	 /* inter_module name for cmdset_setup */
++	unsigned long quirks;
+ 	struct flchip chips[0];  /* per-chip data structure for each chip */
+ };
+ 
 
 
