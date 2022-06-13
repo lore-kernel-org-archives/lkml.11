@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 881E1C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97B8DCCA47B
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:45:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379031AbiFMNnm (ORCPT
+        id S1379236AbiFMNny (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:43:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33382 "EHLO
+        Mon, 13 Jun 2022 09:43:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379116AbiFMNjw (ORCPT
+        with ESMTP id S1379150AbiFMNj4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:39:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E8467A453;
-        Mon, 13 Jun 2022 04:28:43 -0700 (PDT)
+        Mon, 13 Jun 2022 09:39:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE22D2253A;
+        Mon, 13 Jun 2022 04:29:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AA95761036;
-        Mon, 13 Jun 2022 11:28:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4DF7C34114;
-        Mon, 13 Jun 2022 11:28:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 66A18B80D3A;
+        Mon, 13 Jun 2022 11:28:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D28A7C34114;
+        Mon, 13 Jun 2022 11:28:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119722;
-        bh=yRjoz7WQZ8rS3SzcadpZzio7LtuJZcOWf3VV+O2JBU4=;
+        s=korg; t=1655119738;
+        bh=XAepP+VO+bU1kBLylU6LOD5IZD0Sfi2Ra4R0TzkzD6I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cw0qVlw9ZP4rBTIW8YRGfXixIAPGuVEquWrRBkzkjaBtn+bd7pYe9mzw6zuyHcBeT
-         52FDnIT/9Rup/KbrtbI66axI8ciMtmIUsmYsy5BvHBoS/7ueB04KAJhLxzeyFvPBux
-         /sSTGQyr+wz39GagPfLhc5P3ciHkVASDCnKptxGA=
+        b=BT6D+Qs7DHt2DzYoSCl4V30I03LfNSGVOmACyDZcXPyFCbCSsI9ccZWIgOxLEFLWt
+         BMd9Sl6MQ5F8m3j5QcEgaIp5aJJzyg6SLt5h5Re/4SJxc9+fGJmWJRYG5ID6rFGuxj
+         mP9VY4mk1oQJHabtJrYdzGDN3RcNh1dXJjKhK6Aw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Taehee Yoo <ap420073@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Si-Wei Liu <si-wei.liu@oracle.com>,
+        Jason Wang <jasowang@redhat.com>, Eli Cohen <elic@nvidia.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 087/339] amt: fix possible memory leak in amt_rcv()
-Date:   Mon, 13 Jun 2022 12:08:32 +0200
-Message-Id: <20220613094929.155305498@linuxfoundation.org>
+Subject: [PATCH 5.18 122/339] vdpa: Fix error logic in vdpa_nl_cmd_dev_get_doit
+Date:   Mon, 13 Jun 2022 12:09:07 +0200
+Message-Id: <20220613094930.208721378@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,36 +51,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Taehee Yoo <ap420073@gmail.com>
+From: Eli Cohen <elic@nvidia.com>
 
-[ Upstream commit 1a1a0e80e005cbdc2c250fc858e1d8570f4e4acb ]
+[ Upstream commit 7a6691f1f89784f775fa0c54be57533445726068 ]
 
-If an amt receives packets and it finds socket.
-If it can't find a socket, it should free a received skb.
-But it doesn't.
-So, a memory leak would possibly occur.
+In vdpa_nl_cmd_dev_get_doit(), if the call to genlmsg_reply() fails we
+must not call nlmsg_free() since this is done inside genlmsg_reply().
 
-Fixes: cbc21dc1cfe9 ("amt: add data plane of amt interface")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fix it.
+
+Fixes: bc0d90ee021f ("vdpa: Enable user to query vdpa device info")
+Reviewed-by: Si-Wei Liu <si-wei.liu@oracle.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Eli Cohen <elic@nvidia.com>
+Message-Id: <20220518133804.1075129-2-elic@nvidia.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/amt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/vdpa/vdpa.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/amt.c b/drivers/net/amt.c
-index d376ed89f836..22d7da749a24 100644
---- a/drivers/net/amt.c
-+++ b/drivers/net/amt.c
-@@ -2679,7 +2679,7 @@ static int amt_rcv(struct sock *sk, struct sk_buff *skb)
- 	amt = rcu_dereference_sk_user_data(sk);
- 	if (!amt) {
- 		err = true;
--		goto out;
-+		goto drop;
+diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
+index 2b75c00b1005..fac89a0d8178 100644
+--- a/drivers/vdpa/vdpa.c
++++ b/drivers/vdpa/vdpa.c
+@@ -756,14 +756,19 @@ static int vdpa_nl_cmd_dev_get_doit(struct sk_buff *skb, struct genl_info *info)
+ 		goto mdev_err;
  	}
+ 	err = vdpa_dev_fill(vdev, msg, info->snd_portid, info->snd_seq, 0, info->extack);
+-	if (!err)
+-		err = genlmsg_reply(msg, info);
++	if (err)
++		goto mdev_err;
++
++	err = genlmsg_reply(msg, info);
++	put_device(dev);
++	mutex_unlock(&vdpa_dev_mutex);
++	return err;
++
+ mdev_err:
+ 	put_device(dev);
+ err:
+ 	mutex_unlock(&vdpa_dev_mutex);
+-	if (err)
+-		nlmsg_free(msg);
++	nlmsg_free(msg);
+ 	return err;
+ }
  
- 	skb->dev = amt->dev;
 -- 
 2.35.1
 
