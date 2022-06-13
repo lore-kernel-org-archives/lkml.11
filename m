@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5DEDC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:06:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 968E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:06:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350185AbiFMLGN (ORCPT
+        id S1351501AbiFMLGU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:06:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44824 "EHLO
+        Mon, 13 Jun 2022 07:06:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349581AbiFMK5W (ORCPT
+        with ESMTP id S1349848AbiFMK6b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:57:22 -0400
+        Mon, 13 Jun 2022 06:58:31 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F82725C68;
-        Mon, 13 Jun 2022 03:32:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BE771099;
+        Mon, 13 Jun 2022 03:32:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 73165B80EA8;
-        Mon, 13 Jun 2022 10:32:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1A80C34114;
-        Mon, 13 Jun 2022 10:32:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E51B6B80EA3;
+        Mon, 13 Jun 2022 10:32:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E038C34114;
+        Mon, 13 Jun 2022 10:32:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116334;
-        bh=3sEpLrvvO/uTRcRbh2J/sUJLoAvJDDtp0BA43wGp+94=;
+        s=korg; t=1655116339;
+        bh=y7GlcwRD3danYGc5bP/xB3Bm0BKDs6VAvErmOMRmARM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R4A6SSTuVujUh2WBLNA9bg83E2/v3TY4K3XOD7N9v2srhFGhDr4q/pf1Xn1kqXS+i
-         9Ab/gUJIkF6HbiB/I2Bn4sevPaZx8Bez+W6MvEC2/JwdEoJx49PVSnUPBUtAvqTHUT
-         egoN2AJRSnQ9Iivl6ouaOhdsT8GyQvEOZZ3WWOrQ=
+        b=VL1jq8bLtC9OxrD8wYYJMsFGr2QkFQFqsSCi2K4+NeuWtI4UyOKd7KjTPe8Smm04w
+         6ihyzyFy8t/0Gq+y+sT8RdnFP4Ox4wCRRJRIecG7JBZztvQGzMjXNUZp0VWv7S2iI1
+         pzawEMyZNnkToZmKdGkCPRgZZBjZ9HqaUZfK7ixU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kinglong Mee <kinglongmee@gmail.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 172/218] xprtrdma: treat all calls not a bcall when bc_serv is NULL
-Date:   Mon, 13 Jun 2022 12:10:30 +0200
-Message-Id: <20220613094925.821320025@linuxfoundation.org>
+Subject: [PATCH 4.14 173/218] ata: pata_octeon_cf: Fix refcount leak in octeon_cf_probe
+Date:   Mon, 13 Jun 2022 12:10:31 +0200
+Message-Id: <20220613094925.852633366@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -51,71 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kinglong Mee <kinglongmee@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 11270e7ca268e8d61b5d9e5c3a54bd1550642c9c ]
+[ Upstream commit 10d6bdf532902be1d8aa5900b3c03c5671612aa2 ]
 
-When a rdma server returns a fault format reply, nfs v3 client may
-treats it as a bcall when bc service is not exist.
+of_find_device_by_node() takes reference, we should use put_device()
+to release it when not need anymore.
+Add missing put_device() to avoid refcount leak.
 
-The debug message at rpcrdma_bc_receive_call are,
-
-[56579.837169] RPC:       rpcrdma_bc_receive_call: callback XID
-00000001, length=20
-[56579.837174] RPC:       rpcrdma_bc_receive_call: 00 00 00 01 00 00 00
-00 00 00 00 00 00 00 00 00 00 00 00 04
-
-After that, rpcrdma_bc_receive_call will meets NULL pointer as,
-
-[  226.057890] BUG: unable to handle kernel NULL pointer dereference at
-00000000000000c8
-...
-[  226.058704] RIP: 0010:_raw_spin_lock+0xc/0x20
-...
-[  226.059732] Call Trace:
-[  226.059878]  rpcrdma_bc_receive_call+0x138/0x327 [rpcrdma]
-[  226.060011]  __ib_process_cq+0x89/0x170 [ib_core]
-[  226.060092]  ib_cq_poll_work+0x26/0x80 [ib_core]
-[  226.060257]  process_one_work+0x1a7/0x360
-[  226.060367]  ? create_worker+0x1a0/0x1a0
-[  226.060440]  worker_thread+0x30/0x390
-[  226.060500]  ? create_worker+0x1a0/0x1a0
-[  226.060574]  kthread+0x116/0x130
-[  226.060661]  ? kthread_flush_work_fn+0x10/0x10
-[  226.060724]  ret_from_fork+0x35/0x40
-...
-
-Signed-off-by: Kinglong Mee <kinglongmee@gmail.com>
-Reviewed-by: Chuck Lever <chuck.lever@oracle.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Fixes: 43f01da0f279 ("MIPS/OCTEON/ata: Convert pata_octeon_cf.c to use device tree.")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/xprtrdma/rpc_rdma.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/ata/pata_octeon_cf.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/sunrpc/xprtrdma/rpc_rdma.c b/net/sunrpc/xprtrdma/rpc_rdma.c
-index 991d5a96f35b..030bf17a20b6 100644
---- a/net/sunrpc/xprtrdma/rpc_rdma.c
-+++ b/net/sunrpc/xprtrdma/rpc_rdma.c
-@@ -974,6 +974,7 @@ rpcrdma_is_bcall(struct rpcrdma_xprt *r_xprt, struct rpcrdma_rep *rep,
- 		 __be32 xid, __be32 proc)
- #if defined(CONFIG_SUNRPC_BACKCHANNEL)
- {
-+	struct rpc_xprt *xprt = &r_xprt->rx_xprt;
- 	struct xdr_stream *xdr = &rep->rr_stream;
- 	__be32 *p;
- 
-@@ -997,6 +998,10 @@ rpcrdma_is_bcall(struct rpcrdma_xprt *r_xprt, struct rpcrdma_rep *rep,
- 	if (*p != cpu_to_be32(RPC_CALL))
- 		return false;
- 
-+	/* No bc service. */
-+	if (xprt->bc_serv == NULL)
-+		return false;
-+
- 	/* Now that we are sure this is a backchannel call,
- 	 * advance to the RPC header.
- 	 */
+diff --git a/drivers/ata/pata_octeon_cf.c b/drivers/ata/pata_octeon_cf.c
+index ac3b1fda820f..c240d8cbfd41 100644
+--- a/drivers/ata/pata_octeon_cf.c
++++ b/drivers/ata/pata_octeon_cf.c
+@@ -888,12 +888,14 @@ static int octeon_cf_probe(struct platform_device *pdev)
+ 				int i;
+ 				res_dma = platform_get_resource(dma_dev, IORESOURCE_MEM, 0);
+ 				if (!res_dma) {
++					put_device(&dma_dev->dev);
+ 					of_node_put(dma_node);
+ 					return -EINVAL;
+ 				}
+ 				cf_port->dma_base = (u64)devm_ioremap_nocache(&pdev->dev, res_dma->start,
+ 									 resource_size(res_dma));
+ 				if (!cf_port->dma_base) {
++					put_device(&dma_dev->dev);
+ 					of_node_put(dma_node);
+ 					return -EINVAL;
+ 				}
+@@ -903,6 +905,7 @@ static int octeon_cf_probe(struct platform_device *pdev)
+ 					irq = i;
+ 					irq_handler = octeon_cf_interrupt;
+ 				}
++				put_device(&dma_dev->dev);
+ 			}
+ 			of_node_put(dma_node);
+ 		}
 -- 
 2.35.1
 
