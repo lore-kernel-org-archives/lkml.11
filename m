@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD289C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:47:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4508ACCA481
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:47:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241843AbiFMOpw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:45:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57512 "EHLO
+        id S1385668AbiFMOp6 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 10:45:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385642AbiFMOni (ORCPT
+        with ESMTP id S1385702AbiFMOnm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:43:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A00B6B2E8A;
-        Mon, 13 Jun 2022 04:50:51 -0700 (PDT)
+        Mon, 13 Jun 2022 10:43:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33F2AB2E90;
+        Mon, 13 Jun 2022 04:50:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7782FB80EE6;
-        Mon, 13 Jun 2022 11:50:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C871CC341C6;
-        Mon, 13 Jun 2022 11:50:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 62E55612AC;
+        Mon, 13 Jun 2022 11:50:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7211FC341C4;
+        Mon, 13 Jun 2022 11:50:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655121045;
-        bh=O1BECb1BwhYEIW1CUebpdzDbEJQLtGkgaLnnWW6lRNQ=;
+        s=korg; t=1655121047;
+        bh=FLrjGgUTQv6fCtRv8Vq1Iy1NjHMHnXddlPMjRF9DYdM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m86mfXN9srmtNV2v94lh/z1MWclq3obJTDDr4PtXMPp/9NLceiziPR8uJ1KGpyVU4
-         95kk+v2+FgnAMwQL4ITLei0/QRETZ9WRwaL5ROpAKnakJCxcNNHu1z3tGyCuQqnk27
-         WcaI/h+TywEMyxoCCPn2vBIfO2WpExHbDFzh/uhk=
+        b=e/1oqYHAc/AeMdwD6NBzv11AO8GmG8o2jP9nnQt7Ls+3hmQZP0mv0q3h8O+7QRIY4
+         kQi6GAL3I7rhcPwxytYApu8wKiakzqY0UmvMkFksDc5WhNfpth9U0xt5lV8Fh5XuRf
+         /Ts/qw4iqjrk8zEXBaeoE0FNG95HX9gaSeavJz2Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
-        Fam Zheng <fam.zheng@bytedance.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Peter Korsgaard <peter.korsgaard@barco.com>,
+        Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 252/298] vringh: Fix loop descriptors check in the indirect cases
-Date:   Mon, 13 Jun 2022 12:12:26 +0200
-Message-Id: <20220613094932.724487421@linuxfoundation.org>
+Subject: [PATCH 5.17 253/298] platform/x86: barco-p50-gpio: Add check for platform_driver_register
+Date:   Mon, 13 Jun 2022 12:12:27 +0200
+Message-Id: <20220613094932.753788739@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -51,61 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xie Yongji <xieyongji@bytedance.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit dbd29e0752286af74243cf891accf472b2f3edd8 ]
+[ Upstream commit 011881b80ebe773914b59905bce0f5e0ef93e7ba ]
 
-We should use size of descriptor chain to test loop condition
-in the indirect case. And another statistical count is also introduced
-for indirect descriptors to avoid conflict with the statistical count
-of direct descriptors.
+As platform_driver_register() could fail, it should be better
+to deal with the return value in order to maintain the code
+consisitency.
 
-Fixes: f87d0fbb5798 ("vringh: host-side implementation of virtio rings.")
-Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-Signed-off-by: Fam Zheng <fam.zheng@bytedance.com>
-Message-Id: <20220505100910.137-1-xieyongji@bytedance.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
+Fixes: 86af1d02d458 ("platform/x86: Support for EC-connected GPIOs for identify LED/button on Barco P50 board")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Acked-by: Peter Korsgaard <peter.korsgaard@barco.com>
+Link: https://lore.kernel.org/r/20220526090345.1444172-1-jiasheng@iscas.ac.cn
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vhost/vringh.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/platform/x86/barco-p50-gpio.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
-index 14e2043d7685..eab55accf381 100644
---- a/drivers/vhost/vringh.c
-+++ b/drivers/vhost/vringh.c
-@@ -292,7 +292,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
- 	     int (*copy)(const struct vringh *vrh,
- 			 void *dst, const void *src, size_t len))
+diff --git a/drivers/platform/x86/barco-p50-gpio.c b/drivers/platform/x86/barco-p50-gpio.c
+index f5c72e33f9ae..f8b796820ef4 100644
+--- a/drivers/platform/x86/barco-p50-gpio.c
++++ b/drivers/platform/x86/barco-p50-gpio.c
+@@ -406,11 +406,14 @@ MODULE_DEVICE_TABLE(dmi, dmi_ids);
+ static int __init p50_module_init(void)
  {
--	int err, count = 0, up_next, desc_max;
-+	int err, count = 0, indirect_count = 0, up_next, desc_max;
- 	struct vring_desc desc, *descs;
- 	struct vringh_range range = { -1ULL, 0 }, slowrange;
- 	bool slow = false;
-@@ -349,7 +349,12 @@ __vringh_iov(struct vringh *vrh, u16 i,
- 			continue;
- 		}
+ 	struct resource res = DEFINE_RES_IO(P50_GPIO_IO_PORT_BASE, P50_PORT_CMD + 1);
++	int ret;
  
--		if (count++ == vrh->vring.num) {
-+		if (up_next == -1)
-+			count++;
-+		else
-+			indirect_count++;
-+
-+		if (count > vrh->vring.num || indirect_count > desc_max) {
- 			vringh_bad("Descriptor loop in %p", descs);
- 			err = -ELOOP;
- 			goto fail;
-@@ -411,6 +416,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
- 				i = return_from_indirect(vrh, &up_next,
- 							 &descs, &desc_max);
- 				slow = false;
-+				indirect_count = 0;
- 			} else
- 				break;
- 		}
+ 	if (!dmi_first_match(dmi_ids))
+ 		return -ENODEV;
+ 
+-	platform_driver_register(&p50_gpio_driver);
++	ret = platform_driver_register(&p50_gpio_driver);
++	if (ret)
++		return ret;
+ 
+ 	gpio_pdev = platform_device_register_simple(DRIVER_NAME, PLATFORM_DEVID_NONE, &res, 1);
+ 	if (IS_ERR(gpio_pdev)) {
 -- 
 2.35.1
 
