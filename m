@@ -2,90 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB8E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 15:15:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2302BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 15:15:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386767AbiFMPOy (ORCPT
+        id S1387544AbiFMPPF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 11:14:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37574 "EHLO
+        Mon, 13 Jun 2022 11:15:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243709AbiFMPMT (ORCPT
+        with ESMTP id S1387207AbiFMPNv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 11:12:19 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 271561124FF;
-        Mon, 13 Jun 2022 05:26:35 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id h23so10801235ejj.12;
-        Mon, 13 Jun 2022 05:26:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=8xxTI3Ss0WMvQnCIvX3BWtfdOokaW3JYdk6viarNn2w=;
-        b=B1eSHARb/HLRNxEiVUfS1gBgMUu/eKrY6+Ta+1Q1t0zBUYPMNoSNzILph/rg7s0DzS
-         5eY882OPO0TS8avEouSr+LlWRxN8metr9VffuR2NfLOo6r04qRV4ys5LymAbLq165f5f
-         omuxsbxHRt9qbWwtdxOdXLXH34RbTwZy7XiMoGI0p+pBLUgCSbNNn/ipvwEOPfWMbncP
-         /CVPd3oR1ReKpmSf2XKHAqw9bOtE5N2dNU9CncxQLy5zwpLf3Z4cz91VfLWNR4/I8PQP
-         Lf83icvbbTYMLqkHeX62zix3xAFqsok+Bls27pUQnXBR18X2N1dqz1dQn61yeTiyHTm2
-         6bQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=8xxTI3Ss0WMvQnCIvX3BWtfdOokaW3JYdk6viarNn2w=;
-        b=F+QuIVjLL+F/wVE1E4Y6Nm5zu6olBnMWIf/grbywWkCYt6xYTVWzM+46ThGNvQAUeF
-         Z/y8zEj6tCLftExAABTvyGhnPw7g5oPVjybKr4XEoVlWIVEtvz5RTfA/RZw/u1eljCDU
-         Sa8LWONm1J4VFth3716usrn3mQ+Le+qy4SzGSbxHHJQ4hmaoo/56Vt2kJH/8WpXqi3gT
-         6XDU/wJ8HDWY3yZGIpPg2UhX9CyPlwe9zr1eeu1RJKguQVmh80NQgE7qtv6RwJb6u/Nq
-         5e4b6CpgqrHVxGsI7XweQhQr0FuV32ZCeY0dRFexGm3H/vdo+a9zZI0LXvsq9WKPt2Bk
-         UoPg==
-X-Gm-Message-State: AOAM531WJ0R/zbbPLhG4KK1OILp2nW9tw30VfrqQHSmTg3vEYstve5Zr
-        ne21rCzdopa7VmpwIH+NJbg=
-X-Google-Smtp-Source: ABdhPJxRkJaL5XerCne7Kfki+B7OYlwwm15OKT/e9vP7mHjOQ4NDXwo7swD6zqhara4IBUTcU3F9Fg==
-X-Received: by 2002:a17:906:20c6:b0:718:cc95:ccaf with SMTP id c6-20020a17090620c600b00718cc95ccafmr2226111ejc.714.1655123194323;
-        Mon, 13 Jun 2022 05:26:34 -0700 (PDT)
-Received: from felia.fritz.box (200116b8260df50011e978c0f780de03.dip.versatel-1u1.de. [2001:16b8:260d:f500:11e9:78c0:f780:de03])
-        by smtp.gmail.com with ESMTPSA id 12-20020a170906308c00b006ff0b457cdasm3768403ejv.53.2022.06.13.05.26.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 05:26:33 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>, linux-phy@lists.infradead.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] MAINTAINERS: add include/dt-bindings/phy to GENERIC PHY FRAMEWORK
-Date:   Mon, 13 Jun 2022 14:26:21 +0200
-Message-Id: <20220613122621.18397-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 13 Jun 2022 11:13:51 -0400
+Received: from mailout1.rbg.tum.de (mailout1.rbg.tum.de [131.159.0.201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46AABB6E;
+        Mon, 13 Jun 2022 05:28:25 -0700 (PDT)
+Received: from mailrelay1.rbg.tum.de (mailrelay1.in.tum.de [131.159.254.14])
+        by mailout1.rbg.tum.de (Postfix) with ESMTPS id 895E54D;
+        Mon, 13 Jun 2022 14:28:20 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=in.tum.de;
+        s=20220209; t=1655123300;
+        bh=Fy/GQ0kuNY2dgt6/NaElsORQBYUxRHvsByxnFzQadfw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=qm01H+Guv33t7GmzpIwNun8w0ScI8wczrt31RkjIBbbD+NR+ViDZnnRkHphKSyqle
+         iaq+2v8W6y8gapcRjwZj64HYNe4C4KuM3GzAjoK/gcfK9uKFzTuZBg9bQruSiNohPD
+         KyVLlSyAc/JcNv7aU3W8s5EQyyXXYXU2m9M2HMc85r6xQ1c4wmnsRCx4VX0N2nbovj
+         Izs50u97ViKHQaGWmaLtlKzc3uak2ptoyMQvw6Ctf4f37VwzOrlT3CmdjTSSRGxTH9
+         /fpTuYaskC2WD6Li/64gqcWpwlYoE8nUMF6yzyrOhSSjrk2ZRnIYK/n6NwKGhpWde8
+         yO6Q0osrw6cFQ==
+Received: by mailrelay1.rbg.tum.de (Postfix, from userid 112)
+        id 846E428B; Mon, 13 Jun 2022 14:28:20 +0200 (CEST)
+Received: from mailrelay1.rbg.tum.de (localhost [127.0.0.1])
+        by mailrelay1.rbg.tum.de (Postfix) with ESMTP id 527C428A;
+        Mon, 13 Jun 2022 14:28:20 +0200 (CEST)
+Received: from mail.in.tum.de (mailproxy.in.tum.de [IPv6:2a09:80c0::78])
+        by mailrelay1.rbg.tum.de (Postfix) with ESMTPS id 47EB4286;
+        Mon, 13 Jun 2022 14:28:20 +0200 (CEST)
+Received: by mail.in.tum.de (Postfix, from userid 112)
+        id 411744A03AB; Mon, 13 Jun 2022 14:28:20 +0200 (CEST)
+Received: (Authenticated sender: heidekrp)
+        by mail.in.tum.de (Postfix) with ESMTPSA id CE83B4A02E6;
+        Mon, 13 Jun 2022 14:28:19 +0200 (CEST)
+        (Extended-Queue-bit xtech_cr@fff.in.tum.de)
+From:   =?UTF-8?q?Paul=20Heidekr=C3=BCger?= <paul.heidekrueger@in.tum.de>
+To:     Alan Stern <stern@rowland.harvard.edu>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Jade Alglave <j.alglave@ucl.ac.uk>,
+        Luc Maranget <luc.maranget@inria.fr>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        Daniel Lustig <dlustig@nvidia.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        =?UTF-8?q?Paul=20Heidekr=C3=BCger?= <paul.heidekrueger@in.tum.de>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org
+Cc:     Marco Elver <elver@google.com>,
+        Charalampos Mainas <charalampos.mainas@gmail.com>,
+        Pramod Bhatotia <pramod.bhatotia@in.tum.de>,
+        Soham Chakraborty <s.s.chakraborty@tudelft.nl>,
+        Martin Fink <martin.fink@in.tum.de>
+Subject: [PATCH] tools/memory-model: Clarify LKMM's limitations in litmus-tests.txt
+Date:   Mon, 13 Jun 2022 12:27:44 +0000
+Message-Id: <20220613122744.373516-1-paul.heidekrueger@in.tum.de>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Maintainers of the directory Documentation/devicetree/bindings/phy
-are also the maintainers of the corresponding directory
-include/dt-bindings/phy.
+As discussed, clarify LKMM not recognizing certain kinds of orderings.
+In particular, highlight the fact that LKMM might deliberately make
+weaker guarantees than compilers and architectures.
 
-Add the file entry for include/dt-bindings/phy to the appropriate
-section in MAINTAINERS.
-
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Link: https://lore.kernel.org/all/YpoW1deb%2FQeeszO1@ethstick13.dse.in.tum.de/T/#u
+Signed-off-by: Paul Heidekrüger <paul.heidekrueger@in.tum.de>
+Cc: Marco Elver <elver@google.com>
+Cc: Charalampos Mainas <charalampos.mainas@gmail.com>
+Cc: Pramod Bhatotia <pramod.bhatotia@in.tum.de>
+Cc: Soham Chakraborty <s.s.chakraborty@tudelft.nl>
+Cc: Martin Fink <martin.fink@in.tum.de>
 ---
-Kishon, Vinod, please pick this MAINTAINERS addition to your section.
+ .../Documentation/litmus-tests.txt            | 29 ++++++++++++-------
+ 1 file changed, 19 insertions(+), 10 deletions(-)
 
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 3bb8a8724eaf..7a4c3e811262 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8354,6 +8354,7 @@ Q:	https://patchwork.kernel.org/project/linux-phy/list/
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/phy/linux-phy.git
- F:	Documentation/devicetree/bindings/phy/
- F:	drivers/phy/
-+F:	include/dt-bindings/phy/
- F:	include/linux/phy/
+diff --git a/tools/memory-model/Documentation/litmus-tests.txt b/tools/memory-model/Documentation/litmus-tests.txt
+index 8a9d5d2787f9..623059eff84e 100644
+--- a/tools/memory-model/Documentation/litmus-tests.txt
++++ b/tools/memory-model/Documentation/litmus-tests.txt
+@@ -946,22 +946,31 @@ Limitations of the Linux-kernel memory model (LKMM) include:
+ 	carrying a dependency, then the compiler can break that dependency
+ 	by substituting a constant of that value.
  
- GENERIC PINCTRL I2C DEMULTIPLEXER DRIVER
+-	Conversely, LKMM sometimes doesn't recognize that a particular
+-	optimization is not allowed, and as a result, thinks that a
+-	dependency is not present (because the optimization would break it).
+-	The memory model misses some pretty obvious control dependencies
+-	because of this limitation.  A simple example is:
++	Conversely, LKMM will sometimes overstate the amount of reordering
++	done by architectures and compilers, leading it to missing some
++	pretty obvious orderings.  A simple example is:
+ 
+ 		r1 = READ_ONCE(x);
+ 		if (r1 == 0)
+ 			smp_mb();
+ 		WRITE_ONCE(y, 1);
+ 
+-	There is a control dependency from the READ_ONCE to the WRITE_ONCE,
+-	even when r1 is nonzero, but LKMM doesn't realize this and thinks
+-	that the write may execute before the read if r1 != 0.  (Yes, that
+-	doesn't make sense if you think about it, but the memory model's
+-	intelligence is limited.)
++	There is no dependency from the WRITE_ONCE() to the READ_ONCE(),
++	and as a result, LKMM does not assume ordering.  However, the
++	smp_mb() in the if branch will prevent architectures from
++	reordering the WRITE_ONCE() ahead of the READ_ONCE() but only if r1
++	is 0.  This, by definition, is not a control dependency, yet
++	ordering is guaranteed in some cases, depending on the READ_ONCE(),
++	which LKMM doesn't recognize.
++
++	It is clear that it is not dangerous in the slightest for LKMM to
++	make weaker guarantees than architectures.  In fact, it is
++	desirable, as it gives compilers room for making optimizations.
++	For instance, because a value of 0 triggers undefined behavior
++	elsewhere, a clever compiler might deduce that r1 can never be 0 in
++	the if condition.  As a result, said clever compiler might deem it
++	safe to optimize away the smp_mb(), eliminating the branch and
++	any ordering an architecture would guarantee otherwise.
+ 
+ 2.	Multiple access sizes for a single variable are not supported,
+ 	and neither are misaligned or partially overlapping accesses.
 -- 
-2.17.1
+2.35.1
 
