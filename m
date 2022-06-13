@@ -2,82 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 233C0C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:07:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7860EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:07:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351835AbiFMVHP (ORCPT
+        id S1351596AbiFMVHZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 17:07:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53662 "EHLO
+        Mon, 13 Jun 2022 17:07:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351768AbiFMVGf (ORCPT
+        with ESMTP id S243155AbiFMVGh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 17:06:35 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C86B53BBC3;
-        Mon, 13 Jun 2022 13:42:51 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id h192so6606101pgc.4;
-        Mon, 13 Jun 2022 13:42:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=zksiAjqc+ofCnYjvBYw1PF+pN6ibTOkQH6elqHNAtYU=;
-        b=byTHm3x89jOX7huHSgYMmmBJBFc1mQLA0hFsAIojFyto3o1MCbca/Jtzr7C9w6tGVl
-         9L3XlNPoqkjbYwvuGNyMnhaINfbjM0wJomBTYadE73vbAbXCxs3hPxlGVCVPEF5m3N7q
-         GglBlOwCsppYhs6ZGLtBYvLMrIBXGPExiQoK+XhhjvfdTx8Lubees3Bq2CGUqGvGH2rz
-         /bBFohpxycCtfV6IbakJqPJ9a4GWN3sDGmIQelrLQDfbEwx95MmpZeS71DTpDp3cryQb
-         w5p3E/+LM0z0sTsXdSDaGczfR/dA8mpnRN5qwOs85z//PrRHQQDsl5RxK9KFR5YSBt1B
-         UZkg==
+        Mon, 13 Jun 2022 17:06:37 -0400
+Received: from mail-io1-f45.google.com (mail-io1-f45.google.com [209.85.166.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FE6BA1AB;
+        Mon, 13 Jun 2022 13:43:00 -0700 (PDT)
+Received: by mail-io1-f45.google.com with SMTP id q11so7358758iod.8;
+        Mon, 13 Jun 2022 13:43:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=zksiAjqc+ofCnYjvBYw1PF+pN6ibTOkQH6elqHNAtYU=;
-        b=o85L6J01GPsayNi4g5687tIBQRZ5NS4okF7s+8VddSUEiMg2q40BluUZDqSajQnjOQ
-         zr7zK81WgOWUuJjHaWlZL/7qf2ojDwKy9csJcl6eFNPBrasBzJnSM8mzqFy48h1OE7Su
-         k5QSOzwXuSm8yhGkYUL+cPlJsUBVOTozDecqy5/KKhi74V/YZMrqwLCt122LyvQ+gKLW
-         lZVIS+cvKn6a4qo01OXBKtlS8rllHyFj2nR8qs6h5cMy11iDGTL8A7lOAS1sPvQOxu9V
-         7n1v8sjUvM5Gctj1zJBDqdKzzT9+2x5lRLoPGnJD7CVi8bz3afgzbuPfkYhHIsyP9sPs
-         LnhA==
-X-Gm-Message-State: AOAM530k+3FIdGqI/+LlDqLJgs2nbci1dm0hBDFhEQjXs95PN/3J73YY
-        cOyYv5VxVsKw5kCbZJBT3YZSzyt0gHw=
-X-Google-Smtp-Source: ABdhPJxVPL7iI/NqVCP2IhMcUJgHvWpVv13j+JY8VWlh+P9qdQSAmkx79Mr9Ta+C+hvvFuxCnO01Cw==
-X-Received: by 2002:a65:6912:0:b0:3fc:907b:e05 with SMTP id s18-20020a656912000000b003fc907b0e05mr1233288pgq.414.1655152971369;
-        Mon, 13 Jun 2022 13:42:51 -0700 (PDT)
-Received: from [10.69.47.244] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 6-20020a170902c20600b00163e4410b82sm5547670pll.239.2022.06.13.13.42.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Jun 2022 13:42:51 -0700 (PDT)
-Message-ID: <634ce85d-362a-5563-8af5-ddf9f2e379f9@gmail.com>
-Date:   Mon, 13 Jun 2022 13:42:50 -0700
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4cvLgjmvps0lHdHnD+Ttf/d2fQckJt1ozCbfYZlKNKk=;
+        b=TntbIODHZc3jA/2f0PVO6cyHIqpGyu2aRUXLzfe4U5HDhBaBuh7TDkm5qGcBpz8Rq9
+         e/dGqHOeDE68Y/DF1DKwlbyveCKJTbxTJTww50r4oGkYZ+/J+wkrj3YIeOiBe05yoBmB
+         XNxc/ecvc9NmgGnrgZEYeeksrXoIV01S3ysS3v/DKZdH2NvlIvt1yZgieIaFP/LpOZjl
+         zOGxu7pvGthsaLCxaDLydusASBDGsMouILhnMnKsPvwBx59d92yPgynBjL7mNLhU5Uud
+         iG53mkQ5LAQwGsY34BTKWEyxA8sTzITydSPsj4uiMFqmL+fidMi8mnQ17tGpz42GFGJH
+         KViw==
+X-Gm-Message-State: AOAM530P4DE54jHo/0wz+OoE4jTvK8rGLHX++7tj8NCeNaBs1smii4Od
+        Anrh/PNnv9dn6lM6duUMng==
+X-Google-Smtp-Source: ABdhPJx1fRZ7lsDYRtdxX8f9/YvOuCpZt2tAdVjJRsfDZXT87HL0wBhgpY6DIMShWSijSHR9W6qgVA==
+X-Received: by 2002:a05:6638:264b:b0:331:be44:9a9 with SMTP id n11-20020a056638264b00b00331be4409a9mr914848jat.194.1655152979909;
+        Mon, 13 Jun 2022 13:42:59 -0700 (PDT)
+Received: from robh.at.kernel.org ([69.39.28.171])
+        by smtp.gmail.com with ESMTPSA id v10-20020a02384a000000b0033188e8cabesm3932556jae.74.2022.06.13.13.42.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 13:42:59 -0700 (PDT)
+Received: (nullmailer pid 47751 invoked by uid 1000);
+        Mon, 13 Jun 2022 20:42:58 -0000
+Date:   Mon, 13 Jun 2022 14:42:58 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Frank Li <Frank.Li@nxp.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 14/18] PCI: dwc: Move io_cfg_atu_shared to the Root
+ Port descriptor
+Message-ID: <20220613204258.GC28636-robh@kernel.org>
+References: <20220610082535.12802-1-Sergey.Semin@baikalelectronics.ru>
+ <20220610082535.12802-15-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH RESEND --next] scsi: lpfc: Use memset_startat() helper in
- lpfc_nvmet_xmt_fcp_op_cmp
-Content-Language: en-US
-To:     Xiu Jianfeng <xiujianfeng@huawei.com>, james.smart@broadcom.com,
-        dick.kennedy@broadcom.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com
-Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220613021851.59699-1-xiujianfeng@huawei.com>
-From:   James Smart <jsmart2021@gmail.com>
-In-Reply-To: <20220613021851.59699-1-xiujianfeng@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220610082535.12802-15-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/12/2022 7:18 PM, Xiu Jianfeng wrote:
-> Use memset_startat() helper to simplify the code, no functional change
-> in this patch.
+On Fri, Jun 10, 2022 at 11:25:30AM +0300, Serge Semin wrote:
+> That flag is set if there is an outbound iATU window used for both PCIe
+> peripheral config-space accesses and IO ports transfers. Since the flag
+> semantic is purely Root Port specific, it's unused in neither the DW PCIe
+> common code nor the DW PCIe Endpoint driver we can freely move it to the
+> DW PCIe Root Port descriptor. Thus the pcie_port structure will be more
+> coherent.
 > 
-> Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> 
 > ---
+> 
+> Changelog v4:
+> - This is a new patch created on the v4 lap of the series.
+> ---
+>  drivers/pci/controller/dwc/pcie-designware-host.c | 6 +++---
+>  drivers/pci/controller/dwc/pcie-designware.h      | 2 +-
+>  2 files changed, 4 insertions(+), 4 deletions(-)
 
-Reviewed-by: James Smart <jsmart2021@gmail.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
 
--- james
