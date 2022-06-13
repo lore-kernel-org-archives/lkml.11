@@ -2,84 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D708CCA482
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:49:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B68BFCCA47D
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:51:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349775AbiFMUtB (ORCPT
+        id S1347980AbiFMUvI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:49:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54876 "EHLO
+        Mon, 13 Jun 2022 16:51:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244927AbiFMUrl (ORCPT
+        with ESMTP id S1351062AbiFMUtB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:47:41 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2F8112C
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:05:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=1wRsT0Tmd+oAhhjtNXgHdngUWT+v
-        HobjCLA2n+Eu8jE=; b=nNEycXghB1tHVghNXVU8zGRnwhQu3LFM4yI/OhJFipsr
-        RNkTyPvAProZEYMeV93oNQ7vSjBSVZs4lgaPKoW3pZarZjtU2xH86diNB/QHeIFD
-        T48mce3RNUN0K0I+bi7QOMCy8pkX1EfFZWkJEaPmPo+IK6spVLB0VYLK9Zs6eoM=
-Received: (qmail 1425404 invoked from network); 13 Jun 2022 22:04:57 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 13 Jun 2022 22:04:57 +0200
-X-UD-Smtp-Session: l3s3148p1@1TUqzVnhx1dZD+/B
-Date:   Mon, 13 Jun 2022 22:04:53 +0200
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     linux-renesas-soc@vger.kernel.org
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] clk: renesas: r8a779f0: Add HSCIF0+1 clocks
-Message-ID: <YqeYZXTDmW7rfgCP@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        linux-renesas-soc@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220613130949.10001-1-wsa+renesas@sang-engineering.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="pSAZrI7vICVqWXoz"
-Content-Disposition: inline
-In-Reply-To: <20220613130949.10001-1-wsa+renesas@sang-engineering.com>
+        Mon, 13 Jun 2022 16:49:01 -0400
+X-Greylist: delayed 1799 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 13 Jun 2022 13:07:37 PDT
+Received: from finn.localdomain (finn.gateworks.com [108.161.129.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 241E035DC6;
+        Mon, 13 Jun 2022 13:07:35 -0700 (PDT)
+Received: from 068-189-091-139.biz.spectrum.com ([68.189.91.139] helo=tharvey.pdc.gateworks.com)
+        by finn.localdomain with esmtp (Exim 4.93)
+        (envelope-from <tharvey@gateworks.com>)
+        id 1o0pQC-00EGQm-LZ; Mon, 13 Jun 2022 19:08:20 +0000
+From:   Tim Harvey <tharvey@gateworks.com>
+To:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Tim Harvey <tharvey@gateworks.com>
+Subject: [PATCH] arm64: dts: imx8mm-venice-gw7902: fix UART1 CTS
+Date:   Mon, 13 Jun 2022 12:08:18 -0700
+Message-Id: <20220613190818.5386-1-tharvey@gateworks.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Configure the correct GPIO for UART1 CTS.
 
---pSAZrI7vICVqWXoz
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+---
+ arch/arm64/boot/dts/freescale/imx8mm-venice-gw7902.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On Mon, Jun 13, 2022 at 03:09:49PM +0200, Wolfram Sang wrote:
-> Those have been successfully tested. HSCIF2+3 still need verification.
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7902.dts b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7902.dts
+index 407ab4592b4c..6692e55df752 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7902.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7902.dts
+@@ -651,7 +651,7 @@
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_uart1>, <&pinctrl_uart1_gpio>;
+ 	rts-gpios = <&gpio4 10 GPIO_ACTIVE_LOW>;
+-	cts-gpios = <&gpio4 11 GPIO_ACTIVE_LOW>;
++	cts-gpios = <&gpio4 24 GPIO_ACTIVE_LOW>;
+ 	uart-has-rtscts;
+ 	status = "okay";
+ };
+-- 
+2.17.1
 
-I managed to test all other HSCIFs and SCIFs now. I'll resend the
-updated patches tomorrow.
-
-
---pSAZrI7vICVqWXoz
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmKnmGEACgkQFA3kzBSg
-KbaUABAAqDFLBfhHhNSGTuYDvGIIagahcjf7xC404xBrgEiz+2M8H6LDZFMm6nM3
-BjkXPYJlX8w+0rIOgatsET4QLVw8Q1fip/ubea36tBG6wD2JJU7+yjXFWbhxlrM6
-If+MMOMOhj7FSDfM1KHGHpLRPULGT0Nun36738rh6ggs8/xid79LAPXIhUa5oOBH
-mpN9zHO3/EFgzWDVzTr06rX7ASXNsvrSs5Z+Aa3EsqNM4Fvk7Vod9H8RsmuHvqgF
-UuHHu0YIibyB+1bon/ypb9VIX6s5t8h0lyiTM6rdAtEjjQIjc72PPLrv6pCGL3h9
-EW1WUAeVDy2KltQ0ueH5X9c4Ajgsew+40YeGizsBhRzNqRPLWETGj6UibNp/5oUo
-2emjQ/+dg/5//uKnUMTWJw+68opzYSzeQEDr3Lx19d2KbVoJfqgpKgIJslNoJsAH
-ESFoaJoC3+tIaf2Oba63DaH9Y0tHJRX+3JLhQaZarWWZuMlcPRX7snNvM0Qr9bJJ
-yTq+druC3EIm9PUh19FOB+QehUCvoCD+X6zgtvrG7DVQImiOyLuhILbwEBI61IYI
-TbfDlTZMStnTwsGlhHqWpN0mz1zfMmS6g6QpF0clQla3FrRA2jcs+w3NxO+9eAm4
-mWGsK87DPUA/AbHwKs5Mvvr4+g27znN/RDORZYUbGltysqCVmCQ=
-=9YHp
------END PGP SIGNATURE-----
-
---pSAZrI7vICVqWXoz--
