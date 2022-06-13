@@ -2,153 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1A58CCA47E
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 07:26:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22062C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 07:27:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239280AbiFMH04 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 03:26:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55026 "EHLO
+        id S231228AbiFMH06 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 03:26:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231228AbiFMH0x (ORCPT
+        with ESMTP id S239264AbiFMH0y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 03:26:53 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A481AD8B;
-        Mon, 13 Jun 2022 00:26:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655105212; x=1686641212;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=cvLueTdmhN3hJgNVAvOLkfvWJp0QJnKpGRgdoW7g6VE=;
-  b=nfRSQvRQpDQv+Q6YJ1mC2M6tWlpno4GogSkgD2LFC2EPr11am+Zanjvv
-   Ol0LQQRe3DAyQvVUn1qhyTU4/O1e6NFafDX9xJN+GMOJdkEV6gcBJqtiV
-   IAxIY2BvR55bJ6U77VsmuK8TF+ydQnny8YGaFNUnRQj22bvwQUdio40Gg
-   wmUH/feKABVAPrnWmaF/D1b+qMSUJsZd0BoE6cZxOQpr/TBH5xWInwfBd
-   XklN/4kvpUWufsOHSYe1CzKRntGlpiSlbw3SWYAtquO+Uvu9aWOKyjoD+
-   fsf0IuXsk9FzpL7BOBYvyv/uULNkANGXGttH8ee58lbxngDGWEZcUjMrs
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10376"; a="275728700"
-X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
-   d="scan'208";a="275728700"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 00:26:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
-   d="scan'208";a="582101815"
-Received: from fmsmsx604.amr.corp.intel.com ([10.18.126.84])
-  by orsmga007.jf.intel.com with ESMTP; 13 Jun 2022 00:26:52 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Mon, 13 Jun 2022 00:26:51 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Mon, 13 Jun 2022 00:26:51 -0700
-Received: from fmsmsx612.amr.corp.intel.com ([10.18.126.92]) by
- fmsmsx612.amr.corp.intel.com ([10.18.126.92]) with mapi id 15.01.2308.027;
- Mon, 13 Jun 2022 00:26:51 -0700
-From:   "Sang, Oliver" <oliver.sang@intel.com>
-To:     "Qiang, Chenyi" <chenyi.qiang@intel.com>
-CC:     Paolo Bonzini <pbonzini@redhat.com>,
-        "Christopherson,, Sean" <seanjc@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "Hu, Robert" <robert.hu@intel.com>,
-        "Chen, Farrah" <farrah.chen@intel.com>,
-        "Wei, Danmei" <danmei.wei@intel.com>,
-        "lkp@lists.01.org" <lkp@lists.01.org>, lkp <lkp@intel.com>,
-        "Hao, Xudong" <xudong.hao@intel.com>
-Subject: RE: [KVM]  a5202946dc: kernel-selftests.kvm.make_fail
-Thread-Topic: [KVM]  a5202946dc: kernel-selftests.kvm.make_fail
-Thread-Index: AQHYfsSs2wejXgf5QkCfnMMhu7wPqK1NLIaA///Dp1A=
-Date:   Mon, 13 Jun 2022 07:26:51 +0000
-Message-ID: <d16188160405497a9ea9b206e4178730@intel.com>
-References: <20220613012644.GA7252@xsang-OptiPlex-9020>
- <SA2PR11MB50525D04633E934148F8132781AB9@SA2PR11MB5052.namprd11.prod.outlook.com>
-In-Reply-To: <SA2PR11MB50525D04633E934148F8132781AB9@SA2PR11MB5052.namprd11.prod.outlook.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.6.500.17
-x-originating-ip: [10.239.127.36]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Mon, 13 Jun 2022 03:26:54 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC19C1AD8B
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 00:26:53 -0700 (PDT)
+X-UUID: 55cc7ffaeb6f4bb2be9a1cc118f99317-20220613
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:f0ba800b-81f3-48c7-8603-c0332041600c,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:-5
+X-CID-META: VersionHash:2a19b09,CLOUDID:f5355cc6-12ba-4305-bfdf-9aefbdc32516,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 55cc7ffaeb6f4bb2be9a1cc118f99317-20220613
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 138770686; Mon, 13 Jun 2022 15:26:50 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Mon, 13 Jun 2022 15:26:49 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 13 Jun 2022 15:26:49 +0800
+From:   Bo-Chen Chen <rex-bc.chen@mediatek.com>
+To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
+        <chunfeng.yun@mediatek.com>, <kishon@ti.com>, <vkoul@kernel.org>,
+        <matthias.bgg@gmail.com>, <airlied@linux.ie>
+CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
+        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
+        <angelogioacchino.delregno@collabora.com>, <ck.hu@mediatek.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-phy@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Bo-Chen Chen <rex-bc.chen@mediatek.com>
+Subject: [PATCH v11 0/1] drm/mediatek: Add MT8195 DisplayPort PHY driver
+Date:   Mon, 13 Jun 2022 15:26:47 +0800
+Message-ID: <20220613072648.11081-1-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGkgQ2hlbnlpLA0KDQo+IEZyb206IFFpYW5nLCBDaGVueWkgPGNoZW55aS5xaWFuZ0BpbnRlbC5j
-b20+DQo+IFNlbnQ6IE1vbmRheSwgSnVuZSAxMywgMjAyMiAxMjowMiBQTQ0KPiANCj4gSGkgT2xp
-dmVyDQo+IA0KPiBJIGZvdW5kIHRoaXMgaXNzdWUgaXMgYWxyZWFkeSBmaXhlZCBieSBTZWFuIGlu
-IHF1ZXVlIGJyYW5jaC4gVGhhbmtzIGZvciB5b3VyDQo+IHRlc3RpbmcgYW5kIHJlcG9ydC4NCg0K
-VGhhbmtzIGEgbG90IGZvciBpbmZvcm1hdGlvbiENCg0KPiANCj4gVGhhbmtzDQo+IENoZW55aQ0K
-PiANCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogU2FuZywgT2xpdmVyIDxv
-bGl2ZXIuc2FuZ0BpbnRlbC5jb20+DQo+IFNlbnQ6IE1vbmRheSwgSnVuZSAxMywgMjAyMiA5OjI3
-IEFNDQo+IFRvOiBRaWFuZywgQ2hlbnlpIDxjaGVueWkucWlhbmdAaW50ZWwuY29tPg0KPiBDYzog
-UGFvbG8gQm9uemluaSA8cGJvbnppbmlAcmVkaGF0LmNvbT47IENocmlzdG9waGVyc29uLCwgU2Vh
-bg0KPiA8c2VhbmpjQGdvb2dsZS5jb20+OyBMS01MIDxsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwu
-b3JnPjsNCj4ga3ZtQHZnZXIua2VybmVsLm9yZzsgSHUsIFJvYmVydCA8cm9iZXJ0Lmh1QGludGVs
-LmNvbT47IENoZW4sIEZhcnJhaA0KPiA8ZmFycmFoLmNoZW5AaW50ZWwuY29tPjsgV2VpLCBEYW5t
-ZWkgPGRhbm1laS53ZWlAaW50ZWwuY29tPjsNCj4gbGtwQGxpc3RzLjAxLm9yZzsgbGtwIDxsa3BA
-aW50ZWwuY29tPjsgSGFvLCBYdWRvbmcgPHh1ZG9uZy5oYW9AaW50ZWwuY29tPg0KPiBTdWJqZWN0
-OiBbS1ZNXSBhNTIwMjk0NmRjOiBrZXJuZWwtc2VsZnRlc3RzLmt2bS5tYWtlX2ZhaWwNCj4gDQo+
-IA0KPiANCj4gR3JlZXRpbmcsDQo+IA0KPiBGWUksIHdlIG5vdGljZWQgdGhlIGZvbGxvd2luZyBj
-b21taXQgKGJ1aWx0IHdpdGggZ2NjLTExKToNCj4gDQo+IGNvbW1pdDogYTUyMDI5NDZkYzdiMjBi
-ZjJhYmUxYmQzNWFkZjJmNDZhYTE1NWFjMCAoIktWTTogc2VsZnRlc3RzOiBBZGQgYQ0KPiB0ZXN0
-IHRvIGdldC9zZXQgdHJpcGxlIGZhdWx0IGV2ZW50IikgaHR0cHM6Ly9naXQua2VybmVsLm9yZy9j
-Z2l0L3ZpcnQva3ZtL2t2bS5naXQNCj4gbGJyLWZvci13ZWlqaWFuZw0KPiANCj4gaW4gdGVzdGNh
-c2U6IGtlcm5lbC1zZWxmdGVzdHMNCj4gdmVyc2lvbjoga2VybmVsLXNlbGZ0ZXN0cy14ODZfNjQt
-ZDg4OWIxNTEtMV8yMDIyMDYwOA0KPiB3aXRoIGZvbGxvd2luZyBwYXJhbWV0ZXJzOg0KPiANCj4g
-CWdyb3VwOiBrdm0NCj4gCXVjb2RlOiAweGVjDQo+IA0KPiB0ZXN0LWRlc2NyaXB0aW9uOiBUaGUg
-a2VybmVsIGNvbnRhaW5zIGEgc2V0IG9mICJzZWxmIHRlc3RzIiB1bmRlciB0aGUNCj4gdG9vbHMv
-dGVzdGluZy9zZWxmdGVzdHMvIGRpcmVjdG9yeS4gVGhlc2UgYXJlIGludGVuZGVkIHRvIGJlIHNt
-YWxsIHVuaXQgdGVzdHMgdG8NCj4gZXhlcmNpc2UgaW5kaXZpZHVhbCBjb2RlIHBhdGhzIGluIHRo
-ZSBrZXJuZWwuDQo+IHRlc3QtdXJsOiBodHRwczovL3d3dy5rZXJuZWwub3JnL2RvYy9Eb2N1bWVu
-dGF0aW9uL2tzZWxmdGVzdC50eHQNCj4gDQo+IA0KPiBvbiB0ZXN0IG1hY2hpbmU6IDggdGhyZWFk
-cyBJbnRlbChSKSBDb3JlKFRNKSBpNy02NzAwIENQVSBAIDMuNDBHSHogd2l0aCAyOEcNCj4gbWVt
-b3J5DQo+IA0KPiBjYXVzZWQgYmVsb3cgY2hhbmdlcyAocGxlYXNlIHJlZmVyIHRvIGF0dGFjaGVk
-IGRtZXNnL2ttc2cgZm9yIGVudGlyZQ0KPiBsb2cvYmFja3RyYWNlKToNCj4gDQo+IA0KPiANCj4g
-DQo+IElmIHlvdSBmaXggdGhlIGlzc3VlLCBraW5kbHkgYWRkIGZvbGxvd2luZyB0YWcNCj4gUmVw
-b3J0ZWQtYnk6IGtlcm5lbCB0ZXN0IHJvYm90IDxvbGl2ZXIuc2FuZ0BpbnRlbC5jb20+DQo+IA0K
-PiANCj4gDQo+IGdjYyAtV2FsbCAtV3N0cmljdC1wcm90b3R5cGVzIC1XdW5pbml0aWFsaXplZCAt
-TzIgLWcgLXN0ZD1nbnU5OSAtZm5vLXN0YWNrLQ0KPiBwcm90ZWN0b3IgLWZuby1QSUUgLUkuLi8u
-Li8uLi8uLi90b29scy9pbmNsdWRlIC1JLi4vLi4vLi4vLi4vdG9vbHMvYXJjaC94ODYvaW5jbHVk
-ZSAtDQo+IEkuLi8uLi8uLi8uLi91c3IvaW5jbHVkZS8gLUlpbmNsdWRlIC1JeDg2XzY0IC1JaW5j
-bHVkZS94ODZfNjQgLUkuLiAgICAtcHRocmVhZCAgLW5vLXBpZQ0KPiB4ODZfNjQvdHJpcGxlX2Zh
-dWx0X2V2ZW50X3Rlc3QuYyAvdXNyL3NyYy9wZXJmX3NlbGZ0ZXN0cy14ODZfNjQtcmhlbC04LjMt
-DQo+IGtzZWxmdGVzdHMtDQo+IGE1MjAyOTQ2ZGM3YjIwYmYyYWJlMWJkMzVhZGYyZjQ2YWExNTVh
-YzAvdG9vbHMvdGVzdGluZy9zZWxmdGVzdHMva3ZtL2xpYmsNCj4gdm0uYSAgLW8gL3Vzci9zcmMv
-cGVyZl9zZWxmdGVzdHMteDg2XzY0LXJoZWwtOC4zLWtzZWxmdGVzdHMtDQo+IGE1MjAyOTQ2ZGM3
-YjIwYmYyYWJlMWJkMzVhZGYyZjQ2YWExNTVhYzAvdG9vbHMvdGVzdGluZy9zZWxmdGVzdHMva3Zt
-L3g4Ng0KPiBfNjQvdHJpcGxlX2ZhdWx0X2V2ZW50X3Rlc3QNCj4geDg2XzY0L3RyaXBsZV9mYXVs
-dF9ldmVudF90ZXN0LmM6IEluIGZ1bmN0aW9uIOKAmG1haW7igJk6DQo+IHg4Nl82NC90cmlwbGVf
-ZmF1bHRfZXZlbnRfdGVzdC5jOjUwOjEwOiBlcnJvcjoNCj4g4oCYS1ZNX0NBUF9UUklQTEVfRkFV
-TFRfRVZFTlTigJkgdW5kZWNsYXJlZCAoZmlyc3QgdXNlIGluIHRoaXMgZnVuY3Rpb24pOyBkaWQg
-eW91DQo+IG1lYW4g4oCYS1ZNX0NBUF9YODZfVFJJUExFX0ZBVUxUX0VWRU5U4oCZPw0KPiAgICA1
-MCB8ICAgLmNhcCA9IEtWTV9DQVBfVFJJUExFX0ZBVUxUX0VWRU5ULA0KPiAgICAgICB8ICAgICAg
-ICAgIF5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+DQo+ICAgICAgIHwgICAgICAgICAgS1ZNX0NB
-UF9YODZfVFJJUExFX0ZBVUxUX0VWRU5UDQo+IHg4Nl82NC90cmlwbGVfZmF1bHRfZXZlbnRfdGVz
-dC5jOjUwOjEwOiBub3RlOiBlYWNoIHVuZGVjbGFyZWQgaWRlbnRpZmllciBpcw0KPiByZXBvcnRl
-ZCBvbmx5IG9uY2UgZm9yIGVhY2ggZnVuY3Rpb24gaXQgYXBwZWFycyBpbg0KPiBtYWtlOiAqKiog
-Wy4uL2xpYi5tazoxNTI6IC91c3Ivc3JjL3BlcmZfc2VsZnRlc3RzLXg4Nl82NC1yaGVsLTguMy1r
-c2VsZnRlc3RzLQ0KPiBhNTIwMjk0NmRjN2IyMGJmMmFiZTFiZDM1YWRmMmY0NmFhMTU1YWMwL3Rv
-b2xzL3Rlc3Rpbmcvc2VsZnRlc3RzL2t2bS94ODYNCj4gXzY0L3RyaXBsZV9mYXVsdF9ldmVudF90
-ZXN0XSBFcnJvciAxDQo+IG1ha2U6IExlYXZpbmcgZGlyZWN0b3J5ICcvdXNyL3NyYy9wZXJmX3Nl
-bGZ0ZXN0cy14ODZfNjQtcmhlbC04LjMta3NlbGZ0ZXN0cy0NCj4gYTUyMDI5NDZkYzdiMjBiZjJh
-YmUxYmQzNWFkZjJmNDZhYTE1NWFjMC90b29scy90ZXN0aW5nL3NlbGZ0ZXN0cy9rdm0nDQo+IA0K
-PiANCj4gDQo+IFRvIHJlcHJvZHVjZToNCj4gDQo+ICAgICAgICAgZ2l0IGNsb25lIGh0dHBzOi8v
-Z2l0aHViLmNvbS9pbnRlbC9sa3AtdGVzdHMuZ2l0DQo+ICAgICAgICAgY2QgbGtwLXRlc3RzDQo+
-ICAgICAgICAgc3VkbyBiaW4vbGtwIGluc3RhbGwgam9iLnlhbWwgICAgICAgICAgICMgam9iIGZp
-bGUgaXMgYXR0YWNoZWQgaW4gdGhpcyBlbWFpbA0KPiAgICAgICAgIGJpbi9sa3Agc3BsaXQtam9i
-IC0tY29tcGF0aWJsZSBqb2IueWFtbCAjIGdlbmVyYXRlIHRoZSB5YW1sIGZpbGUgZm9yIGxrcCBy
-dW4NCj4gICAgICAgICBzdWRvIGJpbi9sa3AgcnVuIGdlbmVyYXRlZC15YW1sLWZpbGUNCj4gDQo+
-ICAgICAgICAgIyBpZiBjb21lIGFjcm9zcyBhbnkgZmFpbHVyZSB0aGF0IGJsb2NrcyB0aGUgdGVz
-dCwNCj4gICAgICAgICAjIHBsZWFzZSByZW1vdmUgfi8ubGtwIGFuZCAvbGtwIGRpciB0byBydW4g
-ZnJvbSBhIGNsZWFuIHN0YXRlLg0KPiANCj4gDQo+IA0KPiAtLQ0KPiAwLURBWSBDSSBLZXJuZWwg
-VGVzdCBTZXJ2aWNlDQo+IGh0dHBzOi8vMDEub3JnL2xrcA0KPiANCj4gDQoNCg==
+This series display port phy drivers and separated from [1] which is
+original from Guillaume.
+The display port driver is [2].
+
+Changes for v11:
+1. Fix register definition.
+
+[1]:https://lore.kernel.org/all/20220523104758.29531-1-granquet@baylibre.com/
+[2]:https://lore.kernel.org/all/20220610105522.13449-1-rex-bc.chen@mediatek.com/
+
+Markus Schneider-Pargmann (1):
+  phy: phy-mtk-dp: Add driver for DP phy
+
+ MAINTAINERS                       |   1 +
+ drivers/phy/mediatek/Kconfig      |   8 ++
+ drivers/phy/mediatek/Makefile     |   1 +
+ drivers/phy/mediatek/phy-mtk-dp.c | 202 ++++++++++++++++++++++++++++++
+ 4 files changed, 212 insertions(+)
+ create mode 100644 drivers/phy/mediatek/phy-mtk-dp.c
+
+-- 
+2.18.0
+
