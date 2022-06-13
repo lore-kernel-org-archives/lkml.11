@@ -2,102 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06259CCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 15:18:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BFBDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 15:18:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354956AbiFMPSY (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 11:18:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41294 "EHLO
+        id S240800AbiFMPSq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 11:18:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237863AbiFMPRs (ORCPT
+        with ESMTP id S243879AbiFMPRx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 11:17:48 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C8B351269A6;
-        Mon, 13 Jun 2022 05:36:14 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 87B6681D6;
-        Mon, 13 Jun 2022 12:31:31 +0000 (UTC)
-Date:   Mon, 13 Jun 2022 15:36:11 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com,
-        vgupta@kernel.org, linux@armlinux.org.uk,
-        ulli.kroll@googlemail.com, linus.walleij@linaro.org,
-        shawnguo@kernel.org, Sascha Hauer <s.hauer@pengutronix.de>,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        khilman@kernel.org, catalin.marinas@arm.com, will@kernel.org,
-        guoren@kernel.org, bcain@quicinc.com, chenhuacai@kernel.org,
-        kernel@xen0n.name, geert@linux-m68k.org, sammy@sammy.net,
-        monstr@monstr.eu, tsbogend@alpha.franken.de, dinguyen@kernel.org,
-        jonas@southpole.se, stefan.kristiansson@saunalahti.fi,
-        shorne@gmail.com, James.Bottomley@hansenpartnership.com,
-        deller@gmx.de, mpe@ellerman.id.au, benh@kernel.crashing.org,
-        paulus@samba.org, paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, hca@linux.ibm.com, gor@linux.ibm.com,
-        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
-        svens@linux.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org,
-        davem@davemloft.net, richard@nod.at,
-        anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
-        namhyung@kernel.org, jgross@suse.com, srivatsa@csail.mit.edu,
-        amakhalov@vmware.com, pv-drivers@vmware.com,
-        boris.ostrovsky@oracle.com, chris@zankel.net, jcmvbkbc@gmail.com,
-        rafael@kernel.org, lenb@kernel.org, pavel@ucw.cz,
-        gregkh@linuxfoundation.org, mturquette@baylibre.com,
-        sboyd@kernel.org, daniel.lezcano@linaro.org, lpieralisi@kernel.org,
-        sudeep.holla@arm.com, agross@kernel.org,
-        bjorn.andersson@linaro.org, anup@brainfault.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com,
-        jacob.jun.pan@linux.intel.com, Arnd Bergmann <arnd@arndb.de>,
-        yury.norov@gmail.com, andriy.shevchenko@linux.intel.com,
-        linux@rasmusvillemoes.dk, rostedt@goodmis.org, pmladek@suse.com,
-        senozhatsky@chromium.org, john.ogness@linutronix.de,
-        paulmck@kernel.org, frederic@kernel.org, quic_neeraju@quicinc.com,
-        josh@joshtriplett.org, mathieu.desnoyers@efficios.com,
-        jiangshanlai@gmail.com, joel@joelfernandes.org,
-        juri.lelli@redhat.com, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, vschneid@redhat.com, jpoimboe@kernel.org,
-        linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
-        linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-mips@vger.kernel.org, openrisc@lists.librecores.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-perf-users@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        xen-devel@lists.xenproject.org, linux-xtensa@linux-xtensa.org,
-        linux-acpi@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-arch@vger.kernel.org,
-        rcu@vger.kernel.org
-Subject: Re: [PATCH 33/36] cpuidle,omap3: Use WFI for omap3_pm_idle()
-Message-ID: <YqcvO0xSmlEVMef3@atomide.com>
-References: <20220608142723.103523089@infradead.org>
- <20220608144518.010587032@infradead.org>
+        Mon, 13 Jun 2022 11:17:53 -0400
+Received: from smtp-42a8.mail.infomaniak.ch (smtp-42a8.mail.infomaniak.ch [IPv6:2001:1600:4:17::42a8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F131269AC;
+        Mon, 13 Jun 2022 05:36:15 -0700 (PDT)
+Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4LM9zK4sW9zMpyPc;
+        Mon, 13 Jun 2022 14:36:13 +0200 (CEST)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4LM9zK0CnPzlqK2h;
+        Mon, 13 Jun 2022 14:36:12 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1655123773;
+        bh=y8WeNC3r3J7KNO7FidESYUF65oAKkpk01OypWCpEEpI=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=0jqca2CqbhDm2H3L9tH3sKXia+64mN5xDGlKUNW9yCxFJv0zD0a0dE5UldOGfNPUx
+         X8eLqADKLAK47fE8LhhB7re3x5PwlFGYOZ47hNEBNuPTUvSQJUMZbToTUcdAHgA3k+
+         q4aeIrZvnB9nWaIWm73+N4UrUjWtcvj4H+WHnfN4=
+Message-ID: <e7850717-dad6-daef-c96c-2a74248e98f6@digikod.net>
+Date:   Mon, 13 Jun 2022 14:36:12 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220608144518.010587032@infradead.org>
+User-Agent: 
+Content-Language: en-US
+To:     Masahiro Yamada <masahiroy@kernel.org>,
+        linux-kbuild@vger.kernel.org
+Cc:     David Howells <dhowells@redhat.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        David Woodhouse <dwmw2@infradead.org>,
+        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Eric Snowberg <eric.snowberg@oracle.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Tyler Hicks <tyhicks@linux.microsoft.com>
+References: <20220611172233.1494073-1-masahiroy@kernel.org>
+ <20220611172233.1494073-3-masahiroy@kernel.org>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [PATCH 3/4] certs: move scripts/check-blacklist-hashes.awk to
+ certs/
+In-Reply-To: <20220611172233.1494073-3-masahiroy@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* Peter Zijlstra <peterz@infradead.org> [220608 14:52]:
-> arch_cpu_idle() is a very simple idle interface and exposes only a
-> single idle state and is expected to not require RCU and not do any
-> tracing/instrumentation.
-> 
-> As such, omap_sram_idle() is not a valid implementation. Replace it
-> with the simple (shallow) omap3_do_wfi() call. Leaving the more
-> complicated idle states for the cpuidle driver.
 
-Acked-by: Tony Lindgren <tony@atomide.com>
+
+On 11/06/2022 19:22, Masahiro Yamada wrote:
+> This script is only used in certs/Makefile, so certs/ is a better
+> home for it.
+> 
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> ---
+> 
+>   MAINTAINERS                                   | 1 -
+>   certs/Makefile                                | 2 +-
+>   {scripts => certs}/check-blacklist-hashes.awk | 0
+>   3 files changed, 1 insertion(+), 2 deletions(-)
+>   rename {scripts => certs}/check-blacklist-hashes.awk (100%)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 1fc9ead83d2a..7c2a7c304824 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -4627,7 +4627,6 @@ L:	keyrings@vger.kernel.org
+>   S:	Maintained
+>   F:	Documentation/admin-guide/module-signing.rst
+>   F:	certs/
+> -F:	scripts/check-blacklist-hashes.awk >   F:	scripts/sign-file.c
+>   F:	tools/certs/
+>   
+> diff --git a/certs/Makefile b/certs/Makefile
+> index a8d628fd5f7b..df7aaeafd19c 100644
+> --- a/certs/Makefile
+> +++ b/certs/Makefile
+> @@ -13,7 +13,7 @@ CFLAGS_blacklist_hashes.o := -I $(obj)
+>   
+>   quiet_cmd_check_and_copy_blacklist_hash_list = GEN     $@
+>         cmd_check_and_copy_blacklist_hash_list = \
+> -	$(AWK) -f $(srctree)/scripts/check-blacklist-hashes.awk $(CONFIG_SYSTEM_BLACKLIST_HASH_LIST) >&2; \
+> +	$(AWK) -f $(srctree)/$(src)/check-blacklist-hashes.awk $(CONFIG_SYSTEM_BLACKLIST_HASH_LIST) >&2; \
+>   	cat $(CONFIG_SYSTEM_BLACKLIST_HASH_LIST) > $@
+>   
+>   $(obj)/blacklist_hash_list: $(CONFIG_SYSTEM_BLACKLIST_HASH_LIST) FORCE
+> diff --git a/scripts/check-blacklist-hashes.awk b/certs/check-blacklist-hashes.awk
+> similarity index 100%
+> rename from scripts/check-blacklist-hashes.awk
+> rename to certs/check-blacklist-hashes.awk
+
+It looks more appropriate and consistent to me to keep it in scripts/, 
+close to other cert scripts. Is there some precedent to move such script?
