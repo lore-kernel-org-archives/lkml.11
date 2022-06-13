@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D1D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:48:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 294C8C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:48:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245716AbiFMKsM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:48:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39758 "EHLO
+        id S1345054AbiFMKsQ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:48:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348525AbiFMKoS (ORCPT
+        with ESMTP id S1348782AbiFMKoc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:44:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF7AC2AC79;
-        Mon, 13 Jun 2022 03:25:24 -0700 (PDT)
+        Mon, 13 Jun 2022 06:44:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E2522AE1D;
+        Mon, 13 Jun 2022 03:25:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C36DBB80EA3;
-        Mon, 13 Jun 2022 10:25:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BD9FC3411F;
-        Mon, 13 Jun 2022 10:25:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 859D660B8B;
+        Mon, 13 Jun 2022 10:25:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9634DC3411E;
+        Mon, 13 Jun 2022 10:25:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115921;
-        bh=A0HpK7TglfPM4Gwam1uPnihBLJAcsFvWh4WnQBaKaic=;
+        s=korg; t=1655115927;
+        bh=pt3L8h/zW3PR6Pt79ZwW/76CYq13TZw4x6cKPhtkCc8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m+aDTERaKuP1jqo2DAIzKgxx5gdgMLkc40iDD54HOHXzGJb0oqQ+WIhL1fJu9SwqA
-         xtysfhoCL92m2YlkS3Iq+RgfMthfYYNo7tzIuFIv35OJLWlQT+/bGo4y5dp2cvCA7C
-         GODt75rLvM0/lo0CripZxUh+lnVB1KL4txc75fKo=
+        b=whTlmIB2D0DKk8QPtnftWSkNnme8np7/AY/ghj9G4CorJP1bbtzrfbHmF12gPWBU/
+         B9tr7jthdRGCmsaUT3rDkdgfH7UJ/CiEI5fTdvTqVYaim1Omf4m76Z3QIPkcAymHXf
+         S/XazQl8i0QOnfJyQv6jS8gVGTjoZk3Qz1fYv78Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Dionne <marc.dionne@auristor.com>,
-        David Howells <dhowells@redhat.com>,
-        linux-afs@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 079/218] rxrpc: Fix listen() setting the bar too high for the prealloc rings
-Date:   Mon, 13 Jun 2022 12:08:57 +0200
-Message-Id: <20220613094922.870596948@linuxfoundation.org>
+Subject: [PATCH 4.14 081/218] soc: qcom: smp2p: Fix missing of_node_put() in smp2p_parse_ipc
+Date:   Mon, 13 Jun 2022 12:08:59 +0200
+Message-Id: <20220613094922.957948337@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -51,72 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 88e22159750b0d55793302eeed8ee603f5c1a95c ]
+[ Upstream commit 8fd3f18ea31a398ecce4a6d3804433658678b0a3 ]
 
-AF_RXRPC's listen() handler lets you set the backlog up to 32 (if you bump
-up the sysctl), but whilst the preallocation circular buffers have 32 slots
-in them, one of them has to be a dead slot because we're using CIRC_CNT().
+The device_node pointer is returned by of_parse_phandle()  with refcount
+incremented. We should use of_node_put() on it when done.
 
-This means that listen(rxrpc_sock, 32) will cause an oops when the socket
-is closed because rxrpc_service_prealloc_one() allocated one too many calls
-and rxrpc_discard_prealloc() won't then be able to get rid of them because
-it'll think the ring is empty.  rxrpc_release_calls_on_socket() then tries
-to abort them, but oopses because call->peer isn't yet set.
-
-Fix this by setting the maximum backlog to RXRPC_BACKLOG_MAX - 1 to match
-the ring capacity.
-
- BUG: kernel NULL pointer dereference, address: 0000000000000086
- ...
- RIP: 0010:rxrpc_send_abort_packet+0x73/0x240 [rxrpc]
- Call Trace:
-  <TASK>
-  ? __wake_up_common_lock+0x7a/0x90
-  ? rxrpc_notify_socket+0x8e/0x140 [rxrpc]
-  ? rxrpc_abort_call+0x4c/0x60 [rxrpc]
-  rxrpc_release_calls_on_socket+0x107/0x1a0 [rxrpc]
-  rxrpc_release+0xc9/0x1c0 [rxrpc]
-  __sock_release+0x37/0xa0
-  sock_close+0x11/0x20
-  __fput+0x89/0x240
-  task_work_run+0x59/0x90
-  do_exit+0x319/0xaa0
-
-Fixes: 00e907127e6f ("rxrpc: Preallocate peers, conns and calls for incoming service requests")
-Reported-by: Marc Dionne <marc.dionne@auristor.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: linux-afs@lists.infradead.org
-Link: https://lists.infradead.org/pipermail/linux-afs/2022-March/005079.html
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 50e99641413e ("soc: qcom: smp2p: Qualcomm Shared Memory Point to Point")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220308071942.22942-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rxrpc/sysctl.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/soc/qcom/smp2p.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/rxrpc/sysctl.c b/net/rxrpc/sysctl.c
-index 34c706d2f79c..f9afc21b7e2c 100644
---- a/net/rxrpc/sysctl.c
-+++ b/net/rxrpc/sysctl.c
-@@ -18,7 +18,7 @@ static struct ctl_table_header *rxrpc_sysctl_reg_table;
- static const unsigned int zero = 0;
- static const unsigned int one = 1;
- static const unsigned int four = 4;
--static const unsigned int thirtytwo = 32;
-+static const unsigned int max_backlog = RXRPC_BACKLOG_MAX - 1;
- static const unsigned int n_65535 = 65535;
- static const unsigned int n_max_acks = RXRPC_RXTX_BUFF_SIZE - 1;
+diff --git a/drivers/soc/qcom/smp2p.c b/drivers/soc/qcom/smp2p.c
+index 4c5767c73b7a..a0562dec9604 100644
+--- a/drivers/soc/qcom/smp2p.c
++++ b/drivers/soc/qcom/smp2p.c
+@@ -416,6 +416,7 @@ static int smp2p_parse_ipc(struct qcom_smp2p *smp2p)
+ 	}
  
-@@ -114,7 +114,7 @@ static struct ctl_table rxrpc_sysctl_table[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec_minmax,
- 		.extra1		= (void *)&four,
--		.extra2		= (void *)&thirtytwo,
-+		.extra2		= (void *)&max_backlog,
- 	},
- 	{
- 		.procname	= "rx_window_size",
+ 	smp2p->ipc_regmap = syscon_node_to_regmap(syscon);
++	of_node_put(syscon);
+ 	if (IS_ERR(smp2p->ipc_regmap))
+ 		return PTR_ERR(smp2p->ipc_regmap);
+ 
 -- 
 2.35.1
 
