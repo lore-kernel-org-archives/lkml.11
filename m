@@ -2,223 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34571C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:41:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBC67C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:41:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345185AbiFMKlm (ORCPT
+        id S1345268AbiFMKlt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:41:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55010 "EHLO
+        Mon, 13 Jun 2022 06:41:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348225AbiFMKjc (ORCPT
+        with ESMTP id S1348284AbiFMKje (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:39:32 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE85915A16;
-        Mon, 13 Jun 2022 03:23:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655115801; x=1686651801;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=01kA263hwXPhT5HxBQ+kdt4vpfNDUNRi6gZQFXOPTL0=;
-  b=KpbNACfSpFm5IGY86KwZwNawbFmC68r6MnlKe4fBFXbX03GlCYyMU56U
-   Fxj+OnogPPW0dutGY+vChd0KMN04V+zA4ZrwVsLyZ7tX15U0i+kbHwa6+
-   nLNsiu1zimwPIE9qb7m48bNWuEwvmPIQ8rSrxg8Z/dFeDpa7/Crd/fzKu
-   o=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 13 Jun 2022 03:23:21 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 03:23:21 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 13 Jun 2022 03:23:20 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 13 Jun 2022 03:23:16 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_rohkumar@quicinc.com>, <srinivas.kandagatla@linaro.org>,
-        <dianders@chromium.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
-Subject: [PATCH v13 11/12] arm64: dts: qcom: sc7280: Add sound node for CRD 1.0/2.0 and IDP boards
-Date:   Mon, 13 Jun 2022 15:52:12 +0530
-Message-ID: <1655115733-16309-12-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1655115733-16309-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1655115733-16309-1-git-send-email-quic_srivasam@quicinc.com>
+        Mon, 13 Jun 2022 06:39:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9764E20F72;
+        Mon, 13 Jun 2022 03:23:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4193BB80E90;
+        Mon, 13 Jun 2022 10:23:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A772BC34114;
+        Mon, 13 Jun 2022 10:23:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655115801;
+        bh=VNGegGaAd/ly1LXiAX5vOyIxqZbuAAy6Z7qocNNz9Qg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=iMLjwVYfPP3xDVSPqc2ktr8bt2N2Gi5uVRicCv0FXLsoCBxLMG7R0zVz47N1jjH3I
+         nFUV18axS+tSJ5TYAKds41wdSWtahLUl/mDrINdcnPuhWBrhU3kRJODF4dSkadlecz
+         zLP9s9PC+3XCfil0aT5z739iqYWw0s8qIGsanwq0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 035/218] ARM: dts: ox820: align interrupt controller node name with dtschema
+Date:   Mon, 13 Jun 2022 12:08:13 +0200
+Message-Id: <20220613094916.614126863@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add dt nodes for sound card support on revision 3, 4
-(aka CRD 1.0 and 2.0) and IDP boards, which is using WCD9385 headset
-playback, capture, I2S speaker playback and DMICs via VA macro.
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+[ Upstream commit fbcd5ad7a419ad40644a0bb8b4152bc660172d8a ]
+
+Fixes dtbs_check warnings like:
+
+  gic@1000: $nodename:0: 'gic@1000' does not match '^interrupt-controller(@[0-9a-f,]+)*$'
+
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220317115705.450427-1-krzysztof.kozlowski@canonical.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts | 23 +++++++
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi   | 98 ++++++++++++++++++++++++++++++
- 2 files changed, 121 insertions(+)
+ arch/arm/boot/dts/ox820.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts b/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts
-index 9c21207..dddb505 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts
-+++ b/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts
-@@ -87,6 +87,29 @@ ap_ts_pen_1v8: &i2c13 {
- 	pins = "gpio51";
- };
+diff --git a/arch/arm/boot/dts/ox820.dtsi b/arch/arm/boot/dts/ox820.dtsi
+index 8355cb034525..3382b1a9cac9 100644
+--- a/arch/arm/boot/dts/ox820.dtsi
++++ b/arch/arm/boot/dts/ox820.dtsi
+@@ -286,7 +286,7 @@
+ 				clocks = <&armclk>;
+ 			};
  
-+&sound {
-+	audio-routing =
-+		"IN1_HPHL", "HPHL_OUT",
-+		"IN2_HPHR", "HPHR_OUT",
-+		"AMIC1", "MIC BIAS1",
-+		"AMIC2", "MIC BIAS2",
-+		"VA DMIC0", "MIC BIAS1",
-+		"VA DMIC1", "MIC BIAS1",
-+		"VA DMIC2", "MIC BIAS3",
-+		"VA DMIC3", "MIC BIAS3",
-+		"TX SWR_ADC0", "ADC1_OUTPUT",
-+		"TX SWR_ADC1", "ADC2_OUTPUT",
-+		"TX SWR_ADC2", "ADC3_OUTPUT",
-+		"TX SWR_DMIC0", "DMIC1_OUTPUT",
-+		"TX SWR_DMIC1", "DMIC2_OUTPUT",
-+		"TX SWR_DMIC2", "DMIC3_OUTPUT",
-+		"TX SWR_DMIC3", "DMIC4_OUTPUT",
-+		"TX SWR_DMIC4", "DMIC5_OUTPUT",
-+		"TX SWR_DMIC5", "DMIC6_OUTPUT",
-+		"TX SWR_DMIC6", "DMIC7_OUTPUT",
-+		"TX SWR_DMIC7", "DMIC8_OUTPUT";
-+};
-+
- &wcd9385 {
- 	pinctrl-names = "default", "sleep";
- 	pinctrl-0 = <&wcd_reset_n>, <&us_euro_hs_sel>;
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-index 10f646d..ec2b6c9 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-@@ -85,6 +85,104 @@
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&nvme_pwren>;
- 	};
-+
-+	sound: sound {
-+		compatible = "google,sc7280-herobrine";
-+		model = "sc7280-wcd938x-max98360a-1mic";
-+
-+		audio-routing =
-+			"IN1_HPHL", "HPHL_OUT",
-+			"IN2_HPHR", "HPHR_OUT",
-+			"AMIC1", "MIC BIAS1",
-+			"AMIC2", "MIC BIAS2",
-+			"VA DMIC0", "MIC BIAS3",
-+			"VA DMIC1", "MIC BIAS3",
-+			"VA DMIC2", "MIC BIAS1",
-+			"VA DMIC3", "MIC BIAS1",
-+			"TX SWR_ADC0", "ADC1_OUTPUT",
-+			"TX SWR_ADC1", "ADC2_OUTPUT",
-+			"TX SWR_ADC2", "ADC3_OUTPUT",
-+			"TX SWR_DMIC0", "DMIC1_OUTPUT",
-+			"TX SWR_DMIC1", "DMIC2_OUTPUT",
-+			"TX SWR_DMIC2", "DMIC3_OUTPUT",
-+			"TX SWR_DMIC3", "DMIC4_OUTPUT",
-+			"TX SWR_DMIC4", "DMIC5_OUTPUT",
-+			"TX SWR_DMIC5", "DMIC6_OUTPUT",
-+			"TX SWR_DMIC6", "DMIC7_OUTPUT",
-+			"TX SWR_DMIC7", "DMIC8_OUTPUT";
-+
-+		qcom,msm-mbhc-hphl-swh = <1>;
-+		qcom,msm-mbhc-gnd-swh = <1>;
-+
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		#sound-dai-cells = <0>;
-+
-+		dai-link@0 {
-+			link-name = "MAX98360A";
-+			reg = <0>;
-+
-+			cpu {
-+				sound-dai = <&lpass_cpu MI2S_SECONDARY>;
-+			};
-+
-+			codec {
-+				sound-dai = <&max98360a>;
-+			};
-+		};
-+
-+		dai-link@1 {
-+			link-name = "DisplayPort";
-+			reg = <1>;
-+
-+			cpu {
-+				sound-dai = <&lpass_cpu LPASS_DP_RX>;
-+			};
-+
-+			codec {
-+				sound-dai = <&mdss_dp>;
-+			};
-+		};
-+
-+		dai-link@2 {
-+			link-name = "WCD9385 Playback";
-+			reg = <2>;
-+
-+			cpu {
-+				sound-dai = <&lpass_cpu LPASS_CDC_DMA_RX0>;
-+			};
-+
-+			codec {
-+				sound-dai = <&wcd9385 0>, <&swr0 0>, <&lpass_rx_macro 0>;
-+			};
-+		};
-+
-+		dai-link@3 {
-+			link-name = "WCD9385 Capture";
-+			reg = <3>;
-+
-+			cpu {
-+				sound-dai = <&lpass_cpu LPASS_CDC_DMA_TX3>;
-+			};
-+
-+			codec {
-+				sound-dai = <&wcd9385 1>, <&swr1 0>, <&lpass_tx_macro 0>;
-+			};
-+		};
-+
-+		dai-link@4 {
-+			link-name = "DMIC";
-+			reg = <4>;
-+
-+			cpu {
-+				sound-dai = <&lpass_cpu LPASS_CDC_DMA_VA_TX0>;
-+			};
-+
-+			codec {
-+				sound-dai = <&lpass_va_macro 0>;
-+			};
-+		};
-+	};
- };
- 
- &apps_rsc {
+-			gic: gic@1000 {
++			gic: interrupt-controller@1000 {
+ 				compatible = "arm,arm11mp-gic";
+ 				interrupt-controller;
+ 				#interrupt-cells = <3>;
 -- 
-2.7.4
+2.35.1
+
+
 
