@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B293CCA48F
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BCEACCA487
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383049AbiFMOPJ (ORCPT
+        id S1382596AbiFMOO0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:15:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43444 "EHLO
+        Mon, 13 Jun 2022 10:14:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381990AbiFMOFC (ORCPT
+        with ESMTP id S1381258AbiFMOEO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:05:02 -0400
+        Mon, 13 Jun 2022 10:04:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C2193468;
-        Mon, 13 Jun 2022 04:40:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5835745530;
+        Mon, 13 Jun 2022 04:39:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F380561342;
-        Mon, 13 Jun 2022 11:40:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B5ADC34114;
-        Mon, 13 Jun 2022 11:40:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA37B60B6E;
+        Mon, 13 Jun 2022 11:39:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0750CC34114;
+        Mon, 13 Jun 2022 11:39:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120418;
-        bh=mEwbqgWojyxtkqgxEaRPGMELVaiZS+FLu/4v3N6gpOg=;
+        s=korg; t=1655120344;
+        bh=bSu8yqGY2DwAqxb0viMrKj2He+cGqtk0DtJOpvFsoEg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TClz/8E0JvHVOVsFKf2WeFjHCXsxiNfR22o0zZ7QDKlFhPaRYzbY21borrAAjEfVO
-         IV6/OEMiw4tWERSc/tfhUQQIsStlnuT5WdM1xefPd8Yx6QuFdhI+vhmMSGqs8UIFhR
-         ckpF25rXGZ5rX/DZsEjmGZB7yqBcAl2/1/ExKPNE=
+        b=tCXrZst1w6auvGGvSA8BZfK0M1ENnwlsfYPkOSC4ijqVR+Ft3jB2lpEwFAG/+nuJi
+         OuwZ6jzLNSSoogiH7umoqjHkjoNie125yIQwVm3y5TnHMDaRlQLiTIg8PihPbg25vx
+         pXc4HIz6Vz3wWjXcJ+O95QPHLUbRZ4StDZiUXpzc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 026/298] usb: typec: mux: Check dev_set_name() return value
-Date:   Mon, 13 Jun 2022 12:08:40 +0200
-Message-Id: <20220613094925.724029025@linuxfoundation.org>
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Subject: [PATCH 5.18 339/339] zonefs: fix handling of explicit_open option on mount
+Date:   Mon, 13 Jun 2022 12:12:44 +0200
+Message-Id: <20220613094937.011398916@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
-References: <20220613094924.913340374@linuxfoundation.org>
+In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
+References: <20220613094926.497929857@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,58 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Andersson <bjorn.andersson@linaro.org>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit b9fa0292490db39d6542f514117333d366ec0011 ]
+commit a2a513be7139b279f1b5b2cee59c6c4950c34346 upstream.
 
-It's possible that dev_set_name() returns -ENOMEM, catch and handle this.
+Ignoring the explicit_open mount option on mount for devices that do not
+have a limit on the number of open zones must be done after the mount
+options are parsed and set in s_mount_opts. Move the check to ignore
+the explicit_open option after the call to zonefs_parse_options() in
+zonefs_fill_super().
 
-Fixes: 3370db35193b ("usb: typec: Registering real device entries for the muxes")
-Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220422222351.1297276-4-bjorn.andersson@linaro.org
+Fixes: b5c00e975779 ("zonefs: open/close zone on file open/close")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/typec/mux.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ fs/zonefs/super.c |   11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/usb/typec/mux.c b/drivers/usb/typec/mux.c
-index c8340de0ed49..d2aaf294b649 100644
---- a/drivers/usb/typec/mux.c
-+++ b/drivers/usb/typec/mux.c
-@@ -131,8 +131,11 @@ typec_switch_register(struct device *parent,
- 	sw->dev.class = &typec_mux_class;
- 	sw->dev.type = &typec_switch_dev_type;
- 	sw->dev.driver_data = desc->drvdata;
--	dev_set_name(&sw->dev, "%s-switch",
--		     desc->name ? desc->name : dev_name(parent));
-+	ret = dev_set_name(&sw->dev, "%s-switch", desc->name ? desc->name : dev_name(parent));
-+	if (ret) {
-+		put_device(&sw->dev);
-+		return ERR_PTR(ret);
-+	}
+--- a/fs/zonefs/super.c
++++ b/fs/zonefs/super.c
+@@ -1690,11 +1690,6 @@ static int zonefs_fill_super(struct supe
+ 	sbi->s_mount_opts = ZONEFS_MNTOPT_ERRORS_RO;
+ 	sbi->s_max_open_zones = bdev_max_open_zones(sb->s_bdev);
+ 	atomic_set(&sbi->s_open_zones, 0);
+-	if (!sbi->s_max_open_zones &&
+-	    sbi->s_mount_opts & ZONEFS_MNTOPT_EXPLICIT_OPEN) {
+-		zonefs_info(sb, "No open zones limit. Ignoring explicit_open mount option\n");
+-		sbi->s_mount_opts &= ~ZONEFS_MNTOPT_EXPLICIT_OPEN;
+-	}
  
- 	ret = device_add(&sw->dev);
- 	if (ret) {
-@@ -338,8 +341,11 @@ typec_mux_register(struct device *parent, const struct typec_mux_desc *desc)
- 	mux->dev.class = &typec_mux_class;
- 	mux->dev.type = &typec_mux_dev_type;
- 	mux->dev.driver_data = desc->drvdata;
--	dev_set_name(&mux->dev, "%s-mux",
--		     desc->name ? desc->name : dev_name(parent));
-+	ret = dev_set_name(&mux->dev, "%s-mux", desc->name ? desc->name : dev_name(parent));
-+	if (ret) {
-+		put_device(&mux->dev);
-+		return ERR_PTR(ret);
-+	}
+ 	ret = zonefs_read_super(sb);
+ 	if (ret)
+@@ -1713,6 +1708,12 @@ static int zonefs_fill_super(struct supe
+ 	zonefs_info(sb, "Mounting %u zones",
+ 		    blkdev_nr_zones(sb->s_bdev->bd_disk));
  
- 	ret = device_add(&mux->dev);
- 	if (ret) {
--- 
-2.35.1
-
++	if (!sbi->s_max_open_zones &&
++	    sbi->s_mount_opts & ZONEFS_MNTOPT_EXPLICIT_OPEN) {
++		zonefs_info(sb, "No open zones limit. Ignoring explicit_open mount option\n");
++		sbi->s_mount_opts &= ~ZONEFS_MNTOPT_EXPLICIT_OPEN;
++	}
++
+ 	/* Create root directory inode */
+ 	ret = -ENOMEM;
+ 	inode = new_inode(sb);
 
 
