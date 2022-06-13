@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0B46C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:34:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B24BAC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:35:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244389AbiFMKez (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:34:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35700 "EHLO
+        id S1344187AbiFMKfC (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:35:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343795AbiFMKbQ (ORCPT
+        with ESMTP id S1344500AbiFMKbm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:31:16 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B9D275CA;
-        Mon, 13 Jun 2022 03:21:33 -0700 (PDT)
+        Mon, 13 Jun 2022 06:31:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5E5B27B12;
+        Mon, 13 Jun 2022 03:21:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2CF9DCE116D;
-        Mon, 13 Jun 2022 10:21:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2318EC3411C;
-        Mon, 13 Jun 2022 10:21:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D6DD60AE9;
+        Mon, 13 Jun 2022 10:21:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2ED7AC34114;
+        Mon, 13 Jun 2022 10:21:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115690;
-        bh=ZbzBs39XZYEIr01mYJiJsXTEB9wR7xUlcmhU/QgTZy0=;
+        s=korg; t=1655115698;
+        bh=GrMNQC0Zq45esoFsSLD8+gdKZCtqv2bzxMJxZd9rbEQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zRXNaSO+x2oth4X0XPfV1Kgsczpd4r/5Z0FKyTy7Glweh654fcXfVpq0tLSy3NxWS
-         fS3OQ3CpY/p/7JOndcMvdWXt4fegQbgFU9YlRHvf4wOEblrhWuuZNaW2KeqTBCPAJg
-         Q3BN7nDk/3whsKmYx3CG80MAYMzxJNLP7ljRlUJA=
+        b=2wH+PciwA3UW4TTF0lWQlayUo4h6XxoIp7ZUZMMUzqhQvn+5XKYodZ1bKGgfAeM8D
+         7o9hSOB8mcre8dZ6KK5rtnXph5Bi3vvBAGIpKIhu41J/z6hOy5SMqxf4rRwE5M3FfC
+         y1jEcCWHmU8c+YWK2rPRf5u2A13TG1GGGXgDdxew=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michal Kubecek <mkubecek@suse.cz>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 153/167] Revert "net: af_key: add check for pfkey_broadcast in function pfkey_process"
-Date:   Mon, 13 Jun 2022 12:10:27 +0200
-Message-Id: <20220613094916.809997232@linuxfoundation.org>
+        stable@vger.kernel.org, Niklas Cassel <niklas.cassel@wdc.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Kees Cook <keescook@chromium.org>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH 4.14 001/218] binfmt_flat: do not stop relocating GOT entries prematurely on riscv
+Date:   Mon, 13 Jun 2022 12:07:39 +0200
+Message-Id: <20220613094908.637652870@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
-References: <20220613094840.720778945@linuxfoundation.org>
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,59 +53,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michal Kubecek <mkubecek@suse.cz>
+From: Niklas Cassel <niklas.cassel@wdc.com>
 
-[ Upstream commit 9c90c9b3e50e16d03c7f87d63e9db373974781e0 ]
+commit 6045ab5fea4c849153ebeb0acb532da5f29d69c4 upstream.
 
-This reverts commit 4dc2a5a8f6754492180741facf2a8787f2c415d7.
+bFLT binaries are usually created using elf2flt.
 
-A non-zero return value from pfkey_broadcast() does not necessarily mean
-an error occurred as this function returns -ESRCH when no registered
-listener received the message. In particular, a call with
-BROADCAST_PROMISC_ONLY flag and null one_sk argument can never return
-zero so that this commit in fact prevents processing any PF_KEY message.
-One visible effect is that racoon daemon fails to find encryption
-algorithms like aes and refuses to start.
+The linker script used by elf2flt has defined the .data section like the
+following for the last 19 years:
 
-Excluding -ESRCH return value would fix this but it's not obvious that
-we really want to bail out here and most other callers of
-pfkey_broadcast() also ignore the return value. Also, as pointed out by
-Steffen Klassert, PF_KEY is kind of deprecated and newer userspace code
-should use netlink instead so that we should only disturb the code for
-really important fixes.
+.data : {
+	_sdata = . ;
+	__data_start = . ;
+	data_start = . ;
+	*(.got.plt)
+	*(.got)
+	FILL(0) ;
+	. = ALIGN(0x20) ;
+	LONG(-1)
+	. = ALIGN(0x20) ;
+	...
+}
 
-v2: add a comment explaining why is the return value ignored
+It places the .got.plt input section before the .got input section.
+The same is true for the default linker script (ld --verbose) on most
+architectures except x86/x86-64.
 
-Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The binfmt_flat loader should relocate all GOT entries until it encounters
+a -1 (the LONG(-1) in the linker script).
+
+The problem is that the .got.plt input section starts with a GOTPLT header
+(which has size 16 bytes on elf64-riscv and 8 bytes on elf32-riscv), where
+the first word is set to -1. See the binutils implementation for riscv [1].
+
+This causes the binfmt_flat loader to stop relocating GOT entries
+prematurely and thus causes the application to crash when running.
+
+Fix this by skipping the whole GOTPLT header, since the whole GOTPLT header
+is reserved for the dynamic linker.
+
+The GOTPLT header will only be skipped for bFLT binaries with flag
+FLAT_FLAG_GOTPIC set. This flag is unconditionally set by elf2flt if the
+supplied ELF binary has the symbol _GLOBAL_OFFSET_TABLE_ defined.
+ELF binaries without a .got input section should thus remain unaffected.
+
+Tested on RISC-V Canaan Kendryte K210 and RISC-V QEMU nommu_virt_defconfig.
+
+[1] https://sourceware.org/git/?p=binutils-gdb.git;a=blob;f=bfd/elfnn-riscv.c;hb=binutils-2_38#l3275
+
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Niklas Cassel <niklas.cassel@wdc.com>
+Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Link: https://lore.kernel.org/r/20220414091018.896737-1-niklas.cassel@wdc.com
+Fixed-by: kernel test robot <lkp@intel.com>
+Link: https://lore.kernel.org/lkml/202204182333.OIUOotK8-lkp@intel.com
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/key/af_key.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ fs/binfmt_flat.c |   27 ++++++++++++++++++++++++++-
+ 1 file changed, 26 insertions(+), 1 deletion(-)
 
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index d5dc614af2f9..0737fc7b7ebd 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -2861,10 +2861,12 @@ static int pfkey_process(struct sock *sk, struct sk_buff *skb, const struct sadb
- 	void *ext_hdrs[SADB_EXT_MAX];
- 	int err;
+--- a/fs/binfmt_flat.c
++++ b/fs/binfmt_flat.c
+@@ -408,6 +408,30 @@ static void old_reloc(unsigned long rl)
  
--	err = pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
--			      BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
--	if (err)
--		return err;
-+	/* Non-zero return value of pfkey_broadcast() does not always signal
-+	 * an error and even on an actual error we may still want to process
-+	 * the message so rather ignore the return value.
-+	 */
-+	pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
-+			BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
+ /****************************************************************************/
  
- 	memset(ext_hdrs, 0, sizeof(ext_hdrs));
- 	err = parse_exthdrs(skb, hdr, ext_hdrs);
--- 
-2.35.1
-
++static inline u32 __user *skip_got_header(u32 __user *rp)
++{
++	if (IS_ENABLED(CONFIG_RISCV)) {
++		/*
++		 * RISC-V has a 16 byte GOT PLT header for elf64-riscv
++		 * and 8 byte GOT PLT header for elf32-riscv.
++		 * Skip the whole GOT PLT header, since it is reserved
++		 * for the dynamic linker (ld.so).
++		 */
++		u32 rp_val0, rp_val1;
++
++		if (get_user(rp_val0, rp))
++			return rp;
++		if (get_user(rp_val1, rp + 1))
++			return rp;
++
++		if (rp_val0 == 0xffffffff && rp_val1 == 0xffffffff)
++			rp += 4;
++		else if (rp_val0 == 0xffffffff)
++			rp += 2;
++	}
++	return rp;
++}
++
+ static int load_flat_file(struct linux_binprm *bprm,
+ 		struct lib_info *libinfo, int id, unsigned long *extra_stack)
+ {
+@@ -745,7 +769,8 @@ static int load_flat_file(struct linux_b
+ 	 * image.
+ 	 */
+ 	if (flags & FLAT_FLAG_GOTPIC) {
+-		for (rp = (u32 __user *)datapos; ; rp++) {
++		rp = skip_got_header((u32 __user *) datapos);
++		for (; ; rp++) {
+ 			u32 addr, rp_val;
+ 			if (get_user(rp_val, rp))
+ 				return -EFAULT;
 
 
