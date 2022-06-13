@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DD9AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:52:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53389C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:52:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353896AbiFMMwN (ORCPT
+        id S1354179AbiFMMwW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:52:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45308 "EHLO
+        Mon, 13 Jun 2022 08:52:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355359AbiFMMu1 (ORCPT
+        with ESMTP id S1353061AbiFMMuh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:50:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F99C633BA;
-        Mon, 13 Jun 2022 04:12:13 -0700 (PDT)
+        Mon, 13 Jun 2022 08:50:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B9716350D;
+        Mon, 13 Jun 2022 04:12:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CA6CA608C3;
-        Mon, 13 Jun 2022 11:12:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7D52C36AFF;
-        Mon, 13 Jun 2022 11:12:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A03A860B6B;
+        Mon, 13 Jun 2022 11:12:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD06DC3411C;
+        Mon, 13 Jun 2022 11:12:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118733;
-        bh=ZCUTqRz7IFjMLmE0HtszpJPuvsXC2mGDJlhmF6y6hP4=;
+        s=korg; t=1655118725;
+        bh=yLGGIpjfaSSs9oeLf7Wm2id6cx9cbdcnV4O2hHcE/yQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d1SCA2PYXpHxKrrO+Dni7m68UoOcuo9NJsNwlHMDIzhLCF5f7tX0NKI7RfO5Nb9X9
-         y1PseaJtLFcxdLifjus7b5+1Hr7M54Tbm0F1ig+t2ekaXaSxr9vme0nBOIyMPdiyaG
-         G1Y97YExercKeoz1tlMF3R4S6GR+HIyT2BYuXcw4=
+        b=B9uid5G9ULaRtqzww9iIl7dHxtG7fdNAEGPmwheJyYY82Xz2Wts9vCkAg4y8eMVVl
+         727lc1V86Tw42ENWGOepXp8P0zSH+Uy8gRl+legR1vJeqzbPW4kc4G6hHQ3Ba0MkI3
+         QG61fS/Op0eu5HMSxSNzycSuSZpQ4ZeSqA2pRZSU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sherry Sun <sherry.sun@nxp.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 010/247] tty: serial: fsl_lpuart: fix potential bug when using both of_alias_get_id and ida_simple_get
-Date:   Mon, 13 Jun 2022 12:08:32 +0200
-Message-Id: <20220613094923.233237547@linuxfoundation.org>
+        stable@vger.kernel.org, Alexey Kardashevskiy <aik@ozlabs.ru>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.10 167/172] powerpc/mm: Switch obsolete dssall to .long
+Date:   Mon, 13 Jun 2022 12:12:07 +0200
+Message-Id: <20220613094923.337831369@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
-References: <20220613094922.843438024@linuxfoundation.org>
+In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
+References: <20220613094850.166931805@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,117 +49,152 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sherry Sun <sherry.sun@nxp.com>
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
 
-[ Upstream commit f398e0aa325c61fa20903833a5b534ecb8e6e418 ]
+commit d51f86cfd8e378d4907958db77da3074f6dce3ba upstream.
 
-Now fsl_lpuart driver use both of_alias_get_id() and ida_simple_get() in
-.probe(), which has the potential bug. For example, when remove the
-lpuart7 alias in dts, of_alias_get_id() will return error, then call
-ida_simple_get() to allocate the id 0 for lpuart7, this may confilct
-with the lpuart4 which has alias 0.
+The dssall ("Data Stream Stop All") instruction is obsolete altogether
+with other Data Cache Instructions since ISA 2.03 (year 2006).
 
-    aliases {
-	...
-        serial0 = &lpuart4;
-        serial1 = &lpuart5;
-        serial2 = &lpuart6;
-        serial3 = &lpuart7;
-    }
+LLVM IAS does not support it but PPC970 seems to be using it.
+This switches dssall to .long as there is no much point in fixing LLVM.
 
-So remove the ida_simple_get() in .probe(), return an error directly
-when calling of_alias_get_id() fails, which is consistent with other
-uart drivers behavior.
-
-Fixes: 3bc3206e1c0f ("serial: fsl_lpuart: Remove the alias node dependence")
-Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-Link: https://lore.kernel.org/r/20220321112211.8895-1-sherry.sun@nxp.com
+Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20211221055904.555763-6-aik@ozlabs.ru
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/fsl_lpuart.c | 24 ++++--------------------
- 1 file changed, 4 insertions(+), 20 deletions(-)
+ arch/powerpc/include/asm/ppc-opcode.h   |    2 ++
+ arch/powerpc/kernel/idle.c              |    2 +-
+ arch/powerpc/kernel/idle_6xx.S          |    2 +-
+ arch/powerpc/kernel/l2cr_6xx.S          |    6 +++---
+ arch/powerpc/kernel/swsusp_32.S         |    2 +-
+ arch/powerpc/kernel/swsusp_asm64.S      |    2 +-
+ arch/powerpc/mm/mmu_context.c           |    2 +-
+ arch/powerpc/platforms/powermac/cache.S |    4 ++--
+ 8 files changed, 12 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 33e5eba6ff04..481107fdd69b 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -239,8 +239,6 @@
- /* IMX lpuart has four extra unused regs located at the beginning */
- #define IMX_REG_OFF	0x10
+--- a/arch/powerpc/include/asm/ppc-opcode.h
++++ b/arch/powerpc/include/asm/ppc-opcode.h
+@@ -212,6 +212,7 @@
+ #define PPC_INST_COPY			0x7c20060c
+ #define PPC_INST_DCBA			0x7c0005ec
+ #define PPC_INST_DCBA_MASK		0xfc0007fe
++#define PPC_INST_DSSALL			0x7e00066c
+ #define PPC_INST_ISEL			0x7c00001e
+ #define PPC_INST_ISEL_MASK		0xfc00003e
+ #define PPC_INST_LSWI			0x7c0004aa
+@@ -517,6 +518,7 @@
+ #define	PPC_DCBZL(a, b)		stringify_in_c(.long PPC_RAW_DCBZL(a, b))
+ #define	PPC_DIVDE(t, a, b)	stringify_in_c(.long PPC_RAW_DIVDE(t, a, b))
+ #define	PPC_DIVDEU(t, a, b)	stringify_in_c(.long PPC_RAW_DIVDEU(t, a, b))
++#define PPC_DSSALL		stringify_in_c(.long PPC_INST_DSSALL)
+ #define PPC_LQARX(t, a, b, eh)	stringify_in_c(.long PPC_RAW_LQARX(t, a, b, eh))
+ #define PPC_LDARX(t, a, b, eh)	stringify_in_c(.long PPC_RAW_LDARX(t, a, b, eh))
+ #define PPC_LWARX(t, a, b, eh)	stringify_in_c(.long PPC_RAW_LWARX(t, a, b, eh))
+--- a/arch/powerpc/kernel/idle.c
++++ b/arch/powerpc/kernel/idle.c
+@@ -82,7 +82,7 @@ void power4_idle(void)
+ 		return;
  
--static DEFINE_IDA(fsl_lpuart_ida);
--
- enum lpuart_type {
- 	VF610_LPUART,
- 	LS1021A_LPUART,
-@@ -275,7 +273,6 @@ struct lpuart_port {
- 	int			rx_dma_rng_buf_len;
- 	unsigned int		dma_tx_nents;
- 	wait_queue_head_t	dma_wait;
--	bool			id_allocated;
- };
+ 	if (cpu_has_feature(CPU_FTR_ALTIVEC))
+-		asm volatile("DSSALL ; sync" ::: "memory");
++		asm volatile(PPC_DSSALL " ; sync" ::: "memory");
  
- struct lpuart_soc_data {
-@@ -2703,23 +2700,18 @@ static int lpuart_probe(struct platform_device *pdev)
+ 	power4_idle_nap();
  
- 	ret = of_alias_get_id(np, "serial");
- 	if (ret < 0) {
--		ret = ida_simple_get(&fsl_lpuart_ida, 0, UART_NR, GFP_KERNEL);
--		if (ret < 0) {
--			dev_err(&pdev->dev, "port line is full, add device failed\n");
--			return ret;
--		}
--		sport->id_allocated = true;
-+		dev_err(&pdev->dev, "failed to get alias id, errno %d\n", ret);
-+		return ret;
- 	}
- 	if (ret >= ARRAY_SIZE(lpuart_ports)) {
- 		dev_err(&pdev->dev, "serial%d out of range\n", ret);
--		ret = -EINVAL;
--		goto failed_out_of_range;
-+		return -EINVAL;
- 	}
- 	sport->port.line = ret;
+--- a/arch/powerpc/kernel/idle_6xx.S
++++ b/arch/powerpc/kernel/idle_6xx.S
+@@ -129,7 +129,7 @@ BEGIN_FTR_SECTION
+ END_FTR_SECTION_IFCLR(CPU_FTR_NO_DPM)
+ 	mtspr	SPRN_HID0,r4
+ BEGIN_FTR_SECTION
+-	DSSALL
++	PPC_DSSALL
+ 	sync
+ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
+ 	lwz	r8,TI_LOCAL_FLAGS(r2)	/* set napping bit */
+--- a/arch/powerpc/kernel/l2cr_6xx.S
++++ b/arch/powerpc/kernel/l2cr_6xx.S
+@@ -96,7 +96,7 @@ END_FTR_SECTION_IFCLR(CPU_FTR_L2CR)
  
- 	ret = lpuart_enable_clks(sport);
- 	if (ret)
--		goto failed_clock_enable;
-+		return ret;
- 	sport->port.uartclk = lpuart_get_baud_clk_rate(sport);
+ 	/* Stop DST streams */
+ BEGIN_FTR_SECTION
+-	DSSALL
++	PPC_DSSALL
+ 	sync
+ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
  
- 	lpuart_ports[sport->port.line] = sport;
-@@ -2767,10 +2759,6 @@ static int lpuart_probe(struct platform_device *pdev)
- 	uart_remove_one_port(&lpuart_reg, &sport->port);
- failed_attach_port:
- 	lpuart_disable_clks(sport);
--failed_clock_enable:
--failed_out_of_range:
--	if (sport->id_allocated)
--		ida_simple_remove(&fsl_lpuart_ida, sport->port.line);
- 	return ret;
- }
+@@ -292,7 +292,7 @@ END_FTR_SECTION_IFCLR(CPU_FTR_L3CR)
+ 	isync
  
-@@ -2780,9 +2768,6 @@ static int lpuart_remove(struct platform_device *pdev)
+ 	/* Stop DST streams */
+-	DSSALL
++	PPC_DSSALL
+ 	sync
  
- 	uart_remove_one_port(&lpuart_reg, &sport->port);
+ 	/* Get the current enable bit of the L3CR into r4 */
+@@ -401,7 +401,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_L3CR)
+ _GLOBAL(__flush_disable_L1)
+ 	/* Stop pending alitvec streams and memory accesses */
+ BEGIN_FTR_SECTION
+-	DSSALL
++	PPC_DSSALL
+ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
+  	sync
  
--	if (sport->id_allocated)
--		ida_simple_remove(&fsl_lpuart_ida, sport->port.line);
--
- 	lpuart_disable_clks(sport);
+--- a/arch/powerpc/kernel/swsusp_32.S
++++ b/arch/powerpc/kernel/swsusp_32.S
+@@ -181,7 +181,7 @@ _GLOBAL(swsusp_arch_resume)
+ #ifdef CONFIG_ALTIVEC
+ 	/* Stop pending alitvec streams and memory accesses */
+ BEGIN_FTR_SECTION
+-	DSSALL
++	PPC_DSSALL
+ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
+ #endif
+  	sync
+--- a/arch/powerpc/kernel/swsusp_asm64.S
++++ b/arch/powerpc/kernel/swsusp_asm64.S
+@@ -142,7 +142,7 @@ END_FW_FTR_SECTION_IFCLR(FW_FEATURE_LPAR
+ _GLOBAL(swsusp_arch_resume)
+ 	/* Stop pending alitvec streams and memory accesses */
+ BEGIN_FTR_SECTION
+-	DSSALL
++	PPC_DSSALL
+ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
+ 	sync
  
- 	if (sport->dma_tx_chan)
-@@ -2912,7 +2897,6 @@ static int __init lpuart_serial_init(void)
+--- a/arch/powerpc/mm/mmu_context.c
++++ b/arch/powerpc/mm/mmu_context.c
+@@ -79,7 +79,7 @@ void switch_mm_irqs_off(struct mm_struct
+ 	 * context
+ 	 */
+ 	if (cpu_has_feature(CPU_FTR_ALTIVEC))
+-		asm volatile ("dssall");
++		asm volatile (PPC_DSSALL);
  
- static void __exit lpuart_serial_exit(void)
- {
--	ida_destroy(&fsl_lpuart_ida);
- 	platform_driver_unregister(&lpuart_driver);
- 	uart_unregister_driver(&lpuart_reg);
- }
--- 
-2.35.1
-
+ 	if (new_on_cpu)
+ 		radix_kvm_prefetch_workaround(next);
+--- a/arch/powerpc/platforms/powermac/cache.S
++++ b/arch/powerpc/platforms/powermac/cache.S
+@@ -48,7 +48,7 @@ flush_disable_75x:
+ 
+ 	/* Stop DST streams */
+ BEGIN_FTR_SECTION
+-	DSSALL
++	PPC_DSSALL
+ 	sync
+ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
+ 
+@@ -197,7 +197,7 @@ flush_disable_745x:
+ 	isync
+ 
+ 	/* Stop prefetch streams */
+-	DSSALL
++	PPC_DSSALL
+ 	sync
+ 
+ 	/* Disable L2 prefetching */
 
 
