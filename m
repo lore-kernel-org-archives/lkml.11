@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDBA8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:20:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 794CDCCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:20:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353398AbiFMLTn (ORCPT
+        id S1353763AbiFMLT4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:19:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47046 "EHLO
+        Mon, 13 Jun 2022 07:19:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353326AbiFMLPb (ORCPT
+        with ESMTP id S1353452AbiFMLPn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:15:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E88BA377F1;
-        Mon, 13 Jun 2022 03:37:54 -0700 (PDT)
+        Mon, 13 Jun 2022 07:15:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BC0D38182;
+        Mon, 13 Jun 2022 03:38:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1E813B80EA8;
-        Mon, 13 Jun 2022 10:37:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E386C3411C;
-        Mon, 13 Jun 2022 10:37:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 748EB610A0;
+        Mon, 13 Jun 2022 10:38:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58C5FC34114;
+        Mon, 13 Jun 2022 10:38:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116671;
-        bh=Nob+Wmo/YnXwl+VFdK2ySHRbkeW8I4PYJgUMajmRc/M=;
+        s=korg; t=1655116685;
+        bh=tbtcsQGUGyHo1TtcIeqqsRZNhmca5h/b9G5p+CEPjQw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1vnMImAElVfo+7JtypjZTukBKtjZgFSQZNUTcfWgpLJl+REa6owtgTWYrtu6W96hf
-         UgprMYs/fwGgjV8et3UeG9ZswO/kgzaGX3Vy61R3Ra6yehCuwWUXUvCYL3wdGRPRnd
-         QX7kAR2G/EFzzqPYuPrvacWStyWakK4vSroL41PY=
+        b=Q55f4/vF0KsIHmkaLz05MmZ0Zdb2zHeClDFIsiP9xO8XrKV+6K9V7zzXfJ424bS76
+         dQaqsPu5Ce5uRBsBKfhmP/+kVvyJhXXO861UP31Xa+mvBM4xgKtJIIPVmilgCrlPdm
+         Bt91JnDkht3gOlSSsjJu2Tloyppa5kwP2GxUIsfA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 131/411] ASoC: fsl: Fix refcount leak in imx_sgtl5000_probe
-Date:   Mon, 13 Jun 2022 12:06:44 +0200
-Message-Id: <20220613094932.601101228@linuxfoundation.org>
+Subject: [PATCH 5.4 126/411] drm/msm: return an error pointer in msm_gem_prime_get_sg_table()
+Date:   Mon, 13 Jun 2022 12:06:39 +0200
+Message-Id: <20220613094932.451903869@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -51,82 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 41cd312dfe980af869c3503b4d38e62ed20dd3b7 ]
+[ Upstream commit cf575e31611eb6dccf08fad02e57e35b2187704d ]
 
-of_find_i2c_device_by_node() takes a reference,
-In error paths, we should call put_device() to drop
-the reference to aviod refount leak.
+The msm_gem_prime_get_sg_table() needs to return error pointers on
+error.  This is called from drm_gem_map_dma_buf() and returning a
+NULL will lead to a crash in that function.
 
-Fixes: 81e8e4926167 ("ASoC: fsl: add sgtl5000 clock support for imx-sgtl5000")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Fabio Estevam <festevam@gmail.com>
-Link: https://lore.kernel.org/r/20220511065803.3957-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: ac45146733b0 ("drm/msm: fix msm_gem_prime_get_sg_table()")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/485023/
+Link: https://lore.kernel.org/r/YnOmtS5tfENywR9m@kili
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/fsl/imx-sgtl5000.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ drivers/gpu/drm/msm/msm_gem_prime.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/fsl/imx-sgtl5000.c b/sound/soc/fsl/imx-sgtl5000.c
-index 15e8b9343c35..7106d56a3346 100644
---- a/sound/soc/fsl/imx-sgtl5000.c
-+++ b/sound/soc/fsl/imx-sgtl5000.c
-@@ -120,19 +120,19 @@ static int imx_sgtl5000_probe(struct platform_device *pdev)
- 	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
- 	if (!data) {
- 		ret = -ENOMEM;
--		goto fail;
-+		goto put_device;
- 	}
+diff --git a/drivers/gpu/drm/msm/msm_gem_prime.c b/drivers/gpu/drm/msm/msm_gem_prime.c
+index d7c8948427fe..705a834ba1e6 100644
+--- a/drivers/gpu/drm/msm/msm_gem_prime.c
++++ b/drivers/gpu/drm/msm/msm_gem_prime.c
+@@ -17,7 +17,7 @@ struct sg_table *msm_gem_prime_get_sg_table(struct drm_gem_object *obj)
+ 	int npages = obj->size >> PAGE_SHIFT;
  
- 	comp = devm_kzalloc(&pdev->dev, 3 * sizeof(*comp), GFP_KERNEL);
- 	if (!comp) {
- 		ret = -ENOMEM;
--		goto fail;
-+		goto put_device;
- 	}
+ 	if (WARN_ON(!msm_obj->pages))  /* should have already pinned! */
+-		return NULL;
++		return ERR_PTR(-ENOMEM);
  
- 	data->codec_clk = clk_get(&codec_dev->dev, NULL);
- 	if (IS_ERR(data->codec_clk)) {
- 		ret = PTR_ERR(data->codec_clk);
--		goto fail;
-+		goto put_device;
- 	}
- 
- 	data->clk_frequency = clk_get_rate(data->codec_clk);
-@@ -158,10 +158,10 @@ static int imx_sgtl5000_probe(struct platform_device *pdev)
- 	data->card.dev = &pdev->dev;
- 	ret = snd_soc_of_parse_card_name(&data->card, "model");
- 	if (ret)
--		goto fail;
-+		goto put_device;
- 	ret = snd_soc_of_parse_audio_routing(&data->card, "audio-routing");
- 	if (ret)
--		goto fail;
-+		goto put_device;
- 	data->card.num_links = 1;
- 	data->card.owner = THIS_MODULE;
- 	data->card.dai_link = &data->dai;
-@@ -176,7 +176,7 @@ static int imx_sgtl5000_probe(struct platform_device *pdev)
- 		if (ret != -EPROBE_DEFER)
- 			dev_err(&pdev->dev, "snd_soc_register_card failed (%d)\n",
- 				ret);
--		goto fail;
-+		goto put_device;
- 	}
- 
- 	of_node_put(ssi_np);
-@@ -184,6 +184,8 @@ static int imx_sgtl5000_probe(struct platform_device *pdev)
- 
- 	return 0;
- 
-+put_device:
-+	put_device(&codec_dev->dev);
- fail:
- 	if (data && !IS_ERR(data->codec_clk))
- 		clk_put(data->codec_clk);
+ 	return drm_prime_pages_to_sg(msm_obj->pages, npages);
+ }
 -- 
 2.35.1
 
