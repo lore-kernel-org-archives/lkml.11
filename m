@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1002CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:47:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 366AECCA482
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:47:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386087AbiFMOqn (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:46:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35826 "EHLO
+        id S242097AbiFMOrg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 10:47:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386145AbiFMOok (ORCPT
+        with ESMTP id S1386355AbiFMOpG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:44:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD9FBB57A8;
-        Mon, 13 Jun 2022 04:51:16 -0700 (PDT)
+        Mon, 13 Jun 2022 10:45:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91814B82FB;
+        Mon, 13 Jun 2022 04:51:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3160C61499;
-        Mon, 13 Jun 2022 11:51:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E948C3411C;
-        Mon, 13 Jun 2022 11:51:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C8796124E;
+        Mon, 13 Jun 2022 11:51:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ECB5C3411B;
+        Mon, 13 Jun 2022 11:51:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655121069;
-        bh=fphWgj6blX7Mwg172MoSu8DWPSEvMv8Yw5V5OMgkO+c=;
+        s=korg; t=1655121083;
+        bh=nQaHxOXP2yncMBs2yPCI+6GHFW5RJnn8Ysvi5hX2qRo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gPOULlx0n/etT1ZSqA39eE/fu6sg3i3YLOs0/wyEkZe0kz07kUG0nNvmgltEtVCPm
-         nXlgE9TBJqWuJaHycF0R/zEi60gJea/c3Edo0aWHQ+X+W61Mf7Iz0E3W+0aOXnyBkm
-         Br8S1BMO3LFLudbLwbAN0dcjTSMzcdU1DamXhzp4=
+        b=mAd0juPS4F5CfnkWzFRrtIJ6g+5qLW2nXbpBMOBI/eUxWWDk2D5iro64ZnYfGWVXI
+         wQljmWMs4GHS40As591KeB2X8JZB3wJdwY4Zkfapqk1xb7XK4uyFyehQTmpUyb8Ian
+         bxxWnnA8tb7zPD0RqXgsw8cNm9kiEOUbxiDLHZw0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yu Kuai <yukuai3@huawei.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 243/298] nbd: fix io hung while disconnecting device
-Date:   Mon, 13 Jun 2022 12:12:17 +0200
-Message-Id: <20220613094932.456773601@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Michael English <michael.english@seagate.com>,
+        Muhammad Ahmad <muhammad.ahmad@seagate.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Hannes Reinecke <hare@suse.de>,
+        Tyler Erickson <tyler.erickson@seagate.com>,
+        Christoph Hellwig <hch@lst.de>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.17 265/298] scsi: sd: Fix interpretation of VPD B9h length
+Date:   Mon, 13 Jun 2022 12:12:39 +0200
+Message-Id: <20220613094933.110413856@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,78 +54,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Kuai <yukuai3@huawei.com>
+From: Tyler Erickson <tyler.erickson@seagate.com>
 
-[ Upstream commit 09dadb5985023e27d4740ebd17e6fea4640110e5 ]
+commit f92de9d110429e39929a49240d823251c2fe903e upstream.
 
-In our tests, "qemu-nbd" triggers a io hung:
+Fixing the interpretation of the length of the B9h VPD page (Concurrent
+Positioning Ranges). Adding 4 is necessary as the first 4 bytes of the page
+is the header with page number and length information.  Adding 3 was likely
+a misinterpretation of the SBC-5 specification which sets all offsets
+starting at zero.
 
-INFO: task qemu-nbd:11445 blocked for more than 368 seconds.
-      Not tainted 5.18.0-rc3-next-20220422-00003-g2176915513ca #884
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:qemu-nbd        state:D stack:    0 pid:11445 ppid:     1 flags:0x00000000
-Call Trace:
- <TASK>
- __schedule+0x480/0x1050
- ? _raw_spin_lock_irqsave+0x3e/0xb0
- schedule+0x9c/0x1b0
- blk_mq_freeze_queue_wait+0x9d/0xf0
- ? ipi_rseq+0x70/0x70
- blk_mq_freeze_queue+0x2b/0x40
- nbd_add_socket+0x6b/0x270 [nbd]
- nbd_ioctl+0x383/0x510 [nbd]
- blkdev_ioctl+0x18e/0x3e0
- __x64_sys_ioctl+0xac/0x120
- do_syscall_64+0x35/0x80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7fd8ff706577
-RSP: 002b:00007fd8fcdfebf8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 0000000040000000 RCX: 00007fd8ff706577
-RDX: 000000000000000d RSI: 000000000000ab00 RDI: 000000000000000f
-RBP: 000000000000000f R08: 000000000000fbe8 R09: 000055fe497c62b0
-R10: 00000002aff20000 R11: 0000000000000246 R12: 000000000000006d
-R13: 0000000000000000 R14: 00007ffe82dc5e70 R15: 00007fd8fcdff9c0
+This fixes the error in dmesg:
 
-"qemu-ndb -d" will call ioctl 'NBD_DISCONNECT' first, however, following
-message was found:
+[ 9.014456] sd 1:0:0:0: [sda] Invalid Concurrent Positioning Ranges VPD page
 
-block nbd0: Send disconnect failed -32
-
-Which indicate that something is wrong with the server. Then,
-"qemu-nbd -d" will call ioctl 'NBD_CLEAR_SOCK', however ioctl can't clear
-requests after commit 2516ab1543fd("nbd: only clear the queue on device
-teardown"). And in the meantime, request can't complete through timeout
-because nbd_xmit_timeout() will always return 'BLK_EH_RESET_TIMER', which
-means such request will never be completed in this situation.
-
-Now that the flag 'NBD_CMD_INFLIGHT' can make sure requests won't
-complete multiple times, switch back to call nbd_clear_sock() in
-nbd_clear_sock_ioctl(), so that inflight requests can be cleared.
-
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-Reviewed-by: Josef Bacik <josef@toxicpanda.com>
-Link: https://lore.kernel.org/r/20220521073749.3146892-5-yukuai3@huawei.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220602225113.10218-4-tyler.erickson@seagate.com
+Fixes: e815d36548f0 ("scsi: sd: add concurrent positioning ranges support")
+Cc: stable@vger.kernel.org
+Tested-by: Michael English <michael.english@seagate.com>
+Reviewed-by: Muhammad Ahmad <muhammad.ahmad@seagate.com>
+Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Signed-off-by: Tyler Erickson <tyler.erickson@seagate.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/block/nbd.c | 2 +-
+ drivers/scsi/sd.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
-index 7af1c9dbe9f5..151264a4be36 100644
---- a/drivers/block/nbd.c
-+++ b/drivers/block/nbd.c
-@@ -1434,7 +1434,7 @@ static int nbd_start_device_ioctl(struct nbd_device *nbd, struct block_device *b
- static void nbd_clear_sock_ioctl(struct nbd_device *nbd,
- 				 struct block_device *bdev)
- {
--	sock_shutdown(nbd);
-+	nbd_clear_sock(nbd);
- 	__invalidate_device(bdev, true);
- 	nbd_bdev_reset(bdev);
- 	if (test_and_clear_bit(NBD_RT_HAS_CONFIG_REF,
--- 
-2.35.1
-
+--- a/drivers/scsi/sd.c
++++ b/drivers/scsi/sd.c
+@@ -3171,7 +3171,7 @@ static void sd_read_cpr(struct scsi_disk
+ 		goto out;
+ 
+ 	/* We must have at least a 64B header and one 32B range descriptor */
+-	vpd_len = get_unaligned_be16(&buffer[2]) + 3;
++	vpd_len = get_unaligned_be16(&buffer[2]) + 4;
+ 	if (vpd_len > buf_len || vpd_len < 64 + 32 || (vpd_len & 31)) {
+ 		sd_printk(KERN_ERR, sdkp,
+ 			  "Invalid Concurrent Positioning Ranges VPD page\n");
 
 
