@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22B33C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:47:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0EA6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:47:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351677AbiFMMrG (ORCPT
+        id S1352066AbiFMMrN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:47:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56200 "EHLO
+        Mon, 13 Jun 2022 08:47:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357851AbiFMMkE (ORCPT
+        with ESMTP id S1358927AbiFMMkj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:40:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC0A45E756;
-        Mon, 13 Jun 2022 04:10:19 -0700 (PDT)
+        Mon, 13 Jun 2022 08:40:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E43835F8FD;
+        Mon, 13 Jun 2022 04:10:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE1CF60B92;
-        Mon, 13 Jun 2022 11:10:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C57F1C3411E;
-        Mon, 13 Jun 2022 11:10:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C39E60B6E;
+        Mon, 13 Jun 2022 11:10:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 371F8C3411E;
+        Mon, 13 Jun 2022 11:10:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118613;
-        bh=JzGW/PIlJA/cMyZJ3ANK0AFOuDKSu3Alt53e/wLXUWo=;
+        s=korg; t=1655118626;
+        bh=uR7CQe4V55FxsHzDZ0qleDY1nvIx7lIoX7D3hsclkWQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xNRueHF3mU9JbqehN23m4VQ93D38b4sw/0qhcJei5a2EgozElcu0FFmR+ZqnZ6Z3K
-         fkgBp6+AXDnvJHnkmOOR7IJ2R4wpPhmDW6AIlHQg4WUsGDjV252BLqf583td5/E33C
-         EScPxYLwYsXqq1rJE3O3vbrlYUCe5j53MvQSin9U=
+        b=l7DnexXb9FUUeNeAhkbJncb9t2X7p1au+lRly8WmTz99B55ITiNsxhfnctQhOCXwZ
+         kO+m5i8ep3XXu7p4A6TNv0Vbk/3ojnn0VloMEcS7SBc8UsqrfU9Y956jT+DCmWEoDS
+         glWW8p+Hv+waGZC+iFYkH42bhaRsGcjx111Ziex8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gong Yuanjun <ruc_gongyuanjun@163.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 139/172] drm/radeon: fix a possible null pointer dereference
-Date:   Mon, 13 Jun 2022 12:11:39 +0200
-Message-Id: <20220613094921.850711695@linuxfoundation.org>
+Subject: [PATCH 5.10 127/172] misc: rtsx: set NULL intfdata when probe fails
+Date:   Mon, 13 Jun 2022 12:11:27 +0200
+Message-Id: <20220613094920.820490073@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -50,45 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gong Yuanjun <ruc_gongyuanjun@163.com>
+From: Shuah Khan <skhan@linuxfoundation.org>
 
-[ Upstream commit a2b28708b645c5632dc93669ab06e97874c8244f ]
+[ Upstream commit f861d36e021e1ac4a0a2a1f6411d623809975d63 ]
 
-In radeon_fp_native_mode(), the return value of drm_mode_duplicate()
-is assigned to mode, which will lead to a NULL pointer dereference
-on failure of drm_mode_duplicate(). Add a check to avoid npd.
+rtsx_usb_probe() doesn't call usb_set_intfdata() to null out the
+interface pointer when probe fails. This leaves a stale pointer.
+Noticed the missing usb_set_intfdata() while debugging an unrelated
+invalid DMA mapping problem.
 
-The failure status of drm_cvt_mode() on the other path is checked too.
+Fix it with a call to usb_set_intfdata(..., NULL).
 
-Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220429210913.46804-1-skhan@linuxfoundation.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/radeon/radeon_connectors.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/misc/cardreader/rtsx_usb.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/radeon/radeon_connectors.c b/drivers/gpu/drm/radeon/radeon_connectors.c
-index e30834434442..ef111d460be2 100644
---- a/drivers/gpu/drm/radeon/radeon_connectors.c
-+++ b/drivers/gpu/drm/radeon/radeon_connectors.c
-@@ -473,6 +473,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
- 	    native_mode->vdisplay != 0 &&
- 	    native_mode->clock != 0) {
- 		mode = drm_mode_duplicate(dev, native_mode);
-+		if (!mode)
-+			return NULL;
- 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
- 		drm_mode_set_name(mode);
+diff --git a/drivers/misc/cardreader/rtsx_usb.c b/drivers/misc/cardreader/rtsx_usb.c
+index 59eda55d92a3..1ef9b61077c4 100644
+--- a/drivers/misc/cardreader/rtsx_usb.c
++++ b/drivers/misc/cardreader/rtsx_usb.c
+@@ -667,6 +667,7 @@ static int rtsx_usb_probe(struct usb_interface *intf,
+ 	return 0;
  
-@@ -487,6 +489,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
- 		 * simpler.
- 		 */
- 		mode = drm_cvt_mode(dev, native_mode->hdisplay, native_mode->vdisplay, 60, true, false, false);
-+		if (!mode)
-+			return NULL;
- 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
- 		DRM_DEBUG_KMS("Adding cvt approximation of native panel mode %s\n", mode->name);
- 	}
+ out_init_fail:
++	usb_set_intfdata(ucr->pusb_intf, NULL);
+ 	usb_free_coherent(ucr->pusb_dev, IOBUF_SIZE, ucr->iobuf,
+ 			ucr->iobuf_dma);
+ 	return ret;
 -- 
 2.35.1
 
