@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28109CCA483
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:57:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6264CCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:57:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356765AbiFMM5W (ORCPT
+        id S1356620AbiFMM46 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:57:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44010 "EHLO
+        Mon, 13 Jun 2022 08:56:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357781AbiFMMyp (ORCPT
+        with ESMTP id S1357446AbiFMMyX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:54:45 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4496A1A4;
-        Mon, 13 Jun 2022 04:13:22 -0700 (PDT)
+        Mon, 13 Jun 2022 08:54:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8A4165D22;
+        Mon, 13 Jun 2022 04:13:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id CF361CE1177;
-        Mon, 13 Jun 2022 11:13:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7654C3411E;
-        Mon, 13 Jun 2022 11:13:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B8CE560B7C;
+        Mon, 13 Jun 2022 11:13:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C942AC34114;
+        Mon, 13 Jun 2022 11:13:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118799;
-        bh=K2DITIBWOUgM3T52kHFf5xwh5Y7EDPOuTclzffvszoo=;
+        s=korg; t=1655118788;
+        bh=p2xRm+9G+qjCSlFGrHTFKeqMTugLPxbgRQ/rMbsfVyk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y6szSAoJAXZ0WoaeYBa0I+XbYLNENZe/grB2jEsHMdg9LVlqY1D945to5p2bfezBY
-         ypdYePS4hK8e+qVUUPD/eMB1EeH8s+CEyNMg3CgAfp/MnyYX0iT35AT0aF9GvHwH2p
-         sFz97wugnbow3vYkBBOEXiJIfquuQMLnX7NYdv4Q=
+        b=dZ1xn8NqsVonvktvGAQ1iZkAMx1xn7XKVV4dnWnjIQC/FaSTAXPZivxtn1j8uuV9l
+         zwph58GyFcscbqyEmWYpWd2JnRL4sPGMxJN1JPNdSrtZpihTQfZ/5NytF4rFV4p4K0
+         xq6Org5h4eKu3QnaWAm2LiDx4E2xY5MD++wt32nQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Philippe Schenker <philippe.schenker@toradex.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 032/247] rpmsg: qcom_smd: Fix returning 0 if irq_of_parse_and_map() fails
-Date:   Mon, 13 Jun 2022 12:08:54 +0200
-Message-Id: <20220613094923.910894221@linuxfoundation.org>
+Subject: [PATCH 5.15 028/247] iio: adc: stmpe-adc: Fix wait_for_completion_timeout return value check
+Date:   Mon, 13 Jun 2022 12:08:50 +0200
+Message-Id: <20220613094923.789535183@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -51,35 +51,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 59d6f72f6f9c92fec8757d9e29527da828e9281f ]
+[ Upstream commit d345b23200bcdbd2bd3582213d738c258b77718f ]
 
-irq_of_parse_and_map() returns 0 on failure, so this should not be
-passed further as error return code.
+wait_for_completion_timeout() returns unsigned long not long.
+it returns 0 if timed out, and positive if completed.
+The check for <= 0 is ambiguous and should be == 0 here
+indicating timeout which is the only error case
 
-Fixes: 1a358d350664 ("rpmsg: qcom_smd: Fix irq_of_parse_and_map() return value")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220423093932.32136-1-krzysztof.kozlowski@linaro.org
+Fixes: e813dde6f833 ("iio: stmpe-adc: Use wait_for_completion_timeout")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Philippe Schenker <philippe.schenker@toradex.com>
+Link: https://lore.kernel.org/r/20220412065150.14486-1-linmq006@gmail.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rpmsg/qcom_smd.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/adc/stmpe-adc.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/rpmsg/qcom_smd.c b/drivers/rpmsg/qcom_smd.c
-index 775a7e44ac68..370688e8646b 100644
---- a/drivers/rpmsg/qcom_smd.c
-+++ b/drivers/rpmsg/qcom_smd.c
-@@ -1406,7 +1406,7 @@ static int qcom_smd_parse_edge(struct device *dev,
- 	irq = irq_of_parse_and_map(node, 0);
- 	if (!irq) {
- 		dev_err(dev, "required smd interrupt missing\n");
--		ret = irq;
-+		ret = -EINVAL;
- 		goto put_node;
- 	}
+diff --git a/drivers/iio/adc/stmpe-adc.c b/drivers/iio/adc/stmpe-adc.c
+index fba659bfdb40..64305d9fa560 100644
+--- a/drivers/iio/adc/stmpe-adc.c
++++ b/drivers/iio/adc/stmpe-adc.c
+@@ -61,7 +61,7 @@ struct stmpe_adc {
+ static int stmpe_read_voltage(struct stmpe_adc *info,
+ 		struct iio_chan_spec const *chan, int *val)
+ {
+-	long ret;
++	unsigned long ret;
  
+ 	mutex_lock(&info->lock);
+ 
+@@ -79,7 +79,7 @@ static int stmpe_read_voltage(struct stmpe_adc *info,
+ 
+ 	ret = wait_for_completion_timeout(&info->completion, STMPE_ADC_TIMEOUT);
+ 
+-	if (ret <= 0) {
++	if (ret == 0) {
+ 		stmpe_reg_write(info->stmpe, STMPE_REG_ADC_INT_STA,
+ 				STMPE_ADC_CH(info->channel));
+ 		mutex_unlock(&info->lock);
+@@ -96,7 +96,7 @@ static int stmpe_read_voltage(struct stmpe_adc *info,
+ static int stmpe_read_temp(struct stmpe_adc *info,
+ 		struct iio_chan_spec const *chan, int *val)
+ {
+-	long ret;
++	unsigned long ret;
+ 
+ 	mutex_lock(&info->lock);
+ 
+@@ -114,7 +114,7 @@ static int stmpe_read_temp(struct stmpe_adc *info,
+ 
+ 	ret = wait_for_completion_timeout(&info->completion, STMPE_ADC_TIMEOUT);
+ 
+-	if (ret <= 0) {
++	if (ret == 0) {
+ 		mutex_unlock(&info->lock);
+ 		return -ETIMEDOUT;
+ 	}
 -- 
 2.35.1
 
