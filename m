@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF7DCC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:41:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF5AAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:41:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378508AbiFMNlp (ORCPT
+        id S1377885AbiFMNls (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:41:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58252 "EHLO
+        Mon, 13 Jun 2022 09:41:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378911AbiFMNjY (ORCPT
+        with ESMTP id S1378921AbiFMNjY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 09:39:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF0F0793A4;
-        Mon, 13 Jun 2022 04:28:18 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5734B79381;
+        Mon, 13 Jun 2022 04:28:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 072CA61243;
-        Mon, 13 Jun 2022 11:28:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 130E0C3411E;
-        Mon, 13 Jun 2022 11:28:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D71F1B80EA7;
+        Mon, 13 Jun 2022 11:28:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 547E1C34114;
+        Mon, 13 Jun 2022 11:28:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119697;
-        bh=rrdUq0+U2ydsV3HuaJAwxcFjpuqb+aKuO/e9fbI9Kmg=;
+        s=korg; t=1655119691;
+        bh=KyJdAkux9PQxnAy6KAB2uuLEtkTXx+7bKUbe7lIz1jM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AhWMC1qNHTsfVHC5NH/vQUQti5pgkTfUWvhlNb/P/NoW7d43GDMI2ODXectv9AJn6
-         xw9X1jgVA4EwhsHsP2DAZXiCrvNEDT9eztToQgy7lNxfZ7sS9Xf0RXfBSdg6vcZIao
-         cSWVDoILXPD7//8KjmM3R0wR7Tt+66zT/R22J0/c=
+        b=WW31FXYOdi1a8QV7DGV3kiWkpFXTZgo74J8rFQidH694ROZGw5f1v/zMyTLPYaQx+
+         J40HwBlAMUPGa6aXU+CdaCxuyV8bGy/IUJzAX5lzA7EQAYcqeMpYtE6+ccFndKKrJS
+         LYeK0s/FMv9JCWdPKlW2+vaf9losP5JgWMDMq9jg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, liuyacan <liuyacan@corp.netease.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 089/339] net/smc: set ini->smcrv2.ib_dev_v2 to NULL if SMC-Rv2 is unavailable
-Date:   Mon, 13 Jun 2022 12:08:34 +0200
-Message-Id: <20220613094929.215867138@linuxfoundation.org>
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 105/339] block: take destination bvec offsets into account in bio_copy_data_iter
+Date:   Mon, 13 Jun 2022 12:08:50 +0200
+Message-Id: <20220613094929.697184068@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,37 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: liuyacan <liuyacan@corp.netease.com>
+From: Christoph Hellwig <hch@lst.de>
 
-[ Upstream commit b3b1a17538d3ef6a9667b2271216fd16d7678ab5 ]
+[ Upstream commit 403d50341cce6b5481a92eb481e6df60b1f49b55 ]
 
-In the process of checking whether RDMAv2 is available, the current
-implementation first sets ini->smcrv2.ib_dev_v2, and then allocates
-smc buf desc and register rmb, but the latter may fail. In this case,
-the pointer should be reset.
+Appartly bcache can copy into bios that do not just contain fresh
+pages but can have offsets into the bio_vecs.  Restore support for tht
+in bio_copy_data_iter.
 
-Fixes: e49300a6bf62 ("net/smc: add listen processing for SMC-Rv2")
-Signed-off-by: liuyacan <liuyacan@corp.netease.com>
-Reviewed-by: Karsten Graul <kgraul@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220525085408.812273-1-liuyacan@corp.netease.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: f8b679a070c5 ("block: rewrite bio_copy_data_iter to use bvec_kmap_local and memcpy_to_bvec")
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220524143919.1155501-1-hch@lst.de
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/smc/af_smc.c | 1 +
- 1 file changed, 1 insertion(+)
+ block/bio.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 45a24d24210f..540b32d86d9b 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -2136,6 +2136,7 @@ static void smc_find_rdma_v2_device_serv(struct smc_sock *new_smc,
+diff --git a/block/bio.c b/block/bio.c
+index 4259125e16ab..ac29c87c6735 100644
+--- a/block/bio.c
++++ b/block/bio.c
+@@ -1336,10 +1336,12 @@ void bio_copy_data_iter(struct bio *dst, struct bvec_iter *dst_iter,
+ 		struct bio_vec src_bv = bio_iter_iovec(src, *src_iter);
+ 		struct bio_vec dst_bv = bio_iter_iovec(dst, *dst_iter);
+ 		unsigned int bytes = min(src_bv.bv_len, dst_bv.bv_len);
+-		void *src_buf;
++		void *src_buf = bvec_kmap_local(&src_bv);
++		void *dst_buf = bvec_kmap_local(&dst_bv);
  
- not_found:
- 	ini->smcr_version &= ~SMC_V2;
-+	ini->smcrv2.ib_dev_v2 = NULL;
- 	ini->check_smcrv2 = false;
- }
+-		src_buf = bvec_kmap_local(&src_bv);
+-		memcpy_to_bvec(&dst_bv, src_buf);
++		memcpy(dst_buf, src_buf, bytes);
++
++		kunmap_local(dst_buf);
+ 		kunmap_local(src_buf);
  
+ 		bio_advance_iter_single(src, src_iter, bytes);
 -- 
 2.35.1
 
