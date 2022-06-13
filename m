@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F779CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC2D2CCA488
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:49:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356549AbiFMLtN (ORCPT
+        id S1356749AbiFMLt3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:49:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43180 "EHLO
+        Mon, 13 Jun 2022 07:49:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357234AbiFMLpt (ORCPT
+        with ESMTP id S1357323AbiFMLp7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:45:49 -0400
+        Mon, 13 Jun 2022 07:45:59 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD444A3C4;
-        Mon, 13 Jun 2022 03:51:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62CDE4AE1F;
+        Mon, 13 Jun 2022 03:52:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A1D77B80E8D;
-        Mon, 13 Jun 2022 10:51:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFDB9C3411C;
-        Mon, 13 Jun 2022 10:51:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F239AB80D3C;
+        Mon, 13 Jun 2022 10:52:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EDA7C34114;
+        Mon, 13 Jun 2022 10:52:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117513;
-        bh=r9U7jUpfO1R5w4kmQhKW5ns+fP6NnOjs2mPhPNkAiJk=;
+        s=korg; t=1655117524;
+        bh=SpEc8xwd/DWXEBIER3O/kILG2B+8H0RsWfZGILzBquk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A/mKba4QfoOsyejr87Ue+RulV9IPG1RomlD/t9CVBRiIGOaTJhi6n1CN59EYSGAcz
-         4awhet8G9VRkoYT/QjCU2XfTxG1l+yqgqq7tRjUvW6/BGQ6y8laNDFbhLgR8D5a5N9
-         0nwzdUax9Dk8hNpKLhpfvjUrTkCOrR9E+7/r9aBk=
+        b=2EidLRZXZq/AGBPxwwTs77YfMwNmm3iwvbWuG2n/4d4PhBd7VcNosYFQzkn/WJYTj
+         1RkGhdcoBfnPaUCyO4CIiXG8Vw5LDejyvmsR+jIOXNsLKk7/5L6VQ2Ca2UZFokBNhS
+         wWZwCZ+UxvsULQkB58XTjztJqlpdjJYgizG0u6Lg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yicong Yang <yangyicong@hisilicon.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Jay Zhou <jianjay.zhou@huawei.com>
-Subject: [PATCH 4.19 052/287] PCI: Avoid pci_dev_lock() AB/BA deadlock with sriov_numvfs_store()
-Date:   Mon, 13 Jun 2022 12:07:56 +0200
-Message-Id: <20220613094925.445854097@linuxfoundation.org>
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 054/287] powerpc/xics: fix refcount leak in icp_opal_init()
+Date:   Mon, 13 Jun 2022 12:07:58 +0200
+Message-Id: <20220613094925.505763784@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -51,88 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yicong Yang <yangyicong@hisilicon.com>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit a91ee0e9fca9d7501286cfbced9b30a33e52740a ]
+[ Upstream commit 5dd9e27ea4a39f7edd4bf81e9e70208e7ac0b7c9 ]
 
-The sysfs sriov_numvfs_store() path acquires the device lock before the
-config space access lock:
+The of_find_compatible_node() function returns a node pointer with
+refcount incremented, use of_node_put() on it when done.
 
-  sriov_numvfs_store
-    device_lock                 # A (1) acquire device lock
-    sriov_configure
-      vfio_pci_sriov_configure  # (for example)
-        vfio_pci_core_sriov_configure
-          pci_disable_sriov
-            sriov_disable
-              pci_cfg_access_lock
-                pci_wait_cfg    # B (4) wait for dev->block_cfg_access == 0
-
-Previously, pci_dev_lock() acquired the config space access lock before the
-device lock:
-
-  pci_dev_lock
-    pci_cfg_access_lock
-      dev->block_cfg_access = 1 # B (2) set dev->block_cfg_access = 1
-    device_lock                 # A (3) wait for device lock
-
-Any path that uses pci_dev_lock(), e.g., pci_reset_function(), may
-deadlock with sriov_numvfs_store() if the operations occur in the sequence
-(1) (2) (3) (4).
-
-Avoid the deadlock by reversing the order in pci_dev_lock() so it acquires
-the device lock before the config space access lock, the same as the
-sriov_numvfs_store() path.
-
-[bhelgaas: combined and adapted commit log from Jay Zhou's independent
-subsequent posting:
-https://lore.kernel.org/r/20220404062539.1710-1-jianjay.zhou@huawei.com]
-Link: https://lore.kernel.org/linux-pci/1583489997-17156-1-git-send-email-yangyicong@hisilicon.com/
-Also-posted-by: Jay Zhou <jianjay.zhou@huawei.com>
-Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220402013419.2410298-1-lv.ruyi@zte.com.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/pci.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ arch/powerpc/sysdev/xics/icp-opal.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 293b3e3b0083..0c03836245bd 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -4667,18 +4667,18 @@ static int pci_dev_reset_slot_function(struct pci_dev *dev, int probe)
+diff --git a/arch/powerpc/sysdev/xics/icp-opal.c b/arch/powerpc/sysdev/xics/icp-opal.c
+index e3e52cf035a9..672d8aedae12 100644
+--- a/arch/powerpc/sysdev/xics/icp-opal.c
++++ b/arch/powerpc/sysdev/xics/icp-opal.c
+@@ -199,6 +199,7 @@ int icp_opal_init(void)
  
- static void pci_dev_lock(struct pci_dev *dev)
- {
--	pci_cfg_access_lock(dev);
- 	/* block PM suspend, driver probe, etc. */
- 	device_lock(&dev->dev);
-+	pci_cfg_access_lock(dev);
- }
+ 	printk("XICS: Using OPAL ICP fallbacks\n");
  
- /* Return 1 on successful lock, 0 on contention */
- static int pci_dev_trylock(struct pci_dev *dev)
- {
--	if (pci_cfg_access_trylock(dev)) {
--		if (device_trylock(&dev->dev))
-+	if (device_trylock(&dev->dev)) {
-+		if (pci_cfg_access_trylock(dev))
- 			return 1;
--		pci_cfg_access_unlock(dev);
-+		device_unlock(&dev->dev);
- 	}
- 
++	of_node_put(np);
  	return 0;
-@@ -4686,8 +4686,8 @@ static int pci_dev_trylock(struct pci_dev *dev)
- 
- static void pci_dev_unlock(struct pci_dev *dev)
- {
--	device_unlock(&dev->dev);
- 	pci_cfg_access_unlock(dev);
-+	device_unlock(&dev->dev);
  }
  
- static void pci_dev_save_and_disable(struct pci_dev *dev)
 -- 
 2.35.1
 
