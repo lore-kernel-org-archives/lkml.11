@@ -2,105 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75AABC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:41:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49A6BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:42:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232573AbiFMRln (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 13:41:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48146 "EHLO
+        id S231321AbiFMRls (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 13:41:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347252AbiFMRkn (ORCPT
+        with ESMTP id S1348062AbiFMRkx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 13:40:43 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B93039824
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:10:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        from:to:cc:subject:date:message-id:mime-version
-        :content-transfer-encoding; s=k1; bh=nNFUTHutgVGNjPFk6KiURpi6dow
-        EACSz6iArJubNd9M=; b=AU0s+MxgUcJ+dt9rAAqEZ+XtbN3Pgl5SpYayA1AOoFv
-        rH/Ux+TmrowKTCrpkQ3dtU/WgrQcpmA5BltIRmWGfm5AckG2SzJpL2J2Jg0yBjoX
-        5yMtfhjyJAuBsl8+YCbe1zD80WZjs/UbqNo22d8Y4zMOynyInCADU89n1h8J3KNY
-        =
-Received: (qmail 1304708 invoked from network); 13 Jun 2022 15:10:51 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 13 Jun 2022 15:10:51 +0200
-X-UD-Smtp-Session: l3s3148p1@XAJjBFThL1ZZD+yY
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     linux-renesas-soc@vger.kernel.org
-Cc:     Linh Phung <linh.phung.jy@renesas.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] arm64: dts: renesas: r8a779f0: Add HSCIF 0+1 nodes
-Date:   Mon, 13 Jun 2022 15:10:31 +0200
-Message-Id: <20220613131033.10053-1-wsa+renesas@sang-engineering.com>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 13 Jun 2022 13:40:53 -0400
+Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E85839800;
+        Mon, 13 Jun 2022 06:10:53 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R851e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VGHIWD._1655125849;
+Received: from localhost(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0VGHIWD._1655125849)
+          by smtp.aliyun-inc.com;
+          Mon, 13 Jun 2022 21:10:50 +0800
+From:   Xianting Tian <xianting.tian@linux.alibaba.com>
+To:     akpm@linux-foundation.org, vbabka@suse.cz, ziy@nvidia.com
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, huanyi.xj@alibaba-inc.com,
+        guoren@kernel.org, zjb194813@alibaba-inc.com,
+        tianhu.hh@alibaba-inc.com,
+        Xianting Tian <xianting.tian@linux.alibaba.com>
+Subject: [RESEND PATCH] mm: page_alloc: validate buddy before check the migratetype
+Date:   Mon, 13 Jun 2022 21:10:46 +0800
+Message-Id: <20220613131046.3009889-1-xianting.tian@linux.alibaba.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linh Phung <linh.phung.jy@renesas.com>
+Commit 787af64d05cd ("mm: page_alloc: validate buddy before check its migratetype.")
+added buddy check code. But unfortunately, this fix isn't backported to
+linux-5.17.y and the former stable branches. The reason is it added wrong
+fixes message:
+     Fixes: 1dd214b8f21c ("mm: page_alloc: avoid merging non-fallbackable
+			   pageblocks with others")
+Actually, this issue is involved by commit:
+     commit d9dddbf55667 ("mm/page_alloc: prevent merging between isolated and other pageblocks")
 
-Extracted from a bigger patch in the BSP, rebased and DMA
-properties added. HSCIF0+1 work fine, HSCIF2+3 skipped because they
-haven't been tested yet.
+For RISC-V arch, the first 2M is reserved for sbi, so the start PFN is 512,
+but it got buddy PFN 0 for PFN 0x2000:
+     0 = 0x2000 ^ (1 << 12)
+With the illegal buddy PFN 0, it got an illegal buddy page, which caused
+crash in __get_pfnblock_flags_mask().
 
-Signed-off-by: Linh Phung <linh.phung.jy@renesas.com>
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+With the patch, it can avoid the calling of get_pageblock_migratetype() if
+it isn't buddy page.
+
+Fixes: d9dddbf55667 ("mm/page_alloc: prevent merging between isolated and other pageblocks")
+Cc: stable@vger.kernel.org
+Reported-by: zjb194813@alibaba-inc.com
+Reported-by: tianhu.hh@alibaba-inc.com
+Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
 ---
- arch/arm64/boot/dts/renesas/r8a779f0.dtsi | 34 +++++++++++++++++++++++
- 1 file changed, 34 insertions(+)
+ mm/page_alloc.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/renesas/r8a779f0.dtsi b/arch/arm64/boot/dts/renesas/r8a779f0.dtsi
-index d89064f86d85..ebc4a052207a 100644
---- a/arch/arm64/boot/dts/renesas/r8a779f0.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a779f0.dtsi
-@@ -271,6 +271,40 @@ i2c5: i2c@e66e0000 {
- 			status = "disabled";
- 		};
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index b1caa1c6c887..5b423caa68fd 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -1129,6 +1129,9 @@ static inline void __free_one_page(struct page *page,
  
-+		hscif0: serial@e6540000 {
-+			compatible = "renesas,hscif-r8a779f0",
-+				     "renesas,rcar-gen4-hscif", "renesas,hscif";
-+			reg = <0 0xe6540000 0 0x60>;
-+			interrupts = <GIC_SPI 245 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&cpg CPG_MOD 514>,
-+				 <&cpg CPG_CORE R8A779F0_CLK_S0D3>,
-+				 <&scif_clk>;
-+			clock-names = "fck", "brg_int", "scif_clk";
-+			dmas = <&dmac0 0x31>, <&dmac0 0x30>,
-+			       <&dmac1 0x31>, <&dmac1 0x30>;
-+			dma-names = "tx", "rx", "tx", "rx";
-+			power-domains = <&sysc R8A779F0_PD_ALWAYS_ON>;
-+			resets = <&cpg 514>;
-+			status = "disabled";
-+		};
+ 			buddy_pfn = __find_buddy_pfn(pfn, order);
+ 			buddy = page + (buddy_pfn - pfn);
 +
-+		hscif1: serial@e6550000 {
-+			compatible = "renesas,hscif-r8a779f0",
-+				     "renesas,rcar-gen4-hscif", "renesas,hscif";
-+			reg = <0 0xe6550000 0 0x60>;
-+			interrupts = <GIC_SPI 246 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&cpg CPG_MOD 515>,
-+				 <&cpg CPG_CORE R8A779F0_CLK_S0D3>,
-+				 <&scif_clk>;
-+			clock-names = "fck", "brg_int", "scif_clk";
-+			dmas = <&dmac0 0x33>, <&dmac0 0x32>,
-+			       <&dmac1 0x33>, <&dmac1 0x32>;
-+			dma-names = "tx", "rx", "tx", "rx";
-+			power-domains = <&sysc R8A779F0_PD_ALWAYS_ON>;
-+			resets = <&cpg 515>;
-+			status = "disabled";
-+		};
-+
- 		scif3: serial@e6c50000 {
- 			compatible = "renesas,scif-r8a779f0",
- 				     "renesas,rcar-gen4-scif", "renesas,scif";
++			if (!page_is_buddy(page, buddy, order))
++				goto done_merging;
+ 			buddy_mt = get_pageblock_migratetype(buddy);
+ 
+ 			if (migratetype != buddy_mt
 -- 
-2.35.1
+2.17.1
 
