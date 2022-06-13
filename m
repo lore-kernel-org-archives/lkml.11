@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48D3DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:53:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 448B2C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:55:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353455AbiFMMxA (ORCPT
+        id S1354443AbiFMMxc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:53:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43694 "EHLO
+        Mon, 13 Jun 2022 08:53:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354154AbiFMMwS (ORCPT
+        with ESMTP id S1352990AbiFMMwo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:52:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50A0EA187;
-        Mon, 13 Jun 2022 04:12:30 -0700 (PDT)
+        Mon, 13 Jun 2022 08:52:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BFC512D00;
+        Mon, 13 Jun 2022 04:12:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1938760B60;
-        Mon, 13 Jun 2022 11:12:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFE71C34114;
-        Mon, 13 Jun 2022 11:12:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 60B34B80D31;
+        Mon, 13 Jun 2022 11:12:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3DA3C34114;
+        Mon, 13 Jun 2022 11:12:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118749;
-        bh=T7zgCZdrnSI9zOst5mi3apWNt045/z6rDMsSMmV8L38=;
+        s=korg; t=1655118752;
+        bh=boMrDrsFs6PAGswNM/iu+EfFN2pHcApjc+nXHfCdhEE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WBpie6HSHQOj9eH2azPc0zvJLTwR04vkwYWIscf0va6FM4bSu4CMZqsZsLeC4xL2A
-         B449t8gglC4o0DmY8M4oIR4e9Zh4PJFzBifEbGbiPBDWlel3EAs8gWVy4jrgn6xzFO
-         Ig6wNtEWPjpcIdc8+HAW/7SULAZ0eHK3YxMv0n8I=
+        b=rWzoXwO7gjyiK2WRT2C4xO2f96gP4/gTld39x3Fr0B+8SFxSIUG+QXwgKPXXv0RrP
+         KfARHmMvxVRefl1Bgnrq1DRhjnRDg+rmcwUxdPMc7qdTzaWZrjXTeinq5XWBWvAtdD
+         o/BS14BZNJhdjeRhx/oHLJoM65Z7ArG+Ue4EVK0Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        Lin Ma <linma@zju.edu.cn>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 014/247] USB: storage: karma: fix rio_karma_init return
-Date:   Mon, 13 Jun 2022 12:08:36 +0200
-Message-Id: <20220613094923.358118068@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 015/247] usb: musb: Fix missing of_node_put() in omap2430_probe
+Date:   Mon, 13 Jun 2022 12:08:37 +0200
+Message-Id: <20220613094923.388515018@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -49,62 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lin Ma <linma@zju.edu.cn>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit b92ffb1eddd9a66a90defc556dcbf65a43c196c7 ]
+[ Upstream commit 424bef51fa530389b0b9008c9e144e40c10e8458 ]
 
-The function rio_karam_init() should return -ENOMEM instead of
-value 0 (USB_STOR_TRANSPORT_GOOD) when allocation fails.
+The device_node pointer is returned by of_parse_phandle() with refcount
+incremented. We should use of_node_put() on it when done.
 
-Similarly, it should return -EIO when rio_karma_send_command() fails.
-
-Fixes: dfe0d3ba20e8 ("USB Storage: add rio karma eject support")
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Lin Ma <linma@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220412144359.28447-1-linma@zju.edu.cn
+Fixes: 8934d3e4d0e7 ("usb: musb: omap2430: Don't use omap_get_control_dev()")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220309111033.24487-1-linmq006@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/storage/karma.c | 15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
+ drivers/usb/musb/omap2430.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/usb/storage/karma.c b/drivers/usb/storage/karma.c
-index 05cec81dcd3f..38ddfedef629 100644
---- a/drivers/usb/storage/karma.c
-+++ b/drivers/usb/storage/karma.c
-@@ -174,24 +174,25 @@ static void rio_karma_destructor(void *extra)
- 
- static int rio_karma_init(struct us_data *us)
- {
--	int ret = 0;
- 	struct karma_data *data = kzalloc(sizeof(struct karma_data), GFP_NOIO);
- 
- 	if (!data)
--		goto out;
-+		return -ENOMEM;
- 
- 	data->recv = kmalloc(RIO_RECV_LEN, GFP_NOIO);
- 	if (!data->recv) {
- 		kfree(data);
--		goto out;
-+		return -ENOMEM;
- 	}
- 
- 	us->extra = data;
- 	us->extra_destructor = rio_karma_destructor;
--	ret = rio_karma_send_command(RIO_ENTER_STORAGE, us);
--	data->in_storage = (ret == 0);
--out:
--	return ret;
-+	if (rio_karma_send_command(RIO_ENTER_STORAGE, us))
-+		return -EIO;
-+
-+	data->in_storage = 1;
-+
-+	return 0;
- }
- 
- static struct scsi_host_template karma_host_template;
+diff --git a/drivers/usb/musb/omap2430.c b/drivers/usb/musb/omap2430.c
+index f086960fe2b5..bd1de5c4c434 100644
+--- a/drivers/usb/musb/omap2430.c
++++ b/drivers/usb/musb/omap2430.c
+@@ -363,6 +363,7 @@ static int omap2430_probe(struct platform_device *pdev)
+ 	control_node = of_parse_phandle(np, "ctrl-module", 0);
+ 	if (control_node) {
+ 		control_pdev = of_find_device_by_node(control_node);
++		of_node_put(control_node);
+ 		if (!control_pdev) {
+ 			dev_err(&pdev->dev, "Failed to get control device\n");
+ 			ret = -EINVAL;
 -- 
 2.35.1
 
