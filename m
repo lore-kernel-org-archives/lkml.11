@@ -2,45 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0870C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:27:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6FA8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:27:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383768AbiFMO1W (ORCPT
+        id S1383702AbiFMO1i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:27:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49926 "EHLO
+        Mon, 13 Jun 2022 10:27:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383681AbiFMOXq (ORCPT
+        with ESMTP id S1383751AbiFMOX4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:23:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B73DA2E6A0;
-        Mon, 13 Jun 2022 04:44:50 -0700 (PDT)
+        Mon, 13 Jun 2022 10:23:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13E4321273;
+        Mon, 13 Jun 2022 04:45:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 540DA612A8;
-        Mon, 13 Jun 2022 11:44:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E27DC34114;
-        Mon, 13 Jun 2022 11:44:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A4952612A8;
+        Mon, 13 Jun 2022 11:45:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B848C34114;
+        Mon, 13 Jun 2022 11:45:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120689;
-        bh=E3eQsWqo+oeKPDTgSdbGSmsVmraEOtwmrlowGmSCaqs=;
+        s=korg; t=1655120709;
+        bh=gJVcHejTKcyuP/psQJV5MtzjcY2RzC0c8YvPepU7RPE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aPol168qGCz8d89CwZQFMXdH7uzpUHshV6w7z/liETWrkNTlV7hg4405szknWkS6u
-         AkU3bkVpM3M2HoA6+E2dukom4VNoj9dsnpO2TBqm8w9UXpL0hjtRIBEabHRwtvpUTK
-         GzdGkwqkaQGJhhGVML8ZDFLW7VO8JwZUBiSadOLc=
+        b=Oxqw/PGTNtqLyyp40Jf0BwlVTPHdClLyc21JcQLHgnlyAiZez4YvmSUFjlAwEKMdg
+         An9Dvgzf2qesmBnkpOu24kLrHwITqYJSussa9YzQxtK3wje82mqJvUZZ7yV2WCqtBc
+         +UQoxoG6/i5fA6nSd2McVATZqajWoFb8iMUO9tzE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org, Ian Rogers <irogers@google.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Stephane Eranian <eranian@google.com>,
+        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 122/298] afs: Fix infinite loop found by xfstest generic/676
-Date:   Mon, 13 Jun 2022 12:10:16 +0200
-Message-Id: <20220613094928.642942854@linuxfoundation.org>
+Subject: [PATCH 5.17 129/298] perf parse-events: Move slots event for the hybrid platform too
+Date:   Mon, 13 Jun 2022 12:10:23 +0200
+Message-Id: <20220613094928.855785268@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -52,63 +58,141 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Kan Liang <kan.liang@linux.intel.com>
 
-[ Upstream commit 17eabd42560f4636648ad65ba5b20228071e2363 ]
+[ Upstream commit e0e14cdff31d326f81e0edbd5140f788c870756c ]
 
-In AFS, a directory is handled as a file that the client downloads and
-parses locally for the purposes of performing lookup and getdents
-operations.  The in-kernel afs filesystem has a number of functions that
-do this.
+The commit 94dbfd6781a0e87b ("perf parse-events: Architecture specific
+leader override") introduced a feature to reorder the slots event to
+fulfill the restriction of the perf metrics topdown group. But the
+feature doesn't work on the hybrid machine.
 
-A directory file is arranged as a series of 2K blocks divided into
-32-byte slots, where a directory entry occupies one or more slots, plus
-each block starts with one or more metadata blocks.
+  $ perf stat -e "{cpu_core/instructions/,cpu_core/slots/,cpu_core/topdown-retiring/}" -a sleep 1
 
-When parsing a block, if the last slots are occupied by a dirent that
-occupies more than a single slot and the file position points at a slot
-that's not the initial one, the logic in afs_dir_iterate_block() that
-skips over it won't advance the file pointer to the end of it.  This
-will cause an infinite loop in getdents() as it will keep retrying that
-block and failing to advance beyond the final entry.
+   Performance counter stats for 'system wide':
 
-Fix this by advancing the file pointer if the next entry will be beyond
-it when we skip a block.
+       <not counted>      cpu_core/instructions/
+       <not counted>      cpu_core/slots/
+     <not supported>      cpu_core/topdown-retiring/
 
-This was found by the generic/676 xfstest but can also be triggered with
-something like:
+         1.002871801 seconds time elapsed
 
-	~/xfstests-dev/src/t_readdir_3 /xfstest.test/z 4000 1
+A hybrid platform has a different PMU name for the core PMUs, while
+current perf hard code the PMU name "cpu".
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: David Howells <dhowells@redhat.com>
-Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
-Tested-by: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
-Link: http://lore.kernel.org/r/165391973497.110268.2939296942213894166.stgit@warthog.procyon.org.uk/
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Introduce a new function to check whether the system supports the perf
+metrics feature. The result is cached for the future usage.
+
+For X86, the core PMU name always has "cpu" prefix.
+
+With the patch:
+
+  $ perf stat -e "{cpu_core/instructions/,cpu_core/slots/,cpu_core/topdown-retiring/}" -a sleep 1
+
+   Performance counter stats for 'system wide':
+
+          76,337,010      cpu_core/slots/
+          10,416,809      cpu_core/instructions/
+          11,692,372      cpu_core/topdown-retiring/
+
+         1.002805453 seconds time elapsed
+
+Reviewed-by: Ian Rogers <irogers@google.com>
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Stephane Eranian <eranian@google.com>
+Cc: Xing Zhengjun <zhengjun.xing@linux.intel.com>
+Link: https://lore.kernel.org/r/20220518143900.1493980-5-kan.liang@linux.intel.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/afs/dir.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ tools/perf/arch/x86/util/evlist.c  |  5 +++--
+ tools/perf/arch/x86/util/topdown.c | 25 +++++++++++++++++++++++++
+ tools/perf/arch/x86/util/topdown.h |  7 +++++++
+ 3 files changed, 35 insertions(+), 2 deletions(-)
+ create mode 100644 tools/perf/arch/x86/util/topdown.h
 
-diff --git a/fs/afs/dir.c b/fs/afs/dir.c
-index da9b4f8577a1..7f1cb3b73874 100644
---- a/fs/afs/dir.c
-+++ b/fs/afs/dir.c
-@@ -462,8 +462,11 @@ static int afs_dir_iterate_block(struct afs_vnode *dvnode,
- 		}
+diff --git a/tools/perf/arch/x86/util/evlist.c b/tools/perf/arch/x86/util/evlist.c
+index 75564a7df15b..68f681ad54c1 100644
+--- a/tools/perf/arch/x86/util/evlist.c
++++ b/tools/perf/arch/x86/util/evlist.c
+@@ -3,6 +3,7 @@
+ #include "util/pmu.h"
+ #include "util/evlist.h"
+ #include "util/parse-events.h"
++#include "topdown.h"
  
- 		/* skip if starts before the current position */
--		if (offset < curr)
-+		if (offset < curr) {
-+			if (next > curr)
-+				ctx->pos = blkoff + next * sizeof(union afs_xdr_dirent);
- 			continue;
-+		}
+ #define TOPDOWN_L1_EVENTS	"{slots,topdown-retiring,topdown-bad-spec,topdown-fe-bound,topdown-be-bound}"
+ #define TOPDOWN_L2_EVENTS	"{slots,topdown-retiring,topdown-bad-spec,topdown-fe-bound,topdown-be-bound,topdown-heavy-ops,topdown-br-mispredict,topdown-fetch-lat,topdown-mem-bound}"
+@@ -25,12 +26,12 @@ struct evsel *arch_evlist__leader(struct list_head *list)
  
- 		/* found the next entry */
- 		if (!dir_emit(ctx, dire->u.name, nlen,
+ 	first = list_first_entry(list, struct evsel, core.node);
+ 
+-	if (!pmu_have_event("cpu", "slots"))
++	if (!topdown_sys_has_perf_metrics())
+ 		return first;
+ 
+ 	/* If there is a slots event and a topdown event then the slots event comes first. */
+ 	__evlist__for_each_entry(list, evsel) {
+-		if (evsel->pmu_name && !strcmp(evsel->pmu_name, "cpu") && evsel->name) {
++		if (evsel->pmu_name && !strncmp(evsel->pmu_name, "cpu", 3) && evsel->name) {
+ 			if (strcasestr(evsel->name, "slots")) {
+ 				slots = evsel;
+ 				if (slots == first)
+diff --git a/tools/perf/arch/x86/util/topdown.c b/tools/perf/arch/x86/util/topdown.c
+index 2f3d96aa92a5..f4d5422e9960 100644
+--- a/tools/perf/arch/x86/util/topdown.c
++++ b/tools/perf/arch/x86/util/topdown.c
+@@ -3,6 +3,31 @@
+ #include "api/fs/fs.h"
+ #include "util/pmu.h"
+ #include "util/topdown.h"
++#include "topdown.h"
++
++/* Check whether there is a PMU which supports the perf metrics. */
++bool topdown_sys_has_perf_metrics(void)
++{
++	static bool has_perf_metrics;
++	static bool cached;
++	struct perf_pmu *pmu;
++
++	if (cached)
++		return has_perf_metrics;
++
++	/*
++	 * The perf metrics feature is a core PMU feature.
++	 * The PERF_TYPE_RAW type is the type of a core PMU.
++	 * The slots event is only available when the core PMU
++	 * supports the perf metrics feature.
++	 */
++	pmu = perf_pmu__find_by_type(PERF_TYPE_RAW);
++	if (pmu && pmu_have_event(pmu->name, "slots"))
++		has_perf_metrics = true;
++
++	cached = true;
++	return has_perf_metrics;
++}
+ 
+ /*
+  * Check whether we can use a group for top down.
+diff --git a/tools/perf/arch/x86/util/topdown.h b/tools/perf/arch/x86/util/topdown.h
+new file mode 100644
+index 000000000000..46bf9273e572
+--- /dev/null
++++ b/tools/perf/arch/x86/util/topdown.h
+@@ -0,0 +1,7 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _TOPDOWN_H
++#define _TOPDOWN_H 1
++
++bool topdown_sys_has_perf_metrics(void);
++
++#endif
 -- 
 2.35.1
 
