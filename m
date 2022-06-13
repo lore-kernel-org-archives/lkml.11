@@ -2,113 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F0E6C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:55:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BBB4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:55:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229533AbiFMIz3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 04:55:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59346 "EHLO
+        id S240536AbiFMIzi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 04:55:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239397AbiFMIn0 (ORCPT
+        with ESMTP id S239287AbiFMIzb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 04:43:26 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15E97C45;
-        Mon, 13 Jun 2022 01:43:26 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 08:43:23 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1655109804;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PHjuPIMbgdG2lR+qQVtbOKhjK916xLaRY2n9UJBw2Cs=;
-        b=3n1AJdDxkYWxTvX4BubnRkoE5gGX5CHyTSD3JnTUGC5/C2IO2BOzvvIWwQk9S3zsDOiZF5
-        rD3S7SRmDKRBNueFnmMfszfZMYOtQ4XrSZvzpNqp7/DkmGAnq5tM13l5gnHuwxY2WZNchW
-        RXsfsCjj/HWOqJjWQF+OcUON16++oT5E4wFfkV9rQMbgezp2L0fYGPJDWa2M0wyXD5pN3o
-        eOD1IfZf1k2Fql2T41JV5xhuxvd3AXSpeAozllHSO4fxjRB5m7Af5mod11tIT61bfiiYGg
-        hgdJxep1dlrYD9I+HjB/0w9VfcUaV2treEOKGxMBU4XmPTbaoLR3DZiSdQopOw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1655109804;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PHjuPIMbgdG2lR+qQVtbOKhjK916xLaRY2n9UJBw2Cs=;
-        b=N6P2/Y+gsKq1Uj2HVSh/ousT7E8uMViHXs1BGeRQOR5mzfW32TXfx+SvyiK5/JtwGN5r6b
-        HzPuQ1MLQM/gVWDg==
-From:   "tip-bot2 for Tianchen Ding" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/core] sched: Fix the check of nr_running at queue wakelist
-Cc:     Valentin Schneider <vschneid@redhat.com>,
-        Tianchen Ding <dtcccc@linux.alibaba.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220608233412.327341-2-dtcccc@linux.alibaba.com>
-References: <20220608233412.327341-2-dtcccc@linux.alibaba.com>
+        Mon, 13 Jun 2022 04:55:31 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B1BDB7E3;
+        Mon, 13 Jun 2022 01:55:22 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LM50h0gsGzRj23;
+        Mon, 13 Jun 2022 16:52:04 +0800 (CST)
+Received: from dggpemm100009.china.huawei.com (7.185.36.113) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 13 Jun 2022 16:55:16 +0800
+Received: from huawei.com (10.174.178.102) by dggpemm100009.china.huawei.com
+ (7.185.36.113) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 13 Jun
+ 2022 16:55:15 +0800
+From:   linshengwang <linshengwang1@huawei.com>
+To:     <alexs@kernel.org>, <corbet@lwn.net>, <linshengwang1@huawei.com>
+CC:     <siyanteng01@gmail.com>, <bobwxc@email.cn>, <src.res@email.cn>,
+        <wanjiabing@vivo.com>, <linux-doc@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH -next] fs/ntfs3: Remove unused function 'attr_must_be_resident'
+Date:   Mon, 13 Jun 2022 16:55:14 +0800
+Message-ID: <20220613085514.977-1-linshengwang1@huawei.com>
+X-Mailer: git-send-email 2.28.0.windows.1
 MIME-Version: 1.0
-Message-ID: <165510980360.4207.9149154297957353437.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.174.178.102]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm100009.china.huawei.com (7.185.36.113)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the sched/core branch of tip:
+From: Lin Shengwang <linshengwang1@huawei.com>
 
-Commit-ID:     28156108fecb1f808b21d216e8ea8f0d205a530c
-Gitweb:        https://git.kernel.org/tip/28156108fecb1f808b21d216e8ea8f0d205a530c
-Author:        Tianchen Ding <dtcccc@linux.alibaba.com>
-AuthorDate:    Thu, 09 Jun 2022 07:34:11 +08:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Mon, 13 Jun 2022 10:30:01 +02:00
+It is introduced by commit be71b5cba2e6 ("fs/ntfs3:
+Add attrib operations"), but never used, so remove it.
 
-sched: Fix the check of nr_running at queue wakelist
-
-The commit 2ebb17717550 ("sched/core: Offload wakee task activation if it
-the wakee is descheduling") checked rq->nr_running <= 1 to avoid task
-stacking when WF_ON_CPU.
-
-Per the ordering of writes to p->on_rq and p->on_cpu, observing p->on_cpu
-(WF_ON_CPU) in ttwu_queue_cond() implies !p->on_rq, IOW p has gone through
-the deactivate_task() in __schedule(), thus p has been accounted out of
-rq->nr_running. As such, the task being the only runnable task on the rq
-implies reading rq->nr_running == 0 at that point.
-
-The benchmark result is in [1].
-
-[1] https://lore.kernel.org/all/e34de686-4e85-bde1-9f3c-9bbc86b38627@linux.alibaba.com/
-
-Suggested-by: Valentin Schneider <vschneid@redhat.com>
-Signed-off-by: Tianchen Ding <dtcccc@linux.alibaba.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Valentin Schneider <vschneid@redhat.com>
-Link: https://lore.kernel.org/r/20220608233412.327341-2-dtcccc@linux.alibaba.com
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Lin Shengwang <linshengwang1@huawei.com>
 ---
- kernel/sched/core.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ fs/ntfs3/attrib.c | 27 ---------------------------
+ 1 file changed, 27 deletions(-)
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index bfa7452..294b918 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -3829,8 +3829,12 @@ static inline bool ttwu_queue_cond(int cpu, int wake_flags)
- 	 * CPU then use the wakelist to offload the task activation to
- 	 * the soon-to-be-idle CPU as the current CPU is likely busy.
- 	 * nr_running is checked to avoid unnecessary task stacking.
-+	 *
-+	 * Note that we can only get here with (wakee) p->on_rq=0,
-+	 * p->on_cpu can be whatever, we've done the dequeue, so
-+	 * the wakee has been accounted out of ->nr_running.
- 	 */
--	if ((wake_flags & WF_ON_CPU) && cpu_rq(cpu)->nr_running <= 1)
-+	if ((wake_flags & WF_ON_CPU) && !cpu_rq(cpu)->nr_running)
- 		return true;
- 
- 	return false;
+diff --git a/fs/ntfs3/attrib.c b/fs/ntfs3/attrib.c
+index fc0623b029e6..3df0c3f5ec72 100644
+--- a/fs/ntfs3/attrib.c
++++ b/fs/ntfs3/attrib.c
+@@ -54,33 +54,6 @@ static inline u64 get_pre_allocated(u64 size)
+ 	return ret;
+ }
+
+-/*
+- * attr_must_be_resident
+- *
+- * Return: True if attribute must be resident.
+- */
+-static inline bool attr_must_be_resident(struct ntfs_sb_info *sbi,
+-					 enum ATTR_TYPE type)
+-{
+-	const struct ATTR_DEF_ENTRY *de;
+-
+-	switch (type) {
+-	case ATTR_STD:
+-	case ATTR_NAME:
+-	case ATTR_ID:
+-	case ATTR_LABEL:
+-	case ATTR_VOL_INFO:
+-	case ATTR_ROOT:
+-	case ATTR_EA_INFO:
+-		return true;
+-	default:
+-		de = ntfs_query_def(sbi, type);
+-		if (de && (de->flags & NTFS_ATTR_MUST_BE_RESIDENT))
+-			return true;
+-		return false;
+-	}
+-}
+-
+ /*
+  * attr_load_runs - Load all runs stored in @attr.
+  */
+--
+2.17.1
+
+
