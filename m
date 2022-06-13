@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEE61C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:06:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A31BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:06:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240278AbiFMNGn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:06:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51256 "EHLO
+        id S1358348AbiFMNGx (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 09:06:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354394AbiFMMzk (ORCPT
+        with ESMTP id S1354293AbiFMMzj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:55:40 -0400
+        Mon, 13 Jun 2022 08:55:39 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA67610543;
-        Mon, 13 Jun 2022 04:16:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41A8D11146;
+        Mon, 13 Jun 2022 04:16:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 59BB060EF1;
-        Mon, 13 Jun 2022 11:16:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65BBEC34114;
-        Mon, 13 Jun 2022 11:16:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DB6160B60;
+        Mon, 13 Jun 2022 11:16:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACBDFC3411C;
+        Mon, 13 Jun 2022 11:16:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118989;
-        bh=T6ZSpYjX9kIN6bdYKRnBTZugulok050C0NWTF+1U8Jk=;
+        s=korg; t=1655118987;
+        bh=uS4yQiy6l5prXpMsSbHprTqB0Erj5eGU8B8u2yfkB7Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CIpNIMmvZt5FzqNKH+veWioQKz1wYo6dHxb1KpODRPz+Bi8KYypigQvZ8+SJjX/LZ
-         UZ6MxQCq7jRZJrK+U5ljYVU0wbX0f0Vwk3j0TVOVaudLg0joXaeG5ssAsJ/Jhw2z7I
-         PUTsuW0Pbx7nBtI87rn1r6EcHc4I9AgHmltGKDbg=
+        b=gLVn9Ow8A1ZvnMy6uK2ktYA/xS+oeLbjMfpUBTiaEnFhpKOoZ0oRrf6FKL8QbLz70
+         OTtO7Tcin2uxkgXS+vgA4fBelZ3AFLa8lEGPICtmRUpxjmhrPQA1WqqCG4lLytTixz
+         7eP4j0ZzP8OaR9EACxSYpD8Utnaf6emxr834uIOw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Laurent Fasnacht <laurent.fasnacht@proton.ch>,
+        Neal Cardwell <ncardwell@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 100/247] vdpa: ifcvf: set pci driver data in probe
-Date:   Mon, 13 Jun 2022 12:10:02 +0200
-Message-Id: <20220613094925.988710920@linuxfoundation.org>
+Subject: [PATCH 5.15 099/247] tcp: tcp_rtx_synack() can be called from process context
+Date:   Mon, 13 Jun 2022 12:10:01 +0200
+Message-Id: <20220613094925.958134702@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,45 +52,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason Wang <jasowang@redhat.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit bd8bb9aed56b1814784a975e2dfea12a9adcee92 ]
+[ Upstream commit 0a375c822497ed6ad6b5da0792a12a6f1af10c0b ]
 
-We should set the pci driver data in probe instead of the vdpa device
-adding callback. Otherwise if no vDPA device is created we will lose
-the pointer to the management device.
+Laurent reported the enclosed report [1]
 
-Fixes: 6b5df347c6482 ("vDPA/ifcvf: implement management netlink framework for ifcvf")
-Tested-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Jason Wang <jasowang@redhat.com>
-Message-Id: <20220524055557.1938-1-jasowang@redhat.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+This bug triggers with following coditions:
+
+0) Kernel built with CONFIG_DEBUG_PREEMPT=y
+
+1) A new passive FastOpen TCP socket is created.
+   This FO socket waits for an ACK coming from client to be a complete
+   ESTABLISHED one.
+2) A socket operation on this socket goes through lock_sock()
+   release_sock() dance.
+3) While the socket is owned by the user in step 2),
+   a retransmit of the SYN is received and stored in socket backlog.
+4) At release_sock() time, the socket backlog is processed while
+   in process context.
+5) A SYNACK packet is cooked in response of the SYN retransmit.
+6) -> tcp_rtx_synack() is called in process context.
+
+Before blamed commit, tcp_rtx_synack() was always called from BH handler,
+from a timer handler.
+
+Fix this by using TCP_INC_STATS() & NET_INC_STATS()
+which do not assume caller is in non preemptible context.
+
+[1]
+BUG: using __this_cpu_add() in preemptible [00000000] code: epollpep/2180
+caller is tcp_rtx_synack.part.0+0x36/0xc0
+CPU: 10 PID: 2180 Comm: epollpep Tainted: G           OE     5.16.0-0.bpo.4-amd64 #1  Debian 5.16.12-1~bpo11+1
+Hardware name: Supermicro SYS-5039MC-H8TRF/X11SCD-F, BIOS 1.7 11/23/2021
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x48/0x5e
+ check_preemption_disabled+0xde/0xe0
+ tcp_rtx_synack.part.0+0x36/0xc0
+ tcp_rtx_synack+0x8d/0xa0
+ ? kmem_cache_alloc+0x2e0/0x3e0
+ ? apparmor_file_alloc_security+0x3b/0x1f0
+ inet_rtx_syn_ack+0x16/0x30
+ tcp_check_req+0x367/0x610
+ tcp_rcv_state_process+0x91/0xf60
+ ? get_nohz_timer_target+0x18/0x1a0
+ ? lock_timer_base+0x61/0x80
+ ? preempt_count_add+0x68/0xa0
+ tcp_v4_do_rcv+0xbd/0x270
+ __release_sock+0x6d/0xb0
+ release_sock+0x2b/0x90
+ sock_setsockopt+0x138/0x1140
+ ? __sys_getsockname+0x7e/0xc0
+ ? aa_sk_perm+0x3e/0x1a0
+ __sys_setsockopt+0x198/0x1e0
+ __x64_sys_setsockopt+0x21/0x30
+ do_syscall_64+0x38/0xc0
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Fixes: 168a8f58059a ("tcp: TCP Fast Open Server - main code path")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Laurent Fasnacht <laurent.fasnacht@proton.ch>
+Acked-by: Neal Cardwell <ncardwell@google.com>
+Link: https://lore.kernel.org/r/20220530213713.601888-1-eric.dumazet@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vdpa/ifcvf/ifcvf_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/ipv4/tcp_output.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-index 003530b19b4e..4fe8aa13ac68 100644
---- a/drivers/vdpa/ifcvf/ifcvf_main.c
-+++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-@@ -505,7 +505,6 @@ static int ifcvf_vdpa_dev_add(struct vdpa_mgmt_dev *mdev, const char *name)
- 	}
- 
- 	ifcvf_mgmt_dev->adapter = adapter;
--	pci_set_drvdata(pdev, ifcvf_mgmt_dev);
- 
- 	vf = &adapter->vf;
- 	vf->dev_type = get_dev_type(pdev);
-@@ -620,6 +619,8 @@ static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 		goto err;
- 	}
- 
-+	pci_set_drvdata(pdev, ifcvf_mgmt_dev);
-+
- 	return 0;
- 
- err:
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index ed7125a47ce0..dc3b4668fcde 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -4116,8 +4116,8 @@ int tcp_rtx_synack(const struct sock *sk, struct request_sock *req)
+ 	res = af_ops->send_synack(sk, NULL, &fl, req, NULL, TCP_SYNACK_NORMAL,
+ 				  NULL);
+ 	if (!res) {
+-		__TCP_INC_STATS(sock_net(sk), TCP_MIB_RETRANSSEGS);
+-		__NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPSYNRETRANS);
++		TCP_INC_STATS(sock_net(sk), TCP_MIB_RETRANSSEGS);
++		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPSYNRETRANS);
+ 		if (unlikely(tcp_passive_fastopen(sk)))
+ 			tcp_sk(sk)->total_retrans++;
+ 		trace_tcp_retransmit_synack(sk, req);
 -- 
 2.35.1
 
