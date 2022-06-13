@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BED57C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:51:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8037CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:51:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386151AbiFMOv1 (ORCPT
+        id S1386162AbiFMOvc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:51:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38326 "EHLO
+        Mon, 13 Jun 2022 10:51:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385640AbiFMOrt (ORCPT
+        with ESMTP id S1385823AbiFMOsm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:47:49 -0400
+        Mon, 13 Jun 2022 10:48:42 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34851C046B;
-        Mon, 13 Jun 2022 04:52:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95FEAC0472;
+        Mon, 13 Jun 2022 04:52:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CEEA614F1;
-        Mon, 13 Jun 2022 11:52:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ED14C34114;
-        Mon, 13 Jun 2022 11:52:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5703B61499;
+        Mon, 13 Jun 2022 11:52:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8896C34114;
+        Mon, 13 Jun 2022 11:52:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655121159;
-        bh=9uKvnoG4B7uUYhEFbCpI+laNOBVB1oTWCNAqi04Sf4U=;
+        s=korg; t=1655121176;
+        bh=G0vA+oHO6Pf/NwOimi2XtgklJgsVBvKZSqkj2BqgjLQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lbBSqBMGDA4n/Yg3s2MZKB9rRpujOFegRdAFEzwto2KlB70eL6BpO28WncSprIdTg
-         NgVIJXQTw5Imlvnqx0POo6oSJMdp8GJa7poIzP9ONcyc/E3WesAfopNQ/WAH2jYvfj
-         G0yixsn9lEf4m8OtzHp5GoFf6bLNvdGnub7Ky0fM=
+        b=u5y836JwH7Yo4aKFTe7zemqJ/LQtrmSDCtEUZjxgtcNY5YknVWKxXU9/hReL9oXx/
+         PhszAcAbOFojZMzSDfehvIPVFHRY9ISQZkWjDSfwgj5cfvTZ096WgC7QjTyf87IWAl
+         OTjZStEAogY/B+6wZqvwvxHZPBxuK5kucHLzu8oo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.17 270/298] mmc: block: Fix CQE recovery reset success
-Date:   Mon, 13 Jun 2022 12:12:44 +0200
-Message-Id: <20220613094933.260413408@linuxfoundation.org>
+        stable@vger.kernel.org, Martin Faltesek <mfaltesek@google.com>,
+        Guenter Roeck <groeck@chromium.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.17 276/298] nfc: st21nfca: fix incorrect sizing calculations in EVT_TRANSACTION
+Date:   Mon, 13 Jun 2022 12:12:50 +0200
+Message-Id: <20220613094933.449084975@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -49,41 +51,131 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adrian Hunter <adrian.hunter@intel.com>
+From: Martin Faltesek <mfaltesek@google.com>
 
-commit a051246b786af7e4a9d9219cc7038a6e8a411531 upstream.
+commit f2e19b36593caed4c977c2f55aeba7408aeb2132 upstream.
 
-The intention of the use of mmc_blk_reset_success() in
-mmc_blk_cqe_recovery() was to prevent repeated resets when retrying and
-getting the same error. However, that may not be the case - any amount
-of time and I/O may pass before another recovery is needed, in which
-case there would be no reason to deny it the opportunity to recover via
-a reset if necessary. CQE recovery is expected seldom and failure to
-recover (if the clear tasks command fails), even more seldom, so it is
-better to allow the reset always, which can be done by calling
-mmc_blk_reset_success() always.
+The transaction buffer is allocated by using the size of the packet buf,
+and subtracting two which seem intended to remove the two tags which are
+not present in the target structure. This calculation leads to under
+counting memory because of differences between the packet contents and the
+target structure. The aid_len field is a u8 in the packet, but a u32 in
+the structure, resulting in at least 3 bytes always being under counted.
+Further, the aid data is a variable length field in the packet, but fixed
+in the structure, so if this field is less than the max, the difference is
+added to the under counting.
 
-Fixes: 1e8e55b67030c6 ("mmc: block: Add CQE support")
+The last validation check for transaction->params_len is also incorrect
+since it employs the same accounting error.
+
+To fix, perform validation checks progressively to safely reach the
+next field, to determine the size of both buffers and verify both tags.
+Once all validation checks pass, allocate the buffer and copy the data.
+This eliminates freeing memory on the error path, as those checks are
+moved ahead of memory allocation.
+
+Fixes: 26fc6c7f02cb ("NFC: st21nfca: Add HCI transaction event support")
+Fixes: 4fbcc1a4cb20 ("nfc: st21nfca: Fix potential buffer overflows in EVT_TRANSACTION")
 Cc: stable@vger.kernel.org
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-Link: https://lore.kernel.org/r/20220531171922.76080-1-adrian.hunter@intel.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Martin Faltesek <mfaltesek@google.com>
+Reviewed-by: Guenter Roeck <groeck@chromium.org>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/core/block.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/nfc/st21nfca/se.c |   62 +++++++++++++++++++++++-----------------------
+ 1 file changed, 31 insertions(+), 31 deletions(-)
 
---- a/drivers/mmc/core/block.c
-+++ b/drivers/mmc/core/block.c
-@@ -1482,8 +1482,7 @@ void mmc_blk_cqe_recovery(struct mmc_que
- 	err = mmc_cqe_recovery(host);
- 	if (err)
- 		mmc_blk_reset(mq->blkdata, host, MMC_BLK_CQE_RECOVERY);
--	else
--		mmc_blk_reset_success(mq->blkdata, MMC_BLK_CQE_RECOVERY);
-+	mmc_blk_reset_success(mq->blkdata, MMC_BLK_CQE_RECOVERY);
+--- a/drivers/nfc/st21nfca/se.c
++++ b/drivers/nfc/st21nfca/se.c
+@@ -300,6 +300,8 @@ int st21nfca_connectivity_event_received
+ 	int r = 0;
+ 	struct device *dev = &hdev->ndev->dev;
+ 	struct nfc_evt_transaction *transaction;
++	u32 aid_len;
++	u8 params_len;
  
- 	pr_debug("%s: CQE recovery done\n", mmc_hostname(host));
- }
+ 	pr_debug("connectivity gate event: %x\n", event);
+ 
+@@ -308,50 +310,48 @@ int st21nfca_connectivity_event_received
+ 		r = nfc_se_connectivity(hdev->ndev, host);
+ 	break;
+ 	case ST21NFCA_EVT_TRANSACTION:
+-		/*
+-		 * According to specification etsi 102 622
++		/* According to specification etsi 102 622
+ 		 * 11.2.2.4 EVT_TRANSACTION Table 52
+ 		 * Description	Tag	Length
+ 		 * AID		81	5 to 16
+ 		 * PARAMETERS	82	0 to 255
++		 *
++		 * The key differences are aid storage length is variably sized
++		 * in the packet, but fixed in nfc_evt_transaction, and that the aid_len
++		 * is u8 in the packet, but u32 in the structure, and the tags in
++		 * the packet are not included in nfc_evt_transaction.
++		 *
++		 * size in bytes: 1          1       5-16 1             1           0-255
++		 * offset:        0          1       2    aid_len + 2   aid_len + 3 aid_len + 4
++		 * member name:   aid_tag(M) aid_len aid  params_tag(M) params_len  params
++		 * example:       0x81       5-16    X    0x82 0-255    X
+ 		 */
+-		if (skb->len < NFC_MIN_AID_LENGTH + 2 ||
+-		    skb->data[0] != NFC_EVT_TRANSACTION_AID_TAG)
++		if (skb->len < 2 || skb->data[0] != NFC_EVT_TRANSACTION_AID_TAG)
+ 			return -EPROTO;
+ 
+-		transaction = devm_kzalloc(dev, skb->len - 2, GFP_KERNEL);
+-		if (!transaction)
+-			return -ENOMEM;
++		aid_len = skb->data[1];
++
++		if (skb->len < aid_len + 4 || aid_len > sizeof(transaction->aid))
++			return -EPROTO;
+ 
+-		transaction->aid_len = skb->data[1];
++		params_len = skb->data[aid_len + 3];
+ 
+-		/* Checking if the length of the AID is valid */
+-		if (transaction->aid_len > sizeof(transaction->aid)) {
+-			devm_kfree(dev, transaction);
+-			return -EINVAL;
+-		}
+-
+-		memcpy(transaction->aid, &skb->data[2],
+-		       transaction->aid_len);
+-
+-		/* Check next byte is PARAMETERS tag (82) */
+-		if (skb->data[transaction->aid_len + 2] !=
+-		    NFC_EVT_TRANSACTION_PARAMS_TAG) {
+-			devm_kfree(dev, transaction);
++		/* Verify PARAMETERS tag is (82), and final check that there is enough
++		 * space in the packet to read everything.
++		 */
++		if ((skb->data[aid_len + 2] != NFC_EVT_TRANSACTION_PARAMS_TAG) ||
++		    (skb->len < aid_len + 4 + params_len))
+ 			return -EPROTO;
+-		}
+ 
+-		transaction->params_len = skb->data[transaction->aid_len + 3];
++		transaction = devm_kzalloc(dev, sizeof(*transaction) + params_len, GFP_KERNEL);
++		if (!transaction)
++			return -ENOMEM;
+ 
+-		/* Total size is allocated (skb->len - 2) minus fixed array members */
+-		if (transaction->params_len > ((skb->len - 2) -
+-		    sizeof(struct nfc_evt_transaction))) {
+-			devm_kfree(dev, transaction);
+-			return -EINVAL;
+-		}
++		transaction->aid_len = aid_len;
++		transaction->params_len = params_len;
+ 
+-		memcpy(transaction->params, skb->data +
+-		       transaction->aid_len + 4, transaction->params_len);
++		memcpy(transaction->aid, &skb->data[2], aid_len);
++		memcpy(transaction->params, &skb->data[aid_len + 4], params_len);
+ 
+ 		r = nfc_se_transaction(hdev->ndev, host, transaction);
+ 	break;
 
 
