@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74833C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:50:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79BFBC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:50:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354913AbiFMMuF (ORCPT
+        id S1355069AbiFMMuM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:50:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34198 "EHLO
+        Mon, 13 Jun 2022 08:50:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357577AbiFMMtF (ORCPT
+        with ESMTP id S1356301AbiFMMsp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:49:05 -0400
+        Mon, 13 Jun 2022 08:48:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC7362A3C;
-        Mon, 13 Jun 2022 04:11:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E3566223C;
+        Mon, 13 Jun 2022 04:11:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DA8860B6B;
-        Mon, 13 Jun 2022 11:11:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F796C34114;
-        Mon, 13 Jun 2022 11:11:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F751608C3;
+        Mon, 13 Jun 2022 11:11:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5884EC34114;
+        Mon, 13 Jun 2022 11:11:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118694;
-        bh=YP+r8NsOlTXW2d7RbwUjxMYxl+IUDMWpsp0BdIt/vHE=;
+        s=korg; t=1655118686;
+        bh=IhUtz9jVbqvCOmOqsUmTRlRO4beTo/ueWOj5DeHBtek=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ib704iZKUMtnj143DQv7yfNLHVLMyx8hDnTev4XGLi49i9lownVxdtieXs9T2tGfK
-         Ozjm2Oq/amCXKz1WFqNRrLzhlLV4YMONcFTK6ujWIAuAh/A4dbAEEcUUnI0sPuZI2k
-         pN+7sVLrOaOzSsjn8SPXk2Xgl4Rfxve/g22r6ZIk=
+        b=VZxJAJ6gOu3jw4JwQLd1iY9Ll/Fv7d4bVCPdFtxSipkK0wKPqaKfysInZFSeISouQ
+         GitLNHFTEJCtj2Jd+fJYK4aA03TqLo3B0lfKDBb6ZlxKwrMH4JYkHl9UY+IEsCMDCq
+         +Twzvfs1sRqiQhOkaLqhdMsvIxUZKH3rH77r0ffY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Alex Elder <elder@linaro.org>,
-        Taniya Das <quic_tdas@quicinc.com>,
-        Mike Tipton <quic_mdtipton@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Georgi Djakov <djakov@kernel.org>
-Subject: [PATCH 5.10 169/172] interconnect: Restore sync state by ignoring ipa-virt in provider count
-Date:   Mon, 13 Jun 2022 12:12:09 +0200
-Message-Id: <20220613094923.400137096@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 142/172] jump_label,noinstr: Avoid instrumentation for JUMP_LABEL=n builds
+Date:   Mon, 13 Jun 2022 12:11:42 +0200
+Message-Id: <20220613094922.100865784@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -54,56 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephen Boyd <swboyd@chromium.org>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit 20ce30fb4750f2ffc130cdcb26232b1dd87cd0a5 upstream.
+[ Upstream commit 656d054e0a15ec327bd82801ccd58201e59f6896 ]
 
-Ignore compatible strings for the IPA virt drivers that were removed in
-commits 2fb251c26560 ("interconnect: qcom: sdx55: Drop IP0
-interconnects") and 2f3724930eb4 ("interconnect: qcom: sc7180: Drop IP0
-interconnects") so that the sync state logic can kick in again.
-Otherwise all the interconnects in the system will stay pegged at max
-speeds because 'providers_count' is always going to be one larger than
-the number of drivers that will ever probe on sc7180 or sdx55. This
-fixes suspend on sc7180 and sdx55 devices when you don't have a
-devicetree patch to remove the ipa-virt compatible node.
+When building x86_64 with JUMP_LABEL=n it's possible for
+instrumentation to sneak into noinstr:
 
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: Doug Anderson <dianders@chromium.org>
-Cc: Alex Elder <elder@linaro.org>
-Cc: Taniya Das <quic_tdas@quicinc.com>
-Cc: Mike Tipton <quic_mdtipton@quicinc.com>
-Cc: <stable@vger.kernel.org>	# 5.10.x
-Fixes: 2fb251c26560 ("interconnect: qcom: sdx55: Drop IP0 interconnects")
-Fixes: 2f3724930eb4 ("interconnect: qcom: sc7180: Drop IP0 interconnects")
-Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-Reviewed-by: Alex Elder <elder@linaro.org>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Link: https://lore.kernel.org/r/20220427013226.341209-1-swboyd@chromium.org
-Signed-off-by: Georgi Djakov <djakov@kernel.org>
-Signed-off-by: Alex Elder <elder@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+vmlinux.o: warning: objtool: exit_to_user_mode+0x14: call to static_key_count.constprop.0() leaves .noinstr.text section
+vmlinux.o: warning: objtool: syscall_exit_to_user_mode+0x2d: call to static_key_count.constprop.0() leaves .noinstr.text section
+vmlinux.o: warning: objtool: irqentry_exit_to_user_mode+0x1b: call to static_key_count.constprop.0() leaves .noinstr.text section
+
+Switch to arch_ prefixed atomic to avoid the explicit instrumentation.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/interconnect/core.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ include/linux/jump_label.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/interconnect/core.c
-+++ b/drivers/interconnect/core.c
-@@ -1084,9 +1084,14 @@ static int of_count_icc_providers(struct
- {
- 	struct device_node *child;
- 	int count = 0;
-+	const struct of_device_id __maybe_unused ignore_list[] = {
-+		{ .compatible = "qcom,sc7180-ipa-virt" },
-+		{}
-+	};
+diff --git a/include/linux/jump_label.h b/include/linux/jump_label.h
+index 32809624d422..e67ee4d7318f 100644
+--- a/include/linux/jump_label.h
++++ b/include/linux/jump_label.h
+@@ -249,9 +249,9 @@ extern void static_key_disable_cpuslocked(struct static_key *key);
+ #include <linux/atomic.h>
+ #include <linux/bug.h>
  
- 	for_each_available_child_of_node(np, child) {
--		if (of_property_read_bool(child, "#interconnect-cells"))
-+		if (of_property_read_bool(child, "#interconnect-cells") &&
-+		    likely(!of_match_node(ignore_list, child)))
- 			count++;
- 		count += of_count_icc_providers(child);
- 	}
+-static inline int static_key_count(struct static_key *key)
++static __always_inline int static_key_count(struct static_key *key)
+ {
+-	return atomic_read(&key->enabled);
++	return arch_atomic_read(&key->enabled);
+ }
+ 
+ static __always_inline void jump_label_init(void)
+-- 
+2.35.1
+
 
 
