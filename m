@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAD0CCCA490
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:31:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F12F7CCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:31:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384971AbiFMOa2 (ORCPT
+        id S1385520AbiFMObQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:30:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52892 "EHLO
+        Mon, 13 Jun 2022 10:31:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384043AbiFMOYh (ORCPT
+        with ESMTP id S1383845AbiFMOYJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:24:37 -0400
+        Mon, 13 Jun 2022 10:24:09 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8018DF02;
-        Mon, 13 Jun 2022 04:46:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC2894705B;
+        Mon, 13 Jun 2022 04:45:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14F2EB80EB2;
-        Mon, 13 Jun 2022 11:46:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B210C34114;
-        Mon, 13 Jun 2022 11:46:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 86A2AB80EA7;
+        Mon, 13 Jun 2022 11:45:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05B1CC34114;
+        Mon, 13 Jun 2022 11:45:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120793;
-        bh=uVB12VocQsbE+gPRI6s6gOgZctIrY/JOq64olD7xgiw=;
+        s=korg; t=1655120728;
+        bh=5UwgwA5uk3m1yjQ3cSjIclyEbz390K7LIh5k5M5FNEI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0HfG+hFjbTkGKRLXSCc+0S4PNK6MjFF38C0WBPrKQrDePkECLtRX1pRHSLAOQnCB6
-         1Lv8TIe+yCF639BAOqOWq01cpjwL3WnL/cG5Rp/lPz6Cz34vWkPdflTTa1/Li2UMeN
-         +HPnNKMt7OBbtbRlfiNdkzXrRx0gOOPn/A8zxbHc=
+        b=p2rsaoQh+/nBWTTKvRcz6AO+vRGxjYTJyajxfHm31Sa4S0pHuv4/6CCNir8cxrqK2
+         lzeMnq7FGpQOIdzGvfn3wlMxBzW0Yso0bq8lMDCnWPcfz2QwIx4h0LOEvagW+WL/Gm
+         PgmliJ69gV3iYiADYddYLzg50SO5tWZ/dmkvByxo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 159/298] netfilter: nf_tables: use kfree_rcu(ptr, rcu) to release hooks in clean_net path
-Date:   Mon, 13 Jun 2022 12:10:53 +0200
-Message-Id: <20220613094929.758594341@linuxfoundation.org>
+        stable@vger.kernel.org, Ben Walker <benjamin.walker@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 135/298] dmaengine: idxd: set DMA_INTERRUPT cap bit
+Date:   Mon, 13 Jun 2022 12:10:29 +0200
+Message-Id: <20220613094929.038299754@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -49,33 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Dave Jiang <dave.jiang@intel.com>
 
-[ Upstream commit ab5e5c062f67c5ae8cd07f0632ffa62dc0e7d169 ]
+[ Upstream commit 4e5a4eb20393b851590b4465f1197a8041c2076b ]
 
-Use kfree_rcu(ptr, rcu) variant instead as described by ae089831ff28
-("netfilter: nf_tables: prefer kfree_rcu(ptr, rcu) variant").
+Even though idxd driver has always supported interrupt, it never actually
+set the DMA_INTERRUPT cap bit. Rectify this mistake so the interrupt
+capability is advertised.
 
-Fixes: f9a43007d3f7 ("netfilter: nf_tables: double hook unregistration in netns path")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Reported-by: Ben Walker <benjamin.walker@intel.com>
+Signed-off-by: Dave Jiang <dave.jiang@intel.com>
+Link: https://lore.kernel.org/r/164971497859.2201379.17925303210723708961.stgit@djiang5-desk3.ch.intel.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_tables_api.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/dma/idxd/dma.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 42cc703a68e5..07c842b65f6d 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -7247,7 +7247,7 @@ static void __nft_unregister_flowtable_net_hooks(struct net *net,
- 		nf_unregister_net_hook(net, &hook->ops);
- 		if (release_netdev) {
- 			list_del(&hook->list);
--			kfree_rcu(hook);
-+			kfree_rcu(hook, rcu);
- 		}
- 	}
- }
+diff --git a/drivers/dma/idxd/dma.c b/drivers/dma/idxd/dma.c
+index bfff59617d04..13e061944db9 100644
+--- a/drivers/dma/idxd/dma.c
++++ b/drivers/dma/idxd/dma.c
+@@ -193,6 +193,7 @@ int idxd_register_dma_device(struct idxd_device *idxd)
+ 	INIT_LIST_HEAD(&dma->channels);
+ 	dma->dev = dev;
+ 
++	dma_cap_set(DMA_INTERRUPT, dma->cap_mask);
+ 	dma_cap_set(DMA_PRIVATE, dma->cap_mask);
+ 	dma_cap_set(DMA_COMPLETION_NO_ORDER, dma->cap_mask);
+ 	dma->device_release = idxd_dma_release;
 -- 
 2.35.1
 
