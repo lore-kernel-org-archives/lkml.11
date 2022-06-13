@@ -2,30 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73B30C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:57:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 798B4C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:57:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241179AbiFMU5M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:57:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35176 "EHLO
+        id S1351427AbiFMU5P (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 16:57:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352088AbiFMUyK (ORCPT
+        with ESMTP id S1352190AbiFMUyQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:54:10 -0400
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39DBA2A243
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:19:47 -0700 (PDT)
+        Mon, 13 Jun 2022 16:54:16 -0400
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 832C224977
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:20:49 -0700 (PDT)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1655151585;
+        t=1655151648;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=4luxyHsp81FOFiUT/6yoqfYUWRQbE1ZGpW4pjt9Mu8s=;
-        b=wrqv7ohOF96qGiSQuPggQGcjaCvog98ApGuHxDFierBEUu/M31pb0J67CQIkajDOQYJQER
-        YuDnSp2V6YbPoBkcPXwEnEdjyMR+pJGczOFfBWwr4cvGnkAYWCX7vQpjjcSJ9wtyoKpbVh
-        ZPeMiUpOhK1ShOgWWyVcqDCuLD/pVRs=
+        bh=OqOHaer4kC3Iywced9lKgHi/whHdzXvvFFVWcKJPrko=;
+        b=f5d/7XtUXAv8RzxuTswTXDO4W9PSq9kdFaPjQuxA4iTVQtefrfkzPW4aGdvzX++CKF10na
+        9AUHYQzZLF8H3k/I2Tuha5dUthdwznGRX8KR64xwBQq8nFKELem71xvwCOLuFf1+udE9fO
+        uzEbRQXAmCq9BsMMyyvh9Cno2phyuLU=
 From:   andrey.konovalov@linux.dev
 To:     Marco Elver <elver@google.com>,
         Alexander Potapenko <glider@google.com>
@@ -38,9 +39,9 @@ Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH 28/32] kasan: fill in cache and object in complete_report_info
-Date:   Mon, 13 Jun 2022 22:14:19 +0200
-Message-Id: <1e3e75cbcf4f258701b325dbad8b2a43c2633b7b.1655150842.git.andreyknvl@google.com>
+Subject: [PATCH 31/32] kasan: implement stack ring for tag-based modes
+Date:   Mon, 13 Jun 2022 22:14:22 +0200
+Message-Id: <3cd76121903de13713581687ffa45e668ef1475a.1655150842.git.andreyknvl@google.com>
 In-Reply-To: <cover.1655150842.git.andreyknvl@google.com>
 References: <cover.1655150842.git.andreyknvl@google.com>
 MIME-Version: 1.0
@@ -53,91 +54,206 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andrey Konovalov <andreyknvl@google.com>
 
-Add cache and object fields to kasan_report_info and fill them in in
-complete_report_info() instead of fetching them in the middle of the
-report printing code.
+Implement storing stack depot handles for alloc/free stack traces for
+slab objects for the tag-based KASAN modes in a ring buffer.
 
-This allows the reporting code to get access to the object information
-before starting printing the report. One of the following patches uses
-this information to determine the bug type with the tag-based modes.
+This ring buffer is referred to as the stack ring.
+
+On each alloc/free of a slab object, the tagged address of the object and
+the current stack trace are recorded in the stack ring.
+
+On each bug report, if the accessed address belongs to a slab object, the
+stack ring is scanned for matching entries. The newest entries are used to
+print the alloc/free stack traces in the report: one entry for alloc and
+one for free.
+
+The ring buffer is lock-free.
 
 Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+
 ---
- mm/kasan/kasan.h  |  2 ++
- mm/kasan/report.c | 21 +++++++++++++--------
- 2 files changed, 15 insertions(+), 8 deletions(-)
+
+The number of entries in the stack ring is fixed in this version of the
+patch. We could either implement it as a config option or a command-line
+argument. I tilt towards the latter option and will implement it in v2
+unless there are objections.
+---
+ mm/kasan/kasan.h       | 20 ++++++++++++++
+ mm/kasan/report_tags.c | 61 ++++++++++++++++++++++++++++++++++++++++++
+ mm/kasan/tags.c        | 30 +++++++++++++++++++++
+ 3 files changed, 111 insertions(+)
 
 diff --git a/mm/kasan/kasan.h b/mm/kasan/kasan.h
-index 0261d1530055..b9bd9f1656bf 100644
+index c51cea31ced0..da9a3c56ef4b 100644
 --- a/mm/kasan/kasan.h
 +++ b/mm/kasan/kasan.h
-@@ -156,6 +156,8 @@ struct kasan_report_info {
+@@ -2,6 +2,7 @@
+ #ifndef __MM_KASAN_KASAN_H
+ #define __MM_KASAN_KASAN_H
  
- 	/* Filled in by the common reporting code. */
- 	void *first_bad_addr;
-+	struct kmem_cache *cache;
-+	void *object;
- };
++#include <linux/atomic.h>
+ #include <linux/kasan.h>
+ #include <linux/kasan-tags.h>
+ #include <linux/kfence.h>
+@@ -227,6 +228,25 @@ struct kasan_free_meta {
  
- /* Do not change the struct layout: compiler ABI. */
-diff --git a/mm/kasan/report.c b/mm/kasan/report.c
-index 214ba7cb654c..a6b36eb4c33b 100644
---- a/mm/kasan/report.c
-+++ b/mm/kasan/report.c
-@@ -281,19 +281,16 @@ static inline bool init_task_stack_addr(const void *addr)
- 			sizeof(init_thread_union.stack));
- }
+ #endif /* CONFIG_KASAN_GENERIC */
  
--static void print_address_description(void *addr, u8 tag)
-+static void print_address_description(void *addr, u8 tag,
-+				      struct kasan_report_info *info)
- {
- 	struct page *page = addr_to_page(addr);
--	struct slab *slab = kasan_addr_to_slab(addr);
- 
- 	dump_stack_lvl(KERN_ERR);
- 	pr_err("\n");
- 
--	if (slab) {
--		struct kmem_cache *cache = slab->slab_cache;
--		void *object = nearest_obj(cache, slab,	addr);
--
--		describe_object(cache, object, addr, tag);
-+	if (info->cache && info->object) {
-+		describe_object(info->cache, info->object, addr, tag);
- 		pr_err("\n");
- 	}
- 
-@@ -400,7 +397,7 @@ static void print_report(struct kasan_report_info *info)
- 	pr_err("\n");
- 
- 	if (addr_has_metadata(addr)) {
--		print_address_description(addr, tag);
-+		print_address_description(addr, tag, info);
- 		print_memory_metadata(info->first_bad_addr);
- 	} else {
- 		dump_stack_lvl(KERN_ERR);
-@@ -410,12 +407,20 @@ static void print_report(struct kasan_report_info *info)
- static void complete_report_info(struct kasan_report_info *info)
- {
- 	void *addr = kasan_reset_tag(info->access_addr);
-+	struct slab *slab;
- 
- 	if (info->is_free)
- 		info->first_bad_addr = addr;
- 	else
- 		info->first_bad_addr = kasan_find_first_bad_addr(
- 					info->access_addr, info->access_size);
++#if defined(CONFIG_KASAN_SW_TAGS) || defined(CONFIG_KASAN_HW_TAGS)
 +
-+	slab = kasan_addr_to_slab(addr);
-+	if (slab) {
-+		info->cache = slab->slab_cache;
-+		info->object = nearest_obj(info->cache, slab, addr);
-+	} else
-+		info->cache = info->object = NULL;
++struct kasan_stack_ring_entry {
++	atomic64_t ptr;		/* void * */
++	atomic64_t size;	/* size_t */
++	atomic_t pid;		/* u32 */
++	atomic_t stack;		/* depot_stack_handle_t */
++	atomic_t is_free;	/* bool */
++};
++
++#define KASAN_STACK_RING_ENTRIES (32 << 10)
++
++struct kasan_stack_ring {
++	atomic64_t pos;
++	struct kasan_stack_ring_entry entries[KASAN_STACK_RING_ENTRIES];
++};
++
++#endif /* CONFIG_KASAN_SW_TAGS || CONFIG_KASAN_HW_TAGS */
++
+ #if IS_ENABLED(CONFIG_KASAN_KUNIT_TEST)
+ /* Used in KUnit-compatible KASAN tests. */
+ struct kunit_kasan_status {
+diff --git a/mm/kasan/report_tags.c b/mm/kasan/report_tags.c
+index 5cbac2cdb177..21911d1883d3 100644
+--- a/mm/kasan/report_tags.c
++++ b/mm/kasan/report_tags.c
+@@ -4,8 +4,12 @@
+  * Copyright (c) 2020 Google, Inc.
+  */
+ 
++#include <linux/atomic.h>
++
+ #include "kasan.h"
+ 
++extern struct kasan_stack_ring stack_ring;
++
+ static const char *get_bug_type(struct kasan_report_info *info)
+ {
+ 	/*
+@@ -24,5 +28,62 @@ static const char *get_bug_type(struct kasan_report_info *info)
+ 
+ void kasan_complete_mode_report_info(struct kasan_report_info *info)
+ {
++	u64 pos;
++	struct kasan_stack_ring_entry *entry;
++	void *object;
++	u32 pid;
++	depot_stack_handle_t stack;
++	bool is_free;
++	bool alloc_found = false, free_found = false;
++
+ 	info->bug_type = get_bug_type(info);
++
++	if (!info->cache || !info->object)
++		return;
++
++	pos = atomic64_read(&stack_ring.pos);
++
++	for (u64 i = pos - 1; i != pos - 1 - KASAN_STACK_RING_ENTRIES; i--) {
++		if (alloc_found && free_found)
++			break;
++
++		entry = &stack_ring.entries[i % KASAN_STACK_RING_ENTRIES];
++
++		/* Paired with atomic64_set_release() in save_stack_info(). */
++		object = (void *)atomic64_read_acquire(&entry->ptr);
++
++		if (kasan_reset_tag(object) != info->object ||
++		    get_tag(object) != get_tag(info->access_addr))
++			continue;
++
++		pid = atomic_read(&entry->pid);
++		stack = atomic_read(&entry->stack);
++		is_free = atomic_read(&entry->is_free);
++
++		/* Try detecting if the entry was changed while being read. */
++		smp_mb();
++		if (object != (void *)atomic64_read(&entry->ptr))
++			continue;
++
++		if (is_free) {
++			/*
++			 * Second free of the same object.
++			 * Give up on trying to find the alloc entry.
++			 */
++			if (free_found)
++				break;
++
++			info->free_track.pid = pid;
++			info->free_track.stack = stack;
++			free_found = true;
++		} else {
++			/* Second alloc of the same object. Give up. */
++			if (alloc_found)
++				break;
++
++			info->alloc_track.pid = pid;
++			info->alloc_track.stack = stack;
++			alloc_found = true;
++		}
++	}
+ }
+diff --git a/mm/kasan/tags.c b/mm/kasan/tags.c
+index 39a0481e5228..286011307695 100644
+--- a/mm/kasan/tags.c
++++ b/mm/kasan/tags.c
+@@ -6,6 +6,7 @@
+  * Copyright (c) 2020 Google, Inc.
+  */
+ 
++#include <linux/atomic.h>
+ #include <linux/init.h>
+ #include <linux/kasan.h>
+ #include <linux/kernel.h>
+@@ -16,11 +17,40 @@
+ #include <linux/types.h>
+ 
+ #include "kasan.h"
++#include "../slab.h"
++
++struct kasan_stack_ring stack_ring;
++
++void save_stack_info(struct kmem_cache *cache, void *object,
++			gfp_t flags, bool is_free)
++{
++	u64 pos;
++	struct kasan_stack_ring_entry *entry;
++	depot_stack_handle_t stack;
++
++	stack = kasan_save_stack(flags, true);
++
++	pos = atomic64_fetch_add(1, &stack_ring.pos);
++	entry = &stack_ring.entries[pos % KASAN_STACK_RING_ENTRIES];
++
++	atomic64_set(&entry->size, cache->object_size);
++	atomic_set(&entry->pid, current->pid);
++	atomic_set(&entry->stack, stack);
++	atomic_set(&entry->is_free, is_free);
++
++	/*
++	 * Paired with atomic64_read_acquire() in
++	 * kasan_complete_mode_report_info().
++	 */
++	atomic64_set_release(&entry->ptr, (s64)object);
++}
+ 
+ void kasan_save_alloc_info(struct kmem_cache *cache, void *object, gfp_t flags)
+ {
++	save_stack_info(cache, object, flags, false);
  }
  
- void kasan_report_invalid_free(void *ptr, unsigned long ip)
+ void kasan_save_free_info(struct kmem_cache *cache, void *object)
+ {
++	save_stack_info(cache, object, GFP_NOWAIT, true);
+ }
 -- 
 2.25.1
 
