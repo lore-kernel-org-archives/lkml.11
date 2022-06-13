@@ -2,111 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86314C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:31:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3BAAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:31:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229991AbiFMUbt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:31:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60248 "EHLO
+        id S230398AbiFMUbz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 16:31:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351417AbiFMUa4 (ORCPT
+        with ESMTP id S1351265AbiFMU34 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:30:56 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3901D10F
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:21:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655148093; x=1686684093;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=pVQTfp5IU2YdV+5jfNxCHCOaYYaOvPBvgBMV8BSutKI=;
-  b=k0sxJENowsNkKMkbUjmUO8CtSRDypwV5Zd0jWr8vClhr8GdwPBCFpVH2
-   hpZtp+ZGjIwXjvpWdq3l7iaQS1ZI/2PBJ0t4KHkoOvbEVict+i3MFw6+J
-   JVGHltfHPAY7k6aSgn3JD3GD17ZdPpZ17iyxSgn/fr6cOyuN4FgZyyTJC
-   iRMSnumf07l8hzyPOht/tcTxAhGEQl6uOiwXjrP5FmPXtGOyxsvW5L7jy
-   40bqOue+G8+f7x+YOyQr4sYHrgdABgeuO9XLQZ4hp2Fnoaa1XrIux+FTe
-   ddxdUPWf9jw8Xy+LNcHRC8HMk+sfhlzMb/oIWRZxutRV98UjcUyVqJQUL
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="340058361"
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="340058361"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 12:21:32 -0700
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="726419999"
-Received: from kyogendr-mobl.amr.corp.intel.com (HELO [10.212.95.68]) ([10.212.95.68])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 12:21:31 -0700
-Message-ID: <15ef4ec4-14ae-27fc-919d-b0933454455f@linux.intel.com>
-Date:   Mon, 13 Jun 2022 14:21:31 -0500
+        Mon, 13 Jun 2022 16:29:56 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FBD031906
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:20:05 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id p18so10443585lfr.1
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:20:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=N0O/0DmbRs+7MXOg+g7dkZYD+/tIewscyvV6ESK7mhQ=;
+        b=HOdkBVIWNqU056KIzOpAxtJ+hARPtbhKZh0UFqk2E42MCGc4NI0bbNvqot9YBdek/u
+         Aw3Ph3Cy725yYM58fI5EBjLaXvJ3IZA7sMs4+BRmmqE0M72v9SbnlbC8Djtl9NZNb8CU
+         H7xn5l0SUfo734b7nIBfFERs63lfF0xmfxBcgkMDR5XHhk1OpUfJdlbEbqovlOtM5bwf
+         703+UIJV5z9RrG9/Bi4GYdrekq9nxUWi4WJ77/+tLe180iF3OiNNIn/RGyj+dRjI2oiz
+         zU6XL7qBEOCef7JP8Y46wJZV9HCALTmVCCDqgkpsePw0O7mAQ4gHyYbPjTspGXPI7MHe
+         T/FA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=N0O/0DmbRs+7MXOg+g7dkZYD+/tIewscyvV6ESK7mhQ=;
+        b=jVl46d1RiX1b2AGiECUQm6OiDVtNAqduhtMfZcoWbuRCGA4NrphXgl8mhH4662Im21
+         dTbTpSKpPaL+uHrD5+EKkjCNx8Ysm8pNDHKe0RXUQbEVk040VUmJyK7Q94fQRhyzp8LM
+         H6lpy5h1I1oET9ljn0FwAm7WKfCB2Rv+m8h31nVfLFgM6OkOrCBHj+LZqZG2BRUp7pku
+         6ZfrssSK1I4Aha0P6ctbWF4+fhyrKRc2yl3Rbw5Lr/xM3z8wcTw9eQdl51cjbP1z6tB7
+         mG90zfWR0My6Vklo/pq80ukbBsCYPKl3CvN6kZuBVNG7Fnu6+Kn35G/dXCZCzkfTHsXR
+         M4nA==
+X-Gm-Message-State: AJIora+3yTJrm6DpEnC/ff3HdmuQ8tMXMeuFN0K8ghHqfcSD9H+bv1dS
+        QCyell+wR0mTaG0z5EIkveu0S8WdfBSpBYIid26GUydGc67x
+X-Google-Smtp-Source: AGRyM1slaJnALPt1IdrnDQHmZ2dLpXWUN5aXU49HeMYiktjUgFM+PsAcD+NIJ/T25pitBW8x0Gqc0SCI0hzcZ0fBI0A=
+X-Received: by 2002:a05:6512:524:b0:479:898:fd3c with SMTP id
+ o4-20020a056512052400b004790898fd3cmr773787lfc.252.1655148003935; Mon, 13 Jun
+ 2022 12:20:03 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.9.1
-Subject: Re: [PATCH 1/2] soundwire: intel: uniquify debug message
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     alsa-devel@alsa-project.org, vinod.koul@linaro.org, tiwai@suse.de,
-        linux-kernel@vger.kernel.org, vkoul@kernel.org, broonie@kernel.org,
-        srinivas.kandagatla@linaro.org, sanyog.r.kale@intel.com,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        bard.liao@intel.com
-References: <20220610023537.27223-1-yung-chuan.liao@linux.intel.com>
- <20220610023537.27223-2-yung-chuan.liao@linux.intel.com>
- <YqLVwqx9/Pos8T06@kroah.com>
- <b86e6cbd-3488-a239-d765-cf01bf0d4f70@linux.intel.com>
- <YqRCKtLGYlRQQ+DU@kroah.com>
- <7328fbb2-06af-99c8-5e7f-9d22f8c4e4f6@linux.intel.com>
- <YqdyErIYYk85NV41@kroah.com>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <YqdyErIYYk85NV41@kroah.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220610233513.1798771-1-samitolvanen@google.com>
+ <20220610233513.1798771-17-samitolvanen@google.com> <CAKwvOdm1Abmu+NQ82ZLgX3O5g4vYPni23A9c4FJ+xeSYVwPtJw@mail.gmail.com>
+In-Reply-To: <CAKwvOdm1Abmu+NQ82ZLgX3O5g4vYPni23A9c4FJ+xeSYVwPtJw@mail.gmail.com>
+From:   Bill Wendling <morbo@google.com>
+Date:   Mon, 13 Jun 2022 12:19:52 -0700
+Message-ID: <CAGG=3QUt0mCA_Db93kuNkEMFGvO9AJUA4h9wxnVxvUn2Q1Mvqw@mail.gmail.com>
+Subject: Re: [RFC PATCH v3 16/20] kallsyms: Drop CONFIG_CFI_CLANG workarounds
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Sami Tolvanen <samitolvanen@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Joao Moreira <joao@overdrivepizza.com>,
+        Sedat Dilek <sedat.dilek@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-hardening@vger.kernel.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        clang-built-linux <llvm@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Jun 10, 2022 at 4:40 PM Nick Desaulniers
+<ndesaulniers@google.com> wrote:
+>
+> On Fri, Jun 10, 2022 at 4:35 PM Sami Tolvanen <samitolvanen@google.com> wrote:
+> >
+> > With -fsanitize=kcfi, the compiler no longer renames static
+> > functions with CONFIG_CFI_CLANG + ThinLTO. Drop the code that cleans
+> > up the ThinLTO hash from the function names.
+>
+> Good riddance!
+> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+>
+Much clapping!
 
->>>>>> @@ -1549,8 +1549,8 @@ static int __maybe_unused intel_pm_prepare(struct device *dev)
->>>>>>  	int ret;
->>>>>>  
->>>>>>  	if (bus->prop.hw_disabled || !sdw->startup_done) {
->>>>>> -		dev_dbg(dev, "SoundWire master %d is disabled or not-started, ignoring\n",
->>>>>> -			bus->link_id);
->>>>>> +		dev_dbg(dev, "%s: SoundWire master %d is disabled or not-started, ignoring\n",
->>>>>> +			__func__, bus->link_id);
->>>>>
->>>>> Not needed, it is provided automatically if you ask the kernel for this.
->>>>> Same for all other instances in this patch.
->>>>
->>>> provided how? Your comment is a bit cryptic here.
->>>
->>> the dynamic debug code in the kernel already adds the function name
->>> where the message was sent from, if you want to know this in userspace.
->>> Please read the documentation for details (I think the key is the 'f'
->>> flag to be enabled in userspace).
->>>
->>> So adding __func__ to dev_dbg() calls are redundant and never needed.
->>
->> Oh wow, I had no idea - and I am not the only one :-)
->>
->> Here's what I get with a grep on the kernel code
->>
->> git grep __func__ | grep dev_dbg | wc -l
->>
->> 3122
->>
->>
->> Doing this for sound/ gives me 356, and that's for single-line logs only.
->>
->> There's clearly something that was missed by tons of people.
-> 
-> Yes, it's not commonly known so cleanups are always welcome.  Perhaps
-> some of those usages predate the feature being added as well.
+-bw
 
-Yep, looks like no one in our team knew about this. We've changed our
-scripts and I started cleaning this up, changes will be posted upstream
-soon.
-
-https://github.com/thesofproject/linux/pull/3695
-
-This patch will be reverted in our tree, completely unnecessary indeed.
+> >
+> > Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
+> > ---
+> >  kernel/kallsyms.c | 17 -----------------
+> >  1 file changed, 17 deletions(-)
+> >
+> > diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
+> > index fbdf8d3279ac..2fbb94817e02 100644
+> > --- a/kernel/kallsyms.c
+> > +++ b/kernel/kallsyms.c
+> > @@ -179,7 +179,6 @@ static bool cleanup_symbol_name(char *s)
+> >          * character in an identifier in C. Suffixes observed:
+> >          * - foo.llvm.[0-9a-f]+
+> >          * - foo.[0-9a-f]+
+> > -        * - foo.[0-9a-f]+.cfi_jt
+> >          */
+> >         res = strchr(s, '.');
+> >         if (res) {
+> > @@ -187,22 +186,6 @@ static bool cleanup_symbol_name(char *s)
+> >                 return true;
+> >         }
+> >
+> > -       if (!IS_ENABLED(CONFIG_CFI_CLANG) ||
+> > -           !IS_ENABLED(CONFIG_LTO_CLANG_THIN) ||
+> > -           CONFIG_CLANG_VERSION >= 130000)
+> > -               return false;
+> > -
+> > -       /*
+> > -        * Prior to LLVM 13, the following suffixes were observed when thinLTO
+> > -        * and CFI are both enabled:
+> > -        * - foo$[0-9]+
+> > -        */
+> > -       res = strrchr(s, '$');
+> > -       if (res) {
+> > -               *res = '\0';
+> > -               return true;
+> > -       }
+> > -
+> >         return false;
+> >  }
+> >
+> > --
+> > 2.36.1.476.g0c4daa206d-goog
+> >
+>
+>
+> --
+> Thanks,
+> ~Nick Desaulniers
