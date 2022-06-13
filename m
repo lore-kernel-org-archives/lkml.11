@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DD53C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:41:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2642C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:41:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378356AbiFMNlG (ORCPT
+        id S1378385AbiFMNlP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:41:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58538 "EHLO
+        Mon, 13 Jun 2022 09:41:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378634AbiFMNjG (ORCPT
+        with ESMTP id S1378657AbiFMNjH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:39:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC6767891A;
-        Mon, 13 Jun 2022 04:27:46 -0700 (PDT)
+        Mon, 13 Jun 2022 09:39:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D6B278929;
+        Mon, 13 Jun 2022 04:27:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 55FB3B80EA8;
-        Mon, 13 Jun 2022 11:27:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7C4AC3411C;
-        Mon, 13 Jun 2022 11:27:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DBAE60B6E;
+        Mon, 13 Jun 2022 11:27:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7970CC34114;
+        Mon, 13 Jun 2022 11:27:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119664;
-        bh=5KK2CwmryHRpgwOVonR+RYx+OZFduKmyzbH94Fe4iJ0=;
+        s=korg; t=1655119666;
+        bh=OW9TanCI/TQSFzGgkQDobyBKng33JAZMRBLKjnfSQd8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bAnGkDh0Q+X4C4Rbd/+Eb8HJCjnSR/bhvupe3KLfHlln8ABbU75kd67/m7tF5WHqo
-         ZHX8oKdmVuUmgTtSjDdnziShuoxLv4ujgWKEhAdTtETRurENJZCtRJNjuqIyEQy2mN
-         DXgCGihDVN8bQSVmMw+EP5uT9EvvhdfIonQfVj24=
+        b=KFpPWvI7Rw7eU2Qe9BlgngZaAFscWn0kXR0GxXykl3R+y2Dl8sewBvVnVQ/7ft7cj
+         q9sBtDxb8mqg/Wq41VteAnV/IrXnMviSyn15JCekrDk/OFJuaGsuWq1E+a/JoSzy3b
+         g9TT3W/otgw5UQVzbFUhTdeShMk7gVslSunx5tmE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        "kernelci.org bot" <bot@kernelci.org>,
+        stable@vger.kernel.org, Siddharth Vadapalli <s-vadapalli@ti.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 064/339] Revert "serial: 8250_mtk: Make sure to select the right FEATURE_SEL"
-Date:   Mon, 13 Jun 2022 12:08:09 +0200
-Message-Id: <20220613094928.464950203@linuxfoundation.org>
+Subject: [PATCH 5.18 088/339] net: ethernet: ti: am65-cpsw: Fix fwnode passed to phylink_create()
+Date:   Mon, 13 Jun 2022 12:08:33 +0200
+Message-Id: <20220613094929.185381069@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -52,52 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+From: Siddharth Vadapalli <s-vadapalli@ti.com>
 
-[ Upstream commit f0136f65285bcfb7e8f90d1013723076a35acd51 ]
+[ Upstream commit 0b7180072a9df5e18af5b58410fec38230848a8d ]
 
-It was found that some MediaTek SoCs are incompatible with this
-change. Also, this register was mistakenly understood as it was
-related to the 16550A register layout selection but, at least
-on some IPs, if not all, it's related to something else unknown.
+am65-cpsw-nuss driver incorrectly uses fwnode member of common
+ethernet device's "struct device_node" instead of using fwnode
+member of the port's "struct device_node" in phylink_create().
+This results in all ports having the same phy data when there
+are multiple ports with their phy properties populated in their
+respective nodes rather than the common ethernet device node.
 
-This reverts commit 6f81fdded0d024c7d4084d434764f30bca1cd6b1.
+Fix it here by using fwnode member of the port's node.
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Fixes: 6f81fdded0d0 ("serial: 8250_mtk: Make sure to select the right FEATURE_SEL")
-Reported-by: "kernelci.org bot" <bot@kernelci.org>
-Link: https://lore.kernel.org/r/20220510122620.150342-1-angelogioacchino.delregno@collabora.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: e8609e69470f ("net: ethernet: ti: am65-cpsw: Convert to PHYLINK")
+Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
+Link: https://lore.kernel.org/r/20220524062558.19296-1-s-vadapalli@ti.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_mtk.c | 7 -------
- 1 file changed, 7 deletions(-)
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-index 21053db93ff1..54051ec7b499 100644
---- a/drivers/tty/serial/8250/8250_mtk.c
-+++ b/drivers/tty/serial/8250/8250_mtk.c
-@@ -54,9 +54,6 @@
- #define MTK_UART_TX_TRIGGER	1
- #define MTK_UART_RX_TRIGGER	MTK_UART_RX_SIZE
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+index d2747e9db286..98969070ed4b 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
++++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+@@ -9,6 +9,7 @@
+ #include <linux/etherdevice.h>
+ #include <linux/if_vlan.h>
+ #include <linux/interrupt.h>
++#include <linux/irqdomain.h>
+ #include <linux/kernel.h>
+ #include <linux/kmemleak.h>
+ #include <linux/module.h>
+@@ -1989,7 +1990,9 @@ am65_cpsw_nuss_init_port_ndev(struct am65_cpsw_common *common, u32 port_idx)
  
--#define MTK_UART_FEATURE_SEL	39	/* Feature Selection register */
--#define MTK_UART_FEAT_NEWRMAP	BIT(0)	/* Use new register map */
--
- #define MTK_UART_XON1		40	/* I/O: Xon character 1 */
- #define MTK_UART_XOFF1		42	/* I/O: Xoff character 1 */
+ 	phy_interface_set_rgmii(port->slave.phylink_config.supported_interfaces);
  
-@@ -575,10 +572,6 @@ static int mtk8250_probe(struct platform_device *pdev)
- 		uart.dma = data->dma;
- #endif
- 
--	/* Set AP UART new register map */
--	writel(MTK_UART_FEAT_NEWRMAP, uart.port.membase +
--	       (MTK_UART_FEATURE_SEL << uart.port.regshift));
--
- 	/* Disable Rate Fix function */
- 	writel(0x0, uart.port.membase +
- 			(MTK_UART_RATE_FIX << uart.port.regshift));
+-	phylink = phylink_create(&port->slave.phylink_config, dev->fwnode, port->slave.phy_if,
++	phylink = phylink_create(&port->slave.phylink_config,
++				 of_node_to_fwnode(port->slave.phy_node),
++				 port->slave.phy_if,
+ 				 &am65_cpsw_phylink_mac_ops);
+ 	if (IS_ERR(phylink))
+ 		return PTR_ERR(phylink);
 -- 
 2.35.1
 
