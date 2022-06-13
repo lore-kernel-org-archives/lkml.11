@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EC58C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:57:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD329CCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:57:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356717AbiFMM5Q (ORCPT
+        id S1353676AbiFMMzf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:57:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49926 "EHLO
+        Mon, 13 Jun 2022 08:55:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357676AbiFMMyj (ORCPT
+        with ESMTP id S1356316AbiFMMyA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:54:39 -0400
+        Mon, 13 Jun 2022 08:54:00 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A04A663FE;
-        Mon, 13 Jun 2022 04:13:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2663C3F32E;
+        Mon, 13 Jun 2022 04:12:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4FADB60B6B;
-        Mon, 13 Jun 2022 11:13:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62D7FC385A5;
-        Mon, 13 Jun 2022 11:13:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 93C1860B76;
+        Mon, 13 Jun 2022 11:12:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4A02C34114;
+        Mon, 13 Jun 2022 11:12:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118793;
-        bh=4vviVn1+C2VUpSO971tgRUItAVlhTOzZO6vrIeqv1ME=;
+        s=korg; t=1655118763;
+        bh=H9Mml7Wvm3lhnTaVOjmzCox/xg4okfnoDXKTBsKkDo0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l86CBaqZKtXo9mPSL8EmZg8oQYq4OUVaUKvmop510D/T340DOwy3VMKKKjvoQXM7Q
-         Ag7xW2fsbhVYQw4dvpCK0vD+jc6aqEQ32R8rzDSqov45kY2AMGYKEbeEn+zwxIPI6m
-         C6V+BxEYh+UkcFG5HNj0YDOSYZ+nEOy866yyIWgs=
+        b=Rc4RFm1AdL/IeQn1iXWkkj77dFjWnhmDzAvhycJDADc0+yGWzC15kUY8dPSqNsvS7
+         aDdIvnhhriP2PRsuQoypN2RBhbdrhX0nXYzUw9FRYmpLaFh67zYEXp56DbQTf4I4g2
+         LTot5xqNoKLWXlivVUv+8pIx0YSAzJmKM5QvVH7A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Cixi Geng <cixi.geng1@unisoc.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Kees Cook <keescook@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 030/247] iio: adc: sc27xx: fix read big scale voltage not right
-Date:   Mon, 13 Jun 2022 12:08:52 +0200
-Message-Id: <20220613094923.850639169@linuxfoundation.org>
+Subject: [PATCH 5.15 004/247] lkdtm/bugs: Check for the NULL pointer after calling kmalloc
+Date:   Mon, 13 Jun 2022 12:08:26 +0200
+Message-Id: <20220613094923.032482667@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -51,38 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cixi Geng <cixi.geng1@unisoc.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit ad930a75613282400179361e220e58b87386b8c7 ]
+[ Upstream commit 4a9800c81d2f34afb66b4b42e0330ae8298019a2 ]
 
-Fix wrong configuration value of SC27XX_ADC_SCALE_MASK and
-SC27XX_ADC_SCALE_SHIFT by spec documetation.
+As the possible failure of the kmalloc(), the not_checked and checked
+could be NULL pointer.
+Therefore, it should be better to check it in order to avoid the
+dereference of the NULL pointer.
+Also, we need to kfree the 'not_checked' and 'checked' to avoid
+the memory leak if fails.
+And since it is just a test, it may directly return without error
+number.
 
-Fixes: 5df362a6cf49c (iio: adc: Add Spreadtrum SC27XX PMICs ADC support)
-Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
-Reviewed-by: Baolin Wang <baolin.wang7@gmail.com>
-Link: https://lore.kernel.org/r/20220419142458.884933-3-gengcixi@gmail.com
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Fixes: ae2e1aad3e48 ("drivers/misc/lkdtm/bugs.c: add arithmetic overflow and array bounds checks")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Acked-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220120092936.1874264-1-jiasheng@iscas.ac.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/sc27xx_adc.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/misc/lkdtm/bugs.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
-index 00098caf6d9e..aee076c8e2b1 100644
---- a/drivers/iio/adc/sc27xx_adc.c
-+++ b/drivers/iio/adc/sc27xx_adc.c
-@@ -36,8 +36,8 @@
+diff --git a/drivers/misc/lkdtm/bugs.c b/drivers/misc/lkdtm/bugs.c
+index 4282b625200f..072e3b742edf 100644
+--- a/drivers/misc/lkdtm/bugs.c
++++ b/drivers/misc/lkdtm/bugs.c
+@@ -248,6 +248,11 @@ void lkdtm_ARRAY_BOUNDS(void)
  
- /* Bits and mask definition for SC27XX_ADC_CH_CFG register */
- #define SC27XX_ADC_CHN_ID_MASK		GENMASK(4, 0)
--#define SC27XX_ADC_SCALE_MASK		GENMASK(10, 8)
--#define SC27XX_ADC_SCALE_SHIFT		8
-+#define SC27XX_ADC_SCALE_MASK		GENMASK(10, 9)
-+#define SC27XX_ADC_SCALE_SHIFT		9
+ 	not_checked = kmalloc(sizeof(*not_checked) * 2, GFP_KERNEL);
+ 	checked = kmalloc(sizeof(*checked) * 2, GFP_KERNEL);
++	if (!not_checked || !checked) {
++		kfree(not_checked);
++		kfree(checked);
++		return;
++	}
  
- /* Bits definitions for SC27XX_ADC_INT_EN registers */
- #define SC27XX_ADC_IRQ_EN		BIT(0)
+ 	pr_info("Array access within bounds ...\n");
+ 	/* For both, touch all bytes in the actual member size. */
 -- 
 2.35.1
 
