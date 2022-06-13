@@ -2,87 +2,224 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B625AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:37:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 476FAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:37:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346422AbiFMKhQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:37:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46306 "EHLO
+        id S232763AbiFMKhc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:37:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345601AbiFMKgL (ORCPT
+        with ESMTP id S1345609AbiFMKgL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 06:36:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDB7CE0BC;
-        Mon, 13 Jun 2022 03:22:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9FFA6B80E5E;
-        Mon, 13 Jun 2022 10:22:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12D9AC3411E;
-        Mon, 13 Jun 2022 10:22:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115756;
-        bh=l+X116IPdIcDhimPMpbxyK/QJ3o3fL8KICaWCEnn5fo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FTFmuS4a4zB9HyXA/79OOvDs7n1P6zDn7VDmTJhDBfdKXqr0hahzcMuFq7ETDMele
-         nNDSeVRjy1jazo6Cn4iqQ37fbQq9aIKLV7NNh5s9KU0GDXA0hNb8lXT9vkY6eEtr8j
-         Ep6/KTB+nCjPfS9TwLQyFSp0dDBqAR+kVD0PseE8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 020/218] scsi: megaraid: Fix error check return value of register_chrdev()
-Date:   Mon, 13 Jun 2022 12:07:58 +0200
-Message-Id: <20220613094913.090196163@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82BFFD120;
+        Mon, 13 Jun 2022 03:22:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1655115759; x=1686651759;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=P0C/r7CssKx3hxTC9MeZV3WMMnfycujIR/DSLZoMRu0=;
+  b=KF7yZMupSOYh5fZOi/zqLwH4/BN1Lvq3IPhw76WxgsYziqwVJwuwoShM
+   b+nciewxoCWsGKtGXc8a0o9DqrdHEB54cocAeCWump1qnkmrtWJ7pPdvn
+   K2ytvBrt1gfCbTiKi25fHmdkFvKvTWOUVTO0fTS62w4u4YFqP5+wKY6b1
+   A=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 13 Jun 2022 03:22:37 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 03:22:37 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 13 Jun 2022 03:22:37 -0700
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 13 Jun 2022 03:22:32 -0700
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <quic_rohkumar@quicinc.com>, <srinivas.kandagatla@linaro.org>,
+        <dianders@chromium.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
+Subject: [PATCH v13 01/12] arm64: dts: qcom: sc7280: Add nodes for soundwire and va tx rx digital macro codecs
+Date:   Mon, 13 Jun 2022 15:52:02 +0530
+Message-ID: <1655115733-16309-2-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1655115733-16309-1-git-send-email-quic_srivasam@quicinc.com>
+References: <1655115733-16309-1-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+SC7280 has VA, TX and RX macros with SoundWire Controllers to attach with
+external codecs using soundwire masters. Add these nodes for sc7280 based
+platforms audio use case.
 
-[ Upstream commit c5acd61dbb32b6bda0f3a354108f2b8dcb788985 ]
-
-If major equals 0, register_chrdev() returns an error code when it fails.
-This function dynamically allocates a major and returns its number on
-success, so we should use "< 0" to check it instead of "!".
-
-Link: https://lore.kernel.org/r/20220418105755.2558828-1-lv.ruyi@zte.com.cn
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
 ---
- drivers/scsi/megaraid.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/qcom/sc7280.dtsi | 128 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 128 insertions(+)
 
-diff --git a/drivers/scsi/megaraid.c b/drivers/scsi/megaraid.c
-index f5c09bbf9374..eed6d45b8025 100644
---- a/drivers/scsi/megaraid.c
-+++ b/drivers/scsi/megaraid.c
-@@ -4707,7 +4707,7 @@ static int __init megaraid_init(void)
- 	 * major number allocation.
- 	 */
- 	major = register_chrdev(0, "megadev_legacy", &megadev_fops);
--	if (!major) {
-+	if (major < 0) {
- 		printk(KERN_WARNING
- 				"megaraid: failed to register char device\n");
- 	}
+diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+index b14134a..e5f6b50 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+@@ -2176,6 +2176,114 @@
+ 			#clock-cells = <1>;
+ 		};
+ 
++		lpass_rx_macro: codec@3200000 {
++			compatible = "qcom,sc7280-lpass-rx-macro";
++			reg = <0 0x03200000 0 0x1000>;
++
++			pinctrl-names = "default";
++			pinctrl-0 = <&lpass_rx_swr_clk>, <&lpass_rx_swr_data>;
++
++			clocks = <&lpass_aon LPASS_AON_CC_TX_MCLK_CLK>,
++				 <&lpass_aon LPASS_AON_CC_TX_MCLK_2X_CLK>,
++				 <&lpass_va_macro>;
++			clock-names = "mclk", "npl", "fsgen";
++
++			power-domains = <&lpass_hm LPASS_CORE_CC_LPASS_CORE_HM_GDSC>,
++					<&lpass_aon LPASS_AON_CC_LPASS_AUDIO_HM_GDSC>;
++			power-domain-names = "macro", "dcodec";
++
++			#clock-cells = <0>;
++			#sound-dai-cells = <1>;
++
++			status = "disabled";
++		};
++
++		swr0: soundwire@3210000 {
++			compatible = "qcom,soundwire-v1.6.0";
++			reg = <0 0x03210000 0 0x2000>;
++
++			interrupts = <GIC_SPI 155 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&lpass_rx_macro>;
++			clock-names = "iface";
++
++			qcom,din-ports = <0>;
++			qcom,dout-ports = <5>;
++
++			resets = <&lpass_audiocc LPASS_AUDIO_SWR_RX_CGCR>;
++			reset-names = "swr_audio_cgcr";
++
++			qcom,ports-word-length =	/bits/ 8 <0x01 0x07 0x04 0xff 0xff>;
++			qcom,ports-sinterval-low =	/bits/ 8 <0x03 0x3f 0x1f 0x03 0x03>;
++			qcom,ports-offset1 =		/bits/ 8 <0x00 0x00 0x0b 0x01 0x01>;
++			qcom,ports-offset2 =		/bits/ 8 <0x00 0x00 0x0b 0x00 0x00>;
++			qcom,ports-lane-control =	/bits/ 8 <0x01 0x00 0x00 0x00 0x00>;
++			qcom,ports-block-pack-mode =	/bits/ 8 <0xff 0x00 0x01 0xff 0xff>;
++			qcom,ports-hstart =		/bits/ 8 <0xff 0x03 0xff 0xff 0xff>;
++			qcom,ports-hstop =		/bits/ 8 <0xff 0x06 0xff 0xff 0xff>;
++			qcom,ports-block-group-count =	/bits/ 8 <0xff 0xff 0xff 0xff 0x00>;
++
++			#sound-dai-cells = <1>;
++			#address-cells = <2>;
++			#size-cells = <0>;
++
++			status = "disabled";
++		};
++
++		lpass_tx_macro: codec@3220000 {
++			compatible = "qcom,sc7280-lpass-tx-macro";
++			reg = <0 0x03220000 0 0x1000>;
++
++			pinctrl-names = "default";
++			pinctrl-0 = <&lpass_tx_swr_clk>, <&lpass_tx_swr_data>;
++
++			clocks = <&lpass_aon LPASS_AON_CC_TX_MCLK_CLK>,
++				 <&lpass_aon LPASS_AON_CC_TX_MCLK_2X_CLK>,
++				 <&lpass_va_macro>;
++			clock-names = "mclk", "npl", "fsgen";
++
++			power-domains = <&lpass_hm LPASS_CORE_CC_LPASS_CORE_HM_GDSC>,
++					<&lpass_aon LPASS_AON_CC_LPASS_AUDIO_HM_GDSC>;
++			power-domain-names = "macro", "dcodec";
++
++			#clock-cells = <0>;
++			#sound-dai-cells = <1>;
++
++			status = "disabled";
++		};
++
++		swr1: soundwire@3230000 {
++			compatible = "qcom,soundwire-v1.6.0";
++			reg = <0 0x03230000 0 0x2000>;
++
++			interrupts-extended = <&intc GIC_SPI 496 IRQ_TYPE_LEVEL_HIGH>,
++					      <&pdc 130 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&lpass_tx_macro>;
++			clock-names = "iface";
++
++			qcom,din-ports = <3>;
++			qcom,dout-ports = <0>;
++
++			resets = <&lpass_audiocc LPASS_AUDIO_SWR_TX_CGCR>;
++			reset-names = "swr_audio_cgcr";
++
++			qcom,ports-sinterval-low =	/bits/ 8 <0x01 0x03 0x03>;
++			qcom,ports-offset1 =		/bits/ 8 <0x01 0x00 0x02>;
++			qcom,ports-offset2 =		/bits/ 8 <0x00 0x00 0x00>;
++			qcom,ports-hstart =		/bits/ 8 <0xff 0xff 0xff>;
++			qcom,ports-hstop =		/bits/ 8 <0xff 0xff 0xff>;
++			qcom,ports-word-length =	/bits/ 8 <0xff 0x00 0xff>;
++			qcom,ports-block-pack-mode =	/bits/ 8 <0xff 0xff 0xff>;
++			qcom,ports-block-group-count =	/bits/ 8 <0xff 0xff 0xff>;
++			qcom,ports-lane-control =	/bits/ 8 <0x00 0x01 0x00>;
++			qcom,port-offset = <1>;
++
++			#sound-dai-cells = <1>;
++			#address-cells = <2>;
++			#size-cells = <0>;
++
++			status = "disabled";
++		};
++
+ 		lpass_audiocc: clock-controller@3300000 {
+ 			compatible = "qcom,sc7280-lpassaudiocc";
+ 			reg = <0 0x03300000 0 0x30000>;
+@@ -2187,6 +2295,26 @@
+ 			#power-domain-cells = <1>;
+ 		};
+ 
++		lpass_va_macro: codec@3370000 {
++			compatible = "qcom,sc7280-lpass-va-macro";
++			reg = <0 0x03370000 0 0x1000>;
++
++			pinctrl-names = "default";
++			pinctrl-0 = <&lpass_dmic01_clk>, <&lpass_dmic01_data>;
++
++			clocks = <&lpass_aon LPASS_AON_CC_TX_MCLK_CLK>;
++			clock-names = "mclk";
++
++			power-domains = <&lpass_hm LPASS_CORE_CC_LPASS_CORE_HM_GDSC>,
++					<&lpass_aon LPASS_AON_CC_LPASS_AUDIO_HM_GDSC>;
++			power-domain-names = "macro", "dcodec";
++
++			#clock-cells = <0>;
++			#sound-dai-cells = <1>;
++
++			status = "disabled";
++		};
++
+ 		lpass_aon: clock-controller@3380000 {
+ 			compatible = "qcom,sc7280-lpassaoncc";
+ 			reg = <0 0x03380000 0 0x30000>;
 -- 
-2.35.1
-
-
+2.7.4
 
