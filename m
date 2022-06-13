@@ -2,105 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB1D2C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA95EC43334
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:55:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356945AbiFMLxP (ORCPT
+        id S1357213AbiFMLx0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:53:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44958 "EHLO
+        Mon, 13 Jun 2022 07:53:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356404AbiFMLtC (ORCPT
+        with ESMTP id S1356408AbiFMLtC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:49:02 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24547240B8;
-        Mon, 13 Jun 2022 03:53:04 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 1C97B1F8AB;
-        Mon, 13 Jun 2022 10:53:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1655117583; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XqTpxE8yxYYRD/ZdpkztnOS2u2fkB5g/9Dmp+zple7w=;
-        b=SUSZ8nM3O4EyRpbT5YkFU0clddDZEOrRDp7kMrJTnNsatDMQYu6Jdf8atSklUx8PMJvjok
-        ZZmOd5Fylbz2Vn7bGUmt1/2cci8ItL0gMon9ieGf8p1zgynEt4q/fFHToDQdxk+aAgUN4P
-        zzOJ/CkyJqeWhUedpVtWXdeiXDyxqBE=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1655117583;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XqTpxE8yxYYRD/ZdpkztnOS2u2fkB5g/9Dmp+zple7w=;
-        b=86VBSlEwzD3hC55rA05ME4jXwgF4tz+a4fJiTsnx25nzTsv9kQ8GiUfY1EZyIuzDNwksJK
-        mTvFTSRvEvEBr6CA==
-Received: from quack3.suse.cz (unknown [10.163.28.18])
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C77C4C429;
+        Mon, 13 Jun 2022 03:53:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 095632C141;
-        Mon, 13 Jun 2022 10:53:03 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id A3C1CA0634; Mon, 13 Jun 2022 12:53:02 +0200 (CEST)
-Date:   Mon, 13 Jun 2022 12:53:02 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.com>,
-        Dave Kleikamp <shaggy@kernel.org>,
-        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
-        linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jfs-discussion@lists.sourceforge.net,
-        ntfs3@lists.linux.dev
-Subject: Re: [PATCH 5/6] fs: don't call ->writepage from __mpage_writepage
-Message-ID: <20220613105302.pmtqxjbfwmtzkgjh@quack3.lan>
-References: <20220613053715.2394147-1-hch@lst.de>
- <20220613053715.2394147-6-hch@lst.de>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 085F461257;
+        Mon, 13 Jun 2022 10:53:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1952AC3411E;
+        Mon, 13 Jun 2022 10:53:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655117585;
+        bh=H1M60+BrT2ByOxv5b0kmC68kUF0xPfhVc/90+HkxAfA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=malUd19eGahSWj5RhYga+Q8uFQzi2r3Yc3yoQxp14iIdR6dSeYDNdkjZhirIy/win
+         La/yrYh5lEwnUf8KnLNSbC9jpv+fg24aHcnn/FeYbWzQ3eqexI2IXl6hifb0SoFa0Z
+         CBau6JFhBRAnFyK6NYS4NA1ss809S7650LtbChCE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 066/287] drm/vc4: txp: Force alpha to be 0xff if its disabled
+Date:   Mon, 13 Jun 2022 12:08:10 +0200
+Message-Id: <20220613094925.872116733@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
+References: <20220613094923.832156175@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220613053715.2394147-6-hch@lst.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 13-06-22 07:37:14, Christoph Hellwig wrote:
-> All callers of mpage_writepage use block_write_full_page as their
-> ->writepage implementation when called from mpage_writepages
-> (although for ntfs3 this is obsfucated a bit).
-> 
-> Just call block_write_full_page directly instead of going through
-> the ->writepage indirection.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+From: Maxime Ripard <maxime@cerno.tech>
 
-Yeah, ntfs3 is not completely obvious but I agree we should not get to the
-non-trivial case of ntfs_writepage() from mpage_writepages() now. Feel free
-to add:
+[ Upstream commit 5453343a88ede8b12812fced81ecd24cb888ccc3 ]
 
-Reviewed-by: Jan Kara <jack@suse.cz>
+If we use a format that has padding instead of the alpha component (such
+as XRGB8888), it appears that the Transposer will fill the padding to 0,
+disregarding what was stored in the input buffer padding.
 
-								Honza
+This leads to issues with IGT, since it will set the padding to 0xff,
+but will then compare the CRC of the two frames which will thus fail.
+Another nice side effect is that it is now possible to just use the
+buffer as ARGB.
 
-> ---
->  fs/mpage.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/fs/mpage.c b/fs/mpage.c
-> index 31a97a0acf5f5..a354ef2b4b4eb 100644
-> --- a/fs/mpage.c
-> +++ b/fs/mpage.c
-> @@ -624,7 +624,7 @@ static int __mpage_writepage(struct page *page, struct writeback_control *wbc,
->  	/*
->  	 * The caller has a ref on the inode, so *mapping is stable
->  	 */
-> -	ret = mapping->a_ops->writepage(page, wbc);
-> +	ret = block_write_full_page(page, mpd->get_block, wbc);
->  	mapping_set_error(mapping, ret);
->  out:
->  	mpd->bio = bio;
-> -- 
-> 2.30.2
-> 
+Fixes: 008095e065a8 ("drm/vc4: Add support for the transposer block")
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
+Link: https://lore.kernel.org/r/20220328153659.2382206-4-maxime@cerno.tech
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/vc4/vc4_txp.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/gpu/drm/vc4/vc4_txp.c b/drivers/gpu/drm/vc4/vc4_txp.c
+index 9b7810c3dd65..3b56558a5d65 100644
+--- a/drivers/gpu/drm/vc4/vc4_txp.c
++++ b/drivers/gpu/drm/vc4/vc4_txp.c
+@@ -317,6 +317,12 @@ static void vc4_txp_connector_atomic_commit(struct drm_connector *conn,
+ 
+ 	if (fb->format->has_alpha)
+ 		ctrl |= TXP_ALPHA_ENABLE;
++	else
++		/*
++		 * If TXP_ALPHA_ENABLE isn't set and TXP_ALPHA_INVERT is, the
++		 * hardware will force the output padding to be 0xff.
++		 */
++		ctrl |= TXP_ALPHA_INVERT;
+ 
+ 	gem = drm_fb_cma_get_gem_obj(fb, 0);
+ 	TXP_WRITE(TXP_DST_PTR, gem->paddr + fb->offsets[0]);
 -- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+2.35.1
+
+
+
