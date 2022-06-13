@@ -2,79 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49A6BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:42:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E835C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:42:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231321AbiFMRls (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 13:41:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48194 "EHLO
+        id S242320AbiFMRmB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 13:42:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348062AbiFMRkx (ORCPT
+        with ESMTP id S1343712AbiFMRkB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 13:40:53 -0400
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E85839800;
-        Mon, 13 Jun 2022 06:10:53 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R851e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VGHIWD._1655125849;
-Received: from localhost(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0VGHIWD._1655125849)
-          by smtp.aliyun-inc.com;
-          Mon, 13 Jun 2022 21:10:50 +0800
-From:   Xianting Tian <xianting.tian@linux.alibaba.com>
-To:     akpm@linux-foundation.org, vbabka@suse.cz, ziy@nvidia.com
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, huanyi.xj@alibaba-inc.com,
-        guoren@kernel.org, zjb194813@alibaba-inc.com,
-        tianhu.hh@alibaba-inc.com,
-        Xianting Tian <xianting.tian@linux.alibaba.com>
-Subject: [RESEND PATCH] mm: page_alloc: validate buddy before check the migratetype
-Date:   Mon, 13 Jun 2022 21:10:46 +0800
-Message-Id: <20220613131046.3009889-1-xianting.tian@linux.alibaba.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 13 Jun 2022 13:40:01 -0400
+Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2563289A1
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:10:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        from:to:cc:subject:date:message-id:mime-version
+        :content-transfer-encoding; s=k1; bh=nBeTiRbyM+2esDUqM5Tgskkvqkg
+        sZczEfbjH1Zw52CE=; b=CamQ1NsgzhCbMcoZvjvr27uR4Ucb8Ekv24g+gGgEJM8
+        hW6X2L/Jt/3whJpIYPpvJwRAi7e+r7VUlIFyIkfGYbUGZnNAD2OUMgQL2C1duH2E
+        XdZYWq2m2zAOM7sAsSZHDHvAlaBHOaWkpCNOW4rwlgCpX01442v/fuEoF+25hKts
+        =
+Received: (qmail 1304388 invoked from network); 13 Jun 2022 15:10:12 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 13 Jun 2022 15:10:12 +0200
+X-UD-Smtp-Session: l3s3148p1@iQwZAlThGm9ZD+yY
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     linux-renesas-soc@vger.kernel.org
+Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] dt-bindings: serial: renesas,hscif: Document r8a779f0 bindings
+Date:   Mon, 13 Jun 2022 15:10:07 +0200
+Message-Id: <20220613131007.10027-1-wsa+renesas@sang-engineering.com>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 787af64d05cd ("mm: page_alloc: validate buddy before check its migratetype.")
-added buddy check code. But unfortunately, this fix isn't backported to
-linux-5.17.y and the former stable branches. The reason is it added wrong
-fixes message:
-     Fixes: 1dd214b8f21c ("mm: page_alloc: avoid merging non-fallbackable
-			   pageblocks with others")
-Actually, this issue is involved by commit:
-     commit d9dddbf55667 ("mm/page_alloc: prevent merging between isolated and other pageblocks")
-
-For RISC-V arch, the first 2M is reserved for sbi, so the start PFN is 512,
-but it got buddy PFN 0 for PFN 0x2000:
-     0 = 0x2000 ^ (1 << 12)
-With the illegal buddy PFN 0, it got an illegal buddy page, which caused
-crash in __get_pfnblock_flags_mask().
-
-With the patch, it can avoid the calling of get_pageblock_migratetype() if
-it isn't buddy page.
-
-Fixes: d9dddbf55667 ("mm/page_alloc: prevent merging between isolated and other pageblocks")
-Cc: stable@vger.kernel.org
-Reported-by: zjb194813@alibaba-inc.com
-Reported-by: tianhu.hh@alibaba-inc.com
-Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 ---
- mm/page_alloc.c | 3 +++
- 1 file changed, 3 insertions(+)
+ Documentation/devicetree/bindings/serial/renesas,hscif.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index b1caa1c6c887..5b423caa68fd 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -1129,6 +1129,9 @@ static inline void __free_one_page(struct page *page,
- 
- 			buddy_pfn = __find_buddy_pfn(pfn, order);
- 			buddy = page + (buddy_pfn - pfn);
-+
-+			if (!page_is_buddy(page, buddy, order))
-+				goto done_merging;
- 			buddy_mt = get_pageblock_migratetype(buddy);
- 
- 			if (migratetype != buddy_mt
+diff --git a/Documentation/devicetree/bindings/serial/renesas,hscif.yaml b/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
+index 87180d95cd4c..1957b9d782e8 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
++++ b/Documentation/devicetree/bindings/serial/renesas,hscif.yaml
+@@ -57,6 +57,7 @@ properties:
+       - items:
+           - enum:
+               - renesas,hscif-r8a779a0     # R-Car V3U
++              - renesas,hscif-r8a779f0     # R-Car S4-8
+               - renesas,hscif-r8a779g0     # R-Car V4H
+           - const: renesas,rcar-gen4-hscif # R-Car Gen4
+           - const: renesas,hscif           # generic HSCIF compatible UART
 -- 
-2.17.1
+2.35.1
 
