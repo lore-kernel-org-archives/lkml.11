@@ -2,79 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 960CBC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:05:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86B12CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:07:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234399AbiFMKF6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:05:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47124 "EHLO
+        id S240099AbiFMKHI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:07:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229808AbiFMKF4 (ORCPT
+        with ESMTP id S234679AbiFMKHD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:05:56 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28AEEDBD;
-        Mon, 13 Jun 2022 03:05:56 -0700 (PDT)
-Received: from fraeml735-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LM6c82yFFz68B2P;
-        Mon, 13 Jun 2022 18:04:24 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml735-chm.china.huawei.com (10.206.15.216) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 13 Jun 2022 12:05:54 +0200
-Received: from [10.195.33.253] (10.195.33.253) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 13 Jun 2022 11:05:53 +0100
-Message-ID: <2955958b-4982-42bc-7c68-82cd23462b35@huawei.com>
-Date:   Mon, 13 Jun 2022 11:09:01 +0100
+        Mon, 13 Jun 2022 06:07:03 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1AFF25FC
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 03:07:00 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id z7so6363767edm.13
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 03:07:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=388rVfLziXGbjQS21Tul2j/I7M6Zt1K95tN24K1AmoM=;
+        b=hNPIvBFiRMJ6rB/VHNwmWvua/nH8QKLJWyeJkrEUtfgSTBNVuaQxhkbVVpGMdFbjRr
+         8LEM6GKxwsaJ+IGRBEPZ5cL3V68XTQWq3Aw//53cWUmdeBb7cFfKiCxoD0TWWiptbIL/
+         jWGZvp3CsaRaRaogyBL+TKOexYVfbxexw4ssqWWiTXn9DSWXN45SchBd44isMpwxWuSa
+         OnzxtDc82Fea/jlWVAQzdMCGB/l4fNmhfWMyphWpbwg0FJvwAlZ600AO9HPDhaOHb9By
+         Wy8Olozr1Xjub65R8YtZPR4+ZrGIj271V6fcw7137YbsyDzvqpYLPlcHJhqZVzrdXEuS
+         bsgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=388rVfLziXGbjQS21Tul2j/I7M6Zt1K95tN24K1AmoM=;
+        b=MKgm5TQatjp3/i4RHcCtp+t2ZmE/ZRjnNVXcSBv9oPPUlJtHSsc3gD4o1TLgtsjkrK
+         uPpEndfL7M6r3iQhuRShtMmcj0Q1FXZNxCTw1QZxmye2ww1OYtilPUNxEWQVPB1GHiv5
+         Nbq6xJmVvOs7ccMJ0Pg+KYErXaXRsgnCSKgz+3MpusrtAFGW1L8ft3ZBuH6p70N0wSBf
+         sv9QdZKGLcXwNH5CXQpX9l8n2tubMe/Y3BwPK3n4f7pB2fy8YDQikt2OqJw4fSSFmKpO
+         xBXBD+7W01zOunrWj+lWVAIaWsoMxbBR8lqghy3bQqXCoD6nJljAHi7/KA0cRNr6Um2R
+         hXzQ==
+X-Gm-Message-State: AOAM531FdGvGIY+vbrAi6DLvksXKsT87rlIVL41cbc6b1gxhU/UwwCAl
+        xZGRCLsDSS/qYgaKHy6lLRIYB9lvlqmyug==
+X-Google-Smtp-Source: ABdhPJyLVR6mKaSnfeAjdGkfvs4pku53sb5gAxMEnTrk6uCc+t28wi5xWYywt1WZ8NQMLmTOvRKS7Q==
+X-Received: by 2002:a05:6402:5252:b0:42f:b566:c189 with SMTP id t18-20020a056402525200b0042fb566c189mr52169148edd.398.1655114819283;
+        Mon, 13 Jun 2022 03:06:59 -0700 (PDT)
+Received: from krzk-bin.monzoon.net (80-254-69-65.dynamic.monzoon.net. [80.254.69.65])
+        by smtp.gmail.com with ESMTPSA id v2-20020a170906858200b006fe921fcb2dsm3639911ejx.49.2022.06.13.03.06.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 03:06:58 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Doug Gilbert <dgilbert@interlog.com>,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-ide@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v3 0/3] scsi: ufs: minor cleanups
+Date:   Mon, 13 Jun 2022 12:06:52 +0200
+Message-Id: <20220613100655.105301-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH] perf vendor events arm64: Arm Cortex-A78C and X1C
-To:     Nick Forrington <nick.forrington@arm.com>,
-        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-        <acme@kernel.org>
-CC:     Will Deacon <will@kernel.org>, James Clark <james.clark@arm.com>,
-        "Mike Leach" <mike.leach@linaro.org>, Leo Yan <leo.yan@linaro.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        "Namhyung Kim" <namhyung@kernel.org>,
-        Andrew Kilroy <andrew.kilroy@arm.com>,
-        <linux-arm-kernel@lists.infradead.org>
-References: <20220610174459.615995-1-nick.forrington@arm.com>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <20220610174459.615995-1-nick.forrington@arm.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.195.33.253]
-X-ClientProxiedBy: lhreml746-chm.china.huawei.com (10.201.108.196) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/06/2022 18:44, Nick Forrington wrote:
-> Add PMU events for the Arm Cortex-A78C and Arm Cortex-X1C CPUs.
-> 
-> Events for Arm Cortex-A78C match those for Arm Cortex-A78.
-> Events for Arm Cortex-X1C match those for Arm Cortex- X1.
-> 
-> As such, this is just a mapfile change.
-> 
-> Main ID Register (MIDR) and event data is sourced from the corresponding
-> Arm Technical Reference Manuals:
-> 
-> Arm Cortex-A78C
-> https://developer.arm.com/documentation/102226/
-> 
-> Arm Cortex-X1C
-> https://developer.arm.com/documentation/101968/
-> 
-> Signed-off-by: Nick Forrington<nick.forrington@arm.com>
+Hi,
 
-Reviewed-by: John Garry <john.garry@huawei.com>
+Changes since v2
+================
+1. More whitespace cleanups.
+
+Changes since v1
+================
+1. Drop patch 1 (needs further work).
+2. Rebase on current linux-next (including Bart Van Assche's work).
+
+v1: https://lore.kernel.org/all/20220408103027.311624-1-krzysztof.kozlowski@linaro.org/
+
+Best regards,
+Krzysztof
+
+Krzysztof Kozlowski (3):
+  scsi: core: fix white-spaces
+  scsi: ufs: ufshcd-pltfrm: constify pointed data
+  scsi: ufs: ufshcd: constify pointed data
+
+ drivers/scsi/scsi_debug.c         |  2 +-
+ drivers/scsi/scsi_priv.h          |  4 +--
+ drivers/scsi/scsi_proc.c          | 14 ++++-----
+ drivers/scsi/scsi_scan.c          | 10 +++----
+ drivers/scsi/scsi_sysfs.c         |  4 +--
+ drivers/scsi/scsi_transport_spi.c | 49 +++++++++++++++----------------
+ drivers/scsi/scsicam.c            |  6 ++--
+ drivers/scsi/sr.c                 |  8 ++---
+ drivers/ufs/core/ufshcd-priv.h    |  6 ++--
+ drivers/ufs/core/ufshcd.c         | 42 +++++++++++++-------------
+ drivers/ufs/host/ufshcd-pltfrm.c  | 10 +++----
+ drivers/ufs/host/ufshcd-pltfrm.h  |  4 +--
+ include/linux/libata.h            |  6 ++--
+ include/scsi/scsi_cmnd.h          |  2 +-
+ include/scsi/scsi_device.h        | 10 +++----
+ include/scsi/scsi_host.h          | 13 ++++----
+ include/scsi/scsi_ioctl.h         |  2 +-
+ include/scsi/scsi_transport.h     |  2 +-
+ include/scsi/scsi_transport_spi.h |  2 +-
+ include/scsi/scsicam.h            |  2 +-
+ include/scsi/sg.h                 |  2 +-
+ include/ufs/ufshcd.h              |  6 ++--
+ 22 files changed, 103 insertions(+), 103 deletions(-)
+
+-- 
+2.34.1
+
