@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BBBACCA486
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CF44CCA483
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:00:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358079AbiFML7W (ORCPT
+        id S1358060AbiFML7T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:59:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55934 "EHLO
+        Mon, 13 Jun 2022 07:59:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356650AbiFMLux (ORCPT
+        with ESMTP id S1356757AbiFMLvG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:50:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C1361134;
-        Mon, 13 Jun 2022 03:55:00 -0700 (PDT)
+        Mon, 13 Jun 2022 07:51:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 494FE1D0DC;
+        Mon, 13 Jun 2022 03:55:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0FFB6B80E07;
-        Mon, 13 Jun 2022 10:54:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 619CCC34114;
-        Mon, 13 Jun 2022 10:54:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5E7161257;
+        Mon, 13 Jun 2022 10:55:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2C9FC34114;
+        Mon, 13 Jun 2022 10:55:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117697;
-        bh=joiCWW40TiZXDs5a67F1rdFj68GRlZTtQcAh3LvNEkY=;
+        s=korg; t=1655117714;
+        bh=ySNlVh5nnEoeJjtjWyS0BCQmTJIZarnRBpGoaW3WTy8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jd5l1M03wmoqQ2N1+Vx97pn4jXgmgGE4M7jittEkx2cZtwMhzblV3mzpvX88SiIhM
-         TyS4f7eRlQYWcEGk79Hn6JhhnZ0KkoGRXPcIKCisKFkYGrgUjXlWfQyOXBkmm0ILRI
-         vaqnbkeuzBBfVy3/t1MDtdQjfn4xXrMyrSbRabXk=
+        b=C6HqNHSV64G7FPLWFQq8oD0+fiqzsPWROfpbDxqFHZwMmblKb428qEzQKC0CdbO3F
+         lhkl7459D4m1HyqPPsmDsfHknZ18DzkNuwiubkZtw7eryPLfIbdKmYpdtUpz8jr/j5
+         eFcNaoTsYW4s0vlONUX1m7MwtlxF119JJDkRjOQg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 087/287] x86/mm: Cleanup the control_va_addr_alignment() __setup handler
-Date:   Mon, 13 Jun 2022 12:08:31 +0200
-Message-Id: <20220613094926.516647239@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 105/287] ASoC: wm2000: fix missing clk_disable_unprepare() on error in wm2000_anc_transition()
+Date:   Mon, 13 Jun 2022 12:08:49 +0200
+Message-Id: <20220613094927.062242650@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -50,57 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 1ef64b1e89e6d4018da46e08ffc32779a31160c7 ]
+[ Upstream commit be2af740e2a9c7134f2d8ab4f104006e110b13de ]
 
-Clean up control_va_addr_alignment():
+Fix the missing clk_disable_unprepare() before return
+from wm2000_anc_transition() in the error handling case.
 
-a. Make '=' required instead of optional (as documented).
-b. Print a warning if an invalid option value is used.
-c. Return 1 from the __setup handler when an invalid option value is
-   used. This prevents the kernel from polluting init's (limited)
-   environment space with the entire string.
-
-Fixes: dfb09f9b7ab0 ("x86, amd: Avoid cache aliasing penalties on AMD family 15h")
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Link: https://lore.kernel.org/r/20220315001045.7680-1-rdunlap@infradead.org
+Fixes: 514cfd6dd725 ("ASoC: wm2000: Integrate with clock API")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220514091053.686416-1-yangyingliang@huawei.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/sys_x86_64.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ sound/soc/codecs/wm2000.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/kernel/sys_x86_64.c b/arch/x86/kernel/sys_x86_64.c
-index 6a78d4b36a79..9fb266c797fb 100644
---- a/arch/x86/kernel/sys_x86_64.c
-+++ b/arch/x86/kernel/sys_x86_64.c
-@@ -70,9 +70,6 @@ static int __init control_va_addr_alignment(char *str)
- 	if (*str == 0)
- 		return 1;
+diff --git a/sound/soc/codecs/wm2000.c b/sound/soc/codecs/wm2000.c
+index c5ae07234a00..cad39f63b763 100644
+--- a/sound/soc/codecs/wm2000.c
++++ b/sound/soc/codecs/wm2000.c
+@@ -545,7 +545,7 @@ static int wm2000_anc_transition(struct wm2000_priv *wm2000,
+ {
+ 	struct i2c_client *i2c = wm2000->i2c;
+ 	int i, j;
+-	int ret;
++	int ret = 0;
  
--	if (*str == '=')
--		str++;
--
- 	if (!strcmp(str, "32"))
- 		va_align.flags = ALIGN_VA_32;
- 	else if (!strcmp(str, "64"))
-@@ -82,11 +79,11 @@ static int __init control_va_addr_alignment(char *str)
- 	else if (!strcmp(str, "on"))
- 		va_align.flags = ALIGN_VA_32 | ALIGN_VA_64;
- 	else
--		return 0;
-+		pr_warn("invalid option value: 'align_va_addr=%s'\n", str);
+ 	if (wm2000->anc_mode == mode)
+ 		return 0;
+@@ -575,13 +575,13 @@ static int wm2000_anc_transition(struct wm2000_priv *wm2000,
+ 		ret = anc_transitions[i].step[j](i2c,
+ 						 anc_transitions[i].analogue);
+ 		if (ret != 0)
+-			return ret;
++			break;
+ 	}
  
- 	return 1;
+ 	if (anc_transitions[i].dest == ANC_OFF)
+ 		clk_disable_unprepare(wm2000->mclk);
+ 
+-	return 0;
++	return ret;
  }
--__setup("align_va_addr", control_va_addr_alignment);
-+__setup("align_va_addr=", control_va_addr_alignment);
  
- SYSCALL_DEFINE6(mmap, unsigned long, addr, unsigned long, len,
- 		unsigned long, prot, unsigned long, flags,
+ static int wm2000_anc_set_mode(struct wm2000_priv *wm2000)
 -- 
 2.35.1
 
