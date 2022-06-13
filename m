@@ -2,108 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86A77C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 09:31:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAEBAC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 09:31:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234349AbiFMJbY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 05:31:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47312 "EHLO
+        id S234858AbiFMJbo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 05:31:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230266AbiFMJbU (ORCPT
+        with ESMTP id S234476AbiFMJbk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 05:31:20 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D5C183BD;
-        Mon, 13 Jun 2022 02:31:19 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id n10so9992784ejk.5;
-        Mon, 13 Jun 2022 02:31:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1Nr0gFbuhYjG8KTX8QKnFSEdUb/+rTFcUGozeabqOWE=;
-        b=mx2ItKYffmKzgXjYfRHKyDW7j1FcDGadMiQckYa8b0B7ZEpnMTEPvxTXszwidDjulL
-         xYvjTAUAw+j73XF0phdiIry3achr1t9MUD6gkuNzQ7AuLr8IgE3CMWmV5Pf6iao8dniw
-         EUmTfAokn1c1GkLj3tj4xCD4qrXCRbzejKQdamHbCClg3ixF49+nStUnuaj4HoRU0xPu
-         GSTovEXJtpFp+/Y92nxbXubz3XifetHTLYR5l493u/7/LH/Y9TAc7UTl2wLoZKGpFVJw
-         PS6EOfqUbi11rO0dpnSVaVsG3XtWUpdnzAC5t7CYGthz7jPgE4Sx2lHlRUfvNZiR18Fd
-         raQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1Nr0gFbuhYjG8KTX8QKnFSEdUb/+rTFcUGozeabqOWE=;
-        b=QU38f2lNxtIueXx3csqBYpegSr1FTnkdulHVjyFgloSY00w6ARc4CA0SM0kxN6sTO/
-         7n+DnSJhMsntXqxBMP+yLx9gMSMOtGODqWsTvskhDlJHTyvio91/16EtqmL8Ij4rOgOK
-         MlCKx21EuGrA9tHWMZ9pqGAOkYzODqPgmqo7gKmP/3C30a0CZ+Mv0HdKxKTyTNUZ0kXZ
-         u/y7/WODa9y2C8VO+VhWyfCMaie+d3fZPXhMqgtLAiqmBDoCuttDgEN+LQIBfFCf3iz9
-         8iGh+1apCIm4nHX1S8hbh9sDixJylWNgZbR42edazkv31nk3uSIorC6PGjEiZIvpA/63
-         W8qA==
-X-Gm-Message-State: AOAM532VybJR5ss9hVOb8Y1G8WjQDWd95wXmRgEJf8YT6ZjQwLtRm6TG
-        avBFjqozHd2BHXlTJgfi6n0=
-X-Google-Smtp-Source: ABdhPJzj+qZa0AWWbp/fSe3FscftBmjhTfrxx880qe/hW1Y5cKf2K42zYGF5AoE7fkSuZ1Uvkq4geA==
-X-Received: by 2002:a17:906:39d1:b0:6fa:8e62:c8a2 with SMTP id i17-20020a17090639d100b006fa8e62c8a2mr52889103eje.487.1655112678024;
-        Mon, 13 Jun 2022 02:31:18 -0700 (PDT)
-Received: from skbuf ([188.25.255.186])
-        by smtp.gmail.com with ESMTPSA id e11-20020a056402190b00b0043120d5f3dcsm4567524edz.14.2022.06.13.02.31.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 02:31:17 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 12:31:16 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [RFC Patch net-next v2 06/15] net: dsa: microchip: get
- P_STP_CTRL in ksz_port_stp_state by ksz_dev_ops
-Message-ID: <20220613093116.2gc3mc5uvzoy5jrf@skbuf>
-References: <20220530104257.21485-1-arun.ramadoss@microchip.com>
- <20220530104257.21485-7-arun.ramadoss@microchip.com>
+        Mon, 13 Jun 2022 05:31:40 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64D89186D8;
+        Mon, 13 Jun 2022 02:31:37 -0700 (PDT)
+Received: from fraeml734-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LM5p33Dsxz67bVy;
+        Mon, 13 Jun 2022 17:27:55 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml734-chm.china.huawei.com (10.206.15.215) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 13 Jun 2022 11:31:34 +0200
+Received: from [10.195.33.253] (10.195.33.253) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 13 Jun 2022 10:31:33 +0100
+Message-ID: <53fa2856-54f2-c075-2eed-4f05c3459597@huawei.com>
+Date:   Mon, 13 Jun 2022 10:34:41 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220530104257.21485-7-arun.ramadoss@microchip.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH RFC v2 03/18] scsi: core: Implement reserved command
+ handling
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        <axboe@kernel.dk>, <jejb@linux.ibm.com>,
+        <martin.petersen@oracle.com>, <brking@us.ibm.com>, <hare@suse.de>,
+        <hch@lst.de>
+CC:     <linux-block@vger.kernel.org>, <linux-ide@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
+        <chenxiang66@hisilicon.com>
+References: <1654770559-101375-1-git-send-email-john.garry@huawei.com>
+ <1654770559-101375-4-git-send-email-john.garry@huawei.com>
+ <b4a0ede5-95a3-4388-e808-7627b5484d01@opensource.wdc.com>
+ <7f80f3b6-84f6-de48-4e69-4562c96e62c5@huawei.com>
+ <e4b108ba-cbc9-5237-f873-2fcea94f2b85@opensource.wdc.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <e4b108ba-cbc9-5237-f873-2fcea94f2b85@opensource.wdc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.195.33.253]
+X-ClientProxiedBy: lhreml746-chm.china.huawei.com (10.201.108.196) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 30, 2022 at 04:12:48PM +0530, Arun Ramadoss wrote:
-> At present, P_STP_CTRL register value is passed as parameter to
-> ksz_port_stp_state from the individual dsa_switch_ops hooks. This patch
-> update the function to retrieve the register value through the
-> ksz_dev_ops function pointer.
-> And add the static to ksz_update_port_member since it is not called
-> outside the ksz_common.
-> 
-> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-> ---
->  drivers/net/dsa/microchip/ksz8795.c    |  9 +++++----
->  drivers/net/dsa/microchip/ksz9477.c    | 10 +++++-----
->  drivers/net/dsa/microchip/ksz_common.c |  9 +++++----
->  drivers/net/dsa/microchip/ksz_common.h |  5 ++---
->  4 files changed, 17 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-> index 8657b520b336..e6982fa9d382 100644
-> --- a/drivers/net/dsa/microchip/ksz8795.c
-> +++ b/drivers/net/dsa/microchip/ksz8795.c
-> @@ -920,9 +920,9 @@ static void ksz8_cfg_port_member(struct ksz_device *dev, int port, u8 member)
->  	ksz_pwrite8(dev, port, P_MIRROR_CTRL, data);
->  }
->  
-> -static void ksz8_port_stp_state_set(struct dsa_switch *ds, int port, u8 state)
-> +static int ksz8_get_stp_reg(void)
->  {
-> -	ksz_port_stp_state_set(ds, port, state, P_STP_CTRL);
-> +	return P_STP_CTRL;
->  }
+On 13/06/2022 10:06, Damien Le Moal wrote:
+>>> We cannot have more than 32 tags.
+>> We may have 32 regular tags and 1 reserved tag for SATA.
+> Right. But that is the messy part though. That extra 1 tag is actually not
+> a tag since all internal commands are non-NCQ commands that do not need a
+> tag...
 
-Since there's nothing dynamic about get_stp_reg(), can the STP register
-location stay in struct ksz_chip_data?
+But apart from SATA, libsas LLDDs do need a real tag for the libata 
+internal command.
+
+> 
+> I am working on command duration limits support currently. This feature
+> set has a new horrendous "improvement": a command can be aborted by the
+> device if it fails its duration limit, but the abort is done with a good
+> status + sense data available bit set so that the device queue is not
+> aborted entirely like with a regular NCQ command error.
+> 
+> For such aborted commands, the command sense data is set to
+> "COMPLETED/DATA UNAVAILABLE". In this case, the host needs to go read the
+> new "successful NCQ sense data log" to check that the command sense is
+> indeed "COMPLETED/DATA UNAVAILABLE". And to go read that log page without
+> stalling the device queue, we would need an internal NCQ (queuable) command.
+> 
+> Currently, that is not possible to do cleanly as there are no guarantees
+> we can get a free tag (there is a race between block layer tag allocation
+> and libata internal tag counting). So a reserved tag for that would be
+> nice. We would end up with 31 IO tags at most + 1 reserved tag for NCQ
+> commands + ATA_TAG_INTERNAL for non-NCQ. That last one would be rendered
+> rather useless. But that also means that we kind-of go back to the days
+> when Linux showed ATA drives max QD of 31...
+
+So must the ATA_TAG_INTERNAL qc always be available for non-NCQ action 
+like EH, and that is why you cannot reuse for this internal NCQ 
+(queuable) command?
+
+> 
+> I am still struggling with this particular use case and trying to make it
+> fit with your series. Trying out different things right now.
+> 
+
+ok
+
+> 
+>>> I think keeping can_queue as the max queue depth with at most
+>>> nr_reserved_cmds tags reserved is better.
+>> Maybe the wording in the comment can be improved as it originally
+>> focused on SAS HBAs where there are no special rules for tagset depth or
+>> how the tagset should be carved up to handle regular and reserved commands.
+> Indeed. And that would be for HBAs that do*not*  use libsas/libata.
+> Otherwise, the NCQ vs non-NCQ reserved tag mess is there.
+> 
+
+Thanks,
+John
