@@ -2,88 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E144DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 15:11:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1B9CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 15:12:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240793AbiFMPLR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 11:11:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35772 "EHLO
+        id S1355683AbiFMPMT (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 11:12:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386092AbiFMPKy (ORCPT
+        with ESMTP id S1351297AbiFMPMI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 11:10:54 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EF3E10EA73;
-        Mon, 13 Jun 2022 05:22:22 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id c21so6935769wrb.1;
-        Mon, 13 Jun 2022 05:22:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=CE2d0+60NDVuovHtEXKKvDNeFfiEcyOV0bxSUie0izk=;
-        b=AQQtjmGUtZW30Fcgg4eAbM2t8ErNFYEn1s1Lx8T8t57IFy4Ngb1SzvSPJMBAdAGapj
-         eP3l1iG8PUBvAc2/h7LN2NSH/QKKw6lRfrzzbjKyPu0mEDVsn0/UYIfz56hLyLpgKNje
-         6DLRktUcS2VO5otIqUm4mPUCSPvk2WptrAV57fqhFhJ59dI+pUTcOo9y9omusfvEZriG
-         PpGmZeLfaUSPWOpT4MTpKBNHCpVzQUDt58njGpIKRwzQmouBgOKcevBG08vTdvLqzyIH
-         UfxQ9cTUubtJz6D2bgKNQiVyxIV/F8Gz+U4Mqu7nA+cbcSAz9pOi/VmKTo9xlwQexnvy
-         Lz+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=CE2d0+60NDVuovHtEXKKvDNeFfiEcyOV0bxSUie0izk=;
-        b=OzBIkLGJBbsHQaAXBDGMs7V0nHxFvsL3iqJs6jFWatgsX0hllTHFas4VeWBQwfr5GY
-         02+tfZWRys1rm2MyPfVvrJWfsTkKovgpwcjXotGSmY8SpBYkkWO/l1krgbaXxO0tp/Mn
-         dOZCNr3grmUunP3H6XRJVcrEufLKTr+NFxgq541YM8Nyx5s1V2wJ19WVFdYFx0H/1uz4
-         uodQv+OjjvRhCrtZtTx2H7sRpIqHphFCt8Vue8D2OxqSxHmO3Sv//BU7+dWMfMxEzsqi
-         K+RUzRJO08fAXUpRBjhld3fHPOOAn9O9zm5emRPg50twSvAb9b6Bw/NLYU6dyNpWOLdL
-         cupA==
-X-Gm-Message-State: AOAM530tlXA40SLxdT2sybOaw9nlhAPcH6op3d9MU/4/5cRllOi+wuI5
-        c9j1CBYMlC6z1aavPKzILm4=
-X-Google-Smtp-Source: ABdhPJzFf4lj4sWEE4BAhluB5zYv2MnSNEYC7Y0b1gmfxGJI3yeJw+Wr4awfC0Vpe0fdjVlyU7Megw==
-X-Received: by 2002:a5d:64e6:0:b0:218:29d3:ee74 with SMTP id g6-20020a5d64e6000000b0021829d3ee74mr42920070wri.657.1655122940956;
-        Mon, 13 Jun 2022 05:22:20 -0700 (PDT)
-Received: from felia.fritz.box (200116b8260df50011e978c0f780de03.dip.versatel-1u1.de. [2001:16b8:260d:f500:11e9:78c0:f780:de03])
-        by smtp.gmail.com with ESMTPSA id 63-20020a1c1942000000b0039c84c05d88sm8933147wmz.23.2022.06.13.05.22.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 05:22:20 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] MAINTAINERS: add include/dt-bindings/nvmem to NVMEM FRAMEWORK
-Date:   Mon, 13 Jun 2022 14:22:10 +0200
-Message-Id: <20220613122210.14774-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 13 Jun 2022 11:12:08 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62E4F113A0B
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 05:26:37 -0700 (PDT)
+Received: from kwepemi500016.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LM9l02wydzjXZw;
+        Mon, 13 Jun 2022 20:25:32 +0800 (CST)
+Received: from [10.40.193.166] (10.40.193.166) by
+ kwepemi500016.china.huawei.com (7.221.188.220) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 13 Jun 2022 20:26:35 +0800
+From:   "chenxiang (M)" <chenxiang66@hisilicon.com>
+Subject: [Bug] Take more 150s to boot qemu on ARM64
+To:     <paulmck@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <qemu-devel@nongnu.org>,
+        <linuxarm@huawei.com>
+Message-ID: <36a0c658-ee5d-3a1c-416c-c041dc344bff@hisilicon.com>
+Date:   Mon, 13 Jun 2022 20:26:34 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.40.193.166]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemi500016.china.huawei.com (7.221.188.220)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Maintainers of the directory Documentation/devicetree/bindings/nvmem
-are also the maintainers of the corresponding directory
-include/dt-bindings/nvmem.
+Hi all,
 
-Add the file entry for include/dt-bindings/nvmem to the appropriate
-section in MAINTAINERS.
+I encounter a issue with kernel 5.19-rc1 on a ARM64 board:  it takes 
+about 150s between beginning to run qemu command and beginng to boot 
+Linux kernel ("EFI stub: Booting Linux Kernel...").
 
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
----
-Srinivas, please pick this MAINTAINERS addition to your section.
+But in kernel 5.18-rc4, it only takes about 5s. I git bisect the kernel 
+code and it finds c2445d387850 ("srcu: Add contention check to 
+call_srcu() srcu_data ->lock acquisition").
 
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+The qemu (qemu version is 6.2.92) command i run is :
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 42fe1352137e..3bb8a8724eaf 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -14301,6 +14301,7 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/srini/nvmem.git
- F:	Documentation/ABI/stable/sysfs-bus-nvmem
- F:	Documentation/devicetree/bindings/nvmem/
- F:	drivers/nvmem/
-+F:	include/dt-bindings/nvmem/
- F:	include/linux/nvmem-consumer.h
- F:	include/linux/nvmem-provider.h
- 
--- 
-2.17.1
+./qemu-system-aarch64 -m 4G,slots=4,maxmem=8g \
+--trace "kvm*" \
+-cpu host \
+-machine virt,accel=kvm,gic-version=3  \
+-machine smp.cpus=2,smp.sockets=2 \
+-no-reboot \
+-nographic \
+-monitor unix:/home/cx/qmp-test,server,nowait \
+-bios /home/cx/boot/QEMU_EFI.fd \
+-kernel /home/cx/boot/Image  \
+-device 
+pcie-root-port,port=0x8,chassis=1,id=net1,bus=pcie.0,multifunction=on,addr=0x1 
+\
+-device vfio-pci,host=7d:01.3,id=net0 \
+-device virtio-blk-pci,drive=drive0,id=virtblk0,num-queues=4  \
+-drive file=/home/cx/boot/boot_ubuntu.img,if=none,id=drive0 \
+-append "rdinit=init console=ttyAMA0 root=/dev/vda rootfstype=ext4 rw " \
+-net none \
+-D /home/cx/qemu_log.txt
+
+I am not familiar with rcu code, and don't know how it causes the issue. 
+Do you have any idea about this issue?
+
+
+Best Regard,
+
+Xiang Chen
+
 
