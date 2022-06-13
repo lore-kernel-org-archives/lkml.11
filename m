@@ -2,44 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 855FDC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:28:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4BFCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:30:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354082AbiFML2S (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:28:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47906 "EHLO
+        id S238016AbiFML2W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 07:28:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353853AbiFMLUB (ORCPT
+        with ESMTP id S1353872AbiFMLUC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:20:01 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A00E3BA62;
-        Mon, 13 Jun 2022 03:41:49 -0700 (PDT)
+        Mon, 13 Jun 2022 07:20:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A9713BA7B;
+        Mon, 13 Jun 2022 03:41:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EFDDACE110D;
-        Mon, 13 Jun 2022 10:41:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9220C34114;
-        Mon, 13 Jun 2022 10:41:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 64C08611B3;
+        Mon, 13 Jun 2022 10:41:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 407E5C34114;
+        Mon, 13 Jun 2022 10:41:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116906;
-        bh=6WO8gK6ml+7o/mL16azwD6uIXPNzX9aqICY3DvZqYVs=;
+        s=korg; t=1655116911;
+        bh=wm8LFcGvfN52wvxmW6spVewj4UT030P+rLi6QePaU1w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0GGboXGwnGgFOiqqL4EtBcWo0w+Njawr3U1ymC8kns/7/Gj52ldDddh00kTfQDRv/
-         9fG4SThCP9zfItFW/JfQBFlkz2OLKUsGKJ3i5/pWOAjlu8x3YbMutGfg/hA2BgSIFX
-         2ex4sRYNxMK8pXzq2kco+QUZrpTK9wEn1FZUU12o=
+        b=ci6O8eRqMx3M6azTy3joUJFirRLFw3F3LChj4TsJxYqlB4iJR+LSYUKIcOzdIFcWI
+         eqnYJRflRySu8Egsg5d1Z+MIRfg1fEqRdAVTOykXa9pgHMBNN786WZTowEWA24mawP
+         KXRngpYVzMFUrDen1V3x69bLTf48UgnMWWryo2wU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Gregory Greenman <gregory.greenman@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 5.4 216/411] iwlwifi: mvm: fix assert 1F04 upon reconfig
-Date:   Mon, 13 Jun 2022 12:08:09 +0200
-Message-Id: <20220613094935.128615230@linuxfoundation.org>
+        stable@vger.kernel.org, Kan Liang <kan.liang@linux.intel.com>,
+        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
+        Ian Rogers <irogers@google.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Alexander Shishkin <alexander.shishkin@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 208/411] perf jevents: Fix event syntax error caused by ExtSel
+Date:   Mon, 13 Jun 2022 12:08:01 +0200
+Message-Id: <20220613094934.893725679@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -51,36 +56,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
 
-commit 9d096e3d3061dbf4ee10e2b59fc2c06e05bdb997 upstream.
+[ Upstream commit f4df0dbbe62ee8e4405a57b27ccd54393971c773 ]
 
-When we reconfig we must not send the MAC_POWER command that relates to
-a MAC that was not yet added to the firmware.
+In the origin code, when "ExtSel" is 1, the eventcode will change to
+"eventcode |= 1 << 21”. For event “UNC_Q_RxL_CREDITS_CONSUMED_VN0.DRS",
+its "ExtSel" is "1", its eventcode will change from 0x1E to 0x20001E,
+but in fact the eventcode should <=0x1FF, so this will cause the parse
+fail:
 
-Ignore those in the iterator.
+  # perf stat -e "UNC_Q_RxL_CREDITS_CONSUMED_VN0.DRS" -a sleep 0.1
+  event syntax error: '.._RxL_CREDITS_CONSUMED_VN0.DRS'
+                                    \___ value too big for format, maximum is 511
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-Signed-off-by: Gregory Greenman <gregory.greenman@intel.com>
-Link: https://lore.kernel.org/r/20220517120044.ed2ffc8ce732.If786e19512d0da4334a6382ea6148703422c7d7b@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+On the perf kernel side, the kernel assumes the valid bits are continuous.
+It will adjust the 0x100 (bit 8 for perf tool) to bit 21 in HW.
+
+DEFINE_UNCORE_FORMAT_ATTR(event_ext, event, "config:0-7,21");
+
+So the perf tool follows the kernel side and just set bit8 other than bit21.
+
+Fixes: fedb2b518239cbc0 ("perf jevents: Add support for parsing uncore json files")
+Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+Signed-off-by: Xing Zhengjun <zhengjun.xing@linux.intel.com>
+Acked-by: Ian Rogers <irogers@google.com>
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Alexander Shishkin <alexander.shishkin@intel.com>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220525140410.1706851-1-zhengjun.xing@linux.intel.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/power.c |    3 +++
- 1 file changed, 3 insertions(+)
+ tools/perf/pmu-events/jevents.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/wireless/intel/iwlwifi/mvm/power.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/power.c
-@@ -626,6 +626,9 @@ static void iwl_mvm_power_get_vifs_itera
- 	struct iwl_power_vifs *power_iterator = _data;
- 	bool active = mvmvif->phy_ctxt && mvmvif->phy_ctxt->id < NUM_PHY_CTX;
- 
-+	if (!mvmvif->uploaded)
-+		return;
-+
- 	switch (ieee80211_vif_type_p2p(vif)) {
- 	case NL80211_IFTYPE_P2P_DEVICE:
- 		break;
+diff --git a/tools/perf/pmu-events/jevents.c b/tools/perf/pmu-events/jevents.c
+index 47f57f5829d3..a4244bf242e6 100644
+--- a/tools/perf/pmu-events/jevents.c
++++ b/tools/perf/pmu-events/jevents.c
+@@ -567,7 +567,7 @@ int json_events(const char *fn,
+ 			} else if (json_streq(map, field, "ExtSel")) {
+ 				char *code = NULL;
+ 				addfield(map, &code, "", "", val);
+-				eventcode |= strtoul(code, NULL, 0) << 21;
++				eventcode |= strtoul(code, NULL, 0) << 8;
+ 				free(code);
+ 			} else if (json_streq(map, field, "EventName")) {
+ 				addfield(map, &name, "", "", val);
+-- 
+2.35.1
+
 
 
