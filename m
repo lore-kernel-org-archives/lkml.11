@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEA38CCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:25:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B555CCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:25:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383732AbiFMOX4 (ORCPT
+        id S1383791AbiFMOYA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:23:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50664 "EHLO
+        Mon, 13 Jun 2022 10:24:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381990AbiFMOUd (ORCPT
+        with ESMTP id S1382933AbiFMOVV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:20:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA0A746166;
-        Mon, 13 Jun 2022 04:43:50 -0700 (PDT)
+        Mon, 13 Jun 2022 10:21:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72DE9A2060;
+        Mon, 13 Jun 2022 04:43:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F433612AC;
-        Mon, 13 Jun 2022 11:43:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 589C1C34114;
-        Mon, 13 Jun 2022 11:43:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E24DDB80E2C;
+        Mon, 13 Jun 2022 11:43:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37F04C34114;
+        Mon, 13 Jun 2022 11:43:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120628;
-        bh=4uEikPqNYYnsw4eDUc24KPYNn8BAYTj6TfzLS5OwBck=;
+        s=korg; t=1655120636;
+        bh=vgKo32g688iQ+3jnemU02qj9Di+VAnXSWSB12XS0bkQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KLUIhJ8rl5ekAjH3XjT4ok5DsoD5ndX+hY265LH/Pks3f9jbPgH6YFL1LA8pT4uNt
-         9KzjRAdYKK4trTDS0Xmer1/qBo6AESrNuKlwgbQq/XYjRrlt5IBbx7Jk4Cko7UaRcZ
-         AtFuCUVO7uuXMla5YiEkCNdFJ/kuVLX6I+oHE9E4=
+        b=s60zLo+sBW00tl9LGqgOLTeFk3199TvbnoDVxToq8HQ9zdHzDXhmB70LtD9D31ckx
+         nNSFD8uaz/8nHeamtcdk6CfzU7SqmTyDCN0tXpo6zhTXo8glgREIpkRjCBU+sfGaIz
+         pbcWOSNEkb1G7R5Yz5RtFUiwYXCWglOwMT39Ohe0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Tianhao Zhao <tizhao@redhat.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
         =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 102/298] sfc: fix considering that all channels have TX queues
-Date:   Mon, 13 Jun 2022 12:09:56 +0200
-Message-Id: <20220613094928.046017940@linuxfoundation.org>
+Subject: [PATCH 5.17 103/298] sfc: fix wrong tx channel offset with efx_separate_tx_channels
+Date:   Mon, 13 Jun 2022 12:09:57 +0200
+Message-Id: <20220613094928.075637456@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -52,63 +51,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Habets <habetsm.xilinx@gmail.com>
+From: Íñigo Huguet <ihuguet@redhat.com>
 
-[ Upstream commit 2e102b53f8a778f872dc137f4c7ac548705817aa ]
+[ Upstream commit c308dfd1b43ef0d4c3e57b741bb3462eb7a7f4a2 ]
 
-Normally, all channels have RX and TX queues, but this is not true if
-modparam efx_separate_tx_channels=1 is used. In that cases, some
-channels only have RX queues and others only TX queues (or more
-preciselly, they have them allocated, but not initialized).
+tx_channel_offset is calculated in efx_allocate_msix_channels, but it is
+also calculated again in efx_set_channels because it was originally done
+there, and when efx_allocate_msix_channels was introduced it was
+forgotten to be removed from efx_set_channels.
 
-Fix efx_channel_has_tx_queues to return the correct value for this case
-too.
+Moreover, the old calculation is wrong when using
+efx_separate_tx_channels because now we can have XDP channels after the
+TX channels, so n_channels - n_tx_channels doesn't point to the first TX
+channel.
 
-Messages shown at probe time before the fix:
- sfc 0000:03:00.0 ens6f0np0: MC command 0x82 inlen 544 failed rc=-22 (raw=0) arg=0
- ------------[ cut here ]------------
- netdevice: ens6f0np0: failed to initialise TXQ -1
- WARNING: CPU: 1 PID: 626 at drivers/net/ethernet/sfc/ef10.c:2393 efx_ef10_tx_init+0x201/0x300 [sfc]
- [...] stripped
- RIP: 0010:efx_ef10_tx_init+0x201/0x300 [sfc]
- [...] stripped
- Call Trace:
-  efx_init_tx_queue+0xaa/0xf0 [sfc]
-  efx_start_channels+0x49/0x120 [sfc]
-  efx_start_all+0x1f8/0x430 [sfc]
-  efx_net_open+0x5a/0xe0 [sfc]
-  __dev_open+0xd0/0x190
-  __dev_change_flags+0x1b3/0x220
-  dev_change_flags+0x21/0x60
- [...] stripped
+Remove the old calculation from efx_set_channels, and add the
+initialization of this variable if MSI or legacy interrupts are used,
+next to the initialization of the rest of the related variables, where
+it was missing.
 
-Messages shown at remove time before the fix:
- sfc 0000:03:00.0 ens6f0np0: failed to flush 10 queues
- sfc 0000:03:00.0 ens6f0np0: failed to flush queues
-
-Fixes: 8700aff08984 ("sfc: fix channel allocation with brute force")
+Fixes: 3990a8fffbda ("sfc: allocate channels for XDP tx queues")
 Reported-by: Tianhao Zhao <tizhao@redhat.com>
-Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
-Tested-by: Íñigo Huguet <ihuguet@redhat.com>
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/sfc/net_driver.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/sfc/efx_channels.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
-index cc15ee8812d9..8a9eedec177a 100644
---- a/drivers/net/ethernet/sfc/net_driver.h
-+++ b/drivers/net/ethernet/sfc/net_driver.h
-@@ -1533,7 +1533,7 @@ static inline bool efx_channel_is_xdp_tx(struct efx_channel *channel)
+diff --git a/drivers/net/ethernet/sfc/efx_channels.c b/drivers/net/ethernet/sfc/efx_channels.c
+index eec0db76d888..8ab9358a1c3d 100644
+--- a/drivers/net/ethernet/sfc/efx_channels.c
++++ b/drivers/net/ethernet/sfc/efx_channels.c
+@@ -309,6 +309,7 @@ int efx_probe_interrupts(struct efx_nic *efx)
+ 		efx->n_channels = 1;
+ 		efx->n_rx_channels = 1;
+ 		efx->n_tx_channels = 1;
++		efx->tx_channel_offset = 0;
+ 		efx->n_xdp_channels = 0;
+ 		efx->xdp_channel_offset = efx->n_channels;
+ 		rc = pci_enable_msi(efx->pci_dev);
+@@ -329,6 +330,7 @@ int efx_probe_interrupts(struct efx_nic *efx)
+ 		efx->n_channels = 1 + (efx_separate_tx_channels ? 1 : 0);
+ 		efx->n_rx_channels = 1;
+ 		efx->n_tx_channels = 1;
++		efx->tx_channel_offset = 1;
+ 		efx->n_xdp_channels = 0;
+ 		efx->xdp_channel_offset = efx->n_channels;
+ 		efx->legacy_irq = efx->pci_dev->irq;
+@@ -957,10 +959,6 @@ int efx_set_channels(struct efx_nic *efx)
+ 	struct efx_channel *channel;
+ 	int rc;
  
- static inline bool efx_channel_has_tx_queues(struct efx_channel *channel)
- {
--	return true;
-+	return channel && channel->channel >= channel->efx->tx_channel_offset;
- }
+-	efx->tx_channel_offset =
+-		efx_separate_tx_channels ?
+-		efx->n_channels - efx->n_tx_channels : 0;
+-
+ 	if (efx->xdp_tx_queue_count) {
+ 		EFX_WARN_ON_PARANOID(efx->xdp_tx_queues);
  
- static inline unsigned int efx_channel_num_tx_queues(struct efx_channel *channel)
 -- 
 2.35.1
 
