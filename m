@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90613CCA491
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:31:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB791C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:31:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384867AbiFMOaL (ORCPT
+        id S1385055AbiFMOae (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:30:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52196 "EHLO
+        Mon, 13 Jun 2022 10:30:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384019AbiFMOY2 (ORCPT
+        with ESMTP id S1384101AbiFMOYt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:24:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96C29BC0A;
-        Mon, 13 Jun 2022 04:46:29 -0700 (PDT)
+        Mon, 13 Jun 2022 10:24:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E87CD4833D;
+        Mon, 13 Jun 2022 04:46:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA74D612A8;
-        Mon, 13 Jun 2022 11:46:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8F31C34114;
-        Mon, 13 Jun 2022 11:46:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B0FAB80EDF;
+        Mon, 13 Jun 2022 11:46:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E0FEC36B1F;
+        Mon, 13 Jun 2022 11:46:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120788;
-        bh=O0/tWyjSGTu6G0J37ooYuiNFAnqvqQ2I6bdZCgaSRK4=;
+        s=korg; t=1655120804;
+        bh=y9SXt+bQi5aBs6eJhgSvGHInIugvcxyjyGV49YwQ698=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jGoQd6pgfdNKIPUE9kDHFTTM19P0YxsPJNbpLthA4efb/rw6cJYqXrnmkV6dKfeh2
-         8tCcx7Zu4yib24KEG2tcCJevSYcxt8mXf8cqv3YzTx/whhQg0JZGNB/j5oKQ7XlT8g
-         sHN4h+TcxxHtK0x0iDrwD4I92pYBIt+vJMplqWSY=
+        b=dTzy0zbLWtS03tywTE/aFIxNEnXF7pqit1sVTzrylnqTxqYsfIinO7JbZCRHimHuq
+         jnCQKK7BRh6jdnHuDU0hz3fOOuZh62vMJp7QTHPyDu+S84nuLKICwzxhXy0ih5+bVG
+         u1IA1KyTUDxTZZkgzi5I/ijZDr33XnhwSB11NIXY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
-        Mark-PK Tsai <mark-pk.tsai@mediatek.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 140/298] tracing: Avoid adding tracer option before update_tracer_options
-Date:   Mon, 13 Jun 2022 12:10:34 +0200
-Message-Id: <20220613094929.190055753@linuxfoundation.org>
+Subject: [PATCH 5.17 163/298] netfilter: nf_tables: always initialize flowtable hook list in transaction
+Date:   Mon, 13 Jun 2022 12:10:57 +0200
+Message-Id: <20220613094929.876748145@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -51,64 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit ef9188bcc6ca1d8a2ad83e826b548e6820721061 ]
+[ Upstream commit 2c9e4559773c261900c674a86b8e455911675d71 ]
 
-To prepare for support asynchronous tracer_init_tracefs initcall,
-avoid calling create_trace_option_files before __update_tracer_options.
-Otherwise, create_trace_option_files will show warning because
-some tracers in trace_types list are already in tr->topts.
+The hook list is used if nft_trans_flowtable_update(trans) == true. However,
+initialize this list for other cases for safety reasons.
 
-For example, hwlat_tracer call register_tracer in late_initcall,
-and global_trace.dir is already created in tracing_init_dentry,
-hwlat_tracer will be put into tr->topts.
-Then if the __update_tracer_options is executed after hwlat_tracer
-registered, create_trace_option_files find that hwlat_tracer is
-already in tr->topts.
-
-Link: https://lkml.kernel.org/r/20220426122407.17042-2-mark-pk.tsai@mediatek.com
-
-Link: https://lore.kernel.org/lkml/20220322133339.GA32582@xsang-OptiPlex-9020/
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Signed-off-by: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Fixes: 78d9f48f7f44 ("netfilter: nf_tables: add devices to existing flowtable")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/trace.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ net/netfilter/nf_tables_api.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index b741704dcd46..7ebf42607505 100644
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -6324,12 +6324,18 @@ static void tracing_set_nop(struct trace_array *tr)
- 	tr->current_trace = &nop_trace;
- }
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index a7ed8fe46af1..ee7adb42a97d 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -544,6 +544,7 @@ static int nft_trans_flowtable_add(struct nft_ctx *ctx, int msg_type,
+ 	if (msg_type == NFT_MSG_NEWFLOWTABLE)
+ 		nft_activate_next(ctx->net, flowtable);
  
-+static bool tracer_options_updated;
-+
- static void add_tracer_options(struct trace_array *tr, struct tracer *t)
- {
- 	/* Only enable if the directory has been created already. */
- 	if (!tr->dir)
- 		return;
++	INIT_LIST_HEAD(&nft_trans_flowtable_hooks(trans));
+ 	nft_trans_flowtable(trans) = flowtable;
+ 	nft_trans_commit_list_add_tail(ctx->net, trans);
  
-+	/* Only create trace option files after update_tracer_options finish */
-+	if (!tracer_options_updated)
-+		return;
-+
- 	create_trace_option_files(tr, t);
- }
- 
-@@ -9139,6 +9145,7 @@ static void __update_tracer_options(struct trace_array *tr)
- static void update_tracer_options(struct trace_array *tr)
- {
- 	mutex_lock(&trace_types_lock);
-+	tracer_options_updated = true;
- 	__update_tracer_options(tr);
- 	mutex_unlock(&trace_types_lock);
- }
 -- 
 2.35.1
 
