@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 418BFCCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:37:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C1EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:37:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351790AbiFMMhT (ORCPT
+        id S1347430AbiFMMhc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:37:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49692 "EHLO
+        Mon, 13 Jun 2022 08:37:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353353AbiFMMf2 (ORCPT
+        with ESMTP id S1353376AbiFMMfa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:35:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D1931C915;
-        Mon, 13 Jun 2022 04:07:55 -0700 (PDT)
+        Mon, 13 Jun 2022 08:35:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 650591C13F;
+        Mon, 13 Jun 2022 04:07:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AFFA60906;
-        Mon, 13 Jun 2022 11:07:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24C9FC34114;
-        Mon, 13 Jun 2022 11:07:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 826D5608D6;
+        Mon, 13 Jun 2022 11:07:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96547C34114;
+        Mon, 13 Jun 2022 11:07:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118466;
-        bh=M6GNObdT38NasueEcuZx7LUs0CCTPyAhpWWgfvkvyPY=;
+        s=korg; t=1655118471;
+        bh=Wvzg1eIbq/VH+8v4OxYzY979R1uuGnEZjw4IN6qm7tk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a1GaukBiPoBrWsRvqRynq3Wx3F2WGI216SDlFpqVyTnqaeDSbau56WPqcLRVWpTEO
-         o7ybwGOFOYaOO9Y9mBDvIelsUioX3+1xdzKE2orcyzzeI2CHVNUrDTgFWy42lyh9NX
-         3zfu45i7Nnkk4HRKYU8u8oF0SV5YFUEbVhEVJ1hU=
+        b=OMHvy/oVBTIaFmb9UeJF0qp13wzW3QzWMcnLgpJb8t0nyzRbxBEV0RD9w0QdJ4y6+
+         4TudnCSakhWwgII28Q+CK4arZZC4fSRwOm6FRcIWznr0tm2PtO1ojEWgOBoY17lXQA
+         ryI2TqM5I8D0hBnVuqCswLiUKnnaYnfqfhLZ9Wi4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 086/172] dmaengine: zynqmp_dma: In struct zynqmp_dma_chan fix desc_size data type
-Date:   Mon, 13 Jun 2022 12:10:46 +0200
-Message-Id: <20220613094911.091016427@linuxfoundation.org>
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 070/172] afs: Fix infinite loop found by xfstest generic/676
+Date:   Mon, 13 Jun 2022 12:10:30 +0200
+Message-Id: <20220613094907.280795648@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -50,61 +52,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit f9a9f43a62a04ec3183fb0da9226c7706eed0115 ]
+[ Upstream commit 17eabd42560f4636648ad65ba5b20228071e2363 ]
 
-In zynqmp_dma_alloc/free_chan_resources functions there is a
-potential overflow in the below expressions.
+In AFS, a directory is handled as a file that the client downloads and
+parses locally for the purposes of performing lookup and getdents
+operations.  The in-kernel afs filesystem has a number of functions that
+do this.
 
-dma_alloc_coherent(chan->dev, (2 * chan->desc_size *
-		   ZYNQMP_DMA_NUM_DESCS),
-		   &chan->desc_pool_p, GFP_KERNEL);
+A directory file is arranged as a series of 2K blocks divided into
+32-byte slots, where a directory entry occupies one or more slots, plus
+each block starts with one or more metadata blocks.
 
-dma_free_coherent(chan->dev,(2 * ZYNQMP_DMA_DESC_SIZE(chan) *
-                 ZYNQMP_DMA_NUM_DESCS),
-                chan->desc_pool_v, chan->desc_pool_p);
+When parsing a block, if the last slots are occupied by a dirent that
+occupies more than a single slot and the file position points at a slot
+that's not the initial one, the logic in afs_dir_iterate_block() that
+skips over it won't advance the file pointer to the end of it.  This
+will cause an infinite loop in getdents() as it will keep retrying that
+block and failing to advance beyond the final entry.
 
-The arguments desc_size and ZYNQMP_DMA_NUM_DESCS were 32 bit. Though
-this overflow condition is not observed but it is a potential problem
-in the case of 32-bit multiplication. Hence fix it by changing the
-desc_size data type to size_t.
+Fix this by advancing the file pointer if the next entry will be beyond
+it when we skip a block.
 
-In addition to coverity fix it also reuse ZYNQMP_DMA_DESC_SIZE macro in
-dma_alloc_coherent API argument.
+This was found by the generic/676 xfstest but can also be triggered with
+something like:
 
-Addresses-Coverity: Event overflow_before_widen.
-Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Link: https://lore.kernel.org/r/1652166762-18317-2-git-send-email-radhey.shyam.pandey@xilinx.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+	~/xfstests-dev/src/t_readdir_3 /xfstest.test/z 4000 1
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: David Howells <dhowells@redhat.com>
+Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
+Tested-by: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Link: http://lore.kernel.org/r/165391973497.110268.2939296942213894166.stgit@warthog.procyon.org.uk/
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/xilinx/zynqmp_dma.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ fs/afs/dir.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/dma/xilinx/zynqmp_dma.c b/drivers/dma/xilinx/zynqmp_dma.c
-index 5fecf5aa6e85..7e6be076e9d3 100644
---- a/drivers/dma/xilinx/zynqmp_dma.c
-+++ b/drivers/dma/xilinx/zynqmp_dma.c
-@@ -232,7 +232,7 @@ struct zynqmp_dma_chan {
- 	bool is_dmacoherent;
- 	struct tasklet_struct tasklet;
- 	bool idle;
--	u32 desc_size;
-+	size_t desc_size;
- 	bool err;
- 	u32 bus_width;
- 	u32 src_burst_len;
-@@ -490,7 +490,8 @@ static int zynqmp_dma_alloc_chan_resources(struct dma_chan *dchan)
- 	}
+diff --git a/fs/afs/dir.c b/fs/afs/dir.c
+index 262c0ae505af..159795059547 100644
+--- a/fs/afs/dir.c
++++ b/fs/afs/dir.c
+@@ -412,8 +412,11 @@ static int afs_dir_iterate_block(struct afs_vnode *dvnode,
+ 		}
  
- 	chan->desc_pool_v = dma_alloc_coherent(chan->dev,
--					       (2 * chan->desc_size * ZYNQMP_DMA_NUM_DESCS),
-+					       (2 * ZYNQMP_DMA_DESC_SIZE(chan) *
-+					       ZYNQMP_DMA_NUM_DESCS),
- 					       &chan->desc_pool_p, GFP_KERNEL);
- 	if (!chan->desc_pool_v)
- 		return -ENOMEM;
+ 		/* skip if starts before the current position */
+-		if (offset < curr)
++		if (offset < curr) {
++			if (next > curr)
++				ctx->pos = blkoff + next * sizeof(union afs_xdr_dirent);
+ 			continue;
++		}
+ 
+ 		/* found the next entry */
+ 		if (!dir_emit(ctx, dire->u.name, nlen,
 -- 
 2.35.1
 
