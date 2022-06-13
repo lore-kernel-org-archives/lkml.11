@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24786CCA47B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A908ECCA47C
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:01:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356964AbiFMNBR (ORCPT
+        id S1357011AbiFMNBZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:01:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50420 "EHLO
+        Mon, 13 Jun 2022 09:01:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358091AbiFMMzD (ORCPT
+        with ESMTP id S1358078AbiFMMzC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:55:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E0D9590;
-        Mon, 13 Jun 2022 04:14:20 -0700 (PDT)
+        Mon, 13 Jun 2022 08:55:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEEAC639E;
+        Mon, 13 Jun 2022 04:14:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 34A3460B60;
-        Mon, 13 Jun 2022 11:14:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 413C3C3411C;
-        Mon, 13 Jun 2022 11:14:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A27560B6B;
+        Mon, 13 Jun 2022 11:14:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85703C34114;
+        Mon, 13 Jun 2022 11:14:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118859;
-        bh=EO27XRrZvZM3OEMGUga+8QfaUgSMH/01Y5OujwF83w4=;
+        s=korg; t=1655118856;
+        bh=GuEZAMVML4UAVYbxjDfUyMZcQpxhrVaDmupRrwOZv/k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FFSyrkxDcalFghBqTuMMXYK9aDSd1h3srN10vNHezmnsDJaD457lVEKArGE9aPDSS
-         dykTFwlXBRrlR/CWqzG1dEmJIiHo0B8wuMGWpcJKsM44eHJQyLuWn/HPr/HOp+NY5g
-         fz85MbzFVOhT1hLmUbS/KCPDmAjUo/MWI+F6pa4Y=
+        b=HZNt3qlqcLbsqK67KzAaNX4AuCbUOOj6G+xWvKjOZDwbpJ1HsSiWwoYPDB/XBF6M0
+         MvwACUIltnqgZK4q687I8SmxVKdOLaU7jBJ3pRznrEe8cIAsDIZ9K1ZbrKYBkdEbPE
+         3XmrYs7k6uNrsMIr51yxpiclfjyixkfgxIe6Qb3M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 017/247] pwm: lp3943: Fix duty calculation in case period was clamped
-Date:   Mon, 13 Jun 2022 12:08:39 +0200
-Message-Id: <20220613094923.451054502@linuxfoundation.org>
+Subject: [PATCH 5.15 026/247] rpmsg: virtio: Fix possible double free in rpmsg_virtio_add_ctrl_dev()
+Date:   Mon, 13 Jun 2022 12:08:48 +0200
+Message-Id: <20220613094923.728521855@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -52,35 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit 5e3b07ca5cc78cd4a987e78446849e41288d87cb ]
+[ Upstream commit 1680939e9ecf7764fba8689cfb3429c2fe2bb23c ]
 
-The hardware only supports periods <= 1.6 ms and if a bigger period is
-requested it is clamped to 1.6 ms. In this case duty_cycle might be bigger
-than 1.6 ms and then the duty cycle register is written with a value
-bigger than LP3943_MAX_DUTY. So clamp duty_cycle accordingly.
+vch will be free in virtio_rpmsg_release_device() when
+rpmsg_ctrldev_register_device() fails. There is no need to call
+kfree() again.
 
-Fixes: af66b3c0934e ("pwm: Add LP3943 PWM driver")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+Fixes: c486682ae1e2 ("rpmsg: virtio: Register the rpmsg_char device")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Tested-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+Link: https://lore.kernel.org/r/20220426060536.15594-3-hbh25y@gmail.com
+Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pwm/pwm-lp3943.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/rpmsg/virtio_rpmsg_bus.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-lp3943.c b/drivers/pwm/pwm-lp3943.c
-index ea17d446a627..2bd04ecb508c 100644
---- a/drivers/pwm/pwm-lp3943.c
-+++ b/drivers/pwm/pwm-lp3943.c
-@@ -125,6 +125,7 @@ static int lp3943_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	if (err)
- 		return err;
+diff --git a/drivers/rpmsg/virtio_rpmsg_bus.c b/drivers/rpmsg/virtio_rpmsg_bus.c
+index 834a0811e371..3a62e6197151 100644
+--- a/drivers/rpmsg/virtio_rpmsg_bus.c
++++ b/drivers/rpmsg/virtio_rpmsg_bus.c
+@@ -842,7 +842,7 @@ static struct rpmsg_device *rpmsg_virtio_add_ctrl_dev(struct virtio_device *vdev
  
-+	duty_ns = min(duty_ns, period_ns);
- 	val = (u8)(duty_ns * LP3943_MAX_DUTY / period_ns);
+ 	err = rpmsg_chrdev_register_device(rpdev_ctrl);
+ 	if (err) {
+-		kfree(vch);
++		/* vch will be free in virtio_rpmsg_release_device() */
+ 		return ERR_PTR(err);
+ 	}
  
- 	return lp3943_write_byte(lp3943, reg_duty, val);
 -- 
 2.35.1
 
