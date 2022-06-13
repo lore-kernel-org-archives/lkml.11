@@ -2,837 +2,535 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BF4CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:54:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CA62C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:54:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344356AbiFMSyZ (ORCPT
+        id S1344603AbiFMSyj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:54:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35258 "EHLO
+        Mon, 13 Jun 2022 14:54:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344600AbiFMSxO (ORCPT
+        with ESMTP id S1346123AbiFMSxr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 14:53:14 -0400
-Received: from mx2.veeam.com (mx2.veeam.com [64.129.123.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1FCEF45CD;
-        Mon, 13 Jun 2022 08:55:12 -0700 (PDT)
-Received: from mail.veeam.com (prgmbx01.amust.local [172.24.128.102])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx2.veeam.com (Postfix) with ESMTPS id 6A53840118;
-        Mon, 13 Jun 2022 11:55:08 -0400 (EDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=veeam.com;
-        s=mx2-2022; t=1655135708;
-        bh=Sfz04j+oMJImGYRj57Xp2198QOHGgf81l+CsLOdh9V4=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=LgAVIxctDI9NM+VKZCmWFf7qcL604fZBLZbuSBZ/YyAa3nVkStOiZbgsxPT0t/BTB
-         BsAU2O0iYhiJ8yc6XO2DaPBSWGbVg+fA/SqAeedIfUxER94kCzJ0AXdjBfHdxfLKyC
-         3FCkaYtlhcuu/kZPSzBQytpx/D5xHRRKoRrX3s2hbzp/V81FpFouMRiihK2d7z3mcy
-         VYWoBQnG/pYMa0XnTt9pHdrnXqy8CklzzVvcEc2HHzTnqIlV5a8khUfzMDUO6644Qu
-         Qgc3ykXI2tJHhY/TbWB/gOZzNc1kYGQ1fTSOrNWKoHBnxOPZu2HK0CNQiMp1fdvE38
-         rQ/w2NFz+EomA==
-Received: from prgdevlinuxpatch01.amust.local (172.24.14.5) by
- prgmbx01.amust.local (172.24.128.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.9; Mon, 13 Jun 2022 17:54:50 +0200
-From:   Sergei Shtepa <sergei.shtepa@veeam.com>
-To:     <axboe@kernel.dk>, <linux-block@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Sergei Shtepa <sergei.shtepa@veeam.com>
-Subject: [PATCH 16/20] block, blksnap: snapshot
-Date:   Mon, 13 Jun 2022 18:53:09 +0300
-Message-ID: <1655135593-1900-17-git-send-email-sergei.shtepa@veeam.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1655135593-1900-1-git-send-email-sergei.shtepa@veeam.com>
-References: <1655135593-1900-1-git-send-email-sergei.shtepa@veeam.com>
+        Mon, 13 Jun 2022 14:53:47 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78884674D1
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 08:56:26 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id y13-20020a17090a154d00b001eaaa3b9b8dso3476191pja.2
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 08:56:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=z0y4c6epEM+htJm1IysQ5+YJGTkXEvSBmPhnDnJNDpY=;
+        b=bqPAU+rc5ez1db6jGY4ac+dECcnpiJzg22gU34cLwVVqcvEpTt8uF1mFkD0ReAjqSi
+         C+IbjYxBUkcR1156BgHzC/0xcjZcPwL1bzCfvUE/+HnZ3sm6WYO6p3Fc6FlIe0bZZX9W
+         hhZ1BQmjqeN8f7Qw0rt6Ic9x/ByMGbuK0diDPTFwB6HUmOdBM1iesr5dIfB8zGu016/9
+         a69hZ/zywxTZ35XDdJeMm2o8psgemj8lK0MRoGIYbAWPHVcw/1OWZqo7tWRnppEaYkLm
+         g7YgjWsR8ldkhYGRwliVNweWheMsHQy3TP1kIt2Ljc/cTctnlDKsP0intlDgpLddy8Vx
+         tGzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=z0y4c6epEM+htJm1IysQ5+YJGTkXEvSBmPhnDnJNDpY=;
+        b=pgqOFlu10mZcqI1DrsS4Hd0+qJ9nyAncSjmleRq09i+NrkVxzgJcLrDU9klfzhdEci
+         tkgCOAYPQzm1HqoT0PqCsxOgFXj2bSuaVcP8WLhTcvEGXULbnerI+fv9CYvU8T4jvifw
+         rOWfsIXKvH6QyOFA+mVQRVk5bxYV3cPbYyeG6Oxoo++tyBYx/kFgTLk5/HpMg3qq0zLx
+         AxEujGaLs20obPlmefvmylM0xT90FG8xj98jBhu8dhPGMMJJryhVmB1mSIJpE6tpgHKj
+         4N0gH1srx6WWM/ol+L3DslyCiW4OV8xf7TOSqfjkRTwDOpRL6G3swmTMJR82Ih1zwqqV
+         aJTA==
+X-Gm-Message-State: AJIora9KTewe33MT9DJAQTYH/Wh260/ojDtbu20POAMMdSUyQiIpwqMP
+        vgHp05Hd3KIZv/WYJQ4q7fYq85enHBk=
+X-Google-Smtp-Source: AGRyM1uGQ8i5cpFhy0EMNjRVAsq+KIfTGsSotMWw+jKn+R93RC9Zr/Pmzrjpu+oCHdUWzRLRFt5YUA==
+X-Received: by 2002:a17:902:b610:b0:168:cd85:d7a2 with SMTP id b16-20020a170902b61000b00168cd85d7a2mr300552pls.125.1655135785001;
+        Mon, 13 Jun 2022 08:56:25 -0700 (PDT)
+Received: from daehojeong-desktop.mtv.corp.google.com ([2620:15c:211:201:2cd9:fd1f:2142:299c])
+        by smtp.gmail.com with ESMTPSA id t10-20020a17090a6a0a00b001e2f3831102sm5454271pjj.17.2022.06.13.08.56.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 08:56:24 -0700 (PDT)
+From:   Daeho Jeong <daeho43@gmail.com>
+To:     linux-kernel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net, kernel-team@android.com
+Cc:     Daeho Jeong <daehojeong@google.com>
+Subject: [PATCH] f2fs: handle decompress only post processing in softirq
+Date:   Mon, 13 Jun 2022 08:56:12 -0700
+Message-Id: <20220613155612.402297-1-daeho43@gmail.com>
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.24.14.5]
-X-ClientProxiedBy: prgmbx01.amust.local (172.24.128.102) To
- prgmbx01.amust.local (172.24.128.102)
-X-EsetResult: clean, is OK
-X-EsetId: 37303A29D2A50A536D7766
-X-Veeam-MMEX: True
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The struck snapshot combines block devices, for which a snapshot is
-created, block devices of their snapshot images, as well as a difference
-storage.
-There may be several snapshots at the same time, but they should not
-contain common block devices. This can be used for cases when backup is
-scheduled once an hour for some block devices, and once a day for
-others, and once a week for others. In this case, it is possible that
-three snapshots are used at the same time.
+From: Daeho Jeong <daehojeong@google.com>
 
-Signed-off-by: Sergei Shtepa <sergei.shtepa@veeam.com>
+Now decompression is being handled in workqueue and it makes read I/O
+latency non-deterministic, because of the non-deterministic scheduling
+nature of workqueues. So, I made it handled in softirq context only if
+possible.
+
+Signed-off-by: Daeho Jeong <daehojeong@google.com>
 ---
- drivers/block/blksnap/snapshot.c | 671 +++++++++++++++++++++++++++++++
- drivers/block/blksnap/snapshot.h |  76 ++++
- 2 files changed, 747 insertions(+)
- create mode 100644 drivers/block/blksnap/snapshot.c
- create mode 100644 drivers/block/blksnap/snapshot.h
+ fs/f2fs/compress.c | 145 +++++++++++++++++++++++++--------------------
+ fs/f2fs/data.c     |  50 ++++++++++------
+ fs/f2fs/f2fs.h     |  10 ++--
+ 3 files changed, 119 insertions(+), 86 deletions(-)
 
-diff --git a/drivers/block/blksnap/snapshot.c b/drivers/block/blksnap/snapshot.c
-new file mode 100644
-index 000000000000..d7285b8108d0
---- /dev/null
-+++ b/drivers/block/blksnap/snapshot.c
-@@ -0,0 +1,671 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#define pr_fmt(fmt) KBUILD_MODNAME "-snapshot: " fmt
-+#include <linux/slab.h>
-+#include <linux/sched/mm.h>
-+#include <linux/blk_snap.h>
-+#ifdef CONFIG_BLK_SNAP_DEBUG_MEMORY_LEAK
-+#include "memory_checker.h"
-+#endif
-+#include "snapshot.h"
-+#include "tracker.h"
-+#include "diff_storage.h"
-+#include "diff_area.h"
-+#include "snapimage.h"
-+#include "cbt_map.h"
+diff --git a/fs/f2fs/compress.c b/fs/f2fs/compress.c
+index 24824cd96f36..8bc4cd0390dc 100644
+--- a/fs/f2fs/compress.c
++++ b/fs/f2fs/compress.c
+@@ -729,14 +729,13 @@ static int f2fs_compress_pages(struct compress_ctx *cc)
+ 	return ret;
+ }
+ 
+-void f2fs_decompress_cluster(struct decompress_io_ctx *dic)
++void f2fs_decompress_cluster(struct decompress_io_ctx *dic, bool in_softirq)
+ {
+ 	struct f2fs_sb_info *sbi = F2FS_I_SB(dic->inode);
+ 	struct f2fs_inode_info *fi = F2FS_I(dic->inode);
+ 	const struct f2fs_compress_ops *cops =
+ 			f2fs_cops[fi->i_compress_algorithm];
+ 	int ret;
+-	int i;
+ 
+ 	trace_f2fs_decompress_pages_start(dic->inode, dic->cluster_idx,
+ 				dic->cluster_size, fi->i_compress_algorithm);
+@@ -746,49 +745,12 @@ void f2fs_decompress_cluster(struct decompress_io_ctx *dic)
+ 		goto out_end_io;
+ 	}
+ 
+-	dic->tpages = page_array_alloc(dic->inode, dic->cluster_size);
+-	if (!dic->tpages) {
+-		ret = -ENOMEM;
+-		goto out_end_io;
+-	}
+-
+-	for (i = 0; i < dic->cluster_size; i++) {
+-		if (dic->rpages[i]) {
+-			dic->tpages[i] = dic->rpages[i];
+-			continue;
+-		}
+-
+-		dic->tpages[i] = f2fs_compress_alloc_page();
+-		if (!dic->tpages[i]) {
+-			ret = -ENOMEM;
+-			goto out_end_io;
+-		}
+-	}
+-
+-	if (cops->init_decompress_ctx) {
+-		ret = cops->init_decompress_ctx(dic);
+-		if (ret)
+-			goto out_end_io;
+-	}
+-
+-	dic->rbuf = f2fs_vmap(dic->tpages, dic->cluster_size);
+-	if (!dic->rbuf) {
+-		ret = -ENOMEM;
+-		goto out_destroy_decompress_ctx;
+-	}
+-
+-	dic->cbuf = f2fs_vmap(dic->cpages, dic->nr_cpages);
+-	if (!dic->cbuf) {
+-		ret = -ENOMEM;
+-		goto out_vunmap_rbuf;
+-	}
+-
+ 	dic->clen = le32_to_cpu(dic->cbuf->clen);
+ 	dic->rlen = PAGE_SIZE << dic->log_cluster_size;
+ 
+ 	if (dic->clen > PAGE_SIZE * dic->nr_cpages - COMPRESS_HEADER_SIZE) {
+ 		ret = -EFSCORRUPTED;
+-		goto out_vunmap_cbuf;
++		goto out_end_io;
+ 	}
+ 
+ 	ret = cops->decompress_pages(dic);
+@@ -809,17 +771,10 @@ void f2fs_decompress_cluster(struct decompress_io_ctx *dic)
+ 		}
+ 	}
+ 
+-out_vunmap_cbuf:
+-	vm_unmap_ram(dic->cbuf, dic->nr_cpages);
+-out_vunmap_rbuf:
+-	vm_unmap_ram(dic->rbuf, dic->cluster_size);
+-out_destroy_decompress_ctx:
+-	if (cops->destroy_decompress_ctx)
+-		cops->destroy_decompress_ctx(dic);
+ out_end_io:
+ 	trace_f2fs_decompress_pages_end(dic->inode, dic->cluster_idx,
+ 							dic->clen, ret);
+-	f2fs_decompress_end_io(dic, ret);
++	f2fs_decompress_end_io(dic, ret, in_softirq);
+ }
+ 
+ /*
+@@ -829,7 +784,7 @@ void f2fs_decompress_cluster(struct decompress_io_ctx *dic)
+  * (or in the case of a failure, cleans up without actually decompressing).
+  */
+ void f2fs_end_read_compressed_page(struct page *page, bool failed,
+-						block_t blkaddr)
++		block_t blkaddr, bool in_softirq)
+ {
+ 	struct decompress_io_ctx *dic =
+ 			(struct decompress_io_ctx *)page_private(page);
+@@ -839,12 +794,12 @@ void f2fs_end_read_compressed_page(struct page *page, bool failed,
+ 
+ 	if (failed)
+ 		WRITE_ONCE(dic->failed, true);
+-	else if (blkaddr)
++	else if (blkaddr && !in_softirq)
+ 		f2fs_cache_compressed_page(sbi, page,
+ 					dic->inode->i_ino, blkaddr);
+ 
+ 	if (atomic_dec_and_test(&dic->remaining_pages))
+-		f2fs_decompress_cluster(dic);
++		f2fs_decompress_cluster(dic, in_softirq);
+ }
+ 
+ static bool is_page_in_cluster(struct compress_ctx *cc, pgoff_t index)
+@@ -1552,12 +1507,14 @@ int f2fs_write_multi_pages(struct compress_ctx *cc,
+ 	return err;
+ }
+ 
+-static void f2fs_free_dic(struct decompress_io_ctx *dic);
++static void f2fs_free_dic(struct decompress_io_ctx *dic,
++		bool bypass_destroy_callback);
+ 
+ struct decompress_io_ctx *f2fs_alloc_dic(struct compress_ctx *cc)
+ {
+ 	struct decompress_io_ctx *dic;
+ 	pgoff_t start_idx = start_idx_of_cluster(cc);
++	const struct f2fs_compress_ops *cops;
+ 	int i;
+ 
+ 	dic = f2fs_kmem_cache_alloc(dic_entry_slab, GFP_F2FS_ZERO,
+@@ -1602,17 +1559,60 @@ struct decompress_io_ctx *f2fs_alloc_dic(struct compress_ctx *cc)
+ 		dic->cpages[i] = page;
+ 	}
+ 
++	dic->tpages = page_array_alloc(dic->inode, dic->cluster_size);
++	if (!dic->tpages)
++		goto out_free;
 +
-+LIST_HEAD(snapshots);
-+DECLARE_RWSEM(snapshots_lock);
-+
-+static void snapshot_release(struct snapshot *snapshot)
-+{
-+	int inx;
-+	unsigned int current_flag;
-+
-+	pr_info("Release snapshot %pUb\n", &snapshot->id);
-+
-+	/* Destroy all snapshot images. */
-+	for (inx = 0; inx < snapshot->count; ++inx) {
-+		struct snapimage *snapimage = snapshot->snapimage_array[inx];
-+
-+		if (snapimage)
-+			snapimage_free(snapimage);
-+	}
-+
-+	/* Flush and freeze fs on each original block device. */
-+	for (inx = 0; inx < snapshot->count; ++inx) {
-+		struct tracker *tracker = snapshot->tracker_array[inx];
-+
-+		if (!tracker || !tracker->diff_area)
++	for (i = 0; i < dic->cluster_size; i++) {
++		if (dic->rpages[i]) {
++			dic->tpages[i] = dic->rpages[i];
 +			continue;
-+
-+		if (freeze_bdev(tracker->diff_area->orig_bdev))
-+			pr_err("Failed to freeze device [%u:%u]\n",
-+			       MAJOR(tracker->dev_id), MINOR(tracker->dev_id));
-+	}
-+
-+	current_flag = memalloc_noio_save();
-+	tracker_lock();
-+
-+	/* Set tracker as available for new snapshots. */
-+	for (inx = 0; inx < snapshot->count; ++inx)
-+		tracker_release_snapshot(snapshot->tracker_array[inx]);
-+
-+	tracker_unlock();
-+	memalloc_noio_restore(current_flag);
-+
-+	/* Thaw fs on each original block device. */
-+	for (inx = 0; inx < snapshot->count; ++inx) {
-+		struct tracker *tracker = snapshot->tracker_array[inx];
-+
-+		if (!tracker || !tracker->diff_area)
-+			continue;
-+
-+		if (thaw_bdev(tracker->diff_area->orig_bdev))
-+			pr_err("Failed to thaw device [%u:%u]\n",
-+			       MAJOR(tracker->dev_id), MINOR(tracker->dev_id));
-+	}
-+
-+	/* Destroy diff area for each tracker. */
-+	for (inx = 0; inx < snapshot->count; ++inx) {
-+		struct tracker *tracker = snapshot->tracker_array[inx];
-+
-+		if (tracker) {
-+			diff_area_put(tracker->diff_area);
-+			tracker->diff_area = NULL;
-+
-+			tracker_put(tracker);
-+			snapshot->tracker_array[inx] = NULL;
-+		}
-+	}
-+}
-+
-+static void snapshot_free(struct kref *kref)
-+{
-+	struct snapshot *snapshot = container_of(kref, struct snapshot, kref);
-+
-+	if (snapshot->is_taken)
-+		snapshot_release(snapshot);
-+	kfree(snapshot->snapimage_array);
-+#ifdef CONFIG_BLK_SNAP_DEBUG_MEMORY_LEAK
-+	if (snapshot->snapimage_array)
-+		memory_object_dec(memory_object_snapimage_array);
-+#endif
-+	kfree(snapshot->tracker_array);
-+#ifdef CONFIG_BLK_SNAP_DEBUG_MEMORY_LEAK
-+	if (snapshot->tracker_array)
-+		memory_object_dec(memory_object_tracker_array);
-+#endif
-+	diff_storage_put(snapshot->diff_storage);
-+
-+	kfree(snapshot);
-+#ifdef CONFIG_BLK_SNAP_DEBUG_MEMORY_LEAK
-+	memory_object_dec(memory_object_snapshot);
-+#endif
-+}
-+
-+static inline void snapshot_get(struct snapshot *snapshot)
-+{
-+	kref_get(&snapshot->kref);
-+};
-+static inline void snapshot_put(struct snapshot *snapshot)
-+{
-+	if (likely(snapshot))
-+		kref_put(&snapshot->kref, snapshot_free);
-+};
-+
-+static struct snapshot *snapshot_new(unsigned int count)
-+{
-+	int ret;
-+	struct snapshot *snapshot = NULL;
-+
-+	snapshot = kzalloc(sizeof(struct snapshot), GFP_KERNEL);
-+	if (!snapshot) {
-+		ret = -ENOMEM;
-+		goto fail;
-+	}
-+#ifdef CONFIG_BLK_SNAP_DEBUG_MEMORY_LEAK
-+	memory_object_inc(memory_object_snapshot);
-+#endif
-+	snapshot->tracker_array = kcalloc(count, sizeof(void *), GFP_KERNEL);
-+	if (!snapshot->tracker_array) {
-+		ret = -ENOMEM;
-+		goto fail_free_snapshot;
-+	}
-+#ifdef CONFIG_BLK_SNAP_DEBUG_MEMORY_LEAK
-+	memory_object_inc(memory_object_tracker_array);
-+#endif
-+	snapshot->snapimage_array = kcalloc(count, sizeof(void *), GFP_KERNEL);
-+	if (!snapshot->snapimage_array) {
-+		ret = -ENOMEM;
-+		goto fail_free_trackers;
-+	}
-+#ifdef CONFIG_BLK_SNAP_DEBUG_MEMORY_LEAK
-+	memory_object_inc(memory_object_snapimage_array);
-+#endif
-+	snapshot->diff_storage = diff_storage_new();
-+	if (!snapshot->diff_storage) {
-+		ret = -ENOMEM;
-+		goto fail_free_snapimage;
-+	}
-+
-+	INIT_LIST_HEAD(&snapshot->link);
-+	kref_init(&snapshot->kref);
-+	uuid_gen(&snapshot->id);
-+	snapshot->is_taken = false;
-+
-+	return snapshot;
-+
-+fail_free_snapimage:
-+	kfree(snapshot->snapimage_array);
-+#ifdef CONFIG_BLK_SNAP_DEBUG_MEMORY_LEAK
-+	if (snapshot->snapimage_array)
-+		memory_object_dec(memory_object_superblock_array);
-+#endif
-+	kfree(snapshot->snapimage_array);
-+#ifdef CONFIG_BLK_SNAP_DEBUG_MEMORY_LEAK
-+	if (snapshot->snapimage_array)
-+		memory_object_dec(memory_object_snapimage_array);
-+#endif
-+fail_free_trackers:
-+	kfree(snapshot->tracker_array);
-+#ifdef CONFIG_BLK_SNAP_DEBUG_MEMORY_LEAK
-+	if (snapshot->tracker_array)
-+		memory_object_dec(memory_object_tracker_array);
-+#endif
-+
-+fail_free_snapshot:
-+	kfree(snapshot);
-+#ifdef CONFIG_BLK_SNAP_DEBUG_MEMORY_LEAK
-+	if (snapshot)
-+		memory_object_dec(memory_object_snapshot);
-+#endif
-+
-+fail:
-+	return ERR_PTR(ret);
-+}
-+
-+void snapshot_done(void)
-+{
-+	struct snapshot *snapshot;
-+
-+	pr_debug("Cleanup snapshots\n");
-+	do {
-+		down_write(&snapshots_lock);
-+		snapshot = list_first_entry_or_null(&snapshots, struct snapshot,
-+						    link);
-+		if (snapshot)
-+			list_del(&snapshot->link);
-+		up_write(&snapshots_lock);
-+
-+		snapshot_put(snapshot);
-+	} while (snapshot);
-+}
-+
-+int snapshot_create(struct blk_snap_dev_t *dev_id_array, unsigned int count,
-+		    uuid_t *id)
-+{
-+	struct snapshot *snapshot = NULL;
-+	int ret;
-+	unsigned int inx;
-+
-+	pr_info("Create snapshot for devices:\n");
-+	for (inx = 0; inx < count; ++inx)
-+		pr_info("\t%u:%u\n", dev_id_array[inx].mj,
-+			dev_id_array[inx].mn);
-+
-+	snapshot = snapshot_new(count);
-+	if (IS_ERR(snapshot)) {
-+		pr_err("Unable to create snapshot: failed to allocate snapshot structure\n");
-+		return PTR_ERR(snapshot);
-+	}
-+
-+	ret = -ENODEV;
-+	for (inx = 0; inx < count; ++inx) {
-+		dev_t dev_id =
-+			MKDEV(dev_id_array[inx].mj, dev_id_array[inx].mn);
-+		struct tracker *tracker;
-+
-+		tracker = tracker_create_or_get(dev_id);
-+		if (IS_ERR(tracker)) {
-+			pr_err("Unable to create snapshot\n");
-+			pr_err("Failed to add device [%u:%u] to snapshot tracking\n",
-+			       MAJOR(dev_id), MINOR(dev_id));
-+			ret = PTR_ERR(tracker);
-+			goto fail;
 +		}
 +
-+		snapshot->tracker_array[inx] = tracker;
-+		snapshot->count++;
++		dic->tpages[i] = f2fs_compress_alloc_page();
++		if (!dic->tpages[i])
++			goto out_free;
 +	}
 +
-+	down_write(&snapshots_lock);
-+	list_add_tail(&snapshots, &snapshot->link);
-+	up_write(&snapshots_lock);
++	dic->rbuf = f2fs_vmap(dic->tpages, dic->cluster_size);
++	if (!dic->rbuf)
++		goto out_free;
 +
-+	uuid_copy(id, &snapshot->id);
-+	pr_info("Snapshot %pUb was created\n", &snapshot->id);
-+	return 0;
-+fail:
-+	pr_err("Snapshot cannot be created\n");
++	dic->cbuf = f2fs_vmap(dic->cpages, dic->nr_cpages);
++	if (!dic->cbuf)
++		goto out_free;
 +
-+	snapshot_put(snapshot);
-+	return ret;
++	cops = f2fs_cops[F2FS_I(dic->inode)->i_compress_algorithm];
++	if (cops->init_decompress_ctx) {
++		int ret = cops->init_decompress_ctx(dic);
++
++		if (ret)
++			goto out_free;
++	}
++
+ 	return dic;
+ 
+ out_free:
+-	f2fs_free_dic(dic);
++	f2fs_free_dic(dic, true);
+ 	return ERR_PTR(-ENOMEM);
+ }
+ 
+-static void f2fs_free_dic(struct decompress_io_ctx *dic)
++static void f2fs_free_dic(struct decompress_io_ctx *dic,
++		bool bypass_destroy_callback)
+ {
++	const struct f2fs_compress_ops *cops =
++		f2fs_cops[F2FS_I(dic->inode)->i_compress_algorithm];
+ 	int i;
+ 
++	if (!bypass_destroy_callback && cops->destroy_decompress_ctx)
++		cops->destroy_decompress_ctx(dic);
++
++	if (dic->cbuf)
++		vm_unmap_ram(dic->cbuf, dic->nr_cpages);
++
++	if (dic->rbuf)
++		vm_unmap_ram(dic->rbuf, dic->cluster_size);
++
+ 	if (dic->tpages) {
+ 		for (i = 0; i < dic->cluster_size; i++) {
+ 			if (dic->rpages[i])
+@@ -1637,17 +1637,33 @@ static void f2fs_free_dic(struct decompress_io_ctx *dic)
+ 	kmem_cache_free(dic_entry_slab, dic);
+ }
+ 
+-static void f2fs_put_dic(struct decompress_io_ctx *dic)
++static void f2fs_late_free_dic(struct work_struct *work)
+ {
+-	if (refcount_dec_and_test(&dic->refcnt))
+-		f2fs_free_dic(dic);
++	struct decompress_io_ctx *dic =
++		container_of(work, struct decompress_io_ctx, free_work);
++
++	f2fs_free_dic(dic, false);
 +}
 +
-+static struct snapshot *snapshot_get_by_id(uuid_t *id)
++static void f2fs_put_dic(struct decompress_io_ctx *dic, bool in_softirq)
 +{
-+	struct snapshot *snapshot = NULL;
-+	struct snapshot *s;
-+
-+	down_read(&snapshots_lock);
-+	if (list_empty(&snapshots))
-+		goto out;
-+
-+	list_for_each_entry(s, &snapshots, link) {
-+		if (uuid_equal(&s->id, id)) {
-+			snapshot = s;
-+			snapshot_get(snapshot);
-+			break;
++	if (refcount_dec_and_test(&dic->refcnt)) {
++		if (in_softirq) {
++			INIT_WORK(&dic->free_work, f2fs_late_free_dic);
++			queue_work(F2FS_I_SB(dic->inode)->post_read_wq,
++					&dic->free_work);
++		} else {
++			f2fs_free_dic(dic, false);
 +		}
 +	}
-+out:
-+	up_read(&snapshots_lock);
-+	return snapshot;
-+}
+ }
+ 
+ /*
+  * Update and unlock the cluster's pagecache pages, and release the reference to
+  * the decompress_io_ctx that was being held for I/O completion.
+  */
+-static void __f2fs_decompress_end_io(struct decompress_io_ctx *dic, bool failed)
++static void __f2fs_decompress_end_io(struct decompress_io_ctx *dic, bool failed,
++				bool in_softirq)
+ {
+ 	int i;
+ 
+@@ -1668,7 +1684,7 @@ static void __f2fs_decompress_end_io(struct decompress_io_ctx *dic, bool failed)
+ 		unlock_page(rpage);
+ 	}
+ 
+-	f2fs_put_dic(dic);
++	f2fs_put_dic(dic, in_softirq);
+ }
+ 
+ static void f2fs_verify_cluster(struct work_struct *work)
+@@ -1685,14 +1701,15 @@ static void f2fs_verify_cluster(struct work_struct *work)
+ 			SetPageError(rpage);
+ 	}
+ 
+-	__f2fs_decompress_end_io(dic, false);
++	__f2fs_decompress_end_io(dic, false, false);
+ }
+ 
+ /*
+  * This is called when a compressed cluster has been decompressed
+  * (or failed to be read and/or decompressed).
+  */
+-void f2fs_decompress_end_io(struct decompress_io_ctx *dic, bool failed)
++void f2fs_decompress_end_io(struct decompress_io_ctx *dic, bool failed,
++				bool in_softirq)
+ {
+ 	if (!failed && dic->need_verity) {
+ 		/*
+@@ -1704,7 +1721,7 @@ void f2fs_decompress_end_io(struct decompress_io_ctx *dic, bool failed)
+ 		INIT_WORK(&dic->verity_work, f2fs_verify_cluster);
+ 		fsverity_enqueue_verify_work(&dic->verity_work);
+ 	} else {
+-		__f2fs_decompress_end_io(dic, failed);
++		__f2fs_decompress_end_io(dic, failed, in_softirq);
+ 	}
+ }
+ 
+@@ -1713,12 +1730,12 @@ void f2fs_decompress_end_io(struct decompress_io_ctx *dic, bool failed)
+  *
+  * This is called when the page is no longer needed and can be freed.
+  */
+-void f2fs_put_page_dic(struct page *page)
++void f2fs_put_page_dic(struct page *page, bool in_softirq)
+ {
+ 	struct decompress_io_ctx *dic =
+ 			(struct decompress_io_ctx *)page_private(page);
+ 
+-	f2fs_put_dic(dic);
++	f2fs_put_dic(dic, in_softirq);
+ }
+ 
+ /*
+diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
+index 7fcbcf979737..87455350c9e4 100644
+--- a/fs/f2fs/data.c
++++ b/fs/f2fs/data.c
+@@ -119,7 +119,7 @@ struct bio_post_read_ctx {
+ 	block_t fs_blkaddr;
+ };
+ 
+-static void f2fs_finish_read_bio(struct bio *bio)
++static void f2fs_finish_read_bio(struct bio *bio, bool in_softirq)
+ {
+ 	struct bio_vec *bv;
+ 	struct bvec_iter_all iter_all;
+@@ -133,8 +133,9 @@ static void f2fs_finish_read_bio(struct bio *bio)
+ 
+ 		if (f2fs_is_compressed_page(page)) {
+ 			if (bio->bi_status)
+-				f2fs_end_read_compressed_page(page, true, 0);
+-			f2fs_put_page_dic(page);
++				f2fs_end_read_compressed_page(page, true, 0,
++							in_softirq);
++			f2fs_put_page_dic(page, in_softirq);
+ 			continue;
+ 		}
+ 
+@@ -191,7 +192,7 @@ static void f2fs_verify_bio(struct work_struct *work)
+ 		fsverity_verify_bio(bio);
+ 	}
+ 
+-	f2fs_finish_read_bio(bio);
++	f2fs_finish_read_bio(bio, false);
+ }
+ 
+ /*
+@@ -203,7 +204,7 @@ static void f2fs_verify_bio(struct work_struct *work)
+  * can involve reading verity metadata pages from the file, and these verity
+  * metadata pages may be encrypted and/or compressed.
+  */
+-static void f2fs_verify_and_finish_bio(struct bio *bio)
++static void f2fs_verify_and_finish_bio(struct bio *bio, bool in_softirq)
+ {
+ 	struct bio_post_read_ctx *ctx = bio->bi_private;
+ 
+@@ -211,7 +212,7 @@ static void f2fs_verify_and_finish_bio(struct bio *bio)
+ 		INIT_WORK(&ctx->work, f2fs_verify_bio);
+ 		fsverity_enqueue_verify_work(&ctx->work);
+ 	} else {
+-		f2fs_finish_read_bio(bio);
++		f2fs_finish_read_bio(bio, in_softirq);
+ 	}
+ }
+ 
+@@ -224,7 +225,8 @@ static void f2fs_verify_and_finish_bio(struct bio *bio)
+  * that the bio includes at least one compressed page.  The actual decompression
+  * is done on a per-cluster basis, not a per-bio basis.
+  */
+-static void f2fs_handle_step_decompress(struct bio_post_read_ctx *ctx)
++static void f2fs_handle_step_decompress(struct bio_post_read_ctx *ctx,
++		bool in_softirq)
+ {
+ 	struct bio_vec *bv;
+ 	struct bvec_iter_all iter_all;
+@@ -237,7 +239,7 @@ static void f2fs_handle_step_decompress(struct bio_post_read_ctx *ctx)
+ 		/* PG_error was set if decryption failed. */
+ 		if (f2fs_is_compressed_page(page))
+ 			f2fs_end_read_compressed_page(page, PageError(page),
+-						blkaddr);
++						blkaddr, in_softirq);
+ 		else
+ 			all_compressed = false;
+ 
+@@ -262,9 +264,9 @@ static void f2fs_post_read_work(struct work_struct *work)
+ 		fscrypt_decrypt_bio(ctx->bio);
+ 
+ 	if (ctx->enabled_steps & STEP_DECOMPRESS)
+-		f2fs_handle_step_decompress(ctx);
++		f2fs_handle_step_decompress(ctx, false);
+ 
+-	f2fs_verify_and_finish_bio(ctx->bio);
++	f2fs_verify_and_finish_bio(ctx->bio, false);
+ }
+ 
+ static void f2fs_read_end_io(struct bio *bio)
+@@ -281,16 +283,28 @@ static void f2fs_read_end_io(struct bio *bio)
+ 	}
+ 
+ 	if (bio->bi_status) {
+-		f2fs_finish_read_bio(bio);
++		f2fs_finish_read_bio(bio, true);
+ 		return;
+ 	}
+ 
+-	if (ctx && (ctx->enabled_steps & (STEP_DECRYPT | STEP_DECOMPRESS))) {
+-		INIT_WORK(&ctx->work, f2fs_post_read_work);
+-		queue_work(ctx->sbi->post_read_wq, &ctx->work);
+-	} else {
+-		f2fs_verify_and_finish_bio(bio);
++	if (ctx) {
++		unsigned int enabled_steps = ctx->enabled_steps &
++					(STEP_DECRYPT | STEP_DECOMPRESS);
 +
-+int snapshot_destroy(uuid_t *id)
-+{
-+	struct snapshot *snapshot = NULL;
-+
-+	pr_info("Destroy snapshot %pUb\n", id);
-+	down_write(&snapshots_lock);
-+	if (!list_empty(&snapshots)) {
-+		struct snapshot *s = NULL;
-+
-+		list_for_each_entry(s, &snapshots, link) {
-+			if (uuid_equal(&s->id, id)) {
-+				snapshot = s;
-+				list_del(&snapshot->link);
-+				break;
-+			}
++		/*
++		 * If we have only decompression step between decompression and
++		 * decrypt, we don't need post processing for this.
++		 */
++		if (enabled_steps == STEP_DECOMPRESS) {
++			f2fs_handle_step_decompress(ctx, true);
++		} else if (enabled_steps) {
++			INIT_WORK(&ctx->work, f2fs_post_read_work);
++			queue_work(ctx->sbi->post_read_wq, &ctx->work);
++			return;
 +		}
-+	}
-+	up_write(&snapshots_lock);
-+
-+	if (!snapshot) {
-+		pr_err("Unable to destroy snapshot: cannot find snapshot by id %pUb\n",
-+		       id);
-+		return -ENODEV;
-+	}
-+	snapshot_put(snapshot);
-+#ifdef CONFIG_BLK_SNAP_DEBUG_MEMORY_LEAK
-+	pr_debug("blksnap memory consumption:\n");
-+	memory_object_print();
-+	memory_object_max_print();
-+#endif
-+	return 0;
-+}
-+
-+int snapshot_append_storage(uuid_t *id, struct blk_snap_dev_t dev_id,
-+			    struct big_buffer *ranges, unsigned int range_count)
-+{
-+	int ret = 0;
-+	struct snapshot *snapshot;
-+
-+	snapshot = snapshot_get_by_id(id);
-+	if (!snapshot)
-+		return -ESRCH;
-+
-+	ret = diff_storage_append_block(snapshot->diff_storage,
-+					MKDEV(dev_id.mj, dev_id.mn), ranges,
-+					range_count);
-+	snapshot_put(snapshot);
-+	return ret;
-+}
-+
-+int snapshot_take(uuid_t *id)
-+{
-+	int ret = 0;
-+	struct snapshot *snapshot;
-+	int inx;
-+	unsigned int current_flag;
-+
-+	snapshot = snapshot_get_by_id(id);
-+	if (!snapshot)
-+		return -ESRCH;
-+
-+	if (snapshot->is_taken) {
-+		ret = -EALREADY;
-+		goto out;
-+	}
-+
-+	if (!snapshot->count) {
-+		ret = -ENODEV;
-+		goto out;
-+	}
-+
-+	/* Allocate diff area for each device in the snapshot. */
-+	for (inx = 0; inx < snapshot->count; inx++) {
-+		struct tracker *tracker = snapshot->tracker_array[inx];
-+		struct diff_area *diff_area;
-+
-+		if (!tracker)
-+			continue;
-+
-+		diff_area =
-+			diff_area_new(tracker->dev_id, snapshot->diff_storage);
-+		if (IS_ERR(diff_area)) {
-+			ret = PTR_ERR(diff_area);
-+			goto fail;
-+		}
-+		tracker->diff_area = diff_area;
-+	}
-+
-+	/* Try to flush and freeze file system on each original block device. */
-+	for (inx = 0; inx < snapshot->count; inx++) {
-+		struct tracker *tracker = snapshot->tracker_array[inx];
-+
-+		if (!tracker)
-+			continue;
-+
-+		if (freeze_bdev(tracker->diff_area->orig_bdev))
-+			pr_err("Failed to freeze device [%u:%u]\n",
-+			       MAJOR(tracker->dev_id), MINOR(tracker->dev_id));
-+	}
-+
-+	current_flag = memalloc_noio_save();
-+	tracker_lock();
-+
-+	/*
-+	 * Take snapshot - switch CBT tables and enable COW logic
-+	 * for each tracker.
-+	 */
-+	for (inx = 0; inx < snapshot->count; inx++) {
-+		if (!snapshot->tracker_array[inx])
-+			continue;
-+		ret = tracker_take_snapshot(snapshot->tracker_array[inx]);
-+		if (ret) {
-+			pr_err("Unable to take snapshot: failed to capture snapshot %pUb\n",
-+			       &snapshot->id);
-+
-+			break;
-+		}
-+	}
-+
-+	if (ret) {
-+		while (inx--) {
-+			struct tracker *tracker = snapshot->tracker_array[inx];
-+
-+			if (tracker)
-+				tracker_release_snapshot(tracker);
-+		}
-+	} else
-+		snapshot->is_taken = true;
-+
-+	tracker_unlock();
-+	memalloc_noio_restore(current_flag);
-+
-+	/* Thaw file systems on original block devices. */
-+	for (inx = 0; inx < snapshot->count; inx++) {
-+		struct tracker *tracker = snapshot->tracker_array[inx];
-+
-+		if (!tracker)
-+			continue;
-+
-+		if (thaw_bdev(tracker->diff_area->orig_bdev))
-+			pr_err("Failed to thaw device [%u:%u]\n",
-+			       MAJOR(tracker->dev_id), MINOR(tracker->dev_id));
-+	}
-+
-+	if (ret)
-+		goto fail;
-+
-+	pr_info("Snapshot was taken successfully\n");
-+
-+	/**
-+	 * Sometimes a snapshot is in the state of corrupt immediately
-+	 * after it is taken.
-+	 */
-+	for (inx = 0; inx < snapshot->count; inx++) {
-+		struct tracker *tracker = snapshot->tracker_array[inx];
-+
-+		if (!tracker)
-+			continue;
-+
-+		if (diff_area_is_corrupted(tracker->diff_area)) {
-+			pr_err("Unable to freeze devices [%u:%u]: diff area is corrupted\n",
-+			       MAJOR(tracker->dev_id), MINOR(tracker->dev_id));
-+			ret = -EFAULT;
-+			goto fail;
-+		}
-+	}
-+
-+	/* Create all image block devices. */
-+	for (inx = 0; inx < snapshot->count; inx++) {
-+		struct snapimage *snapimage;
-+		struct tracker *tracker = snapshot->tracker_array[inx];
-+
-+		snapimage =
-+			snapimage_create(tracker->diff_area, tracker->cbt_map);
-+		if (IS_ERR(snapimage)) {
-+			ret = PTR_ERR(snapimage);
-+			pr_err("Failed to create snapshot image for device [%u:%u] with error=%d\n",
-+			       MAJOR(tracker->dev_id), MINOR(tracker->dev_id),
-+			       ret);
-+			break;
-+		}
-+		snapshot->snapimage_array[inx] = snapimage;
-+	}
-+
-+	goto out;
-+fail:
-+	pr_err("Unable to take snapshot: failed to capture snapshot %pUb\n",
-+	       &snapshot->id);
-+
-+	down_write(&snapshots_lock);
-+	list_del(&snapshot->link);
-+	up_write(&snapshots_lock);
-+	snapshot_put(snapshot);
-+out:
-+	snapshot_put(snapshot);
-+	return ret;
-+}
-+
-+struct event *snapshot_wait_event(uuid_t *id, unsigned long timeout_ms)
-+{
-+	struct snapshot *snapshot;
-+	struct event *event;
-+
-+	//pr_debug("Wait event\n");
-+	snapshot = snapshot_get_by_id(id);
-+	if (!snapshot)
-+		return ERR_PTR(-ESRCH);
-+
-+	event = event_wait(&snapshot->diff_storage->event_queue, timeout_ms);
-+
-+	snapshot_put(snapshot);
-+	return event;
-+}
-+
-+static inline int uuid_copy_to_user(uuid_t __user *dst, const uuid_t *src)
-+{
-+	int len;
-+
-+	len = copy_to_user(dst, src, sizeof(uuid_t));
-+	if (len)
-+		return -ENODATA;
-+	return 0;
-+}
-+
-+int snapshot_collect(unsigned int *pcount, uuid_t __user *id_array)
-+{
-+	int ret = 0;
-+	int inx = 0;
-+	struct snapshot *s;
-+
-+	pr_debug("Collect snapshots\n");
-+
-+	down_read(&snapshots_lock);
-+	if (list_empty(&snapshots))
-+		goto out;
-+
-+	if (!id_array) {
-+		list_for_each_entry(s, &snapshots, link)
-+			inx++;
-+		goto out;
-+	}
-+
-+	list_for_each_entry(s, &snapshots, link) {
-+		if (inx >= *pcount) {
-+			ret = -ENODATA;
-+			goto out;
-+		}
-+
-+		ret = uuid_copy_to_user(&id_array[inx], &s->id);
-+		if (ret) {
-+			pr_err("Unable to collect snapshots: failed to copy data to user buffer\n");
-+			goto out;
-+		}
-+
-+		inx++;
-+	}
-+out:
-+	up_read(&snapshots_lock);
-+	*pcount = inx;
-+	return ret;
-+}
-+
-+int snapshot_collect_images(
-+	uuid_t *id, struct blk_snap_image_info __user *user_image_info_array,
-+	unsigned int *pcount)
-+{
-+	int ret = 0;
-+	int inx;
-+	unsigned long len;
-+	struct blk_snap_image_info *image_info_array = NULL;
-+	struct snapshot *snapshot;
-+
-+	pr_debug("Collect images for snapshots\n");
-+
-+	snapshot = snapshot_get_by_id(id);
-+	if (!snapshot)
-+		return -ESRCH;
-+
-+	if (!snapshot->is_taken) {
-+		ret = -ENODEV;
-+		goto out;
-+	}
-+
-+	pr_debug("Found snapshot with %d devices\n", snapshot->count);
-+	if (!user_image_info_array) {
-+		pr_debug(
-+			"Unable to collect snapshot images: users buffer is not set\n");
-+		goto out;
-+	}
-+
-+	if (*pcount < snapshot->count) {
-+		ret = -ENODATA;
-+		goto out;
-+	}
-+
-+	image_info_array =
-+		kcalloc(snapshot->count, sizeof(struct blk_snap_image_info),
-+			GFP_KERNEL);
-+	if (!image_info_array) {
-+		pr_err("Unable to collect snapshot images: not enough memory.\n");
-+		ret = -ENOMEM;
-+		goto out;
-+	}
-+#ifdef CONFIG_BLK_SNAP_DEBUG_MEMORY_LEAK
-+	memory_object_inc(memory_object_blk_snap_image_info);
-+#endif
-+	for (inx = 0; inx < snapshot->count; inx++) {
-+		if (snapshot->tracker_array[inx]) {
-+			dev_t orig_dev_id =
-+				snapshot->tracker_array[inx]->dev_id;
-+
-+			pr_debug("Original [%u:%u]\n",
-+				 MAJOR(orig_dev_id),
-+				 MINOR(orig_dev_id));
-+			image_info_array[inx].orig_dev_id.mj =
-+				MAJOR(orig_dev_id);
-+			image_info_array[inx].orig_dev_id.mn =
-+				MINOR(orig_dev_id);
-+		}
-+
-+		if (snapshot->snapimage_array[inx]) {
-+			dev_t image_dev_id =
-+				snapshot->snapimage_array[inx]->image_dev_id;
-+
-+			pr_debug("Image [%u:%u]\n",
-+				 MAJOR(image_dev_id),
-+				 MINOR(image_dev_id));
-+			image_info_array[inx].image_dev_id.mj =
-+				MAJOR(image_dev_id);
-+			image_info_array[inx].image_dev_id.mn =
-+				MINOR(image_dev_id);
-+		}
-+	}
-+
-+	len = copy_to_user(user_image_info_array, image_info_array,
-+			   snapshot->count *
-+				   sizeof(struct blk_snap_image_info));
-+	if (len != 0) {
-+		pr_err("Unable to collect snapshot images: failed to copy data to user buffer\n");
-+		ret = -ENODATA;
-+	}
-+out:
-+	*pcount = snapshot->count;
-+
-+	kfree(image_info_array);
-+#ifdef CONFIG_BLK_SNAP_DEBUG_MEMORY_LEAK
-+	if (image_info_array)
-+		memory_object_dec(memory_object_blk_snap_image_info);
-+#endif
-+	snapshot_put(snapshot);
-+
-+	return ret;
-+}
-+
-+int snapshot_mark_dirty_blocks(dev_t image_dev_id,
-+			       struct blk_snap_block_range *block_ranges,
-+			       unsigned int count)
-+{
-+	int ret = 0;
-+	int inx = 0;
-+	struct snapshot *s;
-+	struct cbt_map *cbt_map = NULL;
-+
-+	pr_debug("Marking [%d] dirty blocks for device [%u:%u]\n", count,
-+		 MAJOR(image_dev_id), MINOR(image_dev_id));
-+
-+	down_read(&snapshots_lock);
-+	if (list_empty(&snapshots))
-+		goto out;
-+
-+	list_for_each_entry(s, &snapshots, link) {
-+		for (inx = 0; inx < s->count; inx++) {
-+			if (s->snapimage_array[inx]->image_dev_id ==
-+			    image_dev_id) {
-+				cbt_map = s->snapimage_array[inx]->cbt_map;
-+				break;
-+			}
-+		}
-+
-+		inx++;
-+	}
-+	if (!cbt_map) {
-+		pr_err("Cannot find snapshot image device [%u:%u]\n",
-+		       MAJOR(image_dev_id), MINOR(image_dev_id));
-+		ret = -ENODEV;
-+		goto out;
-+	}
-+
-+	ret = cbt_map_mark_dirty_blocks(cbt_map, block_ranges, count);
-+	if (ret)
-+		pr_err("Failed to set CBT table. errno=%d\n", abs(ret));
-+out:
-+	up_read(&snapshots_lock);
-+
-+	return ret;
-+}
-diff --git a/drivers/block/blksnap/snapshot.h b/drivers/block/blksnap/snapshot.h
-new file mode 100644
-index 000000000000..6929d7ab62e8
---- /dev/null
-+++ b/drivers/block/blksnap/snapshot.h
-@@ -0,0 +1,76 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#pragma once
-+#include <linux/types.h>
-+#include <linux/list.h>
-+#include <linux/mm.h>
-+#include <linux/kref.h>
-+#include <linux/uuid.h>
-+#include <linux/spinlock.h>
-+#include <linux/rwsem.h>
-+#include <linux/fs.h>
-+#include "big_buffer.h"
-+#include "event_queue.h"
-+
-+struct tracker;
-+struct diff_storage;
-+struct snapimage;
-+/**
-+ * struct snapshot - Snapshot structure.
-+ * @link:
-+ *	The list header allows to store snapshots in a linked list.
-+ * @kref:
-+ *	Protects the structure from being released during the processing of
-+ *	an ioctl.
-+ * @id:
-+ *	UUID of snapshot.
-+ * @is_taken:
-+ *	Flag that the snapshot was taken.
-+ * @diff_storage:
-+ *	A pointer to the difference storage of this snapshot.
-+ * @count:
-+ *	The number of block devices in the snapshot. This number
-+ *	corresponds to the size of arrays of pointers to trackers
-+ *	and snapshot images.
-+ * @tracker_array:
-+ *	Array of pointers to block device trackers.
-+ * @snapimage_array:
-+ *	Array of pointers to images of snapshots of block devices.
-+ *
-+ * A snapshot corresponds to a single backup session and provides snapshot
-+ * images for multiple block devices. Several backup sessions can be
-+ * performed at the same time, which means that several snapshots can
-+ * exist at the same time. However, the original block device can only
-+ * belong to one snapshot. Creating multiple snapshots from the same block
-+ * device is not allowed.
-+ *
-+ * A UUID is used to identify the snapshot.
-+ *
-+ */
-+struct snapshot {
-+	struct list_head link;
-+	struct kref kref;
-+	uuid_t id;
-+	bool is_taken;
-+	struct diff_storage *diff_storage;
-+	int count;
-+	struct tracker **tracker_array;
-+	struct snapimage **snapimage_array;
-+};
-+
-+void snapshot_done(void);
-+
-+int snapshot_create(struct blk_snap_dev_t *dev_id_array, unsigned int count,
-+		    uuid_t *id);
-+int snapshot_destroy(uuid_t *id);
-+int snapshot_append_storage(uuid_t *id, struct blk_snap_dev_t dev_id,
-+			    struct big_buffer *ranges,
-+			    unsigned int range_count);
-+int snapshot_take(uuid_t *id);
-+struct event *snapshot_wait_event(uuid_t *id, unsigned long timeout_ms);
-+int snapshot_collect(unsigned int *pcount, uuid_t __user *id_array);
-+int snapshot_collect_images(uuid_t *id,
-+			    struct blk_snap_image_info __user *image_info_array,
-+			    unsigned int *pcount);
-+int snapshot_mark_dirty_blocks(dev_t image_dev_id,
-+			       struct blk_snap_block_range *block_ranges,
-+			       unsigned int count);
+ 	}
++
++	f2fs_verify_and_finish_bio(bio, true);
+ }
+ 
+ static void f2fs_write_end_io(struct bio *bio)
+@@ -2222,7 +2236,7 @@ int f2fs_read_multi_pages(struct compress_ctx *cc, struct bio **bio_ret,
+ 
+ 		if (f2fs_load_compressed_page(sbi, page, blkaddr)) {
+ 			if (atomic_dec_and_test(&dic->remaining_pages))
+-				f2fs_decompress_cluster(dic);
++				f2fs_decompress_cluster(dic, false);
+ 			continue;
+ 		}
+ 
+@@ -2240,7 +2254,7 @@ int f2fs_read_multi_pages(struct compress_ctx *cc, struct bio **bio_ret,
+ 					page->index, for_write);
+ 			if (IS_ERR(bio)) {
+ 				ret = PTR_ERR(bio);
+-				f2fs_decompress_end_io(dic, ret);
++				f2fs_decompress_end_io(dic, ret, false);
+ 				f2fs_put_dnode(&dn);
+ 				*bio_ret = NULL;
+ 				return ret;
+diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+index d9bbecd008d2..be118d332536 100644
+--- a/fs/f2fs/f2fs.h
++++ b/fs/f2fs/f2fs.h
+@@ -1580,6 +1580,7 @@ struct decompress_io_ctx {
+ 	void *private;			/* payload buffer for specified decompression algorithm */
+ 	void *private2;			/* extra payload buffer */
+ 	struct work_struct verity_work;	/* work to verify the decompressed pages */
++	struct work_struct free_work;	/* work for late free this structure itself */
+ };
+ 
+ #define NULL_CLUSTER			((unsigned int)(~0))
+@@ -4158,9 +4159,9 @@ void f2fs_compress_write_end_io(struct bio *bio, struct page *page);
+ bool f2fs_is_compress_backend_ready(struct inode *inode);
+ int f2fs_init_compress_mempool(void);
+ void f2fs_destroy_compress_mempool(void);
+-void f2fs_decompress_cluster(struct decompress_io_ctx *dic);
++void f2fs_decompress_cluster(struct decompress_io_ctx *dic, bool in_softirq);
+ void f2fs_end_read_compressed_page(struct page *page, bool failed,
+-							block_t blkaddr);
++				block_t blkaddr, bool in_softirq);
+ bool f2fs_cluster_is_empty(struct compress_ctx *cc);
+ bool f2fs_cluster_can_merge_page(struct compress_ctx *cc, pgoff_t index);
+ bool f2fs_all_cluster_page_loaded(struct compress_ctx *cc, struct pagevec *pvec,
+@@ -4179,8 +4180,9 @@ int f2fs_read_multi_pages(struct compress_ctx *cc, struct bio **bio_ret,
+ 				unsigned nr_pages, sector_t *last_block_in_bio,
+ 				bool is_readahead, bool for_write);
+ struct decompress_io_ctx *f2fs_alloc_dic(struct compress_ctx *cc);
+-void f2fs_decompress_end_io(struct decompress_io_ctx *dic, bool failed);
+-void f2fs_put_page_dic(struct page *page);
++void f2fs_decompress_end_io(struct decompress_io_ctx *dic, bool failed,
++				bool in_softirq);
++void f2fs_put_page_dic(struct page *page, bool in_softirq);
+ unsigned int f2fs_cluster_blocks_are_contiguous(struct dnode_of_data *dn);
+ int f2fs_init_compress_ctx(struct compress_ctx *cc);
+ void f2fs_destroy_compress_ctx(struct compress_ctx *cc, bool reuse);
 -- 
-2.20.1
+2.36.1.476.g0c4daa206d-goog
 
