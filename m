@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51B6EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:36:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21B0AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:36:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345754AbiFMKgT (ORCPT
+        id S1345795AbiFMKgc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:36:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51334 "EHLO
+        Mon, 13 Jun 2022 06:36:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345560AbiFMKeM (ORCPT
+        with ESMTP id S1345861AbiFMKeS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:34:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62BFE286DD;
-        Mon, 13 Jun 2022 03:22:09 -0700 (PDT)
+        Mon, 13 Jun 2022 06:34:18 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FEFC28726;
+        Mon, 13 Jun 2022 03:22:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ADC31B80E90;
-        Mon, 13 Jun 2022 10:22:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10B2BC36B00;
-        Mon, 13 Jun 2022 10:22:05 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 977EECE0EEB;
+        Mon, 13 Jun 2022 10:22:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70999C34114;
+        Mon, 13 Jun 2022 10:22:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115726;
-        bh=NJTsCSvbaroNPzY6n9FAOh1SfXKvDmF8OxDYtzQ27VI=;
+        s=korg; t=1655115731;
+        bh=+hGjQKfDNGnTsMzTo9PMesAjDFTq1kh+tT1+3aPgf3c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fp64nC+fzB7usmixLk4E/NNc2welLw33j2EHEHglkoyo1bKRYmCVkXkP8ntead/vb
-         F8wwPCovJEMHFtwWETjfvM/I6mEyJiv/7+D1PNi/JGkqhcgFPPjBR0P5ldz+rUIdau
-         TTS3l5Rk/iV8KycY0Rg8ros8CpESBw1i/QKmZbQU=
+        b=HP8hr3jeFAkEK6XmGWYMs9Gq7RWlv3ziOrcg6UV8ppcmD8VVaztvKta1Iw+8aBmPZ
+         g+9+mIm8Nl9AVu8fozc3l+Imz2CtOZvZ+KnD1JqgR7nLXrVJK1rWKZmnKXk3SiRyC+
+         2QBtlKvIr92aNHigEo+MHYKIae8PSQ52iwKYmeqQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Luca=20B=C3=A9la=20Palkovics?= 
-        <luca.bela.palkovics@gmail.com>, Qu Wenruo <wqu@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 4.14 007/218] btrfs: repair super block num_devices automatically
-Date:   Mon, 13 Jun 2022 12:07:45 +0200
-Message-Id: <20220613094910.034197898@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
+        Niels Dossche <dossche.niels@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 009/218] mwifiex: add mutex lock for call in mwifiex_dfs_chan_sw_work_queue
+Date:   Mon, 13 Jun 2022 12:07:47 +0200
+Message-Id: <20220613094910.533370585@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -51,91 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-commit d201238ccd2f30b9bfcfadaeae0972e3a486a176 upstream.
+[ Upstream commit 3e12968f6d12a34b540c39cbd696a760cc4616f0 ]
 
-[BUG]
-There is a report that a btrfs has a bad super block num devices.
+cfg80211_ch_switch_notify uses ASSERT_WDEV_LOCK to assert that
+net_device->ieee80211_ptr->mtx (which is the same as priv->wdev.mtx)
+is held during the function's execution.
+mwifiex_dfs_chan_sw_work_queue is one of its callers, which does not
+hold that lock, therefore violating the assertion.
+Add a lock around the call.
 
-This makes btrfs to reject the fs completely.
+Disclaimer:
+I am currently working on a static analyser to detect missing locks.
+This was a reported case. I manually verified the report by looking
+at the code, so that I do not send wrong information or patches.
+After concluding that this seems to be a true positive, I created
+this patch.
+However, as I do not in fact have this particular hardware,
+I was unable to test it.
 
-  BTRFS error (device sdd3): super_num_devices 3 mismatch with num_devices 2 found here
-  BTRFS error (device sdd3): failed to read chunk tree: -22
-  BTRFS error (device sdd3): open_ctree failed
-
-[CAUSE]
-During btrfs device removal, chunk tree and super block num devs are
-updated in two different transactions:
-
-  btrfs_rm_device()
-  |- btrfs_rm_dev_item(device)
-  |  |- trans = btrfs_start_transaction()
-  |  |  Now we got transaction X
-  |  |
-  |  |- btrfs_del_item()
-  |  |  Now device item is removed from chunk tree
-  |  |
-  |  |- btrfs_commit_transaction()
-  |     Transaction X got committed, super num devs untouched,
-  |     but device item removed from chunk tree.
-  |     (AKA, super num devs is already incorrect)
-  |
-  |- cur_devices->num_devices--;
-  |- cur_devices->total_devices--;
-  |- btrfs_set_super_num_devices()
-     All those operations are not in transaction X, thus it will
-     only be written back to disk in next transaction.
-
-So after the transaction X in btrfs_rm_dev_item() committed, but before
-transaction X+1 (which can be minutes away), a power loss happen, then
-we got the super num mismatch.
-
-This has been fixed by commit bbac58698a55 ("btrfs: remove device item
-and update super block in the same transaction").
-
-[FIX]
-Make the super_num_devices check less strict, converting it from a hard
-error to a warning, and reset the value to a correct one for the current
-or next transaction commit.
-
-As the number of device items is the critical information where the
-super block num_devices is only a cached value (and also useful for
-cross checking), it's safe to automatically update it. Other device
-related problems like missing device are handled after that and may
-require other means to resolve, like degraded mount. With this fix,
-potentially affected filesystems won't fail mount and require the manual
-repair by btrfs check.
-
-Reported-by: Luca Béla Palkovics <luca.bela.palkovics@gmail.com>
-Link: https://lore.kernel.org/linux-btrfs/CA+8xDSpvdm_U0QLBAnrH=zqDq_cWCOH5TiV46CKmp3igr44okQ@mail.gmail.com/
-CC: stable@vger.kernel.org # 4.14+
-Signed-off-by: Qu Wenruo <wqu@suse.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Brian Norris <briannorris@chromium.org>
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220321225515.32113-1-dossche.niels@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/volumes.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/wireless/marvell/mwifiex/11h.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/fs/btrfs/volumes.c
-+++ b/fs/btrfs/volumes.c
-@@ -6975,12 +6975,12 @@ int btrfs_read_chunk_tree(struct btrfs_f
- 	 * do another round of validation checks.
- 	 */
- 	if (total_dev != fs_info->fs_devices->total_devices) {
--		btrfs_err(fs_info,
--	   "super_num_devices %llu mismatch with num_devices %llu found here",
-+		btrfs_warn(fs_info,
-+"super block num_devices %llu mismatch with DEV_ITEM count %llu, will be repaired on next transaction commit",
- 			  btrfs_super_num_devices(fs_info->super_copy),
- 			  total_dev);
--		ret = -EINVAL;
--		goto error;
-+		fs_info->fs_devices->total_devices = total_dev;
-+		btrfs_set_super_num_devices(fs_info->super_copy, total_dev);
- 	}
- 	if (btrfs_super_total_bytes(fs_info->super_copy) <
- 	    fs_info->fs_devices->total_rw_bytes) {
+diff --git a/drivers/net/wireless/marvell/mwifiex/11h.c b/drivers/net/wireless/marvell/mwifiex/11h.c
+index 238accfe4f41..c4176e357b22 100644
+--- a/drivers/net/wireless/marvell/mwifiex/11h.c
++++ b/drivers/net/wireless/marvell/mwifiex/11h.c
+@@ -303,5 +303,7 @@ void mwifiex_dfs_chan_sw_work_queue(struct work_struct *work)
+ 
+ 	mwifiex_dbg(priv->adapter, MSG,
+ 		    "indicating channel switch completion to kernel\n");
++	mutex_lock(&priv->wdev.mtx);
+ 	cfg80211_ch_switch_notify(priv->netdev, &priv->dfs_chandef);
++	mutex_unlock(&priv->wdev.mtx);
+ }
+-- 
+2.35.1
+
 
 
