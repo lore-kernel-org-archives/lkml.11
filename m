@@ -2,100 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8790C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:40:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFAEAC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:41:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244983AbiFMKky (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:40:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35824 "EHLO
+        id S244566AbiFMKlB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:41:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347430AbiFMKi6 (ORCPT
+        with ESMTP id S1347844AbiFMKjL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:38:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8101B13F2B;
-        Mon, 13 Jun 2022 03:23:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D66B060AE9;
-        Mon, 13 Jun 2022 10:23:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5918C34114;
-        Mon, 13 Jun 2022 10:23:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115787;
-        bh=wwpmpeKtWdv8Qo+7Qoo8H2U5yxSNp0eT7vNgXTst/RQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UnmR7SEQcibr7M6rKoD93Qg3+O5aiM1BXZ0CNJIw9DOSki/Cr72f1PK91GhamNVnI
-         /yHlOR6DMHn045/LYDyYl5p628g4cDL17f2lf7Ohwo/dZhh249xxe6iJSOjBg6uMDj
-         bnJft0DU9GrpxUwt0rU9rvKqGZiFvutYD0O9/oEs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 030/218] ASoC: rt5645: Fix errorenous cleanup order
-Date:   Mon, 13 Jun 2022 12:08:08 +0200
-Message-Id: <20220613094915.390697663@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 13 Jun 2022 06:39:11 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8F4514013;
+        Mon, 13 Jun 2022 03:23:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1655115792; x=1686651792;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=soAslaynwLWuk9ni7o/esKtvLbUcnx/OJF8cC/HrDSA=;
+  b=s/QRK5IdMLR5jDbCYL40M8OPs0/PIHxSsIxBgWMcsUOHXpbKNKyi5Krk
+   ocWn7ii/X7f6y1d+jmTEmX0gAao6Ru6Icviiz+JRo7InvIjCA0iwJHDUQ
+   K1w8elnyG9qLHXe5EmQ7/Tr9hjbjK68ez4+olIyVXZ73DTFOdPidtbTF+
+   8=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 13 Jun 2022 03:23:12 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 03:23:11 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 13 Jun 2022 03:23:12 -0700
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 13 Jun 2022 03:23:07 -0700
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <quic_rohkumar@quicinc.com>, <srinivas.kandagatla@linaro.org>,
+        <dianders@chromium.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
+Subject: [PATCH v13 09/12] arm64: dts: qcom: sc7280: Enable lpass cpu node for CRD 1.0/2.0 and IDP boards.
+Date:   Mon, 13 Jun 2022 15:52:10 +0530
+Message-ID: <1655115733-16309-10-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1655115733-16309-1-git-send-email-quic_srivasam@quicinc.com>
+References: <1655115733-16309-1-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lin Ma <linma@zju.edu.cn>
+Enable lpass cpu node and add pin control and dai-links for audio on sc7280
+based platforms of revision 3, 4 (aka CRD 1.0 and 2.0) and IDP boards.
 
-[ Upstream commit 2def44d3aec59e38d2701c568d65540783f90f2f ]
-
-There is a logic error when removing rt5645 device as the function
-rt5645_i2c_remove() first cancel the &rt5645->jack_detect_work and
-delete the &rt5645->btn_check_timer latter. However, since the timer
-handler rt5645_btn_check_callback() will re-queue the jack_detect_work,
-this cleanup order is buggy.
-
-That is, once the del_timer_sync in rt5645_i2c_remove is concurrently
-run with the rt5645_btn_check_callback, the canceled jack_detect_work
-will be rescheduled again, leading to possible use-after-free.
-
-This patch fix the issue by placing the del_timer_sync function before
-the cancel_delayed_work_sync.
-
-Signed-off-by: Lin Ma <linma@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220516092035.28283-1-linma@zju.edu.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
 ---
- sound/soc/codecs/rt5645.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/qcom/sc7280-idp.dtsi | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-diff --git a/sound/soc/codecs/rt5645.c b/sound/soc/codecs/rt5645.c
-index a98647ac497c..01de25813c72 100644
---- a/sound/soc/codecs/rt5645.c
-+++ b/sound/soc/codecs/rt5645.c
-@@ -3972,9 +3972,14 @@ static int rt5645_i2c_remove(struct i2c_client *i2c)
- 	if (i2c->irq)
- 		free_irq(i2c->irq, rt5645);
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+index ccdbad4a..10f646d 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
+@@ -282,6 +282,34 @@
+ 	modem-init;
+ };
  
-+	/*
-+	 * Since the rt5645_btn_check_callback() can queue jack_detect_work,
-+	 * the timer need to be delted first
-+	 */
-+	del_timer_sync(&rt5645->btn_check_timer);
++&lpass_cpu {
++	status = "okay";
 +
- 	cancel_delayed_work_sync(&rt5645->jack_detect_work);
- 	cancel_delayed_work_sync(&rt5645->rcclock_work);
--	del_timer_sync(&rt5645->btn_check_timer);
- 
- 	snd_soc_unregister_codec(&i2c->dev);
- 	regulator_bulk_disable(ARRAY_SIZE(rt5645->supplies), rt5645->supplies);
++	pinctrl-names = "default";
++	pinctrl-0 = <&mi2s1_data0>, <&mi2s1_sclk>, <&mi2s1_ws>;
++
++	dai-link@1 {
++		reg = <MI2S_SECONDARY>;
++		qcom,playback-sd-lines = <0>;
++	};
++
++	dai-link@5 {
++		reg = <LPASS_DP_RX>;
++	};
++
++	dai-link@6 {
++		reg = <LPASS_CDC_DMA_RX0>;
++	};
++
++	dai-link@19 {
++		reg = <LPASS_CDC_DMA_TX3>;
++	};
++
++	dai-link@25 {
++		reg = <LPASS_CDC_DMA_VA_TX0>;
++	};
++};
++
+ &lpass_rx_macro {
+ 	status = "okay";
+ };
 -- 
-2.35.1
-
-
+2.7.4
 
