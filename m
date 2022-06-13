@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BBB0C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:27:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FDE6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:27:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354043AbiFML1X (ORCPT
+        id S1353521AbiFML1f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:27:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46690 "EHLO
+        Mon, 13 Jun 2022 07:27:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352896AbiFMLTB (ORCPT
+        with ESMTP id S1353096AbiFMLTK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:19:01 -0400
+        Mon, 13 Jun 2022 07:19:10 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF77C39833;
-        Mon, 13 Jun 2022 03:40:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B770C3A193;
+        Mon, 13 Jun 2022 03:40:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CDD98610A0;
-        Mon, 13 Jun 2022 10:40:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDEBBC34114;
-        Mon, 13 Jun 2022 10:40:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D98B6611E6;
+        Mon, 13 Jun 2022 10:40:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB6DAC34114;
+        Mon, 13 Jun 2022 10:40:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116846;
-        bh=YxJ7oQOItiFqndzNT7SS3Vf+Ghx4qKzyaMSvq5xiiC4=;
+        s=korg; t=1655116857;
+        bh=j6T9aUTHchhFID0D3XbRd4u4Z4N5xnyzCw2fslzLvxs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xr4Mfh3RoqG1JDIHXoPPi8dUU0WlCDpfkOy6ANfwypQMNb5QOyB5oO4FjWPAieJ6o
-         Mhe5/WSl//3i83cKg7/i1E56/n9bOyR1xvZA3YVGwfqGV6e9sW592R+ZbDQSAhX2Zv
-         RkMIUnsRrUAzRkrvMenaqAGEjDtcQqCiZFkKExrA=
+        b=SGAFG2HH3iqwxkaVDG/gYumtWwVWTbQ813fPY+qvX/ejVpSztotnrgABE9c9jfDsq
+         WLErpxUVfz0hURq9dJYkpM0z86Vtle9pE/7L0oID+yuOOldzputHUYPF4aOVoXJw5c
+         mXHC9w4QuKqakKk2F4Zj3kwJrTsK/0csQjQxHf7A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "D. Ziegfeld" <dzigg@posteo.de>,
-        =?UTF-8?q?J=C3=B6rg-Volker=20Peetz?= <jvpeetz@web.de>,
-        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 206/411] iommu/amd: Increase timeout waiting for GA log enablement
-Date:   Mon, 13 Jun 2022 12:07:59 +0200
-Message-Id: <20220613094934.834339349@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 198/411] i2c: at91: use dma safe buffers
+Date:   Mon, 13 Jun 2022 12:07:51 +0200
+Message-Id: <20220613094934.598728005@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,49 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joerg Roedel <jroedel@suse.de>
+From: Michael Walle <michael@walle.cc>
 
-[ Upstream commit 42bb5aa043382f09bef2cc33b8431be867c70f8e ]
+[ Upstream commit 03fbb903c8bf7e53e101e8d9a7b261264317c411 ]
 
-On some systems it can take a long time for the hardware to enable the
-GA log of the AMD IOMMU. The current wait time is only 0.1ms, but
-testing showed that it can take up to 14ms for the GA log to enter
-running state after it has been enabled.
+The supplied buffer might be on the stack and we get the following error
+message:
+[    3.312058] at91_i2c e0070600.i2c: rejecting DMA map of vmalloc memory
 
-Sometimes the long delay happens when booting the system, sometimes
-only on resume. Adjust the timeout accordingly to not print a warning
-when hardware takes a longer than usual.
+Use i2c_{get,put}_dma_safe_msg_buf() to get a DMA-able memory region if
+necessary.
 
-There has already been an attempt to fix this with commit
-
-	9b45a7738eec ("iommu/amd: Fix loop timeout issue in iommu_ga_log_enable()")
-
-But that commit was based on some wrong math and did not fix the issue
-in all cases.
-
-Cc: "D. Ziegfeld" <dzigg@posteo.de>
-Cc: Jörg-Volker Peetz <jvpeetz@web.de>
-Fixes: 8bda0cfbdc1a ("iommu/amd: Detect and initialize guest vAPIC log")
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Link: https://lore.kernel.org/r/20220520102214.12563-1-joro@8bytes.org
+Fixes: 60937b2cdbf9 ("i2c: at91: add dma support")
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/amd_iommu_init.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/i2c/busses/i2c-at91-master.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 7502fa84e253..82d008310418 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -83,7 +83,7 @@
- #define ACPI_DEVFLAG_LINT1              0x80
- #define ACPI_DEVFLAG_ATSDIS             0x10000000
+diff --git a/drivers/i2c/busses/i2c-at91-master.c b/drivers/i2c/busses/i2c-at91-master.c
+index a3fcc35ffd3b..44502024cc10 100644
+--- a/drivers/i2c/busses/i2c-at91-master.c
++++ b/drivers/i2c/busses/i2c-at91-master.c
+@@ -609,6 +609,7 @@ static int at91_twi_xfer(struct i2c_adapter *adap, struct i2c_msg *msg, int num)
+ 	unsigned int_addr_flag = 0;
+ 	struct i2c_msg *m_start = msg;
+ 	bool is_read;
++	u8 *dma_buf;
  
--#define LOOP_TIMEOUT	100000
-+#define LOOP_TIMEOUT	2000000
- /*
-  * ACPI table definitions
-  *
+ 	dev_dbg(&adap->dev, "at91_xfer: processing %d messages:\n", num);
+ 
+@@ -656,7 +657,17 @@ static int at91_twi_xfer(struct i2c_adapter *adap, struct i2c_msg *msg, int num)
+ 	dev->msg = m_start;
+ 	dev->recv_len_abort = false;
+ 
++	if (dev->use_dma) {
++		dma_buf = i2c_get_dma_safe_msg_buf(m_start, 1);
++		if (!dma_buf) {
++			ret = -ENOMEM;
++			goto out;
++		}
++		dev->buf = dma_buf;
++	}
++
+ 	ret = at91_do_twi_transfer(dev);
++	i2c_put_dma_safe_msg_buf(dma_buf, m_start, !ret);
+ 
+ 	ret = (ret < 0) ? ret : num;
+ out:
 -- 
 2.35.1
 
