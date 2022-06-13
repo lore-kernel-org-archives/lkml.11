@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D1ADC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:07:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79A97C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:07:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351705AbiFMLHs (ORCPT
+        id S1351715AbiFMLHx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:07:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59302 "EHLO
+        Mon, 13 Jun 2022 07:07:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349366AbiFMLAF (ORCPT
+        with ESMTP id S1349524AbiFMLAc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:00:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA1F3134A;
-        Mon, 13 Jun 2022 03:33:07 -0700 (PDT)
+        Mon, 13 Jun 2022 07:00:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E879C31354;
+        Mon, 13 Jun 2022 03:33:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8269BB80E94;
-        Mon, 13 Jun 2022 10:33:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFAC2C34114;
-        Mon, 13 Jun 2022 10:33:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BBB2360FB1;
+        Mon, 13 Jun 2022 10:32:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA1E6C34114;
+        Mon, 13 Jun 2022 10:32:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116381;
-        bh=y5FpsC0QGeen2RQowSl2Y0D8H3xk4G0Akqg3acr5AMs=;
+        s=korg; t=1655116373;
+        bh=cKRrTbnI+d4+LE1Ydfu6A33V3P+MWNPCyFbzbhkVuKc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p/bP+E6SFLimEfErxK+ppRPUV3/TOxfhWAztB2NRwZE9AI+VH3EMa6m4S/ffLVGY3
-         mB7nWuxfzZHVC0+m+PtxriVG2Srq3CpnI5mc60xMFEkayARDtwFTq6be0AJ1De0moI
-         yPkm/jQyqfekC/7mH35eMBP7DJDkEEcDBn0ovqgY=
+        b=UmAyAn06+6GrEUvtJFMt0MD/KyXLbnPGTOs8HTRnwWkdvnqA83oUg5B0sK2KXGI08
+         Cne3VrPHAkGw788ooMvN2nJDt00VfEux4sA1R4zYQP1d5LZoKZGcXk2B4AAtFjgTw4
+         MCIob7jnmD62FBHvDEVeVWOvO4aL8PrO7cqC2kxM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Vasily Averin <vvs@openvz.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 076/411] powerpc/powernv: fix missing of_node_put in uv_init()
-Date:   Mon, 13 Jun 2022 12:05:49 +0200
-Message-Id: <20220613094930.959380244@linuxfoundation.org>
+Subject: [PATCH 5.4 074/411] tracing: incorrect isolate_mote_t cast in mm_vmscan_lru_isolate
+Date:   Mon, 13 Jun 2022 12:05:47 +0200
+Message-Id: <20220613094930.897166778@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -51,33 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Vasily Averin <vvs@openvz.org>
 
-[ Upstream commit 3ffa9fd471f57f365bc54fc87824c530422f64a5 ]
+[ Upstream commit 2b132903de7124dd9a758be0c27562e91a510848 ]
 
-of_find_compatible_node() returns node pointer with refcount incremented,
-use of_node_put() on it when done.
+Fixes following sparse warnings:
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220407090043.2491854-1-lv.ruyi@zte.com.cn
+  CHECK   mm/vmscan.c
+mm/vmscan.c: note: in included file (through
+include/trace/trace_events.h, include/trace/define_trace.h,
+include/trace/events/vmscan.h):
+./include/trace/events/vmscan.h:281:1: sparse: warning:
+ cast to restricted isolate_mode_t
+./include/trace/events/vmscan.h:281:1: sparse: warning:
+ restricted isolate_mode_t degrades to integer
+
+Link: https://lkml.kernel.org/r/e85d7ff2-fd10-53f8-c24e-ba0458439c1b@openvz.org
+Signed-off-by: Vasily Averin <vvs@openvz.org>
+Acked-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/powernv/ultravisor.c | 1 +
- 1 file changed, 1 insertion(+)
+ include/trace/events/vmscan.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/platforms/powernv/ultravisor.c b/arch/powerpc/platforms/powernv/ultravisor.c
-index e4a00ad06f9d..67c8c4b2d8b1 100644
---- a/arch/powerpc/platforms/powernv/ultravisor.c
-+++ b/arch/powerpc/platforms/powernv/ultravisor.c
-@@ -55,6 +55,7 @@ static int __init uv_init(void)
- 		return -ENODEV;
+diff --git a/include/trace/events/vmscan.h b/include/trace/events/vmscan.h
+index a5ab2973e8dc..57184c02e3b9 100644
+--- a/include/trace/events/vmscan.h
++++ b/include/trace/events/vmscan.h
+@@ -283,7 +283,7 @@ TRACE_EVENT(mm_vmscan_lru_isolate,
+ 		__field(unsigned long, nr_scanned)
+ 		__field(unsigned long, nr_skipped)
+ 		__field(unsigned long, nr_taken)
+-		__field(isolate_mode_t, isolate_mode)
++		__field(unsigned int, isolate_mode)
+ 		__field(int, lru)
+ 	),
  
- 	uv_memcons = memcons_init(node, "memcons");
-+	of_node_put(node);
- 	if (!uv_memcons)
- 		return -ENOENT;
+@@ -294,7 +294,7 @@ TRACE_EVENT(mm_vmscan_lru_isolate,
+ 		__entry->nr_scanned = nr_scanned;
+ 		__entry->nr_skipped = nr_skipped;
+ 		__entry->nr_taken = nr_taken;
+-		__entry->isolate_mode = isolate_mode;
++		__entry->isolate_mode = (__force unsigned int)isolate_mode;
+ 		__entry->lru = lru;
+ 	),
  
 -- 
 2.35.1
