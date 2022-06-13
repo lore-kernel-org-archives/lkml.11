@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1CA1CCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2ED6CCA488
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:39:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355540AbiFMLjK (ORCPT
+        id S1355523AbiFMLjI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:39:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45786 "EHLO
+        Mon, 13 Jun 2022 07:39:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354712AbiFML35 (ORCPT
+        with ESMTP id S1354693AbiFML34 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:29:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D63F3EF28;
-        Mon, 13 Jun 2022 03:45:30 -0700 (PDT)
+        Mon, 13 Jun 2022 07:29:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E4D2AE20;
+        Mon, 13 Jun 2022 03:45:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 390B060FDB;
-        Mon, 13 Jun 2022 10:45:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B087C34114;
-        Mon, 13 Jun 2022 10:45:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 57C81B80D3A;
+        Mon, 13 Jun 2022 10:45:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2D84C34114;
+        Mon, 13 Jun 2022 10:45:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117129;
-        bh=xZMuTpWursdJJdYloy8uMjAmfjbR/M9GPbci0Jb3eq4=;
+        s=korg; t=1655117124;
+        bh=8SJVMbkWgb76oLCpNZEGrn9wLKz7br/QdqE3DdkzGEE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wWYipV5lEXr+Jogpj/xkfOCTCOdWVpbMNG2OJwGv2Ctq5gRtoK2+PnkcR9Kn3iLJt
-         zQJLPJXGac++87Tv3lmPQg4VGeuHe+p9dXdCG2K9CvTdB+IoQYWYXWO6jO+nf+tPwG
-         2Qu3zlhrsFCGTyeZciowIY/X9VPhS1tO4pN99Idw=
+        b=aRjRDWS9iI/dt4zfS7HABGBMcubG4m8GsAChY9WFWwTH1AX/4e+8wCsJYGilk+Jzg
+         lPlFwZ2Yq8E2kWOnU3Tr7PRGcHfWp90EYD2hftGiMMDotuDPE/E+ngcWwuMrMZtiyG
+         EB3mMkMgjWPkMJXwl/MxwChKJp1UIOREh+r4s/wQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
-        Hangyu Hua <hbh25y@gmail.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 287/411] usb: usbip: fix a refcount leak in stub_probe()
-Date:   Mon, 13 Jun 2022 12:09:20 +0200
-Message-Id: <20220613094937.364806969@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 295/411] firmware: stratix10-svc: fix a missing check on list iterator
+Date:   Mon, 13 Jun 2022 12:09:28 +0200
+Message-Id: <20220613094937.603912095@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -49,47 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-[ Upstream commit 9ec4cbf1cc55d126759051acfe328d489c5d6e60 ]
+[ Upstream commit 5a0793ac66ac0e254d292f129a4d6c526f9f2aff ]
 
-usb_get_dev() is called in stub_device_alloc(). When stub_probe() fails
-after that, usb_put_dev() needs to be called to release the reference.
+The bug is here:
+	pmem->vaddr = NULL;
 
-Fix this by moving usb_put_dev() to sdev_free error path handling.
+The list iterator 'pmem' will point to a bogus position containing
+HEAD if the list is empty or no element is found. This case must
+be checked before any use of the iterator, otherwise it will
+lead to a invalid memory access.
 
-Find this by code review.
+To fix this bug, just gen_pool_free/set NULL/list_del() and return
+when found, otherwise list_del HEAD and return;
 
-Fixes: 3ff67445750a ("usbip: fix error handling in stub_probe()")
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Link: https://lore.kernel.org/r/20220412020257.9767-1-hbh25y@gmail.com
+Fixes: 7ca5ce896524f ("firmware: add Intel Stratix10 service layer driver")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Link: https://lore.kernel.org/r/20220414035609.2239-1-xiam0nd.tong@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/usbip/stub_dev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/firmware/stratix10-svc.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/usb/usbip/stub_dev.c b/drivers/usb/usbip/stub_dev.c
-index d8d3892e5a69..3c6d452e3bf4 100644
---- a/drivers/usb/usbip/stub_dev.c
-+++ b/drivers/usb/usbip/stub_dev.c
-@@ -393,7 +393,6 @@ static int stub_probe(struct usb_device *udev)
+diff --git a/drivers/firmware/stratix10-svc.c b/drivers/firmware/stratix10-svc.c
+index b2b4ba240fb1..08c422380a00 100644
+--- a/drivers/firmware/stratix10-svc.c
++++ b/drivers/firmware/stratix10-svc.c
+@@ -934,17 +934,17 @@ EXPORT_SYMBOL_GPL(stratix10_svc_allocate_memory);
+ void stratix10_svc_free_memory(struct stratix10_svc_chan *chan, void *kaddr)
+ {
+ 	struct stratix10_svc_data_mem *pmem;
+-	size_t size = 0;
  
- err_port:
- 	dev_set_drvdata(&udev->dev, NULL);
--	usb_put_dev(udev);
+ 	list_for_each_entry(pmem, &svc_data_mem, node)
+ 		if (pmem->vaddr == kaddr) {
+-			size = pmem->size;
+-			break;
++			gen_pool_free(chan->ctrl->genpool,
++				       (unsigned long)kaddr, pmem->size);
++			pmem->vaddr = NULL;
++			list_del(&pmem->node);
++			return;
+ 		}
  
- 	/* we already have busid_priv, just lock busid_lock */
- 	spin_lock(&busid_priv->busid_lock);
-@@ -408,6 +407,7 @@ static int stub_probe(struct usb_device *udev)
- 	put_busid_priv(busid_priv);
+-	gen_pool_free(chan->ctrl->genpool, (unsigned long)kaddr, size);
+-	pmem->vaddr = NULL;
+-	list_del(&pmem->node);
++	list_del(&svc_data_mem);
+ }
+ EXPORT_SYMBOL_GPL(stratix10_svc_free_memory);
  
- sdev_free:
-+	usb_put_dev(udev);
- 	stub_device_free(sdev);
- 
- 	return rc;
 -- 
 2.35.1
 
