@@ -2,116 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 130EFCCA48B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:05:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64CA8C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:05:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351584AbiFMLEp (ORCPT
+        id S1351623AbiFMLEr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:04:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44328 "EHLO
+        Mon, 13 Jun 2022 07:04:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350372AbiFMKyv (ORCPT
+        with ESMTP id S1350353AbiFMKyu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:54:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 208241EC5A;
-        Mon, 13 Jun 2022 03:31:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C95CFB80E5E;
-        Mon, 13 Jun 2022 10:31:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27F40C34114;
-        Mon, 13 Jun 2022 10:31:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116267;
-        bh=OV+yhI+AIapZZVpxSGNeAn9wZrponTmOw5vBnxD9cug=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UB7qGzLLoEjlbDY+N+zJX4n4w0DM/4TY1MUuuswYEsDHu/gtE45uJfAGDpWgrmuwI
-         m81r6na4So4y5UaKlduPR5doVpZnWOgsJnH4/Mn3KiUdQVM7dyPas4aQOlCi0x4ofV
-         lKKMTZx5RQ6mL+8JdMVGOYWukDth32S9AEfkG+wM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baokun Li <libaokun1@huawei.com>,
-        Richard Weinberger <richard@nod.at>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 161/218] jffs2: fix memory leak in jffs2_do_fill_super
-Date:   Mon, 13 Jun 2022 12:10:19 +0200
-Message-Id: <20220613094925.479983497@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 13 Jun 2022 06:54:50 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 208571D0DB;
+        Mon, 13 Jun 2022 03:30:54 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 10:30:50 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1655116251;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PLG/WtLVkroGPYAWdPXamFTN/HRL0nfnOe8+NibDVJE=;
+        b=u6MjQaeD1yo84eqYt2O0QWrw6Iun8Y88DC0cD0rgJEHFkCEAbWbcWgMlBnD3iEgxXjehVJ
+        7ziHU9O99LrL5Fj/i45fEsm834XYOkmpYLErg/ekFjX0aWkjMEj55PGKNxkjaJqKrGzu7g
+        oj+8SIOeqkGjbnLpa5jw3f2tTBmXV+L4bdm8ygqz5qom5stivznHf57V2slmtWCWRuqN2F
+        wlpP1FdjqUsSVocgry//O01zHSFU/FzAKEW3BMyPfyajshXTDeQeHYJjkpmhYo+4cxnx9e
+        ruDq8k7lF/jJdlTS7Z0XJ1zXqqN8aRLfKkPkjzNNAmBuI2qwxy92wcwy1sl5GA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1655116251;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PLG/WtLVkroGPYAWdPXamFTN/HRL0nfnOe8+NibDVJE=;
+        b=Hb5QcSdc8Ny225TgrLKMtjCUBL1B/ZWX0ps3gxlrQu50D0+zUbqj7Wnpjr58hunj9dmuio
+        ttcXALGh0WC2zXBA==
+From:   "tip-bot2 for Lukas Wunner" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: irq/core] genirq/PM: Unexport {suspend,resume}_device_irqs()
+Cc:     Lukas Wunner <lukas@wunner.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, maz@kernel.org
+In-Reply-To: <fad9b50609f9d9828ea14772dbd4d195713f1c4b.1654846687.git.lukas@wunner.de>
+References: <fad9b50609f9d9828ea14772dbd4d195713f1c4b.1654846687.git.lukas@wunner.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <165511625017.4207.9422220273821026208.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baokun Li <libaokun1@huawei.com>
+The following commit has been merged into the irq/core branch of tip:
 
-[ Upstream commit c14adb1cf70a984ed081c67e9d27bc3caad9537c ]
+Commit-ID:     ac165aab469895de059a4a191a2e04ddb5421d0e
+Gitweb:        https://git.kernel.org/tip/ac165aab469895de059a4a191a2e04ddb5421d0e
+Author:        Lukas Wunner <lukas@wunner.de>
+AuthorDate:    Fri, 10 Jun 2022 09:40:50 +02:00
+Committer:     Thomas Gleixner <tglx@linutronix.de>
+CommitterDate: Mon, 13 Jun 2022 12:27:37 +02:00
 
-If jffs2_iget() or d_make_root() in jffs2_do_fill_super() returns
-an error, we can observe the following kmemleak report:
+genirq/PM: Unexport {suspend,resume}_device_irqs()
 
---------------------------------------------
-unreferenced object 0xffff888105a65340 (size 64):
-  comm "mount", pid 710, jiffies 4302851558 (age 58.239s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<ffffffff859c45e5>] kmem_cache_alloc_trace+0x475/0x8a0
-    [<ffffffff86160146>] jffs2_sum_init+0x96/0x1a0
-    [<ffffffff86140e25>] jffs2_do_mount_fs+0x745/0x2120
-    [<ffffffff86149fec>] jffs2_do_fill_super+0x35c/0x810
-    [<ffffffff8614aae9>] jffs2_fill_super+0x2b9/0x3b0
-    [...]
-unreferenced object 0xffff8881bd7f0000 (size 65536):
-  comm "mount", pid 710, jiffies 4302851558 (age 58.239s)
-  hex dump (first 32 bytes):
-    bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
-    bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
-  backtrace:
-    [<ffffffff858579ba>] kmalloc_order+0xda/0x110
-    [<ffffffff85857a11>] kmalloc_order_trace+0x21/0x130
-    [<ffffffff859c2ed1>] __kmalloc+0x711/0x8a0
-    [<ffffffff86160189>] jffs2_sum_init+0xd9/0x1a0
-    [<ffffffff86140e25>] jffs2_do_mount_fs+0x745/0x2120
-    [<ffffffff86149fec>] jffs2_do_fill_super+0x35c/0x810
-    [<ffffffff8614aae9>] jffs2_fill_super+0x2b9/0x3b0
-    [...]
---------------------------------------------
+Ever since {suspend,resume}_device_irqs() were introduced in 2009
+by commit 0a0c5168df27 ("PM: Introduce functions for suspending and
+resuming device interrupts"), they've been exported even though there
+are no module users and never will be:  The functions are solely called
+by the PM core, which is always built-in.  Unexport them.
 
-This is because the resources allocated in jffs2_sum_init() are not
-released. Call jffs2_sum_exit() to release these resources to solve
-the problem.
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Link: https://lore.kernel.org/r/fad9b50609f9d9828ea14772dbd4d195713f1c4b.1654846687.git.lukas@wunner.de
 
-Fixes: e631ddba5887 ("[JFFS2] Add erase block summary support (mount time improvement)")
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/jffs2/fs.c | 1 +
- 1 file changed, 1 insertion(+)
+ kernel/irq/pm.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/fs/jffs2/fs.c b/fs/jffs2/fs.c
-index b7df9e34ccfd..dd7c6fbd2cc5 100644
---- a/fs/jffs2/fs.c
-+++ b/fs/jffs2/fs.c
-@@ -598,6 +598,7 @@ int jffs2_do_fill_super(struct super_block *sb, void *data, int silent)
- 	jffs2_free_raw_node_refs(c);
- 	kvfree(c->blocks);
- 	jffs2_clear_xattr_subsystem(c);
-+	jffs2_sum_exit(c);
-  out_inohash:
- 	kfree(c->inocache_list);
-  out_wbuf:
--- 
-2.35.1
-
-
-
+diff --git a/kernel/irq/pm.c b/kernel/irq/pm.c
+index ca71123..c556bc4 100644
+--- a/kernel/irq/pm.c
++++ b/kernel/irq/pm.c
+@@ -147,7 +147,6 @@ void suspend_device_irqs(void)
+ 			synchronize_irq(irq);
+ 	}
+ }
+-EXPORT_SYMBOL_GPL(suspend_device_irqs);
+ 
+ static void resume_irq(struct irq_desc *desc)
+ {
+@@ -259,4 +258,3 @@ void resume_device_irqs(void)
+ {
+ 	resume_irqs(false);
+ }
+-EXPORT_SYMBOL_GPL(resume_device_irqs);
