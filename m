@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F0E1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:36:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBF71C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:36:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354896AbiFMLgU (ORCPT
+        id S1354912AbiFMLg0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:36:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46066 "EHLO
+        Mon, 13 Jun 2022 07:36:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354534AbiFML3l (ORCPT
+        with ESMTP id S1354528AbiFML3k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:29:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6E4E205C6;
-        Mon, 13 Jun 2022 03:45:00 -0700 (PDT)
+        Mon, 13 Jun 2022 07:29:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A048201BA;
+        Mon, 13 Jun 2022 03:44:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F22E61016;
-        Mon, 13 Jun 2022 10:45:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E40EC34114;
-        Mon, 13 Jun 2022 10:44:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39583B80E59;
+        Mon, 13 Jun 2022 10:44:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DEF5C341C5;
+        Mon, 13 Jun 2022 10:44:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117099;
-        bh=R7Ai4jnL60FXxpcklSo4vI6jPD0lfh8NErbALngp7OA=;
+        s=korg; t=1655117097;
+        bh=aRdbOx7lSLv9D6cWiWuBrvvuoubprMwBW9czfB/JjMc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DJ6PVvAQ7aVMuXZ0ugZ47Tg/Vk1+mSBCJWTZprvVuRV60mePBaXVUoXC8DlIFWfVV
-         0JaHHAU/q/SpS+u97Cah2u6GCP5izL7JfDiWC7/u4jPQu0WAPN4LDtPUiV0MEA4cSQ
-         dh58lBswYQiQ94BXzl6X7seiGbojQb5AGemu0aqQ=
+        b=XVSsLWEfebVn7cEbPbVH2lPXlK0jqV/+v6n/WNtWhGPdxfRrleTCfsOJaq4Ha7qOY
+         kjXxMr/02MgfMjUwwoLV4o//qXsSz2X4kcoclloN2SIqYKKIfVP9orfx6RbnKGTPzD
+         gsB1y9yUv9kBwW2P1Hyn3caLzFSbNL4BxJDW1cNA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Cixi Geng <cixi.geng1@unisoc.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 298/411] iio: adc: sc27xx: Fine tune the scale calibration values
-Date:   Mon, 13 Jun 2022 12:09:31 +0200
-Message-Id: <20220613094937.694734487@linuxfoundation.org>
+Subject: [PATCH 5.4 297/411] iio: adc: sc27xx: fix read big scale voltage not right
+Date:   Mon, 13 Jun 2022 12:09:30 +0200
+Message-Id: <20220613094937.664275438@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -52,60 +53,36 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Cixi Geng <cixi.geng1@unisoc.com>
 
-[ Upstream commit 5a7a184b11c6910f47600ff5cbbee34168f701a8 ]
+[ Upstream commit ad930a75613282400179361e220e58b87386b8c7 ]
 
-Small adjustment the scale calibration value for the sc2731,
-use new name sc2731_[big|small]_scale_graph_calib, and remove
-the origin [big|small]_scale_graph_calib struct for unused.
+Fix wrong configuration value of SC27XX_ADC_SCALE_MASK and
+SC27XX_ADC_SCALE_SHIFT by spec documetation.
 
-Fixes: 8ba0dbfd07a35 (iio: adc: sc27xx: Add ADC scale calibration)
+Fixes: 5df362a6cf49c (iio: adc: Add Spreadtrum SC27XX PMICs ADC support)
 Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
-Link: https://lore.kernel.org/r/20220419142458.884933-4-gengcixi@gmail.com
+Reviewed-by: Baolin Wang <baolin.wang7@gmail.com>
+Link: https://lore.kernel.org/r/20220419142458.884933-3-gengcixi@gmail.com
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/sc27xx_adc.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/iio/adc/sc27xx_adc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
-index dcc01cdcff3f..5b79c8b9ccde 100644
+index a6c046575ec3..dcc01cdcff3f 100644
 --- a/drivers/iio/adc/sc27xx_adc.c
 +++ b/drivers/iio/adc/sc27xx_adc.c
-@@ -103,14 +103,14 @@ static struct sc27xx_adc_linear_graph small_scale_graph = {
- 	100, 341,
- };
+@@ -36,8 +36,8 @@
  
--static const struct sc27xx_adc_linear_graph big_scale_graph_calib = {
--	4200, 856,
--	3600, 733,
-+static const struct sc27xx_adc_linear_graph sc2731_big_scale_graph_calib = {
-+	4200, 850,
-+	3600, 728,
- };
+ /* Bits and mask definition for SC27XX_ADC_CH_CFG register */
+ #define SC27XX_ADC_CHN_ID_MASK		GENMASK(4, 0)
+-#define SC27XX_ADC_SCALE_MASK		GENMASK(10, 8)
+-#define SC27XX_ADC_SCALE_SHIFT		8
++#define SC27XX_ADC_SCALE_MASK		GENMASK(10, 9)
++#define SC27XX_ADC_SCALE_SHIFT		9
  
--static const struct sc27xx_adc_linear_graph small_scale_graph_calib = {
--	1000, 833,
--	100, 80,
-+static const struct sc27xx_adc_linear_graph sc2731_small_scale_graph_calib = {
-+	1000, 838,
-+	100, 84,
- };
- 
- static int sc27xx_adc_get_calib_data(u32 calib_data, int calib_adc)
-@@ -130,11 +130,11 @@ static int sc27xx_adc_scale_calibration(struct sc27xx_adc_data *data,
- 	size_t len;
- 
- 	if (big_scale) {
--		calib_graph = &big_scale_graph_calib;
-+		calib_graph = &sc2731_big_scale_graph_calib;
- 		graph = &big_scale_graph;
- 		cell_name = "big_scale_calib";
- 	} else {
--		calib_graph = &small_scale_graph_calib;
-+		calib_graph = &sc2731_small_scale_graph_calib;
- 		graph = &small_scale_graph;
- 		cell_name = "small_scale_calib";
- 	}
+ /* Bits definitions for SC27XX_ADC_INT_EN registers */
+ #define SC27XX_ADC_IRQ_EN		BIT(0)
 -- 
 2.35.1
 
