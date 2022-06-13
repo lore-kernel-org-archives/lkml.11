@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE20C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:12:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1D9EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:12:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358919AbiFMNMK (ORCPT
+        id S1359017AbiFMNMR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:12:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35736 "EHLO
+        Mon, 13 Jun 2022 09:12:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357373AbiFMNGV (ORCPT
+        with ESMTP id S1357462AbiFMNGV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 09:06:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF5537031;
-        Mon, 13 Jun 2022 04:18:27 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89BA337BC4;
+        Mon, 13 Jun 2022 04:18:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 45523B80E59;
-        Mon, 13 Jun 2022 11:18:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2E74C34114;
-        Mon, 13 Jun 2022 11:18:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 91473B80EA7;
+        Mon, 13 Jun 2022 11:18:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCA6FC34114;
+        Mon, 13 Jun 2022 11:18:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119103;
-        bh=tHIsGFpR7q/TosDWqEXy1dnboeAXtwvPMfpL3sWrWzo=;
+        s=korg; t=1655119100;
+        bh=McXil9AQhOUidbEK/dN4kvPcVCBpXaKNqKTF7IDX9wU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xPSeiv6qlzeGszAGWr+5rzVsCyPWahFw+DjMEO2wL7xImEp/Cb8c9a9jNZbGMGguq
-         6zXuNF3EVwuWLxPHncu71y/93WIt6Jw+hLahZcD8Nt9TI4UbEQgHTvacNFBQJDTXQB
-         EB92NGoq/jsne/719dt+eTPLBGlj4J1NTzAWq944=
+        b=wgMT2AI+9bLjLrJf8Q/LDg578oRUcHBmCuKvZZWW1SPxpQHdKoQ0huve2oDTnxN4z
+         iH90OiAwjY67rEVyJWHTInI+qscTsE9oCz+DtS+9y/w8SgUfAEXP/eEq3TIX8TOUmw
+         Exhd8fVfyFtFLZyAuRdizXjWuDRWdLB2OkcEDJnw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org, Jun Miao <jun.miao@intel.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 105/247] afs: Fix infinite loop found by xfstest generic/676
-Date:   Mon, 13 Jun 2022 12:10:07 +0200
-Message-Id: <20220613094926.141733828@linuxfoundation.org>
+Subject: [PATCH 5.15 114/247] tracing: Fix sleeping function called from invalid context on RT kernel
+Date:   Mon, 13 Jun 2022 12:10:16 +0200
+Message-Id: <20220613094926.421188355@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -52,63 +50,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Jun Miao <jun.miao@intel.com>
 
-[ Upstream commit 17eabd42560f4636648ad65ba5b20228071e2363 ]
+[ Upstream commit 12025abdc8539ed9d5014e2d647a3fd1bd3de5cd ]
 
-In AFS, a directory is handled as a file that the client downloads and
-parses locally for the purposes of performing lookup and getdents
-operations.  The in-kernel afs filesystem has a number of functions that
-do this.
+When setting bootparams="trace_event=initcall:initcall_start tp_printk=1" in the
+cmdline, the output_printk() was called, and the spin_lock_irqsave() was called in the
+atomic and irq disable interrupt context suitation. On the PREEMPT_RT kernel,
+these locks are replaced with sleepable rt-spinlock, so the stack calltrace will
+be triggered.
+Fix it by raw_spin_lock_irqsave when PREEMPT_RT and "trace_event=initcall:initcall_start
+tp_printk=1" enabled.
 
-A directory file is arranged as a series of 2K blocks divided into
-32-byte slots, where a directory entry occupies one or more slots, plus
-each block starts with one or more metadata blocks.
+ BUG: sleeping function called from invalid context at kernel/locking/spinlock_rt.c:46
+ in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 1, name: swapper/0
+ preempt_count: 2, expected: 0
+ RCU nest depth: 0, expected: 0
+ Preemption disabled at:
+ [<ffffffff8992303e>] try_to_wake_up+0x7e/0xba0
+ CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.17.1-rt17+ #19 34c5812404187a875f32bee7977f7367f9679ea7
+ Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
+ Call Trace:
+  <TASK>
+  dump_stack_lvl+0x60/0x8c
+  dump_stack+0x10/0x12
+  __might_resched.cold+0x11d/0x155
+  rt_spin_lock+0x40/0x70
+  trace_event_buffer_commit+0x2fa/0x4c0
+  ? map_vsyscall+0x93/0x93
+  trace_event_raw_event_initcall_start+0xbe/0x110
+  ? perf_trace_initcall_finish+0x210/0x210
+  ? probe_sched_wakeup+0x34/0x40
+  ? ttwu_do_wakeup+0xda/0x310
+  ? trace_hardirqs_on+0x35/0x170
+  ? map_vsyscall+0x93/0x93
+  do_one_initcall+0x217/0x3c0
+  ? trace_event_raw_event_initcall_level+0x170/0x170
+  ? push_cpu_stop+0x400/0x400
+  ? cblist_init_generic+0x241/0x290
+  kernel_init_freeable+0x1ac/0x347
+  ? _raw_spin_unlock_irq+0x65/0x80
+  ? rest_init+0xf0/0xf0
+  kernel_init+0x1e/0x150
+  ret_from_fork+0x22/0x30
+  </TASK>
 
-When parsing a block, if the last slots are occupied by a dirent that
-occupies more than a single slot and the file position points at a slot
-that's not the initial one, the logic in afs_dir_iterate_block() that
-skips over it won't advance the file pointer to the end of it.  This
-will cause an infinite loop in getdents() as it will keep retrying that
-block and failing to advance beyond the final entry.
+Link: https://lkml.kernel.org/r/20220419013910.894370-1-jun.miao@intel.com
 
-Fix this by advancing the file pointer if the next entry will be beyond
-it when we skip a block.
-
-This was found by the generic/676 xfstest but can also be triggered with
-something like:
-
-	~/xfstests-dev/src/t_readdir_3 /xfstest.test/z 4000 1
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: David Howells <dhowells@redhat.com>
-Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
-Tested-by: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
-Link: http://lore.kernel.org/r/165391973497.110268.2939296942213894166.stgit@warthog.procyon.org.uk/
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Jun Miao <jun.miao@intel.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/afs/dir.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ kernel/trace/trace.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/fs/afs/dir.c b/fs/afs/dir.c
-index 4579bbda4634..948a808a964d 100644
---- a/fs/afs/dir.c
-+++ b/fs/afs/dir.c
-@@ -486,8 +486,11 @@ static int afs_dir_iterate_block(struct afs_vnode *dvnode,
- 		}
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index b49756608f83..98b06d3ce164 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -2840,7 +2840,7 @@ trace_event_buffer_lock_reserve(struct trace_buffer **current_rb,
+ }
+ EXPORT_SYMBOL_GPL(trace_event_buffer_lock_reserve);
  
- 		/* skip if starts before the current position */
--		if (offset < curr)
-+		if (offset < curr) {
-+			if (next > curr)
-+				ctx->pos = blkoff + next * sizeof(union afs_xdr_dirent);
- 			continue;
-+		}
+-static DEFINE_SPINLOCK(tracepoint_iter_lock);
++static DEFINE_RAW_SPINLOCK(tracepoint_iter_lock);
+ static DEFINE_MUTEX(tracepoint_printk_mutex);
  
- 		/* found the next entry */
- 		if (!dir_emit(ctx, dire->u.name, nlen,
+ static void output_printk(struct trace_event_buffer *fbuffer)
+@@ -2868,14 +2868,14 @@ static void output_printk(struct trace_event_buffer *fbuffer)
+ 
+ 	event = &fbuffer->trace_file->event_call->event;
+ 
+-	spin_lock_irqsave(&tracepoint_iter_lock, flags);
++	raw_spin_lock_irqsave(&tracepoint_iter_lock, flags);
+ 	trace_seq_init(&iter->seq);
+ 	iter->ent = fbuffer->entry;
+ 	event_call->event.funcs->trace(iter, 0, event);
+ 	trace_seq_putc(&iter->seq, 0);
+ 	printk("%s", iter->seq.buffer);
+ 
+-	spin_unlock_irqrestore(&tracepoint_iter_lock, flags);
++	raw_spin_unlock_irqrestore(&tracepoint_iter_lock, flags);
+ }
+ 
+ int tracepoint_printk_sysctl(struct ctl_table *table, int write,
 -- 
 2.35.1
 
