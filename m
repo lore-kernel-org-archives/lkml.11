@@ -2,47 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 172B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:17:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CEBAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:18:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241525AbiFMKR4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:17:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58228 "EHLO
+        id S242063AbiFMKSA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:18:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241678AbiFMKRa (ORCPT
+        with ESMTP id S241683AbiFMKRc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:17:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DACF21FCEA;
-        Mon, 13 Jun 2022 03:15:38 -0700 (PDT)
+        Mon, 13 Jun 2022 06:17:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88EAC1FCED;
+        Mon, 13 Jun 2022 03:15:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F2096149D;
-        Mon, 13 Jun 2022 10:15:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 383EAC34114;
-        Mon, 13 Jun 2022 10:15:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B855B80E92;
+        Mon, 13 Jun 2022 10:15:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76300C34114;
+        Mon, 13 Jun 2022 10:15:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115335;
-        bh=sKX0f2rm6Nc1YFGOFE/L3d9cw9EMLZUO6+aNCr12AxE=;
+        s=korg; t=1655115332;
+        bh=9fM207ThNnSdzxF2rwXN/zW9jb0LrWT0dcV66EEyAQs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S+kn7Q6zCYOHBCXBxuPEUlq5t1dXlHTWv1IftAUclp8k7E1FdES6jWC3X/UiIprst
-         tEf9wph+mq0iG6EDBQ1U2v+HoDsufZ3h6PwvRrJz4Y2IM+EFBzDuZoKNCpBlG20lqV
-         FB1J3AmWeqttC49eQOffGVtAxifWoFYTIIdMVmL8=
+        b=gMO3ne67dtM+co9vdgi1kzjYaReMj4EMdfiN4pAoBikkmmO+vmg6GwLpnN2BSSDrJ
+         uMpAHignzsb4Nv7N2rSVNf6WjuOsYItVd+mbFcnQ6tcEB4E+IbcBOlLDbEyJT4OpYa
+         Sijg8WOEOv5VU6wqHObmL+7K0opGjrL0G6X2mBk0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miles Chen <miles.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Zhiqiang Lin <zhiqiang.lin@mediatek.com>,
-        CK Hu <ck.hu@mediatek.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 039/167] drm/mediatek: Fix mtk_cec_mask()
-Date:   Mon, 13 Jun 2022 12:08:33 +0200
-Message-Id: <20220613094850.063721613@linuxfoundation.org>
+        stable@vger.kernel.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 038/167] x86/delay: Fix the wrong asm constraint in delay_loop()
+Date:   Mon, 13 Jun 2022 12:08:32 +0200
+Message-Id: <20220613094849.810646269@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -54,43 +48,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miles Chen <miles.chen@mediatek.com>
+From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
 
-[ Upstream commit 2c5d69b0a141e1e98febe3111e6f4fd8420493a5 ]
+[ Upstream commit b86eb74098a92afd789da02699b4b0dd3f73b889 ]
 
-In current implementation, mtk_cec_mask() writes val into target register
-and ignores the mask. After talking to our hdmi experts, mtk_cec_mask()
-should read a register, clean only mask bits, and update (val | mask) bits
-to the register.
+The asm constraint does not reflect the fact that the asm statement can
+modify the value of the local variable loops. Which it does.
 
-Link: https://patchwork.kernel.org/project/linux-mediatek/patch/20220315232301.2434-1-miles.chen@mediatek.com/
-Fixes: 8f83f26891e1 ("drm/mediatek: Add HDMI support")
-Signed-off-by: Miles Chen <miles.chen@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Zhiqiang Lin <zhiqiang.lin@mediatek.com>
-Cc: CK Hu <ck.hu@mediatek.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+Specifying the wrong constraint may lead to undefined behavior, it may
+clobber random stuff (e.g. local variable, important temporary value in
+regs, etc.). This is especially dangerous when the compiler decides to
+inline the function and since it doesn't know that the value gets
+modified, it might decide to use it from a register directly without
+reloading it.
+
+Change the constraint to "+a" to denote that the first argument is an
+input and an output argument.
+
+  [ bp: Fix typo, massage commit message. ]
+
+Fixes: e01b70ef3eb3 ("x86: fix bug in arch/i386/lib/delay.c file, delay_loop function")
+Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220329104705.65256-2-ammarfaizi2@gnuweeb.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/mediatek/mtk_cec.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/lib/delay.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_cec.c b/drivers/gpu/drm/mediatek/mtk_cec.c
-index 7a3eb8c17ef9..4e5482986dc2 100644
---- a/drivers/gpu/drm/mediatek/mtk_cec.c
-+++ b/drivers/gpu/drm/mediatek/mtk_cec.c
-@@ -91,7 +91,7 @@ static void mtk_cec_mask(struct mtk_cec *cec, unsigned int offset,
- 	u32 tmp = readl(cec->regs + offset) & ~mask;
+diff --git a/arch/x86/lib/delay.c b/arch/x86/lib/delay.c
+index 71a3759a2d4e..60cc4f222cbf 100644
+--- a/arch/x86/lib/delay.c
++++ b/arch/x86/lib/delay.c
+@@ -42,8 +42,8 @@ static void delay_loop(unsigned long loops)
+ 		"	jnz 2b		\n"
+ 		"3:	dec %0		\n"
  
- 	tmp |= val & mask;
--	writel(val, cec->regs + offset);
-+	writel(tmp, cec->regs + offset);
+-		: /* we don't need output */
+-		:"a" (loops)
++		: "+a" (loops)
++		:
+ 	);
  }
  
- void mtk_cec_set_hpd_event(struct device *dev,
 -- 
 2.35.1
 
