@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C90C5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:52:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA157C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:53:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356671AbiFMLwz (ORCPT
+        id S1357160AbiFMLxC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:52:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40974 "EHLO
+        Mon, 13 Jun 2022 07:53:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357560AbiFMLqV (ORCPT
+        with ESMTP id S1356164AbiFMLsZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:46:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5721C13E27;
-        Mon, 13 Jun 2022 03:52:48 -0700 (PDT)
+        Mon, 13 Jun 2022 07:48:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 485794BBB9;
+        Mon, 13 Jun 2022 03:53:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AF68BB80D3A;
-        Mon, 13 Jun 2022 10:52:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17307C34114;
-        Mon, 13 Jun 2022 10:52:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8F536B80D3A;
+        Mon, 13 Jun 2022 10:52:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A44FC34114;
+        Mon, 13 Jun 2022 10:52:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117566;
-        bh=f5PpVOOP3sRfv4brxVzINldqUAaGx0LXGTxUjPP4kic=;
+        s=korg; t=1655117577;
+        bh=7ZJdOB8NWztNFmJga+HULPqObVqV573O24/WNfw5IOk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bSTVZBB91Yz9zSHydNDsN6M8hYNk74vAUaiYf2yo5N76CjT0J8S/FFIZRXQNN+R1J
-         CEcsu+83ozYeWd8DlHSQztJcb8VveOHv32g6nG1wIBgQNqR02H4vKXUPpITCvHH6Fv
-         Rnss52rhL9se6ePb5rVhSTyeqlmcyM2d8IATGRiY=
+        b=EcdjCwRQQm7yHPUpOsdHnQ0tah7oFB9cmULcnaNVs2WrsjbpNw5QL75iNwHktVks6
+         mUpuNYOdNomt8jt6P7io9oItPAtoQTNfDJhNaKP+JsLb+SwcZRc4PXR5RTjxxN9SOV
+         gI+EMonlyNkxs60oGEtb4GNRQlej9eLMs3ECa8bc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wenli Looi <wlooi@ucalgary.ca>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 058/287] ath9k: fix ar9003_get_eepmisc
-Date:   Mon, 13 Jun 2022 12:08:02 +0200
-Message-Id: <20220613094925.628008225@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Subject: [PATCH 5.4 402/411] ata: libata-transport: fix {dma|pio|xfer}_mode sysfs files
+Date:   Mon, 13 Jun 2022 12:11:15 +0200
+Message-Id: <20220613094940.879082162@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
-References: <20220613094923.832156175@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,37 +49,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wenli Looi <wlooi@ucalgary.ca>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-[ Upstream commit 9aaff3864b603408c02c629957ae8d8ff5d5a4f2 ]
+commit 72aad489f992871e908ff6d9055b26c6366fb864 upstream.
 
-The current implementation is reading the wrong eeprom type.
+The {dma|pio}_mode sysfs files are incorrectly documented as having a
+list of the supported DMA/PIO transfer modes, while the corresponding
+fields of the *struct* ata_device hold the transfer mode IDs, not masks.
 
-Fixes: d8ec2e2a63e8 ("ath9k: Add an eeprom_ops callback for retrieving the eepmisc value")
-Signed-off-by: Wenli Looi <wlooi@ucalgary.ca>
-Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220320233010.123106-5-wlooi@ucalgary.ca
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+To match these docs, the {dma|pio}_mode (and even xfer_mode!) sysfs
+files are handled by the ata_bitfield_name_match() macro which leads to
+reading such kind of nonsense from them:
+
+$ cat /sys/class/ata_device/dev3.0/pio_mode
+XFER_UDMA_7, XFER_UDMA_6, XFER_UDMA_5, XFER_UDMA_4, XFER_MW_DMA_4,
+XFER_PIO_6, XFER_PIO_5, XFER_PIO_4, XFER_PIO_3, XFER_PIO_2, XFER_PIO_1,
+XFER_PIO_0
+
+Using the correct ata_bitfield_name_search() macro fixes that:
+
+$ cat /sys/class/ata_device/dev3.0/pio_mode
+XFER_PIO_4
+
+While fixing the file documentation, somewhat reword the {dma|pio}_mode
+file doc and add a note about being mostly useful for PATA devices to
+the xfer_mode file doc...
+
+Fixes: d9027470b886 ("[libata] Add ATA transport class")
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Cc: stable@vger.kernel.org
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/ath/ath9k/ar9003_eeprom.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/ABI/testing/sysfs-ata |   11 ++++++-----
+ drivers/ata/libata-transport.c      |    2 +-
+ 2 files changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c b/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c
-index 4d45d5a8ad2e..db583a6aeb0c 100644
---- a/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c
-+++ b/drivers/net/wireless/ath/ath9k/ar9003_eeprom.c
-@@ -5615,7 +5615,7 @@ unsigned int ar9003_get_paprd_scale_factor(struct ath_hw *ah,
+--- a/Documentation/ABI/testing/sysfs-ata
++++ b/Documentation/ABI/testing/sysfs-ata
+@@ -107,13 +107,14 @@ Description:
+ 				described in ATA8 7.16 and 7.17. Only valid if
+ 				the device is not a PM.
  
- static u8 ar9003_get_eepmisc(struct ath_hw *ah)
- {
--	return ah->eeprom.map4k.baseEepHeader.eepMisc;
-+	return ah->eeprom.ar9300_eep.baseEepHeader.opCapFlags.eepMisc;
- }
+-		pio_mode:	(RO) Transfer modes supported by the device when
+-				in PIO mode. Mostly used by PATA device.
++		pio_mode:	(RO) PIO transfer mode used by the device.
++				Mostly used by PATA devices.
  
- const struct eeprom_ops eep_ar9300_ops = {
--- 
-2.35.1
-
+-		xfer_mode:	(RO) Current transfer mode
++		xfer_mode:	(RO) Current transfer mode. Mostly used by
++				PATA devices.
+ 
+-		dma_mode:	(RO) Transfer modes supported by the device when
+-				in DMA mode. Mostly used by PATA device.
++		dma_mode:	(RO) DMA transfer mode used by the device.
++				Mostly used by PATA devices.
+ 
+ 		class:		(RO) Device class. Can be "ata" for disk,
+ 				"atapi" for packet device, "pmp" for PM, or
+--- a/drivers/ata/libata-transport.c
++++ b/drivers/ata/libata-transport.c
+@@ -196,7 +196,7 @@ static struct {
+ 	{ XFER_PIO_0,			"XFER_PIO_0" },
+ 	{ XFER_PIO_SLOW,		"XFER_PIO_SLOW" }
+ };
+-ata_bitfield_name_match(xfer,ata_xfer_names)
++ata_bitfield_name_search(xfer, ata_xfer_names)
+ 
+ /*
+  * ATA Port attributes
 
 
