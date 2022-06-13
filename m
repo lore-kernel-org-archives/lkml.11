@@ -2,113 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ED37CCA48F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60A98C43334
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:31:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384706AbiFMO37 (ORCPT
+        id S1384739AbiFMOaB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:29:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49956 "EHLO
+        Mon, 13 Jun 2022 10:30:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383963AbiFMOYX (ORCPT
+        with ESMTP id S1384004AbiFMOY1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:24:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CAB54756C;
-        Mon, 13 Jun 2022 04:46:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD53B612A8;
-        Mon, 13 Jun 2022 11:46:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB39EC34114;
-        Mon, 13 Jun 2022 11:46:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120766;
-        bh=h7BD6X4WsdlZ62dptpys6AtBjDppkukzPrTZvNt5/UY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TmlsJl0bLBoHZnm6qt7nSciuwxYhDI28959t/WcvAiCL73MUUCu7ASaV5Wtu7vxjV
-         VhyHDhD2PNHenbiI6uEP0FywmPLu8TbP/o8JMSengFtJ739NDpc7xjQXP5fyrWwEsd
-         QHsae4hG/gCRUzi9b9WdKQPRf9zAumSC9abktl1A=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 150/298] video: fbdev: pxa3xx-gcu: release the resources correctly in pxa3xx_gcu_probe/remove()
-Date:   Mon, 13 Jun 2022 12:10:44 +0200
-Message-Id: <20220613094929.486446276@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
-References: <20220613094924.913340374@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Mon, 13 Jun 2022 10:24:27 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33351638D;
+        Mon, 13 Jun 2022 04:46:28 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id r187-20020a1c44c4000000b0039c76434147so4423518wma.1;
+        Mon, 13 Jun 2022 04:46:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=nzaFuqeqvJmB+vA6LsJ/YIozE1oz1rXm/JebgazMuEU=;
+        b=IAqpgc2xZnZ+91W8mYh0XvQIRGp7yMZMBwyhb3u+Foh3q0B0bl3569VjsdWwxgV1nj
+         dkjaEnc6Lo/OTbaFFBXlL8YFHq9t6cRKOyuMFNl1MN9DEfPWnutQUnNVaBo9YAyYOIhT
+         SRWhSrwSOpalMGtmb9GmtEZVWnrrvIp+pyespACJtJVsqxE1idVR9f2HIMOYtN9rdg21
+         Y3RQ5qRUb1jwV0sEqTh4VXOOs+RfdiQSUSF40nSEPqVtanfgr8NjRUp2WRgvoEu8wuMI
+         etlVQkzv43kwRfLEaHqS7SvUarzl/24SJ+wddjBtA8lB4U/75QsRV6gnXlY3FX0a24ho
+         aU3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=nzaFuqeqvJmB+vA6LsJ/YIozE1oz1rXm/JebgazMuEU=;
+        b=RXIwHMvnZ78kmVn55Zbb1P9cL5O9YRGx2ncD0zhcClmwNsmuKPLDyVlUV5OPYiADBb
+         os9i8OTHvfbzFFuEQT6VVRFIRfVuB/uUkdv1G4h7GpMP5ASLVNozuCTxjAI7vMFTrpQ1
+         1EzyTmSLkJXoCdpoNQORjx31Q0m8NBdTYVs1cI6bBY2j12EvbZo2kfDgsmBzbgP2G0yO
+         vwoBta2MOuyU/hutw9GfKw4Ei2pPU66hu0nVZO2/kAEBqXezxL64PUMJfq2kl231x1+Y
+         0HpBV3/rUuFmM0FU4zRn16bcfGTfwbAcTisELPYpfvBOSWgNVpY3D/XvgvELOtmbLSQG
+         Qg1w==
+X-Gm-Message-State: AOAM532foy959KKaWgbv19tPgsBTmuW8TvVy04dRPVeSG6ps/Q0k6giB
+        Qc3qMq0q3iL9GyQ+g0llxbVD0voJNQw=
+X-Google-Smtp-Source: ABdhPJy0C/teHFxhSocotTFSMCKEjUpwHCBJ3epDSRMMDU5ZO7byMB8eGZhDeIBmW+HpQDRdVu4C8A==
+X-Received: by 2002:a7b:c404:0:b0:39c:4389:5834 with SMTP id k4-20020a7bc404000000b0039c43895834mr14333606wmi.70.1655120787320;
+        Mon, 13 Jun 2022 04:46:27 -0700 (PDT)
+Received: from felia.fritz.box (200116b8260df50011e978c0f780de03.dip.versatel-1u1.de. [2001:16b8:260d:f500:11e9:78c0:f780:de03])
+        by smtp.gmail.com with ESMTPSA id q16-20020a5d5750000000b0020e63ab5d78sm8263311wrw.26.2022.06.13.04.46.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 04:46:26 -0700 (PDT)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     Wolfram Sang <wsa@kernel.org>, linux-i2c@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] MAINTAINERS: add include/dt-bindings/i2c to I2C SUBSYSTEM HOST DRIVERS
+Date:   Mon, 13 Jun 2022 13:46:14 +0200
+Message-Id: <20220613114614.21510-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+Maintainers of the directory Documentation/devicetree/bindings/i2c
+are also the maintainers of the corresponding directory
+include/dt-bindings/i2c.
 
-[ Upstream commit d87ad457f7e1b8d2492ca5b1531eb35030a1cc8f ]
+Add the file entry for include/dt-bindings/i2c to the appropriate
+section in MAINTAINERS.
 
-In pxa3xx_gcu_probe(), the sequence of error lable is wrong, it will
-leads some resource leaked, so adjust the sequence to handle the error
-correctly, and if pxa3xx_gcu_add_buffer() fails, pxa3xx_gcu_free_buffers()
-need be called.
-In pxa3xx_gcu_remove(), add missing clk_disable_unpreprare().
-
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 ---
- drivers/video/fbdev/pxa3xx-gcu.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+Wolfram, please pick this MAINTAINERS addition to the I2C HOST DRIVERS.
 
-diff --git a/drivers/video/fbdev/pxa3xx-gcu.c b/drivers/video/fbdev/pxa3xx-gcu.c
-index 4279e13a3b58..9421d14d0eb0 100644
---- a/drivers/video/fbdev/pxa3xx-gcu.c
-+++ b/drivers/video/fbdev/pxa3xx-gcu.c
-@@ -650,6 +650,7 @@ static int pxa3xx_gcu_probe(struct platform_device *pdev)
- 	for (i = 0; i < 8; i++) {
- 		ret = pxa3xx_gcu_add_buffer(dev, priv);
- 		if (ret) {
-+			pxa3xx_gcu_free_buffers(dev, priv);
- 			dev_err(dev, "failed to allocate DMA memory\n");
- 			goto err_disable_clk;
- 		}
-@@ -666,15 +667,15 @@ static int pxa3xx_gcu_probe(struct platform_device *pdev)
- 			SHARED_SIZE, irq);
- 	return 0;
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index d04e74ade88a..2b8aec742e6e 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -9331,6 +9331,7 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git
+ F:	Documentation/devicetree/bindings/i2c/
+ F:	drivers/i2c/algos/
+ F:	drivers/i2c/busses/
++F:	include/dt-bindings/i2c/
  
--err_free_dma:
--	dma_free_coherent(dev, SHARED_SIZE,
--			priv->shared, priv->shared_phys);
-+err_disable_clk:
-+	clk_disable_unprepare(priv->clk);
- 
- err_misc_deregister:
- 	misc_deregister(&priv->misc_dev);
- 
--err_disable_clk:
--	clk_disable_unprepare(priv->clk);
-+err_free_dma:
-+	dma_free_coherent(dev, SHARED_SIZE,
-+			  priv->shared, priv->shared_phys);
- 
- 	return ret;
- }
-@@ -687,6 +688,7 @@ static int pxa3xx_gcu_remove(struct platform_device *pdev)
- 	pxa3xx_gcu_wait_idle(priv);
- 	misc_deregister(&priv->misc_dev);
- 	dma_free_coherent(dev, SHARED_SIZE, priv->shared, priv->shared_phys);
-+	clk_disable_unprepare(priv->clk);
- 	pxa3xx_gcu_free_buffers(dev, priv);
- 
- 	return 0;
+ I2C-TAOS-EVM DRIVER
+ M:	Jean Delvare <jdelvare@suse.com>
 -- 
-2.35.1
-
-
+2.17.1
 
