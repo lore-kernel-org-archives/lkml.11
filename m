@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FA59C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:21:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52764C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:21:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353262AbiFMMU5 (ORCPT
+        id S1353409AbiFMMVF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:20:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49064 "EHLO
+        Mon, 13 Jun 2022 08:21:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357121AbiFMMTV (ORCPT
+        with ESMTP id S1357644AbiFMMT0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:19:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2976E562DB;
-        Mon, 13 Jun 2022 04:02:50 -0700 (PDT)
+        Mon, 13 Jun 2022 08:19:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A467A563BC;
+        Mon, 13 Jun 2022 04:02:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 957EDB80D31;
-        Mon, 13 Jun 2022 11:02:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 012C8C3411C;
-        Mon, 13 Jun 2022 11:02:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 65B0860F9A;
+        Mon, 13 Jun 2022 11:02:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78D69C34114;
+        Mon, 13 Jun 2022 11:02:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118167;
-        bh=cO+MlwZPZfzLK6MD1rKEn5/lcgTLQLFpZ1PoZlE/mYg=;
+        s=korg; t=1655118172;
+        bh=kxf9ci/BCQtqhZJhZS8r0uz52LFijqgOzZISz+S4H7A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qZTDZY4IcJvk5r+eMbcMu7prnT8SlONqceg92rnfGQ9ZEsKAzebYdorcn4uwsKR10
-         46sn8v4G2ICguoxcyokCDIJrf+/AkP1Mjjcx4+ks6GMmz9X31Inhh1Ylb3Xt3ladSW
-         H/jb1OdC9RZ9kRry1hRIIlO/rEkwSqkwk4TEsYY4=
+        b=UE5xET1yeMh+4rekEd1fs6h9B50QdNAxK/sDSKL8HBmhsvgrn2x8OqvaWQHINpGSx
+         91fOM5/a1Ss6+mLY7blD6VdUoF+7soL60pcbRbRVHZPyGe3BLP9JPHK3Vl04U4vbnp
+         k0isyMrOXiGRBTGfMwH8XQZBVyG4HH9bc3WXstDY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Zheyu Ma <zheyuma97@gmail.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 250/287] tty: synclink_gt: Fix null-pointer-dereference in slgt_clean()
-Date:   Mon, 13 Jun 2022 12:11:14 +0200
-Message-Id: <20220613094931.595883256@linuxfoundation.org>
+        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 242/287] net: xfrm: unexport __init-annotated xfrm4_protocol_init()
+Date:   Mon, 13 Jun 2022 12:11:06 +0200
+Message-Id: <20220613094931.354158950@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -49,45 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-[ Upstream commit 689ca31c542687709ba21ec2195c1fbce34fd029 ]
+[ Upstream commit 4a388f08d8784af48f352193d2b72aaf167a57a1 ]
 
-When the driver fails at alloc_hdlcdev(), and then we remove the driver
-module, we will get the following splat:
+EXPORT_SYMBOL and __init is a bad combination because the .init.text
+section is freed up after the initialization. Hence, modules cannot
+use symbols annotated __init. The access to a freed symbol may end up
+with kernel panic.
 
-[   25.065966] general protection fault, probably for non-canonical address 0xdffffc0000000182: 0000 [#1] PREEMPT SMP KASAN PTI
-[   25.066914] KASAN: null-ptr-deref in range [0x0000000000000c10-0x0000000000000c17]
-[   25.069262] RIP: 0010:detach_hdlc_protocol+0x2a/0x3e0
-[   25.077709] Call Trace:
-[   25.077924]  <TASK>
-[   25.078108]  unregister_hdlc_device+0x16/0x30
-[   25.078481]  slgt_cleanup+0x157/0x9f0 [synclink_gt]
+modpost used to detect it, but it has been broken for a decade.
 
-Fix this by checking whether the 'info->netdev' is a null pointer first.
+Recently, I fixed modpost so it started to warn it again, then this
+showed up in linux-next builds.
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Link: https://lore.kernel.org/r/20220410114814.3920474-1-zheyuma97@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+There are two ways to fix it:
+
+  - Remove __init
+  - Remove EXPORT_SYMBOL
+
+I chose the latter for this case because the only in-tree call-site,
+net/ipv4/xfrm4_policy.c is never compiled as modular.
+(CONFIG_XFRM is boolean)
+
+Fixes: 2f32b51b609f ("xfrm: Introduce xfrm_input_afinfo to access the the callbacks properly")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Acked-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/synclink_gt.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/ipv4/xfrm4_protocol.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/tty/synclink_gt.c b/drivers/tty/synclink_gt.c
-index afe34beec720..11c62fcd67f2 100644
---- a/drivers/tty/synclink_gt.c
-+++ b/drivers/tty/synclink_gt.c
-@@ -1753,6 +1753,8 @@ static int hdlcdev_init(struct slgt_info *info)
-  */
- static void hdlcdev_exit(struct slgt_info *info)
+diff --git a/net/ipv4/xfrm4_protocol.c b/net/ipv4/xfrm4_protocol.c
+index 8dd0e6ab8606..0e1f5dc2766b 100644
+--- a/net/ipv4/xfrm4_protocol.c
++++ b/net/ipv4/xfrm4_protocol.c
+@@ -297,4 +297,3 @@ void __init xfrm4_protocol_init(void)
  {
-+	if (!info->netdev)
-+		return;
- 	unregister_hdlc_device(info->netdev);
- 	free_netdev(info->netdev);
- 	info->netdev = NULL;
+ 	xfrm_input_register_afinfo(&xfrm4_input_afinfo);
+ }
+-EXPORT_SYMBOL(xfrm4_protocol_init);
 -- 
 2.35.1
 
