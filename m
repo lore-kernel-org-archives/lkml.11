@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29585CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:52:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC641C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:52:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356935AbiFMLwK (ORCPT
+        id S1356947AbiFMLwT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:52:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43206 "EHLO
+        Mon, 13 Jun 2022 07:52:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357556AbiFMLqV (ORCPT
+        with ESMTP id S1357557AbiFMLqV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:46:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5653313DC2;
-        Mon, 13 Jun 2022 03:52:36 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FDBF1116D;
+        Mon, 13 Jun 2022 03:52:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D741E61361;
-        Mon, 13 Jun 2022 10:52:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E32D1C34114;
-        Mon, 13 Jun 2022 10:52:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 00E15B80EA8;
+        Mon, 13 Jun 2022 10:52:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F728C34114;
+        Mon, 13 Jun 2022 10:52:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117555;
-        bh=hDXdLF5ENWcg3WB2nDomqCFki0mDsKU29sCXnXCbdvc=;
+        s=korg; t=1655117549;
+        bh=rCm0BVpzsO/CK/q+0+njTSj5LZslu2hznfOgIzLZnVo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r+VEJk6nmey56Yjro9KHmBajyR1gpyLLrKFR/ozyKlZohmh7XV4hxhXefBMFqDFJf
-         cnV+q6YQr0m0I90k8TrOY8Op7rzFpIJ5pRWp2ltWf7QzySQq2xIAhJTxGRY19RINDV
-         uljGc/khbTmqdvnepgMwNL7olIh4WJDb/6qqiSd0=
+        b=R9yGLzMm3iGgTEXlRIh5+s28MqO40spln//4++hAd3oldjk0zm6+4XPUfw7vOGtC4
+         X6kX5aFH2lWUw8Gwzb2qrlB+clywju0knnPaYPgbE271cANLYmqiGjzEaKrLi9Pgsx
+         fABrCkt71mA/ugZPM7B81sqBHRBI/C8uu/4nwPJs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 050/287] ARM: dts: exynos: add atmel,24c128 fallback to Samsung EEPROM
-Date:   Mon, 13 Jun 2022 12:07:54 +0200
-Message-Id: <20220613094925.385219808@linuxfoundation.org>
+        stable@vger.kernel.org, Peng Wu <wupeng58@huawei.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 049/287] ARM: versatile: Add missing of_node_put in dcscb_init
+Date:   Mon, 13 Jun 2022 12:07:53 +0200
+Message-Id: <20220613094925.354914818@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -50,43 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Peng Wu <wupeng58@huawei.com>
 
-[ Upstream commit f038e8186fbc5723d7d38c6fa1d342945107347e ]
+[ Upstream commit 23b44f9c649bbef10b45fa33080cd8b4166800ae ]
 
-The Samsung s524ad0xd1 EEPROM should use atmel,24c128 fallback,
-according to the AT24 EEPROM bindings.
+The device_node pointer is returned by of_find_compatible_node
+with refcount incremented. We should use of_node_put() to avoid
+the refcount leak.
 
-Reported-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220426183443.243113-1-krzysztof.kozlowski@linaro.org
+Signed-off-by: Peng Wu <wupeng58@huawei.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Link: https://lore.kernel.org/r/20220428230356.69418-1-linus.walleij@linaro.org'
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/exynos5250-smdk5250.dts | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/mach-vexpress/dcscb.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/boot/dts/exynos5250-smdk5250.dts b/arch/arm/boot/dts/exynos5250-smdk5250.dts
-index 80479ed69070..95a93ef80d97 100644
---- a/arch/arm/boot/dts/exynos5250-smdk5250.dts
-+++ b/arch/arm/boot/dts/exynos5250-smdk5250.dts
-@@ -127,7 +127,7 @@
- 	samsung,i2c-max-bus-freq = <20000>;
- 
- 	eeprom@50 {
--		compatible = "samsung,s524ad0xd1";
-+		compatible = "samsung,s524ad0xd1", "atmel,24c128";
- 		reg = <0x50>;
- 	};
- 
-@@ -286,7 +286,7 @@
- 	samsung,i2c-max-bus-freq = <20000>;
- 
- 	eeprom@51 {
--		compatible = "samsung,s524ad0xd1";
-+		compatible = "samsung,s524ad0xd1", "atmel,24c128";
- 		reg = <0x51>;
- 	};
- 
+diff --git a/arch/arm/mach-vexpress/dcscb.c b/arch/arm/mach-vexpress/dcscb.c
+index ee2a0faafaa1..aaade91f6551 100644
+--- a/arch/arm/mach-vexpress/dcscb.c
++++ b/arch/arm/mach-vexpress/dcscb.c
+@@ -146,6 +146,7 @@ static int __init dcscb_init(void)
+ 	if (!node)
+ 		return -ENODEV;
+ 	dcscb_base = of_iomap(node, 0);
++	of_node_put(node);
+ 	if (!dcscb_base)
+ 		return -EADDRNOTAVAIL;
+ 	cfg = readl_relaxed(dcscb_base + DCS_CFG_R);
 -- 
 2.35.1
 
