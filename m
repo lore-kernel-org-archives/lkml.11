@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C027CCCA49B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3FD1CCA49A
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:46:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356315AbiFMLoT (ORCPT
+        id S1356956AbiFMLpP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:44:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43572 "EHLO
+        Mon, 13 Jun 2022 07:45:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355654AbiFMLjW (ORCPT
+        with ESMTP id S1355784AbiFMLji (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:39:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D76D32C64F;
-        Mon, 13 Jun 2022 03:49:34 -0700 (PDT)
+        Mon, 13 Jun 2022 07:39:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5726E2CDCB;
+        Mon, 13 Jun 2022 03:49:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8A2D0B80E07;
-        Mon, 13 Jun 2022 10:49:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD16DC3411E;
-        Mon, 13 Jun 2022 10:49:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DE23612E7;
+        Mon, 13 Jun 2022 10:49:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD1AEC34114;
+        Mon, 13 Jun 2022 10:49:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117372;
-        bh=mfzOGPGDFMwBe8JQHvgneMIcB+OQk61Uas1dXZKCVjs=;
+        s=korg; t=1655117394;
+        bh=AFtAHfC/KbuuNV46TdvKwid6qZzeWaijsvBa9IoGvxk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X9/ny6bx1kL1rgvkD4H3IQSdgIiWnvefqIc+sZDTpgAXXGsdYPS3dTcSSujJlLtzP
-         blOa4NdYwtuPmM2n6zIZjXfHOq6l1NOPMCOkUaKLb/XSuXNmz8j3C3/RPk9QWsPBWs
-         9x2AeZ9YfhsyZt9PzWmB2qVBhFz40OEjJDxsxrQE=
+        b=OrJUNnCvyOJuKZ+olz6ga/sTumhmRAdJdgdgcQXsxd+HfNW+BBaTNN/hesYQRz7fT
+         MQ1X3ntQqhGTJ1vSQDzvvOgoJ0UVhyPNJAPi5+VIVhpjjkyZXA8tWRoNPyrorJ+7FU
+         88E8mTU/XAYVXqYC+9lUKAeDUjskUZqyMdaoICuE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Luca Weiss <luca.weiss@fairphone.com>,
-        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 020/287] media: venus: hfi: avoid null dereference in deinit
-Date:   Mon, 13 Jun 2022 12:07:24 +0200
-Message-Id: <20220613094924.472288107@linuxfoundation.org>
+Subject: [PATCH 5.4 370/411] drivers: staging: rtl8192u: Fix deadlock in ieee80211_beacons_stop()
+Date:   Mon, 13 Jun 2022 12:10:43 +0200
+Message-Id: <20220613094939.776520899@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
-References: <20220613094923.832156175@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,39 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luca Weiss <luca.weiss@fairphone.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 86594f6af867b5165d2ba7b5a71fae3a5961e56c ]
+[ Upstream commit 806c7b53414934ba2a39449b31fd1a038e500273 ]
 
-If venus_probe fails at pm_runtime_put_sync the error handling first
-calls hfi_destroy and afterwards hfi_core_deinit. As hfi_destroy sets
-core->ops to NULL, hfi_core_deinit cannot call the core_deinit function
-anymore.
+There is a deadlock in ieee80211_beacons_stop(), which is shown below:
 
-Avoid this null pointer derefence by skipping the call when necessary.
+   (Thread 1)              |      (Thread 2)
+                           | ieee80211_send_beacon()
+ieee80211_beacons_stop()   |  mod_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | ieee80211_send_beacon_cb()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
 
-Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
-Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+We hold ieee->beacon_lock in position (1) of thread 1 and use
+del_timer_sync() to wait timer to stop, but timer handler
+also need ieee->beacon_lock in position (2) of thread 2.
+As a result, ieee80211_beacons_stop() will block forever.
+
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irqsave(), which could let timer handler to obtain
+the needed lock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417135407.109536-1-duoming@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/qcom/venus/hfi.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/qcom/venus/hfi.c b/drivers/media/platform/qcom/venus/hfi.c
-index 24207829982f..8a99e2d8274a 100644
---- a/drivers/media/platform/qcom/venus/hfi.c
-+++ b/drivers/media/platform/qcom/venus/hfi.c
-@@ -113,6 +113,9 @@ int hfi_core_deinit(struct venus_core *core, bool blocking)
- 		mutex_lock(&core->lock);
- 	}
+diff --git a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
+index 33a6af7aad22..a869694337f7 100644
+--- a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
++++ b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
+@@ -528,9 +528,9 @@ static void ieee80211_beacons_stop(struct ieee80211_device *ieee)
+ 	spin_lock_irqsave(&ieee->beacon_lock, flags);
  
-+	if (!core->ops)
-+		goto unlock;
-+
- 	ret = core->ops->core_deinit(core);
+ 	ieee->beacon_txing = 0;
+-	del_timer_sync(&ieee->beacon_timer);
  
- 	if (!ret)
+ 	spin_unlock_irqrestore(&ieee->beacon_lock, flags);
++	del_timer_sync(&ieee->beacon_timer);
+ }
+ 
+ void ieee80211_stop_send_beacons(struct ieee80211_device *ieee)
 -- 
 2.35.1
 
