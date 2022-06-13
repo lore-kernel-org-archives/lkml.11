@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB6AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:21:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 928F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:21:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243361AbiFMKVH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:21:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58618 "EHLO
+        id S243379AbiFMKVN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:21:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243214AbiFMKTF (ORCPT
+        with ESMTP id S242961AbiFMKUn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:19:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B65B9DFED;
-        Mon, 13 Jun 2022 03:16:53 -0700 (PDT)
+        Mon, 13 Jun 2022 06:20:43 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7E1BD5A;
+        Mon, 13 Jun 2022 03:17:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D4F4608C3;
-        Mon, 13 Jun 2022 10:16:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E939C34114;
-        Mon, 13 Jun 2022 10:16:52 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 67726CE1102;
+        Mon, 13 Jun 2022 10:17:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E03BC34114;
+        Mon, 13 Jun 2022 10:17:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115412;
-        bh=pt3L8h/zW3PR6Pt79ZwW/76CYq13TZw4x6cKPhtkCc8=;
+        s=korg; t=1655115442;
+        bh=L+loGqkh9a3KGhATRv0kKG+dx/ozURz4KOnBC5vg7JQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2kt4kDZNMpE036KQBcxy3DTbq8g+Nu/vtHrd/hX1hnElWgKVt0xd3h+ZZ0dGiuaCw
-         tiSyPRpmT8Vy4vLAV1Ki/A60s7mesieThMb8bG7fSvibjT4F+RFS7pLeJLfiBfWft6
-         nqHkFQt2/RWgPYLtEazq/1p6mkPYjwaCl1R3Gk1w=
+        b=a477uGgfAjlgfGuuopiJhsbhXWHxRU+Vy9NolW+kfjhPiSFH9DaDB5JGwJKwgHmnb
+         EOkC4BvDqfAb0owXafxz9WsqJgjulwFHbZdhN6O78ubHTFQOSQCXPYKN5dWmpiH5zi
+         YWGmiLuG41yzENtG8Z/RCx6jR4zwIw6A5ldT0kV4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 063/167] soc: qcom: smp2p: Fix missing of_node_put() in smp2p_parse_ipc
-Date:   Mon, 13 Jun 2022 12:08:57 +0200
-Message-Id: <20220613094855.713430802@linuxfoundation.org>
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH 4.9 075/167] wifi: mac80211: fix use-after-free in chanctx code
+Date:   Mon, 13 Jun 2022 12:09:09 +0200
+Message-Id: <20220613094858.490570668@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -49,36 +48,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 8fd3f18ea31a398ecce4a6d3804433658678b0a3 ]
+commit 2965c4cdf7ad9ce0796fac5e57debb9519ea721e upstream.
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
+In ieee80211_vif_use_reserved_context(), when we have an
+old context and the new context's replace_state is set to
+IEEE80211_CHANCTX_REPLACE_NONE, we free the old context
+in ieee80211_vif_use_reserved_reassign(). Therefore, we
+cannot check the old_ctx anymore, so we should set it to
+NULL after this point.
 
-Fixes: 50e99641413e ("soc: qcom: smp2p: Qualcomm Shared Memory Point to Point")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220308071942.22942-1-linmq006@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+However, since the new_ctx replace state is clearly not
+IEEE80211_CHANCTX_REPLACES_OTHER, we're not going to do
+anything else in this function and can just return to
+avoid accessing the freed old_ctx.
+
+Cc: stable@vger.kernel.org
+Fixes: 5bcae31d9cb1 ("mac80211: implement multi-vif in-place reservations")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220601091926.df419d91b165.I17a9b3894ff0b8323ce2afdb153b101124c821e5@changeid
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/soc/qcom/smp2p.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/mac80211/chan.c |    7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/soc/qcom/smp2p.c b/drivers/soc/qcom/smp2p.c
-index 4c5767c73b7a..a0562dec9604 100644
---- a/drivers/soc/qcom/smp2p.c
-+++ b/drivers/soc/qcom/smp2p.c
-@@ -416,6 +416,7 @@ static int smp2p_parse_ipc(struct qcom_smp2p *smp2p)
+--- a/net/mac80211/chan.c
++++ b/net/mac80211/chan.c
+@@ -1640,12 +1640,9 @@ int ieee80211_vif_use_reserved_context(s
+ 
+ 	if (new_ctx->replace_state == IEEE80211_CHANCTX_REPLACE_NONE) {
+ 		if (old_ctx)
+-			err = ieee80211_vif_use_reserved_reassign(sdata);
+-		else
+-			err = ieee80211_vif_use_reserved_assign(sdata);
++			return ieee80211_vif_use_reserved_reassign(sdata);
+ 
+-		if (err)
+-			return err;
++		return ieee80211_vif_use_reserved_assign(sdata);
  	}
  
- 	smp2p->ipc_regmap = syscon_node_to_regmap(syscon);
-+	of_node_put(syscon);
- 	if (IS_ERR(smp2p->ipc_regmap))
- 		return PTR_ERR(smp2p->ipc_regmap);
- 
--- 
-2.35.1
-
+ 	/*
 
 
