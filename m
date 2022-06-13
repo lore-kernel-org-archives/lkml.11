@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 587D3CCA481
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:15:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADF93C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:15:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358022AbiFMNPZ (ORCPT
+        id S1358894AbiFMNPg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:15:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36996 "EHLO
+        Mon, 13 Jun 2022 09:15:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359256AbiFMNJo (ORCPT
+        with ESMTP id S1359241AbiFMNJn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:09:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E09031FA62;
-        Mon, 13 Jun 2022 04:19:43 -0700 (PDT)
+        Mon, 13 Jun 2022 09:09:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 903C438D9D;
+        Mon, 13 Jun 2022 04:19:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A32E9B80D31;
-        Mon, 13 Jun 2022 11:19:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D592C3411C;
-        Mon, 13 Jun 2022 11:19:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 41798B80D3A;
+        Mon, 13 Jun 2022 11:19:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3A24C34114;
+        Mon, 13 Jun 2022 11:19:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119181;
-        bh=di+rlPStseU+iqxIuStF2OeBZTDVaIS8ROUsB/WG8bY=;
+        s=korg; t=1655119175;
+        bh=Kl2cQXD6MH1wMqc3KYtkdQI0IpPb9iAE6Fo4dSkB0U4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GVQL5DOz1HbwTSgimY5mp0kUTt8ppmMLl1ykFpwfONb3gzcfCr9C/Q3AwrnNDgtxl
-         8YP91vW/l3LYw0GeAxVRpbilPuBiQi9/IkgnOjEhPXzASDiCeklC0nvGoOxxKUTbPE
-         a3Ym6Qlk8FZ3OzX9fLUkNRNLfcv5jOuJdQgaXHAo=
+        b=K6APEznenkr4UDxD6QLcceqp74rP1HbsmZtQvxb64hbjEXaYcnwuSXO/Kz9ozT6+t
+         M4/e9Nrus/7Ror4KvXi1Cz0CF0qDdAqcZkf4O57ps4nnY2CrDofCZFawXRnCamLmHR
+         UeXoC5vbu9K6wSz1GsuNHBtl9JuRKtGAR+MNYqqQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Wong Vee Khee <vee.khee.wong@linux.intel.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 143/247] stmmac: intel: Fix an error handling path in intel_eth_pci_probe()
-Date:   Mon, 13 Jun 2022 12:10:45 +0200
-Message-Id: <20220613094927.291532374@linuxfoundation.org>
+Subject: [PATCH 5.15 141/247] netfilter: nf_tables: bail out early if hardware offload is not supported
+Date:   Mon, 13 Jun 2022 12:10:43 +0200
+Message-Id: <20220613094927.232000525@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -52,47 +49,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit 5e74a4b3ec1816e3bbfd715d46ae29d2508079cb ]
+[ Upstream commit 3a41c64d9c1185a2f3a184015e2a9b78bfc99c71 ]
 
-When the managed API is used, there is no need to explicitly call
-pci_free_irq_vectors().
+If user requests for NFT_CHAIN_HW_OFFLOAD, then check if either device
+provides the .ndo_setup_tc interface or there is an indirect flow block
+that has been registered. Otherwise, bail out early from the preparation
+phase. Moreover, validate that family == NFPROTO_NETDEV and hook is
+NF_NETDEV_INGRESS.
 
-This looks to be a left-over from the commit in the Fixes tag. Only the
-.remove() function had been updated.
-
-So remove this unused function call and update goto label accordingly.
-
-Fixes: 8accc467758e ("stmmac: intel: use managed PCI function on probe and resume")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Reviewed-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
-Link: https://lore.kernel.org/r/1ac9b6787b0db83b0095711882c55c77c8ea8da0.1654462241.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: c9626a2cbdb2 ("netfilter: nf_tables: add hardware offload support")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ include/net/flow_offload.h                |  1 +
+ include/net/netfilter/nf_tables_offload.h |  2 +-
+ net/core/flow_offload.c                   |  6 ++++++
+ net/netfilter/nf_tables_api.c             |  2 +-
+ net/netfilter/nf_tables_offload.c         | 23 ++++++++++++++++++++++-
+ 5 files changed, 31 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index 6f87e296a410..502fbbc082fb 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -1073,13 +1073,11 @@ static int intel_eth_pci_probe(struct pci_dev *pdev,
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index 3961461d9c8b..7a2b0223a02c 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -575,5 +575,6 @@ int flow_indr_dev_setup_offload(struct net_device *dev, struct Qdisc *sch,
+ 				enum tc_setup_type type, void *data,
+ 				struct flow_block_offload *bo,
+ 				void (*cleanup)(struct flow_block_cb *block_cb));
++bool flow_indr_dev_exists(void);
  
- 	ret = stmmac_dvr_probe(&pdev->dev, plat, &res);
- 	if (ret) {
--		goto err_dvr_probe;
-+		goto err_alloc_irq;
- 	}
+ #endif /* _NET_FLOW_OFFLOAD_H */
+diff --git a/include/net/netfilter/nf_tables_offload.h b/include/net/netfilter/nf_tables_offload.h
+index 797147843958..3568b6a2f5f0 100644
+--- a/include/net/netfilter/nf_tables_offload.h
++++ b/include/net/netfilter/nf_tables_offload.h
+@@ -92,7 +92,7 @@ int nft_flow_rule_offload_commit(struct net *net);
+ 	NFT_OFFLOAD_MATCH(__key, __base, __field, __len, __reg)		\
+ 	memset(&(__reg)->mask, 0xff, (__reg)->len);
  
+-int nft_chain_offload_priority(struct nft_base_chain *basechain);
++bool nft_chain_offload_support(const struct nft_base_chain *basechain);
+ 
+ int nft_offload_init(void);
+ void nft_offload_exit(void);
+diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
+index 6beaea13564a..fb11103fa8af 100644
+--- a/net/core/flow_offload.c
++++ b/net/core/flow_offload.c
+@@ -565,3 +565,9 @@ int flow_indr_dev_setup_offload(struct net_device *dev,	struct Qdisc *sch,
+ 	return list_empty(&bo->cb_list) ? -EOPNOTSUPP : 0;
+ }
+ EXPORT_SYMBOL(flow_indr_dev_setup_offload);
++
++bool flow_indr_dev_exists(void)
++{
++	return !list_empty(&flow_block_indr_dev_list);
++}
++EXPORT_SYMBOL(flow_indr_dev_exists);
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 1528620df34c..1b4bc588f8d6 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -2072,7 +2072,7 @@ static int nft_basechain_init(struct nft_base_chain *basechain, u8 family,
+ 	chain->flags |= NFT_CHAIN_BASE | flags;
+ 	basechain->policy = NF_ACCEPT;
+ 	if (chain->flags & NFT_CHAIN_HW_OFFLOAD &&
+-	    nft_chain_offload_priority(basechain) < 0)
++	    !nft_chain_offload_support(basechain))
+ 		return -EOPNOTSUPP;
+ 
+ 	flow_block_init(&basechain->flow_block);
+diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
+index 2d36952b1392..910ef881c3b8 100644
+--- a/net/netfilter/nf_tables_offload.c
++++ b/net/netfilter/nf_tables_offload.c
+@@ -208,7 +208,7 @@ static int nft_setup_cb_call(enum tc_setup_type type, void *type_data,
  	return 0;
+ }
  
--err_dvr_probe:
--	pci_free_irq_vectors(pdev);
- err_alloc_irq:
- 	clk_disable_unprepare(plat->stmmac_clk);
- 	clk_unregister_fixed_rate(plat->stmmac_clk);
+-int nft_chain_offload_priority(struct nft_base_chain *basechain)
++static int nft_chain_offload_priority(const struct nft_base_chain *basechain)
+ {
+ 	if (basechain->ops.priority <= 0 ||
+ 	    basechain->ops.priority > USHRT_MAX)
+@@ -217,6 +217,27 @@ int nft_chain_offload_priority(struct nft_base_chain *basechain)
+ 	return 0;
+ }
+ 
++bool nft_chain_offload_support(const struct nft_base_chain *basechain)
++{
++	struct net_device *dev;
++	struct nft_hook *hook;
++
++	if (nft_chain_offload_priority(basechain) < 0)
++		return false;
++
++	list_for_each_entry(hook, &basechain->hook_list, list) {
++		if (hook->ops.pf != NFPROTO_NETDEV ||
++		    hook->ops.hooknum != NF_NETDEV_INGRESS)
++			return false;
++
++		dev = hook->ops.dev;
++		if (!dev->netdev_ops->ndo_setup_tc && !flow_indr_dev_exists())
++			return false;
++	}
++
++	return true;
++}
++
+ static void nft_flow_cls_offload_setup(struct flow_cls_offload *cls_flow,
+ 				       const struct nft_base_chain *basechain,
+ 				       const struct nft_rule *rule,
 -- 
 2.35.1
 
