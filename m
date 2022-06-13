@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B4A1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:31:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A76AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:31:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354009AbiFMLbS (ORCPT
+        id S1354036AbiFMLba (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:31:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58382 "EHLO
+        Mon, 13 Jun 2022 07:31:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353160AbiFMLXE (ORCPT
+        with ESMTP id S1353162AbiFMLXE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:23:04 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB4523CA72;
-        Mon, 13 Jun 2022 03:42:14 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 434833CA7C;
+        Mon, 13 Jun 2022 03:42:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0F97DCE1109;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 988686119F;
+        Mon, 13 Jun 2022 10:42:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A971CC34114;
         Mon, 13 Jun 2022 10:42:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02404C34114;
-        Mon, 13 Jun 2022 10:42:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116931;
-        bh=Nua4sSapNUidDo4Iy+eYqZBfqmQhsqK8TfuuR9ObeOI=;
+        s=korg; t=1655116934;
+        bh=KvWN1nSdFIPhqvaNOtDtHPRXRbj9/8iKLtfNZxpnjm0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mwZEHchf06lB50bOwXNxjoSJS9hL7pUY9F+7Hku5uL5Bv1wXSDGxpiVFgiGQ0iIdm
-         baZl6D9qPVEdqep1ouoNtq2EzQjMzPYJWHk7YiQ6oW1VTBEnnwzyg2s0D+o/j2Voo0
-         gWIRzQd9luaV+cFIkd54kDZfcBMmZLgW2z43UOUw=
+        b=iEharE17MV4yCgbuhlWsRgMqg0UJv0QS5eSfS/FePzGc7GIZV9G0/Vqi9hAzCPT6E
+         GGlcHUJg+ULOZieRZe6BZRwlMTRJMRzSqP+lCv68LW52H0h28qOUmtDSoKCtpthBI4
+         dsy8gPLStKi78rGerOfhzflldUSyLAhLocTHwp6U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 5.4 227/411] ext4: avoid cycles in directory h-tree
-Date:   Mon, 13 Jun 2022 12:08:20 +0200
-Message-Id: <20220613094935.449968316@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.4 228/411] ACPI: property: Release subnode properties with data nodes
+Date:   Mon, 13 Jun 2022 12:08:21 +0200
+Message-Id: <20220613094935.479056325@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -49,81 +51,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-commit 3ba733f879c2a88910744647e41edeefbc0d92b2 upstream.
+commit 3bd561e1572ee02a50cd1a5be339abf1a5b78d56 upstream.
 
-A maliciously corrupted filesystem can contain cycles in the h-tree
-stored inside a directory. That can easily lead to the kernel corrupting
-tree nodes that were already verified under its hands while doing a node
-split and consequently accessing unallocated memory. Fix the problem by
-verifying traversed block numbers are unique.
+struct acpi_device_properties describes one source of properties present
+on either struct acpi_device or struct acpi_data_node. When properties are
+parsed, both are populated but when released, only those properties that
+are associated with the device node are freed.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220518093332.13986-2-jack@suse.cz
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Fix this by also releasing memory of the data node properties.
+
+Fixes: 5f5e4890d57a ("ACPI / property: Allow multiple property compatible _DSD entries")
+Cc: 4.20+ <stable@vger.kernel.org> # 4.20+
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/namei.c |   22 +++++++++++++++++++---
- 1 file changed, 19 insertions(+), 3 deletions(-)
+ drivers/acpi/property.c |   18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
---- a/fs/ext4/namei.c
-+++ b/fs/ext4/namei.c
-@@ -750,12 +750,14 @@ static struct dx_frame *
- dx_probe(struct ext4_filename *fname, struct inode *dir,
- 	 struct dx_hash_info *hinfo, struct dx_frame *frame_in)
+--- a/drivers/acpi/property.c
++++ b/drivers/acpi/property.c
+@@ -430,6 +430,16 @@ void acpi_init_properties(struct acpi_de
+ 		acpi_extract_apple_properties(adev);
+ }
+ 
++static void acpi_free_device_properties(struct list_head *list)
++{
++	struct acpi_device_properties *props, *tmp;
++
++	list_for_each_entry_safe(props, tmp, list, list) {
++		list_del(&props->list);
++		kfree(props);
++	}
++}
++
+ static void acpi_destroy_nondev_subnodes(struct list_head *list)
  {
--	unsigned count, indirect;
-+	unsigned count, indirect, level, i;
- 	struct dx_entry *at, *entries, *p, *q, *m;
- 	struct dx_root *root;
- 	struct dx_frame *frame = frame_in;
- 	struct dx_frame *ret_err = ERR_PTR(ERR_BAD_DX_DIR);
- 	u32 hash;
-+	ext4_lblk_t block;
-+	ext4_lblk_t blocks[EXT4_HTREE_LEVEL];
- 
- 	memset(frame_in, 0, EXT4_HTREE_LEVEL * sizeof(frame_in[0]));
- 	frame->bh = ext4_read_dirblock(dir, 0, INDEX);
-@@ -811,6 +813,8 @@ dx_probe(struct ext4_filename *fname, st
+ 	struct acpi_data_node *dn, *next;
+@@ -442,22 +452,18 @@ static void acpi_destroy_nondev_subnodes
+ 		wait_for_completion(&dn->kobj_done);
+ 		list_del(&dn->sibling);
+ 		ACPI_FREE((void *)dn->data.pointer);
++		acpi_free_device_properties(&dn->data.properties);
+ 		kfree(dn);
  	}
+ }
  
- 	dxtrace(printk("Look up %x", hash));
-+	level = 0;
-+	blocks[0] = 0;
- 	while (1) {
- 		count = dx_get_count(entries);
- 		if (!count || count > dx_get_limit(entries)) {
-@@ -852,15 +856,27 @@ dx_probe(struct ext4_filename *fname, st
- 			       dx_get_block(at)));
- 		frame->entries = entries;
- 		frame->at = at;
--		if (!indirect--)
-+
-+		block = dx_get_block(at);
-+		for (i = 0; i <= level; i++) {
-+			if (blocks[i] == block) {
-+				ext4_warning_inode(dir,
-+					"dx entry: tree cycle block %u points back to block %u",
-+					blocks[level], block);
-+				goto fail;
-+			}
-+		}
-+		if (++level > indirect)
- 			return frame;
-+		blocks[level] = block;
- 		frame++;
--		frame->bh = ext4_read_dirblock(dir, dx_get_block(at), INDEX);
-+		frame->bh = ext4_read_dirblock(dir, block, INDEX);
- 		if (IS_ERR(frame->bh)) {
- 			ret_err = (struct dx_frame *) frame->bh;
- 			frame->bh = NULL;
- 			goto fail;
- 		}
-+
- 		entries = ((struct dx_node *) frame->bh->b_data)->entries;
+ void acpi_free_properties(struct acpi_device *adev)
+ {
+-	struct acpi_device_properties *props, *tmp;
+-
+ 	acpi_destroy_nondev_subnodes(&adev->data.subnodes);
+ 	ACPI_FREE((void *)adev->data.pointer);
+ 	adev->data.of_compatible = NULL;
+ 	adev->data.pointer = NULL;
+-	list_for_each_entry_safe(props, tmp, &adev->data.properties, list) {
+-		list_del(&props->list);
+-		kfree(props);
+-	}
++	acpi_free_device_properties(&adev->data.properties);
+ }
  
- 		if (dx_get_limit(entries) != dx_node_limit(dir)) {
+ /**
 
 
