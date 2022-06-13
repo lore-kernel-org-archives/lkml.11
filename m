@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 157CDCCA489
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:21:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1383FCCA48C
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:21:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352999AbiFMLUy (ORCPT
+        id S1352912AbiFMLVB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:20:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43242 "EHLO
+        Mon, 13 Jun 2022 07:21:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352978AbiFMLOw (ORCPT
+        with ESMTP id S1353045AbiFMLO7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:14:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADE455F9A;
-        Mon, 13 Jun 2022 03:37:26 -0700 (PDT)
+        Mon, 13 Jun 2022 07:14:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CEA513D2C;
+        Mon, 13 Jun 2022 03:37:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 010C6B80E5C;
-        Mon, 13 Jun 2022 10:37:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A030C34114;
-        Mon, 13 Jun 2022 10:37:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3D839B80EAB;
+        Mon, 13 Jun 2022 10:37:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91CD6C34114;
+        Mon, 13 Jun 2022 10:37:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116643;
-        bh=16LTJ5r6Ir3NkZr+xeVgwoR27oHH0kOv7d0lmSGnVn4=;
+        s=korg; t=1655116651;
+        bh=fa8RtONEmWQpmckanaaiMY87jXS4IG0Lfh1Ci1pthzQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iYGQxfGPAZQFRatCpLU49ZZ/weQTXE4VFiOX9x31rS/Wfr3vzsFiF15QCuF1eesNB
-         VjHhwxYIUiClznsFJjVSkiNp7txUb4qPsyQzL/iaCd5qFFkjrzUDCcoGK5RMYk41rq
-         3+AbA/3MUl5WxMXFskgAo8Kx3mR2GUK98Ym9xgAo=
+        b=yrJxKP2ycI83SFJygM+kHfRDaUnk6GbU6eE0me9stqZaxz4ckHlSCEsRzcoa7PJSL
+         yoJexcyb+PXorNHJsYBu5azt4k6dVzpdBl+gk5x5hhWT1CNz15HJLHDvkEiYMXnA+v
+         jsZIMMLB8Kl7xH/eXN2uta0QthZRgabSA6aLzPqM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 121/411] irqchip/aspeed-i2c-ic: Fix irq_of_parse_and_map() return value
-Date:   Mon, 13 Jun 2022 12:06:34 +0200
-Message-Id: <20220613094932.303306726@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Hugues Fruchet <hugues.fruchet@foss.st.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 136/411] media: st-delta: Fix PM disable depth imbalance in delta_probe
+Date:   Mon, 13 Jun 2022 12:06:49 +0200
+Message-Id: <20220613094932.748985448@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,36 +52,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 50f0f26e7c8665763d0d7d3372dbcf191f94d077 ]
+[ Upstream commit 94e3dba710fe0afc772172305444250023fc2d30 ]
 
-The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
+The pm_runtime_enable will decrease power disable depth.
+If the probe fails, we should use pm_runtime_disable() to balance
+pm_runtime_enable().
 
-Fixes: f48e699ddf70 ("irqchip/aspeed-i2c-ic: Add I2C IRQ controller for Aspeed")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220423094227.33148-1-krzysztof.kozlowski@linaro.org
+Fixes: f386509e4959 ("[media] st-delta: STiH4xx multi-format video decoder v4l2 driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Acked-by: Hugues Fruchet <hugues.fruchet@foss.st.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-aspeed-i2c-ic.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/media/platform/sti/delta/delta-v4l2.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/irqchip/irq-aspeed-i2c-ic.c b/drivers/irqchip/irq-aspeed-i2c-ic.c
-index 8d591c179f81..3d3210828e9b 100644
---- a/drivers/irqchip/irq-aspeed-i2c-ic.c
-+++ b/drivers/irqchip/irq-aspeed-i2c-ic.c
-@@ -79,8 +79,8 @@ static int __init aspeed_i2c_ic_of_init(struct device_node *node,
+diff --git a/drivers/media/platform/sti/delta/delta-v4l2.c b/drivers/media/platform/sti/delta/delta-v4l2.c
+index 2791107e641b..29732b49a2cd 100644
+--- a/drivers/media/platform/sti/delta/delta-v4l2.c
++++ b/drivers/media/platform/sti/delta/delta-v4l2.c
+@@ -1862,7 +1862,7 @@ static int delta_probe(struct platform_device *pdev)
+ 	if (ret) {
+ 		dev_err(delta->dev, "%s failed to initialize firmware ipc channel\n",
+ 			DELTA_PREFIX);
+-		goto err;
++		goto err_pm_disable;
  	}
  
- 	i2c_ic->parent_irq = irq_of_parse_and_map(node, 0);
--	if (i2c_ic->parent_irq < 0) {
--		ret = i2c_ic->parent_irq;
-+	if (!i2c_ic->parent_irq) {
-+		ret = -EINVAL;
- 		goto err_iounmap;
+ 	/* register all available decoders */
+@@ -1876,7 +1876,7 @@ static int delta_probe(struct platform_device *pdev)
+ 	if (ret) {
+ 		dev_err(delta->dev, "%s failed to register V4L2 device\n",
+ 			DELTA_PREFIX);
+-		goto err;
++		goto err_pm_disable;
  	}
  
+ 	delta->work_queue = create_workqueue(DELTA_NAME);
+@@ -1901,6 +1901,8 @@ static int delta_probe(struct platform_device *pdev)
+ 	destroy_workqueue(delta->work_queue);
+ err_v4l2:
+ 	v4l2_device_unregister(&delta->v4l2_dev);
++err_pm_disable:
++	pm_runtime_disable(dev);
+ err:
+ 	return ret;
+ }
 -- 
 2.35.1
 
