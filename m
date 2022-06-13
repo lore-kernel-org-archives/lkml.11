@@ -2,134 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 399D8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:25:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACE4BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:26:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349753AbiFMTZg (ORCPT
+        id S1350048AbiFMT0u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:25:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54124 "EHLO
+        Mon, 13 Jun 2022 15:26:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349243AbiFMTZN (ORCPT
+        with ESMTP id S1350483AbiFMT0f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 15:25:13 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E990D38790;
-        Mon, 13 Jun 2022 10:41:40 -0700 (PDT)
-Received: from linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net (linux.microsoft.com [13.77.154.182])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 8A73220C28A2;
-        Mon, 13 Jun 2022 10:41:40 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 8A73220C28A2
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1655142100;
-        bh=O+F8BlTbN+pAhHpDZpkKrVVMTdsPZdsLp7LznEJHvpc=;
-        h=From:To:Subject:Date:From;
-        b=CtlP3O8MV4MUNxdtuwngW0OSjmjgc4DBZRZEMgnOD0z/NipOGr5/4zcyNBrO5knav
-         L8EeMRKp3tPjMhdex8lZ7fNsoQcbL2qmohRXWq2LyU7WNLXuidSJEC9iJOpTrjEgRP
-         De/8G7piFjspU9WeFDa0QZbiTq7FrRNUI4ARx1hs=
-From:   Saurabh Sengar <ssengar@linux.microsoft.com>
-To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, linux-hyperv@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ssengar@microsoft.com, mikelley@microsoft.com
-Subject: [PATCH v2] scsi: storvsc: Correct reporting of Hyper-V I/O size limits
-Date:   Mon, 13 Jun 2022 10:41:36 -0700
-Message-Id: <1655142096-3591-1-git-send-email-ssengar@linux.microsoft.com>
-X-Mailer: git-send-email 1.8.3.1
+        Mon, 13 Jun 2022 15:26:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED68C3C497;
+        Mon, 13 Jun 2022 10:48:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C84E60FC7;
+        Mon, 13 Jun 2022 17:48:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6916DC34114;
+        Mon, 13 Jun 2022 17:48:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655142484;
+        bh=c6eK96/fB3B8bbSZ76aWI5lVX3ac8Hw/Xs/mjQDWTBk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=NPsAxPdKH5uynbMvGPPhs1bdZWOJIJa4GfB/w8PBP6SetFHieD25LWuo6fzbJ4niQ
+         eqUKsg+RDgngGefM59vB/1ld+CrbGYCA++CWx8NBiyIFBl3Us2BsaDkT37/p96OP+y
+         lgHHZZVpiDfz39G0oK4VRP6jeZqvBLD1wSzuv4Vs=
+Date:   Mon, 13 Jun 2022 19:48:01 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.15 000/247] 5.15.47-rc1 review
+Message-ID: <Yqd4Ucyl9muznjVI@kroah.com>
+References: <20220613094922.843438024@linuxfoundation.org>
+ <20220613131838.GA3571788@roeck-us.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220613131838.GA3571788@roeck-us.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Current code is based on the idea that the max number of SGL entries
-also determines the max size of an I/O request.  While this idea was
-true in older versions of the storvsc driver when SGL entry length
-was limited to 4 Kbytes, commit 3d9c3dcc58e9 ("scsi: storvsc: Enable
-scatterlist entry lengths > 4Kbytes") removed that limitation. It's
-now theoretically possible for the block layer to send requests that
-exceed the maximum size supported by Hyper-V. This problem doesn't
-currently happen in practice because the block layer defaults to a
-512 Kbyte maximum, while Hyper-V in Azure supports 2 Mbyte I/O sizes.
-But some future configuration of Hyper-V could have a smaller max I/O
-size, and the block layer could exceed that max.
+On Mon, Jun 13, 2022 at 06:18:38AM -0700, Guenter Roeck wrote:
+> On Mon, Jun 13, 2022 at 12:08:22PM +0200, Greg Kroah-Hartman wrote:
+> > This is the start of the stable review cycle for the 5.15.47 release.
+> > There are 247 patches in this series, all will be posted as a response
+> > to this one.  If anyone has any issues with these being applied, please
+> > let me know.
+> > 
+> > Responses should be made by Wed, 15 Jun 2022 09:47:08 +0000.
+> > Anything received after that time might be too late.
+> > 
+> 
+> Early feedback:
+> 
+> Building arm:allmodconfig ... failed
+> --------------
+> Error log:
+> In file included from include/linux/kernel.h:16,
+>                  from include/linux/crypto.h:16,
+>                  from include/crypto/hash.h:11,
+>                  from lib/iov_iter.c:2:
+> lib/iov_iter.c: In function 'iter_xarray_get_pages':
+> include/linux/minmax.h:20:35: error: comparison of distinct pointer types lacks a cast
+> 
+> This will likely affect affects all branches where commit 6c77676645ad
+> ("iov_iter: Fix iter_xarray_get_pages{,_alloc}()") was backported.
+> 
+> The fix is upstream commit 1c27f1fc1549 ("iov_iter: fix build issue due
+> to possible type mis-match").
 
-Fix this by correctly setting max_sectors as well as sg_tablesize to
-reflect the maximum I/O size that Hyper-V reports. While allowing
-I/O sizes larger than the block layer default of 512 Kbytes doesn’t
-provide any noticeable performance benefit in the tests we ran, it's
-still appropriate to report the correct underlying Hyper-V capabilities
-to the Linux block layer.
+{sigh}
 
-Also tweak the virt_boundary_mask to reflect that the required
-alignment derives from Hyper-V communication using a 4 Kbyte page size,
-and not on the guest page size, which might be bigger (eg. ARM64).
+For various reasons of being rushed today (and totally busy this past
+weekend), I didn't run my "find if any fixes are needed in the queues"
+scripts, and this got missed, sorry about that.
 
-Fixes: '3d9c3dcc58e9 ("scsi: storvsc: Enable scatter list entry lengths > 4Kbytes")'
-Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
----
-V2
- - More descriptive commit subject and message
- - Better logic by considering max_transfer_bytes aligning to HV_HYP_PAGE_SIZE
+I'll go queue this up now and run the scripts to verify nothing else got
+missed.
 
- drivers/scsi/storvsc_drv.c | 26 +++++++++++++++++++++-----
- 1 file changed, 21 insertions(+), 5 deletions(-)
+thanks,
 
-diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
-index ca3530982e52..99d3be1b6089 100644
---- a/drivers/scsi/storvsc_drv.c
-+++ b/drivers/scsi/storvsc_drv.c
-@@ -1844,7 +1844,7 @@ static struct scsi_host_template scsi_driver = {
- 	.cmd_per_lun =		2048,
- 	.this_id =		-1,
- 	/* Ensure there are no gaps in presented sgls */
--	.virt_boundary_mask =	PAGE_SIZE-1,
-+	.virt_boundary_mask =	HV_HYP_PAGE_SIZE - 1,
- 	.no_write_same =	1,
- 	.track_queue_depth =	1,
- 	.change_queue_depth =	storvsc_change_queue_depth,
-@@ -1895,6 +1895,7 @@ static int storvsc_probe(struct hv_device *device,
- 	int target = 0;
- 	struct storvsc_device *stor_device;
- 	int max_sub_channels = 0;
-+	u32 max_tx_bytes;
- 
- 	/*
- 	 * We support sub-channels for storage on SCSI and FC controllers.
-@@ -1968,12 +1969,27 @@ static int storvsc_probe(struct hv_device *device,
- 	}
- 	/* max cmd length */
- 	host->max_cmd_len = STORVSC_MAX_CMD_LEN;
--
-+	/* Any reasonable Hyper-V configuration should provide
-+	 * max_transfer_bytes value aligning to HV_HYP_PAGE_SIZE,
-+	 * protecting it from any weird value.
-+	 */
-+	max_tx_bytes = round_down(stor_device->max_transfer_bytes, HV_HYP_PAGE_SIZE);
-+	/* max_hw_sectors_kb */
-+	host->max_sectors = max_tx_bytes >> 9;
- 	/*
--	 * set the table size based on the info we got
--	 * from the host.
-+	 * There are 2 requirements for Hyper-V storvsc sgl segments,
-+	 * based on which the below calculation for max segments is
-+	 * done:
-+	 *
-+	 * 1. Except for the first and last sgl segment, all sgl segments
-+	 *    should be align to HV_HYP_PAGE_SIZE, that also means the
-+	 *    maximum number of segments in a sgl can be calculated by
-+	 *    dividing the total max transfer length by HV_HYP_PAGE_SIZE.
-+	 *
-+	 * 2. Except for the first and last, each entry in the SGL must
-+	 *    have an offset that is a multiple of HV_HYP_PAGE_SIZE.
- 	 */
--	host->sg_tablesize = (stor_device->max_transfer_bytes >> PAGE_SHIFT);
-+	host->sg_tablesize = (max_tx_bytes >> HV_HYP_PAGE_SHIFT) + 1;
- 	/*
- 	 * For non-IDE disks, the host supports multiple channels.
- 	 * Set the number of HW queues we are supporting.
--- 
-2.25.1
-
+greg k-h
