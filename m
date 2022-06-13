@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34D8DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:32:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE379C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:32:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354452AbiFMLcn (ORCPT
+        id S1354181AbiFMLcu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:32:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43336 "EHLO
+        Mon, 13 Jun 2022 07:32:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353865AbiFML1i (ORCPT
+        with ESMTP id S1354221AbiFML3D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:27:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6F693E0C9;
-        Mon, 13 Jun 2022 03:42:53 -0700 (PDT)
+        Mon, 13 Jun 2022 07:29:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3313B3EB82;
+        Mon, 13 Jun 2022 03:43:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 69B3760FDB;
-        Mon, 13 Jun 2022 10:42:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78B32C34114;
-        Mon, 13 Jun 2022 10:42:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C3875B80D19;
+        Mon, 13 Jun 2022 10:42:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7A24C34114;
+        Mon, 13 Jun 2022 10:42:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116972;
-        bh=MLkY1OvX2VTXtWkd4B2hKU9SxPB0F0RJYdX5ADWhvgw=;
+        s=korg; t=1655116978;
+        bh=xlCnOYMrPQdrEqV4rKXfQ3FH5oPFMqNeOf1bVNRdb1A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ceCpAMcYVBLKlJJQ82aBzje9hjSXy1/y8JtvNiJ1iExB6tcK1jfbJw2a4j1K12qfe
-         FvyMncfYfzqJ37iJohBuKnusZ3ShOJegd+VjjiGhjojVlcSwDNmw9UY5qFZs/AaUrb
-         r7gHJorpEAqbks0lXczRTROQrXUZzb5ne8p46e2w=
+        b=nAXVrOQ/x2MhmQbRXLpZhwx9pCGn8CP+KAaL+CfzL5KRENyih1jf2LZzAFsk/PAuG
+         EUFCUjg/Hj1HfEAYZ3BIZUSumeJ9ujNmcvBu6jyo4UFucAGzemOV/gdIWKBp4dGeXe
+         b9t4aCf/tH8eMUVmbIyqaaGzM2quZbJPjJbCnczM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Lyude Paul <lyude@redhat.com>
-Subject: [PATCH 5.4 241/411] drm/nouveau/clk: Fix an incorrect NULL check on list iterator
-Date:   Mon, 13 Jun 2022 12:08:34 +0200
-Message-Id: <20220613094936.006726428@linuxfoundation.org>
+        stable@vger.kernel.org, Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Goldwyn Rodrigues <rgoldwyn@suse.com>,
+        Song Liu <song@kernel.org>
+Subject: [PATCH 5.4 243/411] md: fix an incorrect NULL check in does_sb_need_changing
+Date:   Mon, 13 Jun 2022 12:08:36 +0200
+Message-Id: <20220613094936.064605601@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -51,56 +53,53 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit 1c3b2a27def609473ed13b1cd668cb10deab49b4 upstream.
+commit fc8738343eefc4ea8afb6122826dea48eacde514 upstream.
 
 The bug is here:
-	if (nvkm_cstate_valid(clk, cstate, max_volt, clk->temp))
-		return cstate;
+	if (!rdev)
 
-The list iterator value 'cstate' will *always* be set and non-NULL
-by list_for_each_entry_from_reverse(), so it is incorrect to assume
-that the iterator value will be unchanged if the list is empty or no
-element is found (In fact, it will be a bogus pointer to an invalid
-structure object containing the HEAD). Also it missed a NULL check
-at callsite and may lead to invalid memory access after that.
+The list iterator value 'rdev' will *always* be set and non-NULL
+by rdev_for_each(), so it is incorrect to assume that the iterator
+value will be NULL if the list is empty or no element found.
+Otherwise it will bypass the NULL check and lead to invalid memory
+access passing the check.
 
-To fix this bug, just return 'encoder' when found, otherwise return
-NULL. And add the NULL check.
+To fix the bug, use a new variable 'iter' as the list iterator,
+while using the original variable 'rdev' as a dedicated pointer to
+point to the found element.
 
 Cc: stable@vger.kernel.org
-Fixes: 1f7f3d91ad38a ("drm/nouveau/clk: Respect voltage limits in nvkm_cstate_prog")
+Fixes: 2aa82191ac36 ("md-cluster: Perform a lazy update")
+Acked-by: Guoqing Jiang <guoqing.jiang@linux.dev>
 Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Reviewed-by: Lyude Paul <lyude@redhat.com>
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220327075824.11806-1-xiam0nd.tong@gmail.com
+Acked-by: Goldwyn Rodrigues <rgoldwyn@suse.com>
+Signed-off-by: Song Liu <song@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/md/md.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c
-@@ -135,10 +135,10 @@ nvkm_cstate_find_best(struct nvkm_clk *c
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -2532,14 +2532,16 @@ static void sync_sbs(struct mddev *mddev
  
- 	list_for_each_entry_from_reverse(cstate, &pstate->list, head) {
- 		if (nvkm_cstate_valid(clk, cstate, max_volt, clk->temp))
--			break;
-+			return cstate;
- 	}
+ static bool does_sb_need_changing(struct mddev *mddev)
+ {
+-	struct md_rdev *rdev;
++	struct md_rdev *rdev = NULL, *iter;
+ 	struct mdp_superblock_1 *sb;
+ 	int role;
  
--	return cstate;
-+	return NULL;
- }
+ 	/* Find a good rdev */
+-	rdev_for_each(rdev, mddev)
+-		if ((rdev->raid_disk >= 0) && !test_bit(Faulty, &rdev->flags))
++	rdev_for_each(iter, mddev)
++		if ((iter->raid_disk >= 0) && !test_bit(Faulty, &iter->flags)) {
++			rdev = iter;
+ 			break;
++		}
  
- static struct nvkm_cstate *
-@@ -169,6 +169,8 @@ nvkm_cstate_prog(struct nvkm_clk *clk, s
- 	if (!list_empty(&pstate->list)) {
- 		cstate = nvkm_cstate_get(clk, pstate, cstatei);
- 		cstate = nvkm_cstate_find_best(clk, pstate, cstate);
-+		if (!cstate)
-+			return -EINVAL;
- 	} else {
- 		cstate = &pstate->base;
- 	}
+ 	/* No good device found. */
+ 	if (!rdev)
 
 
