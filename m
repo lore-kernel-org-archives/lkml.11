@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CEE3CCA480
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D532CCA47C
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:45:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379069AbiFMNnn (ORCPT
+        id S1378990AbiFMNnj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:43:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58854 "EHLO
+        Mon, 13 Jun 2022 09:43:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379160AbiFMNj4 (ORCPT
+        with ESMTP id S1379122AbiFMNjw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:39:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B4622502;
-        Mon, 13 Jun 2022 04:29:05 -0700 (PDT)
+        Mon, 13 Jun 2022 09:39:52 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9B797A459;
+        Mon, 13 Jun 2022 04:28:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9358461036;
-        Mon, 13 Jun 2022 11:29:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A219DC34114;
-        Mon, 13 Jun 2022 11:29:03 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4E457CE1166;
+        Mon, 13 Jun 2022 11:28:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 656F0C34114;
+        Mon, 13 Jun 2022 11:28:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119744;
-        bh=eDqhiksNIf+jsUY2XBvAV3uAA2+r9m8+eNfbCUe+LBo=;
+        s=korg; t=1655119724;
+        bh=PmQMdKKBRYPR+mOWp4FAdxocodqjDfYNXP6WYmpUaM8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mXYTmD6bvOL09S5MBcrdFw8zMerE/3Ecz8oU0J+xxZnFvQBd/sZH8ZmC7w/DHOsAf
-         P1z/0kL9dm/vaxPPIZ6neXEwSlQMxSAAnm6pVrbZ+g2Ak77JMDsiAi4ZyS5PUo+yuW
-         hEIEIQCKvb5d3tqIJE5gBXZCmAt2qNMMkqyJWzNs=
+        b=qbck0VwTsN9QiZkyKiOeixyaRW0CgvMDxkRBN24YYo37zjy9meUXb4Opw+90ICa2m
+         ncph0UNfFBSYrWakDHG4KROxa5eUpc8OmCRPyB8JV7eOalUff3ZS7Khl4Y/GDJ/wfO
+         aoE4AbbPBxwP7wLjCoPqBM33CcAVetnYrDNEGRNw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org,
+        Guangguan Wang <guangguan.wang@linux.alibaba.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 124/339] net/mlx5: Dont use already freed action pointer
-Date:   Mon, 13 Jun 2022 12:09:09 +0200
-Message-Id: <20220613094930.271415321@linuxfoundation.org>
+Subject: [PATCH 5.18 109/339] net/smc: fixes for converting from "struct smc_cdc_tx_pend **" to "struct smc_wr_tx_pend_priv *"
+Date:   Mon, 13 Jun 2022 12:08:54 +0200
+Message-Id: <20220613094929.816820580@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,48 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+From: Guangguan Wang <guangguan.wang@linux.alibaba.com>
 
-[ Upstream commit 80b2bd737d0e833e6a2b77e482e5a714a79c86a4 ]
+[ Upstream commit e225c9a5a74b12e9ef8516f30a3db2c7eb866ee1 ]
 
-The call to mlx5dr_action_destroy() releases "action" memory. That
-pointer is set to miss_action later and generates the following smatch
-error:
+"struct smc_cdc_tx_pend **" can not directly convert
+to "struct smc_wr_tx_pend_priv *".
 
- drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c:53 set_miss_action()
- warn: 'action' was already freed.
-
-Make sure that the pointer is always valid by setting NULL after destroy.
-
-Fixes: 6a48faeeca10 ("net/mlx5: Add direct rule fs_cmd implementation")
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Fixes: 2bced6aefa3d ("net/smc: put slot when connection is killed")
+Signed-off-by: Guangguan Wang <guangguan.wang@linux.alibaba.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ net/smc/smc_cdc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-index 728f81882589..6a9abba92df6 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-@@ -44,11 +44,10 @@ static int set_miss_action(struct mlx5_flow_root_namespace *ns,
- 	err = mlx5dr_table_set_miss_action(ft->fs_dr_table.dr_table, action);
- 	if (err && action) {
- 		err = mlx5dr_action_destroy(action);
--		if (err) {
--			action = NULL;
--			mlx5_core_err(ns->dev, "Failed to destroy action (%d)\n",
--				      err);
--		}
-+		if (err)
-+			mlx5_core_err(ns->dev,
-+				      "Failed to destroy action (%d)\n", err);
-+		action = NULL;
+diff --git a/net/smc/smc_cdc.c b/net/smc/smc_cdc.c
+index 5c731f27996e..53f63bfbaf5f 100644
+--- a/net/smc/smc_cdc.c
++++ b/net/smc/smc_cdc.c
+@@ -82,7 +82,7 @@ int smc_cdc_get_free_slot(struct smc_connection *conn,
+ 		/* abnormal termination */
+ 		if (!rc)
+ 			smc_wr_tx_put_slot(link,
+-					   (struct smc_wr_tx_pend_priv *)pend);
++					   (struct smc_wr_tx_pend_priv *)(*pend));
+ 		rc = -EPIPE;
  	}
- 	ft->fs_dr_table.miss_action = action;
- 	if (old_miss_action) {
+ 	return rc;
 -- 
 2.35.1
 
