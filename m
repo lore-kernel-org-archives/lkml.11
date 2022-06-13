@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 833F9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:47:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB632C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:47:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385247AbiFMOq5 (ORCPT
+        id S1385531AbiFMOrL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:46:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59002 "EHLO
+        Mon, 13 Jun 2022 10:47:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386212AbiFMOop (ORCPT
+        with ESMTP id S1386202AbiFMOop (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 10:44:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A0C1B717D;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DBFEB717E;
         Mon, 13 Jun 2022 04:51:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E11861486;
-        Mon, 13 Jun 2022 11:50:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A294C3411B;
-        Mon, 13 Jun 2022 11:50:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4C2C9B80EDE;
+        Mon, 13 Jun 2022 11:51:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD6B5C34114;
+        Mon, 13 Jun 2022 11:51:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655121058;
-        bh=sh2G4X4wFqnK2Zl2sU5zgIcGPX5ExeSw9GC5WbGyQy0=;
+        s=korg; t=1655121086;
+        bh=sXhm+oMCrui/y0I0+QBtmpIK+POYQhAS48jgfA/2Ycw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MrusuCMNeLBSXYeT0wU0h1hyZyIbtx55sLR/niLd7QsRNcleFMEjQAoKw/HuW65qA
-         FgxUIbBljK34LR+xzzYoV2cPRYJCSXjqxsOoBI3dh8ZaGGM08qCbeo0OySlrmm9Sx9
-         4+3gFVd8Wqpw7XDj+GuDvu5/7+jUJ8Gu9ed16Rcs=
+        b=ts7AqWDPJ/1YCVZN29TQuJLrclfKJd6LiTdSMPLSvq8z7V/QEWQKTOXz63iUyaEqc
+         hLVyxE8oj/QYrCVzCY4WWYdk/Uuqk85T5SbKyoyc3JH/t46DyQRBE04iHMxLHryABu
+         l+rCMN3yrWVwYHdPpeuLjW/JnrGmPqyfuko84IbU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
-        =?UTF-8?q?Andr=C3=A9=20Kapelrud?= <a.kapelrud@gmail.com>
-Subject: [PATCH 5.17 257/298] ALSA: usb-audio: Skip generic sync EP parse for secondary EP
-Date:   Mon, 13 Jun 2022 12:12:31 +0200
-Message-Id: <20220613094932.871986274@linuxfoundation.org>
+        stable@vger.kernel.org, David Safford <david.safford@gmail.com>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        Jarkko Sakkinen <jarkko@kernel.org>
+Subject: [PATCH 5.17 266/298] KEYS: trusted: tpm2: Fix migratable logic
+Date:   Mon, 13 Jun 2022 12:12:40 +0200
+Message-Id: <20220613094933.140190890@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -49,38 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: David Safford <david.safford@gmail.com>
 
-commit efb75df105e82f076a85b9f2d81410428bcb55fc upstream.
+commit dda5384313a40ecbaafd8a9a80f47483255e4c4d upstream.
 
-When ep_idx is already non-zero, it means usually a capture stream
-that is set up explicity by a fixed-format quirk, and applying the
-check for generic (non-implicit-fb) sync EPs might hit incorrectly,
-resulting in a bogus sync endpoint for the capture stream.
+When creating (sealing) a new trusted key, migratable
+trusted keys have the FIXED_TPM and FIXED_PARENT attributes
+set, and non-migratable keys don't. This is backwards, and
+also causes creation to fail when creating a migratable key
+under a migratable parent. (The TPM thinks you are trying to
+seal a non-migratable blob under a migratable parent.)
 
-This patch adds a check for the ep_idx and skip if it's a secondary
-endpoint.  It's a part of the fixes for regressions on Saffire 6.
+The following simple patch fixes the logic, and has been
+tested for all four combinations of migratable and non-migratable
+trusted keys and parent storage keys. With this logic, you will
+get a proper failure if you try to create a non-migratable
+trusted key under a migratable parent storage key, and all other
+combinations work correctly.
 
-Fixes: 7b0efea4baf0 ("ALSA: usb-audio: Add missing ep_idx in fixed EP quirks")
-Reported-and-tested-by: André Kapelrud <a.kapelrud@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220606160910.6926-2-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Cc: stable@vger.kernel.org # v5.13+
+Fixes: e5fb5d2c5a03 ("security: keys: trusted: Make sealed key properly interoperable")
+Signed-off-by: David Safford <david.safford@gmail.com>
+Reviewed-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/usb/pcm.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ security/keys/trusted-keys/trusted_tpm2.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/sound/usb/pcm.c
-+++ b/sound/usb/pcm.c
-@@ -304,7 +304,7 @@ int snd_usb_audioformat_set_sync_ep(stru
- 	 * Generic sync EP handling
- 	 */
+--- a/security/keys/trusted-keys/trusted_tpm2.c
++++ b/security/keys/trusted-keys/trusted_tpm2.c
+@@ -283,8 +283,8 @@ int tpm2_seal_trusted(struct tpm_chip *c
+ 	/* key properties */
+ 	flags = 0;
+ 	flags |= options->policydigest_len ? 0 : TPM2_OA_USER_WITH_AUTH;
+-	flags |= payload->migratable ? (TPM2_OA_FIXED_TPM |
+-					TPM2_OA_FIXED_PARENT) : 0;
++	flags |= payload->migratable ? 0 : (TPM2_OA_FIXED_TPM |
++					    TPM2_OA_FIXED_PARENT);
+ 	tpm_buf_append_u32(&buf, flags);
  
--	if (altsd->bNumEndpoints < 2)
-+	if (fmt->ep_idx > 0 || altsd->bNumEndpoints < 2)
- 		return 0;
- 
- 	is_playback = !(get_endpoint(alts, 0)->bEndpointAddress & USB_DIR_IN);
+ 	/* policy */
 
 
