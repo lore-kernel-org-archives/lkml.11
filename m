@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A697C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:22:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64A09C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:22:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237886AbiFMLWh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:22:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46498 "EHLO
+        id S1353104AbiFMLWo (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 07:22:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351692AbiFMLQf (ORCPT
+        with ESMTP id S1351681AbiFMLQf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:16:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C30413F70;
-        Mon, 13 Jun 2022 03:40:00 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02AA313F50;
+        Mon, 13 Jun 2022 03:39:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D5FB1610A0;
-        Mon, 13 Jun 2022 10:39:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA86BC3411E;
-        Mon, 13 Jun 2022 10:39:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A0390B80EB4;
+        Mon, 13 Jun 2022 10:39:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0372AC34114;
+        Mon, 13 Jun 2022 10:39:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116799;
-        bh=zeFraWsJc3yTSgQb3pzJ/B6qVY2pED3bey0qvc0sm3I=;
+        s=korg; t=1655116796;
+        bh=AcdtkWwvTJuyIE69/E/Rkvg1tC2FUJiA9+td4VW2HKk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LN+lNYhpCEG8hK85bOmQcvUSUx8TfyjtYjLEvJzN9DXftqNy8enn18lhNML39/VGT
-         kZ321/QbuKClOXPqfFTIztF+ghei4Nle3al6jhU/DkQsumHDqdDwQCKFw9bRs+ueUH
-         VHd1fvcUORz7XqTwcoiluTdGSl7vy7v6RLB4Ze3Y=
+        b=aFKB1Yr5XzKVfDGXRBG1C3Mftwti7BBAoZmjQExpNN1/Xv2uYcnSdKo1z6iDOOeHu
+         cQ4lahR1Lxa4Ha8sXIXgwuh48lrxWufQ0ViEYOwq49a60QuDFxIP7preHLJIqbVQc4
+         NQi+euMncIghUefqZPpPofuE7MUsIif35hdko+Rk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Igor Zhbanov <izh1979@gmail.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Phil Elwell <phil@raspberrypi.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 181/411] powerpc/4xx/cpm: Fix return value of __setup() handler
-Date:   Mon, 13 Jun 2022 12:07:34 +0200
-Message-Id: <20220613094934.087002905@linuxfoundation.org>
+Subject: [PATCH 5.4 167/411] ARM: dts: bcm2835-rpi-b: Fix GPIO line names
+Date:   Mon, 13 Jun 2022 12:07:20 +0200
+Message-Id: <20220613094933.668942305@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,42 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Stefan Wahren <stefan.wahren@i2se.com>
 
-[ Upstream commit 5bb99fd4090fe1acfdb90a97993fcda7f8f5a3d6 ]
+[ Upstream commit 97bd8659c1c46c23e4daea7e040befca30939950 ]
 
-__setup() handlers should return 1 to obsolete_checksetup() in
-init/main.c to indicate that the boot option has been handled.
+Recently this has been fixed in the vendor tree, so upstream this.
 
-A return of 0 causes the boot option/value to be listed as an Unknown
-kernel parameter and added to init's (limited) argument or environment
-strings.
-
-Also, error return codes don't mean anything to obsolete_checksetup() --
-only non-zero (usually 1) or zero. So return 1 from cpm_powersave_off().
-
-Fixes: d164f6d4f910 ("powerpc/4xx: Add suspend and idle support")
-Reported-by: Igor Zhbanov <izh1979@gmail.com>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220502192941.20955-1-rdunlap@infradead.org
+Fixes: 731b26a6ac17 ("ARM: bcm2835: Add names for the Raspberry Pi GPIO lines")
+Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/4xx/cpm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/boot/dts/bcm2835-rpi-b.dts | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/arch/powerpc/platforms/4xx/cpm.c b/arch/powerpc/platforms/4xx/cpm.c
-index ae8b812c9202..2481e78c0423 100644
---- a/arch/powerpc/platforms/4xx/cpm.c
-+++ b/arch/powerpc/platforms/4xx/cpm.c
-@@ -327,6 +327,6 @@ late_initcall(cpm_init);
- static int __init cpm_powersave_off(char *arg)
- {
- 	cpm.powersave_off = 1;
--	return 0;
-+	return 1;
- }
- __setup("powersave=off", cpm_powersave_off);
+diff --git a/arch/arm/boot/dts/bcm2835-rpi-b.dts b/arch/arm/boot/dts/bcm2835-rpi-b.dts
+index 2b69957e0113..1838e0fa0ff5 100644
+--- a/arch/arm/boot/dts/bcm2835-rpi-b.dts
++++ b/arch/arm/boot/dts/bcm2835-rpi-b.dts
+@@ -53,18 +53,17 @@
+ 			  "GPIO18",
+ 			  "NC", /* GPIO19 */
+ 			  "NC", /* GPIO20 */
+-			  "GPIO21",
++			  "CAM_GPIO0",
+ 			  "GPIO22",
+ 			  "GPIO23",
+ 			  "GPIO24",
+ 			  "GPIO25",
+ 			  "NC", /* GPIO26 */
+-			  "CAM_GPIO0",
+-			  /* Binary number representing build/revision */
+-			  "CONFIG0",
+-			  "CONFIG1",
+-			  "CONFIG2",
+-			  "CONFIG3",
++			  "GPIO27",
++			  "GPIO28",
++			  "GPIO29",
++			  "GPIO30",
++			  "GPIO31",
+ 			  "NC", /* GPIO32 */
+ 			  "NC", /* GPIO33 */
+ 			  "NC", /* GPIO34 */
 -- 
 2.35.1
 
