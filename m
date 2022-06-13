@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E721C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:35:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 752BAC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:35:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377869AbiFMNfC (ORCPT
+        id S1377878AbiFMNfM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:35:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50286 "EHLO
+        Mon, 13 Jun 2022 09:35:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378481AbiFMNbm (ORCPT
+        with ESMTP id S1378511AbiFMNbo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:31:42 -0400
+        Mon, 13 Jun 2022 09:31:44 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAF0470909;
-        Mon, 13 Jun 2022 04:26:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEE5B703EB;
+        Mon, 13 Jun 2022 04:26:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3ED0E61036;
-        Mon, 13 Jun 2022 11:26:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E6C7C34114;
-        Mon, 13 Jun 2022 11:26:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 19F6761038;
+        Mon, 13 Jun 2022 11:26:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25E54C341C5;
+        Mon, 13 Jun 2022 11:26:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119570;
-        bh=bt6icHp1z5mM4XKs4r2Z8SPOXr02Stt78U4Pdt+zBZ4=;
+        s=korg; t=1655119573;
+        bh=P2WvBvhNObln23cDiRXI50hZO+1ujw4dGKh/BQBU3KY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bGJsmiIoigqoY8d4+9OYXRSgWgwWb8nc8RwapyNFYZYWTFMkYiIxt+Yzw6bAW/M5k
-         BQsbrV0g6WbuuZRV8A/UJdOCRT/bIcLXm4M7/SNPhmEmwseRAXeJ+/EWoSDFiOh/rz
-         CY5AQBH2iwpmt8UUmf/YYh7D9GDX9jMTqvnR+0QM=
+        b=ZamHkhetZCOUjBD982UhCCC5YbZVu61E/Qa2UcZlTd2k4iAYTEeCR4CeFzG0IgJjT
+         dtbS6c7rIjL1gJWebKE5QqFYAaCau/Nn/oW/C550qekcYn1GYKa76537uyW3w/V0b3
+         VOKSI9K5FCR9/9owfu0Gcoj1WO9wLeLaWNgRigaQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 061/339] rtc: ftrtc010: Fix error handling in ftrtc010_rtc_probe
-Date:   Mon, 13 Jun 2022 12:08:06 +0200
-Message-Id: <20220613094928.373207440@linuxfoundation.org>
+Subject: [PATCH 5.18 044/339] power: supply: ab8500_fg: Allocate wq in probe
+Date:   Mon, 13 Jun 2022 12:07:49 +0200
+Message-Id: <20220613094927.858126177@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,92 +50,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Linus Walleij <linus.walleij@linaro.org>
 
-[ Upstream commit b520cbe5be37b1b9b401c0b6ecbdae32575273db ]
+[ Upstream commit 010ddb813f3554cbbf8bd13b731452236a2c8017 ]
 
-In the error handling path, the clk_prepare_enable() function
-call should be balanced by a corresponding 'clk_disable_unprepare()'
-call , as already done in the remove function.
+The workqueue is allocated in bind() but all interrupts are
+registered in probe().
 
-clk_disable_unprepare calls clk_disable() and clk_unprepare().
-They will use IS_ERR_OR_NULL to check the argument.
+Some interrupts put work on the workqueue, which can have
+bad side effects.
 
-Fixes: ac05fba39cc5 ("rtc: gemini: Add optional clock handling")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20220403054912.31739-1-linmq006@gmail.com
+Allocate the workqueue in probe() instead, destroy it in
+.remove() and make unbind() simply flush the workqueue.
+
+Fixes: 1c1f13a006ed ("power: supply: ab8500: Move to componentized binding")
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rtc/rtc-ftrtc010.c | 34 ++++++++++++++++++++++++----------
- 1 file changed, 24 insertions(+), 10 deletions(-)
+ drivers/power/supply/ab8500_fg.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/rtc/rtc-ftrtc010.c b/drivers/rtc/rtc-ftrtc010.c
-index 53bb08fe1cd4..25c6e7d9570f 100644
---- a/drivers/rtc/rtc-ftrtc010.c
-+++ b/drivers/rtc/rtc-ftrtc010.c
-@@ -137,26 +137,34 @@ static int ftrtc010_rtc_probe(struct platform_device *pdev)
- 		ret = clk_prepare_enable(rtc->extclk);
- 		if (ret) {
- 			dev_err(dev, "failed to enable EXTCLK\n");
--			return ret;
-+			goto err_disable_pclk;
- 		}
- 	}
+diff --git a/drivers/power/supply/ab8500_fg.c b/drivers/power/supply/ab8500_fg.c
+index 97ac588a9e9c..ec8a404d71b4 100644
+--- a/drivers/power/supply/ab8500_fg.c
++++ b/drivers/power/supply/ab8500_fg.c
+@@ -3037,13 +3037,6 @@ static int ab8500_fg_bind(struct device *dev, struct device *master,
+ {
+ 	struct ab8500_fg *di = dev_get_drvdata(dev);
  
- 	rtc->rtc_irq = platform_get_irq(pdev, 0);
--	if (rtc->rtc_irq < 0)
--		return rtc->rtc_irq;
-+	if (rtc->rtc_irq < 0) {
-+		ret = rtc->rtc_irq;
-+		goto err_disable_extclk;
-+	}
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	if (!res)
--		return -ENODEV;
-+	if (!res) {
-+		ret = -ENODEV;
-+		goto err_disable_extclk;
-+	}
- 
- 	rtc->rtc_base = devm_ioremap(dev, res->start,
- 				     resource_size(res));
--	if (!rtc->rtc_base)
+-	/* Create a work queue for running the FG algorithm */
+-	di->fg_wq = alloc_ordered_workqueue("ab8500_fg_wq", WQ_MEM_RECLAIM);
+-	if (di->fg_wq == NULL) {
+-		dev_err(dev, "failed to create work queue\n");
 -		return -ENOMEM;
-+	if (!rtc->rtc_base) {
-+		ret = -ENOMEM;
-+		goto err_disable_extclk;
-+	}
+-	}
+-
+ 	di->bat_cap.max_mah_design = di->bm->bi->charge_full_design_uah;
+ 	di->bat_cap.max_mah = di->bat_cap.max_mah_design;
+ 	di->vbat_nom_uv = di->bm->bi->voltage_max_design_uv;
+@@ -3067,8 +3060,7 @@ static void ab8500_fg_unbind(struct device *dev, struct device *master,
+ 	if (ret)
+ 		dev_err(dev, "failed to disable coulomb counter\n");
  
- 	rtc->rtc_dev = devm_rtc_allocate_device(dev);
--	if (IS_ERR(rtc->rtc_dev))
--		return PTR_ERR(rtc->rtc_dev);
-+	if (IS_ERR(rtc->rtc_dev)) {
-+		ret = PTR_ERR(rtc->rtc_dev);
-+		goto err_disable_extclk;
-+	}
- 
- 	rtc->rtc_dev->ops = &ftrtc010_rtc_ops;
- 
-@@ -172,9 +180,15 @@ static int ftrtc010_rtc_probe(struct platform_device *pdev)
- 	ret = devm_request_irq(dev, rtc->rtc_irq, ftrtc010_rtc_interrupt,
- 			       IRQF_SHARED, pdev->name, dev);
- 	if (unlikely(ret))
--		return ret;
-+		goto err_disable_extclk;
- 
- 	return devm_rtc_register_device(rtc->rtc_dev);
-+
-+err_disable_extclk:
-+	clk_disable_unprepare(rtc->extclk);
-+err_disable_pclk:
-+	clk_disable_unprepare(rtc->pclk);
-+	return ret;
+-	destroy_workqueue(di->fg_wq);
+-	flush_scheduled_work();
++	flush_workqueue(di->fg_wq);
  }
  
- static int ftrtc010_rtc_remove(struct platform_device *pdev)
+ static const struct component_ops ab8500_fg_component_ops = {
+@@ -3117,6 +3109,13 @@ static int ab8500_fg_probe(struct platform_device *pdev)
+ 	ab8500_fg_charge_state_to(di, AB8500_FG_CHARGE_INIT);
+ 	ab8500_fg_discharge_state_to(di, AB8500_FG_DISCHARGE_INIT);
+ 
++	/* Create a work queue for running the FG algorithm */
++	di->fg_wq = alloc_ordered_workqueue("ab8500_fg_wq", WQ_MEM_RECLAIM);
++	if (di->fg_wq == NULL) {
++		dev_err(dev, "failed to create work queue\n");
++		return -ENOMEM;
++	}
++
+ 	/* Init work for running the fg algorithm instantly */
+ 	INIT_WORK(&di->fg_work, ab8500_fg_instant_work);
+ 
+@@ -3227,6 +3226,8 @@ static int ab8500_fg_remove(struct platform_device *pdev)
+ {
+ 	struct ab8500_fg *di = platform_get_drvdata(pdev);
+ 
++	destroy_workqueue(di->fg_wq);
++	flush_scheduled_work();
+ 	component_del(&pdev->dev, &ab8500_fg_component_ops);
+ 	list_del(&di->node);
+ 	ab8500_fg_sysfs_exit(di);
 -- 
 2.35.1
 
