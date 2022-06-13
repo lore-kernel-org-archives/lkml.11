@@ -2,258 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 798B4C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:57:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00ED6C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:57:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351427AbiFMU5P (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:57:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35338 "EHLO
+        id S241357AbiFMU5W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 16:57:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352190AbiFMUyQ (ORCPT
+        with ESMTP id S1352213AbiFMUyR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:54:16 -0400
-Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 832C224977
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:20:49 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1655151648;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=OqOHaer4kC3Iywced9lKgHi/whHdzXvvFFVWcKJPrko=;
-        b=f5d/7XtUXAv8RzxuTswTXDO4W9PSq9kdFaPjQuxA4iTVQtefrfkzPW4aGdvzX++CKF10na
-        9AUHYQzZLF8H3k/I2Tuha5dUthdwznGRX8KR64xwBQq8nFKELem71xvwCOLuFf1+udE9fO
-        uzEbRQXAmCq9BsMMyyvh9Cno2phyuLU=
-From:   andrey.konovalov@linux.dev
-To:     Marco Elver <elver@google.com>,
-        Alexander Potapenko <glider@google.com>
-Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev@googlegroups.com, Peter Collingbourne <pcc@google.com>,
-        Evgenii Stepanov <eugenis@google.com>,
-        Florian Mayer <fmayer@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH 31/32] kasan: implement stack ring for tag-based modes
-Date:   Mon, 13 Jun 2022 22:14:22 +0200
-Message-Id: <3cd76121903de13713581687ffa45e668ef1475a.1655150842.git.andreyknvl@google.com>
-In-Reply-To: <cover.1655150842.git.andreyknvl@google.com>
-References: <cover.1655150842.git.andreyknvl@google.com>
+        Mon, 13 Jun 2022 16:54:17 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3429D29353
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:20:58 -0700 (PDT)
+Received: from sequoia (162-237-133-238.lightspeed.rcsntx.sbcglobal.net [162.237.133.238])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 8640820C154C;
+        Mon, 13 Jun 2022 13:20:57 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 8640820C154C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1655151657;
+        bh=Nft++AK4Xo5eRcdhC/+nOVQRH0imfgMDAanvnC8iCGY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=g0bSIsfsfTpuWw1wxebHkd2aPkjo0Gyxb/hYPwXstl6EQLvknbiRYqW/HO1jZAlxi
+         4RY8Zijlv9dmd3IldYIG/q1jLlzlna24bgt4BfAHvvaknQNpNVG7Ot1ZgVD5WZ74Je
+         ImAB7VOaW0frx6XujBx9pjxOV9fEfwVu7CY4sv0I=
+Date:   Mon, 13 Jun 2022 15:20:53 -0500
+From:   Tyler Hicks <tyhicks@linux.microsoft.com>
+To:     Dominique Martinet <asmadeus@codewreck.org>
+Cc:     Christian Schoenebeck <linux_oss@crudebyte.com>,
+        v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 00/06] fid refcounting improvements and fixes
+Message-ID: <20220613202053.GI7401@sequoia>
+References: <20220612085330.1451496-1-asmadeus@codewreck.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220612085330.1451496-1-asmadeus@codewreck.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrey Konovalov <andreyknvl@google.com>
+On 2022-06-12 17:53:23, Dominique Martinet wrote:
+> So:
+>  - I could reproduce Tyler's generic 531 leak, fixed it by the first
+>    commit in v9fs_vfs_atomic_open_dotl
+>  - Found another less likely leak while reworking code
+>  - Christian's comment that it's not obvious that clunk is just a
+>    refcount decrease was very true: I think it's worth the churn,
+>    so I've rename this all through a new helper...
+>  - ... with the not-so-hidden intent to improve debugging by adding
+>    a tracepoint for them, which I have also done.
+> 
+> I've also taken my comment in the other thread further and went ahead
+> and made it in its own commit. Tyler, if you're ok with this I'll just
+> squash it up. You can see rebased patches here:
+> https://github.com/martinetd/linux/
+> 
+> Note that I also took the permission to add back '/* clone */' as a
+> comment to your changing p9_client_walk's arguments: while I can agree
+> variables are hard to track, figuring out what the heck that boolean
+> argument means is much harder to me and I honestly preferred the
+> variable.
+> Having both through a comment is good enough for me if you'll accept
+> this:
+> ----
+> @@ -222,7 +221,8 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct dentry *dentry,
+>                  * We need to hold rename lock when doing a multipath
+>                  * walk to ensure none of the patch component change
+>                  */
+> -               fid = p9_client_walk(old_fid, l, &wnames[i], clone);
+> +               fid = p9_client_walk(old_fid, l, &wnames[i],
+> +                                    old_fid == root_fid /* clone */);
 
-Implement storing stack depot handles for alloc/free stack traces for
-slab objects for the tag-based KASAN modes in a ring buffer.
+This is no problem at all. The rebased patches look good to me. Squash
+your fix to my fix and it should be ready to go.
 
-This ring buffer is referred to as the stack ring.
+Thanks again!
 
-On each alloc/free of a slab object, the tagged address of the object and
-the current stack trace are recorded in the stack ring.
+Tyler
 
-On each bug report, if the accessed address belongs to a slab object, the
-stack ring is scanned for matching entries. The newest entries are used to
-print the alloc/free stack traces in the report: one entry for alloc and
-one for free.
-
-The ring buffer is lock-free.
-
-Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
-
----
-
-The number of entries in the stack ring is fixed in this version of the
-patch. We could either implement it as a config option or a command-line
-argument. I tilt towards the latter option and will implement it in v2
-unless there are objections.
----
- mm/kasan/kasan.h       | 20 ++++++++++++++
- mm/kasan/report_tags.c | 61 ++++++++++++++++++++++++++++++++++++++++++
- mm/kasan/tags.c        | 30 +++++++++++++++++++++
- 3 files changed, 111 insertions(+)
-
-diff --git a/mm/kasan/kasan.h b/mm/kasan/kasan.h
-index c51cea31ced0..da9a3c56ef4b 100644
---- a/mm/kasan/kasan.h
-+++ b/mm/kasan/kasan.h
-@@ -2,6 +2,7 @@
- #ifndef __MM_KASAN_KASAN_H
- #define __MM_KASAN_KASAN_H
- 
-+#include <linux/atomic.h>
- #include <linux/kasan.h>
- #include <linux/kasan-tags.h>
- #include <linux/kfence.h>
-@@ -227,6 +228,25 @@ struct kasan_free_meta {
- 
- #endif /* CONFIG_KASAN_GENERIC */
- 
-+#if defined(CONFIG_KASAN_SW_TAGS) || defined(CONFIG_KASAN_HW_TAGS)
-+
-+struct kasan_stack_ring_entry {
-+	atomic64_t ptr;		/* void * */
-+	atomic64_t size;	/* size_t */
-+	atomic_t pid;		/* u32 */
-+	atomic_t stack;		/* depot_stack_handle_t */
-+	atomic_t is_free;	/* bool */
-+};
-+
-+#define KASAN_STACK_RING_ENTRIES (32 << 10)
-+
-+struct kasan_stack_ring {
-+	atomic64_t pos;
-+	struct kasan_stack_ring_entry entries[KASAN_STACK_RING_ENTRIES];
-+};
-+
-+#endif /* CONFIG_KASAN_SW_TAGS || CONFIG_KASAN_HW_TAGS */
-+
- #if IS_ENABLED(CONFIG_KASAN_KUNIT_TEST)
- /* Used in KUnit-compatible KASAN tests. */
- struct kunit_kasan_status {
-diff --git a/mm/kasan/report_tags.c b/mm/kasan/report_tags.c
-index 5cbac2cdb177..21911d1883d3 100644
---- a/mm/kasan/report_tags.c
-+++ b/mm/kasan/report_tags.c
-@@ -4,8 +4,12 @@
-  * Copyright (c) 2020 Google, Inc.
-  */
- 
-+#include <linux/atomic.h>
-+
- #include "kasan.h"
- 
-+extern struct kasan_stack_ring stack_ring;
-+
- static const char *get_bug_type(struct kasan_report_info *info)
- {
- 	/*
-@@ -24,5 +28,62 @@ static const char *get_bug_type(struct kasan_report_info *info)
- 
- void kasan_complete_mode_report_info(struct kasan_report_info *info)
- {
-+	u64 pos;
-+	struct kasan_stack_ring_entry *entry;
-+	void *object;
-+	u32 pid;
-+	depot_stack_handle_t stack;
-+	bool is_free;
-+	bool alloc_found = false, free_found = false;
-+
- 	info->bug_type = get_bug_type(info);
-+
-+	if (!info->cache || !info->object)
-+		return;
-+
-+	pos = atomic64_read(&stack_ring.pos);
-+
-+	for (u64 i = pos - 1; i != pos - 1 - KASAN_STACK_RING_ENTRIES; i--) {
-+		if (alloc_found && free_found)
-+			break;
-+
-+		entry = &stack_ring.entries[i % KASAN_STACK_RING_ENTRIES];
-+
-+		/* Paired with atomic64_set_release() in save_stack_info(). */
-+		object = (void *)atomic64_read_acquire(&entry->ptr);
-+
-+		if (kasan_reset_tag(object) != info->object ||
-+		    get_tag(object) != get_tag(info->access_addr))
-+			continue;
-+
-+		pid = atomic_read(&entry->pid);
-+		stack = atomic_read(&entry->stack);
-+		is_free = atomic_read(&entry->is_free);
-+
-+		/* Try detecting if the entry was changed while being read. */
-+		smp_mb();
-+		if (object != (void *)atomic64_read(&entry->ptr))
-+			continue;
-+
-+		if (is_free) {
-+			/*
-+			 * Second free of the same object.
-+			 * Give up on trying to find the alloc entry.
-+			 */
-+			if (free_found)
-+				break;
-+
-+			info->free_track.pid = pid;
-+			info->free_track.stack = stack;
-+			free_found = true;
-+		} else {
-+			/* Second alloc of the same object. Give up. */
-+			if (alloc_found)
-+				break;
-+
-+			info->alloc_track.pid = pid;
-+			info->alloc_track.stack = stack;
-+			alloc_found = true;
-+		}
-+	}
- }
-diff --git a/mm/kasan/tags.c b/mm/kasan/tags.c
-index 39a0481e5228..286011307695 100644
---- a/mm/kasan/tags.c
-+++ b/mm/kasan/tags.c
-@@ -6,6 +6,7 @@
-  * Copyright (c) 2020 Google, Inc.
-  */
- 
-+#include <linux/atomic.h>
- #include <linux/init.h>
- #include <linux/kasan.h>
- #include <linux/kernel.h>
-@@ -16,11 +17,40 @@
- #include <linux/types.h>
- 
- #include "kasan.h"
-+#include "../slab.h"
-+
-+struct kasan_stack_ring stack_ring;
-+
-+void save_stack_info(struct kmem_cache *cache, void *object,
-+			gfp_t flags, bool is_free)
-+{
-+	u64 pos;
-+	struct kasan_stack_ring_entry *entry;
-+	depot_stack_handle_t stack;
-+
-+	stack = kasan_save_stack(flags, true);
-+
-+	pos = atomic64_fetch_add(1, &stack_ring.pos);
-+	entry = &stack_ring.entries[pos % KASAN_STACK_RING_ENTRIES];
-+
-+	atomic64_set(&entry->size, cache->object_size);
-+	atomic_set(&entry->pid, current->pid);
-+	atomic_set(&entry->stack, stack);
-+	atomic_set(&entry->is_free, is_free);
-+
-+	/*
-+	 * Paired with atomic64_read_acquire() in
-+	 * kasan_complete_mode_report_info().
-+	 */
-+	atomic64_set_release(&entry->ptr, (s64)object);
-+}
- 
- void kasan_save_alloc_info(struct kmem_cache *cache, void *object, gfp_t flags)
- {
-+	save_stack_info(cache, object, flags, false);
- }
- 
- void kasan_save_free_info(struct kmem_cache *cache, void *object)
- {
-+	save_stack_info(cache, object, GFP_NOWAIT, true);
- }
--- 
-2.25.1
-
+>                 /* non-cloning walk will return the same fid */
+>                 if (fid != old_fid) {
+>                         p9_client_clunk(old_fid);
+> ----
+> 
+> 
+> The last commit is just cleanups and should be no real change.
+> 
+> Dominique Martinet (6):
+>   9p: fix fid refcount leak in v9fs_vfs_atomic_open_dotl
+>   9p: fix fid refcount leak in v9fs_vfs_get_link
+>   9p: v9fs_fid_lookup_with_uid fix's fix suggestion
+>   9p fid refcount: add p9_fid_get/put wrappers
+>   9p fid refcount: add a 9p_fid_ref tracepoint
+>   9p fid refcount: cleanup p9_fid_put calls
+> 
+> 
+> (diff stats include Tyler's commits)
+> 
+>  fs/9p/fid.c               | 71 +++++++++++++++-------------
+>  fs/9p/fid.h               |  6 +--
+>  fs/9p/vfs_addr.c          |  4 +-
+>  fs/9p/vfs_dentry.c        |  4 +-
+>  fs/9p/vfs_dir.c           |  2 +-
+>  fs/9p/vfs_file.c          |  9 ++--
+>  fs/9p/vfs_inode.c         | 97 +++++++++++++++++----------------------
+>  fs/9p/vfs_inode_dotl.c    | 79 ++++++++++++-------------------
+>  fs/9p/vfs_super.c         |  8 ++--
+>  fs/9p/xattr.c             |  8 ++--
+>  include/net/9p/client.h   |  3 ++
+>  include/trace/events/9p.h | 48 +++++++++++++++++++
+>  net/9p/client.c           | 42 +++++++++++------
+>  13 files changed, 211 insertions(+), 170 deletions(-)
+> 
+> -- 
+> 2.35.1
+> 
