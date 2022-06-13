@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2332FC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A268C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:35:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384306AbiFMOdt (ORCPT
+        id S1384806AbiFMOeo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:33:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38484 "EHLO
+        Mon, 13 Jun 2022 10:34:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384972AbiFMOa2 (ORCPT
+        with ESMTP id S1384636AbiFMO3y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:30:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 914E32B249;
-        Mon, 13 Jun 2022 04:48:24 -0700 (PDT)
+        Mon, 13 Jun 2022 10:29:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D933DA5A93;
+        Mon, 13 Jun 2022 04:47:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 161A8B80D3A;
-        Mon, 13 Jun 2022 11:47:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C983C34114;
-        Mon, 13 Jun 2022 11:47:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 176C8B80ECC;
+        Mon, 13 Jun 2022 11:47:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6690EC34114;
+        Mon, 13 Jun 2022 11:47:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120872;
-        bh=MPZ2kt6IJpKMf0EU6+R/THNMtkJr2jpdHAH+dhp2Y8c=;
+        s=korg; t=1655120845;
+        bh=dYN5m8A1X57ja0pJf/+4aO2HmBpmziRUzvX2+F8DtVk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I69pj31qr/PAPEXuNpwA13YKMXB0maS1sk8DMlKDB7/QJXAphB4Pe+tXg9U2RKdLQ
-         duaK3sbsxbY2I5JPlAzC8E+WTaRgD7ZtpFQFr7DZSte+dSD2FDUAi1QClm6Umy48eX
-         aw5sd4C9JlqbysqnDP8BGEcsF/K28nNFhOkEcgdg=
+        b=A03Xpt5ID2WkfaTNcX3R5w57hmrE3DYvhtlzLxPSafGXPCLvxqq254lAgr/IYHV4t
+         nFvOSJ7P0rs8ppeaRwxlyHd1ntYBzRDgwE4/nM7vc53HHdRxkepn9zRU35hk1Pg3bY
+         utRsAlem/Y8OOoPXqSDdXpyRdwqv0Od43UjsIMkE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Bloch <mbloch@nvidia.com>,
-        Maor Gottlieb <maorg@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 188/298] net/mlx5: fs, fail conflicting actions
-Date:   Mon, 13 Jun 2022 12:11:22 +0200
-Message-Id: <20220613094930.807260019@linuxfoundation.org>
+Subject: [PATCH 5.17 179/298] i40e: xsk: Move tmp desc array from driver to pool
+Date:   Mon, 13 Jun 2022 12:11:13 +0200
+Message-Id: <20220613094930.363070696@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -51,89 +52,248 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Bloch <mbloch@nvidia.com>
+From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-[ Upstream commit 8fa5e7b20e01042b14f8cd684d2da9b638460c74 ]
+[ Upstream commit d1bc532e99becf104635ed4da6fefa306f452321 ]
 
-When combining two steering rules into one check
-not only do they share the same actions but those
-actions are also the same. This resolves an issue where
-when creating two different rules with the same match
-the actions are overwritten and one of the rules is deleted
-a FW syndrome can be seen in dmesg.
+Move desc_array from the driver to the pool. The reason behind this is
+that we can then reuse this array as a temporary storage for descriptors
+in all zero-copy drivers that use the batched interface. This will make
+it easier to add batching to more drivers.
 
-mlx5_core 0000:03:00.0: mlx5_cmd_check:819:(pid 2105): DEALLOC_MODIFY_HEADER_CONTEXT(0x941) op_mod(0x0) failed, status bad resource state(0x9), syndrome (0x1ab444)
+i40e is the only driver that has a batched Tx zero-copy
+implementation, so no need to touch any other driver.
 
-Fixes: 0d235c3fabb7 ("net/mlx5: Add hash table to search FTEs in a flow-group")
-Signed-off-by: Mark Bloch <mbloch@nvidia.com>
-Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Link: https://lore.kernel.org/bpf/20220125160446.78976-6-maciej.fijalkowski@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/mellanox/mlx5/core/fs_core.c | 35 +++++++++++++++++--
- 1 file changed, 32 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c | 11 -----------
+ drivers/net/ethernet/intel/i40e/i40e_txrx.h |  1 -
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c  |  4 ++--
+ include/net/xdp_sock_drv.h                  |  5 ++---
+ include/net/xsk_buff_pool.h                 |  1 +
+ net/xdp/xsk.c                               | 13 ++++++-------
+ net/xdp/xsk_buff_pool.c                     |  7 +++++++
+ net/xdp/xsk_queue.h                         | 12 ++++++------
+ 8 files changed, 24 insertions(+), 30 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-index bd52b0b4eefa..add55195335c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -1560,9 +1560,22 @@ static struct mlx5_flow_rule *find_flow_rule(struct fs_fte *fte,
- 	return NULL;
- }
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+index 66cc79500c10..af9c88e71452 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+@@ -830,8 +830,6 @@ void i40e_free_tx_resources(struct i40e_ring *tx_ring)
+ 	i40e_clean_tx_ring(tx_ring);
+ 	kfree(tx_ring->tx_bi);
+ 	tx_ring->tx_bi = NULL;
+-	kfree(tx_ring->xsk_descs);
+-	tx_ring->xsk_descs = NULL;
  
--static bool check_conflicting_actions(u32 action1, u32 action2)
-+static bool check_conflicting_actions_vlan(const struct mlx5_fs_vlan *vlan0,
-+					   const struct mlx5_fs_vlan *vlan1)
+ 	if (tx_ring->desc) {
+ 		dma_free_coherent(tx_ring->dev, tx_ring->size,
+@@ -1433,13 +1431,6 @@ int i40e_setup_tx_descriptors(struct i40e_ring *tx_ring)
+ 	if (!tx_ring->tx_bi)
+ 		goto err;
+ 
+-	if (ring_is_xdp(tx_ring)) {
+-		tx_ring->xsk_descs = kcalloc(I40E_MAX_NUM_DESCRIPTORS, sizeof(*tx_ring->xsk_descs),
+-					     GFP_KERNEL);
+-		if (!tx_ring->xsk_descs)
+-			goto err;
+-	}
+-
+ 	u64_stats_init(&tx_ring->syncp);
+ 
+ 	/* round up to nearest 4K */
+@@ -1463,8 +1454,6 @@ int i40e_setup_tx_descriptors(struct i40e_ring *tx_ring)
+ 	return 0;
+ 
+ err:
+-	kfree(tx_ring->xsk_descs);
+-	tx_ring->xsk_descs = NULL;
+ 	kfree(tx_ring->tx_bi);
+ 	tx_ring->tx_bi = NULL;
+ 	return -ENOMEM;
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.h b/drivers/net/ethernet/intel/i40e/i40e_txrx.h
+index bfc2845c99d1..f6d91fa1562e 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_txrx.h
++++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.h
+@@ -390,7 +390,6 @@ struct i40e_ring {
+ 	u16 rx_offset;
+ 	struct xdp_rxq_info xdp_rxq;
+ 	struct xsk_buff_pool *xsk_pool;
+-	struct xdp_desc *xsk_descs;      /* For storing descriptors in the AF_XDP ZC path */
+ } ____cacheline_internodealigned_in_smp;
+ 
+ static inline bool ring_uses_build_skb(struct i40e_ring *ring)
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+index e5e72b5bb619..c1d25b0b0ca2 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+@@ -470,11 +470,11 @@ static void i40e_set_rs_bit(struct i40e_ring *xdp_ring)
+  **/
+ static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
  {
--	u32 xored_actions = action1 ^ action2;
-+	return vlan0->ethtype != vlan1->ethtype ||
-+	       vlan0->vid != vlan1->vid ||
-+	       vlan0->prio != vlan1->prio;
-+}
-+
-+static bool check_conflicting_actions(const struct mlx5_flow_act *act1,
-+				      const struct mlx5_flow_act *act2)
-+{
-+	u32 action1 = act1->action;
-+	u32 action2 = act2->action;
-+	u32 xored_actions;
-+
-+	xored_actions = action1 ^ action2;
+-	struct xdp_desc *descs = xdp_ring->xsk_descs;
++	struct xdp_desc *descs = xdp_ring->xsk_pool->tx_descs;
+ 	u32 nb_pkts, nb_processed = 0;
+ 	unsigned int total_bytes = 0;
  
- 	/* if one rule only wants to count, it's ok */
- 	if (action1 == MLX5_FLOW_CONTEXT_ACTION_COUNT ||
-@@ -1579,6 +1592,22 @@ static bool check_conflicting_actions(u32 action1, u32 action2)
- 			     MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH_2))
+-	nb_pkts = xsk_tx_peek_release_desc_batch(xdp_ring->xsk_pool, descs, budget);
++	nb_pkts = xsk_tx_peek_release_desc_batch(xdp_ring->xsk_pool, budget);
+ 	if (!nb_pkts)
  		return true;
  
-+	if (action1 & MLX5_FLOW_CONTEXT_ACTION_PACKET_REFORMAT &&
-+	    act1->pkt_reformat != act2->pkt_reformat)
-+		return true;
-+
-+	if (action1 & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR &&
-+	    act1->modify_hdr != act2->modify_hdr)
-+		return true;
-+
-+	if (action1 & MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH &&
-+	    check_conflicting_actions_vlan(&act1->vlan[0], &act2->vlan[0]))
-+		return true;
-+
-+	if (action1 & MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH_2 &&
-+	    check_conflicting_actions_vlan(&act1->vlan[1], &act2->vlan[1]))
-+		return true;
-+
+diff --git a/include/net/xdp_sock_drv.h b/include/net/xdp_sock_drv.h
+index 443d45951564..4aa031849668 100644
+--- a/include/net/xdp_sock_drv.h
++++ b/include/net/xdp_sock_drv.h
+@@ -13,7 +13,7 @@
+ 
+ void xsk_tx_completed(struct xsk_buff_pool *pool, u32 nb_entries);
+ bool xsk_tx_peek_desc(struct xsk_buff_pool *pool, struct xdp_desc *desc);
+-u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, struct xdp_desc *desc, u32 max);
++u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, u32 max);
+ void xsk_tx_release(struct xsk_buff_pool *pool);
+ struct xsk_buff_pool *xsk_get_pool_from_qid(struct net_device *dev,
+ 					    u16 queue_id);
+@@ -142,8 +142,7 @@ static inline bool xsk_tx_peek_desc(struct xsk_buff_pool *pool,
  	return false;
  }
  
-@@ -1586,7 +1615,7 @@ static int check_conflicting_ftes(struct fs_fte *fte,
- 				  const struct mlx5_flow_context *flow_context,
- 				  const struct mlx5_flow_act *flow_act)
+-static inline u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, struct xdp_desc *desc,
+-						 u32 max)
++static inline u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, u32 max)
  {
--	if (check_conflicting_actions(flow_act->action, fte->action.action)) {
-+	if (check_conflicting_actions(flow_act, &fte->action)) {
- 		mlx5_core_warn(get_dev(&fte->node),
- 			       "Found two FTEs with conflicting actions\n");
- 		return -EEXIST;
+ 	return 0;
+ }
+diff --git a/include/net/xsk_buff_pool.h b/include/net/xsk_buff_pool.h
+index ddeefc4a1040..5554ee75e7da 100644
+--- a/include/net/xsk_buff_pool.h
++++ b/include/net/xsk_buff_pool.h
+@@ -60,6 +60,7 @@ struct xsk_buff_pool {
+ 	 */
+ 	dma_addr_t *dma_pages;
+ 	struct xdp_buff_xsk *heads;
++	struct xdp_desc *tx_descs;
+ 	u64 chunk_mask;
+ 	u64 addrs_cnt;
+ 	u32 free_list_cnt;
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index 39a82bfb5caa..7d3a00cb24ec 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -343,9 +343,9 @@ bool xsk_tx_peek_desc(struct xsk_buff_pool *pool, struct xdp_desc *desc)
+ }
+ EXPORT_SYMBOL(xsk_tx_peek_desc);
+ 
+-static u32 xsk_tx_peek_release_fallback(struct xsk_buff_pool *pool, struct xdp_desc *descs,
+-					u32 max_entries)
++static u32 xsk_tx_peek_release_fallback(struct xsk_buff_pool *pool, u32 max_entries)
+ {
++	struct xdp_desc *descs = pool->tx_descs;
+ 	u32 nb_pkts = 0;
+ 
+ 	while (nb_pkts < max_entries && xsk_tx_peek_desc(pool, &descs[nb_pkts]))
+@@ -355,8 +355,7 @@ static u32 xsk_tx_peek_release_fallback(struct xsk_buff_pool *pool, struct xdp_d
+ 	return nb_pkts;
+ }
+ 
+-u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, struct xdp_desc *descs,
+-				   u32 max_entries)
++u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, u32 max_entries)
+ {
+ 	struct xdp_sock *xs;
+ 	u32 nb_pkts;
+@@ -365,7 +364,7 @@ u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, struct xdp_desc *
+ 	if (!list_is_singular(&pool->xsk_tx_list)) {
+ 		/* Fallback to the non-batched version */
+ 		rcu_read_unlock();
+-		return xsk_tx_peek_release_fallback(pool, descs, max_entries);
++		return xsk_tx_peek_release_fallback(pool, max_entries);
+ 	}
+ 
+ 	xs = list_first_or_null_rcu(&pool->xsk_tx_list, struct xdp_sock, tx_list);
+@@ -374,7 +373,7 @@ u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, struct xdp_desc *
+ 		goto out;
+ 	}
+ 
+-	nb_pkts = xskq_cons_peek_desc_batch(xs->tx, descs, pool, max_entries);
++	nb_pkts = xskq_cons_peek_desc_batch(xs->tx, pool, max_entries);
+ 	if (!nb_pkts) {
+ 		xs->tx->queue_empty_descs++;
+ 		goto out;
+@@ -386,7 +385,7 @@ u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, struct xdp_desc *
+ 	 * packets. This avoids having to implement any buffering in
+ 	 * the Tx path.
+ 	 */
+-	nb_pkts = xskq_prod_reserve_addr_batch(pool->cq, descs, nb_pkts);
++	nb_pkts = xskq_prod_reserve_addr_batch(pool->cq, pool->tx_descs, nb_pkts);
+ 	if (!nb_pkts)
+ 		goto out;
+ 
+diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+index 0202a90b65e3..af040ffa14ff 100644
+--- a/net/xdp/xsk_buff_pool.c
++++ b/net/xdp/xsk_buff_pool.c
+@@ -37,6 +37,7 @@ void xp_destroy(struct xsk_buff_pool *pool)
+ 	if (!pool)
+ 		return;
+ 
++	kvfree(pool->tx_descs);
+ 	kvfree(pool->heads);
+ 	kvfree(pool);
+ }
+@@ -58,6 +59,12 @@ struct xsk_buff_pool *xp_create_and_assign_umem(struct xdp_sock *xs,
+ 	if (!pool->heads)
+ 		goto out;
+ 
++	if (xs->tx) {
++		pool->tx_descs = kcalloc(xs->tx->nentries, sizeof(*pool->tx_descs), GFP_KERNEL);
++		if (!pool->tx_descs)
++			goto out;
++	}
++
+ 	pool->chunk_mask = ~((u64)umem->chunk_size - 1);
+ 	pool->addrs_cnt = umem->size;
+ 	pool->heads_cnt = umem->chunks;
+diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
+index e9aa2c236356..638138fbe475 100644
+--- a/net/xdp/xsk_queue.h
++++ b/net/xdp/xsk_queue.h
+@@ -205,11 +205,11 @@ static inline bool xskq_cons_read_desc(struct xsk_queue *q,
+ 	return false;
+ }
+ 
+-static inline u32 xskq_cons_read_desc_batch(struct xsk_queue *q,
+-					    struct xdp_desc *descs,
+-					    struct xsk_buff_pool *pool, u32 max)
++static inline u32 xskq_cons_read_desc_batch(struct xsk_queue *q, struct xsk_buff_pool *pool,
++					    u32 max)
+ {
+ 	u32 cached_cons = q->cached_cons, nb_entries = 0;
++	struct xdp_desc *descs = pool->tx_descs;
+ 
+ 	while (cached_cons != q->cached_prod && nb_entries < max) {
+ 		struct xdp_rxtx_ring *ring = (struct xdp_rxtx_ring *)q->ring;
+@@ -282,12 +282,12 @@ static inline bool xskq_cons_peek_desc(struct xsk_queue *q,
+ 	return xskq_cons_read_desc(q, desc, pool);
+ }
+ 
+-static inline u32 xskq_cons_peek_desc_batch(struct xsk_queue *q, struct xdp_desc *descs,
+-					    struct xsk_buff_pool *pool, u32 max)
++static inline u32 xskq_cons_peek_desc_batch(struct xsk_queue *q, struct xsk_buff_pool *pool,
++					    u32 max)
+ {
+ 	u32 entries = xskq_cons_nb_entries(q, max);
+ 
+-	return xskq_cons_read_desc_batch(q, descs, pool, entries);
++	return xskq_cons_read_desc_batch(q, pool, entries);
+ }
+ 
+ /* To improve performance in the xskq_cons_release functions, only update local state here.
 -- 
 2.35.1
 
