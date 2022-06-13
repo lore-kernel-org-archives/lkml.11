@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4F9AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:22:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 303A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:22:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353008AbiFMLWS (ORCPT
+        id S1353073AbiFMLWY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:22:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47368 "EHLO
+        Mon, 13 Jun 2022 07:22:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353690AbiFMLQN (ORCPT
+        with ESMTP id S1353783AbiFMLQw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:16:13 -0400
+        Mon, 13 Jun 2022 07:16:52 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B71713DDB;
-        Mon, 13 Jun 2022 03:39:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 529AF15736;
+        Mon, 13 Jun 2022 03:40:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 32F22B80EAB;
-        Mon, 13 Jun 2022 10:39:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7460BC34114;
-        Mon, 13 Jun 2022 10:39:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B445B80EA3;
+        Mon, 13 Jun 2022 10:40:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E1E0C36B02;
+        Mon, 13 Jun 2022 10:40:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116743;
-        bh=NXDvmeUjI8YOcc86cl3vE5LM+I7LcMcMYGdUZdTDduQ=;
+        s=korg; t=1655116805;
+        bh=1QLzhrmPaBDasbV1MuyL7akoWZqN/JmMdcgAMgH4qjM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QPxrQLfHdP1neFKQW97lrZp6OHCGK+2dN3a77NRbX00HVuAJKPjAQGU3MFjyVNMRk
-         0maH5uHSwAAgaAG0YMyX4FrsvEqcaTAmD6ESD8O7GcDcZ5DNYzgdoaFqabS/Bj8Rf7
-         q5X06xO/aD0rz6GU+e+QksaiyMTQRy5usjeyn1ZM=
+        b=UmrYmfgP1UKp/1IbMCkkns453IYJf2sEaEkvOMHwmJXNROHvoxTlWABmRCoGxhNmH
+         qJI8m3+/rvxCPHpsE188iEL5/MHGDU2bN3JlO0wr+tjif+Kegej8ufgWBWRXgMlZCM
+         Q41Rnxap4DbB1LrSvluU16wvmBSbey4ZoFxuMr6g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 158/411] soc: qcom: smp2p: Fix missing of_node_put() in smp2p_parse_ipc
-Date:   Mon, 13 Jun 2022 12:07:11 +0200
-Message-Id: <20220613094933.399862054@linuxfoundation.org>
+Subject: [PATCH 5.4 191/411] powerpc/fsl_rio: Fix refcount leak in fsl_rio_setup
+Date:   Mon, 13 Jun 2022 12:07:44 +0200
+Message-Id: <20220613094934.387695295@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -52,32 +52,36 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 8fd3f18ea31a398ecce4a6d3804433658678b0a3 ]
+[ Upstream commit fcee96924ba1596ca80a6770b2567ca546f9a482 ]
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-Fixes: 50e99641413e ("soc: qcom: smp2p: Qualcomm Shared Memory Point to Point")
+Fixes: abc3aeae3aaa ("fsl-rio: Add two ports and rapidio message units support")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220308071942.22942-1-linmq006@gmail.com
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220512123724.62931-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/qcom/smp2p.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/powerpc/sysdev/fsl_rio.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/soc/qcom/smp2p.c b/drivers/soc/qcom/smp2p.c
-index 42e0b8f647ae..d42bcca3b98e 100644
---- a/drivers/soc/qcom/smp2p.c
-+++ b/drivers/soc/qcom/smp2p.c
-@@ -420,6 +420,7 @@ static int smp2p_parse_ipc(struct qcom_smp2p *smp2p)
+diff --git a/arch/powerpc/sysdev/fsl_rio.c b/arch/powerpc/sysdev/fsl_rio.c
+index 07c164f7f8cf..3f9f78621cf3 100644
+--- a/arch/powerpc/sysdev/fsl_rio.c
++++ b/arch/powerpc/sysdev/fsl_rio.c
+@@ -505,8 +505,10 @@ int fsl_rio_setup(struct platform_device *dev)
+ 	if (rc) {
+ 		dev_err(&dev->dev, "Can't get %pOF property 'reg'\n",
+ 				rmu_node);
++		of_node_put(rmu_node);
+ 		goto err_rmu;
  	}
- 
- 	smp2p->ipc_regmap = syscon_node_to_regmap(syscon);
-+	of_node_put(syscon);
- 	if (IS_ERR(smp2p->ipc_regmap))
- 		return PTR_ERR(smp2p->ipc_regmap);
- 
++	of_node_put(rmu_node);
+ 	rmu_regs_win = ioremap(rmu_regs.start, resource_size(&rmu_regs));
+ 	if (!rmu_regs_win) {
+ 		dev_err(&dev->dev, "Unable to map rmu register window\n");
 -- 
 2.35.1
 
