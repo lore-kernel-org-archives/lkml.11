@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E37B4C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:49:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D1C1CCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:49:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356405AbiFMMsq (ORCPT
+        id S1356663AbiFMMsz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:48:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34234 "EHLO
+        Mon, 13 Jun 2022 08:48:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355705AbiFMMoa (ORCPT
+        with ESMTP id S1353571AbiFMMnC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:44:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7EB260BAB;
-        Mon, 13 Jun 2022 04:11:09 -0700 (PDT)
+        Mon, 13 Jun 2022 08:43:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F2AB606FC;
+        Mon, 13 Jun 2022 04:10:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1DE2CB80EA7;
-        Mon, 13 Jun 2022 11:11:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73B75C34114;
-        Mon, 13 Jun 2022 11:11:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 83FCCB80EA7;
+        Mon, 13 Jun 2022 11:10:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D240FC34114;
+        Mon, 13 Jun 2022 11:10:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118667;
-        bh=ywTXa+tgH2trqooTlPfmy7gOX9eo/VvuN3pDkwNSgBs=;
+        s=korg; t=1655118643;
+        bh=u7IYr3xHt6zjUsYbe5rv2BB9TYgoCtrosryJQ3AJNdM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zx+TzFZMRiSyjBYUOwBDFndo7RII07K/vdu7GfcKXSQvQFZXmrysEur04XnXP11rk
-         jbGaNWt2hlTUYbob3mCYZIyygPmAXoarkl4gotFEQbNfmZA9Zd7r+Yj/Q3gj8aP/f3
-         2ZMge4Tp3oP6NUJdnsrLHuFKNBj9wh2PqOi9mTX4=
+        b=UljzC4nnvcKQiA2zae5of9RsDs0jhPfbVlF2Pd/Eb3dTC5n/hXiKqdHJMEwxadU8W
+         wqosK0NuecadcIUo5ono6wLiLa+7sh7STRZGC5zNTjzl/oxW1C9259nJ++RTk0ohow
+         DD9CNmxhfCaKDtdKSFQ4dpFE928d8Fik4ZD/DYJo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yu Kuai <yukuai3@huawei.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 145/172] nbd: fix io hung while disconnecting device
-Date:   Mon, 13 Jun 2022 12:11:45 +0200
-Message-Id: <20220613094922.351894826@linuxfoundation.org>
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 123/172] drivers: usb: host: Fix deadlock in oxu_bus_suspend()
+Date:   Mon, 13 Jun 2022 12:11:23 +0200
+Message-Id: <20220613094920.063959333@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -50,76 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Kuai <yukuai3@huawei.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 09dadb5985023e27d4740ebd17e6fea4640110e5 ]
+[ Upstream commit 4d378f2ae58138d4c55684e1d274e7dd94aa6524 ]
 
-In our tests, "qemu-nbd" triggers a io hung:
+There is a deadlock in oxu_bus_suspend(), which is shown below:
 
-INFO: task qemu-nbd:11445 blocked for more than 368 seconds.
-      Not tainted 5.18.0-rc3-next-20220422-00003-g2176915513ca #884
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:qemu-nbd        state:D stack:    0 pid:11445 ppid:     1 flags:0x00000000
-Call Trace:
- <TASK>
- __schedule+0x480/0x1050
- ? _raw_spin_lock_irqsave+0x3e/0xb0
- schedule+0x9c/0x1b0
- blk_mq_freeze_queue_wait+0x9d/0xf0
- ? ipi_rseq+0x70/0x70
- blk_mq_freeze_queue+0x2b/0x40
- nbd_add_socket+0x6b/0x270 [nbd]
- nbd_ioctl+0x383/0x510 [nbd]
- blkdev_ioctl+0x18e/0x3e0
- __x64_sys_ioctl+0xac/0x120
- do_syscall_64+0x35/0x80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7fd8ff706577
-RSP: 002b:00007fd8fcdfebf8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 0000000040000000 RCX: 00007fd8ff706577
-RDX: 000000000000000d RSI: 000000000000ab00 RDI: 000000000000000f
-RBP: 000000000000000f R08: 000000000000fbe8 R09: 000055fe497c62b0
-R10: 00000002aff20000 R11: 0000000000000246 R12: 000000000000006d
-R13: 0000000000000000 R14: 00007ffe82dc5e70 R15: 00007fd8fcdff9c0
+   (Thread 1)              |      (Thread 2)
+                           | timer_action()
+oxu_bus_suspend()          |  mod_timer()
+ spin_lock_irq() //(1)     |  (wait a time)
+ ...                       | oxu_watchdog()
+ del_timer_sync()          |  spin_lock_irq() //(2)
+ (wait timer to stop)      |  ...
 
-"qemu-ndb -d" will call ioctl 'NBD_DISCONNECT' first, however, following
-message was found:
+We hold oxu->lock in position (1) of thread 1, and use
+del_timer_sync() to wait timer to stop, but timer handler
+also need oxu->lock in position (2) of thread 2. As a result,
+oxu_bus_suspend() will block forever.
 
-block nbd0: Send disconnect failed -32
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irq(), which could let timer handler to obtain
+the needed lock.
 
-Which indicate that something is wrong with the server. Then,
-"qemu-nbd -d" will call ioctl 'NBD_CLEAR_SOCK', however ioctl can't clear
-requests after commit 2516ab1543fd("nbd: only clear the queue on device
-teardown"). And in the meantime, request can't complete through timeout
-because nbd_xmit_timeout() will always return 'BLK_EH_RESET_TIMER', which
-means such request will never be completed in this situation.
-
-Now that the flag 'NBD_CMD_INFLIGHT' can make sure requests won't
-complete multiple times, switch back to call nbd_clear_sock() in
-nbd_clear_sock_ioctl(), so that inflight requests can be cleared.
-
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-Reviewed-by: Josef Bacik <josef@toxicpanda.com>
-Link: https://lore.kernel.org/r/20220521073749.3146892-5-yukuai3@huawei.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417120305.64577-1-duoming@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/nbd.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/host/oxu210hp-hcd.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
-index 74afa50c7864..4a6b82d434ee 100644
---- a/drivers/block/nbd.c
-+++ b/drivers/block/nbd.c
-@@ -1359,7 +1359,7 @@ static int nbd_start_device_ioctl(struct nbd_device *nbd, struct block_device *b
- static void nbd_clear_sock_ioctl(struct nbd_device *nbd,
- 				 struct block_device *bdev)
- {
--	sock_shutdown(nbd);
-+	nbd_clear_sock(nbd);
- 	__invalidate_device(bdev, true);
- 	nbd_bdev_reset(bdev);
- 	if (test_and_clear_bit(NBD_RT_HAS_CONFIG_REF,
+diff --git a/drivers/usb/host/oxu210hp-hcd.c b/drivers/usb/host/oxu210hp-hcd.c
+index e832909a924f..6df2881cd7b9 100644
+--- a/drivers/usb/host/oxu210hp-hcd.c
++++ b/drivers/usb/host/oxu210hp-hcd.c
+@@ -3908,8 +3908,10 @@ static int oxu_bus_suspend(struct usb_hcd *hcd)
+ 		}
+ 	}
+ 
++	spin_unlock_irq(&oxu->lock);
+ 	/* turn off now-idle HC */
+ 	del_timer_sync(&oxu->watchdog);
++	spin_lock_irq(&oxu->lock);
+ 	ehci_halt(oxu);
+ 	hcd->state = HC_STATE_SUSPENDED;
+ 
 -- 
 2.35.1
 
