@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73E8BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:17:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1145EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:17:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241193AbiFMNRx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:17:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41606 "EHLO
+        id S1359183AbiFMNR5 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 09:17:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359340AbiFMNJt (ORCPT
+        with ESMTP id S1359038AbiFMNJC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:09:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8292339161;
-        Mon, 13 Jun 2022 04:20:21 -0700 (PDT)
+        Mon, 13 Jun 2022 09:09:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6266238BDE;
+        Mon, 13 Jun 2022 04:19:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C61B160EAD;
-        Mon, 13 Jun 2022 11:20:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEF80C34114;
-        Mon, 13 Jun 2022 11:20:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F3B81608C3;
+        Mon, 13 Jun 2022 11:19:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E558C3411C;
+        Mon, 13 Jun 2022 11:19:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119220;
-        bh=fXydfbGPjscZ2gziUBtB4tTAPY3+/VZjcJkVsS08xN0=;
+        s=korg; t=1655119152;
+        bh=k1gz7nGO4oxju0RSotWhCuwJ7Mo5sIbJ/FYjRV09LfE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k/cvoONpa0WZzz5WVNwKPv4xihWUDmEzvxSwAavWD0WeZG2lvNdxn48mansgSF6i6
-         ItE4/bgeX+FXWeK5blNLVUG2292YSJzdZ8c5SerAapfkgZFuJP2wur3b8Vn0zCrTVh
-         Eg/LCNg9OSFbBcAVx2BCLhkGhfVmZFRF2njsC74E=
+        b=jMAlHXLd5X0dK8VhfSMrMD0gP+VB5MurO9YOn52GlKp3jgsWqjMYV6u2VJw+Vx9f+
+         cOR9yCJc4+7pBhZyk6gGeBEraC0WXyhhOf/7GDclzff+DLcR0qoM700aY7ax3uUGnP
+         BeLI/v47/9lyFib8XsAhFhkJ8N8yFVIez+2ZM8wU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 183/247] soundwire: qcom: adjust autoenumeration timeout
-Date:   Mon, 13 Jun 2022 12:11:25 +0200
-Message-Id: <20220613094928.503431089@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 159/247] net: altera: Fix refcount leak in altera_tse_mdio_create
+Date:   Mon, 13 Jun 2022 12:11:01 +0200
+Message-Id: <20220613094927.778213571@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,40 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 74da272400b46f2e898f115d1b1cd60828766919 ]
+[ Upstream commit 11ec18b1d8d92b9df307d31950dcba0b3dd7283c ]
 
-Currently timeout for autoenumeration during probe and bus reset is set to
-2 secs which is really a big value. This can have an adverse effect on
-boot time if the slave device is not ready/reset.
-This was the case with wcd938x which was not reset yet but we spent 2
-secs waiting in the soundwire controller probe. Reduce this time to
-1/10 of Hz which should be good enough time to finish autoenumeration
-if any slaves are available on the bus.
+Every iteration of for_each_child_of_node() decrements
+the reference count of the previous node.
+When break from a for_each_child_of_node() loop,
+we need to explicitly call of_node_put() on the child node when
+not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-Reported-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Link: https://lore.kernel.org/r/20220506084705.18525-1-srinivas.kandagatla@linaro.org
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: bbd2190ce96d ("Altera TSE: Add main and header file for Altera Ethernet Driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220607041144.7553-1-linmq006@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soundwire/qcom.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/altera/altera_tse_main.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
-index 0ef79d60e88e..f5955826b152 100644
---- a/drivers/soundwire/qcom.c
-+++ b/drivers/soundwire/qcom.c
-@@ -97,7 +97,7 @@
+diff --git a/drivers/net/ethernet/altera/altera_tse_main.c b/drivers/net/ethernet/altera/altera_tse_main.c
+index 804b37c76b1e..b51f5b9577e0 100644
+--- a/drivers/net/ethernet/altera/altera_tse_main.c
++++ b/drivers/net/ethernet/altera/altera_tse_main.c
+@@ -163,7 +163,8 @@ static int altera_tse_mdio_create(struct net_device *dev, unsigned int id)
+ 	mdio = mdiobus_alloc();
+ 	if (mdio == NULL) {
+ 		netdev_err(dev, "Error allocating MDIO bus\n");
+-		return -ENOMEM;
++		ret = -ENOMEM;
++		goto put_node;
+ 	}
  
- #define SWRM_SPECIAL_CMD_ID	0xF
- #define MAX_FREQ_NUM		1
--#define TIMEOUT_MS		(2 * HZ)
-+#define TIMEOUT_MS		100
- #define QCOM_SWRM_MAX_RD_LEN	0x1
- #define QCOM_SDW_MAX_PORTS	14
- #define DEFAULT_CLK_FREQ	9600000
+ 	mdio->name = ALTERA_TSE_RESOURCE_NAME;
+@@ -180,6 +181,7 @@ static int altera_tse_mdio_create(struct net_device *dev, unsigned int id)
+ 			   mdio->id);
+ 		goto out_free_mdio;
+ 	}
++	of_node_put(mdio_node);
+ 
+ 	if (netif_msg_drv(priv))
+ 		netdev_info(dev, "MDIO bus %s: created\n", mdio->id);
+@@ -189,6 +191,8 @@ static int altera_tse_mdio_create(struct net_device *dev, unsigned int id)
+ out_free_mdio:
+ 	mdiobus_free(mdio);
+ 	mdio = NULL;
++put_node:
++	of_node_put(mdio_node);
+ 	return ret;
+ }
+ 
 -- 
 2.35.1
 
