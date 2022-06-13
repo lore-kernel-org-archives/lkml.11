@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1383FCCA48C
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:21:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12DB9CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:21:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352912AbiFMLVB (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:21:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46630 "EHLO
+        id S237085AbiFMLVP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 07:21:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353045AbiFMLO7 (ORCPT
+        with ESMTP id S1353246AbiFMLPT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:14:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CEA513D2C;
-        Mon, 13 Jun 2022 03:37:35 -0700 (PDT)
+        Mon, 13 Jun 2022 07:15:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A12EB248EF;
+        Mon, 13 Jun 2022 03:37:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3D839B80EAB;
-        Mon, 13 Jun 2022 10:37:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91CD6C34114;
-        Mon, 13 Jun 2022 10:37:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C156CB80E94;
+        Mon, 13 Jun 2022 10:37:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38A47C34114;
+        Mon, 13 Jun 2022 10:37:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116651;
-        bh=fa8RtONEmWQpmckanaaiMY87jXS4IG0Lfh1Ci1pthzQ=;
+        s=korg; t=1655116666;
+        bh=odwwFRkk68+klX+IXiBeGcqimMANVc67CuJI9VaA7pE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yrJxKP2ycI83SFJygM+kHfRDaUnk6GbU6eE0me9stqZaxz4ckHlSCEsRzcoa7PJSL
-         yoJexcyb+PXorNHJsYBu5azt4k6dVzpdBl+gk5x5hhWT1CNz15HJLHDvkEiYMXnA+v
-         jsZIMMLB8Kl7xH/eXN2uta0QthZRgabSA6aLzPqM=
+        b=BGLMRLD2kDrqiNPGcJrt4+ClkEZzegMzYGj0Xl7ZEnI4jES5cHxC4slXRRntBzack
+         LMY6mV9dQcYJiDOczs0d3x3X1EYi2RYWjQdgUSMimYqnauGngtQJJ4FJrLPn5/iOTY
+         r2t5XO+8MDilgzYU1H1vp+8+8YvjL63ngE2AzySs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Hugues Fruchet <hugues.fruchet@foss.st.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 136/411] media: st-delta: Fix PM disable depth imbalance in delta_probe
-Date:   Mon, 13 Jun 2022 12:06:49 +0200
-Message-Id: <20220613094932.748985448@linuxfoundation.org>
+Subject: [PATCH 5.4 129/411] Revert "cpufreq: Fix possible race in cpufreq online error path"
+Date:   Mon, 13 Jun 2022 12:06:42 +0200
+Message-Id: <20220613094932.540761266@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -52,55 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Viresh Kumar <viresh.kumar@linaro.org>
 
-[ Upstream commit 94e3dba710fe0afc772172305444250023fc2d30 ]
+[ Upstream commit 85f0e42bd65d01b351d561efb38e584d4c596553 ]
 
-The pm_runtime_enable will decrease power disable depth.
-If the probe fails, we should use pm_runtime_disable() to balance
-pm_runtime_enable().
+This reverts commit f346e96267cd76175d6c201b40f770c0116a8a04.
 
-Fixes: f386509e4959 ("[media] st-delta: STiH4xx multi-format video decoder v4l2 driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Acked-by: Hugues Fruchet <hugues.fruchet@foss.st.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+The commit tried to fix a possible real bug but it made it even worse.
+The fix was simply buggy as now an error out to out_offline_policy or
+out_exit_policy will try to release a semaphore which was never taken in
+the first place. This works fine only if we failed late, i.e. via
+out_destroy_policy.
+
+Fixes: f346e96267cd ("cpufreq: Fix possible race in cpufreq online error path")
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/sti/delta/delta-v4l2.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/cpufreq/cpufreq.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/media/platform/sti/delta/delta-v4l2.c b/drivers/media/platform/sti/delta/delta-v4l2.c
-index 2791107e641b..29732b49a2cd 100644
---- a/drivers/media/platform/sti/delta/delta-v4l2.c
-+++ b/drivers/media/platform/sti/delta/delta-v4l2.c
-@@ -1862,7 +1862,7 @@ static int delta_probe(struct platform_device *pdev)
- 	if (ret) {
- 		dev_err(delta->dev, "%s failed to initialize firmware ipc channel\n",
- 			DELTA_PREFIX);
--		goto err;
-+		goto err_pm_disable;
- 	}
+diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
+index 7ea07764988e..af9f34804862 100644
+--- a/drivers/cpufreq/cpufreq.c
++++ b/drivers/cpufreq/cpufreq.c
+@@ -1509,6 +1509,8 @@ static int cpufreq_online(unsigned int cpu)
+ 	for_each_cpu(j, policy->real_cpus)
+ 		remove_cpu_dev_symlink(policy, get_cpu_device(j));
  
- 	/* register all available decoders */
-@@ -1876,7 +1876,7 @@ static int delta_probe(struct platform_device *pdev)
- 	if (ret) {
- 		dev_err(delta->dev, "%s failed to register V4L2 device\n",
- 			DELTA_PREFIX);
--		goto err;
-+		goto err_pm_disable;
- 	}
++	up_write(&policy->rwsem);
++
+ out_offline_policy:
+ 	if (cpufreq_driver->offline)
+ 		cpufreq_driver->offline(policy);
+@@ -1517,9 +1519,6 @@ static int cpufreq_online(unsigned int cpu)
+ 	if (cpufreq_driver->exit)
+ 		cpufreq_driver->exit(policy);
  
- 	delta->work_queue = create_workqueue(DELTA_NAME);
-@@ -1901,6 +1901,8 @@ static int delta_probe(struct platform_device *pdev)
- 	destroy_workqueue(delta->work_queue);
- err_v4l2:
- 	v4l2_device_unregister(&delta->v4l2_dev);
-+err_pm_disable:
-+	pm_runtime_disable(dev);
- err:
+-	cpumask_clear(policy->cpus);
+-	up_write(&policy->rwsem);
+-
+ out_free_policy:
+ 	cpufreq_policy_free(policy);
  	return ret;
- }
 -- 
 2.35.1
 
