@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6277C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:45:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78C29C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:46:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386458AbiFMOpN (ORCPT
+        id S1385068AbiFMOpu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:45:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58722 "EHLO
+        Mon, 13 Jun 2022 10:45:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385596AbiFMOnT (ORCPT
+        with ESMTP id S1385603AbiFMOna (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:43:19 -0400
+        Mon, 13 Jun 2022 10:43:30 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5AC7B1C3F;
-        Mon, 13 Jun 2022 04:50:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ACDEB1C32;
+        Mon, 13 Jun 2022 04:50:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AD82561499;
-        Mon, 13 Jun 2022 11:50:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDE65C34114;
-        Mon, 13 Jun 2022 11:50:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 12C2E61486;
+        Mon, 13 Jun 2022 11:50:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17FE8C34114;
+        Mon, 13 Jun 2022 11:50:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655121037;
-        bh=0/OPehuoJpxf3SgM/ilGfsr7BWC3yKaBiuwbOz7xEW8=;
+        s=korg; t=1655121034;
+        bh=4aYV3+qesPToYmG7/6BMlAecFB2vSBxvku6tOzoYkcc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ghKs8gSOWuPDA2ndhffxd4ufTj/N2uQgv2ULFL9dstKFspn2veMvFEMpuEQLf9dh7
-         NvdLo8BugStqjAMEQ+Zr8UegFxQo0CNhAFhoJTaMSC9LrPMzxtfCgf3lrZyMr8exi7
-         8n3OinCZP7En1lcC9KFdG2mPuyZC8WOs0kU1YInI=
+        b=easaohfn0Boke9p9puqPd8Ylyj6skBW4SSu+2iTz8HRTSR+YstTlcajPkJ1WHqX57
+         mlPSRRRNylBNN/htEReI5I/AaTvbmiDFHaL2UqQCuWDhT6hIdtrKOSS0z9jTqjgbsZ
+         E7v50hHQqM7hGGi2FxIYdOG4FQxmjNa5kJr3rpcg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 215/298] soundwire: qcom: adjust autoenumeration timeout
-Date:   Mon, 13 Jun 2022 12:11:49 +0200
-Message-Id: <20220613094931.625532551@linuxfoundation.org>
+        stable@vger.kernel.org, Liu Xinpeng <liuxp11@chinatelecom.cn>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 224/298] watchdog: wdat_wdt: Stop watchdog when rebooting the system
+Date:   Mon, 13 Jun 2022 12:11:58 +0200
+Message-Id: <20220613094931.893327201@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -51,40 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+From: Liu Xinpeng <liuxp11@chinatelecom.cn>
 
-[ Upstream commit 74da272400b46f2e898f115d1b1cd60828766919 ]
+[ Upstream commit 27fdf84510a1374748904db43f6755f912736d92 ]
 
-Currently timeout for autoenumeration during probe and bus reset is set to
-2 secs which is really a big value. This can have an adverse effect on
-boot time if the slave device is not ready/reset.
-This was the case with wcd938x which was not reset yet but we spent 2
-secs waiting in the soundwire controller probe. Reduce this time to
-1/10 of Hz which should be good enough time to finish autoenumeration
-if any slaves are available on the bus.
+Executing reboot command several times on the machine "Dell
+PowerEdge R740", UEFI security detection stopped machine
+with the following prompt:
 
-Reported-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Link: https://lore.kernel.org/r/20220506084705.18525-1-srinivas.kandagatla@linaro.org
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+UEFI0082: The system was reset due to a timeout from the watchdog
+timer. Check the System Event Log (SEL) or crash dumps from
+Operating Sysstem to identify the source that triggered the
+watchdog timer reset. Update the firmware or driver for the
+identified device.
+
+iDRAC has warning event: "The watchdog timer reset the system".
+
+This patch fixes this issue by adding the reboot notifier.
+
+Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Link: https://lore.kernel.org/r/1650984810-6247-3-git-send-email-liuxp11@chinatelecom.cn
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soundwire/qcom.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/watchdog/wdat_wdt.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
-index 54813417ef8e..249f1b69ec94 100644
---- a/drivers/soundwire/qcom.c
-+++ b/drivers/soundwire/qcom.c
-@@ -99,7 +99,7 @@
+diff --git a/drivers/watchdog/wdat_wdt.c b/drivers/watchdog/wdat_wdt.c
+index 195c8c004b69..4fac8148a8e6 100644
+--- a/drivers/watchdog/wdat_wdt.c
++++ b/drivers/watchdog/wdat_wdt.c
+@@ -462,6 +462,7 @@ static int wdat_wdt_probe(struct platform_device *pdev)
+ 		return ret;
  
- #define SWRM_SPECIAL_CMD_ID	0xF
- #define MAX_FREQ_NUM		1
--#define TIMEOUT_MS		(2 * HZ)
-+#define TIMEOUT_MS		100
- #define QCOM_SWRM_MAX_RD_LEN	0x1
- #define QCOM_SDW_MAX_PORTS	14
- #define DEFAULT_CLK_FREQ	9600000
+ 	watchdog_set_nowayout(&wdat->wdd, nowayout);
++	watchdog_stop_on_reboot(&wdat->wdd);
+ 	return devm_watchdog_register_device(dev, &wdat->wdd);
+ }
+ 
 -- 
 2.35.1
 
