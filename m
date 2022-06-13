@@ -2,89 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22CEECCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 09:53:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EA29C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 09:54:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240560AbiFMJxK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 05:53:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56496 "EHLO
+        id S240766AbiFMJyA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 05:54:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240295AbiFMJxH (ORCPT
+        with ESMTP id S235122AbiFMJx7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 05:53:07 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C03F7D92;
-        Mon, 13 Jun 2022 02:53:06 -0700 (PDT)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25D9gJ3S020604;
-        Mon, 13 Jun 2022 04:52:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=PODMain02222019;
- bh=NGC2Z2sscpSeQkxNL27luBtXi1J0TvS4+58h8uzMCak=;
- b=epPQcRnx4ouGRVPhpSqMsRjcaO8u+tX57ehE3mT+UpKQz54TYUxiZk6vepFvGHyqYUCH
- 73fTDjHE/8f4OeZzPplnCXjY8cytnmlcVwYTOKdg/vYoRDdz858TML4iUJ58tj3uv87b
- ceiN2e51Xrmv3Lj38bpYdFhqTSRbckE57+LnmF1rOu0VV+SvCcVhTL2lZDmCuPPiN/3W
- +4ouBcOcqx8EuY2JAPj5eoOWOTJqSg2WMC8zq9yzfZo63wP44VzERstD13fEstlHF3pv
- u/UJ0LkVqABO4xAYp1Fhq9HI3w19Wgn2los633QtVDKoqR7ZIKTWKfw8u631tZW0y0sb VQ== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3gmqfq1qv2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 13 Jun 2022 04:52:52 -0500
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Mon, 13 Jun
- 2022 10:52:50 +0100
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
- Transport; Mon, 13 Jun 2022 10:52:50 +0100
-Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 7039046C;
-        Mon, 13 Jun 2022 09:52:50 +0000 (UTC)
-Date:   Mon, 13 Jun 2022 09:52:50 +0000
-From:   Charles Keepax <ckeepax@opensource.cirrus.com>
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
-CC:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, Joe Perches <joe@perches.com>,
-        <linux-clk@vger.kernel.org>, Luca Ceresoli <luca@lucaceresoli.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>,
-        <devicetree@vger.kernel.org>, <patches@opensource.cirrus.com>,
-        <kernel-janitors@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/2] dt-bindings: clock: Move lochnagar.h to
- dt-bindings/clock
-Message-ID: <20220613095250.GA38351@ediswmail.ad.cirrus.com>
-References: <20220613081632.2159-1-lukas.bulwahn@gmail.com>
- <20220613081632.2159-2-lukas.bulwahn@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220613081632.2159-2-lukas.bulwahn@gmail.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Proofpoint-ORIG-GUID: UKe1Lc-PQs_M3STC455nabt6Y3fQj0bV
-X-Proofpoint-GUID: UKe1Lc-PQs_M3STC455nabt6Y3fQj0bV
-X-Proofpoint-Spam-Reason: safe
+        Mon, 13 Jun 2022 05:53:59 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 308AD25EB;
+        Mon, 13 Jun 2022 02:53:59 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id 184so5057864pga.12;
+        Mon, 13 Jun 2022 02:53:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=NgdLA0z7oCb9jXlN+2hfQR8rLO9SjNm0Q9JHfTfVmBA=;
+        b=DRlFSfy8Hek0tYzWJZb9W42tzzbiYnNDjvIA0Uj2Rz4QytQisxbqHjMoXKdM1FlhJn
+         zSK0WHntHZBLtGh3Z+VBv3PVUMjqDVhdT/bDwwRwfyWQO/iikcxAEL+OEx3LK6ZiUvby
+         YkV2GfoCO+QDkdrqeJGWlgRVeJVhHBIrkfkaOE5Y3RoFpxrtF65Iq4lz0IBJTPXc8mm1
+         qXSnWEH61FyK/p6kKp5oPH4fw8osFTZIydPNQWO98IcppabC66bUOiG93VknVRvcdSP1
+         6VzWztFD+xI2guHXOVwnD11xF53WT4e3Bh5HXZMzJicb9bZPsRPUnHeIihjJ6IHr36Jk
+         001Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=NgdLA0z7oCb9jXlN+2hfQR8rLO9SjNm0Q9JHfTfVmBA=;
+        b=SEjNh/eua88HoE6jbW+p5Vdgh+T4DJnCAsMnSzkIXRuX0rRuOOJSB/O90DrAbTF98b
+         rUgzoNRZoxBEP0dS8jPI0XxCAcEy1abyFy9+1YRHakmBz/JD6JuXXrkRhc0ewvxrDt3L
+         UzjSXpMq3Ws/iF1i2ET1slr/hBX4ST8iAL2KuYtuPa54rwuayjmmUm+BCi8ySgpsswOG
+         f8dR5iBtKn2z4nbEPREG7m0I34TCm+usjRfhE8i9mJKbSl35GpuCfE57hpm2WcccK0Ro
+         Ex/tOX2mlVYOhibds7oZrNdjWPN4Eq+KwupyGTsym6gEAt/BGQDsLzitjhetm8ODrnAa
+         ASWw==
+X-Gm-Message-State: AOAM532GvQFMVEJx3cVksnGXzmwCefb+38FKTCXHbz4sPkanKqAHyX/I
+        ijVB14TLg8Nl6rqI02qajEo=
+X-Google-Smtp-Source: ABdhPJyLBj9u1uHxRvsDhkVgV1jeG58opSfKPMejYeSBEVgr/Qwrlkk27SnwbAlfZOpteN0/l0f4JA==
+X-Received: by 2002:a05:6a00:2390:b0:51c:21e1:782 with SMTP id f16-20020a056a00239000b0051c21e10782mr38717687pfc.21.1655114038654;
+        Mon, 13 Jun 2022 02:53:58 -0700 (PDT)
+Received: from potin-quanta.dhcpserver.local (125-228-123-29.hinet-ip.hinet.net. [125.228.123.29])
+        by smtp.gmail.com with ESMTPSA id 19-20020a170902e9d300b001639f038250sm4639754plk.220.2022.06.13.02.53.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 02:53:58 -0700 (PDT)
+From:   Potin Lai <potin.lai.pt@gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>, Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>
+Cc:     Patrick Williams <patrick@stwcx.xyz>,
+        Potin Lai <potin.lai@quantatw.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Potin Lai <potin.lai.pt@gmail.com>
+Subject: [PATCH 0/4] Update Facebook Bletchley BMC DTS
+Date:   Mon, 13 Jun 2022 17:51:46 +0800
+Message-Id: <20220613095150.21917-1-potin.lai.pt@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 10:16:31AM +0200, Lukas Bulwahn wrote:
-> Most of the clock-related dt-binding header files are located in
-> include/dt-bindings/clock. It would be good to keep all the similar
-> header files at a single location.
-> 
-> This was discovered while investigating the state of ownership of the files
-> in include/dt-bindings/ according to the MAINTAINERS file.
-> 
-> This change here is similar to commit 8e28918a85a0 ("dt-bindings: clock:
-> Move ti-dra7-atl.h to dt-bindings/clock") and commit 35d35aae8177
-> ("dt-bindings: clock: Move at91.h to dt-bindigs/clock").
-> 
-> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-> ---
+Update below items for Facebook Bletchley BMC devicetree.
 
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Potin Lai (4):
+  ARM: dts: aspeed: bletchley: change LED sys_log_id to active low
+  ARM: dts: aspeed: bletchley: disable GPIOV2 pull-down
+  ARM: dts: aspeed: bletchley: bind presence-sledX pins via gpio-keys
+  ARM: dts: aspeed: bletchley: update fusb302 nodes
 
-Thanks,
-Charles
+ .../dts/aspeed-bmc-facebook-bletchley.dts     | 197 +++++++++++++-----
+ 1 file changed, 148 insertions(+), 49 deletions(-)
+
+-- 
+2.17.1
+
