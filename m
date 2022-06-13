@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FFF5C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF911C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:35:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377731AbiFMNdp (ORCPT
+        id S1377770AbiFMNdz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:33:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52332 "EHLO
+        Mon, 13 Jun 2022 09:33:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378060AbiFMNau (ORCPT
+        with ESMTP id S1378088AbiFMNav (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:30:50 -0400
+        Mon, 13 Jun 2022 09:30:51 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C8BD241;
-        Mon, 13 Jun 2022 04:25:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A433A6F486;
+        Mon, 13 Jun 2022 04:25:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 12144B80EB6;
-        Mon, 13 Jun 2022 11:25:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76B61C34114;
-        Mon, 13 Jun 2022 11:25:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4F7AB80EA7;
+        Mon, 13 Jun 2022 11:25:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EB7CC34114;
+        Mon, 13 Jun 2022 11:25:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119528;
-        bh=Ag5ss0LGA89ufCYoaNA2Cd4xvnIBH+rHrF/uUkOMu0I=;
+        s=korg; t=1655119531;
+        bh=rl0H6cuungh3oCmmkIOXPDee5ihmfkOOVqtdHvvH+7o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lA9wvNT3ED2VIgKmBvc2wzkLGX3RWGa3kdPFhZfOfDtNGxPvL/v/AOXexkuzCqusI
-         ENsdMac6CQPAwtYj7GDrj2h0BmzDYmZfNj9mw0+jo5/p28k69gdqx//EjpQK4B+tgp
-         FqB4tGpS6oao/+vAc5eZlBlcJrUqddJFGqAFj3DM=
+        b=rd/BYi2LeOxr7Fd1CE1WnrEncR/CUzgLdzoAfIRwBFtlmSKx5KW+1twfiM2pk0wFH
+         V4sviFddfHewTZVVk+R+hVpdgtq6dReta0tz7jMThSvPAKWW+Px47AKEn0YEWFqZni
+         rVOSMpHqR3PQCuD34Uo7IAiKcvx7h9kjYnfdOiFM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheng Yongjun <zhengyongjun3@huawei.com>,
+        stable@vger.kernel.org, SeongJae Park <sj@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 026/339] usb: dwc3: pci: Fix pm_runtime_get_sync() error checking
-Date:   Mon, 13 Jun 2022 12:07:31 +0200
-Message-Id: <20220613094927.303914756@linuxfoundation.org>
+Subject: [PATCH 5.18 027/339] scripts/get_abi: Fix wrong script file name in the help message
+Date:   Mon, 13 Jun 2022 12:07:32 +0200
+Message-Id: <20220613094927.335156808@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -49,36 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheng Yongjun <zhengyongjun3@huawei.com>
+From: SeongJae Park <sj@kernel.org>
 
-[ Upstream commit a03e2ddab8e735e2cc315609b297b300e9cc60d2 ]
+[ Upstream commit 5b5bfecaa333fb6a0cce1bfc4852a622dacfed1d ]
 
-If the device is already in a runtime PM enabled state
-pm_runtime_get_sync() will return 1, so a test for negative
-value should be used to check for errors.
+The help message of 'get_abi.pl' is mistakenly saying it's
+'abi_book.pl'.  This commit fixes the wrong name in the help message.
 
-Fixes: 8eed00b237a28 ("usb: dwc3: pci: Runtime resume child device from wq")
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
-Link: https://lore.kernel.org/r/20220422062652.10575-1-zhengyongjun3@huawei.com
+Fixes: bbc249f2b859 ("scripts: add an script to parse the ABI files")
+Signed-off-by: SeongJae Park <sj@kernel.org>
+Link: https://lore.kernel.org/r/20220419121636.290407-1-sj@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/dwc3/dwc3-pci.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ scripts/get_abi.pl | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/usb/dwc3/dwc3-pci.c b/drivers/usb/dwc3/dwc3-pci.c
-index 2e19e0e4ea53..ba51de7dd760 100644
---- a/drivers/usb/dwc3/dwc3-pci.c
-+++ b/drivers/usb/dwc3/dwc3-pci.c
-@@ -288,7 +288,7 @@ static void dwc3_pci_resume_work(struct work_struct *work)
- 	int ret;
+diff --git a/scripts/get_abi.pl b/scripts/get_abi.pl
+index 1389db76cff3..0ffd5531242a 100755
+--- a/scripts/get_abi.pl
++++ b/scripts/get_abi.pl
+@@ -981,11 +981,11 @@ __END__
  
- 	ret = pm_runtime_get_sync(&dwc3->dev);
--	if (ret) {
-+	if (ret < 0) {
- 		pm_runtime_put_sync_autosuspend(&dwc3->dev);
- 		return;
- 	}
+ =head1 NAME
+ 
+-abi_book.pl - parse the Linux ABI files and produce a ReST book.
++get_abi.pl - parse the Linux ABI files and produce a ReST book.
+ 
+ =head1 SYNOPSIS
+ 
+-B<abi_book.pl> [--debug <level>] [--enable-lineno] [--man] [--help]
++B<get_abi.pl> [--debug <level>] [--enable-lineno] [--man] [--help]
+ 	       [--(no-)rst-source] [--dir=<dir>] [--show-hints]
+ 	       [--search-string <regex>]
+ 	       <COMMAND> [<ARGUMENT>]
 -- 
 2.35.1
 
