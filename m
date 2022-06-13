@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29D1FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:01:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CCEECCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:01:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380155AbiFMOBR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:01:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33698 "EHLO
+        id S240937AbiFMN7X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 09:59:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380574AbiFMNyp (ORCPT
+        with ESMTP id S1380186AbiFMNxq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:54:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6514580216;
-        Mon, 13 Jun 2022 04:35:21 -0700 (PDT)
+        Mon, 13 Jun 2022 09:53:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2FF97B9E9;
+        Mon, 13 Jun 2022 04:34:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9EB9B80ECB;
-        Mon, 13 Jun 2022 11:35:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C7F7C341CB;
-        Mon, 13 Jun 2022 11:35:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 57418B80EC7;
+        Mon, 13 Jun 2022 11:34:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4658C34114;
+        Mon, 13 Jun 2022 11:34:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120118;
-        bh=1NDrccUNSF/6uv2W+MpiyQ8aIC7EHlmxH2OYdzZod1U=;
+        s=korg; t=1655120045;
+        bh=C3p8V+CShGR7nozEVmR7aMQKSLK+SVYLvPNgHctlLf8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rI83ekBOrZxIOrQuczEpVz3tzCogeC5Ewb0mHKBPuzjEFHNwdTI0j83Sfy7kVe0kk
-         ClzMTWgpqC2vcb9Q8XKGbanRyXoYC/Obt+GrL3vSkqvhBm/6cucupErVQ4ZAqCN+Yd
-         8rEbAwqp3nGZJ/bbSGxqEHx/fO9gKWhazBHZeicU=
+        b=jfRLKbTwMrt23MV0DMJ2I4/WDLKQyyYjBQ2u5LYLvKnA8dOCrzWczturCfLqxuckp
+         PbB36Eiyl4Egbg8g4LRlo8Vg7dRlmQaDPXFWgjTyI+2J2s8MqiIUlOV5BzVTLCTmPw
+         DyYmJ5qWWmhyNaZg6/pZKNZ12S+clCzuZcy4/yQU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Hannes Reinecke <hare@suse.de>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Huang Guobin <huangguobin4@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 257/339] scsi: myrb: Fix up null pointer access on myrb_cleanup()
-Date:   Mon, 13 Jun 2022 12:11:22 +0200
-Message-Id: <20220613094934.447935328@linuxfoundation.org>
+Subject: [PATCH 5.18 231/339] tty: Fix a possible resource leak in icom_probe
+Date:   Mon, 13 Jun 2022 12:10:56 +0200
+Message-Id: <20220613094933.665375943@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,55 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hannes Reinecke <hare@suse.de>
+From: Huang Guobin <huangguobin4@huawei.com>
 
-[ Upstream commit f9f0a46141e2e39bedb4779c88380d1b5f018c14 ]
+[ Upstream commit ee157a79e7c82b01ae4c25de0ac75899801f322c ]
 
-When myrb_probe() fails the callback might not be set, so we need to
-validate the 'disable_intr' callback in myrb_cleanup() to not cause a null
-pointer exception. And while at it do not call myrb_cleanup() if we cannot
-enable the PCI device at all.
+When pci_read_config_dword failed, call pci_release_regions() and
+pci_disable_device() to recycle the resource previously allocated.
 
-Link: https://lore.kernel.org/r/20220523120244.99515-1-hare@suse.de
-Reported-by: Zheyu Ma <zheyuma97@gmail.com>
-Tested-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Hannes Reinecke <hare@suse.de>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
+Link: https://lore.kernel.org/r/20220331091005.3290753-1-huangguobin4@huawei.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/myrb.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/tty/serial/icom.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/myrb.c b/drivers/scsi/myrb.c
-index 71585528e8db..e885c1dbf61f 100644
---- a/drivers/scsi/myrb.c
-+++ b/drivers/scsi/myrb.c
-@@ -1239,7 +1239,8 @@ static void myrb_cleanup(struct myrb_hba *cb)
- 	myrb_unmap(cb);
- 
- 	if (cb->mmio_base) {
--		cb->disable_intr(cb->io_base);
-+		if (cb->disable_intr)
-+			cb->disable_intr(cb->io_base);
- 		iounmap(cb->mmio_base);
+diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
+index 03a2fe9f4c9a..02b375ba2f07 100644
+--- a/drivers/tty/serial/icom.c
++++ b/drivers/tty/serial/icom.c
+@@ -1501,7 +1501,7 @@ static int icom_probe(struct pci_dev *dev,
+ 	retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg);
+ 	if (retval) {
+ 		dev_err(&dev->dev, "PCI Config read FAILED\n");
+-		return retval;
++		goto probe_exit0;
  	}
- 	if (cb->irq)
-@@ -3413,9 +3414,13 @@ static struct myrb_hba *myrb_detect(struct pci_dev *pdev,
- 	mutex_init(&cb->dcmd_mutex);
- 	mutex_init(&cb->dma_mutex);
- 	cb->pdev = pdev;
-+	cb->host = shost;
  
--	if (pci_enable_device(pdev))
--		goto failure;
-+	if (pci_enable_device(pdev)) {
-+		dev_err(&pdev->dev, "Failed to enable PCI device\n");
-+		scsi_host_put(shost);
-+		return NULL;
-+	}
- 
- 	if (privdata->hw_init == DAC960_PD_hw_init ||
- 	    privdata->hw_init == DAC960_P_hw_init) {
+ 	pci_write_config_dword(dev, PCI_COMMAND,
 -- 
 2.35.1
 
