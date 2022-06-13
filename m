@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05DD5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:43:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51258C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:45:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352929AbiFMMnP (ORCPT
+        id S1353579AbiFMMnR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:43:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54844 "EHLO
+        Mon, 13 Jun 2022 08:43:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355817AbiFMMjR (ORCPT
+        with ESMTP id S1355427AbiFMMjI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:39:17 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D629D33891;
-        Mon, 13 Jun 2022 04:09:34 -0700 (PDT)
+        Mon, 13 Jun 2022 08:39:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B88DE5DD1B;
+        Mon, 13 Jun 2022 04:09:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 48470CE1184;
-        Mon, 13 Jun 2022 11:09:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6118BC34114;
-        Mon, 13 Jun 2022 11:09:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6B965B80D31;
+        Mon, 13 Jun 2022 11:09:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1B18C34114;
+        Mon, 13 Jun 2022 11:09:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118571;
-        bh=1jCg8Kfy0hEEFe172v9re+mnxyKLpW4fnDkJcsLiSq8=;
+        s=korg; t=1655118541;
+        bh=1w3LGqQZEQz4fLKWn07r3txskOEpLiVmDPSUNw17sq4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F4jF5WqxVe5ETVjpa7JmYlw6VmKXNtr+bPBGMB7j0XwEWWrc1wSaH3xb8XNaZ+tjl
-         c7AgE9snofGbBR4IH4i5hMMFGwmnr2UgQsxKTxwdZWxIhrFjTIZkO+Pfu+7VqKxVmo
-         ZAA3AA5zI6LICZ1oqFDXfR5A2hg5KyGg3CziJt70=
+        b=Eyu+EofVIxZW/+wym8bHsteJ4jlbtAjQXaOLoG16+mcfh0AW0ROp0CiBiNF9oDjeo
+         YVqalI6FiRWpiiBTZH79UpMJdOtwa/wVLhq01NYsbEYrcroxC7WCnMjV87ZYuCRaWr
+         qV1f52CaWIjduJGJmYXspm6juxJLprsjypAovnqs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Bloch <mbloch@nvidia.com>,
-        Maor Gottlieb <maorg@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 109/172] net/mlx5: fs, fail conflicting actions
-Date:   Mon, 13 Jun 2022 12:11:09 +0200
-Message-Id: <20220613094916.482487517@linuxfoundation.org>
+Subject: [PATCH 5.10 096/172] netfilter: nf_tables: release new hooks on unsupported flowtable flags
+Date:   Mon, 13 Jun 2022 12:10:56 +0200
+Message-Id: <20220613094913.477315747@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -51,89 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Bloch <mbloch@nvidia.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit 8fa5e7b20e01042b14f8cd684d2da9b638460c74 ]
+[ Upstream commit c271cc9febaaa1bcbc0842d1ee30466aa6148ea8 ]
 
-When combining two steering rules into one check
-not only do they share the same actions but those
-actions are also the same. This resolves an issue where
-when creating two different rules with the same match
-the actions are overwritten and one of the rules is deleted
-a FW syndrome can be seen in dmesg.
+Release the list of new hooks that are pending to be registered in case
+that unsupported flowtable flags are provided.
 
-mlx5_core 0000:03:00.0: mlx5_cmd_check:819:(pid 2105): DEALLOC_MODIFY_HEADER_CONTEXT(0x941) op_mod(0x0) failed, status bad resource state(0x9), syndrome (0x1ab444)
-
-Fixes: 0d235c3fabb7 ("net/mlx5: Add hash table to search FTEs in a flow-group")
-Signed-off-by: Mark Bloch <mbloch@nvidia.com>
-Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Fixes: 78d9f48f7f44 ("netfilter: nf_tables: add devices to existing flowtable")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/mellanox/mlx5/core/fs_core.c | 35 +++++++++++++++++--
- 1 file changed, 32 insertions(+), 3 deletions(-)
+ net/netfilter/nf_tables_api.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-index 15472fb15d7d..4bdcceffe9d3 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -1520,9 +1520,22 @@ static struct mlx5_flow_rule *find_flow_rule(struct fs_fte *fte,
- 	return NULL;
- }
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index b90e45f1ffa0..2872722488c9 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -6694,11 +6694,15 @@ static int nft_flowtable_update(struct nft_ctx *ctx, const struct nlmsghdr *nlh,
  
--static bool check_conflicting_actions(u32 action1, u32 action2)
-+static bool check_conflicting_actions_vlan(const struct mlx5_fs_vlan *vlan0,
-+					   const struct mlx5_fs_vlan *vlan1)
- {
--	u32 xored_actions = action1 ^ action2;
-+	return vlan0->ethtype != vlan1->ethtype ||
-+	       vlan0->vid != vlan1->vid ||
-+	       vlan0->prio != vlan1->prio;
-+}
-+
-+static bool check_conflicting_actions(const struct mlx5_flow_act *act1,
-+				      const struct mlx5_flow_act *act2)
-+{
-+	u32 action1 = act1->action;
-+	u32 action2 = act2->action;
-+	u32 xored_actions;
-+
-+	xored_actions = action1 ^ action2;
- 
- 	/* if one rule only wants to count, it's ok */
- 	if (action1 == MLX5_FLOW_CONTEXT_ACTION_COUNT ||
-@@ -1539,6 +1552,22 @@ static bool check_conflicting_actions(u32 action1, u32 action2)
- 			     MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH_2))
- 		return true;
- 
-+	if (action1 & MLX5_FLOW_CONTEXT_ACTION_PACKET_REFORMAT &&
-+	    act1->pkt_reformat != act2->pkt_reformat)
-+		return true;
-+
-+	if (action1 & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR &&
-+	    act1->modify_hdr != act2->modify_hdr)
-+		return true;
-+
-+	if (action1 & MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH &&
-+	    check_conflicting_actions_vlan(&act1->vlan[0], &act2->vlan[0]))
-+		return true;
-+
-+	if (action1 & MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH_2 &&
-+	    check_conflicting_actions_vlan(&act1->vlan[1], &act2->vlan[1]))
-+		return true;
-+
- 	return false;
- }
- 
-@@ -1546,7 +1575,7 @@ static int check_conflicting_ftes(struct fs_fte *fte,
- 				  const struct mlx5_flow_context *flow_context,
- 				  const struct mlx5_flow_act *flow_act)
- {
--	if (check_conflicting_actions(flow_act->action, fte->action.action)) {
-+	if (check_conflicting_actions(flow_act, &fte->action)) {
- 		mlx5_core_warn(get_dev(&fte->node),
- 			       "Found two FTEs with conflicting actions\n");
- 		return -EEXIST;
+ 	if (nla[NFTA_FLOWTABLE_FLAGS]) {
+ 		flags = ntohl(nla_get_be32(nla[NFTA_FLOWTABLE_FLAGS]));
+-		if (flags & ~NFT_FLOWTABLE_MASK)
+-			return -EOPNOTSUPP;
++		if (flags & ~NFT_FLOWTABLE_MASK) {
++			err = -EOPNOTSUPP;
++			goto err_flowtable_update_hook;
++		}
+ 		if ((flowtable->data.flags & NFT_FLOWTABLE_HW_OFFLOAD) ^
+-		    (flags & NFT_FLOWTABLE_HW_OFFLOAD))
+-			return -EOPNOTSUPP;
++		    (flags & NFT_FLOWTABLE_HW_OFFLOAD)) {
++			err = -EOPNOTSUPP;
++			goto err_flowtable_update_hook;
++		}
+ 	} else {
+ 		flags = flowtable->data.flags;
+ 	}
 -- 
 2.35.1
 
