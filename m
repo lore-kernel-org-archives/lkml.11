@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34404C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:21:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE38AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:21:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359868AbiFMNVE (ORCPT
+        id S1376291AbiFMNVN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:21:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42642 "EHLO
+        Mon, 13 Jun 2022 09:21:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376519AbiFMNLM (ORCPT
+        with ESMTP id S1358848AbiFMNP3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:11:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BACA866C8B;
-        Mon, 13 Jun 2022 04:22:07 -0700 (PDT)
+        Mon, 13 Jun 2022 09:15:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 800B02AE1;
+        Mon, 13 Jun 2022 04:22:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C4DD160F95;
-        Mon, 13 Jun 2022 11:21:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1288C34114;
-        Mon, 13 Jun 2022 11:21:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E81D9B80E93;
+        Mon, 13 Jun 2022 11:22:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56D7BC34114;
+        Mon, 13 Jun 2022 11:22:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119317;
-        bh=c77Ff4g1ZV/MvriXar9ZuDDoWlbpBvVBo5CM9TEWdf4=;
+        s=korg; t=1655119322;
+        bh=4JkfOxC5gmI0LRB5f/6vslBdwhuK+DX353B085otTAA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J09sZ58PvxBwCe/o9i939xdb1NcN8/wLvTTOQ4HCO32ARwsnb7qgmJ7/D6eO0OHWO
-         hc5i1DnBfTNLldvO/aMevttTVOiR9TnpSQgXIakt1hoouaa8NamX1KU9JbcrmTfhFC
-         EM7WV1ON1ZmHembq87Z37wJ66heN0BgVS3/pXPy0=
+        b=yGzIptBmK7Kwx1hxH2iXpMfRAu1RdD6u43732+IRDO/v00dHe9Kni9jQbxqbTDcAG
+         xSCna+RbEXKpBWggiCEBAVgzjTIy/vlhLeaLHe62cHGgVyBpS2JNQ8jHnmbbPeUiII
+         XF94GYYBHAhLfODOWL0TX+dxhzH6uUdL+9q3FDR0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jeremy Soller <jeremy@system76.com>,
-        Tim Crawford <tcrawford@system76.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 218/247] ALSA: hda/realtek: Add quirk for HP Dev One
-Date:   Mon, 13 Jun 2022 12:12:00 +0200
-Message-Id: <20220613094929.555693198@linuxfoundation.org>
+        stable@vger.kernel.org, Satadru Pramanik <satadru@gmail.com>,
+        "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.15 220/247] cifs: fix reconnect on smb3 mount types
+Date:   Mon, 13 Jun 2022 12:12:02 +0200
+Message-Id: <20220613094929.616109209@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,32 +50,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeremy Soller <jeremy@system76.com>
+From: Paulo Alcantara <pc@cjr.nz>
 
-commit 5f3d696eea916693b2d4ed7e62794653fcdd6ec0 upstream.
+commit c36ee7dab7749f7be21f7a72392744490b2a9a2b upstream.
 
-Enables the audio mute LEDs and limits the mic boost to avoid picking up
-noise.
+cifs.ko defines two file system types: cifs & smb3, and
+__cifs_get_super() was not including smb3 file system type when
+looking up superblocks, therefore failing to reconnect tcons in
+cifs_tree_connect().
 
-Signed-off-by: Jeremy Soller <jeremy@system76.com>
-Signed-off-by: Tim Crawford <tcrawford@system76.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220608140111.23170-1-tcrawford@system76.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fix this by calling iterate_supers_type() on both file system types.
+
+Link: https://lore.kernel.org/r/CAFrh3J9soC36+BVuwHB=g9z_KB5Og2+p2_W+BBoBOZveErz14w@mail.gmail.com
+Cc: stable@vger.kernel.org
+Tested-by: Satadru Pramanik <satadru@gmail.com>
+Reported-by: Satadru Pramanik <satadru@gmail.com>
+Signed-off-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ fs/cifs/cifsfs.c |    2 +-
+ fs/cifs/cifsfs.h |    2 +-
+ fs/cifs/misc.c   |   27 ++++++++++++++++-----------
+ 3 files changed, 18 insertions(+), 13 deletions(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -8847,6 +8847,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x103c, 0x88d0, "HP Pavilion 15-eh1xxx (mainboard 88D0)", ALC287_FIXUP_HP_GPIO_LED),
- 	SND_PCI_QUIRK(0x103c, 0x89c3, "HP", ALC285_FIXUP_HP_GPIO_LED),
- 	SND_PCI_QUIRK(0x103c, 0x89ca, "HP", ALC236_FIXUP_HP_MUTE_LED_MICMUTE_VREF),
-+	SND_PCI_QUIRK(0x103c, 0x8a78, "HP Dev One", ALC285_FIXUP_HP_LIMIT_INT_MIC_BOOST),
- 	SND_PCI_QUIRK(0x1043, 0x103e, "ASUS X540SA", ALC256_FIXUP_ASUS_MIC),
- 	SND_PCI_QUIRK(0x1043, 0x103f, "ASUS TX300", ALC282_FIXUP_ASUS_TX300),
- 	SND_PCI_QUIRK(0x1043, 0x106d, "Asus K53BE", ALC269_FIXUP_LIMIT_INT_MIC_BOOST),
+--- a/fs/cifs/cifsfs.c
++++ b/fs/cifs/cifsfs.c
+@@ -1074,7 +1074,7 @@ struct file_system_type cifs_fs_type = {
+ };
+ MODULE_ALIAS_FS("cifs");
+ 
+-static struct file_system_type smb3_fs_type = {
++struct file_system_type smb3_fs_type = {
+ 	.owner = THIS_MODULE,
+ 	.name = "smb3",
+ 	.init_fs_context = smb3_init_fs_context,
+--- a/fs/cifs/cifsfs.h
++++ b/fs/cifs/cifsfs.h
+@@ -38,7 +38,7 @@ static inline unsigned long cifs_get_tim
+ 	return (unsigned long) dentry->d_fsdata;
+ }
+ 
+-extern struct file_system_type cifs_fs_type;
++extern struct file_system_type cifs_fs_type, smb3_fs_type;
+ extern const struct address_space_operations cifs_addr_ops;
+ extern const struct address_space_operations cifs_addr_ops_smallbuf;
+ 
+--- a/fs/cifs/misc.c
++++ b/fs/cifs/misc.c
+@@ -1212,18 +1212,23 @@ static struct super_block *__cifs_get_su
+ 		.data = data,
+ 		.sb = NULL,
+ 	};
++	struct file_system_type **fs_type = (struct file_system_type *[]) {
++		&cifs_fs_type, &smb3_fs_type, NULL,
++	};
+ 
+-	iterate_supers_type(&cifs_fs_type, f, &sd);
+-
+-	if (!sd.sb)
+-		return ERR_PTR(-EINVAL);
+-	/*
+-	 * Grab an active reference in order to prevent automounts (DFS links)
+-	 * of expiring and then freeing up our cifs superblock pointer while
+-	 * we're doing failover.
+-	 */
+-	cifs_sb_active(sd.sb);
+-	return sd.sb;
++	for (; *fs_type; fs_type++) {
++		iterate_supers_type(*fs_type, f, &sd);
++		if (sd.sb) {
++			/*
++			 * Grab an active reference in order to prevent automounts (DFS links)
++			 * of expiring and then freeing up our cifs superblock pointer while
++			 * we're doing failover.
++			 */
++			cifs_sb_active(sd.sb);
++			return sd.sb;
++		}
++	}
++	return ERR_PTR(-EINVAL);
+ }
+ 
+ static void __cifs_put_super(struct super_block *sb)
 
 
