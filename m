@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E424C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:44:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A165C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:44:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239741AbiFMIoM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 04:44:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59422 "EHLO
+        id S239838AbiFMIoO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 04:44:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239632AbiFMIne (ORCPT
+        with ESMTP id S239603AbiFMInd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 04:43:34 -0400
+        Mon, 13 Jun 2022 04:43:33 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8808B1A05E;
-        Mon, 13 Jun 2022 01:43:33 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 08:43:30 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 363EB7661;
+        Mon, 13 Jun 2022 01:43:31 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 08:43:28 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1655109812;
+        s=2020; t=1655109809;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=pKAOjO+RpZcq6LfarieRHwq4JpOcP8z4DONOzbHJQ3E=;
-        b=qO9ioUPfUYcE6tce3t6d4a5bYbYFxbJ8v/mUeiYlbQIzpDYqDji7mnEcaIMpzYRaiRQXwo
-        empbkqj58s3q7vMkJH3LamoU9GcHyqVQETZXq3PqOBoc7Kfc2sYDKq2HzSf7qCDssynmFi
-        DWRoRhD/H2SAsDt4peIo1ZgmXK7PMKU/ASqTNOkGtYwDFv424MHCdXmhZDorj+DaY4p8kT
-        hZ6wrL/lUgrHdCjVnz3CAVtaU+xRJUdEW8Y74RaYcw8gd9TWj/Vdxcg+9UEFOOWwTZu1f/
-        QDWTeF5BbOu05FexNyE+i/eM6qP896Md9FG7xsWh2a5cIx+oX6pWXuHOAFOqUg==
+        bh=M+3xFbmd2Gh9/NIxhdlDtkJKD8GDZuK1gnj6+gOsw0U=;
+        b=IJ9s4WyaLsWzOjvlSW43PZtmpR6On9iauKn4FG/mWx1AKcyz80ZiCxksYnLS+1F8G+K6jS
+        7LFJX4JM6Uhbd4oY84d2+3uVsc9RuDex4TJWewvlCgi5pMaGgK6t3JOC+ArDGU2piMg5pz
+        BRfAI7Q+8tNGEVxhaV0bUz762ouIWw6l/QMR62kTnl84UcNHmbc9rkx1dfRr7AQC7tcddB
+        Dt8khVcNpdztpfb2NmjEE2pcetZb+MOtI8LgxBv8GsAxu+JZb57tGQYdz83NGvMvQDanXe
+        SpF82yINhNN8pql8FCtt4QyZBFxiAai5WL+pNaoMUxyH9WXbNIsYYHwT1Mjqkw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1655109812;
+        s=2020e; t=1655109809;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=pKAOjO+RpZcq6LfarieRHwq4JpOcP8z4DONOzbHJQ3E=;
-        b=bGkhLriKLv2TqyFB6pj75xJgRB3GvFsJUdUJ4RoyZAWB4yMhABI+0/8Yvjr8T2GAqxnh1N
-        kwfJPW2utgspPtCw==
+        bh=M+3xFbmd2Gh9/NIxhdlDtkJKD8GDZuK1gnj6+gOsw0U=;
+        b=IDCF1Dzh9CiCTQTo+rmhB7c9LHYimzBVvQysSS67ANSPoZrTlC3iwQbmdNs3p5c6bNihtj
+        LYttiwevGxlvAXDg==
 From:   "tip-bot2 for Mel Gorman" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/core] sched/numa: Do not swap tasks between nodes when
- spare capacity is available
+Subject: [tip: sched/core] sched/numa: Adjust imb_numa_nr to a better
+ approximation of memory channels
 Cc:     Mel Gorman <mgorman@techsingularity.net>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         K Prateek Nayak <kprateek.nayak@amd.com>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220520103519.1863-3-mgorman@techsingularity.net>
-References: <20220520103519.1863-3-mgorman@techsingularity.net>
+In-Reply-To: <20220520103519.1863-5-mgorman@techsingularity.net>
+References: <20220520103519.1863-5-mgorman@techsingularity.net>
 MIME-Version: 1.0
-Message-ID: <165510981090.4207.296202433440317954.tip-bot2@tip-bot2>
+Message-ID: <165510980876.4207.9859802458122718132.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -63,46 +63,84 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the sched/core branch of tip:
 
-Commit-ID:     13ede33150877d44756171e33570076882b17b0b
-Gitweb:        https://git.kernel.org/tip/13ede33150877d44756171e33570076882b17b0b
+Commit-ID:     026b98a93bbdbefb37ab8008df84e38e2fedaf92
+Gitweb:        https://git.kernel.org/tip/026b98a93bbdbefb37ab8008df84e38e2fedaf92
 Author:        Mel Gorman <mgorman@techsingularity.net>
-AuthorDate:    Fri, 20 May 2022 11:35:17 +01:00
+AuthorDate:    Fri, 20 May 2022 11:35:19 +01:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Mon, 13 Jun 2022 10:29:59 +02:00
+CommitterDate: Mon, 13 Jun 2022 10:30:00 +02:00
 
-sched/numa: Do not swap tasks between nodes when spare capacity is available
+sched/numa: Adjust imb_numa_nr to a better approximation of memory channels
 
-If a destination node has spare capacity but there is an imbalance then
-two tasks are selected for swapping. If the tasks have no numa group
-or are within the same NUMA group, it's simply shuffling tasks around
-without having any impact on the compute imbalance. Instead, it's just
-punishing one task to help another.
+For a single LLC per node, a NUMA imbalance is allowed up until 25%
+of CPUs sharing a node could be active. One intent of the cut-off is
+to avoid an imbalance of memory channels but there is no topological
+information based on active memory channels. Furthermore, there can
+be differences between nodes depending on the number of populated
+DIMMs.
+
+A cut-off of 25% was arbitrary but generally worked. It does have a severe
+corner cases though when an parallel workload is using 25% of all available
+CPUs over-saturates memory channels. This can happen due to the initial
+forking of tasks that get pulled more to one node after early wakeups
+(e.g. a barrier synchronisation) that is not quickly corrected by the
+load balancer. The LB may fail to act quickly as the parallel tasks are
+considered to be poor migrate candidates due to locality or cache hotness.
+
+On a range of modern Intel CPUs, 12.5% appears to be a better cut-off
+assuming all memory channels are populated and is used as the new cut-off
+point. A minimum of 1 is specified to allow a communicating pair to
+remain local even for CPUs with low numbers of cores. For modern AMDs,
+there are multiple LLCs and are not affected.
 
 Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Tested-by: K Prateek Nayak <kprateek.nayak@amd.com>
-Link: https://lore.kernel.org/r/20220520103519.1863-3-mgorman@techsingularity.net
+Link: https://lore.kernel.org/r/20220520103519.1863-5-mgorman@techsingularity.net
 ---
- kernel/sched/fair.c |  9 +++++++++
- 1 file changed, 9 insertions(+)
+ kernel/sched/topology.c | 23 +++++++++++++++--------
+ 1 file changed, 15 insertions(+), 8 deletions(-)
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 51836ef..23da36c 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -1790,6 +1790,15 @@ static bool task_numa_compare(struct task_numa_env *env,
- 	 */
- 	cur_ng = rcu_dereference(cur->numa_group);
- 	if (cur_ng == p_ng) {
-+		/*
-+		 * Do not swap within a group or between tasks that have
-+		 * no group if there is spare capacity. Swapping does
-+		 * not address the load imbalance and helps one task at
-+		 * the cost of punishing another.
-+		 */
-+		if (env->dst_stats.node_type == node_has_spare)
-+			goto unlock;
-+
- 		imp = taskimp + task_weight(cur, env->src_nid, dist) -
- 		      task_weight(cur, env->dst_nid, dist);
- 		/*
+diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
+index 05b6c2a..8739c2a 100644
+--- a/kernel/sched/topology.c
++++ b/kernel/sched/topology.c
+@@ -2316,23 +2316,30 @@ build_sched_domains(const struct cpumask *cpu_map, struct sched_domain_attr *att
+ 
+ 				/*
+ 				 * For a single LLC per node, allow an
+-				 * imbalance up to 25% of the node. This is an
+-				 * arbitrary cutoff based on SMT-2 to balance
+-				 * between memory bandwidth and avoiding
+-				 * premature sharing of HT resources and SMT-4
+-				 * or SMT-8 *may* benefit from a different
+-				 * cutoff.
++				 * imbalance up to 12.5% of the node. This is
++				 * arbitrary cutoff based two factors -- SMT and
++				 * memory channels. For SMT-2, the intent is to
++				 * avoid premature sharing of HT resources but
++				 * SMT-4 or SMT-8 *may* benefit from a different
++				 * cutoff. For memory channels, this is a very
++				 * rough estimate of how many channels may be
++				 * active and is based on recent CPUs with
++				 * many cores.
+ 				 *
+ 				 * For multiple LLCs, allow an imbalance
+ 				 * until multiple tasks would share an LLC
+ 				 * on one node while LLCs on another node
+-				 * remain idle.
++				 * remain idle. This assumes that there are
++				 * enough logical CPUs per LLC to avoid SMT
++				 * factors and that there is a correlation
++				 * between LLCs and memory channels.
+ 				 */
+ 				nr_llcs = sd->span_weight / child->span_weight;
+ 				if (nr_llcs == 1)
+-					imb = sd->span_weight >> 2;
++					imb = sd->span_weight >> 3;
+ 				else
+ 					imb = nr_llcs;
++				imb = max(1U, imb);
+ 				sd->imb_numa_nr = imb;
+ 
+ 				/* Set span based on the first NUMA domain. */
