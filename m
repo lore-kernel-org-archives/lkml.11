@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C270BCCA483
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:31:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B538CCA485
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:31:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385325AbiFMObD (ORCPT
+        id S1385446AbiFMObM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:31:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54050 "EHLO
+        Mon, 13 Jun 2022 10:31:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384361AbiFMOZT (ORCPT
+        with ESMTP id S1383797AbiFMOYE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:25:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86CBC49F82;
-        Mon, 13 Jun 2022 04:47:09 -0700 (PDT)
+        Mon, 13 Jun 2022 10:24:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9DDC2E9D7;
+        Mon, 13 Jun 2022 04:45:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ADFFCB80D3A;
-        Mon, 13 Jun 2022 11:47:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E826C34114;
-        Mon, 13 Jun 2022 11:47:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7F560B80EA7;
+        Mon, 13 Jun 2022 11:45:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFAC8C34114;
+        Mon, 13 Jun 2022 11:45:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120826;
-        bh=1p3XvtCW++ZOFQc/Ji5oBq0oFJ1q34MynTJtoyKtaAs=;
+        s=korg; t=1655120717;
+        bh=2e7f9p/M1b3H6BOVz8uxSqJ142fxFtSnRyMgJr8u4UE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FPUR3gKyD4OXT9fYnFqeU33gXolXnUOau1bfzELainHYVwSINa2RF8Hjc9axOSAhn
-         WHU64LcYpoHi/7SerhLQf65FVuBKBEExanC18F1bvk+PZPifB7sYb3l4n038dauq5Z
-         RAF17rVw3Or25/zfiY8cZVuHmQULANqpGh/9i95Q=
+        b=2JkYhKsbzlkzWgFV3220YXPn1YB6jFh050yihJEEUOSK1ntUoc+9wi0GKI3ZO9iTh
+         Cc9SV9Ex4pqoZv7i6GiBelNw36MbaXUV6cl23bOHBTSS3DfyMqjepR2qAHq1bQ0LU4
+         OM7ZzGgFjW4qzyP8IVeQ17CW6/zPJwcLQzSHNtME=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 147/298] dmaengine: zynqmp_dma: In struct zynqmp_dma_chan fix desc_size data type
-Date:   Mon, 13 Jun 2022 12:10:41 +0200
-Message-Id: <20220613094929.397254993@linuxfoundation.org>
+        stable@vger.kernel.org, Guoju Fang <gjfang@linux.alibaba.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 114/298] net: sched: add barrier to fix packet stuck problem for lockless qdisc
+Date:   Mon, 13 Jun 2022 12:10:08 +0200
+Message-Id: <20220613094928.403820927@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,61 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+From: Guoju Fang <gjfang@linux.alibaba.com>
 
-[ Upstream commit f9a9f43a62a04ec3183fb0da9226c7706eed0115 ]
+[ Upstream commit 2e8728c955ce0624b958eee6e030a37aca3a5d86 ]
 
-In zynqmp_dma_alloc/free_chan_resources functions there is a
-potential overflow in the below expressions.
+In qdisc_run_end(), the spin_unlock() only has store-release semantic,
+which guarantees all earlier memory access are visible before it. But
+the subsequent test_bit() has no barrier semantics so may be reordered
+ahead of the spin_unlock(). The store-load reordering may cause a packet
+stuck problem.
 
-dma_alloc_coherent(chan->dev, (2 * chan->desc_size *
-		   ZYNQMP_DMA_NUM_DESCS),
-		   &chan->desc_pool_p, GFP_KERNEL);
+The concurrent operations can be described as below,
+         CPU 0                      |          CPU 1
+   qdisc_run_end()                  |     qdisc_run_begin()
+          .                         |           .
+ ----> /* may be reorderd here */   |           .
+|         .                         |           .
+|     spin_unlock()                 |         set_bit()
+|         .                         |         smp_mb__after_atomic()
+ ---- test_bit()                    |         spin_trylock()
+          .                         |          .
 
-dma_free_coherent(chan->dev,(2 * ZYNQMP_DMA_DESC_SIZE(chan) *
-                 ZYNQMP_DMA_NUM_DESCS),
-                chan->desc_pool_v, chan->desc_pool_p);
+Consider the following sequence of events:
+    CPU 0 reorder test_bit() ahead and see MISSED = 0
+    CPU 1 calls set_bit()
+    CPU 1 calls spin_trylock() and return fail
+    CPU 0 executes spin_unlock()
 
-The arguments desc_size and ZYNQMP_DMA_NUM_DESCS were 32 bit. Though
-this overflow condition is not observed but it is a potential problem
-in the case of 32-bit multiplication. Hence fix it by changing the
-desc_size data type to size_t.
+At the end of the sequence, CPU 0 calls spin_unlock() and does nothing
+because it see MISSED = 0. The skb on CPU 1 has beed enqueued but no one
+take it, until the next cpu pushing to the qdisc (if ever ...) will
+notice and dequeue it.
 
-In addition to coverity fix it also reuse ZYNQMP_DMA_DESC_SIZE macro in
-dma_alloc_coherent API argument.
+This patch fix this by adding one explicit barrier. As spin_unlock() and
+test_bit() ordering is a store-load ordering, a full memory barrier
+smp_mb() is needed here.
 
-Addresses-Coverity: Event overflow_before_widen.
-Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Link: https://lore.kernel.org/r/1652166762-18317-2-git-send-email-radhey.shyam.pandey@xilinx.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: a90c57f2cedd ("net: sched: fix packet stuck problem for lockless qdisc")
+Signed-off-by: Guoju Fang <gjfang@linux.alibaba.com>
+Link: https://lore.kernel.org/r/20220528101628.120193-1-gjfang@linux.alibaba.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/xilinx/zynqmp_dma.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ include/net/sch_generic.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/dma/xilinx/zynqmp_dma.c b/drivers/dma/xilinx/zynqmp_dma.c
-index 7aa63b652027..3ffa7f37c701 100644
---- a/drivers/dma/xilinx/zynqmp_dma.c
-+++ b/drivers/dma/xilinx/zynqmp_dma.c
-@@ -229,7 +229,7 @@ struct zynqmp_dma_chan {
- 	bool is_dmacoherent;
- 	struct tasklet_struct tasklet;
- 	bool idle;
--	u32 desc_size;
-+	size_t desc_size;
- 	bool err;
- 	u32 bus_width;
- 	u32 src_burst_len;
-@@ -486,7 +486,8 @@ static int zynqmp_dma_alloc_chan_resources(struct dma_chan *dchan)
- 	}
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index 4fe0892dde1a..6764fc265745 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -209,6 +209,12 @@ static inline void qdisc_run_end(struct Qdisc *qdisc)
+ 	if (qdisc->flags & TCQ_F_NOLOCK) {
+ 		spin_unlock(&qdisc->seqlock);
  
- 	chan->desc_pool_v = dma_alloc_coherent(chan->dev,
--					       (2 * chan->desc_size * ZYNQMP_DMA_NUM_DESCS),
-+					       (2 * ZYNQMP_DMA_DESC_SIZE(chan) *
-+					       ZYNQMP_DMA_NUM_DESCS),
- 					       &chan->desc_pool_p, GFP_KERNEL);
- 	if (!chan->desc_pool_v)
- 		return -ENOMEM;
++		/* spin_unlock() only has store-release semantic. The unlock
++		 * and test_bit() ordering is a store-load ordering, so a full
++		 * memory barrier is needed here.
++		 */
++		smp_mb();
++
+ 		if (unlikely(test_bit(__QDISC_STATE_MISSED,
+ 				      &qdisc->state)))
+ 			__netif_schedule(qdisc);
 -- 
 2.35.1
 
