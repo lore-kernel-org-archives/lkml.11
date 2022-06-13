@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51258C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:45:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0D2EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:45:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353579AbiFMMnR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:43:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49972 "EHLO
+        id S239535AbiFMMnf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 08:43:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355427AbiFMMjI (ORCPT
+        with ESMTP id S1356295AbiFMMjU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:39:08 -0400
+        Mon, 13 Jun 2022 08:39:20 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B88DE5DD1B;
-        Mon, 13 Jun 2022 04:09:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ED4833E04;
+        Mon, 13 Jun 2022 04:09:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6B965B80D31;
-        Mon, 13 Jun 2022 11:09:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1B18C34114;
-        Mon, 13 Jun 2022 11:09:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 88ED9B80EB0;
+        Mon, 13 Jun 2022 11:09:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7E19C3411F;
+        Mon, 13 Jun 2022 11:09:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118541;
-        bh=1w3LGqQZEQz4fLKWn07r3txskOEpLiVmDPSUNw17sq4=;
+        s=korg; t=1655118588;
+        bh=QjdCu1aptZA0HMTYSO5wIg0K7eKoSRF/GSpxcxLlggo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Eyu+EofVIxZW/+wym8bHsteJ4jlbtAjQXaOLoG16+mcfh0AW0ROp0CiBiNF9oDjeo
-         YVqalI6FiRWpiiBTZH79UpMJdOtwa/wVLhq01NYsbEYrcroxC7WCnMjV87ZYuCRaWr
-         qV1f52CaWIjduJGJmYXspm6juxJLprsjypAovnqs=
+        b=eywlPfNCyJmY0kT5rbQtwNVQSLPaXV6VpREsz9t/ITc5LoteiIU8oXhQvVg6hJCLU
+         rayYMQcct6BypejPqz5tdZjn4L7iwXmzPhb9eLAR7QnlvHsWvKEfgsbwjQhwcn8dna
+         29KpbON/2wuCTi6bZmREUQtcaybAgFnpjpQ3vZGA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+        Denis Ciocca <denis.ciocca@st.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 096/172] netfilter: nf_tables: release new hooks on unsupported flowtable flags
-Date:   Mon, 13 Jun 2022 12:10:56 +0200
-Message-Id: <20220613094913.477315747@linuxfoundation.org>
+Subject: [PATCH 5.10 115/172] iio: st_sensors: Add a local lock for protecting odr
+Date:   Mon, 13 Jun 2022 12:11:15 +0200
+Message-Id: <20220613094917.930672997@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -49,44 +51,121 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Miquel Raynal <miquel.raynal@bootlin.com>
 
-[ Upstream commit c271cc9febaaa1bcbc0842d1ee30466aa6148ea8 ]
+[ Upstream commit 474010127e2505fc463236470908e1ff5ddb3578 ]
 
-Release the list of new hooks that are pending to be registered in case
-that unsupported flowtable flags are provided.
+Right now the (framework) mlock lock is (ab)used for multiple purposes:
+1- protecting concurrent accesses over the odr local cache
+2- avoid changing samplig frequency whilst buffer is running
 
-Fixes: 78d9f48f7f44 ("netfilter: nf_tables: add devices to existing flowtable")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Let's start by handling situation #1 with a local lock.
+
+Suggested-by: Jonathan Cameron <jic23@kernel.org>
+Cc: Denis Ciocca <denis.ciocca@st.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/r/20220207143840.707510-7-miquel.raynal@bootlin.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_tables_api.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ .../iio/common/st_sensors/st_sensors_core.c   | 24 ++++++++++++++-----
+ include/linux/iio/common/st_sensors.h         |  3 +++
+ 2 files changed, 21 insertions(+), 6 deletions(-)
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index b90e45f1ffa0..2872722488c9 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -6694,11 +6694,15 @@ static int nft_flowtable_update(struct nft_ctx *ctx, const struct nlmsghdr *nlh,
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+index 7a69c1be7393..56206fdbceb9 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_core.c
++++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+@@ -70,16 +70,18 @@ static int st_sensors_match_odr(struct st_sensor_settings *sensor_settings,
  
- 	if (nla[NFTA_FLOWTABLE_FLAGS]) {
- 		flags = ntohl(nla_get_be32(nla[NFTA_FLOWTABLE_FLAGS]));
--		if (flags & ~NFT_FLOWTABLE_MASK)
--			return -EOPNOTSUPP;
-+		if (flags & ~NFT_FLOWTABLE_MASK) {
-+			err = -EOPNOTSUPP;
-+			goto err_flowtable_update_hook;
-+		}
- 		if ((flowtable->data.flags & NFT_FLOWTABLE_HW_OFFLOAD) ^
--		    (flags & NFT_FLOWTABLE_HW_OFFLOAD))
--			return -EOPNOTSUPP;
-+		    (flags & NFT_FLOWTABLE_HW_OFFLOAD)) {
-+			err = -EOPNOTSUPP;
-+			goto err_flowtable_update_hook;
-+		}
+ int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr)
+ {
+-	int err;
++	int err = 0;
+ 	struct st_sensor_odr_avl odr_out = {0, 0};
+ 	struct st_sensor_data *sdata = iio_priv(indio_dev);
+ 
++	mutex_lock(&sdata->odr_lock);
++
+ 	if (!sdata->sensor_settings->odr.mask)
+-		return 0;
++		goto unlock_mutex;
+ 
+ 	err = st_sensors_match_odr(sdata->sensor_settings, odr, &odr_out);
+ 	if (err < 0)
+-		goto st_sensors_match_odr_error;
++		goto unlock_mutex;
+ 
+ 	if ((sdata->sensor_settings->odr.addr ==
+ 					sdata->sensor_settings->pw.addr) &&
+@@ -102,7 +104,9 @@ int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr)
+ 	if (err >= 0)
+ 		sdata->odr = odr_out.hz;
+ 
+-st_sensors_match_odr_error:
++unlock_mutex:
++	mutex_unlock(&sdata->odr_lock);
++
+ 	return err;
+ }
+ EXPORT_SYMBOL(st_sensors_set_odr);
+@@ -364,6 +368,8 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
+ 	struct st_sensors_platform_data *of_pdata;
+ 	int err = 0;
+ 
++	mutex_init(&sdata->odr_lock);
++
+ 	/* If OF/DT pdata exists, it will take precedence of anything else */
+ 	of_pdata = st_sensors_dev_probe(indio_dev->dev.parent, pdata);
+ 	if (IS_ERR(of_pdata))
+@@ -557,18 +563,24 @@ int st_sensors_read_info_raw(struct iio_dev *indio_dev,
+ 		err = -EBUSY;
+ 		goto out;
  	} else {
- 		flags = flowtable->data.flags;
++		mutex_lock(&sdata->odr_lock);
+ 		err = st_sensors_set_enable(indio_dev, true);
+-		if (err < 0)
++		if (err < 0) {
++			mutex_unlock(&sdata->odr_lock);
+ 			goto out;
++		}
+ 
+ 		msleep((sdata->sensor_settings->bootime * 1000) / sdata->odr);
+ 		err = st_sensors_read_axis_data(indio_dev, ch, val);
+-		if (err < 0)
++		if (err < 0) {
++			mutex_unlock(&sdata->odr_lock);
+ 			goto out;
++		}
+ 
+ 		*val = *val >> ch->scan_type.shift;
+ 
+ 		err = st_sensors_set_enable(indio_dev, false);
++		mutex_unlock(&sdata->odr_lock);
  	}
+ out:
+ 	mutex_unlock(&indio_dev->mlock);
+diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
+index 33e939977444..c16a9dda3ad5 100644
+--- a/include/linux/iio/common/st_sensors.h
++++ b/include/linux/iio/common/st_sensors.h
+@@ -228,6 +228,7 @@ struct st_sensor_settings {
+  * @hw_irq_trigger: if we're using the hardware interrupt on the sensor.
+  * @hw_timestamp: Latest timestamp from the interrupt handler, when in use.
+  * @buffer_data: Data used by buffer part.
++ * @odr_lock: Local lock for preventing concurrent ODR accesses/changes
+  */
+ struct st_sensor_data {
+ 	struct device *dev;
+@@ -253,6 +254,8 @@ struct st_sensor_data {
+ 	s64 hw_timestamp;
+ 
+ 	char buffer_data[ST_SENSORS_MAX_BUFFER_SIZE] ____cacheline_aligned;
++
++	struct mutex odr_lock;
+ };
+ 
+ #ifdef CONFIG_IIO_BUFFER
 -- 
 2.35.1
 
