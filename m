@@ -2,111 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BBD5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 03:09:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1C6DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 03:12:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234659AbiFMDJp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 23:09:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47392 "EHLO
+        id S237121AbiFMDMy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 23:12:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236103AbiFMDJk (ORCPT
+        with ESMTP id S233247AbiFMDMs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 23:09:40 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72B5C13D26
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 20:09:35 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id w21so4665414pfc.0
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 20:09:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=/pLEswe5U7/A5k2nogy3DN7PRhluk8qf4cmQOk29Z78=;
-        b=EKDOWHxKCfMShkFDQedXLkTyG2mrlrhWabyejtW1KBPO5wGTwUJIt+KkWFIxABdMF5
-         qS4Ymtd1fpGGE25opVsQfubkztbhvLn4NL7lw7symu5mFTR4V89fK31ijTXrDbouV9Al
-         MN7DYElRohzxlHsyW1WLFTXewGa6BSWK74rsD/fjnoA543XIUrPUtjsDPuteLdC72D7V
-         izXvQqjDQ884ck+syYzWW1kvwtbnSC3R4TXSkeIgc6b1Vwtj+C+DDzYDujqQwcdhq6dt
-         aY1pzWjBAYPQ1Wd9iGQI0whSlbQMU9NDYOzcihiYgjejoq6WTJbY/AB5pBc3KkcQTtji
-         DcAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=/pLEswe5U7/A5k2nogy3DN7PRhluk8qf4cmQOk29Z78=;
-        b=AuH9xzu8y1T7EpcpkL0i4rggRVLzEn8Vwru1pehlji8xyMqkN3sWkgH5uFzIfoDuZS
-         qEUq8t0o51Mai5O/s4zYfKx1vsmLrvBGnWDSlx4R2rv7NIVrWYHz+6KUlPi7t3eQQUJ8
-         YT2QMIsXSltp3s4A2wTWce3jctsVWtplbOgQ6SfzYheWt9I8husxXawp3OuoIPmt9MeF
-         55EibWHeQY8pS2qxwWHXz84tnQe/K9qIs7g0tYt7RaL+qZjeUpo+wJrqUdMHKY5P4gAW
-         ebvja2qgdDldXeS2LL0jdL3b43Cw3jtyTMR1aD8sIRbfoyEXLciN4uYfcMb2NGXdmEA9
-         PTsg==
-X-Gm-Message-State: AOAM532KHgKBo7A0wTUGnUUeJa1fCUWLGdP7uoMyb8jjguZE5Sk8R79v
-        C9B+tN3pvJorN+WikpOQx6Y=
-X-Google-Smtp-Source: ABdhPJzavk0o9G/6joVP9Ji10Y8HfCxyK66lg1vm18Skp6ly3eFgpNTF9oxdZtJFFgp4/487gkifrw==
-X-Received: by 2002:a62:868c:0:b0:51b:bd62:4c87 with SMTP id x134-20020a62868c000000b0051bbd624c87mr57009823pfd.83.1655089774870;
-        Sun, 12 Jun 2022 20:09:34 -0700 (PDT)
-Received: from localhost (2603-800c-1a02-1bae-a7fa-157f-969a-4cde.res6.spectrum.com. [2603:800c:1a02:1bae:a7fa:157f:969a:4cde])
-        by smtp.gmail.com with ESMTPSA id t10-20020a17090a6a0a00b001e2f3831102sm3892424pjj.17.2022.06.12.20.09.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Jun 2022 20:09:34 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Sun, 12 Jun 2022 17:09:33 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Imran Khan <imran.f.khan@oracle.com>
-Cc:     viro@zeniv.linux.org.uk, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RESEND v4 1/4] kernfs: make ->attr.open RCU protected.
-Message-ID: <Yqaqbas1JaWz25jB@slm.duckdns.org>
-References: <20220602063907.136569-1-imran.f.khan@oracle.com>
- <20220602063907.136569-2-imran.f.khan@oracle.com>
- <YqYpTShTDLvAp4vx@slm.duckdns.org>
- <6d1c5a49-fc16-5fc7-e527-8cb91ec0d25c@oracle.com>
- <YqalHuEB6OjjUosV@slm.duckdns.org>
- <c8a8a616-da4c-f2ce-0bb2-e0cba69db24d@oracle.com>
+        Sun, 12 Jun 2022 23:12:48 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9344DDD7;
+        Sun, 12 Jun 2022 20:12:42 -0700 (PDT)
+X-UUID: f7c315592ef14a779a345bf3483fb912-20220613
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:d00b79aa-2c5e-4094-b4fe-cc82990eee57,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:2a19b09,CLOUDID:8ad051c6-12ba-4305-bfdf-9aefbdc32516,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:0,BEC:nil
+X-UUID: f7c315592ef14a779a345bf3483fb912-20220613
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1170772932; Mon, 13 Jun 2022 11:12:34 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Mon, 13 Jun 2022 11:12:33 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Mon, 13 Jun 2022 11:12:33 +0800
+Message-ID: <fc301b26d4e0fea003a9b6c2237eaca16a4929f6.camel@mediatek.com>
+Subject: Re: [PATCH v10 08/21] drm/mediatek: dpi: implement a swap_input
+ toggle in SoC config
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     CK Hu <ck.hu@mediatek.com>,
+        Guillaume Ranquet <granquet@baylibre.com>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        "Kishon Vijay Abraham I" <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>, "Helge Deller" <deller@gmx.de>,
+        Jitao shi <jitao.shi@mediatek.com>
+CC:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-phy@lists.infradead.org>, <linux-fbdev@vger.kernel.org>
+Date:   Mon, 13 Jun 2022 11:12:33 +0800
+In-Reply-To: <2c88fd4c308e86536d5996b3f32f68d05d452e23.camel@mediatek.com>
+References: <20220523104758.29531-1-granquet@baylibre.com>
+         <20220523104758.29531-9-granquet@baylibre.com>
+         <2c88fd4c308e86536d5996b3f32f68d05d452e23.camel@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c8a8a616-da4c-f2ce-0bb2-e0cba69db24d@oracle.com>
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 12:55:14PM +1000, Imran Khan wrote:
-> I took below phrases as reference:
-> 
-> If the access might be within an RCU read-side critical section on the one hand,
-> or protected by (say) my_lock on the other, use rcu_dereference_check(), for
-> example:
-> 
-> p1 = rcu_dereference_check(p->rcu_protected_pointer,
->                            lockdep_is_held(&my_lock));
+On Mon, 2022-05-30 at 15:50 +0800, CK Hu wrote:
+> Hi, Guillaume:
 > 
 > 
-> and
+> On Mon, 2022-05-23 at 12:47 +0200, Guillaume Ranquet wrote:
+> > Adds a bit of flexibility to support SoCs without swap_input
+> > support
+> > 
+> > Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> > Reviewed-by: AngeloGioacchino Del Regno <
+> > angelogioacchino.delregno@collabora.com>
+> > Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+> > ---
+> >  drivers/gpu/drm/mediatek/mtk_dpi.c | 14 +++++++++++---
+> >  1 file changed, 11 insertions(+), 3 deletions(-)
+> > 
+> > diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> > b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> > index 545a1337cc89..454f8563efae 100644
+> > --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> > +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> > @@ -126,6 +126,7 @@ struct mtk_dpi_conf {
+> >  	const u32 *output_fmts;
+> >  	u32 num_output_fmts;
+> >  	bool is_ck_de_pol;
+> > +	bool swap_input_support;
+> >  	const struct mtk_dpi_yc_limit *limit;
+> >  };
+> >  
+> > @@ -378,18 +379,21 @@ static void
+> > mtk_dpi_config_color_format(struct
+> > mtk_dpi *dpi,
+> >  	    (format == MTK_DPI_COLOR_FORMAT_YCBCR_444_FULL)) {
+> >  		mtk_dpi_config_yuv422_enable(dpi, false);
+> >  		mtk_dpi_config_csc_enable(dpi, true);
+> > -		mtk_dpi_config_swap_input(dpi, false);
+> > +		if (dpi->conf->swap_input_support)
+> > +			mtk_dpi_config_swap_input(dpi, false);
+> >  		mtk_dpi_config_channel_swap(dpi,
+> > MTK_DPI_OUT_CHANNEL_SWAP_BGR);
+> >  	} else if ((format == MTK_DPI_COLOR_FORMAT_YCBCR_422) ||
+> >  		   (format == MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL)) {
+> >  		mtk_dpi_config_yuv422_enable(dpi, true);
+> >  		mtk_dpi_config_csc_enable(dpi, true);
+> > -		mtk_dpi_config_swap_input(dpi, true);
+> > +		if (dpi->conf->swap_input_support)
+> > +			mtk_dpi_config_swap_input(dpi, true);
 > 
+> As [1], please keep in touch with Mediatek engineer.
 > 
-> If the access might be within an RCU read-side critical section on the one hand,
-> or protected by either my_lock or your_lock on the other, again use
-> rcu_dereference_check(), for example:
+> Regards,
+> CK
 > 
-> p1 = rcu_dereference_check(p->rcu_protected_pointer,
->                            lockdep_is_held(&my_lock) ||
->                            lockdep_is_held(&your_lock));
+> [1] 
+> 
+https://patchwork.kernel.org/project/linux-mediatek/patch/20220218145437.18563-8-granquet@baylibre.com/
+> 
 
-So, both are saying that if a given reference can be under both read
-critical section or a lock which blocks updates, you can use deref_check to
-cover both cases - we're just using the stronger form of derefing even
-though that's not necessary while update side is locked out, which is fine.
+Hello CK,
 
-The protected one is different in that it doesn't enforce the load ordering
-which is required for accesses with only RCU read lock. Given that all
-that's required is dependency ordering, I doubt it makes any actual
-difference and it likely is more useful in marking a specific dereference as
-always being with the update side locked.
+the reason is the hardware design of dp_intf does not support input
+swap.
+I will add this in commit message.
 
-tl;dr is that you're way over-thinking the rcu deref code. Just make one
-deref accessor which encompasses all three use cases.
+BRs,
+Bo-Chen
 
-Thanks.
+> >  		mtk_dpi_config_channel_swap(dpi,
+> > MTK_DPI_OUT_CHANNEL_SWAP_RGB);
+> >  	} else {
+> >  		mtk_dpi_config_yuv422_enable(dpi, false);
+> >  		mtk_dpi_config_csc_enable(dpi, false);
+> > -		mtk_dpi_config_swap_input(dpi, false);
+> > +		if (dpi->conf->swap_input_support)
+> > +			mtk_dpi_config_swap_input(dpi, false);
+> >  		mtk_dpi_config_channel_swap(dpi,
+> > MTK_DPI_OUT_CHANNEL_SWAP_RGB);
+> >  	}
+> >  }
+> > @@ -808,6 +812,7 @@ static const struct mtk_dpi_conf mt8173_conf =
+> > {
+> >  	.output_fmts = mt8173_output_fmts,
+> >  	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
+> >  	.is_ck_de_pol = true,
+> > +	.swap_input_support = true,
+> >  	.limit = &mtk_dpi_limit,
+> >  };
+> >  
+> > @@ -819,6 +824,7 @@ static const struct mtk_dpi_conf mt2701_conf =
+> > {
+> >  	.output_fmts = mt8173_output_fmts,
+> >  	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
+> >  	.is_ck_de_pol = true,
+> > +	.swap_input_support = true,
+> >  	.limit = &mtk_dpi_limit,
+> >  };
+> >  
+> > @@ -829,6 +835,7 @@ static const struct mtk_dpi_conf mt8183_conf =
+> > {
+> >  	.output_fmts = mt8183_output_fmts,
+> >  	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
+> >  	.is_ck_de_pol = true,
+> > +	.swap_input_support = true,
+> >  	.limit = &mtk_dpi_limit,
+> >  };
+> >  
+> > @@ -839,6 +846,7 @@ static const struct mtk_dpi_conf mt8192_conf =
+> > {
+> >  	.output_fmts = mt8173_output_fmts,
+> >  	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
+> >  	.is_ck_de_pol = true,
+> > +	.swap_input_support = true,
+> >  	.limit = &mtk_dpi_limit,
+> >  };
+> >  
+> 
+> 
 
--- 
-tejun
