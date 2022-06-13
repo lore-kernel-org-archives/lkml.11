@@ -2,210 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCFFEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:11:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBEB1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:11:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348911AbiFMTK6 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:10:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57456 "EHLO
+        id S238452AbiFMTLC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 15:11:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351644AbiFMTKN (ORCPT
+        with ESMTP id S1348071AbiFMTIG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 15:10:13 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4415F30F5C
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:08:58 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id o33-20020a17090a0a2400b001ea806e48c6so6573302pjo.1
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:08:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=AZWAPWwrm8+A0CgIBwRq++T65dkqg+V1CymCWTXMIwM=;
-        b=LIOySr/baoj4EAyTjKf+aH+Qatb2p3UHDovP+gotSlTiSN1yTcg4GCjyqC3fyUX7wl
-         npmmJtdNhVDNh5XKGkUnpjvg/YJI9/ZyQwGvcnz/SS0pPOuUekmDMJRnmbvEUG9D+H7+
-         BZM1DLAMJ8q+I+4MvG2IfeZzZu5Z2p2pmZvJH76I7ELfeoqXCbnsuzr33o2epyIJ5WeO
-         vlWeMTh3YdX80pJSfJHrPWOfpq4BMQV7PRBFhgbMKMVtr4faZ0ISbwZoAbpm/guz5Lxu
-         3Q1Lh7nmkcWUV2iquou5G8hgE2UlhX7m7htGh4cx10X02rbX81xYSe5d64L24n5jYZOT
-         up1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=AZWAPWwrm8+A0CgIBwRq++T65dkqg+V1CymCWTXMIwM=;
-        b=g9FSksw5leGGiPxW1rTeYg1a5ZCfALcf+CH2Jcgj8VeU2g/fimwa+q8i2ZkzeiF0np
-         FmBna16Edqlvzr8HRPYkFzk6YwXlVIIqp1e4PfXOpu4iHSM1q2sXKSDaiQr8b0hsvP99
-         f/8iskptykJ78pHLpYj23VjHOFAF/V4VhikmIAn5pU5E7vVEsYLoUbrzxMhCbHYGczpg
-         +c6cqkFWKK+5tzH/VuqI9emRKFKX1GqHeM4kEKx6R/xXkZX+OkOBdnFX6MmX1JZnEO9K
-         zMIw8S9GCI5Fk+H6bmKsvynwcLm7kCyCE2EcJGV3dyxOtLoIPYpJrYQ4n8F4HkbQQ0Ij
-         tdhA==
-X-Gm-Message-State: AJIora+BEn9FTSwBVPeNC5/oA9QPBxfx8JlemysWcFLeUdtMw+Bx+ttc
-        sZzhPBs6kroWCLsOVeao8itjUQ==
-X-Google-Smtp-Source: AGRyM1sELmzXAHQOaDg6BJ3FBShrRSur5yPmIKoRf1jf9G2G72yJQERR+jxqILTIiQmADcP/b1HsAg==
-X-Received: by 2002:a17:902:c94b:b0:166:4f65:cffb with SMTP id i11-20020a170902c94b00b001664f65cffbmr14965pla.103.1655140137656;
-        Mon, 13 Jun 2022 10:08:57 -0700 (PDT)
-Received: from ash.lan ([192.77.111.2])
-        by smtp.gmail.com with ESMTPSA id 142-20020a621994000000b00518b4cfbbe0sm5632766pfz.203.2022.06.13.10.08.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 10:08:56 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 18:08:53 +0100
-From:   Daniel Thompson <daniel.thompson@linaro.org>
-To:     ChiaEn Wu <peterwu.pub@gmail.com>
-Cc:     jic23@kernel.org, lars@metafoo.de, matthias.bgg@gmail.com,
-        lee.jones@linaro.org, jingoohan1@gmail.com, pavel@ucw.cz,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        szunichen@gmail.com, ChiaEn Wu <chiaen_wu@richtek.com>
-Subject: Re: [PATCH v2 15/15] video: backlight: mt6370: Add Mediatek MT6370
- support
-Message-ID: <20220613170853.bffuwkcmflfgg4gt@ash.lan>
-References: <20220613111146.25221-1-peterwu.pub@gmail.com>
- <20220613111146.25221-16-peterwu.pub@gmail.com>
+        Mon, 13 Jun 2022 15:08:06 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6CB4344FC;
+        Mon, 13 Jun 2022 10:04:34 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 278C01F8F9;
+        Mon, 13 Jun 2022 17:04:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1655139873; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gn9ietmj8gdTelf73NeKf1ZXLc/MBdCgQzvoK6rFKsE=;
+        b=Nv//hmAtfJPmP6Bq4t85OZg9VXxJudcJ7cd0Q8wGPinYnGEwuBdsF0ilpN6GwSiLQ1dRLX
+        4Tz0I8r2dK/WpWqKM064Z8U7cEp7i/VM0okdqk4GFhCk+BA9T4GOuf8nYFOryOSrBBwPjY
+        w5fSODjvzyElYwowuJKzG31goJuDn5I=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1655139873;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gn9ietmj8gdTelf73NeKf1ZXLc/MBdCgQzvoK6rFKsE=;
+        b=9kDsIcxxI3aP5ACZMBTiUhPfiXzIymnZSscNKj/EmShRMKuR+yNYaya6GodHK9U6H9b50u
+        xhiq1t8hIo/HrNCA==
+Received: from vasant-suse.fritz.box (unknown [10.163.24.178])
+        by relay2.suse.de (Postfix) with ESMTP id E0F272C141;
+        Mon, 13 Jun 2022 17:04:32 +0000 (UTC)
+From:   Vasant Karasulli <vkarasulli@suse.de>
+To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     bp@alien8.de, jroedel@suse.de, thomas.lendacky@amd.com,
+        x86@kernel.org, seanjc@google.com,
+        Vasant Karasulli <vkarasulli@suse.de>
+Subject: [PATCH v7 1/4] KVM: SEV-ES: Add configuration options to test #VC handling
+Date:   Mon, 13 Jun 2022 19:04:17 +0200
+Message-Id: <20220613170420.18521-2-vkarasulli@suse.de>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220613170420.18521-1-vkarasulli@suse.de>
+References: <20220613170420.18521-1-vkarasulli@suse.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220613111146.25221-16-peterwu.pub@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 07:11:46PM +0800, ChiaEn Wu wrote:
-> +static int mt6370_init_backlight_properties(struct mt6370_priv *priv,
-> +					    struct backlight_properties *props)
+Configuration options CONFIG_X86_TESTS and CONFIG_AMD_SEV_ES_TEST_VC
+enable the execution of the KUnit tests added under arch/x86/tests that
+test AMD SEV-ES #VC handling.
 
-Most of the changes in this version looks good... but it looks the new
-code in this function has a number of problems. See below...
+Signed-off-by: Vasant Karasulli <vkarasulli@suse.de>
+---
+ arch/x86/Kbuild          |  2 ++
+ arch/x86/Kconfig.debug   | 19 +++++++++++++++++++
+ arch/x86/kernel/Makefile |  7 +++++++
+ 3 files changed, 28 insertions(+)
 
+diff --git a/arch/x86/Kbuild b/arch/x86/Kbuild
+index 5a83da703e87..ec01cd024bae 100644
+--- a/arch/x86/Kbuild
++++ b/arch/x86/Kbuild
+@@ -28,5 +28,7 @@ obj-y += net/
 
-> +{
-> +	struct device *dev = priv->dev;
-> +	u8 prop_val;
-> +	u32 brightness;
-> +	unsigned int mask, val;
-> +	int ret;
-> +
-> +	/* Vendor optional properties
-> +	 * if property not exist, keep value in default.
-> +	 */
+ obj-$(CONFIG_KEXEC_FILE) += purgatory/
 
-That's not the right strategy for booleans. Not existing means false
-(e.g. flags should actively be unset).
++obj-y += tests/
++
+ # for cleaning
+ subdir- += boot tools
+diff --git a/arch/x86/Kconfig.debug b/arch/x86/Kconfig.debug
+index 340399f69954..b0687173fb97 100644
+--- a/arch/x86/Kconfig.debug
++++ b/arch/x86/Kconfig.debug
+@@ -278,3 +278,22 @@ endchoice
+ config FRAME_POINTER
+ 	depends on !UNWINDER_ORC && !UNWINDER_GUESS
+ 	bool
++
++config X86_TESTS
++	bool "x86 unit tests"
++	help
++	    This enables building the tests under arch/x86/tests.
++
++if X86_TESTS
++config AMD_SEV_TEST_VC
++	bool "Test for AMD SEV VC exception handling"
++	depends on AMD_MEM_ENCRYPT
++	select FUNCTION_TRACER
++	select KPROBES
++	select KUNIT
++	help
++	  Enable KUnit-based testing for AMD SEV #VC exception handling.
++	  When this configuration option is enabled, these Kunit tests
++	  get executed at the kernel boot time. Results of the test
++	  execution can be monitored in the kernel log.
++endif # X86_TESTS
+diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
+index 03364dc40d8d..3fa9ce2a700e 100644
+--- a/arch/x86/kernel/Makefile
++++ b/arch/x86/kernel/Makefile
+@@ -23,6 +23,13 @@ CFLAGS_REMOVE_head64.o = -pg
+ CFLAGS_REMOVE_sev.o = -pg
+ endif
 
++# AMD_SEV_TEST_VC registers a kprobe by function name. IPA-SRA creates
++# function copies and renames them to have an .isra suffix, which breaks kprobes'
++# lookup. Build with -fno-ipa-sra for the test.
++ifdef CONFIG_AMD_SEV_TEST_VC
++CFLAGS_sev.o	+= -fno-ipa-sra
++endif
++
+ KASAN_SANITIZE_head$(BITS).o				:= n
+ KASAN_SANITIZE_dumpstack.o				:= n
+ KASAN_SANITIZE_dumpstack_$(BITS).o			:= n
+--
+2.32.0
 
-> +	if (device_property_read_bool(dev, "mediatek,bled-pwm-enable")) {
-> +		ret = regmap_update_bits(priv->regmap, MT6370_REG_BL_PWM,
-> +					 MT6370_BL_PWM_EN_MASK,
-> +					 MT6370_BL_PWM_EN_MASK);
-> +		if (ret)
-> +			return ret;
-> +	}
-
-As above comment... all of the boolean properties are now being read
-incorrectly.
-
-
-> +
-> +	if (device_property_read_bool(dev, "mediatek,bled-pwm-hys-enable")) {
-> +		ret = regmap_update_bits(priv->regmap, MT6370_REG_BL_PWM,
-> +					 MT6370_BL_PWM_HYS_EN_MASK,
-> +					 MT6370_BL_PWM_HYS_EN_MASK);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	ret = device_property_read_u8(dev, "mediatek,bled-pwm-hys-input-bit",
-> +				      &prop_val);
-> +	if (!ret) {
-> +		val = min_t(u8, prop_val, 3)
-> +		      << (ffs(MT6370_BL_PWM_HYS_SEL_MASK) - 1);
-> +		ret = regmap_update_bits(priv->regmap, MT6370_REG_BL_PWM,
-> +					 MT6370_BL_PWM_HYS_SEL_MASK, val);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	ret = device_property_read_u8(dev, "mediatek,bled-ovp-microvolt",
-> +				      &prop_val);
-> +	if (!ret) {
-> +		val = min_t(u8, prop_val, 3)
-> +		      << (ffs(MT6370_BL_OVP_SEL_MASK) - 1);
-
-This has been renamed but still seems to the using 0, 1, 2, 3 rather
-than an actual value in microvolts.
-
-
-> +		ret = regmap_update_bits(priv->regmap, MT6370_REG_BL_BSTCTRL,
-> +					 MT6370_BL_OVP_SEL_MASK, val);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	if (device_property_read_bool(dev, "mediatek,bled-ovp-shutdown")) {
-> +		ret = regmap_update_bits(priv->regmap, MT6370_REG_BL_BSTCTRL,
-> +					 MT6370_BL_OVP_EN_MASK,
-> +					 MT6370_BL_OVP_EN_MASK);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	ret = device_property_read_u8(dev, "mediatek,bled-ocp-microamp",
-> +				      &prop_val);
-> +	if (!ret) {
-> +		val = min_t(u8, prop_val, 3)
-> +		      << (ffs(MT6370_BL_OC_SEL_MASK) - 1);
-
-Likewise, should this be accepting a value in microamps?
-
-
-> +		ret = regmap_update_bits(priv->regmap, MT6370_REG_BL_BSTCTRL,
-> +					 MT6370_BL_OC_SEL_MASK, val);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	if (device_property_read_bool(dev, "mediatek,bled-ocp-shutdown")) {
-> +		ret = regmap_update_bits(priv->regmap, MT6370_REG_BL_BSTCTRL,
-> +					 MT6370_BL_OC_EN_MASK,
-> +					 MT6370_BL_OC_EN_MASK);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	/* Common properties */
-> +	ret = device_property_read_u32(dev, "max-brightness", &brightness);
-> +	if (ret)
-> +		brightness = MT6370_BL_MAX_BRIGHTNESS;
-> +
-> +	props->max_brightness = min_t(u32, brightness,
-> +				      MT6370_BL_MAX_BRIGHTNESS);
-> +
-> +	ret = device_property_read_u32(dev, "default-brightness", &brightness);
-> +	if (ret)
-> +		brightness = props->max_brightness;
-> +
-> +	props->brightness = min_t(u32, brightness, props->max_brightness);
-> +
-> +
-> +	ret = device_property_read_u8(dev, "mediatek,bled-channel-use",
-> +				      &prop_val);
-> +	if (ret) {
-> +		dev_err(dev, "mediatek,bled-channel-use DT property missing\n");
-> +		return ret;
-> +	}
-> +
-> +	if (!prop_val || prop_val > MT6370_BL_MAX_CH) {
-> +		dev_err(dev, "No channel specified (ch_val:%d)\n", prop_val);
-
-Error string has not been updated to match condition that triggers it.
-
-
-> +		return -EINVAL;
-> +	}
-
-
-Daniel.
