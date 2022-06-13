@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E10F7CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:17:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E38B9CCA495
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:17:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352629AbiFMLQ4 (ORCPT
+        id S1352322AbiFMLRY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:16:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60238 "EHLO
+        Mon, 13 Jun 2022 07:17:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237886AbiFMLNU (ORCPT
+        with ESMTP id S1352553AbiFMLOA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:13:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA2C435274;
-        Mon, 13 Jun 2022 03:36:12 -0700 (PDT)
+        Mon, 13 Jun 2022 07:14:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F8C63616C;
+        Mon, 13 Jun 2022 03:36:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6572F60FFD;
-        Mon, 13 Jun 2022 10:36:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 708FEC34114;
-        Mon, 13 Jun 2022 10:36:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D1B2C60EF5;
+        Mon, 13 Jun 2022 10:36:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3F92C34114;
+        Mon, 13 Jun 2022 10:36:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116571;
-        bh=L49VcE1mdqHm6k2wDn2/QF3e8WJpoFCIOCQ1+PsOY2M=;
+        s=korg; t=1655116588;
+        bh=wTL/YhKNf0DTayTEaRcXxDNUnVvYMZPFROyuLfG+zG4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w2lRxYdXbvnBAZ9O+W0OFWr3NjZuZ+LLqzwdTqN/BXzJobawBPnFjPUGsIQGAz5WM
-         7uvXdWiBnj2aqbZpw9y/RaHHRqOdsymG6vcMIkKunLK7m5U1PXQptVJDWlAUCKua5F
-         0v5DalBMTugitwBiL0e9bOz/KSNeGQ7iIwR2V7fU=
+        b=DcHEWzXfMUOozL26YX+9Ih/c2FzOl5XJWFgo58GvF/iasj6zWjUUg0TwNJhccTOnd
+         9zfgr6NkgxscWWv0i3bWUPq44nxipFbg/tLa3mm3jf5MLVVxlxPPakNLCx83n20mVM
+         MNK0npgTxguZPfX0WpG7hzIHjTDX94j25uWzPLjA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, NeilBrown <neilb@suse.de>,
-        Pascal Hambourg <pascal@plouf.fr.eu.org>,
-        Song Liu <song@kernel.org>
-Subject: [PATCH 4.14 215/218] md/raid0: Ignore RAID0 layout if the second zone has only one device
-Date:   Mon, 13 Jun 2022 12:11:13 +0200
-Message-Id: <20220613094927.148467137@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Subject: [PATCH 4.14 208/218] ata: libata-transport: fix {dma|pio|xfer}_mode sysfs files
+Date:   Mon, 13 Jun 2022 12:11:06 +0200
+Message-Id: <20220613094926.933251321@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -50,72 +49,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pascal Hambourg <pascal@plouf.fr.eu.org>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-commit ea23994edc4169bd90d7a9b5908c6ccefd82fa40 upstream.
+commit 72aad489f992871e908ff6d9055b26c6366fb864 upstream.
 
-The RAID0 layout is irrelevant if all members have the same size so the
-array has only one zone. It is *also* irrelevant if the array has two
-zones and the second zone has only one device, for example if the array
-has two members of different sizes.
+The {dma|pio}_mode sysfs files are incorrectly documented as having a
+list of the supported DMA/PIO transfer modes, while the corresponding
+fields of the *struct* ata_device hold the transfer mode IDs, not masks.
 
-So in that case it makes sense to allow assembly even when the layout is
-undefined, like what is done when the array has only one zone.
+To match these docs, the {dma|pio}_mode (and even xfer_mode!) sysfs
+files are handled by the ata_bitfield_name_match() macro which leads to
+reading such kind of nonsense from them:
 
-Reviewed-by: NeilBrown <neilb@suse.de>
-Signed-off-by: Pascal Hambourg <pascal@plouf.fr.eu.org>
-Signed-off-by: Song Liu <song@kernel.org>
+$ cat /sys/class/ata_device/dev3.0/pio_mode
+XFER_UDMA_7, XFER_UDMA_6, XFER_UDMA_5, XFER_UDMA_4, XFER_MW_DMA_4,
+XFER_PIO_6, XFER_PIO_5, XFER_PIO_4, XFER_PIO_3, XFER_PIO_2, XFER_PIO_1,
+XFER_PIO_0
+
+Using the correct ata_bitfield_name_search() macro fixes that:
+
+$ cat /sys/class/ata_device/dev3.0/pio_mode
+XFER_PIO_4
+
+While fixing the file documentation, somewhat reword the {dma|pio}_mode
+file doc and add a note about being mostly useful for PATA devices to
+the xfer_mode file doc...
+
+Fixes: d9027470b886 ("[libata] Add ATA transport class")
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Cc: stable@vger.kernel.org
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/raid0.c |   31 ++++++++++++++++---------------
- 1 file changed, 16 insertions(+), 15 deletions(-)
+ Documentation/ABI/testing/sysfs-ata |    5 +++--
+ drivers/ata/libata-transport.c      |    2 +-
+ 2 files changed, 4 insertions(+), 3 deletions(-)
 
---- a/drivers/md/raid0.c
-+++ b/drivers/md/raid0.c
-@@ -150,21 +150,6 @@ static int create_strip_zones(struct mdd
- 	pr_debug("md/raid0:%s: FINAL %d zones\n",
- 		 mdname(mddev), conf->nr_strip_zones);
+--- a/Documentation/ABI/testing/sysfs-ata
++++ b/Documentation/ABI/testing/sysfs-ata
+@@ -59,17 +59,18 @@ class
  
--	if (conf->nr_strip_zones == 1) {
--		conf->layout = RAID0_ORIG_LAYOUT;
--	} else if (mddev->layout == RAID0_ORIG_LAYOUT ||
--		   mddev->layout == RAID0_ALT_MULTIZONE_LAYOUT) {
--		conf->layout = mddev->layout;
--	} else if (default_layout == RAID0_ORIG_LAYOUT ||
--		   default_layout == RAID0_ALT_MULTIZONE_LAYOUT) {
--		conf->layout = default_layout;
--	} else {
--		pr_err("md/raid0:%s: cannot assemble multi-zone RAID0 with default_layout setting\n",
--		       mdname(mddev));
--		pr_err("md/raid0: please set raid0.default_layout to 1 or 2\n");
--		err = -ENOTSUPP;
--		goto abort;
--	}
- 	/*
- 	 * now since we have the hard sector sizes, we can make sure
- 	 * chunk size is a multiple of that sector size
-@@ -293,6 +278,22 @@ static int create_strip_zones(struct mdd
- 			 (unsigned long long)smallest->sectors);
- 	}
+ dma_mode
  
-+	if (conf->nr_strip_zones == 1 || conf->strip_zone[1].nb_dev == 1) {
-+		conf->layout = RAID0_ORIG_LAYOUT;
-+	} else if (mddev->layout == RAID0_ORIG_LAYOUT ||
-+		   mddev->layout == RAID0_ALT_MULTIZONE_LAYOUT) {
-+		conf->layout = mddev->layout;
-+	} else if (default_layout == RAID0_ORIG_LAYOUT ||
-+		   default_layout == RAID0_ALT_MULTIZONE_LAYOUT) {
-+		conf->layout = default_layout;
-+	} else {
-+		pr_err("md/raid0:%s: cannot assemble multi-zone RAID0 with default_layout setting\n",
-+		       mdname(mddev));
-+		pr_err("md/raid0: please set raid0.default_layout to 1 or 2\n");
-+		err = -EOPNOTSUPP;
-+		goto abort;
-+	}
-+
- 	pr_debug("md/raid0:%s: done.\n", mdname(mddev));
- 	*private_conf = conf;
+-	Transfer modes supported by the device when in DMA mode.
++	DMA transfer mode used by the device.
+ 	Mostly used by PATA device.
  
+ pio_mode
+ 
+-	Transfer modes supported by the device when in PIO mode.
++	PIO transfer mode used by the device.
+ 	Mostly used by PATA device.
+ 
+ xfer_mode
+ 
+ 	Current transfer mode.
++	Mostly used by PATA device.
+ 
+ id
+ 
+--- a/drivers/ata/libata-transport.c
++++ b/drivers/ata/libata-transport.c
+@@ -196,7 +196,7 @@ static struct {
+ 	{ XFER_PIO_0,			"XFER_PIO_0" },
+ 	{ XFER_PIO_SLOW,		"XFER_PIO_SLOW" }
+ };
+-ata_bitfield_name_match(xfer,ata_xfer_names)
++ata_bitfield_name_search(xfer, ata_xfer_names)
+ 
+ /*
+  * ATA Port attributes
 
 
