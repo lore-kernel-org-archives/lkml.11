@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4877CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:56:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FD04CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:56:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348007AbiFMKz5 (ORCPT
+        id S1348244AbiFMK4F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:55:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39524 "EHLO
+        Mon, 13 Jun 2022 06:56:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347724AbiFMKwc (ORCPT
+        with ESMTP id S1347786AbiFMKwd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:52:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5F6624597;
-        Mon, 13 Jun 2022 03:27:34 -0700 (PDT)
+        Mon, 13 Jun 2022 06:52:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 098D12458D;
+        Mon, 13 Jun 2022 03:27:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 086D060AEB;
-        Mon, 13 Jun 2022 10:27:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15609C34114;
-        Mon, 13 Jun 2022 10:27:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5ED2760EF8;
+        Mon, 13 Jun 2022 10:27:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70F45C34114;
+        Mon, 13 Jun 2022 10:27:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116053;
-        bh=lOyJjuFBdn7PwnbUrZC0mbZ8Dy3sqJhe/Zfv7N7zFXI=;
+        s=korg; t=1655116050;
+        bh=yBMfBMsenoejD3SJApeyaIR+DRPPPmmkDIHXMUaPI6E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sh2pFcTOc4knX13WU5U/XckuntpU6sDOuj85yimI6SLUESQdoQw683I/BZ57kjldF
-         Cj06YG1O/Yy7mqBhBzS5NzzHpTqMnlxklrEMfZneBQfW/2mUny7C+aqKNT+BRNGHad
-         AoBpjw0wP59Sm+rCNiNEY27p/b5K2ojT8Ja1smSA=
+        b=mAcmotJJowfnTxOygy7VS9oQ5XKBrXDTjudjW1zSlBCTklyv8IF9Rm6dX12rj99/a
+         lvpCcKUXKro+6r8ilGSrSsTWf81MXRPb7UP6aJGXu99fGoSo4k7bVy/ffXSEBlVNTK
+         JvpDccHY/hZL5pVfBryy5rUo6aQAa752FAdwn9uk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Lyude Paul <lyude@redhat.com>
-Subject: [PATCH 4.14 115/218] drm/nouveau/clk: Fix an incorrect NULL check on list iterator
-Date:   Mon, 13 Jun 2022 12:09:33 +0200
-Message-Id: <20220613094924.055684325@linuxfoundation.org>
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        Richard Weinberger <richard@nod.at>,
+        Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH 4.14 123/218] um: chan_user: Fix winch_tramp() return value
+Date:   Mon, 13 Jun 2022 12:09:41 +0200
+Message-Id: <20220613094924.303302204@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -49,58 +50,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-commit 1c3b2a27def609473ed13b1cd668cb10deab49b4 upstream.
+commit 57ae0b67b747031bc41fb44643aa5344ab58607e upstream.
 
-The bug is here:
-	if (nvkm_cstate_valid(clk, cstate, max_volt, clk->temp))
-		return cstate;
+The previous fix here was only partially correct, it did
+result in returning a proper error value in case of error,
+but it also clobbered the pid that we need to return from
+this function (not just zero for success).
 
-The list iterator value 'cstate' will *always* be set and non-NULL
-by list_for_each_entry_from_reverse(), so it is incorrect to assume
-that the iterator value will be unchanged if the list is empty or no
-element is found (In fact, it will be a bogus pointer to an invalid
-structure object containing the HEAD). Also it missed a NULL check
-at callsite and may lead to invalid memory access after that.
+As a result, it returned 0 here, but later this is treated
+as a pid and used to kill the process, but since it's now
+0 we kill(0, SIGKILL), which makes UML kill itself rather
+than just the helper thread.
 
-To fix this bug, just return 'encoder' when found, otherwise return
-NULL. And add the NULL check.
+Fix that and make it more obvious by using a separate
+variable for the pid.
 
+Fixes: ccf1236ecac4 ("um: fix error return code in winch_tramp()")
+Reported-and-tested-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Cc: stable@vger.kernel.org
-Fixes: 1f7f3d91ad38a ("drm/nouveau/clk: Respect voltage limits in nvkm_cstate_prog")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Reviewed-by: Lyude Paul <lyude@redhat.com>
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220327075824.11806-1-xiam0nd.tong@gmail.com
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ arch/um/drivers/chan_user.c |    9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c
-@@ -136,10 +136,10 @@ nvkm_cstate_find_best(struct nvkm_clk *c
- 	for (cstate = start; &cstate->head != &pstate->list;
- 	     cstate = list_entry(cstate->head.prev, typeof(*cstate), head)) {
- 		if (nvkm_cstate_valid(clk, cstate, max_volt, clk->temp))
--			break;
-+			return cstate;
+--- a/arch/um/drivers/chan_user.c
++++ b/arch/um/drivers/chan_user.c
+@@ -220,7 +220,7 @@ static int winch_tramp(int fd, struct tt
+ 		       unsigned long *stack_out)
+ {
+ 	struct winch_data data;
+-	int fds[2], n, err;
++	int fds[2], n, err, pid;
+ 	char c;
+ 
+ 	err = os_pipe(fds, 1, 1);
+@@ -238,8 +238,9 @@ static int winch_tramp(int fd, struct tt
+ 	 * problem with /dev/net/tun, which if held open by this
+ 	 * thread, prevents the TUN/TAP device from being reused.
+ 	 */
+-	err = run_helper_thread(winch_thread, &data, CLONE_FILES, stack_out);
+-	if (err < 0) {
++	pid = run_helper_thread(winch_thread, &data, CLONE_FILES, stack_out);
++	if (pid < 0) {
++		err = pid;
+ 		printk(UM_KERN_ERR "fork of winch_thread failed - errno = %d\n",
+ 		       -err);
+ 		goto out_close;
+@@ -263,7 +264,7 @@ static int winch_tramp(int fd, struct tt
+ 		goto out_close;
  	}
  
--	return cstate;
-+	return NULL;
- }
+-	return err;
++	return pid;
  
- static struct nvkm_cstate *
-@@ -170,6 +170,8 @@ nvkm_cstate_prog(struct nvkm_clk *clk, s
- 	if (!list_empty(&pstate->list)) {
- 		cstate = nvkm_cstate_get(clk, pstate, cstatei);
- 		cstate = nvkm_cstate_find_best(clk, pstate, cstate);
-+		if (!cstate)
-+			return -EINVAL;
- 	} else {
- 		cstate = &pstate->base;
- 	}
+  out_close:
+ 	close(fds[1]);
 
 
