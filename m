@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 029A5CCA499
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8E5ECCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383430AbiFMOPs (ORCPT
+        id S1382175AbiFMONW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:15:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50546 "EHLO
+        Mon, 13 Jun 2022 10:13:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380294AbiFMOGT (ORCPT
+        with ESMTP id S1382465AbiFMOFx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:06:19 -0400
+        Mon, 13 Jun 2022 10:05:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D2CB980A9;
-        Mon, 13 Jun 2022 04:41:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5231195A18;
+        Mon, 13 Jun 2022 04:40:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 046A76124E;
-        Mon, 13 Jun 2022 11:41:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFAFEC34114;
-        Mon, 13 Jun 2022 11:41:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 142BC61236;
+        Mon, 13 Jun 2022 11:40:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F0EBC3411B;
+        Mon, 13 Jun 2022 11:40:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120477;
-        bh=dHrpiGBjW9rbIO3xNAUzBvjMwbqUsruwtApSEy5CXQc=;
+        s=korg; t=1655120443;
+        bh=AsXd4pQ9cFEd10STZjFmrqlZ/EuZiXMpQlQ1ZA6OWnM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gjupAc2L9MPS5t/PmP69uUBZhP5rgFs0xJeOJqxexXAjUZ53sEXMLtpALSyX19lLV
-         xh0gImRgL9I4/uaZkH2OIFNThGYMysTOwJFDfsNR2AlCIMtKUpcUU6jVGe1deWI6Hi
-         MCExEaa578kCUgua4kdYKMT0y5JnhwX8BysAp2Yk=
+        b=PuX2Sy31aFQ/FqmRiUt44V+sVTGYfqdHTRXCHvI/rSektpUYgsPL/9I6WaZHfg67B
+         X7rxLaJzjx2nqmH1QBBxlL4rruzklacXyeye4TSBqMn/6C1HcMu+1G9UT2u4Z2kSA4
+         hOYws0WIFCFd3S02o9Xs50VCWN8g7ktI8JYmUZCc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        Namjae Jeon <linkinjeon@kernel.org>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 047/298] ksmbd: fix reference count leak in smb_check_perm_dacl()
-Date:   Mon, 13 Jun 2022 12:09:01 +0200
-Message-Id: <20220613094926.372665260@linuxfoundation.org>
+        stable@vger.kernel.org, Samuel Holland <samuel@sholland.org>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 012/298] phy: rockchip-inno-usb2: Fix muxed interrupt support
+Date:   Mon, 13 Jun 2022 12:08:26 +0200
+Message-Id: <20220613094925.298273946@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -52,41 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Xiong <xiongx18@fudan.edu.cn>
+From: Samuel Holland <samuel@sholland.org>
 
-[ Upstream commit d21a580dafc69aa04f46e6099616146a536b0724 ]
+[ Upstream commit 6a98df08ccd55e87947d253b19925691763e755c ]
 
-The issue happens in a specific path in smb_check_perm_dacl(). When
-"id" and "uid" have the same value, the function simply jumps out of
-the loop without decrementing the reference count of the object
-"posix_acls", which is increased by get_acl() earlier. This may
-result in memory leaks.
+This commit fixes two issues with the muxed interrupt handler. First,
+the OTG port has the "bvalid" interrupt enabled, not "linestate". Since
+only the linestate interrupt was handled, and not the bvalid interrupt,
+plugging in a cable to the OTG port caused an interrupt storm.
 
-Fix it by decreasing the reference count of "posix_acls" before
-jumping to label "check_access_bits".
+Second, the return values from the individual port IRQ handlers need to
+be OR-ed together. Otherwise, the lack of an interrupt from the last
+port would cause the handler to erroneously return IRQ_NONE.
 
-Fixes: 777cad1604d6 ("ksmbd: remove select FS_POSIX_ACL in Kconfig")
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-Acked-by: Namjae Jeon <linkinjeon@kernel.org>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Fixes: ed2b5a8e6b98 ("phy: phy-rockchip-inno-usb2: support muxed interrupts")
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Tested-by: Michael Riesch <michael.riesch@wolfvision.net>
+Link: https://lore.kernel.org/r/20220414032258.40984-2-samuel@sholland.org
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ksmbd/smbacl.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/phy/rockchip/phy-rockchip-inno-usb2.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/fs/ksmbd/smbacl.c b/fs/ksmbd/smbacl.c
-index 6ecf55ea1fed..38f23bf981ac 100644
---- a/fs/ksmbd/smbacl.c
-+++ b/fs/ksmbd/smbacl.c
-@@ -1261,6 +1261,7 @@ int smb_check_perm_dacl(struct ksmbd_conn *conn, struct path *path,
- 					if (!access_bits)
- 						access_bits =
- 							SET_MINIMUM_RIGHTS;
-+					posix_acl_release(posix_acls);
- 					goto check_access_bits;
- 				}
- 			}
+diff --git a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
+index eca77e44a4c1..cba5c32cbaee 100644
+--- a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
++++ b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
+@@ -940,8 +940,14 @@ static irqreturn_t rockchip_usb2phy_irq(int irq, void *data)
+ 		if (!rport->phy)
+ 			continue;
+ 
+-		/* Handle linestate irq for both otg port and host port */
+-		ret = rockchip_usb2phy_linestate_irq(irq, rport);
++		switch (rport->port_id) {
++		case USB2PHY_PORT_OTG:
++			ret |= rockchip_usb2phy_otg_mux_irq(irq, rport);
++			break;
++		case USB2PHY_PORT_HOST:
++			ret |= rockchip_usb2phy_linestate_irq(irq, rport);
++			break;
++		}
+ 	}
+ 
+ 	return ret;
 -- 
 2.35.1
 
