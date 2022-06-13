@@ -2,130 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2E03C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:52:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08A29CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:54:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347001AbiFMUwu (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:52:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60772 "EHLO
+        id S244842AbiFMUya (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 16:54:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236213AbiFMUwM (ORCPT
+        with ESMTP id S1348470AbiFMUxA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:52:12 -0400
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D58FE0C8
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:10:08 -0700 (PDT)
-Received: by mail-qk1-x735.google.com with SMTP id p63so4871320qkd.10
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:10:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ndufresne-ca.20210112.gappssmtp.com; s=20210112;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :content-transfer-encoding:user-agent:mime-version;
-        bh=v7I9W+KWz8qCcwRO9hK+FauPyteN/yVzDhLqH8wmqRU=;
-        b=qUfbsn7KlSJMoOLXI6w6yy7TrJ1t3GV0eaUVEpVlSmhhSGPrIysNUeydu8ibydKY2p
-         1zMc9WXdAnvTmzm/lrM27CFeS6jhwcwhiZx2Ch+XXMkguFXByWQ1/3m9I+9pp8etU2CF
-         wrkQRVC0U5MG0ta45bpCFNsfYcLbmavJSAPP3NEu/pDmPwFapsEotpifbzYcKQ5wkiL4
-         dAYl9wue9Te1yAbLZJE0fxDNbbZKuu1H0mwbDD3ztzuhlxwL2jF0RXF9WlqjiHKqlmm8
-         +eZ7tSpup8IssWLJOtSXTNAsUlDpf5nuAlDTqiciGANTlc+VgbcwYDZbXTeCqb3jVEOo
-         vXRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:content-transfer-encoding:user-agent:mime-version;
-        bh=v7I9W+KWz8qCcwRO9hK+FauPyteN/yVzDhLqH8wmqRU=;
-        b=mG2Vo/jAqbxbcS5vLu5idJiZknP0rpoj8rpzcQ3EU7WgH2Dxmj8vLcJ5umDhWVHs8L
-         cYdlfZJzTP6Z2CxGp/N9l5cyOvjutz02LXKQF3+T3N4lhQt42pNfYFAC+MiVZpPF2Eyx
-         hIvBZhKkykNoatXqd2sZL5vxl+YvqQBAVEjbNCDqLIOCwOvfpis/WdPwP7lO4HnKeeUw
-         Ph4IM5f07DpwxlTXz8SGp7dLTxFz3Hj5MVgzFQYtvYjUw0IlewchxyUj+YOuGBfckynq
-         FvOPd45mmACdgIN7a4oOrezOIqoyf2ZbOxWWF/W9cIzRm+gto6eCplaAH8wi1TXQ9zwI
-         kusw==
-X-Gm-Message-State: AOAM532D8zYBbRn0KW4Tc+xi1wo+Iny8eNLsZ7tEalu6MGCO/RS1LxIA
-        MW0lWVIuKczmRJPNMD6Qg7vSPQ==
-X-Google-Smtp-Source: ABdhPJypEb0jxGKtk5VfHQekdsoaNysCZ3OatxB9gwkAI+QgXupZeQPtmwZAmNKNz+Dgb1z5OMMIwQ==
-X-Received: by 2002:a05:620a:4e9:b0:6a7:8357:303d with SMTP id b9-20020a05620a04e900b006a78357303dmr1407957qkh.105.1655151007308;
-        Mon, 13 Jun 2022 13:10:07 -0700 (PDT)
-Received: from nicolas-tpx395.localdomain (192-222-136-102.qc.cable.ebox.net. [192.222.136.102])
-        by smtp.gmail.com with ESMTPSA id r13-20020a05620a298d00b006a6d60a39d0sm8268202qkp.5.2022.06.13.13.10.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 13:10:06 -0700 (PDT)
-Message-ID: <edbb4605c9e30329d2f5a4ff738571acb6b91f1f.camel@ndufresne.ca>
-Subject: Re: [PATCH v4, 0/3] add h264 decoder driver for mt8186
-From:   Nicolas Dufresne <nicolas@ndufresne.ca>
-To:     Yunfei Dong <yunfei.dong@mediatek.com>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tomasz Figa <tfiga@google.com>
-Cc:     George Sun <george.sun@mediatek.com>,
-        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Fritz Koenig <frkoenig@chromium.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Irui Wang <irui.wang@mediatek.com>,
-        Steve Cho <stevecho@chromium.org>, linux-media@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-Date:   Mon, 13 Jun 2022 16:10:05 -0400
-In-Reply-To: <20220512034620.30500-1-yunfei.dong@mediatek.com>
-References: <20220512034620.30500-1-yunfei.dong@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
+        Mon, 13 Jun 2022 16:53:00 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 65BA7D59
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:12:44 -0700 (PDT)
+Received: from sequoia (162-237-133-238.lightspeed.rcsntx.sbcglobal.net [162.237.133.238])
+        by linux.microsoft.com (Postfix) with ESMTPSA id AF05120C29A6;
+        Mon, 13 Jun 2022 13:12:43 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com AF05120C29A6
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1655151164;
+        bh=HWaF1QNmxsIR85mJlUFoIZu1n8vlMMKl1k718oV97FY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Rgkl+iIpE6OKLauIfR74wAB6KRvdMtoESL9vSIufW93thHl16YFEvhVZifRVbiUu0
+         okM9FabZGQj+SsIFQ/0x3Z5PzzvEL2NBkyRKzsuqZAM9kUrt+C5Exm+Jm8AiQyQKhp
+         0eiBsjty9nTvwQ25AoDx290CPSd7qIp/f1Cp8d50=
+Date:   Mon, 13 Jun 2022 15:12:41 -0500
+From:   Tyler Hicks <tyhicks@linux.microsoft.com>
+To:     Dominique Martinet <asmadeus@codewreck.org>
+Cc:     Christian Schoenebeck <linux_oss@crudebyte.com>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 06/06] 9p fid refcount: cleanup p9_fid_put calls
+Message-ID: <20220613201241.GH7401@sequoia>
+References: <20220612085330.1451496-1-asmadeus@codewreck.org>
+ <20220612085330.1451496-7-asmadeus@codewreck.org>
+ <20220613175509.GE7401@sequoia>
+ <YqeVFTkREfWUfPFi@codewreck.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YqeVFTkREfWUfPFi@codewreck.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le jeudi 12 mai 2022 =C3=A0 11:46 +0800, Yunfei Dong a =C3=A9crit=C2=A0:
-> Firstly, add mt8186 compatible and private data, then add document for
-> compatible "mediatek,mt8186-vcodec-dec". For mt8186 is single core
-> architecture, need to add new interface for h264 hardware decoder.
+On 2022-06-14 04:50:45, Dominique Martinet wrote:
+> Thanks for the reviews,
+> 
+> Tyler Hicks wrote on Mon, Jun 13, 2022 at 12:55:09PM -0500:
+> > > @@ -189,13 +197,13 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct dentry *dentry,
+> > >  		else
+> > >  			uname = v9ses->uname;
+> > >  
+> > > -		root_fid = p9_client_attach(v9ses->clnt, NULL, uname, uid,
+> > > -					    v9ses->aname);
+> > > -		if (IS_ERR(root_fid))
+> > > -			return root_fid;
+> > > +		fid = p9_client_attach(v9ses->clnt, NULL, uname, uid,
+> > 
+> > To keep the readability benefits in my "9p: Track the root fid with its
+> > own variable during lookups" patch, I think root_fid should be assigned
+> > here and then used in the error check and return statement.
+> > 
+> > > +				       v9ses->aname);
+> > > +		if (IS_ERR(fid))
+> > > +			return fid;
+> > >  
+> > > -		p9_fid_get(root_fid);
+> > > -		v9fs_fid_add(dentry->d_sb->s_root, root_fid);
+> > > +		root_fid = p9_fid_get(fid);
+> > > +		v9fs_fid_add(dentry->d_sb->s_root, &fid);
+> > 
+> > root_fid should be used in the two lines above, too.
+> 
+> This actually was the only place where we still want to use the root_fid
+> after calling v9fs_fid_add; if we keep root_fid above we need to do
+> something like
+> 
+> fid = p9_fid_get(root_fid);
+> v9fs_Fid_add(dentry->d_sb->s_root, &root_fid);
+> root_fid = fid;
+> // fid = NULL; ? not strictly needed as we set it again shortly afterwards
+> 
+> which I wanted to avoid, but I guess I don't mind strongly either way --
+> pick your poison.
 
-Would be nice to take the habit of sharing fluster score for this new HW, I
-would expect no less then what the numbers you'd get from running over MT81=
-95 or
-92, remains nice to demonstrate that this was tested and document any oops =
-along
-the way.
->=20
-> Patche 1 add mt8186 compatible and private data.
-> Patche 2 add mt8186 compatible document.
-> Patche 3 add h264 single core driver.
-> ---
-> This patch depends on "support for MT8192 decoder"[1]
->=20
-> [1]  https://patchwork.kernel.org/project/linux-mediatek/cover/2022051202=
-1950.29087-1-yunfei.dong@mediatek.com/
-> ---
-> changed with v3:
-> - fix __iomem not reasonable, align share memory to dram.
-> changed with v2:
-> - fix sparse and smatch check fail for patch 3
-> changed with v1:
-> - rebase driver to the latest media_stage.
-> ---
-> Yunfei Dong (3):
->   dt-bindings: media: mediatek: vcodec: Adds decoder dt-bindings for
->     mt8186
->   media: mediatek: vcodec: Support MT8186
->   media: mediatek: vcodec: add h264 decoder driver for mt8186
->=20
->  .../media/mediatek,vcodec-subdev-decoder.yaml |   4 +-
->  .../platform/mediatek/vcodec/mtk_vcodec_dec.h |   1 +
->  .../mediatek/vcodec/mtk_vcodec_dec_drv.c      |   4 +
->  .../vcodec/mtk_vcodec_dec_stateless.c         |  19 ++
->  .../vcodec/vdec/vdec_h264_req_multi_if.c      | 177 +++++++++++++++++-
->  5 files changed, 203 insertions(+), 2 deletions(-)
->=20
+Ah, very good point. I missed that subtly.
 
+> I could also just keep v9fs_fid_add as a non-stealing version, but I
+> think it's better that way as it strongly signal that we stashed that
+> ref away and shouldn't use the fid anymore unless another ref was
+> obtained through fid_get like we do here.
+> (I was actually tempted to do the same with p9_fid_put, but checking
+> other kernel "put"s I didn't see any code that does this so I refrained
+> from that churn)
+
+I like the stealing version. Lets go with it and keep this patch as-is.
+
+Please feel free to slap this tag on it:
+
+ Reviewed-by: Tyler Hicks <tyhicks@linux.microsoft.com>
+
+
+Tyler
+
+> 
+> -- 
+> Dominique
+> 
