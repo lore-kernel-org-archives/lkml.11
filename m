@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62174CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:34:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A3D0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:34:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377836AbiFMNem (ORCPT
+        id S1377845AbiFMNer (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:34:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51936 "EHLO
+        Mon, 13 Jun 2022 09:34:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378311AbiFMNbU (ORCPT
+        with ESMTP id S1378339AbiFMNbW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:31:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE716FD2C;
-        Mon, 13 Jun 2022 04:25:54 -0700 (PDT)
+        Mon, 13 Jun 2022 09:31:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 489A170344;
+        Mon, 13 Jun 2022 04:25:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 97175B80EA7;
-        Mon, 13 Jun 2022 11:25:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0964BC34114;
-        Mon, 13 Jun 2022 11:25:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 630E361120;
+        Mon, 13 Jun 2022 11:25:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73179C3411C;
+        Mon, 13 Jun 2022 11:25:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119551;
-        bh=dHrpiGBjW9rbIO3xNAUzBvjMwbqUsruwtApSEy5CXQc=;
+        s=korg; t=1655119556;
+        bh=X7YenglVW5w/0CfOMVL6Ir5FPNow7NRwNMizl+2C09c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mvVJn+MbdjDJplpZevE1DzRDvI3S4Ch1gHt2izLeL97SIGpZs8oy6JUl1ECFOF30p
-         MRnkpBn70/AWVfANQa2Xwcf9VMvdSY3g8G+9SFCRjbqKLEA5wzQIg9kb82z+uTids7
-         29GdSFoY9SdR1XdmEKUNapALbBF6Ic0HIHtMo1E4=
+        b=VzewI+hD1GnUZ5+c2sH9R1Eakj0OJnfpbqXoFJBtS5v12oy78iAzTlFl7N3uKMoPx
+         gsupeErlbPNVyXvLLUrdIShQ8h2wdwJIgxy/ysOHmo+a2MaGJVqiHGGaQ3GnV65lW9
+         jAVpfUS8aUrd7WrQsizrMrUPGdD+pekM+mlA70Ps=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        Namjae Jeon <linkinjeon@kernel.org>,
-        Steve French <stfrench@microsoft.com>,
+        stable@vger.kernel.org,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 054/339] ksmbd: fix reference count leak in smb_check_perm_dacl()
-Date:   Mon, 13 Jun 2022 12:07:59 +0200
-Message-Id: <20220613094928.161742164@linuxfoundation.org>
+Subject: [PATCH 5.18 056/339] dt-bindings: remoteproc: mediatek: Make l1tcm reg exclusive to mt819x
+Date:   Mon, 13 Jun 2022 12:08:01 +0200
+Message-Id: <20220613094928.221846138@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -52,41 +53,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Xiong <xiongx18@fudan.edu.cn>
+From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
-[ Upstream commit d21a580dafc69aa04f46e6099616146a536b0724 ]
+[ Upstream commit 6bbe1065121b8cd3b3e734ef8cd99f142bdab241 ]
 
-The issue happens in a specific path in smb_check_perm_dacl(). When
-"id" and "uid" have the same value, the function simply jumps out of
-the loop without decrementing the reference count of the object
-"posix_acls", which is increased by get_acl() earlier. This may
-result in memory leaks.
+Commit ca23ecfdbd44 ("remoteproc/mediatek: support L1TCM") added support
+for the l1tcm memory region on the MT8192 SCP, adding a new da_to_va
+callback that handles l1tcm while keeping the old one for
+back-compatibility with MT8183. However, since the mt8192 compatible was
+missing from the dt-binding, the accompanying dt-binding commit
+503c64cc42f1 ("dt-bindings: remoteproc: mediatek: add L1TCM memory region")
+mistakenly added this reg as if it were for mt8183. And later
+it became common to all platforms as their compatibles were added.
 
-Fix it by decreasing the reference count of "posix_acls" before
-jumping to label "check_access_bits".
+Fix the dt-binding so that the l1tcm reg can be present only on the
+supported platforms: mt8192 and mt8195.
 
-Fixes: 777cad1604d6 ("ksmbd: remove select FS_POSIX_ACL in Kconfig")
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-Acked-by: Namjae Jeon <linkinjeon@kernel.org>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Fixes: 503c64cc42f1 ("dt-bindings: remoteproc: mediatek: add L1TCM memory region")
+Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220511195452.871897-2-nfraprado@collabora.com
+Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ksmbd/smbacl.c | 1 +
- 1 file changed, 1 insertion(+)
+ .../bindings/remoteproc/mtk,scp.yaml          | 44 +++++++++++++------
+ 1 file changed, 30 insertions(+), 14 deletions(-)
 
-diff --git a/fs/ksmbd/smbacl.c b/fs/ksmbd/smbacl.c
-index 6ecf55ea1fed..38f23bf981ac 100644
---- a/fs/ksmbd/smbacl.c
-+++ b/fs/ksmbd/smbacl.c
-@@ -1261,6 +1261,7 @@ int smb_check_perm_dacl(struct ksmbd_conn *conn, struct path *path,
- 					if (!access_bits)
- 						access_bits =
- 							SET_MINIMUM_RIGHTS;
-+					posix_acl_release(posix_acls);
- 					goto check_access_bits;
- 				}
- 			}
+diff --git a/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml b/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml
+index 5b693a2d049c..d55b861db605 100644
+--- a/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml
++++ b/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml
+@@ -23,11 +23,13 @@ properties:
+ 
+   reg:
+     description:
+-      Should contain the address ranges for memory regions SRAM, CFG, and
+-      L1TCM.
++      Should contain the address ranges for memory regions SRAM, CFG, and,
++      on some platforms, L1TCM.
++    minItems: 2
+     maxItems: 3
+ 
+   reg-names:
++    minItems: 2
+     items:
+       - const: sram
+       - const: cfg
+@@ -47,16 +49,30 @@ required:
+   - reg
+   - reg-names
+ 
+-if:
+-  properties:
+-    compatible:
+-      enum:
+-        - mediatek,mt8183-scp
+-        - mediatek,mt8192-scp
+-then:
+-  required:
+-    - clocks
+-    - clock-names
++allOf:
++  - if:
++      properties:
++        compatible:
++          enum:
++            - mediatek,mt8183-scp
++            - mediatek,mt8192-scp
++    then:
++      required:
++        - clocks
++        - clock-names
++
++  - if:
++      properties:
++        compatible:
++          enum:
++            - mediatek,mt8183-scp
++            - mediatek,mt8186-scp
++    then:
++      properties:
++        reg:
++          maxItems: 2
++        reg-names:
++          maxItems: 2
+ 
+ additionalProperties:
+   type: object
+@@ -76,10 +92,10 @@ additionalProperties:
+ 
+ examples:
+   - |
+-    #include <dt-bindings/clock/mt8183-clk.h>
++    #include <dt-bindings/clock/mt8192-clk.h>
+ 
+     scp@10500000 {
+-        compatible = "mediatek,mt8183-scp";
++        compatible = "mediatek,mt8192-scp";
+         reg = <0x10500000 0x80000>,
+               <0x10700000 0x8000>,
+               <0x10720000 0xe0000>;
 -- 
 2.35.1
 
