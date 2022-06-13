@@ -2,49 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20771CCA482
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:09:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F268C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:10:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353654AbiFMMJz (ORCPT
+        id S1349730AbiFMMJ7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:09:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54270 "EHLO
+        Mon, 13 Jun 2022 08:09:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359256AbiFMMFe (ORCPT
+        with ESMTP id S1359172AbiFMMFY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:05:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DED626134;
-        Mon, 13 Jun 2022 03:59:49 -0700 (PDT)
+        Mon, 13 Jun 2022 08:05:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FC1118B3E;
+        Mon, 13 Jun 2022 03:59:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0C983B80EA8;
-        Mon, 13 Jun 2022 10:59:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3406AC34114;
-        Mon, 13 Jun 2022 10:59:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BAE44B80D3A;
+        Mon, 13 Jun 2022 10:59:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC03BC34114;
+        Mon, 13 Jun 2022 10:59:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117986;
-        bh=2xRg+D79i5GNl8UccOe7sFp/4aJop6QuUDfI2goaweQ=;
+        s=korg; t=1655117970;
+        bh=dCeVzC/jF/iTDOn+inmUhCo29O8Nt84UucMF/ifylBA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=agNjp7jMXrA9TqgI6g1CdLPQgX+K2v1Z1PPTTC56CtdmAShdrqsiCl1PDLMaa029f
-         oGg+rEOQX9l3x5nnykd/B7aeCZxN/Zces+Cf9TLRuY9UthB2UfXjGyDftSQwaRbbVt
-         jbZ8ZJPoIPJuWNjFLdjd6d1bx9PwqnH+RijvMHGQ=
+        b=Yjv4K4TKNPOC+9uFfVCGMdua/TBU9bIU+kL5vdbTN4r/8VDr3UJApewZKyszqhYSu
+         CCT2NKRtldmsgxjWs82E4xuENHm8YckAFLeNbGJIVU23hknyMvAI2cuED9gId70hqL
+         v3xe6cw4KaDQ2fk4mbhmdsF7Q0ENPK63YLwjimCY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Kees Cook <keescook@chromium.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-mips@vger.kernel.org, Manuel Lauss <manuel.lauss@gmail.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 189/287] pcmcia: db1xxx_ss: restrict to MIPS_DB1XXX boards
-Date:   Mon, 13 Jun 2022 12:10:13 +0200
-Message-Id: <20220613094929.598096632@linuxfoundation.org>
+        stable@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>
+Subject: [PATCH 4.19 183/287] dt-bindings: gpio: altera: correct interrupt-cells
+Date:   Mon, 13 Jun 2022 12:10:07 +0200
+Message-Id: <20220613094929.415873765@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -56,48 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Dinh Nguyen <dinguyen@kernel.org>
 
-[ Upstream commit 3928cf08334ed895a31458cbebd8d4ec6d84c080 ]
+commit 3a21c3ac93aff7b4522b152399df8f6a041df56d upstream.
 
-When the MIPS_ALCHEMY board selection is MIPS_XXS1500 instead of
-MIPS_DB1XXX, the PCMCIA driver 'db1xxx_ss' has build errors due
-to missing DB1XXX symbols. The PCMCIA driver should be restricted
-to MIPS_DB1XXX instead of MIPS_ALCHEMY to fix this build error.
+update documentation to correctly state the interrupt-cells to be 2.
 
-ERROR: modpost: "bcsr_read" [drivers/pcmcia/db1xxx_ss.ko] undefined!
-ERROR: modpost: "bcsr_mod" [drivers/pcmcia/db1xxx_ss.ko] undefined!
-
-Fixes: 42a4f17dc356 ("MIPS: Alchemy: remove SOC_AU1X00 in favor of MIPS_ALCHEMY")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: linux-mips@vger.kernel.org
-Acked-by: Manuel Lauss <manuel.lauss@gmail.com>
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: 4fd9bbc6e071 ("drivers/gpio: Altera soft IP GPIO driver devicetree binding")
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pcmcia/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/gpio/gpio-altera.txt |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pcmcia/Kconfig b/drivers/pcmcia/Kconfig
-index cbbe4a285b48..a8fdd6df6a12 100644
---- a/drivers/pcmcia/Kconfig
-+++ b/drivers/pcmcia/Kconfig
-@@ -146,7 +146,7 @@ config TCIC
- 
- config PCMCIA_ALCHEMY_DEVBOARD
- 	tristate "Alchemy Db/Pb1xxx PCMCIA socket services"
--	depends on MIPS_ALCHEMY && PCMCIA
-+	depends on MIPS_DB1XXX && PCMCIA
- 	help
- 	  Enable this driver of you want PCMCIA support on your Alchemy
- 	  Db1000, Db/Pb1100, Db/Pb1500, Db/Pb1550, Db/Pb1200, DB1300
--- 
-2.35.1
-
+--- a/Documentation/devicetree/bindings/gpio/gpio-altera.txt
++++ b/Documentation/devicetree/bindings/gpio/gpio-altera.txt
+@@ -9,8 +9,9 @@ Required properties:
+   - The second cell is reserved and is currently unused.
+ - gpio-controller : Marks the device node as a GPIO controller.
+ - interrupt-controller: Mark the device node as an interrupt controller
+-- #interrupt-cells : Should be 1. The interrupt type is fixed in the hardware.
++- #interrupt-cells : Should be 2. The interrupt type is fixed in the hardware.
+   - The first cell is the GPIO offset number within the GPIO controller.
++  - The second cell is the interrupt trigger type and level flags.
+ - interrupts: Specify the interrupt.
+ - altr,interrupt-type: Specifies the interrupt trigger type the GPIO
+   hardware is synthesized. This field is required if the Altera GPIO controller
+@@ -38,6 +39,6 @@ gpio_altr: gpio@ff200000 {
+ 	altr,interrupt-type = <IRQ_TYPE_EDGE_RISING>;
+ 	#gpio-cells = <2>;
+ 	gpio-controller;
+-	#interrupt-cells = <1>;
++	#interrupt-cells = <2>;
+ 	interrupt-controller;
+ };
 
 
