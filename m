@@ -2,258 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18197C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 23:15:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A0CEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 23:20:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233555AbiFMXPr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 19:15:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47630 "EHLO
+        id S234195AbiFMXT7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 19:19:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229488AbiFMXPp (ORCPT
+        with ESMTP id S229488AbiFMXT6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 19:15:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53DB52AE14;
-        Mon, 13 Jun 2022 16:15:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 13 Jun 2022 19:19:58 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12AD860EC;
+        Mon, 13 Jun 2022 16:19:57 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B728EB810F1;
-        Mon, 13 Jun 2022 23:15:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46925C34114;
-        Mon, 13 Jun 2022 23:15:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655162141;
-        bh=J2zul2usK5OFM2RXAL8FIgAidSHHGWctOtTje8vhn10=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=M1xocRXFpoXUjYI+e7wLUEzPG3PcrYJMYZ+21A+y78dXdwkRbe12JT2pP/iHLNtBo
-         +oWJQyUjQHCwIcox+8gsRZMxb0vmR1f+/H8PASh1FH2eaLrrVecq9xeERNOOJV9vGe
-         aNMAuzI/wOYvjgIVhthA4wxEt2+TTzvMHhIv6+703apE7vEIlK7x2pifNOA523q5NO
-         o1gHdpinBjbCYDsSRHxxc6qB+lOzPc1mUfb6ZxA2I42KzySwXYxRM3GOO/+N/I7F1y
-         pJqwaQN6jNlKkhldEsD5miOAY6hT9GeBx6LMTByzOn5Qp7BtxaJRrv3SRX0k4pDQ8x
-         CfIVgdXEoyIuQ==
-Date:   Mon, 13 Jun 2022 18:15:39 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Myron Stowe <myron.stowe@redhat.com>,
-        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Benoit =?iso-8859-1?Q?Gr=E9goire?= <benoitg@coeus.ca>,
-        Hui Wang <hui.wang@canonical.com>, linux-acpi@vger.kernel.org,
-        linux-pci@vger.kernel.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Guilherme G . Piccoli" <gpiccoli@igalia.com>
-Subject: Re: [PATCH] x86/PCI: Revert: "Clip only host bridge windows for E820
- regions"
-Message-ID: <20220613231539.GA722481@bhelgaas>
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 3A7A421A94;
+        Mon, 13 Jun 2022 23:19:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1655162395; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=IkkdWLZCbKTXcy+wyaIkRfefAaKEDvHsBtJt3VONYgA=;
+        b=DwoBafhYE+kEHIlypI4/grEhAWzHf/UF0VyDCgMKrgDJIGweAh+P0DadbfI9RAZBJNPQa+
+        b4/IGqGuitKJ+50MHrB/4WdGI38yXlh2GAMi0YPwrODaoyDlNw0fAAcpnFtVN3IlE7JsG/
+        xSyF9acA9PeEVuQqiHrU7/0jevn20F0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1655162395;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=IkkdWLZCbKTXcy+wyaIkRfefAaKEDvHsBtJt3VONYgA=;
+        b=rTVSAXoRTxOBYxsL5LWjJ+V89M/2QCl+IeuxWV/KKnz855LQKX2t8MUT5Qa9Iw3n0NTlzr
+        yQtVtGj9veHk/NAg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id F1619134CF;
+        Mon, 13 Jun 2022 23:19:52 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id M9J8KhjGp2KXbwAAMHmgww
+        (envelope-from <neilb@suse.de>); Mon, 13 Jun 2022 23:19:52 +0000
+Subject: [PATCH RFC 00/12] Allow concurrent directory updates.
+From:   NeilBrown <neilb@suse.de>
+To:     Al Viro <viro@zeniv.linux.org.uk>, Daire Byrne <daire@dneg.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Chuck Lever <chuck.lever@oracle.com>
+Cc:     Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Date:   Tue, 14 Jun 2022 09:18:21 +1000
+Message-ID: <165516173293.21248.14587048046993234326.stgit@noble.brown>
+User-Agent: StGit/1.5
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220612144325.85366-1-hdegoede@redhat.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jun 12, 2022 at 04:43:25PM +0200, Hans de Goede wrote:
-> Clipping the bridge windows directly from pci_acpi_root_prepare_resources()
-> instead of clipping from arch_remove_reservations(), has a number of
-> unforseen consequences.
-> 
-> If there is an e820 reservation in the middle of a bridge window, then
-> the smallest of the 2 remaining parts of the window will be also clipped
-> off. Where as the previous code would clip regions requested by devices,
-> rather then the entire window, leaving regions which were either entirely
-> above or below a reservation in the middle of the window alone.
-> 
-> E.g. on the Steam Deck this leads to this log message:
-> 
-> acpi PNP0A08:00: clipped [mem 0x80000000-0xf7ffffff window] to [mem 0xa0100000-0xf7ffffff window]
-> 
-> which then gets followed by these log messages:
-> 
-> pci 0000:00:01.2: can't claim BAR 14 [mem 0x80600000-0x806fffff]: no compatible bridge window
-> pci 0000:00:01.3: can't claim BAR 14 [mem 0x80500000-0x805fffff]: no compatible bridge window
-> 
-> and many more of these. Ultimately this leads to the Steam Deck
-> no longer booting properly, so revert the change.
-> 
-> Note this is not a clean revert, this revert keeps the later change
-> to make the clipping dependent on a new pci_use_e820 bool, moving
-> the checking of this bool to arch_remove_reservations().
+VFS currently holds an exclusive lock on a directory during create,
+unlink, rename.  This imposes serialisation on all filesystems though
+some may not benefit from it, and some may be able to provide finer
+grained locking internally, thus reducing contention.
 
-4c5e242d3e93 was definitely a mistake (my fault).  My intent was to
-mainly to improve logging of the clipping, but I didn't implement it
-well.
+This series allows the filesystem to request that the inode lock be
+shared rather than exclusive.  In that case an exclusive lock will be
+held on the dentry instead, much as is done for parallel lookup.
 
-That said, I'd like to understand the connection between the messages
-you mention and the failure.  There are four bridges whose MMIO
-windows were in the [mem 0x80000000-0x9fffffff] area that we clipped
-out.  The log shows that we moved all those windows and the devices in
-them to the [mem 0xa0100000-0xf7ffffff] area that remained after
-clipping.
+The NFS filesystem can easily support concurrent updates (server does
+any needed serialiation) so it is converted.
 
-So I think this *should* have worked even though we moved things
-around unnecessarily.  What am I missing?
+This series also converts nfsd to use the new interfaces so concurrent
+incoming NFS requests in the one directory can be handled concurrently.
 
-The E820 map reports [mem 0xa0000000-0xa00fffff] in the middle of the
-_CRS, and we currently trim that out.  We think this is a firmware
-defect, so it's likely to break in 2023 if we stop clipping by
-default.  I'm concerned that there may be other things in _CRS that we
-need to avoid, but firmware isn't telling us about them.
+As a net result, if an NFS mounted filesystem is reexported over NFS,
+then multiple clients can create files in a single directory and all
+synchronisation will be handled on the final server.  This helps hid
+latency on link from client to server.
 
-Or there's some dependency in the devices that we moved on their
-original addresses, e.g., firmware on the device latched the address
-and didn't notice the reassignment.
+I include a few nfsd patches that aren't strictly needed for this work,
+but seem to be a logical consequence of the changes that I did have to
+make.
 
-[1] https://bugzilla.kernel.org/attachment.cgi?id=301154
+I have only tested this lightly.  In particular the rename support is
+quite new and I haven't tried to break it yet.
 
-> BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=216109
-> Fixes: 4c5e242d3e93 ("x86/PCI: Clip only host bridge windows for E820 regions")
-> Reported-and-tested-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-> ---
->  arch/x86/include/asm/e820/api.h |  5 -----
->  arch/x86/include/asm/pci_x86.h  |  8 ++++++++
->  arch/x86/kernel/resource.c      | 14 +++++++++-----
->  arch/x86/pci/acpi.c             |  8 +-------
->  4 files changed, 18 insertions(+), 17 deletions(-)
-> 
-> diff --git a/arch/x86/include/asm/e820/api.h b/arch/x86/include/asm/e820/api.h
-> index 5a39ed59b6db..e8f58ddd06d9 100644
-> --- a/arch/x86/include/asm/e820/api.h
-> +++ b/arch/x86/include/asm/e820/api.h
-> @@ -4,9 +4,6 @@
->  
->  #include <asm/e820/types.h>
->  
-> -struct device;
-> -struct resource;
-> -
->  extern struct e820_table *e820_table;
->  extern struct e820_table *e820_table_kexec;
->  extern struct e820_table *e820_table_firmware;
-> @@ -46,8 +43,6 @@ extern void e820__register_nosave_regions(unsigned long limit_pfn);
->  
->  extern int  e820__get_entry_type(u64 start, u64 end);
->  
-> -extern void remove_e820_regions(struct device *dev, struct resource *avail);
-> -
->  /*
->   * Returns true iff the specified range [start,end) is completely contained inside
->   * the ISA region.
-> diff --git a/arch/x86/include/asm/pci_x86.h b/arch/x86/include/asm/pci_x86.h
-> index f52a886d35cf..70533fdcbf02 100644
-> --- a/arch/x86/include/asm/pci_x86.h
-> +++ b/arch/x86/include/asm/pci_x86.h
-> @@ -69,6 +69,8 @@ void pcibios_scan_specific_bus(int busn);
->  
->  /* pci-irq.c */
->  
-> +struct pci_dev;
-> +
->  struct irq_info {
->  	u8 bus, devfn;			/* Bus, device and function */
->  	struct {
-> @@ -246,3 +248,9 @@ static inline void mmio_config_writel(void __iomem *pos, u32 val)
->  # define x86_default_pci_init_irq	NULL
->  # define x86_default_pci_fixup_irqs	NULL
->  #endif
-> +
-> +#if defined(CONFIG_PCI) && defined(CONFIG_ACPI)
-> +extern bool pci_use_e820;
-> +#else
-> +#define pci_use_e820 false
-> +#endif
-> diff --git a/arch/x86/kernel/resource.c b/arch/x86/kernel/resource.c
-> index db2b350a37b7..bba1abd05bfe 100644
-> --- a/arch/x86/kernel/resource.c
-> +++ b/arch/x86/kernel/resource.c
-> @@ -1,7 +1,8 @@
->  // SPDX-License-Identifier: GPL-2.0
-> -#include <linux/dev_printk.h>
->  #include <linux/ioport.h>
-> +#include <linux/printk.h>
->  #include <asm/e820/api.h>
-> +#include <asm/pci_x86.h>
->  
->  static void resource_clip(struct resource *res, resource_size_t start,
->  			  resource_size_t end)
-> @@ -24,14 +25,14 @@ static void resource_clip(struct resource *res, resource_size_t start,
->  		res->start = end + 1;
->  }
->  
-> -void remove_e820_regions(struct device *dev, struct resource *avail)
-> +static void remove_e820_regions(struct resource *avail)
->  {
->  	int i;
->  	struct e820_entry *entry;
->  	u64 e820_start, e820_end;
->  	struct resource orig = *avail;
->  
-> -	if (!(avail->flags & IORESOURCE_MEM))
-> +	if (!pci_use_e820)
->  		return;
->  
->  	for (i = 0; i < e820_table->nr_entries; i++) {
-> @@ -41,7 +42,7 @@ void remove_e820_regions(struct device *dev, struct resource *avail)
->  
->  		resource_clip(avail, e820_start, e820_end);
->  		if (orig.start != avail->start || orig.end != avail->end) {
-> -			dev_info(dev, "clipped %pR to %pR for e820 entry [mem %#010Lx-%#010Lx]\n",
-> +			pr_info("clipped %pR to %pR for e820 entry [mem %#010Lx-%#010Lx]\n",
->  				 &orig, avail, e820_start, e820_end);
->  			orig = *avail;
->  		}
-> @@ -55,6 +56,9 @@ void arch_remove_reservations(struct resource *avail)
->  	 * the low 1MB unconditionally, as this area is needed for some ISA
->  	 * cards requiring a memory range, e.g. the i82365 PCMCIA controller.
->  	 */
-> -	if (avail->flags & IORESOURCE_MEM)
-> +	if (avail->flags & IORESOURCE_MEM) {
->  		resource_clip(avail, BIOS_ROM_BASE, BIOS_ROM_END);
-> +
-> +		remove_e820_regions(avail);
-> +	}
->  }
-> diff --git a/arch/x86/pci/acpi.c b/arch/x86/pci/acpi.c
-> index a4f43054bc79..2f82480fd430 100644
-> --- a/arch/x86/pci/acpi.c
-> +++ b/arch/x86/pci/acpi.c
-> @@ -8,7 +8,6 @@
->  #include <linux/pci-acpi.h>
->  #include <asm/numa.h>
->  #include <asm/pci_x86.h>
-> -#include <asm/e820/api.h>
->  
->  struct pci_root_info {
->  	struct acpi_pci_root_info common;
-> @@ -20,7 +19,7 @@ struct pci_root_info {
->  #endif
->  };
->  
-> -static bool pci_use_e820 = true;
-> +bool pci_use_e820 = true;
->  static bool pci_use_crs = true;
->  static bool pci_ignore_seg;
->  
-> @@ -387,11 +386,6 @@ static int pci_acpi_root_prepare_resources(struct acpi_pci_root_info *ci)
->  
->  	status = acpi_pci_probe_root_resources(ci);
->  
-> -	if (pci_use_e820) {
-> -		resource_list_for_each_entry(entry, &ci->resources)
-> -			remove_e820_regions(&device->dev, entry->res);
-> -	}
-> -
->  	if (pci_use_crs) {
->  		resource_list_for_each_entry_safe(entry, tmp, &ci->resources)
->  			if (resource_is_pcicfg_ioport(entry->res))
-> -- 
-> 2.36.0
-> 
+I post this for general review, and hopefully extra testing...  Daire
+Byrne has expressed interest in the NFS re-export parallelism.
+
+NeilBrown
+
+
+---
+
+NeilBrown (12):
+      VFS: support parallel updates in the one directory.
+      VFS: move EEXIST and ENOENT tests into lookup_hash_update()
+      VFS: move want_write checks into lookup_hash_update()
+      VFS: move dput() and mnt_drop_write() into done_path_update()
+      VFS: export done_path_update()
+      VFS: support concurrent renames.
+      NFS: support parallel updates in the one directory.
+      nfsd: allow parallel creates from nfsd
+      nfsd: support concurrent renames.
+      nfsd: reduce locking in nfsd_lookup()
+      nfsd: use (un)lock_inode instead of fh_(un)lock
+      nfsd: discard fh_locked flag and fh_lock/fh_unlock
+
+
+ fs/dcache.c            |  59 ++++-
+ fs/namei.c             | 578 ++++++++++++++++++++++++++++++++---------
+ fs/nfs/dir.c           |  29 ++-
+ fs/nfs/inode.c         |   2 +
+ fs/nfs/unlink.c        |   5 +-
+ fs/nfsd/nfs2acl.c      |   6 +-
+ fs/nfsd/nfs3acl.c      |   4 +-
+ fs/nfsd/nfs3proc.c     |  37 +--
+ fs/nfsd/nfs4acl.c      |   7 +-
+ fs/nfsd/nfs4proc.c     |  61 ++---
+ fs/nfsd/nfs4state.c    |   8 +-
+ fs/nfsd/nfsfh.c        |  10 +-
+ fs/nfsd/nfsfh.h        |  58 +----
+ fs/nfsd/nfsproc.c      |  31 +--
+ fs/nfsd/vfs.c          | 243 ++++++++---------
+ fs/nfsd/vfs.h          |   8 +-
+ include/linux/dcache.h |  27 ++
+ include/linux/fs.h     |   1 +
+ include/linux/namei.h  |  30 ++-
+ 19 files changed, 791 insertions(+), 413 deletions(-)
+
+--
+Signature
+
