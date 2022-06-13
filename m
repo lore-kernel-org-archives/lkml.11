@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BEB3CCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:07:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A106ACCA481
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:07:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380684AbiFMOG4 (ORCPT
+        id S1380832AbiFMOHB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:06:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43210 "EHLO
+        Mon, 13 Jun 2022 10:07:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380195AbiFMOAB (ORCPT
+        with ESMTP id S1380551AbiFMN7F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:00:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4981A8D693;
-        Mon, 13 Jun 2022 04:37:57 -0700 (PDT)
+        Mon, 13 Jun 2022 09:59:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 499A98CB2E;
+        Mon, 13 Jun 2022 04:37:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C5A206130D;
-        Mon, 13 Jun 2022 11:37:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D069BC341C6;
-        Mon, 13 Jun 2022 11:37:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C4DFB80E2C;
+        Mon, 13 Jun 2022 11:37:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA73DC3411C;
+        Mon, 13 Jun 2022 11:37:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120276;
-        bh=9y3ubL8G56M9GNII/l+BHiIuPm1Ni1Xym+8v3tSfm2A=;
+        s=korg; t=1655120265;
+        bh=FnCeao+/GWV3XE4N4cPu+iNp9VP0bsdVQ0g152ZehB8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kmypeAwAlz/m6HzYofFlldTjz3cyyXshef/RkdIfg3LEqUY/KttlQj5mWb300lpTd
-         MWiLWf0gduBkVX8h99mkurDLJD3WcEkeXJ7h0LHe3flSj7NPUGeAWzB+SNb5joIUrc
-         lc8a82/U2k3Awj0dLgqNw7xT9UdGmgckEpayAj20=
+        b=QLK6tsiAg3+A3EWoGSEmDILytSiWTC8shJVJAxeS/38CBX/DGlH+oZydRzy5DCB72
+         f4aTaB14ht0WtXenmG0iziLljC8P8f49Gnk9TL4EM7t4zut9q56ZO6vBIFXE3f/TJN
+         gpU2W2T8wJxo/9vooPtig+/10S8DgWegkaG5xQGY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Sit, Michael Wei Hong" <michael.wei.hong.sit@intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Tan Tee Min <tee.min.tan@linux.intel.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
-        Sit@vger.kernel.org
-Subject: [PATCH 5.18 314/339] net: phy: dp83867: retrigger SGMII AN when link change
-Date:   Mon, 13 Jun 2022 12:12:19 +0200
-Message-Id: <20220613094936.273921464@linuxfoundation.org>
+        stable@vger.kernel.org, Jorge Lopez <jorge.lopez2@hp.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 291/339] platform/x86: hp-wmi: Resolve WMI query failures on some devices
+Date:   Mon, 13 Jun 2022 12:11:56 +0200
+Message-Id: <20220613094935.462088879@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -53,89 +51,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tan Tee Min <tee.min.tan@linux.intel.com>
+From: Jorge Lopez <jorge.lopez2@hp.com>
 
-commit c76acfb7e19dcc3a0964e0563770b1d11b8d4540 upstream.
+[ Upstream commit dc6a6ab58379f25bf991d8e4a13b001ed806e881 ]
 
-There is a limitation in TI DP83867 PHY device where SGMII AN is only
-triggered once after the device is booted up. Even after the PHY TPI is
-down and up again, SGMII AN is not triggered and hence no new in-band
-message from PHY to MAC side SGMII.
+WMI queries fail on some devices where the ACPI method HWMC
+unconditionally attempts to create Fields beyond the buffer
+if the buffer is too small, this breaks essential features
+such as power profiles:
 
-This could cause an issue during power up, when PHY is up prior to MAC.
-At this condition, once MAC side SGMII is up, MAC side SGMII wouldn`t
-receive new in-band message from TI PHY with correct link status, speed
-and duplex info.
+         CreateByteField (Arg1, 0x10, D008)
+         CreateByteField (Arg1, 0x11, D009)
+         CreateByteField (Arg1, 0x12, D010)
+         CreateDWordField (Arg1, 0x10, D032)
+         CreateField (Arg1, 0x80, 0x0400, D128)
 
-As suggested by TI, implemented a SW solution here to retrigger SGMII
-Auto-Neg whenever there is a link change.
+In cases where args->data had zero length, ACPI BIOS Error
+(bug): AE_AML_BUFFER_LIMIT, Field [D008] at bit
+offset/length 128/8 exceeds size of target Buffer (128 bits)
+(20211217/dsopcode-198) was obtained.
 
-v2: Add Fixes tag in commit message.
+ACPI BIOS Error (bug): AE_AML_BUFFER_LIMIT, Field [D009] at bit
+offset/length 136/8 exceeds size of target Buffer (136bits)
+(20211217/dsopcode-198)
 
-Fixes: 2a10154abcb7 ("net: phy: dp83867: Add TI dp83867 phy")
-Cc: <stable@vger.kernel.org> # 5.4.x
-Signed-off-by: Sit, Michael Wei Hong <michael.wei.hong.sit@intel.com>
-Reviewed-by: Voon Weifeng <weifeng.voon@intel.com>
-Signed-off-by: Tan Tee Min <tee.min.tan@linux.intel.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://lore.kernel.org/r/20220526090347.128742-1-tee.min.tan@linux.intel.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The original code created a buffer size of 128 bytes regardless if
+the WMI call required a smaller buffer or not.  This particular
+behavior occurs in older BIOS and reproduced in OMEN laptops.  Newer
+BIOS handles buffer sizes properly and meets the latest specification
+requirements.  This is the reason why testing with a dynamically
+allocated buffer did not uncover any failures with the test systems at
+hand.
+
+This patch was tested on several OMEN, Elite, and Zbooks.  It was
+confirmed the patch resolves HPWMI_FAN GET/SET calls in an OMEN
+Laptop 15-ek0xxx.  No problems were reported when testing on several Elite
+and Zbooks notebooks.
+
+Fixes: 4b4967cbd268 ("platform/x86: hp-wmi: Changing bios_args.data to be dynamically allocated")
+Signed-off-by: Jorge Lopez <jorge.lopez2@hp.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Link: https://lore.kernel.org/r/20220608212923.8585-2-jorge.lopez2@hp.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/dp83867.c |   29 +++++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+ drivers/platform/x86/hp-wmi.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/net/phy/dp83867.c
-+++ b/drivers/net/phy/dp83867.c
-@@ -137,6 +137,7 @@
- #define DP83867_DOWNSHIFT_2_COUNT	2
- #define DP83867_DOWNSHIFT_4_COUNT	4
- #define DP83867_DOWNSHIFT_8_COUNT	8
-+#define DP83867_SGMII_AUTONEG_EN	BIT(7)
+diff --git a/drivers/platform/x86/hp-wmi.c b/drivers/platform/x86/hp-wmi.c
+index 0e9a25b56e0e..d3540dd62d06 100644
+--- a/drivers/platform/x86/hp-wmi.c
++++ b/drivers/platform/x86/hp-wmi.c
+@@ -290,14 +290,16 @@ static int hp_wmi_perform_query(int query, enum hp_wmi_command command,
+ 	struct bios_return *bios_return;
+ 	union acpi_object *obj = NULL;
+ 	struct bios_args *args = NULL;
+-	int mid, actual_outsize, ret;
++	int mid, actual_insize, actual_outsize;
+ 	size_t bios_args_size;
++	int ret;
  
- /* CFG3 bits */
- #define DP83867_CFG3_INT_OE			BIT(7)
-@@ -855,6 +856,32 @@ static int dp83867_phy_reset(struct phy_
- 			 DP83867_PHYCR_FORCE_LINK_GOOD, 0);
- }
+ 	mid = encode_outsize_for_pvsz(outsize);
+ 	if (WARN_ON(mid < 0))
+ 		return mid;
  
-+static void dp83867_link_change_notify(struct phy_device *phydev)
-+{
-+	/* There is a limitation in DP83867 PHY device where SGMII AN is
-+	 * only triggered once after the device is booted up. Even after the
-+	 * PHY TPI is down and up again, SGMII AN is not triggered and
-+	 * hence no new in-band message from PHY to MAC side SGMII.
-+	 * This could cause an issue during power up, when PHY is up prior
-+	 * to MAC. At this condition, once MAC side SGMII is up, MAC side
-+	 * SGMII wouldn`t receive new in-band message from TI PHY with
-+	 * correct link status, speed and duplex info.
-+	 * Thus, implemented a SW solution here to retrigger SGMII Auto-Neg
-+	 * whenever there is a link change.
-+	 */
-+	if (phydev->interface == PHY_INTERFACE_MODE_SGMII) {
-+		int val = 0;
-+
-+		val = phy_clear_bits(phydev, DP83867_CFG2,
-+				     DP83867_SGMII_AUTONEG_EN);
-+		if (val < 0)
-+			return;
-+
-+		phy_set_bits(phydev, DP83867_CFG2,
-+			     DP83867_SGMII_AUTONEG_EN);
-+	}
-+}
-+
- static struct phy_driver dp83867_driver[] = {
- 	{
- 		.phy_id		= DP83867_PHY_ID,
-@@ -879,6 +906,8 @@ static struct phy_driver dp83867_driver[
- 
- 		.suspend	= genphy_suspend,
- 		.resume		= genphy_resume,
-+
-+		.link_change_notify = dp83867_link_change_notify,
- 	},
- };
- module_phy_driver(dp83867_driver);
+-	bios_args_size = struct_size(args, data, insize);
++	actual_insize = max(insize, 128);
++	bios_args_size = struct_size(args, data, actual_insize);
+ 	args = kmalloc(bios_args_size, GFP_KERNEL);
+ 	if (!args)
+ 		return -ENOMEM;
+-- 
+2.35.1
+
 
 
