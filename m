@@ -2,81 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D02CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:13:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8809CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:14:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245278AbiFMTNF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:13:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60342 "EHLO
+        id S243736AbiFMTOV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 15:14:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347918AbiFMTK7 (ORCPT
+        with ESMTP id S1348906AbiFMTNk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 15:10:59 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667494504C;
-        Mon, 13 Jun 2022 10:10:24 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id h1so5588639plf.11;
-        Mon, 13 Jun 2022 10:10:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=+E0qOXmIaYGrgKKOxyXbseCzmUGGWWVHHHzfQyyHi4o=;
-        b=cDomZjTb89wINr+qLZAISKobOH9y0iLu8+lPSo9XbgOKJ4MVHIl/lT2dQIYkZlmIxA
-         qg0OwroWZx/DdS2nJxJJVCBQc4hQ+2+KZquTYii+v6839OayuLQpiy3vJUP8glSexjz6
-         uexyVKw7EV/IHN4IzeNyNWoUyH6WjsGUTpNEvmneKUwyKSupG7CMUzMKuoV5Ys4rjnOV
-         3xQVteThlCIhBYviJNm54arhLENUBBWGlNVY7W2IarsddL63ULIXhr4EINrLh1l5g4+0
-         PS/q5YVb6Ig049TMJZhQ/8HUF2ud36QwNhvpQGUOkTrrEEY2Z69Al1t4yXSsH00osTHy
-         6ZIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+E0qOXmIaYGrgKKOxyXbseCzmUGGWWVHHHzfQyyHi4o=;
-        b=PkfxUl9+RPGkvwVfwKpcMqNHt7j3sCKGirzqXF0m2bHZr6yfp4EQtxWqGYCusb/lBR
-         hzwZ8Fw7f4vEKD845ktL7r5Iy3PbpoIcmKemhzqk6mX/VkyOh3Pj5oGi19y0wpktwJSl
-         /KALItoRrdKEXB44P4Wr3T3uRG1UmxXg9J3goosF476IsdVBbids+Gv3gsNmZ1HnLSAO
-         ST20xvzxuISiQIZtYt5ljlilBdNsczanqp6u221tDMBBFGj2wNONBqPSdCxMERpMtxf1
-         f8Qr8GC+01J3a401WW1EP/KfIyJdtmD2SMN6olr5OKNpB+vhiflaNW0jpefcz6OuIvh9
-         NrWA==
-X-Gm-Message-State: AOAM532a9DgAAaiyVVsJ9Eq2fMz7Q5HLPrRFY3Z9NhHScvsagRhoOSbp
-        YXss+yL4OsGxSSoeaFU8WII=
-X-Google-Smtp-Source: ABdhPJz7sM+c99Vg7g5GR9Dl0h78U9tsv/R55WGSbYCXMBmLzwbLN7k6LwX1UuFBpJxcmI3tqmZSLg==
-X-Received: by 2002:a17:90b:4ac8:b0:1e3:4f6a:2d04 with SMTP id mh8-20020a17090b4ac800b001e34f6a2d04mr16988528pjb.233.1655140223871;
-        Mon, 13 Jun 2022 10:10:23 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id n7-20020a63b447000000b00401afc3401esm5650775pgu.35.2022.06.13.10.10.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 10:10:23 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     bcm-kernel-feedback-list@broadcom.com,
-        William Zhang <william.zhang@broadcom.com>,
-        Linux ARM List <linux-arm-kernel@lists.infradead.org>
-Cc:     tomer.yacoby@broadcom.com, anand.gore@broadcom.com,
-        dan.beygelman@broadcom.com, kursad.oney@broadcom.com,
-        philippe.reynes@softathome.com, joel.peshkin@broadcom.com,
-        samyon.furman@broadcom.com,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Mon, 13 Jun 2022 15:13:40 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 47F3645ACD;
+        Mon, 13 Jun 2022 10:34:37 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2A65923A;
+        Mon, 13 Jun 2022 10:34:37 -0700 (PDT)
+Received: from bogus (unknown [10.57.4.242])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 450673F792;
+        Mon, 13 Jun 2022 10:34:35 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 18:33:48 +0100
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Neeraj Upadhyay <quic_neeraju@quicinc.com>
+Cc:     mst@redhat.com, jasowang@redhat.com, cristian.marussi@arm.com,
+        Sudeep Holla <sudeep.holla@arm.com>, quic_sramana@quicinc.com,
+        vincent.guittot@linaro.org, linux-arm-kernel@lists.infradead.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] dt-bindings: arm: add BCM6855 SoC
-Date:   Mon, 13 Jun 2022 10:10:21 -0700
-Message-Id: <20220613171021.238548-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220607172646.32369-2-william.zhang@broadcom.com>
-References: <20220607172646.32369-1-william.zhang@broadcom.com> <20220607172646.32369-2-william.zhang@broadcom.com>
+Subject: Re: [RFC 1/3] dt-bindings: arm: Add document for SCMI Virtio backend
+ device
+Message-ID: <20220613173348.t4ibrtzzs5pe6nii@bogus>
+References: <20220609071956.5183-1-quic_neeraju@quicinc.com>
+ <20220609071956.5183-2-quic_neeraju@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220609071956.5183-2-quic_neeraju@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue,  7 Jun 2022 10:26:44 -0700, William Zhang <william.zhang@broadcom.com> wrote:
-> Add BCM6855 SoC device tree description to bcmbca binding document.
+On Thu, Jun 09, 2022 at 12:49:54PM +0530, Neeraj Upadhyay wrote:
+> Document the properties for ARM SCMI Virtio backend device
+> node.
 > 
-> Signed-off-by: William Zhang <william.zhang@broadcom.com>
+> Signed-off-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
 > ---
+>  .../firmware/arm,scmi-vio-backend.yaml        | 85 +++++++++++++++++++
+>  1 file changed, 85 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/firmware/arm,scmi-vio-backend.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/firmware/arm,scmi-vio-backend.yaml b/Documentation/devicetree/bindings/firmware/arm,scmi-vio-backend.yaml
+> new file mode 100644
+> index 000000000000..c95d4e093a3c
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/firmware/arm,scmi-vio-backend.yaml
+> @@ -0,0 +1,85 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +# Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/firmware/arm,scmi-vio-backend.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: System Control and Management Interface (SCMI) Virtio backend bindings
+> +
+> +maintainers:
+> +  - Neeraj Upadhyay <quic_neeraju@quicinc.com>
+> +
+> +description: |
+> +  This binding defines the interface for configuring the ARM SCMI Virtio
+> +  backend using device tree.
+> +
+> +properties:
+> +  $nodename:
+> +    const: scmi-vio-backend
+> +
+> +  compatible:
+> +    const: arm,scmi-vio-backend
+> +
 
-Applied to https://github.com/Broadcom/stblinux/commits/devicetree/next, thanks!
---
-Florian
+One only change between this and the existing DT binding is the compatible.
+I don't see any explanation here as why this deserves to be separate binding
+document. What can't you just add the compatible to the existing one if there
+is no other change. If not, please provide details and examples on how it
+differs.
+
+-- 
+Regards,
+Sudeep
