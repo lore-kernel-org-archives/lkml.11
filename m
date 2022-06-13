@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89BC7CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:46:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFF60C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:46:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378847AbiFMNqb (ORCPT
+        id S1379005AbiFMNqr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:46:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58252 "EHLO
+        Mon, 13 Jun 2022 09:46:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379228AbiFMNkE (ORCPT
+        with ESMTP id S1379227AbiFMNkE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 09:40:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98B76D122;
-        Mon, 13 Jun 2022 04:30:49 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF581D118;
+        Mon, 13 Jun 2022 04:30:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3527360F18;
-        Mon, 13 Jun 2022 11:30:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49030C34114;
-        Mon, 13 Jun 2022 11:30:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D1F561046;
+        Mon, 13 Jun 2022 11:30:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B429C34114;
+        Mon, 13 Jun 2022 11:30:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119848;
-        bh=71pftw3OoNE6+mQQHohO9Rn9Lsf9BTrdcnxHCcIWmas=;
+        s=korg; t=1655119845;
+        bh=Yq1pMyvdBvXCOYk3h9Hc/tgaOA+v+X0XmzrEY8AW2M4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uZIno9HC2UieKZ8wJJuMhNloV8EEf24RbfJCfHR5ne6f8lZHK5L8N9hPTNJN8Fgz7
-         jCG3RuaE9Kf0S33xSe/V/m6AQSfQ6gYIrqPgZZbrN2pX90papoc3bgJFPX5jY9EgGa
-         ZTlyrH1sYSUMGBYKYkARt/XtRqJdMZLtqrSFa7zU=
+        b=DOM6AMWhTRShuABD3RG2HE0BNDndTD0GuTi9hO8eUNUnhZVs0ttMlJ8SPrQ0gOwIa
+         tufYhoW1wtLTzEAdngdZV6FK5xCxCaakLHZRvtAEZP+2Vgs1KdsCBGk31gqrDvwECw
+         Idi35oPgooy6C7kcTzZc3Z/7CsxwXV2yI72HSbJs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Guoju Fang <gjfang@linux.alibaba.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 152/339] Bluetooth: hci_sync: Fix attempting to suspend with unfiltered passive scan
-Date:   Mon, 13 Jun 2022 12:09:37 +0200
-Message-Id: <20220613094931.293769457@linuxfoundation.org>
+Subject: [PATCH 5.18 130/339] net: sched: add barrier to fix packet stuck problem for lockless qdisc
+Date:   Mon, 13 Jun 2022 12:09:15 +0200
+Message-Id: <20220613094930.453486060@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,142 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Guoju Fang <gjfang@linux.alibaba.com>
 
-[ Upstream commit 3b42055388c30f2761a2d9cd9af2c99611dfe457 ]
+[ Upstream commit 2e8728c955ce0624b958eee6e030a37aca3a5d86 ]
 
-When suspending the passive scanning _must_ have its filter_policy set
-to 0x01 to use the accept list otherwise _any_ advertise report would
-end up waking up the system.
+In qdisc_run_end(), the spin_unlock() only has store-release semantic,
+which guarantees all earlier memory access are visible before it. But
+the subsequent test_bit() has no barrier semantics so may be reordered
+ahead of the spin_unlock(). The store-load reordering may cause a packet
+stuck problem.
 
-In order to fix the filter_policy the code now checks for
-hdev->suspended && HCI_CONN_FLAG_REMOTE_WAKEUP
-first, since the MGMT_OP_SET_DEVICE_FLAGS will reject any attempt to
-set HCI_CONN_FLAG_REMOTE_WAKEUP when it cannot be programmed in the
-acceptlist, so it can return success causing the proper filter_policy
-to be used.
+The concurrent operations can be described as below,
+         CPU 0                      |          CPU 1
+   qdisc_run_end()                  |     qdisc_run_begin()
+          .                         |           .
+ ----> /* may be reorderd here */   |           .
+|         .                         |           .
+|     spin_unlock()                 |         set_bit()
+|         .                         |         smp_mb__after_atomic()
+ ---- test_bit()                    |         spin_trylock()
+          .                         |          .
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215768
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Consider the following sequence of events:
+    CPU 0 reorder test_bit() ahead and see MISSED = 0
+    CPU 1 calls set_bit()
+    CPU 1 calls spin_trylock() and return fail
+    CPU 0 executes spin_unlock()
+
+At the end of the sequence, CPU 0 calls spin_unlock() and does nothing
+because it see MISSED = 0. The skb on CPU 1 has beed enqueued but no one
+take it, until the next cpu pushing to the qdisc (if ever ...) will
+notice and dequeue it.
+
+This patch fix this by adding one explicit barrier. As spin_unlock() and
+test_bit() ordering is a store-load ordering, a full memory barrier
+smp_mb() is needed here.
+
+Fixes: a90c57f2cedd ("net: sched: fix packet stuck problem for lockless qdisc")
+Signed-off-by: Guoju Fang <gjfang@linux.alibaba.com>
+Link: https://lore.kernel.org/r/20220528101628.120193-1-gjfang@linux.alibaba.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_sync.c | 58 +++++++++++++++++++++++++++++-----------
- 1 file changed, 43 insertions(+), 15 deletions(-)
+ include/net/sch_generic.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index 13600bf120b0..6b8d1cd65de4 100644
---- a/net/bluetooth/hci_sync.c
-+++ b/net/bluetooth/hci_sync.c
-@@ -1664,20 +1664,19 @@ static int hci_le_add_accept_list_sync(struct hci_dev *hdev,
- 	struct hci_cp_le_add_to_accept_list cp;
- 	int err;
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index 80973ce820f3..d6cf5116b5f9 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -209,6 +209,12 @@ static inline void qdisc_run_end(struct Qdisc *qdisc)
+ 	if (qdisc->flags & TCQ_F_NOLOCK) {
+ 		spin_unlock(&qdisc->seqlock);
  
-+	/* During suspend, only wakeable devices can be in acceptlist */
-+	if (hdev->suspended &&
-+	    !test_bit(HCI_CONN_FLAG_REMOTE_WAKEUP, params->flags))
-+		return 0;
++		/* spin_unlock() only has store-release semantic. The unlock
++		 * and test_bit() ordering is a store-load ordering, so a full
++		 * memory barrier is needed here.
++		 */
++		smp_mb();
 +
- 	/* Select filter policy to accept all advertising */
- 	if (*num_entries >= hdev->le_accept_list_size)
- 		return -ENOSPC;
- 
- 	/* Accept list can not be used with RPAs */
- 	if (!use_ll_privacy(hdev) &&
--	    hci_find_irk_by_addr(hdev, &params->addr, params->addr_type)) {
-+	    hci_find_irk_by_addr(hdev, &params->addr, params->addr_type))
- 		return -EINVAL;
--	}
--
--	/* During suspend, only wakeable devices can be in acceptlist */
--	if (hdev->suspended &&
--	    !test_bit(HCI_CONN_FLAG_REMOTE_WAKEUP, params->flags))
--		return 0;
- 
- 	/* Attempt to program the device in the resolving list first to avoid
- 	 * having to rollback in case it fails since the resolving list is
-@@ -4881,10 +4880,28 @@ static int hci_update_event_filter_sync(struct hci_dev *hdev)
- 	return 0;
- }
- 
-+/* This function disables scan (BR and LE) and mark it as paused */
-+static int hci_pause_scan_sync(struct hci_dev *hdev)
-+{
-+	if (hdev->scanning_paused)
-+		return 0;
-+
-+	/* Disable page scan if enabled */
-+	if (test_bit(HCI_PSCAN, &hdev->flags))
-+		hci_write_scan_enable_sync(hdev, SCAN_DISABLED);
-+
-+	hci_scan_disable_sync(hdev);
-+
-+	hdev->scanning_paused = true;
-+
-+	return 0;
-+}
-+
- /* This function performs the HCI suspend procedures in the follow order:
-  *
-  * Pause discovery (active scanning/inquiry)
-  * Pause Directed Advertising/Advertising
-+ * Pause Scanning (passive scanning in case discovery was not active)
-  * Disconnect all connections
-  * Set suspend_status to BT_SUSPEND_DISCONNECT if hdev cannot wakeup
-  * otherwise:
-@@ -4910,15 +4927,11 @@ int hci_suspend_sync(struct hci_dev *hdev)
- 	/* Pause other advertisements */
- 	hci_pause_advertising_sync(hdev);
- 
--	/* Disable page scan if enabled */
--	if (test_bit(HCI_PSCAN, &hdev->flags))
--		hci_write_scan_enable_sync(hdev, SCAN_DISABLED);
--
- 	/* Suspend monitor filters */
- 	hci_suspend_monitor_sync(hdev);
- 
- 	/* Prevent disconnects from causing scanning to be re-enabled */
--	hdev->scanning_paused = true;
-+	hci_pause_scan_sync(hdev);
- 
- 	/* Soft disconnect everything (power off) */
- 	err = hci_disconnect_all_sync(hdev, HCI_ERROR_REMOTE_POWER_OFF);
-@@ -4989,6 +5002,22 @@ static void hci_resume_monitor_sync(struct hci_dev *hdev)
- 	}
- }
- 
-+/* This function resume scan and reset paused flag */
-+static int hci_resume_scan_sync(struct hci_dev *hdev)
-+{
-+	if (!hdev->scanning_paused)
-+		return 0;
-+
-+	hci_update_scan_sync(hdev);
-+
-+	/* Reset passive scanning to normal */
-+	hci_update_passive_scan_sync(hdev);
-+
-+	hdev->scanning_paused = false;
-+
-+	return 0;
-+}
-+
- /* This function performs the HCI suspend procedures in the follow order:
-  *
-  * Restore event mask
-@@ -5011,10 +5040,9 @@ int hci_resume_sync(struct hci_dev *hdev)
- 
- 	/* Clear any event filters and restore scan state */
- 	hci_clear_event_filter_sync(hdev);
--	hci_update_scan_sync(hdev);
- 
--	/* Reset passive scanning to normal */
--	hci_update_passive_scan_sync(hdev);
-+	/* Resume scanning */
-+	hci_resume_scan_sync(hdev);
- 
- 	/* Resume monitor filters */
- 	hci_resume_monitor_sync(hdev);
+ 		if (unlikely(test_bit(__QDISC_STATE_MISSED,
+ 				      &qdisc->state)))
+ 			__netif_schedule(qdisc);
 -- 
 2.35.1
 
