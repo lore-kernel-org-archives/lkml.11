@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A19BC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F8FFCCA480
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:47:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378922AbiFMNqL (ORCPT
+        id S1379188AbiFMNrT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:46:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36136 "EHLO
+        Mon, 13 Jun 2022 09:47:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379226AbiFMNkE (ORCPT
+        with ESMTP id S1379185AbiFMNkA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:40:04 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04E00D101;
-        Mon, 13 Jun 2022 04:30:41 -0700 (PDT)
+        Mon, 13 Jun 2022 09:40:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 446C720192;
+        Mon, 13 Jun 2022 04:29:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 58C98CE118D;
-        Mon, 13 Jun 2022 11:30:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C8E4C34114;
-        Mon, 13 Jun 2022 11:30:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 03ED1B80D3A;
+        Mon, 13 Jun 2022 11:29:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E5EFC34114;
+        Mon, 13 Jun 2022 11:29:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119837;
-        bh=ynOFQ8Z5PHk22tFvFXyTLb5N/IoZjn9NfGABCiTAL7E=;
+        s=korg; t=1655119771;
+        bh=/xmJ2uBU3yrpOFL3voMeLP3SrzDDVNuEh0M+dn8yYVM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pknfhRid3PqIPjG8BA2CivZEMZS0YAX507d/WBOYz6b1ZO20eJdKLCJQY+n3ul5OQ
-         5BVV/9GnWz0/AvF8+IRVdJ/zz3deoqlC6ajVWrO9ATAFqoABy3L6k9dI1JEZ9ERH1g
-         ORxkUGUtTqyZde3U6lICBxkfe/8V4EdHXXxvty3E=
+        b=ra4VZ9E4MyYln7JAm9RImff/OdBO8O0ta0SAQGj450e0kWc+h4IyZixXHAntWVQBz
+         rtLVHa6vad1HlhLrjRsWsN3ugTt0RSvKguMqUf11MXQwYWSGbtuHTMO5WQgDpbPuIX
+         NtTxYJfAievjZU/bwhEJ7O2mzBTu70aaH47LllAY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aya Levin <ayal@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        David Ahern <dsahern@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Tianhao Zhao <tizhao@redhat.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 137/339] net: ping6: Fix ping -6 with interface name
-Date:   Mon, 13 Jun 2022 12:09:22 +0200
-Message-Id: <20220613094930.837070203@linuxfoundation.org>
+Subject: [PATCH 5.18 114/339] sfc: fix considering that all channels have TX queues
+Date:   Mon, 13 Jun 2022 12:08:59 +0200
+Message-Id: <20220613094929.968768888@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -54,68 +52,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aya Levin <ayal@nvidia.com>
+From: Martin Habets <habetsm.xilinx@gmail.com>
 
-[ Upstream commit e6652a8ef3e64d953168a95878fe29b934ad78ac ]
+[ Upstream commit 2e102b53f8a778f872dc137f4c7ac548705817aa ]
 
-When passing interface parameter to ping -6:
-$ ping -6 ::11:141:84:9 -I eth2
-Results in:
-PING ::11:141:84:10(::11:141:84:10) from ::11:141:84:9 eth2: 56 data bytes
-ping: sendmsg: Invalid argument
-ping: sendmsg: Invalid argument
+Normally, all channels have RX and TX queues, but this is not true if
+modparam efx_separate_tx_channels=1 is used. In that cases, some
+channels only have RX queues and others only TX queues (or more
+preciselly, they have them allocated, but not initialized).
 
-Initialize the fl6's outgoing interface (OIF) before triggering
-ip6_datagram_send_ctl. Don't wipe fl6 after ip6_datagram_send_ctl() as
-changes in fl6 that may happen in the function are overwritten explicitly.
-Update comment accordingly.
+Fix efx_channel_has_tx_queues to return the correct value for this case
+too.
 
-Fixes: 13651224c00b ("net: ping6: support setting basic SOL_IPV6 options via cmsg")
-Signed-off-by: Aya Levin <ayal@nvidia.com>
-Reviewed-by: Gal Pressman <gal@nvidia.com>
-Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Link: https://lore.kernel.org/r/20220531084544.15126-1-tariqt@nvidia.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Messages shown at probe time before the fix:
+ sfc 0000:03:00.0 ens6f0np0: MC command 0x82 inlen 544 failed rc=-22 (raw=0) arg=0
+ ------------[ cut here ]------------
+ netdevice: ens6f0np0: failed to initialise TXQ -1
+ WARNING: CPU: 1 PID: 626 at drivers/net/ethernet/sfc/ef10.c:2393 efx_ef10_tx_init+0x201/0x300 [sfc]
+ [...] stripped
+ RIP: 0010:efx_ef10_tx_init+0x201/0x300 [sfc]
+ [...] stripped
+ Call Trace:
+  efx_init_tx_queue+0xaa/0xf0 [sfc]
+  efx_start_channels+0x49/0x120 [sfc]
+  efx_start_all+0x1f8/0x430 [sfc]
+  efx_net_open+0x5a/0xe0 [sfc]
+  __dev_open+0xd0/0x190
+  __dev_change_flags+0x1b3/0x220
+  dev_change_flags+0x21/0x60
+ [...] stripped
+
+Messages shown at remove time before the fix:
+ sfc 0000:03:00.0 ens6f0np0: failed to flush 10 queues
+ sfc 0000:03:00.0 ens6f0np0: failed to flush queues
+
+Fixes: 8700aff08984 ("sfc: fix channel allocation with brute force")
+Reported-by: Tianhao Zhao <tizhao@redhat.com>
+Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
+Tested-by: Íñigo Huguet <ihuguet@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/ping.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/sfc/net_driver.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv6/ping.c b/net/ipv6/ping.c
-index ff033d16549e..ecf3a553a0dc 100644
---- a/net/ipv6/ping.c
-+++ b/net/ipv6/ping.c
-@@ -101,6 +101,9 @@ static int ping_v6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 	ipc6.sockc.tsflags = sk->sk_tsflags;
- 	ipc6.sockc.mark = sk->sk_mark;
+diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
+index c75dc75e2857..d7255d54707c 100644
+--- a/drivers/net/ethernet/sfc/net_driver.h
++++ b/drivers/net/ethernet/sfc/net_driver.h
+@@ -1535,7 +1535,7 @@ static inline bool efx_channel_is_xdp_tx(struct efx_channel *channel)
  
-+	memset(&fl6, 0, sizeof(fl6));
-+	fl6.flowi6_oif = oif;
-+
- 	if (msg->msg_controllen) {
- 		struct ipv6_txoptions opt = {};
+ static inline bool efx_channel_has_tx_queues(struct efx_channel *channel)
+ {
+-	return true;
++	return channel && channel->channel >= channel->efx->tx_channel_offset;
+ }
  
-@@ -112,17 +115,14 @@ static int ping_v6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 			return err;
- 
- 		/* Changes to txoptions and flow info are not implemented, yet.
--		 * Drop the options, fl6 is wiped below.
-+		 * Drop the options.
- 		 */
- 		ipc6.opt = NULL;
- 	}
- 
--	memset(&fl6, 0, sizeof(fl6));
--
- 	fl6.flowi6_proto = IPPROTO_ICMPV6;
- 	fl6.saddr = np->saddr;
- 	fl6.daddr = *daddr;
--	fl6.flowi6_oif = oif;
- 	fl6.flowi6_mark = ipc6.sockc.mark;
- 	fl6.flowi6_uid = sk->sk_uid;
- 	fl6.fl6_icmp_type = user_icmph.icmp6_type;
+ static inline unsigned int efx_channel_num_tx_queues(struct efx_channel *channel)
 -- 
 2.35.1
 
