@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74320C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:30:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CAEAC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:30:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356319AbiFMM2q (ORCPT
+        id S1356520AbiFMM2t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:28:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56324 "EHLO
+        Mon, 13 Jun 2022 08:28:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355793AbiFMMX7 (ORCPT
+        with ESMTP id S1355778AbiFMMX7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 08:23:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EE761FA7C;
-        Mon, 13 Jun 2022 04:05:15 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B42A21E3A;
+        Mon, 13 Jun 2022 04:05:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DEFE60F9A;
-        Mon, 13 Jun 2022 11:05:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43014C3411C;
-        Mon, 13 Jun 2022 11:05:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25B5BB80E92;
+        Mon, 13 Jun 2022 11:05:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EB68C3411C;
+        Mon, 13 Jun 2022 11:05:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118314;
-        bh=KlnwLkDFEpOxKXu55Er6clk6IHlEN6nJQoXjp2vsA2w=;
+        s=korg; t=1655118311;
+        bh=ivldFmRQz3n27rbreUK0e3CWVgS0wJu3m2AvKKArnzk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w4ybkk9f3kLTzO8QLj0vt0l3ITrlZ7rmrY4Zc0LqkA+An8D9jLbSpxEEdZl+QfEqD
-         P8JoPAEwWq+cxkjQuose3ws0SbHxtnjz5w6aMC+ruNF/Pcy1tt4oqZVg8UWhiLyun6
-         SsTocjoUJEjQdWeY/Od4CFlagWHKBHKXg0K2uFbE=
+        b=uFmU/nH6nx+Ly/b1AoFswQu930UQ1NAjHXs0YvTjK8MjLoez6zcKImd5sDhqFezLj
+         pXjjFl/Am0PfDOzDaq01eId5Hqr39J+Yji5EGShmjGZAC4tNNlRPbcugZyJnDdk8jJ
+         nswf6AwGWVBkGXhpih9WZj5R55gXxiaU+mGndXnk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 013/172] staging: fieldbus: Fix the error handling path in anybuss_host_common_probe()
-Date:   Mon, 13 Jun 2022 12:09:33 +0200
-Message-Id: <20220613094853.610322037@linuxfoundation.org>
+Subject: [PATCH 5.10 012/172] usb: musb: Fix missing of_node_put() in omap2430_probe
+Date:   Mon, 13 Jun 2022 12:09:32 +0200
+Message-Id: <20220613094853.357054734@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -50,36 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 7079b3483a17be2cfba64cbd4feb1b7ae07f1ea7 ]
+[ Upstream commit 424bef51fa530389b0b9008c9e144e40c10e8458 ]
 
-If device_register() fails, device_unregister() should not be called
-because it will free some resources that are not allocated.
-put_device() should be used instead.
+The device_node pointer is returned by of_parse_phandle() with refcount
+incremented. We should use of_node_put() on it when done.
 
-Fixes: 308ee87a2f1e ("staging: fieldbus: anybus-s: support HMS Anybus-S bus")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/5401a519608d6e1a4e7435c20f4f20b0c5c36c23.1650610082.git.christophe.jaillet@wanadoo.fr
+Fixes: 8934d3e4d0e7 ("usb: musb: omap2430: Don't use omap_get_control_dev()")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220309111033.24487-1-linmq006@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/fieldbus/anybuss/host.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/musb/omap2430.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/staging/fieldbus/anybuss/host.c b/drivers/staging/fieldbus/anybuss/host.c
-index 549cb7d51af8..2a20a1767d77 100644
---- a/drivers/staging/fieldbus/anybuss/host.c
-+++ b/drivers/staging/fieldbus/anybuss/host.c
-@@ -1384,7 +1384,7 @@ anybuss_host_common_probe(struct device *dev,
- 		goto err_device;
- 	return cd;
- err_device:
--	device_unregister(&cd->client->dev);
-+	put_device(&cd->client->dev);
- err_kthread:
- 	kthread_stop(cd->qthread);
- err_reset:
+diff --git a/drivers/usb/musb/omap2430.c b/drivers/usb/musb/omap2430.c
+index 4232f1ce3fbf..1d435e4ee857 100644
+--- a/drivers/usb/musb/omap2430.c
++++ b/drivers/usb/musb/omap2430.c
+@@ -360,6 +360,7 @@ static int omap2430_probe(struct platform_device *pdev)
+ 	control_node = of_parse_phandle(np, "ctrl-module", 0);
+ 	if (control_node) {
+ 		control_pdev = of_find_device_by_node(control_node);
++		of_node_put(control_node);
+ 		if (!control_pdev) {
+ 			dev_err(&pdev->dev, "Failed to get control device\n");
+ 			ret = -EINVAL;
 -- 
 2.35.1
 
