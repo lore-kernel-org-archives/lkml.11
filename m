@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC140CCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:26:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 273B3C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:26:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383597AbiFMO0t (ORCPT
+        id S1383638AbiFMO0z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:26:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52800 "EHLO
+        Mon, 13 Jun 2022 10:26:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383661AbiFMOXo (ORCPT
+        with ESMTP id S1383680AbiFMOXq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:23:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CF1346C87;
-        Mon, 13 Jun 2022 04:44:44 -0700 (PDT)
+        Mon, 13 Jun 2022 10:23:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B091047051;
+        Mon, 13 Jun 2022 04:44:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9FE73B80E2C;
-        Mon, 13 Jun 2022 11:44:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E687C34114;
-        Mon, 13 Jun 2022 11:44:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2CC51B80D3A;
+        Mon, 13 Jun 2022 11:44:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9875CC34114;
+        Mon, 13 Jun 2022 11:44:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120681;
-        bh=y/xU9oOplUtcQEcsuZanE4P5PA5XL3lSbfOYopghJCk=;
+        s=korg; t=1655120687;
+        bh=oX774nsjSI3FEBqXMCgRgEhsiw5DTAfuvuPkyTnsHHo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2lX3lTO1CtcMNv/PrJ2OruD81LT+C6+BIwA9vG9V1NH+DjqTdeUzTTtgqpr1gfA7v
-         3h9FyHpsmltG26eas2krSWghst1uA9ccmZRopKMvoa6wSVIwdiqxKnsPxIWStVezzm
-         hVeJUBgUSrHcdlI3XjlWojGeDO1nyBIBpBC4Pspk=
+        b=xC9qLMFlaUdBC4J4sNCbuLpoY4hbCMJAMmMKnpPRNTrl9ms1s5Kv8WgjqRfPSWrum
+         FmSOl9CWY0aHrZVd9kBoDEPAV2sryu1WjdGjgZKZsYLVpLM9bOIjsJwiJdBpTL3fGK
+         Y8OxJn5g5/7zNBIertGbI+w4eDrk084spy/Nh9Oc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 095/298] block: take destination bvec offsets into account in bio_copy_data_iter
-Date:   Mon, 13 Jun 2022 12:09:49 +0200
-Message-Id: <20220613094927.831704807@linuxfoundation.org>
+        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 113/298] net/mlx5e: Update netdev features after changing XDP state
+Date:   Mon, 13 Jun 2022 12:10:07 +0200
+Message-Id: <20220613094928.373702356@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -49,43 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-[ Upstream commit 403d50341cce6b5481a92eb481e6df60b1f49b55 ]
+[ Upstream commit f6279f113ad593971999c877eb69dc3d36a75894 ]
 
-Appartly bcache can copy into bios that do not just contain fresh
-pages but can have offsets into the bio_vecs.  Restore support for tht
-in bio_copy_data_iter.
+Some features (LRO, HW GRO) conflict with XDP. If there is an attempt to
+enable such features while XDP is active, they will be set to `off
+[requested on]`. In order to activate these features after XDP is turned
+off, the driver needs to call netdev_update_features(). This commit adds
+this missing call after XDP state changes.
 
-Fixes: f8b679a070c5 ("block: rewrite bio_copy_data_iter to use bvec_kmap_local and memcpy_to_bvec")
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220524143919.1155501-1-hch@lst.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: cf6e34c8c22f ("net/mlx5e: Properly block LRO when XDP is enabled")
+Fixes: b0617e7b3500 ("net/mlx5e: Properly block HW GRO when XDP is enabled")
+Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/bio.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/block/bio.c b/block/bio.c
-index 342b1cf5d713..738fea03edbf 100644
---- a/block/bio.c
-+++ b/block/bio.c
-@@ -1308,10 +1308,12 @@ void bio_copy_data_iter(struct bio *dst, struct bvec_iter *dst_iter,
- 		struct bio_vec src_bv = bio_iter_iovec(src, *src_iter);
- 		struct bio_vec dst_bv = bio_iter_iovec(dst, *dst_iter);
- 		unsigned int bytes = min(src_bv.bv_len, dst_bv.bv_len);
--		void *src_buf;
-+		void *src_buf = bvec_kmap_local(&src_bv);
-+		void *dst_buf = bvec_kmap_local(&dst_bv);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 9730bd96d0de..352b5c8ae24e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -4531,6 +4531,11 @@ static int mlx5e_xdp_set(struct net_device *netdev, struct bpf_prog *prog)
  
--		src_buf = bvec_kmap_local(&src_bv);
--		memcpy_to_bvec(&dst_bv, src_buf);
-+		memcpy(dst_buf, src_buf, bytes);
+ unlock:
+ 	mutex_unlock(&priv->state_lock);
 +
-+		kunmap_local(dst_buf);
- 		kunmap_local(src_buf);
++	/* Need to fix some features. */
++	if (!err)
++		netdev_update_features(netdev);
++
+ 	return err;
+ }
  
- 		bio_advance_iter_single(src, src_iter, bytes);
 -- 
 2.35.1
 
