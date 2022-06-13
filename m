@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B03FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:25:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32D21C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:26:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377272AbiFMNZv (ORCPT
+        id S1377316AbiFMNZ6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:25:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33238 "EHLO
+        Mon, 13 Jun 2022 09:25:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376454AbiFMNVw (ORCPT
+        with ESMTP id S1359179AbiFMNWk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:21:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F0123C4B1;
-        Mon, 13 Jun 2022 04:23:47 -0700 (PDT)
+        Mon, 13 Jun 2022 09:22:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A41C56B082;
+        Mon, 13 Jun 2022 04:23:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FDAF60F18;
-        Mon, 13 Jun 2022 11:23:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 503FAC34114;
-        Mon, 13 Jun 2022 11:23:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 48712B80E93;
+        Mon, 13 Jun 2022 11:23:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9140BC34114;
+        Mon, 13 Jun 2022 11:23:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119410;
-        bh=9T8ut3yJcEj4oJFttwR4tRBTO4q3a4CFu8mJehVbGC8=;
+        s=korg; t=1655119419;
+        bh=7ZJdOB8NWztNFmJga+HULPqObVqV573O24/WNfw5IOk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yAyUu1jxgKTGuP1Fti6j8xzhly+F1MkrTzJdTU51+wgqYRIO5ZaDqKRpIZuNNnDvk
-         dSmm0K9OfVcXr+ThjKfdmsjPkTZ/aqX77pnXjyI2bvj6bvPx6iPTMRTGi5OXiGrcv+
-         w30PUxsBzuZSkzh9Vp8S8C3VC2eXKuVbtGHd3Q88=
+        b=f3+1NKqF9SzxoECOq/Pc+9WYVfp/Q3sLcUjQiDZra0TZAEh8iJSBjflgY2Aqafl1c
+         a4NZqn/4hx83lO4GmQgey2EgZyZWWQkSqBGQ34oe5VzRx4P89zCiAiurcPD+8n8VB+
+         OpRf7A2EPASfrtsqlDYfOw/48PTv9V5LFftAAUpw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Martin Faltesek <mfaltesek@google.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 229/247] nfc: st21nfca: fix incorrect sizing calculations in EVT_TRANSACTION
-Date:   Mon, 13 Jun 2022 12:12:11 +0200
-Message-Id: <20220613094929.890993023@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Subject: [PATCH 5.15 222/247] ata: libata-transport: fix {dma|pio|xfer}_mode sysfs files
+Date:   Mon, 13 Jun 2022 12:12:04 +0200
+Message-Id: <20220613094929.678779354@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -51,131 +49,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Faltesek <mfaltesek@google.com>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-commit f2e19b36593caed4c977c2f55aeba7408aeb2132 upstream.
+commit 72aad489f992871e908ff6d9055b26c6366fb864 upstream.
 
-The transaction buffer is allocated by using the size of the packet buf,
-and subtracting two which seem intended to remove the two tags which are
-not present in the target structure. This calculation leads to under
-counting memory because of differences between the packet contents and the
-target structure. The aid_len field is a u8 in the packet, but a u32 in
-the structure, resulting in at least 3 bytes always being under counted.
-Further, the aid data is a variable length field in the packet, but fixed
-in the structure, so if this field is less than the max, the difference is
-added to the under counting.
+The {dma|pio}_mode sysfs files are incorrectly documented as having a
+list of the supported DMA/PIO transfer modes, while the corresponding
+fields of the *struct* ata_device hold the transfer mode IDs, not masks.
 
-The last validation check for transaction->params_len is also incorrect
-since it employs the same accounting error.
+To match these docs, the {dma|pio}_mode (and even xfer_mode!) sysfs
+files are handled by the ata_bitfield_name_match() macro which leads to
+reading such kind of nonsense from them:
 
-To fix, perform validation checks progressively to safely reach the
-next field, to determine the size of both buffers and verify both tags.
-Once all validation checks pass, allocate the buffer and copy the data.
-This eliminates freeing memory on the error path, as those checks are
-moved ahead of memory allocation.
+$ cat /sys/class/ata_device/dev3.0/pio_mode
+XFER_UDMA_7, XFER_UDMA_6, XFER_UDMA_5, XFER_UDMA_4, XFER_MW_DMA_4,
+XFER_PIO_6, XFER_PIO_5, XFER_PIO_4, XFER_PIO_3, XFER_PIO_2, XFER_PIO_1,
+XFER_PIO_0
 
-Fixes: 26fc6c7f02cb ("NFC: st21nfca: Add HCI transaction event support")
-Fixes: 4fbcc1a4cb20 ("nfc: st21nfca: Fix potential buffer overflows in EVT_TRANSACTION")
+Using the correct ata_bitfield_name_search() macro fixes that:
+
+$ cat /sys/class/ata_device/dev3.0/pio_mode
+XFER_PIO_4
+
+While fixing the file documentation, somewhat reword the {dma|pio}_mode
+file doc and add a note about being mostly useful for PATA devices to
+the xfer_mode file doc...
+
+Fixes: d9027470b886 ("[libata] Add ATA transport class")
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
 Cc: stable@vger.kernel.org
-Signed-off-by: Martin Faltesek <mfaltesek@google.com>
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nfc/st21nfca/se.c |   62 +++++++++++++++++++++++-----------------------
- 1 file changed, 31 insertions(+), 31 deletions(-)
+ Documentation/ABI/testing/sysfs-ata |   11 ++++++-----
+ drivers/ata/libata-transport.c      |    2 +-
+ 2 files changed, 7 insertions(+), 6 deletions(-)
 
---- a/drivers/nfc/st21nfca/se.c
-+++ b/drivers/nfc/st21nfca/se.c
-@@ -304,6 +304,8 @@ int st21nfca_connectivity_event_received
- 	int r = 0;
- 	struct device *dev = &hdev->ndev->dev;
- 	struct nfc_evt_transaction *transaction;
-+	u32 aid_len;
-+	u8 params_len;
+--- a/Documentation/ABI/testing/sysfs-ata
++++ b/Documentation/ABI/testing/sysfs-ata
+@@ -107,13 +107,14 @@ Description:
+ 				described in ATA8 7.16 and 7.17. Only valid if
+ 				the device is not a PM.
  
- 	pr_debug("connectivity gate event: %x\n", event);
+-		pio_mode:	(RO) Transfer modes supported by the device when
+-				in PIO mode. Mostly used by PATA device.
++		pio_mode:	(RO) PIO transfer mode used by the device.
++				Mostly used by PATA devices.
  
-@@ -312,50 +314,48 @@ int st21nfca_connectivity_event_received
- 		r = nfc_se_connectivity(hdev->ndev, host);
- 	break;
- 	case ST21NFCA_EVT_TRANSACTION:
--		/*
--		 * According to specification etsi 102 622
-+		/* According to specification etsi 102 622
- 		 * 11.2.2.4 EVT_TRANSACTION Table 52
- 		 * Description	Tag	Length
- 		 * AID		81	5 to 16
- 		 * PARAMETERS	82	0 to 255
-+		 *
-+		 * The key differences are aid storage length is variably sized
-+		 * in the packet, but fixed in nfc_evt_transaction, and that the aid_len
-+		 * is u8 in the packet, but u32 in the structure, and the tags in
-+		 * the packet are not included in nfc_evt_transaction.
-+		 *
-+		 * size in bytes: 1          1       5-16 1             1           0-255
-+		 * offset:        0          1       2    aid_len + 2   aid_len + 3 aid_len + 4
-+		 * member name:   aid_tag(M) aid_len aid  params_tag(M) params_len  params
-+		 * example:       0x81       5-16    X    0x82 0-255    X
- 		 */
--		if (skb->len < NFC_MIN_AID_LENGTH + 2 ||
--		    skb->data[0] != NFC_EVT_TRANSACTION_AID_TAG)
-+		if (skb->len < 2 || skb->data[0] != NFC_EVT_TRANSACTION_AID_TAG)
- 			return -EPROTO;
+-		xfer_mode:	(RO) Current transfer mode
++		xfer_mode:	(RO) Current transfer mode. Mostly used by
++				PATA devices.
  
--		transaction = devm_kzalloc(dev, skb->len - 2, GFP_KERNEL);
--		if (!transaction)
--			return -ENOMEM;
-+		aid_len = skb->data[1];
-+
-+		if (skb->len < aid_len + 4 || aid_len > sizeof(transaction->aid))
-+			return -EPROTO;
+-		dma_mode:	(RO) Transfer modes supported by the device when
+-				in DMA mode. Mostly used by PATA device.
++		dma_mode:	(RO) DMA transfer mode used by the device.
++				Mostly used by PATA devices.
  
--		transaction->aid_len = skb->data[1];
-+		params_len = skb->data[aid_len + 3];
+ 		class:		(RO) Device class. Can be "ata" for disk,
+ 				"atapi" for packet device, "pmp" for PM, or
+--- a/drivers/ata/libata-transport.c
++++ b/drivers/ata/libata-transport.c
+@@ -196,7 +196,7 @@ static struct {
+ 	{ XFER_PIO_0,			"XFER_PIO_0" },
+ 	{ XFER_PIO_SLOW,		"XFER_PIO_SLOW" }
+ };
+-ata_bitfield_name_match(xfer,ata_xfer_names)
++ata_bitfield_name_search(xfer, ata_xfer_names)
  
--		/* Checking if the length of the AID is valid */
--		if (transaction->aid_len > sizeof(transaction->aid)) {
--			devm_kfree(dev, transaction);
--			return -EINVAL;
--		}
--
--		memcpy(transaction->aid, &skb->data[2],
--		       transaction->aid_len);
--
--		/* Check next byte is PARAMETERS tag (82) */
--		if (skb->data[transaction->aid_len + 2] !=
--		    NFC_EVT_TRANSACTION_PARAMS_TAG) {
--			devm_kfree(dev, transaction);
-+		/* Verify PARAMETERS tag is (82), and final check that there is enough
-+		 * space in the packet to read everything.
-+		 */
-+		if ((skb->data[aid_len + 2] != NFC_EVT_TRANSACTION_PARAMS_TAG) ||
-+		    (skb->len < aid_len + 4 + params_len))
- 			return -EPROTO;
--		}
- 
--		transaction->params_len = skb->data[transaction->aid_len + 3];
-+		transaction = devm_kzalloc(dev, sizeof(*transaction) + params_len, GFP_KERNEL);
-+		if (!transaction)
-+			return -ENOMEM;
- 
--		/* Total size is allocated (skb->len - 2) minus fixed array members */
--		if (transaction->params_len > ((skb->len - 2) -
--		    sizeof(struct nfc_evt_transaction))) {
--			devm_kfree(dev, transaction);
--			return -EINVAL;
--		}
-+		transaction->aid_len = aid_len;
-+		transaction->params_len = params_len;
- 
--		memcpy(transaction->params, skb->data +
--		       transaction->aid_len + 4, transaction->params_len);
-+		memcpy(transaction->aid, &skb->data[2], aid_len);
-+		memcpy(transaction->params, &skb->data[aid_len + 4], params_len);
- 
- 		r = nfc_se_transaction(hdev->ndev, host, transaction);
- 	break;
+ /*
+  * ATA Port attributes
 
 
