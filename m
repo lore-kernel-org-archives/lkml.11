@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03160CCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:31:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2DEEC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:31:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354076AbiFMLbm (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:31:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33690 "EHLO
+        id S237451AbiFMLbp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 07:31:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353663AbiFMLYS (ORCPT
+        with ESMTP id S1353694AbiFMLYg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:24:18 -0400
+        Mon, 13 Jun 2022 07:24:36 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BECE813D67;
-        Mon, 13 Jun 2022 03:42:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB9621E00;
+        Mon, 13 Jun 2022 03:42:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 023E3B80E94;
+        by ams.source.kernel.org (Postfix) with ESMTPS id D8A3EB80E59;
+        Mon, 13 Jun 2022 10:42:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBB98C34114;
         Mon, 13 Jun 2022 10:42:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FCC9C34114;
-        Mon, 13 Jun 2022 10:42:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116939;
-        bh=n+qJvALMCv5MoMuwEOWidACoeDxGUQxdZNNnpfPP+fc=;
+        s=korg; t=1655116942;
+        bh=Iy2zCxexbia+3jnrwRqT+rxLhxPsx0s31m2dZe2YRmE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2QoUi/3HubrgQtAZHVwC/MznUxZipF8peLJ+uR3UYkZxZli8yrwm/Bne0dXJKbuuA
-         PlrckQCiwi+S4gRRg+21Aj2GEm9PUATEdKH66rQev2/k0PaeK9PSsF0AMK4Tt0l1JR
-         Z2oQW8pGyFNHrpLYAdXZsOk0nqjeY9+HnOP6ORpI=
+        b=foRZ669MI5ohSmi6QN2aaI1znddQ+zgfkAdfTNJDViozqkHYWj0cCgcE1AsJ6rALD
+         8MezGbHl8xiKugUgPP1FSr44ESNokT+e15UyCNeLj84KldDvSA0pieG07n9WboDFS3
+         tUxDZ+DPDAEiFPHiBYZUBcXQVr6jD1FwEx/G/Zjk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH 5.4 230/411] PCI/PM: Fix bridge_d3_blacklist[] Elo i2 overwrite of Gigabyte X299
-Date:   Mon, 13 Jun 2022 12:08:23 +0200
-Message-Id: <20220613094935.538317127@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: [PATCH 5.4 231/411] PCI: qcom: Fix runtime PM imbalance on probe errors
+Date:   Mon, 13 Jun 2022 12:08:24 +0200
+Message-Id: <20220613094935.568051451@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -48,41 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Helgaas <bhelgaas@google.com>
+From: Johan Hovold <johan+linaro@kernel.org>
 
-commit 12068bb346db5776d0ec9bb4cd073f8427a1ac92 upstream.
+commit 87d83b96c8d6c6c2d2096bd0bdba73bcf42b8ef0 upstream.
 
-92597f97a40b ("PCI/PM: Avoid putting Elo i2 PCIe Ports in D3cold") omitted
-braces around the new Elo i2 entry, so it overwrote the existing Gigabyte
-X299 entry.  Add the appropriate braces.
+Drop the leftover pm_runtime_disable() calls from the late probe error
+paths that would, for example, prevent runtime PM from being reenabled
+after a probe deferral.
 
-Found by:
-
-  $ make W=1 drivers/pci/pci.o
-    CC      drivers/pci/pci.o
-  drivers/pci/pci.c:2974:12: error: initialized field overwritten [-Werror=override-init]
-   2974 |   .ident = "Elo i2",
-        |            ^~~~~~~~
-
-Link: https://lore.kernel.org/r/20220526221258.GA409855@bhelgaas
-Fixes: 92597f97a40b ("PCI/PM: Avoid putting Elo i2 PCIe Ports in D3cold")
+Link: https://lore.kernel.org/r/20220401133854.10421-2-johan+linaro@kernel.org
+Fixes: 6e5da6f7d824 ("PCI: qcom: Fix error handling in runtime PM support")
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Cc: stable@vger.kernel.org  # v5.15+
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Acked-by: Stanimir Varbanov <svarbanov@mm-sol.com>
+Cc: stable@vger.kernel.org      # 4.20
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/pci.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/pci/controller/dwc/pcie-qcom.c |    5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -2613,6 +2613,8 @@ static const struct dmi_system_id bridge
- 			DMI_MATCH(DMI_BOARD_VENDOR, "Gigabyte Technology Co., Ltd."),
- 			DMI_MATCH(DMI_BOARD_NAME, "X299 DESIGNARE EX-CF"),
- 		},
-+	},
-+	{
- 		/*
- 		 * Downstream device is not accessible after putting a root port
- 		 * into D3cold and back into D0 on Elo i2.
+--- a/drivers/pci/controller/dwc/pcie-qcom.c
++++ b/drivers/pci/controller/dwc/pcie-qcom.c
+@@ -1343,17 +1343,14 @@ static int qcom_pcie_probe(struct platfo
+ 	}
+ 
+ 	ret = phy_init(pcie->phy);
+-	if (ret) {
+-		pm_runtime_disable(&pdev->dev);
++	if (ret)
+ 		goto err_pm_runtime_put;
+-	}
+ 
+ 	platform_set_drvdata(pdev, pcie);
+ 
+ 	ret = dw_pcie_host_init(pp);
+ 	if (ret) {
+ 		dev_err(dev, "cannot initialize host\n");
+-		pm_runtime_disable(&pdev->dev);
+ 		goto err_pm_runtime_put;
+ 	}
+ 
 
 
