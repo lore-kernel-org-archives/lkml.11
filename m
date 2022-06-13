@@ -2,112 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32E65C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:07:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09BE9C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:07:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358537AbiFMMG7 (ORCPT
+        id S1358553AbiFMMHB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:06:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54128 "EHLO
+        Mon, 13 Jun 2022 08:07:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359146AbiFMMFT (ORCPT
+        with ESMTP id S1358580AbiFMMEU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:05:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1D40B49E;
-        Mon, 13 Jun 2022 03:58:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 90DEC61257;
-        Mon, 13 Jun 2022 10:58:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97DB0C34114;
-        Mon, 13 Jun 2022 10:58:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117934;
-        bh=yBMfBMsenoejD3SJApeyaIR+DRPPPmmkDIHXMUaPI6E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e8j1YH2lYk8C8XzWrWVUDP6GOmM+hOkbk1j+9zbF9ed1yeFxb10N3jvh+Y9jT1Rye
-         fZq7F0sMx+rGFXNT44yZ4/YJLWHA/HyYP4jm04JWV8xX46gXKInZYpLZdTfm2TWc1V
-         UH347UBFIMWTh4NFrjLiZM/mitraZ7k4lubUgk6g=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Richard Weinberger <richard@nod.at>,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH 4.19 171/287] um: chan_user: Fix winch_tramp() return value
-Date:   Mon, 13 Jun 2022 12:09:55 +0200
-Message-Id: <20220613094929.059410827@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
-References: <20220613094923.832156175@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Mon, 13 Jun 2022 08:04:20 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 304084A919;
+        Mon, 13 Jun 2022 03:57:34 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id r187-20020a1c44c4000000b0039c76434147so4350889wma.1;
+        Mon, 13 Jun 2022 03:57:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=I+mQAAdlRxYZRH/29vXWOhrYvOZ8KHnvV5uZ0Clui7o=;
+        b=YpyLEN1/a2T0NyREDZwDbs+wwokpx38lbbSATmCX92bFRmpSoXUwuShVVr19qfrMiP
+         7F3ltt35cRIHX3QT4MeuSbOD1WmTgOZGiB65n3BeqKUWihgcFmMxTr+/mtjH8qdOHI6p
+         susamQxk8bGDNiMihDzG+2GSzABq9j9JNZ0ufsis9uU/bJbyG40nZchW3JrfGsdsKAM3
+         9vuKtElkiOlRcIwdBf707wuBUrCAsGuSWfZvcNGurFK+LWmnSD1P0fobCc2q5v6pMSmq
+         FBZEZJ3NpZLRhwZI53sn8TSIkkGrhzsbTyCDrhsaniB0DAiUe9EzGMpqfLOXfvMoWYXK
+         ccXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=I+mQAAdlRxYZRH/29vXWOhrYvOZ8KHnvV5uZ0Clui7o=;
+        b=nOYOc+YXe2/gVjP1zU7YZFQiEdD4ZMH8SEefZrR/2AdQfcZ1SW/jY4K6CKeFaUkP+W
+         UvtP23ycbggBPV4MH/uxLvFr9JrKrQXU0eW5HBZgDMRyT8fCOp660xTxDSMhuF6G0d/t
+         E7fi9Z8PayF2eumZ3Op2b7UtfKVYb8nh/IFELXcn8FLSW90a3PpyMLYDvwMq8uiUAsmr
+         O9K6kj+amBc3RTAyXLLpN5Clflk2m+QgE2XIXkzXotdFWIDoOXMthK0TbNvLV6XqIO1S
+         Kjlhm9mXLS7fkU2XXiuAxb2yLMPOqkAqHWvg4vE4ad8sghw9+gSfTVcONJk+C5/Xp6pK
+         iDjg==
+X-Gm-Message-State: AOAM533MWBgmqYfzzlVyEDBysfF5LvPX2ZoT3/pCIb3D27hhEu4UCBGo
+        PRl9fnMZOeG9xKdj36y67cA=
+X-Google-Smtp-Source: ABdhPJyx101r3sLv5Q1UW6EdzWAxoF2lKwCmcCsohkETQk9BiO9huRU/LN+nbnRLzzeYjq3k6dfGGg==
+X-Received: by 2002:a05:600c:34cf:b0:39c:4dfb:1398 with SMTP id d15-20020a05600c34cf00b0039c4dfb1398mr14043917wmq.133.1655117852610;
+        Mon, 13 Jun 2022 03:57:32 -0700 (PDT)
+Received: from felia.fritz.box (200116b8260df50089ef6db2443adc92.dip.versatel-1u1.de. [2001:16b8:260d:f500:89ef:6db2:443a:dc92])
+        by smtp.gmail.com with ESMTPSA id e5-20020a05600c4e4500b0039c4ff5e0a7sm9008225wmq.38.2022.06.13.03.57.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 03:57:32 -0700 (PDT)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] MAINTAINERS: add include/dt-bindings/display to DRM DRIVERS
+Date:   Mon, 13 Jun 2022 12:57:15 +0200
+Message-Id: <20220613105715.13578-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+Maintainers of the directory Documentation/devicetree/bindings/display
+are also the maintainers of the corresponding directory
+include/dt-bindings/display.
 
-commit 57ae0b67b747031bc41fb44643aa5344ab58607e upstream.
+Add the file entry for include/dt-bindings/display to the appropriate
+section in MAINTAINERS.
 
-The previous fix here was only partially correct, it did
-result in returning a proper error value in case of error,
-but it also clobbered the pid that we need to return from
-this function (not just zero for success).
-
-As a result, it returned 0 here, but later this is treated
-as a pid and used to kill the process, but since it's now
-0 we kill(0, SIGKILL), which makes UML kill itself rather
-than just the helper thread.
-
-Fix that and make it more obvious by using a separate
-variable for the pid.
-
-Fixes: ccf1236ecac4 ("um: fix error return code in winch_tramp()")
-Reported-and-tested-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 ---
- arch/um/drivers/chan_user.c |    9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+David, Daniel, please pick this MAINTAINERS addition to your section.
 
---- a/arch/um/drivers/chan_user.c
-+++ b/arch/um/drivers/chan_user.c
-@@ -220,7 +220,7 @@ static int winch_tramp(int fd, struct tt
- 		       unsigned long *stack_out)
- {
- 	struct winch_data data;
--	int fds[2], n, err;
-+	int fds[2], n, err, pid;
- 	char c;
- 
- 	err = os_pipe(fds, 1, 1);
-@@ -238,8 +238,9 @@ static int winch_tramp(int fd, struct tt
- 	 * problem with /dev/net/tun, which if held open by this
- 	 * thread, prevents the TUN/TAP device from being reused.
- 	 */
--	err = run_helper_thread(winch_thread, &data, CLONE_FILES, stack_out);
--	if (err < 0) {
-+	pid = run_helper_thread(winch_thread, &data, CLONE_FILES, stack_out);
-+	if (pid < 0) {
-+		err = pid;
- 		printk(UM_KERN_ERR "fork of winch_thread failed - errno = %d\n",
- 		       -err);
- 		goto out_close;
-@@ -263,7 +264,7 @@ static int winch_tramp(int fd, struct tt
- 		goto out_close;
- 	}
- 
--	return err;
-+	return pid;
- 
-  out_close:
- 	close(fds[1]);
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 2e7d1e885aed..a8d243668992 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -6597,6 +6597,7 @@ F:	Documentation/devicetree/bindings/gpu/
+ F:	Documentation/gpu/
+ F:	drivers/gpu/
+ F:	include/drm/
++F:	include/dt-bindings/display/
+ F:	include/linux/vga*
+ F:	include/uapi/drm/
+ 
+-- 
+2.17.1
 
