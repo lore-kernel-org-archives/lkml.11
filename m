@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6D8BC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB41DCCA47F
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:45:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379334AbiFMNoF (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:44:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58664 "EHLO
+        id S240674AbiFMNpl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 09:45:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379166AbiFMNj5 (ORCPT
+        with ESMTP id S1378055AbiFMNkC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:39:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B7133DA7C;
-        Mon, 13 Jun 2022 04:29:09 -0700 (PDT)
+        Mon, 13 Jun 2022 09:40:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A4B0A45C;
+        Mon, 13 Jun 2022 04:29:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 09092B80E59;
-        Mon, 13 Jun 2022 11:29:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A6CFC34114;
-        Mon, 13 Jun 2022 11:29:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CABDE61236;
+        Mon, 13 Jun 2022 11:29:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D53B5C34114;
+        Mon, 13 Jun 2022 11:29:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119746;
-        bh=OncwCvF+KNasYeqYSs3bvfdp/8rbqOLVhCMBTIbBsyI=;
+        s=korg; t=1655119791;
+        bh=oVBfeT43YiBBYZIXtsBG1KEvA//lVG/SvY0P/Qp7O3s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O3cSXPEbvqLZhZpDRI4xrXTRVaTXvJwni8rglhQUhjL4Vz8kT1MiGwU9GnYg1y6Fy
-         Dh34cy39NvTlYeVWyox3IFaTP5Vs0H/02IWA4v6TuqIUCD79AP00kgqUMIT7QvklTk
-         Bg3klOsAADe5zwAkUuO1r4kGlWZOEbMLH8b0iKkQ=
+        b=AaX5yKIyLZrGmnSntnMwT/1D3RGh1ZO1AGLyCZKZkb+q+OGLTlVRV0zr7ltqRDopg
+         HSnhoseQdZ58d8Ln3SZLTB5vvU1TtK0xvWmgHQQRd+7az1+4fUUcjwjj33Un9RCeI8
+         EYJnsOvc0fWRhBGN6SEw9+CDP4YInVjNQVNpqxNA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maor Dickman <maord@nvidia.com>,
-        Paul Blakey <paulb@nvidia.com>,
-        Ariel Levkovich <lariel@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 125/339] net/mlx5e: TC NIC mode, fix tc chains miss table
-Date:   Mon, 13 Jun 2022 12:09:10 +0200
-Message-Id: <20220613094930.300762030@linuxfoundation.org>
+Subject: [PATCH 5.18 141/339] drm/msm/dp: Always clear mask bits to disable interrupts at dp_ctrl_reset_irq_ctrl()
+Date:   Mon, 13 Jun 2022 12:09:26 +0200
+Message-Id: <20220613094930.961025942@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -52,149 +50,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maor Dickman <maord@nvidia.com>
+From: Kuogee Hsieh <quic_khsieh@quicinc.com>
 
-[ Upstream commit 66cb64e292d21588bdb831f08a7ec0ff04d6380d ]
+[ Upstream commit 993a2adc6e2e94a0a7b5bfc054eda90ac95f62c3 ]
 
-The cited commit changed promisc table to be created on demand with the
-highest priority in the NIC table replacing the vlan table, this caused
-tc NIC tables miss flow to skip the prmoisc table because it use vlan
-table as miss table.
+dp_catalog_ctrl_reset() will software reset DP controller. But it will
+not reset programmable registers to default value. DP driver still have
+to clear mask bits to interrupt status registers to disable interrupts
+after software reset of controller.
 
-OVS offload in NIC mode use promisc by default so any unicast packet
-which will be handled by tc NIC tables miss flow will skip the promisc
-rule and will be dropped.
+At current implementation, dp_ctrl_reset_irq_ctrl() will software reset dp
+controller but did not call dp_catalog_ctrl_enable_irq(false) to clear hpd
+related interrupt mask bits to disable hpd related interrupts due to it
+mistakenly think hpd related interrupt mask bits will be cleared by software
+reset of dp controller automatically. This mistake may cause system to crash
+during suspending procedure due to unexpected irq fired and trigger event
+thread to access dp controller registers with controller clocks are disabled.
 
-Fix this by adding new empty table in new tc level with low priority and
-point the nic tc chain miss to it, the new table is managed so it will
-point to vlan table if promisc is disabled and to promisc table if enabled.
+This patch fixes system crash during suspending problem by removing "enable"
+flag condition checking at dp_ctrl_reset_irq_ctrl() so that hpd related
+interrupt mask bits are cleared to prevent unexpected from happening.
 
-Fixes: 1c46d7409f30 ("net/mlx5e: Optimize promiscuous mode")
-Signed-off-by: Maor Dickman <maord@nvidia.com>
-Reviewed-by: Paul Blakey <paulb@nvidia.com>
-Reviewed-by: Ariel Levkovich <lariel@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Changes in v2:
+-- add more details commit text
+
+Changes in v3:
+-- add synchrons_irq()
+-- add atomic_t suspended
+
+Changes in v4:
+-- correct Fixes's commit ID
+-- remove synchrons_irq()
+
+Changes in v5:
+-- revise commit text
+
+Changes in v6:
+-- add event_lock to protect "suspended"
+
+Changes in v7:
+-- delete "suspended" flag
+
+Fixes: 989ebe7bc446 ("drm/msm/dp: do not initialize phy until plugin interrupt received")
+Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Patchwork: https://patchwork.freedesktop.org/patch/486591/
+Link: https://lore.kernel.org/r/1652804494-19650-1-git-send-email-quic_khsieh@quicinc.com
+Signed-off-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/mellanox/mlx5/core/en/fs.h   |  2 +
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 38 ++++++++++++++++++-
- .../net/ethernet/mellanox/mlx5/core/fs_core.c |  2 +-
- 3 files changed, 39 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/msm/dp/dp_ctrl.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h b/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h
-index 678ffbb48a25..e3e8c1c3ff24 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h
-@@ -12,6 +12,7 @@ struct mlx5e_post_act;
- enum {
- 	MLX5E_TC_FT_LEVEL = 0,
- 	MLX5E_TC_TTC_FT_LEVEL,
-+	MLX5E_TC_MISS_LEVEL,
- };
+diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+index 08cc48af03b7..de1974916ad2 100644
+--- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
++++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+@@ -1380,8 +1380,13 @@ void dp_ctrl_reset_irq_ctrl(struct dp_ctrl *dp_ctrl, bool enable)
  
- struct mlx5e_tc_table {
-@@ -20,6 +21,7 @@ struct mlx5e_tc_table {
- 	 */
- 	struct mutex			t_lock;
- 	struct mlx5_flow_table		*t;
-+	struct mlx5_flow_table		*miss_t;
- 	struct mlx5_fs_chains           *chains;
- 	struct mlx5e_post_act		*post_act;
+ 	dp_catalog_ctrl_reset(ctrl->catalog);
  
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index ac0f73074f7a..ec2dfecd7f0f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -4688,6 +4688,33 @@ static int mlx5e_tc_nic_get_ft_size(struct mlx5_core_dev *dev)
- 	return tc_tbl_size;
+-	if (enable)
+-		dp_catalog_ctrl_enable_irq(ctrl->catalog, enable);
++	/*
++	 * all dp controller programmable registers will not
++	 * be reset to default value after DP_SW_RESET
++	 * therefore interrupt mask bits have to be updated
++	 * to enable/disable interrupts
++	 */
++	dp_catalog_ctrl_enable_irq(ctrl->catalog, enable);
  }
  
-+static int mlx5e_tc_nic_create_miss_table(struct mlx5e_priv *priv)
-+{
-+	struct mlx5_flow_table **ft = &priv->fs.tc.miss_t;
-+	struct mlx5_flow_table_attr ft_attr = {};
-+	struct mlx5_flow_namespace *ns;
-+	int err = 0;
-+
-+	ft_attr.max_fte = 1;
-+	ft_attr.autogroup.max_num_groups = 1;
-+	ft_attr.level = MLX5E_TC_MISS_LEVEL;
-+	ft_attr.prio = 0;
-+	ns = mlx5_get_flow_namespace(priv->mdev, MLX5_FLOW_NAMESPACE_KERNEL);
-+
-+	*ft = mlx5_create_auto_grouped_flow_table(ns, &ft_attr);
-+	if (IS_ERR(*ft)) {
-+		err = PTR_ERR(*ft);
-+		netdev_err(priv->netdev, "failed to create tc nic miss table err=%d\n", err);
-+	}
-+
-+	return err;
-+}
-+
-+static void mlx5e_tc_nic_destroy_miss_table(struct mlx5e_priv *priv)
-+{
-+	mlx5_destroy_flow_table(priv->fs.tc.miss_t);
-+}
-+
- int mlx5e_tc_nic_init(struct mlx5e_priv *priv)
- {
- 	struct mlx5e_tc_table *tc = &priv->fs.tc;
-@@ -4720,19 +4747,23 @@ int mlx5e_tc_nic_init(struct mlx5e_priv *priv)
- 	}
- 	tc->mapping = chains_mapping;
- 
-+	err = mlx5e_tc_nic_create_miss_table(priv);
-+	if (err)
-+		goto err_chains;
-+
- 	if (MLX5_CAP_FLOWTABLE_NIC_RX(priv->mdev, ignore_flow_level))
- 		attr.flags = MLX5_CHAINS_AND_PRIOS_SUPPORTED |
- 			MLX5_CHAINS_IGNORE_FLOW_LEVEL_SUPPORTED;
- 	attr.ns = MLX5_FLOW_NAMESPACE_KERNEL;
- 	attr.max_ft_sz = mlx5e_tc_nic_get_ft_size(dev);
- 	attr.max_grp_num = MLX5E_TC_TABLE_NUM_GROUPS;
--	attr.default_ft = mlx5e_vlan_get_flowtable(priv->fs.vlan);
-+	attr.default_ft = priv->fs.tc.miss_t;
- 	attr.mapping = chains_mapping;
- 
- 	tc->chains = mlx5_chains_create(dev, &attr);
- 	if (IS_ERR(tc->chains)) {
- 		err = PTR_ERR(tc->chains);
--		goto err_chains;
-+		goto err_miss;
- 	}
- 
- 	tc->post_act = mlx5e_tc_post_act_init(priv, tc->chains, MLX5_FLOW_NAMESPACE_KERNEL);
-@@ -4755,6 +4786,8 @@ int mlx5e_tc_nic_init(struct mlx5e_priv *priv)
- 	mlx5_tc_ct_clean(tc->ct);
- 	mlx5e_tc_post_act_destroy(tc->post_act);
- 	mlx5_chains_destroy(tc->chains);
-+err_miss:
-+	mlx5e_tc_nic_destroy_miss_table(priv);
- err_chains:
- 	mapping_destroy(chains_mapping);
- err_mapping:
-@@ -4795,6 +4828,7 @@ void mlx5e_tc_nic_cleanup(struct mlx5e_priv *priv)
- 	mlx5e_tc_post_act_destroy(tc->post_act);
- 	mapping_destroy(tc->mapping);
- 	mlx5_chains_destroy(tc->chains);
-+	mlx5e_tc_nic_destroy_miss_table(priv);
- }
- 
- int mlx5e_tc_ht_init(struct rhashtable *tc_ht)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-index 89ba72e8d109..ab184e154eea 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -116,7 +116,7 @@
- #define KERNEL_MIN_LEVEL (KERNEL_NIC_PRIO_NUM_LEVELS + 1)
- 
- #define KERNEL_NIC_TC_NUM_PRIOS  1
--#define KERNEL_NIC_TC_NUM_LEVELS 2
-+#define KERNEL_NIC_TC_NUM_LEVELS 3
- 
- #define ANCHOR_NUM_LEVELS 1
- #define ANCHOR_NUM_PRIOS 1
+ void dp_ctrl_phy_init(struct dp_ctrl *dp_ctrl)
 -- 
 2.35.1
 
