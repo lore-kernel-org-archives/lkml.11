@@ -2,85 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4BEBCCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF002CCA47F
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:59:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231423AbiFMU7R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:59:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40024 "EHLO
+        id S1352270AbiFMU7C (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 16:59:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352256AbiFMUyT (ORCPT
+        with ESMTP id S1352277AbiFMUyU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:54:19 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B61724088;
-        Mon, 13 Jun 2022 13:22:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=8O3gyMH/DIarLtUQIeptn6LXzo+PYX0mLfSnGbw2a7g=; b=NiCUaEIDQk/r/vKjMnabo0T1aj
-        KK3IXgeBZZBkAGgl4TSxcVArNoBIV/AKyyLi9t5a07UnCfbFSwN2nvXFXzLDYNNMAXXD2fr3a3lXn
-        5qBH/nL9tJX2J7QQ4kM/7UEN+euVSEGc7b6Ex8N+TV4DQW9YU3BeLEFg/YHZyrRBVB4eOurKWVCUV
-        3dbn5FrNEUgwk3XQpLPNxo6eOD7VlDnTDsuYkubKzs3hE1PvMf7ii7WpSMRyCQ1xaKSHGQwOi4VXv
-        BhCrf7pxathZUx6m7wZ/N1DXG7+13m4woNibuhLDnSJXchPFtBME85NedsEqI+ptN5vbrVryuRlDS
-        RIIm5mxw==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o0qZK-007fIG-L3; Mon, 13 Jun 2022 20:21:51 +0000
-Message-ID: <424b4f90-138c-d71f-0f1c-12c60e44c1c2@infradead.org>
-Date:   Mon, 13 Jun 2022 13:21:43 -0700
+        Mon, 13 Jun 2022 16:54:20 -0400
+Received: from mail-oa1-f51.google.com (mail-oa1-f51.google.com [209.85.160.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B672A96C;
+        Mon, 13 Jun 2022 13:22:42 -0700 (PDT)
+Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-f2a4c51c45so9889752fac.9;
+        Mon, 13 Jun 2022 13:22:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KWClgfWpgHG+VAivQTnsEGKmEl3BheN2a8JGL0usIbE=;
+        b=x71qOj9Dke4QPwcNw8orbLy973iV1rsHM5hgNxApmrJE/i4zqPSuovyQfgGwXrez92
+         vIUuhdtmJsTzg+E62m0ne8gaqzztvV/873LFliGnFSl3v/BXA7tqHPcu2d51XXgJsrSq
+         QBvnQhFv3QcMm4p+yiqDwJCsCFohVaKnjTsh5zlDIuGuA2XkbL7rkzjscxxVVRUO4Qxo
+         bUhNkh5bKU67BOBBgMYct6gzloSoISHCs8jw2PPJ4OzR5l6Fr2Or8ArdXyRMKEWwlGz1
+         N4ammCOa0+VtSIcwdO5AwXR8s/MxwOzIZR8neJc7imCfynbEzanwWr8vhhBKqnJ0JhRh
+         YN6A==
+X-Gm-Message-State: AJIora8+ESIvvZBDexq29bmap3YIBSWFU5WfDkk92iYnmaPq7BnT/+sJ
+        u848ni8oHHlBPSTDA4c6WuN1kQRUPQ==
+X-Google-Smtp-Source: AGRyM1uYY8kwAc52zC+3YVt186Rqlx1c75177h/UvxedvgIBWt2vywhFxGucs6f9z45JMqELRcEFAQ==
+X-Received: by 2002:a05:6870:c88a:b0:f2:8d92:318a with SMTP id er10-20020a056870c88a00b000f28d92318amr302337oab.281.1655151761607;
+        Mon, 13 Jun 2022 13:22:41 -0700 (PDT)
+Received: from robh.at.kernel.org ([2607:fb90:20d2:bb97:4381:7341:60ed:a4a1])
+        by smtp.gmail.com with ESMTPSA id a21-20020a4ad1d5000000b0035eb4e5a6b2sm4211689oos.8.2022.06.13.13.22.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 13:22:41 -0700 (PDT)
+Received: (nullmailer pid 7891 invoked by uid 1000);
+        Mon, 13 Jun 2022 20:15:01 -0000
+Date:   Mon, 13 Jun 2022 14:15:01 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Frank Li <Frank.Li@nxp.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 08/18] PCI: dwc: Add trailing new-line literals to the
+ log messages
+Message-ID: <20220613201501.GD4188875-robh@kernel.org>
+References: <20220610082535.12802-1-Sergey.Semin@baikalelectronics.ru>
+ <20220610082535.12802-9-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2 15/15] video: backlight: mt6370: Add Mediatek MT6370
- support
-Content-Language: en-US
-To:     ChiaEn Wu <peterwu.pub@gmail.com>, jic23@kernel.org,
-        lars@metafoo.de, matthias.bgg@gmail.com, lee.jones@linaro.org,
-        daniel.thompson@linaro.org, jingoohan1@gmail.com, pavel@ucw.cz,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
-Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        szunichen@gmail.com, ChiaEn Wu <chiaen_wu@richtek.com>
-References: <20220613111146.25221-1-peterwu.pub@gmail.com>
- <20220613111146.25221-16-peterwu.pub@gmail.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220613111146.25221-16-peterwu.pub@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220610082535.12802-9-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Jun 10, 2022 at 11:25:24AM +0300, Serge Semin wrote:
+> There are two places in the DW PCIe controller driver, which omit the
+> trailing newlines in the log info and warn messages. Not having them there
+> will cause leaving the messages in the printk ring buffer until a next
+> '\n'-terminated message is printed (it will consequently cause the buffer
+> flush). As it isn't what the corresponding code implies let's add the
+> new-line characters in the messages.
+> 
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> ---
+>  drivers/pci/controller/dwc/pcie-designware-host.c | 2 +-
+>  drivers/pci/controller/dwc/pcie-designware.c      | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
 
-
-On 6/13/22 04:11, ChiaEn Wu wrote:
-> diff --git a/drivers/video/backlight/Kconfig b/drivers/video/backlight/Kconfig
-> index a003e02e13ce..ec1589ad88bb 100644
-> --- a/drivers/video/backlight/Kconfig
-> +++ b/drivers/video/backlight/Kconfig
-> @@ -268,6 +268,15 @@ config BACKLIGHT_MAX8925
->  	  If you have a LCD backlight connected to the WLED output of MAX8925
->  	  WLED output, say Y here to enable this driver.
->  
-> +config BACKLIGHT_MT6370
-> +	tristate "Mediatek MT6370 Backlight Driver"
-> +	depends on MFD_MT6370
-> +	help
-> +	  This enables support for Mediatek MT6370 Backlight driver.
-> +	  It's commonly used to drive the display WLED. There're 4 channels
-
-	                                                There are 4 channels
-
-> +	  inisde, and each channel supports up to 30mA of current capability
-
-	  inside,
-
-> +	  with 2048 current steps in exponential or linear mapping curves.
-
--- 
-~Randy
+Reviewed-by: Rob Herring <robh@kernel.org>
