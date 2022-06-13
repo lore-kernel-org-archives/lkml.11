@@ -2,112 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C452FCCA48B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:00:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 300B8CCA48C
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:00:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357560AbiFMM7E (ORCPT
+        id S1357832AbiFMM70 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:59:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45730 "EHLO
+        Mon, 13 Jun 2022 08:59:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357911AbiFMMys (ORCPT
+        with ESMTP id S1356701AbiFMMyH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:54:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A494D35242;
-        Mon, 13 Jun 2022 04:13:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4178860B60;
-        Mon, 13 Jun 2022 11:13:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54065C3411C;
-        Mon, 13 Jun 2022 11:13:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118815;
-        bh=J5SFK+pRZRZW0WBYohQfCLZMxVO9JONEq/gjKiUdi8w=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UEebamtGSfnut1XeWL3vSxvBCL+APltZzhoYkm+1gqMGFfOcHo9wFdHN4H0jkwGE/
-         lqSOxkoWn/bz5V2RW6v2EM7gY0ofcqAgPIx9eqOUnSN+ssPTUk/zuzDHvKyqj3n8yX
-         gvuMYlhDxd2j+YA0GfSrNsP5ccI14lJd3Ep0gDkQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 037/247] serial: sifive: Report actual baud base rather than fixed 115200
-Date:   Mon, 13 Jun 2022 12:08:59 +0200
-Message-Id: <20220613094924.067072485@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
-References: <20220613094922.843438024@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 13 Jun 2022 08:54:07 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 669715675D;
+        Mon, 13 Jun 2022 04:12:58 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id gc3-20020a17090b310300b001e33092c737so5590710pjb.3;
+        Mon, 13 Jun 2022 04:12:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=5PhEd/hCsm+H0s/MYgcNh9Jcss9lmcQSw7vjFLzWUag=;
+        b=Suc6iBHRFwzduJcDko660RQDxH8yM9viwXxb8kLirMiKU3L4sZb2X0B5lKMBVXKi5m
+         C9x103BsKW1QIXl69OQHktmu0sQ3TRjuqgfyotPqL/6uHnOybIy+Nxkse1c0ISdmSoiF
+         PMKWMq5mJY9d5yWnR/OsT/YTfccwN04V8IEw6u0XkdipUSHnBDYPmDC5o3Bcig2Rl2Mt
+         H+xeFH/SA2v1DMTus00eyR3bLPHDR3rMPAjogql5vp2kyoddKeIIfYwgwNwhp0+iY7C7
+         5UybtJdfXvabI83NctAt+Y1VE+5sSULv89R2w2dsvoy1D9tHlASeb57h1nIkXoD1B1In
+         omug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=5PhEd/hCsm+H0s/MYgcNh9Jcss9lmcQSw7vjFLzWUag=;
+        b=OY7tqRmmmFEFYVYc2fwu5N8yOw5B+1zf2ro74xs4SmkOY/qDKY+KR70eGDeOq59poz
+         fouUgvMK2EfdDtr3LB8C3Zv8E9Ud7T6DkYtN3mRBZDP7XOWHuBAoy1zo4NMy9adfQ+px
+         aWur7T7FpMNNRjIRAmJOMaWgkxb8Y5HhNJozLNz1LVvX7lACiyknqL2+hLfn2n8E1zJv
+         5NZKj6Od+fpnnQmZh71ouddhXWYFKmrzM2D/jhv79QNDmD3DPysBJyCUaUXf8m9/Ed8C
+         tp3QhdKCyIDXg6A2kcX97FPlA9sBNpuIbtDaB/yiKjT7H4T2RmH5bEhmSfkhDQvyp1Es
+         q5Hg==
+X-Gm-Message-State: AOAM533JU63q306d0lJhhhSgn3gXfYPUvMo6okGMhTIij8gbJAw0bLxF
+        gihgm8vfqSLS3UYzQF2I9Yc=
+X-Google-Smtp-Source: ABdhPJwg+KdzNhzT/AjwhzSIUVFwI7i5f/6BugmkfhPT6mWaHcgxcAdsTgruwXA2gFhNBmT+m6N0DQ==
+X-Received: by 2002:a17:902:b68c:b0:167:95e2:f822 with SMTP id c12-20020a170902b68c00b0016795e2f822mr30806898pls.128.1655118774234;
+        Mon, 13 Jun 2022 04:12:54 -0700 (PDT)
+Received: from RD-3580-24288.rt.l (42-72-115-109.emome-ip.hinet.net. [42.72.115.109])
+        by smtp.gmail.com with ESMTPSA id g17-20020a056a000b9100b0051b4e53c487sm5199989pfj.45.2022.06.13.04.12.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 04:12:53 -0700 (PDT)
+From:   ChiaEn Wu <peterwu.pub@gmail.com>
+To:     jic23@kernel.org, lars@metafoo.de, matthias.bgg@gmail.com,
+        lee.jones@linaro.org, daniel.thompson@linaro.org,
+        jingoohan1@gmail.com, pavel@ucw.cz, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        szunichen@gmail.com, ChiaEn Wu <chiaen_wu@richtek.com>
+Subject: [PATCH v2 02/15] dt-bindings: power: supply: Add Mediatek MT6370 Charger
+Date:   Mon, 13 Jun 2022 19:11:33 +0800
+Message-Id: <20220613111146.25221-3-peterwu.pub@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220613111146.25221-1-peterwu.pub@gmail.com>
+References: <20220613111146.25221-1-peterwu.pub@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej W. Rozycki <macro@orcam.me.uk>
+From: ChiaEn Wu <chiaen_wu@richtek.com>
 
-[ Upstream commit 0a7ff843d507ce2cca2c3b7e169ee56e28133530 ]
+Add Mediatek MT6370 Charger binding documentation.
 
-The base baud value reported is supposed to be the highest baud rate
-that can be set for a serial port.  The SiFive FU740-C000 SOC's on-chip
-UART supports baud rates of up to 1/16 of the input clock rate, which is
-the bus clock `tlclk'[1], often at 130MHz in the case of the HiFive
-Unmatched board.
-
-However the sifive UART driver reports a fixed value of 115200 instead:
-
-10010000.serial: ttySIF0 at MMIO 0x10010000 (irq = 1, base_baud = 115200) is a SiFive UART v0
-10011000.serial: ttySIF1 at MMIO 0x10011000 (irq = 2, base_baud = 115200) is a SiFive UART v0
-
-even though we already support setting higher baud rates, e.g.:
-
-$ tty
-/dev/ttySIF1
-$ stty speed
-230400
-
-The baud base value is computed by the serial core by dividing the UART
-clock recorded in `struct uart_port' by 16, which is also the minimum
-value of the clock divider supported, so correct the baud base value
-reported by setting the UART clock recorded to the input clock rate
-rather than 115200:
-
-10010000.serial: ttySIF0 at MMIO 0x10010000 (irq = 1, base_baud = 8125000) is a SiFive UART v0
-10011000.serial: ttySIF1 at MMIO 0x10011000 (irq = 2, base_baud = 8125000) is a SiFive UART v0
-
-
-[1] "SiFive FU740-C000 Manual", v1p3, SiFive, Inc., August 13, 2021,
-    Section 16.9 "Baud Rate Divisor Register (div)", pp.143-144
-
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Fixes: 1f1496a923b6 ("riscv: Fix sifive serial driver")
-Link: https://lore.kernel.org/r/alpine.DEB.2.21.2204291656280.9383@angie.orcam.me.uk
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: ChiaEn Wu <chiaen_wu@richtek.com>
 ---
- drivers/tty/serial/sifive.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../power/supply/mediatek,mt6370-charger.yaml | 60 +++++++++++++++++++
+ 1 file changed, 60 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/power/supply/mediatek,mt6370-charger.yaml
 
-diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c
-index 0ac0371f943b..a579d46ed78c 100644
---- a/drivers/tty/serial/sifive.c
-+++ b/drivers/tty/serial/sifive.c
-@@ -998,7 +998,7 @@ static int sifive_serial_probe(struct platform_device *pdev)
- 	/* Set up clock divider */
- 	ssp->clkin_rate = clk_get_rate(ssp->clk);
- 	ssp->baud_rate = SIFIVE_DEFAULT_BAUD_RATE;
--	ssp->port.uartclk = ssp->baud_rate * 16;
-+	ssp->port.uartclk = ssp->clkin_rate;
- 	__ssp_update_div(ssp);
- 
- 	platform_set_drvdata(pdev, ssp);
+diff --git a/Documentation/devicetree/bindings/power/supply/mediatek,mt6370-charger.yaml b/Documentation/devicetree/bindings/power/supply/mediatek,mt6370-charger.yaml
+new file mode 100644
+index 000000000000..b63553ebb15b
+--- /dev/null
++++ b/Documentation/devicetree/bindings/power/supply/mediatek,mt6370-charger.yaml
+@@ -0,0 +1,60 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/power/supply/mediatek,mt6370-charger.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Mediatek MT6370 Battery Charger
++
++maintainers:
++  - ChiaEn Wu <chiaen_wu@richtek.com>
++
++description: |
++  This module is part of the MT6370 MFD device.
++  Provides Battery Charger, Boost for OTG devices and BC1.2 detection.
++
++properties:
++  compatible:
++    const: mediatek,mt6370-charger
++
++  interrupts:
++    description: |
++      Specify what irqs are needed to be handled by MT6370 Charger driver. IRQ
++      "MT6370_IRQ_CHG_MIVR", "MT6370_IRQ_ATTACH" and "MT6370_IRQ_OVPCTRL_UVP_D"
++      are required.
++    items:
++      - description: BC1.2 done irq
++      - description: usb plug in irq
++      - description: mivr irq
++
++  interrupt-names:
++    items:
++      - const: attach_i
++      - const: uvp_d_evt
++      - const: mivr
++
++  io-channels:
++    description: |
++      Use ADC channel to read vbus, ibus, ibat, etc., info. Ibus ADC channel
++      is required.
++    minItems: 1
++    maxItems: 9
++
++  usb-otg-vbus-regulator:
++    type: object
++    description: OTG boost regulator.
++    $ref: /schemas/regulator/regulator.yaml#
++
++    properties:
++      enable-gpio:
++        maxItems: 1
++
++required:
++  - compatible
++  - interrupts
++  - interrupt-names
++  - io-channels
++
++additionalProperties: false
++
++...
 -- 
-2.35.1
-
-
+2.25.1
 
