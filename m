@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BACCC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:56:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15260CCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:56:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348858AbiFMK4g (ORCPT
+        id S1348957AbiFMK4o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:56:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43338 "EHLO
+        Mon, 13 Jun 2022 06:56:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349190AbiFMKyP (ORCPT
+        with ESMTP id S1349281AbiFMKyS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:54:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA7402F382;
-        Mon, 13 Jun 2022 03:27:57 -0700 (PDT)
+        Mon, 13 Jun 2022 06:54:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB6F2F3A5;
+        Mon, 13 Jun 2022 03:28:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63EC0B80E94;
-        Mon, 13 Jun 2022 10:27:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE998C34114;
-        Mon, 13 Jun 2022 10:27:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 12EE660AEB;
+        Mon, 13 Jun 2022 10:28:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B4EFC3411C;
+        Mon, 13 Jun 2022 10:27:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116075;
-        bh=E5T8XFXdHMh26thn7ulMZBY1jVHtv/4aHE/TTVK12Cw=;
+        s=korg; t=1655116080;
+        bh=quui/XcBuVEhwDXWWV0qR5h2GQ+QiIDuw0jFKvkJ/sM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SXvFUtM3sQV1PqUCDkWRj3MsbAGprjUA620WK7XgU3XlBxIWk+O/OZybbbHNYl7TG
-         ocPmRGfcPIJgxmxzCOu1I+947fYSC37LYlWk1FupagS/B8fmdAHYDOboOmWZ3gaKdZ
-         p8QZer5u3rfvj4RkimKRMlhXg+oCmVaO6mmyKN8g=
+        b=ot79oLwavr+wzwQ1VGv8hS2mPlIU+mNTsd9UeBcCvDpbxUAGXMVf/KE32zza8F/Sh
+         LNYK4sSew6W8byBSbgw6FOtLB+/RpchUbrhrXc2aBn+sfTvTNQAsLrPT1kQCdiRDQY
+         jmlnNMQqf3qi+enh594fQ9/iXoPF4zfnbrtlEH80=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Song Liu <song@kernel.org>
-Subject: [PATCH 4.14 118/218] md: fix an incorrect NULL check in md_reload_sb
-Date:   Mon, 13 Jun 2022 12:09:36 +0200
-Message-Id: <20220613094924.148433301@linuxfoundation.org>
+        stable@vger.kernel.org, Dave Airlie <airlied@redhat.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 4.14 114/218] drm/amdgpu/cs: make commands with 0 chunks illegal behaviour.
+Date:   Mon, 13 Jun 2022 12:09:32 +0200
+Message-Id: <20220613094924.022047372@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -49,57 +49,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Dave Airlie <airlied@redhat.com>
 
-commit 64c54d9244a4efe9bc6e9c98e13c4bbb8bb39083 upstream.
+commit 31ab27b14daaa75541a415c6794d6f3567fea44a upstream.
 
-The bug is here:
-	if (!rdev || rdev->desc_nr != nr) {
+Submitting a cs with 0 chunks, causes an oops later, found trying
+to execute the wrong userspace driver.
 
-The list iterator value 'rdev' will *always* be set and non-NULL
-by rdev_for_each_rcu(), so it is incorrect to assume that the
-iterator value will be NULL if the list is empty or no element
-found (In fact, it will be a bogus pointer to an invalid struct
-object containing the HEAD). Otherwise it will bypass the check
-and lead to invalid memory access passing the check.
+MESA_LOADER_DRIVER_OVERRIDE=v3d glxinfo
 
-To fix the bug, use a new variable 'iter' as the list iterator,
-while using the original variable 'pdev' as a dedicated pointer to
-point to the found element.
+[172536.665184] BUG: kernel NULL pointer dereference, address: 00000000000001d8
+[172536.665188] #PF: supervisor read access in kernel mode
+[172536.665189] #PF: error_code(0x0000) - not-present page
+[172536.665191] PGD 6712a0067 P4D 6712a0067 PUD 5af9ff067 PMD 0
+[172536.665195] Oops: 0000 [#1] SMP NOPTI
+[172536.665197] CPU: 7 PID: 2769838 Comm: glxinfo Tainted: P           O      5.10.81 #1-NixOS
+[172536.665199] Hardware name: To be filled by O.E.M. To be filled by O.E.M./CROSSHAIR V FORMULA-Z, BIOS 2201 03/23/2015
+[172536.665272] RIP: 0010:amdgpu_cs_ioctl+0x96/0x1ce0 [amdgpu]
+[172536.665274] Code: 75 18 00 00 4c 8b b2 88 00 00 00 8b 46 08 48 89 54 24 68 49 89 f7 4c 89 5c 24 60 31 d2 4c 89 74 24 30 85 c0 0f 85 c0 01 00 00 <48> 83 ba d8 01 00 00 00 48 8b b4 24 90 00 00 00 74 16 48 8b 46 10
+[172536.665276] RSP: 0018:ffffb47c0e81bbe0 EFLAGS: 00010246
+[172536.665277] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+[172536.665278] RDX: 0000000000000000 RSI: ffffb47c0e81be28 RDI: ffffb47c0e81bd68
+[172536.665279] RBP: ffff936524080010 R08: 0000000000000000 R09: ffffb47c0e81be38
+[172536.665281] R10: ffff936524080010 R11: ffff936524080000 R12: ffffb47c0e81bc40
+[172536.665282] R13: ffffb47c0e81be28 R14: ffff9367bc410000 R15: ffffb47c0e81be28
+[172536.665283] FS:  00007fe35e05d740(0000) GS:ffff936c1edc0000(0000) knlGS:0000000000000000
+[172536.665284] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[172536.665286] CR2: 00000000000001d8 CR3: 0000000532e46000 CR4: 00000000000406e0
+[172536.665287] Call Trace:
+[172536.665322]  ? amdgpu_cs_find_mapping+0x110/0x110 [amdgpu]
+[172536.665332]  drm_ioctl_kernel+0xaa/0xf0 [drm]
+[172536.665338]  drm_ioctl+0x201/0x3b0 [drm]
+[172536.665369]  ? amdgpu_cs_find_mapping+0x110/0x110 [amdgpu]
+[172536.665372]  ? selinux_file_ioctl+0x135/0x230
+[172536.665399]  amdgpu_drm_ioctl+0x49/0x80 [amdgpu]
+[172536.665403]  __x64_sys_ioctl+0x83/0xb0
+[172536.665406]  do_syscall_64+0x33/0x40
+[172536.665409]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/2018
+Signed-off-by: Dave Airlie <airlied@redhat.com>
 Cc: stable@vger.kernel.org
-Fixes: 70bcecdb1534 ("md-cluster: Improve md_reload_sb to be less error prone")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Signed-off-by: Song Liu <song@kernel.org>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/md.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/md/md.c
-+++ b/drivers/md/md.c
-@@ -9266,16 +9266,18 @@ static int read_rdev(struct mddev *mddev
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
+@@ -84,7 +84,7 @@ static int amdgpu_cs_parser_init(struct
+ 	int ret;
  
- void md_reload_sb(struct mddev *mddev, int nr)
- {
--	struct md_rdev *rdev;
-+	struct md_rdev *rdev = NULL, *iter;
- 	int err;
+ 	if (cs->in.num_chunks == 0)
+-		return 0;
++		return -EINVAL;
  
- 	/* Find the rdev */
--	rdev_for_each_rcu(rdev, mddev) {
--		if (rdev->desc_nr == nr)
-+	rdev_for_each_rcu(iter, mddev) {
-+		if (iter->desc_nr == nr) {
-+			rdev = iter;
- 			break;
-+		}
- 	}
- 
--	if (!rdev || rdev->desc_nr != nr) {
-+	if (!rdev) {
- 		pr_warn("%s: %d Could not find rdev with nr %d\n", __func__, __LINE__, nr);
- 		return;
- 	}
+ 	chunk_array = kmalloc_array(cs->in.num_chunks, sizeof(uint64_t), GFP_KERNEL);
+ 	if (!chunk_array)
 
 
