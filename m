@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 408DDC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:34:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1DFAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:34:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377546AbiFMNeS (ORCPT
+        id S1377597AbiFMNed (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:34:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50712 "EHLO
+        Mon, 13 Jun 2022 09:34:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378166AbiFMNa5 (ORCPT
+        with ESMTP id S1378229AbiFMNbF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:30:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C26786F4AD;
-        Mon, 13 Jun 2022 04:25:45 -0700 (PDT)
+        Mon, 13 Jun 2022 09:31:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 211C36F4B8;
+        Mon, 13 Jun 2022 04:25:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20964B80D3A;
-        Mon, 13 Jun 2022 11:25:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80947C385A9;
-        Mon, 13 Jun 2022 11:25:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 358AA60F18;
+        Mon, 13 Jun 2022 11:25:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17E0AC34114;
+        Mon, 13 Jun 2022 11:25:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119542;
-        bh=iEkaNM5GFtw73VWBfMqoguXgWeUVCat7JftniUDJRYI=;
+        s=korg; t=1655119548;
+        bh=dus5GhVCCGRZl6vw1Z0GLTyGcpHSSBRD+KW0xEHSI3c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XKH2BN/YmwYBWamx2/osQZmXPLDe1l+gbB/9dfYM4kcCNXGFF0+mAQMydQHHNAGhC
-         ZChqdqt+3dxMf8M8x3qoqOY6VKPALZdq6wvBRNZRmxIIxyn5CTJ4HLDhzEV78fvmDU
-         EoZ5QzL0RH5iYvliuCJY1p8GnkwNaw4iTWcgqmDM=
+        b=RjuT51fH6HXH4Q40Z2N9R/LXAQYG9knzGg/bws4krT/02bH5+7j+zUlHuXkr1+Dr0
+         Hpcl1GrtKXV2E6WyEogmepj3JGFBPcuOPqczXlNRsNrfDmsP+XWZAreZYB6i7no8uK
+         yfCw3QwtraODqPIoN2DrsEgtQCr5by6O34qe0MeU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        stable@vger.kernel.org, Leo Yan <leo.yan@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Mike Leach <mike.leach@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 043/339] power: supply: axp288_fuel_gauge: Drop BIOS version check from "T3 MRD" DMI quirk
-Date:   Mon, 13 Jun 2022 12:07:48 +0200
-Message-Id: <20220613094927.827304042@linuxfoundation.org>
+Subject: [PATCH 5.18 053/339] coresight: cpu-debug: Replace mutex with mutex_trylock on panic notifier
+Date:   Mon, 13 Jun 2022 12:07:58 +0200
+Message-Id: <20220613094928.131944220@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,36 +53,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Guilherme G. Piccoli <gpiccoli@igalia.com>
 
-[ Upstream commit f61509a6f0b70f5bedea34efaf8065621689bd7a ]
+[ Upstream commit 1adff542d67a2ed1120955cb219bfff8a9c53f59 ]
 
-Some "T3 MRD" mini-PCs / HDMI-sticks without a battery use a different
-value then "5.11" for their DMI BIOS version field.
+The panic notifier infrastructure executes registered callbacks when
+a panic event happens - such callbacks are executed in atomic context,
+with interrupts and preemption disabled in the running CPU and all other
+CPUs disabled. That said, mutexes in such context are not a good idea.
 
-Drop the BIOS version check so that the no-battery "T3 MRD" DMI quirk
-applies to these too.
+This patch replaces a regular mutex with a mutex_trylock safer approach;
+given the nature of the mutex used in the driver, it should be pretty
+uncommon being unable to acquire such mutex in the panic path, hence
+no functional change should be observed (and if it is, that would be
+likely a deadlock with the regular mutex).
 
-Fixes: 3a06b912a5ce ("power: supply: axp288_fuel_gauge: Make "T3 MRD" no_battery_list DMI entry more generic")
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Fixes: 2227b7c74634 ("coresight: add support for CPU debug module")
+Cc: Leo Yan <leo.yan@linaro.org>
+Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+Cc: Mike Leach <mike.leach@linaro.org>
+Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
+Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Link: https://lore.kernel.org/r/20220427224924.592546-10-gpiccoli@igalia.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/supply/axp288_fuel_gauge.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/hwtracing/coresight/coresight-cpu-debug.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/power/supply/axp288_fuel_gauge.c b/drivers/power/supply/axp288_fuel_gauge.c
-index 5b8aa4a980cd..8e6f8a655079 100644
---- a/drivers/power/supply/axp288_fuel_gauge.c
-+++ b/drivers/power/supply/axp288_fuel_gauge.c
-@@ -609,7 +609,6 @@ static const struct dmi_system_id axp288_quirks[] = {
- 			DMI_MATCH(DMI_BOARD_NAME, "T3 MRD"),
- 			DMI_MATCH(DMI_CHASSIS_TYPE, "3"),
- 			DMI_MATCH(DMI_BIOS_VENDOR, "American Megatrends Inc."),
--			DMI_MATCH(DMI_BIOS_VERSION, "5.11"),
- 		},
- 		.driver_data = (void *)AXP288_QUIRK_NO_BATTERY,
- 	},
+diff --git a/drivers/hwtracing/coresight/coresight-cpu-debug.c b/drivers/hwtracing/coresight/coresight-cpu-debug.c
+index 8845ec4b4402..1874df7c6a73 100644
+--- a/drivers/hwtracing/coresight/coresight-cpu-debug.c
++++ b/drivers/hwtracing/coresight/coresight-cpu-debug.c
+@@ -380,9 +380,10 @@ static int debug_notifier_call(struct notifier_block *self,
+ 	int cpu;
+ 	struct debug_drvdata *drvdata;
+ 
+-	mutex_lock(&debug_lock);
++	/* Bail out if we can't acquire the mutex or the functionality is off */
++	if (!mutex_trylock(&debug_lock))
++		return NOTIFY_DONE;
+ 
+-	/* Bail out if the functionality is disabled */
+ 	if (!debug_enable)
+ 		goto skip_dump;
+ 
+@@ -401,7 +402,7 @@ static int debug_notifier_call(struct notifier_block *self,
+ 
+ skip_dump:
+ 	mutex_unlock(&debug_lock);
+-	return 0;
++	return NOTIFY_DONE;
+ }
+ 
+ static struct notifier_block debug_notifier = {
 -- 
 2.35.1
 
