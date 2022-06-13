@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A8ACCCA486
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:21:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 157CDCCA489
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:21:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352544AbiFMLUb (ORCPT
+        id S1352999AbiFMLUy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:20:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37228 "EHLO
+        Mon, 13 Jun 2022 07:20:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352484AbiFMLNl (ORCPT
+        with ESMTP id S1352978AbiFMLOw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:13:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6781C35DE3;
-        Mon, 13 Jun 2022 03:36:21 -0700 (PDT)
+        Mon, 13 Jun 2022 07:14:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADE455F9A;
+        Mon, 13 Jun 2022 03:37:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D11C560FFD;
-        Mon, 13 Jun 2022 10:36:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D86D8C34114;
-        Mon, 13 Jun 2022 10:36:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 010C6B80E5C;
+        Mon, 13 Jun 2022 10:37:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A030C34114;
+        Mon, 13 Jun 2022 10:37:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116580;
-        bh=8NG6eTlEV5bUlXtUimdyw2SacvFJBG4XZ3T31zA2rd4=;
+        s=korg; t=1655116643;
+        bh=16LTJ5r6Ir3NkZr+xeVgwoR27oHH0kOv7d0lmSGnVn4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a3fWc9gBMAtxk6rA47nOxMZhu4l4E24GmsDKCAePVmSaAoHVPepWBjGn78/LpxgFD
-         1KgJW5amGPJ7+9+aZk4M0+T9YZraq/7LpFGHcznay0QN7j2A6LMbfVRNQSD7zd4ElA
-         bO2+VpL4dFzCOYkw+xqt0mJzpbRSto5f0AgQH4Yg=
+        b=iYGQxfGPAZQFRatCpLU49ZZ/weQTXE4VFiOX9x31rS/Wfr3vzsFiF15QCuF1eesNB
+         VjHhwxYIUiClznsFJjVSkiNp7txUb4qPsyQzL/iaCd5qFFkjrzUDCcoGK5RMYk41rq
+         3+AbA/3MUl5WxMXFskgAo8Kx3mR2GUK98Ym9xgAo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Schspa Shi <schspa@gmail.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 103/411] cpufreq: Fix possible race in cpufreq online error path
-Date:   Mon, 13 Jun 2022 12:06:16 +0200
-Message-Id: <20220613094931.766124519@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 121/411] irqchip/aspeed-i2c-ic: Fix irq_of_parse_and_map() return value
+Date:   Mon, 13 Jun 2022 12:06:34 +0200
+Message-Id: <20220613094932.303306726@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,89 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Schspa Shi <schspa@gmail.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit f346e96267cd76175d6c201b40f770c0116a8a04 ]
+[ Upstream commit 50f0f26e7c8665763d0d7d3372dbcf191f94d077 ]
 
-When cpufreq online fails, the policy->cpus mask is not cleared and
-policy->rwsem is released too early, so the driver can be invoked
-via the cpuinfo_cur_freq sysfs attribute while its ->offline() or
-->exit() callbacks are being run.
+The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
 
-Take policy->clk as an example:
-
-static int cpufreq_online(unsigned int cpu)
-{
-  ...
-  // policy->cpus != 0 at this time
-  down_write(&policy->rwsem);
-  ret = cpufreq_add_dev_interface(policy);
-  up_write(&policy->rwsem);
-
-  return 0;
-
-out_destroy_policy:
-	for_each_cpu(j, policy->real_cpus)
-		remove_cpu_dev_symlink(policy, get_cpu_device(j));
-    up_write(&policy->rwsem);
-...
-out_exit_policy:
-  if (cpufreq_driver->exit)
-    cpufreq_driver->exit(policy);
-      clk_put(policy->clk);
-      // policy->clk is a wild pointer
-...
-                                    ^
-                                    |
-                            Another process access
-                            __cpufreq_get
-                              cpufreq_verify_current_freq
-                                cpufreq_generic_get
-                                  // acces wild pointer of policy->clk;
-                                    |
-                                    |
-out_offline_policy:                 |
-  cpufreq_policy_free(policy);      |
-    // deleted here, and will wait for no body reference
-    cpufreq_policy_put_kobj(policy);
-}
-
-Address this by modifying cpufreq_online() to release policy->rwsem
-in the error path after the driver callbacks have run and to clear
-policy->cpus before releasing the semaphore.
-
-Fixes: 7106e02baed4 ("cpufreq: release policy->rwsem on error")
-Signed-off-by: Schspa Shi <schspa@gmail.com>
-[ rjw: Subject and changelog edits ]
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: f48e699ddf70 ("irqchip/aspeed-i2c-ic: Add I2C IRQ controller for Aspeed")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220423094227.33148-1-krzysztof.kozlowski@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpufreq/cpufreq.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/irqchip/irq-aspeed-i2c-ic.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
-index af9f34804862..7ea07764988e 100644
---- a/drivers/cpufreq/cpufreq.c
-+++ b/drivers/cpufreq/cpufreq.c
-@@ -1509,8 +1509,6 @@ static int cpufreq_online(unsigned int cpu)
- 	for_each_cpu(j, policy->real_cpus)
- 		remove_cpu_dev_symlink(policy, get_cpu_device(j));
+diff --git a/drivers/irqchip/irq-aspeed-i2c-ic.c b/drivers/irqchip/irq-aspeed-i2c-ic.c
+index 8d591c179f81..3d3210828e9b 100644
+--- a/drivers/irqchip/irq-aspeed-i2c-ic.c
++++ b/drivers/irqchip/irq-aspeed-i2c-ic.c
+@@ -79,8 +79,8 @@ static int __init aspeed_i2c_ic_of_init(struct device_node *node,
+ 	}
  
--	up_write(&policy->rwsem);
--
- out_offline_policy:
- 	if (cpufreq_driver->offline)
- 		cpufreq_driver->offline(policy);
-@@ -1519,6 +1517,9 @@ static int cpufreq_online(unsigned int cpu)
- 	if (cpufreq_driver->exit)
- 		cpufreq_driver->exit(policy);
+ 	i2c_ic->parent_irq = irq_of_parse_and_map(node, 0);
+-	if (i2c_ic->parent_irq < 0) {
+-		ret = i2c_ic->parent_irq;
++	if (!i2c_ic->parent_irq) {
++		ret = -EINVAL;
+ 		goto err_iounmap;
+ 	}
  
-+	cpumask_clear(policy->cpus);
-+	up_write(&policy->rwsem);
-+
- out_free_policy:
- 	cpufreq_policy_free(policy);
- 	return ret;
 -- 
 2.35.1
 
