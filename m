@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64D86CCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9701DCCA488
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:05:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351409AbiFMLEG (ORCPT
+        id S1351495AbiFMLEO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:04:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44298 "EHLO
+        Mon, 13 Jun 2022 07:04:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350039AbiFMKyj (ORCPT
+        with ESMTP id S1350183AbiFMKyo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:54:39 -0400
+        Mon, 13 Jun 2022 06:54:44 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9EB8DFB6;
-        Mon, 13 Jun 2022 03:28:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D5EDDFEA;
+        Mon, 13 Jun 2022 03:30:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 87973B80E92;
-        Mon, 13 Jun 2022 10:28:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECEFDC34114;
-        Mon, 13 Jun 2022 10:28:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5B363B80E59;
+        Mon, 13 Jun 2022 10:30:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C200FC34114;
+        Mon, 13 Jun 2022 10:30:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116118;
-        bh=ymzWjDHXG7HZZr+a7YADqPiXCSYJgmQtXeMkZqAhPos=;
+        s=korg; t=1655116201;
+        bh=iDmtIbiCibEJV3q/3pm/u+kHThmsdq8O7eZM/tAXpic=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fLg/p+bNclvl0haEj9YOzp+G8inaRi7P4bnderRnt8PhszcHPayVILo6wxKEo+2Eo
-         pVyqT2zg1Dw/yBEtaJ++ljVngkWjiZZgRcSLA6VipSBc1dKaRBN6EBtydwnxRtI4fA
-         HUg3gOXlJPrjILdFd8+0HzQlUYs5ISWafknpPlMo=
+        b=Ba1/DL/ZWv9+pioBz60nUn09vAsFA/f97SGEKLehDgcjuvqpblwDj7f2loeTZDDgU
+         zKEPiD5Yvx9/yXu+iVIvTUae4/f+KzlbkoAw64GXx6waAqAPWlhlCCIJGv4JBNuz08
+         aBIdRhbX1Lv2l8BRiK6+o3QeKipdRcWmWHJMB15w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Niels Dossche <dossche.niels@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 017/411] ipv6: fix locking issues with loops over idev->addr_list
-Date:   Mon, 13 Jun 2022 12:04:50 +0200
-Message-Id: <20220613094929.017953475@linuxfoundation.org>
+Subject: [PATCH 5.4 042/411] ASoC: tscs454: Add endianness flag in snd_soc_component_driver
+Date:   Mon, 13 Jun 2022 12:05:15 +0200
+Message-Id: <20220613094929.771651698@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -51,147 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit 51454ea42c1ab4e0c2828bb0d4d53957976980de ]
+[ Upstream commit ff69ec96b87dccb3a29edef8cec5d4fefbbc2055 ]
 
-idev->addr_list needs to be protected by idev->lock. However, it is not
-always possible to do so while iterating and performing actions on
-inet6_ifaddr instances. For example, multiple functions (like
-addrconf_{join,leave}_anycast) eventually call down to other functions
-that acquire the idev->lock. The current code temporarily unlocked the
-idev->lock during the loops, which can cause race conditions. Moving the
-locks up is also not an appropriate solution as the ordering of lock
-acquisition will be inconsistent with for example mc_lock.
+The endianness flag is used on the CODEC side to specify an
+ambivalence to endian, typically because it is lost over the hardware
+link. This device receives audio over an I2S DAI and as such should
+have endianness applied.
 
-This solution adds an additional field to inet6_ifaddr that is used
-to temporarily add the instances to a temporary list while holding
-idev->lock. The temporary list can then be traversed without holding
-idev->lock. This change was done in two places. In addrconf_ifdown, the
-list_for_each_entry_safe variant of the list loop is also no longer
-necessary as there is no deletion within that specific loop.
+A fixup is also required to use the width directly rather than relying
+on the format in hw_params, now both little and big endian would be
+supported. It is worth noting this changes the behaviour of S24_LE to
+use a word length of 24 rather than 32. This would appear to be a
+correction since the fact S24_LE is stored as 32 bits should not be
+presented over the bus.
 
-Suggested-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Acked-by: Paolo Abeni <pabeni@redhat.com>
-Link: https://lore.kernel.org/r/20220403231523.45843-1-dossche.niels@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220504170905.332415-26-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/if_inet6.h |  8 ++++++++
- net/ipv6/addrconf.c    | 30 ++++++++++++++++++++++++------
- 2 files changed, 32 insertions(+), 6 deletions(-)
+ sound/soc/codecs/tscs454.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/include/net/if_inet6.h b/include/net/if_inet6.h
-index a01981d7108f..f6d614926e9e 100644
---- a/include/net/if_inet6.h
-+++ b/include/net/if_inet6.h
-@@ -64,6 +64,14 @@ struct inet6_ifaddr {
+diff --git a/sound/soc/codecs/tscs454.c b/sound/soc/codecs/tscs454.c
+index c3587af9985c..3d981441b8d1 100644
+--- a/sound/soc/codecs/tscs454.c
++++ b/sound/soc/codecs/tscs454.c
+@@ -3128,18 +3128,17 @@ static int set_aif_sample_format(struct snd_soc_component *component,
+ 	unsigned int width;
+ 	int ret;
  
- 	struct hlist_node	addr_lst;
- 	struct list_head	if_list;
-+	/*
-+	 * Used to safely traverse idev->addr_list in process context
-+	 * if the idev->lock needed to protect idev->addr_list cannot be held.
-+	 * In that case, add the items to this list temporarily and iterate
-+	 * without holding idev->lock.
-+	 * See addrconf_ifdown and dev_forward_change.
-+	 */
-+	struct list_head	if_list_aux;
+-	switch (format) {
+-	case SNDRV_PCM_FORMAT_S16_LE:
++	switch (snd_pcm_format_width(format)) {
++	case 16:
+ 		width = FV_WL_16;
+ 		break;
+-	case SNDRV_PCM_FORMAT_S20_3LE:
++	case 20:
+ 		width = FV_WL_20;
+ 		break;
+-	case SNDRV_PCM_FORMAT_S24_3LE:
++	case 24:
+ 		width = FV_WL_24;
+ 		break;
+-	case SNDRV_PCM_FORMAT_S24_LE:
+-	case SNDRV_PCM_FORMAT_S32_LE:
++	case 32:
+ 		width = FV_WL_32;
+ 		break;
+ 	default:
+@@ -3337,6 +3336,7 @@ static const struct snd_soc_component_driver soc_component_dev_tscs454 = {
+ 	.num_dapm_routes = ARRAY_SIZE(tscs454_intercon),
+ 	.controls =	tscs454_snd_controls,
+ 	.num_controls = ARRAY_SIZE(tscs454_snd_controls),
++	.endianness = 1,
+ };
  
- 	struct list_head	tmp_list;
- 	struct inet6_ifaddr	*ifpub;
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 92b32d131e1c..efea88fb3cd5 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -789,6 +789,7 @@ static void dev_forward_change(struct inet6_dev *idev)
- {
- 	struct net_device *dev;
- 	struct inet6_ifaddr *ifa;
-+	LIST_HEAD(tmp_addr_list);
- 
- 	if (!idev)
- 		return;
-@@ -807,14 +808,24 @@ static void dev_forward_change(struct inet6_dev *idev)
- 		}
- 	}
- 
-+	read_lock_bh(&idev->lock);
- 	list_for_each_entry(ifa, &idev->addr_list, if_list) {
- 		if (ifa->flags&IFA_F_TENTATIVE)
- 			continue;
-+		list_add_tail(&ifa->if_list_aux, &tmp_addr_list);
-+	}
-+	read_unlock_bh(&idev->lock);
-+
-+	while (!list_empty(&tmp_addr_list)) {
-+		ifa = list_first_entry(&tmp_addr_list,
-+				       struct inet6_ifaddr, if_list_aux);
-+		list_del(&ifa->if_list_aux);
- 		if (idev->cnf.forwarding)
- 			addrconf_join_anycast(ifa);
- 		else
- 			addrconf_leave_anycast(ifa);
- 	}
-+
- 	inet6_netconf_notify_devconf(dev_net(dev), RTM_NEWNETCONF,
- 				     NETCONFA_FORWARDING,
- 				     dev->ifindex, &idev->cnf);
-@@ -3713,7 +3724,8 @@ static int addrconf_ifdown(struct net_device *dev, int how)
- 	unsigned long event = how ? NETDEV_UNREGISTER : NETDEV_DOWN;
- 	struct net *net = dev_net(dev);
- 	struct inet6_dev *idev;
--	struct inet6_ifaddr *ifa, *tmp;
-+	struct inet6_ifaddr *ifa;
-+	LIST_HEAD(tmp_addr_list);
- 	bool keep_addr = false;
- 	bool was_ready;
- 	int state, i;
-@@ -3805,16 +3817,23 @@ static int addrconf_ifdown(struct net_device *dev, int how)
- 		write_lock_bh(&idev->lock);
- 	}
- 
--	list_for_each_entry_safe(ifa, tmp, &idev->addr_list, if_list) {
-+	list_for_each_entry(ifa, &idev->addr_list, if_list)
-+		list_add_tail(&ifa->if_list_aux, &tmp_addr_list);
-+	write_unlock_bh(&idev->lock);
-+
-+	while (!list_empty(&tmp_addr_list)) {
- 		struct fib6_info *rt = NULL;
- 		bool keep;
- 
-+		ifa = list_first_entry(&tmp_addr_list,
-+				       struct inet6_ifaddr, if_list_aux);
-+		list_del(&ifa->if_list_aux);
-+
- 		addrconf_del_dad_work(ifa);
- 
- 		keep = keep_addr && (ifa->flags & IFA_F_PERMANENT) &&
- 			!addr_is_local(&ifa->addr);
- 
--		write_unlock_bh(&idev->lock);
- 		spin_lock_bh(&ifa->lock);
- 
- 		if (keep) {
-@@ -3845,15 +3864,14 @@ static int addrconf_ifdown(struct net_device *dev, int how)
- 			addrconf_leave_solict(ifa->idev, &ifa->addr);
- 		}
- 
--		write_lock_bh(&idev->lock);
- 		if (!keep) {
-+			write_lock_bh(&idev->lock);
- 			list_del_rcu(&ifa->if_list);
-+			write_unlock_bh(&idev->lock);
- 			in6_ifa_put(ifa);
- 		}
- 	}
- 
--	write_unlock_bh(&idev->lock);
--
- 	/* Step 5: Discard anycast and multicast list */
- 	if (how) {
- 		ipv6_ac_destroy_dev(idev);
+ #define TSCS454_RATES SNDRV_PCM_RATE_8000_96000
 -- 
 2.35.1
 
