@@ -2,100 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4340C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:06:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F375C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:06:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351626AbiFMVF6 (ORCPT
+        id S1351708AbiFMVGC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 17:05:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54762 "EHLO
+        Mon, 13 Jun 2022 17:06:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352630AbiFMVEb (ORCPT
+        with ESMTP id S1352217AbiFMVEM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 17:04:31 -0400
-Received: from mail-io1-f45.google.com (mail-io1-f45.google.com [209.85.166.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE7A33981A;
-        Mon, 13 Jun 2022 13:39:51 -0700 (PDT)
-Received: by mail-io1-f45.google.com with SMTP id y79so7375187iof.2;
-        Mon, 13 Jun 2022 13:39:51 -0700 (PDT)
+        Mon, 13 Jun 2022 17:04:12 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 64B5C36306
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:38:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655152726;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=miyd1T3+stkgi1mrJ4phi+uWQilLr1GqB1Dxvn0GUOs=;
+        b=W1kdgea77zNwKf+TaNoVHt3TgM1XSPAi+0pwxot1AO07XaSMeB2bER4K/PHEu4dWPKIwVS
+        R01sYEZXq3bPSlx/QHYFANqE4MJUvzhmz01MR8iqn1l1ay41VDIo3xtnTpD4VH8GBV95j1
+        jMssrUcxrwOiVCvel05ho6K1qktC2OI=
+Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com
+ [209.85.215.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-155-Zfq_V0t7P1S-F7yxESNwyQ-1; Mon, 13 Jun 2022 16:38:45 -0400
+X-MC-Unique: Zfq_V0t7P1S-F7yxESNwyQ-1
+Received: by mail-pg1-f197.google.com with SMTP id a15-20020a65604f000000b00401a9baf7d5so3907422pgp.0
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:38:45 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=Jfed8WHo8TWNvxCiSvI5rcyrYQLVvZOkDmByiHpwcb4=;
-        b=R/y71E7QOY6woE382+bK9glJduIZ41l7A6wrwXeq6fpfqICgtjIWPLB48KyjA2UGxO
-         RWzVXV4soUsBDINcnPrt2lIVmYmAfbsu54YrLvL5cWvMlHLICdkJIN2QiL11CWxe+zfk
-         fUMcuhBE/JkMYVF2HGpEoWu2SpWND/ZRT9tvrEIobltZMO+1uDdEUsiRw9tAeLnMtT7j
-         OeMllGfoapaK0ro129uzfm04dzJZXxGBKcW0C/cxi/9kpu7odVPrmxE13yQhHwm0FKJu
-         1bGpMEtcT97KrZuI7gxsowfPCzFi+1fI8FI4hyJXe4uc7zCKBY9HhTdqQC69SY94bJe0
-         OkWA==
-X-Gm-Message-State: AOAM5302xIxFIF0mB4V4JSr+FOtdpHM1aVvKf/yXY+A5wQy4KvboWV3o
-        LJ8DS2a/quoPQIHgoo7NPw==
-X-Google-Smtp-Source: ABdhPJx7nR5T7M0L4hzZ6y5vQUaF5sNik9SF5ruUtWjDfNKqK4EuWnDm5nKY2r7qbgu01ui2ucAQoQ==
-X-Received: by 2002:a6b:6003:0:b0:668:160b:db94 with SMTP id r3-20020a6b6003000000b00668160bdb94mr769352iog.204.1655152790868;
-        Mon, 13 Jun 2022 13:39:50 -0700 (PDT)
-Received: from robh.at.kernel.org ([69.39.28.171])
-        by smtp.gmail.com with ESMTPSA id c9-20020a023f49000000b0033156d6016asm3939471jaf.91.2022.06.13.13.39.49
+        bh=miyd1T3+stkgi1mrJ4phi+uWQilLr1GqB1Dxvn0GUOs=;
+        b=dSUqI+NJQQtYswzKEcqVPfHeIVT+pUBPNPsAaEu4H2AGMyXV7oFsm7s1SC3j59xBnJ
+         /QyG3CKN/I15XSPw786b6ESr1xS/tGjcWHhyKyLtnwlVZeI8Y4VVGMwvE8wm7Ra4M1h/
+         6qUwQmB3P/AQAeKht4oDkSKc5oleUPmHR8uEXCL1+HuzACXnkly2WXvayIIYfmhdc7ZM
+         QzxfCx7xujZSX1ZWPJWF4fwMn7fpANaVN02Wm08brDnlLCv1YDLd7wxxmNPEXolM/w2Z
+         kaLpatkWMt3TZVG7UJj5uZH20l4gjgn1MYpO3i/iQekUxY5XalEOrNrvYBkcwquLxcK5
+         WxLA==
+X-Gm-Message-State: AJIora/lLpYEzbqYLu6BLOz2HRy7b9DWX2NSZ63p2Cm/azqJaF+WQiRE
+        0fiirsBMyTfuPSz5kmPoUS2ocXVlZhL7T8eLwlpHnvFudFwq/cYdBgdUx514lVaNN3krEg+BVke
+        IRg1uSnPpqwio+3zmspwsD6jX
+X-Received: by 2002:a17:902:7604:b0:168:cca6:1b38 with SMTP id k4-20020a170902760400b00168cca61b38mr1113743pll.174.1655152724278;
+        Mon, 13 Jun 2022 13:38:44 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sXs1WFaIXkc6CwFKtbKlij7wvfOFwhTNHBGbcdQcBmY3+wFKnIyMn1hhRSLuPxBKdX7sAxag==
+X-Received: by 2002:a17:902:7604:b0:168:cca6:1b38 with SMTP id k4-20020a170902760400b00168cca61b38mr1113720pll.174.1655152723983;
+        Mon, 13 Jun 2022 13:38:43 -0700 (PDT)
+Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
+        by smtp.gmail.com with ESMTPSA id ja2-20020a170902efc200b0015e8d4eb2c0sm5526354plb.266.2022.06.13.13.38.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 13:39:50 -0700 (PDT)
-Received: (nullmailer pid 42858 invoked by uid 1000);
-        Mon, 13 Jun 2022 20:39:49 -0000
-Date:   Mon, 13 Jun 2022 14:39:49 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Minghuan Lian <minghuan.Lian@nxp.com>,
-        Mingkai Hu <mingkai.hu@nxp.com>, Roy Zang <roy.zang@nxp.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v4 13/18] PCI: dwc: Add start_link/stop_link inliners
-Message-ID: <20220613203949.GB28636-robh@kernel.org>
-References: <20220610082535.12802-1-Sergey.Semin@baikalelectronics.ru>
- <20220610082535.12802-14-Sergey.Semin@baikalelectronics.ru>
+        Mon, 13 Jun 2022 13:38:43 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 13:38:42 -0700
+From:   Jerry Snitselaar <jsnitsel@redhat.com>
+To:     Lu Baolu <baolu.lu@linux.intel.com>
+Cc:     Joerg Roedel <jroedel@suse.de>,
+        Kyung Min Park <kyung.min.park@intel.com>,
+        Steve Wahl <steve.wahl@hpe.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        iommu@lists.linux-foundation.org,
+        Mike Travis <mike.travis@hpe.com>,
+        Dimitri Sivanich <sivanich@hpe.com>,
+        Russ Anderson <russ.anderson@hpe.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iommu/vt-d: Make DMAR_UNITS_SUPPORTED a config setting
+Message-ID: <20220613203842.zyncvndwfauef2yh@cantor>
+References: <20220505194658.246121-1-steve.wahl@hpe.com>
+ <20220512151309.330068-1-steve.wahl@hpe.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220610082535.12802-14-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20220512151309.330068-1-steve.wahl@hpe.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 11:25:29AM +0300, Serge Semin wrote:
-> There are several places in the generic DW PCIe code where the
-> platform-specific PCIe link start/stop methods are called after making
-> sure the ops handler and the callbacks are specified. Instead of repeating
-> the same pattern over and over let's define the static-inline methods in
-> the DW PCIe header file and use them in the relevant parts of the driver.
+On Thu, May 12, 2022 at 10:13:09AM -0500, Steve Wahl wrote:
+> To support up to 64 sockets with 10 DMAR units each (640), make the
+> value of DMAR_UNITS_SUPPORTED adjustable by a config variable,
+> CONFIG_DMAR_UNITS_SUPPORTED, and make it's default 1024 when MAXSMP is
+> set.
 > 
-> Note returning a negative error from the EP link start procedure if the
-> start_link pointer isn't specified doesn't really make much sense since it
-> perfectly normal to have such platform. Moreover even pci_epc_start()
-> doesn't fail if no epc->ops->start callback is spotted. As a side-effect
-> of this modification we can set the generic DW PCIe and Layerscape EP
-> platform drivers free from the empty start_link callbacks and as such
-> entirely dummy dw_pcie_ops instances.
+> If the available hardware exceeds DMAR_UNITS_SUPPORTED (previously set
+> to MAX_IO_APICS, or 128), it causes these messages: "DMAR: Failed to
+> allocate seq_id", "DMAR: Parse DMAR table failure.", and "x2apic: IRQ
+> remapping doesn't support X2APIC mode x2apic disabled"; and the system
+> fails to boot properly.
 > 
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> 
+> Signed-off-by: Steve Wahl <steve.wahl@hpe.com>
 > ---
 > 
-> Changelog v4:
-> - This is a new patch created on the v4 lap of the series.
-> ---
->  drivers/pci/controller/dwc/pci-layerscape-ep.c    | 12 ------------
->  drivers/pci/controller/dwc/pcie-designware-ep.c   |  8 ++------
->  drivers/pci/controller/dwc/pcie-designware-host.c | 10 ++++------
->  drivers/pci/controller/dwc/pcie-designware-plat.c | 10 ----------
->  drivers/pci/controller/dwc/pcie-designware.h      | 14 ++++++++++++++
->  5 files changed, 20 insertions(+), 34 deletions(-)
+> Note that we could not find a reason for connecting
+> DMAR_UNITS_SUPPORTED to MAX_IO_APICS as was done previously.  Perhaps
+> it seemed like the two would continue to match on earlier processors.
+> There doesn't appear to be kernel code that assumes that the value of
+> one is related to the other.
+> 
+> v2: Make this value a config option, rather than a fixed constant.  The default
+> values should match previous configuration except in the MAXSMP case.  Keeping the
+> value at a power of two was requested by Kevin Tian.
+> 
+>  drivers/iommu/intel/Kconfig | 6 ++++++
+>  include/linux/dmar.h        | 6 +-----
+>  2 files changed, 7 insertions(+), 5 deletions(-)
+> 
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Baolu do you have this queued up for v5.20? Also do you have a public repo where
+you keep the vt-d changes before sending Joerg the patches for a release?
+
+Regards,
+Jerry
+
