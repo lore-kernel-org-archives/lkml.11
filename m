@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC440C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:11:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78CDEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:12:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381929AbiFMOL6 (ORCPT
+        id S1381947AbiFMOMC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:11:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52016 "EHLO
+        Mon, 13 Jun 2022 10:12:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381470AbiFMOEW (ORCPT
+        with ESMTP id S1381462AbiFMOEW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 10:04:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4664C2BB3E;
-        Mon, 13 Jun 2022 04:39:49 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AB6B2408B;
+        Mon, 13 Jun 2022 04:39:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AE33D6135C;
-        Mon, 13 Jun 2022 11:39:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9749C341CD;
-        Mon, 13 Jun 2022 11:39:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E4A72B80D31;
+        Mon, 13 Jun 2022 11:39:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 527A4C34114;
+        Mon, 13 Jun 2022 11:39:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120388;
-        bh=vZ5I9oovriQng6VNxcT+i8NCMdFdAWfl2YeDrd4tqvg=;
+        s=korg; t=1655120379;
+        bh=canv2ps0GiqtAbGVbJ9EVEBrbwZCmvW6Vj5g/tdJqck=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oeXQvVPWU8NgUV9oU5dDgY+PfQe/qvGSMHEcuZG0vPmMGiYdOmjzOd+4BSSOe1mu0
-         O8S2+qfNTDl9S+VhIfabSjJzvCg4rOgI0xlD4JgAwmNRzebfK5cLvJrNeO0J58kJw8
-         cd6pJFqtktTG36tQ2Qt88p6gbogEcXxOmr3Ovehk=
+        b=glvUL0GQbapZtve8M3/+EVaGNQTSNkhJVCYB33t6mteZv+ABGPy5I3XU99IX4fihX
+         q8dE3oPKko+pQY8mdgOfIPGcIchiLoVLpjHsoiRFJFklt2+8QTzkkX/dMG/m5I7ooM
+         bS7OBHXoGFUBqusb/qRDr9Yne3vD5bbXzt95KTuQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Kees Cook <keescook@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 007/298] tty: serial: owl: Fix missing clk_disable_unprepare() in owl_uart_probe
-Date:   Mon, 13 Jun 2022 12:08:21 +0200
-Message-Id: <20220613094925.144068187@linuxfoundation.org>
+Subject: [PATCH 5.17 004/298] lkdtm/bugs: Check for the NULL pointer after calling kmalloc
+Date:   Mon, 13 Jun 2022 12:08:18 +0200
+Message-Id: <20220613094925.053490364@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -49,34 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit bcea0f547ec1a2ee44d429aaf0334633e386e67c ]
+[ Upstream commit 4a9800c81d2f34afb66b4b42e0330ae8298019a2 ]
 
-Fix the missing clk_disable_unprepare() before return
-from owl_uart_probe() in the error handling case.
+As the possible failure of the kmalloc(), the not_checked and checked
+could be NULL pointer.
+Therefore, it should be better to check it in order to avoid the
+dereference of the NULL pointer.
+Also, we need to kfree the 'not_checked' and 'checked' to avoid
+the memory leak if fails.
+And since it is just a test, it may directly return without error
+number.
 
-Fixes: abf42d2f333b ("tty: serial: owl: add "much needed" clk_prepare_enable()")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220307105135.11698-1-linmq006@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: ae2e1aad3e48 ("drivers/misc/lkdtm/bugs.c: add arithmetic overflow and array bounds checks")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Acked-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220120092936.1874264-1-jiasheng@iscas.ac.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/owl-uart.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/misc/lkdtm/bugs.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/tty/serial/owl-uart.c b/drivers/tty/serial/owl-uart.c
-index 91f1eb0058d7..9a6611cfc18e 100644
---- a/drivers/tty/serial/owl-uart.c
-+++ b/drivers/tty/serial/owl-uart.c
-@@ -731,6 +731,7 @@ static int owl_uart_probe(struct platform_device *pdev)
- 	owl_port->port.uartclk = clk_get_rate(owl_port->clk);
- 	if (owl_port->port.uartclk == 0) {
- 		dev_err(&pdev->dev, "clock rate is zero\n");
-+		clk_disable_unprepare(owl_port->clk);
- 		return -EINVAL;
- 	}
- 	owl_port->port.flags = UPF_BOOT_AUTOCONF | UPF_IOREMAP | UPF_LOW_LATENCY;
+diff --git a/drivers/misc/lkdtm/bugs.c b/drivers/misc/lkdtm/bugs.c
+index f21854ac5cc2..4f2808b2ca3c 100644
+--- a/drivers/misc/lkdtm/bugs.c
++++ b/drivers/misc/lkdtm/bugs.c
+@@ -327,6 +327,11 @@ void lkdtm_ARRAY_BOUNDS(void)
+ 
+ 	not_checked = kmalloc(sizeof(*not_checked) * 2, GFP_KERNEL);
+ 	checked = kmalloc(sizeof(*checked) * 2, GFP_KERNEL);
++	if (!not_checked || !checked) {
++		kfree(not_checked);
++		kfree(checked);
++		return;
++	}
+ 
+ 	pr_info("Array access within bounds ...\n");
+ 	/* For both, touch all bytes in the actual member size. */
 -- 
 2.35.1
 
