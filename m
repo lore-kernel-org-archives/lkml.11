@@ -2,150 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C24B4CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:17:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98390C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:18:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244988AbiFMVRd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 17:17:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46726 "EHLO
+        id S1351769AbiFMVSA (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 17:18:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351873AbiFMVQA (ORCPT
+        with ESMTP id S239782AbiFMVRs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 17:16:00 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 346A544769
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:57:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655153860;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=DMpM3RLOLxV7DfG66nG4CpZkyo8uEbAIJok5x0MS5a8=;
-        b=NLpxM91+jN0Uik7f/N0lzHKLc2F/oz4EmhtRVsviImQuaV3oIVsU845RPNpsIdNZzaXOIQ
-        xkZsXUR6jHPgKzdzs56ElhbmC8M8KlrDpAUalOjOUxi7rviYL+KyXIdeZdy7/cvwq7hvWq
-        cucYLnrTojWn4eTcU/3HzE6cdAUO3MM=
-Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com
- [209.85.215.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-556-dI3TZdh2OSmOOoTBm5bLAQ-1; Mon, 13 Jun 2022 16:57:36 -0400
-X-MC-Unique: dI3TZdh2OSmOOoTBm5bLAQ-1
-Received: by mail-pg1-f197.google.com with SMTP id 72-20020a63014b000000b003fce454aaf2so3898528pgb.6
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:57:36 -0700 (PDT)
+        Mon, 13 Jun 2022 17:17:48 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9458A4666C;
+        Mon, 13 Jun 2022 14:00:05 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id s12so13442011ejx.3;
+        Mon, 13 Jun 2022 14:00:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=9CJMCg82C9CA+VF6EtDbiVLWnCE+gcyYEDGZtnWDX8I=;
+        b=cJc/SprZOfokSgWwnzvuGuRwPp1zab3QO7Q9DUSxb6DYSiH8EGH3aR8DOm3dcA9B7l
+         GjDO0NbkAF2WQW/sB26wXSNDG/PQsezHS9Sy3haCeZizj7fwKU12mhzRtLLFDmEiu/hp
+         dlHvkvfXMG7Fl99OAPbv0f+ufocMcSZyjnoKeqK341x16Cgcv1X9zl7i5AP9aThKe9bY
+         IZMJYxoTArAncCcTCMjPw5JyRmrVUAQizo6neNGAPII7SBuHvcAvwtjxvW6e3mhPQLrT
+         dpZI1OZO3WsL9PmsWGp3FGnrSd4NyGXdmNxtFsfVL37/QmqoEv8E9IxiwBvVS/IrPskC
+         WxoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DMpM3RLOLxV7DfG66nG4CpZkyo8uEbAIJok5x0MS5a8=;
-        b=o88wD/XPsjdNvuYDXuPJkMNxMPogT0P/Ht0qWGLs4aSCnJEjvHNxDuS77DfcL4VRSe
-         OGP78sVf/IeNZNdUWzbAqWPZfPT2qcgW+A9XNELi6AF73xRx/T5hMqe7QPl6X1fiDlWq
-         j2JX/Aiv01ghToOOqW5Q5hCRC9i8RsKY5kJbSExA9yxhNs7oF0DAPw2/1Zp+yHmjtBCE
-         Djec4GSbI6tb4aDXJ+qAeLhFYwyg4QJZZ7EIgzer7IEqbrsojUhKvTp5Yahc1LtwgRLu
-         Hww2W0OjVKOrP14WEtZlADHzr8GnSGyfe3+zk/y8Psh1DTJ7Lao6rF/iPoK3u4m+02Vu
-         63JA==
-X-Gm-Message-State: AJIora/k6rtrmyLgVEKRdLm2L98wzncDtcd1WtVYP8ulx99pepIQhV61
-        skZzVw2ABNFv99rKQBZU3881Gn63H25Q9qDHdRs7/UP6FYKDXVIpxGzoOfETLFDBrekH+qgG17Q
-        EiijaWbBWnRw1LERDxTPyTT9k
-X-Received: by 2002:a17:902:eb85:b0:168:b028:573b with SMTP id q5-20020a170902eb8500b00168b028573bmr1140652plg.158.1655153855685;
-        Mon, 13 Jun 2022 13:57:35 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uxvz2BCjhipic+Mg5uJOgnZfWvk5iX8yen2Z2mULX6gqvzjjwLap/PzmGC93Z+zJ4AwPc2Pw==
-X-Received: by 2002:a17:902:eb85:b0:168:b028:573b with SMTP id q5-20020a170902eb8500b00168b028573bmr1140628plg.158.1655153855376;
-        Mon, 13 Jun 2022 13:57:35 -0700 (PDT)
-Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
-        by smtp.gmail.com with ESMTPSA id iz19-20020a170902ef9300b001636c0b98a7sm5545154plb.226.2022.06.13.13.57.34
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=9CJMCg82C9CA+VF6EtDbiVLWnCE+gcyYEDGZtnWDX8I=;
+        b=uyyYFL62uedzN2gc7gVsrEn2ah/D0CEyFBpJpd1nH89kvmA1r8oYDx4Xr+TqCtyCDf
+         jowTmTd9GhfudqR09SBLUDdj4s67FuGK21cvAa+AGpVpRPoY7RfDbfGTOR+HZ6NqaXUh
+         mOxG9AvBsrOXtTXX+pDTOR5ghL6mTeXxQpse9pGEv8I7x51IFKAry9YUJLJnQZrhb/Mp
+         SLrr60Npk3kWo06Wo7e67c5oOH6lHj+gBqsUnCSKCYHkR4eUTC89VhouW+YHziNMiLHn
+         dgQqVMhX7r+o0OCy71Typ7Ps+eCxR60FvGkJEivGqMCMuv+lbfhbqMgTy8+sbO+bes+Q
+         ZSoA==
+X-Gm-Message-State: AJIora99+xkLG9zjK43uBfodakOnF4CQ4DJYpsGUAs7fuKa//i4NlCQL
+        sGMeAwzFYbuQLMxNgFPfEaU=
+X-Google-Smtp-Source: ABdhPJy/yfR5haJgk6lB/FbMqG7w8FPgqDK3la1oweXRWZE+kcsnyfKXjsR13vgEm01lVEVNEX/dFA==
+X-Received: by 2002:a17:906:7a13:b0:711:ff9c:f4bb with SMTP id d19-20020a1709067a1300b00711ff9cf4bbmr1415216ejo.642.1655154004124;
+        Mon, 13 Jun 2022 14:00:04 -0700 (PDT)
+Received: from kista.localnet (213-161-3-76.dynamic.telemach.net. [213.161.3.76])
+        by smtp.gmail.com with ESMTPSA id h18-20020a05640250d200b0042e15364d14sm5671325edb.8.2022.06.13.14.00.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 13:57:35 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 13:57:34 -0700
-From:   Jerry Snitselaar <jsnitsel@redhat.com>
-To:     Steve Wahl <steve.wahl@hpe.com>
-Cc:     Joerg Roedel <jroedel@suse.de>,
-        Kyung Min Park <kyung.min.park@intel.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        iommu@lists.linux-foundation.org,
-        Mike Travis <mike.travis@hpe.com>,
-        Dimitri Sivanich <sivanich@hpe.com>,
-        Russ Anderson <russ.anderson@hpe.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iommu/vt-d: Make DMAR_UNITS_SUPPORTED a config setting
-Message-ID: <20220613205734.3x7i46bnsofzerr4@cantor>
-References: <20220505194658.246121-1-steve.wahl@hpe.com>
- <20220512151309.330068-1-steve.wahl@hpe.com>
+        Mon, 13 Jun 2022 14:00:03 -0700 (PDT)
+From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        arm@kernel.org, soc@kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Samuel Holland <samuel@sholland.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH v2 05/48] arm64: dts: allwinner: align gpio-key node names with dtschema
+Date:   Mon, 13 Jun 2022 23:00:02 +0200
+Message-ID: <5574044.DvuYhMxLoT@kista>
+In-Reply-To: <20220609113911.380368-4-krzysztof.kozlowski@linaro.org>
+References: <20220609113721.379932-1-krzysztof.kozlowski@linaro.org> <20220609113911.380368-4-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220512151309.330068-1-steve.wahl@hpe.com>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 12, 2022 at 10:13:09AM -0500, Steve Wahl wrote:
-> To support up to 64 sockets with 10 DMAR units each (640), make the
-> value of DMAR_UNITS_SUPPORTED adjustable by a config variable,
-> CONFIG_DMAR_UNITS_SUPPORTED, and make it's default 1024 when MAXSMP is
-> set.
-> 
-> If the available hardware exceeds DMAR_UNITS_SUPPORTED (previously set
-> to MAX_IO_APICS, or 128), it causes these messages: "DMAR: Failed to
-> allocate seq_id", "DMAR: Parse DMAR table failure.", and "x2apic: IRQ
-> remapping doesn't support X2APIC mode x2apic disabled"; and the system
-> fails to boot properly.
-> 
-> Signed-off-by: Steve Wahl <steve.wahl@hpe.com>
-> ---
-> 
-> Note that we could not find a reason for connecting
-> DMAR_UNITS_SUPPORTED to MAX_IO_APICS as was done previously.  Perhaps
-> it seemed like the two would continue to match on earlier processors.
-> There doesn't appear to be kernel code that assumes that the value of
-> one is related to the other.
-> 
-> v2: Make this value a config option, rather than a fixed constant.  The default
-> values should match previous configuration except in the MAXSMP case.  Keeping the
-> value at a power of two was requested by Kevin Tian.
-> 
->  drivers/iommu/intel/Kconfig | 6 ++++++
->  include/linux/dmar.h        | 6 +-----
->  2 files changed, 7 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
-> index 247d0f2d5fdf..fdbda77ac21e 100644
-> --- a/drivers/iommu/intel/Kconfig
-> +++ b/drivers/iommu/intel/Kconfig
-> @@ -9,6 +9,12 @@ config DMAR_PERF
->  config DMAR_DEBUG
->  	bool
->  
-> +config DMAR_UNITS_SUPPORTED
-> +	int "Number of DMA Remapping Units supported"
+Dne =C4=8Detrtek, 09. junij 2022 ob 13:39:07 CEST je Krzysztof Kozlowski=20
+napisal(a):
+> The node names should be generic and DT schema expects certain pattern
+> (e.g. with key/button/switch).
+>=20
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Also, should there be a "depends on (X86 || IA64)" here?
+Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 
-> +	default 1024 if MAXSMP
-> +	default 128  if X86_64
-> +	default 64
-> +
->  config INTEL_IOMMU
->  	bool "Support for Intel IOMMU using DMA Remapping Devices"
->  	depends on PCI_MSI && ACPI && (X86 || IA64)
-> diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-> index 45e903d84733..0c03c1845c23 100644
-> --- a/include/linux/dmar.h
-> +++ b/include/linux/dmar.h
-> @@ -18,11 +18,7 @@
->  
->  struct acpi_dmar_header;
->  
-> -#ifdef	CONFIG_X86
-> -# define	DMAR_UNITS_SUPPORTED	MAX_IO_APICS
-> -#else
-> -# define	DMAR_UNITS_SUPPORTED	64
-> -#endif
-> +#define	DMAR_UNITS_SUPPORTED	CONFIG_DMAR_UNITS_SUPPORTED
->  
->  /* DMAR Flags */
->  #define DMAR_INTR_REMAP		0x1
-> -- 
-> 2.26.2
-> 
+Best regards,
+Jernej
+
 
