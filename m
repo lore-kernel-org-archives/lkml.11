@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88B22C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:37:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC76DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:37:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377955AbiFMNhZ (ORCPT
+        id S1377981AbiFMNh3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:37:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51976 "EHLO
+        Mon, 13 Jun 2022 09:37:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377515AbiFMNc7 (ORCPT
+        with ESMTP id S1377599AbiFMNdh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:32:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2733272E01;
-        Mon, 13 Jun 2022 04:26:56 -0700 (PDT)
+        Mon, 13 Jun 2022 09:33:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1A2172E0B;
+        Mon, 13 Jun 2022 04:26:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 77F3E61154;
-        Mon, 13 Jun 2022 11:26:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89F12C34114;
-        Mon, 13 Jun 2022 11:26:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4671560B6E;
+        Mon, 13 Jun 2022 11:26:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F4ACC341C4;
+        Mon, 13 Jun 2022 11:26:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119614;
-        bh=uocWnAIGDj1N1SgxSfZcGZiwjslXY7sezSgDHKrzoow=;
+        s=korg; t=1655119617;
+        bh=BW0XEuoI8m9tE28jNunQyhVQ0FFH+oAiHIpWbkAgEyY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qX8o1cNPidfKQs+uWMO5f1q4MPpCnlQ7Ds2R7CYWS4PHwNNEKaL5p+GPUVo9KPzIw
-         rPWhlTFycNfPgbRPT4uavsf+MA+sh/O1X6d7VvRga4HoKDvZ2W1EckLGcIA8c8tcwW
-         HyHRLcLa+MJu5w3FJUG8CkAlNSYqBw2mijNzi0Ag=
+        b=KVqXIIacN3lS/+/QQ8zDfizxTLvof/n6yQEp7zU7MAq/2HFpwW7+/EpyORjN0g1tb
+         aqT/x/WJo1seSyOmZRLkYEsIYytoH2FxCD/MchRV2tOY3YCvvKC70qEAtILHL8vVIy
+         cMvTGkcxyHEEk6quFi/i4cxMJ7eMvsP5LsCc/9eA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Schspa Shi <schspa@gmail.com>,
+        stable@vger.kernel.org, Zhang Wensheng <zhangwensheng5@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 077/339] driver: base: fix UAF when driver_attach failed
-Date:   Mon, 13 Jun 2022 12:08:22 +0200
-Message-Id: <20220613094928.855379902@linuxfoundation.org>
+Subject: [PATCH 5.18 078/339] driver core: fix deadlock in __device_attach
+Date:   Mon, 13 Jun 2022 12:08:23 +0200
+Message-Id: <20220613094928.885407235@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -49,46 +49,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Schspa Shi <schspa@gmail.com>
+From: Zhang Wensheng <zhangwensheng5@huawei.com>
 
-[ Upstream commit 310862e574001a97ad02272bac0fd13f75f42a27 ]
+[ Upstream commit b232b02bf3c205b13a26dcec08e53baddd8e59ed ]
 
-When driver_attach(drv); failed, the driver_private will be freed.
-But it has been added to the bus, which caused a UAF.
+In __device_attach function, The lock holding logic is as follows:
+...
+__device_attach
+device_lock(dev)      // get lock dev
+  async_schedule_dev(__device_attach_async_helper, dev); // func
+    async_schedule_node
+      async_schedule_node_domain(func)
+        entry = kzalloc(sizeof(struct async_entry), GFP_ATOMIC);
+	/* when fail or work limit, sync to execute func, but
+	   __device_attach_async_helper will get lock dev as
+	   well, which will lead to A-A deadlock.  */
+	if (!entry || atomic_read(&entry_count) > MAX_WORK) {
+	  func;
+	else
+	  queue_work_node(node, system_unbound_wq, &entry->work)
+  device_unlock(dev)
 
-To fix it, we need to delete it from the bus when failed.
+As shown above, when it is allowed to do async probes, because of
+out of memory or work limit, async work is not allowed, to do
+sync execute instead. it will lead to A-A deadlock because of
+__device_attach_async_helper getting lock dev.
 
-Fixes: 190888ac01d0 ("driver core: fix possible missing of device probe")
-Signed-off-by: Schspa Shi <schspa@gmail.com>
-Link: https://lore.kernel.org/r/20220513112444.45112-1-schspa@gmail.com
+To fix the deadlock, move the async_schedule_dev outside device_lock,
+as we can see, in async_schedule_node_domain, the parameter of
+queue_work_node is system_unbound_wq, so it can accept concurrent
+operations. which will also not change the code logic, and will
+not lead to deadlock.
+
+Fixes: 765230b5f084 ("driver-core: add asynchronous probing support for drivers")
+Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
+Link: https://lore.kernel.org/r/20220518074516.1225580-1-zhangwensheng5@huawei.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/bus.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/base/dd.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/base/bus.c b/drivers/base/bus.c
-index 97936ec49bde..7ca47e5b3c1f 100644
---- a/drivers/base/bus.c
-+++ b/drivers/base/bus.c
-@@ -617,7 +617,7 @@ int bus_add_driver(struct device_driver *drv)
- 	if (drv->bus->p->drivers_autoprobe) {
- 		error = driver_attach(drv);
- 		if (error)
--			goto out_unregister;
-+			goto out_del_list;
+diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+index 3fc3b5940bb3..ed02a529a896 100644
+--- a/drivers/base/dd.c
++++ b/drivers/base/dd.c
+@@ -941,6 +941,7 @@ static void __device_attach_async_helper(void *_dev, async_cookie_t cookie)
+ static int __device_attach(struct device *dev, bool allow_async)
+ {
+ 	int ret = 0;
++	bool async = false;
+ 
+ 	device_lock(dev);
+ 	if (dev->p->dead) {
+@@ -979,7 +980,7 @@ static int __device_attach(struct device *dev, bool allow_async)
+ 			 */
+ 			dev_dbg(dev, "scheduling asynchronous probe\n");
+ 			get_device(dev);
+-			async_schedule_dev(__device_attach_async_helper, dev);
++			async = true;
+ 		} else {
+ 			pm_request_idle(dev);
+ 		}
+@@ -989,6 +990,8 @@ static int __device_attach(struct device *dev, bool allow_async)
  	}
- 	module_add_driver(drv->owner, drv);
+ out_unlock:
+ 	device_unlock(dev);
++	if (async)
++		async_schedule_dev(__device_attach_async_helper, dev);
+ 	return ret;
+ }
  
-@@ -644,6 +644,8 @@ int bus_add_driver(struct device_driver *drv)
- 
- 	return 0;
- 
-+out_del_list:
-+	klist_del(&priv->knode_bus);
- out_unregister:
- 	kobject_put(&priv->kobj);
- 	/* drv->p is freed in driver_release()  */
 -- 
 2.35.1
 
