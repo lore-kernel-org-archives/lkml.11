@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2849C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:31:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FD15CCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:31:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384936AbiFMOaT (ORCPT
+        id S1385235AbiFMOas (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:30:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52854 "EHLO
+        Mon, 13 Jun 2022 10:30:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384047AbiFMOYk (ORCPT
+        with ESMTP id S1384313AbiFMOZO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:24:40 -0400
+        Mon, 13 Jun 2022 10:25:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7BEDDFB5;
-        Mon, 13 Jun 2022 04:46:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA402120A8;
+        Mon, 13 Jun 2022 04:46:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FBD9612A8;
-        Mon, 13 Jun 2022 11:46:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21B4AC34114;
-        Mon, 13 Jun 2022 11:46:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EF33A612A8;
+        Mon, 13 Jun 2022 11:46:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E112C36AFF;
+        Mon, 13 Jun 2022 11:46:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120796;
-        bh=/6/UZWaJLv8FdlPSotUOeWKDF3F8Cm8ZOwiPh/cn/Y8=;
+        s=korg; t=1655120815;
+        bh=MHenFnE2pLPUBKWsyxRWbIrZeJe3kvJNDY7XN5fGMQE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EKMJfGUoY6erMePt+cKGYIEDcZSS8LRsBoHeJV+ZjCaSXVTPV6zEEVa4r/uufvI8c
-         U0kraWAcm3Gk7FBE6MDki5ghG106z94EI3SoG70HpcfHLtRANMTzlG/dkj8rpHORK/
-         by2ZqELMSYs4Ia2oClrJuC2cA6Uiq3iomF7h98to=
+        b=jqrE1mEIV85swuDjPS1Vu710bm/APFMeQiLvEdnDnuLqLrY7wE5mFKlz9FybX1Nt9
+         OkiWezpri3xj9HPkjk2gi9UrhnF6ZipwWx8hM2NcwWPK+vwp7bOWmDdH6QKA/hRKF+
+         wjFP93umPpjjF99e0t3LiBXJcrrgwHXjU/4HuztM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org,
+        syzbot+763ae12a2ede1d99d4dc@syzkaller.appspotmail.com,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 160/298] netfilter: nf_tables: delete flowtable hooks via transaction list
-Date:   Mon, 13 Jun 2022 12:10:54 +0200
-Message-Id: <20220613094929.788198727@linuxfoundation.org>
+Subject: [PATCH 5.17 143/298] f2fs: remove WARN_ON in f2fs_is_valid_blkaddr
+Date:   Mon, 13 Jun 2022 12:10:37 +0200
+Message-Id: <20220613094929.278447752@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -49,134 +52,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit b6d9014a3335194590abdd2a2471ef5147a67645 ]
+[ Upstream commit dc2f78e2d4cc844a1458653d57ce1b54d4a29f21 ]
 
-Remove inactive bool field in nft_hook object that was introduced in
-abadb2f865d7 ("netfilter: nf_tables: delete devices from flowtable").
-Move stale flowtable hooks to transaction list instead.
+Syzbot triggers two WARNs in f2fs_is_valid_blkaddr and
+__is_bitmap_valid. For example, in f2fs_is_valid_blkaddr,
+if type is DATA_GENERIC_ENHANCE or DATA_GENERIC_ENHANCE_READ,
+it invokes WARN_ON if blkaddr is not in the right range.
+The call trace is as follows:
 
-Deleting twice the same device does not result in ENOENT.
+ f2fs_get_node_info+0x45f/0x1070
+ read_node_page+0x577/0x1190
+ __get_node_page.part.0+0x9e/0x10e0
+ __get_node_page
+ f2fs_get_node_page+0x109/0x180
+ do_read_inode
+ f2fs_iget+0x2a5/0x58b0
+ f2fs_fill_super+0x3b39/0x7ca0
 
-Fixes: abadb2f865d7 ("netfilter: nf_tables: delete devices from flowtable")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fix these two WARNs by replacing WARN_ON with dump_stack.
+
+Reported-by: syzbot+763ae12a2ede1d99d4dc@syzkaller.appspotmail.com
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Reviewed-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/netfilter/nf_tables.h |  1 -
- net/netfilter/nf_tables_api.c     | 31 ++++++-------------------------
- 2 files changed, 6 insertions(+), 26 deletions(-)
+ fs/f2fs/checkpoint.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/netfilter/nf_tables.h b/include/net/netfilter/nf_tables.h
-index c4c0861deac1..c3fdd9f71c05 100644
---- a/include/net/netfilter/nf_tables.h
-+++ b/include/net/netfilter/nf_tables.h
-@@ -1089,7 +1089,6 @@ struct nft_stats {
- 
- struct nft_hook {
- 	struct list_head	list;
--	bool			inactive;
- 	struct nf_hook_ops	ops;
- 	struct rcu_head		rcu;
- };
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 07c842b65f6d..a7ed8fe46af1 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -1835,7 +1835,6 @@ static struct nft_hook *nft_netdev_hook_alloc(struct net *net,
- 		goto err_hook_dev;
+diff --git a/fs/f2fs/checkpoint.c b/fs/f2fs/checkpoint.c
+index bf3ba85cf325..1438ae53c73c 100644
+--- a/fs/f2fs/checkpoint.c
++++ b/fs/f2fs/checkpoint.c
+@@ -151,7 +151,7 @@ static bool __is_bitmap_valid(struct f2fs_sb_info *sbi, block_t blkaddr,
+ 		f2fs_err(sbi, "Inconsistent error blkaddr:%u, sit bitmap:%d",
+ 			 blkaddr, exist);
+ 		set_sbi_flag(sbi, SBI_NEED_FSCK);
+-		WARN_ON(1);
++		dump_stack();
  	}
- 	hook->ops.dev = dev;
--	hook->inactive = false;
- 
- 	return hook;
- 
-@@ -7533,6 +7532,7 @@ static int nft_delflowtable_hook(struct nft_ctx *ctx,
- {
- 	const struct nlattr * const *nla = ctx->nla;
- 	struct nft_flowtable_hook flowtable_hook;
-+	LIST_HEAD(flowtable_del_list);
- 	struct nft_hook *this, *hook;
- 	struct nft_trans *trans;
- 	int err;
-@@ -7548,7 +7548,7 @@ static int nft_delflowtable_hook(struct nft_ctx *ctx,
- 			err = -ENOENT;
- 			goto err_flowtable_del_hook;
- 		}
--		hook->inactive = true;
-+		list_move(&hook->list, &flowtable_del_list);
- 	}
- 
- 	trans = nft_trans_alloc(ctx, NFT_MSG_DELFLOWTABLE,
-@@ -7561,6 +7561,7 @@ static int nft_delflowtable_hook(struct nft_ctx *ctx,
- 	nft_trans_flowtable(trans) = flowtable;
- 	nft_trans_flowtable_update(trans) = true;
- 	INIT_LIST_HEAD(&nft_trans_flowtable_hooks(trans));
-+	list_splice(&flowtable_del_list, &nft_trans_flowtable_hooks(trans));
- 	nft_flowtable_hook_release(&flowtable_hook);
- 
- 	nft_trans_commit_list_add_tail(ctx->net, trans);
-@@ -7568,13 +7569,7 @@ static int nft_delflowtable_hook(struct nft_ctx *ctx,
- 	return 0;
- 
- err_flowtable_del_hook:
--	list_for_each_entry(this, &flowtable_hook.list, list) {
--		hook = nft_hook_list_find(&flowtable->hook_list, this);
--		if (!hook)
--			break;
--
--		hook->inactive = false;
--	}
-+	list_splice(&flowtable_del_list, &flowtable->hook_list);
- 	nft_flowtable_hook_release(&flowtable_hook);
- 
- 	return err;
-@@ -8480,17 +8475,6 @@ void nft_chain_del(struct nft_chain *chain)
- 	list_del_rcu(&chain->list);
+ 	return exist;
  }
- 
--static void nft_flowtable_hooks_del(struct nft_flowtable *flowtable,
--				    struct list_head *hook_list)
--{
--	struct nft_hook *hook, *next;
--
--	list_for_each_entry_safe(hook, next, &flowtable->hook_list, list) {
--		if (hook->inactive)
--			list_move(&hook->list, hook_list);
--	}
--}
--
- static void nf_tables_module_autoload_cleanup(struct net *net)
- {
- 	struct nftables_pernet *nft_net = nft_pernet(net);
-@@ -8835,8 +8819,6 @@ static int nf_tables_commit(struct net *net, struct sk_buff *skb)
- 			break;
- 		case NFT_MSG_DELFLOWTABLE:
- 			if (nft_trans_flowtable_update(trans)) {
--				nft_flowtable_hooks_del(nft_trans_flowtable(trans),
--							&nft_trans_flowtable_hooks(trans));
- 				nf_tables_flowtable_notify(&trans->ctx,
- 							   nft_trans_flowtable(trans),
- 							   &nft_trans_flowtable_hooks(trans),
-@@ -8917,7 +8899,6 @@ static int __nf_tables_abort(struct net *net, enum nfnl_abort_action action)
- 	struct nftables_pernet *nft_net = nft_pernet(net);
- 	struct nft_trans *trans, *next;
- 	struct nft_trans_elem *te;
--	struct nft_hook *hook;
- 
- 	if (action == NFNL_ABORT_VALIDATE &&
- 	    nf_tables_validate(net) < 0)
-@@ -9048,8 +9029,8 @@ static int __nf_tables_abort(struct net *net, enum nfnl_abort_action action)
- 			break;
- 		case NFT_MSG_DELFLOWTABLE:
- 			if (nft_trans_flowtable_update(trans)) {
--				list_for_each_entry(hook, &nft_trans_flowtable(trans)->hook_list, list)
--					hook->inactive = false;
-+				list_splice(&nft_trans_flowtable_hooks(trans),
-+					    &nft_trans_flowtable(trans)->hook_list);
- 			} else {
- 				trans->ctx.table->use++;
- 				nft_clear(trans->ctx.net, nft_trans_flowtable(trans));
+@@ -189,7 +189,7 @@ bool f2fs_is_valid_blkaddr(struct f2fs_sb_info *sbi,
+ 			f2fs_warn(sbi, "access invalid blkaddr:%u",
+ 				  blkaddr);
+ 			set_sbi_flag(sbi, SBI_NEED_FSCK);
+-			WARN_ON(1);
++			dump_stack();
+ 			return false;
+ 		} else {
+ 			return __is_bitmap_valid(sbi, blkaddr, type);
 -- 
 2.35.1
 
