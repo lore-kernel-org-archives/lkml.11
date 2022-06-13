@@ -2,78 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 139ADC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:49:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50F90C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:50:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236265AbiFMRt1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 13:49:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53806 "EHLO
+        id S242013AbiFMRud (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 13:50:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242906AbiFMRsX (ORCPT
+        with ESMTP id S241910AbiFMRuJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 13:48:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48E9C3CA6A;
-        Mon, 13 Jun 2022 06:30:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC783612D5;
-        Mon, 13 Jun 2022 13:30:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3A11EC3411B;
-        Mon, 13 Jun 2022 13:30:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655127021;
-        bh=3owKJmN+C3KrJEir3DsRctBw54DfOoSMlpRJuhdRiu4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=kxGF1j+eI+5kQ9AwgEWJQbIMyKWMkuWMh2YymfsxLeoUcyHSfh+u9NaCjsZW5Ci27
-         vTsJYsAU/bj5451JRBoiCIZY66di1Q7BS3fcpqI1qf+L14TbWqYWroAS+JnbNP6p4e
-         uVnxGIRT3PO02aIGBewc+ipWcchbuoF4KC6L3GCg4kZ97nqXH0hjrsyj7n3atE4uAM
-         QwoDlKRynboAxbw6gmIFCLp85vsf59Y0Vsx0u8kkqPOHvKxoUOuZ1PhF+DxRJGR15I
-         w8W2Sc08wUbogEwgW9COSZFjWJkJKBxfWao4czQMmNyiu3wRuj/2ilOGB301DjKyza
-         AwSOUq9BPr1qw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 01FD217A1CBC;
-        Mon, 13 Jun 2022 13:30:21 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: make __sys_accept4_file() static
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165512702100.2444.14881268183989098998.git-patchwork-notify@kernel.org>
-Date:   Mon, 13 Jun 2022 13:30:21 +0000
-References: <20220610091017.1991892-1-yajun.deng@linux.dev>
-In-Reply-To: <20220610091017.1991892-1-yajun.deng@linux.dev>
-To:     Yajun Deng <yajun.deng@linux.dev>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
+        Mon, 13 Jun 2022 13:50:09 -0400
+Received: from mail-il1-f180.google.com (mail-il1-f180.google.com [209.85.166.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51D436EC59;
+        Mon, 13 Jun 2022 06:33:25 -0700 (PDT)
+Received: by mail-il1-f180.google.com with SMTP id p1so4235291ilj.9;
+        Mon, 13 Jun 2022 06:33:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=11tFqD3m8Y4XwFlrhzVilQYpi5rnvNYwyh/colXebbQ=;
+        b=iR/qIqgwc6Z0a5diEE12yCsRbME3f5s0u9DluK0GgkFKuQ7G71QI6NCI4vzqAwxeoN
+         DEGpUFzczlfCGMfQHBf6MvsWvy2nqGfpPbg8YDH4vVYfCydPdzulzSM25qIifnCNg828
+         sSP+fhEbN79tv3LxlFjxCPSgFZ9JQAlr9ctlXADook/QkOZP+CdbnNq/gj8/Btkmlm+3
+         4m2MXN57sF1wvtfI/3K5OhrT+PJoTijnry8qgg8QwYCS7DR6U5mTHGy4yiikG/kDdkeV
+         MFeB7Z29LVYATCvwXHmmobvyrBTH5HeSn1ewbM4/EsCCuE3A/qntV1+7manXdPSJ9Myn
+         U3YQ==
+X-Gm-Message-State: AOAM533hyaICgtJmTE88BKm5rgZtVfVhnBAzV/R4+zk22iJL4FhXtaO6
+        ydjEfeJGPf8KopBRuzTWwQ==
+X-Google-Smtp-Source: ABdhPJzmK2cQV83DMuVJPdr/ZvzCb4HSLLb6Uq1aIv7PF7+f2zyEtUCDw+8RtX1G2m0ocrPThjCEww==
+X-Received: by 2002:a92:d5cf:0:b0:2d1:d9b0:d5b1 with SMTP id d15-20020a92d5cf000000b002d1d9b0d5b1mr30500068ilq.252.1655127204260;
+        Mon, 13 Jun 2022 06:33:24 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.251])
+        by smtp.gmail.com with ESMTPSA id s18-20020a92cb12000000b002d392d98afdsm3947121ilo.9.2022.06.13.06.33.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 06:33:23 -0700 (PDT)
+Received: (nullmailer pid 3564133 invoked by uid 1000);
+        Mon, 13 Jun 2022 13:33:17 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Irui Wang <irui.wang@mediatek.com>
+Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
+        kyrie wu <kyrie.wu@mediatek.com>,
+        Tzung-Bi Shih <tzungbi@chromium.org>,
+        linux-arm-kernel@lists.infradead.org,
+        nicolas.dufresne@collabora.com, maoguang.meng@mediatek.com,
+        linux-media@vger.kernel.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        xia.jiang@mediatek.com, srv_heupstream@mediatek.com,
+        linux-kernel@vger.kernel.org, Tomasz Figa <tfiga@chromium.org>,
+        devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        angelogioacchino.delregno@collabora.com,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>, wenst@chromium.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+In-Reply-To: <20220613032306.23237-2-irui.wang@mediatek.com>
+References: <20220613032306.23237-1-irui.wang@mediatek.com> <20220613032306.23237-2-irui.wang@mediatek.com>
+Subject: Re: [V9,1/7] dt-bindings: mediatek: Add mediatek, mt8195-jpgenc compatible
+Date:   Mon, 13 Jun 2022 07:33:17 -0600
+Message-Id: <1655127197.551988.3564132.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Fri, 10 Jun 2022 17:10:17 +0800 you wrote:
-> __sys_accept4_file() isn't used outside of the file, make it static.
+On Mon, 13 Jun 2022 11:23:00 +0800, Irui Wang wrote:
+> From: kyrie wu <kyrie.wu@mediatek.com>
 > 
-> As the same time, move file_flags and nofile parameters into
-> __sys_accept4_file().
+> Add mediatek,mt8195-jpgenc compatible to binding document.
 > 
-> Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
+> Signed-off-by: kyrie wu <kyrie.wu@mediatek.com>
+> ---
+>  .../media/mediatek,mt8195-jpegenc.yaml        | 155 ++++++++++++++++++
+>  1 file changed, 155 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/media/mediatek,mt8195-jpegenc.yaml
 > 
-> [...]
 
-Here is the summary with links:
-  - [net-next] net: make __sys_accept4_file() static
-    https://git.kernel.org/netdev/net-next/c/c04245328dd7
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+yamllint warnings/errors:
 
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/media/mediatek,mt8195-jpegenc.yaml: patternProperties:^jpgenc@[0-9a-f]+$:properties:mediatek,hw-id:minItems: 0 is less than the minimum of 1
+	from schema $id: http://devicetree.org/meta-schemas/keywords.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/media/mediatek,mt8195-jpegenc.yaml: patternProperties:^jpgenc@[0-9a-f]+$:properties:mediatek,hw-id: 'oneOf' conditional failed, one must be fixed:
+	'type' is a required property
+		hint: A vendor boolean property can use "type: boolean"
+	Additional properties are not allowed ('maxItems', 'minItems' were unexpected)
+		hint: A vendor boolean property can use "type: boolean"
+	/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/media/mediatek,mt8195-jpegenc.yaml: patternProperties:^jpgenc@[0-9a-f]+$:properties:mediatek,hw-id: 'oneOf' conditional failed, one must be fixed:
+		'enum' is a required property
+		'const' is a required property
+		hint: A vendor string property with exact values has an implicit type
+		from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
+	/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/media/mediatek,mt8195-jpegenc.yaml: patternProperties:^jpgenc@[0-9a-f]+$:properties:mediatek,hw-id: 'oneOf' conditional failed, one must be fixed:
+		'$ref' is a required property
+		'allOf' is a required property
+		hint: A vendor property needs a $ref to types.yaml
+		from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
+	hint: Vendor specific properties must have a type and description unless they have a defined, common suffix.
+	from schema $id: http://devicetree.org/meta-schemas/vendor-props.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/media/mediatek,mt8195-jpegenc.yaml: ignoring, error in schema: patternProperties: ^jpgenc@[0-9a-f]+$: properties: mediatek,hw-id: minItems
+Documentation/devicetree/bindings/media/mediatek,mt8195-jpegenc.example.dtb:0:0: /example-0/soc/jpgenc_master: failed to match any schema with compatible: ['mediatek,mt8195-jpgenc']
+Documentation/devicetree/bindings/media/mediatek,mt8195-jpegenc.example.dtb:0:0: /example-0/soc/jpgenc_master/jpgenc@1a030000: failed to match any schema with compatible: ['mediatek,mt8195-jpgenc-hw']
+Documentation/devicetree/bindings/media/mediatek,mt8195-jpegenc.example.dtb:0:0: /example-0/soc/jpgenc_master/jpgenc@1b030000: failed to match any schema with compatible: ['mediatek,mt8195-jpgenc-hw']
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
