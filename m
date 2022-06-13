@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A8DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:41:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1012EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:41:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355735AbiFMLl3 (ORCPT
+        id S1355779AbiFMLlm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:41:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56038 "EHLO
+        Mon, 13 Jun 2022 07:41:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354576AbiFMLdW (ORCPT
+        with ESMTP id S1354584AbiFMLd3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:33:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB48B275E7;
-        Mon, 13 Jun 2022 03:47:28 -0700 (PDT)
+        Mon, 13 Jun 2022 07:33:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A69073968A;
+        Mon, 13 Jun 2022 03:47:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 149EAB80E07;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 10AF86112A;
+        Mon, 13 Jun 2022 10:47:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25AEBC34114;
         Mon, 13 Jun 2022 10:47:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BEE9C34114;
-        Mon, 13 Jun 2022 10:47:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117245;
-        bh=Vsx/QCh4dOhsv+MH8znzyGSqiAyUjJoyK3m1U3HMMp4=;
+        s=korg; t=1655117248;
+        bh=h22vLYdgdva+a54IzP5sYoSo8XOMrX/sUBB6usoDs/o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cRijtFNE8ZzuuFVm+5c0lyrxl1GeDn1dTr6aMb83MpZ5SXsiuYtcSDPqvlCTW8OTN
-         0yuzqKUY69rw9kbNCQxvcDA/i1F3Dd+LzfQcGsh5jiIfBgEHuun3cw5q/cRbJYQ+Ei
-         OyLhZqb4kxRenqD8o5pu5Ytvt065pCtNDWtf6EFs=
+        b=LQGPxNDMfK0iOjmj+u2doCP+vnx/vron9+75G0e4NgmO5rbmhtR3n2cdNhtX6Cn7r
+         6dIlAQ7xXI+e87zZmn3Ie3EqJwkzxnJLGUvUDGL3rLAty4dF0WjqUfLj1hg3cR9Lz5
+         SbZHF5XOXXbljHUr0lTbhZmk8jHpWse54trmsYGc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guoju Fang <gjfang@linux.alibaba.com>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Laurent Fasnacht <laurent.fasnacht@proton.ch>,
+        Neal Cardwell <ncardwell@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 332/411] net: sched: add barrier to fix packet stuck problem for lockless qdisc
-Date:   Mon, 13 Jun 2022 12:10:05 +0200
-Message-Id: <20220613094938.678918996@linuxfoundation.org>
+Subject: [PATCH 5.4 333/411] tcp: tcp_rtx_synack() can be called from process context
+Date:   Mon, 13 Jun 2022 12:10:06 +0200
+Message-Id: <20220613094938.707534130@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,68 +52,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guoju Fang <gjfang@linux.alibaba.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 2e8728c955ce0624b958eee6e030a37aca3a5d86 ]
+[ Upstream commit 0a375c822497ed6ad6b5da0792a12a6f1af10c0b ]
 
-In qdisc_run_end(), the spin_unlock() only has store-release semantic,
-which guarantees all earlier memory access are visible before it. But
-the subsequent test_bit() has no barrier semantics so may be reordered
-ahead of the spin_unlock(). The store-load reordering may cause a packet
-stuck problem.
+Laurent reported the enclosed report [1]
 
-The concurrent operations can be described as below,
-         CPU 0                      |          CPU 1
-   qdisc_run_end()                  |     qdisc_run_begin()
-          .                         |           .
- ----> /* may be reorderd here */   |           .
-|         .                         |           .
-|     spin_unlock()                 |         set_bit()
-|         .                         |         smp_mb__after_atomic()
- ---- test_bit()                    |         spin_trylock()
-          .                         |          .
+This bug triggers with following coditions:
 
-Consider the following sequence of events:
-    CPU 0 reorder test_bit() ahead and see MISSED = 0
-    CPU 1 calls set_bit()
-    CPU 1 calls spin_trylock() and return fail
-    CPU 0 executes spin_unlock()
+0) Kernel built with CONFIG_DEBUG_PREEMPT=y
 
-At the end of the sequence, CPU 0 calls spin_unlock() and does nothing
-because it see MISSED = 0. The skb on CPU 1 has beed enqueued but no one
-take it, until the next cpu pushing to the qdisc (if ever ...) will
-notice and dequeue it.
+1) A new passive FastOpen TCP socket is created.
+   This FO socket waits for an ACK coming from client to be a complete
+   ESTABLISHED one.
+2) A socket operation on this socket goes through lock_sock()
+   release_sock() dance.
+3) While the socket is owned by the user in step 2),
+   a retransmit of the SYN is received and stored in socket backlog.
+4) At release_sock() time, the socket backlog is processed while
+   in process context.
+5) A SYNACK packet is cooked in response of the SYN retransmit.
+6) -> tcp_rtx_synack() is called in process context.
 
-This patch fix this by adding one explicit barrier. As spin_unlock() and
-test_bit() ordering is a store-load ordering, a full memory barrier
-smp_mb() is needed here.
+Before blamed commit, tcp_rtx_synack() was always called from BH handler,
+from a timer handler.
 
-Fixes: a90c57f2cedd ("net: sched: fix packet stuck problem for lockless qdisc")
-Signed-off-by: Guoju Fang <gjfang@linux.alibaba.com>
-Link: https://lore.kernel.org/r/20220528101628.120193-1-gjfang@linux.alibaba.com
+Fix this by using TCP_INC_STATS() & NET_INC_STATS()
+which do not assume caller is in non preemptible context.
+
+[1]
+BUG: using __this_cpu_add() in preemptible [00000000] code: epollpep/2180
+caller is tcp_rtx_synack.part.0+0x36/0xc0
+CPU: 10 PID: 2180 Comm: epollpep Tainted: G           OE     5.16.0-0.bpo.4-amd64 #1  Debian 5.16.12-1~bpo11+1
+Hardware name: Supermicro SYS-5039MC-H8TRF/X11SCD-F, BIOS 1.7 11/23/2021
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x48/0x5e
+ check_preemption_disabled+0xde/0xe0
+ tcp_rtx_synack.part.0+0x36/0xc0
+ tcp_rtx_synack+0x8d/0xa0
+ ? kmem_cache_alloc+0x2e0/0x3e0
+ ? apparmor_file_alloc_security+0x3b/0x1f0
+ inet_rtx_syn_ack+0x16/0x30
+ tcp_check_req+0x367/0x610
+ tcp_rcv_state_process+0x91/0xf60
+ ? get_nohz_timer_target+0x18/0x1a0
+ ? lock_timer_base+0x61/0x80
+ ? preempt_count_add+0x68/0xa0
+ tcp_v4_do_rcv+0xbd/0x270
+ __release_sock+0x6d/0xb0
+ release_sock+0x2b/0x90
+ sock_setsockopt+0x138/0x1140
+ ? __sys_getsockname+0x7e/0xc0
+ ? aa_sk_perm+0x3e/0x1a0
+ __sys_setsockopt+0x198/0x1e0
+ __x64_sys_setsockopt+0x21/0x30
+ do_syscall_64+0x38/0xc0
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Fixes: 168a8f58059a ("tcp: TCP Fast Open Server - main code path")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Laurent Fasnacht <laurent.fasnacht@proton.ch>
+Acked-by: Neal Cardwell <ncardwell@google.com>
+Link: https://lore.kernel.org/r/20220530213713.601888-1-eric.dumazet@gmail.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/sch_generic.h | 6 ++++++
- 1 file changed, 6 insertions(+)
+ net/ipv4/tcp_output.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index 90fb413d9fd7..1ee396ce0eda 100644
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -194,6 +194,12 @@ static inline void qdisc_run_end(struct Qdisc *qdisc)
- 	if (qdisc->flags & TCQ_F_NOLOCK) {
- 		spin_unlock(&qdisc->seqlock);
- 
-+		/* spin_unlock() only has store-release semantic. The unlock
-+		 * and test_bit() ordering is a store-load ordering, so a full
-+		 * memory barrier is needed here.
-+		 */
-+		smp_mb();
-+
- 		if (unlikely(test_bit(__QDISC_STATE_MISSED,
- 				      &qdisc->state))) {
- 			clear_bit(__QDISC_STATE_MISSED, &qdisc->state);
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 67493ec6318a..739fc69cdcc6 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -3869,8 +3869,8 @@ int tcp_rtx_synack(const struct sock *sk, struct request_sock *req)
+ 	tcp_rsk(req)->txhash = net_tx_rndhash();
+ 	res = af_ops->send_synack(sk, NULL, &fl, req, NULL, TCP_SYNACK_NORMAL);
+ 	if (!res) {
+-		__TCP_INC_STATS(sock_net(sk), TCP_MIB_RETRANSSEGS);
+-		__NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPSYNRETRANS);
++		TCP_INC_STATS(sock_net(sk), TCP_MIB_RETRANSSEGS);
++		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPSYNRETRANS);
+ 		if (unlikely(tcp_passive_fastopen(sk)))
+ 			tcp_sk(sk)->total_retrans++;
+ 		trace_tcp_retransmit_synack(sk, req);
 -- 
 2.35.1
 
