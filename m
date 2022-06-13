@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59C71C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:11:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D09CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:11:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349973AbiFMMLY (ORCPT
+        id S1352405AbiFMML3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:11:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49900 "EHLO
+        Mon, 13 Jun 2022 08:11:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358977AbiFMMFD (ORCPT
+        with ESMTP id S1358852AbiFMMEw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:05:03 -0400
+        Mon, 13 Jun 2022 08:04:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ED2250E31;
-        Mon, 13 Jun 2022 03:58:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 808D950462;
+        Mon, 13 Jun 2022 03:58:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 703E161257;
-        Mon, 13 Jun 2022 10:58:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F1D2C34114;
-        Mon, 13 Jun 2022 10:58:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 32C2361372;
+        Mon, 13 Jun 2022 10:58:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4332AC34114;
+        Mon, 13 Jun 2022 10:58:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117905;
-        bh=88S4UqxzOaOPnauPhayDirdJ9qnG1tlVJt8mICmGb1U=;
+        s=korg; t=1655117884;
+        bh=dt8xZhMxuuCWYJ5EOaNtQVPRqm0fP9U0QnW2yVBRQiU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aJ1ddicuGtZLminLaNJzn/t4rRsAQNuhWrcp/GsWI63kyiUR6pT4Ng9a4/HZ08apP
-         B/DhslwHGyyuj3vxOOCvXhVWNt2QsE12UcGCxtA3K9wJGDp/3hcC4Wn3lPPOvAFObQ
-         U2XD30rtlppFkCEzj8NJXwoqdS6uFJpSuq6qKsgc=
+        b=kq7p4xPH3jFdsEVsv9QXSjQkZlsNbj/JWFijX4h+2OtRpmFPRUE+vRtfcJNya4PH1
+         kAqx5wyZ9H3bIuwJZ7UYgtYUNWi2MycP+iRIDgdFTxmIo9jDPeJi86WyDklVDZXmt6
+         HUPUTXCdcJKmv/lscLb5yQXaFESmKhVakOyqXzZc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
         Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 4.19 159/287] scsi: ufs: qcom: Add a readl() to make sure ref_clk gets enabled
-Date:   Mon, 13 Jun 2022 12:09:43 +0200
-Message-Id: <20220613094928.700931655@linuxfoundation.org>
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: [PATCH 4.19 153/287] PCI: qcom: Fix runtime PM imbalance on probe errors
+Date:   Mon, 13 Jun 2022 12:09:37 +0200
+Message-Id: <20220613094928.517197940@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -51,51 +53,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+From: Johan Hovold <johan+linaro@kernel.org>
 
-commit 8eecddfca30e1651dc1c74531ed5eef21dcce7e3 upstream.
+commit 87d83b96c8d6c6c2d2096bd0bdba73bcf42b8ef0 upstream.
 
-In ufs_qcom_dev_ref_clk_ctrl(), it was noted that the ref_clk needs to be
-stable for at least 1us. Even though there is wmb() to make sure the write
-gets "completed", there is no guarantee that the write actually reached the
-UFS device. There is a good chance that the write could be stored in a
-Write Buffer (WB). In that case, even though the CPU waits for 1us, the
-ref_clk might not be stable for that period.
+Drop the leftover pm_runtime_disable() calls from the late probe error
+paths that would, for example, prevent runtime PM from being reenabled
+after a probe deferral.
 
-So lets do a readl() to make sure that the previous write has reached the
-UFS device before udelay().
-
-Also, the wmb() after writel_relaxed() is not really needed. Both writel()
-and readl() are ordered on all architectures and the CPU won't speculate
-instructions after readl() due to the in-built control dependency with read
-value on weakly ordered architectures. So it can be safely removed.
-
-Link: https://lore.kernel.org/r/20220504084212.11605-4-manivannan.sadhasivam@linaro.org
-Fixes: f06fcc7155dc ("scsi: ufs-qcom: add QUniPro hardware support and power optimizations")
-Cc: stable@vger.kernel.org
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Link: https://lore.kernel.org/r/20220401133854.10421-2-johan+linaro@kernel.org
+Fixes: 6e5da6f7d824 ("PCI: qcom: Fix error handling in runtime PM support")
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Acked-by: Stanimir Varbanov <svarbanov@mm-sol.com>
+Cc: stable@vger.kernel.org      # 4.20
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/ufs/ufs-qcom.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/pci/controller/dwc/pcie-qcom.c |    5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
---- a/drivers/scsi/ufs/ufs-qcom.c
-+++ b/drivers/scsi/ufs/ufs-qcom.c
-@@ -910,8 +910,11 @@ static void ufs_qcom_dev_ref_clk_ctrl(st
+--- a/drivers/pci/controller/dwc/pcie-qcom.c
++++ b/drivers/pci/controller/dwc/pcie-qcom.c
+@@ -1331,17 +1331,14 @@ static int qcom_pcie_probe(struct platfo
+ 	}
  
- 		writel_relaxed(temp, host->dev_ref_clk_ctrl_mmio);
+ 	ret = phy_init(pcie->phy);
+-	if (ret) {
+-		pm_runtime_disable(&pdev->dev);
++	if (ret)
+ 		goto err_pm_runtime_put;
+-	}
  
--		/* ensure that ref_clk is enabled/disabled before we return */
--		wmb();
-+		/*
-+		 * Make sure the write to ref_clk reaches the destination and
-+		 * not stored in a Write Buffer (WB).
-+		 */
-+		readl(host->dev_ref_clk_ctrl_mmio);
+ 	platform_set_drvdata(pdev, pcie);
  
- 		/*
- 		 * If we call hibern8 exit after this, we need to make sure that
+ 	ret = dw_pcie_host_init(pp);
+ 	if (ret) {
+ 		dev_err(dev, "cannot initialize host\n");
+-		pm_runtime_disable(&pdev->dev);
+ 		goto err_pm_runtime_put;
+ 	}
+ 
 
 
