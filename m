@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E927CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:31:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FFFCCCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:31:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245432AbiFMKas (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:30:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60732 "EHLO
+        id S245599AbiFMKaw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:30:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343853AbiFMK2p (ORCPT
+        with ESMTP id S1344320AbiFMK24 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:28:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F027024F3C;
-        Mon, 13 Jun 2022 03:20:14 -0700 (PDT)
+        Mon, 13 Jun 2022 06:28:56 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DD26255B6;
+        Mon, 13 Jun 2022 03:20:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CEE760AEB;
-        Mon, 13 Jun 2022 10:20:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4650DC34114;
-        Mon, 13 Jun 2022 10:20:13 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8B8FBCE1102;
+        Mon, 13 Jun 2022 10:20:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CB6EC36B07;
+        Mon, 13 Jun 2022 10:20:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115613;
-        bh=3QodrNMFdTk9haghT7m1Y+JRA1BRD7FG9f0r5mG+yKE=;
+        s=korg; t=1655115621;
+        bh=vdHmBAw1oESu3mBgdYJHfUNiSBmK3oQCUHtDEM6Fx5M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m1lGruxmLJFF54iGZj1k5TBg/pvRaS3+Ci0KMJyOl0Jp2UEuPqaWGY5M/+H4wicie
-         I9GkwbZhmaWZ/UMYyC41zigv/Mr8yWtDSznUjW+XpsKiQ0MOdh3Nu2cx/wvCR4elnC
-         ELdn3Vv5FFW6s4inTTeV78quOJecIEzd2ahi4b2o=
+        b=XPaGdE4Adzz07hkawUovR1OUDmsKMDb8afHWJF1pB6N6mHkFQa4Wu8RvbBzwpxVke
+         z1X4wELJRX0IGyQ35TrpZFRH+NgN+kx8UqAdtQXZA3XZnRsQ5NirtaU9+md2jH2hku
+         F8GjkU8xsxQ9+EjOxmx4zZfi8I06Z9BShgfzlOFc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Petr Mladek <pmladek@suse.com>,
+        John Ogness <john.ogness@linutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 137/167] net: altera: Fix refcount leak in altera_tse_mdio_create
-Date:   Mon, 13 Jun 2022 12:10:11 +0200
-Message-Id: <20220613094913.003987986@linuxfoundation.org>
+Subject: [PATCH 4.9 151/167] serial: msm_serial: disable interrupts in __msm_console_write()
+Date:   Mon, 13 Jun 2022 12:10:25 +0200
+Message-Id: <20220613094916.316552520@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -49,57 +51,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: John Ogness <john.ogness@linutronix.de>
 
-[ Upstream commit 11ec18b1d8d92b9df307d31950dcba0b3dd7283c ]
+[ Upstream commit aabdbb1b7a5819e18c403334a31fb0cc2c06ad41 ]
 
-Every iteration of for_each_child_of_node() decrements
-the reference count of the previous node.
-When break from a for_each_child_of_node() loop,
-we need to explicitly call of_node_put() on the child node when
-not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+__msm_console_write() assumes that interrupts are disabled, but
+with threaded console printers it is possible that the write()
+callback of the console is called with interrupts enabled.
 
-Fixes: bbd2190ce96d ("Altera TSE: Add main and header file for Altera Ethernet Driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220607041144.7553-1-linmq006@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Explicitly disable interrupts using local_irq_save() to preserve
+the assumed context.
+
+Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/r/20220506213324.470461-1-john.ogness@linutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/altera/altera_tse_main.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/tty/serial/msm_serial.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/ethernet/altera/altera_tse_main.c b/drivers/net/ethernet/altera/altera_tse_main.c
-index e02b99f77b1c..9d63bb33844e 100644
---- a/drivers/net/ethernet/altera/altera_tse_main.c
-+++ b/drivers/net/ethernet/altera/altera_tse_main.c
-@@ -152,7 +152,8 @@ static int altera_tse_mdio_create(struct net_device *dev, unsigned int id)
- 	mdio = mdiobus_alloc();
- 	if (mdio == NULL) {
- 		netdev_err(dev, "Error allocating MDIO bus\n");
--		return -ENOMEM;
-+		ret = -ENOMEM;
-+		goto put_node;
- 	}
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index c284e61ed4fc..33d035f9fded 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -1578,6 +1578,7 @@ static inline struct uart_port *msm_get_port_from_line(unsigned int line)
+ static void __msm_console_write(struct uart_port *port, const char *s,
+ 				unsigned int count, bool is_uartdm)
+ {
++	unsigned long flags;
+ 	int i;
+ 	int num_newlines = 0;
+ 	bool replaced = false;
+@@ -1595,6 +1596,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
+ 			num_newlines++;
+ 	count += num_newlines;
  
- 	mdio->name = ALTERA_TSE_RESOURCE_NAME;
-@@ -169,6 +170,7 @@ static int altera_tse_mdio_create(struct net_device *dev, unsigned int id)
- 			   mdio->id);
- 		goto out_free_mdio;
- 	}
-+	of_node_put(mdio_node);
++	local_irq_save(flags);
++
+ 	if (port->sysrq)
+ 		locked = 0;
+ 	else if (oops_in_progress)
+@@ -1640,6 +1643,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
  
- 	if (netif_msg_drv(priv))
- 		netdev_info(dev, "MDIO bus %s: created\n", mdio->id);
-@@ -178,6 +180,8 @@ static int altera_tse_mdio_create(struct net_device *dev, unsigned int id)
- out_free_mdio:
- 	mdiobus_free(mdio);
- 	mdio = NULL;
-+put_node:
-+	of_node_put(mdio_node);
- 	return ret;
+ 	if (locked)
+ 		spin_unlock(&port->lock);
++
++	local_irq_restore(flags);
  }
  
+ static void msm_console_write(struct console *co, const char *s,
 -- 
 2.35.1
 
