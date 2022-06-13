@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 935C7C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:50:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5336DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:50:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355403AbiFMMub (ORCPT
+        id S1353371AbiFMMui (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:50:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34278 "EHLO
+        Mon, 13 Jun 2022 08:50:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357733AbiFMMtL (ORCPT
+        with ESMTP id S1357740AbiFMMtL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 08:49:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B43462BD6;
-        Mon, 13 Jun 2022 04:11:54 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1FF462CC6;
+        Mon, 13 Jun 2022 04:11:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DDCBE60EAB;
-        Mon, 13 Jun 2022 11:11:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED3F3C34114;
-        Mon, 13 Jun 2022 11:11:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 36C75608C3;
+        Mon, 13 Jun 2022 11:11:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A534C34114;
+        Mon, 13 Jun 2022 11:11:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118700;
-        bh=WFGQ7ZAPxUpvCEKv1vpG6rEPqrzyXIIXezFbT/tLKgw=;
+        s=korg; t=1655118716;
+        bh=E4rQH1VFVcVFFMQSB2xDZNS++oZ3MPwR5If0rkwwWrM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zw4weku2nsKIXem6YmvUmLvDRfzb77iri9z/S93NZiy3YxNW9QGm3N7EOW/xvjh4v
-         QuvuGTaXhc4HPGTzmmCpl+pPt1SEKNI26PmViw27EJ0crRV3BMnsWDSSsKwZKTl2h/
-         DNcaTZeCJexS0J6X/kHeXMcweitD9SCR4Az0Ve58=
+        b=kPc+vqmm/3w/HMKqltp/B4D8SQE8k/l0nUiaNAULDhBt9cqkkMtcNZDQHTXzSklpy
+         fjbqDa0IwXxAM/IEd/iDwSPMe0xm1AxqOr4I5H9ZElQJIJjcGAOWteaTicN++s0GzK
+         45XG2I8l6lwlHK3CkSCA8iH9/u5yVMLtv37hUZBo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: [PATCH 5.10 171/172] PCI: qcom: Fix pipe clock imbalance
-Date:   Mon, 13 Jun 2022 12:12:11 +0200
-Message-Id: <20220613094923.461428580@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
+        Sean Paul <seanpaul@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>
+Subject: [PATCH 5.10 164/172] drm/bridge: analogix_dp: Support PSR-exit to disable transition
+Date:   Mon, 13 Jun 2022 12:12:04 +0200
+Message-Id: <20220613094923.242471484@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -51,44 +50,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan+linaro@kernel.org>
+From: Brian Norris <briannorris@chromium.org>
 
-commit fdf6a2f533115ec5d4d9629178f8196331f1ac50 upstream.
+commit ca871659ec1606d33b1e76de8d4cf924cf627e34 upstream.
 
-Fix a clock imbalance introduced by ed8cc3b1fc84 ("PCI: qcom: Add support
-for SDM845 PCIe controller"), which enables the pipe clock both in init()
-and in post_init() but only disables in post_deinit().
+Most eDP panel functions only work correctly when the panel is not in
+self-refresh. In particular, analogix_dp_bridge_disable() tends to hit
+AUX channel errors if the panel is in self-refresh.
 
-Note that the pipe clock was also never disabled in the init() error
-paths and that enabling the clock before powering up the PHY looks
-questionable.
+Given the above, it appears that so far, this driver assumes that we are
+never in self-refresh when it comes time to fully disable the bridge.
+Prior to commit 846c7dfc1193 ("drm/atomic: Try to preserve the crtc
+enabled state in drm_atomic_remove_fb, v2."), this tended to be true,
+because we would automatically disable the pipe when framebuffers were
+removed, and so we'd typically disable the bridge shortly after the last
+display activity.
 
-Link: https://lore.kernel.org/r/20220401133351.10113-1-johan+linaro@kernel.org
-Fixes: ed8cc3b1fc84 ("PCI: qcom: Add support for SDM845 PCIe controller")
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: stable@vger.kernel.org      # 5.6
+However, that is not guaranteed: an idle (self-refresh) display pipe may
+be disabled, e.g., when switching CRTCs. We need to exit PSR first.
+
+Stable notes: this is definitely a bugfix, and the bug has likely
+existed in some form for quite a while. It may predate the "PSR helpers"
+refactor, but the code looked very different before that, and it's
+probably not worth rewriting the fix.
+
+Cc: <stable@vger.kernel.org>
+Fixes: 6c836d965bad ("drm/rockchip: Use the helpers for PSR")
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Reviewed-by: Sean Paul <seanpaul@chromium.org>
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220228122522.v2.1.I161904be17ba14526f78536ccd78b85818449b51@changeid
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/dwc/pcie-qcom.c |    6 ------
- 1 file changed, 6 deletions(-)
+ drivers/gpu/drm/bridge/analogix/analogix_dp_core.c |   42 +++++++++++++++++++--
+ 1 file changed, 38 insertions(+), 4 deletions(-)
 
---- a/drivers/pci/controller/dwc/pcie-qcom.c
-+++ b/drivers/pci/controller/dwc/pcie-qcom.c
-@@ -1192,12 +1192,6 @@ static int qcom_pcie_init_2_7_0(struct q
- 		goto err_disable_clocks;
- 	}
+--- a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
++++ b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
+@@ -1269,6 +1269,25 @@ static int analogix_dp_bridge_attach(str
+ }
  
--	ret = clk_prepare_enable(res->pipe_clk);
--	if (ret) {
--		dev_err(dev, "cannot prepare/enable pipe clock\n");
--		goto err_disable_clocks;
--	}
--
- 	/* configure PCIe to RC mode */
- 	writel(DEVICE_TYPE_RC, pcie->parf + PCIE20_PARF_DEVICE_TYPE);
+ static
++struct drm_crtc *analogix_dp_get_old_crtc(struct analogix_dp_device *dp,
++					  struct drm_atomic_state *state)
++{
++	struct drm_encoder *encoder = dp->encoder;
++	struct drm_connector *connector;
++	struct drm_connector_state *conn_state;
++
++	connector = drm_atomic_get_old_connector_for_encoder(state, encoder);
++	if (!connector)
++		return NULL;
++
++	conn_state = drm_atomic_get_old_connector_state(state, connector);
++	if (!conn_state)
++		return NULL;
++
++	return conn_state->crtc;
++}
++
++static
+ struct drm_crtc *analogix_dp_get_new_crtc(struct analogix_dp_device *dp,
+ 					  struct drm_atomic_state *state)
+ {
+@@ -1448,14 +1467,16 @@ analogix_dp_bridge_atomic_disable(struct
+ {
+ 	struct drm_atomic_state *old_state = old_bridge_state->base.state;
+ 	struct analogix_dp_device *dp = bridge->driver_private;
+-	struct drm_crtc *crtc;
++	struct drm_crtc *old_crtc, *new_crtc;
++	struct drm_crtc_state *old_crtc_state = NULL;
+ 	struct drm_crtc_state *new_crtc_state = NULL;
++	int ret;
+ 
+-	crtc = analogix_dp_get_new_crtc(dp, old_state);
+-	if (!crtc)
++	new_crtc = analogix_dp_get_new_crtc(dp, old_state);
++	if (!new_crtc)
+ 		goto out;
+ 
+-	new_crtc_state = drm_atomic_get_new_crtc_state(old_state, crtc);
++	new_crtc_state = drm_atomic_get_new_crtc_state(old_state, new_crtc);
+ 	if (!new_crtc_state)
+ 		goto out;
+ 
+@@ -1464,6 +1485,19 @@ analogix_dp_bridge_atomic_disable(struct
+ 		return;
+ 
+ out:
++	old_crtc = analogix_dp_get_old_crtc(dp, old_state);
++	if (old_crtc) {
++		old_crtc_state = drm_atomic_get_old_crtc_state(old_state,
++							       old_crtc);
++
++		/* When moving from PSR to fully disabled, exit PSR first. */
++		if (old_crtc_state && old_crtc_state->self_refresh_active) {
++			ret = analogix_dp_disable_psr(dp);
++			if (ret)
++				DRM_ERROR("Failed to disable psr (%d)\n", ret);
++		}
++	}
++
+ 	analogix_dp_bridge_disable(bridge);
+ }
  
 
 
