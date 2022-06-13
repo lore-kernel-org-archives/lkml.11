@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97755C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:43:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD3C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:43:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378860AbiFMNnI (ORCPT
+        id S1378642AbiFMNnQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:43:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55518 "EHLO
+        Mon, 13 Jun 2022 09:43:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378276AbiFMNij (ORCPT
+        with ESMTP id S1378956AbiFMNja (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:38:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6A8C7520C;
-        Mon, 13 Jun 2022 04:27:34 -0700 (PDT)
+        Mon, 13 Jun 2022 09:39:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 570B37937B;
+        Mon, 13 Jun 2022 04:28:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C15C61240;
-        Mon, 13 Jun 2022 11:27:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60460C34114;
-        Mon, 13 Jun 2022 11:27:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C805460F18;
+        Mon, 13 Jun 2022 11:28:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5C52C34114;
+        Mon, 13 Jun 2022 11:28:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119652;
-        bh=fXrzz1zgoVZZalhc5fBtCufpJU+iM4vU1tJrM+j/NoM=;
+        s=korg; t=1655119683;
+        bh=4uPzDoDtm+L7EnFXiMH8EH9hH4YgpoC0Sl0c04Rut6E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fao8TvtIIRxoU9gKE5QW5N4mpgyvs8GqDQXl2oQiUv7pYgHlMU/sxzR377GwzCyr2
-         1Jlwcwnqdbutl0qGtOFXiNZzvbW5CYkdXVlDdeaN+2L3rMxAU6IwWljD0FVPU4mP42
-         SKIp5GQUSc+snYKG5uhDXbArEWh16RPekkkbQ5r8=
+        b=lEbbh7VAzaLjrWaw8moXdvKr6ylYOTZCPddI/x+uraCFCEosoGx+Y9Hmq1yWj+mBK
+         w4d1LmjofKdkDeR3TIxjhD1JsN8L7QlTrkNQ83sbYYH6IGTIrlmrTXYO55ugESu9O9
+         1C0YxbSSebfjTUuFAcz3iFVS6V7qcg9szBNqdNkQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Richard Weinberger <richard@nod.at>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 070/339] serial: txx9: Dont allow CS5-6
-Date:   Mon, 13 Jun 2022 12:08:15 +0200
-Message-Id: <20220613094928.645367215@linuxfoundation.org>
+Subject: [PATCH 5.18 102/339] ubi: ubi_create_volume: Fix use-after-free when volume creation failed
+Date:   Mon, 13 Jun 2022 12:08:47 +0200
+Message-Id: <20220613094929.606095549@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,40 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-[ Upstream commit 79ac88655dc0551e3571ad16bdabdbe65d61553e ]
+[ Upstream commit 8c03a1c21d72210f81cb369cc528e3fde4b45411 ]
 
-Only CS7 and CS8 are supported but CSIZE is not sanitized with
-CS5 or CS6 to CS8.
+There is an use-after-free problem for 'eba_tbl' in ubi_create_volume()'s
+error handling path:
 
-Set CSIZE correctly so that userspace knows the effective value.
-Incorrect CSIZE also results in miscalculation of the frame bits in
-tty_get_char_size() or in its predecessor where the roughly the same
-code is directly within uart_update_timeout().
+  ubi_eba_replace_table(vol, eba_tbl)
+    vol->eba_tbl = tbl
+out_mapping:
+  ubi_eba_destroy_table(eba_tbl)   // Free 'eba_tbl'
+out_unlock:
+  put_device(&vol->dev)
+    vol_release
+      kfree(tbl->entries)	  // UAF
 
-Fixes: 1da177e4c3f4 (Linux-2.6.12-rc2)
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/20220519081808.3776-5-ilpo.jarvinen@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix it by removing redundant 'eba_tbl' releasing.
+Fetch a reproducer in [Link].
+
+Fixes: 493cfaeaa0c9b ("mtd: utilize new cdev_device_add helper function")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215965
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/serial_txx9.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/mtd/ubi/vmt.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/tty/serial/serial_txx9.c b/drivers/tty/serial/serial_txx9.c
-index 2213e6b841d3..228e380db080 100644
---- a/drivers/tty/serial/serial_txx9.c
-+++ b/drivers/tty/serial/serial_txx9.c
-@@ -618,6 +618,8 @@ serial_txx9_set_termios(struct uart_port *up, struct ktermios *termios,
- 	case CS6:	/* not supported */
- 	case CS8:
- 		cval |= TXX9_SILCR_UMODE_8BIT;
-+		termios->c_cflag &= ~CSIZE;
-+		termios->c_cflag |= CS8;
- 		break;
- 	}
- 
+diff --git a/drivers/mtd/ubi/vmt.c b/drivers/mtd/ubi/vmt.c
+index 1bc7b3a05604..6ea95ade4ca6 100644
+--- a/drivers/mtd/ubi/vmt.c
++++ b/drivers/mtd/ubi/vmt.c
+@@ -309,7 +309,6 @@ int ubi_create_volume(struct ubi_device *ubi, struct ubi_mkvol_req *req)
+ 	ubi->volumes[vol_id] = NULL;
+ 	ubi->vol_count -= 1;
+ 	spin_unlock(&ubi->volumes_lock);
+-	ubi_eba_destroy_table(eba_tbl);
+ out_acc:
+ 	spin_lock(&ubi->volumes_lock);
+ 	ubi->rsvd_pebs -= vol->reserved_pebs;
 -- 
 2.35.1
 
