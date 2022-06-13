@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3361C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:46:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9FA5C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:46:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354683AbiFMMq3 (ORCPT
+        id S1354805AbiFMMqg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:46:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49812 "EHLO
+        Mon, 13 Jun 2022 08:46:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354164AbiFMMix (ORCPT
+        with ESMTP id S1353444AbiFMMis (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:38:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 338DF5D678;
-        Mon, 13 Jun 2022 04:08:28 -0700 (PDT)
+        Mon, 13 Jun 2022 08:38:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B06145D5D1;
+        Mon, 13 Jun 2022 04:08:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 864ADB80EB2;
-        Mon, 13 Jun 2022 11:08:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0B9AC34114;
-        Mon, 13 Jun 2022 11:08:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DFCC360907;
+        Mon, 13 Jun 2022 11:08:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7052C34114;
+        Mon, 13 Jun 2022 11:08:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118505;
-        bh=lyrtj3lszdhFjS8B9+LWI462WQaxx6jyLcIwfw37xXc=;
+        s=korg; t=1655118499;
+        bh=sg3AAHlzu5kB7K5qa4HAhkSlASfdLMsLDyNuhny3OM8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aHglEoYxjg/JlAgeFSUG5oAdAAcYXuc6ZxUbypd6p1DOg/exdWOL3yMGEGY7Bo/yI
-         40blTzbWjBz3PUaxbo6rXfyebzF/QyEz9aYDqqvzTlGkzDE9klT4gTTJxDXSnycRxZ
-         96eCf54xjpOU8tGubZtBB9xApvHlJpeuiavPxyaM=
+        b=c73m82T+g66SbOiROsRWM8rmsyedzAwrpVAZYL9TzggrGLe3CkxiGwLLBV5WeU5qo
+         3SjDb5ClfFSIq3sQBfJQkO/MHynx4UVIbnDi9MELMutn441L16cQN+JuORr4My44ai
+         8qeK+nJNULNySwwAvB5qkY5mSEEHpxg/Ylo6aXRU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 100/172] af_unix: Fix a data-race in unix_dgram_peer_wake_me().
-Date:   Mon, 13 Jun 2022 12:11:00 +0200
-Message-Id: <20220613094914.440535898@linuxfoundation.org>
+Subject: [PATCH 5.10 098/172] netfilter: nf_tables: bail out early if hardware offload is not supported
+Date:   Mon, 13 Jun 2022 12:10:58 +0200
+Message-Id: <20220613094913.986978810@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -50,37 +49,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit 662a80946ce13633ae90a55379f1346c10f0c432 ]
+[ Upstream commit 3a41c64d9c1185a2f3a184015e2a9b78bfc99c71 ]
 
-unix_dgram_poll() calls unix_dgram_peer_wake_me() without `other`'s
-lock held and check if its receive queue is full.  Here we need to
-use unix_recvq_full_lockless() instead of unix_recvq_full(), otherwise
-KCSAN will report a data-race.
+If user requests for NFT_CHAIN_HW_OFFLOAD, then check if either device
+provides the .ndo_setup_tc interface or there is an indirect flow block
+that has been registered. Otherwise, bail out early from the preparation
+phase. Moreover, validate that family == NFPROTO_NETDEV and hook is
+NF_NETDEV_INGRESS.
 
-Fixes: 7d267278a9ec ("unix: avoid use-after-free in ep_remove_wait_queue")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Link: https://lore.kernel.org/r/20220605232325.11804-1-kuniyu@amazon.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: c9626a2cbdb2 ("netfilter: nf_tables: add hardware offload support")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/unix/af_unix.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/net/flow_offload.h                |  1 +
+ include/net/netfilter/nf_tables_offload.h |  2 +-
+ net/core/flow_offload.c                   |  6 ++++++
+ net/netfilter/nf_tables_api.c             |  2 +-
+ net/netfilter/nf_tables_offload.c         | 23 ++++++++++++++++++++++-
+ 5 files changed, 31 insertions(+), 3 deletions(-)
 
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index b7edca89e0ba..28721e9575b7 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -438,7 +438,7 @@ static int unix_dgram_peer_wake_me(struct sock *sk, struct sock *other)
- 	 * -ECONNREFUSED. Otherwise, if we haven't queued any skbs
- 	 * to other and its full, we will hang waiting for POLLOUT.
- 	 */
--	if (unix_recvq_full(other) && !sock_flag(other, SOCK_DEAD))
-+	if (unix_recvq_full_lockless(other) && !sock_flag(other, SOCK_DEAD))
- 		return 1;
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index 010d58159887..9a58274e6217 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -568,5 +568,6 @@ int flow_indr_dev_setup_offload(struct net_device *dev, struct Qdisc *sch,
+ 				enum tc_setup_type type, void *data,
+ 				struct flow_block_offload *bo,
+ 				void (*cleanup)(struct flow_block_cb *block_cb));
++bool flow_indr_dev_exists(void);
  
- 	if (connected)
+ #endif /* _NET_FLOW_OFFLOAD_H */
+diff --git a/include/net/netfilter/nf_tables_offload.h b/include/net/netfilter/nf_tables_offload.h
+index 7a453a35a41d..1058f38e2aca 100644
+--- a/include/net/netfilter/nf_tables_offload.h
++++ b/include/net/netfilter/nf_tables_offload.h
+@@ -91,7 +91,7 @@ int nft_flow_rule_offload_commit(struct net *net);
+ 	NFT_OFFLOAD_MATCH(__key, __base, __field, __len, __reg)		\
+ 	memset(&(__reg)->mask, 0xff, (__reg)->len);
+ 
+-int nft_chain_offload_priority(struct nft_base_chain *basechain);
++bool nft_chain_offload_support(const struct nft_base_chain *basechain);
+ 
+ int nft_offload_init(void);
+ void nft_offload_exit(void);
+diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
+index e3f0d5906811..8d958290b7d2 100644
+--- a/net/core/flow_offload.c
++++ b/net/core/flow_offload.c
+@@ -566,3 +566,9 @@ int flow_indr_dev_setup_offload(struct net_device *dev,	struct Qdisc *sch,
+ 	return list_empty(&bo->cb_list) ? -EOPNOTSUPP : 0;
+ }
+ EXPORT_SYMBOL(flow_indr_dev_setup_offload);
++
++bool flow_indr_dev_exists(void)
++{
++	return !list_empty(&flow_block_indr_dev_list);
++}
++EXPORT_SYMBOL(flow_indr_dev_exists);
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 8507c1bdd736..0c56a90c3f08 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -1963,7 +1963,7 @@ static int nft_basechain_init(struct nft_base_chain *basechain, u8 family,
+ 	chain->flags |= NFT_CHAIN_BASE | flags;
+ 	basechain->policy = NF_ACCEPT;
+ 	if (chain->flags & NFT_CHAIN_HW_OFFLOAD &&
+-	    nft_chain_offload_priority(basechain) < 0)
++	    !nft_chain_offload_support(basechain))
+ 		return -EOPNOTSUPP;
+ 
+ 	flow_block_init(&basechain->flow_block);
+diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
+index 839fd09f1bb4..4e99b1731b3f 100644
+--- a/net/netfilter/nf_tables_offload.c
++++ b/net/netfilter/nf_tables_offload.c
+@@ -208,7 +208,7 @@ static int nft_setup_cb_call(enum tc_setup_type type, void *type_data,
+ 	return 0;
+ }
+ 
+-int nft_chain_offload_priority(struct nft_base_chain *basechain)
++static int nft_chain_offload_priority(const struct nft_base_chain *basechain)
+ {
+ 	if (basechain->ops.priority <= 0 ||
+ 	    basechain->ops.priority > USHRT_MAX)
+@@ -217,6 +217,27 @@ int nft_chain_offload_priority(struct nft_base_chain *basechain)
+ 	return 0;
+ }
+ 
++bool nft_chain_offload_support(const struct nft_base_chain *basechain)
++{
++	struct net_device *dev;
++	struct nft_hook *hook;
++
++	if (nft_chain_offload_priority(basechain) < 0)
++		return false;
++
++	list_for_each_entry(hook, &basechain->hook_list, list) {
++		if (hook->ops.pf != NFPROTO_NETDEV ||
++		    hook->ops.hooknum != NF_NETDEV_INGRESS)
++			return false;
++
++		dev = hook->ops.dev;
++		if (!dev->netdev_ops->ndo_setup_tc && !flow_indr_dev_exists())
++			return false;
++	}
++
++	return true;
++}
++
+ static void nft_flow_cls_offload_setup(struct flow_cls_offload *cls_flow,
+ 				       const struct nft_base_chain *basechain,
+ 				       const struct nft_rule *rule,
 -- 
 2.35.1
 
