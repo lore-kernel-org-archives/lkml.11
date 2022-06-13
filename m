@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0B01C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:22:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3CAFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:22:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376638AbiFMNWd (ORCPT
+        id S1359296AbiFMNWk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:22:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60558 "EHLO
+        Mon, 13 Jun 2022 09:22:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376926AbiFMNTn (ORCPT
+        with ESMTP id S1377030AbiFMNT4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:19:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD4869494;
+        Mon, 13 Jun 2022 09:19:56 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8270E694B0;
         Mon, 13 Jun 2022 04:23:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 258FB60B6E;
-        Mon, 13 Jun 2022 11:22:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 337F9C34114;
-        Mon, 13 Jun 2022 11:22:32 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7C32DCE118D;
+        Mon, 13 Jun 2022 11:22:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CA99C34114;
+        Mon, 13 Jun 2022 11:22:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119352;
-        bh=pbz9DlEqA5TwTXAkZWWpEn6u8/MCy1hJFPIoVEmfs4U=;
+        s=korg; t=1655119349;
+        bh=9uKvnoG4B7uUYhEFbCpI+laNOBVB1oTWCNAqi04Sf4U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DmohrEpDF9fp1QezU6sMWJ5vgNV1o41VuQAwvv5ql3MvStg8/Lw6fLjgZUknJkFnA
-         Yz95mThD86CttzBuerFceuPQJA6rCeRXz34yy/rsCKDrFURUO4JpI1+ScVupVszNaj
-         jkQXRxYGhLsO6UgNtb7Msp0fDUfroR0wP+pDD2YE=
+        b=SBse8UTQcdzoZJFjUZC51Q1j4h7Gy4KQ5xiBYxcBUGR3q/ugXbuVejv6yEvSw5yn4
+         xhkMGGA3o0wBTAE9QfV1Lx6cbYvqc7onizF45hHutMP9OBf+UIpxH0cSZ6DZqoVcAu
+         zu8BWdr24A9YI//aWw+0oB9qpzaIpAx6LBAXhT/0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mathias Nyman <mathias.nyman@linux.intel.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: [PATCH 5.15 232/247] Input: bcm5974 - set missing URB_NO_TRANSFER_DMA_MAP urb flag
-Date:   Mon, 13 Jun 2022 12:12:14 +0200
-Message-Id: <20220613094929.981418237@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH 5.15 223/247] mmc: block: Fix CQE recovery reset success
+Date:   Mon, 13 Jun 2022 12:12:05 +0200
+Message-Id: <20220613094929.709034893@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,55 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathias Nyman <mathias.nyman@linux.intel.com>
+From: Adrian Hunter <adrian.hunter@intel.com>
 
-commit c42e65664390be7c1ef3838cd84956d3a2739d60 upstream.
+commit a051246b786af7e4a9d9219cc7038a6e8a411531 upstream.
 
-The bcm5974 driver does the allocation and dma mapping of the usb urb
-data buffer, but driver does not set the URB_NO_TRANSFER_DMA_MAP flag
-to let usb core know the buffer is already mapped.
+The intention of the use of mmc_blk_reset_success() in
+mmc_blk_cqe_recovery() was to prevent repeated resets when retrying and
+getting the same error. However, that may not be the case - any amount
+of time and I/O may pass before another recovery is needed, in which
+case there would be no reason to deny it the opportunity to recover via
+a reset if necessary. CQE recovery is expected seldom and failure to
+recover (if the clear tasks command fails), even more seldom, so it is
+better to allow the reset always, which can be done by calling
+mmc_blk_reset_success() always.
 
-usb core tries to map the already mapped buffer, causing a warning:
-"xhci_hcd 0000:00:14.0: rejecting DMA map of vmalloc memory"
-
-Fix this by setting the URB_NO_TRANSFER_DMA_MAP, letting usb core
-know buffer is already mapped by bcm5974 driver
-
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Fixes: 1e8e55b67030c6 ("mmc: block: Add CQE support")
 Cc: stable@vger.kernel.org
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215890
-Link: https://lore.kernel.org/r/20220606113636.588955-1-mathias.nyman@linux.intel.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Link: https://lore.kernel.org/r/20220531171922.76080-1-adrian.hunter@intel.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/input/mouse/bcm5974.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/mmc/core/block.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/drivers/input/mouse/bcm5974.c
-+++ b/drivers/input/mouse/bcm5974.c
-@@ -942,17 +942,22 @@ static int bcm5974_probe(struct usb_inte
- 	if (!dev->tp_data)
- 		goto err_free_bt_buffer;
+--- a/drivers/mmc/core/block.c
++++ b/drivers/mmc/core/block.c
+@@ -1482,8 +1482,7 @@ void mmc_blk_cqe_recovery(struct mmc_que
+ 	err = mmc_cqe_recovery(host);
+ 	if (err)
+ 		mmc_blk_reset(mq->blkdata, host, MMC_BLK_CQE_RECOVERY);
+-	else
+-		mmc_blk_reset_success(mq->blkdata, MMC_BLK_CQE_RECOVERY);
++	mmc_blk_reset_success(mq->blkdata, MMC_BLK_CQE_RECOVERY);
  
--	if (dev->bt_urb)
-+	if (dev->bt_urb) {
- 		usb_fill_int_urb(dev->bt_urb, udev,
- 				 usb_rcvintpipe(udev, cfg->bt_ep),
- 				 dev->bt_data, dev->cfg.bt_datalen,
- 				 bcm5974_irq_button, dev, 1);
- 
-+		dev->bt_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
-+	}
-+
- 	usb_fill_int_urb(dev->tp_urb, udev,
- 			 usb_rcvintpipe(udev, cfg->tp_ep),
- 			 dev->tp_data, dev->cfg.tp_datalen,
- 			 bcm5974_irq_trackpad, dev, 1);
- 
-+	dev->tp_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
-+
- 	/* create bcm5974 device */
- 	usb_make_path(udev, dev->phys, sizeof(dev->phys));
- 	strlcat(dev->phys, "/input0", sizeof(dev->phys));
+ 	pr_debug("%s: CQE recovery done\n", mmc_hostname(host));
+ }
 
 
