@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40947CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F188CCA481
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:57:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380119AbiFMNxk (ORCPT
+        id S1381674AbiFMN5H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:53:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54370 "EHLO
+        Mon, 13 Jun 2022 09:57:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379985AbiFMNtz (ORCPT
+        with ESMTP id S1379893AbiFMNvj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:49:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01D4B2A25C;
-        Mon, 13 Jun 2022 04:33:19 -0700 (PDT)
+        Mon, 13 Jun 2022 09:51:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B65F92A957;
+        Mon, 13 Jun 2022 04:33:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FD6960F18;
-        Mon, 13 Jun 2022 11:33:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D992C34114;
-        Mon, 13 Jun 2022 11:33:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 789C6B80EAF;
+        Mon, 13 Jun 2022 11:33:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB7D2C3411C;
+        Mon, 13 Jun 2022 11:33:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119998;
-        bh=R5fTyruJ7o+D4aXdC87l++XcxSa5NYHlcx8nry6x5OA=;
+        s=korg; t=1655120006;
+        bh=t+W9R+MxpX7ns1b7fh0uNzd9ES8QDVmHtnI0z7kG8sk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OLDsgaCNmwjfBKutvXIwYwwvzQ5jId0Dr/cQPXj/ZCmUd2BHh3aAcLcUhaVYBoU4n
-         ug3RDcAI9Z4UilazHBg5KnuT1xIUaVyqbpactp+11rW373GIXeLpnkjMam8J5NP7Bb
-         EEyXkEVeoizsTDFHhjVBsNtMq8aUXRiyu4j5LOrQ=
+        b=aPbPhIfIdmwrS7pgjAr72+1YseualFL9hdEUAlcOCfWKlyrm3fJql0a3bc/jJPs4n
+         1SPIxkVA1EOhqYwNQy3RsglmrdZ3qE/wfXCA1NdvVD8yITXAtuwgS+1o/FYCzOZmN7
+         qPdXW/TRyHhpJj5nQEgMPPLjk9iCWbv2GqEA++sY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 214/339] ip_gre: test csum_start instead of transport header
-Date:   Mon, 13 Jun 2022 12:10:39 +0200
-Message-Id: <20220613094933.153662453@linuxfoundation.org>
+Subject: [PATCH 5.18 216/339] net: dsa: mv88e6xxx: use BMSR_ANEGCOMPLETE bit for filling an_complete
+Date:   Mon, 13 Jun 2022 12:10:41 +0200
+Message-Id: <20220613094933.213448011@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -53,85 +52,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
+From: Marek Behún <kabel@kernel.org>
 
-[ Upstream commit 8d21e9963bec1aad2280cdd034c8993033ef2948 ]
+[ Upstream commit 47e96930d6e6106d5252e85b868d3c7e29296de0 ]
 
-GRE with TUNNEL_CSUM will apply local checksum offload on
-CHECKSUM_PARTIAL packets.
+Commit ede359d8843a ("net: dsa: mv88e6xxx: Link in pcs_get_state() if AN
+is bypassed") added the ability to link if AN was bypassed, and added
+filling of state->an_complete field, but set it to true if AN was
+enabled in BMCR, not when AN was reported complete in BMSR.
 
-ipgre_xmit must validate csum_start after an optional skb_pull,
-else lco_csum may trigger an overflow. The original check was
+This was done because for some reason, when I wanted to use BMSR value
+to infer an_complete, I was looking at BMSR_ANEGCAPABLE bit (which was
+always 1), instead of BMSR_ANEGCOMPLETE bit.
 
-	if (csum && skb_checksum_start(skb) < skb->data)
-		return -EINVAL;
+Use BMSR_ANEGCOMPLETE for filling state->an_complete.
 
-This had false positives when skb_checksum_start is undefined:
-when ip_summed is not CHECKSUM_PARTIAL. A discussed refinement
-was straightforward
-
-	if (csum && skb->ip_summed == CHECKSUM_PARTIAL &&
-	    skb_checksum_start(skb) < skb->data)
-		return -EINVAL;
-
-But was eventually revised more thoroughly:
-- restrict the check to the only branch where needed, in an
-  uncommon GRE path that uses header_ops and calls skb_pull.
-- test skb_transport_header, which is set along with csum_start
-  in skb_partial_csum_set in the normal header_ops datapath.
-
-Turns out skbs can arrive in this branch without the transport
-header set, e.g., through BPF redirection.
-
-Revise the check back to check csum_start directly, and only if
-CHECKSUM_PARTIAL. Do leave the check in the updated location.
-Check field regardless of whether TUNNEL_CSUM is configured.
-
-Link: https://lore.kernel.org/netdev/YS+h%2FtqCJJiQei+W@shredder/
-Link: https://lore.kernel.org/all/20210902193447.94039-2-willemdebruijn.kernel@gmail.com/T/#u
-Fixes: 8a0ed250f911 ("ip_gre: validate csum_start only on pull")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Willem de Bruijn <willemb@google.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
-Link: https://lore.kernel.org/r/20220606132107.3582565-1-willemdebruijn.kernel@gmail.com
+Fixes: ede359d8843a ("net: dsa: mv88e6xxx: Link in pcs_get_state() if AN is bypassed")
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/ip_gre.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ drivers/net/dsa/mv88e6xxx/serdes.c | 27 +++++++++++----------------
+ 1 file changed, 11 insertions(+), 16 deletions(-)
 
-diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
-index aacee9dd771b..bc8dfdf1c48a 100644
---- a/net/ipv4/ip_gre.c
-+++ b/net/ipv4/ip_gre.c
-@@ -629,21 +629,20 @@ static netdev_tx_t ipgre_xmit(struct sk_buff *skb,
+diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6xxx/serdes.c
+index 7b37d45bc9fb..1a19c5284f2c 100644
+--- a/drivers/net/dsa/mv88e6xxx/serdes.c
++++ b/drivers/net/dsa/mv88e6xxx/serdes.c
+@@ -50,22 +50,17 @@ static int mv88e6390_serdes_write(struct mv88e6xxx_chip *chip,
+ }
+ 
+ static int mv88e6xxx_serdes_pcs_get_state(struct mv88e6xxx_chip *chip,
+-					  u16 ctrl, u16 status, u16 lpa,
++					  u16 bmsr, u16 lpa, u16 status,
+ 					  struct phylink_link_state *state)
+ {
+ 	state->link = !!(status & MV88E6390_SGMII_PHY_STATUS_LINK);
++	state->an_complete = !!(bmsr & BMSR_ANEGCOMPLETE);
+ 
+ 	if (status & MV88E6390_SGMII_PHY_STATUS_SPD_DPL_VALID) {
+ 		/* The Spped and Duplex Resolved register is 1 if AN is enabled
+ 		 * and complete, or if AN is disabled. So with disabled AN we
+-		 * still get here on link up. But we want to set an_complete
+-		 * only if AN was enabled, thus we look at BMCR_ANENABLE.
+-		 * (According to 802.3-2008 section 22.2.4.2.10, we should be
+-		 *  able to get this same value from BMSR_ANEGCAPABLE, but tests
+-		 *  show that these Marvell PHYs don't conform to this part of
+-		 *  the specificaion - BMSR_ANEGCAPABLE is simply always 1.)
++		 * still get here on link up.
+ 		 */
+-		state->an_complete = !!(ctrl & BMCR_ANENABLE);
+ 		state->duplex = status &
+ 				MV88E6390_SGMII_PHY_STATUS_DUPLEX_FULL ?
+ 			                         DUPLEX_FULL : DUPLEX_HALF;
+@@ -191,12 +186,12 @@ int mv88e6352_serdes_pcs_config(struct mv88e6xxx_chip *chip, int port,
+ int mv88e6352_serdes_pcs_get_state(struct mv88e6xxx_chip *chip, int port,
+ 				   int lane, struct phylink_link_state *state)
+ {
+-	u16 lpa, status, ctrl;
++	u16 bmsr, lpa, status;
+ 	int err;
+ 
+-	err = mv88e6352_serdes_read(chip, MII_BMCR, &ctrl);
++	err = mv88e6352_serdes_read(chip, MII_BMSR, &bmsr);
+ 	if (err) {
+-		dev_err(chip->dev, "can't read Serdes PHY control: %d\n", err);
++		dev_err(chip->dev, "can't read Serdes BMSR: %d\n", err);
+ 		return err;
  	}
  
- 	if (dev->header_ops) {
--		const int pull_len = tunnel->hlen + sizeof(struct iphdr);
--
- 		if (skb_cow_head(skb, 0))
- 			goto free_skb;
+@@ -212,7 +207,7 @@ int mv88e6352_serdes_pcs_get_state(struct mv88e6xxx_chip *chip, int port,
+ 		return err;
+ 	}
  
- 		tnl_params = (const struct iphdr *)skb->data;
+-	return mv88e6xxx_serdes_pcs_get_state(chip, ctrl, status, lpa, state);
++	return mv88e6xxx_serdes_pcs_get_state(chip, bmsr, lpa, status, state);
+ }
  
--		if (pull_len > skb_transport_offset(skb))
--			goto free_skb;
--
- 		/* Pull skb since ip_tunnel_xmit() needs skb->data pointing
- 		 * to gre header.
- 		 */
--		skb_pull(skb, pull_len);
-+		skb_pull(skb, tunnel->hlen + sizeof(struct iphdr));
- 		skb_reset_mac_header(skb);
-+
-+		if (skb->ip_summed == CHECKSUM_PARTIAL &&
-+		    skb_checksum_start(skb) < skb->data)
-+			goto free_skb;
- 	} else {
- 		if (skb_cow_head(skb, dev->needed_headroom))
- 			goto free_skb;
+ int mv88e6352_serdes_pcs_an_restart(struct mv88e6xxx_chip *chip, int port,
+@@ -918,13 +913,13 @@ int mv88e6390_serdes_pcs_config(struct mv88e6xxx_chip *chip, int port,
+ static int mv88e6390_serdes_pcs_get_state_sgmii(struct mv88e6xxx_chip *chip,
+ 	int port, int lane, struct phylink_link_state *state)
+ {
+-	u16 lpa, status, ctrl;
++	u16 bmsr, lpa, status;
+ 	int err;
+ 
+ 	err = mv88e6390_serdes_read(chip, lane, MDIO_MMD_PHYXS,
+-				    MV88E6390_SGMII_BMCR, &ctrl);
++				    MV88E6390_SGMII_BMSR, &bmsr);
+ 	if (err) {
+-		dev_err(chip->dev, "can't read Serdes PHY control: %d\n", err);
++		dev_err(chip->dev, "can't read Serdes PHY BMSR: %d\n", err);
+ 		return err;
+ 	}
+ 
+@@ -942,7 +937,7 @@ static int mv88e6390_serdes_pcs_get_state_sgmii(struct mv88e6xxx_chip *chip,
+ 		return err;
+ 	}
+ 
+-	return mv88e6xxx_serdes_pcs_get_state(chip, ctrl, status, lpa, state);
++	return mv88e6xxx_serdes_pcs_get_state(chip, bmsr, lpa, status, state);
+ }
+ 
+ static int mv88e6390_serdes_pcs_get_state_10g(struct mv88e6xxx_chip *chip,
 -- 
 2.35.1
 
