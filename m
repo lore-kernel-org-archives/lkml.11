@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5336DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:50:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68CF8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:50:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353371AbiFMMui (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:50:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34294 "EHLO
+        id S239174AbiFMMup (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 08:50:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357740AbiFMMtL (ORCPT
+        with ESMTP id S1357800AbiFMMtM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:49:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1FF462CC6;
-        Mon, 13 Jun 2022 04:11:58 -0700 (PDT)
+        Mon, 13 Jun 2022 08:49:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 578BF62CDB;
+        Mon, 13 Jun 2022 04:12:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 36C75608C3;
-        Mon, 13 Jun 2022 11:11:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A534C34114;
-        Mon, 13 Jun 2022 11:11:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3320360907;
+        Mon, 13 Jun 2022 11:11:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4554CC34114;
+        Mon, 13 Jun 2022 11:11:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118716;
-        bh=E4rQH1VFVcVFFMQSB2xDZNS++oZ3MPwR5If0rkwwWrM=;
+        s=korg; t=1655118708;
+        bh=HE9pJc3MBTefg0BQ/7370zg4d3v6Fos68pQ6N+Ze2nE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kPc+vqmm/3w/HMKqltp/B4D8SQE8k/l0nUiaNAULDhBt9cqkkMtcNZDQHTXzSklpy
-         fjbqDa0IwXxAM/IEd/iDwSPMe0xm1AxqOr4I5H9ZElQJIJjcGAOWteaTicN++s0GzK
-         45XG2I8l6lwlHK3CkSCA8iH9/u5yVMLtv37hUZBo=
+        b=W3FBN55TSbFuSDW/p23FiZdyJPnHUpo98LW/hA2tgDcSYW+Nxx7217TQOTzbD9xj8
+         cET36B5uiEjjFU2x6zK5Q3a5JWjqX+wz5TFySPrwckGns84tMm4uAsEZAxZZVBmvKA
+         IMUjXe1EYTK09N/p4ChZBsyvswPgpvftSGhXbTEY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
-        Sean Paul <seanpaul@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>
-Subject: [PATCH 5.10 164/172] drm/bridge: analogix_dp: Support PSR-exit to disable transition
-Date:   Mon, 13 Jun 2022 12:12:04 +0200
-Message-Id: <20220613094923.242471484@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Olivier Matz <olivier.matz@6wind.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 5.10 161/172] ixgbe: fix bcast packets Rx on VF after promisc removal
+Date:   Mon, 13 Jun 2022 12:12:01 +0200
+Message-Id: <20220613094923.147135089@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -50,109 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Norris <briannorris@chromium.org>
+From: Olivier Matz <olivier.matz@6wind.com>
 
-commit ca871659ec1606d33b1e76de8d4cf924cf627e34 upstream.
+commit 803e9895ea2b0fe80bc85980ae2d7a7e44037914 upstream.
 
-Most eDP panel functions only work correctly when the panel is not in
-self-refresh. In particular, analogix_dp_bridge_disable() tends to hit
-AUX channel errors if the panel is in self-refresh.
+After a VF requested to remove the promiscuous flag on an interface, the
+broadcast packets are not received anymore. This breaks some protocols
+like ARP.
 
-Given the above, it appears that so far, this driver assumes that we are
-never in self-refresh when it comes time to fully disable the bridge.
-Prior to commit 846c7dfc1193 ("drm/atomic: Try to preserve the crtc
-enabled state in drm_atomic_remove_fb, v2."), this tended to be true,
-because we would automatically disable the pipe when framebuffers were
-removed, and so we'd typically disable the bridge shortly after the last
-display activity.
+In ixgbe_update_vf_xcast_mode(), we should keep the IXGBE_VMOLR_BAM
+bit (Broadcast Accept) on promiscuous removal.
 
-However, that is not guaranteed: an idle (self-refresh) display pipe may
-be disabled, e.g., when switching CRTCs. We need to exit PSR first.
+This flag is already set by default in ixgbe_set_vmolr() on VF reset.
 
-Stable notes: this is definitely a bugfix, and the bug has likely
-existed in some form for quite a while. It may predate the "PSR helpers"
-refactor, but the code looked very different before that, and it's
-probably not worth rewriting the fix.
-
-Cc: <stable@vger.kernel.org>
-Fixes: 6c836d965bad ("drm/rockchip: Use the helpers for PSR")
-Signed-off-by: Brian Norris <briannorris@chromium.org>
-Reviewed-by: Sean Paul <seanpaul@chromium.org>
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220228122522.v2.1.I161904be17ba14526f78536ccd78b85818449b51@changeid
+Fixes: 8443c1a4b192 ("ixgbe, ixgbevf: Add new mbox API xcast mode")
+Cc: stable@vger.kernel.org
+Cc: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Signed-off-by: Olivier Matz <olivier.matz@6wind.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/bridge/analogix/analogix_dp_core.c |   42 +++++++++++++++++++--
- 1 file changed, 38 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-+++ b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-@@ -1269,6 +1269,25 @@ static int analogix_dp_bridge_attach(str
- }
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
+@@ -1157,9 +1157,9 @@ static int ixgbe_update_vf_xcast_mode(st
  
- static
-+struct drm_crtc *analogix_dp_get_old_crtc(struct analogix_dp_device *dp,
-+					  struct drm_atomic_state *state)
-+{
-+	struct drm_encoder *encoder = dp->encoder;
-+	struct drm_connector *connector;
-+	struct drm_connector_state *conn_state;
-+
-+	connector = drm_atomic_get_old_connector_for_encoder(state, encoder);
-+	if (!connector)
-+		return NULL;
-+
-+	conn_state = drm_atomic_get_old_connector_state(state, connector);
-+	if (!conn_state)
-+		return NULL;
-+
-+	return conn_state->crtc;
-+}
-+
-+static
- struct drm_crtc *analogix_dp_get_new_crtc(struct analogix_dp_device *dp,
- 					  struct drm_atomic_state *state)
- {
-@@ -1448,14 +1467,16 @@ analogix_dp_bridge_atomic_disable(struct
- {
- 	struct drm_atomic_state *old_state = old_bridge_state->base.state;
- 	struct analogix_dp_device *dp = bridge->driver_private;
--	struct drm_crtc *crtc;
-+	struct drm_crtc *old_crtc, *new_crtc;
-+	struct drm_crtc_state *old_crtc_state = NULL;
- 	struct drm_crtc_state *new_crtc_state = NULL;
-+	int ret;
- 
--	crtc = analogix_dp_get_new_crtc(dp, old_state);
--	if (!crtc)
-+	new_crtc = analogix_dp_get_new_crtc(dp, old_state);
-+	if (!new_crtc)
- 		goto out;
- 
--	new_crtc_state = drm_atomic_get_new_crtc_state(old_state, crtc);
-+	new_crtc_state = drm_atomic_get_new_crtc_state(old_state, new_crtc);
- 	if (!new_crtc_state)
- 		goto out;
- 
-@@ -1464,6 +1485,19 @@ analogix_dp_bridge_atomic_disable(struct
- 		return;
- 
- out:
-+	old_crtc = analogix_dp_get_old_crtc(dp, old_state);
-+	if (old_crtc) {
-+		old_crtc_state = drm_atomic_get_old_crtc_state(old_state,
-+							       old_crtc);
-+
-+		/* When moving from PSR to fully disabled, exit PSR first. */
-+		if (old_crtc_state && old_crtc_state->self_refresh_active) {
-+			ret = analogix_dp_disable_psr(dp);
-+			if (ret)
-+				DRM_ERROR("Failed to disable psr (%d)\n", ret);
-+		}
-+	}
-+
- 	analogix_dp_bridge_disable(bridge);
- }
- 
+ 	switch (xcast_mode) {
+ 	case IXGBEVF_XCAST_MODE_NONE:
+-		disable = IXGBE_VMOLR_BAM | IXGBE_VMOLR_ROMPE |
++		disable = IXGBE_VMOLR_ROMPE |
+ 			  IXGBE_VMOLR_MPE | IXGBE_VMOLR_UPE | IXGBE_VMOLR_VPE;
+-		enable = 0;
++		enable = IXGBE_VMOLR_BAM;
+ 		break;
+ 	case IXGBEVF_XCAST_MODE_MULTI:
+ 		disable = IXGBE_VMOLR_MPE | IXGBE_VMOLR_UPE | IXGBE_VMOLR_VPE;
 
 
