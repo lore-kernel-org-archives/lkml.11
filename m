@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15F29CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FADFCCA488
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:14:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359514AbiFMNNj (ORCPT
+        id S1359534AbiFMNNo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:13:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38432 "EHLO
+        Mon, 13 Jun 2022 09:13:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357054AbiFMNHQ (ORCPT
+        with ESMTP id S1358659AbiFMNHN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:07:16 -0400
+        Mon, 13 Jun 2022 09:07:13 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 218E938795;
-        Mon, 13 Jun 2022 04:18:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55192381A0;
+        Mon, 13 Jun 2022 04:18:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0853960F18;
-        Mon, 13 Jun 2022 11:18:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11D22C34114;
-        Mon, 13 Jun 2022 11:18:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E8B960B6E;
+        Mon, 13 Jun 2022 11:18:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD97EC34114;
+        Mon, 13 Jun 2022 11:18:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119130;
-        bh=VAb/NpOY428oAmU6JQGJpbkhTN2C2LxLd0vPS9M/mTg=;
+        s=korg; t=1655119125;
+        bh=XGML3YZdCB8pHt7L9TOGhy/gKBjQ+AGJw/xGujIi+wg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Tczd6rX8OaYByjnRhWYX3JRfYTHu9UHobBUYaV9n001eLX3ZR++Trd6r0rLPhb3hC
-         kHz7qcUFocH4uU97uz+7+zPjjn0j3hFHxq/sc/cJg/wi5aAGqAcSBLr32Gpsz/TIXZ
-         /jKUr5v8+gIZT1tJ7BCTjnbkLc08vDZCmcIOugTU=
+        b=vYA9cRavKcKzSQcUYeR+ozJ4hPZVWhotmZgTwrpZsOnE5JW0gjBv445a2A1oEbGm3
+         902IvonmeaQ5lhzb/XPrK8rx9rH395LentV5RSH0ZB8ebz2vXYmyNmwORmoXAuKWYV
+         xYSY1n57qxWo4jmqbFt7HtdE74OBryarTydO/QQQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
+        NeilBrown <neilb@suse.de>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 152/247] net: xfrm: unexport __init-annotated xfrm4_protocol_init()
-Date:   Mon, 13 Jun 2022 12:10:54 +0200
-Message-Id: <20220613094927.565492415@linuxfoundation.org>
+Subject: [PATCH 5.15 150/247] SUNRPC: Fix the calculation of xdr->end in xdr_get_next_encode_buffer()
+Date:   Mon, 13 Jun 2022 12:10:52 +0200
+Message-Id: <20220613094927.504464728@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -52,48 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-[ Upstream commit 4a388f08d8784af48f352193d2b72aaf167a57a1 ]
+[ Upstream commit 6c254bf3b637dd4ef4f78eb78c7447419c0161d7 ]
 
-EXPORT_SYMBOL and __init is a bad combination because the .init.text
-section is freed up after the initialization. Hence, modules cannot
-use symbols annotated __init. The access to a freed symbol may end up
-with kernel panic.
+I found that NFSD's new NFSv3 READDIRPLUS XDR encoder was screwing up
+right at the end of the page array. xdr_get_next_encode_buffer() does
+not compute the value of xdr->end correctly:
 
-modpost used to detect it, but it has been broken for a decade.
+ * The check to see if we're on the final available page in xdr->buf
+   needs to account for the space consumed by @nbytes.
 
-Recently, I fixed modpost so it started to warn it again, then this
-showed up in linux-next builds.
+ * The new xdr->end value needs to account for the portion of @nbytes
+   that is to be encoded into the previous buffer.
 
-There are two ways to fix it:
-
-  - Remove __init
-  - Remove EXPORT_SYMBOL
-
-I chose the latter for this case because the only in-tree call-site,
-net/ipv4/xfrm4_policy.c is never compiled as modular.
-(CONFIG_XFRM is boolean)
-
-Fixes: 2f32b51b609f ("xfrm: Introduce xfrm_input_afinfo to access the the callbacks properly")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Acked-by: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 2825a7f90753 ("nfsd4: allow encoding across page boundaries")
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Reviewed-by: NeilBrown <neilb@suse.de>
+Reviewed-by: J. Bruce Fields <bfields@fieldses.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/xfrm4_protocol.c | 1 -
- 1 file changed, 1 deletion(-)
+ net/sunrpc/xdr.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/net/ipv4/xfrm4_protocol.c b/net/ipv4/xfrm4_protocol.c
-index 2fe5860c21d6..b146ce88c5d0 100644
---- a/net/ipv4/xfrm4_protocol.c
-+++ b/net/ipv4/xfrm4_protocol.c
-@@ -304,4 +304,3 @@ void __init xfrm4_protocol_init(void)
- {
- 	xfrm_input_register_afinfo(&xfrm4_input_afinfo);
- }
--EXPORT_SYMBOL(xfrm4_protocol_init);
+diff --git a/net/sunrpc/xdr.c b/net/sunrpc/xdr.c
+index ca10ba2626f2..85473264cccf 100644
+--- a/net/sunrpc/xdr.c
++++ b/net/sunrpc/xdr.c
+@@ -979,7 +979,11 @@ static __be32 *xdr_get_next_encode_buffer(struct xdr_stream *xdr,
+ 	 */
+ 	xdr->p = (void *)p + frag2bytes;
+ 	space_left = xdr->buf->buflen - xdr->buf->len;
+-	xdr->end = (void *)p + min_t(int, space_left, PAGE_SIZE);
++	if (space_left - nbytes >= PAGE_SIZE)
++		xdr->end = (void *)p + PAGE_SIZE;
++	else
++		xdr->end = (void *)p + space_left - frag1bytes;
++
+ 	xdr->buf->page_len += frag2bytes;
+ 	xdr->buf->len += nbytes;
+ 	return p;
 -- 
 2.35.1
 
