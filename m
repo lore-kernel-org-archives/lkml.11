@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF0B3C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:20:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BCB4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:21:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242986AbiFMKUz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:20:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60988 "EHLO
+        id S243024AbiFMKVA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:21:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243130AbiFMKTC (ORCPT
+        with ESMTP id S243170AbiFMKTE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:19:02 -0400
+        Mon, 13 Jun 2022 06:19:04 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B173DDFB2;
-        Mon, 13 Jun 2022 03:16:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17A89DF84;
+        Mon, 13 Jun 2022 03:16:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 43FAE60765;
-        Mon, 13 Jun 2022 10:16:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D2B1C34114;
-        Mon, 13 Jun 2022 10:16:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A84C7608C3;
+        Mon, 13 Jun 2022 10:16:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5738C34114;
+        Mon, 13 Jun 2022 10:16:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115404;
-        bh=hj2J+v5j3ZFbQEu6MDUIKw3/kjjkro8X6Gww229V7K4=;
+        s=korg; t=1655115410;
+        bh=rZrO5jJVf/CDcbdcByQJGPBo7QorKqK1PDw7kMbQaEo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qI/Uaoih/V/JOHAEu4DZb3fQIkI3A3zzPSVu79DMcGa4ADj0WutkMzhdzyjZZYX8w
-         2zqnRsHnN0wnNXPUXSJYWTKMAOjARn+pAcFqa/NGTXTze3MF1YnNYn8xeVF70rsEpq
-         mAN+SNgPncl6jvUMO25xynzYM392M4tOyDG067kc=
+        b=NZJ6h4iqOYJ+4uvwaKqwaSyTfzqviP7m46Bz7aBMnelUSNsJXXZxHhbanPFLioK1S
+         B7FvW6ERObFzc5yvmP5uzELCO0frIccktv3muOvmcggzupKxUmIYvk7IJ7HMSEm8Uc
+         HDoLkJ2DvrwTQ7kFgv9S4U9/hCWGMVp+LOAzl6G8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        linux-afs@lists.infradead.org,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 060/167] ASoC: wm2000: fix missing clk_disable_unprepare() on error in wm2000_anc_transition()
-Date:   Mon, 13 Jun 2022 12:08:54 +0200
-Message-Id: <20220613094854.980135112@linuxfoundation.org>
+Subject: [PATCH 4.9 062/167] rxrpc: Dont try to resend the request if were receiving the reply
+Date:   Mon, 13 Jun 2022 12:08:56 +0200
+Message-Id: <20220613094855.430700012@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -50,52 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit be2af740e2a9c7134f2d8ab4f104006e110b13de ]
+[ Upstream commit 114af61f88fbe34d641b13922d098ffec4c1be1b ]
 
-Fix the missing clk_disable_unprepare() before return
-from wm2000_anc_transition() in the error handling case.
+rxrpc has a timer to trigger resending of unacked data packets in a call.
+This is not cancelled when a client call switches to the receive phase on
+the basis that most calls don't last long enough for it to ever expire.
+However, if it *does* expire after we've started to receive the reply, we
+shouldn't then go into trying to retransmit or pinging the server to find
+out if an ack got lost.
 
-Fixes: 514cfd6dd725 ("ASoC: wm2000: Integrate with clock API")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220514091053.686416-1-yangyingliang@huawei.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fix this by skipping the resend code if we're into receiving the reply to a
+client call.
+
+Fixes: 17926a79320a ("[AF_RXRPC]: Provide secure RxRPC sockets for use by userspace and kernel both")
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: linux-afs@lists.infradead.org
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wm2000.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/rxrpc/call_event.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/wm2000.c b/sound/soc/codecs/wm2000.c
-index 23cde3a0dc11..73cda3c2a861 100644
---- a/sound/soc/codecs/wm2000.c
-+++ b/sound/soc/codecs/wm2000.c
-@@ -545,7 +545,7 @@ static int wm2000_anc_transition(struct wm2000_priv *wm2000,
- {
- 	struct i2c_client *i2c = wm2000->i2c;
- 	int i, j;
--	int ret;
-+	int ret = 0;
- 
- 	if (wm2000->anc_mode == mode)
- 		return 0;
-@@ -575,13 +575,13 @@ static int wm2000_anc_transition(struct wm2000_priv *wm2000,
- 		ret = anc_transitions[i].step[j](i2c,
- 						 anc_transitions[i].analogue);
- 		if (ret != 0)
--			return ret;
-+			break;
+diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
+index 97a17ada4431..4aae0904ae1b 100644
+--- a/net/rxrpc/call_event.c
++++ b/net/rxrpc/call_event.c
+@@ -403,7 +403,8 @@ void rxrpc_process_call(struct work_struct *work)
+ 		goto recheck_state;
  	}
  
- 	if (anc_transitions[i].dest == ANC_OFF)
- 		clk_disable_unprepare(wm2000->mclk);
- 
--	return 0;
-+	return ret;
- }
- 
- static int wm2000_anc_set_mode(struct wm2000_priv *wm2000)
+-	if (test_and_clear_bit(RXRPC_CALL_EV_RESEND, &call->events)) {
++	if (test_and_clear_bit(RXRPC_CALL_EV_RESEND, &call->events) &&
++	    call->state != RXRPC_CALL_CLIENT_RECV_REPLY) {
+ 		rxrpc_resend(call, now);
+ 		goto recheck_state;
+ 	}
 -- 
 2.35.1
 
