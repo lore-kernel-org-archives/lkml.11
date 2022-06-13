@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9346DCCA481
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0EC6CCA496
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383402AbiFMOPr (ORCPT
+        id S1383277AbiFMOPi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:15:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52590 "EHLO
+        Mon, 13 Jun 2022 10:15:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382746AbiFMOGQ (ORCPT
+        with ESMTP id S1382454AbiFMOFw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:06:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 201519728B;
-        Mon, 13 Jun 2022 04:41:17 -0700 (PDT)
+        Mon, 13 Jun 2022 10:05:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB0FC95A12;
+        Mon, 13 Jun 2022 04:40:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA1C3B80EE0;
-        Mon, 13 Jun 2022 11:41:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 282BAC3411B;
-        Mon, 13 Jun 2022 11:41:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6C76DB80ECD;
+        Mon, 13 Jun 2022 11:40:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7858C3411C;
+        Mon, 13 Jun 2022 11:40:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120474;
-        bh=dus5GhVCCGRZl6vw1Z0GLTyGcpHSSBRD+KW0xEHSI3c=;
+        s=korg; t=1655120446;
+        bh=xZMuTpWursdJJdYloy8uMjAmfjbR/M9GPbci0Jb3eq4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NDAy/CXsZC4ChUTrw4he5Tz5VUv0ViluIm92081UkaheYPIpITv8lM48QOPad1g7f
-         Ew40tVq2K8qL4ZmjknrlRHPbWZHcxaSB45AMtcF8CDpxI9UWA0YZOQbfBhWJ/A3LkC
-         tj5NJIrGwYocQORJGZsbtyXzGsYTLDDBbkpdiPkc=
+        b=Uekb8D5MYgskGV/JVK46QPnCoUW7I3chDwVZxAaqW98HZFGdppQX0WqdAjlRhD1xK
+         lxNTMiZQ0VPObb34nvvyjedcc/nocuaadDw9PQSWZrbXKqcc0D5DoQKBn3BLkmIuk+
+         g/Q5eknmN2CYLQNtZMSHmInpcZ/GGxqNEGGGHNy8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Leo Yan <leo.yan@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Mike Leach <mike.leach@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 046/298] coresight: cpu-debug: Replace mutex with mutex_trylock on panic notifier
-Date:   Mon, 13 Jun 2022 12:09:00 +0200
-Message-Id: <20220613094926.342216220@linuxfoundation.org>
+        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
+        Hangyu Hua <hbh25y@gmail.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 013/298] usb: usbip: fix a refcount leak in stub_probe()
+Date:   Mon, 13 Jun 2022 12:08:27 +0200
+Message-Id: <20220613094925.328239498@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -53,61 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guilherme G. Piccoli <gpiccoli@igalia.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit 1adff542d67a2ed1120955cb219bfff8a9c53f59 ]
+[ Upstream commit 9ec4cbf1cc55d126759051acfe328d489c5d6e60 ]
 
-The panic notifier infrastructure executes registered callbacks when
-a panic event happens - such callbacks are executed in atomic context,
-with interrupts and preemption disabled in the running CPU and all other
-CPUs disabled. That said, mutexes in such context are not a good idea.
+usb_get_dev() is called in stub_device_alloc(). When stub_probe() fails
+after that, usb_put_dev() needs to be called to release the reference.
 
-This patch replaces a regular mutex with a mutex_trylock safer approach;
-given the nature of the mutex used in the driver, it should be pretty
-uncommon being unable to acquire such mutex in the panic path, hence
-no functional change should be observed (and if it is, that would be
-likely a deadlock with the regular mutex).
+Fix this by moving usb_put_dev() to sdev_free error path handling.
 
-Fixes: 2227b7c74634 ("coresight: add support for CPU debug module")
-Cc: Leo Yan <leo.yan@linaro.org>
-Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc: Mike Leach <mike.leach@linaro.org>
-Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
-Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
-Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-Link: https://lore.kernel.org/r/20220427224924.592546-10-gpiccoli@igalia.com
+Find this by code review.
+
+Fixes: 3ff67445750a ("usbip: fix error handling in stub_probe()")
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Link: https://lore.kernel.org/r/20220412020257.9767-1-hbh25y@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwtracing/coresight/coresight-cpu-debug.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/usb/usbip/stub_dev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/hwtracing/coresight/coresight-cpu-debug.c b/drivers/hwtracing/coresight/coresight-cpu-debug.c
-index 8845ec4b4402..1874df7c6a73 100644
---- a/drivers/hwtracing/coresight/coresight-cpu-debug.c
-+++ b/drivers/hwtracing/coresight/coresight-cpu-debug.c
-@@ -380,9 +380,10 @@ static int debug_notifier_call(struct notifier_block *self,
- 	int cpu;
- 	struct debug_drvdata *drvdata;
+diff --git a/drivers/usb/usbip/stub_dev.c b/drivers/usb/usbip/stub_dev.c
+index d8d3892e5a69..3c6d452e3bf4 100644
+--- a/drivers/usb/usbip/stub_dev.c
++++ b/drivers/usb/usbip/stub_dev.c
+@@ -393,7 +393,6 @@ static int stub_probe(struct usb_device *udev)
  
--	mutex_lock(&debug_lock);
-+	/* Bail out if we can't acquire the mutex or the functionality is off */
-+	if (!mutex_trylock(&debug_lock))
-+		return NOTIFY_DONE;
+ err_port:
+ 	dev_set_drvdata(&udev->dev, NULL);
+-	usb_put_dev(udev);
  
--	/* Bail out if the functionality is disabled */
- 	if (!debug_enable)
- 		goto skip_dump;
+ 	/* we already have busid_priv, just lock busid_lock */
+ 	spin_lock(&busid_priv->busid_lock);
+@@ -408,6 +407,7 @@ static int stub_probe(struct usb_device *udev)
+ 	put_busid_priv(busid_priv);
  
-@@ -401,7 +402,7 @@ static int debug_notifier_call(struct notifier_block *self,
+ sdev_free:
++	usb_put_dev(udev);
+ 	stub_device_free(sdev);
  
- skip_dump:
- 	mutex_unlock(&debug_lock);
--	return 0;
-+	return NOTIFY_DONE;
- }
- 
- static struct notifier_block debug_notifier = {
+ 	return rc;
 -- 
 2.35.1
 
