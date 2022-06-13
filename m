@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26357C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:16:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 233DCC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:16:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359759AbiFMNQ0 (ORCPT
+        id S1359773AbiFMNQf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:16:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35910 "EHLO
+        Mon, 13 Jun 2022 09:16:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359191AbiFMNJm (ORCPT
+        with ESMTP id S1359205AbiFMNJm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 09:09:42 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA2BD38BF9;
-        Mon, 13 Jun 2022 04:19:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 294BB38D84;
+        Mon, 13 Jun 2022 04:19:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3D970B80E59;
-        Mon, 13 Jun 2022 11:19:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9682CC34114;
-        Mon, 13 Jun 2022 11:19:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DA6C6B80D3A;
+        Mon, 13 Jun 2022 11:19:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51E60C34114;
+        Mon, 13 Jun 2022 11:19:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119164;
-        bh=lv3ld1IX8dx4PG9F4Y+OCWBQ3upPxztmWBERke7qb48=;
+        s=korg; t=1655119166;
+        bh=WanT25jlSxEd+8KaNIKchPADk9tb+27J3bIDNrN2/tg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vVZd0atForu+JtCcqUIran4P++rArA925u0P/L7cLAAlDAeVqfufZfpJJWN9qbVCU
-         veAZJNzhxpBRNzPy2E4myrNGS4Vte9163RzKdB2X0q/WYx4csUvrTUUnRhnl8YeS0T
-         P2mfFOHTLx1F7vDJP4pH6L89Mmu9Pjh6gbmio9s4=
+        b=qR50NjxoSjdFofY7cfUdHIzY8bfY3+A/tdXYtDW72YRpXXd07QNSMeiso8Zh++Ouy
+         79I2rEDXLr5ofTZ1euR0Cr0Rs5kCbvt8yhRvnyfWE3fL2pb3JpTCUD+edlv60qKofE
+         XXFhcUcEKgPFV0odAhM5XCwwrFiKBgBM5SxeSmP4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 137/247] netfilter: nf_tables: always initialize flowtable hook list in transaction
-Date:   Mon, 13 Jun 2022 12:10:39 +0200
-Message-Id: <20220613094927.112586991@linuxfoundation.org>
+Subject: [PATCH 5.15 138/247] ata: pata_octeon_cf: Fix refcount leak in octeon_cf_probe
+Date:   Mon, 13 Jun 2022 12:10:40 +0200
+Message-Id: <20220613094927.141737910@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -49,32 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 2c9e4559773c261900c674a86b8e455911675d71 ]
+[ Upstream commit 10d6bdf532902be1d8aa5900b3c03c5671612aa2 ]
 
-The hook list is used if nft_trans_flowtable_update(trans) == true. However,
-initialize this list for other cases for safety reasons.
+of_find_device_by_node() takes reference, we should use put_device()
+to release it when not need anymore.
+Add missing put_device() to avoid refcount leak.
 
-Fixes: 78d9f48f7f44 ("netfilter: nf_tables: add devices to existing flowtable")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 43f01da0f279 ("MIPS/OCTEON/ata: Convert pata_octeon_cf.c to use device tree.")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_tables_api.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/ata/pata_octeon_cf.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index b19974073156..5c0379394b4a 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -544,6 +544,7 @@ static int nft_trans_flowtable_add(struct nft_ctx *ctx, int msg_type,
- 	if (msg_type == NFT_MSG_NEWFLOWTABLE)
- 		nft_activate_next(ctx->net, flowtable);
- 
-+	INIT_LIST_HEAD(&nft_trans_flowtable_hooks(trans));
- 	nft_trans_flowtable(trans) = flowtable;
- 	nft_trans_commit_list_add_tail(ctx->net, trans);
- 
+diff --git a/drivers/ata/pata_octeon_cf.c b/drivers/ata/pata_octeon_cf.c
+index b5a3f710d76d..4cc8a1027888 100644
+--- a/drivers/ata/pata_octeon_cf.c
++++ b/drivers/ata/pata_octeon_cf.c
+@@ -888,12 +888,14 @@ static int octeon_cf_probe(struct platform_device *pdev)
+ 				int i;
+ 				res_dma = platform_get_resource(dma_dev, IORESOURCE_MEM, 0);
+ 				if (!res_dma) {
++					put_device(&dma_dev->dev);
+ 					of_node_put(dma_node);
+ 					return -EINVAL;
+ 				}
+ 				cf_port->dma_base = (u64)devm_ioremap(&pdev->dev, res_dma->start,
+ 									 resource_size(res_dma));
+ 				if (!cf_port->dma_base) {
++					put_device(&dma_dev->dev);
+ 					of_node_put(dma_node);
+ 					return -EINVAL;
+ 				}
+@@ -903,6 +905,7 @@ static int octeon_cf_probe(struct platform_device *pdev)
+ 					irq = i;
+ 					irq_handler = octeon_cf_interrupt;
+ 				}
++				put_device(&dma_dev->dev);
+ 			}
+ 			of_node_put(dma_node);
+ 		}
 -- 
 2.35.1
 
