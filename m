@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A7F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:27:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7744C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:27:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243524AbiFMK13 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:27:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45864 "EHLO
+        id S245486AbiFMK1p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:27:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244759AbiFMKYI (ORCPT
+        with ESMTP id S242862AbiFMKZN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:24:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79D2ABF7E;
-        Mon, 13 Jun 2022 03:18:23 -0700 (PDT)
+        Mon, 13 Jun 2022 06:25:13 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03DD520F56;
+        Mon, 13 Jun 2022 03:19:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BD799B80E5E;
-        Mon, 13 Jun 2022 10:18:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23B2AC3411E;
-        Mon, 13 Jun 2022 10:18:19 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 684C0CE1171;
+        Mon, 13 Jun 2022 10:19:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AD33C36B07;
+        Mon, 13 Jun 2022 10:19:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115500;
-        bh=PLII3z8k6s49qpTxgn+ynR7j/IvGloXYIOhLBRVT4+A=;
+        s=korg; t=1655115569;
+        bh=rqe1LHISFnnv3Z/S7gTCTi4SI/ic37tYHlVQ+3h2UqU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=smvjIpeye40piKCV82akIfx0BvpBWh1Cxs8Kfgpiv0Fl6Q5wCQHYybrinLjFyHAe8
-         cBeGZqH9XmpgHJ1NU6giassz5Q7EfRGSK1MZifHxSQUj/DTINvF93gYShrjqKixo42
-         Vnk7bCXdnu3WZDR/Bsy0cKK6KBoYtyNxnVlBmb88=
+        b=tBgW3YJxeoKAgWB94JMOsMkA9QhPV630OtdV2K0FrSR/DQFIrG5yYIokRdEym01U0
+         IcEPtPaReXGHo4U+dXfPFR4Ll46+s6xS1KFQGHo1mZq1PBQ4cBSDE6CnnNACOgcLLq
+         Q2BLWnGyhJjkvMRph3akpP3JhhXrQwxa2SRNvstk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mike Kravetz <mike.kravetz@oracle.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 4.9 098/167] hugetlb: fix huge_pmd_unshare address update
-Date:   Mon, 13 Jun 2022 12:09:32 +0200
-Message-Id: <20220613094903.870291376@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 121/167] firmware: dmi-sysfs: Fix memory leak in dmi_sysfs_register_handle
+Date:   Mon, 13 Jun 2022 12:09:55 +0200
+Message-Id: <20220613094909.163627244@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -49,47 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Kravetz <mike.kravetz@oracle.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 48381273f8734d28ef56a5bdf1966dd8530111bc upstream.
+[ Upstream commit 660ba678f9998aca6db74f2dd912fa5124f0fa31 ]
 
-The routine huge_pmd_unshare() is passed a pointer to an address
-associated with an area which may be unshared.  If unshare is successful
-this address is updated to 'optimize' callers iterating over huge page
-addresses.  For the optimization to work correctly, address should be
-updated to the last huge page in the unmapped/unshared area.  However, in
-the common case where the passed address is PUD_SIZE aligned, the address
-is incorrectly updated to the address of the preceding huge page.  That
-wastes CPU cycles as the unmapped/unshared range is scanned twice.
+kobject_init_and_add() takes reference even when it fails.
+According to the doc of kobject_init_and_add()
 
-Link: https://lkml.kernel.org/r/20220524205003.126184-1-mike.kravetz@oracle.com
-Fixes: 39dde65c9940 ("shared page table for hugetlb page")
-Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
-Acked-by: Muchun Song <songmuchun@bytedance.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+   If this function returns an error, kobject_put() must be called to
+   properly clean up the memory associated with the object.
+
+Fix this issue by calling kobject_put().
+
+Fixes: 948af1f0bbc8 ("firmware: Basic dmi-sysfs support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220511071421.9769-1-linmq006@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/hugetlb.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/firmware/dmi-sysfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -4593,7 +4593,14 @@ int huge_pmd_unshare(struct mm_struct *m
- 	pud_clear(pud);
- 	put_page(virt_to_page(ptep));
- 	mm_dec_nr_pmds(mm);
--	*addr = ALIGN(*addr, HPAGE_SIZE * PTRS_PER_PTE) - HPAGE_SIZE;
-+	/*
-+	 * This update of passed address optimizes loops sequentially
-+	 * processing addresses in increments of huge page size (PMD_SIZE
-+	 * in this case).  By clearing the pud, a PUD_SIZE area is unmapped.
-+	 * Update address to the 'last page' in the cleared area so that
-+	 * calling loop can move to first page past this area.
-+	 */
-+	*addr |= PUD_SIZE - PMD_SIZE;
- 	return 1;
- }
- #define want_pmd_share()	(1)
+diff --git a/drivers/firmware/dmi-sysfs.c b/drivers/firmware/dmi-sysfs.c
+index ef76e5eecf0b..37f76daa2b3d 100644
+--- a/drivers/firmware/dmi-sysfs.c
++++ b/drivers/firmware/dmi-sysfs.c
+@@ -601,7 +601,7 @@ static void __init dmi_sysfs_register_handle(const struct dmi_header *dh,
+ 				    "%d-%d", dh->type, entry->instance);
+ 
+ 	if (*ret) {
+-		kfree(entry);
++		kobject_put(&entry->kobj);
+ 		return;
+ 	}
+ 
+-- 
+2.35.1
+
 
 
