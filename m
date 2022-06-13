@@ -2,49 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D371FCCA480
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F173DCCA482
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:06:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381420AbiFMOEU (ORCPT
+        id S1381690AbiFMOEl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:04:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54726 "EHLO
+        Mon, 13 Jun 2022 10:04:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380287AbiFMNyB (ORCPT
+        with ESMTP id S1381214AbiFMN4O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:54:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03A4D42A21;
-        Mon, 13 Jun 2022 04:34:26 -0700 (PDT)
+        Mon, 13 Jun 2022 09:56:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 217D7880C8;
+        Mon, 13 Jun 2022 04:36:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91BBF612D0;
-        Mon, 13 Jun 2022 11:34:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DE7FC34114;
-        Mon, 13 Jun 2022 11:34:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 51754612AC;
+        Mon, 13 Jun 2022 11:36:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62CE1C34114;
+        Mon, 13 Jun 2022 11:36:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120065;
-        bh=ZjDVsKHFBSnws36ePAnZg275uQcp5H4PcRvFzlD2OCY=;
+        s=korg; t=1655120201;
+        bh=WNRbdnu9zN71jyTXYMJ9X9d3clP+NxZi3j+Y7jPJ+cM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GdOw7yAMTFxOtA1uIG2rgNiapakQfWnLMWiyHKauhP60cOEWFLhhU6YCfuehZ7/3F
-         SEMXPUP2zht6b6B9NZ5JUOBkLujbvj8izhd3/QNwn8xvHfP6o+PN9XsSrQZDUAe3tu
-         G+4cVlx+UfapznwBQ8Vo+Zp5V5G4MeRrM+yCMJTE=
+        b=vdd/QaSWBP5IADRBYhSBh4s0Y8jbDLsYSmEQQe8iyxdXKG4c5MAOmJRICvRjUMfdv
+         BEgqD5CT65qCwrLBajaMSkl5U2h0NIA4M4dKrVMOsNTIiI1mkm5eQ4ypOWR4/homLx
+         uvDY0h8Lz+HesThshr4wWpvdlDVyhip8907g3B6M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jeff Layton <jlayton@kernel.org>,
-        David Howells <dhowells@redhat.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Mike Marshall <hubcap@omnibond.com>,
-        Gao Xiang <xiang@kernel.org>, linux-afs@lists.infradead.org,
-        v9fs-developer@lists.sourceforge.net, devel@lists.orangefs.org,
-        linux-erofs@lists.ozlabs.org, linux-cachefs@redhat.com,
-        linux-fsdevel@vger.kernel.org, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 222/339] iov_iter: Fix iter_xarray_get_pages{,_alloc}()
-Date:   Mon, 13 Jun 2022 12:10:47 +0200
-Message-Id: <20220613094933.390057932@linuxfoundation.org>
+        stable@vger.kernel.org, Gong Yuanjun <ruc_gongyuanjun@163.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 267/339] drm/amd/pm: fix a potential gpu_metrics_table memory leak
+Date:   Mon, 13 Jun 2022 12:11:32 +0200
+Message-Id: <20220613094934.745789090@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -56,97 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Gong Yuanjun <ruc_gongyuanjun@163.com>
 
-[ Upstream commit 6c77676645ad42993e0a8bdb8dafa517851a352a ]
+[ Upstream commit d2f4460a3d9502513419f06cc376c7ade49d5753 ]
 
-The maths at the end of iter_xarray_get_pages() to calculate the actual
-size doesn't work under some circumstances, such as when it's been asked to
-extract a partial single page.  Various terms of the equation cancel out
-and you end up with actual == offset.  The same issue exists in
-iter_xarray_get_pages_alloc().
+gpu_metrics_table is allocated in yellow_carp_init_smc_tables() but
+not freed in yellow_carp_fini_smc_tables().
 
-Fix these to just use min() to select the lesser amount from between the
-amount of page content transcribed into the buffer, minus the offset, and
-the size limit specified.
-
-This doesn't appear to have caused a problem yet upstream because network
-filesystems aren't getting the pages from an xarray iterator, but rather
-passing it directly to the socket, which just iterates over it.  Cachefiles
-*does* do DIO from one to/from ext4/xfs/btrfs/etc. but it always asks for
-whole pages to be written or read.
-
-Fixes: 7ff5062079ef ("iov_iter: Add ITER_XARRAY")
-Reported-by: Jeff Layton <jlayton@kernel.org>
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Alexander Viro <viro@zeniv.linux.org.uk>
-cc: Dominique Martinet <asmadeus@codewreck.org>
-cc: Mike Marshall <hubcap@omnibond.com>
-cc: Gao Xiang <xiang@kernel.org>
-cc: linux-afs@lists.infradead.org
-cc: v9fs-developer@lists.sourceforge.net
-cc: devel@lists.orangefs.org
-cc: linux-erofs@lists.ozlabs.org
-cc: linux-cachefs@redhat.com
-cc: linux-fsdevel@vger.kernel.org
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/iov_iter.c | 20 ++++----------------
- 1 file changed, 4 insertions(+), 16 deletions(-)
+ drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/lib/iov_iter.c b/lib/iov_iter.c
-index 6dd5330f7a99..dda6d5f481c1 100644
---- a/lib/iov_iter.c
-+++ b/lib/iov_iter.c
-@@ -1434,7 +1434,7 @@ static ssize_t iter_xarray_get_pages(struct iov_iter *i,
- {
- 	unsigned nr, offset;
- 	pgoff_t index, count;
--	size_t size = maxsize, actual;
-+	size_t size = maxsize;
- 	loff_t pos;
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c
+index 87257b1b028f..feff4f8c927c 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c
+@@ -190,6 +190,9 @@ static int yellow_carp_fini_smc_tables(struct smu_context *smu)
+ 	kfree(smu_table->watermarks_table);
+ 	smu_table->watermarks_table = NULL;
  
- 	if (!size || !maxpages)
-@@ -1461,13 +1461,7 @@ static ssize_t iter_xarray_get_pages(struct iov_iter *i,
- 	if (nr == 0)
- 		return 0;
- 
--	actual = PAGE_SIZE * nr;
--	actual -= offset;
--	if (nr == count && size > 0) {
--		unsigned last_offset = (nr > 1) ? 0 : offset;
--		actual -= PAGE_SIZE - (last_offset + size);
--	}
--	return actual;
-+	return min(nr * PAGE_SIZE - offset, maxsize);
++	kfree(smu_table->gpu_metrics_table);
++	smu_table->gpu_metrics_table = NULL;
++
+ 	return 0;
  }
  
- /* must be done on non-empty ITER_IOVEC one */
-@@ -1602,7 +1596,7 @@ static ssize_t iter_xarray_get_pages_alloc(struct iov_iter *i,
- 	struct page **p;
- 	unsigned nr, offset;
- 	pgoff_t index, count;
--	size_t size = maxsize, actual;
-+	size_t size = maxsize;
- 	loff_t pos;
- 
- 	if (!size)
-@@ -1631,13 +1625,7 @@ static ssize_t iter_xarray_get_pages_alloc(struct iov_iter *i,
- 	if (nr == 0)
- 		return 0;
- 
--	actual = PAGE_SIZE * nr;
--	actual -= offset;
--	if (nr == count && size > 0) {
--		unsigned last_offset = (nr > 1) ? 0 : offset;
--		actual -= PAGE_SIZE - (last_offset + size);
--	}
--	return actual;
-+	return min(nr * PAGE_SIZE - offset, maxsize);
- }
- 
- ssize_t iov_iter_get_pages_alloc(struct iov_iter *i,
 -- 
 2.35.1
 
