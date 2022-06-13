@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36564C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:51:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1CD1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:51:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344705AbiFMKvP (ORCPT
+        id S1346991AbiFMKvU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:51:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57628 "EHLO
+        Mon, 13 Jun 2022 06:51:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348207AbiFMKtM (ORCPT
+        with ESMTP id S1348199AbiFMKtM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 06:49:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77983240AA;
-        Mon, 13 Jun 2022 03:26:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B51F2DD4D;
+        Mon, 13 Jun 2022 03:26:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 132B360B8B;
-        Mon, 13 Jun 2022 10:26:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EE9DC34114;
-        Mon, 13 Jun 2022 10:26:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D3BD660AEB;
+        Mon, 13 Jun 2022 10:26:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D97F6C34114;
+        Mon, 13 Jun 2022 10:26:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116006;
-        bh=JCwMZwP9xYpUJHYu56bf6rhRhw1tnKpoDThFOYDOutg=;
+        s=korg; t=1655116009;
+        bh=4SgZ93K4izLIRG+/5o4JaxKKXjWiS68cLfgaBrU9xEU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L54PUFdGCptG9VC+kc1mAGToCpydjyjLNnAgmgXVgg6ODiSB5SCYKgCzv4DNBb/jZ
-         Che/eWKnTe5ZB3dcfBYszizv88/HV+OMnsa/tSeYPTqckZWUXmE7+PUf/xdWlZso4y
-         lPJujWD7dkoCagOuN6Ycf/+OpkT9BfXqgra5A4Vo=
+        b=cM8fzjNeg27GD+9SPZHKHMKoQRQ+quKIbaw9jJHOOxhkrbUGkYfZExV0askdhCoax
+         GY9pG5JdRfz9PjiYLwJNGugPS5eay9aoL/WeCCutd6F3EGuZoeH51lRBBcYaS1sMol
+         pemFcAO2y9BG4owKejz8RVrnbIAZht0BXtFk1HNs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Ye Bin <yebin10@huawei.com>, Jan Kara <jack@suse.cz>,
+        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
         Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 4.14 106/218] ext4: fix bug_on in ext4_writepages
-Date:   Mon, 13 Jun 2022 12:09:24 +0200
-Message-Id: <20220613094923.773420670@linuxfoundation.org>
+Subject: [PATCH 4.14 107/218] ext4: verify dir block before splitting it
+Date:   Mon, 13 Jun 2022 12:09:25 +0200
+Message-Id: <20220613094923.804849291@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -50,107 +49,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Bin <yebin10@huawei.com>
+From: Jan Kara <jack@suse.cz>
 
-commit ef09ed5d37b84d18562b30cf7253e57062d0db05 upstream.
+commit 46c116b920ebec58031f0a78c5ea9599b0d2a371 upstream.
 
-we got issue as follows:
-EXT4-fs error (device loop0): ext4_mb_generate_buddy:1141: group 0, block bitmap and bg descriptor inconsistent: 25 vs 31513 free cls
-------------[ cut here ]------------
-kernel BUG at fs/ext4/inode.c:2708!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
-CPU: 2 PID: 2147 Comm: rep Not tainted 5.18.0-rc2-next-20220413+ #155
-RIP: 0010:ext4_writepages+0x1977/0x1c10
-RSP: 0018:ffff88811d3e7880 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: 0000000000000001 RCX: ffff88811c098000
-RDX: 0000000000000000 RSI: ffff88811c098000 RDI: 0000000000000002
-RBP: ffff888128140f50 R08: ffffffffb1ff6387 R09: 0000000000000000
-R10: 0000000000000007 R11: ffffed10250281ea R12: 0000000000000001
-R13: 00000000000000a4 R14: ffff88811d3e7bb8 R15: ffff888128141028
-FS:  00007f443aed9740(0000) GS:ffff8883aef00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020007200 CR3: 000000011c2a4000 CR4: 00000000000006e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- do_writepages+0x130/0x3a0
- filemap_fdatawrite_wbc+0x83/0xa0
- filemap_flush+0xab/0xe0
- ext4_alloc_da_blocks+0x51/0x120
- __ext4_ioctl+0x1534/0x3210
- __x64_sys_ioctl+0x12c/0x170
- do_syscall_64+0x3b/0x90
+Before splitting a directory block verify its directory entries are sane
+so that the splitting code does not access memory it should not.
 
-It may happen as follows:
-1. write inline_data inode
-vfs_write
-  new_sync_write
-    ext4_file_write_iter
-      ext4_buffered_write_iter
-        generic_perform_write
-          ext4_da_write_begin
-            ext4_da_write_inline_data_begin -> If inline data size too
-            small will allocate block to write, then mapping will has
-            dirty page
-                ext4_da_convert_inline_data_to_extent ->clear EXT4_STATE_MAY_INLINE_DATA
-2. fallocate
-do_vfs_ioctl
-  ioctl_preallocate
-    vfs_fallocate
-      ext4_fallocate
-        ext4_convert_inline_data
-          ext4_convert_inline_data_nolock
-            ext4_map_blocks -> fail will goto restore data
-            ext4_restore_inline_data
-              ext4_create_inline_data
-              ext4_write_inline_data
-              ext4_set_inode_state -> set inode EXT4_STATE_MAY_INLINE_DATA
-3. writepages
-__ext4_ioctl
-  ext4_alloc_da_blocks
-    filemap_flush
-      filemap_fdatawrite_wbc
-        do_writepages
-          ext4_writepages
-            if (ext4_has_inline_data(inode))
-              BUG_ON(ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA))
-
-The root cause of this issue is we destory inline data until call
-ext4_writepages under delay allocation mode.  But there maybe already
-convert from inline to extent.  To solve this issue, we call
-filemap_flush first..
-
-Cc: stable@kernel.org
-Signed-off-by: Ye Bin <yebin10@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220516122634.1690462-1-yebin10@huawei.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220518093332.13986-1-jack@suse.cz
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/inline.c |   12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ fs/ext4/namei.c |   32 +++++++++++++++++++++-----------
+ 1 file changed, 21 insertions(+), 11 deletions(-)
 
---- a/fs/ext4/inline.c
-+++ b/fs/ext4/inline.c
-@@ -1995,6 +1995,18 @@ int ext4_convert_inline_data(struct inod
- 	if (!ext4_has_inline_data(inode)) {
- 		ext4_clear_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
- 		return 0;
-+	} else if (!ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA)) {
-+		/*
-+		 * Inode has inline data but EXT4_STATE_MAY_INLINE_DATA is
-+		 * cleared. This means we are in the middle of moving of
-+		 * inline data to delay allocated block. Just force writeout
-+		 * here to finish conversion.
-+		 */
-+		error = filemap_flush(inode->i_mapping);
-+		if (error)
-+			return error;
-+		if (!ext4_has_inline_data(inode))
-+			return 0;
- 	}
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -271,9 +271,9 @@ static struct dx_frame *dx_probe(struct
+ 				 struct dx_hash_info *hinfo,
+ 				 struct dx_frame *frame);
+ static void dx_release(struct dx_frame *frames);
+-static int dx_make_map(struct inode *dir, struct ext4_dir_entry_2 *de,
+-		       unsigned blocksize, struct dx_hash_info *hinfo,
+-		       struct dx_map_entry map[]);
++static int dx_make_map(struct inode *dir, struct buffer_head *bh,
++		       struct dx_hash_info *hinfo,
++		       struct dx_map_entry *map_tail);
+ static void dx_sort_map(struct dx_map_entry *map, unsigned count);
+ static struct ext4_dir_entry_2 *dx_move_dirents(char *from, char *to,
+ 		struct dx_map_entry *offsets, int count, unsigned blocksize);
+@@ -1202,15 +1202,23 @@ static inline int search_dirblock(struct
+  * Create map of hash values, offsets, and sizes, stored at end of block.
+  * Returns number of entries mapped.
+  */
+-static int dx_make_map(struct inode *dir, struct ext4_dir_entry_2 *de,
+-		       unsigned blocksize, struct dx_hash_info *hinfo,
++static int dx_make_map(struct inode *dir, struct buffer_head *bh,
++		       struct dx_hash_info *hinfo,
+ 		       struct dx_map_entry *map_tail)
+ {
+ 	int count = 0;
+-	char *base = (char *) de;
++	struct ext4_dir_entry_2 *de = (struct ext4_dir_entry_2 *)bh->b_data;
++	unsigned int buflen = bh->b_size;
++	char *base = bh->b_data;
+ 	struct dx_hash_info h = *hinfo;
  
- 	needed_blocks = ext4_writepage_trans_blocks(inode);
+-	while ((char *) de < base + blocksize) {
++	if (ext4_has_metadata_csum(dir->i_sb))
++		buflen -= sizeof(struct ext4_dir_entry_tail);
++
++	while ((char *) de < base + buflen) {
++		if (ext4_check_dir_entry(dir, NULL, de, bh, base, buflen,
++					 ((char *)de) - base))
++			return -EFSCORRUPTED;
+ 		if (de->name_len && de->inode) {
+ 			ext4fs_dirhash(de->name, de->name_len, &h);
+ 			map_tail--;
+@@ -1220,8 +1228,7 @@ static int dx_make_map(struct inode *dir
+ 			count++;
+ 			cond_resched();
+ 		}
+-		/* XXX: do we need to check rec_len == 0 case? -Chris */
+-		de = ext4_next_entry(de, blocksize);
++		de = ext4_next_entry(de, dir->i_sb->s_blocksize);
+ 	}
+ 	return count;
+ }
+@@ -1737,8 +1744,11 @@ static struct ext4_dir_entry_2 *do_split
+ 
+ 	/* create map in the end of data2 block */
+ 	map = (struct dx_map_entry *) (data2 + blocksize);
+-	count = dx_make_map(dir, (struct ext4_dir_entry_2 *) data1,
+-			     blocksize, hinfo, map);
++	count = dx_make_map(dir, *bh, hinfo, map);
++	if (count < 0) {
++		err = count;
++		goto journal_error;
++	}
+ 	map -= count;
+ 	dx_sort_map(map, count);
+ 	/* Ensure that neither split block is over half full */
 
 
