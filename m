@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12DBDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:02:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0EA7C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:02:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350059AbiFMLCk (ORCPT
+        id S1351030AbiFMLCo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:02:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44322 "EHLO
+        Mon, 13 Jun 2022 07:02:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350344AbiFMKyu (ORCPT
+        with ESMTP id S1350340AbiFMKyu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 06:54:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93FDD1EC6A;
-        Mon, 13 Jun 2022 03:31:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C816F13DF2;
+        Mon, 13 Jun 2022 03:31:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 311B060F09;
-        Mon, 13 Jun 2022 10:31:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C715C3411E;
-        Mon, 13 Jun 2022 10:31:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 63C3460F9A;
+        Mon, 13 Jun 2022 10:31:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B91CC34114;
+        Mon, 13 Jun 2022 10:31:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116264;
-        bh=9PJD3Qn9tZV44T/FEmmw6UElYs3+9edj15+ybckTrGQ=;
+        s=korg; t=1655116261;
+        bh=cGZfxlH9DSPS+HXCRiDbM0j6XjWTU0EEXbZagw8l5Sg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=17qfC1ZX11J1AzBW2pQqLWe8GSTJGoQw/7Mut01HzudtpJSidCxXy2LYfh0HIQEeW
-         Fw3mseWQWHjcOJnTNqccLgImFXoLadh5/JcFmlWYDJDRPZX2pdU7ei/VQr2V73Z6aO
-         5jc2HyLSCn0Vll26SwfurbiPvycjKHI2/rPAP4Wc=
+        b=iIQCM70agxnkSFsRHL2cWljFrJyJIA0bE+erC/F9VOsWunIHOgSCU78WZfEQcxG7k
+         fy1wZjD4eZNxXd2wHYOj+N1ZoEgG3RjZOJQIixqy0pXgv+eFevykkLzWX/oIhKhPB0
+         98uwRKRkTj6cOBfOH3iV3+DTt2YJ/bbZ21hgf4Co=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 054/411] ASoC: rt5645: Fix errorenous cleanup order
-Date:   Mon, 13 Jun 2022 12:05:27 +0200
-Message-Id: <20220613094930.132861618@linuxfoundation.org>
+Subject: [PATCH 4.14 160/218] modpost: fix removing numeric suffixes
+Date:   Mon, 13 Jun 2022 12:10:18 +0200
+Message-Id: <20220613094925.448864514@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,51 +52,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lin Ma <linma@zju.edu.cn>
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-[ Upstream commit 2def44d3aec59e38d2701c568d65540783f90f2f ]
+[ Upstream commit b5beffa20d83c4e15306c991ffd00de0d8628338 ]
 
-There is a logic error when removing rt5645 device as the function
-rt5645_i2c_remove() first cancel the &rt5645->jack_detect_work and
-delete the &rt5645->btn_check_timer latter. However, since the timer
-handler rt5645_btn_check_callback() will re-queue the jack_detect_work,
-this cleanup order is buggy.
+With the `-z unique-symbol` linker flag or any similar mechanism,
+it is possible to trigger the following:
 
-That is, once the del_timer_sync in rt5645_i2c_remove is concurrently
-run with the rt5645_btn_check_callback, the canceled jack_detect_work
-will be rescheduled again, leading to possible use-after-free.
+ERROR: modpost: "param_set_uint.0" [vmlinux] is a static EXPORT_SYMBOL
 
-This patch fix the issue by placing the del_timer_sync function before
-the cancel_delayed_work_sync.
+The reason is that for now the condition from remove_dot():
 
-Signed-off-by: Lin Ma <linma@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220516092035.28283-1-linma@zju.edu.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
+if (m && (s[n + m] == '.' || s[n + m] == 0))
+
+which was designed to test if it's a dot or a '\0' after the suffix
+is never satisfied.
+This is due to that `s[n + m]` always points to the last digit of a
+numeric suffix, not on the symbol next to it (from a custom debug
+print added to modpost):
+
+param_set_uint.0, s[n + m] is '0', s[n + m + 1] is '\0'
+
+So it's off-by-one and was like that since 2014.
+
+Fix this for the sake of any potential upcoming features, but don't
+bother stable-backporting, as it's well hidden -- apart from that
+LD flag, it can be triggered only with GCC LTO which never landed
+upstream.
+
+Fixes: fcd38ed0ff26 ("scripts: modpost: fix compilation warning")
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rt5645.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ scripts/mod/modpost.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/rt5645.c b/sound/soc/codecs/rt5645.c
-index c83f7f5da96b..a66e93a3af74 100644
---- a/sound/soc/codecs/rt5645.c
-+++ b/sound/soc/codecs/rt5645.c
-@@ -4074,9 +4074,14 @@ static int rt5645_i2c_remove(struct i2c_client *i2c)
- 	if (i2c->irq)
- 		free_irq(i2c->irq, rt5645);
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index b6eb929899c5..bc2c860f88ef 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -1949,7 +1949,7 @@ static char *remove_dot(char *s)
  
-+	/*
-+	 * Since the rt5645_btn_check_callback() can queue jack_detect_work,
-+	 * the timer need to be delted first
-+	 */
-+	del_timer_sync(&rt5645->btn_check_timer);
-+
- 	cancel_delayed_work_sync(&rt5645->jack_detect_work);
- 	cancel_delayed_work_sync(&rt5645->rcclock_work);
--	del_timer_sync(&rt5645->btn_check_timer);
- 
- 	regulator_bulk_disable(ARRAY_SIZE(rt5645->supplies), rt5645->supplies);
- 
+ 	if (n && s[n]) {
+ 		size_t m = strspn(s + n + 1, "0123456789");
+-		if (m && (s[n + m] == '.' || s[n + m] == 0))
++		if (m && (s[n + m + 1] == '.' || s[n + m + 1] == 0))
+ 			s[n] = 0;
+ 	}
+ 	return s;
 -- 
 2.35.1
 
