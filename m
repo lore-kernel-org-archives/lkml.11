@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59AABC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:08:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C0A6C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:08:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358716AbiFMMH6 (ORCPT
+        id S1358724AbiFMMIC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:07:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59592 "EHLO
+        Mon, 13 Jun 2022 08:08:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358853AbiFMMEw (ORCPT
+        with ESMTP id S1359082AbiFMMFO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:04:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 817295046F;
-        Mon, 13 Jun 2022 03:58:08 -0700 (PDT)
+        Mon, 13 Jun 2022 08:05:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6310B10547;
+        Mon, 13 Jun 2022 03:58:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC879613EF;
-        Mon, 13 Jun 2022 10:58:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF533C34114;
-        Mon, 13 Jun 2022 10:58:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0CF52B80E5E;
+        Mon, 13 Jun 2022 10:58:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D2ECC34114;
+        Mon, 13 Jun 2022 10:58:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117887;
-        bh=xF8yIWbEetOHnmhmGQHznR5lIx4juxK+WgkFwVon71Y=;
+        s=korg; t=1655117925;
+        bh=O1nxQDWCiV4/ZzljothVR5pGvrqTk3NJ1jRRecS4DeQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2J3a+ckZY+BgiTs2UvL/kqcMz5/ktSsjEA9eRfdRrWog+602HCFKzdH1IJYjz8uU2
-         zaqMDr3BlZxVvCYuI4VaxdgLcHM8+k/jpiGI4TWV96l9ckZ1R/9K3GVvfqLVbQof2G
-         6JoMtcUTQW3qnsk4Ff6VB6lu1UlfvKNE7iiesQj8=
+        b=sX36KXsRP8Fk1EJQg0mwB8Mx2az0LivvMol1RQ+4hWySMKXmFURVLXTDQRDPM8Cx+
+         WUTNs+FOzwyi6v8in/CZxIEG/1Eb0F5j/uBmBpcN4sTjMPWWxQl87L3EWSRRb9MGTq
+         hstMrgVd/7q8JcEsLFe3X1CrYt/SYQ9ayCzr2oKw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>
-Subject: [PATCH 4.19 154/287] PCI: qcom: Fix unbalanced PHY init on probe errors
-Date:   Mon, 13 Jun 2022 12:09:38 +0200
-Message-Id: <20220613094928.548465973@linuxfoundation.org>
+        stable@vger.kernel.org, Kathiravan T <quic_kathirav@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: [PATCH 4.19 180/287] arm64: dts: qcom: ipq8074: fix the sleep clock frequency
+Date:   Mon, 13 Jun 2022 12:10:04 +0200
+Message-Id: <20220613094929.326753700@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -52,42 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan+linaro@kernel.org>
+From: Kathiravan T <quic_kathirav@quicinc.com>
 
-commit 83013631f0f9961416abd812e228c8efbc2f6069 upstream.
+commit f607dd767f5d6800ffbdce5b99ba81763b023781 upstream.
 
-Undo the PHY initialisation (e.g. balance runtime PM) if host
-initialisation fails during probe.
+Sleep clock frequency should be 32768Hz. Lets fix it.
 
-Link: https://lore.kernel.org/r/20220401133854.10421-3-johan+linaro@kernel.org
-Fixes: 82a823833f4e ("PCI: qcom: Add Qualcomm PCIe controller driver")
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Acked-by: Stanimir Varbanov <svarbanov@mm-sol.com>
-Cc: stable@vger.kernel.org      # 4.5
+Cc: stable@vger.kernel.org
+Fixes: 41dac73e243d ("arm64: dts: Add ipq8074 SoC and HK01 board support")
+Link: https://lore.kernel.org/all/e2a447f8-6024-0369-f698-2027b6edcf9e@codeaurora.org/
+Signed-off-by: Kathiravan T <quic_kathirav@quicinc.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/1644581655-11568-1-git-send-email-quic_kathirav@quicinc.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/dwc/pcie-qcom.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/qcom/ipq8074.dtsi |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/pci/controller/dwc/pcie-qcom.c
-+++ b/drivers/pci/controller/dwc/pcie-qcom.c
-@@ -1339,11 +1339,13 @@ static int qcom_pcie_probe(struct platfo
- 	ret = dw_pcie_host_init(pp);
- 	if (ret) {
- 		dev_err(dev, "cannot initialize host\n");
--		goto err_pm_runtime_put;
-+		goto err_phy_exit;
- 	}
+--- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+@@ -490,7 +490,7 @@
+ 	clocks {
+ 		sleep_clk: sleep_clk {
+ 			compatible = "fixed-clock";
+-			clock-frequency = <32000>;
++			clock-frequency = <32768>;
+ 			#clock-cells = <0>;
+ 		};
  
- 	return 0;
- 
-+err_phy_exit:
-+	phy_exit(pcie->phy);
- err_pm_runtime_put:
- 	pm_runtime_put(dev);
- 	pm_runtime_disable(dev);
 
 
