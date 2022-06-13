@@ -2,95 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FA3DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:31:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90FC1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:31:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352442AbiFMVbi (ORCPT
+        id S1352078AbiFMVbx convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 17:31:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33046 "EHLO
+        Mon, 13 Jun 2022 17:31:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353230AbiFMV33 (ORCPT
+        with ESMTP id S1352120AbiFMVaJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 17:29:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2293BB9F
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:26:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA6FBB815A6
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 21:26:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A908C3411C;
-        Mon, 13 Jun 2022 21:26:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1655155570;
-        bh=ZiPSlVmPdSZv7W3M0Gh742ofWTqMrSKr8lBpme/zFfw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZZiNsJrRHxvmqrf7NM63ryJlMGQiaqpdR10zxOX6IMMmoJAjISs0HoDA8skjf+NbA
-         nznY8vvRKzm7qH1srbvcXTZ0wcSy6sf11tALSEEAtCg1fnV7eKwGEGUepJei5mt8EU
-         l52aGRpE4AJRcrW8Wclmhq4lhokM6VjCZH3J9OH8=
-Date:   Mon, 13 Jun 2022 14:26:09 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Stephen Brennan <stephen.s.brennan@oracle.com>
-Cc:     Baoquan He <bhe@redhat.com>, linux-kernel@vger.kernel.org,
-        kexec@lists.infradead.org,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Dave Young <dyoung@redhat.com>,
+        Mon, 13 Jun 2022 17:30:09 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BFCBF192
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:29:50 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-170-9N43S4nTPaqalKCbtLkcWA-1; Mon, 13 Jun 2022 22:29:47 +0100
+X-MC-Unique: 9N43S4nTPaqalKCbtLkcWA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.36; Mon, 13 Jun 2022 22:29:46 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.036; Mon, 13 Jun 2022 22:29:46 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     "'Luck, Tony'" <tony.luck@intel.com>,
+        "Lobakin, Alexandr" <alexandr.lobakin@intel.com>,
+        Marco Elver <elver@google.com>
+CC:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Yury Norov <yury.norov@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matt Turner <mattst88@gmail.com>,
+        Brian Cain <bcain@quicinc.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        "Yoshinori Sato" <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Kees Cook <keescook@chromium.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Bixuan Cui <cuibixuan@huawei.com>,
-        David Vernet <void@manifault.com>,
-        Vivek Goyal <vgoyal@redhat.com>,
-        Sami Tolvanen <samitolvanen@google.com>
-Subject: Re: [PATCH 0/2] Expose kallsyms data in vmcoreinfo note
-Message-Id: <20220613142609.3e4be0f2f45671341450232d@linux-foundation.org>
-In-Reply-To: <20220517000508.777145-1-stephen.s.brennan@oracle.com>
-References: <20220517000508.777145-1-stephen.s.brennan@oracle.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>,
+        "linux-hexagon@vger.kernel.org" <linux-hexagon@vger.kernel.org>,
+        "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>,
+        "linux-m68k@lists.linux-m68k.org" <linux-m68k@lists.linux-m68k.org>,
+        "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v2 2/6] bitops: always define asm-generic non-atomic
+ bitops
+Thread-Topic: [PATCH v2 2/6] bitops: always define asm-generic non-atomic
+ bitops
+Thread-Index: AQHYfL4xWJEoq3eTcEeKREBjFjjrHK1JHg2A//+t5kCAAH9LAIAEkeOA//+tDzCAAFKXkA==
+Date:   Mon, 13 Jun 2022 21:29:46 +0000
+Message-ID: <5d65491caf6249c8b72c7a6ced95614c@AcuMS.aculab.com>
+References: <20220610113427.908751-1-alexandr.lobakin@intel.com>
+ <20220610113427.908751-3-alexandr.lobakin@intel.com>
+ <YqNMO0ioGzJ1IkoA@smile.fi.intel.com>
+ <22042c14bc6a437d9c6b235fbfa32c8a@intel.com>
+ <CANpmjNNZAeMQjzNyXLeKY4cp_m-xJBU1vs7PgT+7_sJwxtEEAg@mail.gmail.com>
+ <20220613141947.1176100-1-alexandr.lobakin@intel.com>
+ <c82877aa7cc244f2bf0f65dfb2b617e7@intel.com>
+In-Reply-To: <c82877aa7cc244f2bf0f65dfb2b617e7@intel.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 16 May 2022 17:05:06 -0700 Stephen Brennan <stephen.s.brennan@oracle.com> wrote:
-
-> The kernel can be configured to contain a lot of introspection or
-> debugging information built-in, such as ORC for unwinding stack traces,
-> BTF for type information, and of course kallsyms. Debuggers could use
-> this information to navigate a core dump or live system, but they need
-> to be able to find it.
+From: Luck, Tony
+> Sent: 13 June 2022 17:27
 > 
-> This patch series adds the necessary symbols into vmcoreinfo, which
-> would allow a debugger to find and interpret the kallsyms table. Using
-> the kallsyms data, the debugger can then lookup any symbol, allowing it
-> to find ORC, BTF, or any other useful data.
+> >> It's listed in Documentation/atomic_bitops.txt.
+> >
+> > Oh, so my memory was actually correct that I saw it in the docs
+> > somewhere.
+> > WDYT, should I mention this here in the code (block comment) as well
+> > that it's atomic and must not lose `volatile` as Andy suggested or
+> > it's sufficient to have it in the docs (+ it's not underscored)?
 > 
-> This would allow a live kernel, or core dump, to be debugged without
-> any DWARF debuginfo. This is useful for many cases: the debuginfo may
-> not have been generated, or you may not want to deploy the large files
-> everywhere you need them.
-
-Am trying to understand the value of all of this.  Can you explain
-further why carrying the dwarf info is problematic?  How problematic
-are these large files?
-
-> I've demonstrated a proof of concept for this at LSF/MM+BPF during a
-> lighting talk. Using a work-in-progress branch of the drgn debugger, and
-> an extended set of BTF generated by a patched version of dwarves, I've
-> been able to open a core dump without any DWARF info and do basic tasks
-> such as enumerating slab caches, block devices, tasks, and doing
-> backtraces. I hope this series can be a first step toward a new
-> possibility of "DWARFless debugging".
+> I think a comment that the "volatile" is required to prevent re-ordering
+> is enough.
 > 
-> Related discussion around the BTF side of this:
-> https://lore.kernel.org/bpf/586a6288-704a-f7a7-b256-e18a675927df@oracle.com/T/#u
-> 
-> Some work-in-progress branches using this feature:
-> https://github.com/brenns10/dwarves/tree/remove_percpu_restriction_1
-> https://github.com/brenns10/drgn/tree/kallsyms_plus_btf
+> But maybe others are sufficiently clear on the meaning? I once wasted
+> time looking for the non-atomic __test_bit() version (to use in some code
+> that was already protected by a spin lock, so didn't need the overhead
+> of an "atomic" version) before realizing there wasn't a non-atomic one.
 
-What's the story on using gdb with this?
+Does it make any sense for 'test bit' to be atomic?
+
+I'm not even sure is needs any ordering constraints either.
+The result is always stale - the value can be changed by
+another cpu at any time.
+
+The set/clear atomic bit-ops require a RMW bus cycle - which has
+to be locked (or similar) to avoid corruption.
+
+The atomic 'test and set' (etc) are RMW and return a valid state.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
