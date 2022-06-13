@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E8ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:32:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76B39C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:32:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383987AbiFMOcV (ORCPT
+        id S1384049AbiFMOcj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:32:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59004 "EHLO
+        Mon, 13 Jun 2022 10:32:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384194AbiFMO27 (ORCPT
+        with ESMTP id S1384416AbiFMO3V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:28:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00ECE38195;
-        Mon, 13 Jun 2022 04:47:32 -0700 (PDT)
+        Mon, 13 Jun 2022 10:29:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A039EA5006;
+        Mon, 13 Jun 2022 04:47:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D58A3B80EDF;
-        Mon, 13 Jun 2022 11:47:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34328C34114;
-        Mon, 13 Jun 2022 11:47:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3342BB80EB2;
+        Mon, 13 Jun 2022 11:47:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FDCEC34114;
+        Mon, 13 Jun 2022 11:47:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120848;
-        bh=0vJ7kPV8KVVlmRbZOmIAC4xvOA0aVrOWAaETYxAoOUs=;
+        s=korg; t=1655120843;
+        bh=FKej8SBFned+bzHH/nlY+d5eNOv/cPZuTaoTzbfd1JE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=voC8lrhYUJ0OTDzkkQSJV8d9ayY5DjqlgnDLsZY28HhbAIRLHbFVPxBFogXoMAtbO
-         WuQstP4pAC2XizlRD3VEV/NOFn6buOcM1nu1cubYbcCtrfEtpCk8oP1gsnwk2ikiHd
-         SXM/Cv6G2TsJkn1iaOE8FYa2PNgd4EXseumGCm0k=
+        b=FkKF7AMKTG2M+2XZF279OMjpaSyQQDKQgieLh4aL+fIQJUHk1HVwdn37BPYpRO5n+
+         Xwa+Nhjg53SRtq4rruSSKIYEe6iLHsyQd1FvReCzLK1Wj1AUkHyj2dJ96S+2Rm+U2L
+         JwWvmmon66Jkoe5TQhfZ2BoQft5wqvbiLziTNuNU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
+        stable@vger.kernel.org, Gal Pressman <gal@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 180/298] xsk: Fix handling of invalid descriptors in XSK TX batching API
-Date:   Mon, 13 Jun 2022 12:11:14 +0200
-Message-Id: <20220613094930.393155938@linuxfoundation.org>
+Subject: [PATCH 5.17 178/298] net/mlx4_en: Fix wrong return value on ioctl EEPROM query failure
+Date:   Mon, 13 Jun 2022 12:11:12 +0200
+Message-Id: <20220613094930.332792306@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -52,83 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+From: Gal Pressman <gal@nvidia.com>
 
-[ Upstream commit d678cbd2f867a564a3c5b276c454e873f43f02f8 ]
+[ Upstream commit f5826c8c9d57210a17031af5527056eefdc2b7eb ]
 
-xdpxceiver run on a AF_XDP ZC enabled driver revealed a problem with XSK
-Tx batching API. There is a test that checks how invalid Tx descriptors
-are handled by AF_XDP. Each valid descriptor is followed by invalid one
-on Tx side whereas the Rx side expects only to receive a set of valid
-descriptors.
+The ioctl EEPROM query wrongly returns success on read failures, fix
+that by returning the appropriate error code.
 
-In current xsk_tx_peek_release_desc_batch() function, the amount of
-available descriptors is hidden inside xskq_cons_peek_desc_batch(). This
-can be problematic in cases where invalid descriptors are present due to
-the fact that xskq_cons_peek_desc_batch() returns only a count of valid
-descriptors. This means that it is impossible to properly update XSK
-ring state when calling xskq_cons_release_n().
-
-To address this issue, pull out the contents of
-xskq_cons_peek_desc_batch() so that callers (currently only
-xsk_tx_peek_release_desc_batch()) will always be able to update the
-state of ring properly, as total count of entries is now available and
-use this value as an argument in xskq_cons_release_n(). By
-doing so, xskq_cons_peek_desc_batch() can be dropped altogether.
-
-Fixes: 9349eb3a9d2a ("xsk: Introduce batched Tx descriptor interfaces")
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
-Link: https://lore.kernel.org/bpf/20220607142200.576735-1-maciej.fijalkowski@intel.com
+Fixes: 7202da8b7f71 ("ethtool, net/mlx4_en: Cable info, get_module_info/eeprom ethtool support")
+Signed-off-by: Gal Pressman <gal@nvidia.com>
+Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+Link: https://lore.kernel.org/r/20220606115718.14233-1-tariqt@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/xdp/xsk.c       | 5 +++--
- net/xdp/xsk_queue.h | 8 --------
- 2 files changed, 3 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/mellanox/mlx4/en_ethtool.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index 7d3a00cb24ec..4806fe35c657 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -373,7 +373,8 @@ u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, u32 max_entries)
- 		goto out;
- 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
+index ed5038d98ef6..6400a827173c 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
++++ b/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
+@@ -2110,7 +2110,7 @@ static int mlx4_en_get_module_eeprom(struct net_device *dev,
+ 			en_err(priv,
+ 			       "mlx4_get_module_info i(%d) offset(%d) bytes_to_read(%d) - FAILED (0x%x)\n",
+ 			       i, offset, ee->len - i, ret);
+-			return 0;
++			return ret;
+ 		}
  
--	nb_pkts = xskq_cons_peek_desc_batch(xs->tx, pool, max_entries);
-+	max_entries = xskq_cons_nb_entries(xs->tx, max_entries);
-+	nb_pkts = xskq_cons_read_desc_batch(xs->tx, pool, max_entries);
- 	if (!nb_pkts) {
- 		xs->tx->queue_empty_descs++;
- 		goto out;
-@@ -389,7 +390,7 @@ u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, u32 max_entries)
- 	if (!nb_pkts)
- 		goto out;
- 
--	xskq_cons_release_n(xs->tx, nb_pkts);
-+	xskq_cons_release_n(xs->tx, max_entries);
- 	__xskq_cons_release(xs->tx);
- 	xs->sk.sk_write_space(&xs->sk);
- 
-diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
-index 638138fbe475..4d092e7a33d1 100644
---- a/net/xdp/xsk_queue.h
-+++ b/net/xdp/xsk_queue.h
-@@ -282,14 +282,6 @@ static inline bool xskq_cons_peek_desc(struct xsk_queue *q,
- 	return xskq_cons_read_desc(q, desc, pool);
- }
- 
--static inline u32 xskq_cons_peek_desc_batch(struct xsk_queue *q, struct xsk_buff_pool *pool,
--					    u32 max)
--{
--	u32 entries = xskq_cons_nb_entries(q, max);
--
--	return xskq_cons_read_desc_batch(q, pool, entries);
--}
--
- /* To improve performance in the xskq_cons_release functions, only update local state here.
-  * Reflect this to global state when we get new entries from the ring in
-  * xskq_cons_get_entries() and whenever Rx or Tx processing are completed in the NAPI loop.
+ 		i += ret;
 -- 
 2.35.1
 
