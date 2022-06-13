@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2648C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:19:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71FE3C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:19:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242301AbiFMKTv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:19:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59696 "EHLO
+        id S242343AbiFMKTx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:19:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242964AbiFMKS6 (ORCPT
+        with ESMTP id S242979AbiFMKS6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 06:18:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3F4620F52;
-        Mon, 13 Jun 2022 03:16:29 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D243620F5F;
+        Mon, 13 Jun 2022 03:16:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 938A261496;
-        Mon, 13 Jun 2022 10:16:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA264C34114;
-        Mon, 13 Jun 2022 10:16:27 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 42864CE110D;
+        Mon, 13 Jun 2022 10:16:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3495EC34114;
+        Mon, 13 Jun 2022 10:16:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115388;
-        bh=G9JIeztz/1WNc1f5ma3qZPcbfK3A8KMrnRB+hYfkvNU=;
+        s=korg; t=1655115393;
+        bh=peTvhdEzEREWGvN7fEzb5RhKDEU525Wx9WM1YuLPjVc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LFKKNkUvUXaQUlvrgVpuHJGj7bQgk/fwkPSGx62PBKcwCeM5AoCfpYMnq9nlxMi5i
-         Ot83mb3GRQbdk8vmkjUw7lzEU4oSlbVy/KqL6dp0VSha+atho7Hu3pl+0AxpNEU/YC
-         SVXCaqQhBVQ/QPvvfU9qjnF2eTzGIdUjGcRF0hww=
+        b=kBdyl72mCQuRtLUSzDIgX0YsEXhzWfS5rJqww/AnUmwcR0vQMMLfjW0PNxNZdqwXJ
+         td8hhDqpUM0raPkRi2sUFIGcxmqQPwqBuO+fob6petTY9VKK5zJYf2OGyvLSAeSo5v
+         T7Ob1pM/GevUcV5zSMqScl/z/VNAdHNc9cGBhM38=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Ungerer <gerg@linux-m68k.org>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 058/167] m68k: math-emu: Fix dependencies of math emulation support
-Date:   Mon, 13 Jun 2022 12:08:52 +0200
-Message-Id: <20220613094854.486794202@linuxfoundation.org>
+Subject: [PATCH 4.9 068/167] powerpc/8xx: export cpm_setbrg for modules
+Date:   Mon, 13 Jun 2022 12:09:02 +0200
+Message-Id: <20220613094856.850318584@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -50,54 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert@linux-m68k.org>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit ed6bc6bf0a7d75e80eb1df883c09975ebb74e590 ]
+[ Upstream commit 22f8e625ebabd7ed3185b82b44b4f12fc0402113 ]
 
-If CONFIG_M54xx=y, CONFIG_MMU=y, and CONFIG_M68KFPU_EMU=y:
+Fix missing export for a loadable module build:
 
-    {standard input}:272: Error: invalid instruction for this architecture; needs 68000 or higher (68000 [68ec000, 68hc000, 68hc001, 68008, 68302, 68306, 68307, 68322, 68356], 68010, 68020 [68k, 68ec020], 68030 [68ec030], 68040 [68ec040], 68060 [68ec060], cpu32 [68330, 68331, 68332, 68333, 68334, 68336, 68340, 68341, 68349, 68360], fidoa [fido]) -- statement `sub.b %d1,%d3' ignored
-    {standard input}:609: Error: invalid instruction for this architecture; needs 68020 or higher (68020 [68k, 68ec020], 68030 [68ec030], 68040 [68ec040], 68060 [68ec060]) -- statement `bfextu 4(%a1){%d0,#8},%d0' ignored
-    {standard input}:752: Error: operands mismatch -- statement `mulu.l 4(%a0),%d3:%d0' ignored
-    {standard input}:1155: Error: operands mismatch -- statement `divu.l %d0,%d3:%d7' ignored
+ERROR: modpost: "cpm_setbrg" [drivers/tty/serial/cpm_uart/cpm_uart.ko] undefined!
 
-The math emulation support code is intended for 68020 and higher, and
-uses several instructions or instruction modes not available on coldfire
-or 68000.
-
-Originally, the dependency of M68KFPU_EMU on MMU was fine, as MMU
-support was only available on 68020 or higher.  But this assumption
-was broken by the introduction of MMU support for M547x and M548x.
-
-Drop the dependency on MMU, as the code should work fine on 68020 and up
-without MMU (which are not yet supported by Linux, though).
-Add dependencies on M68KCLASSIC (to rule out Coldfire) and FPU (kernel
-has some type of floating-point support --- be it hardware or software
-emulated, to rule out anything below 68020).
-
-Fixes: 1f7034b9616e6f14 ("m68k: allow ColdFire 547x and 548x CPUs to be built with MMU enabled")
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
 Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Reviewed-by: Greg Ungerer <gerg@linux-m68k.org>
-Link: https://lore.kernel.org/r/18c34695b7c95107f60ccca82a4ff252f3edf477.1652446117.git.geert@linux-m68k.org
+[chleroy: Changed Fixes: tag]
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20210122010819.30986-1-rdunlap@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/m68k/Kconfig.cpu | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/sysdev/cpm1.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/m68k/Kconfig.cpu b/arch/m68k/Kconfig.cpu
-index d2219f30b78f..2268d19cc915 100644
---- a/arch/m68k/Kconfig.cpu
-+++ b/arch/m68k/Kconfig.cpu
-@@ -307,7 +307,7 @@ comment "Processor Specific Options"
+diff --git a/arch/powerpc/sysdev/cpm1.c b/arch/powerpc/sysdev/cpm1.c
+index 986cd111d4df..8f2dc4ea9376 100644
+--- a/arch/powerpc/sysdev/cpm1.c
++++ b/arch/powerpc/sysdev/cpm1.c
+@@ -290,6 +290,7 @@ cpm_setbrg(uint brg, uint rate)
+ 		out_be32(bp, (((BRG_UART_CLK_DIV16 / rate) - 1) << 1) |
+ 			      CPM_BRG_EN | CPM_BRG_DIV16);
+ }
++EXPORT_SYMBOL(cpm_setbrg);
  
- config M68KFPU_EMU
- 	bool "Math emulation support"
--	depends on MMU
-+	depends on M68KCLASSIC && FPU
- 	help
- 	  At some point in the future, this will cause floating-point math
- 	  instructions to be emulated by the kernel on machines that lack a
+ struct cpm_ioport16 {
+ 	__be16 dir, par, odr_sor, dat, intr;
 -- 
 2.35.1
 
