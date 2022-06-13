@@ -2,98 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10754C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:12:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6C46C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:12:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353578AbiFMMMP (ORCPT
+        id S1348742AbiFMMMV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:12:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59918 "EHLO
+        Mon, 13 Jun 2022 08:12:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358704AbiFMMHt (ORCPT
+        with ESMTP id S1358813AbiFMMId (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:07:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0B1C515BE;
-        Mon, 13 Jun 2022 04:00:11 -0700 (PDT)
+        Mon, 13 Jun 2022 08:08:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2727151E61;
+        Mon, 13 Jun 2022 04:00:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0D5B4B80D3A;
-        Mon, 13 Jun 2022 11:00:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B875C3411E;
-        Mon, 13 Jun 2022 11:00:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118008;
-        bh=gDBS5ivrfzV13GZedBnzpygN0y4DfOtxPoTKpGomeQo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1L39Lug9eIS1hMaMO9SA58+KfRvynnjxfmRQ7yidNFVRPbEowzpAeiznQ/G+f/ZnK
-         FM3GdCN2BjpmfrPmNAXlBScvTymKTJnJkSn7tvBu5GKLd8+sRv17HCKpjO3MJYgdzr
-         Qss7Cbv+epsE3C7Gn6tT8P5XtYarkjM/fJvJoW1o=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@st.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 210/287] serial: st-asc: Sanitize CSIZE and correct PARENB for CS7
-Date:   Mon, 13 Jun 2022 12:10:34 +0200
-Message-Id: <20220613094930.230209297@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
-References: <20220613094923.832156175@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D2C76144A;
+        Mon, 13 Jun 2022 11:00:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DE64EC3411E;
+        Mon, 13 Jun 2022 11:00:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655118013;
+        bh=JgpchjD40vF8E9DhKlEBOn+h/yMlnzYJD8uDO46SrLs=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Ra8w3rtLxe+HoYJd1Mru65Gxl05xCw+I9Kt6AuWFJRvTjC26EHmfEITGY4JS5mfOP
+         7o8pLQ03jStR/zS4+ijkcfBH/oiWUY4bKLBBmtqSyKdWDExjrRIB/X4vCmbqTWPPj7
+         QNyU0uKde/NWWhlu57u/nWGcQ+nRlyxjv/fVTwVrCx/mZKX0J6gyIy++THneOWqYo/
+         0z8IDYhdOvYJ9AIYMkH9g5QLM0aP8UfTFFN01BidUAi91YCit/7v8Eqdi8IuGB9jih
+         wqThCV9do9Fim8wIrSyHkMYACHSZTirvH9umC1mQwk7e4RDpBZy97lxbq2oFWCHysp
+         HCNFVVVODwmsw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C4518E57538;
+        Mon, 13 Jun 2022 11:00:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/6] net: hns3: add some fixes for -net
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165511801380.27055.5976208563800390037.git-patchwork-notify@kernel.org>
+Date:   Mon, 13 Jun 2022 11:00:13 +0000
+References: <20220611122529.18571-1-huangguangbin2@huawei.com>
+In-Reply-To: <20220611122529.18571-1-huangguangbin2@huawei.com>
+To:     Guangbin Huang <huangguangbin2@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lipeng321@huawei.com,
+        chenhao288@hisilicon.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Hello:
 
-[ Upstream commit 52bb1cb7118564166b04d52387bd8403632f5190 ]
+This series was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Only CS7 and CS8 seem supported but CSIZE is not sanitized from CS5 or
-CS6 to CS8. In addition, ASC_CTL_MODE_7BIT_PAR suggests that CS7 has
-to have parity, thus add PARENB.
+On Sat, 11 Jun 2022 20:25:23 +0800 you wrote:
+> This series adds some fixes for the HNS3 ethernet driver.
+> 
+> Guangbin Huang (3):
+>   net: hns3: set port base vlan tbl_sta to false before removing old
+>     vlan
+>   net: hns3: restore tm priority/qset to default settings when tc
+>     disabled
+>   net: hns3: fix tm port shapping of fibre port is incorrect after
+>     driver initialization
+> 
+> [...]
 
-Incorrect CSIZE results in miscalculation of the frame bits in
-tty_get_char_size() or in its predecessor where the roughly the same
-code is directly within uart_update_timeout().
+Here is the summary with links:
+  - [net,1/6] net: hns3: set port base vlan tbl_sta to false before removing old vlan
+    https://git.kernel.org/netdev/net/c/9eda7d8bcbdb
+  - [net,2/6] net: hns3: don't push link state to VF if unalive
+    https://git.kernel.org/netdev/net/c/283847e3ef6d
+  - [net,3/6] net: hns3: modify the ring param print info
+    https://git.kernel.org/netdev/net/c/cfd80687a538
+  - [net,4/6] net: hns3: restore tm priority/qset to default settings when tc disabled
+    https://git.kernel.org/netdev/net/c/e93530ae0e5d
+  - [net,5/6] net: hns3: fix PF rss size initialization bug
+    https://git.kernel.org/netdev/net/c/71b215f36dca
+  - [net,6/6] net: hns3: fix tm port shapping of fibre port is incorrect after driver initialization
+    https://git.kernel.org/netdev/net/c/12a367088772
 
-Fixes: c4b058560762 (serial:st-asc: Add ST ASC driver.)
-Cc: Srinivas Kandagatla <srinivas.kandagatla@st.com>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/20220519081808.3776-8-ilpo.jarvinen@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/serial/st-asc.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-index 7971997cdead..ce35e3a131b1 100644
---- a/drivers/tty/serial/st-asc.c
-+++ b/drivers/tty/serial/st-asc.c
-@@ -540,10 +540,14 @@ static void asc_set_termios(struct uart_port *port, struct ktermios *termios,
- 	/* set character length */
- 	if ((cflag & CSIZE) == CS7) {
- 		ctrl_val |= ASC_CTL_MODE_7BIT_PAR;
-+		cflag |= PARENB;
- 	} else {
- 		ctrl_val |= (cflag & PARENB) ?  ASC_CTL_MODE_8BIT_PAR :
- 						ASC_CTL_MODE_8BIT;
-+		cflag &= ~CSIZE;
-+		cflag |= CS8;
- 	}
-+	termios->c_cflag = cflag;
- 
- 	/* set stop bit */
- 	ctrl_val |= (cflag & CSTOPB) ? ASC_CTL_STOP_2BIT : ASC_CTL_STOP_1BIT;
+You are awesome, thank you!
 -- 
-2.35.1
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
