@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1789CCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:30:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BFB2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:30:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239228AbiFMM2a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:28:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34322 "EHLO
+        id S1351440AbiFMMaO (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 08:30:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355458AbiFMMX4 (ORCPT
+        with ESMTP id S1357306AbiFMMYS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:23:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D06131539;
-        Mon, 13 Jun 2022 04:04:59 -0700 (PDT)
+        Mon, 13 Jun 2022 08:24:18 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A315431DE2;
+        Mon, 13 Jun 2022 04:05:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CE2B561435;
-        Mon, 13 Jun 2022 11:04:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBAE5C34114;
-        Mon, 13 Jun 2022 11:04:57 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3F2E4CE1179;
+        Mon, 13 Jun 2022 11:05:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1418DC3411C;
+        Mon, 13 Jun 2022 11:05:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118298;
-        bh=IhebxJ8vLQHB+MvIrD20QJoz2NfHUxkg+wA2gpF3CwY=;
+        s=korg; t=1655118328;
+        bh=1okDpxG+2HAeH3YlR9vj5KO6UWz/SMYp93/ULZFDgus=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n/R7fJ5ecWCTNRy8jSlv4v24YhNT2LGnN4pZ+ZwymsmBMO8SfBZiOQ/tmlqrm3z9u
-         QHsSh/2oLidmcKJDrcjMTqTIw07rMCG6YPOwYs4minkw77EHkKhmfB5Cs6tIFeANed
-         9FazOIigjCR4GLSWm1WTkYi/Cm8AFmoMONqy0S3U=
+        b=dPIa7Mp9KUUAF3mHen2tY7J9Ko6nQe6JcL9vNxvYQbj5agAPl3Zzg13epyxMUiu/x
+         woC6/mNAwiWCeFwZIOGSJUZNJsoRbeJvhzzYQx5EzkzRn/BMqo08ilgQr7ja7LIKqi
+         Ta87Eb+RC8UHbT7PTwXeEqVo4Wmn8xozbWUxWQHQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Evan Green <evgreen@chromium.org>,
-        Johan Hovold <johan+linaro@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 025/172] phy: qcom-qmp: fix pipe-clock imbalance on power-on failure
-Date:   Mon, 13 Jun 2022 12:09:45 +0200
-Message-Id: <20220613094856.463782806@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Li Jun <jun.li@nxp.com>, Chanwoo Choi <cw00.choi@samsung.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 028/172] extcon: ptn5150: Add queue work sync before driver release
+Date:   Mon, 13 Jun 2022 12:09:48 +0200
+Message-Id: <20220613094857.166749117@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -49,38 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan+linaro@kernel.org>
+From: Li Jun <jun.li@nxp.com>
 
-[ Upstream commit 5e73b2d9867998278479ccc065a8a8227a5513ef ]
+[ Upstream commit 782cd939cbe0f569197cd1c9b0477ee213167f04 ]
 
-Make sure to disable the pipe clock also if ufs-reset deassertion fails
-during power on.
+Add device managed action to sync pending queue work, otherwise
+the queued work may run after the work is destroyed.
 
-Note that the ufs-reset is asserted in qcom_qmp_phy_com_exit().
-
-Fixes: c9b589791fc1 ("phy: qcom: Utilize UFS reset controller")
-Cc: Evan Green <evgreen@chromium.org>
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-Link: https://lore.kernel.org/r/20220502133130.4125-2-johan+linaro@kernel.org
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: 4ed754de2d66 ("extcon: Add support for ptn5150 extcon driver")
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Li Jun <jun.li@nxp.com>
+Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/qualcomm/phy-qcom-qmp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/extcon/extcon-ptn5150.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/phy/qualcomm/phy-qcom-qmp.c b/drivers/phy/qualcomm/phy-qcom-qmp.c
-index ea46950c5d2a..afcc82ab3202 100644
---- a/drivers/phy/qualcomm/phy-qcom-qmp.c
-+++ b/drivers/phy/qualcomm/phy-qcom-qmp.c
-@@ -3141,7 +3141,7 @@ static int qcom_qmp_phy_power_on(struct phy *phy)
+diff --git a/drivers/extcon/extcon-ptn5150.c b/drivers/extcon/extcon-ptn5150.c
+index 5b9a3cf8df26..2a7874108df8 100644
+--- a/drivers/extcon/extcon-ptn5150.c
++++ b/drivers/extcon/extcon-ptn5150.c
+@@ -194,6 +194,13 @@ static int ptn5150_init_dev_type(struct ptn5150_info *info)
+ 	return 0;
+ }
  
- 	ret = reset_control_deassert(qmp->ufs_reset);
++static void ptn5150_work_sync_and_put(void *data)
++{
++	struct ptn5150_info *info = data;
++
++	cancel_work_sync(&info->irq_work);
++}
++
+ static int ptn5150_i2c_probe(struct i2c_client *i2c)
+ {
+ 	struct device *dev = &i2c->dev;
+@@ -284,6 +291,10 @@ static int ptn5150_i2c_probe(struct i2c_client *i2c)
  	if (ret)
--		goto err_lane_rst;
-+		goto err_pcs_ready;
+ 		return -EINVAL;
  
- 	qcom_qmp_phy_configure(pcs_misc, cfg->regs, cfg->pcs_misc_tbl,
- 			       cfg->pcs_misc_tbl_num);
++	ret = devm_add_action_or_reset(dev, ptn5150_work_sync_and_put, info);
++	if (ret)
++		return ret;
++
+ 	/*
+ 	 * Update current extcon state if for example OTG connection was there
+ 	 * before the probe
 -- 
 2.35.1
 
