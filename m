@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A58A7C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:00:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36BB4C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:00:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231912AbiFMNA2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:00:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49542 "EHLO
+        id S1344354AbiFMNAq (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 09:00:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358055AbiFMMzB (ORCPT
+        with ESMTP id S1358176AbiFMMzF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:55:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7957635865;
-        Mon, 13 Jun 2022 04:14:08 -0700 (PDT)
+        Mon, 13 Jun 2022 08:55:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FDEDBF70;
+        Mon, 13 Jun 2022 04:14:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 319C5B80EA8;
-        Mon, 13 Jun 2022 11:14:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B0F0C34114;
-        Mon, 13 Jun 2022 11:14:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BA76608C3;
+        Mon, 13 Jun 2022 11:14:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3627CC34114;
+        Mon, 13 Jun 2022 11:14:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118845;
-        bh=bqxwt3xMXRrlP2ECcIaUOns90969ytvB6D4J7Y1DLds=;
+        s=korg; t=1655118870;
+        bh=FovolB3GLkI4N728YMl+Y6P6Wrp1UDnwV3YKBK+Ji74=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zk1YFKJGo44qqTPe0Ixs8MTvKwM1LeOdoYIOsH2DcTtmLK0vms2UPblw6g37VyARh
-         +f0KV+pxZMzgzI3wQ5h0r9jyhjOEdgFWgH0DA2QCwwPYKCuSrM25cG34doJkltCxgt
-         LN3Yjx5NZYGaXQav7wRG9Lp0IKsjh07FEP2rCSDE=
+        b=UKPfOlhcSkZXYtLLqv4laKCSzNvjsRJiNOoUEIMSPAYWasmSWulVNOvz34KjiR8dZ
+         iIwTNTZyDEVkgVnJQ3p3nUFRHOQJ1OXuqsggPRRr8JpRb+OHsYVLuNH0mSJ6IHTuOH
+         y5NTduiDG/3s+fM/j76xt+SemR5J/GOSfGtY+jTs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 022/247] misc: fastrpc: fix an incorrect NULL check on list iterator
-Date:   Mon, 13 Jun 2022 12:08:44 +0200
-Message-Id: <20220613094923.605006234@linuxfoundation.org>
+Subject: [PATCH 5.15 058/247] serial: sh-sci: Dont allow CS5-6
+Date:   Mon, 13 Jun 2022 12:09:20 +0200
+Message-Id: <20220613094924.716297944@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -48,58 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-[ Upstream commit 5ac11fe03a0a83042d1a040dbce4fa2fb5521e23 ]
+[ Upstream commit 9b87162de8be26bf3156460b37deee6399fd0fcb ]
 
-The bug is here:
-	if (!buf) {
+Only CS7 and CS8 seem supported but CSIZE is not sanitized from
+CS5 or CS6 to CS8.
 
-The list iterator value 'buf' will *always* be set and non-NULL
-by list_for_each_entry(), so it is incorrect to assume that the
-iterator value will be NULL if the list is empty (in this case, the
-check 'if (!buf) {' will always be false and never exit expectly).
+Set CSIZE correctly so that userspace knows the effective value.
+Incorrect CSIZE also results in miscalculation of the frame bits in
+tty_get_char_size() or in its predecessor where the roughly the same
+code is directly within uart_update_timeout().
 
-To fix the bug, use a new variable 'iter' as the list iterator,
-while use the original variable 'buf' as a dedicated pointer to
-point to the found element.
-
-Fixes: 2419e55e532de ("misc: fastrpc: add mmap/unmap support")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Link: https://lore.kernel.org/r/20220327062202.5720-1-xiam0nd.tong@gmail.com
+Fixes: 1da177e4c3f4 (Linux-2.6.12-rc2)
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Link: https://lore.kernel.org/r/20220519081808.3776-6-ilpo.jarvinen@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/fastrpc.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/tty/serial/sh-sci.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
-index 86d8fb8c0148..c7134d2cf69a 100644
---- a/drivers/misc/fastrpc.c
-+++ b/drivers/misc/fastrpc.c
-@@ -1351,17 +1351,18 @@ static int fastrpc_req_munmap_impl(struct fastrpc_user *fl,
- 				   struct fastrpc_req_munmap *req)
- {
- 	struct fastrpc_invoke_args args[1] = { [0] = { 0 } };
--	struct fastrpc_buf *buf, *b;
-+	struct fastrpc_buf *buf = NULL, *iter, *b;
- 	struct fastrpc_munmap_req_msg req_msg;
- 	struct device *dev = fl->sctx->dev;
- 	int err;
- 	u32 sc;
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 89ee43061d3a..c5c0f39cb1c7 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -2390,8 +2390,12 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	int best_clk = -1;
+ 	unsigned long flags;
  
- 	spin_lock(&fl->lock);
--	list_for_each_entry_safe(buf, b, &fl->mmaps, node) {
--		if ((buf->raddr == req->vaddrout) && (buf->size == req->size))
-+	list_for_each_entry_safe(iter, b, &fl->mmaps, node) {
-+		if ((iter->raddr == req->vaddrout) && (iter->size == req->size)) {
-+			buf = iter;
- 			break;
--		buf = NULL;
-+		}
- 	}
- 	spin_unlock(&fl->lock);
- 
+-	if ((termios->c_cflag & CSIZE) == CS7)
++	if ((termios->c_cflag & CSIZE) == CS7) {
+ 		smr_val |= SCSMR_CHR;
++	} else {
++		termios->c_cflag &= ~CSIZE;
++		termios->c_cflag |= CS8;
++	}
+ 	if (termios->c_cflag & PARENB)
+ 		smr_val |= SCSMR_PE;
+ 	if (termios->c_cflag & PARODD)
 -- 
 2.35.1
 
