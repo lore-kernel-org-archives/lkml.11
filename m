@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C436AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:57:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C30FCCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:57:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348530AbiFMK5i (ORCPT
+        id S1348600AbiFMK5n (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:57:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39568 "EHLO
+        Mon, 13 Jun 2022 06:57:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349936AbiFMKyh (ORCPT
+        with ESMTP id S1349965AbiFMKyi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:54:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7FC32FFE4;
-        Mon, 13 Jun 2022 03:28:29 -0700 (PDT)
+        Mon, 13 Jun 2022 06:54:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E8E62FFF3;
+        Mon, 13 Jun 2022 03:28:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AD8A6B80E92;
-        Mon, 13 Jun 2022 10:28:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24CDBC34114;
-        Mon, 13 Jun 2022 10:28:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BB51460F09;
+        Mon, 13 Jun 2022 10:28:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDB99C34114;
+        Mon, 13 Jun 2022 10:28:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116107;
-        bh=cVaZcLGwbKC5d/IW4BBGSpZFFZmjg+VtkO7FpKZARkI=;
+        s=korg; t=1655116110;
+        bh=7xf9iBHpNNLxSetGM17NzppiizC8ZCsYKWufW33KuuU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ilwWyQ+UFmo6UwgdCdFHJPmVhBb4D+DT+LdKtCXFPUEZPnb+S3tUTogxbZ0J76ijG
-         K6QNHqlGlYyg5ec5YBFD3m2D0PNEWEoZ/olzvwZCktWEnSwCrTf/pKEed2EmQen2M+
-         /qoesy8qRpINSeXSz/ArPOG/NSROdGKBzo0rm6BY=
+        b=QfTq9oaHAA6qI4b3o2mjNQRBuuIzawJTIf/6OKrGJoFQ+6LolIJkbQL3O/ZeREbpL
+         eHsXb4pQIyqaWKElNd4wXN1aLgzdQr0ySoujB58miir1HwnkIDx7dtS+eUIGoGKnUh
+         Bw0Gb/Wsre0DTaTx9gDVdoCZdnl8uxs/w0Xa4iOc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 024/411] drm/amd/pm: fix double free in si_parse_power_table()
-Date:   Mon, 13 Jun 2022 12:04:57 +0200
-Message-Id: <20220613094929.226358785@linuxfoundation.org>
+        stable@vger.kernel.org, Akira Yokosawa <akiyks@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>
+Subject: [PATCH 4.14 134/218] docs/conf.py: Cope with removal of language=None in Sphinx 5.0.0
+Date:   Mon, 13 Jun 2022 12:09:52 +0200
+Message-Id: <20220613094924.647845896@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,70 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+From: Akira Yokosawa <akiyks@gmail.com>
 
-[ Upstream commit f3fa2becf2fc25b6ac7cf8d8b1a2e4a86b3b72bd ]
+commit 627f01eab93d8671d4e4afee9b148f9998d20e7c upstream.
 
-In function si_parse_power_table(), array adev->pm.dpm.ps and its member
-is allocated. If the allocation of each member fails, the array itself
-is freed and returned with an error code. However, the array is later
-freed again in si_dpm_fini() function which is called when the function
-returns an error.
+One of the changes in Sphinx 5.0.0 [1] says [sic]:
 
-This leads to potential double free of the array adev->pm.dpm.ps, as
-well as leak of its array members, since the members are not freed in
-the allocation function and the array is not nulled when freed.
-In addition adev->pm.dpm.num_ps, which keeps track of the allocated
-array member, is not updated until the member allocation is
-successfully finished, this could also lead to either use after free,
-or uninitialized variable access in si_dpm_fini().
+    5.0.0 final
 
-Fix this by postponing the free of the array until si_dpm_fini() and
-increment adev->pm.dpm.num_ps everytime the array member is allocated.
+     - #10474: language does not accept None as it value.
+       The default value of language becomes to 'en' now.
 
-Signed-off-by: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+[1]: https://www.sphinx-doc.org/en/master/changes.html#release-5-0-0-released-may-30-2022
+
+It results in a new warning from Sphinx 5.0.0 [sic]:
+
+    WARNING: Invalid configuration value found: 'language = None'.
+    Update your configuration to a valid langauge code. Falling
+    back to 'en' (English).
+
+Silence the warning by using 'en'.
+It works with all the Sphinx versions required for building
+kernel documentation (1.7.9 or later).
+
+Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
+Link: https://lore.kernel.org/r/bd0c2ddc-2401-03cb-4526-79ca664e1cbe@gmail.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Jonathan Corbet <corbet@lwn.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/si_dpm.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ Documentation/conf.py |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/si_dpm.c b/drivers/gpu/drm/amd/amdgpu/si_dpm.c
-index 4cb4c891120b..9931d5c17cfb 100644
---- a/drivers/gpu/drm/amd/amdgpu/si_dpm.c
-+++ b/drivers/gpu/drm/amd/amdgpu/si_dpm.c
-@@ -7250,17 +7250,15 @@ static int si_parse_power_table(struct amdgpu_device *adev)
- 	if (!adev->pm.dpm.ps)
- 		return -ENOMEM;
- 	power_state_offset = (u8 *)state_array->states;
--	for (i = 0; i < state_array->ucNumEntries; i++) {
-+	for (adev->pm.dpm.num_ps = 0, i = 0; i < state_array->ucNumEntries; i++) {
- 		u8 *idx;
- 		power_state = (union pplib_power_state *)power_state_offset;
- 		non_clock_array_index = power_state->v2.nonClockInfoIndex;
- 		non_clock_info = (struct _ATOM_PPLIB_NONCLOCK_INFO *)
- 			&non_clock_info_array->nonClockInfo[non_clock_array_index];
- 		ps = kzalloc(sizeof(struct  si_ps), GFP_KERNEL);
--		if (ps == NULL) {
--			kfree(adev->pm.dpm.ps);
-+		if (ps == NULL)
- 			return -ENOMEM;
--		}
- 		adev->pm.dpm.ps[i].ps_priv = ps;
- 		si_parse_pplib_non_clock_info(adev, &adev->pm.dpm.ps[i],
- 					      non_clock_info,
-@@ -7282,8 +7280,8 @@ static int si_parse_power_table(struct amdgpu_device *adev)
- 			k++;
- 		}
- 		power_state_offset += 2 + power_state->v2.ucNumDPMLevels;
-+		adev->pm.dpm.num_ps++;
- 	}
--	adev->pm.dpm.num_ps = state_array->ucNumEntries;
+--- a/Documentation/conf.py
++++ b/Documentation/conf.py
+@@ -96,7 +96,7 @@ finally:
+ #
+ # This is also used if you do content translation via gettext catalogs.
+ # Usually you set "language" from the command line for these cases.
+-language = None
++language = 'en'
  
- 	/* fill in the vce power states */
- 	for (i = 0; i < adev->pm.dpm.num_of_vce_states; i++) {
--- 
-2.35.1
-
+ # There are two options for replacing |today|: either, you set today to some
+ # non-false value, then it is used:
 
 
