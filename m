@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA1A1CCA496
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:20:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8279FCCA48B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:21:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377465AbiFMNUg (ORCPT
+        id S1359715AbiFMNU7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:20:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41664 "EHLO
+        Mon, 13 Jun 2022 09:20:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359336AbiFMNJt (ORCPT
+        with ESMTP id S1376499AbiFMNLL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:09:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AFCC39163;
-        Mon, 13 Jun 2022 04:20:25 -0700 (PDT)
+        Mon, 13 Jun 2022 09:11:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F2B166FA0;
+        Mon, 13 Jun 2022 04:22:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 55D96B80D31;
-        Mon, 13 Jun 2022 11:20:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1F94C34114;
-        Mon, 13 Jun 2022 11:20:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CCC560F91;
+        Mon, 13 Jun 2022 11:21:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B7CDC34114;
+        Mon, 13 Jun 2022 11:21:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119223;
-        bh=uR7CQe4V55FxsHzDZ0qleDY1nvIx7lIoX7D3hsclkWQ=;
+        s=korg; t=1655119314;
+        bh=yzEr4owxzOhbiK85r++xW5wWQCnarR6rihYSQru+o2E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZWyH7qMzF4XDfeQz3AVGIGeBoUoXQ4xZ6p6+uZ0MbhKOGFUoW8/SDBwyVG2Mbl4h4
-         y2fAZcMoV2RV6Mnx4rEnJkJOLSLWL/bgQLjVDpkoCnlPkklp4vJcP9vNepnnxC2zUj
-         x971VSZYeOuBtxtfx7L302SCokj1BtAfnkxt5GHo=
+        b=UtMGccPki/Y9Ruh+h3G6lLAHm9MSYml/AyVjWd8q7txk1LJ5oLxn28STWb5F6u6X8
+         GywIWOsG4ete4qFMj5TEy90qTpbBJoOfRIYlJp18EffO/0hHlTHEpgLGR4HcaC8IMK
+         llN7Diua33RVrDaDAEbU4ynMPrSI11nfyD260uoQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 184/247] misc: rtsx: set NULL intfdata when probe fails
-Date:   Mon, 13 Jun 2022 12:11:26 +0200
-Message-Id: <20220613094928.533329453@linuxfoundation.org>
+        stable@vger.kernel.org, Cameron Berkenpas <cam@neo-zeon.de>,
+        Takashi Iwai <tiwai@suse.de>,
+        Songine <donglingluoying@gmail.com>
+Subject: [PATCH 5.15 217/247] ALSA: hda/realtek: Fix for quirk to enable speaker output on the Lenovo Yoga DuetITL 2021
+Date:   Mon, 13 Jun 2022 12:11:59 +0200
+Message-Id: <20220613094929.524544774@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -49,39 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shuah Khan <skhan@linuxfoundation.org>
+From: Cameron Berkenpas <cam@neo-zeon.de>
 
-[ Upstream commit f861d36e021e1ac4a0a2a1f6411d623809975d63 ]
+commit 85743a847caeab696dafc4ce1a7e1e2b7e29a0f6 upstream.
 
-rtsx_usb_probe() doesn't call usb_set_intfdata() to null out the
-interface pointer when probe fails. This leaves a stale pointer.
-Noticed the missing usb_set_intfdata() while debugging an unrelated
-invalid DMA mapping problem.
+Enables the ALC287_FIXUP_YOGA7_14ITL_SPEAKERS quirk for the Lenovo
+Yoga DuetITL 2021 laptop to fix speaker output.
 
-Fix it with a call to usb_set_intfdata(..., NULL).
+[ re-sorted in the SSID order by tiwai ]
 
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Link: https://lore.kernel.org/r/20220429210913.46804-1-skhan@linuxfoundation.org
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=208555
+Signed-off-by: Cameron Berkenpas <cam@neo-zeon.de>
+Co-authored-by: Songine <donglingluoying@gmail.com>
+Cc: stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220606002329.215330-1-cam@neo-zeon.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/cardreader/rtsx_usb.c | 1 +
+ sound/pci/hda/patch_realtek.c |    1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/misc/cardreader/rtsx_usb.c b/drivers/misc/cardreader/rtsx_usb.c
-index 59eda55d92a3..1ef9b61077c4 100644
---- a/drivers/misc/cardreader/rtsx_usb.c
-+++ b/drivers/misc/cardreader/rtsx_usb.c
-@@ -667,6 +667,7 @@ static int rtsx_usb_probe(struct usb_interface *intf,
- 	return 0;
- 
- out_init_fail:
-+	usb_set_intfdata(ucr->pusb_intf, NULL);
- 	usb_free_coherent(ucr->pusb_dev, IOBUF_SIZE, ucr->iobuf,
- 			ucr->iobuf_dma);
- 	return ret;
--- 
-2.35.1
-
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -9043,6 +9043,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x17aa, 0x3176, "ThinkCentre Station", ALC283_FIXUP_HEADSET_MIC),
+ 	SND_PCI_QUIRK(0x17aa, 0x3178, "ThinkCentre Station", ALC283_FIXUP_HEADSET_MIC),
+ 	SND_PCI_QUIRK(0x17aa, 0x31af, "ThinkCentre Station", ALC623_FIXUP_LENOVO_THINKSTATION_P340),
++	SND_PCI_QUIRK(0x17aa, 0x3802, "Lenovo Yoga DuetITL 2021", ALC287_FIXUP_YOGA7_14ITL_SPEAKERS),
+ 	SND_PCI_QUIRK(0x17aa, 0x3813, "Legion 7i 15IMHG05", ALC287_FIXUP_LEGION_15IMHG05_SPEAKERS),
+ 	SND_PCI_QUIRK(0x17aa, 0x3818, "Lenovo C940", ALC298_FIXUP_LENOVO_SPK_VOLUME),
+ 	SND_PCI_QUIRK(0x17aa, 0x3819, "Lenovo 13s Gen2 ITL", ALC287_FIXUP_13S_GEN2_SPEAKERS),
 
 
