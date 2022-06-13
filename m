@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C571C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:37:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88B22C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:37:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377738AbiFMNhW (ORCPT
+        id S1377955AbiFMNhZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:37:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50628 "EHLO
+        Mon, 13 Jun 2022 09:37:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378846AbiFMNcL (ORCPT
+        with ESMTP id S1377515AbiFMNc7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:32:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F65371DBC;
-        Mon, 13 Jun 2022 04:26:49 -0700 (PDT)
+        Mon, 13 Jun 2022 09:32:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2733272E01;
+        Mon, 13 Jun 2022 04:26:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B9640B80E93;
-        Mon, 13 Jun 2022 11:26:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2484BC34114;
-        Mon, 13 Jun 2022 11:26:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 77F3E61154;
+        Mon, 13 Jun 2022 11:26:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89F12C34114;
+        Mon, 13 Jun 2022 11:26:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119606;
-        bh=iFng9JkIeZc/j7oQjmXHafZbwRf9aTmSNFrPkBm4l1w=;
+        s=korg; t=1655119614;
+        bh=uocWnAIGDj1N1SgxSfZcGZiwjslXY7sezSgDHKrzoow=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TU86PyI1smwg2VlpRh6sIfFglhq/Mb4vNX706x0t/+03jsHrrfw6Z6POltnxEODnm
-         DVE5TflDHIS4vgiCpk/piHXvTQDp1hUTZJFRs4ARFwMuA+0J2fJR0xmLIIYUVG6VPc
-         KsiEYWEWX5qDv734VIpimcYyjHLls5xszbLtnrOU=
+        b=qX8o1cNPidfKQs+uWMO5f1q4MPpCnlQ7Ds2R7CYWS4PHwNNEKaL5p+GPUVo9KPzIw
+         rPWhlTFycNfPgbRPT4uavsf+MA+sh/O1X6d7VvRga4HoKDvZ2W1EckLGcIA8c8tcwW
+         HyHRLcLa+MJu5w3FJUG8CkAlNSYqBw2mijNzi0Ag=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Erwan Le Ray <erwan.leray@st.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        stable@vger.kernel.org, Schspa Shi <schspa@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 074/339] serial: stm32-usart: Correct CSIZE, bits, and parity
-Date:   Mon, 13 Jun 2022 12:08:19 +0200
-Message-Id: <20220613094928.765066968@linuxfoundation.org>
+Subject: [PATCH 5.18 077/339] driver: base: fix UAF when driver_attach failed
+Date:   Mon, 13 Jun 2022 12:08:22 +0200
+Message-Id: <20220613094928.855379902@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,59 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+From: Schspa Shi <schspa@gmail.com>
 
-[ Upstream commit 1deeda8d2877c18bc2b9eeee10dd6d2628852848 ]
+[ Upstream commit 310862e574001a97ad02272bac0fd13f75f42a27 ]
 
-Add CSIZE sanitization for unsupported CSIZE configurations. In
-addition, if parity is asked for but CSx was unsupported, the sensible
-result is CS8+parity which requires setting USART_CR1_M0 like with 9
-bits.
+When driver_attach(drv); failed, the driver_private will be freed.
+But it has been added to the bus, which caused a UAF.
 
-Incorrect CSIZE results in miscalculation of the frame bits in
-tty_get_char_size() or in its predecessor where the roughly the same
-code is directly within uart_update_timeout().
+To fix it, we need to delete it from the bus when failed.
 
-Fixes: c8a9d043947b (serial: stm32: fix word length configuration)
-Cc: Erwan Le Ray <erwan.leray@st.com>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/20220519081808.3776-9-ilpo.jarvinen@linux.intel.com
+Fixes: 190888ac01d0 ("driver core: fix possible missing of device probe")
+Signed-off-by: Schspa Shi <schspa@gmail.com>
+Link: https://lore.kernel.org/r/20220513112444.45112-1-schspa@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/stm32-usart.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ drivers/base/bus.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index 87b5cd4c9743..3c551fd4f3ff 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -1037,13 +1037,22 @@ static void stm32_usart_set_termios(struct uart_port *port,
- 	 * CS8 or (CS7 + parity), 8 bits word aka [M1:M0] = 0b00
- 	 * M0 and M1 already cleared by cr1 initialization.
- 	 */
--	if (bits == 9)
-+	if (bits == 9) {
- 		cr1 |= USART_CR1_M0;
--	else if ((bits == 7) && cfg->has_7bits_data)
-+	} else if ((bits == 7) && cfg->has_7bits_data) {
- 		cr1 |= USART_CR1_M1;
--	else if (bits != 8)
-+	} else if (bits != 8) {
- 		dev_dbg(port->dev, "Unsupported data bits config: %u bits\n"
- 			, bits);
-+		cflag &= ~CSIZE;
-+		cflag |= CS8;
-+		termios->c_cflag = cflag;
-+		bits = 8;
-+		if (cflag & PARENB) {
-+			bits++;
-+			cr1 |= USART_CR1_M0;
-+		}
-+	}
+diff --git a/drivers/base/bus.c b/drivers/base/bus.c
+index 97936ec49bde..7ca47e5b3c1f 100644
+--- a/drivers/base/bus.c
++++ b/drivers/base/bus.c
+@@ -617,7 +617,7 @@ int bus_add_driver(struct device_driver *drv)
+ 	if (drv->bus->p->drivers_autoprobe) {
+ 		error = driver_attach(drv);
+ 		if (error)
+-			goto out_unregister;
++			goto out_del_list;
+ 	}
+ 	module_add_driver(drv->owner, drv);
  
- 	if (ofs->rtor != UNDEF_REG && (stm32_port->rx_ch ||
- 				       (stm32_port->fifoen &&
+@@ -644,6 +644,8 @@ int bus_add_driver(struct device_driver *drv)
+ 
+ 	return 0;
+ 
++out_del_list:
++	klist_del(&priv->knode_bus);
+ out_unregister:
+ 	kobject_put(&priv->kobj);
+ 	/* drv->p is freed in driver_release()  */
 -- 
 2.35.1
 
