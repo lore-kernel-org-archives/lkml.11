@@ -2,79 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51EC3C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:25:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD6E5C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:25:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350220AbiFMTZF (ORCPT
+        id S1350453AbiFMTZZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:25:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54494 "EHLO
+        Mon, 13 Jun 2022 15:25:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350193AbiFMTYv (ORCPT
+        with ESMTP id S1350474AbiFMTZH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 15:24:51 -0400
-Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C2FE3A5D0;
-        Mon, 13 Jun 2022 10:42:24 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
+        Mon, 13 Jun 2022 15:25:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78AA83614E
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:41:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id 8A3B72D6;
-        Mon, 13 Jun 2022 17:42:23 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 8A3B72D6
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1655142143; bh=D/tkzvqkGG3tyA96/khy1O4WmIgfRfvmO+IJpiodDjc=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=WIQjVqR6dCCotZXHSAN3xulM+JTXouRZjvyTfzmHRlQdfLZdnYb4B1NbvbE5NUNmK
-         nV8MOfUHjSzFrNzfYEaXJWdauneDeT/8JczTujB7oDwaB3cby+DWOHa0ilRi6SWxMx
-         JaWTwOdiOuFPNy7Vicc4brU5iweijhHcETACbpqkIVZwnqR+4+8aniujnV7S5h3Dzt
-         tsshuLEyHsJhFgcl8rLyNvq3zr/R3b0L8V8W7SBI+9wDfszix/MT5lfU3VN/I6xGSo
-         64mAOgQHtzy3HPCuT03RczmsXPJQSed91p+tFs0hxiljRlga3HuUgHQ7LCTqP0JVrx
-         orjuzXQGSLMnQ==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Bagas Sanjaya <bagasdotme@gmail.com>, linux-doc@vger.kernel.org
-Cc:     Bagas Sanjaya <bagasdotme@gmail.com>, Pavel Machek <pavel@ucw.cz>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        linux-leds@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RESEND v2] leds: Add leds-qcom-lpg entry to
- documentation table of contents
-In-Reply-To: <20220612000125.9777-1-bagasdotme@gmail.com>
-References: <20220612000125.9777-1-bagasdotme@gmail.com>
-Date:   Mon, 13 Jun 2022 11:42:22 -0600
-Message-ID: <87v8t4zcht.fsf@meer.lwn.net>
-MIME-Version: 1.0
-Content-Type: text/plain
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E84F860F71
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 17:41:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F7E0C34114;
+        Mon, 13 Jun 2022 17:41:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1655142089;
+        bh=EhXZ8nwjvG7Is/AQKsJc4Np8BsZB+E9sA9nAWAwc81g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Vata14MZ1y1CEXhew/wz5vQ6tAhOTuM64dK67d4bxfkvLS7WXKFiOWhJUJ3nnL/Os
+         lCOX3h53QRC79qTwRYrQyAHN9Th4W/4FOexMwfTn0EncBhpztxgOfNbkwH9uK0DcuV
+         BgZj/uf/b834Jijd46OZQNHRkP+xTQnbvjaxlSg0=
+Date:   Mon, 13 Jun 2022 10:41:28 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     syzbot <syzbot+3f1e5c1dea3a2e66ea9a@syzkaller.appspotmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        syzkaller-bugs@googlegroups.com,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Peter Xu <peterx@redhat.com>
+Subject: Re: [syzbot] kernel BUG in mcopy_continue
+Message-Id: <20220613104128.fc55ed6ab63c428e502bc483@linux-foundation.org>
+In-Reply-To: <00000000000039bfb905e14ea9d0@google.com>
+References: <00000000000039bfb905e14ea9d0@google.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Bagas Sanjaya <bagasdotme@gmail.com> writes:
+On Sun, 12 Jun 2022 23:47:26 -0700 syzbot <syzbot+3f1e5c1dea3a2e66ea9a@syzkaller.appspotmail.com> wrote:
 
-> After merging linux-leds tree to the mainline [1], htmldocs build produces
-> a new warning:
->
-> checking consistency... /home/bagas/repo/linux-stable/Documentation/leds/leds-qcom-lpg.rst: WARNING: document isn't included in any toctree
->
-> The warning above is because leds-qcom-lpg.rst is missing in the table of
-> contents.
->
-> Add the missing entry.
->
-> [1]: https://lore.kernel.org/all/20220531200619.GA8906@duo.ucw.cz/
->
-> Fixes: 24e2d05d1b6898 ("leds: Add driver for Qualcomm LPG")
-> Acked-by: Pavel Machek <pavel@ucw.cz>
-> Cc: Jonathan Corbet <corbet@lwn.net>
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: Marijn Suijten <marijn.suijten@somainline.org>
-> Cc: linux-leds@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    6d0c80680317 Add linux-next specific files for 20220610
+> git tree:       linux-next
+> console output: https://syzkaller.appspot.com/x/log.txt?x=13a777f7f00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=a30d6e3e814e5931
+> dashboard link: https://syzkaller.appspot.com/bug?extid=3f1e5c1dea3a2e66ea9a
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> 
+> Unfortunately, I don't have any reproducer for this issue yet.
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+3f1e5c1dea3a2e66ea9a@syzkaller.appspotmail.com
+> 
+> ------------[ cut here ]------------
+> kernel BUG at mm/userfaultfd.c:642!
 
-Pavel, that document appears to have entered via your tree; do you plan
-to push this fix too?
+Thanks.  I'm looking suspiciously at "mm: userfaultfd: fix
+UFFDIO_CONTINUE on fallocated shmem pages"?
 
-Thanks,
-
-jon
+> invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+> CPU: 0 PID: 14685 Comm: syz-executor.4 Not tainted 5.19.0-rc1-next-20220610-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> RIP: 0010:__mcopy_atomic mm/userfaultfd.c:642 [inline]
+> RIP: 0010:mcopy_continue+0x80f/0x1360 mm/userfaultfd.c:699
+> Code: a8 ff 49 83 fd fe 0f 85 bd fd ff ff e8 ba ca a8 ff 0f 1f 44 00 00 e8 b0 ca a8 ff e8 ab ca a8 ff 48 8b 7c 24 20 e8 51 76 8b ff <0f> 0b e8 9a ca a8 ff 0f 0b e8 93 ca a8 ff 4d 89 ee 31 ff 41 81 e6
+> RSP: 0018:ffffc900058f7b70 EFLAGS: 00010282
+> RAX: 0000000000000000 RBX: ffff8880226dee58 RCX: 0000000000000000
+> RDX: 0000000000000000 RSI: 0000000000000008 RDI: ffff88801a0b4228
+> RBP: 0000000020531000 R08: 0000000000000001 R09: ffff88801a0b422f
+> R10: ffffed1003416845 R11: 0000000000000001 R12: 0000000000000000
+> R13: fffffffffffffffe R14: 00000000fffffffe R15: ffff88801a0b4140
+> FS:  00007f91409ee700(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 0000001b2c522000 CR3: 000000001d578000 CR4: 00000000003526f0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>  <TASK>
+>  userfaultfd_continue fs/userfaultfd.c:1893 [inline]
+>  userfaultfd_ioctl+0x1818/0x41f0 fs/userfaultfd.c:2017
+>  vfs_ioctl fs/ioctl.c:51 [inline]
+>  __do_sys_ioctl fs/ioctl.c:870 [inline]
+>  __se_sys_ioctl fs/ioctl.c:856 [inline]
+>  __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> RIP: 0033:0x7f913f889109
+> Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007f91409ee168 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+> RAX: ffffffffffffffda RBX: 00007f913f99c030 RCX: 00007f913f889109
+> RDX: 0000000020000040 RSI: 00000000c020aa07 RDI: 0000000000000004
+> RBP: 00007f913f8e30ad R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007ffcb29c401f R14: 00007f91409ee300 R15: 0000000000022000
+>  </TASK>
+> Modules linked in:
+> ---[ end trace 0000000000000000 ]---
+> RIP: 0010:__mcopy_atomic mm/userfaultfd.c:642 [inline]
+> RIP: 0010:mcopy_continue+0x80f/0x1360 mm/userfaultfd.c:699
+> Code: a8 ff 49 83 fd fe 0f 85 bd fd ff ff e8 ba ca a8 ff 0f 1f 44 00 00 e8 b0 ca a8 ff e8 ab ca a8 ff 48 8b 7c 24 20 e8 51 76 8b ff <0f> 0b e8 9a ca a8 ff 0f 0b e8 93 ca a8 ff 4d 89 ee 31 ff 41 81 e6
+> RSP: 0018:ffffc900058f7b70 EFLAGS: 00010282
+> RAX: 0000000000000000 RBX: ffff8880226dee58 RCX: 0000000000000000
+> RDX: 0000000000000000 RSI: 0000000000000008 RDI: ffff88801a0b4228
+> RBP: 0000000020531000 R08: 0000000000000001 R09: ffff88801a0b422f
+> R10: ffffed1003416845 R11: 0000000000000001 R12: 0000000000000000
+> R13: fffffffffffffffe R14: 00000000fffffffe R15: ffff88801a0b4140
+> FS:  00007f91409ee700(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00007f91409cd718 CR3: 000000001d578000 CR4: 00000000003526f0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> 
+> 
+> ---
+> This report is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
+> syzbot will keep track of this issue. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
