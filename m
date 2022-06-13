@@ -2,87 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEA4BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:31:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F52FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:31:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347036AbiFMVbH (ORCPT
+        id S1352402AbiFMVbZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 17:31:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58482 "EHLO
+        Mon, 13 Jun 2022 17:31:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235795AbiFMV36 (ORCPT
+        with ESMTP id S1353130AbiFMV3S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 17:29:58 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A4D6409;
-        Mon, 13 Jun 2022 14:28:20 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id h1so6128232plf.11;
-        Mon, 13 Jun 2022 14:28:20 -0700 (PDT)
+        Mon, 13 Jun 2022 17:29:18 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09B9831D
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:25:30 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id n8-20020a170902d2c800b001663868e2c2so3627269plc.21
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:25:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=gxN/w1qcbqbye494uu3kK3mI9gmlkf76QjHUX/jq0jk=;
-        b=BJ3FNM10ThOwKy5Kn0oFOLHkB770mLO87XRTWBD4hkj/4Xl/E3irXqGu9mORKR8g6/
-         3DoeZCa42weHFaJiPHGkIBiUk5sH/uXqXajDrnpnGWsYxGeoKJTqVzLdJvGkhl/BuaYw
-         bt2KaNj/6IXJUiLFppQYA/50oZ6udp/1YQSLNAyi8ku7IHQ9ERI6abdE4IuZzN0njnA0
-         TtPQBTVKd8xyXCVETzdezlX5b+H+Iq9+SjJvvLF6XhaaS/YZX6/lTcjIPUVQHvLYfROf
-         ol3Vry6HbkPpqogJrm2Ofkg90gCJNQSVPNJFY8KH2pOCRHxzCDLbwOaGiMyte9OYLk8E
-         W0DQ==
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=q6y/cC7ApzMVwblo2wX2ATrZhvcsAJbJjDOeRfXShtw=;
+        b=RN4Ahs2YdEGqhtKw34QQe3IO/xafb0O5TijAX1HUmRKqJ5SPvgQBNF9hDRuK4I/rLo
+         IcP4HvdCBbNrtqzDZxXk4P7qWw1bf0z304OUkJ5gd4As+5RYdXhGQXAYpaUednwXsceK
+         1qr0bayaCTCYN4HzkgxTbjkceHZjHWESZt/7Iu3pOw8Lkv+Bbcuhfr6ACeDCeUas6G8O
+         9u6vj1t96vO0oufnlrHIFZAInvk/eCa+BqvV0btNPG22I7xBwCClYfYJzRoVbltrG2Eu
+         iC8wXOPHRy11Ym07Ttf3LH4ulolEHI3AiwXY+QCE1QprbAj6S57opoZCh22HQ1I0sXtc
+         nWpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=gxN/w1qcbqbye494uu3kK3mI9gmlkf76QjHUX/jq0jk=;
-        b=az+wKfyBMYcNXtqYve3ahFPzXKdqZOWXStJcyjm9H6mBCEWPaFTM8RMN/NOtM6BfpC
-         yuhESyT0klZ3w9xY3sHK3txi2JuiJyRzwj+hC3WwHi9BWARV66DyYjjWj5wYmQHVi2Ea
-         EvYgf75/MMe0z8CVwgsXebukSt6fEbFuy4717MLTHBLI3gT3LD41r+2+B7tvAD5JOFBj
-         oQ8vG6ju7vK4L4zkUExerxeeUVVmRVO0IOXeH+8gzLPZ7/hKIEKo7tzpRN76+iyp4s/g
-         ZVVCU3+u7QqOOAN6SvEhSYEIZph8Sq9MgELRhoWvbwa7+g7r2vUL6LQ3HsmIviaLQLX6
-         uRKw==
-X-Gm-Message-State: AJIora8apgPWY54jgqnEBQIGV1xXmj4Y8605A0zN2b5pU8JMV+JScFnw
-        3NvQBpV5VEq55Kzlpu2oXtee1tU0DeI=
-X-Google-Smtp-Source: AGRyM1s0FiY95llbjr94fqtXJiJblkRew/GKk/iyo4JZmvI86xxmNwdWHEsptrZb3ykeJmWWx46m2Q==
-X-Received: by 2002:a17:90b:33c4:b0:1e8:6e2f:97a2 with SMTP id lk4-20020a17090b33c400b001e86e2f97a2mr740822pjb.165.1655155700326;
-        Mon, 13 Jun 2022 14:28:20 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id i17-20020a056a00225100b0051c04b1c89dsm5899252pfu.3.2022.06.13.14.28.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Jun 2022 14:28:19 -0700 (PDT)
-Message-ID: <3f59aa12-1859-1833-1742-06c0411be4ef@gmail.com>
-Date:   Mon, 13 Jun 2022 14:28:14 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 0/3] arm: bcmbca: Add BCM6856 SoC support
-Content-Language: en-US
-To:     William Zhang <william.zhang@broadcom.com>,
-        Linux ARM List <linux-arm-kernel@lists.infradead.org>
-Cc:     samyon.furman@broadcom.com,
-        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
-        dan.beygelman@broadcom.com, tomer.yacoby@broadcom.com,
-        philippe.reynes@softathome.com, kursad.oney@broadcom.com,
-        f.fainelli@gmail.com, anand.gore@broadcom.com,
-        joel.peshkin@broadcom.com,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220608180437.31971-1-william.zhang@broadcom.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220608180437.31971-1-william.zhang@broadcom.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=q6y/cC7ApzMVwblo2wX2ATrZhvcsAJbJjDOeRfXShtw=;
+        b=oXtFJu4uKIHwWGfPJ5Mzpf03GbYr0HQNgg/d1EPddbPfm9CCa3dRNXEQaRhAN/2gwe
+         7+4CxVZQvayiFUpeYjZCkI77ALsErzTUtFOXVhyGK0B2rx7bB3KinspVFfHYtdlR24ry
+         0f5ru5+f7ofbUfB/iSA2O4jbUkYKVzom384qLZanNrzHNhNe/8dkDOsrok/hVpo2nwg0
+         sbbkYqVkIJ97ReMtY4e/CAlaze180ZvPT1mYDcQy//HchnUIoUSSyMPU81HaJyQWaj/4
+         vbRCAQxMRxjnQVfJ/z/rnzRURWBQQj6NYPBIOs4ghF/qBjGOENo0l20heAKIbLqlWy+5
+         gTfQ==
+X-Gm-Message-State: AJIora+stFRp8fIatsueV22/Wss6JWxgdjxykAOOjkLGeA/DCQQDx0sv
+        Rk2/cuFhHxU611VafZFxQWDakci3WhI2
+X-Google-Smtp-Source: AGRyM1vUtxSBaOadpUzI1R0wd/z2CXO0o1CfpyEq9BbjSFAphaDKd24NnJRz1w7VV3Qj/dH1ku1jH+IeLDz+
+X-Received: from sweer.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:e45])
+ (user=bgardon job=sendgmr) by 2002:a17:90b:2247:b0:1e8:9f24:269a with SMTP id
+ hk7-20020a17090b224700b001e89f24269amr774220pjb.14.1655155529508; Mon, 13 Jun
+ 2022 14:25:29 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 21:25:15 +0000
+In-Reply-To: <20220613212523.3436117-1-bgardon@google.com>
+Message-Id: <20220613212523.3436117-3-bgardon@google.com>
+Mime-Version: 1.0
+References: <20220613212523.3436117-1-bgardon@google.com>
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+Subject: [PATCH v9 02/10] KVM: selftests: Read binary stats header in lib
+From:   Ben Gardon <bgardon@google.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Peter Xu <peterx@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        David Matlack <dmatlack@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        David Dunn <daviddunn@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Junaid Shahid <junaids@google.com>,
+        Ben Gardon <bgardon@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/8/22 11:04, William Zhang wrote:
-> This change adds the basic support for Broadcom's ARM64 based
-> Broadband SoC BCM6856. The initial support includes a bare-bone DTS
-> for dual core ARM A53 with a Broadcom uart. Linux kernel image can be
-> build with the ARM64 defconfig.
+Move the code to read the binary stats header to the KVM selftests
+library. It will be re-used by other tests to check KVM behavior.
 
-Series applied, thanks William!
+No functional change intended.
+
+Reviewed-by: David Matlack <dmatlack@google.com>
+Reviewed-by: Peter Xu <peterx@redhat.com>
+Signed-off-by: Ben Gardon <bgardon@google.com>
+---
+ tools/testing/selftests/kvm/include/kvm_util_base.h | 8 ++++++++
+ tools/testing/selftests/kvm/kvm_binary_stats_test.c | 4 ++--
+ 2 files changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+index cdaea2383543..3d3dd144f427 100644
+--- a/tools/testing/selftests/kvm/include/kvm_util_base.h
++++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+@@ -303,6 +303,14 @@ static inline int vm_get_stats_fd(struct kvm_vm *vm)
+ 	return fd;
+ }
+ 
++static inline void read_stats_header(int stats_fd, struct kvm_stats_header *header)
++{
++	ssize_t ret;
++
++	ret = read(stats_fd, header, sizeof(*header));
++	TEST_ASSERT(ret == sizeof(*header), "Read stats header");
++}
++
+ void vm_create_irqchip(struct kvm_vm *vm);
+ 
+ void vm_set_user_memory_region(struct kvm_vm *vm, uint32_t slot, uint32_t flags,
+diff --git a/tools/testing/selftests/kvm/kvm_binary_stats_test.c b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
+index ae48d4153f85..64db17faacd2 100644
+--- a/tools/testing/selftests/kvm/kvm_binary_stats_test.c
++++ b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
+@@ -33,8 +33,8 @@ static void stats_test(int stats_fd)
+ 	struct kvm_stats_desc *pdesc;
+ 
+ 	/* Read kvm stats header */
+-	ret = read(stats_fd, &header, sizeof(header));
+-	TEST_ASSERT(ret == sizeof(header), "Read stats header");
++	read_stats_header(stats_fd, &header);
++
+ 	size_desc = sizeof(*stats_desc) + header.name_size;
+ 
+ 	/* Read kvm stats id string */
 -- 
-Florian
+2.36.1.476.g0c4daa206d-goog
+
