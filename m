@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C793C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:32:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B42DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:32:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348717AbiFMMcR (ORCPT
+        id S1352246AbiFMMcZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:32:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41846 "EHLO
+        Mon, 13 Jun 2022 08:32:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357717AbiFMM31 (ORCPT
+        with ESMTP id S1357799AbiFMM32 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:29:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 010C65A14D;
-        Mon, 13 Jun 2022 04:06:32 -0700 (PDT)
+        Mon, 13 Jun 2022 08:29:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E5DA5A161;
+        Mon, 13 Jun 2022 04:06:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58434B80EAA;
-        Mon, 13 Jun 2022 11:06:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFE69C34114;
-        Mon, 13 Jun 2022 11:06:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C2F0614DC;
+        Mon, 13 Jun 2022 11:06:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76A53C34114;
+        Mon, 13 Jun 2022 11:06:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118375;
-        bh=eVVGLClJE3cjfMM7K64saHd3yZhNqEe/Dyi1Il2NU1k=;
+        s=korg; t=1655118377;
+        bh=c2tgN3p+zjBZ0UI8I3rzEyvmKixlS5QbGliVZrXxf60=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XbpvHDjXPOFXcU3DC4MjFuqFo5xRFqqnENsdrAG1K3wcpMyhB+0lpkDtDvJK9POrb
-         UuZ3P+zIp8cITxbtw3ov+7yvNAkCE/ddRbGtJQ+EIvq7wMGP/qa8+QKsspzERZBhpk
-         Oe/pOhIlzxaUpgX/O7OE9jrmV83DWp04d8G0lP68=
+        b=aAtHU7n6vCVOVGYCj29+QkYm/zMjLqvULxGhKwhHJ9eMPDyxP/+fDvdNZCtEwe2SL
+         KUsSE44faOCOt5QVKF4gbON/N2Dp0K1xI0oBj2gWBLnbqQy1mpNgek6FFmBrgkT8R2
+         /TY+qxvlLaM0O2QXTHoTQl8HbXtdVyoBdLUlCAVA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        stable@vger.kernel.org, Leo Yan <leo.yan@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Mike Leach <mike.leach@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 036/172] serial: txx9: Dont allow CS5-6
-Date:   Mon, 13 Jun 2022 12:09:56 +0200
-Message-Id: <20220613094859.052644494@linuxfoundation.org>
+Subject: [PATCH 5.10 027/172] coresight: cpu-debug: Replace mutex with mutex_trylock on panic notifier
+Date:   Mon, 13 Jun 2022 12:09:47 +0200
+Message-Id: <20220613094856.943105489@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -50,40 +53,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+From: Guilherme G. Piccoli <gpiccoli@igalia.com>
 
-[ Upstream commit 79ac88655dc0551e3571ad16bdabdbe65d61553e ]
+[ Upstream commit 1adff542d67a2ed1120955cb219bfff8a9c53f59 ]
 
-Only CS7 and CS8 are supported but CSIZE is not sanitized with
-CS5 or CS6 to CS8.
+The panic notifier infrastructure executes registered callbacks when
+a panic event happens - such callbacks are executed in atomic context,
+with interrupts and preemption disabled in the running CPU and all other
+CPUs disabled. That said, mutexes in such context are not a good idea.
 
-Set CSIZE correctly so that userspace knows the effective value.
-Incorrect CSIZE also results in miscalculation of the frame bits in
-tty_get_char_size() or in its predecessor where the roughly the same
-code is directly within uart_update_timeout().
+This patch replaces a regular mutex with a mutex_trylock safer approach;
+given the nature of the mutex used in the driver, it should be pretty
+uncommon being unable to acquire such mutex in the panic path, hence
+no functional change should be observed (and if it is, that would be
+likely a deadlock with the regular mutex).
 
-Fixes: 1da177e4c3f4 (Linux-2.6.12-rc2)
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/20220519081808.3776-5-ilpo.jarvinen@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 2227b7c74634 ("coresight: add support for CPU debug module")
+Cc: Leo Yan <leo.yan@linaro.org>
+Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+Cc: Mike Leach <mike.leach@linaro.org>
+Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
+Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Link: https://lore.kernel.org/r/20220427224924.592546-10-gpiccoli@igalia.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/serial_txx9.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/hwtracing/coresight/coresight-cpu-debug.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_txx9.c b/drivers/tty/serial/serial_txx9.c
-index 7a07e7272de1..7beec331010c 100644
---- a/drivers/tty/serial/serial_txx9.c
-+++ b/drivers/tty/serial/serial_txx9.c
-@@ -644,6 +644,8 @@ serial_txx9_set_termios(struct uart_port *port, struct ktermios *termios,
- 	case CS6:	/* not supported */
- 	case CS8:
- 		cval |= TXX9_SILCR_UMODE_8BIT;
-+		termios->c_cflag &= ~CSIZE;
-+		termios->c_cflag |= CS8;
- 		break;
- 	}
+diff --git a/drivers/hwtracing/coresight/coresight-cpu-debug.c b/drivers/hwtracing/coresight/coresight-cpu-debug.c
+index 2dcf13de751f..1e98562f4287 100644
+--- a/drivers/hwtracing/coresight/coresight-cpu-debug.c
++++ b/drivers/hwtracing/coresight/coresight-cpu-debug.c
+@@ -379,9 +379,10 @@ static int debug_notifier_call(struct notifier_block *self,
+ 	int cpu;
+ 	struct debug_drvdata *drvdata;
  
+-	mutex_lock(&debug_lock);
++	/* Bail out if we can't acquire the mutex or the functionality is off */
++	if (!mutex_trylock(&debug_lock))
++		return NOTIFY_DONE;
+ 
+-	/* Bail out if the functionality is disabled */
+ 	if (!debug_enable)
+ 		goto skip_dump;
+ 
+@@ -400,7 +401,7 @@ static int debug_notifier_call(struct notifier_block *self,
+ 
+ skip_dump:
+ 	mutex_unlock(&debug_lock);
+-	return 0;
++	return NOTIFY_DONE;
+ }
+ 
+ static struct notifier_block debug_notifier = {
 -- 
 2.35.1
 
