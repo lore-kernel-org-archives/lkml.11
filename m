@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31343CCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CDBFCCA487
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:09:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352065AbiFMLJU (ORCPT
+        id S1352137AbiFMLJZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:09:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45418 "EHLO
+        Mon, 13 Jun 2022 07:09:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351712AbiFMLEz (ORCPT
+        with ESMTP id S1351764AbiFMLE7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:04:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 879233206A;
-        Mon, 13 Jun 2022 03:33:53 -0700 (PDT)
+        Mon, 13 Jun 2022 07:04:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5FD327CC5;
+        Mon, 13 Jun 2022 03:33:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 16EFFB80EA3;
-        Mon, 13 Jun 2022 10:33:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B6FAC34114;
-        Mon, 13 Jun 2022 10:33:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6AD1BB80E94;
+        Mon, 13 Jun 2022 10:33:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C27FBC34114;
+        Mon, 13 Jun 2022 10:33:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116417;
-        bh=kxf9ci/BCQtqhZJhZS8r0uz52LFijqgOzZISz+S4H7A=;
+        s=korg; t=1655116437;
+        bh=902gFoAgWWQFr8ZEXLjOR7pDD0ubzAz8YbNtrMgiSvY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VI/n4QZsjGibicoXIM8tId1qnEWGpyJrkJe8EMcg5FcZgmamKPbG481QgL2feFh50
-         lZ+Uime+PZ8BCodexh84DKFpG3xJgzl5idCjVm52y0MOSVtFjDcJ8c3qb81bmzIYw7
-         HS5WODueTiptpaZV3LT6G+r7ieQb6cSolQWuX3YA=
+        b=NMDGzP7m3kzHAmY7/QAAi1X61HIKMdz+PlpcYvw3ZE/7h3nOTaSTMssZFzyhveazS
+         kUgwQJ4zYp1d8PFsU+Neqk0BSzp9thuqrkAKJfKIEs5ZjysNfDDesbSviLdJbcWtn5
+         B3jSMvDnatwX1/N4xN1jPipxdw7cQ0UAhPfcihik=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 177/218] net: xfrm: unexport __init-annotated xfrm4_protocol_init()
-Date:   Mon, 13 Jun 2022 12:10:35 +0200
-Message-Id: <20220613094925.975978630@linuxfoundation.org>
+        stable@vger.kernel.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 086/411] x86/delay: Fix the wrong asm constraint in delay_loop()
+Date:   Mon, 13 Jun 2022 12:05:59 +0200
+Message-Id: <20220613094931.259536438@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,48 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
 
-[ Upstream commit 4a388f08d8784af48f352193d2b72aaf167a57a1 ]
+[ Upstream commit b86eb74098a92afd789da02699b4b0dd3f73b889 ]
 
-EXPORT_SYMBOL and __init is a bad combination because the .init.text
-section is freed up after the initialization. Hence, modules cannot
-use symbols annotated __init. The access to a freed symbol may end up
-with kernel panic.
+The asm constraint does not reflect the fact that the asm statement can
+modify the value of the local variable loops. Which it does.
 
-modpost used to detect it, but it has been broken for a decade.
+Specifying the wrong constraint may lead to undefined behavior, it may
+clobber random stuff (e.g. local variable, important temporary value in
+regs, etc.). This is especially dangerous when the compiler decides to
+inline the function and since it doesn't know that the value gets
+modified, it might decide to use it from a register directly without
+reloading it.
 
-Recently, I fixed modpost so it started to warn it again, then this
-showed up in linux-next builds.
+Change the constraint to "+a" to denote that the first argument is an
+input and an output argument.
 
-There are two ways to fix it:
+  [ bp: Fix typo, massage commit message. ]
 
-  - Remove __init
-  - Remove EXPORT_SYMBOL
-
-I chose the latter for this case because the only in-tree call-site,
-net/ipv4/xfrm4_policy.c is never compiled as modular.
-(CONFIG_XFRM is boolean)
-
-Fixes: 2f32b51b609f ("xfrm: Introduce xfrm_input_afinfo to access the the callbacks properly")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Acked-by: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: e01b70ef3eb3 ("x86: fix bug in arch/i386/lib/delay.c file, delay_loop function")
+Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220329104705.65256-2-ammarfaizi2@gnuweeb.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/xfrm4_protocol.c | 1 -
- 1 file changed, 1 deletion(-)
+ arch/x86/lib/delay.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv4/xfrm4_protocol.c b/net/ipv4/xfrm4_protocol.c
-index 8dd0e6ab8606..0e1f5dc2766b 100644
---- a/net/ipv4/xfrm4_protocol.c
-+++ b/net/ipv4/xfrm4_protocol.c
-@@ -297,4 +297,3 @@ void __init xfrm4_protocol_init(void)
- {
- 	xfrm_input_register_afinfo(&xfrm4_input_afinfo);
+diff --git a/arch/x86/lib/delay.c b/arch/x86/lib/delay.c
+index c126571e5e2e..3d1cfad36ba2 100644
+--- a/arch/x86/lib/delay.c
++++ b/arch/x86/lib/delay.c
+@@ -43,8 +43,8 @@ static void delay_loop(unsigned long loops)
+ 		"	jnz 2b		\n"
+ 		"3:	dec %0		\n"
+ 
+-		: /* we don't need output */
+-		:"a" (loops)
++		: "+a" (loops)
++		:
+ 	);
  }
--EXPORT_SYMBOL(xfrm4_protocol_init);
+ 
 -- 
 2.35.1
 
