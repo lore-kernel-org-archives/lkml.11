@@ -2,139 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 429E4C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:41:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C238CCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:44:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232217AbiFMUl0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:41:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43668 "EHLO
+        id S1344413AbiFMUnG (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 16:43:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242261AbiFMUk7 (ORCPT
+        with ESMTP id S1346301AbiFMUmV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:40:59 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9FBB45B887
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:38:11 -0700 (PDT)
-Received: from sequoia (162-237-133-238.lightspeed.rcsntx.sbcglobal.net [162.237.133.238])
-        by linux.microsoft.com (Postfix) with ESMTPSA id BDFC520C154C;
-        Mon, 13 Jun 2022 12:38:10 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com BDFC520C154C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1655149091;
-        bh=Nlhe89f21s2Nn6sZlzNNWxjIOhCd8EeCNee7Yy+xEvU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ikjQZmtHOZ+WLe7eXSv06sgC+WIMy6qYOHsYl7R3s+ezYufbTNoh1MQu0ZSQzrnng
-         xYlX8CztPE8odeMby13fHDEYRtASMSs4m0XSf4+JW3cYWTVZbxjIdlxMwQbapVww7H
-         VaYAyOL+V7jxcNjtFFJJebiJadQAYuPPUzUWKM6k=
-Date:   Mon, 13 Jun 2022 14:38:07 -0500
-From:   Tyler Hicks <tyhicks@linux.microsoft.com>
-To:     Dominique Martinet <asmadeus@codewreck.org>
-Cc:     Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Christian Schoenebeck <linux_oss@crudebyte.com>,
-        Jianyong Wu <jianyong.wu@arm.com>,
-        v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/5] 9p: Fix refcounting during full path walks for
- fid lookups
-Message-ID: <20220613193807.GF7401@sequoia>
-References: <20220527000003.355812-1-tyhicks@linux.microsoft.com>
- <20220527000003.355812-2-tyhicks@linux.microsoft.com>
- <YqUifCFPTG8Qmn7a@codewreck.org>
+        Mon, 13 Jun 2022 16:42:21 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 265E113F25;
+        Mon, 13 Jun 2022 12:43:46 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id CA43221AFC;
+        Mon, 13 Jun 2022 19:43:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1655149424;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=tDlIv8k4YI9AeL8zTuC9Y9jHBJ5RQWlcpO0WYfw29GM=;
+        b=QYlBWgzCJ6lCxWp3gQ2Z3SxBRp998NEKsWzmGenXDPEfVxBop57Ws1nlUFD0NTb9nj2J1U
+        XFqvWHen/BxLTqci0hMrUCQAEuxeP+1O5zGCtE8sHpo8OzFa4m5PB0GRMkfkadYEfZOtJ4
+        mcIcxneT88NF/XRo8y5WU9xxDHnnFz0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1655149424;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=tDlIv8k4YI9AeL8zTuC9Y9jHBJ5RQWlcpO0WYfw29GM=;
+        b=WxJzS6RsJwIE+51FIvF7osXGjc2WqiShjDo+rq6ZX5YPlk22LSRsagEVL8ljguIQVAH0D+
+        IrM0Uph/jbzMNSCA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8279413443;
+        Mon, 13 Jun 2022 19:43:44 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id FbzTHnCTp2I1NAAAMHmgww
+        (envelope-from <dsterba@suse.cz>); Mon, 13 Jun 2022 19:43:44 +0000
+Date:   Mon, 13 Jun 2022 21:39:12 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     syzbot <syzbot+d2dd123304b4ae59f1bd@syzkaller.appspotmail.com>
+Cc:     akpm@linux-foundation.org, clm@fb.com, dsterba@suse.com,
+        hch@lst.de, josef@toxicpanda.com, linux-btrfs@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, syzkaller-bugs@googlegroups.com,
+        willy@infradead.org
+Subject: Re: [syzbot] KASAN: use-after-free Read in
+ copy_page_from_iter_atomic (2)
+Message-ID: <20220613193912.GI20633@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz,
+        syzbot <syzbot+d2dd123304b4ae59f1bd@syzkaller.appspotmail.com>,
+        akpm@linux-foundation.org, clm@fb.com, dsterba@suse.com, hch@lst.de,
+        josef@toxicpanda.com, linux-btrfs@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, syzkaller-bugs@googlegroups.com,
+        willy@infradead.org
+References: <0000000000003ce9d105e0db53c8@google.com>
+ <00000000000085068105e112a117@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YqUifCFPTG8Qmn7a@codewreck.org>
+In-Reply-To: <00000000000085068105e112a117@google.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-06-12 08:17:16, Dominique Martinet wrote:
-> Tyler Hicks wrote on Thu, May 26, 2022 at 06:59:59PM -0500:
-> > Decrement the refcount of the parent dentry's fid after walking
-> > each path component during a full path walk for a lookup. Failure to do
-> > so can lead to fids that are not clunked until the filesystem is
-> > unmounted, as indicated by this warning:
-> > 
-> >  9pnet: found fid 3 not clunked
-> > 
-> > The improper refcounting after walking resulted in open(2) returning
-> > -EIO on any directories underneath the mount point when using the virtio
-> > transport. When using the fd transport, there's no apparent issue until
-> > the filesytem is unmounted and the warning above is emitted to the logs.
-> > 
-> > In some cases, the user may not yet be attached to the filesystem and a
-> > new root fid, associated with the user, is created and attached to the
-> > root dentry before the full path walk is performed. Increment the new
-> > root fid's refcount to two in that situation so that it can be safely
-> > decremented to one after it is used for the walk operation. The new fid
-> > will still be attached to the root dentry when
-> > v9fs_fid_lookup_with_uid() returns so a final refcount of one is
-> > correct/expected.
-> > 
-> > Fixes: 6636b6dcc3db ("9p: add refcount to p9_fid struct")
-> > Cc: stable@vger.kernel.org
-> > Signed-off-by: Tyler Hicks <tyhicks@linux.microsoft.com>
-> > ---
-> >  fs/9p/fid.c | 17 +++++------------
-> >  1 file changed, 5 insertions(+), 12 deletions(-)
-> > 
-> > diff --git a/fs/9p/fid.c b/fs/9p/fid.c
-> > index 79df61fe0e59..5a469b79c1ee 100644
-> > --- a/fs/9p/fid.c
-> > +++ b/fs/9p/fid.c
-> > @@ -152,7 +152,7 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct dentry *dentry,
-> >  	const unsigned char **wnames, *uname;
-> >  	int i, n, l, clone, access;
-> >  	struct v9fs_session_info *v9ses;
-> > -	struct p9_fid *fid, *old_fid = NULL;
-> > +	struct p9_fid *fid, *old_fid;
-> >  
-> >  	v9ses = v9fs_dentry2v9ses(dentry);
-> >  	access = v9ses->flags & V9FS_ACCESS_MASK;
-> > @@ -194,13 +194,12 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct dentry *dentry,
-> >  		if (IS_ERR(fid))
-> >  			return fid;
-> >  
-> > +		refcount_inc(&fid->count);
-> >  		v9fs_fid_add(dentry->d_sb->s_root, fid);
-> >  	}
-> >  	/* If we are root ourself just return that */
-> > -	if (dentry->d_sb->s_root == dentry) {
-> > -		refcount_inc(&fid->count);
-> > +	if (dentry->d_sb->s_root == dentry)
-> >  		return fid;
-> > -	}
-> >  	/*
-> >  	 * Do a multipath walk with attached root.
-> >  	 * When walking parent we need to make sure we
-> > @@ -212,6 +211,7 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct dentry *dentry,
-> >  		fid = ERR_PTR(n);
-> >  		goto err_out;
-> >  	}
-> > +	old_fid = fid;
-> >  	clone = 1;
-> >  	i = 0;
-> >  	while (i < n) {
-> > @@ -221,15 +221,8 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct dentry *dentry,
-> >  		 * walk to ensure none of the patch component change
-> >  		 */
-> >  		fid = p9_client_walk(fid, l, &wnames[i], clone);
-> > +		p9_client_clunk(old_fid);
+On Fri, Jun 10, 2022 at 12:10:19AM -0700, syzbot wrote:
+> syzbot has bisected this issue to:
 > 
-> hmm, if we're not cloning then fid == old_fid and the refcount is not
-> increased? (I think... I didn't even realize/remember that walk had a
-> no-clone mode, sorry.)
+> commit 4cd4aed63125ccd4efc35162627827491c2a7be7
+> Author: Christoph Hellwig <hch@lst.de>
+> Date:   Fri May 27 08:43:20 2022 +0000
 > 
-> So we'd only need to clunk if old fid here if we're cloning (old fid is
-> the initial root fid), but I'm not sure how to test this path as I
-> couldn't think of any pattern that'd trigger a multi-level lookup,
-> so I'm not 100% sure; I'll try a bit more.
+>     btrfs: fold repair_io_failure into btrfs_repair_eb_io_failure
 
-Yes, you're correct. Nice catch!
+Josef also reported a crash and found a bug in the patch, now added as
+fixup that'll be in for-next:
 
-Tyler
-
-> 
-> -- 
-> Dominique
-> 
+diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
+index 89a319e65197..5eac9ffb7499 100644
+--- a/fs/btrfs/extent_io.c
++++ b/fs/btrfs/extent_io.c
+@@ -2260,7 +2260,7 @@ int btrfs_repair_eb_io_failure(const struct extent_buffer *eb, int mirror_num)
+		__bio_add_page(&bio, p, PAGE_SIZE, start - page_offset(p));
+		ret = btrfs_map_repair_bio(fs_info, &bio, mirror_num);
+		bio_uninit(&bio);
+-
++               start += PAGE_SIZE;
+		if (ret)
+			return ret;
+	}
+---
