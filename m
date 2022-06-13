@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F341ECCA486
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:51:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DAFBCCA488
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:51:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385857AbiFMOuN (ORCPT
+        id S1385908AbiFMOuU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:50:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36036 "EHLO
+        Mon, 13 Jun 2022 10:50:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386552AbiFMOph (ORCPT
+        with ESMTP id S1386508AbiFMOpX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:45:37 -0400
+        Mon, 13 Jun 2022 10:45:23 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03731BCE9E;
-        Mon, 13 Jun 2022 04:52:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4D02BC6ED;
+        Mon, 13 Jun 2022 04:52:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C77D7B80EE0;
-        Mon, 13 Jun 2022 11:52:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DBE3C3411B;
-        Mon, 13 Jun 2022 11:52:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3B7C8B80EA7;
+        Mon, 13 Jun 2022 11:52:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A22BEC34114;
+        Mon, 13 Jun 2022 11:52:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655121132;
-        bh=E4rQH1VFVcVFFMQSB2xDZNS++oZ3MPwR5If0rkwwWrM=;
+        s=korg; t=1655121127;
+        bh=1UixyvoLN2QSYpYfK0BK4OCi/4U+aVgFQL0tX8f+yag=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TWManL8q9ZtSSNwTbIm+wTO4xUCl/f1D2sQ+9nq5930xGZnFe5mAzJgWGjbOOSL/l
-         wgaXAp8conIwnB/zQPOB/92oa3m+Uy6WFYXQEcLspMbLF8FvZcFzVYX2ZwU1j3Ul1A
-         pDnetmj0MdBJNxWd1lHaTzubX1wPhN+PFUf25pPc=
+        b=Q6vBvU5Va20qriFZCJ+0o8/AwIvJ27V544IFFFdfZ0qrtZ3cjRyU4EzSn55+zqtKB
+         mMpfJsGX9IEjuKL++FRskNAhAd04YVWWmZsvGVWPxKnx5vYST4IWntaFp9yKWe21x0
+         OJY+LR/5HWGiGEJMAju7dWI+RoN7bbg8qYHTSxr0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
-        Sean Paul <seanpaul@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>
-Subject: [PATCH 5.17 284/298] drm/bridge: analogix_dp: Support PSR-exit to disable transition
-Date:   Mon, 13 Jun 2022 12:12:58 +0200
-Message-Id: <20220613094933.695638063@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+9e27a75a8c24f3fe75c1@syzkaller.appspotmail.com,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Subject: [PATCH 5.17 282/298] mm/huge_memory: Fix xarray node memory leak
+Date:   Mon, 13 Jun 2022 12:12:56 +0200
+Message-Id: <20220613094933.634623237@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,109 +50,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Norris <briannorris@chromium.org>
+From: Matthew Wilcox (Oracle) <willy@infradead.org>
 
-commit ca871659ec1606d33b1e76de8d4cf924cf627e34 upstream.
+commit 69a37a8ba1b408a1c7616494aa7018e4b3844cbe upstream.
 
-Most eDP panel functions only work correctly when the panel is not in
-self-refresh. In particular, analogix_dp_bridge_disable() tends to hit
-AUX channel errors if the panel is in self-refresh.
+If xas_split_alloc() fails to allocate the necessary nodes to complete the
+xarray entry split, it sets the xa_state to -ENOMEM, which xas_nomem()
+then interprets as "Please allocate more memory", not as "Please free
+any unnecessary memory" (which was the intended outcome).  It's confusing
+to use xas_nomem() to free memory in this context, so call xas_destroy()
+instead.
 
-Given the above, it appears that so far, this driver assumes that we are
-never in self-refresh when it comes time to fully disable the bridge.
-Prior to commit 846c7dfc1193 ("drm/atomic: Try to preserve the crtc
-enabled state in drm_atomic_remove_fb, v2."), this tended to be true,
-because we would automatically disable the pipe when framebuffers were
-removed, and so we'd typically disable the bridge shortly after the last
-display activity.
-
-However, that is not guaranteed: an idle (self-refresh) display pipe may
-be disabled, e.g., when switching CRTCs. We need to exit PSR first.
-
-Stable notes: this is definitely a bugfix, and the bug has likely
-existed in some form for quite a while. It may predate the "PSR helpers"
-refactor, but the code looked very different before that, and it's
-probably not worth rewriting the fix.
-
-Cc: <stable@vger.kernel.org>
-Fixes: 6c836d965bad ("drm/rockchip: Use the helpers for PSR")
-Signed-off-by: Brian Norris <briannorris@chromium.org>
-Reviewed-by: Sean Paul <seanpaul@chromium.org>
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220228122522.v2.1.I161904be17ba14526f78536ccd78b85818449b51@changeid
+Reported-by: syzbot+9e27a75a8c24f3fe75c1@syzkaller.appspotmail.com
+Fixes: 6b24ca4a1a8d ("mm: Use multi-index entries in the page cache")
+Cc: stable@vger.kernel.org
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/bridge/analogix/analogix_dp_core.c |   42 +++++++++++++++++++--
- 1 file changed, 38 insertions(+), 4 deletions(-)
+ include/linux/xarray.h |    1 +
+ lib/xarray.c           |    5 +++--
+ mm/huge_memory.c       |    3 +--
+ 3 files changed, 5 insertions(+), 4 deletions(-)
 
---- a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-+++ b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-@@ -1269,6 +1269,25 @@ static int analogix_dp_bridge_attach(str
- }
+--- a/include/linux/xarray.h
++++ b/include/linux/xarray.h
+@@ -1506,6 +1506,7 @@ void *xas_find_marked(struct xa_state *,
+ void xas_init_marks(const struct xa_state *);
  
- static
-+struct drm_crtc *analogix_dp_get_old_crtc(struct analogix_dp_device *dp,
-+					  struct drm_atomic_state *state)
-+{
-+	struct drm_encoder *encoder = dp->encoder;
-+	struct drm_connector *connector;
-+	struct drm_connector_state *conn_state;
-+
-+	connector = drm_atomic_get_old_connector_for_encoder(state, encoder);
-+	if (!connector)
-+		return NULL;
-+
-+	conn_state = drm_atomic_get_old_connector_state(state, connector);
-+	if (!conn_state)
-+		return NULL;
-+
-+	return conn_state->crtc;
-+}
-+
-+static
- struct drm_crtc *analogix_dp_get_new_crtc(struct analogix_dp_device *dp,
- 					  struct drm_atomic_state *state)
+ bool xas_nomem(struct xa_state *, gfp_t);
++void xas_destroy(struct xa_state *);
+ void xas_pause(struct xa_state *);
+ 
+ void xas_create_range(struct xa_state *);
+--- a/lib/xarray.c
++++ b/lib/xarray.c
+@@ -264,9 +264,10 @@ static void xa_node_free(struct xa_node
+  * xas_destroy() - Free any resources allocated during the XArray operation.
+  * @xas: XArray operation state.
+  *
+- * This function is now internal-only.
++ * Most users will not need to call this function; it is called for you
++ * by xas_nomem().
+  */
+-static void xas_destroy(struct xa_state *xas)
++void xas_destroy(struct xa_state *xas)
  {
-@@ -1448,14 +1467,16 @@ analogix_dp_bridge_atomic_disable(struct
- {
- 	struct drm_atomic_state *old_state = old_bridge_state->base.state;
- 	struct analogix_dp_device *dp = bridge->driver_private;
--	struct drm_crtc *crtc;
-+	struct drm_crtc *old_crtc, *new_crtc;
-+	struct drm_crtc_state *old_crtc_state = NULL;
- 	struct drm_crtc_state *new_crtc_state = NULL;
-+	int ret;
+ 	struct xa_node *next, *node = xas->xa_alloc;
  
--	crtc = analogix_dp_get_new_crtc(dp, old_state);
--	if (!crtc)
-+	new_crtc = analogix_dp_get_new_crtc(dp, old_state);
-+	if (!new_crtc)
- 		goto out;
- 
--	new_crtc_state = drm_atomic_get_new_crtc_state(old_state, crtc);
-+	new_crtc_state = drm_atomic_get_new_crtc_state(old_state, new_crtc);
- 	if (!new_crtc_state)
- 		goto out;
- 
-@@ -1464,6 +1485,19 @@ analogix_dp_bridge_atomic_disable(struct
- 		return;
- 
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -2736,8 +2736,7 @@ out_unlock:
+ 	if (mapping)
+ 		i_mmap_unlock_read(mapping);
  out:
-+	old_crtc = analogix_dp_get_old_crtc(dp, old_state);
-+	if (old_crtc) {
-+		old_crtc_state = drm_atomic_get_old_crtc_state(old_state,
-+							       old_crtc);
-+
-+		/* When moving from PSR to fully disabled, exit PSR first. */
-+		if (old_crtc_state && old_crtc_state->self_refresh_active) {
-+			ret = analogix_dp_disable_psr(dp);
-+			if (ret)
-+				DRM_ERROR("Failed to disable psr (%d)\n", ret);
-+		}
-+	}
-+
- 	analogix_dp_bridge_disable(bridge);
+-	/* Free any memory we didn't use */
+-	xas_nomem(&xas, 0);
++	xas_destroy(&xas);
+ 	count_vm_event(!ret ? THP_SPLIT_PAGE : THP_SPLIT_PAGE_FAILED);
+ 	return ret;
  }
- 
 
 
