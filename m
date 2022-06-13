@@ -2,94 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6593AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:40:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92CBBC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:40:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344267AbiFMKkl (ORCPT
+        id S1344130AbiFMKkr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:40:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35654 "EHLO
+        Mon, 13 Jun 2022 06:40:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347341AbiFMKiz (ORCPT
+        with ESMTP id S1347432AbiFMKi6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:38:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AB6B13EBA;
-        Mon, 13 Jun 2022 03:23:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B896CB80EA3;
-        Mon, 13 Jun 2022 10:23:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 260E8C3411C;
-        Mon, 13 Jun 2022 10:23:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115784;
-        bh=svTYRwQoEOZR9ALrZn3icahIfblnTbsuQORE2Oif/Ag=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vaox896f9rAYvSodYoc1n/p+dg8NQdS84Z/EST5OFGvwDb+S7s8q//WhAkVyxSUXB
-         fl2eEhfDdaKTDNnVUKJJfTNiAMZLADZJ0g9nitUDR6tCiym0ov9MapsUTg2+sZxcBW
-         O6fwoq28LWOw9yLaSQmFsFlP0dLKcaV0N5G0EONg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kyle Smith <kyles@hpe.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Hannes Reinecke <hare@suse.de>, Christoph Hellwig <hch@lst.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 029/218] nvme-pci: fix a NULL pointer dereference in nvme_alloc_admin_tags
-Date:   Mon, 13 Jun 2022 12:08:07 +0200
-Message-Id: <20220613094915.157160552@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 13 Jun 2022 06:38:58 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8109613F2C;
+        Mon, 13 Jun 2022 03:23:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1655115788; x=1686651788;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=eENHtNiWrS3MENh6dCmHrWJEDYGD0k8qjCG6VuCcQnc=;
+  b=wpbN6U4ueAILVt9LFQOwZnkXXi8yMHabFozUtrad/B7lARh654v2GGjo
+   TY3J3nGrq8Zp6iEEDR+JlIRGeH0mdq6v/L6ZAqme/tPRHiOGtAYuGvzCr
+   HdSUq0E/XtSPirP1z2C9cOtbcJDrF2nBOuEXepv9klhGTLGhomGtbZCWw
+   Q=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 13 Jun 2022 03:23:08 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 03:23:08 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 13 Jun 2022 03:23:07 -0700
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 13 Jun 2022 03:23:03 -0700
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <quic_rohkumar@quicinc.com>, <srinivas.kandagatla@linaro.org>,
+        <dianders@chromium.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
+Subject: [PATCH v13 08/12] arm64: dts: qcom: sc7280: Add lpass cpu node
+Date:   Mon, 13 Jun 2022 15:52:09 +0530
+Message-ID: <1655115733-16309-9-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1655115733-16309-1-git-send-email-quic_srivasam@quicinc.com>
+References: <1655115733-16309-1-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Smith, Kyle Miller (Nimble Kernel) <kyles@hpe.com>
+Add lpass cpu node for audio on sc7280 based platforms.
 
-[ Upstream commit da42761181627e9bdc37d18368b827948a583929 ]
-
-In nvme_alloc_admin_tags, the admin_q can be set to an error (typically
--ENOMEM) if the blk_mq_init_queue call fails to set up the queue, which
-is checked immediately after the call. However, when we return the error
-message up the stack, to nvme_reset_work the error takes us to
-nvme_remove_dead_ctrl()
-  nvme_dev_disable()
-   nvme_suspend_queue(&dev->queues[0]).
-
-Here, we only check that the admin_q is non-NULL, rather than not
-an error or NULL, and begin quiescing a queue that never existed, leading
-to bad / NULL pointer dereference.
-
-Signed-off-by: Kyle Smith <kyles@hpe.com>
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
-Reviewed-by: Hannes Reinecke <hare@suse.de>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
 ---
- drivers/nvme/host/pci.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/boot/dts/qcom/sc7280.dtsi | 62 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 62 insertions(+)
 
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index 92f269a0846c..de23f2814877 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -1424,6 +1424,7 @@ static int nvme_alloc_admin_tags(struct nvme_dev *dev)
- 		dev->ctrl.admin_q = blk_mq_init_queue(&dev->admin_tagset);
- 		if (IS_ERR(dev->ctrl.admin_q)) {
- 			blk_mq_free_tag_set(&dev->admin_tagset);
-+			dev->ctrl.admin_q = NULL;
- 			return -ENOMEM;
- 		}
- 		if (!blk_get_queue(dev->ctrl.admin_q)) {
+diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+index e5f6b50..06fe14e 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+@@ -22,6 +22,7 @@
+ #include <dt-bindings/reset/qcom,sdm845-aoss.h>
+ #include <dt-bindings/reset/qcom,sdm845-pdc.h>
+ #include <dt-bindings/soc/qcom,rpmh-rsc.h>
++#include <dt-bindings/sound/qcom,lpass.h>
+ #include <dt-bindings/thermal/thermal.h>
+ 
+ / {
+@@ -2336,6 +2337,67 @@
+ 			#power-domain-cells = <1>;
+ 		};
+ 
++		lpass_cpu: audio@3987000 {
++			compatible = "qcom,sc7280-lpass-cpu";
++
++			reg = <0 0x03987000 0 0x68000>,
++			      <0 0x03b00000 0 0x29000>,
++			      <0 0x03260000 0 0xc000>,
++			      <0 0x03280000 0 0x29000>,
++			      <0 0x03340000 0 0x29000>,
++			      <0 0x0336c000 0 0x3000>;
++			reg-names = "lpass-hdmiif",
++				    "lpass-lpaif",
++				    "lpass-rxtx-cdc-dma-lpm",
++				    "lpass-rxtx-lpaif",
++				    "lpass-va-lpaif",
++				    "lpass-va-cdc-dma-lpm";
++
++			iommus = <&apps_smmu 0x1820 0>,
++				 <&apps_smmu 0x1821 0>,
++				 <&apps_smmu 0x1832 0>;
++
++			power-domains =	<&rpmhpd SC7280_LCX>;
++			power-domain-names = "lcx";
++			required-opps = <&rpmhpd_opp_nom>;
++
++			clocks = <&lpass_aon LPASS_AON_CC_AUDIO_HM_H_CLK>,
++				 <&lpass_core LPASS_CORE_CC_EXT_MCLK0_CLK>,
++				 <&lpass_core LPASS_CORE_CC_SYSNOC_MPORT_CORE_CLK>,
++				 <&lpass_core LPASS_CORE_CC_EXT_IF0_IBIT_CLK>,
++				 <&lpass_core LPASS_CORE_CC_EXT_IF1_IBIT_CLK>,
++				 <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM_CLK>,
++				 <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM0_CLK>,
++				 <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM1_CLK>,
++				 <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM2_CLK>,
++				 <&lpass_aon LPASS_AON_CC_VA_MEM0_CLK>;
++			clock-names = "aon_cc_audio_hm_h",
++				      "core_cc_ext_mclk0",
++				      "core_cc_sysnoc_mport_core",
++				      "core_cc_ext_if0_ibit",
++				      "core_cc_ext_if1_ibit",
++				      "audio_cc_codec_mem",
++				      "audio_cc_codec_mem0",
++				      "audio_cc_codec_mem1",
++				      "audio_cc_codec_mem2",
++				      "aon_cc_va_mem0";
++
++			#sound-dai-cells = <1>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			interrupts = <GIC_SPI 160 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 268 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 180 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "lpass-irq-lpaif",
++					  "lpass-irq-hdmi",
++					  "lpass-irq-vaif",
++					  "lpass-irq-rxtxif";
++
++			status = "disabled";
++		};
++
+ 		lpass_hm: clock-controller@3c00000 {
+ 			compatible = "qcom,sc7280-lpasshm";
+ 			reg = <0 0x3c00000 0 0x28>;
 -- 
-2.35.1
-
-
+2.7.4
 
