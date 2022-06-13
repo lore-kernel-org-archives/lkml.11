@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2208DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:27:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A2CAC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:27:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353651AbiFMM1q (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:27:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33932 "EHLO
+        id S238353AbiFMM1u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 08:27:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355282AbiFMMXz (ORCPT
+        with ESMTP id S1355421AbiFMMXz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 08:23:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CD9531530;
-        Mon, 13 Jun 2022 04:04:36 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5BE53152A;
+        Mon, 13 Jun 2022 04:04:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE6EF61435;
-        Mon, 13 Jun 2022 11:04:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C18DC34114;
-        Mon, 13 Jun 2022 11:04:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 70444B80D31;
+        Mon, 13 Jun 2022 11:04:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB49BC34114;
+        Mon, 13 Jun 2022 11:04:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118275;
-        bh=hUNx9CZjR1LIuSKxLgjbKC/nXLk8yQ38+RhSvQnVqY8=;
+        s=korg; t=1655118290;
+        bh=ubSeAJmt3Nr4jnlp+O6kFpUOQt1A5mjy+03QXrdE7ik=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wJJ6WVKRRPLW2f3yfSVbFFeVakSWdt+2FAbDrY+GoU1xnsK6HN/BS6GFq1SL3AvOw
-         /MpZvqNXDxKXr3gH07KZkFtkQzThT4VpmglI2SgGkEnYHc11uOLci3CpdKk6/HgDeg
-         I/NPoVgBSVlqQNfPPQUUja02AHYVGmYnH8jB9cpY=
+        b=CcccBNHmifm+3nlEQTuGXdn0DI0c2AvUWWGbjSnd35m6tMsKmNt9qk4y9arZ8Nc5j
+         tZxLWQtUJ2nC/hIlKpvDSX60OJpiGVWZM2dDZY0y3bWrPZwhSHQjx5dnNLJG879C4F
+         7lGXBXoNKLiH4Yr7YrUtEvwPp8trivXzzfa51Bxs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        stable@vger.kernel.org, Cixi Geng <cixi.geng1@unisoc.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 017/172] misc: fastrpc: fix an incorrect NULL check on list iterator
-Date:   Mon, 13 Jun 2022 12:09:37 +0200
-Message-Id: <20220613094854.530418986@linuxfoundation.org>
+Subject: [PATCH 5.10 022/172] iio: adc: sc27xx: fix read big scale voltage not right
+Date:   Mon, 13 Jun 2022 12:09:42 +0200
+Message-Id: <20220613094855.706139329@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -49,58 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Cixi Geng <cixi.geng1@unisoc.com>
 
-[ Upstream commit 5ac11fe03a0a83042d1a040dbce4fa2fb5521e23 ]
+[ Upstream commit ad930a75613282400179361e220e58b87386b8c7 ]
 
-The bug is here:
-	if (!buf) {
+Fix wrong configuration value of SC27XX_ADC_SCALE_MASK and
+SC27XX_ADC_SCALE_SHIFT by spec documetation.
 
-The list iterator value 'buf' will *always* be set and non-NULL
-by list_for_each_entry(), so it is incorrect to assume that the
-iterator value will be NULL if the list is empty (in this case, the
-check 'if (!buf) {' will always be false and never exit expectly).
-
-To fix the bug, use a new variable 'iter' as the list iterator,
-while use the original variable 'buf' as a dedicated pointer to
-point to the found element.
-
-Fixes: 2419e55e532de ("misc: fastrpc: add mmap/unmap support")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Link: https://lore.kernel.org/r/20220327062202.5720-1-xiam0nd.tong@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 5df362a6cf49c (iio: adc: Add Spreadtrum SC27XX PMICs ADC support)
+Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
+Reviewed-by: Baolin Wang <baolin.wang7@gmail.com>
+Link: https://lore.kernel.org/r/20220419142458.884933-3-gengcixi@gmail.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/fastrpc.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/iio/adc/sc27xx_adc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
-index d0471fec37fb..65f24b6150aa 100644
---- a/drivers/misc/fastrpc.c
-+++ b/drivers/misc/fastrpc.c
-@@ -1349,17 +1349,18 @@ static int fastrpc_req_munmap_impl(struct fastrpc_user *fl,
- 				   struct fastrpc_req_munmap *req)
- {
- 	struct fastrpc_invoke_args args[1] = { [0] = { 0 } };
--	struct fastrpc_buf *buf, *b;
-+	struct fastrpc_buf *buf = NULL, *iter, *b;
- 	struct fastrpc_munmap_req_msg req_msg;
- 	struct device *dev = fl->sctx->dev;
- 	int err;
- 	u32 sc;
+diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
+index aa32a1f385e2..2c0d0d1634c8 100644
+--- a/drivers/iio/adc/sc27xx_adc.c
++++ b/drivers/iio/adc/sc27xx_adc.c
+@@ -36,8 +36,8 @@
  
- 	spin_lock(&fl->lock);
--	list_for_each_entry_safe(buf, b, &fl->mmaps, node) {
--		if ((buf->raddr == req->vaddrout) && (buf->size == req->size))
-+	list_for_each_entry_safe(iter, b, &fl->mmaps, node) {
-+		if ((iter->raddr == req->vaddrout) && (iter->size == req->size)) {
-+			buf = iter;
- 			break;
--		buf = NULL;
-+		}
- 	}
- 	spin_unlock(&fl->lock);
+ /* Bits and mask definition for SC27XX_ADC_CH_CFG register */
+ #define SC27XX_ADC_CHN_ID_MASK		GENMASK(4, 0)
+-#define SC27XX_ADC_SCALE_MASK		GENMASK(10, 8)
+-#define SC27XX_ADC_SCALE_SHIFT		8
++#define SC27XX_ADC_SCALE_MASK		GENMASK(10, 9)
++#define SC27XX_ADC_SCALE_SHIFT		9
  
+ /* Bits definitions for SC27XX_ADC_INT_EN registers */
+ #define SC27XX_ADC_IRQ_EN		BIT(0)
 -- 
 2.35.1
 
