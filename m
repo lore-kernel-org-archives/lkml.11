@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F0A3CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:36:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6CF6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:36:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347933AbiFMMgL (ORCPT
+        id S1351290AbiFMMgP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:36:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45154 "EHLO
+        Mon, 13 Jun 2022 08:36:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357364AbiFMMeW (ORCPT
+        with ESMTP id S1357507AbiFMMe1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:34:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F141BE92;
-        Mon, 13 Jun 2022 04:07:48 -0700 (PDT)
+        Mon, 13 Jun 2022 08:34:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20B3A1AF22;
+        Mon, 13 Jun 2022 04:07:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F6EC6062B;
-        Mon, 13 Jun 2022 11:07:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49C0CC3411E;
-        Mon, 13 Jun 2022 11:07:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7631EB80EB4;
+        Mon, 13 Jun 2022 11:07:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90F03C34114;
+        Mon, 13 Jun 2022 11:07:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118452;
-        bh=zmZtnps9hinPo8CUOIHu7/mKHJLP8v4TcqEBjZryPhw=;
+        s=korg; t=1655118447;
+        bh=cYu+1ovIvzbZWdV6fydt0umFUycVmoK/fr3u/duYZ5I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tDMHklVd0g0st/wxpZsC/FjhDHgmUrq/AueoEK3ralAPa9M8yYdYfyieoUed1aJrq
-         5mI4DxbhKZf4JMdgkC1ufjatvK0+/7Rd/qUL8ZSAhXszrRgr7nbkyX/MZEJ9Ml0cwY
-         awMJJF4JgKHxy8JZHdiW5GVexE4q20VP0C6pf+3U=
+        b=Agb18uW/Gw1Eu1BmsWgc/2wKH5T8W7f1hKxd5grB5SJ/XgoHa+CYGWStU+XraOq+4
+         xd63DS9tty266U5gR3a0jdZeoBmAdr974ULPJ/TVCUg3BjRtOFTEqHWjXz6tju0U3y
+         BAUzMC467tvETNl9DPVSdfbP0m2wqoM5QffZbeUo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 081/172] iommu/arm-smmu-v3: check return value after calling platform_get_resource()
-Date:   Mon, 13 Jun 2022 12:10:41 +0200
-Message-Id: <20220613094909.847290999@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
+        Mark-PK Tsai <mark-pk.tsai@mediatek.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 079/172] tracing: Avoid adding tracer option before update_tracer_options
+Date:   Mon, 13 Jun 2022 12:10:39 +0200
+Message-Id: <20220613094909.380646825@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -49,34 +51,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
 
-[ Upstream commit b131fa8c1d2afd05d0b7598621114674289c2fbb ]
+[ Upstream commit ef9188bcc6ca1d8a2ad83e826b548e6820721061 ]
 
-It will cause null-ptr-deref if platform_get_resource() returns NULL,
-we need check the return value.
+To prepare for support asynchronous tracer_init_tracefs initcall,
+avoid calling create_trace_option_files before __update_tracer_options.
+Otherwise, create_trace_option_files will show warning because
+some tracers in trace_types list are already in tr->topts.
 
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220425114525.2651143-1-yangyingliang@huawei.com
-Signed-off-by: Will Deacon <will@kernel.org>
+For example, hwlat_tracer call register_tracer in late_initcall,
+and global_trace.dir is already created in tracing_init_dentry,
+hwlat_tracer will be put into tr->topts.
+Then if the __update_tracer_options is executed after hwlat_tracer
+registered, create_trace_option_files find that hwlat_tracer is
+already in tr->topts.
+
+Link: https://lkml.kernel.org/r/20220426122407.17042-2-mark-pk.tsai@mediatek.com
+
+Link: https://lore.kernel.org/lkml/20220322133339.GA32582@xsang-OptiPlex-9020/
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 ++
- 1 file changed, 2 insertions(+)
+ kernel/trace/trace.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 483c1362cc4a..bc4cbc7542ce 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -3512,6 +3512,8 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index 124e3e25e155..50200898410d 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -5907,12 +5907,18 @@ static void tracing_set_nop(struct trace_array *tr)
+ 	tr->current_trace = &nop_trace;
+ }
  
- 	/* Base address */
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res)
-+		return -EINVAL;
- 	if (resource_size(res) < arm_smmu_resource_size(smmu)) {
- 		dev_err(dev, "MMIO region too small (%pr)\n", res);
- 		return -EINVAL;
++static bool tracer_options_updated;
++
+ static void add_tracer_options(struct trace_array *tr, struct tracer *t)
+ {
+ 	/* Only enable if the directory has been created already. */
+ 	if (!tr->dir)
+ 		return;
+ 
++	/* Only create trace option files after update_tracer_options finish */
++	if (!tracer_options_updated)
++		return;
++
+ 	create_trace_option_files(tr, t);
+ }
+ 
+@@ -8649,6 +8655,7 @@ static void __update_tracer_options(struct trace_array *tr)
+ static void update_tracer_options(struct trace_array *tr)
+ {
+ 	mutex_lock(&trace_types_lock);
++	tracer_options_updated = true;
+ 	__update_tracer_options(tr);
+ 	mutex_unlock(&trace_types_lock);
+ }
 -- 
 2.35.1
 
