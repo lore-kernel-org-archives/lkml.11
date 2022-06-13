@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBBE1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:01:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A950AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:01:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380729AbiFMOBp (ORCPT
+        id S1380770AbiFMOBu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:01:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36842 "EHLO
+        Mon, 13 Jun 2022 10:01:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380730AbiFMNzB (ORCPT
+        with ESMTP id S1380732AbiFMNzB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 09:55:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83A2D814AD;
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F02C81486;
         Mon, 13 Jun 2022 04:35:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 04E6561046;
-        Mon, 13 Jun 2022 11:35:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16398C34114;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7FB84CE1230;
         Mon, 13 Jun 2022 11:35:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54D07C34114;
+        Mon, 13 Jun 2022 11:35:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120138;
-        bh=ABD3YVlI2vm6/FS72Qxvu6Bn0pNQypERcbxOP8PiQ8c=;
+        s=korg; t=1655120135;
+        bh=IBEvw16s7AhnUjLXu1kcyc7no2h3G3sNQlwhqQ+fxto=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CHCQvz8FxnSwKAelPMdcoNRwYVMLkfLJfIFFGfJkXTjRx6pl62vHzWhXoNDE2xu3X
-         L3GrNaliFagthV64fl/7BfOFx2g5UMlR/8IRavAOTMCPWkRWaWDUFsJqFthcGzRZU2
-         zoGaaVW6+RbiKIwJoFZQ9eLQMELSg+mugzmR1/lI=
+        b=VkPFMvVuUlCBh/11sanA9CkiyesSXBxzqaGcoxR86YZYyCd0+BRmVD2frDYkEIW9c
+         woJ26t+KnBW83Uj8E5QG1D/r6kKv6dgdPp0ZtErNYyBspT0M9lnmLrCVpyO1c5gZcF
+         LPAqR4cSLIPBmbHh0XO9o54SDLpv9V/1VLhAZ9CY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 244/339] soundwire: qcom: adjust autoenumeration timeout
-Date:   Mon, 13 Jun 2022 12:11:09 +0200
-Message-Id: <20220613094934.054470733@linuxfoundation.org>
+        stable@vger.kernel.org, Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 243/339] usb: dwc3: gadget: Only End Transfer for ep0 data phase
+Date:   Mon, 13 Jun 2022 12:11:08 +0200
+Message-Id: <20220613094934.024486970@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,40 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+From: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
 
-[ Upstream commit 74da272400b46f2e898f115d1b1cd60828766919 ]
+[ Upstream commit ace17b6ee4f92ab0375d12a1b42494f8590a96b6 ]
 
-Currently timeout for autoenumeration during probe and bus reset is set to
-2 secs which is really a big value. This can have an adverse effect on
-boot time if the slave device is not ready/reset.
-This was the case with wcd938x which was not reset yet but we spent 2
-secs waiting in the soundwire controller probe. Reduce this time to
-1/10 of Hz which should be good enough time to finish autoenumeration
-if any slaves are available on the bus.
+The driver shouldn't be able to issue End Transfer to the control
+endpoint at anytime. Typically we should only do so in error cases such
+as invalid/unexpected direction of Data Phase as described in the
+control transfer flow of the programming guide. It _may_ end started
+data phase during controller deinitialization from soft disconnect or
+driver removal. However, that should not happen because the driver
+should be maintained in EP0_SETUP_PHASE during driver tear-down. On
+soft-connect, the controller should be reset from a soft-reset and there
+should be no issue starting the control endpoint.
 
-Reported-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Link: https://lore.kernel.org/r/20220506084705.18525-1-srinivas.kandagatla@linaro.org
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Link: https://lore.kernel.org/r/3c6643678863a26702e4115e9e19d7d94a30d49c.1650593829.git.Thinh.Nguyen@synopsys.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soundwire/qcom.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/dwc3/gadget.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
-index b38525b35bec..7b8ef45abee4 100644
---- a/drivers/soundwire/qcom.c
-+++ b/drivers/soundwire/qcom.c
-@@ -105,7 +105,7 @@
- 
- #define SWRM_SPECIAL_CMD_ID	0xF
- #define MAX_FREQ_NUM		1
--#define TIMEOUT_MS		(2 * HZ)
-+#define TIMEOUT_MS		100
- #define QCOM_SWRM_MAX_RD_LEN	0x1
- #define QCOM_SDW_MAX_PORTS	14
- #define DEFAULT_CLK_FREQ	9600000
+diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
+index 6936d8ce8981..bf2eaa09d73c 100644
+--- a/drivers/usb/dwc3/gadget.c
++++ b/drivers/usb/dwc3/gadget.c
+@@ -3685,6 +3685,17 @@ static void dwc3_reset_gadget(struct dwc3 *dwc)
+ void dwc3_stop_active_transfer(struct dwc3_ep *dep, bool force,
+ 	bool interrupt)
+ {
++	struct dwc3 *dwc = dep->dwc;
++
++	/*
++	 * Only issue End Transfer command to the control endpoint of a started
++	 * Data Phase. Typically we should only do so in error cases such as
++	 * invalid/unexpected direction as described in the control transfer
++	 * flow of the programming guide.
++	 */
++	if (dep->number <= 1 && dwc->ep0state != EP0_DATA_PHASE)
++		return;
++
+ 	if (!(dep->flags & DWC3_EP_TRANSFER_STARTED) ||
+ 	    (dep->flags & DWC3_EP_DELAY_STOP) ||
+ 	    (dep->flags & DWC3_EP_END_TRANSFER_PENDING))
 -- 
 2.35.1
 
