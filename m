@@ -2,79 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74A52C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:30:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEEF8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:30:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234167AbiFMVar (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 17:30:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58868 "EHLO
+        id S1352343AbiFMVay (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 17:30:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352640AbiFMV2t (ORCPT
+        with ESMTP id S1353168AbiFMV3W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 17:28:49 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08A3E2E9E8
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:21:23 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id z17so6835052pff.7
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:21:22 -0700 (PDT)
+        Mon, 13 Jun 2022 17:29:22 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F111DB9
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:25:39 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-30c99cb3d4dso8960147b3.6
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:25:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=1pdPmusGMnUfQyyEHdu3Oky7j+h/vnutTYbvmZDyqZs=;
-        b=XUNbexr4kGyEWSemqyCTT+8Y3QUcITPQxnaHgckUUUsjuQFsbpOYwCs/VMAbViAxsp
-         fxb6wUVmkSoRBuhZRgbQSCpVfsD5PJIHl9QNg8/w7yEr7vn8U2IwmWyFW47EIqWigFL1
-         YkDfx9KjX47u+27zvLVOSmKeiSdRcGxIRSzg4NWfvRQZr4OaMJZjnz0wptD9+a4ZMPvm
-         zytSu5i4whwjqSEfax9CF3l709vL3YxmZMcTQSmulbCZ/zfm2MJxxVasDG5UdWVAVpFX
-         WYV8ouCc4xGFX21BekPO9hGfcWxFYjoivG6UEps2q+OLquqOOHOzWkurJVzr/F05EbHZ
-         fgdA==
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=VkR00FIY91tjDpMUCEsQU2PfErV2sywfNrBtcS7WMdA=;
+        b=UEPb/R59lq8V0rQq30AmkNgtayiFpIGEWCSalN9r1ucDzSJGzRnBAV01JGW8njwhqC
+         lWQO5gk9PF8tD8n20nTTH3SLPkjg/m+VbFCZWv6BgtKjkZJ7B9EXdjAbyfgF3EaD/wU4
+         IryCXnecgXVcCT49ytAduSe478drjCJTURMN8X7SgkMQYfWm53xldKgzGVG+OtGCya+g
+         mRjWssFxkU7v9KRaL5jNgNwNm1cSf4wyOBeXVU8CBVWcWmWvdAeTs1LkqiWrsoyiLZdE
+         aSXEP7njhdjc5obmr6XMESfssR40v+dbNPmwEQy0HuxewMWAiEvKtc/kEJbFV/eShkGN
+         9JyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=1pdPmusGMnUfQyyEHdu3Oky7j+h/vnutTYbvmZDyqZs=;
-        b=qWvA4JEoF5nCnpXsFMftTiqJlbbKAdTJOK6lj4nVa6+5zxMZMZbwVQ1w7+uwqoIBe0
-         6Rutx5xXi9rAS6QKlXTk8ykTqxjysSa412vNB3jJ9guDa2ScWL6fe4GjT9m3ia422p7f
-         iyfZ+GaLQR+1EJaKqlKTRBBV3IRS8YFIaAL/DqOtg5h7LR4SFjkFNR84Wz94Oue6amLL
-         OGPZTrNrcV8SIMcfIKinwYC8g7e/5/06ltbz6d1TilAMgMpYZSUxG5SqwPevYU5QAC1N
-         DEh/wsd0bM290AFm/mUermmb6SSUxXVzLg0ZqXIO7KM6R54YHtV6Y1KFl4Ybbet7w2xg
-         xTKA==
-X-Gm-Message-State: AOAM533E6+rQovYYQbaY46zB151KW2W91/awg7Z/U/tIoyw2LeQ91iHJ
-        8HoyW38Whuo0fTDyd6JvQ6dF9P/lkSo=
-X-Google-Smtp-Source: ABdhPJy3+lg35CK83pWQYOr/pm2VSe4+EXNwARqiW7cDOYbfBDIvxi1ptscUUO3Z/57x4NfCyyQ40g==
-X-Received: by 2002:a62:8702:0:b0:51b:c452:33cf with SMTP id i2-20020a628702000000b0051bc45233cfmr1283955pfe.72.1655155282381;
-        Mon, 13 Jun 2022 14:21:22 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id d20-20020a170902f15400b0015e8d4eb285sm5564414plb.207.2022.06.13.14.21.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 14:21:22 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     bcm-kernel-feedback-list@broadcom.com,
-        William Zhang <william.zhang@broadcom.com>,
-        Linux ARM List <linux-arm-kernel@lists.infradead.org>
-Cc:     samyon.furman@broadcom.com, dan.beygelman@broadcom.com,
-        tomer.yacoby@broadcom.com, philippe.reynes@softathome.com,
-        kursad.oney@broadcom.com, anand.gore@broadcom.com,
-        joel.peshkin@broadcom.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] MAINTAINERS: Add BCM6856 to bcmbca arch entry
-Date:   Mon, 13 Jun 2022 14:21:20 -0700
-Message-Id: <20220613212120.260366-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220608180437.31971-4-william.zhang@broadcom.com>
-References: <20220608180437.31971-1-william.zhang@broadcom.com> <20220608180437.31971-4-william.zhang@broadcom.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=VkR00FIY91tjDpMUCEsQU2PfErV2sywfNrBtcS7WMdA=;
+        b=APmn6qhwdI301fGC51QyeoonqKAyxsI3aGks6djtFK5+YzKf4sQaLRuro2nohY359Z
+         9l63wWZOThuIpQ75i7yPlrDPliJhrzzPYVR15ZJJ1vW9LUGSGLU86zt4K5Utjsf4xjC4
+         7yVCPuMGrn8MT0i622SSh3ROeEgtZ4cBrC7Df4mg99FIJM2X+jt/Kaq2Gn3WlC518rrs
+         9rT9ycZuYD1/MWfpoQc2XAop8oIecLxjk2RkvqwTlINXxNTGb3iFvAMXLcauotlYvGTg
+         XX8+2kM1mJFO1WUPRzb+n2kqYyq4wo19cWR07EYcBtAkT93+BE8YDG5QD25RLwvVcmcf
+         EuSg==
+X-Gm-Message-State: AJIora/J2VfoLPHG0FctVVgRj9TY+K87450EDn6E3reNjG5amk5b2Zw+
+        YHzcm8nuRsG96OEu7UWtR7I2ALfc6K9G
+X-Google-Smtp-Source: AGRyM1sceaZ0bDImwee/oOoIdhrOh/Mf9Twz8hbEsZTH2MRSIYefJttI+4NGXFaKqrCk/yQgMsZj6WphjB0J
+X-Received: from sweer.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:e45])
+ (user=bgardon job=sendgmr) by 2002:a25:d4c9:0:b0:65c:a345:64a1 with SMTP id
+ m192-20020a25d4c9000000b0065ca34564a1mr1627968ybf.535.1655155538306; Mon, 13
+ Jun 2022 14:25:38 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 21:25:20 +0000
+In-Reply-To: <20220613212523.3436117-1-bgardon@google.com>
+Message-Id: <20220613212523.3436117-8-bgardon@google.com>
+Mime-Version: 1.0
+References: <20220613212523.3436117-1-bgardon@google.com>
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+Subject: [PATCH v9 07/10] KVM: x86: Fix errant brace in KVM capability handling
+From:   Ben Gardon <bgardon@google.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Peter Xu <peterx@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        David Matlack <dmatlack@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        David Dunn <daviddunn@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Junaid Shahid <junaids@google.com>,
+        Ben Gardon <bgardon@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed,  8 Jun 2022 11:04:37 -0700, William Zhang <william.zhang@broadcom.com> wrote:
-> Add BCM6856 related files to BCMBCA ARCH maintainer list entry
-> 
-> Signed-off-by: William Zhang <william.zhang@broadcom.com>
-> 
-> ---
+The braces around the KVM_CAP_XSAVE2 block also surround the
+KVM_CAP_PMU_CAPABILITY block, likely the result of a merge issue. Simply
+move the curly brace back to where it belongs.
 
-Applied to https://github.com/Broadcom/stblinux/commits/maintainers/next, thanks!
---
-Florian
+Fixes: ba7bb663f5547 ("KVM: x86: Provide per VM capability for disabling PMU virtualization")
+
+Reviewed-by: David Matlack <dmatlack@google.com>
+Reviewed-by: Peter Xu <peterx@redhat.com>
+Signed-off-by: Ben Gardon <bgardon@google.com>
+---
+ arch/x86/kvm/x86.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 2318a99139fa..d6639653a113 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -4398,10 +4398,10 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
+ 		if (r < sizeof(struct kvm_xsave))
+ 			r = sizeof(struct kvm_xsave);
+ 		break;
++	}
+ 	case KVM_CAP_PMU_CAPABILITY:
+ 		r = enable_pmu ? KVM_CAP_PMU_VALID_MASK : 0;
+ 		break;
+-	}
+ 	case KVM_CAP_DISABLE_QUIRKS2:
+ 		r = KVM_X86_VALID_QUIRKS;
+ 		break;
+-- 
+2.36.1.476.g0c4daa206d-goog
+
