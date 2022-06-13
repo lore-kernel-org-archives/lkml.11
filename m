@@ -2,89 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E010CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 09:36:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C94AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 09:37:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240170AbiFMJgZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 05:36:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53892 "EHLO
+        id S240866AbiFMJhq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 05:37:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229926AbiFMJgW (ORCPT
+        with ESMTP id S240304AbiFMJhm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 05:36:22 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF5D66356;
-        Mon, 13 Jun 2022 02:36:19 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id n10so10017468ejk.5;
-        Mon, 13 Jun 2022 02:36:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Kxhsb4j+LHktkCeM8EHAsOHU0Xef2/yfMBziY6AVgmc=;
-        b=UVdGvKSRxf1rkD9O+mZfi9f1MOXkwIfGxIJ8NDPLZVP591C2nJTkMEljvhe2taf9BJ
-         LJiZpIAhqTLLfd+IQi50zINWtKdylmjLTZLNHvHRZe/WIhWsQXLecWkoANc4BjvrzjnJ
-         oYtUkNuko8Jn5fovpSoF2MyVDj0t3Itt9lf9fs8A9dyt4StUBtLYSoZtsA0XE4/wOjru
-         dp4VQ1XAArQ36I2qbvC4UwDvcHRRXCYTiFgcLhOW4MPG24rMYV6i+XTAere4il09TtzC
-         uMDZ3sm52bLxFfZyk1O/txRtJdUmgnGR8qD0LaEN3NhI2VUuSgPxfmrX/WrzaYSvJn9D
-         MlGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Kxhsb4j+LHktkCeM8EHAsOHU0Xef2/yfMBziY6AVgmc=;
-        b=QW6/dXqRF+817osULhPNmO8OF3TzGm9NuwlubUn0gq+WWEGgzOntHk/2N2NC0d9Z5w
-         IvtVruyin5evOBHvQrGdqBzEtdGdXM5mcRgwfalYPjO9/AhNiJ2G+Y5SfTc0G5cPwObq
-         UAMCGXHygO+RZK/Met6xvCgPL8/3KTzUIpcs1JEQpurJQSbiKqex4fm+J+DykxMSJzYV
-         1aieaZqZERwHe8M+P6fPEfvPUd9jlHP+ommH98jvgqOaqhV5I7mTjVq2NOOiMD8Umm5B
-         MJtPdLMbL9S9wykfVSoBJZkr83qzUVH9CBztj6Yzbdtcw32653HbA5VR3KTDTb5VWrak
-         FPbw==
-X-Gm-Message-State: AOAM5330OtjuIp31mDttqMGmdLjZqpBlgr22U73ExPT/8vhm3kQFM78V
-        IrhJtJkmuKDUaYzfCfmNhCG3MggXvvg=
-X-Google-Smtp-Source: ABdhPJzgQ9L7Bl8OQAcZPxd6LcZ7d6mZk413LmeDZR/0FkrPRxwaL0vSs8nNlvuwI5e9LK5Yk2FkCA==
-X-Received: by 2002:a17:906:6009:b0:6fe:9813:14ea with SMTP id o9-20020a170906600900b006fe981314eamr51856681ejj.732.1655112978526;
-        Mon, 13 Jun 2022 02:36:18 -0700 (PDT)
-Received: from skbuf ([188.25.255.186])
-        by smtp.gmail.com with ESMTPSA id u10-20020a1709061daa00b00711d546f8a8sm3592471ejh.139.2022.06.13.02.36.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 02:36:17 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 12:36:16 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [RFC Patch net-next v2 08/15] net: dsa: microchip: update the
- ksz_port_mdb_add/del
-Message-ID: <20220613093616.mqpdzqfmapbj4svt@skbuf>
-References: <20220530104257.21485-1-arun.ramadoss@microchip.com>
- <20220530104257.21485-9-arun.ramadoss@microchip.com>
+        Mon, 13 Jun 2022 05:37:42 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A52C1275F;
+        Mon, 13 Jun 2022 02:37:41 -0700 (PDT)
+Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LM5vX2ft9z67PMv;
+        Mon, 13 Jun 2022 17:32:40 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Mon, 13 Jun 2022 11:37:39 +0200
+Received: from [10.195.33.253] (10.195.33.253) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 13 Jun 2022 10:37:38 +0100
+Message-ID: <04540488-ec07-3bc2-a997-b7f64b0ba606@huawei.com>
+Date:   Mon, 13 Jun 2022 10:40:46 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220530104257.21485-9-arun.ramadoss@microchip.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH RFC v2 04/18] scsi: core: Add support to send reserved
+ commands
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        <axboe@kernel.dk>, <jejb@linux.ibm.com>,
+        <martin.petersen@oracle.com>, <brking@us.ibm.com>, <hare@suse.de>,
+        <hch@lst.de>
+CC:     <linux-block@vger.kernel.org>, <linux-ide@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
+        <chenxiang66@hisilicon.com>
+References: <1654770559-101375-1-git-send-email-john.garry@huawei.com>
+ <1654770559-101375-5-git-send-email-john.garry@huawei.com>
+ <3f519a72-bb43-b1f0-c85d-a2ea4596f2f2@opensource.wdc.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <3f519a72-bb43-b1f0-c85d-a2ea4596f2f2@opensource.wdc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.195.33.253]
+X-ClientProxiedBy: lhreml746-chm.china.huawei.com (10.201.108.196) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, May 30, 2022 at 04:12:50PM +0530, Arun Ramadoss wrote:
-> ksz_mdb_add/del in ksz_common.c is specific for the ksz8795.c file. The
+On 13/06/2022 08:03, Damien Le Moal wrote:
+>> +	if (shost->nr_reserved_cmds && !sht->reserved_queuecommand) {
+>> +		shost_printk(KERN_ERR, shost,
+>> +			"nr_reserved_cmds set but no method to queue\n");
+>> +		goto fail;
+> This would be a driver implementation bug.
 
-ksz_port_mdb_add
+It would be a driver bug, but it probably makes the driver utterly 
+useless and there is no point in continuing (to try to add). If the 
+driver supports reserved commands then they are prob essential to make 
+the driver function.
 
-> ksz9477 has its separate ksz9477_port_mdb_add/del functions.  This patch
-> moves the ksz8795 specific mdb functionality from ksz_common to ksz8795.
-> And this dsa_switch_ops hooks for ksz8795/ksz9477 are invoked through
-> the ksz_port_mdb_add/del.
+> So what about a WARN() here ?
+
+Maybe but I really do not see a point in continuing
+
 > 
-> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-> ---
+>> +	}
+>> +
+>>   	/* Use min_t(int, ...) in case shost->can_queue exceeds SHRT_MAX */
+>>   	shost->cmd_per_lun = min_t(int, shost->cmd_per_lun,
+>>   				   shost->can_queue);
+>> diff --git a/drivers/scsi/scsi_lib.c b/drivers/scsi/scsi_lib.c
+>> index f6e53c6d913c..8c8b4c6767d9 100644
+>> --- a/drivers/scsi/scsi_lib.c
+>> +++ b/drivers/scsi/scsi_lib.c
+>> @@ -1422,6 +1422,16 @@ static void scsi_complete(struct request *rq)
+>>   	struct scsi_cmnd *cmd = blk_mq_rq_to_pdu(rq);
+>>   	enum scsi_disposition disposition;
+>>   
+>> +	if (scsi_is_reserved_cmd(cmd)) {
+>> +		struct scsi_device *sdev = cmd->device;
+>> +
+>> +		scsi_mq_uninit_cmd(cmd);
+>> +		scsi_device_unbusy(sdev, cmd);
+>> +		__blk_mq_end_request(rq, 0);
+>> +
+>> +		return;
+>> +	}
+>> +
+>>   	INIT_LIST_HEAD(&cmd->eh_entry);
+>>   
+>>   	atomic_inc(&cmd->device->iodone_cnt);
+>> @@ -1706,6 +1716,28 @@ static blk_status_t scsi_queue_rq(struct blk_mq_hw_ctx *hctx,
+>>   
+>>   	WARN_ON_ONCE(cmd->budget_token < 0);
+>>   
+>> +	if (scsi_is_reserved_cmd(cmd)) {
+>> +		unsigned char *host_scribble = cmd->host_scribble;
+>> +
+>> +		if (!(req->rq_flags & RQF_DONTPREP)) {
+>> +			ret = scsi_prepare_cmd(req);
+>> +			if (ret != BLK_STS_OK) {
+>> +
+> Stray blank line.
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+ok
+
+> 
+>> +				goto out_dec_host_busy;
+>> +			}
+> No need for the curly brackets here.
+
+ok
+
+> 
+>> +
+>> +			req->rq_flags |= RQF_DONTPREP;
+>> +		} else {
+>> +			clear_bit(SCMD_STATE_COMPLETE, &cmd->state);
+>> +		}
+
+Thanks,
+John
