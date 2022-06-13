@@ -2,176 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84F41C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 06:47:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9975FCCA47E
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 06:48:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237519AbiFMGrz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 02:47:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54534 "EHLO
+        id S231824AbiFMGsx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 02:48:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237283AbiFMGrj (ORCPT
+        with ESMTP id S231821AbiFMGst (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 02:47:39 -0400
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B1141144B
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 23:47:27 -0700 (PDT)
-Received: by mail-io1-f70.google.com with SMTP id f16-20020a056602071000b00669bb12a6baso2204598iox.8
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 23:47:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=qZj+mPmzYopsuWJNtoK6AumfVed4a3AhFSi49Edkd8k=;
-        b=18zbpP5FTcFup1gZMUAwaes8/YVrsG0aLCcr5hM11vUg0X0427VAieZ+eEfsIVYtfY
-         gMW6lAhlky7DU/n5fHQ6iCalAm1RtBIhTg/PoW2TkTld9Ad4eafmFRnOv/rAaSlZ6meX
-         08A2o+QoSLY2qLGfn/n7eCx/xRllCOIZ2Cp43qTJR1bI3yZIaiDQ+gKNYDrlwE4djopX
-         lKYmblpE2MKm2eZzeHouX3ZcCNSRXub0KG6hxEJY7NDMbGIsmrBV2HHkNz0j3bCTSUBs
-         lZIa6fGytNDyo4+7XVcc5Sr+MH5FA3nt1mtMOvm/FYEqEYnExHFz/itN0KzzN+ywcRnO
-         5wyw==
-X-Gm-Message-State: AOAM531aPmoVGDMrXO0HhMWjq6Kj8QT3fd0XefLvaI7BSzGSEKM0zLKb
-        1mqGpxTWmjWAe0Dh2/Aur6IUiwY44Uk06FONjoabfH+3+Uo9
-X-Google-Smtp-Source: ABdhPJw49d0ebXsLuEz1UB7NrfZot7Me1pMcHPWzjTKJPYfvKpCU8wP4w1Y8wfIbZb0FXhGZ7wMlS/EDu9UaFDNsoYFnUMNfBT66
+        Mon, 13 Jun 2022 02:48:49 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3EBB6248;
+        Sun, 12 Jun 2022 23:48:47 -0700 (PDT)
+X-UUID: 145a70e6795c4edb85d5558b8950f276-20220613
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:1d278dfb-9983-476e-bcba-e1a06fb244b4,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:-5
+X-CID-META: VersionHash:2a19b09,CLOUDID:56715ac6-12ba-4305-bfdf-9aefbdc32516,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 145a70e6795c4edb85d5558b8950f276-20220613
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1090511867; Mon, 13 Jun 2022 14:48:42 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Mon, 13 Jun 2022 14:48:42 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 13 Jun 2022 14:48:42 +0800
+From:   Bo-Chen Chen <rex-bc.chen@mediatek.com>
+To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
+        <daniel@ffwll.ch>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <matthias.bgg@gmail.com>,
+        <airlied@linux.ie>
+CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
+        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
+        <angelogioacchino.delregno@collabora.com>, <ck.hu@mediatek.com>,
+        <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Bo-Chen Chen <rex-bc.chen@mediatek.com>
+Subject: [PATCH v11 00/12] drm/mediatek: Add MT8195 dp_intf driver
+Date:   Mon, 13 Jun 2022 14:48:29 +0800
+Message-ID: <20220613064841.10481-1-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:14cb:b0:669:e8a5:71b3 with SMTP id
- b11-20020a05660214cb00b00669e8a571b3mr1631318iow.150.1655102846814; Sun, 12
- Jun 2022 23:47:26 -0700 (PDT)
-Date:   Sun, 12 Jun 2022 23:47:26 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000004053b205e14ea988@google.com>
-Subject: [syzbot] WARNING: locking bug in inode_insert5
-From:   syzbot <syzbot+55178a000c85f0e0cf64@syzkaller.appspotmail.com>
-To:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+The dpi/dpintf driver and the added helper functions are required for
+the DisplayPort driver to work.
 
-syzbot found the following issue on:
+This series is separated from [1] which is original from Guillaume.
+The display port driver is [2].
 
-HEAD commit:    fe43c0188911 Merge tag 'docs-5.19-3' of git://git.lwn.net/..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1786d7f0080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=34139cb754ba01d0
-dashboard link: https://syzkaller.appspot.com/bug?extid=55178a000c85f0e0cf64
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+Changes for v11:
+1. Rename ck_cg to pll_gate.
+2. Add some commit message to clarify the modification reason.
+3. Fix some driver order and modify for reviewers' comments.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+[1]:https://lore.kernel.org/all/20220523104758.29531-1-granquet@baylibre.com/
+[2]:https://lore.kernel.org/all/20220610105522.13449-1-rex-bc.chen@mediatek.com/
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+55178a000c85f0e0cf64@syzkaller.appspotmail.com
+Guillaume Ranquet (11):
+  drm/mediatek: dpi: move dpi limits to SoC config
+  drm/mediatek: dpi: implement a CK/DE pol toggle in SoC config
+  drm/mediatek: dpi: implement a swap_input toggle in SoC config
+  drm/mediatek: dpi: move dimension mask to SoC config
+  drm/mediatek: dpi: move hvsize_mask to SoC config
+  drm/mediatek: dpi: move swap_shift to SoC config
+  drm/mediatek: dpi: move the yuv422_en_bit to SoC config
+  drm/mediatek: dpi: move the csc_enable bit to SoC config
+  drm/mediatek: dpi: Add dpintf support
+  drm/mediatek: dpi: Only enable dpi after the bridge is enabled
+  drm/mediatek: dpi: Add matrix_sel helper
 
-ntfs3: loop3: failed to read volume at offset 0x102000
-ntfs3: loop3: failed to read volume at offset 0x104000
-ntfs3: loop3: failed to read volume at offset 0x108000
-=============================
-[ BUG: Invalid wait context ]
-5.19.0-rc1-syzkaller-00214-gfe43c0188911 #0 Not tainted
------------------------------
-syz-executor.3/9358 is trying to lock:
-ffffffff8c230a98 (&local->iflist_mtx){+.+.}-{3:3}, at: spin_lock include/linux/spinlock.h:349 [inline]
-ffffffff8c230a98 (&local->iflist_mtx){+.+.}-{3:3}, at: inode_sb_list_add fs/inode.c:493 [inline]
-ffffffff8c230a98 (&local->iflist_mtx){+.+.}-{3:3}, at: inode_insert5+0x2df/0x6e0 fs/inode.c:1203
-other info that might help us debug this:
-context-{4:4}
-2 locks held by syz-executor.3/9358:
- #0: ffff888076c200e0 (&type->s_umount_key#71/1){+.+.}-{3:3}, at: alloc_super+0x1dd/0xa80 fs/super.c:228
- #1: ffffffff8ba146d8 (inode_hash_lock){+.+.}-{2:2}, at: spin_lock include/linux/spinlock.h:349 [inline]
- #1: ffffffff8ba146d8 (inode_hash_lock){+.+.}-{2:2}, at: inode_insert5+0x10a/0x6e0 fs/inode.c:1171
-stack backtrace:
-CPU: 3 PID: 9358 Comm: syz-executor.3 Not tainted 5.19.0-rc1-syzkaller-00214-gfe43c0188911 #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_lock_invalid_wait_context kernel/locking/lockdep.c:4705 [inline]
- check_wait_context kernel/locking/lockdep.c:4766 [inline]
- __lock_acquire.cold+0xdb/0x3b4 kernel/locking/lockdep.c:5003
- lock_acquire kernel/locking/lockdep.c:5665 [inline]
- lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5630
- __raw_spin_lock include/linux/spinlock_api_smp.h:133 [inline]
- _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:154
- spin_lock include/linux/spinlock.h:349 [inline]
- inode_sb_list_add fs/inode.c:493 [inline]
- inode_insert5+0x2df/0x6e0 fs/inode.c:1203
- iget5_locked fs/inode.c:1242 [inline]
- iget5_locked+0x239/0x2e0 fs/inode.c:1231
- ntfs_iget5+0xcc/0x3240 fs/ntfs3/inode.c:493
- ntfs_fill_super+0x2d8e/0x3730 fs/ntfs3/super.c:1185
- get_tree_bdev+0x440/0x760 fs/super.c:1292
- vfs_get_tree+0x89/0x2f0 fs/super.c:1497
- do_new_mount fs/namespace.c:3040 [inline]
- path_mount+0x1320/0x1fa0 fs/namespace.c:3370
- do_mount fs/namespace.c:3383 [inline]
- __do_sys_mount fs/namespace.c:3591 [inline]
- __se_sys_mount fs/namespace.c:3568 [inline]
- __x64_sys_mount+0x27f/0x300 fs/namespace.c:3568
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7ff821a8a63a
-Code: 48 c7 c2 b8 ff ff ff f7 d8 64 89 02 b8 ff ff ff ff eb d2 e8 b8 04 00 00 0f 1f 84 00 00 00 00 00 49 89 ca b8 a5 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ff822b4af88 EFLAGS: 00000206 ORIG_RAX: 00000000000000a5
-RAX: ffffffffffffffda RBX: 0000000020000200 RCX: 00007ff821a8a63a
-RDX: 0000000020000000 RSI: 0000000020000100 RDI: 00007ff822b4afe0
-RBP: 00007ff822b4b020 R08: 00007ff822b4b020 R09: 0000000020000000
-R10: 0000000000000000 R11: 0000000000000206 R12: 0000000020000000
-R13: 0000000020000100 R14: 00007ff822b4afe0 R15: 000000002007aa80
- </TASK>
-================================================================================
-UBSAN: array-index-out-of-bounds in kernel/locking/qspinlock.c:131:9
-index 8967 is out of range for type 'long unsigned int [8]'
-CPU: 3 PID: 9358 Comm: syz-executor.3 Not tainted 5.19.0-rc1-syzkaller-00214-gfe43c0188911 #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- ubsan_epilogue+0xb/0x50 lib/ubsan.c:151
- __ubsan_handle_out_of_bounds.cold+0x62/0x6c lib/ubsan.c:283
- decode_tail kernel/locking/qspinlock.c:131 [inline]
- __pv_queued_spin_lock_slowpath+0xa4d/0xb50 kernel/locking/qspinlock.c:471
- pv_queued_spin_lock_slowpath arch/x86/include/asm/paravirt.h:591 [inline]
- queued_spin_lock_slowpath arch/x86/include/asm/qspinlock.h:51 [inline]
- queued_spin_lock include/asm-generic/qspinlock.h:114 [inline]
- do_raw_spin_lock+0x200/0x2a0 kernel/locking/spinlock_debug.c:115
- spin_lock include/linux/spinlock.h:349 [inline]
- inode_sb_list_add fs/inode.c:493 [inline]
- inode_insert5+0x2df/0x6e0 fs/inode.c:1203
- iget5_locked fs/inode.c:1242 [inline]
- iget5_locked+0x239/0x2e0 fs/inode.c:1231
- ntfs_iget5+0xcc/0x3240 fs/ntfs3/inode.c:493
- ntfs_fill_super+0x2d8e/0x3730 fs/ntfs3/super.c:1185
- get_tree_bdev+0x440/0x760 fs/super.c:1292
- vfs_get_tree+0x89/0x2f0 fs/super.c:1497
- do_new_mount fs/namespace.c:3040 [inline]
- path_mount+0x1320/0x1fa0 fs/namespace.c:3370
- do_mount fs/namespace.c:3383 [inline]
- __do_sys_mount fs/namespace.c:3591 [inline]
- __se_sys_mount fs/namespace.c:3568 [inline]
- __x64_sys_mount+0x27f/0x300 fs/namespace.c:3568
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7ff821a8a63a
-Code: 48 c7 c2 b8 ff ff ff f7 d8 64 89 02 b8 ff ff ff ff eb d2 e8 b8 04 00 00 0f 1f 84 00 00 00 00 00 49 89 ca b8 a5 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ff822b4af88 EFLAGS: 00000206 ORIG_RAX: 00000000000000a5
-RAX: ffffffffffffffda RBX: 0000000020000200 RCX: 00007ff821a8a63a
-RDX: 0000000020000000 RSI: 0000000020000100 RDI: 00007ff822b4afe0
-RBP: 00007ff822b4b020 R08: 00007ff822b4b020 R09: 0000000020000000
-R10: 0000000000000000 R11: 0000000000000206 R12: 0000000020000000
-R13: 0000000020000100 R14: 00007ff822b4afe0 R15: 000000002007aa80
- </TASK>
-================================================================================
+Markus Schneider-Pargmann (1):
+  dt-bindings: mediatek,dpi: Add DP_INTF compatible
 
+ .../display/mediatek/mediatek,dpi.yaml        |  13 +-
+ drivers/gpu/drm/mediatek/mtk_dpi.c            | 262 +++++++++++++++---
+ drivers/gpu/drm/mediatek/mtk_dpi_regs.h       |  16 ++
+ drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c   |   4 +
+ drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h   |   1 +
+ drivers/gpu/drm/mediatek/mtk_drm_drv.c        |   3 +
+ 6 files changed, 251 insertions(+), 48 deletions(-)
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+-- 
+2.18.0
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
