@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44C2DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:22:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5CDDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:22:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243091AbiFMKWD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:22:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45532 "EHLO
+        id S243203AbiFMKWH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:22:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242747AbiFMKUg (ORCPT
+        with ESMTP id S242893AbiFMKUl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:20:36 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EE482125B;
-        Mon, 13 Jun 2022 03:17:09 -0700 (PDT)
+        Mon, 13 Jun 2022 06:20:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A371EC69;
+        Mon, 13 Jun 2022 03:17:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C793ACE1166;
-        Mon, 13 Jun 2022 10:17:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1483C34114;
-        Mon, 13 Jun 2022 10:17:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C7652B80E2D;
+        Mon, 13 Jun 2022 10:17:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B1E0C34114;
+        Mon, 13 Jun 2022 10:17:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115426;
-        bh=tx6HgN386WLwB2WB8TgNOq4Nshf8cgFom7qnPkHSvdU=;
+        s=korg; t=1655115431;
+        bh=4CnfZTVIakF7H6BgXbf61/Vv64C1smXXvBhssH3OVKs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o4UDRVtJi5ZHNvL8Wtco4mNSmfR6Wrxsh/CDgoYOph2syT+WneVIET9PGbByCxZNB
-         WCxWFtBoFfe3BlcpnMR7pIBGtAlxwoTyoWzuh2HNyDuv/zEYIuzM5zfEdyBNliokex
-         fnwDICq/YR24LMuW3/5KMcN3pVLKnQZVn6fVaUsA=
+        b=Rh0BFQlEReYcOKkJmTtMBzpw2oiQZftU4Ae6QUNrWckSykhAnRPS1gw/5djvc13wc
+         06FIxG6llEyS10r7Ibq5q+A3yTr2gopeVGOYceLU8J/zplYhRSQTkwz3Bd7N/K7SNg
+         pv3BfarjLVwNHSWgQPmFAQzHH+mI6hsOUkjph3Hg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 072/167] Input: sparcspkr - fix refcount leak in bbc_beep_probe
-Date:   Mon, 13 Jun 2022 12:09:06 +0200
-Message-Id: <20220613094857.756908010@linuxfoundation.org>
+        stable@vger.kernel.org, Alexander Aring <aahringo@redhat.com>,
+        David Teigland <teigland@redhat.com>
+Subject: [PATCH 4.9 082/167] dlm: fix missing lkb refcount handling
+Date:   Mon, 13 Jun 2022 12:09:16 +0200
+Message-Id: <20220613094900.120461254@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -49,38 +48,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Alexander Aring <aahringo@redhat.com>
 
-[ Upstream commit c8994b30d71d64d5dcc9bc0edbfdf367171aa96f ]
+commit 1689c169134f4b5a39156122d799b7dca76d8ddb upstream.
 
-of_find_node_by_path() calls of_find_node_opts_by_path(),
-which returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() to avoid refcount leak.
+We always call hold_lkb(lkb) if we increment lkb->lkb_wait_count.
+So, we always need to call unhold_lkb(lkb) if we decrement
+lkb->lkb_wait_count. This patch will add missing unhold_lkb(lkb) if we
+decrement lkb->lkb_wait_count. In case of setting lkb->lkb_wait_count to
+zero we need to countdown until reaching zero and call unhold_lkb(lkb).
+The waiters list unhold_lkb(lkb) can be removed because it's done for
+the last lkb_wait_count decrement iteration as it's done in
+_remove_from_waiters().
 
-Fixes: 9c1a5077fdca ("input: Rewrite sparcspkr device probing.")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220516081018.42728-1-linmq006@gmail.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This issue was discovered by a dlm gfs2 test case which use excessively
+dlm_unlock(LKF_CANCEL) feature. Probably the lkb->lkb_wait_count value
+never reached above 1 if this feature isn't used and so it was not
+discovered before.
+
+The testcase ended in a rsb on the rsb keep data structure with a
+refcount of 1 but no lkb was associated with it, which is itself
+an invalid behaviour. A side effect of that was a condition in which
+the dlm was sending remove messages in a looping behaviour. With this
+patch that has not been reproduced.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Alexander Aring <aahringo@redhat.com>
+Signed-off-by: David Teigland <teigland@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/input/misc/sparcspkr.c | 1 +
- 1 file changed, 1 insertion(+)
+ fs/dlm/lock.c |   11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/input/misc/sparcspkr.c b/drivers/input/misc/sparcspkr.c
-index 4a5afc7fe96e..f6e1f38267d9 100644
---- a/drivers/input/misc/sparcspkr.c
-+++ b/drivers/input/misc/sparcspkr.c
-@@ -204,6 +204,7 @@ static int bbc_beep_probe(struct platform_device *op)
+--- a/fs/dlm/lock.c
++++ b/fs/dlm/lock.c
+@@ -1555,6 +1555,7 @@ static int _remove_from_waiters(struct d
+ 		lkb->lkb_wait_type = 0;
+ 		lkb->lkb_flags &= ~DLM_IFL_OVERLAP_CANCEL;
+ 		lkb->lkb_wait_count--;
++		unhold_lkb(lkb);
+ 		goto out_del;
+ 	}
  
- 	info = &state->u.bbc;
- 	info->clock_freq = of_getintprop_default(dp, "clock-frequency", 0);
-+	of_node_put(dp);
- 	if (!info->clock_freq)
- 		goto out_free;
+@@ -1581,6 +1582,7 @@ static int _remove_from_waiters(struct d
+ 		log_error(ls, "remwait error %x reply %d wait_type %d overlap",
+ 			  lkb->lkb_id, mstype, lkb->lkb_wait_type);
+ 		lkb->lkb_wait_count--;
++		unhold_lkb(lkb);
+ 		lkb->lkb_wait_type = 0;
+ 	}
  
--- 
-2.35.1
-
+@@ -5314,11 +5316,16 @@ int dlm_recover_waiters_post(struct dlm_
+ 		lkb->lkb_flags &= ~DLM_IFL_OVERLAP_UNLOCK;
+ 		lkb->lkb_flags &= ~DLM_IFL_OVERLAP_CANCEL;
+ 		lkb->lkb_wait_type = 0;
+-		lkb->lkb_wait_count = 0;
++		/* drop all wait_count references we still
++		 * hold a reference for this iteration.
++		 */
++		while (lkb->lkb_wait_count) {
++			lkb->lkb_wait_count--;
++			unhold_lkb(lkb);
++		}
+ 		mutex_lock(&ls->ls_waiters_mutex);
+ 		list_del_init(&lkb->lkb_wait_reply);
+ 		mutex_unlock(&ls->ls_waiters_mutex);
+-		unhold_lkb(lkb); /* for waiters list */
+ 
+ 		if (oc || ou) {
+ 			/* do an unlock or cancel instead of resending */
 
 
