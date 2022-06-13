@@ -2,49 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A68BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:16:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32F57C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:16:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359473AbiFMNQA (ORCPT
+        id S1359493AbiFMNQH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:16:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37018 "EHLO
+        Mon, 13 Jun 2022 09:16:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359257AbiFMNJo (ORCPT
+        with ESMTP id S1359272AbiFMNJp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:09:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FF5E28E04;
-        Mon, 13 Jun 2022 04:19:47 -0700 (PDT)
+        Mon, 13 Jun 2022 09:09:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7AF2222AF;
+        Mon, 13 Jun 2022 04:19:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C13860F2B;
-        Mon, 13 Jun 2022 11:19:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2422FC34114;
-        Mon, 13 Jun 2022 11:19:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8DCF2B80E59;
+        Mon, 13 Jun 2022 11:19:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F38E1C3411C;
+        Mon, 13 Jun 2022 11:19:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119186;
-        bh=VDEMdKayyI9mHvjQiuo3UP5gP86R8hGnkAqeLT6SQmc=;
+        s=korg; t=1655119189;
+        bh=1hJPOJGNIcXFSa9CLjtVS0gJeJaw4SwglJArfgbQavk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aUphnpHkeiwAoEJ/p8vT5D+KX5PuNdMmyVw1T+WW0YoYkAXoe5UIYO25XR/O4RCFk
-         BOZwRoTreLZlx2xJ9Uee8lxlos9w3aqtMCDVsk32al/tAXuasg6YNqOvmA9bgnY9vP
-         VEXuy3v+N5DK0qzYmsGcagcnkPOnSi2+1nd5wzQU=
+        b=eIZ5jgEQcRVnBbReHZVDZcZ8ZtUdZt9tlsoQEwBfIOA2kNg7f4h4cxMrJPUD1ZtNd
+         fT/X4vAtwViOEiSOwsY3c99eLeHvE7ocndNpCubHjDxWCRYBei2sgqZ6ZOfF4NEzOy
+         eGvkxHVDSHCvVDoWYV9/pPxh6cUQ6keJ03xFKEAk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jeff Layton <jlayton@kernel.org>,
-        David Howells <dhowells@redhat.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Mike Marshall <hubcap@omnibond.com>,
-        Gao Xiang <xiang@kernel.org>, linux-afs@lists.infradead.org,
-        v9fs-developer@lists.sourceforge.net, devel@lists.orangefs.org,
-        linux-erofs@lists.ozlabs.org, linux-cachefs@redhat.com,
-        linux-fsdevel@vger.kernel.org, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 164/247] iov_iter: Fix iter_xarray_get_pages{,_alloc}()
-Date:   Mon, 13 Jun 2022 12:11:06 +0200
-Message-Id: <20220613094927.932137292@linuxfoundation.org>
+        stable@vger.kernel.org, Brad Campbell <lists2009@fnarfbargle.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 173/247] thunderbolt: Use different lane for second DisplayPort tunnel
+Date:   Mon, 13 Jun 2022 12:11:15 +0200
+Message-Id: <20220613094928.204365827@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -56,97 +50,216 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
 
-[ Upstream commit 6c77676645ad42993e0a8bdb8dafa517851a352a ]
+[ Upstream commit 9d2d0a5cf0ca063f417681cc33e767ce52615286 ]
 
-The maths at the end of iter_xarray_get_pages() to calculate the actual
-size doesn't work under some circumstances, such as when it's been asked to
-extract a partial single page.  Various terms of the equation cancel out
-and you end up with actual == offset.  The same issue exists in
-iter_xarray_get_pages_alloc().
+Brad reported that on Apple hardware with Light Ridge or Falcon Ridge
+controller, plugging in a chain of Thunderbolt displays (Light Ridge
+based controllers) causes all kinds of tearing and flickering. The
+reason for this is that on Thunderbolt 1 hardware there is no lane
+bonding so we have two independent 10 Gb/s lanes, and currently Linux
+tunnels both displays through the lane 1. This makes the displays to
+share the 10 Gb/s bandwidth which may not be enough for higher
+resolutions.
 
-Fix these to just use min() to select the lesser amount from between the
-amount of page content transcribed into the buffer, minus the offset, and
-the size limit specified.
+For this reason make the second tunnel go through the lane 0 instead.
+This seems to match what the macOS connection manager is also doing.
 
-This doesn't appear to have caused a problem yet upstream because network
-filesystems aren't getting the pages from an xarray iterator, but rather
-passing it directly to the socket, which just iterates over it.  Cachefiles
-*does* do DIO from one to/from ext4/xfs/btrfs/etc. but it always asks for
-whole pages to be written or read.
-
-Fixes: 7ff5062079ef ("iov_iter: Add ITER_XARRAY")
-Reported-by: Jeff Layton <jlayton@kernel.org>
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Alexander Viro <viro@zeniv.linux.org.uk>
-cc: Dominique Martinet <asmadeus@codewreck.org>
-cc: Mike Marshall <hubcap@omnibond.com>
-cc: Gao Xiang <xiang@kernel.org>
-cc: linux-afs@lists.infradead.org
-cc: v9fs-developer@lists.sourceforge.net
-cc: devel@lists.orangefs.org
-cc: linux-erofs@lists.ozlabs.org
-cc: linux-cachefs@redhat.com
-cc: linux-fsdevel@vger.kernel.org
-Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Reported-by: Brad Campbell <lists2009@fnarfbargle.com>
+Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Tested-by: Brad Campbell <lists2009@fnarfbargle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/iov_iter.c | 20 ++++----------------
- 1 file changed, 4 insertions(+), 16 deletions(-)
+ drivers/thunderbolt/tb.c     | 19 +++++++++++++++++--
+ drivers/thunderbolt/test.c   | 16 ++++++++--------
+ drivers/thunderbolt/tunnel.c | 11 ++++++-----
+ drivers/thunderbolt/tunnel.h |  4 ++--
+ 4 files changed, 33 insertions(+), 17 deletions(-)
 
-diff --git a/lib/iov_iter.c b/lib/iov_iter.c
-index 6d146f77601d..be07eb24ab2f 100644
---- a/lib/iov_iter.c
-+++ b/lib/iov_iter.c
-@@ -1436,7 +1436,7 @@ static ssize_t iter_xarray_get_pages(struct iov_iter *i,
+diff --git a/drivers/thunderbolt/tb.c b/drivers/thunderbolt/tb.c
+index 2897a77d44c3..b805b6939794 100644
+--- a/drivers/thunderbolt/tb.c
++++ b/drivers/thunderbolt/tb.c
+@@ -851,7 +851,7 @@ static struct tb_port *tb_find_dp_out(struct tb *tb, struct tb_port *in)
+ 
+ static void tb_tunnel_dp(struct tb *tb)
  {
- 	unsigned nr, offset;
- 	pgoff_t index, count;
--	size_t size = maxsize, actual;
-+	size_t size = maxsize;
- 	loff_t pos;
+-	int available_up, available_down, ret;
++	int available_up, available_down, ret, link_nr;
+ 	struct tb_cm *tcm = tb_priv(tb);
+ 	struct tb_port *port, *in, *out;
+ 	struct tb_tunnel *tunnel;
+@@ -896,6 +896,20 @@ static void tb_tunnel_dp(struct tb *tb)
+ 		return;
+ 	}
  
- 	if (!size || !maxpages)
-@@ -1463,13 +1463,7 @@ static ssize_t iter_xarray_get_pages(struct iov_iter *i,
- 	if (nr == 0)
- 		return 0;
++	/*
++	 * This is only applicable to links that are not bonded (so
++	 * when Thunderbolt 1 hardware is involved somewhere in the
++	 * topology). For these try to share the DP bandwidth between
++	 * the two lanes.
++	 */
++	link_nr = 1;
++	list_for_each_entry(tunnel, &tcm->tunnel_list, list) {
++		if (tb_tunnel_is_dp(tunnel)) {
++			link_nr = 0;
++			break;
++		}
++	}
++
+ 	/*
+ 	 * DP stream needs the domain to be active so runtime resume
+ 	 * both ends of the tunnel.
+@@ -927,7 +941,8 @@ static void tb_tunnel_dp(struct tb *tb)
+ 	tb_dbg(tb, "available bandwidth for new DP tunnel %u/%u Mb/s\n",
+ 	       available_up, available_down);
  
--	actual = PAGE_SIZE * nr;
--	actual -= offset;
--	if (nr == count && size > 0) {
--		unsigned last_offset = (nr > 1) ? 0 : offset;
--		actual -= PAGE_SIZE - (last_offset + size);
--	}
--	return actual;
-+	return min(nr * PAGE_SIZE - offset, maxsize);
- }
+-	tunnel = tb_tunnel_alloc_dp(tb, in, out, available_up, available_down);
++	tunnel = tb_tunnel_alloc_dp(tb, in, out, link_nr, available_up,
++				    available_down);
+ 	if (!tunnel) {
+ 		tb_port_dbg(out, "could not allocate DP tunnel\n");
+ 		goto err_reclaim;
+diff --git a/drivers/thunderbolt/test.c b/drivers/thunderbolt/test.c
+index 1f69bab236ee..66b6e665e96f 100644
+--- a/drivers/thunderbolt/test.c
++++ b/drivers/thunderbolt/test.c
+@@ -1348,7 +1348,7 @@ static void tb_test_tunnel_dp(struct kunit *test)
+ 	in = &host->ports[5];
+ 	out = &dev->ports[13];
  
- /* must be done on non-empty ITER_IOVEC one */
-@@ -1604,7 +1598,7 @@ static ssize_t iter_xarray_get_pages_alloc(struct iov_iter *i,
- 	struct page **p;
- 	unsigned nr, offset;
- 	pgoff_t index, count;
--	size_t size = maxsize, actual;
-+	size_t size = maxsize;
- 	loff_t pos;
+-	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
++	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
+ 	KUNIT_ASSERT_TRUE(test, tunnel != NULL);
+ 	KUNIT_EXPECT_EQ(test, tunnel->type, TB_TUNNEL_DP);
+ 	KUNIT_EXPECT_PTR_EQ(test, tunnel->src_port, in);
+@@ -1394,7 +1394,7 @@ static void tb_test_tunnel_dp_chain(struct kunit *test)
+ 	in = &host->ports[5];
+ 	out = &dev4->ports[14];
  
- 	if (!size)
-@@ -1633,13 +1627,7 @@ static ssize_t iter_xarray_get_pages_alloc(struct iov_iter *i,
- 	if (nr == 0)
- 		return 0;
+-	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
++	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
+ 	KUNIT_ASSERT_TRUE(test, tunnel != NULL);
+ 	KUNIT_EXPECT_EQ(test, tunnel->type, TB_TUNNEL_DP);
+ 	KUNIT_EXPECT_PTR_EQ(test, tunnel->src_port, in);
+@@ -1444,7 +1444,7 @@ static void tb_test_tunnel_dp_tree(struct kunit *test)
+ 	in = &dev2->ports[13];
+ 	out = &dev5->ports[13];
  
--	actual = PAGE_SIZE * nr;
--	actual -= offset;
--	if (nr == count && size > 0) {
--		unsigned last_offset = (nr > 1) ? 0 : offset;
--		actual -= PAGE_SIZE - (last_offset + size);
--	}
--	return actual;
-+	return min(nr * PAGE_SIZE - offset, maxsize);
- }
+-	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
++	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
+ 	KUNIT_ASSERT_TRUE(test, tunnel != NULL);
+ 	KUNIT_EXPECT_EQ(test, tunnel->type, TB_TUNNEL_DP);
+ 	KUNIT_EXPECT_PTR_EQ(test, tunnel->src_port, in);
+@@ -1509,7 +1509,7 @@ static void tb_test_tunnel_dp_max_length(struct kunit *test)
+ 	in = &dev6->ports[13];
+ 	out = &dev12->ports[13];
  
- ssize_t iov_iter_get_pages_alloc(struct iov_iter *i,
+-	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
++	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
+ 	KUNIT_ASSERT_TRUE(test, tunnel != NULL);
+ 	KUNIT_EXPECT_EQ(test, tunnel->type, TB_TUNNEL_DP);
+ 	KUNIT_EXPECT_PTR_EQ(test, tunnel->src_port, in);
+@@ -1627,7 +1627,7 @@ static void tb_test_tunnel_port_on_path(struct kunit *test)
+ 	in = &dev2->ports[13];
+ 	out = &dev5->ports[13];
+ 
+-	dp_tunnel = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
++	dp_tunnel = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
+ 	KUNIT_ASSERT_TRUE(test, dp_tunnel != NULL);
+ 
+ 	KUNIT_EXPECT_TRUE(test, tb_tunnel_port_on_path(dp_tunnel, in));
+@@ -2009,7 +2009,7 @@ static void tb_test_credit_alloc_dp(struct kunit *test)
+ 	in = &host->ports[5];
+ 	out = &dev->ports[14];
+ 
+-	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
++	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
+ 	KUNIT_ASSERT_TRUE(test, tunnel != NULL);
+ 	KUNIT_ASSERT_EQ(test, tunnel->npaths, (size_t)3);
+ 
+@@ -2245,7 +2245,7 @@ static struct tb_tunnel *TB_TEST_DP_TUNNEL1(struct kunit *test,
+ 
+ 	in = &host->ports[5];
+ 	out = &dev->ports[13];
+-	dp_tunnel1 = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
++	dp_tunnel1 = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
+ 	KUNIT_ASSERT_TRUE(test, dp_tunnel1 != NULL);
+ 	KUNIT_ASSERT_EQ(test, dp_tunnel1->npaths, (size_t)3);
+ 
+@@ -2282,7 +2282,7 @@ static struct tb_tunnel *TB_TEST_DP_TUNNEL2(struct kunit *test,
+ 
+ 	in = &host->ports[6];
+ 	out = &dev->ports[14];
+-	dp_tunnel2 = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
++	dp_tunnel2 = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
+ 	KUNIT_ASSERT_TRUE(test, dp_tunnel2 != NULL);
+ 	KUNIT_ASSERT_EQ(test, dp_tunnel2->npaths, (size_t)3);
+ 
+diff --git a/drivers/thunderbolt/tunnel.c b/drivers/thunderbolt/tunnel.c
+index bb5cc480fc9a..bd98c719bf55 100644
+--- a/drivers/thunderbolt/tunnel.c
++++ b/drivers/thunderbolt/tunnel.c
+@@ -843,6 +843,7 @@ struct tb_tunnel *tb_tunnel_discover_dp(struct tb *tb, struct tb_port *in)
+  * @tb: Pointer to the domain structure
+  * @in: DP in adapter port
+  * @out: DP out adapter port
++ * @link_nr: Preferred lane adapter when the link is not bonded
+  * @max_up: Maximum available upstream bandwidth for the DP tunnel (%0
+  *	    if not limited)
+  * @max_down: Maximum available downstream bandwidth for the DP tunnel
+@@ -854,8 +855,8 @@ struct tb_tunnel *tb_tunnel_discover_dp(struct tb *tb, struct tb_port *in)
+  * Return: Returns a tb_tunnel on success or NULL on failure.
+  */
+ struct tb_tunnel *tb_tunnel_alloc_dp(struct tb *tb, struct tb_port *in,
+-				     struct tb_port *out, int max_up,
+-				     int max_down)
++				     struct tb_port *out, int link_nr,
++				     int max_up, int max_down)
+ {
+ 	struct tb_tunnel *tunnel;
+ 	struct tb_path **paths;
+@@ -879,21 +880,21 @@ struct tb_tunnel *tb_tunnel_alloc_dp(struct tb *tb, struct tb_port *in,
+ 	paths = tunnel->paths;
+ 
+ 	path = tb_path_alloc(tb, in, TB_DP_VIDEO_HOPID, out, TB_DP_VIDEO_HOPID,
+-			     1, "Video");
++			     link_nr, "Video");
+ 	if (!path)
+ 		goto err_free;
+ 	tb_dp_init_video_path(path);
+ 	paths[TB_DP_VIDEO_PATH_OUT] = path;
+ 
+ 	path = tb_path_alloc(tb, in, TB_DP_AUX_TX_HOPID, out,
+-			     TB_DP_AUX_TX_HOPID, 1, "AUX TX");
++			     TB_DP_AUX_TX_HOPID, link_nr, "AUX TX");
+ 	if (!path)
+ 		goto err_free;
+ 	tb_dp_init_aux_path(path);
+ 	paths[TB_DP_AUX_PATH_OUT] = path;
+ 
+ 	path = tb_path_alloc(tb, out, TB_DP_AUX_RX_HOPID, in,
+-			     TB_DP_AUX_RX_HOPID, 1, "AUX RX");
++			     TB_DP_AUX_RX_HOPID, link_nr, "AUX RX");
+ 	if (!path)
+ 		goto err_free;
+ 	tb_dp_init_aux_path(path);
+diff --git a/drivers/thunderbolt/tunnel.h b/drivers/thunderbolt/tunnel.h
+index eea14e24f7e0..a92027431697 100644
+--- a/drivers/thunderbolt/tunnel.h
++++ b/drivers/thunderbolt/tunnel.h
+@@ -69,8 +69,8 @@ struct tb_tunnel *tb_tunnel_alloc_pci(struct tb *tb, struct tb_port *up,
+ 				      struct tb_port *down);
+ struct tb_tunnel *tb_tunnel_discover_dp(struct tb *tb, struct tb_port *in);
+ struct tb_tunnel *tb_tunnel_alloc_dp(struct tb *tb, struct tb_port *in,
+-				     struct tb_port *out, int max_up,
+-				     int max_down);
++				     struct tb_port *out, int link_nr,
++				     int max_up, int max_down);
+ struct tb_tunnel *tb_tunnel_alloc_dma(struct tb *tb, struct tb_port *nhi,
+ 				      struct tb_port *dst, int transmit_path,
+ 				      int transmit_ring, int receive_path,
 -- 
 2.35.1
 
