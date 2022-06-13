@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C81ACCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:34:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 408DDC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:34:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377118AbiFMNeG (ORCPT
+        id S1377546AbiFMNeS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:34:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51978 "EHLO
+        Mon, 13 Jun 2022 09:34:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378113AbiFMNax (ORCPT
+        with ESMTP id S1378166AbiFMNa5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:30:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C7D313D6A;
-        Mon, 13 Jun 2022 04:25:38 -0700 (PDT)
+        Mon, 13 Jun 2022 09:30:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C26786F4AD;
+        Mon, 13 Jun 2022 04:25:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EAE5E60F18;
-        Mon, 13 Jun 2022 11:25:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00E52C36B07;
-        Mon, 13 Jun 2022 11:25:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 20964B80D3A;
+        Mon, 13 Jun 2022 11:25:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80947C385A9;
+        Mon, 13 Jun 2022 11:25:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119537;
-        bh=b/9qIeG94uHBo4HSzdZoF9DK2yKWhDCwVZXzJ95coXI=;
+        s=korg; t=1655119542;
+        bh=iEkaNM5GFtw73VWBfMqoguXgWeUVCat7JftniUDJRYI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mcjtbUIL9ahrf5EWb11Q/dNj8ArcwREoAqq1T3TmX0CFY1oFH93FrMJlfzlWijVQ6
-         Pa1J/lnL6Iip74bJva+Ml/tog+hjq580YykE94y5s2BrNplaX2KGwhEZtFlIueh7ko
-         PxyTEmz26y+F4Mi7TmTyNFDsx2kVHhGP0RKUPTKE=
+        b=XKH2BN/YmwYBWamx2/osQZmXPLDe1l+gbB/9dfYM4kcCNXGFF0+mAQMydQHHNAGhC
+         ZChqdqt+3dxMf8M8x3qoqOY6VKPALZdq6wvBRNZRmxIIxyn5CTJ4HLDhzEV78fvmDU
+         EoZ5QzL0RH5iYvliuCJY1p8GnkwNaw4iTWcgqmDM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 029/339] firmware: stratix10-svc: fix a missing check on list iterator
-Date:   Mon, 13 Jun 2022 12:07:34 +0200
-Message-Id: <20220613094927.397080499@linuxfoundation.org>
+Subject: [PATCH 5.18 043/339] power: supply: axp288_fuel_gauge: Drop BIOS version check from "T3 MRD" DMI quirk
+Date:   Mon, 13 Jun 2022 12:07:48 +0200
+Message-Id: <20220613094927.827304042@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -49,58 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 5a0793ac66ac0e254d292f129a4d6c526f9f2aff ]
+[ Upstream commit f61509a6f0b70f5bedea34efaf8065621689bd7a ]
 
-The bug is here:
-	pmem->vaddr = NULL;
+Some "T3 MRD" mini-PCs / HDMI-sticks without a battery use a different
+value then "5.11" for their DMI BIOS version field.
 
-The list iterator 'pmem' will point to a bogus position containing
-HEAD if the list is empty or no element is found. This case must
-be checked before any use of the iterator, otherwise it will
-lead to a invalid memory access.
+Drop the BIOS version check so that the no-battery "T3 MRD" DMI quirk
+applies to these too.
 
-To fix this bug, just gen_pool_free/set NULL/list_del() and return
-when found, otherwise list_del HEAD and return;
-
-Fixes: 7ca5ce896524f ("firmware: add Intel Stratix10 service layer driver")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Link: https://lore.kernel.org/r/20220414035609.2239-1-xiam0nd.tong@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 3a06b912a5ce ("power: supply: axp288_fuel_gauge: Make "T3 MRD" no_battery_list DMI entry more generic")
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/stratix10-svc.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/power/supply/axp288_fuel_gauge.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/firmware/stratix10-svc.c b/drivers/firmware/stratix10-svc.c
-index 8177a0fae11d..14663f671323 100644
---- a/drivers/firmware/stratix10-svc.c
-+++ b/drivers/firmware/stratix10-svc.c
-@@ -948,17 +948,17 @@ EXPORT_SYMBOL_GPL(stratix10_svc_allocate_memory);
- void stratix10_svc_free_memory(struct stratix10_svc_chan *chan, void *kaddr)
- {
- 	struct stratix10_svc_data_mem *pmem;
--	size_t size = 0;
- 
- 	list_for_each_entry(pmem, &svc_data_mem, node)
- 		if (pmem->vaddr == kaddr) {
--			size = pmem->size;
--			break;
-+			gen_pool_free(chan->ctrl->genpool,
-+				       (unsigned long)kaddr, pmem->size);
-+			pmem->vaddr = NULL;
-+			list_del(&pmem->node);
-+			return;
- 		}
- 
--	gen_pool_free(chan->ctrl->genpool, (unsigned long)kaddr, size);
--	pmem->vaddr = NULL;
--	list_del(&pmem->node);
-+	list_del(&svc_data_mem);
- }
- EXPORT_SYMBOL_GPL(stratix10_svc_free_memory);
- 
+diff --git a/drivers/power/supply/axp288_fuel_gauge.c b/drivers/power/supply/axp288_fuel_gauge.c
+index 5b8aa4a980cd..8e6f8a655079 100644
+--- a/drivers/power/supply/axp288_fuel_gauge.c
++++ b/drivers/power/supply/axp288_fuel_gauge.c
+@@ -609,7 +609,6 @@ static const struct dmi_system_id axp288_quirks[] = {
+ 			DMI_MATCH(DMI_BOARD_NAME, "T3 MRD"),
+ 			DMI_MATCH(DMI_CHASSIS_TYPE, "3"),
+ 			DMI_MATCH(DMI_BIOS_VENDOR, "American Megatrends Inc."),
+-			DMI_MATCH(DMI_BIOS_VERSION, "5.11"),
+ 		},
+ 		.driver_data = (void *)AXP288_QUIRK_NO_BATTERY,
+ 	},
 -- 
 2.35.1
 
