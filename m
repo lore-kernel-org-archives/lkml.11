@@ -2,91 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3F44C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:59:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6890EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:59:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345778AbiFMS7v (ORCPT
+        id S1345853AbiFMS7z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:59:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45902 "EHLO
+        Mon, 13 Jun 2022 14:59:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345578AbiFMS61 (ORCPT
+        with ESMTP id S1346453AbiFMS6m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 14:58:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E34F29817;
-        Mon, 13 Jun 2022 09:07:58 -0700 (PDT)
+        Mon, 13 Jun 2022 14:58:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF74345041;
+        Mon, 13 Jun 2022 09:10:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1339261523;
-        Mon, 13 Jun 2022 16:07:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A25DAC3411C;
-        Mon, 13 Jun 2022 16:07:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4827B61517;
+        Mon, 13 Jun 2022 16:10:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11614C34114;
+        Mon, 13 Jun 2022 16:10:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655136477;
-        bh=tfjRnPB5emG2L4Jef72rHm8N5OHicWHsvAUn6VvcjmU=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=l+BRpCEHp3ZqrvfTlaeybd8XxUuh/8/GU9hy6eiahvhAHgcL/QTzRyoYO8E+R5tqE
-         wrpFVFCuARhQpYHkb5Q3zKEoSAdxJxrPuQYh2z1q60zpIMi54eWvaoQE7jUKrpev02
-         ffBgOfSEruQveZSVakIoLHFndG78oxdVJno+ePJ1bpTiEhaX4yCW6/MBmN/dmGvcZ7
-         uwxh00lYIA6r6kscLMo+gdo0KLjz/rQ3EUZUvjDl0hc4H8CbItrI43i8mxwIAh5Q0i
-         ts/PEyjmhyKlRo8i9vsLkEycPp/90b9hUl1omsy+bXOJyfAFz1ASXdVAW7ufEK1MDR
-         FdipfA0UvuPHQ==
-From:   Mark Brown <broonie@kernel.org>
-To:     perex@perex.cz, yassine.oudjana@gmail.com, lgirdwood@gmail.com,
-        srinivas.kandagatla@linaro.org, tiwai@suse.com
-Cc:     linux-arm-msm@vger.kernel.org, alsa-devel@alsa-project.org,
-        y.oudjana@protonmail.com, linux-kernel@vger.kernel.org
-In-Reply-To: <20220606152226.149164-1-y.oudjana@protonmail.com>
-References: <20220606152226.149164-1-y.oudjana@protonmail.com>
-Subject: Re: [PATCH] ASoC: wcd9335: Remove RX channel from old list before adding it to a new one
-Message-Id: <165513647538.514792.3755540877211595484.b4-ty@kernel.org>
-Date:   Mon, 13 Jun 2022 17:07:55 +0100
+        s=k20201202; t=1655136645;
+        bh=vDGoVyz7P2imouhGRqKcXTMbxxpUemh4hqy3lJLfAus=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ib6hfQBqRr57ddK363WydGfoo7U25V23nCdwpOGrxXpCFAKVarA1lUuHhtoad7Vfw
+         UGjftOcUsSs8wpTImEfj6ZAEfef0zddkF5GUJbNeVLJ/iJuiSFoH1Jmiv92Tq6MDq7
+         sYXvY+EUZM8szo2wmhJyODYo+gMFwPtq8x1WEL/Qlrw02D0EMJ1aO7Iq4VBVyP4fX6
+         9sM+xoK4oMrZirvXc0k6RrRuafW3ToEvPnXeTDjuU8wAKUCNabXph/SccJosxaB4oK
+         mj5UGRxuLoznh9ZSbgVoBlod7K2djNvhwGzQxhpH58slofsKsMoUHrStQHb3zmQh2e
+         hHcxfOagf9R3w==
+Date:   Mon, 13 Jun 2022 09:10:43 -0700
+From:   Josh Poimboeuf <jpoimboe@kernel.org>
+To:     Sami Tolvanen <samitolvanen@google.com>
+Cc:     linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Joao Moreira <joao@overdrivepizza.com>,
+        Sedat Dilek <sedat.dilek@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-hardening@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, llvm@lists.linux.dev
+Subject: Re: [RFC PATCH v3 15/20] objtool: Disable CFI warnings
+Message-ID: <20220613161043.4wiqservfyxeme4f@treble>
+References: <20220610233513.1798771-1-samitolvanen@google.com>
+ <20220610233513.1798771-16-samitolvanen@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220610233513.1798771-16-samitolvanen@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 6 Jun 2022 19:22:26 +0400, Yassine Oudjana wrote:
-> From: Yassine Oudjana <y.oudjana@protonmail.com>
+On Fri, Jun 10, 2022 at 04:35:08PM -0700, Sami Tolvanen wrote:
+> The __cfi_ preambles contain int3 padding and a mov instruction that
+> embeds the KCFI type identifier in the following format:
 > 
-> Currently in slim_rx_mux_put, an RX channel gets added to a new list
-> even if it is already in one. This can mess up links and make either
-> it, the new list head, or both, get linked to the wrong entries.
-> This can cause an entry to link to itself which in turn ends up
-> making list_for_each_entry in other functions loop infinitely.
-> To avoid issues, always remove the RX channel from any list it's in
-> before adding it to a new list.
+>   ; type preamble
+>   __cfi_function:
+>     int3
+>     int3
+>     mov <id>, %eax
+>     int3
+>     int3
+>   function:
+>     ...
 > 
-> [...]
+> While the preamble symbols are STT_FUNC and contain valid
+> instructions, they are never executed and always fall through. Skip
+> the warning for them.
+> 
+> .kcfi_traps sections point to CFI traps in text sections. Also skip
+> the warning about them referencing !ENDBR instructions.
+> 
+> Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
 
-Applied to
+Acked-by: Josh Poimboeuf <jpoimboe@kernel.org>
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
-
-Thanks!
-
-[1/1] ASoC: wcd9335: Remove RX channel from old list before adding it to a new one
-      commit: 7263fc6c71c3a88c17a1ce3565b7b6f378d13878
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
+-- 
+Josh
