@@ -2,185 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C4FFC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:07:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D478DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:08:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351016AbiFMVHv (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 17:07:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57176 "EHLO
+        id S242887AbiFMVIM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 17:08:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349148AbiFMVGi (ORCPT
+        with ESMTP id S1351672AbiFMVHC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 17:06:38 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B2A4B26
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:43:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655152983; x=1686688983;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Wxp5UrEGniWquPRir9qG4Wn/ZLM32hC17iMaC9mtEfU=;
-  b=H+RETdYE5gY5tOZlq2a79GPD13lLW7Hy7O6Fm+DeE+LHo8OyYxbUlfSu
-   CcArfcsMxaAUdpG2vzCL42sWdIBiY6Wrg6nqsawomMF4e/x5dDSJK7jAP
-   N4SA11ozJ6AFTX5CEjNvGxBI44dQble77NOf0y+iHXnrCOLGkjMicD3Ak
-   Po5atkahNNFsu9yjMDNCG9GG/Sgnb+NBW/fvWkcfkkscqdWj/+zPC5AuY
-   6uJt86iO1WjJ0K8XHNtVVeD7DOYnRYl/ejJIkDxhw2B+NGlg8XOPJ6zTc
-   KuIgd3y2u3XbW6RYF3lTw6TLK/z9Cuinq470KpsfCHtJySELQQg0zykQc
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="267097802"
-X-IronPort-AV: E=Sophos;i="5.91,298,1647327600"; 
-   d="scan'208";a="267097802"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 13:43:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,298,1647327600"; 
-   d="scan'208";a="910586588"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 13 Jun 2022 13:43:00 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o0qtn-000L87-T5;
-        Mon, 13 Jun 2022 20:42:59 +0000
-Date:   Tue, 14 Jun 2022 04:42:52 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Hsin-Yi Wang <hsinyi@chromium.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Nicolas Boichat <drinkcat@chromium.org>
-Subject: [jsarha:topic/chromeos-4.19-s0ix 7737/9999]
- drivers/gpu/drm/bridge/parade-ps8640.c:399:5: warning: no previous prototype
- for function 'ps8640_bridge_attach'
-Message-ID: <202206140423.YnAsdC2D-lkp@intel.com>
+        Mon, 13 Jun 2022 17:07:02 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9C81DEB6
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:45:06 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id u99so11791984ybi.11
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:45:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=m5JCegGAYMi5Q9W2JQGuLDIcqo00Awy4QAwQXlwcWcE=;
+        b=Y8PgXmY2/nGutxvyX2dVqsPiD/5+ONTAVCrb5dCOijLp6hOh6guiH0qrM/AiFzGG+L
+         2zF2AhQ2OrJIp07OjeQZkImtrzevfAiZn6aQPFYk7tefYh8Atc6pUh3dMEF2rocc9zmP
+         Dg3xzw03JF6KBjd+jSOcSvmgwkw8LZeAS0/XQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=m5JCegGAYMi5Q9W2JQGuLDIcqo00Awy4QAwQXlwcWcE=;
+        b=1CKtug75wKRsVubdnMDTlNQoQycOb5p6jx3XLXkCTGiSEl0UVM2OgfBsUjZHRVXlzq
+         Et85Z2fMS0Hh0gVnKGkghCzbAv6RgykvS6O+UkYFu0tLMoOHXMXLytC8fPTwBklQ0QSq
+         mOTaAuWXOZzFS45ANJ/cqT5BVfHQsoD+rjpBsd0eoflbJCXo2HfZdqs/gfqOrifVZS1p
+         KHEmB9d5lxHX9chEXtNAVeoOt7MdCjB6G+w1yPtpQtsvHKkcNUnLipjF62oZNydOnzJa
+         GHO2iB6kku6uYGyUWH3au3XTJ2BNTk5vgn5EME879M/i7kpCWNDOB73uhYd6oLgf/4Md
+         xmRQ==
+X-Gm-Message-State: AJIora8NadFrzpw2f+VkXNhBwJTvCn7LkUUbwO/vUPIMUZf/WmI4ejsD
+        EQ5Juzwt0zEXnFhs3RyTtoxW/dDGKERkbq1zy1Q52g==
+X-Google-Smtp-Source: AGRyM1t6Ihkfl/eHvd+ILi0J6eEA0HkYOgT9briyKqKgLuf0D40FSPRp8M7otpMGiIZHBU56xkDHGbRCug93NReu0Yk=
+X-Received: by 2002:a25:ce83:0:b0:664:6360:41ae with SMTP id
+ x125-20020a25ce83000000b00664636041aemr1514280ybe.336.1655153105879; Mon, 13
+ Jun 2022 13:45:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220609181106.3695103-1-pmalani@chromium.org>
+ <20220609181106.3695103-4-pmalani@chromium.org> <20220613203804.3d23gxidkw657ggq@notapiano>
+In-Reply-To: <20220613203804.3d23gxidkw657ggq@notapiano>
+From:   Prashant Malani <pmalani@chromium.org>
+Date:   Mon, 13 Jun 2022 13:44:54 -0700
+Message-ID: <CACeCKafwT2HbYqG=u+NwXtvD4R+EK_f7DCWn88WoHriP4iOMdw@mail.gmail.com>
+Subject: Re: [PATCH v2 3/7] dt-bindings: usb: Add Type-C switch binding
+To:     =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
+        <nfraprado@collabora.com>
+Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        bleung@chromium.org, swboyd@chromium.org,
+        heikki.krogerus@linux.intel.com,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Pin-Yen Lin <treapking@chromium.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Tzung-Bi Shih <tzungbi@google.com>,
+        Xin Ji <xji@analogixsemi.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Hsin-Yi,
+Hi N=C3=ADcolas,
 
-FYI, the error/warning still remains.
+On Mon, Jun 13, 2022 at 1:38 PM N=C3=ADcolas F. R. A. Prado
+<nfraprado@collabora.com> wrote:
+>
+> Hi Prashant,
+>
+> thanks for the patch. Please see sugestions below.
+>
+> On Thu, Jun 09, 2022 at 06:09:42PM +0000, Prashant Malani wrote:
+> > Introduce a binding which represents a component that can control the
+> > routing of USB Type-C data lines as well as address data line
+> > orientation (based on CC lines' orientation).
+> >
+> > Signed-off-by: Prashant Malani <pmalani@chromium.org>
+> > ---
+> >
+> > Changes since v1:
+> > - Removed "items" from compatible.
+> > - Fixed indentation in example.
+> >
+> >  .../devicetree/bindings/usb/typec-switch.yaml | 74 +++++++++++++++++++
+> >  1 file changed, 74 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/usb/typec-switch.=
+yaml
+> >
+> > diff --git a/Documentation/devicetree/bindings/usb/typec-switch.yaml b/=
+Documentation/devicetree/bindings/usb/typec-switch.yaml
+> > new file mode 100644
+> > index 000000000000..78b0190c8543
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/usb/typec-switch.yaml
+> > @@ -0,0 +1,74 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/usb/typec-switch.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: USB Type-C Switch
+> > +
+> > +maintainers:
+> > +  - Prashant Malani <pmalani@chromium.org>
+> > +
+> > +description:
+> > +  A USB Type-C switch represents a component which routes USB Type-C d=
+ata
+> > +  lines to various protocol host controllers (e.g USB, VESA DisplayPor=
+t,
+> > +  Thunderbolt etc.) depending on which mode the Type-C port, port part=
+ner
+> > +  and cable are operating in. It can also modify lane routing based on
+> > +  the orientation of a connected Type-C peripheral.
+> > +
+> > +properties:
+> > +  compatible:
+> > +    const: typec-switch
+> > +
+> > +  mode-switch:
+> > +    type: boolean
+> > +    description: Specify that this switch can handle alternate mode sw=
+itching.
+> > +
+> > +  orientation-switch:
+> > +    type: boolean
+> > +    description: Specify that this switch can handle orientation switc=
+hing.
+> > +
+> > +  ports:
+> > +    $ref: /schemas/graph.yaml#/properties/ports
+> > +    description: OF graph binding modelling data lines to the Type-C s=
+witch.
+> > +
+> > +    properties:
+> > +      port@0:
+> > +        $ref: /schemas/graph.yaml#/properties/port
+> > +        description: Link between the switch and a Type-C connector.
+>
+> Since you have a single port, you can omit the ports node.
 
-tree:   https://github.com/jsarha/linux topic/chromeos-4.19-s0ix
-head:   430bdaa0a8c38697780f45a148964d71951df11f
-commit: e09a9439c5a794b24f73e6909d8eba778e3e3041 [7737/9999] FIXUP: FROMLIST: drm/bridge: Add I2C based driver for ps8640 bridge
-config: x86_64-randconfig-a001-20220613 (https://download.01.org/0day-ci/archive/20220614/202206140423.YnAsdC2D-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d378268ead93c85803c270277f0243737b536ae7)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/jsarha/linux/commit/e09a9439c5a794b24f73e6909d8eba778e3e3041
-        git remote add jsarha https://github.com/jsarha/linux
-        git fetch --no-tags jsarha topic/chromeos-4.19-s0ix
-        git checkout e09a9439c5a794b24f73e6909d8eba778e3e3041
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/gpu/drm/bridge/
+I've kept "ports", since it should be possible to add additional ports
+which connect the switch to some other entity (and kept separate from
+port@0), if the individual driver desires this.
+port@0 should only contain the end-point from the Type-C connector.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/gpu/drm/bridge/parade-ps8640.c:399:5: warning: no previous prototype for function 'ps8640_bridge_attach' [-Wmissing-prototypes]
-   int ps8640_bridge_attach(struct drm_bridge *bridge)
-       ^
-   drivers/gpu/drm/bridge/parade-ps8640.c:399:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int ps8640_bridge_attach(struct drm_bridge *bridge)
-   ^
-   static 
-   1 warning generated.
-
-
-vim +/ps8640_bridge_attach +399 drivers/gpu/drm/bridge/parade-ps8640.c
-
-71e4156c5ec43f7 Jitao Shi    2016-11-14  398  
-71e4156c5ec43f7 Jitao Shi    2016-11-14 @399  int ps8640_bridge_attach(struct drm_bridge *bridge)
-71e4156c5ec43f7 Jitao Shi    2016-11-14  400  {
-71e4156c5ec43f7 Jitao Shi    2016-11-14  401  	struct ps8640 *ps_bridge = bridge_to_ps8640(bridge);
-71e4156c5ec43f7 Jitao Shi    2016-11-14  402  	struct device *dev = &ps_bridge->page[0]->dev;
-71e4156c5ec43f7 Jitao Shi    2016-11-14  403  	struct device_node *in_ep, *dsi_node = NULL;
-71e4156c5ec43f7 Jitao Shi    2016-11-14  404  	struct mipi_dsi_device *dsi;
-71e4156c5ec43f7 Jitao Shi    2016-11-14  405  	struct mipi_dsi_host *host = NULL;
-71e4156c5ec43f7 Jitao Shi    2016-11-14  406  	int ret;
-71e4156c5ec43f7 Jitao Shi    2016-11-14  407  	const struct mipi_dsi_device_info info = { .type = "ps8640",
-71e4156c5ec43f7 Jitao Shi    2016-11-14  408  						   .channel = 0,
-71e4156c5ec43f7 Jitao Shi    2016-11-14  409  						   .node = NULL,
-71e4156c5ec43f7 Jitao Shi    2016-11-14  410  						 };
-71e4156c5ec43f7 Jitao Shi    2016-11-14  411  
-71e4156c5ec43f7 Jitao Shi    2016-11-14  412  	ret = drm_connector_init(bridge->dev, &ps_bridge->connector,
-71e4156c5ec43f7 Jitao Shi    2016-11-14  413  				 &ps8640_connector_funcs,
-71e4156c5ec43f7 Jitao Shi    2016-11-14  414  				 DRM_MODE_CONNECTOR_eDP);
-71e4156c5ec43f7 Jitao Shi    2016-11-14  415  
-71e4156c5ec43f7 Jitao Shi    2016-11-14  416  	if (ret) {
-71e4156c5ec43f7 Jitao Shi    2016-11-14  417  		DRM_ERROR("Failed to initialize connector with drm: %d\n", ret);
-71e4156c5ec43f7 Jitao Shi    2016-11-14  418  		return ret;
-71e4156c5ec43f7 Jitao Shi    2016-11-14  419  	}
-71e4156c5ec43f7 Jitao Shi    2016-11-14  420  
-71e4156c5ec43f7 Jitao Shi    2016-11-14  421  	drm_connector_helper_add(&ps_bridge->connector,
-71e4156c5ec43f7 Jitao Shi    2016-11-14  422  				 &ps8640_connector_helper_funcs);
-71e4156c5ec43f7 Jitao Shi    2016-11-14  423  
-71e4156c5ec43f7 Jitao Shi    2016-11-14  424  	ps_bridge->connector.dpms = DRM_MODE_DPMS_ON;
-e09a9439c5a794b Hsin-Yi Wang 2019-07-18  425  	drm_connector_attach_encoder(&ps_bridge->connector,
-71e4156c5ec43f7 Jitao Shi    2016-11-14  426  					  bridge->encoder);
-71e4156c5ec43f7 Jitao Shi    2016-11-14  427  
-71e4156c5ec43f7 Jitao Shi    2016-11-14  428  	if (ps_bridge->panel)
-71e4156c5ec43f7 Jitao Shi    2016-11-14  429  		drm_panel_attach(ps_bridge->panel, &ps_bridge->connector);
-71e4156c5ec43f7 Jitao Shi    2016-11-14  430  
-71e4156c5ec43f7 Jitao Shi    2016-11-14  431  	/* port@0 is ps8640 dsi input port */
-71e4156c5ec43f7 Jitao Shi    2016-11-14  432  	in_ep = of_graph_get_endpoint_by_regs(dev->of_node, 0, -1);
-71e4156c5ec43f7 Jitao Shi    2016-11-14  433  	if (in_ep) {
-71e4156c5ec43f7 Jitao Shi    2016-11-14  434  		dsi_node = of_graph_get_remote_port_parent(in_ep);
-71e4156c5ec43f7 Jitao Shi    2016-11-14  435  		of_node_put(in_ep);
-71e4156c5ec43f7 Jitao Shi    2016-11-14  436  	}
-71e4156c5ec43f7 Jitao Shi    2016-11-14  437  
-71e4156c5ec43f7 Jitao Shi    2016-11-14  438  	if (dsi_node) {
-71e4156c5ec43f7 Jitao Shi    2016-11-14  439  		host = of_find_mipi_dsi_host_by_node(dsi_node);
-71e4156c5ec43f7 Jitao Shi    2016-11-14  440  		of_node_put(dsi_node);
-71e4156c5ec43f7 Jitao Shi    2016-11-14  441  		if (!host) {
-71e4156c5ec43f7 Jitao Shi    2016-11-14  442  			ret = -ENODEV;
-71e4156c5ec43f7 Jitao Shi    2016-11-14  443  			goto err;
-71e4156c5ec43f7 Jitao Shi    2016-11-14  444  		}
-71e4156c5ec43f7 Jitao Shi    2016-11-14  445  	}
-71e4156c5ec43f7 Jitao Shi    2016-11-14  446  
-71e4156c5ec43f7 Jitao Shi    2016-11-14  447  	dsi = mipi_dsi_device_register_full(host, &info);
-71e4156c5ec43f7 Jitao Shi    2016-11-14  448  	if (IS_ERR(dsi)) {
-71e4156c5ec43f7 Jitao Shi    2016-11-14  449  		dev_err(dev, "failed to create dsi device\n");
-71e4156c5ec43f7 Jitao Shi    2016-11-14  450  		ret = PTR_ERR(dsi);
-71e4156c5ec43f7 Jitao Shi    2016-11-14  451  		goto err;
-71e4156c5ec43f7 Jitao Shi    2016-11-14  452  	}
-71e4156c5ec43f7 Jitao Shi    2016-11-14  453  
-71e4156c5ec43f7 Jitao Shi    2016-11-14  454  	ps_bridge->dsi = dsi;
-71e4156c5ec43f7 Jitao Shi    2016-11-14  455  
-71e4156c5ec43f7 Jitao Shi    2016-11-14  456  	dsi->host = host;
-71e4156c5ec43f7 Jitao Shi    2016-11-14  457  	dsi->mode_flags = MIPI_DSI_MODE_VIDEO |
-71e4156c5ec43f7 Jitao Shi    2016-11-14  458  				     MIPI_DSI_MODE_VIDEO_SYNC_PULSE;
-71e4156c5ec43f7 Jitao Shi    2016-11-14  459  	dsi->format = MIPI_DSI_FMT_RGB888;
-71e4156c5ec43f7 Jitao Shi    2016-11-14  460  	dsi->lanes = 4;
-71e4156c5ec43f7 Jitao Shi    2016-11-14  461  	ret = mipi_dsi_attach(dsi);
-71e4156c5ec43f7 Jitao Shi    2016-11-14  462  	if (ret)
-71e4156c5ec43f7 Jitao Shi    2016-11-14  463  		goto err_dsi_attach;
-71e4156c5ec43f7 Jitao Shi    2016-11-14  464  
-71e4156c5ec43f7 Jitao Shi    2016-11-14  465  	return 0;
-71e4156c5ec43f7 Jitao Shi    2016-11-14  466  
-71e4156c5ec43f7 Jitao Shi    2016-11-14  467  err_dsi_attach:
-71e4156c5ec43f7 Jitao Shi    2016-11-14  468  	mipi_dsi_device_unregister(dsi);
-71e4156c5ec43f7 Jitao Shi    2016-11-14  469  err:
-71e4156c5ec43f7 Jitao Shi    2016-11-14  470  	if (ps_bridge->panel)
-71e4156c5ec43f7 Jitao Shi    2016-11-14  471  		drm_panel_detach(ps_bridge->panel);
-71e4156c5ec43f7 Jitao Shi    2016-11-14  472  	drm_connector_cleanup(&ps_bridge->connector);
-71e4156c5ec43f7 Jitao Shi    2016-11-14  473  	return ret;
-71e4156c5ec43f7 Jitao Shi    2016-11-14  474  }
-71e4156c5ec43f7 Jitao Shi    2016-11-14  475  
-
-:::::: The code at line 399 was first introduced by commit
-:::::: 71e4156c5ec43f72077bb1f50882f588cfd71d71 FROMLIST: drm/bridge: Add I2C based driver for ps8640 bridge
-
-:::::: TO: Jitao Shi <jitao.shi@mediatek.com>
-:::::: CC: Commit Bot <commit-bot@chromium.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+>
+> > +
+> > +    required:
+> > +      - port@0
+> > +
+> > +required:
+> > +  - compatible
+> > +  - ports
+> > +
+> > +anyOf:
+> > +  - required:
+> > +      - mode-switch
+> > +  - required:
+> > +      - orientation-switch
+> > +
+> > +additionalProperties: true
+> > +
+> > +examples:
+> > +  - |
+> > +    drm-bridge {
+> > +        usb-switch {
+> > +            compatible =3D "typec-switch";
+> > +            mode-switch;
+> > +            orientation-switch;
+> > +            ports {
+> > +                #address-cells =3D <1>;
+> > +                #size-cells =3D <0>;
+> > +
+> > +                port@0 {
+> > +                    reg =3D <0>;
+> > +                    anx_ep: endpoint {
+> > +                        remote-endpoint =3D <&typec_controller>;
+> > +                    };
+> > +                };
+> > +            };
+>
+> So instead of ports you would have just
+>
+>                port {
+>                    anx_ep: endpoint {
+>                        remote-endpoint =3D <&typec_controller>;
+>                    };
+>                };
+>
+> And the same simplification on patch 4, for the anx7625 dt-binding.
+>
+> Thanks,
+> N=C3=ADcolas
+>
+> > +        };
+> > +    };
+> > --
+> > 2.36.1.476.g0c4daa206d-goog
+> >
