@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAC82C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:27:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBA13C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:27:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383693AbiFMO1G (ORCPT
+        id S1382963AbiFMO1N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:27:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54128 "EHLO
+        Mon, 13 Jun 2022 10:27:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383695AbiFMOXr (ORCPT
+        with ESMTP id S1383687AbiFMOXq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:23:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2040746C9F;
-        Mon, 13 Jun 2022 04:44:56 -0700 (PDT)
+        Mon, 13 Jun 2022 10:23:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE8D47048;
+        Mon, 13 Jun 2022 04:44:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B48B0612A8;
-        Mon, 13 Jun 2022 11:44:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9AD8C34114;
-        Mon, 13 Jun 2022 11:44:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A8788B80D31;
+        Mon, 13 Jun 2022 11:44:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AD23C34114;
+        Mon, 13 Jun 2022 11:44:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120695;
-        bh=7VwtMFW1AMc4/lyAzgdPsDpmsJE+fVMKFqOIJTo4+zg=;
+        s=korg; t=1655120692;
+        bh=k+nBBCHqK9h4ic60pdj6CWi8bzDqIkaYwyyIRwk/hj4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SLg+1KbiIfNgzYMvXqvGMbg/HRiveo8dybPJbF6P1qXZnHMCO89lYXdefmHaBrWxx
-         SGzm3cGzNZqQ4wzPmeeLadikHlfrtzj8ez61x+7W3JyufCv5HW2soNp8onOonQfY/9
-         rjFvHu+efkCgyqKZOaJtGWrQ9LtwBYMiuBvaMkmw=
+        b=JeuQhQQRixYMzxu83wfdQXXHhjZ300cUgFK22W1+azCOjUY6Zd/yDPj07oE9hB8ea
+         GyX4yrfhy7IwKoC/BEF5Hp7sapW42CZY0weeBqoytln/N7tPW2d+a+HH0rOX4Ux/ug
+         jGEbCqG18ao4rgEr0SnooNr80d1ISnRTn9MZhRUc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dongliang Mu <mudongliangabcd@gmail.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 124/298] scsi: sd: Fix potential NULL pointer dereference
-Date:   Mon, 13 Jun 2022 12:10:18 +0200
-Message-Id: <20220613094928.703076298@linuxfoundation.org>
+Subject: [PATCH 5.17 123/298] drm/msm/dp: Always clear mask bits to disable interrupts at dp_ctrl_reset_irq_ctrl()
+Date:   Mon, 13 Jun 2022 12:10:17 +0200
+Message-Id: <20220613094928.672935176@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -52,45 +51,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Kuogee Hsieh <quic_khsieh@quicinc.com>
 
-[ Upstream commit 05fbde3a77a4f1d62e4c4428f384288c1f1a0be5 ]
+[ Upstream commit 993a2adc6e2e94a0a7b5bfc054eda90ac95f62c3 ]
 
-If sd_probe() sees an early error before sdkp->device is initialized,
-sd_zbc_release_disk() is called. This causes a NULL pointer dereference
-when sd_is_zoned() is called inside that function. Avoid this by removing
-the call to sd_zbc_release_disk() in sd_probe() error path.
+dp_catalog_ctrl_reset() will software reset DP controller. But it will
+not reset programmable registers to default value. DP driver still have
+to clear mask bits to interrupt status registers to disable interrupts
+after software reset of controller.
 
-This change is safe and does not result in zone information memory leakage
-because the zone information for a zoned disk is allocated only when
-sd_revalidate_disk() is called, at which point sdkp->disk_dev is fully set,
-resulting in sd_disk_release() being called when needed to cleanup a disk
-zone information using sd_zbc_release_disk().
+At current implementation, dp_ctrl_reset_irq_ctrl() will software reset dp
+controller but did not call dp_catalog_ctrl_enable_irq(false) to clear hpd
+related interrupt mask bits to disable hpd related interrupts due to it
+mistakenly think hpd related interrupt mask bits will be cleared by software
+reset of dp controller automatically. This mistake may cause system to crash
+during suspending procedure due to unexpected irq fired and trigger event
+thread to access dp controller registers with controller clocks are disabled.
 
-Link: https://lore.kernel.org/r/20220601062544.905141-2-damien.lemoal@opensource.wdc.com
-Fixes: 89d947561077 ("sd: Implement support for ZBC devices")
-Reported-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Suggested-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+This patch fixes system crash during suspending problem by removing "enable"
+flag condition checking at dp_ctrl_reset_irq_ctrl() so that hpd related
+interrupt mask bits are cleared to prevent unexpected from happening.
+
+Changes in v2:
+-- add more details commit text
+
+Changes in v3:
+-- add synchrons_irq()
+-- add atomic_t suspended
+
+Changes in v4:
+-- correct Fixes's commit ID
+-- remove synchrons_irq()
+
+Changes in v5:
+-- revise commit text
+
+Changes in v6:
+-- add event_lock to protect "suspended"
+
+Changes in v7:
+-- delete "suspended" flag
+
+Fixes: 989ebe7bc446 ("drm/msm/dp: do not initialize phy until plugin interrupt received")
+Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Patchwork: https://patchwork.freedesktop.org/patch/486591/
+Link: https://lore.kernel.org/r/1652804494-19650-1-git-send-email-quic_khsieh@quicinc.com
+Signed-off-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/sd.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/gpu/drm/msm/dp/dp_ctrl.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
-index 8b5d2a4076c2..65b501859141 100644
---- a/drivers/scsi/sd.c
-+++ b/drivers/scsi/sd.c
-@@ -3605,7 +3605,6 @@ static int sd_probe(struct device *dev)
-  out_put:
- 	put_disk(gd);
-  out_free:
--	sd_zbc_release_disk(sdkp);
- 	kfree(sdkp);
-  out:
- 	scsi_autopm_put_device(sdp);
+diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+index 6eb176872a17..7ae74bd05924 100644
+--- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
++++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+@@ -1373,8 +1373,13 @@ void dp_ctrl_reset_irq_ctrl(struct dp_ctrl *dp_ctrl, bool enable)
+ 
+ 	dp_catalog_ctrl_reset(ctrl->catalog);
+ 
+-	if (enable)
+-		dp_catalog_ctrl_enable_irq(ctrl->catalog, enable);
++	/*
++	 * all dp controller programmable registers will not
++	 * be reset to default value after DP_SW_RESET
++	 * therefore interrupt mask bits have to be updated
++	 * to enable/disable interrupts
++	 */
++	dp_catalog_ctrl_enable_irq(ctrl->catalog, enable);
+ }
+ 
+ void dp_ctrl_phy_init(struct dp_ctrl *dp_ctrl)
 -- 
 2.35.1
 
