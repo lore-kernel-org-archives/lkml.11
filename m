@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67589CCA492
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:31:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE7EAC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:31:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344294AbiFMKb3 (ORCPT
+        id S1344582AbiFMKbo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:31:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33044 "EHLO
+        Mon, 13 Jun 2022 06:31:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345167AbiFMK3b (ORCPT
+        with ESMTP id S244430AbiFMK0d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:29:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C824825EAC;
-        Mon, 13 Jun 2022 03:20:39 -0700 (PDT)
+        Mon, 13 Jun 2022 06:26:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDB50245B2;
+        Mon, 13 Jun 2022 03:19:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E5A1B60C5D;
-        Mon, 13 Jun 2022 10:20:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F26CFC34114;
-        Mon, 13 Jun 2022 10:20:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 74F1EB80E5C;
+        Mon, 13 Jun 2022 10:19:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1D2EC34114;
+        Mon, 13 Jun 2022 10:19:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115638;
-        bh=FbHW7wJdsutLxte77RD+vKYaOV2opqcOLhcyd1Y6Q4U=;
+        s=korg; t=1655115583;
+        bh=0evX1aX+8vGsL+wWX4IQfjHNmGv7ZxnUybITsf+ORBQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qvUqq0TA9v6BzSBDOJmfPPXRQllP34E9Nv/zSHxGpj3IrloPKZmwh//K0HVwm/QZL
-         E6LE8CIm9QNQxMEihkbE30MPKU+8Wu+yCuGcFPrtRkLOO+UPO/8dRId5mkX+k/6zI6
-         NMFKeCnh+6JgRws65aeNzRPUdIYE3JhNMU+yI0V4=
+        b=FUtSNPHZtuZlTbWgJBjSCn7TfKAWQrqosC4D0JZqTxoYsdDyZn7NBLpOm5BMWbYub
+         LByomx/5BuXcm3Zdb+N+5tc1jxkQboE4AFn4wwJRorjFiSB2cywtXv4maz3snmPHCX
+         lC/1YehJYJwT4un6ylackIhKO5Hr0TIR1qM5vHRw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
+        stable@vger.kernel.org, Hugh Dickens <hughd@google.com>,
+        Greg Ungerer <gerg@linux-m68k.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 147/167] usb: dwc2: gadget: dont reset gadgets driver->bus
-Date:   Mon, 13 Jun 2022 12:10:21 +0200
-Message-Id: <20220613094915.386585005@linuxfoundation.org>
+Subject: [PATCH 4.9 129/167] m68knommu: set ZERO_PAGE() to the allocated zeroed page
+Date:   Mon, 13 Jun 2022 12:10:03 +0200
+Message-Id: <20220613094911.120736832@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -50,64 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Szyprowski <m.szyprowski@samsung.com>
+From: Greg Ungerer <gerg@linux-m68k.org>
 
-[ Upstream commit 3120aac6d0ecd9accf56894aeac0e265f74d3d5a ]
+[ Upstream commit dc068f46217970d9516f16cd37972a01d50dc055 ]
 
-UDC driver should not touch gadget's driver internals, especially it
-should not reset driver->bus. This wasn't harmful so far, but since
-commit fc274c1e9973 ("USB: gadget: Add a new bus for gadgets") gadget
-subsystem got it's own bus and messing with ->bus triggers the
-following NULL pointer dereference:
+The non-MMU m68k pagetable ZERO_PAGE() macro is being set to the
+somewhat non-sensical value of "virt_to_page(0)". The zeroth page
+is not in any way guaranteed to be a page full of "0". So the result
+is that ZERO_PAGE() will almost certainly contain random values.
 
-dwc2 12480000.hsotg: bound driver g_ether
-8<--- cut here ---
-Unable to handle kernel NULL pointer dereference at virtual address 00000000
-[00000000] *pgd=00000000
-Internal error: Oops: 5 [#1] SMP ARM
-Modules linked in: ...
-CPU: 0 PID: 620 Comm: modprobe Not tainted 5.18.0-rc5-next-20220504 #11862
-Hardware name: Samsung Exynos (Flattened Device Tree)
-PC is at module_add_driver+0x44/0xe8
-LR is at sysfs_do_create_link_sd+0x84/0xe0
-...
-Process modprobe (pid: 620, stack limit = 0x(ptrval))
-...
- module_add_driver from bus_add_driver+0xf4/0x1e4
- bus_add_driver from driver_register+0x78/0x10c
- driver_register from usb_gadget_register_driver_owner+0x40/0xb4
- usb_gadget_register_driver_owner from do_one_initcall+0x44/0x1e0
- do_one_initcall from do_init_module+0x44/0x1c8
- do_init_module from load_module+0x19b8/0x1b9c
- load_module from sys_finit_module+0xdc/0xfc
- sys_finit_module from ret_fast_syscall+0x0/0x54
-Exception stack(0xf1771fa8 to 0xf1771ff0)
-...
-dwc2 12480000.hsotg: new device is high-speed
----[ end trace 0000000000000000 ]---
+We already allocate a real "empty_zero_page" in the mm setup code shared
+between MMU m68k and non-MMU m68k. It is just not hooked up to the
+ZERO_PAGE() macro for the non-MMU m68k case.
 
-Fix this by removing driver->bus entry reset.
+Fix ZERO_PAGE() to use the allocated "empty_zero_page" pointer.
 
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Link: https://lore.kernel.org/r/20220505104618.22729-1-m.szyprowski@samsung.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+I am not aware of any specific issues caused by the old code.
+
+Link: https://lore.kernel.org/linux-m68k/2a462b23-5b8e-bbf4-ec7d-778434a3b9d7@google.com/T/#t
+Reported-by: Hugh Dickens <hughd@google.com>
+Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/dwc2/gadget.c | 1 -
- 1 file changed, 1 deletion(-)
+ arch/m68k/include/asm/pgtable_no.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
-index 65bcbbad6d54..44bab6727b43 100644
---- a/drivers/usb/dwc2/gadget.c
-+++ b/drivers/usb/dwc2/gadget.c
-@@ -3445,7 +3445,6 @@ static int dwc2_hsotg_udc_start(struct usb_gadget *gadget,
+diff --git a/arch/m68k/include/asm/pgtable_no.h b/arch/m68k/include/asm/pgtable_no.h
+index ac7d87a02335..269443e1084b 100644
+--- a/arch/m68k/include/asm/pgtable_no.h
++++ b/arch/m68k/include/asm/pgtable_no.h
+@@ -41,7 +41,8 @@ extern void paging_init(void);
+  * ZERO_PAGE is a global shared page that is always zero: used
+  * for zero-mapped memory areas etc..
+  */
+-#define ZERO_PAGE(vaddr)	(virt_to_page(0))
++extern void *empty_zero_page;
++#define ZERO_PAGE(vaddr)	(virt_to_page(empty_zero_page))
  
- 	WARN_ON(hsotg->driver);
- 
--	driver->driver.bus = NULL;
- 	hsotg->driver = driver;
- 	hsotg->gadget.dev.of_node = hsotg->dev->of_node;
- 	hsotg->gadget.speed = USB_SPEED_UNKNOWN;
+ /*
+  * No page table caches to initialise.
 -- 
 2.35.1
 
