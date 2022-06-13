@@ -2,95 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2CB6C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:59:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7642DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:59:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345091AbiFMS7Q (ORCPT
+        id S1345231AbiFMS7V convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:59:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43838 "EHLO
+        Mon, 13 Jun 2022 14:59:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345728AbiFMS63 (ORCPT
+        with ESMTP id S1346492AbiFMS6m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 14:58:29 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A34F62A96C
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 09:09:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655136551; x=1686672551;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=XkiVhgQtjYa74jxc4fNcCogOvoJpuvPnLCoIHPR00Jo=;
-  b=CAnomKoFyhPma+j4HAxDEI6jHA2xsF6Rt7z+7X/y3fpKHzRtXxc2ePG8
-   Eeo4Wo++eQKJb52TBB7xT62cPjkU3Ni+utdsb1I76d2TgvLCdCsHgGULp
-   SEdOv/tmB57pMcpADUzSf2TZDWYJY0Y5IjZ2JAjCbK9kw8coUQs1uaZO6
-   2jQWO6nOf6LLtlXNWN4hV+RvREADinPEtzxTtQWPR1qKsvRMcvuyADBpd
-   wPsDyvb//4Y12aS6uydz+j4OfcV8hQDZqIKRV+g0s9fzE9lQBqg6wFE8T
-   PDAvM7YaDa+W0J4PwfJos+S6EXzpRJ2h57nk3MJBhGABiTmS87ucKtETb
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="303727929"
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="303727929"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 09:08:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="651502987"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga004.fm.intel.com with ESMTP; 13 Jun 2022 09:08:48 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 4F257346; Mon, 13 Jun 2022 19:08:52 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Vinod Koul <vkoul@kernel.org>, Hans de Goede <hdegoede@redhat.com>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        linux-phy@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Ferry Toth <ftoth@exalondelft.nl>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] phy: ti: tusb1210: Don't check for write errors when powering on
-Date:   Mon, 13 Jun 2022 19:08:48 +0300
-Message-Id: <20220613160848.82746-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 13 Jun 2022 14:58:42 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AFFBF8CCD6
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 09:11:30 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-188-UKF4EeJcNpOg5PEFD63RQQ-1; Mon, 13 Jun 2022 17:11:24 +0100
+X-MC-Unique: UKF4EeJcNpOg5PEFD63RQQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.36; Mon, 13 Jun 2022 17:11:19 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.036; Mon, 13 Jun 2022 17:11:19 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Petr Mladek' <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>
+CC:     John Ogness <john.ogness@linutronix.de>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>
+Subject: RE: [BUG] Threaded printk breaks early debugging
+Thread-Topic: [BUG] Threaded printk breaks early debugging
+Thread-Index: AQHYfw5tEBAMEt7XXEKQmWQ8WlSw2q1Nf9Zw
+Date:   Mon, 13 Jun 2022 16:11:19 +0000
+Message-ID: <c81870cef50f4e1fac5083f0b780983d@AcuMS.aculab.com>
+References: <CAMdYzYpF4FNTBPZsEFeWRuEwSies36QM_As8osPWZSr2q-viEA@mail.gmail.com>
+ <87y1y48spg.fsf@jogness.linutronix.de> <YqVZ4CyWTiDgngkA@google.com>
+ <8735g9mqo0.fsf@jogness.linutronix.de> <Yqazr060OLp2Rpbk@google.com>
+ <87wndlge43.fsf@jogness.linutronix.de> <Yqb9xOBiY/262lhk@google.com>
+ <YqcN9mH/aVwBoIMQ@alley>
+In-Reply-To: <YqcN9mH/aVwBoIMQ@alley>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On some platforms, like Intel Merrifield, the writing values during power on
-may timeout:
+From: Petr Mladek
+> Sent: 13 June 2022 11:14
+...
+> Another interesting alternative is the Peter Zijlstra's mode
+> where all messages are printed to the console "immediately".
+> They are serialized only by the CPU-reentrant lock.
+> 
+> This mode is not good for production system. But it might
+> be good for debugging. The good thing is that the behavior
+> is well defined.
 
-   tusb1210 dwc3.0.auto.ulpi: error -110 writing val 0x41 to reg 0x80
-   phy phy-dwc3.0.auto.ulpi.0: phy poweron failed --> -110
-   dwc3 dwc3.0.auto: error -ETIMEDOUT: failed to initialize core
-   dwc3: probe of dwc3.0.auto failed with error -110
+ISTM that all messages should be output (even if this means
+that cpu spin waiting for a serial console) until userspace
+has a chance to set an option to change the behaviour.
 
-which effectively fails the probe of the USB controller.
-Drop the check as it was before the culprit commit (see Fixes tag).
+Oh, and can someone stop the distros hiding the console output.
+I want to see the 'oops' traceback when I break the kernel!
 
-Fixes: 09a3512681b3 ("phy: ti: tusb1210: Improve ulpi_read()/_write() error checking")
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/phy/ti/phy-tusb1210.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+	David
 
-diff --git a/drivers/phy/ti/phy-tusb1210.c b/drivers/phy/ti/phy-tusb1210.c
-index c3ab4b69ea68..669c13d6e402 100644
---- a/drivers/phy/ti/phy-tusb1210.c
-+++ b/drivers/phy/ti/phy-tusb1210.c
-@@ -105,8 +105,9 @@ static int tusb1210_power_on(struct phy *phy)
- 	msleep(TUSB1210_RESET_TIME_MS);
- 
- 	/* Restore the optional eye diagram optimization value */
--	return tusb1210_ulpi_write(tusb, TUSB1210_VENDOR_SPECIFIC2,
--				   tusb->vendor_specific2);
-+	tusb1210_ulpi_write(tusb, TUSB1210_VENDOR_SPECIFIC2, tusb->vendor_specific2);
-+
-+	return 0;
- }
- 
- static int tusb1210_power_off(struct phy *phy)
--- 
-2.35.1
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
