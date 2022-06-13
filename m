@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A7EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:03:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A0B9C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:03:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358357AbiFMMDC (ORCPT
+        id S1358366AbiFMMDJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:03:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49902 "EHLO
+        Mon, 13 Jun 2022 08:03:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358424AbiFMMAD (ORCPT
+        with ESMTP id S1357136AbiFMMAJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:00:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5211524F3C;
-        Mon, 13 Jun 2022 03:57:00 -0700 (PDT)
+        Mon, 13 Jun 2022 08:00:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D90E4F1DD;
+        Mon, 13 Jun 2022 03:57:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 695DF6140D;
-        Mon, 13 Jun 2022 10:56:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71D40C3411E;
-        Mon, 13 Jun 2022 10:56:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E5CCB61346;
+        Mon, 13 Jun 2022 10:57:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 035C8C385A5;
+        Mon, 13 Jun 2022 10:57:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117818;
-        bh=ViJROby02GyZyQYTg0MYFcHMxaI8kXhKPs9s2mAtsnA=;
+        s=korg; t=1655117824;
+        bh=cSiW0E2vgA5wLCx+etHaj7zETnTlz7C9ERF+0liPKpI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ptI4jmTAC+QtCB9A7MY4Bex+brfHTHSUtCUwHNpvOuD2x6VhC1lf7MvZRVI/+xwYb
-         5uQKHP6cS7Rpim12/K+enEz5iKN/GovohT8UBtfdsrTW+wBnNrZd6V12LHHavNiw7c
-         lt8tQnVHLfNrumStfRUlLo4m+/0ZCzPPJbPy+FCU=
+        b=O9kECT594CS6keS3KU80AsAEpZyyDJkj1w6/5BFAgoO2u+wqmxkK0HSNnUevFOIy+
+         WIKUqCgxxejPsCsukq8gXEf8/cjLohdZVu8UFM3pLgTGjSghtX+0DNBIJcxT0H/18o
+         38dig3nQlve1qqQa7AWRNkS9IjKnP6dCSbGf6ikE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Bj=C3=B6rn=20Ard=C3=B6?= <bjorn.ardo@axis.com>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 130/287] mailbox: forward the hrtimer if not queued and under a lock
-Date:   Mon, 13 Jun 2022 12:09:14 +0200
-Message-Id: <20220613094927.822026604@linuxfoundation.org>
+Subject: [PATCH 4.19 122/287] powerpc/8xx: export cpm_setbrg for modules
+Date:   Mon, 13 Jun 2022 12:09:06 +0200
+Message-Id: <20220613094927.579642283@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -51,107 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Björn Ardö <bjorn.ardo@axis.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit bca1a1004615efe141fd78f360ecc48c60bc4ad5 ]
+[ Upstream commit 22f8e625ebabd7ed3185b82b44b4f12fc0402113 ]
 
-This reverts commit c7dacf5b0f32957b24ef29df1207dc2cd8307743,
-"mailbox: avoid timer start from callback"
+Fix missing export for a loadable module build:
 
-The previous commit was reverted since it lead to a race that
-caused the hrtimer to not be started at all. The check for
-hrtimer_active() in msg_submit() will return true if the
-callback function txdone_hrtimer() is currently running. This
-function could return HRTIMER_NORESTART and then the timer
-will not be restarted, and also msg_submit() will not start
-the timer. This will lead to a message actually being submitted
-but no timer will start to check for its compleation.
+ERROR: modpost: "cpm_setbrg" [drivers/tty/serial/cpm_uart/cpm_uart.ko] undefined!
 
-The original fix that added checking hrtimer_active() was added to
-avoid a warning with hrtimer_forward. Looking in the kernel
-another solution to avoid this warning is to check hrtimer_is_queued()
-before calling hrtimer_forward_now() instead. This however requires a
-lock so the timer is not started by msg_submit() inbetween this check
-and the hrtimer_forward() call.
-
-Fixes: c7dacf5b0f32 ("mailbox: avoid timer start from callback")
-Signed-off-by: Björn Ardö <bjorn.ardo@axis.com>
-Signed-off-by: Jassi Brar <jaswinder.singh@linaro.org>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+[chleroy: Changed Fixes: tag]
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20210122010819.30986-1-rdunlap@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mailbox/mailbox.c          | 19 +++++++++++++------
- include/linux/mailbox_controller.h |  1 +
- 2 files changed, 14 insertions(+), 6 deletions(-)
+ arch/powerpc/sysdev/cpm1.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/mailbox/mailbox.c b/drivers/mailbox/mailbox.c
-index 10a559cfb7ea..aa28fdcb81b9 100644
---- a/drivers/mailbox/mailbox.c
-+++ b/drivers/mailbox/mailbox.c
-@@ -85,11 +85,11 @@ static void msg_submit(struct mbox_chan *chan)
- exit:
- 	spin_unlock_irqrestore(&chan->lock, flags);
- 
--	/* kick start the timer immediately to avoid delays */
- 	if (!err && (chan->txdone_method & TXDONE_BY_POLL)) {
--		/* but only if not already active */
--		if (!hrtimer_active(&chan->mbox->poll_hrt))
--			hrtimer_start(&chan->mbox->poll_hrt, 0, HRTIMER_MODE_REL);
-+		/* kick start the timer immediately to avoid delays */
-+		spin_lock_irqsave(&chan->mbox->poll_hrt_lock, flags);
-+		hrtimer_start(&chan->mbox->poll_hrt, 0, HRTIMER_MODE_REL);
-+		spin_unlock_irqrestore(&chan->mbox->poll_hrt_lock, flags);
- 	}
+diff --git a/arch/powerpc/sysdev/cpm1.c b/arch/powerpc/sysdev/cpm1.c
+index 4f8dcf124828..f5b1ea2d6524 100644
+--- a/arch/powerpc/sysdev/cpm1.c
++++ b/arch/powerpc/sysdev/cpm1.c
+@@ -290,6 +290,7 @@ cpm_setbrg(uint brg, uint rate)
+ 		out_be32(bp, (((BRG_UART_CLK_DIV16 / rate) - 1) << 1) |
+ 			      CPM_BRG_EN | CPM_BRG_DIV16);
  }
++EXPORT_SYMBOL(cpm_setbrg);
  
-@@ -123,20 +123,26 @@ static enum hrtimer_restart txdone_hrtimer(struct hrtimer *hrtimer)
- 		container_of(hrtimer, struct mbox_controller, poll_hrt);
- 	bool txdone, resched = false;
- 	int i;
-+	unsigned long flags;
- 
- 	for (i = 0; i < mbox->num_chans; i++) {
- 		struct mbox_chan *chan = &mbox->chans[i];
- 
- 		if (chan->active_req && chan->cl) {
--			resched = true;
- 			txdone = chan->mbox->ops->last_tx_done(chan);
- 			if (txdone)
- 				tx_tick(chan, 0);
-+			else
-+				resched = true;
- 		}
- 	}
- 
- 	if (resched) {
--		hrtimer_forward_now(hrtimer, ms_to_ktime(mbox->txpoll_period));
-+		spin_lock_irqsave(&mbox->poll_hrt_lock, flags);
-+		if (!hrtimer_is_queued(hrtimer))
-+			hrtimer_forward_now(hrtimer, ms_to_ktime(mbox->txpoll_period));
-+		spin_unlock_irqrestore(&mbox->poll_hrt_lock, flags);
-+
- 		return HRTIMER_RESTART;
- 	}
- 	return HRTIMER_NORESTART;
-@@ -473,6 +479,7 @@ int mbox_controller_register(struct mbox_controller *mbox)
- 		hrtimer_init(&mbox->poll_hrt, CLOCK_MONOTONIC,
- 			     HRTIMER_MODE_REL);
- 		mbox->poll_hrt.function = txdone_hrtimer;
-+		spin_lock_init(&mbox->poll_hrt_lock);
- 	}
- 
- 	for (i = 0; i < mbox->num_chans; i++) {
-diff --git a/include/linux/mailbox_controller.h b/include/linux/mailbox_controller.h
-index 74deadb42d76..5a4524f66ea1 100644
---- a/include/linux/mailbox_controller.h
-+++ b/include/linux/mailbox_controller.h
-@@ -83,6 +83,7 @@ struct mbox_controller {
- 				      const struct of_phandle_args *sp);
- 	/* Internal to API */
- 	struct hrtimer poll_hrt;
-+	spinlock_t poll_hrt_lock;
- 	struct list_head node;
- };
- 
+ struct cpm_ioport16 {
+ 	__be16 dir, par, odr_sor, dat, intr;
 -- 
 2.35.1
 
