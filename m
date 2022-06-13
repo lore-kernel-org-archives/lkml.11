@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07FE3C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:17:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 663ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:18:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345427AbiFMMRl (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:17:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44724 "EHLO
+        id S238093AbiFMMRy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 08:17:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358705AbiFMMOS (ORCPT
+        with ESMTP id S1358844AbiFMMOW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:14:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 345DF5468B;
-        Mon, 13 Jun 2022 04:01:56 -0700 (PDT)
+        Mon, 13 Jun 2022 08:14:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2949B54BCC;
+        Mon, 13 Jun 2022 04:02:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE07961435;
-        Mon, 13 Jun 2022 11:01:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF87FC34114;
-        Mon, 13 Jun 2022 11:01:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B58BAB80E92;
+        Mon, 13 Jun 2022 11:02:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27894C34114;
+        Mon, 13 Jun 2022 11:01:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118115;
-        bh=JNL82SmDWxYNCtU/gNOc7WAO0pSHqkbMptkPcQIA5c8=;
+        s=korg; t=1655118120;
+        bh=D+zeTU6SXXi0V2t/Dy+iOTkgmgB5f1gBGleEo3rDDCg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tsQIOkW/QWV6vwyhlkC9OCPqTAz328qH39V3wY1ZL7TQLFMBceSalfgoJ/5Jh374g
-         YMH6YoNh+7VUg6mGMxy0KuFpwg//7sLlfVH+/Uau2xBAa7+3a66TkFzxMHKtIsa8QA
-         bfdr2zlGBmfipXq10zgfUJZfSlRdS8+sp1UQ+I3c=
+        b=QUsS2f/fkFhIcdm3E3E0fWjePXLgifQmsPe/SXCmvA4w8H4fnktawmxHSySS2CnI3
+         JfsQRgE5ms+rXtL/oOJZohgk7+3Sa+KCN3FyRGn5OIwmtZp4htYH5Ez6Gik1cHro04
+         DT4XRxVz7VY0rh72KRgxJ4sxCzuGIU0CcyvdMpfo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kinglong Mee <kinglongmee@gmail.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 235/287] xprtrdma: treat all calls not a bcall when bc_serv is NULL
-Date:   Mon, 13 Jun 2022 12:10:59 +0200
-Message-Id: <20220613094931.142922411@linuxfoundation.org>
+Subject: [PATCH 4.19 243/287] net: ipv6: unexport __init-annotated seg6_hmac_init()
+Date:   Mon, 13 Jun 2022 12:11:07 +0200
+Message-Id: <20220613094931.384937546@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -51,71 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kinglong Mee <kinglongmee@gmail.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-[ Upstream commit 11270e7ca268e8d61b5d9e5c3a54bd1550642c9c ]
+[ Upstream commit 5801f064e35181c71857a80ff18af4dbec3c5f5c ]
 
-When a rdma server returns a fault format reply, nfs v3 client may
-treats it as a bcall when bc service is not exist.
+EXPORT_SYMBOL and __init is a bad combination because the .init.text
+section is freed up after the initialization. Hence, modules cannot
+use symbols annotated __init. The access to a freed symbol may end up
+with kernel panic.
 
-The debug message at rpcrdma_bc_receive_call are,
+modpost used to detect it, but it has been broken for a decade.
 
-[56579.837169] RPC:       rpcrdma_bc_receive_call: callback XID
-00000001, length=20
-[56579.837174] RPC:       rpcrdma_bc_receive_call: 00 00 00 01 00 00 00
-00 00 00 00 00 00 00 00 00 00 00 00 04
+Recently, I fixed modpost so it started to warn it again, then this
+showed up in linux-next builds.
 
-After that, rpcrdma_bc_receive_call will meets NULL pointer as,
+There are two ways to fix it:
 
-[  226.057890] BUG: unable to handle kernel NULL pointer dereference at
-00000000000000c8
-...
-[  226.058704] RIP: 0010:_raw_spin_lock+0xc/0x20
-...
-[  226.059732] Call Trace:
-[  226.059878]  rpcrdma_bc_receive_call+0x138/0x327 [rpcrdma]
-[  226.060011]  __ib_process_cq+0x89/0x170 [ib_core]
-[  226.060092]  ib_cq_poll_work+0x26/0x80 [ib_core]
-[  226.060257]  process_one_work+0x1a7/0x360
-[  226.060367]  ? create_worker+0x1a0/0x1a0
-[  226.060440]  worker_thread+0x30/0x390
-[  226.060500]  ? create_worker+0x1a0/0x1a0
-[  226.060574]  kthread+0x116/0x130
-[  226.060661]  ? kthread_flush_work_fn+0x10/0x10
-[  226.060724]  ret_from_fork+0x35/0x40
-...
+  - Remove __init
+  - Remove EXPORT_SYMBOL
 
-Signed-off-by: Kinglong Mee <kinglongmee@gmail.com>
-Reviewed-by: Chuck Lever <chuck.lever@oracle.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+I chose the latter for this case because the caller (net/ipv6/seg6.c)
+and the callee (net/ipv6/seg6_hmac.c) belong to the same module.
+It seems an internal function call in ipv6.ko.
+
+Fixes: bf355b8d2c30 ("ipv6: sr: add core files for SR HMAC support")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/xprtrdma/rpc_rdma.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ net/ipv6/seg6_hmac.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/net/sunrpc/xprtrdma/rpc_rdma.c b/net/sunrpc/xprtrdma/rpc_rdma.c
-index f2eaf264726b..3d65a2bccfc7 100644
---- a/net/sunrpc/xprtrdma/rpc_rdma.c
-+++ b/net/sunrpc/xprtrdma/rpc_rdma.c
-@@ -980,6 +980,7 @@ static bool
- rpcrdma_is_bcall(struct rpcrdma_xprt *r_xprt, struct rpcrdma_rep *rep)
- #if defined(CONFIG_SUNRPC_BACKCHANNEL)
+diff --git a/net/ipv6/seg6_hmac.c b/net/ipv6/seg6_hmac.c
+index 8546f94f30d4..a886a8f4c0cb 100644
+--- a/net/ipv6/seg6_hmac.c
++++ b/net/ipv6/seg6_hmac.c
+@@ -406,7 +406,6 @@ int __init seg6_hmac_init(void)
  {
-+	struct rpc_xprt *xprt = &r_xprt->rx_xprt;
- 	struct xdr_stream *xdr = &rep->rr_stream;
- 	__be32 *p;
+ 	return seg6_hmac_init_algo();
+ }
+-EXPORT_SYMBOL(seg6_hmac_init);
  
-@@ -1003,6 +1004,10 @@ rpcrdma_is_bcall(struct rpcrdma_xprt *r_xprt, struct rpcrdma_rep *rep)
- 	if (*p != cpu_to_be32(RPC_CALL))
- 		return false;
- 
-+	/* No bc service. */
-+	if (xprt->bc_serv == NULL)
-+		return false;
-+
- 	/* Now that we are sure this is a backchannel call,
- 	 * advance to the RPC header.
- 	 */
+ int __net_init seg6_hmac_net_init(struct net *net)
+ {
 -- 
 2.35.1
 
