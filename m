@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0B78C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:34:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62174CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:34:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377825AbiFMNej (ORCPT
+        id S1377836AbiFMNem (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:34:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51806 "EHLO
+        Mon, 13 Jun 2022 09:34:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378252AbiFMNbH (ORCPT
+        with ESMTP id S1378311AbiFMNbU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:31:07 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CEE56FA18;
-        Mon, 13 Jun 2022 04:25:49 -0700 (PDT)
+        Mon, 13 Jun 2022 09:31:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE716FD2C;
+        Mon, 13 Jun 2022 04:25:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 81CC3CE1171;
-        Mon, 13 Jun 2022 11:25:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51FD9C34114;
-        Mon, 13 Jun 2022 11:25:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 97175B80EA7;
+        Mon, 13 Jun 2022 11:25:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0964BC34114;
+        Mon, 13 Jun 2022 11:25:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119545;
-        bh=/2108pRDFRfrsSrSUV7Yy/lazrzX7KKagVieVpc9FoE=;
+        s=korg; t=1655119551;
+        bh=dHrpiGBjW9rbIO3xNAUzBvjMwbqUsruwtApSEy5CXQc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vSzJElPfR8eY9wE59zNg/uOQTpfprYGCk/UuotySXyVgYEvkmxvLL+qG+GnAahl9v
-         7xof9n+5gGq+n6s1CCCfIjQaN8ByMoCn6sS7e6kr5XNABrvlwVEl20qh+PGXovmNCB
-         OAH1/k/eRFG6i36MhORoGDdtkL9qFAFWGGEv18Vc=
+        b=mvVJn+MbdjDJplpZevE1DzRDvI3S4Ch1gHt2izLeL97SIGpZs8oy6JUl1ECFOF30p
+         MRnkpBn70/AWVfANQa2Xwcf9VMvdSY3g8G+9SFCRjbqKLEA5wzQIg9kb82z+uTids7
+         29GdSFoY9SdR1XdmEKUNapALbBF6Ic0HIHtMo1E4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 052/339] soundwire: qcom: return error when pm_runtime_get_sync fails
-Date:   Mon, 13 Jun 2022 12:07:57 +0200
-Message-Id: <20220613094928.101275873@linuxfoundation.org>
+        stable@vger.kernel.org, Xin Xiong <xiongx18@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>,
+        Namjae Jeon <linkinjeon@kernel.org>,
+        Steve French <stfrench@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 054/339] ksmbd: fix reference count leak in smb_check_perm_dacl()
+Date:   Mon, 13 Jun 2022 12:07:59 +0200
+Message-Id: <20220613094928.161742164@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -53,45 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Xin Xiong <xiongx18@fudan.edu.cn>
 
-[ Upstream commit f6ee6c8499226eb158ca30457d346511f5e329ce ]
+[ Upstream commit d21a580dafc69aa04f46e6099616146a536b0724 ]
 
-For some reason there's a missing error return in two places.
+The issue happens in a specific path in smb_check_perm_dacl(). When
+"id" and "uid" have the same value, the function simply jumps out of
+the loop without decrementing the reference count of the object
+"posix_acls", which is increased by get_acl() earlier. This may
+result in memory leaks.
 
-Fixes: 74e79da9fd46a ("soundwire: qcom: add runtime pm support")
-Fixes: 04d46a7b38375 ("soundwire: qcom: add in-band wake up interrupt support")
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Link: https://lore.kernel.org/r/20220426235623.4253-2-yung-chuan.liao@linux.intel.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fix it by decreasing the reference count of "posix_acls" before
+jumping to label "check_access_bits".
+
+Fixes: 777cad1604d6 ("ksmbd: remove select FS_POSIX_ACL in Kconfig")
+Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
+Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+Acked-by: Namjae Jeon <linkinjeon@kernel.org>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soundwire/qcom.c | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/ksmbd/smbacl.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
-index dd9f67f895b2..b38525b35bec 100644
---- a/drivers/soundwire/qcom.c
-+++ b/drivers/soundwire/qcom.c
-@@ -516,6 +516,7 @@ static irqreturn_t qcom_swrm_wake_irq_handler(int irq, void *dev_id)
- 				    "pm_runtime_get_sync failed in %s, ret %d\n",
- 				    __func__, ret);
- 		pm_runtime_put_noidle(swrm->dev);
-+		return ret;
- 	}
- 
- 	if (swrm->wake_irq > 0) {
-@@ -1258,6 +1259,7 @@ static int swrm_reg_show(struct seq_file *s_file, void *data)
- 				    "pm_runtime_get_sync failed in %s, ret %d\n",
- 				    __func__, ret);
- 		pm_runtime_put_noidle(swrm->dev);
-+		return ret;
- 	}
- 
- 	for (reg = 0; reg <= SWR_MSTR_MAX_REG_ADDR; reg += 4) {
+diff --git a/fs/ksmbd/smbacl.c b/fs/ksmbd/smbacl.c
+index 6ecf55ea1fed..38f23bf981ac 100644
+--- a/fs/ksmbd/smbacl.c
++++ b/fs/ksmbd/smbacl.c
+@@ -1261,6 +1261,7 @@ int smb_check_perm_dacl(struct ksmbd_conn *conn, struct path *path,
+ 					if (!access_bits)
+ 						access_bits =
+ 							SET_MINIMUM_RIGHTS;
++					posix_acl_release(posix_acls);
+ 					goto check_access_bits;
+ 				}
+ 			}
 -- 
 2.35.1
 
