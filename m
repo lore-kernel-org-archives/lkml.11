@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8F5DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:40:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59AFDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:40:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355268AbiFMLkO (ORCPT
+        id S1355363AbiFMLkR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:40:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56650 "EHLO
+        Mon, 13 Jun 2022 07:40:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355217AbiFMLay (ORCPT
+        with ESMTP id S1355254AbiFMLa7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:30:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B9F419A2;
-        Mon, 13 Jun 2022 03:46:53 -0700 (PDT)
+        Mon, 13 Jun 2022 07:30:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1357F41F92;
+        Mon, 13 Jun 2022 03:47:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 90E08B80D3B;
-        Mon, 13 Jun 2022 10:46:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EECD6C34114;
-        Mon, 13 Jun 2022 10:46:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 533DF61257;
+        Mon, 13 Jun 2022 10:46:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57F56C34114;
+        Mon, 13 Jun 2022 10:46:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117210;
-        bh=4uPzDoDtm+L7EnFXiMH8EH9hH4YgpoC0Sl0c04Rut6E=;
+        s=korg; t=1655117218;
+        bh=MPbYGSYDH4oLsp81M+7tzECJbGhkal0aiEE+3tdFE/E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y7U0ol3PnFCqdlMk6Sc4gMiolQ3gP0DGc6AkmSK9jX0QjAaPPZHJ70yqb1PHGUsu8
-         I2nJhWT7SmMunHlRGqZEI4HMYjSYqfaPit2WafYc0yZ3uIbxylRGeEwjykFfMiqU8X
-         LejUMaA3IJv9CLjVp5H9U9S6Bhb1MDCFyNYy1FOQ=
+        b=vbIev4FoiagObwe4Yw68Iw/8Gt6c6p1eGfrZyjwpyhyt2BL5ATxjOZ34bMjO0I2L+
+         iVUcnrd14Il0RoohqNkO50362TwPZAD6A1BqSvYflPfc0dGgJGHCagXPGI2Z+RrX9F
+         SZINN1d75yfEdK76NPopX2wRzdMKJZdS4ZobuFw8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
-        Richard Weinberger <richard@nod.at>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 328/411] ubi: ubi_create_volume: Fix use-after-free when volume creation failed
-Date:   Mon, 13 Jun 2022 12:10:01 +0200
-Message-Id: <20220613094938.562932574@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Marios Levogiannis <marios.levogiannis@gmail.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 4.19 002/287] ALSA: hda/realtek - Fix microphone noise on ASUS TUF B550M-PLUS
+Date:   Mon, 13 Jun 2022 12:07:06 +0200
+Message-Id: <20220613094923.913702439@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
+References: <20220613094923.832156175@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,48 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhihao Cheng <chengzhihao1@huawei.com>
+From: Marios Levogiannis <marios.levogiannis@gmail.com>
 
-[ Upstream commit 8c03a1c21d72210f81cb369cc528e3fde4b45411 ]
+commit 9bfa7b36343c7d84370bc61c9ed774635b05e4eb upstream.
 
-There is an use-after-free problem for 'eba_tbl' in ubi_create_volume()'s
-error handling path:
+Set microphone pins 0x18 (rear) and 0x19 (front) to VREF_50 to fix the
+microphone noise on ASUS TUF B550M-PLUS which uses the ALCS1200A codec.
+The initial value was VREF_80.
 
-  ubi_eba_replace_table(vol, eba_tbl)
-    vol->eba_tbl = tbl
-out_mapping:
-  ubi_eba_destroy_table(eba_tbl)   // Free 'eba_tbl'
-out_unlock:
-  put_device(&vol->dev)
-    vol_release
-      kfree(tbl->entries)	  // UAF
+The same issue is also present on Windows using both the default Windows
+driver and all tested Realtek drivers before version 6.0.9049.1. Comparing
+Realtek driver 6.0.9049.1 (the first one without the microphone noise) to
+Realtek driver 6.0.9047.1 (the last one with the microphone noise)
+revealed that the fix is the result of setting pins 0x18 and 0x19 to
+VREF_50.
 
-Fix it by removing redundant 'eba_tbl' releasing.
-Fetch a reproducer in [Link].
+This fix may also work for other boards that have been reported to have
+the same microphone issue and use the ALC1150 and ALCS1200A codecs, since
+these codecs are similar and the fix in the Realtek driver on Windows is
+common for both. However, it is currently enabled only for ASUS TUF
+B550M-PLUS as this is the only board that could be tested.
 
-Fixes: 493cfaeaa0c9b ("mtd: utilize new cdev_device_add helper function")
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215965
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Marios Levogiannis <marios.levogiannis@gmail.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220530074131.12258-1-marios.levogiannis@gmail.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mtd/ubi/vmt.c | 1 -
- 1 file changed, 1 deletion(-)
+ sound/pci/hda/patch_realtek.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/mtd/ubi/vmt.c b/drivers/mtd/ubi/vmt.c
-index 1bc7b3a05604..6ea95ade4ca6 100644
---- a/drivers/mtd/ubi/vmt.c
-+++ b/drivers/mtd/ubi/vmt.c
-@@ -309,7 +309,6 @@ int ubi_create_volume(struct ubi_device *ubi, struct ubi_mkvol_req *req)
- 	ubi->volumes[vol_id] = NULL;
- 	ubi->vol_count -= 1;
- 	spin_unlock(&ubi->volumes_lock);
--	ubi_eba_destroy_table(eba_tbl);
- out_acc:
- 	spin_lock(&ubi->volumes_lock);
- 	ubi->rsvd_pebs -= vol->reserved_pebs;
--- 
-2.35.1
-
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -1916,6 +1916,7 @@ enum {
+ 	ALC1220_FIXUP_CLEVO_PB51ED_PINS,
+ 	ALC887_FIXUP_ASUS_AUDIO,
+ 	ALC887_FIXUP_ASUS_HMIC,
++	ALCS1200A_FIXUP_MIC_VREF,
+ };
+ 
+ static void alc889_fixup_coef(struct hda_codec *codec,
+@@ -2461,6 +2462,14 @@ static const struct hda_fixup alc882_fix
+ 		.chained = true,
+ 		.chain_id = ALC887_FIXUP_ASUS_AUDIO,
+ 	},
++	[ALCS1200A_FIXUP_MIC_VREF] = {
++		.type = HDA_FIXUP_PINCTLS,
++		.v.pins = (const struct hda_pintbl[]) {
++			{ 0x18, PIN_VREF50 }, /* rear mic */
++			{ 0x19, PIN_VREF50 }, /* front mic */
++			{}
++		}
++	},
+ };
+ 
+ static const struct snd_pci_quirk alc882_fixup_tbl[] = {
+@@ -2498,6 +2507,7 @@ static const struct snd_pci_quirk alc882
+ 	SND_PCI_QUIRK(0x1043, 0x835f, "Asus Eee 1601", ALC888_FIXUP_EEE1601),
+ 	SND_PCI_QUIRK(0x1043, 0x84bc, "ASUS ET2700", ALC887_FIXUP_ASUS_BASS),
+ 	SND_PCI_QUIRK(0x1043, 0x8691, "ASUS ROG Ranger VIII", ALC882_FIXUP_GPIO3),
++	SND_PCI_QUIRK(0x1043, 0x8797, "ASUS TUF B550M-PLUS", ALCS1200A_FIXUP_MIC_VREF),
+ 	SND_PCI_QUIRK(0x104d, 0x9043, "Sony Vaio VGC-LN51JGB", ALC882_FIXUP_NO_PRIMARY_HP),
+ 	SND_PCI_QUIRK(0x104d, 0x9044, "Sony VAIO AiO", ALC882_FIXUP_NO_PRIMARY_HP),
+ 	SND_PCI_QUIRK(0x104d, 0x9047, "Sony Vaio TT", ALC889_FIXUP_VAIO_TT),
 
 
