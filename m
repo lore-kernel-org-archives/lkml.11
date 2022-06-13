@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19CDECCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D1E7CCA480
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:55:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357312AbiFMLxx (ORCPT
+        id S1357338AbiFMLx5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:53:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56610 "EHLO
+        Mon, 13 Jun 2022 07:53:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356694AbiFMLt1 (ORCPT
+        with ESMTP id S1356619AbiFMLtV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:49:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD9384D26A;
-        Mon, 13 Jun 2022 03:53:14 -0700 (PDT)
+        Mon, 13 Jun 2022 07:49:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C44B84CD57;
+        Mon, 13 Jun 2022 03:53:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 45E3B6135F;
-        Mon, 13 Jun 2022 10:53:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 275DBC3411C;
-        Mon, 13 Jun 2022 10:53:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5B29FB80D3A;
+        Mon, 13 Jun 2022 10:53:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3DCAC34114;
+        Mon, 13 Jun 2022 10:53:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117593;
-        bh=2HQSmBnichybBCDp3mrh9Rp8FHzNIOjhmd7G3VIkAU0=;
+        s=korg; t=1655117588;
+        bh=3K7C41fTffbQ/v6QxeTjmJCyuQRwcrtVfBjKF8Xfi4A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZG/l2uUt1vcGo3MOK5Lxk/e2owBmpp81TvGaEcYmlhPQs6hjT+W+BBaY8UYVVXeMn
-         svabYLyC1YLMD9Ok9jsDZ/AytYuLuPRDMi7QHYuliz1Pf722tzoTUFxMchGVvUgQ/r
-         Ttz4QgER+YdvpvXa92Elj6qZKqqOgaz0dp/wbnEg=
+        b=CVdY6Q+PY2d878jBk1losPiAapuey0Dm9tGw2aHFt8IzzUDOEouSgoTC+M7ELR9Or
+         ZYwH/lB5uDiXxm0gb2mglR3o+Kha6Tkaz7vYmkERrEooS7uLHIUkb/JQ556u8mTzGP
+         utFe+TzfmrBKoQuGITIwcznfnCJop7rtkWl5UyQ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Guenter Roeck <groeck@chromium.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 405/411] nfc: st21nfca: fix memory leaks in EVT_TRANSACTION handling
-Date:   Mon, 13 Jun 2022 12:11:18 +0200
-Message-Id: <20220613094940.966488160@linuxfoundation.org>
+Subject: [PATCH 5.4 404/411] nfc: st21nfca: fix incorrect validating logic in EVT_TRANSACTION
+Date:   Mon, 13 Jun 2022 12:11:17 +0200
+Message-Id: <20220613094940.936815006@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -53,13 +53,14 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Martin Faltesek <mfaltesek@google.com>
 
-commit 996419e0594abb311fb958553809f24f38e7abbe upstream.
+commit 77e5fe8f176a525523ae091d6fd0fbb8834c156d upstream.
 
-Error paths do not free previously allocated memory. Add devm_kfree() to
-those failure paths.
+The first validation check for EVT_TRANSACTION has two different checks
+tied together with logical AND. One is a check for minimum packet length,
+and the other is for a valid aid_tag. If either condition is true (fails),
+then an error should be triggered.  The fix is to change && to ||.
 
 Fixes: 26fc6c7f02cb ("NFC: st21nfca: Add HCI transaction event support")
-Fixes: 4fbcc1a4cb20 ("nfc: st21nfca: Fix potential buffer overflows in EVT_TRANSACTION")
 Cc: stable@vger.kernel.org
 Signed-off-by: Martin Faltesek <mfaltesek@google.com>
 Reviewed-by: Guenter Roeck <groeck@chromium.org>
@@ -67,43 +68,19 @@ Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nfc/st21nfca/se.c |   13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ drivers/nfc/st21nfca/se.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 --- a/drivers/nfc/st21nfca/se.c
 +++ b/drivers/nfc/st21nfca/se.c
-@@ -331,22 +331,29 @@ int st21nfca_connectivity_event_received
- 		transaction->aid_len = skb->data[1];
- 
- 		/* Checking if the length of the AID is valid */
--		if (transaction->aid_len > sizeof(transaction->aid))
-+		if (transaction->aid_len > sizeof(transaction->aid)) {
-+			devm_kfree(dev, transaction);
- 			return -EINVAL;
-+		}
- 
- 		memcpy(transaction->aid, &skb->data[2],
- 		       transaction->aid_len);
- 
- 		/* Check next byte is PARAMETERS tag (82) */
- 		if (skb->data[transaction->aid_len + 2] !=
--		    NFC_EVT_TRANSACTION_PARAMS_TAG)
-+		    NFC_EVT_TRANSACTION_PARAMS_TAG) {
-+			devm_kfree(dev, transaction);
+@@ -319,7 +319,7 @@ int st21nfca_connectivity_event_received
+ 		 * AID		81	5 to 16
+ 		 * PARAMETERS	82	0 to 255
+ 		 */
+-		if (skb->len < NFC_MIN_AID_LENGTH + 2 &&
++		if (skb->len < NFC_MIN_AID_LENGTH + 2 ||
+ 		    skb->data[0] != NFC_EVT_TRANSACTION_AID_TAG)
  			return -EPROTO;
-+		}
  
- 		transaction->params_len = skb->data[transaction->aid_len + 3];
- 
- 		/* Total size is allocated (skb->len - 2) minus fixed array members */
--		if (transaction->params_len > ((skb->len - 2) - sizeof(struct nfc_evt_transaction)))
-+		if (transaction->params_len > ((skb->len - 2) -
-+		    sizeof(struct nfc_evt_transaction))) {
-+			devm_kfree(dev, transaction);
- 			return -EINVAL;
-+		}
- 
- 		memcpy(transaction->params, skb->data +
- 		       transaction->aid_len + 4, transaction->params_len);
 
 
