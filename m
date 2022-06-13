@@ -2,101 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 233DCC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:16:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC4F9C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:16:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359773AbiFMNQf (ORCPT
+        id S1359816AbiFMNQr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:16:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35930 "EHLO
+        Mon, 13 Jun 2022 09:16:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359205AbiFMNJm (ORCPT
+        with ESMTP id S1359302AbiFMNJr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:09:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 294BB38D84;
-        Mon, 13 Jun 2022 04:19:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA6C6B80D3A;
-        Mon, 13 Jun 2022 11:19:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51E60C34114;
-        Mon, 13 Jun 2022 11:19:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119166;
-        bh=WanT25jlSxEd+8KaNIKchPADk9tb+27J3bIDNrN2/tg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qR50NjxoSjdFofY7cfUdHIzY8bfY3+A/tdXYtDW72YRpXXd07QNSMeiso8Zh++Ouy
-         79I2rEDXLr5ofTZ1euR0Cr0Rs5kCbvt8yhRvnyfWE3fL2pb3JpTCUD+edlv60qKofE
-         XXFhcUcEKgPFV0odAhM5XCwwrFiKBgBM5SxeSmP4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 138/247] ata: pata_octeon_cf: Fix refcount leak in octeon_cf_probe
-Date:   Mon, 13 Jun 2022 12:10:40 +0200
-Message-Id: <20220613094927.141737910@linuxfoundation.org>
+        Mon, 13 Jun 2022 09:09:47 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 554DF28E06;
+        Mon, 13 Jun 2022 04:20:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1655119203; x=1686655203;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=+Z7LwiQq63QPFqjyunT+jVzk6Ngr6unTuvtymNkZK5w=;
+  b=BwOmVlLlT7k5TNs7jMUOTyPwLc5tdDeGjHhHgDoswAUc8W3cwEJfoM8w
+   IdZj8+n53cAuyS3hbmUuUAGKQOz6FzL6AkQQjWxNoJmAPLNw/UtkOFtsg
+   LuT2O2DzMLlzL/ko60/xFzI2Y6gvNrjSEB+vMDQLmVQDZnBSd57GQeY7l
+   MsLqI+ses+XeT8bx2+efY3Ej3sslpxLnKBWk3rz4+q46wHEBWE/ZXufVx
+   E33cdhMUB4Ea1hnQ7KzljIBaY0qG3iCub9uC4A4f9RLh/AWVcPYTJZjCb
+   a2jHXoJvZNSRD1KmhQl0kKz0YXuENpVCd/ZPirJiSp6jzWo8eqvGNfhlK
+   A==;
+X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
+   d="scan'208";a="163066291"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Jun 2022 04:20:02 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 13 Jun 2022 04:20:01 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Mon, 13 Jun 2022 04:19:59 -0700
+From:   Conor Dooley <conor.dooley@microchip.com>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        "Lee Jones" <lee.jones@linaro.org>
+CC:     Daire McNamara <daire.mcnamara@microchip.com>,
+        <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
+        <linux-riscv@lists.infradead.org>,
+        Conor Dooley <conor.dooley@microchip.com>
+Subject: [PATCH v2 0/2] Add support for Microchip's pwm fpga core
+Date:   Mon, 13 Jun 2022 12:17:58 +0100
+Message-ID: <20220613111759.1550578-1-conor.dooley@microchip.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
-References: <20220613094922.843438024@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+Hey Uwe,
+Got a v2 for you...
+I added some comments explaining the calculations and a documentation link
+so hopefully things are a bit easier to follow.
 
-[ Upstream commit 10d6bdf532902be1d8aa5900b3c03c5671612aa2 ]
+Code wise, I went through and sorted out a bunch of issues that cycling
+through the different periods/duties threw up. Along the way I found
+some other problems - especially with the longer periods which I have
+fixed. I also added a write to the sync register in the apply function,
+which will resolve to a NOP for channels without "shadow registers".
 
-of_find_device_by_node() takes reference, we should use put_device()
-to release it when not need anymore.
-Add missing put_device() to avoid refcount leak.
+Other than that, I managed to ditch the mchp_core_pwm_registers struct
+entirely but had to add a short delay before reading back the registers
+in order to compute the duty.
 
-Fixes: 43f01da0f279 ("MIPS/OCTEON/ata: Convert pata_octeon_cf.c to use device tree.")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/ata/pata_octeon_cf.c | 3 +++
- 1 file changed, 3 insertions(+)
+Thanks,
+Conor.
 
-diff --git a/drivers/ata/pata_octeon_cf.c b/drivers/ata/pata_octeon_cf.c
-index b5a3f710d76d..4cc8a1027888 100644
---- a/drivers/ata/pata_octeon_cf.c
-+++ b/drivers/ata/pata_octeon_cf.c
-@@ -888,12 +888,14 @@ static int octeon_cf_probe(struct platform_device *pdev)
- 				int i;
- 				res_dma = platform_get_resource(dma_dev, IORESOURCE_MEM, 0);
- 				if (!res_dma) {
-+					put_device(&dma_dev->dev);
- 					of_node_put(dma_node);
- 					return -EINVAL;
- 				}
- 				cf_port->dma_base = (u64)devm_ioremap(&pdev->dev, res_dma->start,
- 									 resource_size(res_dma));
- 				if (!cf_port->dma_base) {
-+					put_device(&dma_dev->dev);
- 					of_node_put(dma_node);
- 					return -EINVAL;
- 				}
-@@ -903,6 +905,7 @@ static int octeon_cf_probe(struct platform_device *pdev)
- 					irq = i;
- 					irq_handler = octeon_cf_interrupt;
- 				}
-+				put_device(&dma_dev->dev);
- 			}
- 			of_node_put(dma_node);
- 		}
+Changes from v1:
+- account for edge "quirk" while inverted
+- block changing enabled channels' period
+- document the hardware/driver limitations
+- rearrange get_state() more logically
+- fix cast sizes in get_state()
+- fix remove() and probe error paths
+- delete mchp_core_pwm_registers
+- simplify .apply() logic
+- don't warn in calculate_base()
+- fix period calculation
+- fix duty cycle calculation
+- add COREPWM prefix to defines
+- add a documentation link
+
+Conor Dooley (2):
+  pwm: add microchip soft ip corePWM driver
+  MAINTAINERS: add pwm to PolarFire SoC entry
+
+ MAINTAINERS                      |   1 +
+ drivers/pwm/Kconfig              |  10 +
+ drivers/pwm/Makefile             |   1 +
+ drivers/pwm/pwm-microchip-core.c | 310 +++++++++++++++++++++++++++++++
+ 4 files changed, 322 insertions(+)
+ create mode 100644 drivers/pwm/pwm-microchip-core.c
+
+
+base-commit: 61114e734ccb804bc12561ab4020745e02c468c2
 -- 
-2.35.1
-
-
+2.36.1
 
