@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F04C8CCA483
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:34:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE55C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:34:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343994AbiFMKdf (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:33:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42486 "EHLO
+        id S236882AbiFMKes (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:34:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346594AbiFMKbA (ORCPT
+        with ESMTP id S1346880AbiFMKbl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:31:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75FC526AED;
-        Mon, 13 Jun 2022 03:21:30 -0700 (PDT)
+        Mon, 13 Jun 2022 06:31:41 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B49B3275F4;
+        Mon, 13 Jun 2022 03:21:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F2353B80E95;
-        Mon, 13 Jun 2022 10:21:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 631ECC36B00;
-        Mon, 13 Jun 2022 10:21:27 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C0286CE1167;
+        Mon, 13 Jun 2022 10:21:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF867C34114;
+        Mon, 13 Jun 2022 10:21:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115687;
-        bh=VLAUu/pBbU0WbMGamu1ApVdJKC+8dNefuYHs3rDbbgo=;
+        s=korg; t=1655115693;
+        bh=uKnl2EJ1eFFTQAHXO15f5y/ajrIMAWXllM2S4FtiUA4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0KFJ4D+UXMGCndIqa0FgsjqCv9mAfVkBOUUSHuP0R5fUtT5R+j95IohCSQFciN515
-         k5X8UaIDTOnok1IMNrijxuRYzngSXbDuSyYaMu6Qh/+L8xeorCY2Hmhj8B3NTrzPj/
-         Jf6uQaGt5hNgXkZ08lEGtXnc48fckZompKsrP2ew=
+        b=kpskR6ozVvsVOgQPGrDcvx/Wd8tqJQG81ayDnZfM+EsT7d1RFBGFge2EY41fkWvZ9
+         cNefxYtWKmhUNS0LLsQDqX7XEVQSbcpkysWhYX3jMJXuYo8HPRabL8M1lh+jWe3aI7
+         iIHvwukHE4Sw+zd+qsstu0+j/lE+5+F7G2eVvdTs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Martin Faltesek <mfaltesek@google.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.9 162/167] nfc: st21nfca: fix memory leaks in EVT_TRANSACTION handling
-Date:   Mon, 13 Jun 2022 12:10:36 +0200
-Message-Id: <20220613094918.973482189@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>
+Subject: [PATCH 4.9 167/167] PCI: qcom: Fix unbalanced PHY init on probe errors
+Date:   Mon, 13 Jun 2022 12:10:41 +0200
+Message-Id: <20220613094920.173799133@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -51,59 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Faltesek <mfaltesek@google.com>
+From: Johan Hovold <johan+linaro@kernel.org>
 
-commit 996419e0594abb311fb958553809f24f38e7abbe upstream.
+commit 83013631f0f9961416abd812e228c8efbc2f6069 upstream.
 
-Error paths do not free previously allocated memory. Add devm_kfree() to
-those failure paths.
+Undo the PHY initialisation (e.g. balance runtime PM) if host
+initialisation fails during probe.
 
-Fixes: 26fc6c7f02cb ("NFC: st21nfca: Add HCI transaction event support")
-Fixes: 4fbcc1a4cb20 ("nfc: st21nfca: Fix potential buffer overflows in EVT_TRANSACTION")
-Cc: stable@vger.kernel.org
-Signed-off-by: Martin Faltesek <mfaltesek@google.com>
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Link: https://lore.kernel.org/r/20220401133854.10421-3-johan+linaro@kernel.org
+Fixes: 82a823833f4e ("PCI: qcom: Add Qualcomm PCIe controller driver")
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Acked-by: Stanimir Varbanov <svarbanov@mm-sol.com>
+Cc: stable@vger.kernel.org      # 4.5
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nfc/st21nfca/se.c |   13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ drivers/pci/host/pcie-qcom.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/drivers/nfc/st21nfca/se.c
-+++ b/drivers/nfc/st21nfca/se.c
-@@ -332,22 +332,29 @@ int st21nfca_connectivity_event_received
- 		transaction->aid_len = skb->data[1];
+--- a/drivers/pci/host/pcie-qcom.c
++++ b/drivers/pci/host/pcie-qcom.c
+@@ -562,10 +562,15 @@ static int qcom_pcie_probe(struct platfo
+ 	ret = dw_pcie_host_init(pp);
+ 	if (ret) {
+ 		dev_err(dev, "cannot initialize host\n");
+-		return ret;
++		goto err_phy_exit;
+ 	}
  
- 		/* Checking if the length of the AID is valid */
--		if (transaction->aid_len > sizeof(transaction->aid))
-+		if (transaction->aid_len > sizeof(transaction->aid)) {
-+			devm_kfree(dev, transaction);
- 			return -EINVAL;
-+		}
+ 	return 0;
++
++err_phy_exit:
++	phy_exit(pcie->phy);
++
++	return ret;
+ }
  
- 		memcpy(transaction->aid, &skb->data[2],
- 		       transaction->aid_len);
- 
- 		/* Check next byte is PARAMETERS tag (82) */
- 		if (skb->data[transaction->aid_len + 2] !=
--		    NFC_EVT_TRANSACTION_PARAMS_TAG)
-+		    NFC_EVT_TRANSACTION_PARAMS_TAG) {
-+			devm_kfree(dev, transaction);
- 			return -EPROTO;
-+		}
- 
- 		transaction->params_len = skb->data[transaction->aid_len + 3];
- 
- 		/* Total size is allocated (skb->len - 2) minus fixed array members */
--		if (transaction->params_len > ((skb->len - 2) - sizeof(struct nfc_evt_transaction)))
-+		if (transaction->params_len > ((skb->len - 2) -
-+		    sizeof(struct nfc_evt_transaction))) {
-+			devm_kfree(dev, transaction);
- 			return -EINVAL;
-+		}
- 
- 		memcpy(transaction->params, skb->data +
- 		       transaction->aid_len + 4, transaction->params_len);
+ static const struct of_device_id qcom_pcie_match[] = {
 
 
