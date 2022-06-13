@@ -2,42 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C2E1CCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D9CCCCA483
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:34:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354856AbiFMLeL (ORCPT
+        id S1354815AbiFMLeJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:34:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45960 "EHLO
+        Mon, 13 Jun 2022 07:34:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354388AbiFML30 (ORCPT
+        with ESMTP id S1354370AbiFML3X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:29:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE271DE90;
-        Mon, 13 Jun 2022 03:43:54 -0700 (PDT)
+        Mon, 13 Jun 2022 07:29:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80D012314F;
+        Mon, 13 Jun 2022 03:43:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 697E760FDB;
-        Mon, 13 Jun 2022 10:43:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7478DC34114;
-        Mon, 13 Jun 2022 10:43:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2850FB80D3B;
+        Mon, 13 Jun 2022 10:43:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5905EC34114;
+        Mon, 13 Jun 2022 10:43:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117033;
-        bh=7rZF2IHgBj9mwQs69gc9xvfSda+RUPXmcviHiBRUdWU=;
+        s=korg; t=1655117014;
+        bh=1deBv8pWO4EhlblSV+d3qc0OS1zA34siQuYQ1ppkR98=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cg7JnBReY7blu3RiNx6rRXH3GtD7l0RsvlCe/ZqOTUm5yhyXn0DJGdWPuCuCaUFTa
-         vUsQq0zVfs+P4Klz1hs+kzKd3CKZ3YP+mW8ItfP09k0Kcdxcs10vGm2bu6OZr3Z8Ug
-         p+pIVLfK3YUBezxF463tBF/gWLDsW4QMxeNsu7Rs=
+        b=bxcBibQvBElkkDbmkwCo0mKwVVL7xeDVGL6wQvvKMOetj2sXXnNDgMa1XkYOpE91L
+         DByhTGyRmlM32GoRTTmCZdry1hjZ/FNY1zetXQ5d42WpBBcO1mXtgzDM7jQWApo0sU
+         Qaa1q5VTBEjJpJq69E7Xpnl0NI1em+K3xS2iRwrs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Jyri Sarha <jyri.sarha@iki.fi>
-Subject: [PATCH 5.4 262/411] tilcdc: tilcdc_external: fix an incorrect NULL check on list iterator
-Date:   Mon, 13 Jun 2022 12:08:55 +0200
-Message-Id: <20220613094936.619869235@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe de Dinechin <christophe@dinechin.org>,
+        Christophe de Dinechin <dinechin@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ben Segall <bsegall@google.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, Mel Gorman <mgorman@suse.de>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: [PATCH 5.4 256/411] nodemask.h: fix compilation error with GCC12
+Date:   Mon, 13 Jun 2022 12:08:49 +0200
+Message-Id: <20220613094936.441817314@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -49,52 +63,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Christophe de Dinechin <dinechin@redhat.com>
 
-commit 8b917cbe38e9b0d002492477a9fc2bfee2412ce4 upstream.
+commit 37462a920392cb86541650a6f4121155f11f1199 upstream.
 
-The bug is here:
-	if (!encoder) {
+With gcc version 12.0.1 20220401 (Red Hat 12.0.1-0), building with
+defconfig results in the following compilation error:
 
-The list iterator value 'encoder' will *always* be set and non-NULL
-by list_for_each_entry(), so it is incorrect to assume that the
-iterator value will be NULL if the list is empty or no element
-is found.
+|   CC      mm/swapfile.o
+| mm/swapfile.c: In function `setup_swap_info':
+| mm/swapfile.c:2291:47: error: array subscript -1 is below array bounds
+|  of `struct plist_node[]' [-Werror=array-bounds]
+|  2291 |                                 p->avail_lists[i].prio = 1;
+|       |                                 ~~~~~~~~~~~~~~^~~
+| In file included from mm/swapfile.c:16:
+| ./include/linux/swap.h:292:27: note: while referencing `avail_lists'
+|   292 |         struct plist_node avail_lists[]; /*
+|       |                           ^~~~~~~~~~~
 
-To fix the bug, use a new variable 'iter' as the list iterator,
-while use the original variable 'encoder' as a dedicated pointer
-to point to the found element.
+This is due to the compiler detecting that the mask in
+node_states[__state] could theoretically be zero, which would lead to
+first_node() returning -1 through find_first_bit.
 
-Cc: stable@vger.kernel.org
-Fixes: ec9eab097a500 ("drm/tilcdc: Add drm bridge support for attaching drm bridge drivers")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Reviewed-by: Jyri Sarha <jyri.sarha@iki.fi>
-Tested-by: Jyri Sarha <jyri.sarha@iki.fi>
-Signed-off-by: Jyri Sarha <jyri.sarha@iki.fi>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220327061516.5076-1-xiam0nd.tong@gmail.com
+I believe that the warning/error is legitimate.  I first tried adding a
+test to check that the node mask is not emtpy, since a similar test exists
+in the case where MAX_NUMNODES == 1.
+
+However, adding the if statement causes other warnings to appear in
+for_each_cpu_node_but, because it introduces a dangling else ambiguity.
+And unfortunately, GCC is not smart enough to detect that the added test
+makes the case where (node) == -1 impossible, so it still complains with
+the same message.
+
+This is why I settled on replacing that with a harmless, but relatively
+useless (node) >= 0 test.  Based on the warning for the dangling else, I
+also decided to fix the case where MAX_NUMNODES == 1 by moving the
+condition inside the for loop.  It will still only be tested once.  This
+ensures that the meaning of an else following for_each_node_mask or
+derivatives would not silently have a different meaning depending on the
+configuration.
+
+Link: https://lkml.kernel.org/r/20220414150855.2407137-3-dinechin@redhat.com
+Signed-off-by: Christophe de Dinechin <christophe@dinechin.org>
+Signed-off-by: Christophe de Dinechin <dinechin@redhat.com>
+Reviewed-by: Andrew Morton <akpm@linux-foundation.org>
+Cc: Ben Segall <bsegall@google.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Mel Gorman <mgorman@suse.de>
+Cc: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Cc: Vincent Guittot <vincent.guittot@linaro.org>
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Cc: Daniel Bristot de Oliveira <bristot@redhat.com>
+Cc: Jason Wang <jasowang@redhat.com>
+Cc: Zhen Lei <thunder.leizhen@huawei.com>
+Cc: Juri Lelli <juri.lelli@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/tilcdc/tilcdc_external.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ include/linux/nodemask.h |   13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
---- a/drivers/gpu/drm/tilcdc/tilcdc_external.c
-+++ b/drivers/gpu/drm/tilcdc/tilcdc_external.c
-@@ -58,11 +58,13 @@ struct drm_connector *tilcdc_encoder_fin
- int tilcdc_add_component_encoder(struct drm_device *ddev)
- {
- 	struct tilcdc_drm_private *priv = ddev->dev_private;
--	struct drm_encoder *encoder;
-+	struct drm_encoder *encoder = NULL, *iter;
+--- a/include/linux/nodemask.h
++++ b/include/linux/nodemask.h
+@@ -375,14 +375,13 @@ static inline void __nodes_fold(nodemask
+ }
  
--	list_for_each_entry(encoder, &ddev->mode_config.encoder_list, head)
--		if (encoder->possible_crtcs & (1 << priv->crtc->index))
-+	list_for_each_entry(iter, &ddev->mode_config.encoder_list, head)
-+		if (iter->possible_crtcs & (1 << priv->crtc->index)) {
-+			encoder = iter;
- 			break;
-+		}
+ #if MAX_NUMNODES > 1
+-#define for_each_node_mask(node, mask)			\
+-	for ((node) = first_node(mask);			\
+-		(node) < MAX_NUMNODES;			\
+-		(node) = next_node((node), (mask)))
++#define for_each_node_mask(node, mask)				    \
++	for ((node) = first_node(mask);				    \
++	     (node >= 0) && (node) < MAX_NUMNODES;		    \
++	     (node) = next_node((node), (mask)))
+ #else /* MAX_NUMNODES == 1 */
+-#define for_each_node_mask(node, mask)			\
+-	if (!nodes_empty(mask))				\
+-		for ((node) = 0; (node) < 1; (node)++)
++#define for_each_node_mask(node, mask)                                  \
++	for ((node) = 0; (node) < 1 && !nodes_empty(mask); (node)++)
+ #endif /* MAX_NUMNODES */
  
- 	if (!encoder) {
- 		dev_err(ddev->dev, "%s: No suitable encoder found\n", __func__);
+ /*
 
 
