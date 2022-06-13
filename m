@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31682C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:40:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC602C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:40:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346916AbiFMKkW (ORCPT
+        id S1347092AbiFMKke (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:40:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58456 "EHLO
+        Mon, 13 Jun 2022 06:40:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346926AbiFMKiW (ORCPT
+        with ESMTP id S1347001AbiFMKiY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:38:22 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4791713E2F;
-        Mon, 13 Jun 2022 03:23:02 -0700 (PDT)
+        Mon, 13 Jun 2022 06:38:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5334713E8E;
+        Mon, 13 Jun 2022 03:23:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 8E7D8CE110D;
-        Mon, 13 Jun 2022 10:23:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87677C34114;
-        Mon, 13 Jun 2022 10:22:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F1D3EB80E94;
+        Mon, 13 Jun 2022 10:23:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BC12C3411F;
+        Mon, 13 Jun 2022 10:23:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115778;
-        bh=yFAJjDuee0KkcfhDSAPMvVKX9B6AQABnodhfFK3su7I=;
+        s=korg; t=1655115781;
+        bh=OQghg15WTTKbgLw8BNWy3ibXEyUcYovgtnMJ4FXHuMo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fo0y/XcRSGgF4QlX+uFMfWn7Gpkwm4qfkl5gr530ISGGR4p/qO4GH9C7Fx8Cbl7Q8
-         aL9ak6d7fEfMofkeHr4flEBTFUNgXRZzBrCY9gjWSEf7FFckGcZQ5sOXdhbyd38eO5
-         Ntu0sWyzqQaVw+xtZeS0kJLIdQcEVXgmriIr8r4s=
+        b=AxrePapDjA34uqOUTAIBFboj01aFfzojnDxPot5MIhy3TSIgBVBsV1GT8qsGylp7C
+         Ix3NJJnbrWr0sRCp4WSze1XLtWrNPQ7idOTBGSC0fdR+ViYTZYKq1UJKpGGBwB7lVi
+         1/THyI6AukLvgPVb8AKCWcywTyl/VBYVqSO7N5iE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
-        qianfan <qianfanguijin@163.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>, Jonas Bonn <jonas@southpole.se>,
+        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
+        Stafford Horne <shorne@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 038/218] fat: add ratelimit to fat*_ent_bread()
-Date:   Mon, 13 Jun 2022 12:08:16 +0200
-Message-Id: <20220613094917.337367415@linuxfoundation.org>
+Subject: [PATCH 4.14 028/218] openrisc: start CPU timer early in boot
+Date:   Mon, 13 Jun 2022 12:08:06 +0200
+Message-Id: <20220613094914.913605022@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -52,48 +54,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-[ Upstream commit 183c3237c928109d2008c0456dff508baf692b20 ]
+[ Upstream commit 516dd4aacd67a0f27da94f3fe63fe0f4dbab6e2b ]
 
-fat*_ent_bread() can be the cause of too many report on I/O error path.
-So use fat_msg_ratelimit() instead.
+In order to measure the boot process, the timer should be switched on as
+early in boot as possible. As well, the commit defines the get_cycles
+macro, like the previous patches in this series, so that generic code is
+aware that it's implemented by the platform, as is done on other archs.
 
-Link: https://lkml.kernel.org/r/87bkxogfeq.fsf@mail.parknet.co.jp
-Signed-off-by: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
-Reported-by: qianfan <qianfanguijin@163.com>
-Tested-by: qianfan <qianfanguijin@163.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Jonas Bonn <jonas@southpole.se>
+Cc: Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>
+Acked-by: Stafford Horne <shorne@gmail.com>
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/fat/fatent.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ arch/openrisc/include/asm/timex.h | 1 +
+ arch/openrisc/kernel/head.S       | 9 +++++++++
+ 2 files changed, 10 insertions(+)
 
-diff --git a/fs/fat/fatent.c b/fs/fat/fatent.c
-index 24ed1f4e48ae..3ef3e773da1b 100644
---- a/fs/fat/fatent.c
-+++ b/fs/fat/fatent.c
-@@ -92,7 +92,8 @@ static int fat12_ent_bread(struct super_block *sb, struct fat_entry *fatent,
- err_brelse:
- 	brelse(bhs[0]);
- err:
--	fat_msg(sb, KERN_ERR, "FAT read failed (blocknr %llu)", (llu)blocknr);
-+	fat_msg_ratelimit(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
-+			  (llu)blocknr);
- 	return -EIO;
+diff --git a/arch/openrisc/include/asm/timex.h b/arch/openrisc/include/asm/timex.h
+index 9935cad1b9b9..34d015bf0462 100644
+--- a/arch/openrisc/include/asm/timex.h
++++ b/arch/openrisc/include/asm/timex.h
+@@ -27,6 +27,7 @@ static inline cycles_t get_cycles(void)
+ {
+ 	return mfspr(SPR_TTCR);
  }
++#define get_cycles get_cycles
  
-@@ -105,8 +106,8 @@ static int fat_ent_bread(struct super_block *sb, struct fat_entry *fatent,
- 	fatent->fat_inode = MSDOS_SB(sb)->fat_inode;
- 	fatent->bhs[0] = sb_bread(sb, blocknr);
- 	if (!fatent->bhs[0]) {
--		fat_msg(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
--		       (llu)blocknr);
-+		fat_msg_ratelimit(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
-+				  (llu)blocknr);
- 		return -EIO;
- 	}
- 	fatent->nr_bhs = 1;
+ /* This isn't really used any more */
+ #define CLOCK_TICK_RATE 1000
+diff --git a/arch/openrisc/kernel/head.S b/arch/openrisc/kernel/head.S
+index 4d878d13b860..3f1e9d168710 100644
+--- a/arch/openrisc/kernel/head.S
++++ b/arch/openrisc/kernel/head.S
+@@ -459,6 +459,15 @@ _start:
+ 	l.ori	r3,r0,0x1
+ 	l.mtspr	r0,r3,SPR_SR
+ 
++	/*
++	 * Start the TTCR as early as possible, so that the RNG can make use of
++	 * measurements of boot time from the earliest opportunity. Especially
++	 * important is that the TTCR does not return zero by the time we reach
++	 * rand_initialize().
++	 */
++	l.movhi r3,hi(SPR_TTMR_CR)
++	l.mtspr r0,r3,SPR_TTMR
++
+ 	CLEAR_GPR(r1)
+ 	CLEAR_GPR(r2)
+ 	CLEAR_GPR(r3)
 -- 
 2.35.1
 
