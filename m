@@ -2,80 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1030DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 06:13:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0BECC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 06:19:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234963AbiFMGNP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 02:13:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54036 "EHLO
+        id S234380AbiFMGTM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 02:19:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234315AbiFMGNF (ORCPT
+        with ESMTP id S232326AbiFMGS5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 02:13:05 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B29A713F22;
-        Sun, 12 Jun 2022 23:13:04 -0700 (PDT)
-Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LM1PP3ybmzRj08;
-        Mon, 13 Jun 2022 14:09:45 +0800 (CST)
-Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
- dggpeml500020.china.huawei.com (7.185.36.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 13 Jun 2022 14:13:01 +0800
-Received: from zelda.huawei.com (10.175.103.14) by
- dggpeml100012.china.huawei.com (7.185.36.121) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 13 Jun 2022 14:13:00 +0800
-From:   Jin Xiaoyun <jinxiaoyun2@huawei.com>
-To:     <rafael@kernel.org>, <daniel.lezcano@linaro.org>,
-        <amitk@kernel.org>, <rui.zhang@intel.com>
-CC:     <linux-pm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Jin Xiaoyun <jinxiaoyun2@huawei.com>,
-        Hulk Robot <hulkci@huawei.com>
-Subject: [PATCH -next] thermal: k3_j72xx_bandgap: Make k3_j72xx_bandgap_j721e_data and k3_j72xx_bandgap_j7200_data static
-Date:   Mon, 13 Jun 2022 14:31:11 +0800
-Message-ID: <20220613063111.654893-1-jinxiaoyun2@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 13 Jun 2022 02:18:57 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C351219F93;
+        Sun, 12 Jun 2022 23:18:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655101119; x=1686637119;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=RI6qAwFkvyfDJbNSty7ikmbQQ/e8na613HjB1kmUOqU=;
+  b=WeXnuC3UbWR6a+8d+HiMBnio2FQ80b9Nk+futyypGOcq5XOqaRyl8ooo
+   QaLBofjKD0MA5VWOqB74N/yXv91qlE6pjf4cl7Yf33A5VjMcywREtQfIF
+   1HABdlVG58jAOkaLPa0DIQuZAITJdGFDheHV1m5Z3bp1fByT+FgdyixmA
+   F19f9RioFSBxX9PuWcKDBBkEQ54k8M83ziN36Mc4PltEY8AwpSdFmXh/t
+   HG/pQfdc4NiFYlfQy9wfvzbcackkKNQs0OdB3ma7on99tMEo1Mhupj36/
+   Vn5bnC2kkkQ8m+23OpO5a32vmQ6/Oz0I7rdhEq0qPmQ1lLayCo+bBLPFX
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10376"; a="364508178"
+X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
+   d="scan'208";a="364508178"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2022 23:18:39 -0700
+X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
+   d="scan'208";a="673098050"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2022 23:18:34 -0700
+Received: by lahna (sSMTP sendmail emulation); Mon, 13 Jun 2022 09:18:31 +0300
+Date:   Mon, 13 Jun 2022 09:18:31 +0300
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Oleksandr Ocheretnyi <oocheret@cisco.com>
+Cc:     tudor.ambarus@microchip.com, miquel.raynal@bootlin.com,
+        p.yadav@ti.com, michael@walle.cc, richard@nod.at, vigneshr@ti.com,
+        broonie@kernel.org, linux-mtd@lists.infradead.org,
+        linux-spi@vger.kernel.org, mauro.lima@eclypsium.com,
+        lee.jones@linaro.org, linux-kernel@vger.kernel.org,
+        xe-linux-external@cisco.com
+Subject: Re: [PATCH] mtd: spi-nor: handle unsupported FSR opcodes properly
+Message-ID: <YqbWt9f3of+7Z76e@lahna>
+References: <YmZUCIE/ND82BlNh@lahna>
+ <20220610191548.3626218-1-oocheret@cisco.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.14]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml100012.china.huawei.com (7.185.36.121)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220610191548.3626218-1-oocheret@cisco.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix sparse warnings:
+Hi,
 
-drivers/thermal/k3_j72xx_bandgap.c:532:36: sparse: sparse: symbol 'k3_j72xx_bandgap_j721e_data' was not declared. Should it be static?
-drivers/thermal/k3_j72xx_bandgap.c:536:36: sparse: sparse: symbol 'k3_j72xx_bandgap_j7200_data' was not declared. Should it be static?
+On Fri, Jun 10, 2022 at 12:15:48PM -0700, Oleksandr Ocheretnyi wrote:
+> Commit 094d3b9 ("mtd: spi-nor: Add USE_FSR flag for n25q* entries")
+> and following one 8f93826 ("mtd: spi-nor: micron-st: convert USE_FSR
+> to a manufacturer flag") enables SPINOR_OP_RDFSR opcode handling ability,
+> however some controller drivers still cannot handle it properly in
+> the micron_st_nor_ready() call what breaks some mtd callbacks with
+> next error logs:
+> 
+> mtdblock: erase of region [address1, size1] on "BIOS" failed
+> mtdblock: erase of region [address2, size2] on "BIOS" failed
+> 
+> Just skip subsequent processing of the SPINOR_OP_RDFSR opcode's results
+> because of -ENOTSUPP return value of the micron_st_nor_read_fsr()
+> if there is no proper handling of that opcode as it's been before
+> commit 094d3b9 ("mtd: spi-nor: Add USE_FSR flag for n25q* entries")
+> 
+> Signed-off-by: Oleksandr Ocheretnyi <oocheret@cisco.com>
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Jin Xiaoyun <jinxiaoyun2@huawei.com>
----
- drivers/thermal/k3_j72xx_bandgap.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+I sent similar patch some time ago here:
 
-diff --git a/drivers/thermal/k3_j72xx_bandgap.c b/drivers/thermal/k3_j72xx_bandgap.c
-index 64e323158952..f8ff20feb120 100644
---- a/drivers/thermal/k3_j72xx_bandgap.c
-+++ b/drivers/thermal/k3_j72xx_bandgap.c
-@@ -529,11 +529,11 @@ static int k3_j72xx_bandgap_remove(struct platform_device *pdev)
- 	return 0;
- }
+https://lore.kernel.org/linux-mtd/20220506105158.43613-1-mika.westerberg@linux.intel.com/#t
 
--const struct k3_j72xx_bandgap_data k3_j72xx_bandgap_j721e_data = {
-+static const struct k3_j72xx_bandgap_data k3_j72xx_bandgap_j721e_data = {
- 	.has_errata_i2128 = 1,
- };
+but so far it has not been picked up by the maintainers. I'm fine if we
+go with your patch instead, just one minor comment:
 
--const struct k3_j72xx_bandgap_data k3_j72xx_bandgap_j7200_data = {
-+static const struct k3_j72xx_bandgap_data k3_j72xx_bandgap_j7200_data = {
- 	.has_errata_i2128 = 0,
- };
+> ---
+>  drivers/mtd/spi-nor/micron-st.c | 6 +++++-
+>  drivers/spi/spi-intel.c         | 3 ++-
+>  2 files changed, 7 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/mtd/spi-nor/micron-st.c b/drivers/mtd/spi-nor/micron-st.c
+> index a96f74e0f568..507e675d81e0 100644
+> --- a/drivers/mtd/spi-nor/micron-st.c
+> +++ b/drivers/mtd/spi-nor/micron-st.c
+> @@ -399,8 +399,12 @@ static int micron_st_nor_ready(struct spi_nor *nor)
+>  		return sr_ready;
+>  
+>  	ret = micron_st_nor_read_fsr(nor, nor->bouncebuf);
+> -	if (ret)
+> +	if (ret < 0) {
+> +		/* Check if read FSR is supported. If not, skip it. */
+> +		if (ret == -ENOTSUPP)
+> +			return sr_ready;
+>  		return ret;
+> +	}
+>  
+>  	if (nor->bouncebuf[0] & (FSR_E_ERR | FSR_P_ERR)) {
+>  		if (nor->bouncebuf[0] & FSR_E_ERR)
+> diff --git a/drivers/spi/spi-intel.c b/drivers/spi/spi-intel.c
+> index 50f42983b950..f0313a718d1b 100644
+> --- a/drivers/spi/spi-intel.c
+> +++ b/drivers/spi/spi-intel.c
+> @@ -352,7 +352,8 @@ static int intel_spi_hw_cycle(struct intel_spi *ispi, u8 opcode, size_t len)
+>  		val |= HSFSTS_CTL_FCYCLE_RDSR;
+>  		break;
+>  	default:
+> -		return -EINVAL;
+> +		dev_dbg(ispi->dev, "%#x not supported\n", opcode);
+> +		return -ENOTSUPP;
 
---
-2.25.1
+I don't think this is necessary because we already return -EOPNOTSUPP in
+intel_spi_exec_mem_op() so we can just check that one in
+micron_st_nor_ready().
 
+With that changed feel free to add my,
+
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
