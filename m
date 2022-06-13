@@ -2,85 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97F67C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 23:34:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05D93C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 23:34:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235333AbiFMXeN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 19:34:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38992 "EHLO
+        id S234956AbiFMXeV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 19:34:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230365AbiFMXeL (ORCPT
+        with ESMTP id S241478AbiFMXeS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 19:34:11 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2972C31DE5
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 16:34:10 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id w17so1446552wrg.7
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 16:34:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xGYiKa6mXP0iZOXOQm7kCvDLrx3D14bnw7gw1UJaDHY=;
-        b=Q+qj4tgzGC0W3T7fwxnpleP1RH8nFiUZ+6PltDb2osyo96YS0SaAnAL3gcP90t3uW9
-         bVhf20bfbfCis0UBI4wK4VvpBeUJcK2hur0uOIuFfFULpyXglo5fZog21X1vnbEpj8R0
-         f6+zigzJU2zRTaJoqvIYo5YzbnY8d+1qrYUFqmo4w+mQlSNvXR9i6eJaLInvHYOHb/aY
-         6fiB6f/aniXoNg2wTLroaIxPaB3oJKzuSYKh5lCz+fTdshNh365tkVBZeJ4xIDEF/5mP
-         8GqWXaXYU08FP4yV7maeP7Pw2orru0HBjntNANVH9SAmRzpHbIVUC2XlLdPpRG+uV9IO
-         438A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xGYiKa6mXP0iZOXOQm7kCvDLrx3D14bnw7gw1UJaDHY=;
-        b=EFEztCNErZkf5Oc+OzvbTeMxGGoWk7bqHXnlM5x7HcHrFqVrNEnZd1iwNsZ6/w7Los
-         vWkeNfxdqw4krpLjSIqbIISXuViF5FgavUW2e3bt9h3/KCBKH4YONbMK0c8in5eUw289
-         CvXVSPte6AuUHAL0IwJB0GWiI9/1tF2VTZG0rTpbwIMvZAwihBliLKQiaiyzTKjEkoSc
-         ne/CMguuGAYoFET4xwU9+QivE5E3ixzzw4rrOcg63UM01itN/pX4e4Ic76offUiKmnhM
-         8hqBPfvy+Vs6H8NZuoPraQ+8GZE3dp1hwdM/PaGAchJJevegXRYLEsbIiDim523us3+T
-         SzMw==
-X-Gm-Message-State: AJIora8xTXwY7jKxsw33WC8jT0TDU/4Xln9fp/f6v0W955L4qBgG8hTB
-        27cM+JasYgjCFEgkpkfJzzIYskMlfqXdVl/WNqzc
-X-Google-Smtp-Source: AGRyM1vupl+waimCKX6BURP8frkXJ72r3v3eqI+2I8C6U17IP2g6be79mtg7PPeYV5f/qLsklq4q5mwUcv6/2+XPdpw=
-X-Received: by 2002:a05:6000:1008:b0:210:3e9a:324c with SMTP id
- a8-20020a056000100800b002103e9a324cmr1964810wrx.89.1655163248675; Mon, 13 Jun
- 2022 16:34:08 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220614082425.415adffc@canb.auug.org.au>
-In-Reply-To: <20220614082425.415adffc@canb.auug.org.au>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Mon, 13 Jun 2022 19:33:58 -0400
-Message-ID: <CAHC9VhT9QUdfu5TCZcAuzcC8wBaA8VR2MKWiQE3RWEv5M65tJA@mail.gmail.com>
-Subject: Re: linux-next: Fixes tag needs some work in the selinux tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Mon, 13 Jun 2022 19:34:18 -0400
+Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3237C326E5;
+        Mon, 13 Jun 2022 16:34:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=zObLgYLKaX93eqNdhzg3WCjAdYsBSVDmp1swEyP75Z8=; b=KowdyPlmA1k3oZhYWZ+axPGuPF
+        w01vx8DloeDtGGYdCjeAMqAI5RU2QAQCmyI+qVgyNUd3SYQ20o3MpcHh1+JEnrG5WchLgzZ8LhrEY
+        FLjzAii9mRwNr8Juav+Z8yA+I2mU0wxt5fNnv1CB+FFNmhO3EtTFOXWa6FK6+pQZYqLNyIhmytLcZ
+        Uye67DsxU0yLicruRin9LPCeA3ZGDPyJfiYtJhQA50Qn8vMWfz7G01K8nHA1n+rD+lNiyi5uoXX6d
+        yjIg/+qy/WVCfwi8vR7hMqnIvdyhBm9tWseTjq6WK6JsJYyz/qxF9tYvpG6Mll4SLwsbFZEiSr7w8
+        utn9yywg==;
+Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
+        id 1o0tZW-0005lI-5G;
+        Mon, 13 Jun 2022 23:34:14 +0000
+Date:   Tue, 14 Jun 2022 00:34:14 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Dan Williams <dan.j.williams@intel.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        nvdimm@lists.linux.dev, David Howells <dhowells@redhat.com>
+Subject: Re: [RFC][PATCH] fix short copy handling in copy_mc_pipe_to_iter()
+Message-ID: <YqfJdup4nsOLXXrL@ZenIV>
+References: <YqaAcKsd6uGfIQzM@zeniv-ca.linux.org.uk>
+ <CAHk-=wjmCzdNDCt6L8-N33WSRaYjnj0=yTc_JG8A_Pd7ZEtEJw@mail.gmail.com>
+ <Yqe6EjGTpkvJUU28@ZenIV>
+ <YqfHT7Ha/N/wAdcG@ZenIV>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YqfHT7Ha/N/wAdcG@ZenIV>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 6:24 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
->
-> Hi all,
->
-> In commit
->
->   e81ee824e8a1 ("docs: selinux: add '=' signs to kernel boot options")
->
-> Fixes tag
->
->   Fixes: ^1da177e4c3f4 ("Linux-2.6.12-rc2")
->
-> has these problem(s):
->
->   - No SHA1 recognised
->
-> Also, I don't think that is a relevent or useful Fixes tag anyway.
+On Tue, Jun 14, 2022 at 12:25:03AM +0100, Al Viro wrote:
 
-Good point Stephen.  I just dropped the tag in the offending commit
-and did a force push back to selinux/next; sorry for the noise.
+> The more I'm looking at that thing, the more it smells like a bug;
+> it had the same 3 callers since the time it had been introduced.
+> 
+> 1) pipe_get_pages().  We are about to try and allocate up to that
+> many pipe buffers.  Allocation (done in push_pipe()) is done only
+> if we have !pipe_full(pipe->head, pipe->tail, pipe->max_usage).
+> 
+> It simply won't give you more than max_usage - occupancy.
+> Your function returns min(ring_size - occupancy, max_usage), which
+> is always greater than or equal to that (ring_size >= max_usage).
+> 
+> 2) pipe_get_pages_alloc().  Same story, same push_pipe() being
+> called, same "we'll never get that much - it'll hit the limit
+> first".
+> 
+> 3) iov_iter_npages() in case of ITER_PIPE.  Again, the value
+> is bogus - it should not be greater than the amount of pages
+> we would be able to write there.
+> 
+> AFAICS, 6718b6f855a0 "pipe: Allow pipes to have kernel-reserved slots"
+> broke it for cases when ring_size != max_usage...
 
--- 
-paul-moore.com
+Unless I'm missing something, the following would do the right thing.
+Dave?
+
+diff --git a/include/linux/pipe_fs_i.h b/include/linux/pipe_fs_i.h
+index 4ea496924106..c22173d6e500 100644
+--- a/include/linux/pipe_fs_i.h
++++ b/include/linux/pipe_fs_i.h
+@@ -165,15 +165,10 @@ static inline bool pipe_full(unsigned int head, unsigned int tail,
+ static inline unsigned int pipe_space_for_user(unsigned int head, unsigned int tail,
+ 					       struct pipe_inode_info *pipe)
+ {
+-	unsigned int p_occupancy, p_space;
+-
+-	p_occupancy = pipe_occupancy(head, tail);
++	unsigned int p_occupancy = pipe_occupancy(head, tail);
+ 	if (p_occupancy >= pipe->max_usage)
+ 		return 0;
+-	p_space = pipe->ring_size - p_occupancy;
+-	if (p_space > pipe->max_usage)
+-		p_space = pipe->max_usage;
+-	return p_space;
++	return pipe->max_usage - p_occupancy;
+ }
+ 
+ /**
