@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0335BCCA47B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 308F6CCA481
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:20:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355732AbiFMMSw (ORCPT
+        id S1357027AbiFMMTU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:18:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47996 "EHLO
+        Mon, 13 Jun 2022 08:19:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359054AbiFMMOi (ORCPT
+        with ESMTP id S237968AbiFMMMl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:14:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A67D54F87;
-        Mon, 13 Jun 2022 04:02:14 -0700 (PDT)
+        Mon, 13 Jun 2022 08:12:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AFC753A73;
+        Mon, 13 Jun 2022 04:01:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9734AB80E93;
-        Mon, 13 Jun 2022 11:02:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0ACBC34114;
-        Mon, 13 Jun 2022 11:02:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 16BE2611B3;
+        Mon, 13 Jun 2022 11:01:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 269A0C34114;
+        Mon, 13 Jun 2022 11:01:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118131;
-        bh=4xrCwR+dSMUMl6tf6Scxfy8ADhapePz4RrscHl0msvY=;
+        s=korg; t=1655118063;
+        bh=7TBhTfbaDPhVdwpSz3pA6namIJ2zb0GDJdL83mqp43o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Sc3ZJIzV+ES29zraMJSAph1pjC9f7QgqEIPgCGLpCklBtdd4LLrdiqzplQppbmyXi
-         WZAR2HMo4CdGPFk3DfRwPomZCQoyukZisHREwYD0baAty9dgpK6JVvb6g2jlFdanQi
-         sT/Esrt3WzcGH2YRsbhs0vTBJ8s6zSrNVo8xczxA=
+        b=od8Q7x3RrVg7ARwYu2qmesdM0fP/+uA2ww0eCJMr8HbfNJEnNtTtO1y2PWTkyfNaD
+         Q3KMUFBlR0LPf8AGoUxxLPntm9/Cui0Ic0dYhuBwyZY02rVAH746Dl/WfI513WaWoH
+         6nWS1m3cLqw9BUjVMxc1x5Js+c0IfcGwN1OJC1Tk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        stable@vger.kernel.org,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 255/287] drivers: tty: serial: Fix deadlock in sa1100_set_termios()
-Date:   Mon, 13 Jun 2022 12:11:19 +0200
-Message-Id: <20220613094931.744548529@linuxfoundation.org>
+Subject: [PATCH 4.19 218/287] modpost: fix removing numeric suffixes
+Date:   Mon, 13 Jun 2022 12:10:42 +0200
+Message-Id: <20220613094930.470872452@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -49,59 +52,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-[ Upstream commit 62b2caef400c1738b6d22f636c628d9f85cd4c4c ]
+[ Upstream commit b5beffa20d83c4e15306c991ffd00de0d8628338 ]
 
-There is a deadlock in sa1100_set_termios(), which is shown
-below:
+With the `-z unique-symbol` linker flag or any similar mechanism,
+it is possible to trigger the following:
 
-   (Thread 1)              |      (Thread 2)
-                           | sa1100_enable_ms()
-sa1100_set_termios()       |  mod_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | sa1100_timeout()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
+ERROR: modpost: "param_set_uint.0" [vmlinux] is a static EXPORT_SYMBOL
 
-We hold sport->port.lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need sport->port.lock in position (2) of thread 2. As a result,
-sa1100_set_termios() will block forever.
+The reason is that for now the condition from remove_dot():
 
-This patch moves del_timer_sync() before spin_lock_irqsave()
-in order to prevent the deadlock.
+if (m && (s[n + m] == '.' || s[n + m] == 0))
 
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417111626.7802-1-duoming@zju.edu.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+which was designed to test if it's a dot or a '\0' after the suffix
+is never satisfied.
+This is due to that `s[n + m]` always points to the last digit of a
+numeric suffix, not on the symbol next to it (from a custom debug
+print added to modpost):
+
+param_set_uint.0, s[n + m] is '0', s[n + m + 1] is '\0'
+
+So it's off-by-one and was like that since 2014.
+
+Fix this for the sake of any potential upcoming features, but don't
+bother stable-backporting, as it's well hidden -- apart from that
+LD flag, it can be triggered only with GCC LTO which never landed
+upstream.
+
+Fixes: fcd38ed0ff26 ("scripts: modpost: fix compilation warning")
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/sa1100.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ scripts/mod/modpost.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
-index a399772be3fc..8a65fb1ce568 100644
---- a/drivers/tty/serial/sa1100.c
-+++ b/drivers/tty/serial/sa1100.c
-@@ -439,6 +439,8 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
- 	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16); 
- 	quot = uart_get_divisor(port, baud);
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index 7c693bd775c1..c42da4a35142 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -1937,7 +1937,7 @@ static char *remove_dot(char *s)
  
-+	del_timer_sync(&sport->timer);
-+
- 	spin_lock_irqsave(&sport->port.lock, flags);
- 
- 	sport->port.read_status_mask &= UTSR0_TO_SM(UTSR0_TFS);
-@@ -469,8 +471,6 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
- 				UTSR1_TO_SM(UTSR1_ROR);
+ 	if (n && s[n]) {
+ 		size_t m = strspn(s + n + 1, "0123456789");
+-		if (m && (s[n + m] == '.' || s[n + m] == 0))
++		if (m && (s[n + m + 1] == '.' || s[n + m + 1] == 0))
+ 			s[n] = 0;
  	}
- 
--	del_timer_sync(&sport->timer);
--
- 	/*
- 	 * Update the per-port timeout.
- 	 */
+ 	return s;
 -- 
 2.35.1
 
