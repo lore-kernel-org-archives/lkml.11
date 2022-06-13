@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED5ECC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:16:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 188EAC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:16:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354591AbiFMMQr (ORCPT
+        id S1354646AbiFMMQy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:16:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47084 "EHLO
+        Mon, 13 Jun 2022 08:16:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356352AbiFMMNv (ORCPT
+        with ESMTP id S1357499AbiFMMOA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:13:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89FCB53C4D;
-        Mon, 13 Jun 2022 04:01:26 -0700 (PDT)
+        Mon, 13 Jun 2022 08:14:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C62B554194;
+        Mon, 13 Jun 2022 04:01:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D3860613E9;
-        Mon, 13 Jun 2022 11:01:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6858C34114;
-        Mon, 13 Jun 2022 11:01:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0994061445;
+        Mon, 13 Jun 2022 11:01:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 136D3C34114;
+        Mon, 13 Jun 2022 11:01:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118085;
-        bh=HQXkaF/0XjO+oCZ2kZ8uyO/oX1UPYAWidGjb7jTFUlg=;
+        s=korg; t=1655118093;
+        bh=wBTgbzAlBHnpwemiBc67jc18++WoUd+7ldSlE8d/NmQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=shDzEkdUOLk61G28pkajuVFJDCHpeqvC3RwCunFH3AuINccwETFbW+/jAO0QkujPH
-         mGLClWkrDbVbPtdGgni2ToKkfVCiPEvbbbbo8BDEorgf6BxfhRfS061n4a5GOIHJw9
-         z/kN1qLk83985vQHsnoFIXpzOcT+Qij99pFekZew=
+        b=j6l4LxzHbJDqiPUXDj6QAaEoTCQLijK644BEBLtq50UUeBYCBEL30fDrar/vcxHIk
+         6dTCVem3n7sguKBk7fyXBx1EBb4T/HeM7jewQbmSTnqkMS1UWBBlgmZxNdRws66B2j
+         NXenA92eu0UV/vI8qHiwm6OtFllMYaxsWd4b4quk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <songliubraving@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 238/287] bpf, arm64: Clear prog->jited_len along prog->jited
-Date:   Mon, 13 Jun 2022 12:11:02 +0200
-Message-Id: <20220613094931.232935919@linuxfoundation.org>
+Subject: [PATCH 4.19 241/287] net: mdio: unexport __init-annotated mdio_bus_init()
+Date:   Mon, 13 Jun 2022 12:11:05 +0200
+Message-Id: <20220613094931.323838550@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -53,98 +53,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-[ Upstream commit 10f3b29c65bb2fe0d47c2945cd0b4087be1c5218 ]
+[ Upstream commit 35b42dce619701f1300fb8498dae82c9bb1f0263 ]
 
-syzbot reported an illegal copy_to_user() attempt
-from bpf_prog_get_info_by_fd() [1]
+EXPORT_SYMBOL and __init is a bad combination because the .init.text
+section is freed up after the initialization. Hence, modules cannot
+use symbols annotated __init. The access to a freed symbol may end up
+with kernel panic.
 
-There was no repro yet on this bug, but I think
-that commit 0aef499f3172 ("mm/usercopy: Detect vmalloc overruns")
-is exposing a prior bug in bpf arm64.
+modpost used to detect it, but it has been broken for a decade.
 
-bpf_prog_get_info_by_fd() looks at prog->jited_len
-to determine if the JIT image can be copied out to user space.
+Recently, I fixed modpost so it started to warn it again, then this
+showed up in linux-next builds.
 
-My theory is that syzbot managed to get a prog where prog->jited_len
-has been set to 43, while prog->bpf_func has ben cleared.
+There are two ways to fix it:
 
-It is not clear why copy_to_user(uinsns, NULL, ulen) is triggering
-this particular warning.
+  - Remove __init
+  - Remove EXPORT_SYMBOL
 
-I thought find_vma_area(NULL) would not find a vm_struct.
-As we do not hold vmap_area_lock spinlock, it might be possible
-that the found vm_struct was garbage.
+I chose the latter for this case because the only in-tree call-site,
+drivers/net/phy/phy_device.c is never compiled as modular.
+(CONFIG_PHYLIB is boolean)
 
-[1]
-usercopy: Kernel memory exposure attempt detected from vmalloc (offset 792633534417210172, size 43)!
-kernel BUG at mm/usercopy.c:101!
-Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
-Modules linked in:
-CPU: 0 PID: 25002 Comm: syz-executor.1 Not tainted 5.18.0-syzkaller-10139-g8291eaafed36 #0
-Hardware name: linux,dummy-virt (DT)
-pstate: 60400009 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-pc : usercopy_abort+0x90/0x94 mm/usercopy.c:101
-lr : usercopy_abort+0x90/0x94 mm/usercopy.c:89
-sp : ffff80000b773a20
-x29: ffff80000b773a30 x28: faff80000b745000 x27: ffff80000b773b48
-x26: 0000000000000000 x25: 000000000000002b x24: 0000000000000000
-x23: 00000000000000e0 x22: ffff80000b75db67 x21: 0000000000000001
-x20: 000000000000002b x19: ffff80000b75db3c x18: 00000000fffffffd
-x17: 2820636f6c6c616d x16: 76206d6f72662064 x15: 6574636574656420
-x14: 74706d6574746120 x13: 2129333420657a69 x12: 73202c3237313031
-x11: 3237313434333533 x10: 3336323937207465 x9 : 657275736f707865
-x8 : ffff80000a30c550 x7 : ffff80000b773830 x6 : ffff80000b773830
-x5 : 0000000000000000 x4 : ffff00007fbbaa10 x3 : 0000000000000000
-x2 : 0000000000000000 x1 : f7ff000028fc0000 x0 : 0000000000000064
-Call trace:
- usercopy_abort+0x90/0x94 mm/usercopy.c:89
- check_heap_object mm/usercopy.c:186 [inline]
- __check_object_size mm/usercopy.c:252 [inline]
- __check_object_size+0x198/0x36c mm/usercopy.c:214
- check_object_size include/linux/thread_info.h:199 [inline]
- check_copy_size include/linux/thread_info.h:235 [inline]
- copy_to_user include/linux/uaccess.h:159 [inline]
- bpf_prog_get_info_by_fd.isra.0+0xf14/0xfdc kernel/bpf/syscall.c:3993
- bpf_obj_get_info_by_fd+0x12c/0x510 kernel/bpf/syscall.c:4253
- __sys_bpf+0x900/0x2150 kernel/bpf/syscall.c:4956
- __do_sys_bpf kernel/bpf/syscall.c:5021 [inline]
- __se_sys_bpf kernel/bpf/syscall.c:5019 [inline]
- __arm64_sys_bpf+0x28/0x40 kernel/bpf/syscall.c:5019
- __invoke_syscall arch/arm64/kernel/syscall.c:38 [inline]
- invoke_syscall+0x48/0x114 arch/arm64/kernel/syscall.c:52
- el0_svc_common.constprop.0+0x44/0xec arch/arm64/kernel/syscall.c:142
- do_el0_svc+0xa0/0xc0 arch/arm64/kernel/syscall.c:206
- el0_svc+0x44/0xb0 arch/arm64/kernel/entry-common.c:624
- el0t_64_sync_handler+0x1ac/0x1b0 arch/arm64/kernel/entry-common.c:642
- el0t_64_sync+0x198/0x19c arch/arm64/kernel/entry.S:581
-Code: aa0003e3 d00038c0 91248000 97fff65f (d4210000)
-
-Fixes: db496944fdaa ("bpf: arm64: add JIT support for multi-function programs")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Song Liu <songliubraving@fb.com>
-Link: https://lore.kernel.org/bpf/20220531215113.1100754-1-eric.dumazet@gmail.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Fixes: 90eff9096c01 ("net: phy: Allow splitting MDIO bus/device support from PHYs")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/net/bpf_jit_comp.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/phy/mdio_bus.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
-index 6876e8205042..321d3880fe13 100644
---- a/arch/arm64/net/bpf_jit_comp.c
-+++ b/arch/arm64/net/bpf_jit_comp.c
-@@ -938,6 +938,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 			bpf_jit_binary_free(header);
- 			prog->bpf_func = NULL;
- 			prog->jited = 0;
-+			prog->jited_len = 0;
- 			goto out_off;
- 		}
- 		bpf_jit_binary_lock_ro(header);
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index eaa890a6a5d2..efdac68da7f4 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -746,7 +746,6 @@ int __init mdio_bus_init(void)
+ 
+ 	return ret;
+ }
+-EXPORT_SYMBOL_GPL(mdio_bus_init);
+ 
+ #if IS_ENABLED(CONFIG_PHYLIB)
+ void mdio_bus_exit(void)
 -- 
 2.35.1
 
