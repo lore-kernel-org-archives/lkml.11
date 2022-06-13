@@ -2,88 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2EBFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:03:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 974B4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:03:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229577AbiFMKDF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:03:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40386 "EHLO
+        id S240691AbiFMKDH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:03:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241439AbiFMKCb (ORCPT
+        with ESMTP id S241453AbiFMKCc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:02:31 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD4F710A7;
-        Mon, 13 Jun 2022 03:02:28 -0700 (PDT)
-Received: from fraeml738-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LM6Tf4bCNz682DK;
-        Mon, 13 Jun 2022 17:58:46 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml738-chm.china.huawei.com (10.206.15.219) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 13 Jun 2022 12:02:26 +0200
-Received: from [10.195.33.253] (10.195.33.253) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 13 Jun 2022 11:02:25 +0100
-Message-ID: <5a2047e3-5e71-141a-ec3a-2e22749d3c49@huawei.com>
-Date:   Mon, 13 Jun 2022 11:05:33 +0100
+        Mon, 13 Jun 2022 06:02:32 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6628226CF;
+        Mon, 13 Jun 2022 03:02:29 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AE1C91042;
+        Mon, 13 Jun 2022 03:02:29 -0700 (PDT)
+Received: from a077893.arm.com (unknown [10.163.38.134])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 421013F66F;
+        Mon, 13 Jun 2022 03:02:22 -0700 (PDT)
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        peterz@infradead.org, acme@kernel.org, mark.rutland@arm.com,
+        will@kernel.org
+Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Clark <james.clark@arm.com>,
+        Rob Herring <robh@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        linux-perf-users@vger.kernel.org
+Subject: [PATCH 8/8] arm64/perf: Enable branch stack sampling
+Date:   Mon, 13 Jun 2022 15:31:19 +0530
+Message-Id: <20220613100119.684673-9-anshuman.khandual@arm.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220613100119.684673-1-anshuman.khandual@arm.com>
+References: <20220613100119.684673-1-anshuman.khandual@arm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH RFC v2 03/18] scsi: core: Implement reserved command
- handling
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        <axboe@kernel.dk>, <jejb@linux.ibm.com>,
-        <martin.petersen@oracle.com>, <brking@us.ibm.com>, <hare@suse.de>,
-        <hch@lst.de>
-CC:     <linux-block@vger.kernel.org>, <linux-ide@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
-        <chenxiang66@hisilicon.com>
-References: <1654770559-101375-1-git-send-email-john.garry@huawei.com>
- <1654770559-101375-4-git-send-email-john.garry@huawei.com>
- <b4a0ede5-95a3-4388-e808-7627b5484d01@opensource.wdc.com>
- <7f80f3b6-84f6-de48-4e69-4562c96e62c5@huawei.com>
- <e4b108ba-cbc9-5237-f873-2fcea94f2b85@opensource.wdc.com>
- <53fa2856-54f2-c075-2eed-4f05c3459597@huawei.com>
- <d2e452cd-6a91-f25d-748e-94f560deb1bb@opensource.wdc.com>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <d2e452cd-6a91-f25d-748e-94f560deb1bb@opensource.wdc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.195.33.253]
-X-ClientProxiedBy: lhreml746-chm.china.huawei.com (10.201.108.196) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/06/2022 10:43, Damien Le Moal wrote:
->>> Currently, that is not possible to do cleanly as there are no guarantees
->>> we can get a free tag (there is a race between block layer tag allocation
->>> and libata internal tag counting). So a reserved tag for that would be
->>> nice. We would end up with 31 IO tags at most + 1 reserved tag for NCQ
->>> commands + ATA_TAG_INTERNAL for non-NCQ. That last one would be rendered
->>> rather useless. But that also means that we kind-of go back to the days
->>> when Linux showed ATA drives max QD of 31...
->> So must the ATA_TAG_INTERNAL qc always be available for non-NCQ action
->> like EH, and that is why you cannot reuse for this internal NCQ
->> (queuable) command?
-> Currently, ATA_TAG_INTERNAL is always used for non-NCQ commands. Seeing a
-> qc with that tag means it is*not*  NCQ.
-> 
-> I am trying to see if I can reuse the tag from one of the commands that
-> completed with that weird good status/sense data available. The problem
-> though is that this all needs to be done*before*  calling
-> qc->complete_fn() which will free the tag. So we endup with 2 qcs that
-> have the same tag, the second one (for the read log command) temporarily
-> using the tag but still going through the same completion path without the
-> original command fully completed yet. It is a real mess.
-> 
+Now that all the required pieces are already in place, just enable the perf
+branch stack sampling support on arm64 platform, by removing the gate which
+blocks it in armpmu_event_init().
 
-Reusing tags seems really messy, but then reserving an NCQ command seems 
-wasteful.
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+---
+ drivers/perf/arm_pmu.c | 32 +++++++++++++++++++++++++++++---
+ 1 file changed, 29 insertions(+), 3 deletions(-)
 
-Thanks,
-John
+diff --git a/drivers/perf/arm_pmu.c b/drivers/perf/arm_pmu.c
+index 52a903d26702..efbc6db42b35 100644
+--- a/drivers/perf/arm_pmu.c
++++ b/drivers/perf/arm_pmu.c
+@@ -537,9 +537,35 @@ static int armpmu_event_init(struct perf_event *event)
+ 		!cpumask_test_cpu(event->cpu, &armpmu->supported_cpus))
+ 		return -ENOENT;
+ 
+-	/* does not support taken branch sampling */
+-	if (has_branch_stack(event))
+-		return -EOPNOTSUPP;
++	if (has_branch_stack(event)) {
++		/*
++		 * BRBE support is absent. Select CONFIG_ARM_BRBE_PMU
++		 * in the config, before branch stack sampling events
++		 * can be requested.
++		 */
++		if (!IS_ENABLED(CONFIG_ARM_BRBE_PMU)) {
++			pr_warn_once("BRBE is disabled, select CONFIG_ARM_BRBE_PMU\n");
++			return -EOPNOTSUPP;
++		}
++
++		if (event->attr.branch_sample_type & PERF_SAMPLE_BRANCH_KERNEL) {
++			if (!perfmon_capable()) {
++				pr_warn_once("does not have permission for kernel branch filter\n");
++				return -EPERM;
++			}
++		}
++
++		/*
++		 * Branch stack sampling event can not be supported in
++		 * case either the required driver itself is absent or
++		 * BRBE buffer, is not supported. Besides checking for
++		 * the callback prevents a crash in case it's absent.
++		 */
++		if (!armpmu->brbe_supported || !armpmu->brbe_supported(event)) {
++			pr_warn_once("BRBE is not supported\n");
++			return -EOPNOTSUPP;
++		}
++	}
+ 
+ 	if (armpmu->map_event(event) == -ENOENT)
+ 		return -ENOENT;
+-- 
+2.25.1
+
