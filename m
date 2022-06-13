@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BC26CCA483
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:46:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF1B0CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:46:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355590AbiFMLqq (ORCPT
+        id S1355784AbiFMLqz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:46:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60828 "EHLO
+        Mon, 13 Jun 2022 07:46:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356017AbiFMLnh (ORCPT
+        with ESMTP id S1356018AbiFMLnh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:43:37 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72CBD46143;
-        Mon, 13 Jun 2022 03:50:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FE434615D;
+        Mon, 13 Jun 2022 03:50:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AE188B80D41;
-        Mon, 13 Jun 2022 10:50:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1570DC3411C;
-        Mon, 13 Jun 2022 10:50:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 78A4AB80E5E;
+        Mon, 13 Jun 2022 10:50:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1259C34114;
+        Mon, 13 Jun 2022 10:50:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117413;
-        bh=+Zu52xhLNEr3n86vyYiWyA+bk3Zs5E5WLkGRppu9zUk=;
+        s=korg; t=1655117416;
+        bh=36x3i11W5RZTSNjgQ36rNxvdIphNwWcjx1Q8uj5tAnQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kkXwwYhORDUEcuo6uSP8Vb8cUI1b26DuxGzQLW0RG2D8CYz4VX/zkEzs00pEKf+x2
-         IUAINvcLsd9O64hvx1dv43APqIJBwFCnKdCxE2ruibP55LP2nKay7jQf4vi5A91Te7
-         GcS/0ph44Pk0WFKktRopNVXqPMWw81178fTuOulI=
+        b=ffuyBTRMGBmNLWI5kj+FYm/3kP3Xl/mIoALVcL3+SlCOm1xr8OviP0GRyDw0XaEcj
+         A8io7thDwtnUL91pARG2GLGNpFi/3T+5v25uDFapbYP2+/p2uOYW/FZ/2wAynddZjP
+         RIWPvWLE3h9l/ED0d+t3PyHJ0P6BQC1PWgpUVGB4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>, Jonas Bonn <jonas@southpole.se>,
+        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
+        Stafford Horne <shorne@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 364/411] drm: imx: fix compiler warning with gcc-12
-Date:   Mon, 13 Jun 2022 12:10:37 +0200
-Message-Id: <20220613094939.604690419@linuxfoundation.org>
+Subject: [PATCH 4.19 036/287] openrisc: start CPU timer early in boot
+Date:   Mon, 13 Jun 2022 12:07:40 +0200
+Message-Id: <20220613094924.960519510@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
+References: <20220613094923.832156175@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,46 +54,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-[ Upstream commit 7aefd8b53815274f3ef398d370a3c9b27dd9f00c ]
+[ Upstream commit 516dd4aacd67a0f27da94f3fe63fe0f4dbab6e2b ]
 
-Gcc-12 correctly warned about this code using a non-NULL pointer as a
-truth value:
+In order to measure the boot process, the timer should be switched on as
+early in boot as possible. As well, the commit defines the get_cycles
+macro, like the previous patches in this series, so that generic code is
+aware that it's implemented by the platform, as is done on other archs.
 
-  drivers/gpu/drm/imx/ipuv3-crtc.c: In function ‘ipu_crtc_disable_planes’:
-  drivers/gpu/drm/imx/ipuv3-crtc.c:72:21: error: the comparison will always evaluate as ‘true’ for the address of ‘plane’ will never be NULL [-Werror=address]
-     72 |                 if (&ipu_crtc->plane[1] && plane == &ipu_crtc->plane[1]->base)
-        |                     ^
-
-due to the extraneous '&' address-of operator.
-
-Philipp Zabel points out that The mistake had no adverse effect since
-the following condition doesn't actually dereference the NULL pointer,
-but the intent of the code was obviously to check for it, not to take
-the address of the member.
-
-Fixes: eb8c88808c83 ("drm/imx: add deferred plane disabling")
-Acked-by: Philipp Zabel <p.zabel@pengutronix.de>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Jonas Bonn <jonas@southpole.se>
+Cc: Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>
+Acked-by: Stafford Horne <shorne@gmail.com>
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/imx/ipuv3-crtc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/openrisc/include/asm/timex.h | 1 +
+ arch/openrisc/kernel/head.S       | 9 +++++++++
+ 2 files changed, 10 insertions(+)
 
-diff --git a/drivers/gpu/drm/imx/ipuv3-crtc.c b/drivers/gpu/drm/imx/ipuv3-crtc.c
-index 2256c9789fc2..f19264e91d4d 100644
---- a/drivers/gpu/drm/imx/ipuv3-crtc.c
-+++ b/drivers/gpu/drm/imx/ipuv3-crtc.c
-@@ -68,7 +68,7 @@ static void ipu_crtc_disable_planes(struct ipu_crtc *ipu_crtc,
- 	drm_atomic_crtc_state_for_each_plane(plane, old_crtc_state) {
- 		if (plane == &ipu_crtc->plane[0]->base)
- 			disable_full = true;
--		if (&ipu_crtc->plane[1] && plane == &ipu_crtc->plane[1]->base)
-+		if (ipu_crtc->plane[1] && plane == &ipu_crtc->plane[1]->base)
- 			disable_partial = true;
- 	}
+diff --git a/arch/openrisc/include/asm/timex.h b/arch/openrisc/include/asm/timex.h
+index 9935cad1b9b9..34d015bf0462 100644
+--- a/arch/openrisc/include/asm/timex.h
++++ b/arch/openrisc/include/asm/timex.h
+@@ -27,6 +27,7 @@ static inline cycles_t get_cycles(void)
+ {
+ 	return mfspr(SPR_TTCR);
+ }
++#define get_cycles get_cycles
  
+ /* This isn't really used any more */
+ #define CLOCK_TICK_RATE 1000
+diff --git a/arch/openrisc/kernel/head.S b/arch/openrisc/kernel/head.S
+index 31ed257ff061..d7e49b947164 100644
+--- a/arch/openrisc/kernel/head.S
++++ b/arch/openrisc/kernel/head.S
+@@ -525,6 +525,15 @@ _start:
+ 	l.ori	r3,r0,0x1
+ 	l.mtspr	r0,r3,SPR_SR
+ 
++	/*
++	 * Start the TTCR as early as possible, so that the RNG can make use of
++	 * measurements of boot time from the earliest opportunity. Especially
++	 * important is that the TTCR does not return zero by the time we reach
++	 * rand_initialize().
++	 */
++	l.movhi r3,hi(SPR_TTMR_CR)
++	l.mtspr r0,r3,SPR_TTMR
++
+ 	CLEAR_GPR(r1)
+ 	CLEAR_GPR(r2)
+ 	CLEAR_GPR(r3)
 -- 
 2.35.1
 
