@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7F64C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:47:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F824C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:47:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379223AbiFMNpd (ORCPT
+        id S1378513AbiFMNpp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:45:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33276 "EHLO
+        Mon, 13 Jun 2022 09:45:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379203AbiFMNkC (ORCPT
+        with ESMTP id S1379219AbiFMNkD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:40:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F405A47D;
-        Mon, 13 Jun 2022 04:29:56 -0700 (PDT)
+        Mon, 13 Jun 2022 09:40:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98D13CE1A;
+        Mon, 13 Jun 2022 04:30:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 390E2B80E93;
-        Mon, 13 Jun 2022 11:29:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F1A3C34114;
-        Mon, 13 Jun 2022 11:29:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3611F61037;
+        Mon, 13 Jun 2022 11:30:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 459DBC34114;
+        Mon, 13 Jun 2022 11:30:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119793;
-        bh=hg4eKdYW94QLi8dr7oGtiRmsgVK/KtC3e8QThTj3Zv4=;
+        s=korg; t=1655119821;
+        bh=iEiLZMAi4r23IEn/jxT1qzEzPzoZvPtxWJI0p2hAUP4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aeY8ba5Zu738ZsfR6MgWNlUKw6651RDWr9O0KB/VkIV1SDx4BWC5S82O7m2iD47vJ
-         z0aJDVQNliXnmB3Q0UHM3+AQ0dYS1GqXpSCQDJ/ZCF1Kp0QBkctYng+4fENGTnB7Ac
-         MLRUhEYm82AK9LqVlX9NLO06PGD6zum0bREtDAkk=
+        b=O4feMX9mu3Pj0ROzlD2J75oG2VmH9okh5idkHfKtmyFC7j6ZRASi5jYS68Xpr1kzP
+         SZeCWuk/718DSvAlpQmsV8ofkq2jdXPgWti5yvBCITY6D6lsfdncs7ELxd5VvPggy6
+         RE0nty4aSuowzDJjHFtXvH4XqL8TfcfH2ChuTItg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dongliang Mu <mudongliangabcd@gmail.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Hangbin Liu <liuhangbin@gmail.com>,
+        Jonathan Toppins <jtoppins@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 142/339] scsi: sd: Fix potential NULL pointer dereference
-Date:   Mon, 13 Jun 2022 12:09:27 +0200
-Message-Id: <20220613094930.991161913@linuxfoundation.org>
+Subject: [PATCH 5.18 133/339] bonding: guard ns_targets by CONFIG_IPV6
+Date:   Mon, 13 Jun 2022 12:09:18 +0200
+Message-Id: <20220613094930.543814055@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -52,45 +51,133 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Hangbin Liu <liuhangbin@gmail.com>
 
-[ Upstream commit 05fbde3a77a4f1d62e4c4428f384288c1f1a0be5 ]
+[ Upstream commit c4caa500ffebf64795d1c0f6f9d6f179b502c6b7 ]
 
-If sd_probe() sees an early error before sdkp->device is initialized,
-sd_zbc_release_disk() is called. This causes a NULL pointer dereference
-when sd_is_zoned() is called inside that function. Avoid this by removing
-the call to sd_zbc_release_disk() in sd_probe() error path.
+Guard ns_targets in struct bond_params by CONFIG_IPV6, which could save
+256 bytes if IPv6 not configed. Also add this protection for function
+bond_is_ip6_target_ok() and bond_get_targets_ip6().
 
-This change is safe and does not result in zone information memory leakage
-because the zone information for a zoned disk is allocated only when
-sd_revalidate_disk() is called, at which point sdkp->disk_dev is fully set,
-resulting in sd_disk_release() being called when needed to cleanup a disk
-zone information using sd_zbc_release_disk().
+Remove the IS_ENABLED() check for bond_opts[] as this will make
+BOND_OPT_NS_TARGETS uninitialized if CONFIG_IPV6 not enabled. Add
+a dummy bond_option_ns_ip6_targets_set() for this situation.
 
-Link: https://lore.kernel.org/r/20220601062544.905141-2-damien.lemoal@opensource.wdc.com
-Fixes: 89d947561077 ("sd: Implement support for ZBC devices")
-Reported-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Suggested-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 4e24be018eb9 ("bonding: add new parameter ns_targets")
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+Acked-by: Jonathan Toppins <jtoppins@redhat.com>
+Link: https://lore.kernel.org/r/20220531063727.224043-1-liuhangbin@gmail.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/sd.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/bonding/bond_main.c    |  2 ++
+ drivers/net/bonding/bond_options.c | 10 ++++++----
+ include/net/bonding.h              |  6 ++++++
+ 3 files changed, 14 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
-index 5539d75dcfe7..8a16cbf77496 100644
---- a/drivers/scsi/sd.c
-+++ b/drivers/scsi/sd.c
-@@ -3501,7 +3501,6 @@ static int sd_probe(struct device *dev)
-  out_put:
- 	put_disk(gd);
-  out_free:
--	sd_zbc_release_disk(sdkp);
- 	kfree(sdkp);
-  out:
- 	scsi_autopm_put_device(sdp);
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index b5c5196e03ee..26a6573adf0f 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -6159,7 +6159,9 @@ static int bond_check_params(struct bond_params *params)
+ 		strscpy_pad(params->primary, primary, sizeof(params->primary));
+ 
+ 	memcpy(params->arp_targets, arp_target, sizeof(arp_target));
++#if IS_ENABLED(CONFIG_IPV6)
+ 	memset(params->ns_targets, 0, sizeof(struct in6_addr) * BOND_MAX_NS_TARGETS);
++#endif
+ 
+ 	return 0;
+ }
+diff --git a/drivers/net/bonding/bond_options.c b/drivers/net/bonding/bond_options.c
+index 64f7db2627ce..1f8323ad5282 100644
+--- a/drivers/net/bonding/bond_options.c
++++ b/drivers/net/bonding/bond_options.c
+@@ -34,10 +34,8 @@ static int bond_option_arp_ip_target_add(struct bonding *bond, __be32 target);
+ static int bond_option_arp_ip_target_rem(struct bonding *bond, __be32 target);
+ static int bond_option_arp_ip_targets_set(struct bonding *bond,
+ 					  const struct bond_opt_value *newval);
+-#if IS_ENABLED(CONFIG_IPV6)
+ static int bond_option_ns_ip6_targets_set(struct bonding *bond,
+ 					  const struct bond_opt_value *newval);
+-#endif
+ static int bond_option_arp_validate_set(struct bonding *bond,
+ 					const struct bond_opt_value *newval);
+ static int bond_option_arp_all_targets_set(struct bonding *bond,
+@@ -299,7 +297,6 @@ static const struct bond_option bond_opts[BOND_OPT_LAST] = {
+ 		.flags = BOND_OPTFLAG_RAWVAL,
+ 		.set = bond_option_arp_ip_targets_set
+ 	},
+-#if IS_ENABLED(CONFIG_IPV6)
+ 	[BOND_OPT_NS_TARGETS] = {
+ 		.id = BOND_OPT_NS_TARGETS,
+ 		.name = "ns_ip6_target",
+@@ -307,7 +304,6 @@ static const struct bond_option bond_opts[BOND_OPT_LAST] = {
+ 		.flags = BOND_OPTFLAG_RAWVAL,
+ 		.set = bond_option_ns_ip6_targets_set
+ 	},
+-#endif
+ 	[BOND_OPT_DOWNDELAY] = {
+ 		.id = BOND_OPT_DOWNDELAY,
+ 		.name = "downdelay",
+@@ -1254,6 +1250,12 @@ static int bond_option_ns_ip6_targets_set(struct bonding *bond,
+ 
+ 	return 0;
+ }
++#else
++static int bond_option_ns_ip6_targets_set(struct bonding *bond,
++					  const struct bond_opt_value *newval)
++{
++	return -EPERM;
++}
+ #endif
+ 
+ static int bond_option_arp_validate_set(struct bonding *bond,
+diff --git a/include/net/bonding.h b/include/net/bonding.h
+index b14f4c0b4e9e..cb904d356e31 100644
+--- a/include/net/bonding.h
++++ b/include/net/bonding.h
+@@ -149,7 +149,9 @@ struct bond_params {
+ 	struct reciprocal_value reciprocal_packets_per_slave;
+ 	u16 ad_actor_sys_prio;
+ 	u16 ad_user_port_key;
++#if IS_ENABLED(CONFIG_IPV6)
+ 	struct in6_addr ns_targets[BOND_MAX_NS_TARGETS];
++#endif
+ 
+ 	/* 2 bytes of padding : see ether_addr_equal_64bits() */
+ 	u8 ad_actor_system[ETH_ALEN + 2];
+@@ -503,12 +505,14 @@ static inline int bond_is_ip_target_ok(__be32 addr)
+ 	return !ipv4_is_lbcast(addr) && !ipv4_is_zeronet(addr);
+ }
+ 
++#if IS_ENABLED(CONFIG_IPV6)
+ static inline int bond_is_ip6_target_ok(struct in6_addr *addr)
+ {
+ 	return !ipv6_addr_any(addr) &&
+ 	       !ipv6_addr_loopback(addr) &&
+ 	       !ipv6_addr_is_multicast(addr);
+ }
++#endif
+ 
+ /* Get the oldest arp which we've received on this slave for bond's
+  * arp_targets.
+@@ -746,6 +750,7 @@ static inline int bond_get_targets_ip(__be32 *targets, __be32 ip)
+ 	return -1;
+ }
+ 
++#if IS_ENABLED(CONFIG_IPV6)
+ static inline int bond_get_targets_ip6(struct in6_addr *targets, struct in6_addr *ip)
+ {
+ 	int i;
+@@ -758,6 +763,7 @@ static inline int bond_get_targets_ip6(struct in6_addr *targets, struct in6_addr
+ 
+ 	return -1;
+ }
++#endif
+ 
+ /* exported from bond_main.c */
+ extern unsigned int bond_net_id;
 -- 
 2.35.1
 
