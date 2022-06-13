@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DC50C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:35:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C10C2CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:35:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351997AbiFMMfC (ORCPT
+        id S1352956AbiFMMfI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:35:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41850 "EHLO
+        Mon, 13 Jun 2022 08:35:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349406AbiFMMbS (ORCPT
+        with ESMTP id S1352727AbiFMMci (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:31:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94812B865;
-        Mon, 13 Jun 2022 04:07:26 -0700 (PDT)
+        Mon, 13 Jun 2022 08:32:38 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBD2926123;
+        Mon, 13 Jun 2022 04:07:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 667FF614C3;
-        Mon, 13 Jun 2022 11:07:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 702C4C34114;
-        Mon, 13 Jun 2022 11:07:07 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E8C68CE1184;
+        Mon, 13 Jun 2022 11:07:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4B04C34114;
+        Mon, 13 Jun 2022 11:07:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118427;
-        bh=BaivaKI+6LKe4QyubgCLaVmnqy1TW00F7HM8aV6lwss=;
+        s=korg; t=1655118444;
+        bh=gZn3VS3JM8zDLwPakO824699rxrNIkXxQcrQKKhndbk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j/T9GmvNDzL47B1iikmGipG6rCkH00VAZzGK8EliDK6b3GEMRc6wJpMLtKIk9HSuD
-         sMnvk0xlAfB9u1FVJlQ5m68N43k2q8Fgk+YFKKIouIwyrbTl+rKKILXop3y47Romx/
-         NsOiLZI9u3QJcWvCYyEipt1DN75D+UUg93f4gPms=
+        b=okrfx/5cNR7Hwn1UIn33aspj//M94oc42oA9rRFHkSnEf+VEMO1sQ7ZUcA/vMpJSQ
+         V4i1e9zzjw45z6QbrlZ7RS64qd8CVlY/dnTYcKvQKpvlbalxtY5yKztotv/3GW9ip2
+         TxGvNdWuSbaFkR4koVbtHEoXToVuHlLjD7T3z0Ls=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Jun Miao <jun.miao@intel.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 053/172] net: dsa: mv88e6xxx: Fix refcount leak in mv88e6xxx_mdios_register
-Date:   Mon, 13 Jun 2022 12:10:13 +0200
-Message-Id: <20220613094903.133590832@linuxfoundation.org>
+Subject: [PATCH 5.10 078/172] tracing: Fix sleeping function called from invalid context on RT kernel
+Date:   Mon, 13 Jun 2022 12:10:38 +0200
+Message-Id: <20220613094909.166914198@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -51,39 +50,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Jun Miao <jun.miao@intel.com>
 
-[ Upstream commit 02ded5a173619b11728b8bf75a3fd995a2c1ff28 ]
+[ Upstream commit 12025abdc8539ed9d5014e2d647a3fd1bd3de5cd ]
 
-of_get_child_by_name() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
+When setting bootparams="trace_event=initcall:initcall_start tp_printk=1" in the
+cmdline, the output_printk() was called, and the spin_lock_irqsave() was called in the
+atomic and irq disable interrupt context suitation. On the PREEMPT_RT kernel,
+these locks are replaced with sleepable rt-spinlock, so the stack calltrace will
+be triggered.
+Fix it by raw_spin_lock_irqsave when PREEMPT_RT and "trace_event=initcall:initcall_start
+tp_printk=1" enabled.
 
-mv88e6xxx_mdio_register() pass the device node to of_mdiobus_register().
-We don't need the device node after it.
+ BUG: sleeping function called from invalid context at kernel/locking/spinlock_rt.c:46
+ in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 1, name: swapper/0
+ preempt_count: 2, expected: 0
+ RCU nest depth: 0, expected: 0
+ Preemption disabled at:
+ [<ffffffff8992303e>] try_to_wake_up+0x7e/0xba0
+ CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.17.1-rt17+ #19 34c5812404187a875f32bee7977f7367f9679ea7
+ Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
+ Call Trace:
+  <TASK>
+  dump_stack_lvl+0x60/0x8c
+  dump_stack+0x10/0x12
+  __might_resched.cold+0x11d/0x155
+  rt_spin_lock+0x40/0x70
+  trace_event_buffer_commit+0x2fa/0x4c0
+  ? map_vsyscall+0x93/0x93
+  trace_event_raw_event_initcall_start+0xbe/0x110
+  ? perf_trace_initcall_finish+0x210/0x210
+  ? probe_sched_wakeup+0x34/0x40
+  ? ttwu_do_wakeup+0xda/0x310
+  ? trace_hardirqs_on+0x35/0x170
+  ? map_vsyscall+0x93/0x93
+  do_one_initcall+0x217/0x3c0
+  ? trace_event_raw_event_initcall_level+0x170/0x170
+  ? push_cpu_stop+0x400/0x400
+  ? cblist_init_generic+0x241/0x290
+  kernel_init_freeable+0x1ac/0x347
+  ? _raw_spin_unlock_irq+0x65/0x80
+  ? rest_init+0xf0/0xf0
+  kernel_init+0x1e/0x150
+  ret_from_fork+0x22/0x30
+  </TASK>
 
-Add missing of_node_put() to avoid refcount leak.
+Link: https://lkml.kernel.org/r/20220419013910.894370-1-jun.miao@intel.com
 
-Fixes: a3c53be55c95 ("net: dsa: mv88e6xxx: Support multiple MDIO busses")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Marek Behún <kabel@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Jun Miao <jun.miao@intel.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 1 +
- 1 file changed, 1 insertion(+)
+ kernel/trace/trace.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index e79a808375fc..7b7a8a74405d 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -3148,6 +3148,7 @@ static int mv88e6xxx_mdios_register(struct mv88e6xxx_chip *chip,
- 	 */
- 	child = of_get_child_by_name(np, "mdio");
- 	err = mv88e6xxx_mdio_register(chip, child, false);
-+	of_node_put(child);
- 	if (err)
- 		return err;
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index 953dd9568dd7..124e3e25e155 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -2784,7 +2784,7 @@ trace_event_buffer_lock_reserve(struct trace_buffer **current_rb,
+ }
+ EXPORT_SYMBOL_GPL(trace_event_buffer_lock_reserve);
  
+-static DEFINE_SPINLOCK(tracepoint_iter_lock);
++static DEFINE_RAW_SPINLOCK(tracepoint_iter_lock);
+ static DEFINE_MUTEX(tracepoint_printk_mutex);
+ 
+ static void output_printk(struct trace_event_buffer *fbuffer)
+@@ -2812,14 +2812,14 @@ static void output_printk(struct trace_event_buffer *fbuffer)
+ 
+ 	event = &fbuffer->trace_file->event_call->event;
+ 
+-	spin_lock_irqsave(&tracepoint_iter_lock, flags);
++	raw_spin_lock_irqsave(&tracepoint_iter_lock, flags);
+ 	trace_seq_init(&iter->seq);
+ 	iter->ent = fbuffer->entry;
+ 	event_call->event.funcs->trace(iter, 0, event);
+ 	trace_seq_putc(&iter->seq, 0);
+ 	printk("%s", iter->seq.buffer);
+ 
+-	spin_unlock_irqrestore(&tracepoint_iter_lock, flags);
++	raw_spin_unlock_irqrestore(&tracepoint_iter_lock, flags);
+ }
+ 
+ int tracepoint_printk_sysctl(struct ctl_table *table, int write,
 -- 
 2.35.1
 
