@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA5AECCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:59:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B520DCCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:59:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351099AbiFMK7M (ORCPT
+        id S1351144AbiFMK7P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:59:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35442 "EHLO
+        Mon, 13 Jun 2022 06:59:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350120AbiFMKym (ORCPT
+        with ESMTP id S1350116AbiFMKym (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 06:54:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD7ADFF1;
-        Mon, 13 Jun 2022 03:29:25 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79420DFCE;
+        Mon, 13 Jun 2022 03:29:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 024A9B80E95;
-        Mon, 13 Jun 2022 10:29:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E6FDC34114;
-        Mon, 13 Jun 2022 10:29:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39204B80E95;
+        Mon, 13 Jun 2022 10:29:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99421C34114;
+        Mon, 13 Jun 2022 10:29:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116162;
-        bh=k9u9j8aY1zKKEsAw274pxYRcOYeWowMXMlTUdX+0YAo=;
+        s=korg; t=1655116160;
+        bh=m3mQ0K2nY20wBSuawmJFygct/FIvP2rUvjLm0G27y8U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UIWGjvyxEOiKpA4dT7tpFKg4zEP5ZwwZOpXNpYlgGjKZIQwAniGlCs7EBvE4B4NeN
-         0XDASlfS+boapZmKteDeD6yxt5jNi9y1MlQBnPeZ9s9ESFfn3yc68nT1/wvWwuyNfF
-         gAskch8TILkIS8/Ik8szmL4lhxFIwoPlTs0zT6NU=
+        b=NfbquxVuAaR2EVxoWGEWNV5agVSTGy5clHmh2oD/xuH/fLQauQc9GoBobnIq29h/T
+         BcV9wzPFUXYAzkUepaYK27tZnnjgOBTPFAEiCou+HjUca7qdLzFqkqR4Ykd5lZ7UxR
+         h3t059I5ZDPgK9+fczCsBVUd9j0pRkWngTsHpp8E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        stable@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Wang Weiyang <wangweiyang2@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 035/411] drm: msm: fix error check return value of irq_of_parse_and_map()
-Date:   Mon, 13 Jun 2022 12:05:08 +0200
-Message-Id: <20220613094929.557760411@linuxfoundation.org>
+Subject: [PATCH 4.14 142/218] tty: goldfish: Use tty_port_destroy() to destroy port
+Date:   Mon, 13 Jun 2022 12:10:00 +0200
+Message-Id: <20220613094924.896588516@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,41 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Wang Weiyang <wangweiyang2@huawei.com>
 
-[ Upstream commit b9e4f1d2b505df8e2439b63e67afaa287c1c43e2 ]
+[ Upstream commit 507b05063d1b7a1fcb9f7d7c47586fc4f3508f98 ]
 
-The irq_of_parse_and_map() function returns 0 on failure, and does not
-return an negative value.
+In goldfish_tty_probe(), the port initialized through tty_port_init()
+should be destroyed in error paths.In goldfish_tty_remove(), qtty->port
+also should be destroyed or else might leak resources.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/483175/
-Link: https://lore.kernel.org/r/20220424031959.3172406-1-lv.ruyi@zte.com.cn
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Fix the above by calling tty_port_destroy().
+
+Fixes: 666b7793d4bf ("goldfish: tty driver")
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Signed-off-by: Wang Weiyang <wangweiyang2@huawei.com>
+Link: https://lore.kernel.org/r/20220328115844.86032-1-wangweiyang2@huawei.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/tty/goldfish.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
-index 77823ccdd0f8..39d0082eedcc 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
-@@ -698,9 +698,9 @@ struct msm_kms *mdp5_kms_init(struct drm_device *dev)
- 	pdev = mdp5_kms->pdev;
- 
- 	irq = irq_of_parse_and_map(pdev->dev.of_node, 0);
--	if (irq < 0) {
--		ret = irq;
--		DRM_DEV_ERROR(&pdev->dev, "failed to get irq: %d\n", ret);
-+	if (!irq) {
-+		ret = -EINVAL;
-+		DRM_DEV_ERROR(&pdev->dev, "failed to get irq\n");
- 		goto fail;
- 	}
- 
+diff --git a/drivers/tty/goldfish.c b/drivers/tty/goldfish.c
+index 85a500ddbcaa..1b72321f2d0b 100644
+--- a/drivers/tty/goldfish.c
++++ b/drivers/tty/goldfish.c
+@@ -414,6 +414,7 @@ static int goldfish_tty_probe(struct platform_device *pdev)
+ err_tty_register_device_failed:
+ 	free_irq(irq, qtty);
+ err_dec_line_count:
++	tty_port_destroy(&qtty->port);
+ 	goldfish_tty_current_line_count--;
+ 	if (goldfish_tty_current_line_count == 0)
+ 		goldfish_tty_delete_driver();
+@@ -435,6 +436,7 @@ static int goldfish_tty_remove(struct platform_device *pdev)
+ 	iounmap(qtty->base);
+ 	qtty->base = NULL;
+ 	free_irq(qtty->irq, pdev);
++	tty_port_destroy(&qtty->port);
+ 	goldfish_tty_current_line_count--;
+ 	if (goldfish_tty_current_line_count == 0)
+ 		goldfish_tty_delete_driver();
 -- 
 2.35.1
 
