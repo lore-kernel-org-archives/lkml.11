@@ -2,140 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16BFDC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:24:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B74C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:24:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352800AbiFMMYm (ORCPT
+        id S1351322AbiFMMYr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:24:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53672 "EHLO
+        Mon, 13 Jun 2022 08:24:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348009AbiFMMWl (ORCPT
+        with ESMTP id S237774AbiFMMWn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:22:41 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A604557B15
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 04:03:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655118211; x=1686654211;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=I0+AQdJdP0W9uMbzGijxcDYistK8Ld2UH8HmZHjvd38=;
-  b=NTTcVcTeAXZDv3MLrWhiLxEhI/ecERZ0G1tp3Ho8MsSO2CJ00v6lqKEB
-   EPJE4DTN7UJG5KWg89DMxFvaPkP8qmyrsiTFMOEMoUkgcNfiBZqgDHbNX
-   cLJ6dD6WWOLmHKpdhMr6OEVyQ/OPhaN88pXesImmzJOHyUZn/smHu/53m
-   MdCvxY/NcExYekKo27KjFr0dHNz05eslts+/7s/kIUm8+pjixqJvZjsuV
-   ZdW+bCOKq42r+QrJc5KMQj3yDetbTpraHxOZfFTUK6pxcWO2NLuWItjNg
-   lC6tGbNTkuVpAutWtWLfNOXCyVK382ggpiKKTeeYLb3QOPwlvNbd1Dtlp
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10376"; a="342220115"
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="342220115"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 04:03:30 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="829742491"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 13 Jun 2022 04:03:28 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o0hqy-000KkH-4J;
-        Mon, 13 Jun 2022 11:03:28 +0000
-Date:   Mon, 13 Jun 2022 19:03:00 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Peter Gonda <pgonda@google.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Subject: arch/x86/kvm/svm/sev.c:1605:30: warning: parameter 'role' set but
- not used
-Message-ID: <202206131853.x4KJwC5Q-lkp@intel.com>
+        Mon, 13 Jun 2022 08:22:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C12057B1D;
+        Mon, 13 Jun 2022 04:03:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C8370613EF;
+        Mon, 13 Jun 2022 11:03:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9211C34114;
+        Mon, 13 Jun 2022 11:03:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655118211;
+        bh=CLxhyRsIbGorzJp3CfbUxXaPLoemca5e22KRT6otbHs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fCbnYUPlmDSDRFQ/f3jR8/0cOuzAi9IUS732y4k30txttN1PBOvLXz7QjXs07RC/A
+         1HWxnt45cWfFFWorIzn/zEAuFmSMS7h6wvX27Unmy65tTJZlSgSuy1fIGbMgovr+Nk
+         7MP0f3SfwPyAtusI26TfI9puJJ2G1O95ODX1TTic=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Gong Yuanjun <ruc_gongyuanjun@163.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 268/287] drm/radeon: fix a possible null pointer dereference
+Date:   Mon, 13 Jun 2022 12:11:32 +0200
+Message-Id: <20220613094932.128625589@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
+References: <20220613094923.832156175@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Peter,
+From: Gong Yuanjun <ruc_gongyuanjun@163.com>
 
-FYI, the error/warning still remains.
+[ Upstream commit a2b28708b645c5632dc93669ab06e97874c8244f ]
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   b13baccc3850ca8b8cccbf8ed9912dbaa0fdf7f3
-commit: 0c2c7c069285374fc8feacddc0498f8ab7627117 KVM: SEV: Mark nested locking of vcpu->lock
-date:   5 weeks ago
-config: x86_64-buildonly-randconfig-r005-20220613 (https://download.01.org/0day-ci/archive/20220613/202206131853.x4KJwC5Q-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d378268ead93c85803c270277f0243737b536ae7)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0c2c7c069285374fc8feacddc0498f8ab7627117
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 0c2c7c069285374fc8feacddc0498f8ab7627117
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/kvm/ drivers/media/platform/qcom/camss/
+In radeon_fp_native_mode(), the return value of drm_mode_duplicate()
+is assigned to mode, which will lead to a NULL pointer dereference
+on failure of drm_mode_duplicate(). Add a check to avoid npd.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+The failure status of drm_cvt_mode() on the other path is checked too.
 
-All warnings (new ones prefixed by >>):
+Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/radeon/radeon_connectors.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
->> arch/x86/kvm/svm/sev.c:1605:30: warning: parameter 'role' set but not used [-Wunused-but-set-parameter]
-                                           enum sev_migration_role role)
-                                                                   ^
-   1 warning generated.
-
-
-vim +/role +1605 arch/x86/kvm/svm/sev.c
-
-  1603	
-  1604	static int sev_lock_vcpus_for_migration(struct kvm *kvm,
-> 1605						enum sev_migration_role role)
-  1606	{
-  1607		struct kvm_vcpu *vcpu;
-  1608		unsigned long i, j;
-  1609		bool first = true;
-  1610	
-  1611		kvm_for_each_vcpu(i, vcpu, kvm) {
-  1612			if (mutex_lock_killable_nested(&vcpu->mutex, role))
-  1613				goto out_unlock;
-  1614	
-  1615			if (first) {
-  1616				/*
-  1617				 * Reset the role to one that avoids colliding with
-  1618				 * the role used for the first vcpu mutex.
-  1619				 */
-  1620				role = SEV_NR_MIGRATION_ROLES;
-  1621				first = false;
-  1622			} else {
-  1623				mutex_release(&vcpu->mutex.dep_map, _THIS_IP_);
-  1624			}
-  1625		}
-  1626	
-  1627		return 0;
-  1628	
-  1629	out_unlock:
-  1630	
-  1631		first = true;
-  1632		kvm_for_each_vcpu(j, vcpu, kvm) {
-  1633			if (i == j)
-  1634				break;
-  1635	
-  1636			if (first)
-  1637				first = false;
-  1638			else
-  1639				mutex_acquire(&vcpu->mutex.dep_map, role, 0, _THIS_IP_);
-  1640	
-  1641	
-  1642			mutex_unlock(&vcpu->mutex);
-  1643		}
-  1644		return -EINTR;
-  1645	}
-  1646	
-
+diff --git a/drivers/gpu/drm/radeon/radeon_connectors.c b/drivers/gpu/drm/radeon/radeon_connectors.c
+index b9927101e845..47240983f360 100644
+--- a/drivers/gpu/drm/radeon/radeon_connectors.c
++++ b/drivers/gpu/drm/radeon/radeon_connectors.c
+@@ -476,6 +476,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
+ 	    native_mode->vdisplay != 0 &&
+ 	    native_mode->clock != 0) {
+ 		mode = drm_mode_duplicate(dev, native_mode);
++		if (!mode)
++			return NULL;
+ 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
+ 		drm_mode_set_name(mode);
+ 
+@@ -490,6 +492,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
+ 		 * simpler.
+ 		 */
+ 		mode = drm_cvt_mode(dev, native_mode->hdisplay, native_mode->vdisplay, 60, true, false, false);
++		if (!mode)
++			return NULL;
+ 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
+ 		DRM_DEBUG_KMS("Adding cvt approximation of native panel mode %s\n", mode->name);
+ 	}
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.1
+
+
+
