@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7241C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:03:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6137C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:06:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380964AbiFMODS (ORCPT
+        id S1380864AbiFMODX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:03:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36474 "EHLO
+        Mon, 13 Jun 2022 10:03:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381101AbiFMNz7 (ORCPT
+        with ESMTP id S1381127AbiFMN4I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:55:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC18D87223;
-        Mon, 13 Jun 2022 04:36:34 -0700 (PDT)
+        Mon, 13 Jun 2022 09:56:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD0EE87A22;
+        Mon, 13 Jun 2022 04:36:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 27CDC612D0;
-        Mon, 13 Jun 2022 11:36:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3807AC34114;
-        Mon, 13 Jun 2022 11:36:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A1B06B80ECA;
+        Mon, 13 Jun 2022 11:36:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F29E9C34114;
+        Mon, 13 Jun 2022 11:36:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120193;
-        bh=JFMCjGRirR0FmWsQPOEbQH2Ao92E7UdBKDrpiz0uqQo=;
+        s=korg; t=1655120196;
+        bh=WOZZ81gRLciIhVRawU+i1v+Da6F8SDjqNSRRDxrrypA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K/qpUi1VgNq9mV+SrfAdgBiH4/SohgneKanmgTR4OqejQwH9Juf1kG92nzgo5o8bo
-         QvhbNarYJjnkSW4h89DbO2rnMnK8XskRu2rVmMuy85FUh1iDJjqzqxH+DRmvq4nzjh
-         fLkx9HZ6LWad7bljQjPFwIN1vnzP+C07De5W/kmc=
+        b=gx/h2CvMe8w5T19lU7gp6M6ajEkj2vzA6gmHLbN7zjVC9glERyVz7ZfLtarx4wlAO
+         PCHYgZxkiPXZE72Gbd4AJRZs9FxAVPYP4E9nEzUPVFUVr9kwaH71tTG9u4bPnIfVLe
+         62mFld0WWfwCQ7Xb4+TxbDTZnQjwJ3SgkKurNYcQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Martin Leung <Martin.Leung@amd.com>,
+        stable@vger.kernel.org,
+        Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>,
         Qingqing Zhuo <qingqing.zhuo@amd.com>,
-        David Galiffi <David.Galiffi@amd.com>,
+        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
         Daniel Wheeler <daniel.wheeler@amd.com>,
         Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 264/339] drm/amd/display: Check if modulo is 0 before dividing.
-Date:   Mon, 13 Jun 2022 12:11:29 +0200
-Message-Id: <20220613094934.655988982@linuxfoundation.org>
+Subject: [PATCH 5.18 265/339] drm/amd/display: Check zero planes for OTG disable W/A on clock change
+Date:   Mon, 13 Jun 2022 12:11:30 +0200
+Message-Id: <20220613094934.686145142@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -53,43 +54,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Galiffi <David.Galiffi@amd.com>
+From: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
 
-[ Upstream commit 49947b906a6bd9668eaf4f9cf691973c25c26955 ]
+[ Upstream commit 66a197203794339b028eedfa880bff9367fce783 ]
 
-[How & Why]
-If a value of 0 is read, then this will cause a divide-by-0 panic.
+[Why]
+A display clock change hang can occur when switching between DIO and HPO
+enabled modes during the optimize_bandwidth in dc_commit_state_no_check
+call.
 
-Reviewed-by: Martin Leung <Martin.Leung@amd.com>
+This happens when going from 4k120 8bpc 420 to 4k144 10bpc 444.
+
+Display clock in the DIO case is 1200MHz, but pixel rate is 600MHz
+because the pixel format is 420.
+
+Display clock in the HPO case is less (800MHz?) because of ODM combine
+which results in a smaller divider.
+
+The DIO is still active in prepare but not active in the optimize which
+results in the hang occuring.
+
+During this change there are no planes on the stream so it's safe to
+apply the workaround, but dpms_off = false and signal type is not
+virtual.
+
+[How]
+Check for plane_count == 0, no planes on the stream.
+
+It's easiest to check pipe->plane_state == NULL as an equivalent check
+rather than trying to search for the stream status in the context
+associated with the stream, so let's do that.
+
+The primary, non MPO pipe should not have a NULL plane state.
+
+Reviewed-by: Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>
 Acked-by: Qingqing Zhuo <qingqing.zhuo@amd.com>
-Signed-off-by: David Galiffi <David.Galiffi@amd.com>
+Signed-off-by: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
 Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
 Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c | 3 ++-
+ drivers/gpu/drm/amd/display/dc/clk_mgr/dcn316/dcn316_clk_mgr.c | 3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c b/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c
-index cc5128e67daf..8e9a7409c17a 100644
---- a/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c
-+++ b/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c
-@@ -1105,9 +1105,12 @@ static bool get_pixel_clk_frequency_100hz(
- 			 * not be programmed equal to DPREFCLK
- 			 */
- 			modulo_hz = REG_READ(MODULO[inst]);
--			*pixel_clk_khz = div_u64((uint64_t)clock_hz*
--				clock_source->ctx->dc->clk_mgr->dprefclk_khz*10,
--				modulo_hz);
-+			if (modulo_hz)
-+				*pixel_clk_khz = div_u64((uint64_t)clock_hz*
-+					clock_source->ctx->dc->clk_mgr->dprefclk_khz*10,
-+					modulo_hz);
-+			else
-+				*pixel_clk_khz = 0;
- 		} else {
- 			/* NOTE: There is agreement with VBIOS here that MODULO is
- 			 * programmed equal to DPREFCLK, in which case PHASE will be
+diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c
+index 8be4c1970628..3bf2ab2ff7f8 100644
+--- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c
++++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c
+@@ -91,7 +91,8 @@ static void dcn315_disable_otg_wa(struct clk_mgr *clk_mgr_base, bool disable)
+ 
+ 		if (pipe->top_pipe || pipe->prev_odm_pipe)
+ 			continue;
+-		if (pipe->stream && (pipe->stream->dpms_off || dc_is_virtual_signal(pipe->stream->signal))) {
++		if (pipe->stream && (pipe->stream->dpms_off || pipe->plane_state == NULL ||
++				     dc_is_virtual_signal(pipe->stream->signal))) {
+ 			if (disable)
+ 				pipe->stream_res.tg->funcs->immediate_disable_crtc(pipe->stream_res.tg);
+ 			else
+diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn316/dcn316_clk_mgr.c b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn316/dcn316_clk_mgr.c
+index 3121dd2d2a91..fc3af81ed6c6 100644
+--- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn316/dcn316_clk_mgr.c
++++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn316/dcn316_clk_mgr.c
+@@ -122,7 +122,8 @@ static void dcn316_disable_otg_wa(struct clk_mgr *clk_mgr_base, bool disable)
+ 
+ 		if (pipe->top_pipe || pipe->prev_odm_pipe)
+ 			continue;
+-		if (pipe->stream && (pipe->stream->dpms_off || dc_is_virtual_signal(pipe->stream->signal))) {
++		if (pipe->stream && (pipe->stream->dpms_off || pipe->plane_state == NULL ||
++				     dc_is_virtual_signal(pipe->stream->signal))) {
+ 			if (disable)
+ 				pipe->stream_res.tg->funcs->immediate_disable_crtc(pipe->stream_res.tg);
+ 			else
 -- 
 2.35.1
 
