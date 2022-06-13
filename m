@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EFBCC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:35:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F01BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:35:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384198AbiFMOfj (ORCPT
+        id S1384229AbiFMOfq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:35:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39718 "EHLO
+        Mon, 13 Jun 2022 10:35:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385510AbiFMObQ (ORCPT
+        with ESMTP id S1385507AbiFMObQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 10:31:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47663ABE73;
-        Mon, 13 Jun 2022 04:49:00 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA86ABE6B;
+        Mon, 13 Jun 2022 04:48:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BE136124E;
-        Mon, 13 Jun 2022 11:48:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A88FC34114;
-        Mon, 13 Jun 2022 11:48:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C8C6261425;
+        Mon, 13 Jun 2022 11:48:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7DAAC34114;
+        Mon, 13 Jun 2022 11:48:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120910;
-        bh=C3p8V+CShGR7nozEVmR7aMQKSLK+SVYLvPNgHctlLf8=;
+        s=korg; t=1655120935;
+        bh=H/ojBjv8RedJ1tRhj7i5pR0yqtBqO8nR4KB/LsnXy2I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rIvUQ6Gy9XyKOslJr8fVcZgN6x4PpkOnvhFmCs7RSwtZzy3DJgGpcVaz45Zf3Iydm
-         N8ejKfLU+4Rwr8/hxmxRi0FC221Fv7p0i7HhX0U6psG3u2QOLPhIFm7HYrl9Sy9HOy
-         nRuSBLv6ZXJPNOjl2XXB07LDuFTwU2TqNsIjVgvE=
+        b=imqA0AAbh+PXHgluq+ix33b7/g5wH+1xdgw5LG7QyFuUumTvyKu6cjVxKzs3wZ4Rh
+         ymNHY6/MrwmfDBGkHgJhtYpGHYxbqMU+Zi0b2L8TLu4YYKHlxWT1WO55Wm8YKcOxYm
+         lwftWlyheQdknE5L4ngV+x8HRlBuJxLNJ1rgAH0M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Huang Guobin <huangguobin4@huawei.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 203/298] tty: Fix a possible resource leak in icom_probe
-Date:   Mon, 13 Jun 2022 12:11:37 +0200
-Message-Id: <20220613094931.262131598@linuxfoundation.org>
+        stable@vger.kernel.org, Eli Billauer <eli.billauer@gmail.com>,
+        Hangyu Hua <hbh25y@gmail.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 211/298] char: xillybus: fix a refcount leak in cleanup_dev()
+Date:   Mon, 13 Jun 2022 12:11:45 +0200
+Message-Id: <20220613094931.504796157@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,35 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Huang Guobin <huangguobin4@huawei.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit ee157a79e7c82b01ae4c25de0ac75899801f322c ]
+[ Upstream commit b67d19662fdee275c479d21853bc1239600a798f ]
 
-When pci_read_config_dword failed, call pci_release_regions() and
-pci_disable_device() to recycle the resource previously allocated.
+usb_get_dev is called in xillyusb_probe. So it is better to call
+usb_put_dev before xdev is released.
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
-Link: https://lore.kernel.org/r/20220331091005.3290753-1-huangguobin4@huawei.com
+Acked-by: Eli Billauer <eli.billauer@gmail.com>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Link: https://lore.kernel.org/r/20220406075703.23464-1-hbh25y@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/icom.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/char/xillybus/xillyusb.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
-index 03a2fe9f4c9a..02b375ba2f07 100644
---- a/drivers/tty/serial/icom.c
-+++ b/drivers/tty/serial/icom.c
-@@ -1501,7 +1501,7 @@ static int icom_probe(struct pci_dev *dev,
- 	retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg);
- 	if (retval) {
- 		dev_err(&dev->dev, "PCI Config read FAILED\n");
--		return retval;
-+		goto probe_exit0;
- 	}
+diff --git a/drivers/char/xillybus/xillyusb.c b/drivers/char/xillybus/xillyusb.c
+index dc3551796e5e..39bcbfd908b4 100644
+--- a/drivers/char/xillybus/xillyusb.c
++++ b/drivers/char/xillybus/xillyusb.c
+@@ -549,6 +549,7 @@ static void cleanup_dev(struct kref *kref)
+ 	if (xdev->workq)
+ 		destroy_workqueue(xdev->workq);
  
- 	pci_write_config_dword(dev, PCI_COMMAND,
++	usb_put_dev(xdev->udev);
+ 	kfree(xdev->channels); /* Argument may be NULL, and that's fine */
+ 	kfree(xdev);
+ }
 -- 
 2.35.1
 
