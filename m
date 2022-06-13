@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61C07C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:21:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F3EEC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:22:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376440AbiFMNVs (ORCPT
+        id S1376476AbiFMNV4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:21:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60456 "EHLO
+        Mon, 13 Jun 2022 09:21:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376754AbiFMNT3 (ORCPT
+        with ESMTP id S1376755AbiFMNT3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 09:19:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 778B45A097;
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C39656416;
         Mon, 13 Jun 2022 04:22:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 01621B80EAB;
-        Mon, 13 Jun 2022 11:22:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 528F1C34114;
-        Mon, 13 Jun 2022 11:22:13 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A3BA4CE1184;
+        Mon, 13 Jun 2022 11:22:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 871B7C3411C;
+        Mon, 13 Jun 2022 11:22:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119333;
-        bh=UuT5pcuIYfI0vQXMOvXgNqqRRJ+ochAjLD8cGR0HfcE=;
+        s=korg; t=1655119330;
+        bh=RGI/+Kt+yF7/Hi7Ju1QxNMwGev2vPf7BIbJqB3l03Sw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=caHO4I0YsHFrl+cb1FdyeM6ZMVNU2aw+1kmEeuIMZX6mVUlx8860P/LKGSbc6+Eqj
-         psBHIVTgtotJpKHOYfxos9CgKzlgEeZZLRQFWoIQJDNZcXRCvUOlXZPisdgEdPCrXo
-         ou+N6eqVSOGL2HoeBF1/vyjI+LYjWCtsuBDTls6M=
+        b=grk4syGz3slf+cqkCek81g3LA4Oud1CCOcN6ajfAWQ2nAxqIb5tbIJiFWMOVKs/vE
+         HBUM5hV34y1H112Iwk7YgbwxMN6Ao4AhQUGiOCBnWtcUuSGtMqO5Ph8/yhgi636jqs
+         eAbDXW2Ro6kieWMucKCHtGdLXVTjdmpFCFIdQqB0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Martin Leung <Martin.Leung@amd.com>,
-        Qingqing Zhuo <qingqing.zhuo@amd.com>,
-        David Galiffi <David.Galiffi@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Xiubo Li <xiubli@redhat.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 198/247] drm/amd/display: Check if modulo is 0 before dividing.
-Date:   Mon, 13 Jun 2022 12:11:40 +0200
-Message-Id: <20220613094928.954510878@linuxfoundation.org>
+Subject: [PATCH 5.15 197/247] ceph: flush the mdlog for filesystem sync
+Date:   Mon, 13 Jun 2022 12:11:39 +0200
+Message-Id: <20220613094928.924066918@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -53,43 +51,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Galiffi <David.Galiffi@amd.com>
+From: Xiubo Li <xiubli@redhat.com>
 
-[ Upstream commit 49947b906a6bd9668eaf4f9cf691973c25c26955 ]
+[ Upstream commit 1b2ba3c5616e17ff951359e25c658a1c3f146f1e ]
 
-[How & Why]
-If a value of 0 is read, then this will cause a divide-by-0 panic.
+Before waiting for a request's safe reply, we will send the mdlog flush
+request to the relevant MDS. And this will also flush the mdlog for all
+the other unsafe requests in the same session, so we can record the last
+session and no need to flush mdlog again in the next loop. But there
+still have cases that it may send the mdlog flush requst twice or more,
+but that should be not often.
 
-Reviewed-by: Martin Leung <Martin.Leung@amd.com>
-Acked-by: Qingqing Zhuo <qingqing.zhuo@amd.com>
-Signed-off-by: David Galiffi <David.Galiffi@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Rename wait_unsafe_requests() to
+flush_mdlog_and_wait_mdsc_unsafe_requests() to make it more
+descriptive.
+
+[xiubli: fold in MDS request refcount leak fix from Jeff]
+
+URL: https://tracker.ceph.com/issues/55284
+URL: https://tracker.ceph.com/issues/55411
+Signed-off-by: Xiubo Li <xiubli@redhat.com>
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ fs/ceph/mds_client.c | 33 +++++++++++++++++++++++++++------
+ 1 file changed, 27 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c b/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c
-index 2c7eb982eabc..054823d12403 100644
---- a/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c
-+++ b/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c
-@@ -1013,9 +1013,12 @@ static bool get_pixel_clk_frequency_100hz(
- 			 * not be programmed equal to DPREFCLK
- 			 */
- 			modulo_hz = REG_READ(MODULO[inst]);
--			*pixel_clk_khz = div_u64((uint64_t)clock_hz*
--				clock_source->ctx->dc->clk_mgr->dprefclk_khz*10,
--				modulo_hz);
-+			if (modulo_hz)
-+				*pixel_clk_khz = div_u64((uint64_t)clock_hz*
-+					clock_source->ctx->dc->clk_mgr->dprefclk_khz*10,
-+					modulo_hz);
-+			else
-+				*pixel_clk_khz = 0;
- 		} else {
- 			/* NOTE: There is agreement with VBIOS here that MODULO is
- 			 * programmed equal to DPREFCLK, in which case PHASE will be
+diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
+index e9409c460acd..912903de4de4 100644
+--- a/fs/ceph/mds_client.c
++++ b/fs/ceph/mds_client.c
+@@ -4794,15 +4794,17 @@ void ceph_mdsc_pre_umount(struct ceph_mds_client *mdsc)
+ }
+ 
+ /*
+- * wait for all write mds requests to flush.
++ * flush the mdlog and wait for all write mds requests to flush.
+  */
+-static void wait_unsafe_requests(struct ceph_mds_client *mdsc, u64 want_tid)
++static void flush_mdlog_and_wait_mdsc_unsafe_requests(struct ceph_mds_client *mdsc,
++						 u64 want_tid)
+ {
+ 	struct ceph_mds_request *req = NULL, *nextreq;
++	struct ceph_mds_session *last_session = NULL;
+ 	struct rb_node *n;
+ 
+ 	mutex_lock(&mdsc->mutex);
+-	dout("wait_unsafe_requests want %lld\n", want_tid);
++	dout("%s want %lld\n", __func__, want_tid);
+ restart:
+ 	req = __get_oldest_req(mdsc);
+ 	while (req && req->r_tid <= want_tid) {
+@@ -4814,14 +4816,32 @@ static void wait_unsafe_requests(struct ceph_mds_client *mdsc, u64 want_tid)
+ 			nextreq = NULL;
+ 		if (req->r_op != CEPH_MDS_OP_SETFILELOCK &&
+ 		    (req->r_op & CEPH_MDS_OP_WRITE)) {
++			struct ceph_mds_session *s = req->r_session;
++
++			if (!s) {
++				req = nextreq;
++				continue;
++			}
++
+ 			/* write op */
+ 			ceph_mdsc_get_request(req);
+ 			if (nextreq)
+ 				ceph_mdsc_get_request(nextreq);
++			s = ceph_get_mds_session(s);
+ 			mutex_unlock(&mdsc->mutex);
+-			dout("wait_unsafe_requests  wait on %llu (want %llu)\n",
++
++			/* send flush mdlog request to MDS */
++			if (last_session != s) {
++				send_flush_mdlog(s);
++				ceph_put_mds_session(last_session);
++				last_session = s;
++			} else {
++				ceph_put_mds_session(s);
++			}
++			dout("%s wait on %llu (want %llu)\n", __func__,
+ 			     req->r_tid, want_tid);
+ 			wait_for_completion(&req->r_safe_completion);
++
+ 			mutex_lock(&mdsc->mutex);
+ 			ceph_mdsc_put_request(req);
+ 			if (!nextreq)
+@@ -4836,7 +4856,8 @@ static void wait_unsafe_requests(struct ceph_mds_client *mdsc, u64 want_tid)
+ 		req = nextreq;
+ 	}
+ 	mutex_unlock(&mdsc->mutex);
+-	dout("wait_unsafe_requests done\n");
++	ceph_put_mds_session(last_session);
++	dout("%s done\n", __func__);
+ }
+ 
+ void ceph_mdsc_sync(struct ceph_mds_client *mdsc)
+@@ -4865,7 +4886,7 @@ void ceph_mdsc_sync(struct ceph_mds_client *mdsc)
+ 	dout("sync want tid %lld flush_seq %lld\n",
+ 	     want_tid, want_flush);
+ 
+-	wait_unsafe_requests(mdsc, want_tid);
++	flush_mdlog_and_wait_mdsc_unsafe_requests(mdsc, want_tid);
+ 	wait_caps_flush(mdsc, want_flush);
+ }
+ 
 -- 
 2.35.1
 
