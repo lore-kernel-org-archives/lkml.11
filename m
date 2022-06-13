@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6BA5CCA486
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:20:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46FBDCCA488
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:20:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376738AbiFMNTZ (ORCPT
+        id S1376996AbiFMNTt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:19:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38638 "EHLO
+        Mon, 13 Jun 2022 09:19:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359666AbiFMNKV (ORCPT
+        with ESMTP id S1376330AbiFMNKv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:10:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 230C63B290;
-        Mon, 13 Jun 2022 04:21:17 -0700 (PDT)
+        Mon, 13 Jun 2022 09:10:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCA4A666B7;
+        Mon, 13 Jun 2022 04:21:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 713EC60FAD;
-        Mon, 13 Jun 2022 11:21:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B557C34114;
-        Mon, 13 Jun 2022 11:21:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 63A99B80E59;
+        Mon, 13 Jun 2022 11:21:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C34E2C34114;
+        Mon, 13 Jun 2022 11:21:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119275;
-        bh=KcOo1oA3ujYCM/X6/pxf5zQ0h3TH3jWllfC3FvL+cl8=;
+        s=korg; t=1655119306;
+        bh=7RUlMWfljiidExMpp+ECfZuNrzYH/eWjg+U8SwDpDkQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=owGaEqLPr8oZuoR4vj1LK1oTn2quvHnSk7yAqODppMZ/caIKhXM7cVRlvk/mxNU9Q
-         6LkxXIphtzyndzjFJ/t8JhCQFQLyDAYXa0yjbU+edIMTXiYETiB1mKA3cArF8yP7QB
-         fmejMi0887rT7ONH/SF4Dw4r4JjEMieHMni3IJ3k=
+        b=0vXT/tUBZto5483+GdJj1fD6GRe5+0N40+dzVPa8ZRAM4hq2YEpDhEO7wQZ8/wcIQ
+         rI6aPQ+JGQtqvkxQ/qwOalbpdBTAotfwhGHMBl7yguEsIdVDmBS5tia7TCQacWYQ4n
+         eC7MxqyXwvflCdTXUiZuuvk9W9Hj88m0jjmh2b/E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 204/247] jump_label,noinstr: Avoid instrumentation for JUMP_LABEL=n builds
-Date:   Mon, 13 Jun 2022 12:11:46 +0200
-Message-Id: <20220613094929.131691875@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
+        =?UTF-8?q?Andr=C3=A9=20Kapelrud?= <a.kapelrud@gmail.com>
+Subject: [PATCH 5.15 214/247] ALSA: usb-audio: Skip generic sync EP parse for secondary EP
+Date:   Mon, 13 Jun 2022 12:11:56 +0200
+Message-Id: <20220613094929.429570327@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,44 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 656d054e0a15ec327bd82801ccd58201e59f6896 ]
+commit efb75df105e82f076a85b9f2d81410428bcb55fc upstream.
 
-When building x86_64 with JUMP_LABEL=n it's possible for
-instrumentation to sneak into noinstr:
+When ep_idx is already non-zero, it means usually a capture stream
+that is set up explicity by a fixed-format quirk, and applying the
+check for generic (non-implicit-fb) sync EPs might hit incorrectly,
+resulting in a bogus sync endpoint for the capture stream.
 
-vmlinux.o: warning: objtool: exit_to_user_mode+0x14: call to static_key_count.constprop.0() leaves .noinstr.text section
-vmlinux.o: warning: objtool: syscall_exit_to_user_mode+0x2d: call to static_key_count.constprop.0() leaves .noinstr.text section
-vmlinux.o: warning: objtool: irqentry_exit_to_user_mode+0x1b: call to static_key_count.constprop.0() leaves .noinstr.text section
+This patch adds a check for the ep_idx and skip if it's a secondary
+endpoint.  It's a part of the fixes for regressions on Saffire 6.
 
-Switch to arch_ prefixed atomic to avoid the explicit instrumentation.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 7b0efea4baf0 ("ALSA: usb-audio: Add missing ep_idx in fixed EP quirks")
+Reported-and-tested-by: André Kapelrud <a.kapelrud@gmail.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220606160910.6926-2-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/jump_label.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/usb/pcm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/jump_label.h b/include/linux/jump_label.h
-index 48b9b2a82767..019e55c13248 100644
---- a/include/linux/jump_label.h
-+++ b/include/linux/jump_label.h
-@@ -261,9 +261,9 @@ extern void static_key_disable_cpuslocked(struct static_key *key);
- #include <linux/atomic.h>
- #include <linux/bug.h>
+diff --git a/sound/usb/pcm.c b/sound/usb/pcm.c
+index b470404a5376..b0369df53910 100644
+--- a/sound/usb/pcm.c
++++ b/sound/usb/pcm.c
+@@ -304,7 +304,7 @@ int snd_usb_audioformat_set_sync_ep(struct snd_usb_audio *chip,
+ 	 * Generic sync EP handling
+ 	 */
  
--static inline int static_key_count(struct static_key *key)
-+static __always_inline int static_key_count(struct static_key *key)
- {
--	return atomic_read(&key->enabled);
-+	return arch_atomic_read(&key->enabled);
- }
+-	if (altsd->bNumEndpoints < 2)
++	if (fmt->ep_idx > 0 || altsd->bNumEndpoints < 2)
+ 		return 0;
  
- static __always_inline void jump_label_init(void)
+ 	is_playback = !(get_endpoint(alts, 0)->bEndpointAddress & USB_DIR_IN);
 -- 
-2.35.1
+2.36.1
 
 
 
