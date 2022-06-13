@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82F1AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:23:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8C66C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:25:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382643AbiFMOXL (ORCPT
+        id S1383502AbiFMOXZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:23:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41570 "EHLO
+        Mon, 13 Jun 2022 10:23:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382465AbiFMORj (ORCPT
+        with ESMTP id S1382654AbiFMOSh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:17:39 -0400
+        Mon, 13 Jun 2022 10:18:37 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6AC29EB66;
-        Mon, 13 Jun 2022 04:43:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49B182E0BA;
+        Mon, 13 Jun 2022 04:43:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 79E90612D0;
-        Mon, 13 Jun 2022 11:43:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88E7FC34114;
-        Mon, 13 Jun 2022 11:43:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A76E61236;
+        Mon, 13 Jun 2022 11:43:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2863CC34114;
+        Mon, 13 Jun 2022 11:43:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120614;
-        bh=Peq5gzmdgmG8DJ+CvcqQLnVGG1RKzHTqlFTjY4iQTVY=;
+        s=korg; t=1655120609;
+        bh=c67V56s4yiqr9KBUa9oYsn0oH4mwB5ZrMV4N1j52+P8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WVOZ4aV5N/rzP49GpsxZBunxmzLdSE2Lp1GQygurdkZpLKcpZ2MfiFDG2GJVmk+8U
-         DoeqN4GQw3pjzmz7GTWiwpvxf15izB91le0oXpTu3jwraAf2SryBM2+UeYDy8PDL1f
-         hCd1O8oDDt1LWEblk4Ei4urMSNzXCDnyaxFrEVmg=
+        b=SeEH7W9o8X/UDcUgyYGAF8/taeTbOxFB8oxrzCOs0+ExriRGmws7Mw+NzjW8CdnSk
+         jhxVsUq9dCw2aoijXJpf+LDh5OX2yfLvqIt8TgK+Zb4y0CAfUxinoYRO3pvEMOHDCP
+         fQxUzdFxizqbjYhoFIq+yiipiQf2S7eCbmXzVRtA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 097/298] riscv: read-only pages should not be writable
-Date:   Mon, 13 Jun 2022 12:09:51 +0200
-Message-Id: <20220613094927.892965281@linuxfoundation.org>
+Subject: [PATCH 5.17 087/298] modpost: fix removing numeric suffixes
+Date:   Mon, 13 Jun 2022 12:09:41 +0200
+Message-Id: <20220613094927.587234013@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -51,37 +52,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-[ Upstream commit 630f972d76d6460235e84e1aa034ee06f9c8c3a9 ]
+[ Upstream commit b5beffa20d83c4e15306c991ffd00de0d8628338 ]
 
-If EFI pages are marked as read-only,
-we should remove the _PAGE_WRITE flag.
+With the `-z unique-symbol` linker flag or any similar mechanism,
+it is possible to trigger the following:
 
-The current code overwrites an unused value.
+ERROR: modpost: "param_set_uint.0" [vmlinux] is a static EXPORT_SYMBOL
 
-Fixes: b91540d52a08b ("RISC-V: Add EFI runtime services")
-Signed-off-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
-Link: https://lore.kernel.org/r/20220528014132.91052-1-heinrich.schuchardt@canonical.com
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+The reason is that for now the condition from remove_dot():
+
+if (m && (s[n + m] == '.' || s[n + m] == 0))
+
+which was designed to test if it's a dot or a '\0' after the suffix
+is never satisfied.
+This is due to that `s[n + m]` always points to the last digit of a
+numeric suffix, not on the symbol next to it (from a custom debug
+print added to modpost):
+
+param_set_uint.0, s[n + m] is '0', s[n + m + 1] is '\0'
+
+So it's off-by-one and was like that since 2014.
+
+Fix this for the sake of any potential upcoming features, but don't
+bother stable-backporting, as it's well hidden -- apart from that
+LD flag, it can be triggered only with GCC LTO which never landed
+upstream.
+
+Fixes: fcd38ed0ff26 ("scripts: modpost: fix compilation warning")
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/kernel/efi.c | 2 +-
+ scripts/mod/modpost.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/riscv/kernel/efi.c b/arch/riscv/kernel/efi.c
-index 024159298231..1aa540350abd 100644
---- a/arch/riscv/kernel/efi.c
-+++ b/arch/riscv/kernel/efi.c
-@@ -65,7 +65,7 @@ static int __init set_permissions(pte_t *ptep, unsigned long addr, void *data)
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index e04ae56931e2..3b098e26938e 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -1986,7 +1986,7 @@ static char *remove_dot(char *s)
  
- 	if (md->attribute & EFI_MEMORY_RO) {
- 		val = pte_val(pte) & ~_PAGE_WRITE;
--		val = pte_val(pte) | _PAGE_READ;
-+		val |= _PAGE_READ;
- 		pte = __pte(val);
- 	}
- 	if (md->attribute & EFI_MEMORY_XP) {
+ 	if (n && s[n]) {
+ 		size_t m = strspn(s + n + 1, "0123456789");
+-		if (m && (s[n + m] == '.' || s[n + m] == 0))
++		if (m && (s[n + m + 1] == '.' || s[n + m + 1] == 0))
+ 			s[n] = 0;
+ 
+ 		/* strip trailing .lto */
 -- 
 2.35.1
 
