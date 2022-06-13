@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE55C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:34:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0B46C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:34:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236882AbiFMKes (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:34:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42978 "EHLO
+        id S244389AbiFMKez (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:34:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346880AbiFMKbl (ORCPT
+        with ESMTP id S1343795AbiFMKbQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:31:41 -0400
+        Mon, 13 Jun 2022 06:31:16 -0400
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B49B3275F4;
-        Mon, 13 Jun 2022 03:21:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B9D275CA;
+        Mon, 13 Jun 2022 03:21:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C0286CE1167;
-        Mon, 13 Jun 2022 10:21:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF867C34114;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2CF9DCE116D;
         Mon, 13 Jun 2022 10:21:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2318EC3411C;
+        Mon, 13 Jun 2022 10:21:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115693;
-        bh=uKnl2EJ1eFFTQAHXO15f5y/ajrIMAWXllM2S4FtiUA4=;
+        s=korg; t=1655115690;
+        bh=ZbzBs39XZYEIr01mYJiJsXTEB9wR7xUlcmhU/QgTZy0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kpskR6ozVvsVOgQPGrDcvx/Wd8tqJQG81ayDnZfM+EsT7d1RFBGFge2EY41fkWvZ9
-         cNefxYtWKmhUNS0LLsQDqX7XEVQSbcpkysWhYX3jMJXuYo8HPRabL8M1lh+jWe3aI7
-         iIHvwukHE4Sw+zd+qsstu0+j/lE+5+F7G2eVvdTs=
+        b=zRXNaSO+x2oth4X0XPfV1Kgsczpd4r/5Z0FKyTy7Glweh654fcXfVpq0tLSy3NxWS
+         fS3OQ3CpY/p/7JOndcMvdWXt4fegQbgFU9YlRHvf4wOEblrhWuuZNaW2KeqTBCPAJg
+         Q3BN7nDk/3whsKmYx3CG80MAYMzxJNLP7ljRlUJA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>
-Subject: [PATCH 4.9 167/167] PCI: qcom: Fix unbalanced PHY init on probe errors
-Date:   Mon, 13 Jun 2022 12:10:41 +0200
-Message-Id: <20220613094920.173799133@linuxfoundation.org>
+        stable@vger.kernel.org, Michal Kubecek <mkubecek@suse.cz>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 153/167] Revert "net: af_key: add check for pfkey_broadcast in function pfkey_process"
+Date:   Mon, 13 Jun 2022 12:10:27 +0200
+Message-Id: <20220613094916.809997232@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -51,44 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan+linaro@kernel.org>
+From: Michal Kubecek <mkubecek@suse.cz>
 
-commit 83013631f0f9961416abd812e228c8efbc2f6069 upstream.
+[ Upstream commit 9c90c9b3e50e16d03c7f87d63e9db373974781e0 ]
 
-Undo the PHY initialisation (e.g. balance runtime PM) if host
-initialisation fails during probe.
+This reverts commit 4dc2a5a8f6754492180741facf2a8787f2c415d7.
 
-Link: https://lore.kernel.org/r/20220401133854.10421-3-johan+linaro@kernel.org
-Fixes: 82a823833f4e ("PCI: qcom: Add Qualcomm PCIe controller driver")
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Acked-by: Stanimir Varbanov <svarbanov@mm-sol.com>
-Cc: stable@vger.kernel.org      # 4.5
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+A non-zero return value from pfkey_broadcast() does not necessarily mean
+an error occurred as this function returns -ESRCH when no registered
+listener received the message. In particular, a call with
+BROADCAST_PROMISC_ONLY flag and null one_sk argument can never return
+zero so that this commit in fact prevents processing any PF_KEY message.
+One visible effect is that racoon daemon fails to find encryption
+algorithms like aes and refuses to start.
+
+Excluding -ESRCH return value would fix this but it's not obvious that
+we really want to bail out here and most other callers of
+pfkey_broadcast() also ignore the return value. Also, as pointed out by
+Steffen Klassert, PF_KEY is kind of deprecated and newer userspace code
+should use netlink instead so that we should only disturb the code for
+really important fixes.
+
+v2: add a comment explaining why is the return value ignored
+
+Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/host/pcie-qcom.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ net/key/af_key.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
---- a/drivers/pci/host/pcie-qcom.c
-+++ b/drivers/pci/host/pcie-qcom.c
-@@ -562,10 +562,15 @@ static int qcom_pcie_probe(struct platfo
- 	ret = dw_pcie_host_init(pp);
- 	if (ret) {
- 		dev_err(dev, "cannot initialize host\n");
--		return ret;
-+		goto err_phy_exit;
- 	}
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index d5dc614af2f9..0737fc7b7ebd 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -2861,10 +2861,12 @@ static int pfkey_process(struct sock *sk, struct sk_buff *skb, const struct sadb
+ 	void *ext_hdrs[SADB_EXT_MAX];
+ 	int err;
  
- 	return 0;
-+
-+err_phy_exit:
-+	phy_exit(pcie->phy);
-+
-+	return ret;
- }
+-	err = pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
+-			      BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
+-	if (err)
+-		return err;
++	/* Non-zero return value of pfkey_broadcast() does not always signal
++	 * an error and even on an actual error we may still want to process
++	 * the message so rather ignore the return value.
++	 */
++	pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
++			BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
  
- static const struct of_device_id qcom_pcie_match[] = {
+ 	memset(ext_hdrs, 0, sizeof(ext_hdrs));
+ 	err = parse_exthdrs(skb, hdr, ext_hdrs);
+-- 
+2.35.1
+
 
 
