@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6368EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:15:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D492C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:15:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359245AbiFMNPl (ORCPT
+        id S1359324AbiFMNPs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:15:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42500 "EHLO
+        Mon, 13 Jun 2022 09:15:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359236AbiFMNJn (ORCPT
+        with ESMTP id S1359242AbiFMNJn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 09:09:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBD5638D9B;
-        Mon, 13 Jun 2022 04:19:34 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5CDD38D9F;
+        Mon, 13 Jun 2022 04:19:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 93E2FB80E93;
-        Mon, 13 Jun 2022 11:19:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE0B2C34114;
-        Mon, 13 Jun 2022 11:19:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57D1660EAE;
+        Mon, 13 Jun 2022 11:19:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67574C34114;
+        Mon, 13 Jun 2022 11:19:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119172;
-        bh=UzkXVXcVlQIyOt/ib8J7ffHnS3VEqMrdDTeztC7n3xY=;
+        s=korg; t=1655119177;
+        bh=4oxHm1p9md4OCeao8DceTL8n6o67+unER+HdBMgk2n8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WexvY1yMED/yCYKvsSlgkKUTXWVhJfV90CocJLJm5k3BbMx5Obd53VboHZPLxfHiI
-         6zuT37BrS/HwLwZ4jGHSBFx3YH0EpQ/plE60dTTrvQQKShEZBdBmjbbO2AgL4ITqZd
-         QBrSotyAY17z1RsCowSNiaAOrsfTIyxh33QY0Gz4=
+        b=CfABduFJgM4RGCTakR26/ijHcnL61kPWSOVTxlasP1XyTVZn31Mm+L04xnAmeyvqh
+         mpIleytIu1EG7opMlccmThy0XF/YGQoTMH7KPZUQP4wZ0cSSTFCjXixrHwqHqU4z7h
+         kJDiU/RV/4E0K0y8X3sxanMIx01TCdtjNN3Q1IEk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Juergen Gross <jgross@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 140/247] netfilter: nf_tables: memleak flow rule from commit path
-Date:   Mon, 13 Jun 2022 12:10:42 +0200
-Message-Id: <20220613094927.202216181@linuxfoundation.org>
+Subject: [PATCH 5.15 142/247] xen: unexport __init-annotated xen_xlate_map_ballooned_pages()
+Date:   Mon, 13 Jun 2022 12:10:44 +0200
+Message-Id: <20220613094927.261176974@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -49,44 +53,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-[ Upstream commit 9dd732e0bdf538b1b76dc7c157e2b5e560ff30d3 ]
+[ Upstream commit dbac14a5a05ff8e1ce7c0da0e1f520ce39ec62ea ]
 
-Abort path release flow rule object, however, commit path does not.
-Update code to destroy these objects before releasing the transaction.
+EXPORT_SYMBOL and __init is a bad combination because the .init.text
+section is freed up after the initialization. Hence, modules cannot
+use symbols annotated __init. The access to a freed symbol may end up
+with kernel panic.
 
-Fixes: c9626a2cbdb2 ("netfilter: nf_tables: add hardware offload support")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+modpost used to detect it, but it has been broken for a decade.
+
+Recently, I fixed modpost so it started to warn it again, then this
+showed up in linux-next builds.
+
+There are two ways to fix it:
+
+  - Remove __init
+  - Remove EXPORT_SYMBOL
+
+I chose the latter for this case because none of the in-tree call-sites
+(arch/arm/xen/enlighten.c, arch/x86/xen/grant-table.c) is compiled as
+modular.
+
+Fixes: 243848fc018c ("xen/grant-table: Move xlated_setup_gnttab_pages to common place")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Acked-by: Stefano Stabellini <sstabellini@kernel.org>
+Link: https://lore.kernel.org/r/20220606045920.4161881-1-masahiroy@kernel.org
+Signed-off-by: Juergen Gross <jgross@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_tables_api.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/xen/xlate_mmu.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index af2ae42cc5c7..1528620df34c 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -8228,6 +8228,9 @@ static void nft_commit_release(struct nft_trans *trans)
- 		nf_tables_chain_destroy(&trans->ctx);
- 		break;
- 	case NFT_MSG_DELRULE:
-+		if (trans->ctx.chain->flags & NFT_CHAIN_HW_OFFLOAD)
-+			nft_flow_rule_destroy(nft_trans_flow_rule(trans));
-+
- 		nf_tables_rule_destroy(&trans->ctx, nft_trans_rule(trans));
- 		break;
- 	case NFT_MSG_DELSET:
-@@ -8667,6 +8670,9 @@ static int nf_tables_commit(struct net *net, struct sk_buff *skb)
- 			nf_tables_rule_notify(&trans->ctx,
- 					      nft_trans_rule(trans),
- 					      NFT_MSG_NEWRULE);
-+			if (trans->ctx.chain->flags & NFT_CHAIN_HW_OFFLOAD)
-+				nft_flow_rule_destroy(nft_trans_flow_rule(trans));
-+
- 			nft_trans_destroy(trans);
- 			break;
- 		case NFT_MSG_DELRULE:
+diff --git a/drivers/xen/xlate_mmu.c b/drivers/xen/xlate_mmu.c
+index 34742c6e189e..f17c4c03db30 100644
+--- a/drivers/xen/xlate_mmu.c
++++ b/drivers/xen/xlate_mmu.c
+@@ -261,7 +261,6 @@ int __init xen_xlate_map_ballooned_pages(xen_pfn_t **gfns, void **virt,
+ 
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(xen_xlate_map_ballooned_pages);
+ 
+ struct remap_pfn {
+ 	struct mm_struct *mm;
 -- 
 2.35.1
 
