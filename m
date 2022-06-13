@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA977C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:27:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B35BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:27:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377287AbiFMN1e (ORCPT
+        id S1377336AbiFMN1j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:27:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46020 "EHLO
+        Mon, 13 Jun 2022 09:27:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377157AbiFMNZl (ORCPT
+        with ESMTP id S1377293AbiFMN0C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:25:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F1456C54E;
-        Mon, 13 Jun 2022 04:24:28 -0700 (PDT)
+        Mon, 13 Jun 2022 09:26:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 824BE6CA9E;
+        Mon, 13 Jun 2022 04:24:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0C5E9B80E59;
+        by ams.source.kernel.org (Postfix) with ESMTPS id BA250B80EA7;
+        Mon, 13 Jun 2022 11:24:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24779C34114;
         Mon, 13 Jun 2022 11:24:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 313D5C34114;
-        Mon, 13 Jun 2022 11:24:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119465;
-        bh=canv2ps0GiqtAbGVbJ9EVEBrbwZCmvW6Vj5g/tdJqck=;
+        s=korg; t=1655119468;
+        bh=iFk92i18hiLhQkbZUlM0x+c/7PU5dWLNQZpKnT0X130=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NwTie4lMoSenpC+Q5ypnfb3QJeSGESIsF5zoaLOe0kBUFIzPd4AutI64SzCKg6FzU
-         KrLxcLxz80wMHPNx2TUo9MHwOvrs06qiHrwWdnu2WNSFD+eGD+J2/AFacaA6dAdxXF
-         3YrTUFOdf/fPNQHq7OB8vZ4RojeAyNC2J371mJlc=
+        b=mmF33/RZ5IXoNDKGfJq5yGeABiWmMECENyLrwf+Rx0jJZtDjHtkt+1jrE5mX8UaHX
+         /pGdsN6hzc2zTQuHMvg3U7zKUlhjrbOy4KPsfcZocqn+bjzYGE2Ryysp4Mmg6XqZfx
+         hkc8MxblGWxExnlJiYh8HwFNgq1Wx3zCqe1ptDxI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
+        stable@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
         Kees Cook <keescook@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 007/339] lkdtm/bugs: Check for the NULL pointer after calling kmalloc
-Date:   Mon, 13 Jun 2022 12:07:12 +0200
-Message-Id: <20220613094926.728646041@linuxfoundation.org>
+Subject: [PATCH 5.18 008/339] lkdtm/bugs: Dont expect thread termination without CONFIG_UBSAN_TRAP
+Date:   Mon, 13 Jun 2022 12:07:13 +0200
+Message-Id: <20220613094926.759766994@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,45 +51,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit 4a9800c81d2f34afb66b4b42e0330ae8298019a2 ]
+[ Upstream commit 8bfdbddd68249e0d8598777cca8249619ee51df0 ]
 
-As the possible failure of the kmalloc(), the not_checked and checked
-could be NULL pointer.
-Therefore, it should be better to check it in order to avoid the
-dereference of the NULL pointer.
-Also, we need to kfree the 'not_checked' and 'checked' to avoid
-the memory leak if fails.
-And since it is just a test, it may directly return without error
-number.
+When you don't select CONFIG_UBSAN_TRAP, you get:
 
-Fixes: ae2e1aad3e48 ("drivers/misc/lkdtm/bugs.c: add arithmetic overflow and array bounds checks")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Acked-by: Dan Carpenter <dan.carpenter@oracle.com>
+  # echo ARRAY_BOUNDS > /sys/kernel/debug/provoke-crash/DIRECT
+[  102.265827] ================================================================================
+[  102.278433] UBSAN: array-index-out-of-bounds in drivers/misc/lkdtm/bugs.c:342:16
+[  102.287207] index 8 is out of range for type 'char [8]'
+[  102.298722] ================================================================================
+[  102.313712] lkdtm: FAIL: survived array bounds overflow!
+[  102.318770] lkdtm: Unexpected! This kernel (5.16.0-rc1-s3k-dev-01884-g720dcf79314a ppc) was built with CONFIG_UBSAN_BOUNDS=y
+
+It is not correct because when CONFIG_UBSAN_TRAP is not selected
+you can't expect array bounds overflow to kill the thread.
+
+Modify the logic so that when the kernel is built with
+CONFIG_UBSAN_BOUNDS but without CONFIG_UBSAN_TRAP, you get a warning
+about CONFIG_UBSAN_TRAP not been selected instead.
+
+This also require a fix of pr_expected_config(), otherwise the
+following error is encountered.
+
+  CC      drivers/misc/lkdtm/bugs.o
+drivers/misc/lkdtm/bugs.c: In function 'lkdtm_ARRAY_BOUNDS':
+drivers/misc/lkdtm/bugs.c:351:2: error: 'else' without a previous 'if'
+  351 |  else
+      |  ^~~~
+
+Fixes: c75be56e35b2 ("lkdtm/bugs: Add ARRAY_BOUNDS to selftests")
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220120092936.1874264-1-jiasheng@iscas.ac.cn
+Link: https://lore.kernel.org/r/363b58690e907c677252467a94fe49444c80ea76.1649704381.git.christophe.leroy@csgroup.eu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/lkdtm/bugs.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/misc/lkdtm/bugs.c  | 5 ++++-
+ drivers/misc/lkdtm/lkdtm.h | 8 ++++----
+ 2 files changed, 8 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/misc/lkdtm/bugs.c b/drivers/misc/lkdtm/bugs.c
-index f21854ac5cc2..4f2808b2ca3c 100644
+index 4f2808b2ca3c..8cb342c562af 100644
 --- a/drivers/misc/lkdtm/bugs.c
 +++ b/drivers/misc/lkdtm/bugs.c
-@@ -327,6 +327,11 @@ void lkdtm_ARRAY_BOUNDS(void)
+@@ -351,7 +351,10 @@ void lkdtm_ARRAY_BOUNDS(void)
+ 	kfree(not_checked);
+ 	kfree(checked);
+ 	pr_err("FAIL: survived array bounds overflow!\n");
+-	pr_expected_config(CONFIG_UBSAN_BOUNDS);
++	if (IS_ENABLED(CONFIG_UBSAN_BOUNDS))
++		pr_expected_config(CONFIG_UBSAN_TRAP);
++	else
++		pr_expected_config(CONFIG_UBSAN_BOUNDS);
+ }
  
- 	not_checked = kmalloc(sizeof(*not_checked) * 2, GFP_KERNEL);
- 	checked = kmalloc(sizeof(*checked) * 2, GFP_KERNEL);
-+	if (!not_checked || !checked) {
-+		kfree(not_checked);
-+		kfree(checked);
-+		return;
-+	}
+ void lkdtm_CORRUPT_LIST_ADD(void)
+diff --git a/drivers/misc/lkdtm/lkdtm.h b/drivers/misc/lkdtm/lkdtm.h
+index 305fc2ec3f25..90f87b193c1e 100644
+--- a/drivers/misc/lkdtm/lkdtm.h
++++ b/drivers/misc/lkdtm/lkdtm.h
+@@ -9,19 +9,19 @@
+ extern char *lkdtm_kernel_info;
  
- 	pr_info("Array access within bounds ...\n");
- 	/* For both, touch all bytes in the actual member size. */
+ #define pr_expected_config(kconfig)				\
+-{								\
++do {								\
+ 	if (IS_ENABLED(kconfig)) 				\
+ 		pr_err("Unexpected! This %s was built with " #kconfig "=y\n", \
+ 			lkdtm_kernel_info);			\
+ 	else							\
+ 		pr_warn("This is probably expected, since this %s was built *without* " #kconfig "=y\n", \
+ 			lkdtm_kernel_info);			\
+-}
++} while (0)
+ 
+ #ifndef MODULE
+ int lkdtm_check_bool_cmdline(const char *param);
+ #define pr_expected_config_param(kconfig, param)		\
+-{								\
++do {								\
+ 	if (IS_ENABLED(kconfig)) {				\
+ 		switch (lkdtm_check_bool_cmdline(param)) {	\
+ 		case 0:						\
+@@ -52,7 +52,7 @@ int lkdtm_check_bool_cmdline(const char *param);
+ 			break;					\
+ 		}						\
+ 	}							\
+-}
++} while (0)
+ #else
+ #define pr_expected_config_param(kconfig, param) pr_expected_config(kconfig)
+ #endif
 -- 
 2.35.1
 
