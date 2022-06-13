@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDA0CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:53:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 184B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:53:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346915AbiFMKxE (ORCPT
+        id S1345291AbiFMKxK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:53:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59044 "EHLO
+        Mon, 13 Jun 2022 06:53:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348794AbiFMKtg (ORCPT
+        with ESMTP id S245056AbiFMKtk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:49:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B4212E6A2;
-        Mon, 13 Jun 2022 03:27:12 -0700 (PDT)
+        Mon, 13 Jun 2022 06:49:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D4172E9D9;
+        Mon, 13 Jun 2022 03:27:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D91E60AEB;
-        Mon, 13 Jun 2022 10:27:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C4CBC34114;
-        Mon, 13 Jun 2022 10:27:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A7E23B80E94;
+        Mon, 13 Jun 2022 10:27:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 077A8C34114;
+        Mon, 13 Jun 2022 10:27:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116031;
-        bh=2p8gEQy7N4nmmIhZpnKGXvMKWI0J2oK3wHed5skNLhI=;
+        s=korg; t=1655116034;
+        bh=GVBoC3ONwbd18zu1JOv8mlw0ejjz+jFPu3hUDCp8mUM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d20CYm/PL/Vjl/XXrxI3ghYQYxQg4yOvgpz6dQLM3D5CfGEzt7KlTvju3BUjdY5xS
-         sHSBcaWl4G4A9eRM7UBUlDmG7YzISRMkqt6fU5svwHdoIzWe0zSgBw+7A3+6ZHSTJA
-         EDkZ+i22hD3wt90b8cXQJkCuI/OVEPQ3vDgGCwKY=
+        b=cwDT0fP0uRX7331Kr/FaSyHVAlTS7ZKl03T/nIsFls7KEMdvKhbqCVFzPIvVIATOE
+         60goLNor4e9tcjHdLm79lfiK2AF9pCP8aZinGCQJcHmOPr3FWMHu5swrcqvrs68jfp
+         8o8TeUjpPoD6If/UoE10ed9vNr4iQkrtoXzzOrAU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>, Marc Zyngier <maz@kernel.org>
-Subject: [PATCH 4.14 120/218] irqchip/armada-370-xp: Do not touch Performance Counter Overflow on A375, A38x, A39x
-Date:   Mon, 13 Jun 2022 12:09:38 +0200
-Message-Id: <20220613094924.210937845@linuxfoundation.org>
+        stable@vger.kernel.org, Nikolay Borisov <nborisov@suse.com>,
+        Qu Wenruo <wqu@suse.com>, David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.4 010/411] btrfs: add "0x" prefix for unsupported optional features
+Date:   Mon, 13 Jun 2022 12:04:43 +0200
+Message-Id: <20220613094928.804598824@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,45 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Qu Wenruo <wqu@suse.com>
 
-commit a3d66a76348daf559873f19afc912a2a7c2ccdaf upstream.
+commit d5321a0fa8bc49f11bea0b470800962c17d92d8f upstream.
 
-Register ARMADA_370_XP_INT_FABRIC_MASK_OFFS is Armada 370 and XP specific
-and on new Armada platforms it has different meaning. It does not configure
-Performance Counter Overflow interrupt masking. So do not touch this
-register on non-A370/XP platforms (A375, A38x and A39x).
+The following error message lack the "0x" obviously:
 
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Cc: stable@vger.kernel.org
-Fixes: 28da06dfd9e4 ("irqchip: armada-370-xp: Enable the PMU interrupts")
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220425113706.29310-1-pali@kernel.org
+  cannot mount because of unsupported optional features (4000)
+
+Add the prefix to make it less confusing. This can happen on older
+kernels that try to mount a filesystem with newer features so it makes
+sense to backport to older trees.
+
+CC: stable@vger.kernel.org # 4.14+
+Reviewed-by: Nikolay Borisov <nborisov@suse.com>
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/irqchip/irq-armada-370-xp.c |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ fs/btrfs/disk-io.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/irqchip/irq-armada-370-xp.c
-+++ b/drivers/irqchip/irq-armada-370-xp.c
-@@ -392,7 +392,16 @@ static void armada_xp_mpic_smp_cpu_init(
- 
- static void armada_xp_mpic_perf_init(void)
- {
--	unsigned long cpuid = cpu_logical_map(smp_processor_id());
-+	unsigned long cpuid;
-+
-+	/*
-+	 * This Performance Counter Overflow interrupt is specific for
-+	 * Armada 370 and XP. It is not available on Armada 375, 38x and 39x.
-+	 */
-+	if (!of_machine_is_compatible("marvell,armada-370-xp"))
-+		return;
-+
-+	cpuid = cpu_logical_map(smp_processor_id());
- 
- 	/* Enable Performance Counter Overflow interrupts */
- 	writel(ARMADA_370_XP_INT_CAUSE_PERF(cpuid),
+--- a/fs/btrfs/disk-io.c
++++ b/fs/btrfs/disk-io.c
+@@ -2927,7 +2927,7 @@ int open_ctree(struct super_block *sb,
+ 		~BTRFS_FEATURE_INCOMPAT_SUPP;
+ 	if (features) {
+ 		btrfs_err(fs_info,
+-		    "cannot mount because of unsupported optional features (%llx)",
++		    "cannot mount because of unsupported optional features (0x%llx)",
+ 		    features);
+ 		err = -EINVAL;
+ 		goto fail_csum;
+@@ -2965,7 +2965,7 @@ int open_ctree(struct super_block *sb,
+ 		~BTRFS_FEATURE_COMPAT_RO_SUPP;
+ 	if (!sb_rdonly(sb) && features) {
+ 		btrfs_err(fs_info,
+-	"cannot mount read-write because of unsupported optional features (%llx)",
++	"cannot mount read-write because of unsupported optional features (0x%llx)",
+ 		       features);
+ 		err = -EINVAL;
+ 		goto fail_csum;
 
 
