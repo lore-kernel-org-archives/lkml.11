@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D00A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:02:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C6C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:02:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350863AbiFMLB7 (ORCPT
+        id S1349545AbiFMLCC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:01:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39576 "EHLO
+        Mon, 13 Jun 2022 07:02:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350248AbiFMKyq (ORCPT
+        with ESMTP id S1350323AbiFMKyt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:54:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B90FDFFC;
-        Mon, 13 Jun 2022 03:30:32 -0700 (PDT)
+        Mon, 13 Jun 2022 06:54:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95CE61CFFF;
+        Mon, 13 Jun 2022 03:30:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 274F760EF5;
-        Mon, 13 Jun 2022 10:30:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3198AC34114;
-        Mon, 13 Jun 2022 10:30:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4FB51B80E94;
+        Mon, 13 Jun 2022 10:30:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97893C3411C;
+        Mon, 13 Jun 2022 10:30:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116231;
-        bh=RbjE5QatI+ejZkz/KePngFLzoLyuc6tNPxKNv6r96tM=;
+        s=korg; t=1655116251;
+        bh=Gr+Vw9+XXHKPKIAm54nUK/J4qufutb1HXkatbHy3PKE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mC9smSNlvy3D+yAPHVvrs9PcGivui3K6FtKGso/X+xTfWErND4q0awEQX6PZoT6vf
-         49dwRLAP5Y3968MB6DGwtVcK6uzAHwdqLMRYu8ZdjRo4m6lih2mpyNKEBaeVCopfks
-         sBWFDpxahs2gc1ZktXsVrvj4BNAotb5LMvAj7btA=
+        b=OKG1NHok2StZVNq53FXMatzh636xHAFF1IF8nVb0SdiUXk2H5roTxLtW5NHQ+N7ei
+         MDBdFIzyZpE5JKyrr3cmIc4dLDnhd6xKo+AbeMWczabSIN4bulq05DQCYUkTyv1TT2
+         +Nxn+aP15uHwpBLQiP+B/h/h4+T6TKIQWtKAEQ1o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
+        stable@vger.kernel.org, Mark Bloch <mbloch@nvidia.com>,
+        Maor Gottlieb <maorg@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 146/218] pwm: lp3943: Fix duty calculation in case period was clamped
-Date:   Mon, 13 Jun 2022 12:10:04 +0200
-Message-Id: <20220613094925.018223304@linuxfoundation.org>
+Subject: [PATCH 5.4 037/411] net/mlx5: fs, delete the FTE when there are no rules attached to it
+Date:   Mon, 13 Jun 2022 12:05:10 +0200
+Message-Id: <20220613094929.619218694@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,35 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Mark Bloch <mbloch@nvidia.com>
 
-[ Upstream commit 5e3b07ca5cc78cd4a987e78446849e41288d87cb ]
+[ Upstream commit 7b0c6338597613f465d131bd939a51844a00455a ]
 
-The hardware only supports periods <= 1.6 ms and if a bigger period is
-requested it is clamped to 1.6 ms. In this case duty_cycle might be bigger
-than 1.6 ms and then the duty cycle register is written with a value
-bigger than LP3943_MAX_DUTY. So clamp duty_cycle accordingly.
+When an FTE has no children is means all the rules where removed
+and the FTE can be deleted regardless of the dests_size value.
+While dests_size should be 0 when there are no children
+be extra careful not to leak memory or get firmware syndrome
+if the proper bookkeeping of dests_size wasn't done.
 
-Fixes: af66b3c0934e ("pwm: Add LP3943 PWM driver")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+Signed-off-by: Mark Bloch <mbloch@nvidia.com>
+Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pwm/pwm-lp3943.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pwm/pwm-lp3943.c b/drivers/pwm/pwm-lp3943.c
-index fc446d5c19f9..34151fc4cd51 100644
---- a/drivers/pwm/pwm-lp3943.c
-+++ b/drivers/pwm/pwm-lp3943.c
-@@ -128,6 +128,7 @@ static int lp3943_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	if (err)
- 		return err;
- 
-+	duty_ns = min(duty_ns, period_ns);
- 	val = (u8)(duty_ns * LP3943_MAX_DUTY / period_ns);
- 
- 	return lp3943_write_byte(lp3943, reg_duty, val);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+index 5baf2c666d29..8c8b68e7abb4 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+@@ -1937,16 +1937,16 @@ void mlx5_del_flow_rules(struct mlx5_flow_handle *handle)
+ 	down_write_ref_node(&fte->node, false);
+ 	for (i = handle->num_rules - 1; i >= 0; i--)
+ 		tree_remove_node(&handle->rule[i]->node, true);
+-	if (fte->dests_size) {
+-		if (fte->modify_mask)
+-			modify_fte(fte);
+-		up_write_ref_node(&fte->node, false);
+-	} else if (list_empty(&fte->node.children)) {
++	if (list_empty(&fte->node.children)) {
+ 		del_hw_fte(&fte->node);
+ 		/* Avoid double call to del_hw_fte */
+ 		fte->node.del_hw_func = NULL;
+ 		up_write_ref_node(&fte->node, false);
+ 		tree_put_node(&fte->node, false);
++	} else if (fte->dests_size) {
++		if (fte->modify_mask)
++			modify_fte(fte);
++		up_write_ref_node(&fte->node, false);
+ 	} else {
+ 		up_write_ref_node(&fte->node, false);
+ 	}
 -- 
 2.35.1
 
