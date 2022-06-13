@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B35E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:35:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1733AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:35:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377713AbiFMNfe (ORCPT
+        id S1377900AbiFMNfj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:35:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49208 "EHLO
+        Mon, 13 Jun 2022 09:35:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378585AbiFMNbt (ORCPT
+        with ESMTP id S1378668AbiFMNb5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:31:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B991712C5;
-        Mon, 13 Jun 2022 04:26:18 -0700 (PDT)
+        Mon, 13 Jun 2022 09:31:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59814719CD;
+        Mon, 13 Jun 2022 04:26:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 838E1B80EA8;
-        Mon, 13 Jun 2022 11:26:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2DCFC34114;
-        Mon, 13 Jun 2022 11:26:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C74A60F18;
+        Mon, 13 Jun 2022 11:26:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACFBDC3411C;
+        Mon, 13 Jun 2022 11:26:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119576;
-        bh=trIe5ARgZoxmDqrzZ8elWm74d4GdHQHmKghNDNU7Wqg=;
+        s=korg; t=1655119587;
+        bh=rCSIA7RsX1fxH+QSFK64nbPN6ho0+M4zZF4daOD5wXg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vBs0Z9FarXh89V2vf9xcdoYJs5G224cc4q8fJba0r/FTqYWwt1qf9Xc+kDKUpf2kE
-         Ww4jNsI8xRQDxP4IXc4V0DUa2VMEmlCj5l+Y6/P8eMOz00geIeGxYVfjptozyU5WaL
-         h3Ofl++7bNDOrkWHXnqJExmNYDXqs6TwF7y0enKk=
+        b=1FHFyxWCKFEGeAwdDJmuXRqnTTxmghhmEZ3e/H04Je7yYrq7EfAZR7E1DKswPPRRp
+         twl/rw3m9pQG8TNQrIPY03q3WQz+BWeWlXUbDjNVTz6vY00I1U7UpmS5iLFLIG5H8X
+         cE6h6a04KFZVU8KBz8miAR+GDeaeR0nkfnl6phAI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        stable@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 062/339] staging: r8188eu: add check for kzalloc
-Date:   Mon, 13 Jun 2022 12:08:07 +0200
-Message-Id: <20220613094928.403630989@linuxfoundation.org>
+Subject: [PATCH 5.18 047/339] watchdog: rzg2l_wdt: Fix 32bit overflow issue
+Date:   Mon, 13 Jun 2022 12:07:52 +0200
+Message-Id: <20220613094927.950446747@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,85 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Biju Das <biju.das.jz@bp.renesas.com>
 
-[ Upstream commit f94b47c6bde624d6c07f43054087607c52054a95 ]
+[ Upstream commit ea2949df22a533cdf75e4583c00b1ce94cd5a83b ]
 
-As kzalloc() may return null pointer, it should be better to
-check the return value and return error if fails in order
-to avoid dereference of null pointer.
-Moreover, the return value of rtw_alloc_hwxmits() should also
-be dealt with.
+The value of timer_cycle_us can be 0 due to 32bit overflow.
+For eg:- If we assign the counter value "0xfff" for computing
+maxval.
 
-Fixes: 15865124feed ("staging: r8188eu: introduce new core dir for RTL8188eu driver")
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20220518075957.514603-1-jiasheng@iscas.ac.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This patch fixes this issue by appending ULL to 1024, so that
+it is promoted to 64bit.
+
+This patch also fixes the warning message, 'watchdog: Invalid min and
+max timeout values, resetting to 0!'.
+
+Fixes: 2cbc5cd0b55fa2 ("watchdog: Add Watchdog Timer driver for RZ/G2L")
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/20220225175320.11041-2-biju.das.jz@bp.renesas.com
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/r8188eu/core/rtw_xmit.c    | 13 +++++++++++--
- drivers/staging/r8188eu/include/rtw_xmit.h |  2 +-
- 2 files changed, 12 insertions(+), 3 deletions(-)
+ drivers/watchdog/rzg2l_wdt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/r8188eu/core/rtw_xmit.c b/drivers/staging/r8188eu/core/rtw_xmit.c
-index c2a550e7250e..2ee92bbe66a0 100644
---- a/drivers/staging/r8188eu/core/rtw_xmit.c
-+++ b/drivers/staging/r8188eu/core/rtw_xmit.c
-@@ -178,7 +178,12 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter)
+diff --git a/drivers/watchdog/rzg2l_wdt.c b/drivers/watchdog/rzg2l_wdt.c
+index 6b426df34fd6..96f2a018ab62 100644
+--- a/drivers/watchdog/rzg2l_wdt.c
++++ b/drivers/watchdog/rzg2l_wdt.c
+@@ -53,7 +53,7 @@ static void rzg2l_wdt_wait_delay(struct rzg2l_wdt_priv *priv)
  
- 	pxmitpriv->free_xmit_extbuf_cnt = num_xmit_extbuf;
- 
--	rtw_alloc_hwxmits(padapter);
-+	res = rtw_alloc_hwxmits(padapter);
-+	if (res) {
-+		res = _FAIL;
-+		goto exit;
-+	}
-+
- 	rtw_init_hwxmits(pxmitpriv->hwxmits, pxmitpriv->hwxmit_entry);
- 
- 	for (i = 0; i < 4; i++)
-@@ -1474,7 +1479,7 @@ s32 rtw_xmit_classifier(struct adapter *padapter, struct xmit_frame *pxmitframe)
- 	return res;
- }
- 
--void rtw_alloc_hwxmits(struct adapter *padapter)
-+int rtw_alloc_hwxmits(struct adapter *padapter)
+ static u32 rzg2l_wdt_get_cycle_usec(unsigned long cycle, u32 wdttime)
  {
- 	struct hw_xmit *hwxmits;
- 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
-@@ -1482,6 +1487,8 @@ void rtw_alloc_hwxmits(struct adapter *padapter)
- 	pxmitpriv->hwxmit_entry = HWXMIT_ENTRY;
+-	u64 timer_cycle_us = 1024 * 1024 * (wdttime + 1) * MICRO;
++	u64 timer_cycle_us = 1024 * 1024ULL * (wdttime + 1) * MICRO;
  
- 	pxmitpriv->hwxmits = kzalloc(sizeof(struct hw_xmit) * pxmitpriv->hwxmit_entry, GFP_KERNEL);
-+	if (!pxmitpriv->hwxmits)
-+		return -ENOMEM;
- 
- 	hwxmits = pxmitpriv->hwxmits;
- 
-@@ -1498,6 +1505,8 @@ void rtw_alloc_hwxmits(struct adapter *padapter)
- 		hwxmits[3] .sta_queue = &pxmitpriv->bk_pending;
- 	} else {
- 	}
-+
-+	return 0;
+ 	return div64_ul(timer_cycle_us, cycle);
  }
- 
- void rtw_free_hwxmits(struct adapter *padapter)
-diff --git a/drivers/staging/r8188eu/include/rtw_xmit.h b/drivers/staging/r8188eu/include/rtw_xmit.h
-index b2df1480d66b..e73632972900 100644
---- a/drivers/staging/r8188eu/include/rtw_xmit.h
-+++ b/drivers/staging/r8188eu/include/rtw_xmit.h
-@@ -341,7 +341,7 @@ s32 rtw_txframes_sta_ac_pending(struct adapter *padapter,
- void rtw_init_hwxmits(struct hw_xmit *phwxmit, int entry);
- s32 _rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter);
- void _rtw_free_xmit_priv(struct xmit_priv *pxmitpriv);
--void rtw_alloc_hwxmits(struct adapter *padapter);
-+int rtw_alloc_hwxmits(struct adapter *padapter);
- void rtw_free_hwxmits(struct adapter *padapter);
- s32 rtw_xmit(struct adapter *padapter, struct sk_buff **pkt);
- 
 -- 
 2.35.1
 
