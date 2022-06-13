@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60B32C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EB3BCCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381931AbiFMOQS (ORCPT
+        id S1382023AbiFMOQb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:16:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57894 "EHLO
+        Mon, 13 Jun 2022 10:16:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381353AbiFMOIW (ORCPT
+        with ESMTP id S1381670AbiFMOIx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:08:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A77D986E9;
-        Mon, 13 Jun 2022 04:41:32 -0700 (PDT)
+        Mon, 13 Jun 2022 10:08:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B06D59874B;
+        Mon, 13 Jun 2022 04:41:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FDD9612A8;
-        Mon, 13 Jun 2022 11:41:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95D2CC34114;
-        Mon, 13 Jun 2022 11:41:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 31E0B612AB;
+        Mon, 13 Jun 2022 11:41:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43C96C34114;
+        Mon, 13 Jun 2022 11:41:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120491;
-        bh=rp7BVa+YdVp1no5nrT8jUWCSbXCylb1klRp57aAm3fM=;
+        s=korg; t=1655120493;
+        bh=CrkCWVSL0i8pqXnfO+c68e2gA3PsrZBJFkdZ5anU2jE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sxD9osXMQkgtS0N/P+liMoOY/cfOGvlIgTFRDuNwYlfIpVZyD+awD2/kxpUPRoo7G
-         sy57Ar6ZqDuTIjz3h3hMXTWYO+qSJblmQ3ZnWBL75CK/eiUUwZb0zn0egyB9P1DRBf
-         AnBB1LpJLrF4FbRYqJiYFyICyvUgsKO9p5TMdOLw=
+        b=wqiy3dmuplRs4ClijHFVZnDOBSwVxvfIh682CXss6qNuYM0KKMPzANyG8z2QiVsny
+         oKzYxZAYF98I5klVsFzC2vAzkd43eQEK+Kh2stkFSzNowIcO/a6esqB11jYQM9VZB8
+         gviQKBTlyp/kRCBHBFrRjLurmW+Rg7WTPwR4q1Yo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Howard Chiu <howard_chiu@aspeedtech.com>,
-        Joel Stanley <joel@jms.id.au>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 052/298] ARM: dts: aspeed: ast2600-evb: Enable RX delay for MAC0/MAC1
-Date:   Mon, 13 Jun 2022 12:09:06 +0200
-Message-Id: <20220613094926.528660324@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 053/298] rtc: mt6397: check return value after calling platform_get_resource()
+Date:   Mon, 13 Jun 2022 12:09:07 +0200
+Message-Id: <20220613094926.559127413@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -49,49 +52,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Howard Chiu <howard_chiu@aspeedtech.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 4d338ee40ba89e508c5d3e1b4af956af7cb5e12e ]
+[ Upstream commit d3b43eb505bffb8e4cdf6800c15660c001553fe6 ]
 
-Since mac0/1 and mac2/3 are physically located on different die,
-they have different properties by nature, which is mac0/1 has smaller delay step.
+It will cause null-ptr-deref if platform_get_resource() returns NULL,
+we need check the return value.
 
-The property 'phy-mode' on ast2600 mac0 and mac1 is recommended to set to 'rgmii-rxid'
-which enables the RX interface delay from the PHY chip.
-Refer page 45 of SDK User Guide v08.00
-https://github.com/AspeedTech-BMC/openbmc/releases/download/v08.00/SDK_User_Guide_v08.00.pdf
-
-Fixes: 2ca5646b5c2f ("ARM: dts: aspeed: Add AST2600 and EVB")
-Signed-off-by: Howard Chiu <howard_chiu@aspeedtech.com>
-Link: https://lore.kernel.org/r/SG2PR06MB23152A548AAE81140B57DD69E6E09@SG2PR06MB2315.apcprd06.prod.outlook.com
-Signed-off-by: Joel Stanley <joel@jms.id.au>
+Fixes: fc2979118f3f ("rtc: mediatek: Add MT6397 RTC driver")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20220505125043.1594771-1-yangyingliang@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/aspeed-ast2600-evb.dts | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/rtc/rtc-mt6397.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm/boot/dts/aspeed-ast2600-evb.dts b/arch/arm/boot/dts/aspeed-ast2600-evb.dts
-index b7eb552640cb..788448cdd6b3 100644
---- a/arch/arm/boot/dts/aspeed-ast2600-evb.dts
-+++ b/arch/arm/boot/dts/aspeed-ast2600-evb.dts
-@@ -103,7 +103,7 @@
- &mac0 {
- 	status = "okay";
+diff --git a/drivers/rtc/rtc-mt6397.c b/drivers/rtc/rtc-mt6397.c
+index 80dc479a6ff0..1d297af80f87 100644
+--- a/drivers/rtc/rtc-mt6397.c
++++ b/drivers/rtc/rtc-mt6397.c
+@@ -269,6 +269,8 @@ static int mtk_rtc_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
  
--	phy-mode = "rgmii";
-+	phy-mode = "rgmii-rxid";
- 	phy-handle = <&ethphy0>;
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res)
++		return -EINVAL;
+ 	rtc->addr_base = res->start;
  
- 	pinctrl-names = "default";
-@@ -114,7 +114,7 @@
- &mac1 {
- 	status = "okay";
- 
--	phy-mode = "rgmii";
-+	phy-mode = "rgmii-rxid";
- 	phy-handle = <&ethphy1>;
- 
- 	pinctrl-names = "default";
+ 	rtc->data = of_device_get_match_data(&pdev->dev);
 -- 
 2.35.1
 
