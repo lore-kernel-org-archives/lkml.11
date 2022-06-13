@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F541C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:52:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38161C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:52:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352850AbiFMMww (ORCPT
+        id S1354141AbiFMMw5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:52:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45308 "EHLO
+        Mon, 13 Jun 2022 08:52:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351091AbiFMMwK (ORCPT
+        with ESMTP id S1352823AbiFMMwL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:52:10 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0514641C;
-        Mon, 13 Jun 2022 04:12:24 -0700 (PDT)
+        Mon, 13 Jun 2022 08:52:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98B94657A;
+        Mon, 13 Jun 2022 04:12:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A81FECE118D;
-        Mon, 13 Jun 2022 11:12:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95614C3411C;
-        Mon, 13 Jun 2022 11:12:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 56EAA60B7C;
+        Mon, 13 Jun 2022 11:12:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63743C34114;
+        Mon, 13 Jun 2022 11:12:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118741;
-        bh=MK2DExhRzPuMniHrsCO4Hu8aINQml8/b84nZ7z6XkVg=;
+        s=korg; t=1655118743;
+        bh=xZMuTpWursdJJdYloy8uMjAmfjbR/M9GPbci0Jb3eq4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1R3jqXY68C5574H2ggQZFdOerKqQxUDSx5R1uLgu0pWCVqSgaJjpkvL/L+WnM+sFH
-         fENdGXkZS7hr0F5VGl8S5FfFvx7Ex9LrZ//cK2/xhfY/6P/OkRZAnaSDVX8F/jaOiQ
-         uvOspqP/2M4qBktoXn7Urv967/tBXqmJGg0+b/hI=
+        b=bkyX1uEZyDMaGE+q12pWUIgNkTkj+OCcserOUh0Tn90FvBX6zNe/wxI1C/5uJ8xbl
+         uotQOhVescnPMcQffMzA1aLIeCblJX5EzdWklkJg2SAawZ9dOJKCOBgZJc1xIHXqbx
+         yMeEnPVO2uGKOfqs67pOEcjj9+4Djj2c5+9jWuEE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 011/247] remoteproc: imx_rproc: Ignore create mem entry for resource table
-Date:   Mon, 13 Jun 2022 12:08:33 +0200
-Message-Id: <20220613094923.264637509@linuxfoundation.org>
+        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
+        Hangyu Hua <hbh25y@gmail.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 012/247] usb: usbip: fix a refcount leak in stub_probe()
+Date:   Mon, 13 Jun 2022 12:08:34 +0200
+Message-Id: <20220613094923.296451937@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,37 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Fan <peng.fan@nxp.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit 58b7c856519fe946620ee68dd0c37bd3c695484a ]
+[ Upstream commit 9ec4cbf1cc55d126759051acfe328d489c5d6e60 ]
 
-Resource table is used by Linux to get information published by
-remote processor. It should be not be used for memory allocation, so
-not create rproc mem entry.
+usb_get_dev() is called in stub_device_alloc(). When stub_probe() fails
+after that, usb_put_dev() needs to be called to release the reference.
 
-Fixes: b29b4249f8f0 ("remoteproc: imx_rproc: add i.MX specific parse fw hook")
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
-Link: https://lore.kernel.org/r/20220415025737.1561976-1-peng.fan@oss.nxp.com
-Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+Fix this by moving usb_put_dev() to sdev_free error path handling.
+
+Find this by code review.
+
+Fixes: 3ff67445750a ("usbip: fix error handling in stub_probe()")
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Link: https://lore.kernel.org/r/20220412020257.9767-1-hbh25y@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/remoteproc/imx_rproc.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/usb/usbip/stub_dev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/remoteproc/imx_rproc.c b/drivers/remoteproc/imx_rproc.c
-index 05c39e1c56b4..59eae605ad59 100644
---- a/drivers/remoteproc/imx_rproc.c
-+++ b/drivers/remoteproc/imx_rproc.c
-@@ -447,6 +447,9 @@ static int imx_rproc_prepare(struct rproc *rproc)
- 		if (!strcmp(it.node->name, "vdev0buffer"))
- 			continue;
+diff --git a/drivers/usb/usbip/stub_dev.c b/drivers/usb/usbip/stub_dev.c
+index d8d3892e5a69..3c6d452e3bf4 100644
+--- a/drivers/usb/usbip/stub_dev.c
++++ b/drivers/usb/usbip/stub_dev.c
+@@ -393,7 +393,6 @@ static int stub_probe(struct usb_device *udev)
  
-+		if (!strcmp(it.node->name, "rsc-table"))
-+			continue;
-+
- 		rmem = of_reserved_mem_lookup(it.node);
- 		if (!rmem) {
- 			dev_err(priv->dev, "unable to acquire memory-region\n");
+ err_port:
+ 	dev_set_drvdata(&udev->dev, NULL);
+-	usb_put_dev(udev);
+ 
+ 	/* we already have busid_priv, just lock busid_lock */
+ 	spin_lock(&busid_priv->busid_lock);
+@@ -408,6 +407,7 @@ static int stub_probe(struct usb_device *udev)
+ 	put_busid_priv(busid_priv);
+ 
+ sdev_free:
++	usb_put_dev(udev);
+ 	stub_device_free(sdev);
+ 
+ 	return rc;
 -- 
 2.35.1
 
