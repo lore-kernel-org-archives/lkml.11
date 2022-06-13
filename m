@@ -2,134 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6190EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:49:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B271CCA485
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:49:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243848AbiFMUs5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:48:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54728 "EHLO
+        id S1351124AbiFMUtD (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 16:49:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351238AbiFMUrQ (ORCPT
+        with ESMTP id S1348989AbiFMUsV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:47:16 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FE9F2A940;
-        Mon, 13 Jun 2022 13:03:12 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id v25so8694588eda.6;
-        Mon, 13 Jun 2022 13:03:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=O2td3YP3JdUJuU07d3g8dndjMkX/4E+coAFBXOpD16E=;
-        b=JMkGk63f6veModCTgkLMWMKyGEaydw5MgeRkLBOCjl+edkC8l6swYd6lK5XvGB1uDI
-         C6j2NjFSj1Y+VNJoX+K3fXxfv4BCldHpQP1G4DF6WAPjgMWTtwk2A+iD5j8/2f70X4Zl
-         PL6VeYes3d1ImWkIkEL8JK081lUKcpvfIOlyonY2g8oorwEKgKoh/f3RpfcT4Y86wZkh
-         AR5rzkq41X9KEy5t18yxRzj9Q9jr29jMJGCILcWUk3tLjS7apGXFwRqDJ2fxiQdlLdff
-         RcnJn3/nQogPSbr6nF03vZ2dB4WyJYeznggeZ1FX92Laz/D1R2959Up9yIBOrNysZH5p
-         Hoew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=O2td3YP3JdUJuU07d3g8dndjMkX/4E+coAFBXOpD16E=;
-        b=kTXLS/DzElqRoIzpjzxwqA8X0ZBGGvgQsmrpjjjVzkgdiTQnUFmvSrbGAOKjEhk6WC
-         D2YWKwT3yLuhjx9SiA6yvIGyEWZ1k9Bvfpn6StXGa2SMpazwFZmDwEyjI8tHfknIOM99
-         vmzTnSVU1FFIfrnmsYK2oOYa87kOHVv88Ef0y1eVInzUST5JZhOUAf5VFpcVWmxok2HO
-         b3OPDjY56UClgcUiuzW1fJxzikk8q8cp5nueU2iUbMORgmaHLbGDjLTqMiRGXoFn0wpS
-         Nvn3bTelscIgniZNelSUehtpOLHXuCKvJSmK5BBpm8PAT+tux4yJAgklWXc/p2/+ivvq
-         iuxQ==
-X-Gm-Message-State: AOAM533L2VHfrx9OLBtQ+7FC+WO4+43/5FAmPOfnke6HzE90Dg/KR7Zw
-        D9x8Ay0i8pi7nn6tonJ6nWlRjBfDt3zKzM7BN64NmhFD+l8=
-X-Google-Smtp-Source: ABdhPJw2yRloQpbm6sxa+GrLKvGbTyCPyWW+lcJOlNOcBAd9ZPR5hEzRjfBokj5OwA6RXjIWWGTL3Pfzc7umGHPa950=
-X-Received: by 2002:a05:6402:3546:b0:42e:2f58:2c90 with SMTP id
- f6-20020a056402354600b0042e2f582c90mr1710971edd.84.1655150590514; Mon, 13 Jun
- 2022 13:03:10 -0700 (PDT)
+        Mon, 13 Jun 2022 16:48:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD921038;
+        Mon, 13 Jun 2022 13:06:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 142FC61571;
+        Mon, 13 Jun 2022 20:06:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4B61C34114;
+        Mon, 13 Jun 2022 20:06:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655150772;
+        bh=shKSr/RiV2YcabImw7K3ffFlzf7xs/cPOaAF6/t5ZCY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=H6L7u8jMeuHogNoG/VW04jHZnGwXKCZBPaTJGxSSqpB0MMqThvHKRUfAgUAse7XMi
+         Fq9RKmJsGedh9kVH4+rJBcqEKiGRR+Fe/JTZIWXbpG8slKGaFz4kPODA8XySEx/67p
+         n+0uVqzRAMWG9d4fFJqZA4fGynEycyzh2VFZBrkYZvWf4BgPHVCxm0NKCmOvEXMOlt
+         YcWcJZDR21nkVN1hJdZHNDAUXXpx4sUkMRraL62CEKWXw7PIoK7BL9bxlwjO1/QwN4
+         EkynUGfbS3HuQDo8J0t9AE175CXIA13cUq3ChEUnymiyQDH96C3SjpWgo+FlzTJ+P3
+         o/XGffJtFCgXA==
+Date:   Mon, 13 Jun 2022 22:06:07 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Peter Rosin <peda@axentia.se>
+Cc:     Codrin.Ciubotariu@microchip.com, linux-i2c@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, Ludovic.Desroches@microchip.com,
+        Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com,
+        robh+dt@kernel.org, kamel.bouhara@bootlin.com
+Subject: Re: Regression: at24 eeprom writing times out on sama5d3
+Message-ID: <YqeYr6b2k0rXsvIv@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Peter Rosin <peda@axentia.se>, Codrin.Ciubotariu@microchip.com,
+        linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Ludovic.Desroches@microchip.com, Nicolas.Ferre@microchip.com,
+        alexandre.belloni@bootlin.com, robh+dt@kernel.org,
+        kamel.bouhara@bootlin.com
+References: <074b39c5-55fc-2bc1-072d-aef1070e284d@axentia.se>
+ <2bb4868b-90ab-887e-bf13-9de8b79231bd@microchip.com>
+ <YqdQoJbsgwjQ9PYh@shikoro>
+ <0ce8b9d7-8a9e-cded-1762-71e230f4246c@axentia.se>
 MIME-Version: 1.0
-References: <297d2547ff2ee627731662abceeab9dbdaf23231.1655068321.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <297d2547ff2ee627731662abceeab9dbdaf23231.1655068321.git.christophe.jaillet@wanadoo.fr>
-From:   Christian Lamparter <chunkeey@gmail.com>
-Date:   Mon, 13 Jun 2022 22:02:58 +0200
-Message-ID: <CAAd0S9DgctqyRx+ppfT6dNntUR-cpySnsYaL=unboQ+qTK2wGQ@mail.gmail.com>
-Subject: Re: [PATCH v2] p54: Fix an error handling path in p54spi_probe()
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org,
-        Christian Lamparter <chunkeey@web.de>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ogV34CoYxK6HOSzb"
+Content-Disposition: inline
+In-Reply-To: <0ce8b9d7-8a9e-cded-1762-71e230f4246c@axentia.se>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jun 12, 2022 at 11:12 PM Christophe JAILLET
-<christophe.jaillet@wanadoo.fr> wrote:
->
-> If an error occurs after a successful call to p54spi_request_firmware(), it
-> must be undone by a corresponding release_firmware() as already done in
-> the error handling path of p54spi_request_firmware() and in the .remove()
-> function.
->
-> Add the missing call in the error handling path and remove it from
-> p54spi_request_firmware() now that it is the responsibility of the caller
-> to release the firmawre
 
-that last word hast a typo:  firmware. (maybe Kalle can fix this in post).
+--ogV34CoYxK6HOSzb
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> Fixes: cd8d3d321285 ("p54spi: p54spi driver")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Acked-by: Christian Lamparter <chunkeey@gmail.com>
-(Though, v1 was fine too.)
-> ---
-> v2: reduce diffstat and take advantage on the fact that release_firmware()
-> checks for NULL
 
-Heh, ok ;) . Now that I see it,  the "ret = p54_parse_firmware(...); ... "
-could have been replaced with "return p54_parse_firmware(dev, priv->firmware);"
-so the p54spi.c could shrink another 5-6 lines.
+> I replied to patch 1/3 and 2/3 but have not seen them on the lists and
+> patchwork also appears to be in the dark.
+> Did the replies make it anywhere? Should I resend?
 
-I think leaving p54spi_request_firmware() callee to deal with
-releasing the firmware
-in the error case as well is nicer because it gets rid of a "but in
-this case" complexity.
+I didn't get them. Yeah, maybe a resend will help?
 
-(I still have hope for the devres-firmware to hit some day).
 
-Cheers
-Christian
+--ogV34CoYxK6HOSzb
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> ---
->  drivers/net/wireless/intersil/p54/p54spi.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/net/wireless/intersil/p54/p54spi.c b/drivers/net/wireless/intersil/p54/p54spi.c
-> index f99b7ba69fc3..19152fd449ba 100644
-> --- a/drivers/net/wireless/intersil/p54/p54spi.c
-> +++ b/drivers/net/wireless/intersil/p54/p54spi.c
-> @@ -164,7 +164,7 @@ static int p54spi_request_firmware(struct ieee80211_hw *dev)
->
->         ret = p54_parse_firmware(dev, priv->firmware);
->         if (ret) {
-> -               release_firmware(priv->firmware);
-> +               /* the firmware is released by the caller */
->                 return ret;
->         }
->
-> @@ -659,6 +659,7 @@ static int p54spi_probe(struct spi_device *spi)
->         return 0;
->
->  err_free_common:
-> +       release_firmware(priv->firmware);
->         free_irq(gpio_to_irq(p54spi_gpio_irq), spi);
->  err_free_gpio_irq:
->         gpio_free(p54spi_gpio_irq);
-> --
-> 2.34.1
->
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmKnmK8ACgkQFA3kzBSg
+KbbJWBAAlS8SaQDw0SsR0R3wckRC2LN0TZ1ehFWsm9akX38NgWXfprCt5Y1HcKsu
+DcyHwWdwVKoT6lCPkAKeZsfF+3ipoKBf4CedKk5zYwL/3o/I80S3+sYSw+akUV05
+X3HWMjpCRlWAqGRod4TWafawWqEA1U4GlDmApYl3TB7PWEk27lJp+3BgwBgnSs0l
+9dT7CnfeqkeIVZ8LapGQksqwC/fKMsa4dVNyluCDHHm9DlsDHFgW4fYzWJgg8WlS
+rhTC2QnXYmcRS0uWQR7W+FNnHjRK2ARyP+So2rzbes7/tqBBMAMWlvMzpNHd3ucb
+ZkQWVxRs4cXcpprtyuhA0axvAGfYCc4lvGr8IdRoFyPnDSv8U3hUZ4ZU2bH8C//2
+CbyRTFGBu7C1UV5YwjswBkAmvUeFrnM6gSH+/ZcZcOQlQ23RHG4TFMCe93MPJPv4
+RbKLzX/WhBnzY+b7Vk0Y+lGgM1QX5CsEiL8S82dpxhylypGXv9GX8d0F2sXP/lXT
+hNJ0BqA1Tp7umUUom7ZTM0h8IZnEWn8k0RRr7XMTvKQOA4cIhVccBHRCJHIrfMm0
+qsJp7dJpm6nuCfipS3yW1UXZjhq1NRKRNLQrt+aQPwYZVHvdPBq9di6uqmQdOnHg
+7gB1dExjEtarnUpcMfsABDJ/jz1nL0fZRZLKPoM6HGiisxfQKD8=
+=Rl7P
+-----END PGP SIGNATURE-----
+
+--ogV34CoYxK6HOSzb--
