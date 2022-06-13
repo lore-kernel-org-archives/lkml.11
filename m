@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CD93C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BD15CCA482
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:55:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357419AbiFMLyL (ORCPT
+        id S1357358AbiFMLyE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:54:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53800 "EHLO
+        Mon, 13 Jun 2022 07:54:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356888AbiFMLtl (ORCPT
+        with ESMTP id S1356324AbiFMLsv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:49:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F27514D6A8;
-        Mon, 13 Jun 2022 03:53:36 -0700 (PDT)
+        Mon, 13 Jun 2022 07:48:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C701D4C40C;
+        Mon, 13 Jun 2022 03:53:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CD656135E;
-        Mon, 13 Jun 2022 10:53:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75E57C34114;
-        Mon, 13 Jun 2022 10:53:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4DA00B80E93;
+        Mon, 13 Jun 2022 10:53:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4219C3411E;
+        Mon, 13 Jun 2022 10:52:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117615;
-        bh=NuJ00ZTTNaLSXkr9xl6V0Dq1TVSE7hiBhjNyJjtUJG0=;
+        s=korg; t=1655117580;
+        bh=jV1nlxoLi1cKEqWaoK0WmtX6r+5CQ9w7Vi3Pto+GAHQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h+dP+f+O2whjb0FcODXD7S1CFZLq2nc/1zfJducDpT7kJHzojE8SNewFMxMdF/xj7
-         Z/xLxkA6s7dZUxLG1ypQI3uYdV/JpJn1kLXwHWe2/rNLrTf+LHYBpCc7nkSk7EOmD2
-         LgiwreyBAEcDLNaoav+VbU47Q0K1vo1Zw8F07vdM=
+        b=R6ix13pgclgRPKUjPGL3L46JO9srDKMmpQ0xCMHDDASE7S7KbBDWWrUR/zpnYq3av
+         mn61ydulrl/NrSljMTEKAbElPEdR+KNJK5E1Ck2e2hBMQTwduA9QWLRFV1wdZE+P3V
+         asb4F1F9L8ogKYxT5OyV9AkKJd+EJIolXxo5FUkM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 062/287] ASoC: mediatek: Fix missing of_node_put in mt2701_wm8960_machine_probe
-Date:   Mon, 13 Jun 2022 12:08:06 +0200
-Message-Id: <20220613094925.750630104@linuxfoundation.org>
+Subject: [PATCH 4.19 065/287] drm/vc4: txp: Dont set TXP_VSTART_AT_EOF
+Date:   Mon, 13 Jun 2022 12:08:09 +0200
+Message-Id: <20220613094925.841629984@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -50,56 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit 05654431a18fe24e5e46a375d98904134628a102 ]
+[ Upstream commit 234998df929f14d00cbf2f1e81a7facb69fd9266 ]
 
-This node pointer is returned by of_parse_phandle() with
-refcount incremented in this function.
-Calling of_node_put() to avoid the refcount leak.
+The TXP_VSTART_AT_EOF will generate a second VSTART signal to the HVS.
+However, the HVS waits for VSTART to enable the FIFO and will thus start
+filling the FIFO before the start of the frame.
 
-Fixes: 8625c1dbd876 ("ASoC: mediatek: Add mt2701-wm8960 machine driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220404093526.30004-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+This leads to corruption at the beginning of the first frame, and
+content from the previous frame at the beginning of the next frames.
+
+Since one VSTART is enough, let's get rid of it.
+
+Fixes: 008095e065a8 ("drm/vc4: Add support for the transposer block")
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
+Link: https://lore.kernel.org/r/20220328153659.2382206-3-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/mediatek/mt2701/mt2701-wm8960.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/vc4/vc4_txp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/mediatek/mt2701/mt2701-wm8960.c b/sound/soc/mediatek/mt2701/mt2701-wm8960.c
-index 89f34efd9747..a5ede216b795 100644
---- a/sound/soc/mediatek/mt2701/mt2701-wm8960.c
-+++ b/sound/soc/mediatek/mt2701/mt2701-wm8960.c
-@@ -118,7 +118,8 @@ static int mt2701_wm8960_machine_probe(struct platform_device *pdev)
- 	if (!codec_node) {
- 		dev_err(&pdev->dev,
- 			"Property 'audio-codec' missing or invalid\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto put_platform_node;
- 	}
- 	for (i = 0; i < card->num_links; i++) {
- 		if (mt2701_wm8960_dai_links[i].codec_name)
-@@ -129,7 +130,7 @@ static int mt2701_wm8960_machine_probe(struct platform_device *pdev)
- 	ret = snd_soc_of_parse_audio_routing(card, "audio-routing");
- 	if (ret) {
- 		dev_err(&pdev->dev, "failed to parse audio-routing: %d\n", ret);
--		return ret;
-+		goto put_codec_node;
- 	}
+diff --git a/drivers/gpu/drm/vc4/vc4_txp.c b/drivers/gpu/drm/vc4/vc4_txp.c
+index 6e23c50168f9..9b7810c3dd65 100644
+--- a/drivers/gpu/drm/vc4/vc4_txp.c
++++ b/drivers/gpu/drm/vc4/vc4_txp.c
+@@ -311,7 +311,7 @@ static void vc4_txp_connector_atomic_commit(struct drm_connector *conn,
+ 	if (WARN_ON(i == ARRAY_SIZE(drm_fmts)))
+ 		return;
  
- 	ret = devm_snd_soc_register_card(&pdev->dev, card);
-@@ -137,6 +138,10 @@ static int mt2701_wm8960_machine_probe(struct platform_device *pdev)
- 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
- 			__func__, ret);
- 
-+put_codec_node:
-+	of_node_put(codec_node);
-+put_platform_node:
-+	of_node_put(platform_node);
- 	return ret;
- }
+-	ctrl = TXP_GO | TXP_VSTART_AT_EOF | TXP_EI |
++	ctrl = TXP_GO | TXP_EI |
+ 	       VC4_SET_FIELD(0xf, TXP_BYTE_ENABLE) |
+ 	       VC4_SET_FIELD(txp_fmts[i], TXP_FORMAT);
  
 -- 
 2.35.1
