@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AA54CCA48F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42F2FCCA48D
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:39:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355708AbiFMLje (ORCPT
+        id S1355663AbiFMLjW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:39:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49866 "EHLO
+        Mon, 13 Jun 2022 07:39:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355018AbiFMLaY (ORCPT
+        with ESMTP id S1354947AbiFMLaU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:30:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0380340A2C;
-        Mon, 13 Jun 2022 03:46:20 -0700 (PDT)
+        Mon, 13 Jun 2022 07:30:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 199D0403FD;
+        Mon, 13 Jun 2022 03:46:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 93E8E61259;
-        Mon, 13 Jun 2022 10:46:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A47E3C34114;
-        Mon, 13 Jun 2022 10:46:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 947B6B80D3C;
+        Mon, 13 Jun 2022 10:46:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1666C34114;
+        Mon, 13 Jun 2022 10:46:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117179;
-        bh=5v3UGAyPJezobIbyy1LC/hgX1ZVAKtD9+5IHR+gLdjM=;
+        s=korg; t=1655117165;
+        bh=Ok3La8mRQV7bu6LFgpuG/TAdbgySw0P+nNilnEqF8j0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yikBqgN/IHn0G8sEkKa2CsY9wZR3EZA+sIE8lavOgc3UTGgYrSl+wOpVs1oHgRcID
-         niwh6ZO1XZh+ylq426TO9OEPXDAkuHLuok4e96bDwZ00WD3JOPkYDABErm+Wax7gvR
-         5XRRpShqmUQAnu8c4suFJ/4e48DMbkX28AugknUA=
+        b=NjNbEgBdXRXx8sTcq69oEeKIPrHugmNb3qdAoYRV6nVJjKpbsoa00ZJMomm+ijZ0O
+         vSVUeEHsGGuAt4iLbDRymD/s1IMRoIekBpV/kfqZ26tssVpU/jvP5wJCJ9Wv8F2ho3
+         yrde7wy2WET7Slm6zUBQMlmXDtZSGx9fi84B0ZYY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Manivannan Sadhasivam <mani@kernel.org>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 325/411] net: dsa: mv88e6xxx: Fix refcount leak in mv88e6xxx_mdios_register
-Date:   Mon, 13 Jun 2022 12:09:58 +0200
-Message-Id: <20220613094938.475909084@linuxfoundation.org>
+Subject: [PATCH 5.4 309/411] serial: rda-uart: Dont allow CS5-6
+Date:   Mon, 13 Jun 2022 12:09:42 +0200
+Message-Id: <20220613094938.014578255@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -51,39 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-[ Upstream commit 02ded5a173619b11728b8bf75a3fd995a2c1ff28 ]
+[ Upstream commit 098333a9c7d12bb3ce44c82f08b4d810c44d31b0 ]
 
-of_get_child_by_name() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
+Only CS7 and CS8 are supported but CSIZE is not sanitized after
+fallthrough from CS5 or CS6 to CS7.
 
-mv88e6xxx_mdio_register() pass the device node to of_mdiobus_register().
-We don't need the device node after it.
+Set CSIZE correctly so that userspace knows the effective value.
+Incorrect CSIZE also results in miscalculation of the frame bits in
+tty_get_char_size() or in its predecessor where the roughly the same
+code is directly within uart_update_timeout().
 
-Add missing of_node_put() to avoid refcount leak.
-
-Fixes: a3c53be55c95 ("net: dsa: mv88e6xxx: Support multiple MDIO busses")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Marek Behún <kabel@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: c10b13325ced (tty: serial: Add RDA8810PL UART driver)
+Cc: Manivannan Sadhasivam <mani@kernel.org>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Link: https://lore.kernel.org/r/20220519081808.3776-4-ilpo.jarvinen@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/serial/rda-uart.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 87d28ef82559..b336ed071fa8 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -2910,6 +2910,7 @@ static int mv88e6xxx_mdios_register(struct mv88e6xxx_chip *chip,
- 	 */
- 	child = of_get_child_by_name(np, "mdio");
- 	err = mv88e6xxx_mdio_register(chip, child, false);
-+	of_node_put(child);
- 	if (err)
- 		return err;
- 
+diff --git a/drivers/tty/serial/rda-uart.c b/drivers/tty/serial/rda-uart.c
+index ff9a27d48bca..877d86ff6819 100644
+--- a/drivers/tty/serial/rda-uart.c
++++ b/drivers/tty/serial/rda-uart.c
+@@ -262,6 +262,8 @@ static void rda_uart_set_termios(struct uart_port *port,
+ 		/* Fall through */
+ 	case CS7:
+ 		ctrl &= ~RDA_UART_DBITS_8;
++		termios->c_cflag &= ~CSIZE;
++		termios->c_cflag |= CS7;
+ 		break;
+ 	default:
+ 		ctrl |= RDA_UART_DBITS_8;
 -- 
 2.35.1
 
