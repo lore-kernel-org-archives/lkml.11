@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E81ECCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:47:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6E35C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:47:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385590AbiFMOrl (ORCPT
+        id S1385600AbiFMOro (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:47:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58720 "EHLO
+        Mon, 13 Jun 2022 10:47:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385692AbiFMOnl (ORCPT
+        with ESMTP id S1385929AbiFMOoQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:43:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22853B2E9E;
-        Mon, 13 Jun 2022 04:50:55 -0700 (PDT)
+        Mon, 13 Jun 2022 10:44:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D48AB41F1;
+        Mon, 13 Jun 2022 04:51:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8C652B80D31;
-        Mon, 13 Jun 2022 11:50:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D935FC34114;
-        Mon, 13 Jun 2022 11:50:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B4050612AC;
+        Mon, 13 Jun 2022 11:51:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C430AC3411B;
+        Mon, 13 Jun 2022 11:51:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655121053;
-        bh=cik2UWmz0PBmx+Cme4rzLA38B3Rv2FNtIkAKFF7lmls=;
+        s=korg; t=1655121064;
+        bh=rxbr1Y6tY5vCrqN0GZ6O31nAcp1+t7/ChYjrzFVsJF0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FXtNXjteSmjDubuuEOaEXgD8OQ6jukV/TPrGZ59/Q9ev4W4zz1KrXPaTZALNRUO4l
-         wM+jwebksioC8rO6E3RSud3QQt2KsBfdWeuY45RyD7TPoFaryq5OG7EBKNETS5XrsP
-         n1T2C/21kPq7CmDzBbvTBRyGkS2RGTDugDewaT+4=
+        b=rRbNRL+xe1JEFT47sleWjXbdTzOkzJ415i5XVXmI3tMdLEnh7u8Og5HxlSLdVcPID
+         U8ytRqKm6FaZ6g9Z5N09qOyrddg1282ssJ0z5Ze8nUV4/iu9hbu1reccofdVQJukcc
+         lGSjqtmc/zg25J6XYHP4RQqqRS8lgi6EHZNFBLNY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jorge Lopez <jorge.lopez2@hp.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 255/298] platform/x86: hp-wmi: Fix hp_wmi_read_int() reporting error (0x05)
-Date:   Mon, 13 Jun 2022 12:12:29 +0200
-Message-Id: <20220613094932.812347505@linuxfoundation.org>
+        stable@vger.kernel.org, huangwenhui <huangwenhuia@uniontech.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.17 259/298] ALSA: hda/conexant - Fix loopback issue with CX20632
+Date:   Mon, 13 Jun 2022 12:12:33 +0200
+Message-Id: <20220613094932.931537292@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,53 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jorge Lopez <jorge.lopez2@hp.com>
+From: huangwenhui <huangwenhuia@uniontech.com>
 
-[ Upstream commit 12b19f14a21a2ee6348825d95b642ef2cd16794f ]
+commit d5ea7544c32ba27c2c5826248e4ff58bd50a2518 upstream.
 
-The purpose of this patch is to introduce a fix to hp_wmi_read_int()
-and eliminate failure error (0x05). Several WMI queries leverage
-hp_wmi_read_int() to read their data and were failing with error 0x05.
+On a machine with CX20632, Alsamixer doesn't have 'Loopback
+Mixing' and 'Line'.
 
-HPWMI_DISPLAY_QUERY
-HPWMI_HDDTEMP_QUERY
-HPWMI_ALS_QUERY
-HPWMI_HARDWARE_QUERY
-HPWMI_WIRELESS_QUERY
-HPWMI_POSTCODEERROR_QUERY
-
-The failure occurs because hp_wmi_read_int() calls
-hp_wmi_perform_query() with input parameter of size greater than zero.
-Invoking those WMI commands with an input buffer size greater than
-zero causes the command to be rejected and error 0x05 be returned.
-
-All changes were validated on a HP ZBook Workstation notebook,
-HP EliteBook x360, and HP EliteBook 850 G8.
-
-Signed-off-by: Jorge Lopez <jorge.lopez2@hp.com>
-Link: https://lore.kernel.org/r/20220310210853.28367-2-jorge.lopez2@hp.com
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: huangwenhui <huangwenhuia@uniontech.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220607065631.10708-1-huangwenhuia@uniontech.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/platform/x86/hp-wmi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/pci/hda/patch_conexant.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/platform/x86/hp-wmi.c b/drivers/platform/x86/hp-wmi.c
-index 88f0bfd6ecf1..29ae35d15a41 100644
---- a/drivers/platform/x86/hp-wmi.c
-+++ b/drivers/platform/x86/hp-wmi.c
-@@ -347,7 +347,7 @@ static int hp_wmi_read_int(int query)
- 	int val = 0, ret;
- 
- 	ret = hp_wmi_perform_query(query, HPWMI_READ, &val,
--				   sizeof(val), sizeof(val));
-+				   0, sizeof(val));
- 
- 	if (ret)
- 		return ret < 0 ? ret : -EINVAL;
--- 
-2.35.1
-
+--- a/sound/pci/hda/patch_conexant.c
++++ b/sound/pci/hda/patch_conexant.c
+@@ -1052,6 +1052,13 @@ static int patch_conexant_auto(struct hd
+ 		snd_hda_pick_fixup(codec, cxt5051_fixup_models,
+ 				   cxt5051_fixups, cxt_fixups);
+ 		break;
++	case 0x14f15098:
++		codec->pin_amp_workaround = 1;
++		spec->gen.mixer_nid = 0x22;
++		spec->gen.add_stereo_mix_input = HDA_HINT_STEREO_MIX_AUTO;
++		snd_hda_pick_fixup(codec, cxt5066_fixup_models,
++				   cxt5066_fixups, cxt_fixups);
++		break;
+ 	case 0x14f150f2:
+ 		codec->power_save_node = 1;
+ 		fallthrough;
 
 
