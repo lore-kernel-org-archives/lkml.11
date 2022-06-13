@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F46BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:13:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1936AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381695AbiFMONQ (ORCPT
+        id S1382218AbiFMON3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:13:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51980 "EHLO
+        Mon, 13 Jun 2022 10:13:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382375AbiFMOFr (ORCPT
+        with ESMTP id S1382598AbiFMOGG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:05:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F5769549B;
-        Mon, 13 Jun 2022 04:40:43 -0700 (PDT)
+        Mon, 13 Jun 2022 10:06:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 666F695DED;
+        Mon, 13 Jun 2022 04:41:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3D139B80D31;
-        Mon, 13 Jun 2022 11:40:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F2C4C341C4;
-        Mon, 13 Jun 2022 11:40:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8060AB80D31;
+        Mon, 13 Jun 2022 11:40:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6759C34114;
+        Mon, 13 Jun 2022 11:40:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120435;
-        bh=+lNjLZLQbeY+zNTSRXU8Q/ga2ssIT8vG9WFJSp3ZJkM=;
+        s=korg; t=1655120458;
+        bh=28hVbwrBlTsfQv2+VKD9WOmazeddOyy/E8ouUEiCXM0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S2669vE5t15iXhzwQfyeHWIcaiQq9/RWmM9FIfBhdg7nFYA5ZNUcTD7Slg7DSnlqF
-         oamrm9yinlb85z+grtvq+WJFcjz9bQlNwFsFFjlG+wJaNNuRMAIyxGXmDiD7EihVBw
-         CDNlC/9nDyZsiGPprkrHVi892OphKZlNuBNxHY+M=
+        b=EdrUK/DfVPSvIoc+43Sxwpo/btJT0LsxbGDGafhP8yVWeu5lemA6K13iIzSKpQwN1
+         LCC/7mG2plleM1ASQSgYBnjyOWU4XM2SzCScXx7+u1aJnq5K9Yi6dkQvvXNfDopgn6
+         +VpNamEKVUlaXzvARfM2uItaecH5rqP0753oZdB4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 031/298] iio: proximity: vl53l0x: Fix return value check of wait_for_completion_timeout
-Date:   Mon, 13 Jun 2022 12:08:45 +0200
-Message-Id: <20220613094925.875386367@linuxfoundation.org>
+Subject: [PATCH 5.17 017/298] staging: fieldbus: Fix the error handling path in anybuss_host_common_probe()
+Date:   Mon, 13 Jun 2022 12:08:31 +0200
+Message-Id: <20220613094925.451631622@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,49 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 50f2959113cb6756ffd73c4fedc712cf2661f711 ]
+[ Upstream commit 7079b3483a17be2cfba64cbd4feb1b7ae07f1ea7 ]
 
-wait_for_completion_timeout() returns unsigned long not int.
-It returns 0 if timed out, and positive if completed.
-The check for <= 0 is ambiguous and should be == 0 here
-indicating timeout which is the only error case.
+If device_register() fails, device_unregister() should not be called
+because it will free some resources that are not allocated.
+put_device() should be used instead.
 
-Fixes: 3cef2e31b54b ("iio: proximity: vl53l0x: Add IRQ support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220412064210.10734-1-linmq006@gmail.com
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Fixes: 308ee87a2f1e ("staging: fieldbus: anybus-s: support HMS Anybus-S bus")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/5401a519608d6e1a4e7435c20f4f20b0c5c36c23.1650610082.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/proximity/vl53l0x-i2c.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/staging/fieldbus/anybuss/host.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/proximity/vl53l0x-i2c.c b/drivers/iio/proximity/vl53l0x-i2c.c
-index cf38144b6f95..13a87d3e3544 100644
---- a/drivers/iio/proximity/vl53l0x-i2c.c
-+++ b/drivers/iio/proximity/vl53l0x-i2c.c
-@@ -104,6 +104,7 @@ static int vl53l0x_read_proximity(struct vl53l0x_data *data,
- 	u16 tries = 20;
- 	u8 buffer[12];
- 	int ret;
-+	unsigned long time_left;
- 
- 	ret = i2c_smbus_write_byte_data(client, VL_REG_SYSRANGE_START, 1);
- 	if (ret < 0)
-@@ -112,10 +113,8 @@ static int vl53l0x_read_proximity(struct vl53l0x_data *data,
- 	if (data->client->irq) {
- 		reinit_completion(&data->completion);
- 
--		ret = wait_for_completion_timeout(&data->completion, HZ/10);
--		if (ret < 0)
--			return ret;
--		else if (ret == 0)
-+		time_left = wait_for_completion_timeout(&data->completion, HZ/10);
-+		if (time_left == 0)
- 			return -ETIMEDOUT;
- 
- 		vl53l0x_clear_irq(data);
+diff --git a/drivers/staging/fieldbus/anybuss/host.c b/drivers/staging/fieldbus/anybuss/host.c
+index a344410e48fe..cd86b9c9e345 100644
+--- a/drivers/staging/fieldbus/anybuss/host.c
++++ b/drivers/staging/fieldbus/anybuss/host.c
+@@ -1384,7 +1384,7 @@ anybuss_host_common_probe(struct device *dev,
+ 		goto err_device;
+ 	return cd;
+ err_device:
+-	device_unregister(&cd->client->dev);
++	put_device(&cd->client->dev);
+ err_kthread:
+ 	kthread_stop(cd->qthread);
+ err_reset:
 -- 
 2.35.1
 
