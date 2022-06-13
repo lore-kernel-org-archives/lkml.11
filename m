@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E41B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:36:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F0A3CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:36:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351729AbiFMMgE (ORCPT
+        id S1347933AbiFMMgL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:36:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50034 "EHLO
+        Mon, 13 Jun 2022 08:36:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357204AbiFMMeS (ORCPT
+        with ESMTP id S1357364AbiFMMeW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:34:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D654B1A808;
-        Mon, 13 Jun 2022 04:07:42 -0700 (PDT)
+        Mon, 13 Jun 2022 08:34:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F141BE92;
+        Mon, 13 Jun 2022 04:07:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 66D17B80EA8;
-        Mon, 13 Jun 2022 11:07:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1A59C34114;
-        Mon, 13 Jun 2022 11:07:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F6EC6062B;
+        Mon, 13 Jun 2022 11:07:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49C0CC3411E;
+        Mon, 13 Jun 2022 11:07:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118458;
-        bh=ojvQO6cm4PbQqQ023UPiJ8nXEl6/BlpRnWuGVqOAcE8=;
+        s=korg; t=1655118452;
+        bh=zmZtnps9hinPo8CUOIHu7/mKHJLP8v4TcqEBjZryPhw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ySR+Awqr5AlA55qEZntgiLO7HkCrtAHow8kFtvSR/7umFsfto5I5X5kbFhEJzwaPQ
-         4/HJ7/9nYEkJzQ6tWSnDBMhJ8QUmGQsoaUsLoEQGdu29o5dXpC6iIxVhaejq0+vmoM
-         lkzMQhPzyHTMoebYcoMQ0nxaFqzuK0hU6o4Yy7zE=
+        b=tDMHklVd0g0st/wxpZsC/FjhDHgmUrq/AueoEK3ralAPa9M8yYdYfyieoUed1aJrq
+         5mI4DxbhKZf4JMdgkC1ufjatvK0+/7Rd/qUL8ZSAhXszrRgr7nbkyX/MZEJ9Ml0cwY
+         awMJJF4JgKHxy8JZHdiW5GVexE4q20VP0C6pf+3U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 083/172] i2c: cadence: Increase timeout per message if necessary
-Date:   Mon, 13 Jun 2022 12:10:43 +0200
-Message-Id: <20220613094910.327344826@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 081/172] iommu/arm-smmu-v3: check return value after calling platform_get_resource()
+Date:   Mon, 13 Jun 2022 12:10:41 +0200
+Message-Id: <20220613094909.847290999@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -51,62 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucas Tanure <tanureal@opensource.cirrus.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 96789dce043f5bff8b7d62aa28d52a7c59403a84 ]
+[ Upstream commit b131fa8c1d2afd05d0b7598621114674289c2fbb ]
 
-Timeout as 1 second sets an upper limit on the length
-of the transfer executed, but there is no maximum length
-of a write or read message set in i2c_adapter_quirks for
-this controller.
+It will cause null-ptr-deref if platform_get_resource() returns NULL,
+we need check the return value.
 
-This upper limit affects devices that require sending
-large firmware blobs over I2C.
-
-To remove that limitation, calculate the minimal time
-necessary, plus some wiggle room, for every message and
-use it instead of the default one second, if more than
-one second.
-
-Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
-Acked-by: Michal Simek <michal.simek@xilinx.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220425114525.2651143-1-yangyingliang@huawei.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-cadence.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/i2c/busses/i2c-cadence.c b/drivers/i2c/busses/i2c-cadence.c
-index c1bbc4caeb5c..50e3ddba52ba 100644
---- a/drivers/i2c/busses/i2c-cadence.c
-+++ b/drivers/i2c/busses/i2c-cadence.c
-@@ -724,7 +724,7 @@ static void cdns_i2c_master_reset(struct i2c_adapter *adap)
- static int cdns_i2c_process_msg(struct cdns_i2c *id, struct i2c_msg *msg,
- 		struct i2c_adapter *adap)
- {
--	unsigned long time_left;
-+	unsigned long time_left, msg_timeout;
- 	u32 reg;
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 483c1362cc4a..bc4cbc7542ce 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -3512,6 +3512,8 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
  
- 	id->p_msg = msg;
-@@ -749,8 +749,16 @@ static int cdns_i2c_process_msg(struct cdns_i2c *id, struct i2c_msg *msg,
- 	else
- 		cdns_i2c_msend(id);
- 
-+	/* Minimal time to execute this message */
-+	msg_timeout = msecs_to_jiffies((1000 * msg->len * BITS_PER_BYTE) / id->i2c_clk);
-+	/* Plus some wiggle room */
-+	msg_timeout += msecs_to_jiffies(500);
-+
-+	if (msg_timeout < adap->timeout)
-+		msg_timeout = adap->timeout;
-+
- 	/* Wait for the signal of completion */
--	time_left = wait_for_completion_timeout(&id->xfer_done, adap->timeout);
-+	time_left = wait_for_completion_timeout(&id->xfer_done, msg_timeout);
- 	if (time_left == 0) {
- 		cdns_i2c_master_reset(adap);
- 		dev_err(id->adap.dev.parent,
+ 	/* Base address */
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res)
++		return -EINVAL;
+ 	if (resource_size(res) < arm_smmu_resource_size(smmu)) {
+ 		dev_err(dev, "MMIO region too small (%pr)\n", res);
+ 		return -EINVAL;
 -- 
 2.35.1
 
