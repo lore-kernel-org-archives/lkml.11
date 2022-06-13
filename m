@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F235C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:56:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1427C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:56:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242045AbiFMS4d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:56:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38080 "EHLO
+        id S1343562AbiFMS4i (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:56:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239717AbiFMSz3 (ORCPT
+        with ESMTP id S238837AbiFMSz3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 14:55:29 -0400
 Received: from mx2.veeam.com (mx2.veeam.com [64.129.123.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59E56FCEC6;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59D7F19C10;
         Mon, 13 Jun 2022 08:59:55 -0700 (PDT)
 Received: from mail.veeam.com (prgmbx01.amust.local [172.24.128.102])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx2.veeam.com (Postfix) with ESMTPS id 3B72243153;
-        Mon, 13 Jun 2022 11:54:28 -0400 (EDT)
+        by mx2.veeam.com (Postfix) with ESMTPS id 31933431E5;
+        Mon, 13 Jun 2022 11:54:51 -0400 (EDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=veeam.com;
-        s=mx2-2022; t=1655135668;
-        bh=9X64ZceNM+IfAVNDWnAE8KoqwfjGPLkSJ8g/cxM3Qmg=;
+        s=mx2-2022; t=1655135691;
+        bh=ak1tO0s8mN3mZtDkM8oxRcWU7JFKE992i39KI3uJF6g=;
         h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=aTeDJNsYhkOb10Gezsqilo9TBHWwFGte6QzsDiKvQRIk0LU6GMmEh23s0j95Dsv+W
-         jIIcc+6tuFw6meb4YSQVHArt/IRMT5V0DI4/lRXg1aQFLm5J5IY+iE5+9OyJVA2o6r
-         i3jjuTf+8R1hF/Ay5A1zofSgAyT3tZDyOy5v1aWWG+TowfilgPcU2i0c0V4o0AFZUv
-         TcjruhgJb3V2uh+9kbDhA8Q7s658VnOzsOTitN5U8nsPpPMTmFYbCXn3DOOB81hE7l
-         ASeyN4aMWP8Mdv17txGmLl0drnWUBonrjUTFBzEsOTNjFvujFBrppITLP6G2dkxtkI
-         twh2k4ZiMXCKA==
+        b=k1pU4DkCuGBVcEAkhBbu5ZGBQGrRfuf72on5OOLCSPwuy9uq3lS5RkBcpYA9VPxOa
+         YtWVxk4enkrTRcHUxOeWe2zzcq2pncJw/v9VD1XmRInMJingBlIjezcAt+HNagW7hR
+         fFwQkyHekqAcCkiPOGXhblBcXzRyoIaUsSThrYA5sFsR+zaL9Kb/D98RWyB4pZfYsW
+         tTPpqbMq2XkgezMVbDBJ6IF38oXOEsoGPlX9wbFDjdDEGZ81QmAHu5851Dia1XyJCJ
+         B6B93o3kjrlv5qo83hX/P6lJeeJ0EtDcM+OSwem6EypPjm9qHdrofmX+xAY5qG/sOR
+         23J0Gfffci21w==
 Received: from prgdevlinuxpatch01.amust.local (172.24.14.5) by
  prgmbx01.amust.local (172.24.128.102) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.9; Mon, 13 Jun 2022 17:54:20 +0200
+ 15.2.1118.9; Mon, 13 Jun 2022 17:54:34 +0200
 From:   Sergei Shtepa <sergei.shtepa@veeam.com>
 To:     <axboe@kernel.dk>, <linux-block@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
 CC:     Sergei Shtepa <sergei.shtepa@veeam.com>
-Subject: [PATCH 07/20] block, blksnap: map of change block tracking
-Date:   Mon, 13 Jun 2022 18:53:00 +0300
-Message-ID: <1655135593-1900-8-git-send-email-sergei.shtepa@veeam.com>
+Subject: [PATCH 11/20] block, blksnap: functions and structures for performing block I/O operations
+Date:   Mon, 13 Jun 2022 18:53:04 +0300
+Message-ID: <1655135593-1900-12-git-send-email-sergei.shtepa@veeam.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1655135593-1900-1-git-send-email-sergei.shtepa@veeam.com>
 References: <1655135593-1900-1-git-send-email-sergei.shtepa@veeam.com>
@@ -56,421 +57,355 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Description of the struct cbt_map for storing change map data and
-functions for managing this map.
+Provides synchronous and asynchronous block I/O operations for the
+buffer of the minimum data storage block (struct diff_buffer).
 
 Signed-off-by: Sergei Shtepa <sergei.shtepa@veeam.com>
 ---
- drivers/block/blksnap/cbt_map.c | 280 ++++++++++++++++++++++++++++++++
- drivers/block/blksnap/cbt_map.h | 112 +++++++++++++
- 2 files changed, 392 insertions(+)
- create mode 100644 drivers/block/blksnap/cbt_map.c
- create mode 100644 drivers/block/blksnap/cbt_map.h
+ drivers/block/blksnap/diff_io.c | 204 ++++++++++++++++++++++++++++++++
+ drivers/block/blksnap/diff_io.h | 122 +++++++++++++++++++
+ 2 files changed, 326 insertions(+)
+ create mode 100644 drivers/block/blksnap/diff_io.c
+ create mode 100644 drivers/block/blksnap/diff_io.h
 
-diff --git a/drivers/block/blksnap/cbt_map.c b/drivers/block/blksnap/cbt_map.c
+diff --git a/drivers/block/blksnap/diff_io.c b/drivers/block/blksnap/diff_io.c
 new file mode 100644
-index 000000000000..aac0f9236d1a
+index 000000000000..0be179c461d9
 --- /dev/null
-+++ b/drivers/block/blksnap/cbt_map.c
-@@ -0,0 +1,280 @@
++++ b/drivers/block/blksnap/diff_io.c
+@@ -0,0 +1,204 @@
 +// SPDX-License-Identifier: GPL-2.0
-+#define pr_fmt(fmt) KBUILD_MODNAME "-cbt_map: " fmt
++#define pr_fmt(fmt) KBUILD_MODNAME "-diff-io: " fmt
++#include <linux/blkdev.h>
 +#include <linux/slab.h>
-+#include <linux/blk_snap.h>
 +#ifdef CONFIG_BLK_SNAP_DEBUG_MEMORY_LEAK
 +#include "memory_checker.h"
 +#endif
-+#include "cbt_map.h"
-+#include "params.h"
++#include "diff_io.h"
++#include "diff_buffer.h"
 +
-+static inline unsigned long long count_by_shift(sector_t capacity,
-+						unsigned long long shift)
++#define SECTORS_IN_PAGE (PAGE_SIZE / SECTOR_SIZE)
++
++struct bio_set diff_io_bioset = { 0 };
++
++int diff_io_init(void)
 +{
-+	sector_t blk_size = 1ull << (shift - SECTOR_SHIFT);
-+
-+	return round_up(capacity, blk_size) / blk_size;
++	return bioset_init(&diff_io_bioset, 64, 0,
++			   BIOSET_NEED_BVECS | BIOSET_NEED_RESCUER);
 +}
 +
-+static void cbt_map_calculate_block_size(struct cbt_map *cbt_map)
++void diff_io_done(void)
 +{
-+	unsigned long long shift;
-+	unsigned long long count;
-+
-+	/**
-+	 * The size of the tracking block is calculated based on the size of the disk
-+	 * so that the CBT table does not exceed a reasonable size.
-+	 */
-+	shift = tracking_block_minimum_shift;
-+	count = count_by_shift(cbt_map->device_capacity, shift);
-+
-+	while (count > tracking_block_maximum_count) {
-+		shift = shift << 1;
-+		count = count_by_shift(cbt_map->device_capacity, shift);
-+	}
-+
-+	cbt_map->blk_size_shift = shift;
-+	cbt_map->blk_count = count;
++	bioset_exit(&diff_io_bioset);
 +}
 +
-+static int cbt_map_allocate(struct cbt_map *cbt_map)
++static void diff_io_notify_cb(struct work_struct *work)
 +{
-+	pr_debug("Allocate CBT map of %zu blocks\n", cbt_map->blk_count);
++	struct diff_io_async *async =
++		container_of(work, struct diff_io_async, work);
 +
-+	cbt_map->read_map = big_buffer_alloc(cbt_map->blk_count, GFP_KERNEL);
-+	if (cbt_map->read_map != NULL)
-+		big_buffer_memset(cbt_map->read_map, 0);
++	might_sleep();
++	async->notify_cb(async->ctx);
++}
 +
-+	cbt_map->write_map = big_buffer_alloc(cbt_map->blk_count, GFP_KERNEL);
-+	if (cbt_map->write_map != NULL)
-+		big_buffer_memset(cbt_map->write_map, 0);
++static void diff_io_endio(struct bio *bio)
++{
++	struct diff_io *diff_io = bio->bi_private;
 +
-+	if ((cbt_map->read_map == NULL) || (cbt_map->write_map == NULL)) {
-+		pr_err("Cannot allocate CBT map. %zu blocks are required.\n",
-+		       cbt_map->blk_count);
-+		return -ENOMEM;
++	if (bio->bi_status != BLK_STS_OK)
++		diff_io->error = -EIO;
++
++	if (atomic_dec_and_test(&diff_io->bio_count)) {
++		if (diff_io->is_sync_io)
++			complete(&diff_io->notify.sync.completion);
++		else
++			queue_work(system_wq, &diff_io->notify.async.work);
 +	}
 +
-+	cbt_map->snap_number_previous = 0;
-+	cbt_map->snap_number_active = 1;
-+	generate_random_uuid(cbt_map->generation_id.b);
-+	cbt_map->is_corrupted = false;
++	bio_put(bio);
++}
++
++static inline struct diff_io *diff_io_new(bool is_write, bool is_nowait)
++{
++	struct diff_io *diff_io;
++	gfp_t gfp_mask = is_nowait ? (GFP_NOIO | GFP_NOWAIT) : GFP_NOIO;
++
++	diff_io = kzalloc(sizeof(struct diff_io), gfp_mask);
++	if (unlikely(!diff_io))
++		return NULL;
++#ifdef CONFIG_BLK_SNAP_DEBUG_MEMORY_LEAK
++	memory_object_inc(memory_object_diff_io);
++#endif
++	diff_io->error = 0;
++	diff_io->is_write = is_write;
++	atomic_set(&diff_io->bio_count, 0);
++
++	return diff_io;
++}
++
++struct diff_io *diff_io_new_sync(bool is_write)
++{
++	struct diff_io *diff_io;
++
++	diff_io = diff_io_new(is_write, false);
++	if (unlikely(!diff_io))
++		return NULL;
++
++	diff_io->is_sync_io = true;
++	init_completion(&diff_io->notify.sync.completion);
++	return diff_io;
++}
++
++struct diff_io *diff_io_new_async(bool is_write, bool is_nowait,
++				  void (*notify_cb)(void *ctx), void *ctx)
++{
++	struct diff_io *diff_io;
++
++	diff_io = diff_io_new(is_write, is_nowait);
++	if (unlikely(!diff_io))
++		return NULL;
++
++	diff_io->is_sync_io = false;
++	INIT_WORK(&diff_io->notify.async.work, diff_io_notify_cb);
++	diff_io->notify.async.ctx = ctx;
++	diff_io->notify.async.notify_cb = notify_cb;
++	return diff_io;
++}
++
++static inline bool check_page_aligned(sector_t sector)
++{
++	return !(sector & ((1ULL << (PAGE_SHIFT - SECTOR_SHIFT)) - 1));
++}
++
++static inline unsigned short calc_page_count(sector_t sectors)
++{
++	return round_up(sectors, SECTOR_IN_PAGE) / SECTOR_IN_PAGE;
++}
++
++int diff_io_do(struct diff_io *diff_io, struct diff_region *diff_region,
++	       struct diff_buffer *diff_buffer, const bool is_nowait)
++{
++	int ret = 0;
++	struct bio *bio = NULL;
++	struct bio *flush_bio = NULL;
++	struct page **current_page_ptr;
++	unsigned int opf;
++	gfp_t gfp;
++	unsigned short nr_iovecs;
++	sector_t processed = 0;
++
++	if (unlikely(!check_page_aligned(diff_region->sector))) {
++		pr_err("Difference storage block should be aligned to PAGE_SIZE\n");
++		ret = -EINVAL;
++		goto fail;
++	}
++
++	nr_iovecs = calc_page_count(diff_region->count);
++	if (unlikely(nr_iovecs > diff_buffer->page_count)) {
++		pr_err("The difference storage block is larger than the buffer size\n");
++		ret = -EINVAL;
++		goto fail;
++	}
++
++	// Allocate both bios
++	opf = diff_io->is_write ? REQ_OP_WRITE : REQ_OP_READ;
++	gfp = GFP_NOIO | (is_nowait ? GFP_NOWAIT : 0);
++
++	bio = bio_alloc_bioset(diff_region->bdev, nr_iovecs,
++			       opf | REQ_SYNC | REQ_IDLE | REQ_FUA,
++			       gfp, &diff_io_bioset);
++	if (unlikely(!bio)) {
++		if (is_nowait)
++			ret = -EAGAIN;
++		else
++			ret = -ENOMEM;
++		goto fail;
++	}
++
++	flush_bio = bio_alloc_bioset(diff_region->bdev, 0,
++				     opf | REQ_SYNC | REQ_PREFLUSH,
++				     gfp, &diff_io_bioset);
++	if (unlikely(!flush_bio)) {
++		if (is_nowait)
++			ret = -EAGAIN;
++		else
++			ret = -ENOMEM;
++		goto fail;
++	}
++
++	atomic_set(&diff_io->bio_count, 2);
++
++	// Submit bio with datas
++	bio_set_flag(bio, BIO_FILTERED);
++	bio->bi_end_io = diff_io_endio;
++	bio->bi_private = diff_io;
++	bio->bi_iter.bi_sector = diff_region->sector;
++
++	current_page_ptr = diff_buffer->pages;
++	while (processed < diff_region->count) {
++		sector_t bvec_len_sect;
++		unsigned int bvec_len;
++
++		bvec_len_sect = min_t(sector_t, SECTORS_IN_PAGE,
++				      diff_region->count - processed);
++		bvec_len = (unsigned int)(bvec_len_sect << SECTOR_SHIFT);
++
++		if (bio_add_page(bio, *current_page_ptr, bvec_len, 0) == 0) {
++			bio_put(bio);
++			return -EFAULT;
++		}
++
++		current_page_ptr++;
++		processed += bvec_len_sect;
++	}
++	submit_bio_noacct(bio);
++
++	// Submit flush bio
++	bio_set_flag(flush_bio, BIO_FILTERED);
++	flush_bio->bi_end_io = diff_io_endio;
++	flush_bio->bi_private = diff_io;
++	flush_bio->bi_iter.bi_sector = 0;
++	submit_bio_noacct(flush_bio);
++
++	if (diff_io->is_sync_io)
++		wait_for_completion_io(&diff_io->notify.sync.completion);
 +
 +	return 0;
-+}
-+
-+static void cbt_map_deallocate(struct cbt_map *cbt_map)
-+{
-+	cbt_map->is_corrupted = false;
-+
-+	if (cbt_map->read_map != NULL) {
-+		big_buffer_free(cbt_map->read_map);
-+		cbt_map->read_map = NULL;
-+	}
-+
-+	if (cbt_map->write_map != NULL) {
-+		big_buffer_free(cbt_map->write_map);
-+		cbt_map->write_map = NULL;
-+	}
-+}
-+
-+int cbt_map_reset(struct cbt_map *cbt_map, sector_t device_capacity)
-+{
-+	cbt_map_deallocate(cbt_map);
-+
-+	cbt_map->device_capacity = device_capacity;
-+	cbt_map_calculate_block_size(cbt_map);
-+	cbt_map->is_corrupted = false;
-+
-+	return cbt_map_allocate(cbt_map);
-+}
-+
-+static inline void cbt_map_destroy(struct cbt_map *cbt_map)
-+{
-+	pr_debug("CBT map destroy\n");
-+
-+	cbt_map_deallocate(cbt_map);
-+	kfree(cbt_map);
-+#ifdef CONFIG_BLK_SNAP_DEBUG_MEMORY_LEAK
-+	memory_object_dec(memory_object_cbt_map);
-+#endif
-+}
-+
-+struct cbt_map *cbt_map_create(struct block_device *bdev)
-+{
-+	struct cbt_map *cbt_map = NULL;
-+
-+	pr_debug("CBT map create\n");
-+
-+	cbt_map = kzalloc(sizeof(struct cbt_map), GFP_KERNEL);
-+	if (cbt_map == NULL)
-+		return NULL;
-+#ifdef CONFIG_BLK_SNAP_DEBUG_MEMORY_LEAK
-+	memory_object_inc(memory_object_cbt_map);
-+#endif
-+	cbt_map->device_capacity = bdev_nr_sectors(bdev);
-+	cbt_map_calculate_block_size(cbt_map);
-+
-+	if (cbt_map_allocate(cbt_map)) {
-+		cbt_map_destroy(cbt_map);
-+		return NULL;
-+	}
-+
-+	spin_lock_init(&cbt_map->locker);
-+	kref_init(&cbt_map->kref);
-+	cbt_map->is_corrupted = false;
-+
-+	return cbt_map;
-+}
-+
-+void cbt_map_destroy_cb(struct kref *kref)
-+{
-+	cbt_map_destroy(container_of(kref, struct cbt_map, kref));
-+}
-+
-+void cbt_map_switch(struct cbt_map *cbt_map)
-+{
-+	pr_debug("CBT map switch\n");
-+	spin_lock(&cbt_map->locker);
-+
-+	big_buffer_memcpy(cbt_map->read_map, cbt_map->write_map);
-+
-+	cbt_map->snap_number_previous = cbt_map->snap_number_active;
-+	++cbt_map->snap_number_active;
-+	if (cbt_map->snap_number_active == 256) {
-+		cbt_map->snap_number_active = 1;
-+
-+		big_buffer_memset(cbt_map->write_map, 0);
-+
-+		generate_random_uuid(cbt_map->generation_id.b);
-+
-+		pr_debug("CBT reset\n");
-+	}
-+	spin_unlock(&cbt_map->locker);
-+}
-+
-+static inline int _cbt_map_set(struct cbt_map *cbt_map, sector_t sector_start,
-+			       sector_t sector_cnt, u8 snap_number,
-+			       struct big_buffer *map)
-+{
-+	int res = 0;
-+	u8 num;
-+	size_t cbt_block;
-+	size_t cbt_block_first = (size_t)(
-+		sector_start >> (cbt_map->blk_size_shift - SECTOR_SHIFT));
-+	size_t cbt_block_last =
-+		(size_t)((sector_start + sector_cnt - 1) >>
-+			 (cbt_map->blk_size_shift - SECTOR_SHIFT)); //inclusive
-+
-+	for (cbt_block = cbt_block_first; cbt_block <= cbt_block_last;
-+	     ++cbt_block) {
-+		if (unlikely(cbt_block >= cbt_map->blk_count)) {
-+			pr_err("Block index is too large.\n");
-+			pr_err("Block #%zu was demanded, map size %zu blocks.\n",
-+			       cbt_block, cbt_map->blk_count);
-+			res = -EINVAL;
-+			break;
-+		}
-+
-+		res = big_buffer_byte_get(map, cbt_block, &num);
-+		if (unlikely(res)) {
-+			pr_err("CBT table out of range\n");
-+			break;
-+		}
-+
-+		if (num < snap_number) {
-+			res = big_buffer_byte_set(map, cbt_block, snap_number);
-+			if (unlikely(res)) {
-+				pr_err("CBT table out of range\n");
-+				break;
-+			}
-+		}
-+	}
-+	return res;
-+}
-+
-+int cbt_map_set(struct cbt_map *cbt_map, sector_t sector_start,
-+		sector_t sector_cnt)
-+{
-+	int res;
-+
-+	spin_lock(&cbt_map->locker);
-+	if (unlikely(cbt_map->is_corrupted)) {
-+		spin_unlock(&cbt_map->locker);
-+		return -EINVAL;
-+	}
-+	res = _cbt_map_set(cbt_map, sector_start, sector_cnt,
-+			   (u8)cbt_map->snap_number_active, cbt_map->write_map);
-+	if (unlikely(res))
-+		cbt_map->is_corrupted = true;
-+
-+	spin_unlock(&cbt_map->locker);
-+
-+	return res;
-+}
-+
-+int cbt_map_set_both(struct cbt_map *cbt_map, sector_t sector_start,
-+		     sector_t sector_cnt)
-+{
-+	int res;
-+
-+	spin_lock(&cbt_map->locker);
-+	if (unlikely(cbt_map->is_corrupted)) {
-+		spin_unlock(&cbt_map->locker);
-+		return -EINVAL;
-+	}
-+	res = _cbt_map_set(cbt_map, sector_start, sector_cnt,
-+			   (u8)cbt_map->snap_number_active, cbt_map->write_map);
-+	if (!res)
-+		res = _cbt_map_set(cbt_map, sector_start, sector_cnt,
-+				   (u8)cbt_map->snap_number_previous,
-+				   cbt_map->read_map);
-+	spin_unlock(&cbt_map->locker);
-+
-+	return res;
-+}
-+
-+size_t cbt_map_read_to_user(struct cbt_map *cbt_map, char __user *user_buff,
-+			    size_t offset, size_t size)
-+{
-+	size_t readed = 0;
-+	size_t left_size;
-+	size_t real_size = min((cbt_map->blk_count - offset), size);
-+
-+	if (unlikely(cbt_map->is_corrupted)) {
-+		pr_err("CBT table was corrupted\n");
-+		return -EFAULT;
-+	}
-+
-+	left_size = real_size - big_buffer_copy_to_user(user_buff, offset,
-+							cbt_map->read_map,
-+							real_size);
-+
-+	if (left_size == 0)
-+		readed = real_size;
-+	else {
-+		pr_err("Not all CBT data was read. Left [%zu] bytes\n",
-+		       left_size);
-+		readed = real_size - left_size;
-+	}
-+
-+	return readed;
-+}
-+
-+int cbt_map_mark_dirty_blocks(struct cbt_map *cbt_map,
-+			      struct blk_snap_block_range *block_ranges,
-+			      unsigned int count)
-+{
-+	int inx;
-+	int ret = 0;
-+
-+	for (inx = 0; inx < count; inx++) {
-+		ret = cbt_map_set_both(
-+			cbt_map, (sector_t)block_ranges[inx].sector_offset,
-+			(sector_t)block_ranges[inx].sector_count);
-+		if (ret)
-+			break;
-+	}
-+
++fail:
++	if (bio)
++		bio_put(bio);
++	if (flush_bio)
++		bio_put(flush_bio);
 +	return ret;
 +}
-diff --git a/drivers/block/blksnap/cbt_map.h b/drivers/block/blksnap/cbt_map.h
+diff --git a/drivers/block/blksnap/diff_io.h b/drivers/block/blksnap/diff_io.h
 new file mode 100644
-index 000000000000..934f417f7da7
+index 000000000000..40cd3d88c838
 --- /dev/null
-+++ b/drivers/block/blksnap/cbt_map.h
-@@ -0,0 +1,112 @@
++++ b/drivers/block/blksnap/diff_io.h
+@@ -0,0 +1,122 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +#pragma once
-+#include <linux/kernel.h>
-+#include <linux/kref.h>
-+#include <linux/uuid.h>
-+#include <linux/spinlock.h>
-+#include <linux/blkdev.h>
++#include <linux/workqueue.h>
++#include <linux/completion.h>
 +
-+#include "big_buffer.h"
-+
-+struct blk_snap_block_range;
++struct diff_buffer;
 +
 +/**
-+ * struct cbt_map - The table of changes for a block device.
-+ *
-+ * @kref:
-+ *	Reference counter.
-+ * @locker:
-+ *	Locking for atomic modification of structure members.
-+ * @blk_size_shift:
-+ *	The power of 2 used to specify the change tracking block size.
-+ * @blk_count:
-+ *	The number of change tracking blocks.
-+ * @device_capacity:
-+ *	The actual capacity of the device.
-+ * @read_map:
-+ *	A table of changes available for reading. This is the table that can
-+ *	be read after taking a snapshot.
-+ * @write_map:
-+ *	The current table for tracking changes.
-+ * @snap_number_active:
-+ *	The current sequential number of changes. This is the number that is written to
-+ *	the current table when the block data changes.
-+ * @snap_number_previous:
-+ *	The previous sequential number of changes. This number is used to identify the
-+ *	blocks that were changed between the penultimate snapshot and the last snapshot.
-+ * @generation_id:
-+ *	UUID of the generation of changes.
-+ * @is_corrupted:
-+ *	A flag that the change tracking data is no longer reliable.
-+ *
-+ * The change block tracking map is a byte table. Each byte stores the
-+ * sequential number of changes for one block. To determine which blocks have changed
-+ * since the previous snapshot with the change number 4, it is enough to
-+ * find all bytes with the number more than 4.
-+ *
-+ * Since one byte is allocated to track changes in one block, the change
-+ * table is created again at the 255th snapshot. At the same time, a new
-+ * unique generation identifier is generated. Tracking changes is
-+ * possible only for tables of the same generation.
-+ *
-+ * There are two tables on the change block tracking map. One is
-+ * available for reading, and the other is available for writing. At the moment of taking
-+ * a snapshot, the tables are synchronized. The user's process, when
-+ * calling the corresponding ioctl, can read the readable table.
-+ * At the same time, the change tracking mechanism continues to work with
-+ * the writable table.
-+ *
-+ * To provide the ability to mount a snapshot image as writeable, it is
-+ * possible to make changes to both of these tables simultaneously.
-+ *
++ * struct diff_region - Describes the location of the chunks data on
++ *	difference storage.
++ * @bdev:
++ *	The target block device.
++ * @sector:
++ *	The sector offset of the region's first sector.
++ * @count:
++ *	The count of sectors in the region.
 + */
-+struct cbt_map {
-+	struct kref kref;
-+
-+	spinlock_t locker;
-+
-+	size_t blk_size_shift;
-+	size_t blk_count;
-+	sector_t device_capacity;
-+
-+	struct big_buffer *read_map;
-+	struct big_buffer *write_map;
-+
-+	unsigned long snap_number_active;
-+	unsigned long snap_number_previous;
-+	uuid_t generation_id;
-+
-+	bool is_corrupted;
++struct diff_region {
++	struct block_device *bdev;
++	sector_t sector;
++	sector_t count;
 +};
 +
-+struct cbt_map *cbt_map_create(struct block_device *bdev);
-+int cbt_map_reset(struct cbt_map *cbt_map, sector_t device_capacity);
++/**
++ * struct diff_io_sync - Structure for notification about completion of
++ *	synchronous I/O.
++ * @completion:
++ *	Indicates that the request has been processed.
++ *
++ * Allows to wait for completion of the I/O operation in the
++ * current thread.
++ */
++struct diff_io_sync {
++	struct completion completion;
++};
 +
-+void cbt_map_destroy_cb(struct kref *kref);
-+static inline void cbt_map_get(struct cbt_map *cbt_map)
++/**
++ * struct diff_io_async - Structure for notification about completion of
++ *	asynchronous I/O.
++ * @work:
++ *	The &struct work_struct allows to schedule execution of an I/O operation
++ *	in a separate process.
++ * @notify_cb:
++ *	A pointer to the callback function that will be executed when
++ *	the I/O execution is completed.
++ * @ctx:
++ *	The context for the callback function &notify_cb.
++ *
++ * Allows to schedule execution of an I/O operation.
++ */
++struct diff_io_async {
++	struct work_struct work;
++	void (*notify_cb)(void *ctx);
++	void *ctx;
++};
++
++/**
++ * struct diff_io - Structure for I/O maintenance.
++ * @error:
++ *	Zero if the I/O operation is successful, or an error code if it fails.
++ * @bio_count:
++ *	The count of bio in the I/O request.
++ * @is_write:
++ *	Indicates that a write operation is being performed.
++ * @is_sync_io:
++ *	Indicates that the operation is being performed synchronously.
++ * @notify:
++ *	This union may contain the diff_io_sync or diff_io_async structure
++ *	for synchronous or asynchronous request.
++ *
++ * The request to perform an I/O operation is executed for a region of sectors.
++ * Such a region may contain several bios. It is necessary to notify about the
++ * completion of processing of all bios. The diff_io structure allows to do it.
++ */
++struct diff_io {
++	int error;
++	atomic_t bio_count;
++	bool is_write;
++	bool is_sync_io;
++	union {
++		struct diff_io_sync sync;
++		struct diff_io_async async;
++	} notify;
++};
++
++int diff_io_init(void);
++void diff_io_done(void);
++
++static inline void diff_io_free(struct diff_io *diff_io)
 +{
-+	kref_get(&cbt_map->kref);
-+};
-+static inline void cbt_map_put(struct cbt_map *cbt_map)
++	kfree(diff_io);
++#ifdef CONFIG_BLK_SNAP_DEBUG_MEMORY_LEAK
++	if (diff_io)
++		memory_object_dec(memory_object_diff_io);
++#endif
++}
++
++struct diff_io *diff_io_new_sync(bool is_write);
++static inline struct diff_io *diff_io_new_sync_read(void)
 +{
-+	if (likely(cbt_map))
-+		kref_put(&cbt_map->kref, cbt_map_destroy_cb);
++	return diff_io_new_sync(false);
 +};
-+
-+void cbt_map_switch(struct cbt_map *cbt_map);
-+int cbt_map_set(struct cbt_map *cbt_map, sector_t sector_start,
-+		sector_t sector_cnt);
-+int cbt_map_set_both(struct cbt_map *cbt_map, sector_t sector_start,
-+		     sector_t sector_cnt);
-+
-+size_t cbt_map_read_to_user(struct cbt_map *cbt_map, char __user *user_buffer,
-+			    size_t offset, size_t size);
-+
-+static inline size_t cbt_map_blk_size(struct cbt_map *cbt_map)
++static inline struct diff_io *diff_io_new_sync_write(void)
 +{
-+	return 1 << cbt_map->blk_size_shift;
++	return diff_io_new_sync(true);
 +};
 +
-+int cbt_map_mark_dirty_blocks(struct cbt_map *cbt_map,
-+			      struct blk_snap_block_range *block_ranges,
-+			      unsigned int count);
++struct diff_io *diff_io_new_async(bool is_write, bool is_nowait,
++				  void (*notify_cb)(void *ctx), void *ctx);
++static inline struct diff_io *
++diff_io_new_async_read(void (*notify_cb)(void *ctx), void *ctx, bool is_nowait)
++{
++	return diff_io_new_async(false, is_nowait, notify_cb, ctx);
++};
++static inline struct diff_io *
++diff_io_new_async_write(void (*notify_cb)(void *ctx), void *ctx, bool is_nowait)
++{
++	return diff_io_new_async(true, is_nowait, notify_cb, ctx);
++};
++
++int diff_io_do(struct diff_io *diff_io, struct diff_region *diff_region,
++	       struct diff_buffer *diff_buffer, const bool is_nowait);
 -- 
 2.20.1
 
