@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2296DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:37:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE19AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:37:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350094AbiFMMhj (ORCPT
+        id S1348438AbiFMMho (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:37:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49824 "EHLO
+        Mon, 13 Jun 2022 08:37:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347854AbiFMMgP (ORCPT
+        with ESMTP id S1348647AbiFMMhD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:36:15 -0400
+        Mon, 13 Jun 2022 08:37:03 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DDF81CB38;
-        Mon, 13 Jun 2022 04:07:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F0411CFD4;
+        Mon, 13 Jun 2022 04:08:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D483608C3;
-        Mon, 13 Jun 2022 11:07:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4050DC34114;
-        Mon, 13 Jun 2022 11:07:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE78F60A66;
+        Mon, 13 Jun 2022 11:07:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7CB4C34114;
+        Mon, 13 Jun 2022 11:07:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118474;
-        bh=M+nrL1voRykk1xNL3fDXNbK7OXaK2QeZLJddAItmT9s=;
+        s=korg; t=1655118477;
+        bh=x6jj/3Ud8+RYmtbJP9U9fUw4lyvC3AWeIlH9Z4/R6Mo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=daOUsIPkmkZ2XPiMNDdXDygEvseqvt2H3dohdJxsPlWrF3HTxrp3d9y6f1YUH9x7X
-         4+jhrXpxn6sJiCOFgEqTFWJeD1L4Q28hiX4WP9Wn8yIqnfWE0T4fB0KJ5vC56grWVJ
-         RPTgZR3+oe6KYu2oM6QRwQsse6zeTNztFLsQamiM=
+        b=iswx2IzguSKqMo3fEzZ4wI5CgEYtxZKiME5Z1oqvM5yLFIXblP9QuPFvxIl/dUqVX
+         o5aHMokiLBA049DB1zshaCrTDsgQRfDoQTzp4OJVxDrrYYPvnE0SHZ5UMdhnSmTdvn
+         LUO2sN4/tIih5L6hmU5kNDt4jfv+C7+HfH6+smDY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dongliang Mu <mudongliangabcd@gmail.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org,
+        syzbot+e820fdc8ce362f2dea51@syzkaller.appspotmail.com,
+        Jon Maloy <jmaloy@redhat.com>,
+        Hoang Le <hoang.h.le@dektech.com.au>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 071/172] scsi: sd: Fix potential NULL pointer dereference
-Date:   Mon, 13 Jun 2022 12:10:31 +0200
-Message-Id: <20220613094907.496963526@linuxfoundation.org>
+Subject: [PATCH 5.10 072/172] tipc: check attribute length for bearer name
+Date:   Mon, 13 Jun 2022 12:10:32 +0200
+Message-Id: <20220613094907.720711594@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -52,45 +53,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Hoang Le <hoang.h.le@dektech.com.au>
 
-[ Upstream commit 05fbde3a77a4f1d62e4c4428f384288c1f1a0be5 ]
+[ Upstream commit 7f36f798f89bf32c0164049cb0e3fd1af613d0bb ]
 
-If sd_probe() sees an early error before sdkp->device is initialized,
-sd_zbc_release_disk() is called. This causes a NULL pointer dereference
-when sd_is_zoned() is called inside that function. Avoid this by removing
-the call to sd_zbc_release_disk() in sd_probe() error path.
+syzbot reported uninit-value:
+=====================================================
+BUG: KMSAN: uninit-value in string_nocheck lib/vsprintf.c:644 [inline]
+BUG: KMSAN: uninit-value in string+0x4f9/0x6f0 lib/vsprintf.c:725
+ string_nocheck lib/vsprintf.c:644 [inline]
+ string+0x4f9/0x6f0 lib/vsprintf.c:725
+ vsnprintf+0x2222/0x3650 lib/vsprintf.c:2806
+ vprintk_store+0x537/0x2150 kernel/printk/printk.c:2158
+ vprintk_emit+0x28b/0xab0 kernel/printk/printk.c:2256
+ vprintk_default+0x86/0xa0 kernel/printk/printk.c:2283
+ vprintk+0x15f/0x180 kernel/printk/printk_safe.c:50
+ _printk+0x18d/0x1cf kernel/printk/printk.c:2293
+ tipc_enable_bearer net/tipc/bearer.c:371 [inline]
+ __tipc_nl_bearer_enable+0x2022/0x22a0 net/tipc/bearer.c:1033
+ tipc_nl_bearer_enable+0x6c/0xb0 net/tipc/bearer.c:1042
+ genl_family_rcv_msg_doit net/netlink/genetlink.c:731 [inline]
 
-This change is safe and does not result in zone information memory leakage
-because the zone information for a zoned disk is allocated only when
-sd_revalidate_disk() is called, at which point sdkp->disk_dev is fully set,
-resulting in sd_disk_release() being called when needed to cleanup a disk
-zone information using sd_zbc_release_disk().
+- Do sanity check the attribute length for TIPC_NLA_BEARER_NAME.
+- Do not use 'illegal name' in printing message.
 
-Link: https://lore.kernel.org/r/20220601062544.905141-2-damien.lemoal@opensource.wdc.com
-Fixes: 89d947561077 ("sd: Implement support for ZBC devices")
-Reported-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Suggested-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Reported-by: syzbot+e820fdc8ce362f2dea51@syzkaller.appspotmail.com
+Fixes: cb30a63384bc ("tipc: refactor function tipc_enable_bearer()")
+Acked-by: Jon Maloy <jmaloy@redhat.com>
+Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
+Link: https://lore.kernel.org/r/20220602063053.5892-1-hoang.h.le@dektech.com.au
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/sd.c | 1 -
- 1 file changed, 1 deletion(-)
+ net/tipc/bearer.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
-index 56e291708587..bd068d3bb455 100644
---- a/drivers/scsi/sd.c
-+++ b/drivers/scsi/sd.c
-@@ -3511,7 +3511,6 @@ static int sd_probe(struct device *dev)
-  out_put:
- 	put_disk(gd);
-  out_free:
--	sd_zbc_release_disk(sdkp);
- 	kfree(sdkp);
-  out:
- 	scsi_autopm_put_device(sdp);
+diff --git a/net/tipc/bearer.c b/net/tipc/bearer.c
+index 6911f1cab206..72c31ef985eb 100644
+--- a/net/tipc/bearer.c
++++ b/net/tipc/bearer.c
+@@ -249,9 +249,8 @@ static int tipc_enable_bearer(struct net *net, const char *name,
+ 	u32 i;
+ 
+ 	if (!bearer_name_validate(name, &b_names)) {
+-		errstr = "illegal name";
+ 		NL_SET_ERR_MSG(extack, "Illegal name");
+-		goto rejected;
++		return res;
+ 	}
+ 
+ 	if (prio > TIPC_MAX_LINK_PRI && prio != TIPC_MEDIA_LINK_PRI) {
 -- 
 2.35.1
 
