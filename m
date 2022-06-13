@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95584C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:31:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3572EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:31:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356347AbiFMMa1 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:30:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56862 "EHLO
+        id S239195AbiFMMab (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 08:30:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354894AbiFMMXu (ORCPT
+        with ESMTP id S1355653AbiFMMX6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:23:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EE043150C;
-        Mon, 13 Jun 2022 04:04:01 -0700 (PDT)
+        Mon, 13 Jun 2022 08:23:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FE0B27B21;
+        Mon, 13 Jun 2022 04:05:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3300CB80E92;
-        Mon, 13 Jun 2022 11:04:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C2D0C34114;
-        Mon, 13 Jun 2022 11:03:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 47F10B80D3A;
+        Mon, 13 Jun 2022 11:05:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA713C3411C;
+        Mon, 13 Jun 2022 11:05:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118239;
-        bh=zE4buU9Rak3E8B5T5HsD+nJsRxnOIs/mXRe++VDPmJs=;
+        s=korg; t=1655118309;
+        bh=T7zgCZdrnSI9zOst5mi3apWNt045/z6rDMsSMmV8L38=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TP4x4Vd4rZRaPciW+2ig0v1HqBUqtQ/xn7ZgYGDKujdPM8e47o+qhoyqFX/jeN+aT
-         MwVvPxjlaMLJjjsnqJDfo/Qd8NJlmiG6uqMvZb+UcglKBx6q3eWb2GC090geomjcFI
-         O3Mzfqwsr2Gr6fIj6P9vY6+m9uCCUMf51N81jGPM=
+        b=snrxRISEEfoiJZ24vhQcBJPTGkJjlH5CMEeAvADOAq4U/7EuCPLK/mQuZH51PiqRA
+         hVSYg/tXz3qMJAezb/jnEecKdWTjs+9Gt4rK4q7RJtV0w1aBTHzTf+ZHWITNZmTr7s
+         6kWTakYnurJq6+IwL6Ks2lYj7sxvIOCtlOMpAGnk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Kees Cook <keescook@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 004/172] lkdtm/bugs: Check for the NULL pointer after calling kmalloc
-Date:   Mon, 13 Jun 2022 12:09:24 +0200
-Message-Id: <20220613094851.365027910@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        Lin Ma <linma@zju.edu.cn>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 011/172] USB: storage: karma: fix rio_karma_init return
+Date:   Mon, 13 Jun 2022 12:09:31 +0200
+Message-Id: <20220613094853.090907893@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -51,45 +48,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Lin Ma <linma@zju.edu.cn>
 
-[ Upstream commit 4a9800c81d2f34afb66b4b42e0330ae8298019a2 ]
+[ Upstream commit b92ffb1eddd9a66a90defc556dcbf65a43c196c7 ]
 
-As the possible failure of the kmalloc(), the not_checked and checked
-could be NULL pointer.
-Therefore, it should be better to check it in order to avoid the
-dereference of the NULL pointer.
-Also, we need to kfree the 'not_checked' and 'checked' to avoid
-the memory leak if fails.
-And since it is just a test, it may directly return without error
-number.
+The function rio_karam_init() should return -ENOMEM instead of
+value 0 (USB_STOR_TRANSPORT_GOOD) when allocation fails.
 
-Fixes: ae2e1aad3e48 ("drivers/misc/lkdtm/bugs.c: add arithmetic overflow and array bounds checks")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Acked-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220120092936.1874264-1-jiasheng@iscas.ac.cn
+Similarly, it should return -EIO when rio_karma_send_command() fails.
+
+Fixes: dfe0d3ba20e8 ("USB Storage: add rio karma eject support")
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220412144359.28447-1-linma@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/lkdtm/bugs.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/usb/storage/karma.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/misc/lkdtm/bugs.c b/drivers/misc/lkdtm/bugs.c
-index a337f97b30e2..d39b8139b096 100644
---- a/drivers/misc/lkdtm/bugs.c
-+++ b/drivers/misc/lkdtm/bugs.c
-@@ -231,6 +231,11 @@ void lkdtm_ARRAY_BOUNDS(void)
+diff --git a/drivers/usb/storage/karma.c b/drivers/usb/storage/karma.c
+index 05cec81dcd3f..38ddfedef629 100644
+--- a/drivers/usb/storage/karma.c
++++ b/drivers/usb/storage/karma.c
+@@ -174,24 +174,25 @@ static void rio_karma_destructor(void *extra)
  
- 	not_checked = kmalloc(sizeof(*not_checked) * 2, GFP_KERNEL);
- 	checked = kmalloc(sizeof(*checked) * 2, GFP_KERNEL);
-+	if (!not_checked || !checked) {
-+		kfree(not_checked);
-+		kfree(checked);
-+		return;
-+	}
+ static int rio_karma_init(struct us_data *us)
+ {
+-	int ret = 0;
+ 	struct karma_data *data = kzalloc(sizeof(struct karma_data), GFP_NOIO);
  
- 	pr_info("Array access within bounds ...\n");
- 	/* For both, touch all bytes in the actual member size. */
+ 	if (!data)
+-		goto out;
++		return -ENOMEM;
+ 
+ 	data->recv = kmalloc(RIO_RECV_LEN, GFP_NOIO);
+ 	if (!data->recv) {
+ 		kfree(data);
+-		goto out;
++		return -ENOMEM;
+ 	}
+ 
+ 	us->extra = data;
+ 	us->extra_destructor = rio_karma_destructor;
+-	ret = rio_karma_send_command(RIO_ENTER_STORAGE, us);
+-	data->in_storage = (ret == 0);
+-out:
+-	return ret;
++	if (rio_karma_send_command(RIO_ENTER_STORAGE, us))
++		return -EIO;
++
++	data->in_storage = 1;
++
++	return 0;
+ }
+ 
+ static struct scsi_host_template karma_host_template;
 -- 
 2.35.1
 
