@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA43ACCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB123CCA486
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:34:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384347AbiFMOdz (ORCPT
+        id S1384186AbiFMOdX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:33:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33130 "EHLO
+        Mon, 13 Jun 2022 10:33:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385033AbiFMOac (ORCPT
+        with ESMTP id S1384699AbiFMO36 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:30:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66128A7E3E;
-        Mon, 13 Jun 2022 04:48:29 -0700 (PDT)
+        Mon, 13 Jun 2022 10:29:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85DACA76CC;
+        Mon, 13 Jun 2022 04:48:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 45CB2B80EDE;
-        Mon, 13 Jun 2022 11:47:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A325CC34114;
-        Mon, 13 Jun 2022 11:47:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B6D296124E;
+        Mon, 13 Jun 2022 11:47:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6D04C34114;
+        Mon, 13 Jun 2022 11:47:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120854;
-        bh=rnyRN8uJNieEChc6O58lyP6uWMUtgSC8w2CYZauwB94=;
+        s=korg; t=1655120862;
+        bh=/KZlrmAG9MD6AIoMpaa5iSedaR3bX++VdsOxGzPYYiE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HAR45XppdIlFBmDQI7Wo1tW9kmgcFZMb8bUmqEANlWWBeAOUELaPIxSlyb0H9mxc/
-         zIzZiW/UggwAAPgnEVmuCS1QY2D842d1GjoeObw9je3njZhxWxS9GdSWf3V+RUAMvv
-         V6VDk7vVBqOjCtpjXf6V2WXegOC8Kix7pIhyTdg0=
+        b=dlMy9jlay4L2Hd2zLElQQizvB4ornJ56yhwxZQSt+JvFeseR+7tF7JVEViUVIcyCa
+         3wk5f3jNgiX/h7uVdoxrcyiVrf9+vHtpjmR8e+eerk0Fe6Zko+nc1y5w3axhdwVXyp
+         HCHRHLX1GtuF4k8XokYjSj4BEuZNBPaFoWBjzW2o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 182/298] net: mdio: unexport __init-annotated mdio_bus_init()
-Date:   Mon, 13 Jun 2022 12:11:16 +0200
-Message-Id: <20220613094930.451844213@linuxfoundation.org>
+Subject: [PATCH 5.17 167/298] netfilter: nf_tables: bail out early if hardware offload is not supported
+Date:   Mon, 13 Jun 2022 12:11:01 +0200
+Message-Id: <20220613094929.997532200@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -53,52 +49,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit 35b42dce619701f1300fb8498dae82c9bb1f0263 ]
+[ Upstream commit 3a41c64d9c1185a2f3a184015e2a9b78bfc99c71 ]
 
-EXPORT_SYMBOL and __init is a bad combination because the .init.text
-section is freed up after the initialization. Hence, modules cannot
-use symbols annotated __init. The access to a freed symbol may end up
-with kernel panic.
+If user requests for NFT_CHAIN_HW_OFFLOAD, then check if either device
+provides the .ndo_setup_tc interface or there is an indirect flow block
+that has been registered. Otherwise, bail out early from the preparation
+phase. Moreover, validate that family == NFPROTO_NETDEV and hook is
+NF_NETDEV_INGRESS.
 
-modpost used to detect it, but it has been broken for a decade.
-
-Recently, I fixed modpost so it started to warn it again, then this
-showed up in linux-next builds.
-
-There are two ways to fix it:
-
-  - Remove __init
-  - Remove EXPORT_SYMBOL
-
-I chose the latter for this case because the only in-tree call-site,
-drivers/net/phy/phy_device.c is never compiled as modular.
-(CONFIG_PHYLIB is boolean)
-
-Fixes: 90eff9096c01 ("net: phy: Allow splitting MDIO bus/device support from PHYs")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: c9626a2cbdb2 ("netfilter: nf_tables: add hardware offload support")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/mdio_bus.c | 1 -
- 1 file changed, 1 deletion(-)
+ include/net/flow_offload.h                |  1 +
+ include/net/netfilter/nf_tables_offload.h |  2 +-
+ net/core/flow_offload.c                   |  6 ++++++
+ net/netfilter/nf_tables_api.c             |  2 +-
+ net/netfilter/nf_tables_offload.c         | 23 ++++++++++++++++++++++-
+ 5 files changed, 31 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-index 58d602985877..8a2dbe849866 100644
---- a/drivers/net/phy/mdio_bus.c
-+++ b/drivers/net/phy/mdio_bus.c
-@@ -1046,7 +1046,6 @@ int __init mdio_bus_init(void)
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index 5b8c54eb7a6b..7a10e4ed5540 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -591,5 +591,6 @@ int flow_indr_dev_setup_offload(struct net_device *dev, struct Qdisc *sch,
+ 				enum tc_setup_type type, void *data,
+ 				struct flow_block_offload *bo,
+ 				void (*cleanup)(struct flow_block_cb *block_cb));
++bool flow_indr_dev_exists(void);
  
- 	return ret;
+ #endif /* _NET_FLOW_OFFLOAD_H */
+diff --git a/include/net/netfilter/nf_tables_offload.h b/include/net/netfilter/nf_tables_offload.h
+index 797147843958..3568b6a2f5f0 100644
+--- a/include/net/netfilter/nf_tables_offload.h
++++ b/include/net/netfilter/nf_tables_offload.h
+@@ -92,7 +92,7 @@ int nft_flow_rule_offload_commit(struct net *net);
+ 	NFT_OFFLOAD_MATCH(__key, __base, __field, __len, __reg)		\
+ 	memset(&(__reg)->mask, 0xff, (__reg)->len);
+ 
+-int nft_chain_offload_priority(struct nft_base_chain *basechain);
++bool nft_chain_offload_support(const struct nft_base_chain *basechain);
+ 
+ int nft_offload_init(void);
+ void nft_offload_exit(void);
+diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
+index 73f68d4625f3..929f6379a279 100644
+--- a/net/core/flow_offload.c
++++ b/net/core/flow_offload.c
+@@ -595,3 +595,9 @@ int flow_indr_dev_setup_offload(struct net_device *dev,	struct Qdisc *sch,
+ 	return (bo && list_empty(&bo->cb_list)) ? -EOPNOTSUPP : count;
  }
--EXPORT_SYMBOL_GPL(mdio_bus_init);
+ EXPORT_SYMBOL(flow_indr_dev_setup_offload);
++
++bool flow_indr_dev_exists(void)
++{
++	return !list_empty(&flow_block_indr_dev_list);
++}
++EXPORT_SYMBOL(flow_indr_dev_exists);
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 5a2d585e180c..8eac1915ec73 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -2087,7 +2087,7 @@ static int nft_basechain_init(struct nft_base_chain *basechain, u8 family,
+ 	chain->flags |= NFT_CHAIN_BASE | flags;
+ 	basechain->policy = NF_ACCEPT;
+ 	if (chain->flags & NFT_CHAIN_HW_OFFLOAD &&
+-	    nft_chain_offload_priority(basechain) < 0)
++	    !nft_chain_offload_support(basechain))
+ 		return -EOPNOTSUPP;
  
- #if IS_ENABLED(CONFIG_PHYLIB)
- void mdio_bus_exit(void)
+ 	flow_block_init(&basechain->flow_block);
+diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
+index 2d36952b1392..910ef881c3b8 100644
+--- a/net/netfilter/nf_tables_offload.c
++++ b/net/netfilter/nf_tables_offload.c
+@@ -208,7 +208,7 @@ static int nft_setup_cb_call(enum tc_setup_type type, void *type_data,
+ 	return 0;
+ }
+ 
+-int nft_chain_offload_priority(struct nft_base_chain *basechain)
++static int nft_chain_offload_priority(const struct nft_base_chain *basechain)
+ {
+ 	if (basechain->ops.priority <= 0 ||
+ 	    basechain->ops.priority > USHRT_MAX)
+@@ -217,6 +217,27 @@ int nft_chain_offload_priority(struct nft_base_chain *basechain)
+ 	return 0;
+ }
+ 
++bool nft_chain_offload_support(const struct nft_base_chain *basechain)
++{
++	struct net_device *dev;
++	struct nft_hook *hook;
++
++	if (nft_chain_offload_priority(basechain) < 0)
++		return false;
++
++	list_for_each_entry(hook, &basechain->hook_list, list) {
++		if (hook->ops.pf != NFPROTO_NETDEV ||
++		    hook->ops.hooknum != NF_NETDEV_INGRESS)
++			return false;
++
++		dev = hook->ops.dev;
++		if (!dev->netdev_ops->ndo_setup_tc && !flow_indr_dev_exists())
++			return false;
++	}
++
++	return true;
++}
++
+ static void nft_flow_cls_offload_setup(struct flow_cls_offload *cls_flow,
+ 				       const struct nft_base_chain *basechain,
+ 				       const struct nft_rule *rule,
 -- 
 2.35.1
 
