@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6CF6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:36:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8BEEC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:36:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351290AbiFMMgP (ORCPT
+        id S1352789AbiFMMgS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:36:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43858 "EHLO
+        Mon, 13 Jun 2022 08:36:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357507AbiFMMe1 (ORCPT
+        with ESMTP id S1357563AbiFMMe3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:34:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20B3A1AF22;
-        Mon, 13 Jun 2022 04:07:47 -0700 (PDT)
+        Mon, 13 Jun 2022 08:34:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A38E61C106;
+        Mon, 13 Jun 2022 04:07:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7631EB80EB4;
-        Mon, 13 Jun 2022 11:07:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90F03C34114;
-        Mon, 13 Jun 2022 11:07:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 97452B80D31;
+        Mon, 13 Jun 2022 11:07:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E69FEC34114;
+        Mon, 13 Jun 2022 11:07:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118447;
-        bh=cYu+1ovIvzbZWdV6fydt0umFUycVmoK/fr3u/duYZ5I=;
+        s=korg; t=1655118469;
+        bh=RtEXNlkzwJJXelVxr5GQUBzq7Qc5cnQyf3vlI1HEOQg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Agb18uW/Gw1Eu1BmsWgc/2wKH5T8W7f1hKxd5grB5SJ/XgoHa+CYGWStU+XraOq+4
-         xd63DS9tty266U5gR3a0jdZeoBmAdr974ULPJ/TVCUg3BjRtOFTEqHWjXz6tju0U3y
-         BAUzMC467tvETNl9DPVSdfbP0m2wqoM5QffZbeUo=
+        b=FcwttFP6YIda3cSxy7iKREQ3Jd9TyWPdyifbHwoYtfCo9Izm787NsJ2gdy8Xlf76W
+         f0QIj37u+AKOmoT5BDuz8CAZPxwjbn6ofby0iBy4iNtD9sjpzNXh0IrGSZoGiu0tAR
+         Iu13jIZvJ53RvtnozwOpJkZ0/ypEJDUL2SEB1PqM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
-        Mark-PK Tsai <mark-pk.tsai@mediatek.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        stable@vger.kernel.org, Haibo Chen <haibo.chen@nxp.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 079/172] tracing: Avoid adding tracer option before update_tracer_options
-Date:   Mon, 13 Jun 2022 12:10:39 +0200
-Message-Id: <20220613094909.380646825@linuxfoundation.org>
+Subject: [PATCH 5.10 069/172] gpio: pca953x: use the correct register address to do regcache sync
+Date:   Mon, 13 Jun 2022 12:10:29 +0200
+Message-Id: <20220613094907.013759674@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -51,64 +50,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+From: Haibo Chen <haibo.chen@nxp.com>
 
-[ Upstream commit ef9188bcc6ca1d8a2ad83e826b548e6820721061 ]
+[ Upstream commit 43624eda86c98b0de726d0b6f2516ccc3ef7313f ]
 
-To prepare for support asynchronous tracer_init_tracefs initcall,
-avoid calling create_trace_option_files before __update_tracer_options.
-Otherwise, create_trace_option_files will show warning because
-some tracers in trace_types list are already in tr->topts.
+For regcache_sync_region, need to use pca953x_recalc_addr() to get
+the real register address.
 
-For example, hwlat_tracer call register_tracer in late_initcall,
-and global_trace.dir is already created in tracing_init_dentry,
-hwlat_tracer will be put into tr->topts.
-Then if the __update_tracer_options is executed after hwlat_tracer
-registered, create_trace_option_files find that hwlat_tracer is
-already in tr->topts.
-
-Link: https://lkml.kernel.org/r/20220426122407.17042-2-mark-pk.tsai@mediatek.com
-
-Link: https://lore.kernel.org/lkml/20220322133339.GA32582@xsang-OptiPlex-9020/
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Signed-off-by: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Fixes: b76574300504 ("gpio: pca953x: Restore registers after suspend/resume cycle")
+Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/trace.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/gpio/gpio-pca953x.c | 19 +++++++++++--------
+ 1 file changed, 11 insertions(+), 8 deletions(-)
 
-diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index 124e3e25e155..50200898410d 100644
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -5907,12 +5907,18 @@ static void tracing_set_nop(struct trace_array *tr)
- 	tr->current_trace = &nop_trace;
- }
- 
-+static bool tracer_options_updated;
-+
- static void add_tracer_options(struct trace_array *tr, struct tracer *t)
+diff --git a/drivers/gpio/gpio-pca953x.c b/drivers/gpio/gpio-pca953x.c
+index e936e1eb1f95..bb4ca064447e 100644
+--- a/drivers/gpio/gpio-pca953x.c
++++ b/drivers/gpio/gpio-pca953x.c
+@@ -1107,20 +1107,21 @@ static int pca953x_regcache_sync(struct device *dev)
  {
- 	/* Only enable if the directory has been created already. */
- 	if (!tr->dir)
- 		return;
+ 	struct pca953x_chip *chip = dev_get_drvdata(dev);
+ 	int ret;
++	u8 regaddr;
  
-+	/* Only create trace option files after update_tracer_options finish */
-+	if (!tracer_options_updated)
-+		return;
-+
- 	create_trace_option_files(tr, t);
- }
+ 	/*
+ 	 * The ordering between direction and output is important,
+ 	 * sync these registers first and only then sync the rest.
+ 	 */
+-	ret = regcache_sync_region(chip->regmap, chip->regs->direction,
+-				   chip->regs->direction + NBANK(chip));
++	regaddr = pca953x_recalc_addr(chip, chip->regs->direction, 0);
++	ret = regcache_sync_region(chip->regmap, regaddr, regaddr + NBANK(chip));
+ 	if (ret) {
+ 		dev_err(dev, "Failed to sync GPIO dir registers: %d\n", ret);
+ 		return ret;
+ 	}
  
-@@ -8649,6 +8655,7 @@ static void __update_tracer_options(struct trace_array *tr)
- static void update_tracer_options(struct trace_array *tr)
- {
- 	mutex_lock(&trace_types_lock);
-+	tracer_options_updated = true;
- 	__update_tracer_options(tr);
- 	mutex_unlock(&trace_types_lock);
- }
+-	ret = regcache_sync_region(chip->regmap, chip->regs->output,
+-				   chip->regs->output + NBANK(chip));
++	regaddr = pca953x_recalc_addr(chip, chip->regs->output, 0);
++	ret = regcache_sync_region(chip->regmap, regaddr, regaddr + NBANK(chip));
+ 	if (ret) {
+ 		dev_err(dev, "Failed to sync GPIO out registers: %d\n", ret);
+ 		return ret;
+@@ -1128,16 +1129,18 @@ static int pca953x_regcache_sync(struct device *dev)
+ 
+ #ifdef CONFIG_GPIO_PCA953X_IRQ
+ 	if (chip->driver_data & PCA_PCAL) {
+-		ret = regcache_sync_region(chip->regmap, PCAL953X_IN_LATCH,
+-					   PCAL953X_IN_LATCH + NBANK(chip));
++		regaddr = pca953x_recalc_addr(chip, PCAL953X_IN_LATCH, 0);
++		ret = regcache_sync_region(chip->regmap, regaddr,
++					   regaddr + NBANK(chip));
+ 		if (ret) {
+ 			dev_err(dev, "Failed to sync INT latch registers: %d\n",
+ 				ret);
+ 			return ret;
+ 		}
+ 
+-		ret = regcache_sync_region(chip->regmap, PCAL953X_INT_MASK,
+-					   PCAL953X_INT_MASK + NBANK(chip));
++		regaddr = pca953x_recalc_addr(chip, PCAL953X_INT_MASK, 0);
++		ret = regcache_sync_region(chip->regmap, regaddr,
++					   regaddr + NBANK(chip));
+ 		if (ret) {
+ 			dev_err(dev, "Failed to sync INT mask registers: %d\n",
+ 				ret);
 -- 
 2.35.1
 
