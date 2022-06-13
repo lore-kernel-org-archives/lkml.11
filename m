@@ -2,102 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8138C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:26:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CC82C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:27:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241700AbiFMR00 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 13:26:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35600 "EHLO
+        id S239473AbiFMR1s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 13:27:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238038AbiFMRZ6 (ORCPT
+        with ESMTP id S232375AbiFMR1X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 13:25:58 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E43F5D5D7;
-        Mon, 13 Jun 2022 05:41:23 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 1D13166015B3;
-        Mon, 13 Jun 2022 13:41:21 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1655124081;
-        bh=Dssxu5juHxniKEwBlOPdCopiQRHAuksbl/SlhCHu2R0=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=cj1Y7XKnAUxZ9AFEebBoxYSFqi2LXEuJRLBk7CcG9RY6lLsqhlFzV+oxNSnRAq35d
-         OCOiKUkuwtSR+9XSJ6bQgiY2tR+/pCYoiPZ2BMm35mXHvziQjWV0gOEj0U9S4GhMOz
-         EYidKT4SRSawFGHUZuKV15dCQfIEuYSlhQyeLmS/mnBTddIv9RX26o1Tj0LdumsVOw
-         ofcXrD15RlCDQA/aerb01D36rVGPuAyr6vv5yADcS/k8QTz+HSblMJutsBpu4fTyhT
-         QDBqCG3Iyw1M52WLJNimNCjmcCzyMeLKnme5b0GdVG3XihAtSttrusNmTabOCzrmOU
-         tJ78YAHvoCNMw==
-Message-ID: <30fcd090-0f31-5a7a-ec14-11098aac8e5c@collabora.com>
-Date:   Mon, 13 Jun 2022 14:41:19 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 1/3] dt-bindings: dsp: mediatek: Use meaningful names
- for mbox
-Content-Language: en-US
-To:     Tinghan Shen <tinghan.shen@mediatek.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        YC Hung <yc.hung@mediatek.com>,
-        Curtis Malainey <cujomalainey@chromium.org>,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220609083101.24195-1-tinghan.shen@mediatek.com>
- <20220609083101.24195-2-tinghan.shen@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220609083101.24195-2-tinghan.shen@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Mon, 13 Jun 2022 13:27:23 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44D9549242;
+        Mon, 13 Jun 2022 05:43:23 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id s1so6966666wra.9;
+        Mon, 13 Jun 2022 05:43:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=gWZ2iuIrN0ujnQkPHV+TXRlSbNOjanWQAKWTOlhoEcw=;
+        b=m77Tk6N3ACPMUA59bi65hTpTPrRkAmreeEkyPDG3GSgXJ4ZskPgxVFTCgLrtL3XMIN
+         ptdPRIejAHUs/msgd9kwUcXEjXH9h7iZTcPwQxmlBnAUS7pH5Fm0NyuuqMXMP7CiLvVO
+         A9X9U3iJN+KG2ON0S31rL3jMCzil1eJebmUdSlTO0cApaAKzK6aiS/YCtN5nqUvbdiWe
+         gIf7Zmiz6VM37j6dsu/XmcwtVHHpYInnIywvwAg1s0q6KNVE7YG/xv2O93IgV/yg+P7Q
+         s2pNHc1o5iLoQm+lbRaHYNVnObrF+/BXhSd9zlqbOuRTur8kUpI7PWlWdET9InW86Eqd
+         fw+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=gWZ2iuIrN0ujnQkPHV+TXRlSbNOjanWQAKWTOlhoEcw=;
+        b=5UXfS2fjCGSQkFlZKZMLo7c5axWa4m3Kt3jmYQXnhZE0ixUw/JXD/7+twL8O1TLAJN
+         fysoJ3KT6V4UlbZf/Guyheg0iyQ0QiS4Mt7heHEUw42PNDNNa2SrbwsiYMsFONH1jTTw
+         jCeAOjVXDp8RQeHeTySsRgLehHkBBcsBfy5IFQb+gi1ZWrm3i2SAR3BeRsCJXEx/Pl0p
+         RKbgtvHTK+oCOKrL0cn2sdZFbVNRQq6tSOZZUyeeG2PYuYKaYno/nQnAf/X3/pUgzgXu
+         r/77B0XdUgSXATWzNqMGiCvHR2BKKKmOB0/YTVFpjSWCnV4+I83C0sZtqBTe/K5fQ04x
+         PSnw==
+X-Gm-Message-State: AOAM530OEGRwbAcENhZcw5qSn79f/IVpN5gEzMcpo7Isd7uiWQu9DIm3
+        xygdv/9i86k6axmXGHGjHpg=
+X-Google-Smtp-Source: ABdhPJxmRpI3gbTnGIrNNYzB/skcfriE8YOSY4phl7jCU0+HLVMzMpV8RT5xLa1lCuYOs16Wh9CFCA==
+X-Received: by 2002:a5d:6c62:0:b0:218:3e13:4b17 with SMTP id r2-20020a5d6c62000000b002183e134b17mr38913538wrz.673.1655124201670;
+        Mon, 13 Jun 2022 05:43:21 -0700 (PDT)
+Received: from felia.fritz.box (200116b8260df50011e978c0f780de03.dip.versatel-1u1.de. [2001:16b8:260d:f500:11e9:78c0:f780:de03])
+        by smtp.gmail.com with ESMTPSA id y3-20020adfd083000000b002103cfd2fbasm8383940wrh.65.2022.06.13.05.43.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 05:43:21 -0700 (PDT)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>, linux-pm@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] MAINTAINERS: add include/dt-bindings/thermal to THERMAL
+Date:   Mon, 13 Jun 2022 14:43:09 +0200
+Message-Id: <20220613124309.28790-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 09/06/22 10:30, Tinghan Shen ha scritto:
-> Rename mbox according to action instead of 'mbox0' and 'mbox1'.
-> 
-> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
-> ---
->   .../devicetree/bindings/dsp/mediatek,mt8195-dsp.yaml        | 6 +++---
->   1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/dsp/mediatek,mt8195-dsp.yaml b/Documentation/devicetree/bindings/dsp/mediatek,mt8195-dsp.yaml
-> index b7e68b0dfa13..6cedd6868cc5 100644
-> --- a/Documentation/devicetree/bindings/dsp/mediatek,mt8195-dsp.yaml
-> +++ b/Documentation/devicetree/bindings/dsp/mediatek,mt8195-dsp.yaml
-> @@ -55,8 +55,8 @@ properties:
->   
->     mbox-names:
->       items:
-> -      - const: mbox0
-> -      - const: mbox1
-> +      - const: rep
-> +      - const: req
+Maintainers of the directory Documentation/devicetree/bindings/thermal
+are also the maintainers of the corresponding directory
+include/dt-bindings/thermal.
 
-"reply", "request" - as said on patch [2/3]....
+Add the file entry for include/dt-bindings/thermal to the appropriate
+section in MAINTAINERS.
 
-P.S.: Adding context for anyone else reading this patch, mt8195 devicetrees didn't
-       get any dsp node yet.
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+---
+Rafael, Daniel, please pick this MAINTAINERS addition to your section.
 
->   
->     memory-region:
->       items:
-> @@ -100,6 +100,6 @@ examples:
->          memory-region = <&adsp_dma_mem_reserved>,
->                          <&adsp_mem_reserved>;
->          power-domains = <&spm 6>; //MT8195_POWER_DOMAIN_ADSP
-> -       mbox-names = "mbox0", "mbox1";
-> +       mbox-names = "rep", "req";
->          mboxes = <&adsp_mailbox0>, <&adsp_mailbox1>;
->       };
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/MAINTAINERS b/MAINTAINERS
+index ec2e764a22ee..4fd2c1080aa5 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -19858,6 +19858,7 @@ F:	Documentation/ABI/testing/sysfs-class-thermal
+ F:	Documentation/devicetree/bindings/thermal/
+ F:	Documentation/driver-api/thermal/
+ F:	drivers/thermal/
++F:	include/dt-bindings/thermal/
+ F:	include/linux/cpu_cooling.h
+ F:	include/linux/thermal.h
+ F:	include/uapi/linux/thermal.h
+-- 
+2.17.1
 
