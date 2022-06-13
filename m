@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAF53C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:26:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8701BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:26:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376573AbiFMN0M (ORCPT
+        id S1377363AbiFMN0Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:26:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60568 "EHLO
+        Mon, 13 Jun 2022 09:26:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376736AbiFMNXU (ORCPT
+        with ESMTP id S1377190AbiFMNYl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:23:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82FDD6B7D9;
-        Mon, 13 Jun 2022 04:23:55 -0700 (PDT)
+        Mon, 13 Jun 2022 09:24:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C616B7E7;
+        Mon, 13 Jun 2022 04:23:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BBCDE60FB9;
-        Mon, 13 Jun 2022 11:23:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6D7BC34114;
-        Mon, 13 Jun 2022 11:23:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DCDD9B80E59;
+        Mon, 13 Jun 2022 11:23:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F393C34114;
+        Mon, 13 Jun 2022 11:23:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119427;
-        bh=bDrYDOHNgYhO6FPo+JxBPzduYAj0DNlg6EhLq6ri5ys=;
+        s=korg; t=1655119432;
+        bh=vRM2dlIwjQSrogb4P0RAs0ZyRLIbezsLTuCM6WnjExU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G43xgSfULGLPrEUNU+qG8bdk583XwhGVjAvsgWe70Ma1Lb+nmqGNjHAcaEOEByQUf
-         hwjPyi5dnr5zHYrIA0MdocxEtoMI017cCOhdzftJ0IcRKNsy0OCn/wHARRMjecicCH
-         6OpiHPYH1xeC2LYlw90Mcf3zp+A5+XQdcXE5x120=
+        b=wRpxQgo/fOFIW3g0p9QYQRODZcb5hr4Ntuj5Ddqmic3jJMN7s8NJroCNlC/+SaPvv
+         qXHqYmJ+RyP1teNcm0dzBLyf0wUR+LpWGrJbtdJDT+/rQ9+L5yXUZ8lUlwWiuHVIQm
+         mWHJP5i50jCgHGk8p3oTlRS6Z/EO9GJcvDPLW4Dc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Daniel Gibson <daniel@gibson.sh>,
+        stable@vger.kernel.org, Sherry Sun <sherry.sun@nxp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 011/339] tty: n_tty: Restore EOF push handling behavior
-Date:   Mon, 13 Jun 2022 12:07:16 +0200
-Message-Id: <20220613094926.852012924@linuxfoundation.org>
+Subject: [PATCH 5.18 013/339] tty: serial: fsl_lpuart: fix potential bug when using both of_alias_get_id and ida_simple_get
+Date:   Mon, 13 Jun 2022 12:07:18 +0200
+Message-Id: <20220613094926.911327425@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -52,121 +49,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Gibson <daniel@gibson.sh>
+From: Sherry Sun <sherry.sun@nxp.com>
 
-[ Upstream commit 65a8b287023da68c4550deab5c764e6891cf1caf ]
+[ Upstream commit f398e0aa325c61fa20903833a5b534ecb8e6e418 ]
 
-TTYs in ICANON mode have a special case that allows "pushing" a line
-without a regular EOL character (like newline), by using EOF (the EOT
-character - ASCII 0x4) as a pseudo-EOL. It is silently discarded, so
-the reader of the PTS will receive the line *without* EOF or any other
-terminating character.
+Now fsl_lpuart driver use both of_alias_get_id() and ida_simple_get() in
+.probe(), which has the potential bug. For example, when remove the
+lpuart7 alias in dts, of_alias_get_id() will return error, then call
+ida_simple_get() to allocate the id 0 for lpuart7, this may confilct
+with the lpuart4 which has alias 0.
 
-This special case has an edge case: What happens if the readers buffer
-is the same size as the line (without EOF)? Will they be able to tell
-if the whole line is received, i.e. if the next read() will return more
-of the same line or the next line?
+    aliases {
+	...
+        serial0 = &lpuart4;
+        serial1 = &lpuart5;
+        serial2 = &lpuart6;
+        serial3 = &lpuart7;
+    }
 
-There are two possibilities,  that both have (dis)advantages:
+So remove the ida_simple_get() in .probe(), return an error directly
+when calling of_alias_get_id() fails, which is consistent with other
+uart drivers behavior.
 
-1. The next read() returns 0. FreeBSD (13.0) and OSX (10.11) do this.
-   Advantage: The reader can interpret this as "the line is over".
-   Disadvantage: read() returning 0 means EOF, the reader could also
-   interpret it as "there's no more data" and stop reading or even
-   close the PT.
-
-2. The next read() returns the next line, the EOF is silently discarded.
-   Solaris (or at least OpenIndiana 2021.10) does this, Linux has done
-   do this since commit 40d5e0905a03 ("n_tty: Fix EOF push handling");
-   this behavior was recently broken by commit 359303076163 ("tty:
-   n_tty: do not look ahead for EOL character past the end of the buffer").
-   Advantage: read() won't return 0 (EOF), reader less likely to be
-   confused (and things like `while(read(..)>0)` don't break)
-   Disadvantage: The reader can't really know if the read() continues
-   the last line (that filled the whole read buffer) or starts a
-   new line.
-
-As both options are defensible (and are used by other Unix-likes), it's
-best to stick to the "old" behavior since "n_tty: Fix EOF push handling"
-of 2013, i.e. silently discard that EOF.
-
-This patch - that I actually got from Linus for testing and only
-modified slightly - restores that behavior by skipping an EOF
-character if it's the next character after reading is done.
-
-Based on a patch from Linus Torvalds.
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215611
-Fixes: 359303076163 ("tty: n_tty: do not look ahead for EOL character past the end of the buffer")
-Cc: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Reviewed-and-tested-by: Daniel Gibson <daniel@gibson.sh>
-Acked-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Daniel Gibson <daniel@gibson.sh>
-Link: https://lore.kernel.org/r/20220329235810.452513-2-daniel@gibson.sh
+Fixes: 3bc3206e1c0f ("serial: fsl_lpuart: Remove the alias node dependence")
+Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+Link: https://lore.kernel.org/r/20220321112211.8895-1-sherry.sun@nxp.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_tty.c | 38 +++++++++++++++++++++++++++++++++++++-
- 1 file changed, 37 insertions(+), 1 deletion(-)
+ drivers/tty/serial/fsl_lpuart.c | 24 ++++--------------------
+ 1 file changed, 4 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index efc72104c840..bdc314aeab88 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -1975,6 +1975,35 @@ static bool canon_copy_from_read_buf(struct tty_struct *tty,
- 	return ldata->read_tail != canon_head;
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index be12fee94db5..2cb89491dd09 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -239,8 +239,6 @@
+ /* IMX lpuart has four extra unused regs located at the beginning */
+ #define IMX_REG_OFF	0x10
+ 
+-static DEFINE_IDA(fsl_lpuart_ida);
+-
+ enum lpuart_type {
+ 	VF610_LPUART,
+ 	LS1021A_LPUART,
+@@ -276,7 +274,6 @@ struct lpuart_port {
+ 	int			rx_dma_rng_buf_len;
+ 	unsigned int		dma_tx_nents;
+ 	wait_queue_head_t	dma_wait;
+-	bool			id_allocated;
+ };
+ 
+ struct lpuart_soc_data {
+@@ -2717,23 +2714,18 @@ static int lpuart_probe(struct platform_device *pdev)
+ 
+ 	ret = of_alias_get_id(np, "serial");
+ 	if (ret < 0) {
+-		ret = ida_simple_get(&fsl_lpuart_ida, 0, UART_NR, GFP_KERNEL);
+-		if (ret < 0) {
+-			dev_err(&pdev->dev, "port line is full, add device failed\n");
+-			return ret;
+-		}
+-		sport->id_allocated = true;
++		dev_err(&pdev->dev, "failed to get alias id, errno %d\n", ret);
++		return ret;
+ 	}
+ 	if (ret >= ARRAY_SIZE(lpuart_ports)) {
+ 		dev_err(&pdev->dev, "serial%d out of range\n", ret);
+-		ret = -EINVAL;
+-		goto failed_out_of_range;
++		return -EINVAL;
+ 	}
+ 	sport->port.line = ret;
+ 
+ 	ret = lpuart_enable_clks(sport);
+ 	if (ret)
+-		goto failed_clock_enable;
++		return ret;
+ 	sport->port.uartclk = lpuart_get_baud_clk_rate(sport);
+ 
+ 	lpuart_ports[sport->port.line] = sport;
+@@ -2781,10 +2773,6 @@ static int lpuart_probe(struct platform_device *pdev)
+ 	uart_remove_one_port(&lpuart_reg, &sport->port);
+ failed_attach_port:
+ 	lpuart_disable_clks(sport);
+-failed_clock_enable:
+-failed_out_of_range:
+-	if (sport->id_allocated)
+-		ida_simple_remove(&fsl_lpuart_ida, sport->port.line);
+ 	return ret;
  }
  
-+/*
-+ * If we finished a read at the exact location of an
-+ * EOF (special EOL character that's a __DISABLED_CHAR)
-+ * in the stream, silently eat the EOF.
-+ */
-+static void canon_skip_eof(struct tty_struct *tty)
-+{
-+	struct n_tty_data *ldata = tty->disc_data;
-+	size_t tail, canon_head;
-+
-+	canon_head = smp_load_acquire(&ldata->canon_head);
-+	tail = ldata->read_tail;
-+
-+	// No data?
-+	if (tail == canon_head)
-+		return;
-+
-+	// See if the tail position is EOF in the circular buffer
-+	tail &= (N_TTY_BUF_SIZE - 1);
-+	if (!test_bit(tail, ldata->read_flags))
-+		return;
-+	if (read_buf(ldata, tail) != __DISABLED_CHAR)
-+		return;
-+
-+	// Clear the EOL bit, skip the EOF char.
-+	clear_bit(tail, ldata->read_flags);
-+	smp_store_release(&ldata->read_tail, ldata->read_tail + 1);
-+}
-+
- /**
-  * job_control		-	check job control
-  * @tty: tty
-@@ -2045,7 +2074,14 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
- 	 */
- 	if (*cookie) {
- 		if (ldata->icanon && !L_EXTPROC(tty)) {
--			if (canon_copy_from_read_buf(tty, &kb, &nr))
-+			/*
-+			 * If we have filled the user buffer, see
-+			 * if we should skip an EOF character before
-+			 * releasing the lock and returning done.
-+			 */
-+			if (!nr)
-+				canon_skip_eof(tty);
-+			else if (canon_copy_from_read_buf(tty, &kb, &nr))
- 				return kb - kbuf;
- 		} else {
- 			if (copy_from_read_buf(tty, &kb, &nr))
+@@ -2794,9 +2782,6 @@ static int lpuart_remove(struct platform_device *pdev)
+ 
+ 	uart_remove_one_port(&lpuart_reg, &sport->port);
+ 
+-	if (sport->id_allocated)
+-		ida_simple_remove(&fsl_lpuart_ida, sport->port.line);
+-
+ 	lpuart_disable_clks(sport);
+ 
+ 	if (sport->dma_tx_chan)
+@@ -2926,7 +2911,6 @@ static int __init lpuart_serial_init(void)
+ 
+ static void __exit lpuart_serial_exit(void)
+ {
+-	ida_destroy(&fsl_lpuart_ida);
+ 	platform_driver_unregister(&lpuart_driver);
+ 	uart_unregister_driver(&lpuart_reg);
+ }
 -- 
 2.35.1
 
