@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35692CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44D9ACCA482
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:24:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376922AbiFMNXt (ORCPT
+        id S1376963AbiFMNXz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:23:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60620 "EHLO
+        Mon, 13 Jun 2022 09:23:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377088AbiFMNUA (ORCPT
+        with ESMTP id S1376980AbiFMNTq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:20:00 -0400
+        Mon, 13 Jun 2022 09:19:46 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 920B06973E;
-        Mon, 13 Jun 2022 04:23:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3F6E692BD;
+        Mon, 13 Jun 2022 04:23:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 84F1160F18;
-        Mon, 13 Jun 2022 11:22:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95224C3411C;
-        Mon, 13 Jun 2022 11:22:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B0BA460F8C;
+        Mon, 13 Jun 2022 11:22:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF94BC34114;
+        Mon, 13 Jun 2022 11:22:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119358;
-        bh=2hBjMjiZ041N5Z0Yg7mhxSGjvQprD2H+8vtm5RyJEns=;
+        s=korg; t=1655119347;
+        bh=dGSOQsi//NDJceKRzTdm937m9iBGzCOIme+ahMgLDsw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YgY2wEzjC2rWgYkQRF6vyOMQ631nz59nOqCJz1L20ogVEyRyFV6freIFbbOmppsUo
-         hG2KZ1rO4nqbtqi2P1w4wzZyo4U9nXbIXnQA6byhCVeZfOUDebZ0mulbBwfMhKGiaj
-         WtSVCB+GKBI5T4o6loKTw/i7eOg27/v8EC2IemRA=
+        b=xYiU9jCD5KyOXqAgz+Ip009SuJsWW0+Dg4wB3MA4DFD+KreZFfC5SGLlFSe3OO+uR
+         xfOwGyB0xmJqgLw8oCm7v14Aw/7LEh907lgjKm2mNG3Ko6ryqMS8+RARzy0OYab3g9
+         qlvarXyFZEiJFFdHzseXovX1Tvq22NkcitbdWLzI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.15 234/247] powerpc: Dont select HAVE_IRQ_EXIT_ON_IRQ_STACK
-Date:   Mon, 13 Jun 2022 12:12:16 +0200
-Message-Id: <20220613094930.041280594@linuxfoundation.org>
+        stable@vger.kernel.org, Donald Buczek <buczek@molgen.mpg.de>,
+        Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 193/247] md: protect md_unregister_thread from reentrancy
+Date:   Mon, 13 Jun 2022 12:11:35 +0200
+Message-Id: <20220613094928.804432025@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -48,52 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Guoqing Jiang <guoqing.jiang@cloud.ionos.com>
 
-commit 1346d00e1bdfd4067f92bc14e8a6131a01de4190 upstream.
+[ Upstream commit 1e267742283a4b5a8ca65755c44166be27e9aa0f ]
 
-The HAVE_IRQ_EXIT_ON_IRQ_STACK option tells generic code that irq_exit()
-is called while still running on the hard irq stack (hardirq_ctx[] in
-the powerpc code).
+Generally, the md_unregister_thread is called with reconfig_mutex, but
+raid_message in dm-raid doesn't hold reconfig_mutex to unregister thread,
+so md_unregister_thread can be called simulitaneously from two call sites
+in theory.
 
-Selecting the option means the generic code will *not* switch to the
-softirq stack before running softirqs, because the code is already
-running on the (mostly empty) hard irq stack.
+Then after previous commit which remove the protection of reconfig_mutex
+for md_unregister_thread completely, the potential issue could be worse
+than before.
 
-But since commit 1b1b6a6f4cc0 ("powerpc: handle irq_enter/irq_exit in
-interrupt handler wrappers"), irq_exit() is now called on the regular task
-stack, not the hard irq stack.
+Let's take pers_lock at the beginning of function to ensure reentrancy.
 
-That's because previously irq_exit() was called in __do_irq() which is
-run on the hard irq stack, but now it is called in
-interrupt_async_exit_prepare() which is called from do_irq() constructed
-by the wrapper macro, which is after the switch back to the task stack.
-
-So drop HAVE_IRQ_EXIT_ON_IRQ_STACK from the Kconfig. This will mean an
-extra stack switch when processing some interrupts, but should
-significantly reduce the likelihood of stack overflow.
-
-It also means the softirq stack will be used for running softirqs from
-other interrupts that don't use the hard irq stack, eg. timer interrupts.
-
-Fixes: 1b1b6a6f4cc0 ("powerpc: handle irq_enter/irq_exit in interrupt handler wrappers")
-Cc: stable@vger.kernel.org # v5.12+
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220525032639.1947280-1-mpe@ellerman.id.au
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Donald Buczek <buczek@molgen.mpg.de>
+Signed-off-by: Guoqing Jiang <guoqing.jiang@linux.dev>
+Signed-off-by: Song Liu <song@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/Kconfig |    1 -
- 1 file changed, 1 deletion(-)
+ drivers/md/md.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
---- a/arch/powerpc/Kconfig
-+++ b/arch/powerpc/Kconfig
-@@ -217,7 +217,6 @@ config PPC
- 	select HAVE_HARDLOCKUP_DETECTOR_PERF	if PERF_EVENTS && HAVE_PERF_EVENTS_NMI && !HAVE_HARDLOCKUP_DETECTOR_ARCH
- 	select HAVE_HW_BREAKPOINT		if PERF_EVENTS && (PPC_BOOK3S || PPC_8xx)
- 	select HAVE_IOREMAP_PROT
--	select HAVE_IRQ_EXIT_ON_IRQ_STACK
- 	select HAVE_IRQ_TIME_ACCOUNTING
- 	select HAVE_KERNEL_GZIP
- 	select HAVE_KERNEL_LZMA			if DEFAULT_UIMAGE
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index b553654cbebc..bf1c5c0e472e 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -7942,17 +7942,22 @@ EXPORT_SYMBOL(md_register_thread);
+ 
+ void md_unregister_thread(struct md_thread **threadp)
+ {
+-	struct md_thread *thread = *threadp;
+-	if (!thread)
+-		return;
+-	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
+-	/* Locking ensures that mddev_unlock does not wake_up a
++	struct md_thread *thread;
++
++	/*
++	 * Locking ensures that mddev_unlock does not wake_up a
+ 	 * non-existent thread
+ 	 */
+ 	spin_lock(&pers_lock);
++	thread = *threadp;
++	if (!thread) {
++		spin_unlock(&pers_lock);
++		return;
++	}
+ 	*threadp = NULL;
+ 	spin_unlock(&pers_lock);
+ 
++	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
+ 	kthread_stop(thread->tsk);
+ 	kfree(thread);
+ }
+-- 
+2.35.1
+
 
 
