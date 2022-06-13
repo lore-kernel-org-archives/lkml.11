@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B161CCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 709A3CCA48E
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:34:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384619AbiFMOeU (ORCPT
+        id S1384768AbiFMOeh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:34:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35220 "EHLO
+        Mon, 13 Jun 2022 10:34:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385105AbiFMOai (ORCPT
+        with ESMTP id S1385401AbiFMObJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:30:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A8EDA86A5;
-        Mon, 13 Jun 2022 04:48:35 -0700 (PDT)
+        Mon, 13 Jun 2022 10:31:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D055AAB0F6;
+        Mon, 13 Jun 2022 04:48:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 92360612AC;
-        Mon, 13 Jun 2022 11:48:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77806C3411C;
-        Mon, 13 Jun 2022 11:48:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AE736B80ECD;
+        Mon, 13 Jun 2022 11:48:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FB5AC34114;
+        Mon, 13 Jun 2022 11:48:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120881;
-        bh=xiYEgWBVMCuIUkmI5EK4524c4rH/1oU6YNVnXbs2OsU=;
+        s=korg; t=1655120905;
+        bh=BBbKxzBTSgGkElDL5HOf2Rr4T8+XctVQOFZU15enauU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CewKg/IPdo05yYZhMRum+2tIyjM380BAQY1OwLXVbbdV1I87Ki+oWDuC/L1Ivbj0k
-         1Z/hrjQ5oPP8D+iXQFKCVcWUrLIJzmQmv3xRXsBYFzBaWx0X9hSmS1iegkGpyc0FXN
-         GmUdG5dWc6X/9EFmmSSvQzNMgYfGcfymKX6YqPtA=
+        b=cYCtM5MhIakcHE0j2FQkMRko13ATHHUrwJZcddUxvTDjIgClxp8n6rb30yECiCclH
+         //j1VrI6xsQrCvXToZT1gwFa5NQFOY0ZjHq2SKEWvH9M/S/6l2NS+iSrda4tCrtaGV
+         6F9fMlm85Xbsi5cZZChSO/ecQ+89bqLNr9Sh3yiA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 169/298] amt: fix possible null-ptr-deref in amt_rcv()
-Date:   Mon, 13 Jun 2022 12:11:03 +0200
-Message-Id: <20220613094930.057866332@linuxfoundation.org>
+Subject: [PATCH 5.17 201/298] drivers: staging: rtl8192bs: Fix deadlock in rtw_joinbss_event_prehandle()
+Date:   Mon, 13 Jun 2022 12:11:35 +0200
+Message-Id: <20220613094931.201356439@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -52,42 +49,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Taehee Yoo <ap420073@gmail.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit d16207f92a4a823c48b4ea953ad51f4483456768 ]
+[ Upstream commit 041879b12ddb0c6c83ed9c0bdd10dc82a056f2fc ]
 
-When amt interface receives amt message, it tries to obtain amt private
-data from sock.
-If there is no amt private data, it frees an skb immediately.
-After kfree_skb(), it increases the rx_dropped stats.
-But in order to use rx_dropped, amt private data is needed.
-So, it makes amt_rcv() to do not increase rx_dropped stats when it can
-not obtain amt private data.
+There is a deadlock in rtw_joinbss_event_prehandle(), which is shown
+below:
 
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Fixes: 1a1a0e80e005 ("amt: fix possible memory leak in amt_rcv()")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+   (Thread 1)                |      (Thread 2)
+                             | _set_timer()
+rtw_joinbss_event_prehandle()|  mod_timer()
+ spin_lock_bh() //(1)        |  (wait a time)
+ ...                         | _rtw_join_timeout_handler()
+ del_timer_sync()            |  spin_lock_bh() //(2)
+ (wait timer to stop)        |  ...
+
+We hold pmlmepriv->lock in position (1) of thread 1 and
+use del_timer_sync() to wait timer to stop, but timer handler
+also need pmlmepriv->lock in position (2) of thread 2.
+As a result, rtw_joinbss_event_prehandle() will block forever.
+
+This patch extracts del_timer_sync() from the protection of
+spin_lock_bh(), which could let timer handler to obtain
+the needed lock. What`s more, we change spin_lock_bh() to
+spin_lock_irq() in _rtw_join_timeout_handler() in order to
+prevent deadlock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220409064953.67420-1-duoming@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/amt.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/staging/rtl8723bs/core/rtw_mlme.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/amt.c b/drivers/net/amt.c
-index d8c47c4e6559..e239c0262d56 100644
---- a/drivers/net/amt.c
-+++ b/drivers/net/amt.c
-@@ -2698,7 +2698,8 @@ static int amt_rcv(struct sock *sk, struct sk_buff *skb)
- 	amt = rcu_dereference_sk_user_data(sk);
- 	if (!amt) {
- 		err = true;
--		goto drop;
-+		kfree_skb(skb);
-+		goto out;
+diff --git a/drivers/staging/rtl8723bs/core/rtw_mlme.c b/drivers/staging/rtl8723bs/core/rtw_mlme.c
+index a6e5f2332e12..c29e3c68e61e 100644
+--- a/drivers/staging/rtl8723bs/core/rtw_mlme.c
++++ b/drivers/staging/rtl8723bs/core/rtw_mlme.c
+@@ -1240,8 +1240,10 @@ void rtw_joinbss_event_prehandle(struct adapter *adapter, u8 *pbuf)
+ 
+ 			spin_unlock_bh(&pmlmepriv->scanned_queue.lock);
+ 
++			spin_unlock_bh(&pmlmepriv->lock);
+ 			/* s5. Cancel assoc_timer */
+ 			del_timer_sync(&pmlmepriv->assoc_timer);
++			spin_lock_bh(&pmlmepriv->lock);
+ 		} else {
+ 			spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
+ 		}
+@@ -1547,7 +1549,7 @@ void _rtw_join_timeout_handler(struct timer_list *t)
+ 	if (adapter->bDriverStopped || adapter->bSurpriseRemoved)
+ 		return;
+ 
+-	spin_lock_bh(&pmlmepriv->lock);
++	spin_lock_irq(&pmlmepriv->lock);
+ 
+ 	if (rtw_to_roam(adapter) > 0) { /* join timeout caused by roaming */
+ 		while (1) {
+@@ -1575,7 +1577,7 @@ void _rtw_join_timeout_handler(struct timer_list *t)
+ 
  	}
  
- 	skb->dev = amt->dev;
+-	spin_unlock_bh(&pmlmepriv->lock);
++	spin_unlock_irq(&pmlmepriv->lock);
+ }
+ 
+ /*
 -- 
 2.35.1
 
