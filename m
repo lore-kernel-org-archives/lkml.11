@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 308F6CCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E9F9CCA483
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:20:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357027AbiFMMTU (ORCPT
+        id S1357732AbiFMMT1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:19:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39284 "EHLO
+        Mon, 13 Jun 2022 08:19:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237968AbiFMMMl (ORCPT
+        with ESMTP id S1354965AbiFMMNp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:12:41 -0400
+        Mon, 13 Jun 2022 08:13:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AFC753A73;
-        Mon, 13 Jun 2022 04:01:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6927A53C62;
+        Mon, 13 Jun 2022 04:01:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 16BE2611B3;
-        Mon, 13 Jun 2022 11:01:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 269A0C34114;
-        Mon, 13 Jun 2022 11:01:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 885E061435;
+        Mon, 13 Jun 2022 11:01:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9794FC34114;
+        Mon, 13 Jun 2022 11:01:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118063;
-        bh=7TBhTfbaDPhVdwpSz3pA6namIJ2zb0GDJdL83mqp43o=;
+        s=korg; t=1655118080;
+        bh=y7GlcwRD3danYGc5bP/xB3Bm0BKDs6VAvErmOMRmARM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=od8Q7x3RrVg7ARwYu2qmesdM0fP/+uA2ww0eCJMr8HbfNJEnNtTtO1y2PWTkyfNaD
-         Q3KMUFBlR0LPf8AGoUxxLPntm9/Cui0Ic0dYhuBwyZY02rVAH746Dl/WfI513WaWoH
-         6nWS1m3cLqw9BUjVMxc1x5Js+c0IfcGwN1OJC1Tk=
+        b=b19G+pUTUXGd37/Pd9WmGd7Esbcz++9sZtXlm/+wvubRFTAMvTdwwK9/cnEILEGQw
+         6evuS3NULB6FHt0yKLhvzHsoU8gUsQJ/NZTDxKZKoP6BfXphxYRzPbxjTsCGHv2wKh
+         EqyCLX8UvZS2+NU71x+AdLZY6MAKsCq+FNTZFj7k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 218/287] modpost: fix removing numeric suffixes
-Date:   Mon, 13 Jun 2022 12:10:42 +0200
-Message-Id: <20220613094930.470872452@linuxfoundation.org>
+Subject: [PATCH 4.19 236/287] ata: pata_octeon_cf: Fix refcount leak in octeon_cf_probe
+Date:   Mon, 13 Jun 2022 12:11:00 +0200
+Message-Id: <20220613094931.172784455@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -52,56 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit b5beffa20d83c4e15306c991ffd00de0d8628338 ]
+[ Upstream commit 10d6bdf532902be1d8aa5900b3c03c5671612aa2 ]
 
-With the `-z unique-symbol` linker flag or any similar mechanism,
-it is possible to trigger the following:
+of_find_device_by_node() takes reference, we should use put_device()
+to release it when not need anymore.
+Add missing put_device() to avoid refcount leak.
 
-ERROR: modpost: "param_set_uint.0" [vmlinux] is a static EXPORT_SYMBOL
-
-The reason is that for now the condition from remove_dot():
-
-if (m && (s[n + m] == '.' || s[n + m] == 0))
-
-which was designed to test if it's a dot or a '\0' after the suffix
-is never satisfied.
-This is due to that `s[n + m]` always points to the last digit of a
-numeric suffix, not on the symbol next to it (from a custom debug
-print added to modpost):
-
-param_set_uint.0, s[n + m] is '0', s[n + m + 1] is '\0'
-
-So it's off-by-one and was like that since 2014.
-
-Fix this for the sake of any potential upcoming features, but don't
-bother stable-backporting, as it's well hidden -- apart from that
-LD flag, it can be triggered only with GCC LTO which never landed
-upstream.
-
-Fixes: fcd38ed0ff26 ("scripts: modpost: fix compilation warning")
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Fixes: 43f01da0f279 ("MIPS/OCTEON/ata: Convert pata_octeon_cf.c to use device tree.")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/mod/modpost.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/ata/pata_octeon_cf.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 7c693bd775c1..c42da4a35142 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -1937,7 +1937,7 @@ static char *remove_dot(char *s)
- 
- 	if (n && s[n]) {
- 		size_t m = strspn(s + n + 1, "0123456789");
--		if (m && (s[n + m] == '.' || s[n + m] == 0))
-+		if (m && (s[n + m + 1] == '.' || s[n + m + 1] == 0))
- 			s[n] = 0;
- 	}
- 	return s;
+diff --git a/drivers/ata/pata_octeon_cf.c b/drivers/ata/pata_octeon_cf.c
+index ac3b1fda820f..c240d8cbfd41 100644
+--- a/drivers/ata/pata_octeon_cf.c
++++ b/drivers/ata/pata_octeon_cf.c
+@@ -888,12 +888,14 @@ static int octeon_cf_probe(struct platform_device *pdev)
+ 				int i;
+ 				res_dma = platform_get_resource(dma_dev, IORESOURCE_MEM, 0);
+ 				if (!res_dma) {
++					put_device(&dma_dev->dev);
+ 					of_node_put(dma_node);
+ 					return -EINVAL;
+ 				}
+ 				cf_port->dma_base = (u64)devm_ioremap_nocache(&pdev->dev, res_dma->start,
+ 									 resource_size(res_dma));
+ 				if (!cf_port->dma_base) {
++					put_device(&dma_dev->dev);
+ 					of_node_put(dma_node);
+ 					return -EINVAL;
+ 				}
+@@ -903,6 +905,7 @@ static int octeon_cf_probe(struct platform_device *pdev)
+ 					irq = i;
+ 					irq_handler = octeon_cf_interrupt;
+ 				}
++				put_device(&dma_dev->dev);
+ 			}
+ 			of_node_put(dma_node);
+ 		}
 -- 
 2.35.1
 
