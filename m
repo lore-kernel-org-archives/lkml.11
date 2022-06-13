@@ -2,272 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DC85C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 16:54:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82B00C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 16:56:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239246AbiFMQyW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 12:54:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44290 "EHLO
+        id S235002AbiFMQ4S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 12:56:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243147AbiFMQxq (ORCPT
+        with ESMTP id S241392AbiFMQ4A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 12:53:46 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 607491F5899
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 07:38:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=wypwNo31pEoKbTgQWNWX70zzoyNQ9oMUPSN5tbzhBBg=; b=QOaOTcl7RlOJ50kzhpL16tQ+O/
-        AUGcSiZNJDKL/1WyLtbcDrKtQMC2cyooJMJuZxTrE1Xl/cdIKus7LrijAyhz6AUPw04LvqqM9NWkt
-        oYO7Qz6zBrX7qU+V7BVnfke89MVmym3N+9IKpWN1nKkRAyjINSISNTciDPkgnF5mU+PCm1KwTUu3D
-        f+rj2u+rdOcElXQclEB67mG8hF/YLMZYrCAH76Ca1Ct9lcpatDkLDwuYMz4brQooSGZXNTsuECMjj
-        oXT92E73xUbgX4TeOGQsYzmRqntv6I4nbTq4iIQvIdboy8wIyz4D4vy38mHuVE9Ghouu0s17rP9TR
-        AL6C7Rxg==;
-Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o0lDE-00Gv6S-NB; Mon, 13 Jun 2022 14:38:40 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 558FB30023F;
-        Mon, 13 Jun 2022 16:38:40 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 3E12E2029F884; Mon, 13 Jun 2022 16:38:40 +0200 (CEST)
-Date:   Mon, 13 Jun 2022 16:38:40 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Ravi Bangoria <ravi.bangoria@amd.com>
-Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com,
-        jolsa@redhat.com, namhyung@kernel.org, songliubraving@fb.com,
-        eranian@google.com, alexey.budankov@linux.intel.com,
-        ak@linux.intel.com, mark.rutland@arm.com, megha.dey@intel.com,
-        frederic@kernel.org, maddy@linux.ibm.com, irogers@google.com,
-        kim.phillips@amd.com, linux-kernel@vger.kernel.org,
-        santosh.shukla@amd.com
-Subject: Re: [RFC v2] perf: Rewrite core context handling
-Message-ID: <YqdL8LsOvxNqhz/v@hirez.programming.kicks-ass.net>
-References: <20220113134743.1292-1-ravi.bangoria@amd.com>
- <YqdLH+ZU/sf4n0pa@hirez.programming.kicks-ass.net>
+        Mon, 13 Jun 2022 12:56:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 824311FBF4D;
+        Mon, 13 Jun 2022 07:42:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E62E6612DF;
+        Mon, 13 Jun 2022 14:42:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A49B6C34114;
+        Mon, 13 Jun 2022 14:42:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655131373;
+        bh=6RUtcC2ezgxpX0fcc7bhWT61oNaYVTXSim1tOI9z8ZI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SJ/loUNhH/OFKFpMUaBwV6LdfZLnQhohXNWEWhWZZgygtBSiW13RgUyaulpl8BmEi
+         ucPy0xYLklhNYOPl20R5wBljMzm5+DPKd9qfAP+6fZJyz1RzVt8VlhaH5Cx3X09b2p
+         mICq8nY+LSElP8mXQq8CXjhBfqMPeoHprkcE3LGoi4aAo9voiryR52k4jDDdYSI/m4
+         t7+xI1CgIawQ+0m6dNriXcNvoiWOX/ZczXSysNWJKop+wagu7qvPLSlBhoJNZae5bs
+         KhQthrat/tTrKrlaR47jO0tfyzpybTeXfD4XoA7l3cR/pfxEMZKpVrsk35Izc26kGu
+         +ln4q3PXv3Jgg==
+Date:   Mon, 13 Jun 2022 16:42:49 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Cc:     Conor Dooley <conor.dooley@microchip.com>,
+        linux-i2c@vger.kernel.org, Peter Korsgaard <peter@korsgaard.com>,
+        Andrew Lunn <andrew@lunn.ch>, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] MAINTAINERS: Rectify entry for OPENCORES I2C BUS DRIVER
+Message-ID: <YqdM6TAFKAQAyGrA@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        linux-i2c@vger.kernel.org, Peter Korsgaard <peter@korsgaard.com>,
+        Andrew Lunn <andrew@lunn.ch>, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220610105154.2358-1-lukas.bulwahn@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="Humb4uRqxbTH4IS/"
 Content-Disposition: inline
-In-Reply-To: <YqdLH+ZU/sf4n0pa@hirez.programming.kicks-ass.net>
+In-Reply-To: <20220610105154.2358-1-lukas.bulwahn@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 04:35:11PM +0200, Peter Zijlstra wrote:
 
-Another one of those lockdep splats:
+--Humb4uRqxbTH4IS/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> @@ -12147,42 +12256,37 @@ SYSCALL_DEFINE5(perf_event_open,
->  	if (pmu->task_ctx_nr == perf_sw_context)
->  		event->event_caps |= PERF_EV_CAP_SOFTWARE;
->  
-> -	if (group_leader) {
-> -		if (is_software_event(event) &&
-> -		    !in_software_context(group_leader)) {
-> -			/*
-> -			 * If the event is a sw event, but the group_leader
-> -			 * is on hw context.
-> -			 *
-> -			 * Allow the addition of software events to hw
-> -			 * groups, this is safe because software events
-> -			 * never fail to schedule.
-> -			 */
-> -			pmu = group_leader->ctx->pmu;
-> -		} else if (!is_software_event(event) &&
-> -			   is_software_event(group_leader) &&
-> -			   (group_leader->group_caps & PERF_EV_CAP_SOFTWARE)) {
-> -			/*
-> -			 * In case the group is a pure software group, and we
-> -			 * try to add a hardware event, move the whole group to
-> -			 * the hardware context.
-> -			 */
-> -			move_group = 1;
-> -		}
-> -	}
-> -
->  	/*
->  	 * Get the target context (task or percpu):
->  	 */
-> -	ctx = find_get_context(pmu, task, event);
-> +	ctx = find_get_context(task, event);
->  	if (IS_ERR(ctx)) {
->  		err = PTR_ERR(ctx);
->  		goto err_alloc;
->  	}
->  
-> -	/*
-> -	 * Look up the group leader (we will attach this event to it):
-> -	 */
-> +	mutex_lock(&ctx->mutex);
-> +
-> +	if (ctx->task == TASK_TOMBSTONE) {
-> +		err = -ESRCH;
-> +		goto err_locked;
-> +	}
-> +
-> +	if (!task) {
-> +		/*
-> +		 * Check if the @cpu we're creating an event for is online.
-> +		 *
-> +		 * We use the perf_cpu_context::ctx::mutex to serialize against
-> +		 * the hotplug notifiers. See perf_event_{init,exit}_cpu().
-> +		 */
-> +		struct perf_cpu_context *cpuctx = per_cpu_ptr(&cpu_context, event->cpu);
-> +
-> +		if (!cpuctx->online) {
-> +			err = -ENODEV;
-> +			goto err_locked;
-> +		}
-> +	}
-> +
->  	if (group_leader) {
->  		err = -EINVAL;
->  
+On Fri, Jun 10, 2022 at 12:51:54PM +0200, Lukas Bulwahn wrote:
+> Commit 8ad69f490516 ("dt-bindings: i2c: convert ocores binding to yaml")
+> converts i2c-ocores.txt to opencores,i2c-ocores.yaml, but then adjust its
+> reference in MAINTAINERS to a slightly wrong new filename.
+>=20
+> Hence, ./scripts/get_maintainer.pl --self-test=3Dpatterns complains about=
+ a
+> broken reference.
+>=20
+> Repair this file reference in OPENCORES I2C BUS DRIVER.
+>=20
+> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+
+Applied to for-next, thanks!
 
 
-pulling up the ctx->mutex makes things simpler, but also violates the
-locking order vs exec_update_lock.
+--Humb4uRqxbTH4IS/
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Pull that lock up as well...
+-----BEGIN PGP SIGNATURE-----
 
----
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -12254,13 +12254,29 @@ SYSCALL_DEFINE5(perf_event_open,
- 	if (pmu->task_ctx_nr == perf_sw_context)
- 		event->event_caps |= PERF_EV_CAP_SOFTWARE;
- 
-+	if (task) {
-+		err = down_read_interruptible(&task->signal->exec_update_lock);
-+		if (err)
-+			goto err_alloc;
-+
-+		/*
-+		 * We must hold exec_update_lock across this and any potential
-+		 * perf_install_in_context() call for this new event to
-+		 * serialize against exec() altering our credentials (and the
-+		 * perf_event_exit_task() that could imply).
-+		 */
-+		err = -EACCES;
-+		if (!perf_check_permission(&attr, task))
-+			goto err_cred;
-+	}
-+
- 	/*
- 	 * Get the target context (task or percpu):
- 	 */
- 	ctx = find_get_context(task, event);
- 	if (IS_ERR(ctx)) {
- 		err = PTR_ERR(ctx);
--		goto err_alloc;
-+		goto err_cred;
- 	}
- 
- 	mutex_lock(&ctx->mutex);
-@@ -12358,58 +12374,14 @@ SYSCALL_DEFINE5(perf_event_open,
- 			goto err_context;
- 	}
- 
--	event_file = anon_inode_getfile("[perf_event]", &perf_fops, event, f_flags);
--	if (IS_ERR(event_file)) {
--		err = PTR_ERR(event_file);
--		event_file = NULL;
--		goto err_context;
--	}
--
--	if (task) {
--		err = down_read_interruptible(&task->signal->exec_update_lock);
--		if (err)
--			goto err_file;
--
--		/*
--		 * We must hold exec_update_lock across this and any potential
--		 * perf_install_in_context() call for this new event to
--		 * serialize against exec() altering our credentials (and the
--		 * perf_event_exit_task() that could imply).
--		 */
--		err = -EACCES;
--		if (!perf_check_permission(&attr, task))
--			goto err_cred;
--	}
--
--	if (ctx->task == TASK_TOMBSTONE) {
--		err = -ESRCH;
--		goto err_locked;
--	}
--
- 	if (!perf_event_validate_size(event)) {
- 		err = -E2BIG;
--		goto err_locked;
--	}
--
--	if (!task) {
--		/*
--		 * Check if the @cpu we're creating an event for is online.
--		 *
--		 * We use the perf_cpu_context::ctx::mutex to serialize against
--		 * the hotplug notifiers. See perf_event_{init,exit}_cpu().
--		 */
--		struct perf_cpu_context *cpuctx =
--			container_of(ctx, struct perf_cpu_context, ctx);
--
--		if (!cpuctx->online) {
--			err = -ENODEV;
--			goto err_locked;
--		}
-+		goto err_context;
- 	}
- 
- 	if (perf_need_aux_event(event) && !perf_get_aux_event(event, group_leader)) {
- 		err = -EINVAL;
--		goto err_locked;
-+		goto err_context;
- 	}
- 
- 	/*
-@@ -12418,11 +12390,18 @@ SYSCALL_DEFINE5(perf_event_open,
- 	 */
- 	if (!exclusive_event_installable(event, ctx)) {
- 		err = -EBUSY;
--		goto err_cred;
-+		goto err_context;
- 	}
- 
- 	WARN_ON_ONCE(ctx->parent_ctx);
- 
-+	event_file = anon_inode_getfile("[perf_event]", &perf_fops, event, f_flags);
-+	if (IS_ERR(event_file)) {
-+		err = PTR_ERR(event_file);
-+		event_file = NULL;
-+		goto err_context;
-+	}
-+
- 	/*
- 	 * This is the point on no return; we cannot fail hereafter. This is
- 	 * where we start modifying current state.
-@@ -12500,17 +12479,15 @@ SYSCALL_DEFINE5(perf_event_open,
- 	fd_install(event_fd, event_file);
- 	return event_fd;
- 
--err_cred:
--	if (task)
--		up_read(&task->signal->exec_update_lock);
--err_file:
--	fput(event_file);
- err_context:
- 	/* event->pmu_ctx freed by free_event() */
- err_locked:
- 	mutex_unlock(&ctx->mutex);
- 	perf_unpin_context(ctx);
- 	put_ctx(ctx);
-+err_cred:
-+	if (task)
-+		up_read(&task->signal->exec_update_lock);
- err_alloc:
- 	/*
- 	 * If event_file is set, the fput() above will have called ->release()
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmKnTOUACgkQFA3kzBSg
+KbYCzQ/8CnVbVX/n9OOuxdaPSvaelEt7wJ7ti1XWUYHrqBjQ5Jf8d5Duy70IoW3G
+/2o0k7BUxaCMVbLjwiVHBXQai+5ms1jca0qtu3vd0KbtcGMyLvNL0m1/Eoeb2hFH
+7o1buKsv5dbuZvGf3QwgvE2BbvQ/dIg3e0OfsKqu/2yAMu3UBz3bbaA3iuva4QbK
+ODXGRUsJn3ZmoLGrTaIc9/R6g4gMjKulDefWuF+Mx0uFkfjtOMcf3ggTNDaTu+0s
+w0Sh1OulFx2+2gQZ2ebLJcUXFrqSxaTX2rjcHf8f9UoCoLGOLA3L/bKNNmzJgsrq
+Ng1inbdMbWsHmys88y2MxTyVvvU0pd2qCOrVt8duhaoIj0BsyRlQT1K4JCl0Q06Y
+vBybjZiEgGs7d9uVvZy7a4g8AvTp9n+QIeZcecjNvPEmM5gN/28edIshrx5ODtnJ
+3Ek66WPsXnY+y6uPCHbAvt0LirFM3q3tVbawWCKLQMqOQFXceNmUFhytofPzJh34
+o/8JXsxE4fs1SFGN88mRbsUOSjrQTBGJM1gurSee6ZrU58DqrSFLT64/VHEWfe3G
+er86rmAv1Tq7iWvN0Al1H0zC7xCsmUjtIoL/QxFh2pdCH7UgYusfYuY4eXMD8dA+
+vVWufqGZaYl1GiJrLCW5rPRDVYw/1HcslRcdA/ThJxhY+HROgb8=
+=wLIF
+-----END PGP SIGNATURE-----
+
+--Humb4uRqxbTH4IS/--
