@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76DDBC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:24:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0825EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:24:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352720AbiFMLYi (ORCPT
+        id S1353701AbiFMLYm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:24:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46718 "EHLO
+        Mon, 13 Jun 2022 07:24:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353743AbiFMLQR (ORCPT
+        with ESMTP id S1353740AbiFMLQQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:16:17 -0400
+        Mon, 13 Jun 2022 07:16:16 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E383613E9E;
-        Mon, 13 Jun 2022 03:39:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B1E13E3D;
+        Mon, 13 Jun 2022 03:39:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 48C7F60F9A;
-        Mon, 13 Jun 2022 10:39:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57D54C341C4;
-        Mon, 13 Jun 2022 10:39:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 933BD6119F;
+        Mon, 13 Jun 2022 10:39:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99A2EC34114;
+        Mon, 13 Jun 2022 10:39:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116793;
-        bh=iAbFE3K6z0vMTrB6qPWR5hsWfHPkqkqHVd/UNDrgL/c=;
+        s=korg; t=1655116791;
+        bh=lDsK+540RmwREZaERlJaP2SKBGrB1xvgPEhdWnr0PS4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OuWCXvm7j9+lqN7TonvlT7uxcZFXw/e5rtS42W30JM1VHNGzD60bGVGoOoexCIRtg
-         pzxyzQvSMVDwU4NystsruKvVUQvu/GiqrrUzMf/aXb3XmUHuylmsstxEndWmPr/dJT
-         0GCPJGY2RTgTEUCGDqWoP3fWx46gwinG+EUd2IxY=
+        b=0/Es6xM8rh1vW0q0a/6F/sP4amyT5ECtqDy0odKn0EafKGa6eQi9Li8PiIBAqhey4
+         PrOoTH568h6XE1aNYyh9/GsVSrPeSIYOajqr1uOdw3qLO/SurD7cnAG6z8n+sV9Kpt
+         FzM3eHxH4lQNcz/vCcmPQAxhCrD6E0lDEjT2GTI0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Vishal Verma <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Jeff Moyer <jmoyer@redhat.com>,
+        Krzysztof Kensicki <krzysztof.kensicki@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 176/411] pinctrl: mvebu: Fix irq_of_parse_and_map() return value
-Date:   Mon, 13 Jun 2022 12:07:29 +0200
-Message-Id: <20220613094933.935156497@linuxfoundation.org>
+Subject: [PATCH 5.4 175/411] nvdimm: Allow overwrite in the presence of disabled dimms
+Date:   Mon, 13 Jun 2022 12:07:28 +0200
+Message-Id: <20220613094933.904632229@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -51,34 +54,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Dan Williams <dan.j.williams@intel.com>
 
-[ Upstream commit 71bc7cf3be65bab441e03667cf215c557712976c ]
+[ Upstream commit bb7bf697fed58eae9d3445944e457ab0de4da54f ]
 
-The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
+It is not clear why the original implementation of overwrite support
+required the dimm driver to be active before overwrite could proceed. In
+fact that can lead to cases where the kernel retains an invalid cached
+copy of the labels from before the overwrite. Unfortunately the kernel
+has not only allowed that case, but enforced it.
 
-Fixes: 2f227605394b ("pinctrl: armada-37xx: Add irqchip support")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220422105339.78810-1-krzysztof.kozlowski@linaro.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Going forward, allow for overwrite to happen while the label area is
+offline, and follow-on with updates to 'ndctl sanitize-dimm --overwrite'
+to trigger the label area invalidation by default.
+
+Cc: Vishal Verma <vishal.l.verma@intel.com>
+Cc: Dave Jiang <dave.jiang@intel.com>
+Cc: Ira Weiny <ira.weiny@intel.com>
+Cc: Jeff Moyer <jmoyer@redhat.com>
+Reported-by: Krzysztof Kensicki <krzysztof.kensicki@intel.com>
+Fixes: 7d988097c546 ("acpi/nfit, libnvdimm/security: Add security DSM overwrite support")
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/mvebu/pinctrl-armada-37xx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/nvdimm/security.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-index f56add78d58c..359b2ecfcbdb 100644
---- a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-+++ b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-@@ -773,7 +773,7 @@ static int armada_37xx_irqchip_register(struct platform_device *pdev,
- 	for (i = 0; i < nr_irq_parent; i++) {
- 		int irq = irq_of_parse_and_map(np, i);
+diff --git a/drivers/nvdimm/security.c b/drivers/nvdimm/security.c
+index 35d265014e1e..0e23d8c27792 100644
+--- a/drivers/nvdimm/security.c
++++ b/drivers/nvdimm/security.c
+@@ -379,11 +379,6 @@ static int security_overwrite(struct nvdimm *nvdimm, unsigned int keyid)
+ 			|| !nvdimm->sec.flags)
+ 		return -EOPNOTSUPP;
  
--		if (irq < 0)
-+		if (!irq)
- 			continue;
- 
- 		gpiochip_set_chained_irqchip(gc, irqchip, irq,
+-	if (dev->driver == NULL) {
+-		dev_dbg(dev, "Unable to overwrite while DIMM active.\n");
+-		return -EINVAL;
+-	}
+-
+ 	rc = check_security_state(nvdimm);
+ 	if (rc)
+ 		return rc;
 -- 
 2.35.1
 
