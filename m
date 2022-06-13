@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18CFFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:15:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FB58C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:15:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352012AbiFMMPV (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:15:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59974 "EHLO
+        id S238878AbiFMMP2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 08:15:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353816AbiFMMJz (ORCPT
+        with ESMTP id S1354377AbiFMMJ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:09:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97997532CE;
-        Mon, 13 Jun 2022 04:00:49 -0700 (PDT)
+        Mon, 13 Jun 2022 08:09:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CD7B532FA;
+        Mon, 13 Jun 2022 04:00:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65F41B80EA7;
-        Mon, 13 Jun 2022 11:00:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B61A3C3411C;
-        Mon, 13 Jun 2022 11:00:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CDAB61469;
+        Mon, 13 Jun 2022 11:00:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34875C34114;
+        Mon, 13 Jun 2022 11:00:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118039;
-        bh=am04AjD6owRvnb+LGNB0GWp0pAqfo+ZlLBOerBB7Xe0=;
+        s=korg; t=1655118052;
+        bh=oMk0Ft44FqbK0peOx4FqfoOomQEWe7BHGqVBQiA0TKU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KW0hIOWHec03gc3rHIvevK/IwGzafCPBTk18NnviEXeg+goVBcXnLbNCQZyHAKRKm
-         DHP2HbERMQsDXqT5rtpYlUK4ZWFuqhjxF2OgjFjOiEitEKKGrpQsqI8hJdThxdj/Ck
-         44DldnC+ijbgw5KlpU/vuV4ToDA5xve5r1Ewi6dY=
+        b=eVxwMdZ/BQpib8SkdTsnqWpcioncg0vr3//BKCyASYakddMwKeSL9D2R0WPehAh8M
+         E/cqI5lFp3KJaM/pawY3b30q64HxZ7t72lxp/q173IVoJHi7G2v8TZ+I+I3ZXscOqX
+         ZuqNlHv9dr/gRpJIMcYKac8Pt6p1sZ44+apd9Jg0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Romain Naour <romain.naour@smile.fr>,
-        Tony Lindgren <tony@atomide.com>,
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 213/287] bus: ti-sysc: Fix warnings for unbind for serial
-Date:   Mon, 13 Jun 2022 12:10:37 +0200
-Message-Id: <20220613094930.321973001@linuxfoundation.org>
+Subject: [PATCH 4.19 214/287] clocksource/drivers/oxnas-rps: Fix irq_of_parse_and_map() return value
+Date:   Mon, 13 Jun 2022 12:10:38 +0200
+Message-Id: <20220613094930.351836885@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -50,43 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Lindgren <tony@atomide.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit c337125b8834f9719dfda0e40b25eaa266f1b8cf ]
+[ Upstream commit 9c04a8ff03def4df3f81219ffbe1ec9b44ff5348 ]
 
-We can get "failed to disable" clock_unprepare warnings on unbind at least
-for the serial console device if the unbind is done before the device has
-been idled.
+The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
 
-As some devices are using deferred idle, we must check the status for
-pending idle work to idle the device.
-
-Fixes: 76f0f772e469 ("bus: ti-sysc: Improve handling for no-reset-on-init and no-idle-on-init")
-Cc: Romain Naour <romain.naour@smile.fr>
-Reviewed-by: Romain Naour <romain.naour@smile.fr>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
-Link: https://lore.kernel.org/r/20220512053021.61650-1-tony@atomide.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 89355274e1f7 ("clocksource/drivers/oxnas-rps: Add Oxford Semiconductor RPS Dual Timer")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220422104101.55754-1-krzysztof.kozlowski@linaro.org
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bus/ti-sysc.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/clocksource/timer-oxnas-rps.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/bus/ti-sysc.c b/drivers/bus/ti-sysc.c
-index b6a278183d82..bc274ddb9767 100644
---- a/drivers/bus/ti-sysc.c
-+++ b/drivers/bus/ti-sysc.c
-@@ -1801,7 +1801,9 @@ static int sysc_remove(struct platform_device *pdev)
- 	struct sysc *ddata = platform_get_drvdata(pdev);
- 	int error;
+diff --git a/drivers/clocksource/timer-oxnas-rps.c b/drivers/clocksource/timer-oxnas-rps.c
+index 30c6f4ce672b..cfcd54e66c57 100644
+--- a/drivers/clocksource/timer-oxnas-rps.c
++++ b/drivers/clocksource/timer-oxnas-rps.c
+@@ -247,7 +247,7 @@ static int __init oxnas_rps_timer_init(struct device_node *np)
+ 	}
  
--	cancel_delayed_work_sync(&ddata->idle_work);
-+	/* Device can still be enabled, see deferred idle quirk in probe */
-+	if (cancel_delayed_work_sync(&ddata->idle_work))
-+		ti_sysc_idle(&ddata->idle_work.work);
- 
- 	error = pm_runtime_get_sync(ddata->dev);
- 	if (error < 0) {
+ 	rps->irq = irq_of_parse_and_map(np, 0);
+-	if (rps->irq < 0) {
++	if (!rps->irq) {
+ 		ret = -EINVAL;
+ 		goto err_iomap;
+ 	}
 -- 
 2.35.1
 
