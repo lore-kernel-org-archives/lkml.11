@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5A89C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:50:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE829C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:50:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379677AbiFMNut (ORCPT
+        id S1379696AbiFMNuw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:50:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40504 "EHLO
+        Mon, 13 Jun 2022 09:50:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379419AbiFMNoM (ORCPT
+        with ESMTP id S1379373AbiFMNoJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:44:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C56A2403CA;
-        Mon, 13 Jun 2022 04:32:07 -0700 (PDT)
+        Mon, 13 Jun 2022 09:44:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C6493FBE8;
+        Mon, 13 Jun 2022 04:32:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CE9861037;
-        Mon, 13 Jun 2022 11:32:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A801C3411C;
-        Mon, 13 Jun 2022 11:32:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58846B80EAB;
+        Mon, 13 Jun 2022 11:32:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF9FFC3411C;
+        Mon, 13 Jun 2022 11:31:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119925;
-        bh=N0xKfe2H9O0r3xkTOw7Xz8JJXf8uIot4OBYdJaZ2TcY=;
+        s=korg; t=1655119920;
+        bh=dT2l33uv6GhCpXb1oLlsKyZNKaNp+QotPFkoIfnKgag=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mrfoRLyNNEG9eWAsp39eeUadNKoPSemCEhUmGyjts4/rg9zU5WlPeTpEzB0+l5ETi
-         vVNs+KHWeHVcjmy7Optco0/R/mQkobLIIUZVuW41KMZcR6rXUaaqHKmx5ysZpoiKV3
-         GaWWMIhQNyprvlS3Pz94Lncdgt/FyEzF0JfXjKrQ=
+        b=WMNr4tpD8EkfpK84hIuWu1IfgM+Ko9TnOX76oZq5XlKt+23p1v7SO+m5bF4iWsJHQ
+         2OawHKck9L1i/TXSw+luirS10H5cm8bfBiJ//ZYdjM8bFrTkK0fz+SYs25jVDUG4OI
+         bp/ACEhkmFChrs2JtNNaraUT3TZmPwcHQuS1SYcI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 188/339] netfilter: nf_tables: release new hooks on unsupported flowtable flags
-Date:   Mon, 13 Jun 2022 12:10:13 +0200
-Message-Id: <20220613094932.377380679@linuxfoundation.org>
+Subject: [PATCH 5.18 186/339] netfilter: nf_tables: always initialize flowtable hook list in transaction
+Date:   Mon, 13 Jun 2022 12:10:11 +0200
+Message-Id: <20220613094932.317098656@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,42 +51,30 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit c271cc9febaaa1bcbc0842d1ee30466aa6148ea8 ]
+[ Upstream commit 2c9e4559773c261900c674a86b8e455911675d71 ]
 
-Release the list of new hooks that are pending to be registered in case
-that unsupported flowtable flags are provided.
+The hook list is used if nft_trans_flowtable_update(trans) == true. However,
+initialize this list for other cases for safety reasons.
 
 Fixes: 78d9f48f7f44 ("netfilter: nf_tables: add devices to existing flowtable")
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_tables_api.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ net/netfilter/nf_tables_api.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index e515fa7d1ca2..5c9a53729a28 100644
+index f23c40e6caa6..e515fa7d1ca2 100644
 --- a/net/netfilter/nf_tables_api.c
 +++ b/net/netfilter/nf_tables_api.c
-@@ -7427,11 +7427,15 @@ static int nft_flowtable_update(struct nft_ctx *ctx, const struct nlmsghdr *nlh,
+@@ -544,6 +544,7 @@ static int nft_trans_flowtable_add(struct nft_ctx *ctx, int msg_type,
+ 	if (msg_type == NFT_MSG_NEWFLOWTABLE)
+ 		nft_activate_next(ctx->net, flowtable);
  
- 	if (nla[NFTA_FLOWTABLE_FLAGS]) {
- 		flags = ntohl(nla_get_be32(nla[NFTA_FLOWTABLE_FLAGS]));
--		if (flags & ~NFT_FLOWTABLE_MASK)
--			return -EOPNOTSUPP;
-+		if (flags & ~NFT_FLOWTABLE_MASK) {
-+			err = -EOPNOTSUPP;
-+			goto err_flowtable_update_hook;
-+		}
- 		if ((flowtable->data.flags & NFT_FLOWTABLE_HW_OFFLOAD) ^
--		    (flags & NFT_FLOWTABLE_HW_OFFLOAD))
--			return -EOPNOTSUPP;
-+		    (flags & NFT_FLOWTABLE_HW_OFFLOAD)) {
-+			err = -EOPNOTSUPP;
-+			goto err_flowtable_update_hook;
-+		}
- 	} else {
- 		flags = flowtable->data.flags;
- 	}
++	INIT_LIST_HEAD(&nft_trans_flowtable_hooks(trans));
+ 	nft_trans_flowtable(trans) = flowtable;
+ 	nft_trans_commit_list_add_tail(ctx->net, trans);
+ 
 -- 
 2.35.1
 
