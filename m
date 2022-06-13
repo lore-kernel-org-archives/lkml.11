@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7F0CCCA481
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:20:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D906CCA485
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:20:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376546AbiFMNTH (ORCPT
+        id S1376566AbiFMNTN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:19:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42650 "EHLO
+        Mon, 13 Jun 2022 09:19:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359509AbiFMNKA (ORCPT
+        with ESMTP id S1359558AbiFMNKH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:10:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D0113A5D1;
-        Mon, 13 Jun 2022 04:21:03 -0700 (PDT)
+        Mon, 13 Jun 2022 09:10:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4C773A709;
+        Mon, 13 Jun 2022 04:21:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BDDE360EF1;
-        Mon, 13 Jun 2022 11:21:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5697C341C4;
-        Mon, 13 Jun 2022 11:21:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7552C60EF1;
+        Mon, 13 Jun 2022 11:21:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8305BC36AFF;
+        Mon, 13 Jun 2022 11:21:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119262;
-        bh=EbHpsNQsZRgTMF45CSYfLlirVAaStJQ+cyuj+aVwgLI=;
+        s=korg; t=1655119264;
+        bh=C3p8V+CShGR7nozEVmR7aMQKSLK+SVYLvPNgHctlLf8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u7pfJXCr1G397fPKbAM8yU7cdLkgmkFe1Gv9y4NV2GpTwQOAzzAylA0sAkfNiSBae
-         Ox8iC3Wtd6IH0l7XjNiN2BX1cFZ+caMeiNt2wsHn+fs08fvFr5emmnfFCKmNZWDi+9
-         DJPWgf7F4sXvnhhbjYap9rCu5DvBvTr/tDhLXfMc=
+        b=RqhaT9z3w5YSaukUAWHrrAE/Endll7ph0fIXYcfsicgRt5131Z4PhNUh76Uwiherb
+         NBOAvIJ95cOowkUj5e9FjEXeykX89WfwdzkCR3iwYGjL6nOD88toCOjoxtg7VbTlYO
+         c0NTiGN1D2VCk6qAgfkM4Mxj3imJk1GzNk8MzO30=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Zheyu Ma <zheyuma97@gmail.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 171/247] tty: synclink_gt: Fix null-pointer-dereference in slgt_clean()
-Date:   Mon, 13 Jun 2022 12:11:13 +0200
-Message-Id: <20220613094928.144777699@linuxfoundation.org>
+        Huang Guobin <huangguobin4@huawei.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 172/247] tty: Fix a possible resource leak in icom_probe
+Date:   Mon, 13 Jun 2022 12:11:14 +0200
+Message-Id: <20220613094928.174277515@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -49,45 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Huang Guobin <huangguobin4@huawei.com>
 
-[ Upstream commit 689ca31c542687709ba21ec2195c1fbce34fd029 ]
+[ Upstream commit ee157a79e7c82b01ae4c25de0ac75899801f322c ]
 
-When the driver fails at alloc_hdlcdev(), and then we remove the driver
-module, we will get the following splat:
-
-[   25.065966] general protection fault, probably for non-canonical address 0xdffffc0000000182: 0000 [#1] PREEMPT SMP KASAN PTI
-[   25.066914] KASAN: null-ptr-deref in range [0x0000000000000c10-0x0000000000000c17]
-[   25.069262] RIP: 0010:detach_hdlc_protocol+0x2a/0x3e0
-[   25.077709] Call Trace:
-[   25.077924]  <TASK>
-[   25.078108]  unregister_hdlc_device+0x16/0x30
-[   25.078481]  slgt_cleanup+0x157/0x9f0 [synclink_gt]
-
-Fix this by checking whether the 'info->netdev' is a null pointer first.
+When pci_read_config_dword failed, call pci_release_regions() and
+pci_disable_device() to recycle the resource previously allocated.
 
 Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Link: https://lore.kernel.org/r/20220410114814.3920474-1-zheyuma97@gmail.com
+Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
+Link: https://lore.kernel.org/r/20220331091005.3290753-1-huangguobin4@huawei.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/synclink_gt.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/serial/icom.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/synclink_gt.c b/drivers/tty/synclink_gt.c
-index 25c558e65ece..9bc2a9265277 100644
---- a/drivers/tty/synclink_gt.c
-+++ b/drivers/tty/synclink_gt.c
-@@ -1746,6 +1746,8 @@ static int hdlcdev_init(struct slgt_info *info)
-  */
- static void hdlcdev_exit(struct slgt_info *info)
- {
-+	if (!info->netdev)
-+		return;
- 	unregister_hdlc_device(info->netdev);
- 	free_netdev(info->netdev);
- 	info->netdev = NULL;
+diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
+index 03a2fe9f4c9a..02b375ba2f07 100644
+--- a/drivers/tty/serial/icom.c
++++ b/drivers/tty/serial/icom.c
+@@ -1501,7 +1501,7 @@ static int icom_probe(struct pci_dev *dev,
+ 	retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg);
+ 	if (retval) {
+ 		dev_err(&dev->dev, "PCI Config read FAILED\n");
+-		return retval;
++		goto probe_exit0;
+ 	}
+ 
+ 	pci_write_config_dword(dev, PCI_COMMAND,
 -- 
 2.35.1
 
