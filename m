@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 936CFC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:35:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2332FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:35:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383826AbiFMOfJ (ORCPT
+        id S1384306AbiFMOdt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:35:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39686 "EHLO
+        Mon, 13 Jun 2022 10:33:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385340AbiFMObE (ORCPT
+        with ESMTP id S1384972AbiFMOa2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:31:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 564A14BB80;
-        Mon, 13 Jun 2022 04:48:50 -0700 (PDT)
+        Mon, 13 Jun 2022 10:30:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 914E32B249;
+        Mon, 13 Jun 2022 04:48:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EA06613EF;
-        Mon, 13 Jun 2022 11:48:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B37FFC34114;
-        Mon, 13 Jun 2022 11:48:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 161A8B80D3A;
+        Mon, 13 Jun 2022 11:47:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C983C34114;
+        Mon, 13 Jun 2022 11:47:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120889;
-        bh=4oxHm1p9md4OCeao8DceTL8n6o67+unER+HdBMgk2n8=;
+        s=korg; t=1655120872;
+        bh=MPZ2kt6IJpKMf0EU6+R/THNMtkJr2jpdHAH+dhp2Y8c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EKMFqg64lyQG0mCnXL6L7tCtEude4tmpaBmbblT0gguSKveTzkgRMdIYmblGrw5zB
-         Y9dzf1W1/xsAdeNP3THMki6YcljJwKDq2Gh/Pbb+zG9l3TEW3z00JmBcS3LrzL5FnC
-         ljw6y+7jMfDKI++ASb003uHTvLM6xkGVCrZUIxLw=
+        b=I69pj31qr/PAPEXuNpwA13YKMXB0maS1sk8DMlKDB7/QJXAphB4Pe+tXg9U2RKdLQ
+         duaK3sbsxbY2I5JPlAzC8E+WTaRgD7ZtpFQFr7DZSte+dSD2FDUAi1QClm6Umy48eX
+         aw5sd4C9JlqbysqnDP8BGEcsF/K28nNFhOkEcgdg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Juergen Gross <jgross@suse.com>,
+        stable@vger.kernel.org, Mark Bloch <mbloch@nvidia.com>,
+        Maor Gottlieb <maorg@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 172/298] xen: unexport __init-annotated xen_xlate_map_ballooned_pages()
-Date:   Mon, 13 Jun 2022 12:11:06 +0200
-Message-Id: <20220613094930.149327237@linuxfoundation.org>
+Subject: [PATCH 5.17 188/298] net/mlx5: fs, fail conflicting actions
+Date:   Mon, 13 Jun 2022 12:11:22 +0200
+Message-Id: <20220613094930.807260019@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -53,53 +51,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Mark Bloch <mbloch@nvidia.com>
 
-[ Upstream commit dbac14a5a05ff8e1ce7c0da0e1f520ce39ec62ea ]
+[ Upstream commit 8fa5e7b20e01042b14f8cd684d2da9b638460c74 ]
 
-EXPORT_SYMBOL and __init is a bad combination because the .init.text
-section is freed up after the initialization. Hence, modules cannot
-use symbols annotated __init. The access to a freed symbol may end up
-with kernel panic.
+When combining two steering rules into one check
+not only do they share the same actions but those
+actions are also the same. This resolves an issue where
+when creating two different rules with the same match
+the actions are overwritten and one of the rules is deleted
+a FW syndrome can be seen in dmesg.
 
-modpost used to detect it, but it has been broken for a decade.
+mlx5_core 0000:03:00.0: mlx5_cmd_check:819:(pid 2105): DEALLOC_MODIFY_HEADER_CONTEXT(0x941) op_mod(0x0) failed, status bad resource state(0x9), syndrome (0x1ab444)
 
-Recently, I fixed modpost so it started to warn it again, then this
-showed up in linux-next builds.
-
-There are two ways to fix it:
-
-  - Remove __init
-  - Remove EXPORT_SYMBOL
-
-I chose the latter for this case because none of the in-tree call-sites
-(arch/arm/xen/enlighten.c, arch/x86/xen/grant-table.c) is compiled as
-modular.
-
-Fixes: 243848fc018c ("xen/grant-table: Move xlated_setup_gnttab_pages to common place")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-Acked-by: Stefano Stabellini <sstabellini@kernel.org>
-Link: https://lore.kernel.org/r/20220606045920.4161881-1-masahiroy@kernel.org
-Signed-off-by: Juergen Gross <jgross@suse.com>
+Fixes: 0d235c3fabb7 ("net/mlx5: Add hash table to search FTEs in a flow-group")
+Signed-off-by: Mark Bloch <mbloch@nvidia.com>
+Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/xen/xlate_mmu.c | 1 -
- 1 file changed, 1 deletion(-)
+ .../net/ethernet/mellanox/mlx5/core/fs_core.c | 35 +++++++++++++++++--
+ 1 file changed, 32 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/xen/xlate_mmu.c b/drivers/xen/xlate_mmu.c
-index 34742c6e189e..f17c4c03db30 100644
---- a/drivers/xen/xlate_mmu.c
-+++ b/drivers/xen/xlate_mmu.c
-@@ -261,7 +261,6 @@ int __init xen_xlate_map_ballooned_pages(xen_pfn_t **gfns, void **virt,
- 
- 	return 0;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+index bd52b0b4eefa..add55195335c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+@@ -1560,9 +1560,22 @@ static struct mlx5_flow_rule *find_flow_rule(struct fs_fte *fte,
+ 	return NULL;
  }
--EXPORT_SYMBOL_GPL(xen_xlate_map_ballooned_pages);
  
- struct remap_pfn {
- 	struct mm_struct *mm;
+-static bool check_conflicting_actions(u32 action1, u32 action2)
++static bool check_conflicting_actions_vlan(const struct mlx5_fs_vlan *vlan0,
++					   const struct mlx5_fs_vlan *vlan1)
+ {
+-	u32 xored_actions = action1 ^ action2;
++	return vlan0->ethtype != vlan1->ethtype ||
++	       vlan0->vid != vlan1->vid ||
++	       vlan0->prio != vlan1->prio;
++}
++
++static bool check_conflicting_actions(const struct mlx5_flow_act *act1,
++				      const struct mlx5_flow_act *act2)
++{
++	u32 action1 = act1->action;
++	u32 action2 = act2->action;
++	u32 xored_actions;
++
++	xored_actions = action1 ^ action2;
+ 
+ 	/* if one rule only wants to count, it's ok */
+ 	if (action1 == MLX5_FLOW_CONTEXT_ACTION_COUNT ||
+@@ -1579,6 +1592,22 @@ static bool check_conflicting_actions(u32 action1, u32 action2)
+ 			     MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH_2))
+ 		return true;
+ 
++	if (action1 & MLX5_FLOW_CONTEXT_ACTION_PACKET_REFORMAT &&
++	    act1->pkt_reformat != act2->pkt_reformat)
++		return true;
++
++	if (action1 & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR &&
++	    act1->modify_hdr != act2->modify_hdr)
++		return true;
++
++	if (action1 & MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH &&
++	    check_conflicting_actions_vlan(&act1->vlan[0], &act2->vlan[0]))
++		return true;
++
++	if (action1 & MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH_2 &&
++	    check_conflicting_actions_vlan(&act1->vlan[1], &act2->vlan[1]))
++		return true;
++
+ 	return false;
+ }
+ 
+@@ -1586,7 +1615,7 @@ static int check_conflicting_ftes(struct fs_fte *fte,
+ 				  const struct mlx5_flow_context *flow_context,
+ 				  const struct mlx5_flow_act *flow_act)
+ {
+-	if (check_conflicting_actions(flow_act->action, fte->action.action)) {
++	if (check_conflicting_actions(flow_act, &fte->action)) {
+ 		mlx5_core_warn(get_dev(&fte->node),
+ 			       "Found two FTEs with conflicting actions\n");
+ 		return -EEXIST;
 -- 
 2.35.1
 
