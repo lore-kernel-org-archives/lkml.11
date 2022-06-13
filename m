@@ -2,119 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68CCBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:30:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74A52C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:30:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349315AbiFMVan (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 17:30:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32952 "EHLO
+        id S234167AbiFMVar (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 17:30:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353143AbiFMV3T (ORCPT
+        with ESMTP id S1352640AbiFMV2t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 17:29:19 -0400
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 865BE388
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:25:32 -0700 (PDT)
-Received: by mail-io1-xd30.google.com with SMTP id y79so7496444iof.2
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:25:32 -0700 (PDT)
+        Mon, 13 Jun 2022 17:28:49 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08A3E2E9E8
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:21:23 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id z17so6835052pff.7
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:21:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5NnE+Xgzg7AJlz/AVhS5h85z464OyTQxoGvdET9a4HY=;
-        b=dGPjzDX0wzDFKyXDAUW16dsPz49CqHJLXNBHBiPeOgaE5d8xIbI0bX7Mtw+wOV7ghH
-         YdkHbi8kLXpQAGTQENTv5yw/FQizJyoXOIltRHJDFSNGf7ugFCFAHx/drsOJszoBvwES
-         3p+trjrQuIZ1rUqPy7JNsgwyvKgJewjazkJ2c=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=1pdPmusGMnUfQyyEHdu3Oky7j+h/vnutTYbvmZDyqZs=;
+        b=XUNbexr4kGyEWSemqyCTT+8Y3QUcITPQxnaHgckUUUsjuQFsbpOYwCs/VMAbViAxsp
+         fxb6wUVmkSoRBuhZRgbQSCpVfsD5PJIHl9QNg8/w7yEr7vn8U2IwmWyFW47EIqWigFL1
+         YkDfx9KjX47u+27zvLVOSmKeiSdRcGxIRSzg4NWfvRQZr4OaMJZjnz0wptD9+a4ZMPvm
+         zytSu5i4whwjqSEfax9CF3l709vL3YxmZMcTQSmulbCZ/zfm2MJxxVasDG5UdWVAVpFX
+         WYV8ouCc4xGFX21BekPO9hGfcWxFYjoivG6UEps2q+OLquqOOHOzWkurJVzr/F05EbHZ
+         fgdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5NnE+Xgzg7AJlz/AVhS5h85z464OyTQxoGvdET9a4HY=;
-        b=n+oyut6UXdf34ldHS3BQ7mRQo/Z5KzluAqGUn5P38vVJqAo7tgdQfloX5UAGKh0emD
-         HHnhcj0JFaYtbTNFD3Hq5jzQ4O9SIgsacyS/BWw9GgSXrHKDOxuVU/bQLGKG/cpb63AU
-         +vdAie5/c9sjzUFK+pKjlxJz+OkrfwboF+98c+/Cso8JfsYF0sDZSBhLA2lol7y4U3Wl
-         TrHueNAfejcHMyrScE55p1wOYDWCXBxJERU5XKrn3025P9Y2n0HFieneGMw9tSzPTDvQ
-         l8XyGZFmwICdJ+fYQkeiyWCPi7Ua9oUxxDyxjzJtGpwhVipNLVunWh+n4Q6qczQ5/gmv
-         dXBg==
-X-Gm-Message-State: AOAM533AatcXXl0zxOq/y/skKyrhw1ul3ru3ZwgWmQBqCRnTE4RUPBHH
-        W/+pbRaR4ZKJ2/bge4Z1Mya56Mp5A/zVHIcfsxXtrw==
-X-Google-Smtp-Source: ABdhPJyIxaI4vfZUSuU/ut9uN+5eC6ns20NayC9QlK+nuCJcAcU7BG8to5jvy1RRIeWa4opwhwvNAExigeFrGbuL6o8=
-X-Received: by 2002:a05:6602:13c3:b0:669:cb19:6fe6 with SMTP id
- o3-20020a05660213c300b00669cb196fe6mr818734iov.177.1655155531829; Mon, 13 Jun
- 2022 14:25:31 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=1pdPmusGMnUfQyyEHdu3Oky7j+h/vnutTYbvmZDyqZs=;
+        b=qWvA4JEoF5nCnpXsFMftTiqJlbbKAdTJOK6lj4nVa6+5zxMZMZbwVQ1w7+uwqoIBe0
+         6Rutx5xXi9rAS6QKlXTk8ykTqxjysSa412vNB3jJ9guDa2ScWL6fe4GjT9m3ia422p7f
+         iyfZ+GaLQR+1EJaKqlKTRBBV3IRS8YFIaAL/DqOtg5h7LR4SFjkFNR84Wz94Oue6amLL
+         OGPZTrNrcV8SIMcfIKinwYC8g7e/5/06ltbz6d1TilAMgMpYZSUxG5SqwPevYU5QAC1N
+         DEh/wsd0bM290AFm/mUermmb6SSUxXVzLg0ZqXIO7KM6R54YHtV6Y1KFl4Ybbet7w2xg
+         xTKA==
+X-Gm-Message-State: AOAM533E6+rQovYYQbaY46zB151KW2W91/awg7Z/U/tIoyw2LeQ91iHJ
+        8HoyW38Whuo0fTDyd6JvQ6dF9P/lkSo=
+X-Google-Smtp-Source: ABdhPJy3+lg35CK83pWQYOr/pm2VSe4+EXNwARqiW7cDOYbfBDIvxi1ptscUUO3Z/57x4NfCyyQ40g==
+X-Received: by 2002:a62:8702:0:b0:51b:c452:33cf with SMTP id i2-20020a628702000000b0051bc45233cfmr1283955pfe.72.1655155282381;
+        Mon, 13 Jun 2022 14:21:22 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id d20-20020a170902f15400b0015e8d4eb285sm5564414plb.207.2022.06.13.14.21.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 14:21:22 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     bcm-kernel-feedback-list@broadcom.com,
+        William Zhang <william.zhang@broadcom.com>,
+        Linux ARM List <linux-arm-kernel@lists.infradead.org>
+Cc:     samyon.furman@broadcom.com, dan.beygelman@broadcom.com,
+        tomer.yacoby@broadcom.com, philippe.reynes@softathome.com,
+        kursad.oney@broadcom.com, anand.gore@broadcom.com,
+        joel.peshkin@broadcom.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] MAINTAINERS: Add BCM6856 to bcmbca arch entry
+Date:   Mon, 13 Jun 2022 14:21:20 -0700
+Message-Id: <20220613212120.260366-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220608180437.31971-4-william.zhang@broadcom.com>
+References: <20220608180437.31971-1-william.zhang@broadcom.com> <20220608180437.31971-4-william.zhang@broadcom.com>
 MIME-Version: 1.0
-References: <20220530174326.1381-1-andriy.shevchenko@linux.intel.com> <20220603180618.4b643391@jic23-huawei>
-In-Reply-To: <20220603180618.4b643391@jic23-huawei>
-From:   Gwendal Grignou <gwendal@chromium.org>
-Date:   Mon, 13 Jun 2022 14:25:21 -0700
-Message-ID: <CAPUE2usmrREACn+bjRfMyNvF1aeozJq+tHCQY6XT7KMXvp94Bg@mail.gmail.com>
-Subject: Re: [PATCH v1 1/1] iio: proximity: sx_common: Allow IIO core to take
- care of firmware node
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The reason we have the code ACPI_COMPANION_SET and dev.of_node set (by
-commit 74a53a959028e ("iio:proximity:sx_common: Fix device property
-parsing on DT systems") from Stephen is we are getting device propery
-in ->get_default_reg(), which is called in sx_common_init_device(),
-before devm_iio_device_register().
+On Wed,  8 Jun 2022 11:04:37 -0700, William Zhang <william.zhang@broadcom.com> wrote:
+> Add BCM6856 related files to BCMBCA ARCH maintainer list entry
+> 
+> Signed-off-by: William Zhang <william.zhang@broadcom.com>
+> 
+> ---
 
-We have the same code path in other driver, like adc/stm32-adc.c,
-where indio_dev->dev.of_node is set manually to be able to set the
-resolution based on device tree properties.
-
-Gwendal.
-
-On Fri, Jun 3, 2022 at 9:57 AM Jonathan Cameron <jic23@kernel.org> wrote:
->
-> On Mon, 30 May 2022 20:43:26 +0300
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
->
-> > IIO core correctly will take care of firmware node if it's not set in
-> > the driver. Drop ACPI and OF specifics from the driver and allow IIO
-> > core to handle this.
-> >
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Looks fine to me.  As such I'll apply it now, but Gwendal, you've
-> been active with this driver recently so if you have time to sanity check
-> that would be great.  Once I've caught up with new stuff I plan to check
-> where we are with your various series on this driver.
->
-> Thanks,
->
-> Jonathan
->
-> > ---
-> >  drivers/iio/proximity/sx_common.c | 3 ---
-> >  1 file changed, 3 deletions(-)
-> >
-> > diff --git a/drivers/iio/proximity/sx_common.c b/drivers/iio/proximity/sx_common.c
-> > index 8ad814d96b7e..6bb68c1835da 100644
-> > --- a/drivers/iio/proximity/sx_common.c
-> > +++ b/drivers/iio/proximity/sx_common.c
-> > @@ -5,7 +5,6 @@
-> >   * Common part of most Semtech SAR sensor.
-> >   */
-> >
-> > -#include <linux/acpi.h>
-> >  #include <linux/bitops.h>
-> >  #include <linux/byteorder/generic.h>
-> >  #include <linux/delay.h>
-> > @@ -520,8 +519,6 @@ int sx_common_probe(struct i2c_client *client,
-> >       if (ret)
-> >               return dev_err_probe(dev, ret, "error reading WHOAMI\n");
-> >
-> > -     ACPI_COMPANION_SET(&indio_dev->dev, ACPI_COMPANION(dev));
-> > -     indio_dev->dev.of_node = client->dev.of_node;
-> >       indio_dev->modes = INDIO_DIRECT_MODE;
-> >
-> >       indio_dev->channels =  data->chip_info->iio_channels;
->
+Applied to https://github.com/Broadcom/stblinux/commits/maintainers/next, thanks!
+--
+Florian
