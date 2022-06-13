@@ -2,101 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44160C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:12:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71C08C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:14:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237228AbiFMRLl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 13:11:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54594 "EHLO
+        id S240417AbiFMROg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 13:14:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241837AbiFMRKQ (ORCPT
+        with ESMTP id S244427AbiFMROD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 13:10:16 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A332C54BD1;
-        Mon, 13 Jun 2022 05:16:28 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7BDA0D6E;
-        Mon, 13 Jun 2022 05:16:28 -0700 (PDT)
-Received: from [10.1.29.148] (e127744.cambridge.arm.com [10.1.29.148])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 512913F73B;
-        Mon, 13 Jun 2022 05:16:25 -0700 (PDT)
-Subject: Re: [PATCH 7/8] arm64/perf: Add BRBE driver
-To:     Anshuman Khandual <anshuman.khandual@arm.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        peterz@infradead.org, acme@kernel.org, mark.rutland@arm.com,
-        will@kernel.org
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        James Clark <james.clark@arm.com>,
-        Rob Herring <robh@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        linux-perf-users@vger.kernel.org
-References: <20220613100119.684673-1-anshuman.khandual@arm.com>
- <20220613100119.684673-8-anshuman.khandual@arm.com>
-From:   German Gomez <german.gomez@arm.com>
-Message-ID: <f84187d1-b7eb-e25e-090a-d09532f15594@arm.com>
-Date:   Mon, 13 Jun 2022 13:16:19 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Mon, 13 Jun 2022 13:14:03 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49B5B562DF
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 05:20:18 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id 184so5353673pga.12
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 05:20:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Z0oEkfDVJe+HvF3K4yQj+I/I4I4F1ajdtFNjkCqfrE4=;
+        b=HvvYkH2n5qn/QCZLJcg/jHbtZWu7OazLAFjOfxK5ql3Y9+4zNyt6n9R8RkcuMy2ClU
+         RJdk8sFbawmM3HQB/1tzN7aST+J6ldbAU0Xg1Oq5UcLgdxxern83DakfCeF7MXKyiJCQ
+         TqxapXtnyHBTqAIqYrk3KzyKJHszezFcombmWN9OKTTpPyV9Z4Ee5F40vGyzj2fFxsWV
+         N2Nv11kjMdymUzUg6yk041oz7xEpSAoYWEh4tKccm5tP+ymXZ0nUemtu2Br6ykn7zMkt
+         Xo9wFWSOYLocpAN6ScJO1bRK8uZ4H8u74/UsIXHXtRTtdKfJX3aR8EkiDCW27bhyxcpJ
+         9zpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Z0oEkfDVJe+HvF3K4yQj+I/I4I4F1ajdtFNjkCqfrE4=;
+        b=i93erp1UrngJE4rS+fVaWg1jjFbgXTm30lKgcGi+s1rpZ4h++nqZwDHzkeOEHfAz0V
+         B7L6Qzbv8Mvxk8YfJEKKn6H+bZ9qbtAVj7bEpebx72rAa0MoU/HFsdFgN7/E03FtbnB2
+         Yv4iXudK6vLlmC7OIhKxptIu6onQHUYrdEY6bL7QqLNYUJJxKJeFUB96aJQx8tfQX7Hx
+         0I3oMny5FAujnJFZVroRRK1eNf9u95ZT1sGJHpU6EAL4qStYG2ZCAxD5xfVnQ5S3NlOP
+         KZIJjQFZKXrCKkdpCnO8F5pdrvExbIcNrO1RtdX9dTguSRWjxJL+DhhdRiNLpuFb6mIB
+         q09w==
+X-Gm-Message-State: AOAM5302/Ev/qqhE2Jp/BPZ03K25Lz1719hdGZuA7bsH/eLUdO1RS9jP
+        40QYU/23SUZbjTzfQVUeueTf0w==
+X-Google-Smtp-Source: ABdhPJzvjve4xAnVW/ZwpbBTzlF6lkZU8LuA+bcz0387m1+Rf+OnvgQ2HZdlwb6VqKgpLYWwS8Na6Q==
+X-Received: by 2002:a63:9c4:0:b0:401:a7b6:ad18 with SMTP id 187-20020a6309c4000000b00401a7b6ad18mr18250278pgj.523.1655122817456;
+        Mon, 13 Jun 2022 05:20:17 -0700 (PDT)
+Received: from localhost ([139.177.225.255])
+        by smtp.gmail.com with ESMTPSA id x4-20020a170902820400b00163fbb1eec5sm4944428pln.229.2022.06.13.05.20.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 05:20:16 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 20:20:13 +0800
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     andrey.konovalov@linux.dev
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Marco Elver <elver@google.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        kasan-dev@googlegroups.com, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Andrey Konovalov <andreyknvl@google.com>
+Subject: Re: [PATCH v2 1/3] mm: rename kernel_init_free_pages to
+ kernel_init_pages
+Message-ID: <YqcrfaaImHWEYuRK@FVFYT0MHHV2J.usts.net>
+References: <1ecaffc0a9c1404d4d7cf52efe0b2dc8a0c681d8.1654798516.git.andreyknvl@google.com>
 MIME-Version: 1.0
-In-Reply-To: <20220613100119.684673-8-anshuman.khandual@arm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1ecaffc0a9c1404d4d7cf52efe0b2dc8a0c681d8.1654798516.git.andreyknvl@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Anshuman, thanks for the update,
+On Thu, Jun 09, 2022 at 08:18:45PM +0200, andrey.konovalov@linux.dev wrote:
+> From: Andrey Konovalov <andreyknvl@google.com>
+> 
+> Rename kernel_init_free_pages() to kernel_init_pages(). This function is
+> not only used for free pages but also for pages that were just allocated.
+> 
+> Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
 
-As I mentioned offline, I have a perf test that I've been using for the
-branch records and filters. I'll let you know the result using this set.
+LGTM.
 
-On 13/06/2022 11:01, Anshuman Khandual wrote:
-> [...]
->
-> +
-> +static int brbe_fetch_perf_priv(u64 brbinf)
-> +{
-> +       int brbe_el = brbe_fetch_el(brbinf);
-> +
-> +       switch (brbe_el) {
-> +       case BRBINF_EL_EL0:
-> +               return PERF_BR_PRIV_USER;
-> +       case BRBINF_EL_EL1:
-> +               return PERF_BR_PRIV_KERNEL;
-> +       case BRBINF_EL_EL2:
-> +               if (is_kernel_in_hyp_mode())
-> +                       return PERF_BR_PRIV_KERNEL;
-> +               return PERF_BR_PRIV_HV;
-> +       default:
-> +               pr_warn("unknown branch privilege captured\n");
-> +               return -1;
+Reviewed-by: Muchun Song <songmuchun@bytedance.com>
 
-This looks like it should return PERF_BR_PRIV_UNKNOWN.
-
-Thanks,
-German
-
-> +       }
-> +}
-> +
-> +static void capture_brbe_flags(struct pmu_hw_events *cpuc, struct perf_event *event,
-> +			       u64 brbinf, int idx)
-> +{
->
-> [...]
->
-> +
-> +	if (branch_sample_priv(event)) {
-> +		/*
-> +		 * All these information (i.e branch privilege level) are not
-> +		 * available for source only branch records.
-> +		 */
-> +		if (type != BRBINF_VALID_SOURCE)
-> +			cpuc->brbe_entries[idx].priv = brbe_fetch_perf_priv(brbinf);
-> +	}
-> +}
-> +
->
-> [...]
+Thanks.
