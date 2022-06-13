@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94870CCA48A
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:04:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F393BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:05:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358791AbiFMNEq (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:04:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49960 "EHLO
+        id S240920AbiFMNE7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 09:04:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354162AbiFMMzx (ORCPT
+        with ESMTP id S1356108AbiFMMzR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:55:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEAFF120B1;
-        Mon, 13 Jun 2022 04:16:44 -0700 (PDT)
+        Mon, 13 Jun 2022 08:55:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92326B7DE;
+        Mon, 13 Jun 2022 04:15:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6431160B60;
-        Mon, 13 Jun 2022 11:16:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74558C34114;
-        Mon, 13 Jun 2022 11:16:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4E084B80EA8;
+        Mon, 13 Jun 2022 11:15:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9218C3411C;
+        Mon, 13 Jun 2022 11:15:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119003;
-        bh=4uPzDoDtm+L7EnFXiMH8EH9hH4YgpoC0Sl0c04Rut6E=;
+        s=korg; t=1655118937;
+        bh=abkGmMOdu/QCux4ybU0A5MWLV/3jWK/Fgc2EYNAW6vI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pzbx9rx5MOG5FGvzrUPgJDwW1v85hZGFkrcCykqfTcIahgNkoLnuQqb0pnWyZWnYs
-         SoBX+5+J2zNnaAOIS0xTe04L5acR9QWWxxKbxDnmn2IXt58dgk1SdP921GTxHKdpZJ
-         lusdGxQJwxKkmx5NIN+vnGN8LjeI9+aXzpKBPB4g=
+        b=sOM4bit8hYwPZfUcnrUTac/2GcsgLLtcxGvJwIRH7Yaq4sYGMl8LxYAgvrlxvphz8
+         ngfbkrGQxKFkIPEXKDgeT9+zBp1ov6col0A8EhwJ+uTLiSUQ8/jPX77n30wh535gnk
+         BmKeEgcbca1CATfeRKRuZ+LVfkpU16NfDmj8PRrk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
-        Richard Weinberger <richard@nod.at>,
+        stable@vger.kernel.org, YueHaibing <yuehaibing@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 079/247] ubi: ubi_create_volume: Fix use-after-free when volume creation failed
-Date:   Mon, 13 Jun 2022 12:09:41 +0200
-Message-Id: <20220613094925.353057682@linuxfoundation.org>
+Subject: [PATCH 5.15 054/247] serial: cpm_uart: Fix build error without CONFIG_SERIAL_CPM_CONSOLE
+Date:   Mon, 13 Jun 2022 12:09:16 +0200
+Message-Id: <20220613094924.593981143@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,46 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhihao Cheng <chengzhihao1@huawei.com>
+From: YueHaibing <yuehaibing@huawei.com>
 
-[ Upstream commit 8c03a1c21d72210f81cb369cc528e3fde4b45411 ]
+[ Upstream commit 0258502f11a4f6036b5f8b34b09027c8a92def3a ]
 
-There is an use-after-free problem for 'eba_tbl' in ubi_create_volume()'s
-error handling path:
+drivers/tty/serial/cpm_uart/cpm_uart_core.c: In function ‘cpm_uart_init_port’:
+drivers/tty/serial/cpm_uart/cpm_uart_core.c:1251:7: error: ‘udbg_port’ undeclared (first use in this function); did you mean ‘uart_port’?
+  if (!udbg_port)
+       ^~~~~~~~~
+       uart_port
 
-  ubi_eba_replace_table(vol, eba_tbl)
-    vol->eba_tbl = tbl
-out_mapping:
-  ubi_eba_destroy_table(eba_tbl)   // Free 'eba_tbl'
-out_unlock:
-  put_device(&vol->dev)
-    vol_release
-      kfree(tbl->entries)	  // UAF
+commit d142585bceb3 leave this corner, wrap it with #ifdef block
 
-Fix it by removing redundant 'eba_tbl' releasing.
-Fetch a reproducer in [Link].
-
-Fixes: 493cfaeaa0c9b ("mtd: utilize new cdev_device_add helper function")
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215965
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Fixes: d142585bceb3 ("serial: cpm_uart: Protect udbg definitions by CONFIG_SERIAL_CPM_CONSOLE")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Link: https://lore.kernel.org/r/20220518135452.39480-1-yuehaibing@huawei.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/ubi/vmt.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/tty/serial/cpm_uart/cpm_uart_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/mtd/ubi/vmt.c b/drivers/mtd/ubi/vmt.c
-index 1bc7b3a05604..6ea95ade4ca6 100644
---- a/drivers/mtd/ubi/vmt.c
-+++ b/drivers/mtd/ubi/vmt.c
-@@ -309,7 +309,6 @@ int ubi_create_volume(struct ubi_device *ubi, struct ubi_mkvol_req *req)
- 	ubi->volumes[vol_id] = NULL;
- 	ubi->vol_count -= 1;
- 	spin_unlock(&ubi->volumes_lock);
--	ubi_eba_destroy_table(eba_tbl);
- out_acc:
- 	spin_lock(&ubi->volumes_lock);
- 	ubi->rsvd_pebs -= vol->reserved_pebs;
+diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+index d6d3db9c3b1f..db07d6a5d764 100644
+--- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
++++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+@@ -1247,7 +1247,7 @@ static int cpm_uart_init_port(struct device_node *np,
+ 	}
+ 
+ #ifdef CONFIG_PPC_EARLY_DEBUG_CPM
+-#ifdef CONFIG_CONSOLE_POLL
++#if defined(CONFIG_CONSOLE_POLL) && defined(CONFIG_SERIAL_CPM_CONSOLE)
+ 	if (!udbg_port)
+ #endif
+ 		udbg_putc = NULL;
 -- 
 2.35.1
 
