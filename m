@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74B5ACCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:57:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A659AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349319AbiFMK5J (ORCPT
+        id S1349433AbiFMK5M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:57:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59610 "EHLO
+        Mon, 13 Jun 2022 06:57:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349637AbiFMKyZ (ORCPT
+        with ESMTP id S1349746AbiFMKy1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:54:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E0722F671;
-        Mon, 13 Jun 2022 03:28:19 -0700 (PDT)
+        Mon, 13 Jun 2022 06:54:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D6B2FE47;
+        Mon, 13 Jun 2022 03:28:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA93FB80E95;
-        Mon, 13 Jun 2022 10:28:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 518A2C34114;
-        Mon, 13 Jun 2022 10:28:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 941AEB80E90;
+        Mon, 13 Jun 2022 10:28:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05D0AC34114;
+        Mon, 13 Jun 2022 10:28:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116096;
-        bh=TBUDZ+myfFdQp2Q9crrRnwOfAHGZg4s6dWhVQ8ghWYA=;
+        s=korg; t=1655116099;
+        bh=wg/jeH1nD6ezVz3KPJLq9fuNHsOUPOmgIWwYN1gPBtY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=efD4HLkYRz7fBXOdNNsNypSqPhCdxWSyFpk0JMJsNw7m5jUh1o35easIJ+V8B9H56
-         smFWGqSFLe2rXp0rPGOfAPrjD09K3ufpluCaDPu9N5ZF98musmNt1mVEhdx1Q8rzvG
-         VEUKE3bL9L5r7vdXWKqx1gzzLispY3DqfjI9fOFk=
+        b=2ZJz30uVjaraupxB9Bykifca8/0nXgQrS5QXnkK1NDFk5QG3vTeHFzvxbVPsTL18R
+         lChvjjPw3IN0mM8lvftkksM8rUTKDq+7/xBAX568LXI6jCyEaOfc2c6SjRL12P7PRa
+         /DLiTuawkuiwaWY/2Ojzvt4ih/X7oRbZonnU0Jfk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 022/411] spi: spi-rspi: Remove setting {src,dst}_{addr,addr_width} based on DMA direction
-Date:   Mon, 13 Jun 2022 12:04:55 +0200
-Message-Id: <20220613094929.166927546@linuxfoundation.org>
+        stable@vger.kernel.org, Kathiravan T <quic_kathirav@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: [PATCH 4.14 132/218] arm64: dts: qcom: ipq8074: fix the sleep clock frequency
+Date:   Mon, 13 Jun 2022 12:09:50 +0200
+Message-Id: <20220613094924.584223320@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,70 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Biju Das <biju.das.jz@bp.renesas.com>
+From: Kathiravan T <quic_kathirav@quicinc.com>
 
-[ Upstream commit 6f381481a5b236cb53d6de2c49c6ef83a4d0f432 ]
+commit f607dd767f5d6800ffbdce5b99ba81763b023781 upstream.
 
-The direction field in the DMA config is deprecated. The rspi driver
-sets {src,dst}_{addr,addr_width} based on the DMA direction and
-it results in dmaengine_slave_config() failure as RZ DMAC driver
-validates {src,dst}_addr_width values independent of DMA direction.
+Sleep clock frequency should be 32768Hz. Lets fix it.
 
-This patch fixes the issue by passing both {src,dst}_{addr,addr_width}
-values independent of DMA direction.
-
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Suggested-by: Vinod Koul <vkoul@kernel.org>
-Reviewed-by: Vinod Koul <vkoul@kernel.org>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/20220411173115.6619-1-biju.das.jz@bp.renesas.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: 41dac73e243d ("arm64: dts: Add ipq8074 SoC and HK01 board support")
+Link: https://lore.kernel.org/all/e2a447f8-6024-0369-f698-2027b6edcf9e@codeaurora.org/
+Signed-off-by: Kathiravan T <quic_kathirav@quicinc.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/1644581655-11568-1-git-send-email-quic_kathirav@quicinc.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/spi/spi-rspi.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+ arch/arm64/boot/dts/qcom/ipq8074.dtsi |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spi-rspi.c b/drivers/spi/spi-rspi.c
-index 7222c7689c3c..0524741d73b9 100644
---- a/drivers/spi/spi-rspi.c
-+++ b/drivers/spi/spi-rspi.c
-@@ -1044,14 +1044,11 @@ static struct dma_chan *rspi_request_dma_chan(struct device *dev,
- 	}
+--- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
+@@ -181,7 +181,7 @@
+ 	clocks {
+ 		sleep_clk: sleep_clk {
+ 			compatible = "fixed-clock";
+-			clock-frequency = <32000>;
++			clock-frequency = <32768>;
+ 			#clock-cells = <0>;
+ 		};
  
- 	memset(&cfg, 0, sizeof(cfg));
-+	cfg.dst_addr = port_addr + RSPI_SPDR;
-+	cfg.src_addr = port_addr + RSPI_SPDR;
-+	cfg.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
-+	cfg.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
- 	cfg.direction = dir;
--	if (dir == DMA_MEM_TO_DEV) {
--		cfg.dst_addr = port_addr;
--		cfg.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
--	} else {
--		cfg.src_addr = port_addr;
--		cfg.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
--	}
- 
- 	ret = dmaengine_slave_config(chan, &cfg);
- 	if (ret) {
-@@ -1082,12 +1079,12 @@ static int rspi_request_dma(struct device *dev, struct spi_controller *ctlr,
- 	}
- 
- 	ctlr->dma_tx = rspi_request_dma_chan(dev, DMA_MEM_TO_DEV, dma_tx_id,
--					     res->start + RSPI_SPDR);
-+					     res->start);
- 	if (!ctlr->dma_tx)
- 		return -ENODEV;
- 
- 	ctlr->dma_rx = rspi_request_dma_chan(dev, DMA_DEV_TO_MEM, dma_rx_id,
--					     res->start + RSPI_SPDR);
-+					     res->start);
- 	if (!ctlr->dma_rx) {
- 		dma_release_channel(ctlr->dma_tx);
- 		ctlr->dma_tx = NULL;
--- 
-2.35.1
-
 
 
