@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A604ECCA489
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4663CCA48A
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:31:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384388AbiFMO3T (ORCPT
+        id S1384540AbiFMO3h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:29:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52856 "EHLO
+        Mon, 13 Jun 2022 10:29:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383934AbiFMOYV (ORCPT
+        with ESMTP id S1383956AbiFMOYW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:24:21 -0400
+        Mon, 13 Jun 2022 10:24:22 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37C3C47546;
-        Mon, 13 Jun 2022 04:45:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 778F247565;
+        Mon, 13 Jun 2022 04:46:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E46B6B80D31;
-        Mon, 13 Jun 2022 11:45:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DFB1C34114;
-        Mon, 13 Jun 2022 11:45:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39F40B80D3A;
+        Mon, 13 Jun 2022 11:46:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A901CC34114;
+        Mon, 13 Jun 2022 11:46:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120755;
-        bh=fOmEGDzjhXjRXNSFXsnkEyFZWht1ZbgaTXFWlRky5G8=;
+        s=korg; t=1655120761;
+        bh=zSl9On6JXQksaVkLlCojkuRstyiovCU05PcRybp6n9o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PFqyUc4RwTrEUnhLV+YiaATDb6YtH9ZIlPA3XK0XNndsbnQ8d7I36BXNbirjhhfk8
-         a64C2k6P35gG8tCmQTNUOby3KViABIIVj8v0u+tBQdTJY2Sbz76GBV5r5GKchDKvcb
-         xtHaZ6UN9SnH7nPBsA51JK4xdY3jwhXAkmyGonQg=
+        b=BUFpRs/yE4qhdz88iYyRtF40Qdtdod6jO40VQB5kNxBQm4lqkOd0C8afUC6Ek2qAh
+         cglEbZUb2Io27dvnmmZOD6odS+R4sjtDEm/SwPiV5s1G9OEZvbiMIQ9TwDB3STAnFP
+         OusftBvBBQV+Y2XO4kKd1CI7GFXy8vGE7j+oBTIQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Changcheng Liu <jerrliu@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 112/298] net/mlx5: correct ECE offset in query qp output
-Date:   Mon, 13 Jun 2022 12:10:06 +0200
-Message-Id: <20220613094928.344120690@linuxfoundation.org>
+Subject: [PATCH 5.17 148/298] NFSv4: Dont hold the layoutget locks across multiple RPC calls
+Date:   Mon, 13 Jun 2022 12:10:42 +0200
+Message-Id: <20220613094929.425863185@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,39 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Changcheng Liu <jerrliu@nvidia.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 3fc2a9e89b3508a5cc0c324f26d7b4740ba8c456 ]
+[ Upstream commit 6949493884fe88500de4af182588e071cf1544ee ]
 
-ECE field should be after opt_param_mask in query qp output.
+When doing layoutget as part of the open() compound, we have to be
+careful to release the layout locks before we can call any further RPC
+calls, such as setattr(). The reason is that those calls could trigger
+a recall, which could deadlock.
 
-Fixes: 6b646a7e4af6 ("net/mlx5: Add ability to read and write ECE options")
-Signed-off-by: Changcheng Liu <jerrliu@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/mlx5/mlx5_ifc.h | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ fs/nfs/nfs4proc.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 49a48d7709ac..4cd54277d5d9 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -5175,12 +5175,11 @@ struct mlx5_ifc_query_qp_out_bits {
+diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
+index 1db686509a3e..e9761f55ac9c 100644
+--- a/fs/nfs/nfs4proc.c
++++ b/fs/nfs/nfs4proc.c
+@@ -3101,6 +3101,10 @@ static int _nfs4_open_and_get_state(struct nfs4_opendata *opendata,
+ 	}
  
- 	u8         syndrome[0x20];
- 
--	u8         reserved_at_40[0x20];
--	u8         ece[0x20];
-+	u8         reserved_at_40[0x40];
- 
- 	u8         opt_param_mask[0x20];
- 
--	u8         reserved_at_a0[0x20];
-+	u8         ece[0x20];
- 
- 	struct mlx5_ifc_qpc_bits qpc;
- 
+ out:
++	if (opendata->lgp) {
++		nfs4_lgopen_release(opendata->lgp);
++		opendata->lgp = NULL;
++	}
+ 	if (!opendata->cancelled)
+ 		nfs4_sequence_free_slot(&opendata->o_res.seq_res);
+ 	return ret;
 -- 
 2.35.1
 
