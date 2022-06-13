@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8CF8CCA480
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92828C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:20:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353207AbiFMLTa (ORCPT
+        id S1353111AbiFMLTL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:19:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43236 "EHLO
+        Mon, 13 Jun 2022 07:19:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353075AbiFMLPC (ORCPT
+        with ESMTP id S1352993AbiFMLOx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:15:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E9A113F76;
-        Mon, 13 Jun 2022 03:37:36 -0700 (PDT)
+        Mon, 13 Jun 2022 07:14:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 598BFF5B0;
+        Mon, 13 Jun 2022 03:37:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 37CAD60EF5;
-        Mon, 13 Jun 2022 10:37:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47CF8C34114;
-        Mon, 13 Jun 2022 10:37:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD2D6B80EAA;
+        Mon, 13 Jun 2022 10:37:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14845C34114;
+        Mon, 13 Jun 2022 10:37:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116655;
-        bh=7oro8Z8axFzWkHRDWyos86S+DNjZJYpxQ4brKFMOJ8E=;
+        s=korg; t=1655116646;
+        bh=GZVRwy7337SVLmv0fEGVPgfQHVoUPUCbvcYZYxp8WFg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p1sISjzZpTdweCbWljVP9L2BLAnnZ2BSbSQMuJZ8lIpovflJ+8r+JjDrYaDTHx3ZW
-         LuiG+0MymzIXMo2F9qsKwPXEvMCFDdK9umW9Na6M2sNA/6hgVMS70m2Upm6N5OCfYs
-         EwAz3LMs5VuTLdJ2rLtHM+QL5Z0IrmeZ+YKJy9iQ=
+        b=yPopj2YuMYAryuFkKcFmMc4yktGMnrT+orMh+Px6Xsi3h9UnSg1EoNjHSettIoqJZ
+         ESJXiohNDrUezMPcXQl0d/DP3C0KbwTsPsVIteP8GdiAmFX6PxVyjaSgTbOhOy5Nxd
+         y2KKCYwB//Qomzj+n9fajIVyagceum64ld4K8cEQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Vinod Polimera <quic_vpolimer@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 137/411] media: exynos4-is: Change clk_disable to clk_disable_unprepare
-Date:   Mon, 13 Jun 2022 12:06:50 +0200
-Message-Id: <20220613094932.778065487@linuxfoundation.org>
+Subject: [PATCH 5.4 113/411] drm/msm/disp/dpu1: set vbif hw config to NULL to avoid use after memory free during pm runtime resume
+Date:   Mon, 13 Jun 2022 12:06:26 +0200
+Message-Id: <20220613094932.061365971@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -51,37 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Vinod Polimera <quic_vpolimer@quicinc.com>
 
-[ Upstream commit 9fadab72a6916c7507d7fedcd644859eef995078 ]
+[ Upstream commit fa5186b279ecf44b14fb435540d2065be91cb1ed ]
 
-The corresponding API for clk_prepare_enable is clk_disable_unprepare,
-other than clk_disable.
+BUG: Unable to handle kernel paging request at virtual address 006b6b6b6b6b6be3
 
-Fix this by changing clk_disable to clk_disable_unprepare.
+Call trace:
+  dpu_vbif_init_memtypes+0x40/0xb8
+  dpu_runtime_resume+0xcc/0x1c0
+  pm_generic_runtime_resume+0x30/0x44
+  __genpd_runtime_resume+0x68/0x7c
+  genpd_runtime_resume+0x134/0x258
+  __rpm_callback+0x98/0x138
+  rpm_callback+0x30/0x88
+  rpm_resume+0x36c/0x49c
+  __pm_runtime_resume+0x80/0xb0
+  dpu_core_irq_uninstall+0x30/0xb0
+  dpu_irq_uninstall+0x18/0x24
+  msm_drm_uninit+0xd8/0x16c
 
-Fixes: b4155d7d5b2c ("[media] exynos4-is: Ensure fimc-is clocks are not enabled until properly configured")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: 25fdd5933e4c ("drm/msm: Add SDM845 DPU support")
+Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/483255/
+Link: https://lore.kernel.org/r/1650857213-30075-1-git-send-email-quic_vpolimer@quicinc.com
+[DB: fixed Fixes tag]
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/exynos4-is/fimc-is.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/exynos4-is/fimc-is.c b/drivers/media/platform/exynos4-is/fimc-is.c
-index 64148b7e0d98..9bb14bb2e498 100644
---- a/drivers/media/platform/exynos4-is/fimc-is.c
-+++ b/drivers/media/platform/exynos4-is/fimc-is.c
-@@ -141,7 +141,7 @@ static int fimc_is_enable_clocks(struct fimc_is *is)
- 			dev_err(&is->pdev->dev, "clock %s enable failed\n",
- 				fimc_is_clocks[i]);
- 			for (--i; i >= 0; i--)
--				clk_disable(is->clocks[i]);
-+				clk_disable_unprepare(is->clocks[i]);
- 			return ret;
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+index 72f487692adb..c08c67338d73 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+@@ -599,8 +599,10 @@ static void _dpu_kms_hw_destroy(struct dpu_kms *dpu_kms)
+ 		for (i = 0; i < dpu_kms->catalog->vbif_count; i++) {
+ 			u32 vbif_idx = dpu_kms->catalog->vbif[i].id;
+ 
+-			if ((vbif_idx < VBIF_MAX) && dpu_kms->hw_vbif[vbif_idx])
++			if ((vbif_idx < VBIF_MAX) && dpu_kms->hw_vbif[vbif_idx]) {
+ 				dpu_hw_vbif_destroy(dpu_kms->hw_vbif[vbif_idx]);
++				dpu_kms->hw_vbif[vbif_idx] = NULL;
++			}
  		}
- 		pr_debug("enabled clock: %s\n", fimc_is_clocks[i]);
+ 	}
+ 
 -- 
 2.35.1
 
