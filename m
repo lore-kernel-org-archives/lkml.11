@@ -2,206 +2,296 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25929C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 15:33:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACC78CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 15:35:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242618AbiFMPdR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 11:33:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51498 "EHLO
+        id S243352AbiFMPfR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 11:35:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236054AbiFMPdF (ORCPT
+        with ESMTP id S241511AbiFMPeq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 11:33:05 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B743A1CFE3
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:04:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655125474; x=1686661474;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=0tnG9BXEaWduagHvEffox1LxPE3qnPFmIkZpu/feW+4=;
-  b=jl9KUaHuWfGZR3L38i7CT2qpAEy8vDjIit9VDa5lP0ojHBrAL10WhieD
-   5Gyy5xZzzDDx0sEwwQzHATB9+XBhNToITAyTfbhGZJqFe0oCH0IO7FMLx
-   Uw9df6kMNmdOGUIlbUbJXFUs0yqQtW33+pu6VC3eAx/FofVHIl+FFRrj5
-   LlLRRfljdlYFyUVtObSPNz5+A1t1IYphfCPvvy5a7chUw/m+CjVp+OWsg
-   Yk4nKsm1Of7bTNUVrFcJolcfHdleGUGUlUy8lVvpA7KlMDCAHQVtqYcoc
-   1R88O4iHLUM6HmXMRBxBrwCTh+xfeTLl68bTFaHD6lkNM5tYkfD7JneXm
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10376"; a="278993938"
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="278993938"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 06:02:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="829788279"
-Received: from fmsmsx605.amr.corp.intel.com ([10.18.126.85])
-  by fmsmga006.fm.intel.com with ESMTP; 13 Jun 2022 06:02:43 -0700
-Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
- fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Mon, 13 Jun 2022 06:02:43 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Mon, 13 Jun 2022 06:02:23 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Mon, 13 Jun 2022 06:02:23 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.108)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+        Mon, 13 Jun 2022 11:34:46 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BF7B377EE;
+        Mon, 13 Jun 2022 06:07:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1655125625; x=1686661625;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=RjncP8fHJaZm0GW9zoaAk/zj6fE5CQig6aRBxp/wKTw=;
+  b=djcktMo1eMQYk4skgRSd/00BST+0fk2iSOAm4MjxRjvXarLGz5lqJVK2
+   +dPiqBXO/T5URDSHz+LViRtV6SvhVDKWYiPg6NKhjG/292NIjErY7LFZf
+   kpFItpZSEnZu1AMpwtj2GHyW4rBCb10DELma1wrw3l62pZ0EBR78mVArB
+   w=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 13 Jun 2022 06:07:04 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 06:07:04 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Mon, 13 Jun 2022 06:02:14 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=c+Ohuv58jSJ61C0GnU53LAJAYKcCZjN8RhUu67xgeZrenPTRu62uiW9imLemn4GTSNrSGfh4N9HkR1Wc/o54oHegT5+aiFcBm+Snm489kHSJWPp6cl7F+NLwjamwwvx0dCGJnEbqkZqOQCMuuXSEeeDZp53dhaFLNA7WyieiyO37n+gW7nfWkb8UhA9djMj6ayqfAlM9gUHLm2AhKQTYL64SP6hGyAFLnq6T3FdyEK0rrAV4FCLu6VvQenCi8T+oSLsa2kLePvODIh18vg0pK70dCLKJBG82ajeOj8OsF8UATrdSyWCENBls9PSIEAeopu7lxmpLW7cPZGowVb2MKg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0tnG9BXEaWduagHvEffox1LxPE3qnPFmIkZpu/feW+4=;
- b=LNdSO2JISilFdTA41BgxAqGve/F2AQXF3AWkVKY7iUx987l6TGFA/n+9w47RwCYA+h+tsbDrQVO6TKuURRGHJUf1Zwh9KZFsvdDwNLpip9MGZSn36Sv6od3VyZwJdJwYVtUBoGQp5/sg6mCz82wemvqu7bdcI76ACHS9xH8Cce5qFCGWzn4pt/b4pD6/syapnUpcMmlIOSyv8uThJdR8SGj8IWaPDub0vBJKKQMk8vHt2KA/QRk5GPt5oVdKiKWQiV8GntXRO7AriFg3BT3OwHVzU9PWo21OjvEn6iSM3Bk+4STMGtTk6Q3VXlhfZm4dieygdFw4iT9icYwk51Q/MA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from SA2PR11MB5115.namprd11.prod.outlook.com (2603:10b6:806:118::22)
- by MWHPR11MB1855.namprd11.prod.outlook.com (2603:10b6:300:10e::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.16; Mon, 13 Jun
- 2022 13:02:12 +0000
-Received: from SA2PR11MB5115.namprd11.prod.outlook.com
- ([fe80::9489:e53a:f37e:e0be]) by SA2PR11MB5115.namprd11.prod.outlook.com
- ([fe80::9489:e53a:f37e:e0be%8]) with mapi id 15.20.5332.020; Mon, 13 Jun 2022
- 13:02:12 +0000
-From:   "R, Monish Kumar" <monish.kumar.r@intel.com>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Pankaj Raghav <pankydev8@gmail.com>
-CC:     Christoph Hellwig <hch@lst.de>,
-        "open list:NVM EXPRESS DRIVER" <linux-nvme@lists.infradead.org>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        "alan.adamson@oracle.com" <alan.adamson@oracle.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Yi Zhang <yi.zhang@redhat.com>,
-        Keith Busch <kbusch@kernel.org>, "axboe@fb.com" <axboe@fb.com>,
-        "Rao, Abhijeet" <abhijeet.rao@intel.com>,
-        "p.raghav@samsung.com" <p.raghav@samsung.com>
-Subject: RE: 2 second nvme initialization delay regression in 5.18 [Was: Re:
- [bug report]nvme0: Admin Cmd(0x6), I/O Error (sct 0x0 / sc 0x2) MORE DNR
- observed during blktests]
-Thread-Topic: 2 second nvme initialization delay regression in 5.18 [Was: Re:
- [bug report]nvme0: Admin Cmd(0x6), I/O Error (sct 0x0 / sc 0x2) MORE DNR
- observed during blktests]
-Thread-Index: AQHYe9vO7iZneeeix02+6Itt57U7B61GyDHwgAAJhoCAAVlYgIAAM5uAgASGuJCAAGL6gIAACEAQ
-Date:   Mon, 13 Jun 2022 13:02:12 +0000
-Message-ID: <SA2PR11MB511533DE1F10D80B57C07AF0C3AB9@SA2PR11MB5115.namprd11.prod.outlook.com>
-References: <CAHj4cs_iC+FE8ZAXXZPeia1V3ZX7zRbeASdOP_8c7DLiFozNfA@mail.gmail.com>
- <Ykyf5Zuz1W8yHhNY@zx2c4.com>
- <CAHmME9pwz4q0m-pSUy7ReWu4nNzxySNcYZrqyDZiTuGxHN=1NQ@mail.gmail.com>
- <CAHmME9o-orF52HzkT80054e3Op5fLOcTHb-KHpvvU7H3FpAJ7A@mail.gmail.com>
- <SA2PR11MB5115DCE45778910C96813CA1C3A79@SA2PR11MB5115.namprd11.prod.outlook.com>
- <YqG/pybFg0P5yQ9a@zx2c4.com> <20220610061449.GD24331@lst.de>
- <YqMMo2Dv9SZRtR7B@zx2c4.com>
- <SA2PR11MB5115C9D7AE1DF332B29625B0C3AB9@SA2PR11MB5115.namprd11.prod.outlook.com>
- <Yqcrq2ewmqhflAYw@zx2c4.com>
-In-Reply-To: <Yqcrq2ewmqhflAYw@zx2c4.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-Mentions: pankydev8@gmail.com
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.6.500.17
-dlp-reaction: no-action
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 51308a9c-53db-4f25-2bb6-08da4d3ceec9
-x-ms-traffictypediagnostic: MWHPR11MB1855:EE_
-x-microsoft-antispam-prvs: <MWHPR11MB1855FCF01ADFC123CB756249C3AB9@MWHPR11MB1855.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: p0g/2SGMIVIC7orqBlacOViLMEd+Wqe6rV0w5yMRmEN6R1xlaREhjalnkiO5xJ5USuFG6xEhmcI/tYxQM4KmRsuWuOBZWE2hx13teAJ1L1t4rDW2dI8XUd9h22cgJC6HSq68dhpOAxITB14hv0GlRF6gzoty7ZT0DbWu5VKZpF1anKmfXSCBlSiXIqtqCMBrnmEqmvY1D5vMLGRxyY9nt//WZn6PtHxoAynTV727Qpt9f4c5L2X9VVW1rNBD1l4Esh5S6H9D5QT1oSvlDG0DQzdk7UZMhhNp5fERqvfZATfB590/GqT97tHPABPm1T9QLndWz/imDMBRnS4KR8qwKVkoscDc5cZshnKUmrLLO5m3nRY2+ncI45U8hMsR5dvW1w3PWYeXMHHvUOtIdlhspWwdfeHWlPUljusx5fi3aPbRQDbFIDsY77W4zMM1rduaNQ1vo1/dEvDV9flfk4WEX8okEJIb2OrLGig981Ak1S849iHOnm6zoFT/eY4rbMOnSgvXliwY0TJGLQsA4dOSOrcPuUgK6l8BoGvlJwTj9G5n6kDt8/CnyfQOtNwZJj+JeTF4ByC0+qCeGVSjFebmsbmCwfJPdhImeQHLE8Ob3HPYXej41P6ot8hsI15fRNe8SxpbvCXk0lSuonJObLLmK0/XjvVTfEqWwOKWCOwxz4PjZ1NgYJ0qPxUAajJFnV9r/KxaBSal5Y7+k/P1H17aIg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA2PR11MB5115.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(4326008)(64756008)(8676002)(86362001)(66446008)(55016003)(38070700005)(5660300002)(7416002)(52536014)(508600001)(110136005)(54906003)(66476007)(33656002)(76116006)(316002)(66556008)(2906002)(8936002)(66946007)(26005)(38100700002)(9686003)(71200400001)(53546011)(186003)(82960400001)(6506007)(7696005)(83380400001)(122000001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?ZFdUekloblVkdzZMSjYvTllLNk9jRnN5U0FXYktVZm4xTlhJUENFVWVtVzNm?=
- =?utf-8?B?aWwxMHN3UlNOT2N3dkQ3LzVuVFhleXhiQUJHazBBK3B5ckhObWxuRkViNDJG?=
- =?utf-8?B?eDdOVjB2bzd0c3pYd1E5WjRDMUY1MFdqL2oxNUhQUk8wUU5HVDU5ZlRVNmtO?=
- =?utf-8?B?S0tlM09wNFNkbk8vMmFHdUlXWVd5NXFtTWt2RHhQNXFPZ3hGVVlCYTRRVm1n?=
- =?utf-8?B?OVA4dFh1eFdzbElUUWc5TnRhd1ZLUU9kR2d2TjlrelpMLytURDUxMjBhbWZw?=
- =?utf-8?B?NUZ3YWYrMDFaOFZYTTNtNTZHZ2ZoczFMa0pXQzIxMVp0Zk1FajZOUENuaStN?=
- =?utf-8?B?ZmpvOGNxYU9pd2cwQVZDYU5PYXM1OG5oeERNeFd5enBQWE01MkxNM0dyaXNQ?=
- =?utf-8?B?Zk9DTGNlZENDbUIrSlYvRW4zck1QSTZQZXFZT3ZKSkFuYzQrRExWaWpNM2Vq?=
- =?utf-8?B?WStiSVA4K20wWFpXVnZ0N21LN09tTkVjZ05WWnRia0xyZDNNYXJ1UEpDdUZP?=
- =?utf-8?B?WEJ3cDhiN1c3dGdyVld4cG1kUlhVblI0QTlQWDJPSDhjWXRoK2FOcS9RSldp?=
- =?utf-8?B?SmZvMmpzaTlMZlY2V2FXTDRGZ1JUVXZGckFLVjlYUnBpNHdIYTNOLzZFN2Vs?=
- =?utf-8?B?akdpNGNnMzBmTGZOengyM05aS1VPSStRVnFNK2FIVlNPQ29YMVlQS0xGdjF6?=
- =?utf-8?B?anpHL2hrcDdjK3pXUmE2NkJqS0F3bVJ5V0JFSUJvc3l4Uzh4QjROUTQzZE04?=
- =?utf-8?B?RVhnNElDZmY3MGwrcGhtNXlCSittV0FyRDZXTlRSdEZKQWlrR1JGM2l3cFFK?=
- =?utf-8?B?Qk9FeEM5R2ErL0FieU5FYmhCaFowcFlmaGkvMnU5VHhKTHp1NmZrTExZbHRU?=
- =?utf-8?B?amRJdUxaTjZPSno5MURLWDU2eFVrOWE2ZGEyUkw2cHk2Q3BMVXV0cm56MnNJ?=
- =?utf-8?B?WmlEUWN0QXNYcnl5NWtubXZhN0NUNWxHeGdRd21yS0NPOStDd2EycnQwZFRK?=
- =?utf-8?B?YWM3YkNIZFgyZ1drTVM0WWdjMjJFTm9PTjZENnpFSzFLN1VMMDluYjBmc3gv?=
- =?utf-8?B?YVMzM1UxRU9oQ1E4dTlKb3lDRW9UZHp1Z0o0MWhUV3lhN0JkQUl3TmlLaS9W?=
- =?utf-8?B?RmpKMzhTMWl4UlhxbFdLcElNMDZjMVJDZ04rZ2V6Vy90YXBRS1VDcVZldEJm?=
- =?utf-8?B?aDV2TGRKYWRGYWczeWRzbjBDYUZtODRFdGFtQjRBbkpMeFBXUC9NVVA3aTY2?=
- =?utf-8?B?QjM4YW5UMHBkeHh4WUc3bUsvMnRKdFBkcXVKa0RzRm5hNzZ5TENuSmtlV1kr?=
- =?utf-8?B?TDcwM2x5bXVEQzhIVHN5R3ZHQ3pBVEtqNUxSU1NiMmgyeXZWSHl6UWFsTk4y?=
- =?utf-8?B?anFwWWxMRVduVDU1Y0lqRm84Mnc0aWlNZVZSYWhrelJORk84ejdDTUJHajF4?=
- =?utf-8?B?T0pqWnJzakpWK3lwNU5HcFlGc3I0ZXZWdnl2L1NvVlRYS0xtWDZtZGgrd0t2?=
- =?utf-8?B?cVpMazlScFN6MHZlT3U2OUFBTDJGUVgza3ZEb1p0ODlmSkFCK3ZveitHS1pr?=
- =?utf-8?B?M21QQ3pYaFZpUWQvdVBYSVB3QTNPWFhFSlhNQWVIZVlxdzNQLysyTFhBbW4y?=
- =?utf-8?B?ZTBDTjVDdGtEcEdraDZSNEJUekIwTytTcWFLZ1IxM1hvU2NmbWNkUDYvRVpR?=
- =?utf-8?B?ZW9zUFI3MFZxYVg3U0EvcGNQZlI4Y2VUM0V1WUlnbDNqYTQrQS85QXBqVWpi?=
- =?utf-8?B?VWo3RVRVTjdWZEVWU21lRVJWZmlCbGNpRXozN0RnMC80U2prS0NUQVZhSC9p?=
- =?utf-8?B?cHpROVE5eVJiVGQyV1liMjlQZDZvUVhvajhXUk9yNm43OW1sNzZJbnNsZE1a?=
- =?utf-8?B?VG1VOWxTaDhLVThlOFZNRkplVmVFRmVKNWxSNWdGazFlMjhZdDNpWktKL0sz?=
- =?utf-8?B?U3B6SjFWWjVkblBMNC9KV2NOMk5oeTNFSXRNK0xDMEFZcXNsalNVaFdEMmtm?=
- =?utf-8?B?ZC9uRk5mdVZJejZZVlE3VktxN2w5M0pJdUtvQTRaL0dWbm1hbm5qOE0wYStp?=
- =?utf-8?B?aVB2bHdveEorNEh2bGdOdEo1U0ROSTl4Mnh3cVhRUUwyak1sejVuTy9DK3o2?=
- =?utf-8?B?L1ZkU052K0hSNEtKODN3V21NYTdQWXE4eUJGZmJDdnc0em1HZ0VFdFRjbURk?=
- =?utf-8?B?RFNJUytvYVArWHRUZXBvWjB5OXBiUTB6cXk2bm1lN2J1b05iRDloTDhXWWtZ?=
- =?utf-8?B?alBQOW5HR3BWU0I1UDVyMklZSkUyT29Tak1yWUZNMzN0M3phR3JUUFlaaFFj?=
- =?utf-8?B?L0EwaEJlbGxaVVdwYWxqUHhrWmhnNlZSVEtNaE01OFNYajRLUTdXUT09?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ 15.2.986.22; Mon, 13 Jun 2022 06:07:04 -0700
+Received: from [10.226.59.182] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 13 Jun
+ 2022 06:07:03 -0700
+Message-ID: <b3f5e49d-8917-79ab-8f59-29ad6cec3973@quicinc.com>
+Date:   Mon, 13 Jun 2022 07:07:02 -0600
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SA2PR11MB5115.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 51308a9c-53db-4f25-2bb6-08da4d3ceec9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jun 2022 13:02:12.5259
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: QCy4S4+zTTtrhAUzXu+vNU0np83kw3XxJaoboA6lUi53i36s1VzN2Umc/GGR9UwDNfqh/DUGFNZDY/3aQMVIzYbyCXA+LxmP8t+Ep+1ahdg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1855
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH] bus: mhi: Disable IRQs instead of freeing them during
+ power down
+Content-Language: en-US
+To:     Qiang Yu <quic_qianyu@quicinc.com>, <mani@kernel.org>,
+        <quic_hemantk@quicinc.com>, <loic.poulain@linaro.org>
+CC:     <mhi@lists.linux.dev>, <linux-arm-msm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <quic_cang@quicinc.com>
+References: <1654782215-70383-1-git-send-email-quic_qianyu@quicinc.com>
+ <62d09e6f-9898-6233-dfd6-b5ba5d837571@quicinc.com>
+ <9659ecb9-9727-a146-e286-d28d656483c3@quicinc.com>
+ <9a11394d-f7df-e549-8afb-0834f7d30202@quicinc.com>
+ <8eceb966-b5c1-8913-ac97-95348f92650d@quicinc.com>
+From:   Jeffrey Hugo <quic_jhugo@quicinc.com>
+In-Reply-To: <8eceb966-b5c1-8913-ac97-95348f92650d@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SmFzb24sDQoNCkkgYW0gbm90IHN1cmUsIHdoZXRoZXIgdGhpcyBydW5uaW5nIGZpcm13YXJlIChm
-cjogMVAzUUVYRTcpIHdhcyB0aGUgbGF0ZXN0IG9uZS4NCk1vcmVvdmVyLCB0aGlzIGRldmljZSBp
-cyBhIG5ld2VyIG9uZSBhbmQgd2UgYm91Z2h0IGNvdXBsZSBvZiBtb250aHMgYmFjay4NCg0KV2hl
-biBJIGFtIHRyaWVkIHRvIHVwZGF0ZSBTU0QgZmlybXdhcmUgdXNpbmcgU2Ftc3VuZyBQb3J0YWJs
-ZSBTU0QgU29mdHdhcmUsIA0KaXQgZmFpbGVkIHRvIGNvbW11bmljYXRlIHdpdGggdGhlaXIgU2Ft
-c3VuZyBzZXJ2ZXJzLg0KDQpMZXQgQFBhbmthaiBSYWdoYXYgPHBhbmt5ZGV2OEBnbWFpbC5jb20+
-IGNhbiBnZXQgYmFjayBvbiB0aGlzIGFuZCBjb25maXJtIA0KYWJvdXQgdGhpcyBmaXJtd2FyZSB2
-ZXJzaW9uLCBhcyBoZSByZXBvcnRlZCB0aGlzIGlzc3VlIGludGVybmFsbHkgdG8gU2Ftc3VuZy4g
-DQoNClJlZ2FyZHMsDQpNb25pc2ggS3VtYXIgUg0KDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0t
-LQ0KRnJvbTogSmFzb24gQS4gRG9uZW5mZWxkIDxKYXNvbkB6eDJjNC5jb20+IA0KU2VudDogMTMg
-SnVuZSAyMDIyIDE3OjUxDQpUbzogUiwgTW9uaXNoIEt1bWFyIDxtb25pc2gua3VtYXIuckBpbnRl
-bC5jb20+DQpDYzogQ2hyaXN0b3BoIEhlbGx3aWcgPGhjaEBsc3QuZGU+OyBvcGVuIGxpc3Q6TlZN
-IEVYUFJFU1MgRFJJVkVSIDxsaW51eC1udm1lQGxpc3RzLmluZnJhZGVhZC5vcmc+OyBTYWdpIEdy
-aW1iZXJnIDxzYWdpQGdyaW1iZXJnLm1lPjsgYWxhbi5hZGFtc29uQG9yYWNsZS5jb207IExLTUwg
-PGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc+OyBZaSBaaGFuZyA8eWkuemhhbmdAcmVkaGF0
-LmNvbT47IEtlaXRoIEJ1c2NoIDxrYnVzY2hAa2VybmVsLm9yZz47IGF4Ym9lQGZiLmNvbTsgUmFv
-LCBBYmhpamVldCA8YWJoaWplZXQucmFvQGludGVsLmNvbT4NClN1YmplY3Q6IFJlOiAyIHNlY29u
-ZCBudm1lIGluaXRpYWxpemF0aW9uIGRlbGF5IHJlZ3Jlc3Npb24gaW4gNS4xOCBbV2FzOiBSZTog
-W2J1ZyByZXBvcnRdbnZtZTA6IEFkbWluIENtZCgweDYpLCBJL08gRXJyb3IgKHNjdCAweDAgLyBz
-YyAweDIpIE1PUkUgRE5SIG9ic2VydmVkIGR1cmluZyBibGt0ZXN0c10NCg0KT24gTW9uLCBKdW4g
-MTMsIDIwMjIgYXQgMDY6MzY6NDRBTSArMDAwMCwgUiwgTW9uaXNoIEt1bWFyIHdyb3RlOg0KPiBt
-biAgICAgICAgOiBTYW1zdW5nIFBvcnRhYmxlIFNTRCBYNQ0KPiBmciAgICAgICAgOiAxUDNRRVhF
-Nw0KDQpJc24ndCB0aGUgbGF0ZXN0IGZpcm13YXJlIGZvciB0aGUgUUVYRTcgbGluZSAyQjJRRVhF
-Nz8NCg0KSmFzb24NCg==
+On 6/12/2022 7:48 PM, Qiang Yu wrote:
+> 
+> On 6/10/2022 10:00 PM, Jeffrey Hugo wrote:
+>> On 6/9/2022 9:21 PM, Qiang Yu wrote:
+>>> On 6/9/2022 9:54 PM, Jeffrey Hugo wrote:
+>>>
+>>>> On 6/9/2022 7:43 AM, Qiang Yu wrote:
+>>>>> EP tends to read MSI address/data once and cache them after BME is 
+>>>>> set.
+>>>>> So host should avoid changing MSI address/data after BME is set.
+>>>>>
+>>>>> In pci reset function, host invokes free_irq(), which also clears MSI
+>>>>> address/data in EP's PCIe config space. If the invalid address/data
+>>>>> are cached and used by EP, MSI triggered by EP wouldn't be received by
+>>>>> host, because an invalid MSI data is sent to an invalid MSI address.
+>>>>>
+>>>>> To fix this issue, after host runs request_irq() successfully during
+>>>>> mhi driver probe, let's invoke enable_irq()/disable_irq() instead of
+>>>>> request_irq()/free_irq() when we want to power on and power down MHI.
+>>>>> Meanwhile, Host should invoke free_irq() when mhi host driver is
+>>>>> removed.
+>>>>
+>>>> I don't think this works for hotplug, nor cases where there are 
+>>>> multiple MHI devices on the system.
+>>>>
+>>>> The EP shouldn't be caching this information for multiple reasons. 
+>>>> Masking the MSIs, disabling the MSIs, changing the address when the 
+>>>> affinity changes, etc.
+>>>>
+>>>> It really feels like we are solving the problem in the wrong place.
+>>>>
+>>>> Right now, this gets a NACK from me.
+>>>>
+>>> After free_irq(), MSI is still enabled but MSI address and data are 
+>>> cleared. So there is a chance that device initiates MSI using zero 
+>>> address. How to fix this race conditions.
+>>
+>> On what system is MSI still enabled?  I just removed the AIC100 
+>> controller on an random x86 system, and lspci is indicating MSIs are 
+>> disabled -
+>>
+>> Capabilities: [50] MSI: Enable- Count=32/32 Maskable+ 64bit+
+> 
+> system: Ubuntu18.04, 5.4.0-89-generic,  Intel(R) Core(TM) i7-6700 CPU @ 
+> 3.40GHz
+> 
+> After removing MHI driver, I also see MSI enable is cleared.  But I 
+> don't think free_irq clears it. I add log before free_irq and after 
+> free_irq as following show:
+> 
+> [62777.625111] msi cap before free irq
+> [62777.625125] msi control=0x1bb, address=0xfee00318, data=0x0
+> [62777.625301] msi cap after free irq
+> [62777.625313] msi control=0x1bb, address=0x0, data=0x0
+> [62777.625496] mhi-pci-generic 0000:01:00.0: mhi_pci_remove end of line, 
+> block 90 secs.
+> # lspci -vvs 01:00.0
+>          Capabilities: [50] MSI: Enable+ Count=8/32 Maskable+ 64bit+
+>                  Address: 0000000000000000  Data: 0000
+>                  Masking: ffffffff  Pending: 00000000
+
+At this point, the MSI functionality is still enabled, but every MSI is 
+masked out (Masking), so per the PCIe spec, the endpoint may not trigger 
+a MSI to the host.  The device advertises that it supports maskable MSIs 
+(Maskable+), so this is appropiate.
+
+If your device can still send a MSI at this point, then it violates the 
+PCIe spec.
+
+disable_irq() will not help you with this as it will do the same thing.
+
+I still think you are trying to fix an issue in the wrong location (host 
+vs EP), and causing additional issues by doing so.
+
+> [62868.692186] mhi-pci-generic 0000:01:00.0: mhi_pci_remove 90 sec expire.
+> # lspci -vvs 01:00.0
+>          Capabilities: [50] MSI: Enable- Count=8/32 Maskable+ 64bit+
+>                  Address: 0000000000000000  Data: 0000
+>                  Masking: 00000000  Pending: 00000000
+> 
+> I also add msleep() at last of remove callback to block the remove 
+> operation, then lspci shows MSI is still enabled  and after MHI driver 
+> is removed,
+> 
+> lspci shows MSI is disabled. It proves free_irq does not clear MSI 
+> enable, although I am not sure who does it (probably pci framework 
+> clears but I don 't find it).
+> 
+> I delete pci_free_irq_vectors() when I test.
+> 
+>>
+>>> Maybe EP should not cache MSI data and address. But I think this 
+>>> patch is necessary and we will talk with EP POC.
+>>>
+>>>>>
+>>>>> Signed-off-by: Qiang Yu <quic_qianyu@quicinc.com>
+>>>>> ---
+>>>>>   drivers/bus/mhi/host/init.c        | 31 
+>>>>> +++++++++++++++++++++++++++++++
+>>>>>   drivers/bus/mhi/host/pci_generic.c |  2 ++
+>>>>>   drivers/bus/mhi/host/pm.c          |  4 ++--
+>>>>>   3 files changed, 35 insertions(+), 2 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/bus/mhi/host/init.c b/drivers/bus/mhi/host/init.c
+>>>>> index cbb86b2..48cb093 100644
+>>>>> --- a/drivers/bus/mhi/host/init.c
+>>>>> +++ b/drivers/bus/mhi/host/init.c
+>>>>> @@ -18,6 +18,7 @@
+>>>>>   #include <linux/slab.h>
+>>>>>   #include <linux/vmalloc.h>
+>>>>>   #include <linux/wait.h>
+>>>>> +#include <linux/irq.h>
+>>>>
+>>>> Should be in alphabetical order
+>>>>
+>>>>>   #include "internal.h"
+>>>>>     static DEFINE_IDA(mhi_controller_ida);
+>>>>> @@ -168,6 +169,22 @@ int mhi_init_irq_setup(struct mhi_controller 
+>>>>> *mhi_cntrl)
+>>>>>       unsigned long irq_flags = IRQF_SHARED | IRQF_NO_SUSPEND;
+>>>>>       int i, ret;
+>>>>>   +    /*
+>>>>> +     * if irq[0] has action, it represents all MSI IRQs have been
+>>>>> +     * requested, so we just need to enable them.
+>>>>> +     */
+>>>>
+>>>> This seems like an assumption about how the interrupts are allocated 
+>>>> and assigned that may not hold true for all devices.
+>>>
+>>> All interrupts are allocated and assigned together in 
+>>> mhi_pci_get_irqs() and mhi_init_irq_setup().
+>>>
+>>> So I think if irq[0] has action, other irqs must be requested 
+>>> successfully. If any other msi request fail, irq[0] should have been 
+>>> freed.
+>>>
+>>>>> +    if (irq_has_action(mhi_cntrl->irq[0])) {
+>>>>> +        enable_irq(mhi_cntrl->irq[0]);
+>>>>> +
+>>>>> +        for (i = 0; i < mhi_cntrl->total_ev_rings; i++, 
+>>>>> mhi_event++) {
+>>>>> +            if (mhi_event->offload_ev)
+>>>>> +                continue;
+>>>>> +
+>>>>> + enable_irq(mhi_cntrl->irq[mhi_event->irq]);
+>>>>> +        }
+>>>>> +        return 0;
+>>>>> +    }
+>>>>> +
+>>>>>       /* if controller driver has set irq_flags, use it */
+>>>>>       if (mhi_cntrl->irq_flags)
+>>>>>           irq_flags = mhi_cntrl->irq_flags;
+>>>>> @@ -179,6 +196,11 @@ int mhi_init_irq_setup(struct mhi_controller 
+>>>>> *mhi_cntrl)
+>>>>>                      "bhi", mhi_cntrl);
+>>>>>       if (ret)
+>>>>>           return ret;
+>>>>> +    /*
+>>>>> +     * IRQ marked IRQF_SHARED isn't recommended to use IRQ_NOAUTOEN,
+>>>>> +     * so disable it explicitly.
+>>>>> +     */
+>>>>> +    disable_irq(mhi_cntrl->irq[0]);
+>>>>>         for (i = 0; i < mhi_cntrl->total_ev_rings; i++, mhi_event++) {
+>>>>>           if (mhi_event->offload_ev)
+>>>>> @@ -200,6 +222,8 @@ int mhi_init_irq_setup(struct mhi_controller 
+>>>>> *mhi_cntrl)
+>>>>>                   mhi_cntrl->irq[mhi_event->irq], i);
+>>>>>               goto error_request;
+>>>>>           }
+>>>>> +
+>>>>> +        disable_irq(mhi_cntrl->irq[mhi_event->irq]);
+>>>>>       }
+>>>>>         return 0;
+>>>>> @@ -1003,8 +1027,14 @@ int mhi_register_controller(struct 
+>>>>> mhi_controller *mhi_cntrl,
+>>>>>         mhi_create_debugfs(mhi_cntrl);
+>>>>>   +    ret = mhi_init_irq_setup(mhi_cntrl);
+>>>>> +    if (ret)
+>>>>> +        goto error_setup_irq;
+>>>>> +
+>>>>>       return 0;
+>>>>>   +error_setup_irq:
+>>>>> +    mhi_destroy_debugfs(mhi_cntrl);
+>>>>>   err_release_dev:
+>>>>>       put_device(&mhi_dev->dev);
+>>>>>   err_ida_free:
+>>>>> @@ -1027,6 +1057,7 @@ void mhi_unregister_controller(struct 
+>>>>> mhi_controller *mhi_cntrl)
+>>>>>       struct mhi_chan *mhi_chan = mhi_cntrl->mhi_chan;
+>>>>>       unsigned int i;
+>>>>>   +    mhi_deinit_free_irq(mhi_cntrl);
+>>>>>       mhi_destroy_debugfs(mhi_cntrl);
+>>>>>         destroy_workqueue(mhi_cntrl->hiprio_wq);
+>>>>> diff --git a/drivers/bus/mhi/host/pci_generic.c 
+>>>>> b/drivers/bus/mhi/host/pci_generic.c
+>>>>> index 6fbc591..60020d0 100644
+>>>>> --- a/drivers/bus/mhi/host/pci_generic.c
+>>>>> +++ b/drivers/bus/mhi/host/pci_generic.c
+>>>>> @@ -945,6 +945,8 @@ static void mhi_pci_remove(struct pci_dev *pdev)
+>>>>>         mhi_unregister_controller(mhi_cntrl);
+>>>>>       pci_disable_pcie_error_reporting(pdev);
+>>>>> +
+>>>>> +    pci_free_irq_vectors(pdev);
+>>>>>   }
+>>>>>     static void mhi_pci_shutdown(struct pci_dev *pdev)
+>>>>> diff --git a/drivers/bus/mhi/host/pm.c b/drivers/bus/mhi/host/pm.c
+>>>>> index dc2e8ff..190231c 100644
+>>>>> --- a/drivers/bus/mhi/host/pm.c
+>>>>> +++ b/drivers/bus/mhi/host/pm.c
+>>>>> @@ -500,7 +500,7 @@ static void mhi_pm_disable_transition(struct 
+>>>>> mhi_controller *mhi_cntrl)
+>>>>>       for (i = 0; i < mhi_cntrl->total_ev_rings; i++, mhi_event++) {
+>>>>>           if (mhi_event->offload_ev)
+>>>>>               continue;
+>>>>> -        free_irq(mhi_cntrl->irq[mhi_event->irq], mhi_event);
+>>>>> +        disable_irq(mhi_cntrl->irq[mhi_event->irq]);
+>>>>>           tasklet_kill(&mhi_event->task);
+>>>>>       }
+>>>>>   @@ -1182,7 +1182,7 @@ void mhi_power_down(struct mhi_controller 
+>>>>> *mhi_cntrl, bool graceful)
+>>>>>       /* Wait for shutdown to complete */
+>>>>>       flush_work(&mhi_cntrl->st_worker);
+>>>>>   -    free_irq(mhi_cntrl->irq[0], mhi_cntrl);
+>>>>> +    disable_irq(mhi_cntrl->irq[0]);
+>>>>>   }
+>>>>>   EXPORT_SYMBOL_GPL(mhi_power_down);
+>>>>
+>>
+
