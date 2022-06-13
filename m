@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B8B8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:11:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0337DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:11:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351690AbiFMLLZ (ORCPT
+        id S1352284AbiFMLLa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:11:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44946 "EHLO
+        Mon, 13 Jun 2022 07:11:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351770AbiFMLIL (ORCPT
+        with ESMTP id S1352008AbiFMLJO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:08:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5D3D33A22;
-        Mon, 13 Jun 2022 03:35:17 -0700 (PDT)
+        Mon, 13 Jun 2022 07:09:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 540E6338B2;
+        Mon, 13 Jun 2022 03:35:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7A88BB80EAF;
-        Mon, 13 Jun 2022 10:35:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA711C34114;
-        Mon, 13 Jun 2022 10:35:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B2450B80EAA;
+        Mon, 13 Jun 2022 10:35:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 128BAC34114;
+        Mon, 13 Jun 2022 10:35:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116514;
-        bh=XCfyyp/SpNXn1B7LF8SU/L3pLBwEj/28+24y99Csbfo=;
+        s=korg; t=1655116511;
+        bh=T4cvfR4WHCduCcFXKo/nqm80YevLxO60ECFJam+FNdw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hXOLP9YOl0n+AvEm+uhWuB939fF57BELBvCxLBzoJnwwhsyS8ZtvrDDUixFeEQwkn
-         zMO6rRhJ7mdKln40U7KwwkxTBXRpcbf564Whdc1EZ/YtRN1Y0k8WHfVp/lbpjhAFuS
-         XXuB+dtTk9x0eT5m8/zwJEoR5ELyNVFE1jJOwVGE=
+        b=Xi6nIHw2pjyhUFJVF3PKz+DAgn2OtmFdrrCd9H80n25dT93V3KWCDIef8sO98vYJp
+         YNpbfjPA6lsx1X4m9RL98VCtebA0QV6/gk1AhOCuXpM2KCVHh/hSSioTQJR30B1jdh
+         9Va5InyHst9IxmnO4/D/qXoJXMirCrm8ujxvsIyc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
-        Fam Zheng <fam.zheng@bytedance.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 205/218] vringh: Fix loop descriptors check in the indirect cases
-Date:   Mon, 13 Jun 2022 12:11:03 +0200
-Message-Id: <20220613094926.840709254@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 099/411] HID: elan: Fix potential double free in elan_input_configured
+Date:   Mon, 13 Jun 2022 12:06:12 +0200
+Message-Id: <20220613094931.649108885@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,61 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xie Yongji <xieyongji@bytedance.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit dbd29e0752286af74243cf891accf472b2f3edd8 ]
+[ Upstream commit 1af20714fedad238362571620be0bd690ded05b6 ]
 
-We should use size of descriptor chain to test loop condition
-in the indirect case. And another statistical count is also introduced
-for indirect descriptors to avoid conflict with the statistical count
-of direct descriptors.
+'input' is a managed resource allocated with devm_input_allocate_device(),
+so there is no need to call input_free_device() explicitly or
+there will be a double free.
 
-Fixes: f87d0fbb5798 ("vringh: host-side implementation of virtio rings.")
-Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-Signed-off-by: Fam Zheng <fam.zheng@bytedance.com>
-Message-Id: <20220505100910.137-1-xieyongji@bytedance.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
+According to the doc of devm_input_allocate_device():
+ * Managed input devices do not need to be explicitly unregistered or
+ * freed as it will be done automatically when owner device unbinds from
+ * its driver (or binding fails).
+
+Fixes: b7429ea53d6c ("HID: elan: Fix memleak in elan_input_configured")
+Fixes: 9a6a4193d65b ("HID: Add driver for USB ELAN Touchpad")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vhost/vringh.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/hid/hid-elan.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
-index c23045aa9873..a764d36c4d38 100644
---- a/drivers/vhost/vringh.c
-+++ b/drivers/vhost/vringh.c
-@@ -263,7 +263,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
- 	     gfp_t gfp,
- 	     int (*copy)(void *dst, const void *src, size_t len))
- {
--	int err, count = 0, up_next, desc_max;
-+	int err, count = 0, indirect_count = 0, up_next, desc_max;
- 	struct vring_desc desc, *descs;
- 	struct vringh_range range = { -1ULL, 0 }, slowrange;
- 	bool slow = false;
-@@ -320,7 +320,12 @@ __vringh_iov(struct vringh *vrh, u16 i,
- 			continue;
- 		}
+diff --git a/drivers/hid/hid-elan.c b/drivers/hid/hid-elan.c
+index 0e8f424025fe..838673303f77 100644
+--- a/drivers/hid/hid-elan.c
++++ b/drivers/hid/hid-elan.c
+@@ -188,7 +188,6 @@ static int elan_input_configured(struct hid_device *hdev, struct hid_input *hi)
+ 	ret = input_mt_init_slots(input, ELAN_MAX_FINGERS, INPUT_MT_POINTER);
+ 	if (ret) {
+ 		hid_err(hdev, "Failed to init elan MT slots: %d\n", ret);
+-		input_free_device(input);
+ 		return ret;
+ 	}
  
--		if (count++ == vrh->vring.num) {
-+		if (up_next == -1)
-+			count++;
-+		else
-+			indirect_count++;
-+
-+		if (count > vrh->vring.num || indirect_count > desc_max) {
- 			vringh_bad("Descriptor loop in %p", descs);
- 			err = -ELOOP;
- 			goto fail;
-@@ -382,6 +387,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
- 				i = return_from_indirect(vrh, &up_next,
- 							 &descs, &desc_max);
- 				slow = false;
-+				indirect_count = 0;
- 			} else
- 				break;
- 		}
+@@ -200,7 +199,6 @@ static int elan_input_configured(struct hid_device *hdev, struct hid_input *hi)
+ 		hid_err(hdev, "Failed to register elan input device: %d\n",
+ 			ret);
+ 		input_mt_destroy_slots(input);
+-		input_free_device(input);
+ 		return ret;
+ 	}
+ 
 -- 
 2.35.1
 
