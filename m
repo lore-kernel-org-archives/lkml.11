@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70ABBCCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:26:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8538BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:26:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383498AbiFMO0b (ORCPT
+        id S1383523AbiFMO0h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:26:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49964 "EHLO
+        Mon, 13 Jun 2022 10:26:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383582AbiFMOXh (ORCPT
+        with ESMTP id S1383602AbiFMOXj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:23:37 -0400
+        Mon, 13 Jun 2022 10:23:39 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C3B345AE6;
-        Mon, 13 Jun 2022 04:44:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4828C46B33;
+        Mon, 13 Jun 2022 04:44:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BC8B613F9;
-        Mon, 13 Jun 2022 11:44:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3D89C34114;
-        Mon, 13 Jun 2022 11:44:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 78E4A61236;
+        Mon, 13 Jun 2022 11:44:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 837F9C34114;
+        Mon, 13 Jun 2022 11:44:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120673;
-        bh=h2GAPVA3uVAAFtMjriXrr9QUlUNYuhwWbO0AJOL+LgI=;
+        s=korg; t=1655120675;
+        bh=AWG9gvMcYACCQztBZWgs0FhjmGr5NkuGSG93WBuDqX0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mAldeU+cto4Y4YXk3PsmbjT0zl3mUP6hfTr/1V/sytHzVGlbJnqcGwQXX8nPe0raC
-         aEvRF+Es9nYUUpGqzmYgt/mYXlN/sqOJ9oSfen0jfHRI7hg6m2peKS1f7yUZdJ/16x
-         bdgLdHxc3ulfzsK+0uCCWCVI42cTAVKKHxCCsaAI=
+        b=rXVoPhDah1t3u5BCq/pxmyj+GgknTmsqrEx2/oc3RkHbnRVCgvC1GTx+o7PinSzH/
+         Ryhp3IhrtXURBqlVjWpNyCp93y0bW755M6Iww+tt8VS8An4oJR1po311Oj3C/CLUot
+         MdU5z48I/kfw8X4DD0nix339Tg0icgZqymcJulUs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
+        stable@vger.kernel.org, Mykola Lysenko <mykolal@fb.com>,
+        Song Liu <song@kernel.org>, David Vernet <void@manifault.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 092/298] selftests/bpf: fix selftest after random: Urandom_read tracepoint removal
-Date:   Mon, 13 Jun 2022 12:09:46 +0200
-Message-Id: <20220613094927.739915034@linuxfoundation.org>
+Subject: [PATCH 5.17 093/298] selftests/bpf: fix stacktrace_build_id with missing kprobe/urandom_read
+Date:   Mon, 13 Jun 2022 12:09:47 +0200
+Message-Id: <20220613094927.770174505@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -51,50 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrii Nakryiko <andrii@kernel.org>
+From: Song Liu <song@kernel.org>
 
-[ Upstream commit 99dea2c664d7bc7e4f6f6947182d0d365165a998 ]
+[ Upstream commit 59ed76fe2f981bccde37bdddb465f260a96a2404 ]
 
-14c174633f34 ("random: remove unused tracepoints") removed all the
-tracepoints from drivers/char/random.c, one of which,
-random:urandom_read, was used by stacktrace_build_id selftest to trigger
-stack trace capture.
+Kernel function urandom_read is replaced with urandom_read_iter.
+Therefore, kprobe on urandom_read is not working any more:
 
-Fix breakage by switching to kprobing urandom_read() function.
+[root@eth50-1 bpf]# ./test_progs -n 161
+test_stacktrace_build_id:PASS:skel_open_and_load 0 nsec
+libbpf: kprobe perf_event_open() failed: No such file or directory
+libbpf: prog 'oncpu': failed to create kprobe 'urandom_read+0x0' \
+        perf event: No such file or directory
+libbpf: prog 'oncpu': failed to auto-attach: -2
+test_stacktrace_build_id:FAIL:attach_tp err -2
+161     stacktrace_build_id:FAIL
 
-Suggested-by: Yonghong Song <yhs@fb.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Fix this by replacing urandom_read with urandom_read_iter in the test.
+
+Fixes: 1b388e7765f2 ("random: convert to using fops->read_iter()")
+Reported-by: Mykola Lysenko <mykolal@fb.com>
+Signed-off-by: Song Liu <song@kernel.org>
+Acked-by: David Vernet <void@manifault.com>
+Link: https://lore.kernel.org/r/20220526191608.2364049-1-song@kernel.org
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/bpf/20220325225643.2606-1-andrii@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../selftests/bpf/progs/test_stacktrace_build_id.c   | 12 ++----------
- 1 file changed, 2 insertions(+), 10 deletions(-)
+ tools/testing/selftests/bpf/progs/test_stacktrace_build_id.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/tools/testing/selftests/bpf/progs/test_stacktrace_build_id.c b/tools/testing/selftests/bpf/progs/test_stacktrace_build_id.c
-index 36a707e7c7a7..6c62bfb8bb6f 100644
+index 6c62bfb8bb6f..0c4426592a26 100644
 --- a/tools/testing/selftests/bpf/progs/test_stacktrace_build_id.c
 +++ b/tools/testing/selftests/bpf/progs/test_stacktrace_build_id.c
-@@ -39,16 +39,8 @@ struct {
+@@ -39,7 +39,7 @@ struct {
  	__type(value, stack_trace_t);
  } stack_amap SEC(".maps");
  
--/* taken from /sys/kernel/debug/tracing/events/random/urandom_read/format */
--struct random_urandom_args {
--	unsigned long long pad;
--	int got_bits;
--	int pool_left;
--	int input_left;
--};
--
--SEC("tracepoint/random/urandom_read")
--int oncpu(struct random_urandom_args *args)
-+SEC("kprobe/urandom_read")
-+int oncpu(struct pt_regs *args)
+-SEC("kprobe/urandom_read")
++SEC("kprobe/urandom_read_iter")
+ int oncpu(struct pt_regs *args)
  {
  	__u32 max_len = sizeof(struct bpf_stack_build_id)
- 			* PERF_MAX_STACK_DEPTH;
 -- 
 2.35.1
 
