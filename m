@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44FD4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:21:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E7F7C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:22:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352306AbiFMMVx (ORCPT
+        id S1353124AbiFMMWH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:21:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54736 "EHLO
+        Mon, 13 Jun 2022 08:22:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357785AbiFMMT1 (ORCPT
+        with ESMTP id S1358525AbiFMMTc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:19:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56BBC56775;
-        Mon, 13 Jun 2022 04:02:58 -0700 (PDT)
+        Mon, 13 Jun 2022 08:19:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B280656C05;
+        Mon, 13 Jun 2022 04:03:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C47BAB80D31;
-        Mon, 13 Jun 2022 11:02:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 237F4C3411C;
-        Mon, 13 Jun 2022 11:02:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A4E0C613E9;
+        Mon, 13 Jun 2022 11:03:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE924C34114;
+        Mon, 13 Jun 2022 11:03:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118175;
-        bh=xyFbE5pv8bl67oZmKZ4mGg9acI4G9yfb0MUCQQZAONg=;
+        s=korg; t=1655118181;
+        bh=R1fg0jbArUk76OFDbNDPtgKbT9ANofjb4LAD13xul88=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aV3sw3LWg3KO784Z/2CZQ7nZTHw/ZeUAHGzUo5+5qHfW7qZ3DMoxcw6tgRaAW134L
-         O0xgQ6zdlih0/zDgyXRRE99GSufQxHizmsmpKnOX7X5PQte2o+RtwLOARHhFKJsz9v
-         MP9P91RyBmbiJJTQ9SkT9K4poLp09WISInAB7qkE=
+        b=O7ChxfnEi51K/UX8gXfMYD/gdw5qEkrlGzbc1lm0Khw6txB7k0ZWWC97rZkUJ6vLo
+         qZDbsWvQ+xREIsWoVMlFFkoXXxgWFBdzIT816MD5SfYyqNhMbiabTJJ6N99LRLt/AT
+         wRKcWo9ieJjZ/EICzIrcolRklGv5EgNlqfhe8co8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 261/287] clocksource/drivers/sp804: Avoid error on multiple instances
-Date:   Mon, 13 Jun 2022 12:11:25 +0200
-Message-Id: <20220613094931.922183213@linuxfoundation.org>
+        stable@vger.kernel.org, Hou Tao <houtao1@huawei.com>,
+        Yu Kuai <yukuai3@huawei.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 271/287] nbd: fix race between nbd_alloc_config() and module removal
+Date:   Mon, 13 Jun 2022 12:11:35 +0200
+Message-Id: <20220613094932.217851632@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -51,63 +51,122 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andre Przywara <andre.przywara@arm.com>
+From: Yu Kuai <yukuai3@huawei.com>
 
-[ Upstream commit a98399cbc1e05f7b977419f03905501d566cf54e ]
+[ Upstream commit c55b2b983b0fa012942c3eb16384b2b722caa810 ]
 
-When a machine sports more than one SP804 timer instance, we only bring
-up the first one, since multiple timers of the same kind are not useful
-to Linux. As this is intentional behaviour, we should not return an
-error message, as we do today:
-===============
-[    0.000800] Failed to initialize '/bus@8000000/motherboard-bus@8000000/iofpga-bus@300000000/timer@120000': -22
-===============
+When nbd module is being removing, nbd_alloc_config() may be
+called concurrently by nbd_genl_connect(), although try_module_get()
+will return false, but nbd_alloc_config() doesn't handle it.
 
-Replace the -EINVAL return with a debug message and return 0 instead.
+The race may lead to the leak of nbd_config and its related
+resources (e.g, recv_workq) and oops in nbd_read_stat() due
+to the unload of nbd module as shown below:
 
-Also we do not reach the init function anymore if the DT node is
-disabled (as this is now handled by OF_DECLARE), so remove the explicit
-check for that case.
+  BUG: kernel NULL pointer dereference, address: 0000000000000040
+  Oops: 0000 [#1] SMP PTI
+  CPU: 5 PID: 13840 Comm: kworker/u17:33 Not tainted 5.14.0+ #1
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
+  Workqueue: knbd16-recv recv_work [nbd]
+  RIP: 0010:nbd_read_stat.cold+0x130/0x1a4 [nbd]
+  Call Trace:
+   recv_work+0x3b/0xb0 [nbd]
+   process_one_work+0x1ed/0x390
+   worker_thread+0x4a/0x3d0
+   kthread+0x12a/0x150
+   ret_from_fork+0x22/0x30
 
-This fixes a long standing bogus error when booting ARM's fastmodels.
+Fixing it by checking the return value of try_module_get()
+in nbd_alloc_config(). As nbd_alloc_config() may return ERR_PTR(-ENODEV),
+assign nbd->config only when nbd_alloc_config() succeeds to ensure
+the value of nbd->config is binary (valid or NULL).
 
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Link: https://lore.kernel.org/r/20220506162522.3675399-1-andre.przywara@arm.com
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Also adding a debug message to check the reference counter
+of nbd_config during module removal.
+
+Signed-off-by: Hou Tao <houtao1@huawei.com>
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+Reviewed-by: Josef Bacik <josef@toxicpanda.com>
+Link: https://lore.kernel.org/r/20220521073749.3146892-3-yukuai3@huawei.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clocksource/timer-sp804.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/block/nbd.c | 28 +++++++++++++++++++---------
+ 1 file changed, 19 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/clocksource/timer-sp804.c b/drivers/clocksource/timer-sp804.c
-index e01222ea888f..738c50e916f7 100644
---- a/drivers/clocksource/timer-sp804.c
-+++ b/drivers/clocksource/timer-sp804.c
-@@ -228,6 +228,11 @@ static int __init sp804_of_init(struct device_node *np)
- 	struct clk *clk1, *clk2;
- 	const char *name = of_get_property(np, "compatible", NULL);
+diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
+index 29bed6397173..f48553979b85 100644
+--- a/drivers/block/nbd.c
++++ b/drivers/block/nbd.c
+@@ -1395,15 +1395,20 @@ static struct nbd_config *nbd_alloc_config(void)
+ {
+ 	struct nbd_config *config;
  
-+	if (initialized) {
-+		pr_debug("%pOF: skipping further SP804 timer device\n", np);
-+		return 0;
++	if (!try_module_get(THIS_MODULE))
++		return ERR_PTR(-ENODEV);
++
+ 	config = kzalloc(sizeof(struct nbd_config), GFP_NOFS);
+-	if (!config)
+-		return NULL;
++	if (!config) {
++		module_put(THIS_MODULE);
++		return ERR_PTR(-ENOMEM);
 +	}
 +
- 	base = of_iomap(np, 0);
- 	if (!base)
- 		return -ENXIO;
-@@ -236,11 +241,6 @@ static int __init sp804_of_init(struct device_node *np)
- 	writel(0, base + TIMER_CTRL);
- 	writel(0, base + TIMER_2_BASE + TIMER_CTRL);
+ 	atomic_set(&config->recv_threads, 0);
+ 	init_waitqueue_head(&config->recv_wq);
+ 	init_waitqueue_head(&config->conn_wait);
+ 	config->blksize = NBD_DEF_BLKSIZE;
+ 	atomic_set(&config->live_connections, 0);
+-	try_module_get(THIS_MODULE);
+ 	return config;
+ }
  
--	if (initialized || !of_device_is_available(np)) {
--		ret = -EINVAL;
--		goto err;
--	}
--
- 	clk1 = of_clk_get(np, 0);
- 	if (IS_ERR(clk1))
- 		clk1 = NULL;
+@@ -1430,12 +1435,13 @@ static int nbd_open(struct block_device *bdev, fmode_t mode)
+ 			mutex_unlock(&nbd->config_lock);
+ 			goto out;
+ 		}
+-		config = nbd->config = nbd_alloc_config();
+-		if (!config) {
+-			ret = -ENOMEM;
++		config = nbd_alloc_config();
++		if (IS_ERR(config)) {
++			ret = PTR_ERR(config);
+ 			mutex_unlock(&nbd->config_lock);
+ 			goto out;
+ 		}
++		nbd->config = config;
+ 		refcount_set(&nbd->config_refs, 1);
+ 		refcount_inc(&nbd->refs);
+ 		mutex_unlock(&nbd->config_lock);
+@@ -1820,13 +1826,14 @@ static int nbd_genl_connect(struct sk_buff *skb, struct genl_info *info)
+ 		nbd_put(nbd);
+ 		return -EINVAL;
+ 	}
+-	config = nbd->config = nbd_alloc_config();
+-	if (!nbd->config) {
++	config = nbd_alloc_config();
++	if (IS_ERR(config)) {
+ 		mutex_unlock(&nbd->config_lock);
+ 		nbd_put(nbd);
+ 		printk(KERN_ERR "nbd: couldn't allocate config\n");
+-		return -ENOMEM;
++		return PTR_ERR(config);
+ 	}
++	nbd->config = config;
+ 	refcount_set(&nbd->config_refs, 1);
+ 	set_bit(NBD_BOUND, &config->runtime_flags);
+ 
+@@ -2352,6 +2359,9 @@ static void __exit nbd_cleanup(void)
+ 	while (!list_empty(&del_list)) {
+ 		nbd = list_first_entry(&del_list, struct nbd_device, list);
+ 		list_del_init(&nbd->list);
++		if (refcount_read(&nbd->config_refs))
++			printk(KERN_ERR "nbd: possibly leaking nbd_config (ref %d)\n",
++					refcount_read(&nbd->config_refs));
+ 		if (refcount_read(&nbd->refs) != 1)
+ 			printk(KERN_ERR "nbd: possibly leaking a device\n");
+ 		nbd_put(nbd);
 -- 
 2.35.1
 
