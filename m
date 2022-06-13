@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64389CCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90889CCA483
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:20:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353679AbiFMLTy (ORCPT
+        id S1353839AbiFMLUA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:19:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46616 "EHLO
+        Mon, 13 Jun 2022 07:20:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353445AbiFMLPm (ORCPT
+        with ESMTP id S1353497AbiFMLPq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:15:42 -0400
+        Mon, 13 Jun 2022 07:15:46 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B3A37BFA;
-        Mon, 13 Jun 2022 03:38:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEEB8381A9;
+        Mon, 13 Jun 2022 03:38:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3CF92B80E94;
-        Mon, 13 Jun 2022 10:38:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B6FDC34114;
-        Mon, 13 Jun 2022 10:38:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7F18DB80EA3;
+        Mon, 13 Jun 2022 10:38:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA6B6C3411E;
+        Mon, 13 Jun 2022 10:38:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116683;
-        bh=+9IgQ/HHoYPDWZs3cMzOuO1R5OJJnADp6vjFwEWk9A4=;
+        s=korg; t=1655116694;
+        bh=SGx7+q0pR03ozeCJd////y0KHdb2pEnaoGfENwzN3H0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VfgG1nIAUKGdzfZ3auxyBYvMUAPY1SiHiSbue5q/3lYXoW1Pi346zTPzbbIVI48KB
-         V/++UfGH8iAEEmZ/ftRmBFYp/g87y6/uRfnGKS1pXxo55SLog6FhCzc5ee9SpuZUWC
-         7gcu9LsiFjfBGnZ1OAN0MdAnhyEEFU5Yg8Fq8tS0=
+        b=Z+LmL7QX/lnay1BF+IK/L4GSmQD24EX+Vksvl1evd8arKxMPGKo9yRDGjwKersu9R
+         pM5Sa1p8cyrM2W1X0yBfr5RL3iVzf1iB0C8ksgyN9s4z9lE7Q2glyOel0SEEt7oL7i
+         TNDPA+4mt0ri4yncJmoNmCtOp4fZkHRBc6MO3iQI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        linux-afs@lists.infradead.org,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 135/411] media: aspeed: Fix an error handling path in aspeed_video_probe()
-Date:   Mon, 13 Jun 2022 12:06:48 +0200
-Message-Id: <20220613094932.719606920@linuxfoundation.org>
+Subject: [PATCH 5.4 151/411] rxrpc: Dont try to resend the request if were receiving the reply
+Date:   Mon, 13 Jun 2022 12:07:04 +0200
+Message-Id: <20220613094933.193565678@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -52,49 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit 310fda622bbd38be17fb444f7f049b137af3bc0d ]
+[ Upstream commit 114af61f88fbe34d641b13922d098ffec4c1be1b ]
 
-A dma_free_coherent() call is missing in the error handling path of the
-probe, as already done in the remove function.
+rxrpc has a timer to trigger resending of unacked data packets in a call.
+This is not cancelled when a client call switches to the receive phase on
+the basis that most calls don't last long enough for it to ever expire.
+However, if it *does* expire after we've started to receive the reply, we
+shouldn't then go into trying to retransmit or pinging the server to find
+out if an ack got lost.
 
-In fact, this call is included in aspeed_video_free_buf(). So use the
-latter both in the error handling path of the probe and in the remove
-function.
-It is easier to see the relation with aspeed_video_alloc_buf() this way.
+Fix this by skipping the resend code if we're into receiving the reply to a
+client call.
 
-Fixes: d2b4387f3bdf ("media: platform: Add Aspeed Video Engine driver")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: 17926a79320a ("[AF_RXRPC]: Provide secure RxRPC sockets for use by userspace and kernel both")
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: linux-afs@lists.infradead.org
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/aspeed-video.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/rxrpc/call_event.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
-index c87eddb1c93f..c3f0b143330a 100644
---- a/drivers/media/platform/aspeed-video.c
-+++ b/drivers/media/platform/aspeed-video.c
-@@ -1688,6 +1688,7 @@ static int aspeed_video_probe(struct platform_device *pdev)
+diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
+index 80e15310f1b2..8574e7066d94 100644
+--- a/net/rxrpc/call_event.c
++++ b/net/rxrpc/call_event.c
+@@ -407,7 +407,8 @@ void rxrpc_process_call(struct work_struct *work)
+ 		goto recheck_state;
+ 	}
  
- 	rc = aspeed_video_setup_video(video);
- 	if (rc) {
-+		aspeed_video_free_buf(video, &video->jpeg);
- 		clk_unprepare(video->vclk);
- 		clk_unprepare(video->eclk);
- 		return rc;
-@@ -1715,8 +1716,7 @@ static int aspeed_video_remove(struct platform_device *pdev)
- 
- 	v4l2_device_unregister(v4l2_dev);
- 
--	dma_free_coherent(video->dev, VE_JPEG_HEADER_SIZE, video->jpeg.virt,
--			  video->jpeg.dma);
-+	aspeed_video_free_buf(video, &video->jpeg);
- 
- 	of_reserved_mem_device_release(dev);
- 
+-	if (test_and_clear_bit(RXRPC_CALL_EV_RESEND, &call->events)) {
++	if (test_and_clear_bit(RXRPC_CALL_EV_RESEND, &call->events) &&
++	    call->state != RXRPC_CALL_CLIENT_RECV_REPLY) {
+ 		rxrpc_resend(call, now);
+ 		goto recheck_state;
+ 	}
 -- 
 2.35.1
 
