@@ -2,101 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BFBDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 15:18:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 677E7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 15:18:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240800AbiFMPSq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 11:18:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39640 "EHLO
+        id S242801AbiFMPSy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 11:18:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243879AbiFMPRx (ORCPT
+        with ESMTP id S1345984AbiFMPSM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 11:17:53 -0400
-Received: from smtp-42a8.mail.infomaniak.ch (smtp-42a8.mail.infomaniak.ch [IPv6:2001:1600:4:17::42a8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F131269AC;
-        Mon, 13 Jun 2022 05:36:15 -0700 (PDT)
-Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4LM9zK4sW9zMpyPc;
-        Mon, 13 Jun 2022 14:36:13 +0200 (CEST)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4LM9zK0CnPzlqK2h;
-        Mon, 13 Jun 2022 14:36:12 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1655123773;
-        bh=y8WeNC3r3J7KNO7FidESYUF65oAKkpk01OypWCpEEpI=;
-        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
-        b=0jqca2CqbhDm2H3L9tH3sKXia+64mN5xDGlKUNW9yCxFJv0zD0a0dE5UldOGfNPUx
-         X8eLqADKLAK47fE8LhhB7re3x5PwlFGYOZ47hNEBNuPTUvSQJUMZbToTUcdAHgA3k+
-         q4aeIrZvnB9nWaIWm73+N4UrUjWtcvj4H+WHnfN4=
-Message-ID: <e7850717-dad6-daef-c96c-2a74248e98f6@digikod.net>
-Date:   Mon, 13 Jun 2022 14:36:12 +0200
+        Mon, 13 Jun 2022 11:18:12 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88098127198
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 05:36:21 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1655123778;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=vhsJGvgbTSULjQe9rAN8kAWgucSRuf4nK7/LbKJ59/c=;
+        b=I1SKlwy+9Kr7dqrHKzQUy6+PxcNNEYDymTHhdH3g3oaFVGG2Tor/fsRJ7nNSyJmOebK8nY
+        Yg+UNT1knFyd4QukEpLSfdHSCYqgoXxtxQs8mVFdtMi4yqieqJiFn8ie/gVJXt7X6V0vvM
+        RyM5ZfwiRSOvT8zv9cNMNRFpvBw3ldBFeP4zPkB2uqIh1AHIhdwfbb83KfsE/v15Yvdp/c
+        Cc1Fcr0/LQahMBhUfccpbgEmzZZRAc6VWBIXZlWujd59nHYjzxDDAbZFqA6+MaDDungHyS
+        q6Ltz9WXAOuvQHkwT9Msmwqx/iBX9HhFsVRK1HcT7pJ8ZYEtgNxfwUVLudwfTA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1655123778;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=vhsJGvgbTSULjQe9rAN8kAWgucSRuf4nK7/LbKJ59/c=;
+        b=9MEwiMhM5UEMaUZkRQU35aVcyFuKS9lYU0Z++F6KDQY5asSh4Znd3UPaegf9MOzlwDl/60
+        isCCJNyNnuIBbcCA==
+To:     Vincent Donnefort <vdonnefort@google.com>, peterz@infradead.org
+Cc:     linux-kernel@vger.kernel.org, vschneid@redhat.com,
+        kernel-team@android.com, Vincent Donnefort <vdonnefort@google.com>,
+        Derek Dolney <z23@posteo.net>
+Subject: Re: [PATCH v2] cpu/hotplug: Do not bail-out in DYING/STARTING sections
+In-Reply-To: <20220523160536.2889162-1-vdonnefort@google.com>
+References: <20220523160536.2889162-1-vdonnefort@google.com>
+Date:   Mon, 13 Jun 2022 14:36:18 +0200
+Message-ID: <87mteg3flp.ffs@tglx>
 MIME-Version: 1.0
-User-Agent: 
-Content-Language: en-US
-To:     Masahiro Yamada <masahiroy@kernel.org>,
-        linux-kbuild@vger.kernel.org
-Cc:     David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        David Woodhouse <dwmw2@infradead.org>,
-        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Eric Snowberg <eric.snowberg@oracle.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>
-References: <20220611172233.1494073-1-masahiroy@kernel.org>
- <20220611172233.1494073-3-masahiroy@kernel.org>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-Subject: Re: [PATCH 3/4] certs: move scripts/check-blacklist-hashes.awk to
- certs/
-In-Reply-To: <20220611172233.1494073-3-masahiroy@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Vincent,
 
+On Mon, May 23 2022 at 17:05, Vincent Donnefort wrote:
+> +static int _cpuhp_invoke_callback_range(bool bringup,
+> +					unsigned int cpu,
+> +					struct cpuhp_cpu_state *st,
+> +					enum cpuhp_state target,
+> +					bool nofail)
+>  {
+>  	enum cpuhp_state state;
+> -	int err = 0;
+> +	int ret = 0;
+>  
+>  	while (cpuhp_next_state(bringup, &state, st, target)) {
+> +		int err;
+> +
+>  		err = cpuhp_invoke_callback(cpu, state, bringup, NULL, NULL);
+> -		if (err)
+> +		if (!err)
+> +			continue;
+> +
+> +		if (nofail) {
+> +			pr_warn("CPU %u %s state %s (%d) failed (%d)\n",
+> +				cpu, bringup ? "UP" : "DOWN",
+> +				cpuhp_get_step(st->state)->name,
+> +				st->state, err);
+> +			ret = -1;
 
-On 11/06/2022 19:22, Masahiro Yamada wrote:
-> This script is only used in certs/Makefile, so certs/ is a better
-> home for it.
-> 
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
-> 
->   MAINTAINERS                                   | 1 -
->   certs/Makefile                                | 2 +-
->   {scripts => certs}/check-blacklist-hashes.awk | 0
->   3 files changed, 1 insertion(+), 2 deletions(-)
->   rename {scripts => certs}/check-blacklist-hashes.awk (100%)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 1fc9ead83d2a..7c2a7c304824 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -4627,7 +4627,6 @@ L:	keyrings@vger.kernel.org
->   S:	Maintained
->   F:	Documentation/admin-guide/module-signing.rst
->   F:	certs/
-> -F:	scripts/check-blacklist-hashes.awk >   F:	scripts/sign-file.c
->   F:	tools/certs/
->   
-> diff --git a/certs/Makefile b/certs/Makefile
-> index a8d628fd5f7b..df7aaeafd19c 100644
-> --- a/certs/Makefile
-> +++ b/certs/Makefile
-> @@ -13,7 +13,7 @@ CFLAGS_blacklist_hashes.o := -I $(obj)
->   
->   quiet_cmd_check_and_copy_blacklist_hash_list = GEN     $@
->         cmd_check_and_copy_blacklist_hash_list = \
-> -	$(AWK) -f $(srctree)/scripts/check-blacklist-hashes.awk $(CONFIG_SYSTEM_BLACKLIST_HASH_LIST) >&2; \
-> +	$(AWK) -f $(srctree)/$(src)/check-blacklist-hashes.awk $(CONFIG_SYSTEM_BLACKLIST_HASH_LIST) >&2; \
->   	cat $(CONFIG_SYSTEM_BLACKLIST_HASH_LIST) > $@
->   
->   $(obj)/blacklist_hash_list: $(CONFIG_SYSTEM_BLACKLIST_HASH_LIST) FORCE
-> diff --git a/scripts/check-blacklist-hashes.awk b/certs/check-blacklist-hashes.awk
-> similarity index 100%
-> rename from scripts/check-blacklist-hashes.awk
-> rename to certs/check-blacklist-hashes.awk
+I have a hard time to map this to the changelog:
 
-It looks more appropriate and consistent to me to keep it in scripts/, 
-close to other cert scripts. Is there some precedent to move such script?
+> those sections. In that case, there's nothing the hotplug machinery can do,
+> so let's just proceed and log the failures.
+
+That's still returning an error code at the end. Confused.
+
+Thanks,
+
+        tglx
