@@ -2,106 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D492C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:15:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15DB9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:15:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359324AbiFMNPs (ORCPT
+        id S1359390AbiFMNPz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:15:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42498 "EHLO
+        Mon, 13 Jun 2022 09:15:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359242AbiFMNJn (ORCPT
+        with ESMTP id S1359258AbiFMNJo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:09:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5CDD38D9F;
-        Mon, 13 Jun 2022 04:19:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 57D1660EAE;
-        Mon, 13 Jun 2022 11:19:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67574C34114;
-        Mon, 13 Jun 2022 11:19:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119177;
-        bh=4oxHm1p9md4OCeao8DceTL8n6o67+unER+HdBMgk2n8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CfABduFJgM4RGCTakR26/ijHcnL61kPWSOVTxlasP1XyTVZn31Mm+L04xnAmeyvqh
-         mpIleytIu1EG7opMlccmThy0XF/YGQoTMH7KPZUQP4wZ0cSSTFCjXixrHwqHqU4z7h
-         kJDiU/RV/4E0K0y8X3sxanMIx01TCdtjNN3Q1IEk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Juergen Gross <jgross@suse.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 142/247] xen: unexport __init-annotated xen_xlate_map_ballooned_pages()
-Date:   Mon, 13 Jun 2022 12:10:44 +0200
-Message-Id: <20220613094927.261176974@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
-References: <20220613094922.843438024@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 13 Jun 2022 09:09:44 -0400
+Received: from smtpproxy21.qq.com (smtpbg701.qq.com [203.205.195.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BE6E20183
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 04:19:47 -0700 (PDT)
+X-QQ-mid: bizesmtp79t1655119156t8v5z557
+Received: from localhost.localdomain ( [58.240.82.166])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Mon, 13 Jun 2022 19:19:09 +0800 (CST)
+X-QQ-SSF: 01400000002000G0Q000B00A0000000
+X-QQ-FEAT: JRmPfD6HWhzxxqXoKc4lDmEGgd/42n5znbX7pLGemLE3r5lVrjvC2ONwBaySs
+        /HuRfbQD393oA3em2mY77GLsVsnkiePKD5SadgPjLo1d13QXsIMi0BBoqV4FR251RVPdAAs
+        3t/1R1R8pTObL98w6dYSHSzn4JYEpq8Rr5OjkUICeUm80FPrex1f/2BM2RWJ6fMW4sGubQx
+        CjqSv/kzt7T+KbtAbE+gElb/ABHEYlBRJhZlbMc+SzeBUWOWUi4Vwve+MsCeFvueQUpIlD7
+        p1dYJbRoy1fNE56Qu+Cvc7iB64jitvBFbq6E7fWNsF1H91xV9Jhja84L9IWckKPCix1uJTO
+        Hpx1Ugp4Hr0w4quf70Pi9YlK4FRrdgreGz7M7jN
+X-QQ-GoodBg: 2
+From:   Meng Tang <tangmeng@uniontech.com>
+To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, kuba@kernel.org, bhelgaas@google.com
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Meng Tang <tangmeng@uniontech.com>
+Subject: [PATCH 5.10 1/2] commit 1d71eb53e451 ("Revert "PCI: Make pci_enable_ptm() private"")
+Date:   Mon, 13 Jun 2022 19:19:06 +0800
+Message-Id: <20220613111907.25490-1-tangmeng@uniontech.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign10
+X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 
-[ Upstream commit dbac14a5a05ff8e1ce7c0da0e1f520ce39ec62ea ]
+Make pci_enable_ptm() accessible from the drivers.
 
-EXPORT_SYMBOL and __init is a bad combination because the .init.text
-section is freed up after the initialization. Hence, modules cannot
-use symbols annotated __init. The access to a freed symbol may end up
-with kernel panic.
+Exposing this to the driver enables the driver to use the
+'ptm_enabled' field of 'pci_dev' to check if PTM is enabled or not.
 
-modpost used to detect it, but it has been broken for a decade.
+This reverts commit ac6c26da29c1 ("PCI: Make pci_enable_ptm() private").
 
-Recently, I fixed modpost so it started to warn it again, then this
-showed up in linux-next builds.
+In the 5.10 kernel version, even to the latest confirmed version,
+the following error will still be reported when I225-V network card
+is used.
 
-There are two ways to fix it:
+kernel: [    1.031581] igc: probe of 0000:01:00.0 failed with error -2
+kernel: [    1.066574] igc: probe of 0000:02:00.0 failed with error -2
+kernel: [    1.096152] igc: probe of 0000:03:00.0 failed with error -2
+kernel: [    1.127251] igc: probe of 0000:04:00.0 failed with error -2
 
-  - Remove __init
-  - Remove EXPORT_SYMBOL
+Even though I confirmed that 7c496de538eebd8212dc2a3c9a468386b2640d4
+and 47bca7de6a4fb8dcb564c7ca4d885c91ed19e03 have been merged into the
+kernel 5.10, the bug is still occurred, and the
+"commit 1b5d73fb8624 ("igc: Enable PCIe PTM")" can fixes it.
 
-I chose the latter for this case because none of the in-tree call-sites
-(arch/arm/xen/enlighten.c, arch/x86/xen/grant-table.c) is compiled as
-modular.
+And this patch is the pre-patch of
+1b5d73fb862414106cf270a1a7300ce8ae77de83.
 
-Fixes: 243848fc018c ("xen/grant-table: Move xlated_setup_gnttab_pages to common place")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-Acked-by: Stefano Stabellini <sstabellini@kernel.org>
-Link: https://lore.kernel.org/r/20220606045920.4161881-1-masahiroy@kernel.org
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Meng Tang <tangmeng@uniontech.com>
 ---
- drivers/xen/xlate_mmu.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/pci/pci.h   | 3 ---
+ include/linux/pci.h | 7 +++++++
+ 2 files changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/xen/xlate_mmu.c b/drivers/xen/xlate_mmu.c
-index 34742c6e189e..f17c4c03db30 100644
---- a/drivers/xen/xlate_mmu.c
-+++ b/drivers/xen/xlate_mmu.c
-@@ -261,7 +261,6 @@ int __init xen_xlate_map_ballooned_pages(xen_pfn_t **gfns, void **virt,
+diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+index a96dc6f53076..4084764bf0b1 100644
+--- a/drivers/pci/pci.h
++++ b/drivers/pci/pci.h
+@@ -585,11 +585,8 @@ static inline void pcie_ecrc_get_policy(char *str) { }
  
- 	return 0;
- }
--EXPORT_SYMBOL_GPL(xen_xlate_map_ballooned_pages);
+ #ifdef CONFIG_PCIE_PTM
+ void pci_ptm_init(struct pci_dev *dev);
+-int pci_enable_ptm(struct pci_dev *dev, u8 *granularity);
+ #else
+ static inline void pci_ptm_init(struct pci_dev *dev) { }
+-static inline int pci_enable_ptm(struct pci_dev *dev, u8 *granularity)
+-{ return -EINVAL; }
+ #endif
  
- struct remap_pfn {
- 	struct mm_struct *mm;
+ struct pci_dev_reset_methods {
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index bc5a1150f072..692ce678c5f1 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -1599,6 +1599,13 @@ static inline bool pci_aer_available(void) { return false; }
+ 
+ bool pci_ats_disabled(void);
+ 
++#ifdef CONFIG_PCIE_PTM
++int pci_enable_ptm(struct pci_dev *dev, u8 *granularity);
++#else
++static inline int pci_enable_ptm(struct pci_dev *dev, u8 *granularity)
++{ return -EINVAL; }
++#endif
++
+ void pci_cfg_access_lock(struct pci_dev *dev);
+ bool pci_cfg_access_trylock(struct pci_dev *dev);
+ void pci_cfg_access_unlock(struct pci_dev *dev);
 -- 
-2.35.1
+2.20.1
 
 
 
