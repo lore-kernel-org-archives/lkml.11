@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2ED6CCA488
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:39:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B1F3CCA48B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:39:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355523AbiFMLjI (ORCPT
+        id S1355579AbiFMLjQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:39:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44578 "EHLO
+        Mon, 13 Jun 2022 07:39:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354693AbiFML34 (ORCPT
+        with ESMTP id S1354830AbiFMLaM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:29:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E4D2AE20;
-        Mon, 13 Jun 2022 03:45:26 -0700 (PDT)
+        Mon, 13 Jun 2022 07:30:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE1983FBDE;
+        Mon, 13 Jun 2022 03:45:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 57C81B80D3A;
-        Mon, 13 Jun 2022 10:45:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2D84C34114;
-        Mon, 13 Jun 2022 10:45:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 48A2361248;
+        Mon, 13 Jun 2022 10:45:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55AF1C34114;
+        Mon, 13 Jun 2022 10:45:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117124;
-        bh=8SJVMbkWgb76oLCpNZEGrn9wLKz7br/QdqE3DdkzGEE=;
+        s=korg; t=1655117148;
+        bh=/lWHFpte0nQhGTo7XI8GUdlZRuC2Mn0hannG7wMM4LU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aRjRDWS9iI/dt4zfS7HABGBMcubG4m8GsAChY9WFWwTH1AX/4e+8wCsJYGilk+Jzg
-         lPlFwZ2Yq8E2kWOnU3Tr7PRGcHfWp90EYD2hftGiMMDotuDPE/E+ngcWwuMrMZtiyG
-         EB3mMkMgjWPkMJXwl/MxwChKJp1UIOREh+r4s/wQ=
+        b=JSK5jsaarZ7GpSYuiETkUSEGJMSCVAcwJGNtubVqVcZXhWapn9ZuWYUh+du8r7U/6
+         2hhPejOBz8aLn3/w7qGdl14KaEZklsvCdseOCMQGcjTHqD0SnBmKt2GZCopPlnJd3R
+         4jhPVPRqCcDxYheGVeJpyB4PSYjRFikAsxseJTDM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Heiko Stuebner <heiko@sntech.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 295/411] firmware: stratix10-svc: fix a missing check on list iterator
-Date:   Mon, 13 Jun 2022 12:09:28 +0200
-Message-Id: <20220613094937.603912095@linuxfoundation.org>
+Subject: [PATCH 5.4 303/411] soc: rockchip: Fix refcount leak in rockchip_grf_init
+Date:   Mon, 13 Jun 2022 12:09:36 +0200
+Message-Id: <20220613094937.839141064@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -49,58 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 5a0793ac66ac0e254d292f129a4d6c526f9f2aff ]
+[ Upstream commit 9b59588d8be91c96bfb0371e912ceb4f16315dbf ]
 
-The bug is here:
-	pmem->vaddr = NULL;
+of_find_matching_node_and_match returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
 
-The list iterator 'pmem' will point to a bogus position containing
-HEAD if the list is empty or no element is found. This case must
-be checked before any use of the iterator, otherwise it will
-lead to a invalid memory access.
-
-To fix this bug, just gen_pool_free/set NULL/list_del() and return
-when found, otherwise list_del HEAD and return;
-
-Fixes: 7ca5ce896524f ("firmware: add Intel Stratix10 service layer driver")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Link: https://lore.kernel.org/r/20220414035609.2239-1-xiam0nd.tong@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 4c58063d4258 ("soc: rockchip: add driver handling grf setup")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220516072013.19731-1-linmq006@gmail.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/stratix10-svc.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/soc/rockchip/grf.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/firmware/stratix10-svc.c b/drivers/firmware/stratix10-svc.c
-index b2b4ba240fb1..08c422380a00 100644
---- a/drivers/firmware/stratix10-svc.c
-+++ b/drivers/firmware/stratix10-svc.c
-@@ -934,17 +934,17 @@ EXPORT_SYMBOL_GPL(stratix10_svc_allocate_memory);
- void stratix10_svc_free_memory(struct stratix10_svc_chan *chan, void *kaddr)
- {
- 	struct stratix10_svc_data_mem *pmem;
--	size_t size = 0;
+diff --git a/drivers/soc/rockchip/grf.c b/drivers/soc/rockchip/grf.c
+index 494cf2b5bf7b..343ff61ccccb 100644
+--- a/drivers/soc/rockchip/grf.c
++++ b/drivers/soc/rockchip/grf.c
+@@ -148,12 +148,14 @@ static int __init rockchip_grf_init(void)
+ 		return -ENODEV;
+ 	if (!match || !match->data) {
+ 		pr_err("%s: missing grf data\n", __func__);
++		of_node_put(np);
+ 		return -EINVAL;
+ 	}
  
- 	list_for_each_entry(pmem, &svc_data_mem, node)
- 		if (pmem->vaddr == kaddr) {
--			size = pmem->size;
--			break;
-+			gen_pool_free(chan->ctrl->genpool,
-+				       (unsigned long)kaddr, pmem->size);
-+			pmem->vaddr = NULL;
-+			list_del(&pmem->node);
-+			return;
- 		}
+ 	grf_info = match->data;
  
--	gen_pool_free(chan->ctrl->genpool, (unsigned long)kaddr, size);
--	pmem->vaddr = NULL;
--	list_del(&pmem->node);
-+	list_del(&svc_data_mem);
- }
- EXPORT_SYMBOL_GPL(stratix10_svc_free_memory);
- 
+ 	grf = syscon_node_to_regmap(np);
++	of_node_put(np);
+ 	if (IS_ERR(grf)) {
+ 		pr_err("%s: could not get grf syscon\n", __func__);
+ 		return PTR_ERR(grf);
 -- 
 2.35.1
 
