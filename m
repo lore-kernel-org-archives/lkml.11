@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACE3EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:32:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1953CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:32:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376583AbiFMNck (ORCPT
+        id S1377301AbiFMNcr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:32:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43862 "EHLO
+        Mon, 13 Jun 2022 09:32:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377626AbiFMN3x (ORCPT
+        with ESMTP id S1377725AbiFMNaG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:29:53 -0400
+        Mon, 13 Jun 2022 09:30:06 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 926886D3A5;
-        Mon, 13 Jun 2022 04:24:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD356D4F8;
+        Mon, 13 Jun 2022 04:25:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C0AF360B6E;
-        Mon, 13 Jun 2022 11:24:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6589C3411C;
-        Mon, 13 Jun 2022 11:24:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7311E61037;
+        Mon, 13 Jun 2022 11:24:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 858D7C3411C;
+        Mon, 13 Jun 2022 11:24:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119491;
-        bh=cJI/Ff5eCY4YKk09fUdLQV5mFqySbVgI0sF7RBQJTzk=;
+        s=korg; t=1655119498;
+        bh=dUEd1nJ1TGgsOkj8BXb0S0dzjSUW0ry9MJ2v6OX4Hqg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Sikwp8gOdq5jUZ8j7D2QKqmsW1NV8QnSdJxn46kjWQ5mWFKPhtTtMHGPi3miR5otE
-         ti8e0coexwwb1vhfed/HsdQb4wPpZIjhtBCPb8lMlwzjrs/x4i1xzrR20r9kzuCc8i
-         IJCJQ5kSZe5y2xuglZWt0X1KxLkAAXTVKhEN7C7o=
+        b=MHe+A2xb7LYAkiRwsYT2cn6TIW8LFCfsoWLP+kahhmuT6CKUcW1ipiojDO+aP78/3
+         rrYsIyvijo1QgK3WBLwJm7WwH/4Yg+KadOv8mMC3Q+/rbuFLWXdHkSWueZq8sF70aB
+         B6i7DNd1+0sJ+fOvK1KUQ27baB+OYOnPm593M0nA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 034/339] iio: adc: stmpe-adc: Fix wait_for_completion_timeout return value check
-Date:   Mon, 13 Jun 2022 12:07:39 +0200
-Message-Id: <20220613094927.552169501@linuxfoundation.org>
+Subject: [PATCH 5.18 035/339] iio: proximity: vl53l0x: Fix return value check of wait_for_completion_timeout
+Date:   Mon, 13 Jun 2022 12:07:40 +0200
+Message-Id: <20220613094927.583528772@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -53,63 +52,47 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit d345b23200bcdbd2bd3582213d738c258b77718f ]
+[ Upstream commit 50f2959113cb6756ffd73c4fedc712cf2661f711 ]
 
-wait_for_completion_timeout() returns unsigned long not long.
-it returns 0 if timed out, and positive if completed.
+wait_for_completion_timeout() returns unsigned long not int.
+It returns 0 if timed out, and positive if completed.
 The check for <= 0 is ambiguous and should be == 0 here
-indicating timeout which is the only error case
+indicating timeout which is the only error case.
 
-Fixes: e813dde6f833 ("iio: stmpe-adc: Use wait_for_completion_timeout")
+Fixes: 3cef2e31b54b ("iio: proximity: vl53l0x: Add IRQ support")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Philippe Schenker <philippe.schenker@toradex.com>
-Link: https://lore.kernel.org/r/20220412065150.14486-1-linmq006@gmail.com
+Link: https://lore.kernel.org/r/20220412064210.10734-1-linmq006@gmail.com
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/stmpe-adc.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/iio/proximity/vl53l0x-i2c.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/adc/stmpe-adc.c b/drivers/iio/adc/stmpe-adc.c
-index d2d405388499..83e0ac4467ca 100644
---- a/drivers/iio/adc/stmpe-adc.c
-+++ b/drivers/iio/adc/stmpe-adc.c
-@@ -61,7 +61,7 @@ struct stmpe_adc {
- static int stmpe_read_voltage(struct stmpe_adc *info,
- 		struct iio_chan_spec const *chan, int *val)
- {
--	long ret;
-+	unsigned long ret;
+diff --git a/drivers/iio/proximity/vl53l0x-i2c.c b/drivers/iio/proximity/vl53l0x-i2c.c
+index 661a79ea200d..a284b20529fb 100644
+--- a/drivers/iio/proximity/vl53l0x-i2c.c
++++ b/drivers/iio/proximity/vl53l0x-i2c.c
+@@ -104,6 +104,7 @@ static int vl53l0x_read_proximity(struct vl53l0x_data *data,
+ 	u16 tries = 20;
+ 	u8 buffer[12];
+ 	int ret;
++	unsigned long time_left;
  
- 	mutex_lock(&info->lock);
+ 	ret = i2c_smbus_write_byte_data(client, VL_REG_SYSRANGE_START, 1);
+ 	if (ret < 0)
+@@ -112,10 +113,8 @@ static int vl53l0x_read_proximity(struct vl53l0x_data *data,
+ 	if (data->client->irq) {
+ 		reinit_completion(&data->completion);
  
-@@ -79,7 +79,7 @@ static int stmpe_read_voltage(struct stmpe_adc *info,
+-		ret = wait_for_completion_timeout(&data->completion, HZ/10);
+-		if (ret < 0)
+-			return ret;
+-		else if (ret == 0)
++		time_left = wait_for_completion_timeout(&data->completion, HZ/10);
++		if (time_left == 0)
+ 			return -ETIMEDOUT;
  
- 	ret = wait_for_completion_timeout(&info->completion, STMPE_ADC_TIMEOUT);
- 
--	if (ret <= 0) {
-+	if (ret == 0) {
- 		stmpe_reg_write(info->stmpe, STMPE_REG_ADC_INT_STA,
- 				STMPE_ADC_CH(info->channel));
- 		mutex_unlock(&info->lock);
-@@ -96,7 +96,7 @@ static int stmpe_read_voltage(struct stmpe_adc *info,
- static int stmpe_read_temp(struct stmpe_adc *info,
- 		struct iio_chan_spec const *chan, int *val)
- {
--	long ret;
-+	unsigned long ret;
- 
- 	mutex_lock(&info->lock);
- 
-@@ -114,7 +114,7 @@ static int stmpe_read_temp(struct stmpe_adc *info,
- 
- 	ret = wait_for_completion_timeout(&info->completion, STMPE_ADC_TIMEOUT);
- 
--	if (ret <= 0) {
-+	if (ret == 0) {
- 		mutex_unlock(&info->lock);
- 		return -ETIMEDOUT;
- 	}
+ 		vl53l0x_clear_irq(data);
 -- 
 2.35.1
 
