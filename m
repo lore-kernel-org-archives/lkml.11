@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7783CCA47B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D49C4CCA488
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:00:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358112AbiFML71 (ORCPT
+        id S1358139AbiFML7e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:59:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55322 "EHLO
+        Mon, 13 Jun 2022 07:59:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356972AbiFMLw0 (ORCPT
+        with ESMTP id S1357049AbiFMLwp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:52:26 -0400
+        Mon, 13 Jun 2022 07:52:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CC6E21259;
-        Mon, 13 Jun 2022 03:55:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DF71220CE;
+        Mon, 13 Jun 2022 03:55:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2115661257;
-        Mon, 13 Jun 2022 10:55:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 284DDC34114;
-        Mon, 13 Jun 2022 10:55:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7472260EFE;
+        Mon, 13 Jun 2022 10:55:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8884CC34114;
+        Mon, 13 Jun 2022 10:55:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117722;
-        bh=+GwQ78k6PfWm/H5SjSG6dts4NNQtZaWGVz0m9qkt2Us=;
+        s=korg; t=1655117727;
+        bh=sELfsL7R04gHFsBTxos23N12m385pyivDoZwxC2LLS4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0gtuIC9aaRaIWrsXGu/z3Lm5yIaP6xTEOaYEKqDRm5W+TNff6mVnTcH17D0wJQ7tT
-         e6Ct4NQFfOYNs97WqSvYll6nFCyUgCMHNtWwqBZtkZ17XFQoE0zxAjMexh+0G7ml8j
-         MFEeomuTqnF1HT9fOqoMCixNyd91N49G47FwK3bQ=
+        b=x8/+wDH8G5Kr5xvfwhJ2/L0OLEjaC7MTL2addS0Y0hgQSva0Ol60XTzVc62zdQg4h
+         ojsPpXrXuMXH4W7/6saN/zV1adA+M3hmE3LQxpnpHwGWDHtv09K21cmP8+IBZu/flZ
+         jHf2mLXIWE6yILdG7gl7Geuvc90vKs4/mdVBXm6M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Hugues Fruchet <hugues.fruchet@foss.st.com>,
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 096/287] media: st-delta: Fix PM disable depth imbalance in delta_probe
-Date:   Mon, 13 Jun 2022 12:08:40 +0200
-Message-Id: <20220613094926.789410340@linuxfoundation.org>
+        Sasha Levin <sashal@kernel.org>,
+        syzbot+1a247e36149ffd709a9b@syzkaller.appspotmail.com
+Subject: [PATCH 4.19 098/287] media: pvrusb2: fix array-index-out-of-bounds in pvr2_i2c_core_init
+Date:   Mon, 13 Jun 2022 12:08:42 +0200
+Message-Id: <20220613094926.851868115@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -52,55 +52,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit 94e3dba710fe0afc772172305444250023fc2d30 ]
+[ Upstream commit 471bec68457aaf981add77b4f590d65dd7da1059 ]
 
-The pm_runtime_enable will decrease power disable depth.
-If the probe fails, we should use pm_runtime_disable() to balance
-pm_runtime_enable().
+Syzbot reported that -1 is used as array index. The problem was in
+missing validation check.
 
-Fixes: f386509e4959 ("[media] st-delta: STiH4xx multi-format video decoder v4l2 driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Acked-by: Hugues Fruchet <hugues.fruchet@foss.st.com>
+hdw->unit_number is initialized with -1 and then if init table walk fails
+this value remains unchanged. Since code blindly uses this member for
+array indexing adding sanity check is the easiest fix for that.
+
+hdw->workpoll initialization moved upper to prevent warning in
+__flush_work.
+
+Reported-and-tested-by: syzbot+1a247e36149ffd709a9b@syzkaller.appspotmail.com
+
+Fixes: d855497edbfb ("V4L/DVB (4228a): pvrusb2 to kernel 2.6.18")
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/sti/delta/delta-v4l2.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/media/usb/pvrusb2/pvrusb2-hdw.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/platform/sti/delta/delta-v4l2.c b/drivers/media/platform/sti/delta/delta-v4l2.c
-index 53dc6da2b09e..eb5e8867967e 100644
---- a/drivers/media/platform/sti/delta/delta-v4l2.c
-+++ b/drivers/media/platform/sti/delta/delta-v4l2.c
-@@ -1862,7 +1862,7 @@ static int delta_probe(struct platform_device *pdev)
- 	if (ret) {
- 		dev_err(delta->dev, "%s failed to initialize firmware ipc channel\n",
- 			DELTA_PREFIX);
--		goto err;
-+		goto err_pm_disable;
- 	}
+diff --git a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
+index 21ccbbd70dce..bbb5ff16abd6 100644
+--- a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
++++ b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
+@@ -2561,6 +2561,11 @@ struct pvr2_hdw *pvr2_hdw_create(struct usb_interface *intf,
+ 	} while (0);
+ 	mutex_unlock(&pvr2_unit_mtx);
  
- 	/* register all available decoders */
-@@ -1876,7 +1876,7 @@ static int delta_probe(struct platform_device *pdev)
- 	if (ret) {
- 		dev_err(delta->dev, "%s failed to register V4L2 device\n",
- 			DELTA_PREFIX);
--		goto err;
-+		goto err_pm_disable;
- 	}
++	INIT_WORK(&hdw->workpoll, pvr2_hdw_worker_poll);
++
++	if (hdw->unit_number == -1)
++		goto fail;
++
+ 	cnt1 = 0;
+ 	cnt2 = scnprintf(hdw->name+cnt1,sizeof(hdw->name)-cnt1,"pvrusb2");
+ 	cnt1 += cnt2;
+@@ -2572,8 +2577,6 @@ struct pvr2_hdw *pvr2_hdw_create(struct usb_interface *intf,
+ 	if (cnt1 >= sizeof(hdw->name)) cnt1 = sizeof(hdw->name)-1;
+ 	hdw->name[cnt1] = 0;
  
- 	delta->work_queue = create_workqueue(DELTA_NAME);
-@@ -1901,6 +1901,8 @@ static int delta_probe(struct platform_device *pdev)
- 	destroy_workqueue(delta->work_queue);
- err_v4l2:
- 	v4l2_device_unregister(&delta->v4l2_dev);
-+err_pm_disable:
-+	pm_runtime_disable(dev);
- err:
- 	return ret;
- }
+-	INIT_WORK(&hdw->workpoll,pvr2_hdw_worker_poll);
+-
+ 	pvr2_trace(PVR2_TRACE_INIT,"Driver unit number is %d, name is %s",
+ 		   hdw->unit_number,hdw->name);
+ 
 -- 
 2.35.1
 
