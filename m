@@ -2,154 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50E3FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:02:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F989C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:04:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239367AbiFMRB5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 13:01:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47562 "EHLO
+        id S241524AbiFMREj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 13:04:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241720AbiFMRBS (ORCPT
+        with ESMTP id S244014AbiFMRDK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 13:01:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B51C03A2;
-        Mon, 13 Jun 2022 04:52:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5B26EB80EE3;
-        Mon, 13 Jun 2022 11:52:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE342C385A9;
-        Mon, 13 Jun 2022 11:52:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655121165;
-        bh=va27Whq9MlqmSQeciQ1mgy6bmhWVQAuq24GMVFNoUUM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WyobQWzYFiJ1upEhznonkXHz03tl2kUQD8EqxgQ1O/Pz4leDThJbVWeq4UbF0Ey5o
-         tFWk+HBzXXKMrXC74DevU8Tcu09Svv7O6R/Szah4fyh76fwgq5W4sVYyIW7mGo/75P
-         WoLtSvsCSfcjuJI0C1jyl7DwgcgVJxefGIEPhLmU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Frode Nordahl <frode.nordahl@canonical.com>,
-        Ilya Maximets <i.maximets@ovn.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.17 272/298] net: openvswitch: fix misuse of the cached connection on tuple changes
-Date:   Mon, 13 Jun 2022 12:12:46 +0200
-Message-Id: <20220613094933.320040427@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
-References: <20220613094924.913340374@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Mon, 13 Jun 2022 13:03:10 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 328F3E15C9;
+        Mon, 13 Jun 2022 05:02:18 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id m24so6818923wrb.10;
+        Mon, 13 Jun 2022 05:02:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=iAGGMDO3RCjpuDnI12s4tp/U5muUk3K/RmYbixGZ5cY=;
+        b=j+Yp1Y4cfSfJ+AVrsnjA5ETWh4QdGa67V5H3ARF0m2zwsPeGShbVT/A0rxLFgS7AE0
+         B+p6QFJQAaE8fSt1zafzR9UZz4dHWbcKCDUXgl9LvHF+LNUyubjgj1wdxuibfUQVIhks
+         Sb7fIv4nDkYVEy2M3B9oaulLLD4zxcopEk7RNQnVkM/KPcx8zvoacWn8x7a54pyipETU
+         j+eWgGryN0jSxoU510/DRai6znER5XoTmB6XxjZVN0NBL903fgFPzJITO96udsNy2Zd7
+         sqSaHhLeI6KNgmBr1RVXlMqH2015r3QCdktca5AWw+QcpI4UU1BFPEoh+Jwg93RXshlW
+         HP6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=iAGGMDO3RCjpuDnI12s4tp/U5muUk3K/RmYbixGZ5cY=;
+        b=Jw6k0XYQ27MRtYqcQJb9Ddp4MI2hmz6IdJ85QQMEYEDVHy9vlfU2w8Z2xynWn3CMN8
+         sUzzZq+n56BPavFJ/Ygv7e7g9i1jLeUaLMUMeXXVYkmALK8hZW6DEgUSjnI9HnffL6u6
+         fRJ+HWdcMGRltHi8izdjLJZnZjukTtal4O67pqa9dkB/6486mDoDKQKbRm9cETmqeffv
+         ItV9WFZ3hHqwtqDpTy+btQ8Umsy7fz/sUUWHD8eYGsT9OyhzI3nE917S4Uqhnm6JbHmj
+         71fBpFzPFElfLT2GAnIOjz8Y1EV+DL2oKM0RBuoEwGYl9MGoi5hlaG/2BbUIcuNSvSQO
+         RoOQ==
+X-Gm-Message-State: AOAM532ka1v0xT8CLk5iMKNDeDN57NuUrgML3LApC43z3z6U876GTjFS
+        /8anK2GsKdrZ5YTzKO0Trkgh6QyASFo=
+X-Google-Smtp-Source: ABdhPJw6IDp5GNuZncI3s0NeFl8BYG40OMdVjI/u5bAvFe5hXAGcozpvJTybpIK+LUARmdlKWbENOg==
+X-Received: by 2002:a05:6000:12c8:b0:213:584:3d7 with SMTP id l8-20020a05600012c800b00213058403d7mr57282336wrx.125.1655121736420;
+        Mon, 13 Jun 2022 05:02:16 -0700 (PDT)
+Received: from felia.fritz.box (200116b8260df50011e978c0f780de03.dip.versatel-1u1.de. [2001:16b8:260d:f500:11e9:78c0:f780:de03])
+        by smtp.gmail.com with ESMTPSA id q1-20020adff501000000b002117ef160fbsm8437077wro.21.2022.06.13.05.02.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 05:02:16 -0700 (PDT)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] MAINTAINERS: add include/dt-bindings/interrupt-controller to IRQCHIP DRIVERS
+Date:   Mon, 13 Jun 2022 14:02:05 +0200
+Message-Id: <20220613120205.31311-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilya Maximets <i.maximets@ovn.org>
+Maintainers of the directory
+Documentation/devicetree/bindings/interrupt-controller are also the
+maintainers of the corresponding directory
+include/dt-bindings/interrupt-controller.
 
-commit 2061ecfdf2350994e5b61c43e50e98a7a70e95ee upstream.
+Add the file entry for include/dt-bindings/interrupt-controller to the
+appropriate section in MAINTAINERS.
 
-If packet headers changed, the cached nfct is no longer relevant
-for the packet and attempt to re-use it leads to the incorrect packet
-classification.
-
-This issue is causing broken connectivity in OpenStack deployments
-with OVS/OVN due to hairpin traffic being unexpectedly dropped.
-
-The setup has datapath flows with several conntrack actions and tuple
-changes between them:
-
-  actions:ct(commit,zone=8,mark=0/0x1,nat(src)),
-          set(eth(src=00:00:00:00:00:01,dst=00:00:00:00:00:06)),
-          set(ipv4(src=172.18.2.10,dst=192.168.100.6,ttl=62)),
-          ct(zone=8),recirc(0x4)
-
-After the first ct() action the packet headers are almost fully
-re-written.  The next ct() tries to re-use the existing nfct entry
-and marks the packet as invalid, so it gets dropped later in the
-pipeline.
-
-Clearing the cached conntrack entry whenever packet tuple is changed
-to avoid the issue.
-
-The flow key should not be cleared though, because we should still
-be able to match on the ct_state if the recirculation happens after
-the tuple change but before the next ct() action.
-
-Cc: stable@vger.kernel.org
-Fixes: 7f8a436eaa2c ("openvswitch: Add conntrack action")
-Reported-by: Frode Nordahl <frode.nordahl@canonical.com>
-Link: https://mail.openvswitch.org/pipermail/ovs-discuss/2022-May/051829.html
-Link: https://bugs.launchpad.net/ubuntu/+source/ovn/+bug/1967856
-Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
-Link: https://lore.kernel.org/r/20220606221140.488984-1-i.maximets@ovn.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 ---
- net/openvswitch/actions.c   |    6 ++++++
- net/openvswitch/conntrack.c |    4 +++-
- 2 files changed, 9 insertions(+), 1 deletion(-)
+Thomas, Marc, please pick this MAINTAINERS addition to your section.
 
---- a/net/openvswitch/actions.c
-+++ b/net/openvswitch/actions.c
-@@ -373,6 +373,7 @@ static void set_ip_addr(struct sk_buff *
- 	update_ip_l4_checksum(skb, nh, *addr, new_addr);
- 	csum_replace4(&nh->check, *addr, new_addr);
- 	skb_clear_hash(skb);
-+	ovs_ct_clear(skb, NULL);
- 	*addr = new_addr;
- }
- 
-@@ -420,6 +421,7 @@ static void set_ipv6_addr(struct sk_buff
- 		update_ipv6_checksum(skb, l4_proto, addr, new_addr);
- 
- 	skb_clear_hash(skb);
-+	ovs_ct_clear(skb, NULL);
- 	memcpy(addr, new_addr, sizeof(__be32[4]));
- }
- 
-@@ -660,6 +662,7 @@ static int set_nsh(struct sk_buff *skb,
- static void set_tp_port(struct sk_buff *skb, __be16 *port,
- 			__be16 new_port, __sum16 *check)
- {
-+	ovs_ct_clear(skb, NULL);
- 	inet_proto_csum_replace2(check, skb, *port, new_port, false);
- 	*port = new_port;
- }
-@@ -699,6 +702,7 @@ static int set_udp(struct sk_buff *skb,
- 		uh->dest = dst;
- 		flow_key->tp.src = src;
- 		flow_key->tp.dst = dst;
-+		ovs_ct_clear(skb, NULL);
- 	}
- 
- 	skb_clear_hash(skb);
-@@ -761,6 +765,8 @@ static int set_sctp(struct sk_buff *skb,
- 	sh->checksum = old_csum ^ old_correct_csum ^ new_csum;
- 
- 	skb_clear_hash(skb);
-+	ovs_ct_clear(skb, NULL);
-+
- 	flow_key->tp.src = sh->source;
- 	flow_key->tp.dst = sh->dest;
- 
---- a/net/openvswitch/conntrack.c
-+++ b/net/openvswitch/conntrack.c
-@@ -1342,7 +1342,9 @@ int ovs_ct_clear(struct sk_buff *skb, st
- 
- 	nf_ct_put(ct);
- 	nf_ct_set(skb, NULL, IP_CT_UNTRACKED);
--	ovs_ct_fill_key(skb, key, false);
-+
-+	if (key)
-+		ovs_ct_fill_key(skb, key, false);
- 
- 	return 0;
- }
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 262ed53d544a..30f80e8fe775 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -10490,6 +10490,7 @@ S:	Maintained
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git irq/core
+ F:	Documentation/devicetree/bindings/interrupt-controller/
+ F:	drivers/irqchip/
++F:	include/dt-bindings/interrupt-controller/
+ 
+ ISA
+ M:	William Breathitt Gray <vilhelm.gray@gmail.com>
+-- 
+2.17.1
 
