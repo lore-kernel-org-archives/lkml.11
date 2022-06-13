@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F8FFCCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:47:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76163C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:47:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379188AbiFMNrT (ORCPT
+        id S1379160AbiFMNrc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:47:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35916 "EHLO
+        Mon, 13 Jun 2022 09:47:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379185AbiFMNkA (ORCPT
+        with ESMTP id S1379186AbiFMNkA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 09:40:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 446C720192;
-        Mon, 13 Jun 2022 04:29:34 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52E5011152;
+        Mon, 13 Jun 2022 04:29:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 03ED1B80D3A;
-        Mon, 13 Jun 2022 11:29:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E5EFC34114;
-        Mon, 13 Jun 2022 11:29:31 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A7533CE110D;
+        Mon, 13 Jun 2022 11:29:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0B90C34114;
+        Mon, 13 Jun 2022 11:29:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119771;
-        bh=/xmJ2uBU3yrpOFL3voMeLP3SrzDDVNuEh0M+dn8yYVM=;
+        s=korg; t=1655119769;
+        bh=6nQzew8eWXcwJ/e6eQADK+2ZYHZl3QXmSnJJdhl8oDA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ra4VZ9E4MyYln7JAm9RImff/OdBO8O0ta0SAQGj450e0kWc+h4IyZixXHAntWVQBz
-         rtLVHa6vad1HlhLrjRsWsN3ugTt0RSvKguMqUf11MXQwYWSGbtuHTMO5WQgDpbPuIX
-         NtTxYJfAievjZU/bwhEJ7O2mzBTu70aaH47LllAY=
+        b=DninzJh26n7mxupTT4Xm9BlLONLX778jUsUoRKi3GaXRYgZOXiyUDQEoBOCVpJXsB
+         j2wKK9U32Ggdx9O2zxpJKWPl0SQRVZ2kN48Y5tMk84jE4DSdUHDf0WtcwNnbW4DZ2f
+         Zc3lM0eXH6ubTbCrwTEGt+YryB3rXb9qhFNqVla4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tianhao Zhao <tizhao@redhat.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
+        stable@vger.kernel.org, Li Liang <liali@redhat.com>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Jonathan Toppins <jtoppins@redhat.com>,
+        Jay Vosburgh <jay.vosburgh@canonical.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 114/339] sfc: fix considering that all channels have TX queues
-Date:   Mon, 13 Jun 2022 12:08:59 +0200
-Message-Id: <20220613094929.968768888@linuxfoundation.org>
+Subject: [PATCH 5.18 113/339] bonding: NS target should accept link local address
+Date:   Mon, 13 Jun 2022 12:08:58 +0200
+Message-Id: <20220613094929.938831564@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -52,63 +53,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Habets <habetsm.xilinx@gmail.com>
+From: Hangbin Liu <liuhangbin@gmail.com>
 
-[ Upstream commit 2e102b53f8a778f872dc137f4c7ac548705817aa ]
+[ Upstream commit 5e1eeef69c0fef6249b794bda5d68f95a65d062f ]
 
-Normally, all channels have RX and TX queues, but this is not true if
-modparam efx_separate_tx_channels=1 is used. In that cases, some
-channels only have RX queues and others only TX queues (or more
-preciselly, they have them allocated, but not initialized).
+When setting bond NS target, we use bond_is_ip6_target_ok() to check
+if the address valid. The link local address was wrongly rejected in
+bond_changelink(), as most time the user just set the ARP/NS target to
+gateway, while the IPv6 gateway is always a link local address when user
+set up interface via SLAAC.
 
-Fix efx_channel_has_tx_queues to return the correct value for this case
-too.
+So remove the link local addr check when setting bond NS target.
 
-Messages shown at probe time before the fix:
- sfc 0000:03:00.0 ens6f0np0: MC command 0x82 inlen 544 failed rc=-22 (raw=0) arg=0
- ------------[ cut here ]------------
- netdevice: ens6f0np0: failed to initialise TXQ -1
- WARNING: CPU: 1 PID: 626 at drivers/net/ethernet/sfc/ef10.c:2393 efx_ef10_tx_init+0x201/0x300 [sfc]
- [...] stripped
- RIP: 0010:efx_ef10_tx_init+0x201/0x300 [sfc]
- [...] stripped
- Call Trace:
-  efx_init_tx_queue+0xaa/0xf0 [sfc]
-  efx_start_channels+0x49/0x120 [sfc]
-  efx_start_all+0x1f8/0x430 [sfc]
-  efx_net_open+0x5a/0xe0 [sfc]
-  __dev_open+0xd0/0x190
-  __dev_change_flags+0x1b3/0x220
-  dev_change_flags+0x21/0x60
- [...] stripped
-
-Messages shown at remove time before the fix:
- sfc 0000:03:00.0 ens6f0np0: failed to flush 10 queues
- sfc 0000:03:00.0 ens6f0np0: failed to flush queues
-
-Fixes: 8700aff08984 ("sfc: fix channel allocation with brute force")
-Reported-by: Tianhao Zhao <tizhao@redhat.com>
-Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
-Tested-by: Íñigo Huguet <ihuguet@redhat.com>
+Fixes: 129e3c1bab24 ("bonding: add new option ns_ip6_target")
+Reported-by: Li Liang <liali@redhat.com>
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+Reviewed-by: Jonathan Toppins <jtoppins@redhat.com>
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/sfc/net_driver.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/bonding/bond_netlink.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
-index c75dc75e2857..d7255d54707c 100644
---- a/drivers/net/ethernet/sfc/net_driver.h
-+++ b/drivers/net/ethernet/sfc/net_driver.h
-@@ -1535,7 +1535,7 @@ static inline bool efx_channel_is_xdp_tx(struct efx_channel *channel)
+diff --git a/drivers/net/bonding/bond_netlink.c b/drivers/net/bonding/bond_netlink.c
+index f427fa1737c7..6f404f9c34e3 100644
+--- a/drivers/net/bonding/bond_netlink.c
++++ b/drivers/net/bonding/bond_netlink.c
+@@ -290,11 +290,6 @@ static int bond_changelink(struct net_device *bond_dev, struct nlattr *tb[],
  
- static inline bool efx_channel_has_tx_queues(struct efx_channel *channel)
- {
--	return true;
-+	return channel && channel->channel >= channel->efx->tx_channel_offset;
- }
+ 			addr6 = nla_get_in6_addr(attr);
  
- static inline unsigned int efx_channel_num_tx_queues(struct efx_channel *channel)
+-			if (ipv6_addr_type(&addr6) & IPV6_ADDR_LINKLOCAL) {
+-				NL_SET_ERR_MSG(extack, "Invalid IPv6 addr6");
+-				return -EINVAL;
+-			}
+-
+ 			bond_opt_initextra(&newval, &addr6, sizeof(addr6));
+ 			err = __bond_opt_set(bond, BOND_OPT_NS_TARGETS,
+ 					     &newval);
 -- 
 2.35.1
 
