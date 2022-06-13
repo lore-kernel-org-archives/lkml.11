@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3F71C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:36:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C10E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:36:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377989AbiFMNgZ (ORCPT
+        id S1377841AbiFMNg2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:36:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51950 "EHLO
+        Mon, 13 Jun 2022 09:36:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378447AbiFMNbg (ORCPT
+        with ESMTP id S1378626AbiFMNbz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:31:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9001703DF;
-        Mon, 13 Jun 2022 04:26:07 -0700 (PDT)
+        Mon, 13 Jun 2022 09:31:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E098712F1;
+        Mon, 13 Jun 2022 04:26:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 571AEB80E93;
-        Mon, 13 Jun 2022 11:26:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4249C34114;
-        Mon, 13 Jun 2022 11:26:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DCEB660B6E;
+        Mon, 13 Jun 2022 11:26:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6E61C34114;
+        Mon, 13 Jun 2022 11:26:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119565;
-        bh=rp7BVa+YdVp1no5nrT8jUWCSbXCylb1klRp57aAm3fM=;
+        s=korg; t=1655119584;
+        bh=RAPHGV+rtvwWQJEXunWfr637QO4/abkhlqk7qVnMv14=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oW8ki3qOu21usA3h1vlOrjPHCY67HR1GQ8kmcQxCuaR4diQJE4eMT8JU5Wr3JPjeo
-         641i4GXSJkd+Ss3nRSLgZHdHuad+miXyvCCa1+ID7CCh0O57gdUtkwOPUvYlWtO3GX
-         5Ij2OVcLKylyhaWUdwJZw3vbytGx+Kag33L9LSQQ=
+        b=t1pa3B5w2bBQIrAUIqWsfuEGOOiNOFoucrc9iHbArcmMMmsrapZMPgS3SYIipoOtj
+         8+HdDyLtmOwjXb8hTsyOSmqd2jz64l/494kOqfQwjGbNhZIes6fFsCjOBwbCna7UPY
+         W6gWHQ56X8RikGaYaYAde8cuQbMIVe/bcGx+SIvg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Howard Chiu <howard_chiu@aspeedtech.com>,
-        Joel Stanley <joel@jms.id.au>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 059/339] ARM: dts: aspeed: ast2600-evb: Enable RX delay for MAC0/MAC1
-Date:   Mon, 13 Jun 2022 12:08:04 +0200
-Message-Id: <20220613094928.311639057@linuxfoundation.org>
+        stable@vger.kernel.org, Miroslav Benes <mbenes@suse.cz>,
+        Emil Velikov <emil.l.velikov@gmail.com>,
+        Jessica Yu <jeyu@kernel.org>,
+        Quentin Perret <qperret@google.com>,
+        Matthias Maennich <maennich@google.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 046/339] export: fix string handling of namespace in EXPORT_SYMBOL_NS
+Date:   Mon, 13 Jun 2022 12:07:51 +0200
+Message-Id: <20220613094927.920126897@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -49,49 +54,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Howard Chiu <howard_chiu@aspeedtech.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-[ Upstream commit 4d338ee40ba89e508c5d3e1b4af956af7cb5e12e ]
+[ Upstream commit d143b9db8069f0e2a0fa34484e806a55a0dd4855 ]
 
-Since mac0/1 and mac2/3 are physically located on different die,
-they have different properties by nature, which is mac0/1 has smaller delay step.
+Commit c3a6cf19e695 ("export: avoid code duplication in
+include/linux/export.h") broke the ability for a defined string to be
+used as a namespace value.  Fix this up by using stringify to properly
+encode the namespace name.
 
-The property 'phy-mode' on ast2600 mac0 and mac1 is recommended to set to 'rgmii-rxid'
-which enables the RX interface delay from the PHY chip.
-Refer page 45 of SDK User Guide v08.00
-https://github.com/AspeedTech-BMC/openbmc/releases/download/v08.00/SDK_User_Guide_v08.00.pdf
-
-Fixes: 2ca5646b5c2f ("ARM: dts: aspeed: Add AST2600 and EVB")
-Signed-off-by: Howard Chiu <howard_chiu@aspeedtech.com>
-Link: https://lore.kernel.org/r/SG2PR06MB23152A548AAE81140B57DD69E6E09@SG2PR06MB2315.apcprd06.prod.outlook.com
-Signed-off-by: Joel Stanley <joel@jms.id.au>
+Fixes: c3a6cf19e695 ("export: avoid code duplication in include/linux/export.h")
+Cc: Miroslav Benes <mbenes@suse.cz>
+Cc: Emil Velikov <emil.l.velikov@gmail.com>
+Cc: Jessica Yu <jeyu@kernel.org>
+Cc: Quentin Perret <qperret@google.com>
+Cc: Matthias Maennich <maennich@google.com>
+Reviewed-by: Masahiro Yamada <masahiroy@kernel.org>
+Link: https://lore.kernel.org/r/20220427090442.2105905-1-gregkh@linuxfoundation.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/aspeed-ast2600-evb.dts | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/linux/export.h | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm/boot/dts/aspeed-ast2600-evb.dts b/arch/arm/boot/dts/aspeed-ast2600-evb.dts
-index b7eb552640cb..788448cdd6b3 100644
---- a/arch/arm/boot/dts/aspeed-ast2600-evb.dts
-+++ b/arch/arm/boot/dts/aspeed-ast2600-evb.dts
-@@ -103,7 +103,7 @@
- &mac0 {
- 	status = "okay";
+diff --git a/include/linux/export.h b/include/linux/export.h
+index 27d848712b90..5910ccb66ca2 100644
+--- a/include/linux/export.h
++++ b/include/linux/export.h
+@@ -2,6 +2,8 @@
+ #ifndef _LINUX_EXPORT_H
+ #define _LINUX_EXPORT_H
  
--	phy-mode = "rgmii";
-+	phy-mode = "rgmii-rxid";
- 	phy-handle = <&ethphy0>;
++#include <linux/stringify.h>
++
+ /*
+  * Export symbols from the kernel to modules.  Forked from module.h
+  * to reduce the amount of pointless cruft we feed to gcc when only
+@@ -154,7 +156,6 @@ struct kernel_symbol {
+ #endif /* CONFIG_MODULES */
  
- 	pinctrl-names = "default";
-@@ -114,7 +114,7 @@
- &mac1 {
- 	status = "okay";
+ #ifdef DEFAULT_SYMBOL_NAMESPACE
+-#include <linux/stringify.h>
+ #define _EXPORT_SYMBOL(sym, sec)	__EXPORT_SYMBOL(sym, sec, __stringify(DEFAULT_SYMBOL_NAMESPACE))
+ #else
+ #define _EXPORT_SYMBOL(sym, sec)	__EXPORT_SYMBOL(sym, sec, "")
+@@ -162,8 +163,8 @@ struct kernel_symbol {
  
--	phy-mode = "rgmii";
-+	phy-mode = "rgmii-rxid";
- 	phy-handle = <&ethphy1>;
+ #define EXPORT_SYMBOL(sym)		_EXPORT_SYMBOL(sym, "")
+ #define EXPORT_SYMBOL_GPL(sym)		_EXPORT_SYMBOL(sym, "_gpl")
+-#define EXPORT_SYMBOL_NS(sym, ns)	__EXPORT_SYMBOL(sym, "", #ns)
+-#define EXPORT_SYMBOL_NS_GPL(sym, ns)	__EXPORT_SYMBOL(sym, "_gpl", #ns)
++#define EXPORT_SYMBOL_NS(sym, ns)	__EXPORT_SYMBOL(sym, "", __stringify(ns))
++#define EXPORT_SYMBOL_NS_GPL(sym, ns)	__EXPORT_SYMBOL(sym, "_gpl", __stringify(ns))
  
- 	pinctrl-names = "default";
+ #endif /* !__ASSEMBLY__ */
+ 
 -- 
 2.35.1
 
