@@ -2,233 +2,305 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A82C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:22:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FED2C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:25:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350761AbiFMUWo (ORCPT
+        id S1344106AbiFMUKX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:22:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56186 "EHLO
+        Mon, 13 Jun 2022 16:10:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347992AbiFMUWW (ORCPT
+        with ESMTP id S1349092AbiFMUKE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:22:22 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECF20D19F9;
-        Mon, 13 Jun 2022 12:01:30 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 21:01:27 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1655146888;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=2e6yFy5HhGWMohdTtuAybmHn7JSg3oKogJZRx3s/jDA=;
-        b=ltqtlJqYVqb5J3DJGhFBysQDW4sauNH592tMtE3hVK4nwESb0/UPiLcjEW7m0DwTDO1lwF
-        vtixLNFDb35xsCL/7xwgaPvG2rDHzVXz7JKf771FiXcPtKPmvpVYmVQcakBUQLC0wgmemm
-        o0sdhXHBwBhSgd2qpOoLgm0uUyC07xdPazJu6jqX9vBSCMYX6i/J0fon370XKR2W5BgOJM
-        8jHCHcDHYAiHKXo5vcjjkAiO0r7soFbo+1kgBy+zK749fYwhBSCK/O8YXmEjoxILLQpXyO
-        vxfSQuyt9awQsPrKh+VisDogrT45iBMbRks7Wk/K6Zlc4+HaRsK1ssTd+vU8OA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1655146888;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=2e6yFy5HhGWMohdTtuAybmHn7JSg3oKogJZRx3s/jDA=;
-        b=RW+zagoU94hsC24v0V+X8fzt4AI3i68eqW4kvCop57r1mlt6wPv3Uwt6ScNs3OiKXRiG2/
-        DUsbNanYIBtAnHBA==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        linux-rt-users@vger.kernel.org,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: [ANNOUNCE] v5.19-rc2-rt3
-Message-ID: <YqeJhwD3aPNpVPZn@linutronix.de>
+        Mon, 13 Jun 2022 16:10:04 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E9E527B0F;
+        Mon, 13 Jun 2022 11:44:12 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id g25so7200065ljm.2;
+        Mon, 13 Jun 2022 11:44:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=VqO5G8hk6yhioyao4IlSt5H4ZBoh/GhshlNDoSDXcHI=;
+        b=ooWtNh0joNNDvhVMDEBoyVh+mVbiOboztgnSdtVXz8PNPmr9qFjtLJMps/xhIcVvGr
+         WFUk0waE1laiRv4UwjFk3wD+dTNqxddGZjpkPVfUVS63jCgi08bUEUPFRGV9QQ6EmzJq
+         y6e4sB59cLFryuyHSHXA0+gxVMKSn9P+4oBce7wuEI8VNHiu0nuE25//ZEu3N030nU8/
+         l0LJJdH5i8F/tI0nNS/lH8hIxFGFz15t6ch1Ko4gXRRWlLhRoVAQje/8skCpTS3KyXEB
+         Nx+pNoHl2MFQuqRmQZRjq44XwIanpJslp3TAkFhWirFFNOmcMxeTcE2+7ezf5y7XAK63
+         4W3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=VqO5G8hk6yhioyao4IlSt5H4ZBoh/GhshlNDoSDXcHI=;
+        b=dLXM/uLI0lzpIEvtWR517QikU7wWQlIBX0AlFyaUjrYP/N1voDrgdNRhywejf/XNOx
+         LRGkpV0vTPDzuHb3sB8GkheX65urcPCimJ114wNTHYADgIe/29uO/Gc2NOXqB8edWWbw
+         OAcTe8zdzz2SuzsSC9t2OPwAP+7nKtNhm0OPwKtZ68wkd86WKSf/XRVuWhVgHQMFx9xa
+         JjRd2nMg3FpB7Aj+yvq2xXntxZryuxcgdXnimPAfU64lhJ+AZNxWeJxs7q4uRHvjJTIG
+         dRTHv5lM8TwmeDikLTMMvdzetwy9gAy3WEEkG3CMwCJLeaGJ+oLkrudisKMaU3VGqBaQ
+         55Iw==
+X-Gm-Message-State: AJIora8fu8AIqY0Ob6aZn5J8WxF8aoSBa17YTYvmemtMXhxJFotL/BHZ
+        TpbUBm/fqwST3VsT3Qhsx1ZoqiWrK97klg==
+X-Google-Smtp-Source: AGRyM1tOuSWMIusVj6mJP+VBio3OBudn1pRbolu79qYknI0f2/ofYU+6Kvf0i2ar33GOqGC7WRrlMw==
+X-Received: by 2002:a2e:95cc:0:b0:255:8325:9920 with SMTP id y12-20020a2e95cc000000b0025583259920mr471242ljh.362.1655145850832;
+        Mon, 13 Jun 2022 11:44:10 -0700 (PDT)
+Received: from localhost.localdomain ([94.103.229.27])
+        by smtp.gmail.com with ESMTPSA id s2-20020a2eb8c2000000b0024f3d1dae9csm1071667ljp.36.2022.06.13.11.44.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 11:44:09 -0700 (PDT)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     toke@toke.dk, kvalo@kernel.org, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Jeff Johnson <quic_jjohnson@quicinc.com>
+Subject: [PATCH v6 2/2] ath9k: htc: clean up statistics macros
+Date:   Mon, 13 Jun 2022 21:44:07 +0300
+Message-Id: <ebb2306d06a496cd1b032155ae52fdc5fa8cc2c5.1655145743.git.paskripkin@gmail.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <d57bbedc857950659bfacac0ab48790c1eda00c8.1655145743.git.paskripkin@gmail.com>
+References: <d57bbedc857950659bfacac0ab48790c1eda00c8.1655145743.git.paskripkin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear RT folks!
+I've changed *STAT_* macros a bit in previous patch and I seems like
+they become really unreadable. Align these macros definitions to make
+code cleaner and fix folllowing checkpatch warning
 
-I'm pleased to announce the v5.19-rc2-rt3 patch set. 
+ERROR: Macros with complex values should be enclosed in parentheses
 
-Changes since v5.19-rc2-rt2:
+Also, statistics macros now accept an hif_dev as argument, since
+macros that depend on having a local variable with a magic name
+don't abide by the coding style.
 
-  - Don't a spinlock_t in the zram driver on non-PREEMPT_RT builds.
+No functional change
 
-  - Redo the dcache patch and move the wake-up back under the
-    dentry::lock lock protection to avoid problems on spurious wake-ups.
+Suggested-by: Jeff Johnson <quic_jjohnson@quicinc.com>
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+---
 
-Known issues
-     - Valentin Schneider reported a few splats on ARM64, see
-          https://lkml.kernel.org/r/20210810134127.1394269-1-valentin.schneider@arm.com
+Changes since v4:
+	- Fixed build error caused by wrong variable name
+	  passed to newly added macros
 
-The delta patch against v5.19-rc2-rt2 is appended below and can be found here:
- 
-     https://cdn.kernel.org/pub/linux/kernel/projects/rt/5.19/incr/patch-5.19-rc2-rt2-rt3.patch.xz
+Changes since v4:
+	- Rebased on top of ath-next branch
 
-You can get this release via the git tree at:
+Changes since v3:
+	- Added additional clean up related to relying on magical
+	  name from outside of the macro
 
-    git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git v5.19-rc2-rt3
+Changes since v2:
+	- My send-email script forgot, that mailing lists exist.
+	  Added back all related lists
+	- Fixed checkpatch warning
 
-The RT patch against v5.19-rc2 can be found here:
+Changes since v1:
+	- Added this patch
 
-    https://cdn.kernel.org/pub/linux/kernel/projects/rt/5.19/older/patch-5.19-rc2-rt3.patch.xz
+---
+ drivers/net/wireless/ath/ath9k/hif_usb.c      | 26 +++++++--------
+ drivers/net/wireless/ath/ath9k/htc.h          | 32 +++++++++++--------
+ drivers/net/wireless/ath/ath9k/htc_drv_txrx.c | 10 +++---
+ 3 files changed, 36 insertions(+), 32 deletions(-)
 
-The split quilt queue is available at:
-
-    https://cdn.kernel.org/pub/linux/kernel/projects/rt/5.19/older/patches-5.19-rc2-rt3.tar.xz
-
-Sebastian
-
-diff --git a/drivers/block/zram/zram_drv.h b/drivers/block/zram/zram_drv.h
-index c82e846802608..7995b00a8ca99 100644
---- a/drivers/block/zram/zram_drv.h
-+++ b/drivers/block/zram/zram_drv.h
-@@ -63,7 +63,9 @@ struct zram_table_entry {
- 		unsigned long element;
- 	};
- 	unsigned long flags;
-+#ifdef CONFIG_PREEMPT_RT
- 	spinlock_t lock;
-+#endif
- #ifdef CONFIG_ZRAM_MEMORY_TRACKING
- 	ktime_t ac_time;
- #endif
-diff --git a/fs/dcache.c b/fs/dcache.c
-index e9ac408b693aa..0b5fd3a17ff7c 100644
---- a/fs/dcache.c
-+++ b/fs/dcache.c
-@@ -2564,9 +2564,11 @@ EXPORT_SYMBOL(d_rehash);
- static inline unsigned start_dir_add(struct inode *dir)
- {
- 	/*
--	 * The caller has a spinlock_t (dentry::d_lock) acquired which disables
--	 * preemption on !PREEMPT_RT. On PREEMPT_RT the lock does not disable
--	 * preemption and it has be done explicitly.
-+	 * The caller holds a spinlock (dentry::d_lock). On !PREEMPT_RT
-+	 * kernels spin_lock() implicitly disables preemption, but not on
-+	 * PREEMPT_RT.  So for RT it has to be done explicitly to protect
-+	 * the sequence count write side critical section against a reader
-+	 * or another writer preempting, which would result in a live lock.
- 	 */
- 	if (IS_ENABLED(CONFIG_PREEMPT_RT))
- 		preempt_disable();
-@@ -2709,11 +2711,19 @@ struct dentry *d_alloc_parallel(struct dentry *parent,
+diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
+index 518deb509..4d9002a9d 100644
+--- a/drivers/net/wireless/ath/ath9k/hif_usb.c
++++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
+@@ -244,11 +244,11 @@ static inline void ath9k_skb_queue_complete(struct hif_device_usb *hif_dev,
+ 		ath9k_htc_txcompletion_cb(hif_dev->htc_handle,
+ 					  skb, txok);
+ 		if (txok) {
+-			TX_STAT_INC(skb_success);
+-			TX_STAT_ADD(skb_success_bytes, ln);
++			TX_STAT_INC(hif_dev, skb_success);
++			TX_STAT_ADD(hif_dev, skb_success_bytes, ln);
+ 		}
+ 		else
+-			TX_STAT_INC(skb_failed);
++			TX_STAT_INC(hif_dev, skb_failed);
+ 	}
  }
- EXPORT_SYMBOL(d_alloc_parallel);
  
--static wait_queue_head_t *__d_lookup_clear_d_wait(struct dentry *dentry)
-+/*
-+ * - Unhash the dentry
-+ * - Retrieve and clear the waitqueue head in dentry
-+ * - Return the waitqueue head
-+ */
-+static wait_queue_head_t *__d_lookup_unhash(struct dentry *dentry)
- {
- 	wait_queue_head_t *d_wait;
--	struct hlist_bl_head *b = in_lookup_hash(dentry->d_parent,
--						 dentry->d_name.hash);
-+	struct hlist_bl_head *b;
-+
-+	lockdep_assert_held(&dentry->d_lock);
-+
-+	b = in_lookup_hash(dentry->d_parent, dentry->d_name.hash);
- 	hlist_bl_lock(b);
- 	dentry->d_flags &= ~DCACHE_PAR_LOOKUP;
- 	__hlist_bl_del(&dentry->d_u.d_in_lookup_hash);
-@@ -2727,12 +2737,9 @@ static wait_queue_head_t *__d_lookup_clear_d_wait(struct dentry *dentry)
+@@ -302,7 +302,7 @@ static void hif_usb_tx_cb(struct urb *urb)
+ 	hif_dev->tx.tx_buf_cnt++;
+ 	if (!(hif_dev->tx.flags & HIF_USB_TX_STOP))
+ 		__hif_usb_tx(hif_dev); /* Check for pending SKBs */
+-	TX_STAT_INC(buf_completed);
++	TX_STAT_INC(hif_dev, buf_completed);
+ 	spin_unlock(&hif_dev->tx.tx_lock);
+ }
  
- void __d_lookup_done(struct dentry *dentry)
- {
--	wait_queue_head_t *wq_head;
+@@ -353,7 +353,7 @@ static int __hif_usb_tx(struct hif_device_usb *hif_dev)
+ 			tx_buf->len += tx_buf->offset;
+ 
+ 		__skb_queue_tail(&tx_buf->skb_queue, nskb);
+-		TX_STAT_INC(skb_queued);
++		TX_STAT_INC(hif_dev, skb_queued);
+ 	}
+ 
+ 	usb_fill_bulk_urb(tx_buf->urb, hif_dev->udev,
+@@ -369,7 +369,7 @@ static int __hif_usb_tx(struct hif_device_usb *hif_dev)
+ 		list_move_tail(&tx_buf->list, &hif_dev->tx.tx_buf);
+ 		hif_dev->tx.tx_buf_cnt++;
+ 	} else {
+-		TX_STAT_INC(buf_queued);
++		TX_STAT_INC(hif_dev, buf_queued);
+ 	}
+ 
+ 	return ret;
+@@ -514,7 +514,7 @@ static void hif_usb_sta_drain(void *hif_handle, u8 idx)
+ 			ath9k_htc_txcompletion_cb(hif_dev->htc_handle,
+ 						  skb, false);
+ 			hif_dev->tx.tx_skb_cnt--;
+-			TX_STAT_INC(skb_failed);
++			TX_STAT_INC(hif_dev, skb_failed);
+ 		}
+ 	}
+ 
+@@ -585,14 +585,14 @@ static void ath9k_hif_usb_rx_stream(struct hif_device_usb *hif_dev,
+ 		pkt_tag = get_unaligned_le16(ptr + index + 2);
+ 
+ 		if (pkt_tag != ATH_USB_RX_STREAM_MODE_TAG) {
+-			RX_STAT_INC(skb_dropped);
++			RX_STAT_INC(hif_dev, skb_dropped);
+ 			return;
+ 		}
+ 
+ 		if (pkt_len > 2 * MAX_RX_BUF_SIZE) {
+ 			dev_err(&hif_dev->udev->dev,
+ 				"ath9k_htc: invalid pkt_len (%x)\n", pkt_len);
+-			RX_STAT_INC(skb_dropped);
++			RX_STAT_INC(hif_dev, skb_dropped);
+ 			return;
+ 		}
+ 
+@@ -618,7 +618,7 @@ static void ath9k_hif_usb_rx_stream(struct hif_device_usb *hif_dev,
+ 				goto err;
+ 			}
+ 			skb_reserve(nskb, 32);
+-			RX_STAT_INC(skb_allocated);
++			RX_STAT_INC(hif_dev, skb_allocated);
+ 
+ 			memcpy(nskb->data, &(skb->data[chk_idx+4]),
+ 			       hif_dev->rx_transfer_len);
+@@ -639,7 +639,7 @@ static void ath9k_hif_usb_rx_stream(struct hif_device_usb *hif_dev,
+ 				goto err;
+ 			}
+ 			skb_reserve(nskb, 32);
+-			RX_STAT_INC(skb_allocated);
++			RX_STAT_INC(hif_dev, skb_allocated);
+ 
+ 			memcpy(nskb->data, &(skb->data[chk_idx+4]), pkt_len);
+ 			skb_put(nskb, pkt_len);
+@@ -649,10 +649,10 @@ static void ath9k_hif_usb_rx_stream(struct hif_device_usb *hif_dev,
+ 
+ err:
+ 	for (i = 0; i < pool_index; i++) {
+-		RX_STAT_ADD(skb_completed_bytes, skb_pool[i]->len);
++		RX_STAT_ADD(hif_dev, skb_completed_bytes, skb_pool[i]->len);
+ 		ath9k_htc_rx_msg(hif_dev->htc_handle, skb_pool[i],
+ 				 skb_pool[i]->len, USB_WLAN_RX_PIPE);
+-		RX_STAT_INC(skb_completed);
++		RX_STAT_INC(hif_dev, skb_completed);
+ 	}
+ }
+ 
+diff --git a/drivers/net/wireless/ath/ath9k/htc.h b/drivers/net/wireless/ath/ath9k/htc.h
+index e3d546ef7..30f0765fb 100644
+--- a/drivers/net/wireless/ath/ath9k/htc.h
++++ b/drivers/net/wireless/ath/ath9k/htc.h
+@@ -327,14 +327,18 @@ static inline struct ath9k_htc_tx_ctl *HTC_SKB_CB(struct sk_buff *skb)
+ }
+ 
+ #ifdef CONFIG_ATH9K_HTC_DEBUGFS
+-#define __STAT_SAFE(expr) (hif_dev->htc_handle->drv_priv ? (expr) : 0)
+-#define TX_STAT_INC(c) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
+-#define TX_STAT_ADD(c, a) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
+-#define RX_STAT_INC(c) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
+-#define RX_STAT_ADD(c, a) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
+-#define CAB_STAT_INC   priv->debug.tx_stats.cab_queued++
 -
- 	spin_lock(&dentry->d_lock);
--	wq_head = __d_lookup_clear_d_wait(dentry);
-+	wake_up_all(__d_lookup_unhash(dentry));
- 	spin_unlock(&dentry->d_lock);
--	wake_up_all(wq_head);
- }
- EXPORT_SYMBOL(__d_lookup_done);
- 
-@@ -2740,15 +2747,15 @@ EXPORT_SYMBOL(__d_lookup_done);
- 
- static inline void __d_add(struct dentry *dentry, struct inode *inode)
- {
--	wait_queue_head_t *d_wait = NULL;
-+	wait_queue_head_t *d_wait;
- 	struct inode *dir = NULL;
--
- 	unsigned n;
+-#define TX_QSTAT_INC(q) (priv->debug.tx_stats.queue_stats[q]++)
++#define __STAT_SAFE(hif_dev, expr)	((hif_dev)->htc_handle->drv_priv ? (expr) : 0)
++#define CAB_STAT_INC(priv)		((priv)->debug.tx_stats.cab_queued++)
++#define TX_QSTAT_INC(priv, q)		((priv)->debug.tx_stats.queue_stats[q]++)
 +
- 	spin_lock(&dentry->d_lock);
- 	if (unlikely(d_in_lookup(dentry))) {
- 		dir = dentry->d_parent->d_inode;
- 		n = start_dir_add(dir);
--		d_wait = __d_lookup_clear_d_wait(dentry);
-+		d_wait = __d_lookup_unhash(dentry);
++#define TX_STAT_INC(hif_dev, c) \
++		__STAT_SAFE((hif_dev), (hif_dev)->htc_handle->drv_priv->debug.tx_stats.c++)
++#define TX_STAT_ADD(hif_dev, c, a) \
++		__STAT_SAFE((hif_dev), (hif_dev)->htc_handle->drv_priv->debug.tx_stats.c += a)
++#define RX_STAT_INC(hif_dev, c) \
++		__STAT_SAFE((hif_dev), (hif_dev)->htc_handle->drv_priv->debug.skbrx_stats.c++)
++#define RX_STAT_ADD(hif_dev, c, a) \
++		__STAT_SAFE((hif_dev), (hif_dev)->htc_handle->drv_priv->debug.skbrx_stats.c += a)
+ 
+ void ath9k_htc_err_stat_rx(struct ath9k_htc_priv *priv,
+ 			   struct ath_rx_status *rs);
+@@ -374,13 +378,13 @@ void ath9k_htc_get_et_stats(struct ieee80211_hw *hw,
+ 			    struct ethtool_stats *stats, u64 *data);
+ #else
+ 
+-#define TX_STAT_INC(c) do { } while (0)
+-#define TX_STAT_ADD(c, a) do { } while (0)
+-#define RX_STAT_INC(c) do { } while (0)
+-#define RX_STAT_ADD(c, a) do { } while (0)
+-#define CAB_STAT_INC   do { } while (0)
++#define TX_STAT_INC(hif_dev, c)
++#define TX_STAT_ADD(hif_dev, c, a)
++#define RX_STAT_INC(hif_dev, c)
++#define RX_STAT_ADD(hif_dev, c, a)
+ 
+-#define TX_QSTAT_INC(c) do { } while (0)
++#define CAB_STAT_INC(priv)
++#define TX_QSTAT_INC(priv, c)
+ 
+ static inline void ath9k_htc_err_stat_rx(struct ath9k_htc_priv *priv,
+ 					 struct ath_rx_status *rs)
+diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
+index a23eaca03..672789e3c 100644
+--- a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
++++ b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
+@@ -106,20 +106,20 @@ static inline enum htc_endpoint_id get_htc_epid(struct ath9k_htc_priv *priv,
+ 
+ 	switch (qnum) {
+ 	case 0:
+-		TX_QSTAT_INC(IEEE80211_AC_VO);
++		TX_QSTAT_INC(priv, IEEE80211_AC_VO);
+ 		epid = priv->data_vo_ep;
+ 		break;
+ 	case 1:
+-		TX_QSTAT_INC(IEEE80211_AC_VI);
++		TX_QSTAT_INC(priv, IEEE80211_AC_VI);
+ 		epid = priv->data_vi_ep;
+ 		break;
+ 	case 2:
+-		TX_QSTAT_INC(IEEE80211_AC_BE);
++		TX_QSTAT_INC(priv, IEEE80211_AC_BE);
+ 		epid = priv->data_be_ep;
+ 		break;
+ 	case 3:
+ 	default:
+-		TX_QSTAT_INC(IEEE80211_AC_BK);
++		TX_QSTAT_INC(priv, IEEE80211_AC_BK);
+ 		epid = priv->data_bk_ep;
+ 		break;
  	}
- 	if (inode) {
- 		unsigned add_flags = d_flags_for_inode(inode);
-@@ -2759,11 +2766,11 @@ static inline void __d_add(struct dentry *dentry, struct inode *inode)
- 		fsnotify_update_flags(dentry);
+@@ -328,7 +328,7 @@ static void ath9k_htc_tx_data(struct ath9k_htc_priv *priv,
+ 	memcpy(tx_fhdr, (u8 *) &tx_hdr, sizeof(tx_hdr));
+ 
+ 	if (is_cab) {
+-		CAB_STAT_INC;
++		CAB_STAT_INC(priv);
+ 		tx_ctl->epid = priv->cab_ep;
+ 		return;
  	}
- 	__d_rehash(dentry);
--	if (dir)
-+	if (dir) {
- 		end_dir_add(dir, n);
--	spin_unlock(&dentry->d_lock);
--	if (d_wait)
- 		wake_up_all(d_wait);
-+	}
-+	spin_unlock(&dentry->d_lock);
- 	if (inode)
- 		spin_unlock(&inode->i_lock);
- }
-@@ -2908,8 +2915,8 @@ static void copy_name(struct dentry *dentry, struct dentry *target)
- static void __d_move(struct dentry *dentry, struct dentry *target,
- 		     bool exchange)
- {
--	wait_queue_head_t *d_wait = NULL;
- 	struct dentry *old_parent, *p;
-+	wait_queue_head_t *d_wait;
- 	struct inode *dir = NULL;
- 	unsigned n;
- 
-@@ -2940,7 +2947,7 @@ static void __d_move(struct dentry *dentry, struct dentry *target,
- 	if (unlikely(d_in_lookup(target))) {
- 		dir = target->d_parent->d_inode;
- 		n = start_dir_add(dir);
--		d_wait = __d_lookup_clear_d_wait(target);
-+		d_wait = __d_lookup_unhash(target);
- 	}
- 
- 	write_seqcount_begin(&dentry->d_seq);
-@@ -2975,8 +2982,10 @@ static void __d_move(struct dentry *dentry, struct dentry *target,
- 	write_seqcount_end(&target->d_seq);
- 	write_seqcount_end(&dentry->d_seq);
- 
--	if (dir)
-+	if (dir) {
- 		end_dir_add(dir, n);
-+		wake_up_all(d_wait);
-+	}
- 
- 	if (dentry->d_parent != old_parent)
- 		spin_unlock(&dentry->d_parent->d_lock);
-@@ -2984,8 +2993,6 @@ static void __d_move(struct dentry *dentry, struct dentry *target,
- 		spin_unlock(&old_parent->d_lock);
- 	spin_unlock(&target->d_lock);
- 	spin_unlock(&dentry->d_lock);
--	if (d_wait)
--		wake_up_all(d_wait);
- }
- 
- /*
-diff --git a/localversion-rt b/localversion-rt
-index c3054d08a1129..1445cd65885cd 100644
---- a/localversion-rt
-+++ b/localversion-rt
-@@ -1 +1 @@
---rt2
-+-rt3
+-- 
+2.36.1
+
