@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78EE7CCA493
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67589CCA492
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:31:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346868AbiFMKbk (ORCPT
+        id S1344294AbiFMKb3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:31:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59822 "EHLO
+        Mon, 13 Jun 2022 06:31:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244014AbiFMKZz (ORCPT
+        with ESMTP id S1345167AbiFMK3b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:25:55 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94DD92459E;
-        Mon, 13 Jun 2022 03:19:41 -0700 (PDT)
+        Mon, 13 Jun 2022 06:29:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C824825EAC;
+        Mon, 13 Jun 2022 03:20:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BA03ECE1177;
-        Mon, 13 Jun 2022 10:19:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E4AFC34114;
-        Mon, 13 Jun 2022 10:19:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E5A1B60C5D;
+        Mon, 13 Jun 2022 10:20:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F26CFC34114;
+        Mon, 13 Jun 2022 10:20:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115577;
-        bh=iqdz9/xSQEmd+oEUkMq2yJAwK76J9g1icM/ZzBHs/JM=;
+        s=korg; t=1655115638;
+        bh=FbHW7wJdsutLxte77RD+vKYaOV2opqcOLhcyd1Y6Q4U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BMRB+AsSbBckuOq0EvbvTDg0NO8lq7QjhS3hEEUyZj8hhkQGDJbGjyAbI7u6K6Woa
-         ynPPYQSakEGuK+QhIENDnxvVboaVL7KBKVi4yzAAMX7e2cRjdSd7ftqGEodMbdzZko
-         bPLgTZrPLJhRPPxuV3dRNtQFExAg7KobkxAQZtvU=
+        b=qvUqq0TA9v6BzSBDOJmfPPXRQllP34E9Nv/zSHxGpj3IrloPKZmwh//K0HVwm/QZL
+         E6LE8CIm9QNQxMEihkbE30MPKU+8Wu+yCuGcFPrtRkLOO+UPO/8dRId5mkX+k/6zI6
+         NMFKeCnh+6JgRws65aeNzRPUdIYE3JhNMU+yI0V4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 124/167] modpost: fix removing numeric suffixes
-Date:   Mon, 13 Jun 2022 12:09:58 +0200
-Message-Id: <20220613094909.883619661@linuxfoundation.org>
+Subject: [PATCH 4.9 147/167] usb: dwc2: gadget: dont reset gadgets driver->bus
+Date:   Mon, 13 Jun 2022 12:10:21 +0200
+Message-Id: <20220613094915.386585005@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -52,56 +50,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
 
-[ Upstream commit b5beffa20d83c4e15306c991ffd00de0d8628338 ]
+[ Upstream commit 3120aac6d0ecd9accf56894aeac0e265f74d3d5a ]
 
-With the `-z unique-symbol` linker flag or any similar mechanism,
-it is possible to trigger the following:
+UDC driver should not touch gadget's driver internals, especially it
+should not reset driver->bus. This wasn't harmful so far, but since
+commit fc274c1e9973 ("USB: gadget: Add a new bus for gadgets") gadget
+subsystem got it's own bus and messing with ->bus triggers the
+following NULL pointer dereference:
 
-ERROR: modpost: "param_set_uint.0" [vmlinux] is a static EXPORT_SYMBOL
+dwc2 12480000.hsotg: bound driver g_ether
+8<--- cut here ---
+Unable to handle kernel NULL pointer dereference at virtual address 00000000
+[00000000] *pgd=00000000
+Internal error: Oops: 5 [#1] SMP ARM
+Modules linked in: ...
+CPU: 0 PID: 620 Comm: modprobe Not tainted 5.18.0-rc5-next-20220504 #11862
+Hardware name: Samsung Exynos (Flattened Device Tree)
+PC is at module_add_driver+0x44/0xe8
+LR is at sysfs_do_create_link_sd+0x84/0xe0
+...
+Process modprobe (pid: 620, stack limit = 0x(ptrval))
+...
+ module_add_driver from bus_add_driver+0xf4/0x1e4
+ bus_add_driver from driver_register+0x78/0x10c
+ driver_register from usb_gadget_register_driver_owner+0x40/0xb4
+ usb_gadget_register_driver_owner from do_one_initcall+0x44/0x1e0
+ do_one_initcall from do_init_module+0x44/0x1c8
+ do_init_module from load_module+0x19b8/0x1b9c
+ load_module from sys_finit_module+0xdc/0xfc
+ sys_finit_module from ret_fast_syscall+0x0/0x54
+Exception stack(0xf1771fa8 to 0xf1771ff0)
+...
+dwc2 12480000.hsotg: new device is high-speed
+---[ end trace 0000000000000000 ]---
 
-The reason is that for now the condition from remove_dot():
+Fix this by removing driver->bus entry reset.
 
-if (m && (s[n + m] == '.' || s[n + m] == 0))
-
-which was designed to test if it's a dot or a '\0' after the suffix
-is never satisfied.
-This is due to that `s[n + m]` always points to the last digit of a
-numeric suffix, not on the symbol next to it (from a custom debug
-print added to modpost):
-
-param_set_uint.0, s[n + m] is '0', s[n + m + 1] is '\0'
-
-So it's off-by-one and was like that since 2014.
-
-Fix this for the sake of any potential upcoming features, but don't
-bother stable-backporting, as it's well hidden -- apart from that
-LD flag, it can be triggered only with GCC LTO which never landed
-upstream.
-
-Fixes: fcd38ed0ff26 ("scripts: modpost: fix compilation warning")
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Link: https://lore.kernel.org/r/20220505104618.22729-1-m.szyprowski@samsung.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/mod/modpost.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/dwc2/gadget.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 62b0552b7b71..29c3e4d6fc06 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -1932,7 +1932,7 @@ static char *remove_dot(char *s)
+diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
+index 65bcbbad6d54..44bab6727b43 100644
+--- a/drivers/usb/dwc2/gadget.c
++++ b/drivers/usb/dwc2/gadget.c
+@@ -3445,7 +3445,6 @@ static int dwc2_hsotg_udc_start(struct usb_gadget *gadget,
  
- 	if (n && s[n]) {
- 		size_t m = strspn(s + n + 1, "0123456789");
--		if (m && (s[n + m] == '.' || s[n + m] == 0))
-+		if (m && (s[n + m + 1] == '.' || s[n + m + 1] == 0))
- 			s[n] = 0;
- 	}
- 	return s;
+ 	WARN_ON(hsotg->driver);
+ 
+-	driver->driver.bus = NULL;
+ 	hsotg->driver = driver;
+ 	hsotg->gadget.dev.of_node = hsotg->dev->of_node;
+ 	hsotg->gadget.speed = USB_SPEED_UNKNOWN;
 -- 
 2.35.1
 
