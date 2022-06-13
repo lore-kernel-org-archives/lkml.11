@@ -2,126 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7142CCA47D
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:02:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C110CCA481
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:05:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233284AbiFMSCa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:02:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44064 "EHLO
+        id S242483AbiFMSDG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:03:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244547AbiFMSBu (ORCPT
+        with ESMTP id S242686AbiFMSB5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 14:01:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD373D48;
-        Mon, 13 Jun 2022 06:44:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 59C486136C;
-        Mon, 13 Jun 2022 13:44:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFEE4C3411C;
-        Mon, 13 Jun 2022 13:44:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655127894;
-        bh=SJRMus/BrkP3vZSiuqVxHOTCxoFSg6FdAcDr36Ttmc8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=gjj58l5gwcWlK20bbp9cq5UzCb3FzYuo8gSP9m7FOz61y3+/6jw16j5bSlSgphnc8
-         99piEzRHWd+EsGvu5Z4OUB8hMOoaHzV57i9V2INBtqwhbgq/hrGAUjmgEmTkjBxFaz
-         aPwTJfEH11ewftcdF95vLKLZcmyTre9V0/exP9NBK1g/9sHMrr0vCEYCPCOvRh1xYE
-         0w87H4s56a0B0dRbAqmWml9Bx8OOSD32CNxh/rrfFleZWIovdw8CHHRH3oIlnP8itb
-         bD3fhf22w5DNGo0bwN5bM9Lj2zurq5C2+v91DSn1n0PtzCgG0/sAl8P27JG+88h929
-         UeseoLqyYnRVA==
-Received: by mail-ua1-f45.google.com with SMTP id o8so2152924uap.6;
-        Mon, 13 Jun 2022 06:44:54 -0700 (PDT)
-X-Gm-Message-State: AOAM531auZ6shlyMXTJQeowraO5R+GjKMnAD1YN3m0U3n4Cn39x04VL8
-        8hsjMfvMseRkefb5cmgrqDsZRF2F3IhtpfLU/w==
-X-Google-Smtp-Source: ABdhPJwJdSYFPrU1lg9RQoPXl/q9bfbItYSHKMVnQIK267UpiLdgLX0oIGrik27v8fBGf1yD7rtr9VX6VNPHvUarm0M=
-X-Received: by 2002:ab0:2705:0:b0:379:7378:3c75 with SMTP id
- s5-20020ab02705000000b0037973783c75mr1881607uao.77.1655127893697; Mon, 13 Jun
- 2022 06:44:53 -0700 (PDT)
+        Mon, 13 Jun 2022 14:01:57 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93BFA3FBF4
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:46:01 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id me5so11327244ejb.2
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:46:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oz0TSHV6YibOu6tc/5orXXjHQ8MbMxUcncoqA4aXgsw=;
+        b=n7JdFwECnhhUL1dLeSQ//ZJYsNONYjH51NPj+wkg/wrQ7bvBJRdyt8UrWsFim/C61O
+         96YUEqosV7TbGGXls0LrpNdpOaQskhlQoQYSw57/cTyQQorCQ/k9zYzof7BpsCqKfBU3
+         g5ZXP/ZXGEK+WCUOTl7e3G7UtklbBZIWme6Z0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oz0TSHV6YibOu6tc/5orXXjHQ8MbMxUcncoqA4aXgsw=;
+        b=GKhiUyNK4hhQCAKrIjrkkZebmUSAs1javBNYgFTD5V+CJEM/cLQf0lymFhSTqNCadH
+         7jOXypn1baV/jM3qomkfLr9jmoc7Gx7TkD7G7UPjdw5BV7fc8k0eaAG6oOJNMMRlqqeJ
+         grKhmJ0+mbYh8eozJTJ0zgjpGgugWFjGDPv4mGQFU27LrIMTycvW3h5uP6OmSYxx5ob1
+         QdqHPk+wTrhqzbfCoqI5GZJXNQUgmCDppLsCu4FW0oOScTl0Iwfj2oQXOlVO0EA7D9zW
+         20NqU2BFRQQDFP243qd3LCMp0zb5rg1LRa11Gq89uxNA1kAZ/FAIi6sZ6OmUNz8Yqaus
+         fXIg==
+X-Gm-Message-State: AOAM531Ake/M2/d/uRquYzE8sltgJ1JucbynSX/d4wCZubwxlveqf6S/
+        kIYmVcJNoOb+ylGZxERnqYJRqRYNKPdQfRNuv5ba9g==
+X-Google-Smtp-Source: ABdhPJyvmkSgw072UHRnxND0KgUWRAzqc9nZk+izs23tKS/t6KazemOaZFtDajiE/juzKvXO8q+b2oLKjsmpxv6p55s=
+X-Received: by 2002:a17:906:c347:b0:718:ca61:e7b7 with SMTP id
+ ci7-20020a170906c34700b00718ca61e7b7mr3050168ejb.746.1655127959979; Mon, 13
+ Jun 2022 06:45:59 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220607165840.66931-1-yoan.picchi@arm.com> <20220607165840.66931-3-yoan.picchi@arm.com>
- <20220609213652.GA115440-robh@kernel.org> <20220610114840.10db23ea@donnerap.cambridge.arm.com>
- <YqcUXrFGO+QVMKBd@silpixa00400314>
-In-Reply-To: <YqcUXrFGO+QVMKBd@silpixa00400314>
-From:   Rob Herring <robh@kernel.org>
-Date:   Mon, 13 Jun 2022 07:44:42 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqJ_mjR8tbUu0n4AxXSVGtDOMTnRZTBRyvOAwe28tGXamA@mail.gmail.com>
-Message-ID: <CAL_JsqJ_mjR8tbUu0n4AxXSVGtDOMTnRZTBRyvOAwe28tGXamA@mail.gmail.com>
-Subject: Re: [PATCH 2/2] Removes the x86 dependency on the QAT drivers
-To:     Giovanni Cabiddu <giovanni.cabiddu@intel.com>
-Cc:     Andre Przywara <andre.przywara@arm.com>,
-        Yoan Picchi <yoan.picchi@arm.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>, qat-linux@intel.com,
-        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
-        <linux-crypto@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>
+References: <20220601103922.1338320-1-hsinyi@chromium.org> <20220601103922.1338320-4-hsinyi@chromium.org>
+ <CGME20220603125421eucas1p17da286a3e7f2d4759aa4c7639dd62f75@eucas1p1.samsung.com>
+ <c017d992-2746-045b-47c8-c5b9c3025f1a@samsung.com> <31ed17e7-29d1-55e8-cb09-a750ab80da15@squashfs.org.uk>
+ <701bee9a-a06d-8b1a-bf23-d893249c7764@samsung.com>
+In-Reply-To: <701bee9a-a06d-8b1a-bf23-d893249c7764@samsung.com>
+From:   Hsin-Yi Wang <hsinyi@chromium.org>
+Date:   Mon, 13 Jun 2022 21:45:34 +0800
+Message-ID: <CAJMQK-hVT=TcVfsbhUiqxcTBz3ZrX=B7yBPbuc2=MD6i7iGkAw@mail.gmail.com>
+Subject: Re: [PATCH v4 3/3] squashfs: implement readahead
+To:     Marek Szyprowski <m.szyprowski@samsung.com>
+Cc:     Phillip Lougher <phillip@squashfs.org.uk>,
+        Matthew Wilcox <willy@infradead.org>,
+        Xiongwei Song <Xiongwei.Song@windriver.com>,
+        Zheng Liang <zhengliang6@huawei.com>,
+        Zhang Yi <yi.zhang@huawei.com>, Hou Tao <houtao1@huawei.com>,
+        Miao Xie <miaoxie@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "linux-mm @ kvack . org" <linux-mm@kvack.org>,
+        "squashfs-devel @ lists . sourceforge . net" 
+        <squashfs-devel@lists.sourceforge.net>,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 4:41 AM Giovanni Cabiddu
-<giovanni.cabiddu@intel.com> wrote:
+On Mon, Jun 13, 2022 at 8:08 PM Marek Szyprowski
+<m.szyprowski@samsung.com> wrote:
 >
-> On Fri, Jun 10, 2022 at 11:48:40AM +0100, Andre Przywara wrote:
-> > On Thu, 9 Jun 2022 15:36:52 -0600
-> > Rob Herring <robh@kernel.org> wrote:
-> >
-> > Hi,
-> >
-> > > On Tue, Jun 07, 2022 at 04:58:40PM +0000, Yoan Picchi wrote:
-> > > > This dependency looks outdated. After the previous patch, we have been able
-> > > > to use this driver to encrypt some data and to create working VF on arm64.
-> > > > We have not tested it yet on any big endian machine, hence the new dependency
-> > >
-> > > For the subject, use prefixes matching the subsystem (like you did on
-> > > patch 1).
-> Just to add on this, patches to the qat driver should have the following
-> headline:
->     crypto: qat -
-> not
->     crypto: qat:
+> Hi Phillip,
 >
-> > >
-> > > The only testing obligation you have is compiling for BE.
+> On 07.06.2022 09:35, Phillip Lougher wrote:
+> > On 03/06/2022 13:54, Marek Szyprowski wrote:
+> >> Hi,
+> >>
+> >> On 01.06.2022 12:39, Hsin-Yi Wang wrote:
+> >>> Implement readahead callback for squashfs. It will read datablocks
+> >>> which cover pages in readahead request. For a few cases it will
+> >>> not mark page as uptodate, including:
+> >>> - file end is 0.
+> >>> - zero filled blocks.
+> >>> - current batch of pages isn't in the same datablock or not enough in a
+> >>>     datablock.
+> >>> - decompressor error.
+> >>> Otherwise pages will be marked as uptodate. The unhandled pages will be
+> >>> updated by readpage later.
+> >>>
+> >>> Suggested-by: Matthew Wilcox <willy@infradead.org>
+> >>> Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
+> >>> Reported-by: Matthew Wilcox <willy@infradead.org>
+> >>> Reported-by: Phillip Lougher <phillip@squashfs.org.uk>
+> >>> Reported-by: Xiongwei Song <Xiongwei.Song@windriver.com>
+> >>> ---
+> >>
+> >> This patch landed recently in linux-next as commit 95f7a26191de
+> >> ("squashfs: implement readahead"). I've noticed that it causes serious
+> >> issues on my test systems (various ARM 32bit and 64bit based boards).
+> >> The easiest way to observe is udev timeout 'waiting for /dev to be fully
+> >> populated' and prolonged booting time. I'm using squashfs for deploying
+> >> kernel modules via initrd. Reverting aeefca9dfae7 & 95f7a26191deon on
+> >> top of the next-20220603 fixes the issue.
+> >>
+> >> Let me know how I can help debugging this issue. There is no hurry
+> >> though, because the next week I will be on holidays.
 > >
-> > So I just compiled for arm64 BE, powerpc BE & LE, and riscv again:
-> > $ file qat_c62xvf.ko
-> > qat_c62xvf.ko: ELF 64-bit MSB relocatable, ARM aarch64, version 1 (SYSV),
-> > BuildID[sha1]=630cc0ee5586c7aeb6e0ab5567ce2f2f7cc46adf, with debug_info,
-> > not stripped
-> > qat_c62xvf.ko: ELF 64-bit MSB relocatable, 64-bit PowerPC or cisco 7500,
-> > version 1 (SYSV), BuildID[sha1]=4090ba181cf95f27108bf3ecde0776f12ef2b636,
-> > not stripped
-> > qat_c62xvf.ko: ELF 64-bit LSB relocatable, 64-bit PowerPC or cisco 7500,
-> > version 1 (SYSV), BuildID[sha1]=2cb0fd09d5bc36c8918fcd061c9f3dac1546cf0d,
-> > not stripped
-> > qat_c62xvf.ko: ELF 64-bit LSB relocatable, UCB RISC-V, version 1 (SYSV),
-> > BuildID[sha1]=bfaa53df7e9aad79d3ab4c05e75ca9169227f6b8, not stripped
+> > Hi Marek,
 > >
-> > All built without errors or warnings, for every of the enabled drivers.
+> > Can you supply an example Squashfs filesystem and script that
+> > reproduces the slow-down?  Failing that, can you supply a copy
+> > of your initrd/root-filesystem that can be run under emulation
+> > to reproduce the issue? (I don't have any modern ARM embedded
+> > systems).
 > >
-> > > If kconfig was
-> > > supposed to capture what endianness drivers have been tested or not
-> > > tested with, then lots of drivers are missing the dependency. Kconfig
-> > > depends/select entries should generally be either to prevent compile
-> > > failures (you checked PPC, RiscV, etc.?) or to hide drivers *really*
-> > > specific to a platform. IMO, we should only have !CPU_BIG_ENDIAN if it
-> > > is known not to work and not easily fixed.
+> > Again failing that, are you happy to test some debug code?
 > >
-> > Fair enough, I leave that decision to Giovanni. I have plans to test this
-> > with BE, but getting a BE setup on a server is not trivial, both for
-> > userland and actual booting, so this will take some time. We just didn't
-> > want to block this on some BE concerns.
-> Just inspecting the code I can see we are not handling BE in the logic
-> that builds FW descriptors.
-> My preference would be to keep !CPU_BIG_ENDIAN until the driver is fixed
-> and tested.
+> > Thanks
+> >
+> > Phillip (Squashfs maintainer and author).
+>
+> I've just got back from my holidays.
+>
+> Is this still relevant? I've noticed that v6 has been posted, but I
+> failed to apply it on top of next-20220610 as mentioned in the
+> cover-letter to test. I've also tried also to apply the mentioned
+> 'Squashfs: handle missing pages decompressing into page cache' patchset.
+> On the other hand, next-20220610 seems to be working fine on my setup now.
+>
 
-Okay, then at least add '|| COMPILE_TEST' so that allyesconfig builds build it.
+hi Marek,
 
-Rob
+next-20220610 contains v5 of the series. To apply v6, you need to
+revert ca1505bf4805 ("squashfs: implement readahead") and 9d58b94aa73a
+("squashfs: always build "file direct" version of page actor") first,
+then apply  'Squashfs: handle missing pages decompressing into page
+cache' patchset, then finally apply v6, since v6 is dependent on the
+patchset.
+
+Thanks.
+
+>
+> Best regards
+> --
+> Marek Szyprowski, PhD
+> Samsung R&D Institute Poland
+>
