@@ -2,234 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27516CCA480
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61253CCA481
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:35:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245347AbiFMRbd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 13:31:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39752 "EHLO
+        id S236412AbiFMRbn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 13:31:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240746AbiFMR30 (ORCPT
+        with ESMTP id S243998AbiFMRat (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 13:29:26 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A3E762A29
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 05:49:28 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id d129so5433088pgc.9
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 05:49:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gPvvSe6FTsRcXPQ951pr09BFrUgePKl3dqQkTDR/CbA=;
-        b=aTF9amwoZBKqnS6EeoUA3wklSe4v5hYF/iEedNdET2+BKeTE4Xa4uyyUI74TeuiQca
-         iqswv0uIgsfH/umy67XVJvPFP30umF1wj5lqLawZ4VCw14X+bZzaKdVY/JH5tWLqfYx0
-         nibRrW9jmT3ywWSNPT2IyGKfUhcuiXnS9JjFqobeeAWi1Y9/NrJj0oaGIObNt3rby4T2
-         xHo3sPFV7Jh8G9tkxm5NBqhd1wv56hDkY3c3857jtoSa1p8HrmJq6Q7ks0k3h2Elmytk
-         a9HQei/J/DioYv3DGrSPkzCu+UI3DsSNl+J7d4kEUFHe9qCaP+epuUs1dkvTq63gtmBK
-         xAqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gPvvSe6FTsRcXPQ951pr09BFrUgePKl3dqQkTDR/CbA=;
-        b=7OfuU+/aLknvbjWYr9kW0NFEJGK5AcLf9x/6DNXEmcOiNmFyxi4AUgXATe4bgjE5X3
-         kzcVMEafq8cBHiOyi12ArGEBldgo/mjPIs2UdsviI/cwZHzKWMExZncxJIhynuGlRNpg
-         b54hkSSpffpAkW+mRzDhxX3Mr1B+tLrIEUZV0G+K4AzMB5CwvaB1hrTkqySrqcEUGiWm
-         ws77Fde2zaBrLSojNEWULeVKM29b+V1fThieNHDCqG2q+L4wS4UpMc0vqfpX7eJmkVzo
-         oVSDBg9gOdNyaXUf+UWpmzyavVIM6Gexit2idoMrjnzGmR32PfzyuQkXE/loUz6qtO1G
-         n2hw==
-X-Gm-Message-State: AOAM531vqotV4hqNCPo7+nLgagHlIapOxU8ZG7R69WEH65Qd9FID5Atj
-        TrdRtbzP4SrfHnCUn4CoIwc=
-X-Google-Smtp-Source: ABdhPJxFIOEU7ll2wYEtvRIrzPzwiiuRm8s/BGB/bNT9QaatYBwZXao9gACSHEgYjz3KDf3im/iSJg==
-X-Received: by 2002:a63:4a4b:0:b0:408:9a69:3610 with SMTP id j11-20020a634a4b000000b004089a693610mr863285pgl.433.1655124567737;
-        Mon, 13 Jun 2022 05:49:27 -0700 (PDT)
-Received: from hyeyoo ([114.29.24.243])
-        by smtp.gmail.com with ESMTPSA id c125-20020a624e83000000b0051850716942sm5457595pfb.140.2022.06.13.05.49.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 05:49:26 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 21:49:07 +0900
-From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
-To:     Jann Horn <jannh@google.com>
-Cc:     Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm/slub: add missing TID updates on slab deactivation
-Message-ID: <YqcyQwCzSuFKkIpr@hyeyoo>
-References: <20220608182205.2945720-1-jannh@google.com>
+        Mon, 13 Jun 2022 13:30:49 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85399A1BB;
+        Mon, 13 Jun 2022 05:53:03 -0700 (PDT)
+Received: from [10.5.50.66] (unknown [103.108.5.209])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: shreeya)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 630BB6601653;
+        Mon, 13 Jun 2022 13:52:58 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1655124782;
+        bh=wPVPeG0ehxwVBRfqVV1QMdSaUZUBQIBEq78jW56sV4o=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=AHeKSLCh5eGkJ6D/hN2EP4Yw6oO71wW7futn/cYMYl+/EHU1HMYTBq2KWP25QeJYS
+         KpPSlsjloVqRuoWomCv8cOFP3HP8LJeViwFTu6NDLfNqKWnE1eIhGBuiZzShkaEcZI
+         kepTO0cxJCDBB3x2B5WrO0FmQDm9xWdBJxslOluN158viHJUdPxTSAleqQgaR3chE7
+         D4dOU/oDyOS+Rj6dIrW/cEfNkRc+shCKUZIOZYSv/Gr1dbJpm891MeYCKojBgddlw+
+         OKmWCiBA+RINm9Hx9qAQ0J4Hzd1HkIvLWMUCeQB10P31sixFMrjTuy2qbsZtHutRVa
+         oeJn2dn7VnLmA==
+Message-ID: <a4334956-deca-d2cc-7bbd-6e5f305b9e35@collabora.com>
+Date:   Mon, 13 Jun 2022 18:22:53 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220608182205.2945720-1-jannh@google.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v5 2/2] iio: light: Add support for ltrf216a sensor
+Content-Language: en-US
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>, Zhigang.Shi@liteon.com,
+        krisman@collabora.com, linux-iio <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Collabora Kernel ML <kernel@collabora.com>,
+        alvaro.soliverez@collabora.com, Dmitry Osipenko <digetx@gmail.com>
+References: <20220608113553.32083-1-shreeya.patel@collabora.com>
+ <20220608113553.32083-3-shreeya.patel@collabora.com>
+ <CAHp75VcpHO-_Dghdc0VFjT=us-95h1b03Jmg32odJuuJZRy8aA@mail.gmail.com>
+From:   Shreeya Patel <shreeya.patel@collabora.com>
+In-Reply-To: <CAHp75VcpHO-_Dghdc0VFjT=us-95h1b03Jmg32odJuuJZRy8aA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 08, 2022 at 08:22:05PM +0200, Jann Horn wrote:
-> The fastpath in slab_alloc_node() assumes that c->slab is stable as long as
-> the TID stays the same. However, two places in __slab_alloc() currently
-> don't update the TID when deactivating the CPU slab.
-> 
-> If multiple operations race the right way, this could lead to an object
-> getting lost; or, in an even more unlikely situation, it could even lead to
-> an object being freed onto the wrong slab's freelist, messing up the
-> `inuse` counter and eventually causing a page to be freed to the page
-> allocator while it still contains slab objects.
-> 
-> (I haven't actually tested these cases though, this is just based on
-> looking at the code. Writing testcases for this stuff seems like it'd be
-> a pain...)
-> 
-> The race leading to state inconsistency is (all operations on the same CPU
-> and kmem_cache):
-> 
->  - task A: begin do_slab_free():
->     - read TID
->     - read pcpu freelist (==NULL)
->     - check `slab == c->slab` (true)
->  - [PREEMPT A->B]
->  - task B: begin slab_alloc_node():
->     - fastpath fails (`c->freelist` is NULL)
->     - enter __slab_alloc()
->     - slub_get_cpu_ptr() (disables preemption)
->     - enter ___slab_alloc()
->     - take local_lock_irqsave()
->     - read c->freelist as NULL
->     - get_freelist() returns NULL
->     - write `c->slab = NULL`
->     - drop local_unlock_irqrestore()
->     - goto new_slab
->     - slub_percpu_partial() is NULL
->     - get_partial() returns NULL
->     - slub_put_cpu_ptr() (enables preemption)
->  - [PREEMPT B->A]
->  - task A: finish do_slab_free():
->     - this_cpu_cmpxchg_double() succeeds()
->     - [CORRUPT STATE: c->slab==NULL, c->freelist!=NULL]
 
-I can see this happening (!c->slab && c->freelist becoming true)
-when I synthetically add scheduling points in the code:
-
-diff --git a/mm/slub.c b/mm/slub.c
-index b97fa5e21046..b8012fdf2607 100644
---- a/mm/slub.c
-+++ b/mm/slub.c
-@@ -3001,6 +3001,10 @@ static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
- 		goto check_new_slab;
-
- 	slub_put_cpu_ptr(s->cpu_slab);
-+
-+	if (!in_atomic())
-+		schedule();
-+
- 	slab = new_slab(s, gfpflags, node);
- 	c = slub_get_cpu_ptr(s->cpu_slab);
-
-@@ -3456,9 +3460,13 @@ static __always_inline void do_slab_free(struct kmem_cache *s,
- 	if (likely(slab == c->slab)) {
- #ifndef CONFIG_PREEMPT_RT
- 		void **freelist = READ_ONCE(c->freelist);
-+		unsigned long flags;
-
- 		set_freepointer(s, tail_obj, freelist);
-
-+		if (!in_atomic())
-+			schedule();
-+
- 		if (unlikely(!this_cpu_cmpxchg_double(
- 				s->cpu_slab->freelist, s->cpu_slab->tid,
- 				freelist, tid,
-@@ -3467,6 +3475,10 @@ static __always_inline void do_slab_free(struct kmem_cache *s,
- 			note_cmpxchg_failure("slab_free", s, tid);
- 			goto redo;
- 		}
-+
-+		local_irq_save(flags);
-+		WARN_ON(!READ_ONCE(c->slab) && READ_ONCE(c->freelist));
-+		local_irq_restore(flags);
- #else /* CONFIG_PREEMPT_RT */
- 		/*
- 		 * We cannot use the lockless fastpath on PREEMPT_RT because if
-
-
-> From there, the object on c->freelist will get lost if task B is allowed to
-> continue from here: It will proceed to the retry_load_slab label,
-> set c->slab, then jump to load_freelist, which clobbers c->freelist.
+On 08/06/22 21:46, Andy Shevchenko wrote:
+> On Wed, Jun 8, 2022 at 1:37 PM Shreeya Patel
+> <shreeya.patel@collabora.com> wrote:
+>> From: Zhigang Shi <Zhigang.Shi@liteon.com>
+>>
+>> Add initial support for ltrf216a ambient light sensor.
+>>
+>> Datasheet: gitlab.steamos.cloud/shreeya/iio/-/blob/main/LTRF216A.pdf
+> https?
 >
-> But if we instead continue as follows, we get worse corruption:
-> 
->  - task A: run __slab_free() on object from other struct slab:
->     - CPU_PARTIAL_FREE case (slab was on no list, is now on pcpu partial)
->  - task A: run slab_alloc_node() with NUMA node constraint:
->     - fastpath fails (c->slab is NULL)
->     - call __slab_alloc()
->     - slub_get_cpu_ptr() (disables preemption)
->     - enter ___slab_alloc()
->     - c->slab is NULL: goto new_slab
->     - slub_percpu_partial() is non-NULL
->     - set c->slab to slub_percpu_partial(c)
->     - [CORRUPT STATE: c->slab points to slab-1, c->freelist has objects
->       from slab-2]
->     - goto redo
->     - node_match() fails
->     - goto deactivate_slab
->     - existing c->freelist is passed into deactivate_slab()
->     - inuse count of slab-1 is decremented to account for object from
->       slab-2
+> ...
+>
+>> +#define LTRF216A_ALS_READ_DATA_DELAY   20000
+> What units?
+>
+> ...
+>
+>> +/* Window Factor is needed when device is under Window glass
+> the device
+>
+>> + * with coated tinted ink. This is to compensate the light loss
+> for the?
+>
+>> + * due to the lower transmission rate of the window glass.
+>> + */
+> /*
+>   * Multi-line comments should look
+>   * like this very example. Find the difference.
+>   */
+>
+> ...
+>
+>> +static int ltrf216a_init(struct iio_dev *indio_dev)
+>> +{
+>> +       struct ltrf216a_data *data = iio_priv(indio_dev);
+>> +       int ret = 0;
+> Useless assignment.
+>
+>> +
+>> +       /* enable sensor */
+>> +       ret |= FIELD_PREP(LTRF216A_ALS_ENABLE_MASK, 1);
+> This is bad code. Use another variable with distinguashable name.
+>
+>> +       ret = i2c_smbus_write_byte_data(data->client, LTRF216A_MAIN_CTRL, ret);
+> Can this driver utilize regmap I2C?
 
-I didn't try to reproduce this -- but I agree SLUB can be fooled
-by the condition (!c->slab && c->freelist).
+Thanks for all your comments and yes we can use the regmap I2C
+but the plan is to get the basic version merged and then I'll be sending
+patches for any enhancements that we'd like to do.
 
-> At this point, the inuse count of slab-1 is 1 lower than it should be.
-> This means that if we free all allocated objects in slab-1 except for one,
-> SLUB will think that slab-1 is completely unused, and may free its page,
-> leading to use-after-free.
-> 
-> Fixes: c17dda40a6a4e ("slub: Separate out kmem_cache_cpu processing from deactivate_slab")
-> Fixes: 03e404af26dc2 ("slub: fast release on full slab")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Jann Horn <jannh@google.com>
-> ---
->  mm/slub.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/mm/slub.c b/mm/slub.c
-> index e5535020e0fdf..b97fa5e210469 100644
-> --- a/mm/slub.c
-> +++ b/mm/slub.c
-> @@ -2936,6 +2936,7 @@ static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
->  
->  	if (!freelist) {
->  		c->slab = NULL;
-> +		c->tid = next_tid(c->tid);
->  		local_unlock_irqrestore(&s->cpu_slab->lock, flags);
->  		stat(s, DEACTIVATE_BYPASS);
->  		goto new_slab;
-> @@ -2968,6 +2969,7 @@ static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
->  	freelist = c->freelist;
->  	c->slab = NULL;
->  	c->freelist = NULL;
-> +	c->tid = next_tid(c->tid);
->  	local_unlock_irqrestore(&s->cpu_slab->lock, flags);
->  	deactivate_slab(s, slab, freelist);
->  
-> 
-> base-commit: 9886142c7a2226439c1e3f7d9b69f9c7094c3ef6
-> -- 
-> 2.36.1.476.g0c4daa206d-goog
 
-With this patch I couldn't reproduce it.
-This work is really nice. Thanks!
 
-Tested-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-
-BTW I wonder how much this race will affect machines in the real world.
-Maybe just rare and undetectable memory leak?
-
--- 
 Thanks,
-Hyeonggon
+Shreeya Patel
+
+>
+>> +       if (ret < 0)
+>> +               dev_err(&data->client->dev,
+>> +                       "Error writing to LTRF216A_MAIN_CTRL while enabling the sensor: %d\n", ret);
+>> +
+>> +       return ret;
+>> +}
+> ...
+>
+>> +static int ltrf216a_disable(struct iio_dev *indio_dev)
+>> +{
+>> +       struct ltrf216a_data *data = iio_priv(indio_dev);
+>> +       int ret = 0;
+> Useless assignment.
+>
+>> +       ret = i2c_smbus_write_byte_data(data->client, LTRF216A_MAIN_CTRL, 0);
+>> +       if (ret < 0)
+>> +               dev_err(&data->client->dev,
+>> +                       "Error writing to LTRF216A_MAIN_CTRL while disabling the sensor: %d\n",
+>> +                       ret);
+> With a temporary variable for the device this may be located on one line.
+> Same for the similar cases.
+>
+>> +       return ret;
+>> +}
+> ...
+>
+>> +#ifdef CONFIG_PM
+> Why? Can't it be hidden by using pm_sleep_ptr() or alike?
+>
+>> +static int ltrf216a_set_power_state(struct ltrf216a_data *data, bool on)
+>> +{
+>> +       struct device *dev = &data->client->dev;
+>> +       int ret = 0, suspended;
+> Useless assignment. Please, go thru all your code and drop these
+> potentially dangerous assignments.
+>
+>> +
+>> +       if (on) {
+>> +               suspended = pm_runtime_suspended(dev);
+>> +               ret = pm_runtime_get_sync(dev);
+>> +
+>> +               /* Allow one integration cycle before allowing a reading */
+>> +               if (suspended)
+>> +                       msleep(ltrf216a_int_time_reg[0][0]);
+>> +       } else {
+>> +               pm_runtime_mark_last_busy(dev);
+>> +               ret = pm_runtime_put_autosuspend(dev);
+>> +       }
+>> +
+>> +       return ret;
+>> +}
+>> +#else
+>> +static int ltrf216a_set_power_state(struct ltrf216a_data *data, bool on)
+>> +{
+>> +       return 0;
+>> +}
+>> +#endif
+>> +
+>> +int ltrf216a_check_for_data(struct i2c_client *client)
+>> +{
+>> +       int ret;
+>> +
+>> +       ret = i2c_smbus_read_byte_data(client, LTRF216A_MAIN_STATUS);
+>> +       if (ret < 0) {
+>> +               dev_err(&client->dev, "Failed to read LTRF216A_MAIN_STATUS register: %d\n", ret);
+>> +               return ret;
+> Dup.
+>
+>> +       }
+>> +
+>> +       return ret;
+>> +}
+> ...
+>
+>> +#ifdef CONFIG_PM_SLEEP
+> Oh, please no.
+>
+>> +#endif
+> ...
+>
+>> +static const struct dev_pm_ops ltrf216a_pm_ops = {
+>> +       SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
+>> +                               pm_runtime_force_resume)
+>> +       SET_RUNTIME_PM_OPS(ltrf216a_runtime_suspend,
+>> +                          ltrf216a_runtime_resume, NULL)
+>> +};
+> Use pm_sleep_ptr() and corresponding top-level macros.
+>
