@@ -2,219 +2,489 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B122C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:54:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDF6FCCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:55:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344796AbiFMSyt (ORCPT
+        id S1345321AbiFMSzm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:54:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36930 "EHLO
+        Mon, 13 Jun 2022 14:55:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346654AbiFMSxx (ORCPT
+        with ESMTP id S244778AbiFMSzU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 14:53:53 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2073.outbound.protection.outlook.com [40.107.223.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AECEF7F9D;
-        Mon, 13 Jun 2022 08:57:11 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ltTghIjeKNSRmda1Gv+llOCqPkx4En+JpRvIyN3TL2/WDoXMGgLeYKt6GOtojwdH65q1aQWJzN6f5gZetitKPnomuxh3p/9xUhe0L28YVKvHbi8sjnFTUXkVYuWsWJCo58HJUE3NccW+DB5uiIafHZanlUPNXX3a2+y6p2e09x2J2uCH3kHpqt3DKA37uqzcF3E8UfczyVSFBFcvjzh7GRhE2DAslYJaD/LfEORqEv9J2l4PGIBSY+hAVLaaXFz7W5Mv01kFv880yB2J9hpMyq1OeHMPiRMb4f/zP+fwMCiQoChgrEknuNqqDxQz/Nc0L2vwkME8crXHI5AQh831Gw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=b6FjRt05x07TNerkep9bFVcetJINEWManqcWOGnFUok=;
- b=gX4TG0rCQPzAP7UbHDpgEcFmcmXRot0+HeBv1hoqNwyh9BVaTMis2jesBjaKQFtkZCz2q7h/Wj7fAN2mQUutpvMlwq5Ofjlf7J2+hoxN31MAZsUdPKOTllV58bpQZQEoQdLfv0YTPS0VdDaBQwxqrsczFt/paavqKuG0D8FTrTqWZmPBFvFlJylN4HUWi7mCJXPHjGv5sjdWQ6CRFGpY79cGPjta3AdkmcgEiBshHVkkFg4o4ZMYP4ZLM7TaPtbXveAtWHSE+LYFdA/X+Ce2wEpnvinimFTXggio2IxDiiUMB/9nk1tEgPxVijZCF+gWKLHt1r4lPKxm0NHugDW5JA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=b6FjRt05x07TNerkep9bFVcetJINEWManqcWOGnFUok=;
- b=fUN4DjHlR6W3Js113zTLjK5b1nmpG12x7PwU29l3MH036+YkPyklBh4nZ8XCgf9pHyF57fjlEq4lXLVPL2KozuzFWvmO6ERYPk0rzS+A9k+TsyEVZkGlriOC/rYoi3jSflS5HV332U0MQjkG0XtEi9+tM7MA9D8sIWCI0Py/bBc=
-Received: from MN0PR12MB6101.namprd12.prod.outlook.com (2603:10b6:208:3cb::10)
- by CY4PR12MB1782.namprd12.prod.outlook.com (2603:10b6:903:123::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.14; Mon, 13 Jun
- 2022 15:57:09 +0000
-Received: from MN0PR12MB6101.namprd12.prod.outlook.com
- ([fe80::3839:4183:6783:b1d1]) by MN0PR12MB6101.namprd12.prod.outlook.com
- ([fe80::3839:4183:6783:b1d1%5]) with mapi id 15.20.5332.020; Mon, 13 Jun 2022
- 15:57:09 +0000
-From:   "Limonciello, Mario" <Mario.Limonciello@amd.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-CC:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        "open list:SUSPEND TO RAM" <linux-pm@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] Documentation: PM: Drop pme_interrupt reference
-Thread-Topic: [PATCH] Documentation: PM: Drop pme_interrupt reference
-Thread-Index: AQHYdp6IJx+DfZWbjU28FeOkgrM2Aq1GISkAgAdtduA=
-Date:   Mon, 13 Jun 2022 15:57:09 +0000
-Message-ID: <MN0PR12MB610188F2F289EFA12872D8E2E2AB9@MN0PR12MB6101.namprd12.prod.outlook.com>
-References: <20220602163330.317-1-mario.limonciello@amd.com>
- <20220608222922.GA429328@bhelgaas>
-In-Reply-To: <20220608222922.GA429328@bhelgaas>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_Enabled=true;
- MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_SetDate=2022-06-13T15:55:07Z;
- MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_Method=Privileged;
- MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_Name=Public-AIP 2.0;
- MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;
- MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_ActionId=a23ea24a-b4b0-4e82-8b29-2ab605828834;
- MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_ContentBits=1
-msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_enabled: true
-msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_setdate: 2022-06-13T15:57:08Z
-msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_method: Privileged
-msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_name: Public-AIP 2.0
-msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_siteid: 3dd8961f-e488-4e60-8e11-a82d994e183d
-msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_actionid: 2702f6b9-5197-439c-8e59-dc209a97bb63
-msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_contentbits: 0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a5f18c74-f044-4834-2c42-08da4d555f87
-x-ms-traffictypediagnostic: CY4PR12MB1782:EE_
-x-microsoft-antispam-prvs: <CY4PR12MB1782B537A053F3782367BEE9E2AB9@CY4PR12MB1782.namprd12.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: C8EDyxOnLzOaoR8qUUqaG1c+z6aXRxJOZ0PYgF2ecs38TAi8y5pLcX+p4CiRKy0EE8aE9qQnHhjSHTt5nCgaWVDqmQzfW0W8YJvDqgaIFXv6yRnRgz7oD4TnaxvOnapx7QF6Nu3Gd+Gkkqwgl6O3aq0aBTDnHwswgYp7bimusTEsQGtbDhbRCyOUBIS2Jfkepzeh66/mNS4KJ+P9JVaqo7nIaLWFkO+LtZMuzbf3aU4BKAlg/1z9A5q60UJqbmc3bKHTtKvOlR5G+VlEaOwG/rwmVYTNQL9knmiAwrVcoACvOFx+dpNsRoU0WRHzLN8NSx/ZEipVUlcQDFovYj7LaRy8zCLnjEXHngo3WWhZrCKtgX+J2SiUH39/bxkI1Ey5A50RM52ojodOuBITrYvWAU1AOSq4ZPhVKR0L1m4atvhl3VxnrXNOLHfI0KmTkK6UD2PEUnYIUTdLF+MGALX7NOG1qMjuyCz6lyGXbacxlvIR/6RPSy0oiUzN19Nmwx/+Ixy+2TvtG+xbkNkUBZWuJHpyS1Tpt1yLm/X7rGXiDpgztcVujWxkBW3aL5pKtpWoTaXBawM/eG9blmzjp2wdeay+HOmv2s8iG6ir+W0y6F9MOvx+yOXPZTEM8w2+wAHe3+1cemS/3gDuRGTSTdo39zwTeBADDwfAOzoSFNH4F7fgsYPHQE9i4f5Wl5SP6B9IXicsXeBfjuMlgYvPsfttlfK52XEXYbP0MQTO2STKtXGo7lJSdvnJZH37/zv41nDsa6kq9zvOHY0jW8NJnIZx+yieN+iqeFCf7RP9kyjHfcw=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR12MB6101.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(64756008)(66556008)(66446008)(33656002)(5660300002)(66476007)(66946007)(2906002)(76116006)(508600001)(45080400002)(8936002)(52536014)(9686003)(6506007)(966005)(53546011)(86362001)(8676002)(4326008)(38100700002)(7696005)(54906003)(38070700005)(6916009)(71200400001)(26005)(316002)(122000001)(55016003)(83380400001)(186003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?OCBoQVlgz7Om6SC8hXvKrDYAVsTGhvhCgF5NNwO8A4BukJCHtVwds7/GcYKG?=
- =?us-ascii?Q?cWICy0eYVvtyfnQaEN7IAJjUh/r8j0DVmSXlmkEn3Z3/DTovzf/fjfSnLaON?=
- =?us-ascii?Q?KyF3+XJzr+ORuE8J+GC122AdW7uoasNgK1PjuLOoZcS5a8JlqMwxt0xcc7ft?=
- =?us-ascii?Q?HnOjIffpGWbLwD0wld3dOFBkCSGauZkLFXwOPzMGYeBqY+C6dtLScPVFiZmx?=
- =?us-ascii?Q?u5uO5nqVyN4LzBDTUV5PQDCSU9TMr+Va8OusgZ/SHRL1IgFO0NqRV2Wc5JMq?=
- =?us-ascii?Q?rmrWH4pFpWZDGkXqO2Vksar2BhadwjsdFszaiea28R4OdtTF+WIUE9XhezeH?=
- =?us-ascii?Q?0ULDUTOifbcmslOhMz8Zp0Msu8Imo7WAzrKXrkKZHmHFrdjOy8XFOHTym3Ez?=
- =?us-ascii?Q?hj0hPyUFZbVbU3WOynjO5Lyg+r5f5NVx/gYqzhXuriO0PZXy1uc3kkCmD/lC?=
- =?us-ascii?Q?yqj9JnbzUYPZg2jcM+5c96miarEZ8lqgrjaERmgtPMkHZiCRbbZaYJwmIU0K?=
- =?us-ascii?Q?rrqUA3zgdyNBzeL2Ks5mU7E72CmPgCkwFM0/UOC+tcqe/tasyrqbFfds6P2v?=
- =?us-ascii?Q?LfUuV32M1UfDysnQ5Xz9/fjmKK2RwYM6ooNtJ86nN1n0OK9pHyT+o39tjgSS?=
- =?us-ascii?Q?Q3Ano7I2nmB2Ke7o+TPwjESwGPHde6bwt7IbJo497/lYC+Q1bU4ZNqgm/TIx?=
- =?us-ascii?Q?pJ0RV5khDXleAqWp1qn6v0aRPvonJ9W0C69dK3YroMmwarOtVVF390yVVSu3?=
- =?us-ascii?Q?Bpc6libMZPiJt4A2veoxQjxtZxO7y+GgJljgMlQwIADFvhwAoNxzniTid/Yl?=
- =?us-ascii?Q?uAFAbp8lrx4ciVVan85SRjZyljKYQ1jyCxxJY1DoiVaJIXr+6rYEoCS/ujG5?=
- =?us-ascii?Q?r59N8Wd3wo/NxUHj20jeq/Dy2LurOBMpm0s0Wbjy74hwyiAgHxhi0HcRFdXX?=
- =?us-ascii?Q?6zhEN7c0ykyndPEPFu+QbR1i0AnSGjYk/cTTDMOHBlc99PiUkVSmotsNahAN?=
- =?us-ascii?Q?xvfw3HwlzsemIwMUSkyZ04CDcwVZJR1P9RL+/BoF8N3hGteS3jc5h/hq5MJz?=
- =?us-ascii?Q?iMJHBvKkz/S4hknY+gdiO/jq3FtTrP7n5Nnueo6tSQDiBaDo6mZLPhBqy5VH?=
- =?us-ascii?Q?eejnWgy1efdOFneN7+ptyYraL+6OEFmd18bhxVFWi2y1MnsDp2kCYO5DZxSi?=
- =?us-ascii?Q?Gxjq45XCQvJ8qxq1EHrxggmdWjVHAeUbDVE3jqtSxI2IbJh+QSQ+O4JLtz58?=
- =?us-ascii?Q?FBb09jpXNARBB+j9gSYeTgrqbouDn6IhONjeFXNtocpGHasywPwEAZZl1T89?=
- =?us-ascii?Q?pAU7pod53Os/OclzRZ/sfpit8Vlu4JAu/Iv2RPoOVo/V0Si1KDiAhTiePj4x?=
- =?us-ascii?Q?5jWptyBdZtW29SwJEeAEi8BZnJprgNo3+RhbRcdwXW+k97/D1YMHtYPAgGwU?=
- =?us-ascii?Q?f1bxiSddFtWXOrP9Vh0mkfK37VVSPFKC1pnYo6eQ4Bdfj0uzYKOwXorRsj6b?=
- =?us-ascii?Q?CjMVGOgNjmMbyICmEW3p+9CCdqDOErhm5pKpknTozZuY/vcg/BF20PYKwMIk?=
- =?us-ascii?Q?+5YDVGd0dNbMq5OcEmNvI43GkUnmKCZqJWqg3SOX9mfj16MrAcfEcRx4xBzw?=
- =?us-ascii?Q?F2hFHBKecR5Kkkl44kYuZOyA+EkFl+b9usQa6IdxE2fP07Y5JNKfZFdKrW13?=
- =?us-ascii?Q?qKq6SAKn1ST7fM1WrHaQOhzPtSg95M4/3aUv/Bd2SO8MTJto?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Mon, 13 Jun 2022 14:55:20 -0400
+Received: from mx4.veeam.com (mx4.veeam.com [104.41.138.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CF9DFC839;
+        Mon, 13 Jun 2022 08:59:53 -0700 (PDT)
+Received: from mail.veeam.com (prgmbx01.amust.local [172.24.128.102])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx4.veeam.com (Postfix) with ESMTPS id 2AAB8CCE21;
+        Mon, 13 Jun 2022 18:54:02 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=veeam.com;
+        s=mx4-2022; t=1655135642;
+        bh=7SqasGcsGPk7lF68LbZBSDsnkrJS5LAXkYNjoErasw8=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
+        b=e5vrwEkyBCZCpd5m9rPnsZ3Z7+1uBaMBqA6PRKbfWwylOanZA7lsLZh7P0EfzCucN
+         QNbA6jgV9819xiGh8aFj0dLAn436nCTG1QHikPbt4kpA6Ysjj6k7wjw19RxibkqiNL
+         9xbDvwHkaiJB+KB1Jvg+/TLs182V4npLU00+DRJ2dgX0hvhh4D+cfi5vM7ysXLBrTu
+         6fu4laij0Lr7sT1ZCFf3zO06GlPSLXDBJXuaVqKokfCsoEddLunlqQ/Dhh60FkzD6r
+         U5/Yg7eUNkUUjoPQUDipY5hkQ3oJ6PODJbSid9zWOwoXJ7ATlURkOS8DLVL/MeHWUs
+         LkFEuoxbCYmvw==
+Received: from prgdevlinuxpatch01.amust.local (172.24.14.5) by
+ prgmbx01.amust.local (172.24.128.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.9; Mon, 13 Jun 2022 17:53:59 +0200
+From:   Sergei Shtepa <sergei.shtepa@veeam.com>
+To:     <axboe@kernel.dk>, <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Sergei Shtepa <sergei.shtepa@veeam.com>
+Subject: [PATCH 01/20] block, blk_filter: enable block device filters
+Date:   Mon, 13 Jun 2022 18:52:54 +0300
+Message-ID: <1655135593-1900-2-git-send-email-sergei.shtepa@veeam.com>
+X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1655135593-1900-1-git-send-email-sergei.shtepa@veeam.com>
+References: <1655135593-1900-1-git-send-email-sergei.shtepa@veeam.com>
 MIME-Version: 1.0
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MN0PR12MB6101.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a5f18c74-f044-4834-2c42-08da4d555f87
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jun 2022 15:57:09.6443
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Nl9L0W0lQdt8ClBbY/tVdBlxER5jJLBo21XdpefnNyYkE/AsjLyX+SPNVe96+taSPe0W4LeP9zv8XIRhAMSiNA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1782
+Content-Type: text/plain
+X-Originating-IP: [172.24.14.5]
+X-ClientProxiedBy: prgmbx01.amust.local (172.24.128.102) To
+ prgmbx01.amust.local (172.24.128.102)
+X-EsetResult: clean, is OK
+X-EsetId: 37303A29D2A50A536D7766
+X-Veeam-MMEX: True
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[Public]
+Allows to attach block device filters to the block devices.
+Kernel modules can use this functionality to extend the
+capabilities of the block layer.
 
+Signed-off-by: Sergei Shtepa <sergei.shtepa@veeam.com>
+---
+ block/Kconfig             |   8 +++
+ block/bdev.c              | 129 ++++++++++++++++++++++++++++++++++++++
+ block/blk-core.c          |  88 ++++++++++++++++++++++++++
+ include/linux/blk_types.h |  22 +++++++
+ include/linux/blkdev.h    |  81 ++++++++++++++++++++++++
+ 5 files changed, 328 insertions(+)
 
+diff --git a/block/Kconfig b/block/Kconfig
+index 50b17e260fa2..256483e00224 100644
+--- a/block/Kconfig
++++ b/block/Kconfig
+@@ -225,6 +225,14 @@ config BLK_MQ_RDMA
+ config BLK_PM
+ 	def_bool PM
+ 
++config BLK_FILTER
++	bool "Enable block device filters"
++	default n
++	help
++	  Enabling this lets the block layer filters handle bio requests.
++	  Kernel modules can use this feature to extend the functionality
++	  of the block layer.
++
+ # do not use in new code
+ config BLOCK_HOLDER_DEPRECATED
+ 	bool
+diff --git a/block/bdev.c b/block/bdev.c
+index 5fe06c1f2def..4bcd9f4378e3 100644
+--- a/block/bdev.c
++++ b/block/bdev.c
+@@ -426,8 +426,15 @@ static void init_once(void *data)
+ 	inode_init_once(&ei->vfs_inode);
+ }
+ 
++#ifdef CONFIG_BLK_FILTER
++static void bdev_filter_cleanup(struct block_device *bdev);
++#endif
++
+ static void bdev_evict_inode(struct inode *inode)
+ {
++#ifdef CONFIG_BLK_FILTER
++	bdev_filter_cleanup(I_BDEV(inode));
++#endif
+ 	truncate_inode_pages_final(&inode->i_data);
+ 	invalidate_inode_buffers(inode); /* is it needed here? */
+ 	clear_inode(inode);
+@@ -503,6 +510,11 @@ struct block_device *bdev_alloc(struct gendisk *disk, u8 partno)
+ 		return NULL;
+ 	}
+ 	bdev->bd_disk = disk;
++
++#ifdef CONFIG_BLK_FILTER
++	memset(bdev->bd_filters, 0, sizeof(bdev->bd_filters));
++	spin_lock_init(&bdev->bd_filters_lock);
++#endif
+ 	return bdev;
+ }
+ 
+@@ -1071,3 +1083,120 @@ void sync_bdevs(bool wait)
+ 	spin_unlock(&blockdev_superblock->s_inode_list_lock);
+ 	iput(old_inode);
+ }
++
++#ifdef CONFIG_BLK_FILTER
++static void bdev_filter_cleanup(struct block_device *bdev)
++{
++	int altitude;
++	struct bdev_filter *flt;
++
++	for (altitude = 0; altitude < bdev_filter_alt_end; altitude++) {
++		spin_lock(&bdev->bd_filters_lock);
++		flt = bdev->bd_filters[altitude];
++		bdev->bd_filters[altitude] = NULL;
++		spin_unlock(&bdev->bd_filters_lock);
++
++		bdev_filter_put(flt);
++	}
++}
++
++/**
++ * bdev_filter_attach - Attach a filter to the original block device.
++ * @bdev:
++ *	Block device.
++ * @name:
++ *	Name of the block device filter.
++ * @altitude:
++ *	Altituda number of the block device filter.
++ * @flt:
++ *	Pointer to the filter structure.
++ *
++ * Before adding a filter, it is necessary to initialize &struct bdev_filter.
++ *
++ * The bdev_filter_detach() function allows to detach the filter from the block
++ * device.
++ *
++ * Return:
++ * 0 - OK
++ * -EALREADY - a filter with this name already exists
++ */
++int bdev_filter_attach(struct block_device *bdev, const char *name,
++		       const enum bdev_filter_altitudes altitude,
++		       struct bdev_filter *flt)
++{
++	int ret = 0;
++
++	spin_lock(&bdev->bd_filters_lock);
++	if (bdev->bd_filters[altitude])
++		ret = -EALREADY;
++	else
++		bdev->bd_filters[altitude] = flt;
++	spin_unlock(&bdev->bd_filters_lock);
++
++	if (!ret)
++		pr_info("block device filter '%s' has been attached to %d:%d",
++			name, MAJOR(bdev->bd_dev), MINOR(bdev->bd_dev));
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(bdev_filter_attach);
++
++/**
++ * bdev_filter_detach - Detach a filter from the block device.
++ * @bdev:
++ *	Block device.
++ * @name:
++ *	Name of the block device filter.
++ * @altitude:
++ *	Altituda number of the block device filter.
++ *
++ * The filter should be added using the bdev_filter_attach() function.
++ *
++ * Return:
++ * 0 - OK
++ * -ENOENT - the filter was not found in the linked list
++ */
++int bdev_filter_detach(struct block_device *bdev, const char *name,
++		       const enum bdev_filter_altitudes altitude)
++{
++	struct bdev_filter *flt = NULL;
++
++	spin_lock(&bdev->bd_filters_lock);
++	flt = bdev->bd_filters[altitude];
++	bdev->bd_filters[altitude] = NULL;
++	spin_unlock(&bdev->bd_filters_lock);
++
++	if (!flt)
++		return -ENOENT;
++
++	bdev_filter_put(flt);
++	pr_info("block device filter '%s' has been detached from %d:%d",
++		name, MAJOR(bdev->bd_dev), MINOR(bdev->bd_dev));
++	return 0;
++}
++EXPORT_SYMBOL_GPL(bdev_filter_detach);
++
++/**
++ * bdev_filter_get_by_altitude - Get filter by altitude.
++ * @bdev:
++ *	Pointer to the block device structure.
++ *
++ * Return:
++ * pointer - pointer to filters structure from &struct blk_filter
++ * NULL - no filter has been set
++ */
++struct bdev_filter *bdev_filter_get_by_altitude(struct block_device *bdev,
++				const enum bdev_filter_altitudes altitude)
++{
++	struct bdev_filter *flt;
++
++	spin_lock(&bdev->bd_filters_lock);
++	flt = bdev->bd_filters[altitude];
++	if (flt)
++		bdev_filter_get(flt);
++	spin_unlock(&bdev->bd_filters_lock);
++
++	return flt;
++}
++EXPORT_SYMBOL_GPL(bdev_filter_get_by_altitude);
++#endif
+diff --git a/block/blk-core.c b/block/blk-core.c
+index 06ff5bbfe8f6..a44906fb08aa 100644
+--- a/block/blk-core.c
++++ b/block/blk-core.c
+@@ -757,6 +757,86 @@ void submit_bio_noacct_nocheck(struct bio *bio)
+ 		__submit_bio_noacct(bio);
+ }
+ 
++#ifdef CONFIG_BLK_FILTER
++
++/**
++ * __filter_bio() - Process bio by the block device filter.
++ * @flt:
++ *	Block device filter.
++ * @bio:
++ *	Original I/O unit.
++ *
++ * Return:
++ * bdev_filter_pass - original bio should be submitted
++ * bdev_filter_skip - do not submit original bio
++ * bdev_filter_redirect - repeat bio processing for another block device
++ */
++static inline enum bdev_filter_result __filter_bio(struct bdev_filter *flt,
++						   struct bio *bio)
++{
++	enum bdev_filter_result result;
++	struct bio *new_bio;
++	struct bio_list bio_list[2] = { };
++
++	do {
++		bio_list_init(&bio_list[0]);
++		current->bio_list = bio_list;
++
++		result = flt->fops->submit_bio_cb(bio, flt);
++
++		current->bio_list = NULL;
++
++		while ((new_bio = bio_list_pop(&bio_list[0]))) {
++			bio_set_flag(new_bio, BIO_FILTERED);
++			submit_bio_noacct(new_bio);
++		};
++	} while (result == bdev_filter_repeat);
++
++	return result;
++}
++
++/**
++ * filter_bio() - Pass bio to the block device filters.
++ * @bio:
++ *	Original I/O unit.
++ *
++ * Return:
++ * true - original bio should be submitted
++ * false - do not submit original bio
++ */
++static bool filter_bio(struct bio *bio)
++{
++	enum bdev_filter_result result = bdev_filter_pass;
++
++	if (bio_flagged(bio, BIO_FILTERED))
++		return true;
++	do {
++		struct block_device *bdev = bio->bi_bdev;
++		unsigned int altitude = 0;
++
++		while (altitude < bdev_filter_alt_end) {
++			struct bdev_filter *flt;
++
++			spin_lock(&bdev->bd_filters_lock);
++			flt = bdev->bd_filters[altitude];
++			if (flt)
++				bdev_filter_get(flt);
++			spin_unlock(&bdev->bd_filters_lock);
++
++			if (flt) {
++				result = __filter_bio(flt, bio);
++				bdev_filter_put(flt);
++				if (result != bdev_filter_pass)
++					break;
++			}
++			altitude++;
++		}
++	} while (result == bdev_filter_redirect);
++
++	return (result == bdev_filter_pass);
++}
++#endif
++
+ /**
+  * submit_bio_noacct - re-submit a bio to the block device layer for I/O
+  * @bio:  The bio describing the location in memory and on the device.
+@@ -790,6 +870,14 @@ void submit_bio_noacct(struct bio *bio)
+ 		goto end_io;
+ 	if (unlikely(bio_check_ro(bio)))
+ 		goto end_io;
++#ifdef CONFIG_BLK_FILTER
++	/*
++	 * It looks like should_fail_bio() and bio_check_ro() can be placed
++	 * in a separate block device filter for debugging.
++	 */
++	if (!filter_bio(bio))
++		goto end_io;
++#endif
+ 	if (!bio_flagged(bio, BIO_REMAPPED)) {
+ 		if (unlikely(bio_check_eod(bio)))
+ 			goto end_io;
+diff --git a/include/linux/blk_types.h b/include/linux/blk_types.h
+index a24d4078fb21..b88f506ea59e 100644
+--- a/include/linux/blk_types.h
++++ b/include/linux/blk_types.h
+@@ -37,6 +37,23 @@ struct bio_crypt_ctx;
+ #define PAGE_SECTORS		(1 << PAGE_SECTORS_SHIFT)
+ #define SECTOR_MASK		(PAGE_SECTORS - 1)
+ 
++#ifdef CONFIG_BLK_FILTER
++/**
++ * enum bdev_filter_altitudes - Set of reserved altitudes for block device
++ *	filters.
++ *
++ * @bdev_filter_alt_blksnap:
++ *	An altitude for the blksnap module.
++ * @bdev_filter_alt_end:
++ *	Indicates the end of the altitude set.
++ */
++enum bdev_filter_altitudes {
++	bdev_filter_alt_blksnap = 0,
++	bdev_filter_alt_end
++};
++struct bdev_filter;
++#endif
++
+ struct block_device {
+ 	sector_t		bd_start_sect;
+ 	sector_t		bd_nr_sectors;
+@@ -68,6 +85,10 @@ struct block_device {
+ #ifdef CONFIG_FAIL_MAKE_REQUEST
+ 	bool			bd_make_it_fail;
+ #endif
++#ifdef CONFIG_BLK_FILTER
++	struct bdev_filter	*bd_filters[bdev_filter_alt_end];
++	spinlock_t		bd_filters_lock;
++#endif
+ } __randomize_layout;
+ 
+ #define bdev_whole(_bdev) \
+@@ -332,6 +353,7 @@ enum {
+ 	BIO_QOS_MERGED,		/* but went through rq_qos merge path */
+ 	BIO_REMAPPED,
+ 	BIO_ZONE_WRITE_LOCKED,	/* Owns a zoned device zone write lock */
++	BIO_FILTERED,		/* bio has already been filtered */
+ 	BIO_FLAG_LAST
+ };
+ 
+diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
+index 608d577734c2..24cb5293897f 100644
+--- a/include/linux/blkdev.h
++++ b/include/linux/blkdev.h
+@@ -1573,4 +1573,85 @@ struct io_comp_batch {
+ 
+ #define DEFINE_IO_COMP_BATCH(name)	struct io_comp_batch name = { }
+ 
++#ifdef CONFIG_BLK_FILTER
++/**
++ * enum bdev_filter_result - The result of bio processing by
++ *	the block device filter.
++ *
++ * @bdev_filter_skip:
++ *	Original bio does not need to be submitted.
++ * @bdev_filter_pass:
++ *	It is necessary to submit the original request.
++ * @bdev_filter_repeat:
++ *	Bio processing has not been completed, a second call is required.
++ * @bdev_filter_redirect:
++ *	Original bio was redirected to another block device. The set
++ *	of filters on it is different, so processing must be repeated.
++ */
++enum bdev_filter_result {
++	bdev_filter_skip = 0,
++	bdev_filter_pass,
++	bdev_filter_repeat,
++	bdev_filter_redirect
++};
++struct bdev_filter;
++/**
++ * bdev_filter_operations - List of callback functions for the filter.
++ *
++ * @submit_bio_cb:
++ *	A callback function for bio processing.
++ * @detach_cb:
++ *	A callback function to disable the filter when removing a block
++ *	device from the system.
++ */
++struct bdev_filter_operations {
++	enum bdev_filter_result (*submit_bio_cb)(struct bio *bio,
++						 struct bdev_filter *flt);
++	void (*detach_cb)(struct kref *kref);
++};
++/**
++ * struct bdev_filter - Block device filter.
++ *
++ * @kref:
++ *	Kernel reference counter.
++ * @fops:
++ *	The pointer to &struct bdev_filter_operations with callback
++ *	functions for the filter.
++ */
++struct bdev_filter {
++	struct kref kref;
++	const struct bdev_filter_operations *fops;
++};
++/**
++ * bdev_filter_init - Initialization of the filter structure.
++ * @flt:
++ *	Pointer to the &struct bdev_filter to be initialized.
++ * @fops:
++ *	The callback functions for the filter.
++ */
++static inline void bdev_filter_init(struct bdev_filter *flt,
++		const struct bdev_filter_operations *fops)
++{
++	kref_init(&flt->kref);
++	flt->fops = fops;
++};
++int bdev_filter_attach(struct block_device *bdev, const char *name,
++		       const enum bdev_filter_altitudes altitude,
++		       struct bdev_filter *flt);
++int bdev_filter_detach(struct block_device *bdev, const char *name,
++		       const enum bdev_filter_altitudes altitude);
++struct bdev_filter *bdev_filter_get_by_altitude(struct block_device *bdev,
++		       const enum bdev_filter_altitudes altitude);
++static inline void bdev_filter_get(struct bdev_filter *flt)
++{
++	kref_get(&flt->kref);
++}
++static inline void bdev_filter_put(struct bdev_filter *flt)
++{
++	if (flt)
++		kref_put(&flt->kref, flt->fops->detach_cb);
++};
++
++#endif
++
+ #endif /* _LINUX_BLKDEV_H */
+-- 
+2.20.1
 
-> -----Original Message-----
-> From: Bjorn Helgaas <helgaas@kernel.org>
-> Sent: Wednesday, June 8, 2022 17:29
-> To: Limonciello, Mario <Mario.Limonciello@amd.com>
-> Cc: Rafael J. Wysocki <rafael@kernel.org>; Len Brown <len.brown@intel.com=
->;
-> Pavel Machek <pavel@ucw.cz>; Bjorn Helgaas <bhelgaas@google.com>; Mika
-> Westerberg <mika.westerberg@linux.intel.com>; open list:SUSPEND TO RAM
-> <linux-pm@vger.kernel.org>; open list <linux-kernel@vger.kernel.org>
-> Subject: Re: [PATCH] Documentation: PM: Drop pme_interrupt reference
->=20
-> On Thu, Jun 02, 2022 at 11:33:30AM -0500, Mario Limonciello wrote:
-> > `pme_interrupt` was dropped from `struct pci_dev` as part of commit
-> > 8370c2dc4c7b ("PCI / PM: Drop pme_interrupt flag from struct pci_dev"),
-> > but the Documentation still includes this member.
-> >
-> > Remove it from the documentation as well and update it to have the miss=
-ing
-> > `pme_poll` member instead.
-> >
-> > Fixes: 8370c2dc4c7b ("PCI / PM: Drop pme_interrupt flag from struct pci=
-_dev")
-> > Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-> > ---
-> >  Documentation/power/pci.rst | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/Documentation/power/pci.rst b/Documentation/power/pci.rst
-> > index b04fb18cc4e2..a125544b4cb6 100644
-> > --- a/Documentation/power/pci.rst
-> > +++ b/Documentation/power/pci.rst
-> > @@ -315,7 +315,7 @@ that these callbacks operate on::
-> >  					   configuration space */
-> >  	unsigned int	pme_support:5;	/* Bitmask of states from which PME#
-> >  					   can be generated */
-> > -	unsigned int	pme_interrupt:1;/* Is native PCIe PME signaling used?
-> */
-> > +	unsigned int	pme_poll:1;	/* Poll device's PME status bit */
-> >  	unsigned int	d1_support:1;	/* Low power state D1 is supported */
-> >  	unsigned int	d2_support:1;	/* Low power state D2 is supported */
-> >  	unsigned int	no_d1d2:1;	/* D1 and D2 are forbidden */
->=20
-> I'm OK with this patch if Rafael wants to take it.
->=20
-> But I'm not sure how much value this section of the doc really adds.
-> The doc basically says "the PCI PM callbacks operate on several of
-> these fields of the struct pci_dev" and goes on to quote part of the
-> struct pci_dev.
-
-The reason that the patch came up is that someone who doesn't normally look
-at kernel code but looked at documentation reached out asking questions abo=
-ut
-these variables at the time a bug was occurring.  I was baffled how they we=
-re referring
-to pme_interrupt until I found that it's only mentioned in documentation si=
-nce the linked
-Fixes tag.  So I figured we should make the documentation match the code.
-
->=20
-> But "pm_cap" is the only one of those fields that is mentioned
-> elsewhere in the doc, and that one is only incidental.
->=20
-> For example, is it really useful to say "the PCI PM callbacks use
-> pci_dev.pme_poll" without any other details about pme_poll?
->=20
-> I think I would consider just removing everything from "The structure
-> representing a PCI device ..." to the end of the section, i.e., lines
-> 308-329 at [1].
->=20
-
-That's perfectly fine to me too.
-
-> [1]
-> https://nam11.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Fgit.k=
-ern
-> el.org%2Fpub%2Fscm%2Flinux%2Fkernel%2Fgit%2Ftorvalds%2Flinux.git%2Ftree
-> %2FDocumentation%2Fpower%2Fpci.rst%3Fid%3Dv5.18%23n308&amp;data=3D05
-> %7C01%7Cmario.limonciello%40amd.com%7C2302a7c692c545aa56f808da499
-> e5ade%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637903241734
-> 399580%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2lu
-> MzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=3DqP0
-> NdVaGMl2wzbiWzc8t4eMmilwogsLhEvzn6aJtsD8%3D&amp;reserved=3D0
