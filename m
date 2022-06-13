@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63118C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:23:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82F1AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:23:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383329AbiFMOXC (ORCPT
+        id S1382643AbiFMOXL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:23:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42656 "EHLO
+        Mon, 13 Jun 2022 10:23:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382071AbiFMOQg (ORCPT
+        with ESMTP id S1382465AbiFMORj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:16:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70E662DD6E;
-        Mon, 13 Jun 2022 04:43:31 -0700 (PDT)
+        Mon, 13 Jun 2022 10:17:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6AC29EB66;
+        Mon, 13 Jun 2022 04:43:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B9714B80E2C;
-        Mon, 13 Jun 2022 11:43:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C3DCC34114;
-        Mon, 13 Jun 2022 11:43:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 79E90612D0;
+        Mon, 13 Jun 2022 11:43:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88E7FC34114;
+        Mon, 13 Jun 2022 11:43:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120585;
-        bh=kspaQPGbJV1NlakBjIX0v3JHztnswdilDVjBlWSPEtA=;
+        s=korg; t=1655120614;
+        bh=Peq5gzmdgmG8DJ+CvcqQLnVGG1RKzHTqlFTjY4iQTVY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kK+XbWUV0bjzE+mpBvkPEGNnuUyWFzJqk2icJOJAMF1WwJvP0uDrkbxsJe54+XYDo
-         tz0kRBOKoSAn+MlU/bJ1WUPD8lTthzWj34aQ5Vr2FoDMEKf5HC5FtsP52PBIU42EZ7
-         6xTUMCCFo9m2gFg58m9W5TwnoOhMZ9MWYtnqiGu8=
+        b=WVOZ4aV5N/rzP49GpsxZBunxmzLdSE2Lp1GQygurdkZpLKcpZ2MfiFDG2GJVmk+8U
+         DoeqN4GQw3pjzmz7GTWiwpvxf15izB91le0oXpTu3jwraAf2SryBM2+UeYDy8PDL1f
+         hCd1O8oDDt1LWEblk4Ei4urMSNzXCDnyaxFrEVmg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 085/298] net: ethernet: ti: am65-cpsw-nuss: Fix some refcount leaks
-Date:   Mon, 13 Jun 2022 12:09:39 +0200
-Message-Id: <20220613094927.526020927@linuxfoundation.org>
+Subject: [PATCH 5.17 097/298] riscv: read-only pages should not be writable
+Date:   Mon, 13 Jun 2022 12:09:51 +0200
+Message-Id: <20220613094927.892965281@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,48 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
 
-[ Upstream commit 5dd89d2fc438457811cbbec07999ce0d80051ff5 ]
+[ Upstream commit 630f972d76d6460235e84e1aa034ee06f9c8c3a9 ]
 
-of_get_child_by_name() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-am65_cpsw_init_cpts() and am65_cpsw_nuss_probe() don't release
-the refcount in error case.
-Add missing of_node_put() to avoid refcount leak.
+If EFI pages are marked as read-only,
+we should remove the _PAGE_WRITE flag.
 
-Fixes: b1f66a5bee07 ("net: ethernet: ti: am65-cpsw-nuss: enable packet timestamping support")
-Fixes: 93a76530316a ("net: ethernet: ti: introduce am65x/j721e gigabit eth subsystem driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+The current code overwrites an unused value.
+
+Fixes: b91540d52a08b ("RISC-V: Add EFI runtime services")
+Signed-off-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+Link: https://lore.kernel.org/r/20220528014132.91052-1-heinrich.schuchardt@canonical.com
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ti/am65-cpsw-nuss.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/riscv/kernel/efi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-index 8251d7eb001b..eda91336c9f6 100644
---- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-+++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-@@ -1802,6 +1802,7 @@ static int am65_cpsw_init_cpts(struct am65_cpsw_common *common)
- 	if (IS_ERR(cpts)) {
- 		int ret = PTR_ERR(cpts);
+diff --git a/arch/riscv/kernel/efi.c b/arch/riscv/kernel/efi.c
+index 024159298231..1aa540350abd 100644
+--- a/arch/riscv/kernel/efi.c
++++ b/arch/riscv/kernel/efi.c
+@@ -65,7 +65,7 @@ static int __init set_permissions(pte_t *ptep, unsigned long addr, void *data)
  
-+		of_node_put(node);
- 		if (ret == -EOPNOTSUPP) {
- 			dev_info(dev, "cpts disabled\n");
- 			return 0;
-@@ -2669,9 +2670,9 @@ static int am65_cpsw_nuss_probe(struct platform_device *pdev)
- 	if (!node)
- 		return -ENOENT;
- 	common->port_num = of_get_child_count(node);
-+	of_node_put(node);
- 	if (common->port_num < 1 || common->port_num > AM65_CPSW_MAX_PORTS)
- 		return -ENOENT;
--	of_node_put(node);
- 
- 	common->rx_flow_id_base = -1;
- 	init_completion(&common->tdown_complete);
+ 	if (md->attribute & EFI_MEMORY_RO) {
+ 		val = pte_val(pte) & ~_PAGE_WRITE;
+-		val = pte_val(pte) | _PAGE_READ;
++		val |= _PAGE_READ;
+ 		pte = __pte(val);
+ 	}
+ 	if (md->attribute & EFI_MEMORY_XP) {
 -- 
 2.35.1
 
