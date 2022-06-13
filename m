@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3960FCCA483
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:34:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8026DCCA48A
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:34:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377561AbiFMNdd (ORCPT
+        id S1377614AbiFMNdj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:33:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50872 "EHLO
+        Mon, 13 Jun 2022 09:33:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377953AbiFMNam (ORCPT
+        with ESMTP id S1378038AbiFMNas (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:30:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65C016D949;
-        Mon, 13 Jun 2022 04:25:11 -0700 (PDT)
+        Mon, 13 Jun 2022 09:30:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87F1B6EC54;
+        Mon, 13 Jun 2022 04:25:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F3B761055;
-        Mon, 13 Jun 2022 11:25:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D053C34114;
-        Mon, 13 Jun 2022 11:25:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B2BDFB80D31;
+        Mon, 13 Jun 2022 11:25:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12966C3411E;
+        Mon, 13 Jun 2022 11:25:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119509;
-        bh=wVkcYHc5vMhIs7MOXoo85jAoir9Esaq47MytOfsNKtA=;
+        s=korg; t=1655119523;
+        bh=72tc4bIMi/WzF0JQ9Pd7txZATTkGwv0vXHYtqVJ7lA4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y0zrfiJpvYCrYB7AbII+RJhk9GQgkOVLwAMexp/pa0ovx1sZuD4/1cdfcpfB3lxbw
-         yIYX5GZ1sOcvoLNZkB81iTZ4jmRJnb5a2gUoPNBFJYVZPsyJYnm0pPOotQkOv+oU0k
-         VEN3PJH+JKtFVyyLZetdCg9lN04hGsEFv0uuhSXg=
+        b=MSi6TUSDh8YzIMAvGZYWTEjREUPzNdpocj/YcXvdyobejcbCfT/upbH7MJ4At+cw2
+         M0dbiX3y4X0uU5HE2fcehCHlLPOArJH+aLFgjsHx/LUzBswlaQH7DMLTn2xcp8ECq9
+         HB+2mRGYTH4kICLOwQ4iN4JwUK7TvgMO0BTzc6ts=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Mihai Carabas <mihai.carabas@oracle.com>,
-        Shile Zhang <shile.zhang@linux.alibaba.com>,
-        Wang ShaoBo <bobo.shaobowang@huawei.com>,
-        zhenwei pi <pizhenwei@bytedance.com>,
-        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 039/339] misc/pvpanic: Convert regular spinlock into trylock on panic path
-Date:   Mon, 13 Jun 2022 12:07:44 +0200
-Message-Id: <20220613094927.705605246@linuxfoundation.org>
+Subject: [PATCH 5.18 024/339] rpmsg: qcom_smd: Fix irq_of_parse_and_map() return value
+Date:   Mon, 13 Jun 2022 12:07:29 +0200
+Message-Id: <20220613094927.242788800@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -55,69 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guilherme G. Piccoli <gpiccoli@igalia.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit e918c10265ef2bc82ce8a6fed6d8123d09ec1db3 ]
+[ Upstream commit 1a358d35066487d228a68303d808bc4721c6b1b9 ]
 
-The pvpanic driver relies on panic notifiers to execute a callback
-on panic event. Such function is executed in atomic context - the
-panic function disables local IRQs, preemption and all other CPUs
-that aren't running the panic code.
+The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
 
-With that said, it's dangerous to use regular spinlocks in such path,
-as introduced by commit b3c0f8774668 ("misc/pvpanic: probe multiple instances").
-This patch fixes that by replacing regular spinlocks with the trylock
-safer approach.
-
-It also fixes an old comment (about a long gone framebuffer code) and
-the notifier priority - we should execute hypervisor notifiers early,
-deferring this way the panic action to the hypervisor, as expected by
-the users that are setting up pvpanic.
-
-Fixes: b3c0f8774668 ("misc/pvpanic: probe multiple instances")
-Cc: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc: Mihai Carabas <mihai.carabas@oracle.com>
-Cc: Shile Zhang <shile.zhang@linux.alibaba.com>
-Cc: Wang ShaoBo <bobo.shaobowang@huawei.com>
-Cc: zhenwei pi <pizhenwei@bytedance.com>
-Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
-Link: https://lore.kernel.org/r/20220427224924.592546-6-gpiccoli@igalia.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 53e2822e56c7 ("rpmsg: Introduce Qualcomm SMD backend")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220422105326.78713-1-krzysztof.kozlowski@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/pvpanic/pvpanic.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/rpmsg/qcom_smd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/misc/pvpanic/pvpanic.c b/drivers/misc/pvpanic/pvpanic.c
-index 4b8f1c7d726d..049a12006348 100644
---- a/drivers/misc/pvpanic/pvpanic.c
-+++ b/drivers/misc/pvpanic/pvpanic.c
-@@ -34,7 +34,9 @@ pvpanic_send_event(unsigned int event)
- {
- 	struct pvpanic_instance *pi_cur;
+diff --git a/drivers/rpmsg/qcom_smd.c b/drivers/rpmsg/qcom_smd.c
+index 764c980507be..6ccfa12abd10 100644
+--- a/drivers/rpmsg/qcom_smd.c
++++ b/drivers/rpmsg/qcom_smd.c
+@@ -1407,7 +1407,7 @@ static int qcom_smd_parse_edge(struct device *dev,
+ 		edge->name = node->name;
  
--	spin_lock(&pvpanic_lock);
-+	if (!spin_trylock(&pvpanic_lock))
-+		return;
-+
- 	list_for_each_entry(pi_cur, &pvpanic_list, list) {
- 		if (event & pi_cur->capability & pi_cur->events)
- 			iowrite8(event, pi_cur->base);
-@@ -55,9 +57,13 @@ pvpanic_panic_notify(struct notifier_block *nb, unsigned long code, void *unused
- 	return NOTIFY_DONE;
- }
- 
-+/*
-+ * Call our notifier very early on panic, deferring the
-+ * action taken to the hypervisor.
-+ */
- static struct notifier_block pvpanic_panic_nb = {
- 	.notifier_call = pvpanic_panic_notify,
--	.priority = 1, /* let this called before broken drm_fb_helper() */
-+	.priority = INT_MAX,
- };
- 
- static void pvpanic_remove(void *param)
+ 	irq = irq_of_parse_and_map(node, 0);
+-	if (irq < 0) {
++	if (!irq) {
+ 		dev_err(dev, "required smd interrupt missing\n");
+ 		ret = irq;
+ 		goto put_node;
 -- 
 2.35.1
 
