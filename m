@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CEBAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:18:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EE68C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:18:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242063AbiFMKSA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:18:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57734 "EHLO
+        id S242258AbiFMKSE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:18:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241683AbiFMKRc (ORCPT
+        with ESMTP id S241974AbiFMKRn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:17:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88EAC1FCED;
-        Mon, 13 Jun 2022 03:15:39 -0700 (PDT)
+        Mon, 13 Jun 2022 06:17:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 739EDCE2A;
+        Mon, 13 Jun 2022 03:15:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B855B80E92;
-        Mon, 13 Jun 2022 10:15:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76300C34114;
-        Mon, 13 Jun 2022 10:15:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65954B80E5C;
+        Mon, 13 Jun 2022 10:15:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB5E4C34114;
+        Mon, 13 Jun 2022 10:15:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115332;
-        bh=9fM207ThNnSdzxF2rwXN/zW9jb0LrWT0dcV66EEyAQs=;
+        s=korg; t=1655115330;
+        bh=XCrqjfc7I0Avaka7xzYkfiK9KH0nx9ROGhToQyIvzI0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gMO3ne67dtM+co9vdgi1kzjYaReMj4EMdfiN4pAoBikkmmO+vmg6GwLpnN2BSSDrJ
-         uMpAHignzsb4Nv7N2rSVNf6WjuOsYItVd+mbFcnQ6tcEB4E+IbcBOlLDbEyJT4OpYa
-         Sijg8WOEOv5VU6wqHObmL+7K0opGjrL0G6X2mBk0=
+        b=kWhXGrToMfm4IeDcs6YAUDLjkGlt1VNvoK3k0jyZ+Kb0cf3QpnJf557rvwWWv0Hd/
+         P404vSujyFcIWNtG493HSskjS22LPqQVRtvrJOXLvIe6rBooMW2Le9YZf7FqOysOxd
+         4LfFrRArT46D+Fco367o4QVHZ/WBJ7WF46T7dE7s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 038/167] x86/delay: Fix the wrong asm constraint in delay_loop()
-Date:   Mon, 13 Jun 2022 12:08:32 +0200
-Message-Id: <20220613094849.810646269@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 037/167] ASoC: mediatek: Fix error handling in mt8173_max98090_dev_probe
+Date:   Mon, 13 Jun 2022 12:08:31 +0200
+Message-Id: <20220613094849.570315113@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -48,49 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit b86eb74098a92afd789da02699b4b0dd3f73b889 ]
+[ Upstream commit 4f4e0454e226de3bf4efd7e7924d1edc571c52d5 ]
 
-The asm constraint does not reflect the fact that the asm statement can
-modify the value of the local variable loops. Which it does.
+Call of_node_put(platform_node) to avoid refcount leak in
+the error path.
 
-Specifying the wrong constraint may lead to undefined behavior, it may
-clobber random stuff (e.g. local variable, important temporary value in
-regs, etc.). This is especially dangerous when the compiler decides to
-inline the function and since it doesn't know that the value gets
-modified, it might decide to use it from a register directly without
-reloading it.
-
-Change the constraint to "+a" to denote that the first argument is an
-input and an output argument.
-
-  [ bp: Fix typo, massage commit message. ]
-
-Fixes: e01b70ef3eb3 ("x86: fix bug in arch/i386/lib/delay.c file, delay_loop function")
-Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220329104705.65256-2-ammarfaizi2@gnuweeb.org
+Fixes: 94319ba10eca ("ASoC: mediatek: Use platform_of_node for machine drivers")
+Fixes: 493433785df0 ("ASoC: mediatek: mt8173: fix device_node leak")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Link: https://lore.kernel.org/r/20220404092903.26725-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/lib/delay.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/soc/mediatek/mt8173/mt8173-max98090.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/lib/delay.c b/arch/x86/lib/delay.c
-index 71a3759a2d4e..60cc4f222cbf 100644
---- a/arch/x86/lib/delay.c
-+++ b/arch/x86/lib/delay.c
-@@ -42,8 +42,8 @@ static void delay_loop(unsigned long loops)
- 		"	jnz 2b		\n"
- 		"3:	dec %0		\n"
+diff --git a/sound/soc/mediatek/mt8173/mt8173-max98090.c b/sound/soc/mediatek/mt8173/mt8173-max98090.c
+index cab30cb48366..85bf9eafda49 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-max98090.c
++++ b/sound/soc/mediatek/mt8173/mt8173-max98090.c
+@@ -170,7 +170,8 @@ static int mt8173_max98090_dev_probe(struct platform_device *pdev)
+ 	if (!codec_node) {
+ 		dev_err(&pdev->dev,
+ 			"Property 'audio-codec' missing or invalid\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto put_platform_node;
+ 	}
+ 	for (i = 0; i < card->num_links; i++) {
+ 		if (mt8173_max98090_dais[i].codec_name)
+@@ -185,6 +186,8 @@ static int mt8173_max98090_dev_probe(struct platform_device *pdev)
+ 			__func__, ret);
  
--		: /* we don't need output */
--		:"a" (loops)
-+		: "+a" (loops)
-+		:
- 	);
+ 	of_node_put(codec_node);
++
++put_platform_node:
+ 	of_node_put(platform_node);
+ 	return ret;
  }
- 
 -- 
 2.35.1
 
