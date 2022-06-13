@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3FD1CCA49A
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:46:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C405CCA49C
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:46:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356956AbiFMLpP (ORCPT
+        id S1355525AbiFMLqg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:45:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46388 "EHLO
+        Mon, 13 Jun 2022 07:46:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355784AbiFMLji (ORCPT
+        with ESMTP id S1355648AbiFMLks (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:39:38 -0400
+        Mon, 13 Jun 2022 07:40:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5726E2CDCB;
-        Mon, 13 Jun 2022 03:49:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE79F2DAA8;
+        Mon, 13 Jun 2022 03:50:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DE23612E7;
-        Mon, 13 Jun 2022 10:49:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD1AEC34114;
-        Mon, 13 Jun 2022 10:49:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD9A8612BC;
+        Mon, 13 Jun 2022 10:50:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEECFC34114;
+        Mon, 13 Jun 2022 10:50:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117394;
-        bh=AFtAHfC/KbuuNV46TdvKwid6qZzeWaijsvBa9IoGvxk=;
+        s=korg; t=1655117405;
+        bh=1Zd8eT+4jXDy64Y37w5XfYXv5UqL+hhmiZJkakBpthI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OrJUNnCvyOJuKZ+olz6ga/sTumhmRAdJdgdgcQXsxd+HfNW+BBaTNN/hesYQRz7fT
-         MQ1X3ntQqhGTJ1vSQDzvvOgoJ0UVhyPNJAPi5+VIVhpjjkyZXA8tWRoNPyrorJ+7FU
-         88E8mTU/XAYVXqYC+9lUKAeDUjskUZqyMdaoICuE=
+        b=2kc1FLHXUzWWcpOOlXKM8SS5SIpx5fsq8Hrgzt9aq/y+j/8tNc6zyZC5/jB0E4nPD
+         hLbBHSqZ/veeypU01L6yyJQQHa57NkmCw01mkGGqlg3YHFWdv+zOh0X0yWL96HcOhf
+         2eR7MemhCVdnMRHl8zOyF/NBDuM8WLrw0dLR3S/8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        stable@vger.kernel.org, Zhen Ni <nizhen@uniontech.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 370/411] drivers: staging: rtl8192u: Fix deadlock in ieee80211_beacons_stop()
-Date:   Mon, 13 Jun 2022 12:10:43 +0200
-Message-Id: <20220613094939.776520899@linuxfoundation.org>
+Subject: [PATCH 5.4 372/411] USB: host: isp116x: check return value after calling platform_get_resource()
+Date:   Mon, 13 Jun 2022 12:10:45 +0200
+Message-Id: <20220613094939.834264242@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -49,52 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Zhen Ni <nizhen@uniontech.com>
 
-[ Upstream commit 806c7b53414934ba2a39449b31fd1a038e500273 ]
+[ Upstream commit 134a3408c2d3f7e23eb0e4556e0a2d9f36c2614e ]
 
-There is a deadlock in ieee80211_beacons_stop(), which is shown below:
+It will cause null-ptr-deref if platform_get_resource() returns NULL,
+we need check the return value.
 
-   (Thread 1)              |      (Thread 2)
-                           | ieee80211_send_beacon()
-ieee80211_beacons_stop()   |  mod_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | ieee80211_send_beacon_cb()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
-
-We hold ieee->beacon_lock in position (1) of thread 1 and use
-del_timer_sync() to wait timer to stop, but timer handler
-also need ieee->beacon_lock in position (2) of thread 2.
-As a result, ieee80211_beacons_stop() will block forever.
-
-This patch extracts del_timer_sync() from the protection of
-spin_lock_irqsave(), which could let timer handler to obtain
-the needed lock.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417135407.109536-1-duoming@zju.edu.cn
+Signed-off-by: Zhen Ni <nizhen@uniontech.com>
+Link: https://lore.kernel.org/r/20220302033716.31272-1-nizhen@uniontech.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/host/isp116x-hcd.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
-index 33a6af7aad22..a869694337f7 100644
---- a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
-+++ b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
-@@ -528,9 +528,9 @@ static void ieee80211_beacons_stop(struct ieee80211_device *ieee)
- 	spin_lock_irqsave(&ieee->beacon_lock, flags);
+diff --git a/drivers/usb/host/isp116x-hcd.c b/drivers/usb/host/isp116x-hcd.c
+index a87c0b26279e..00a4e12a1f15 100644
+--- a/drivers/usb/host/isp116x-hcd.c
++++ b/drivers/usb/host/isp116x-hcd.c
+@@ -1541,10 +1541,12 @@ static int isp116x_remove(struct platform_device *pdev)
  
- 	ieee->beacon_txing = 0;
--	del_timer_sync(&ieee->beacon_timer);
+ 	iounmap(isp116x->data_reg);
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+-	release_mem_region(res->start, 2);
++	if (res)
++		release_mem_region(res->start, 2);
+ 	iounmap(isp116x->addr_reg);
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	release_mem_region(res->start, 2);
++	if (res)
++		release_mem_region(res->start, 2);
  
- 	spin_unlock_irqrestore(&ieee->beacon_lock, flags);
-+	del_timer_sync(&ieee->beacon_timer);
- }
- 
- void ieee80211_stop_send_beacons(struct ieee80211_device *ieee)
+ 	usb_put_hcd(hcd);
+ 	return 0;
 -- 
 2.35.1
 
