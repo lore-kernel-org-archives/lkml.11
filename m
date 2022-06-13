@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48357CCA481
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:40:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CCEBCCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:41:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351542AbiFMMkz (ORCPT
+        id S1345117AbiFMMlE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:40:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56258 "EHLO
+        Mon, 13 Jun 2022 08:41:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355530AbiFMMjK (ORCPT
+        with ESMTP id S1355778AbiFMMjR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:39:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67A6C3388B;
-        Mon, 13 Jun 2022 04:09:09 -0700 (PDT)
+        Mon, 13 Jun 2022 08:39:17 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BD6033890;
+        Mon, 13 Jun 2022 04:09:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2514DB80EAA;
-        Mon, 13 Jun 2022 11:09:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E0BCC34114;
-        Mon, 13 Jun 2022 11:09:06 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7FD34CE1171;
+        Mon, 13 Jun 2022 11:09:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91110C34114;
+        Mon, 13 Jun 2022 11:09:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118546;
-        bh=z3JeTc4QV3sbDogezC0WvQrnNPjcN+SUQtDaUubSRX8=;
+        s=korg; t=1655118568;
+        bh=icyfI8Yx907IkhsOmmzicj4spu+VAF7EmjddPir0bXY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gIDxidRaX8cjfqK3+uQx4Ry4vR8vl4QUv4qzgvnF+3q3ppmHTEipk9vhQv1eRRWUO
-         MkmiQW9tX98ECX+Tu26HkFbY/ER3Q++bRJIfSn7vdIqZeklMEgPNy6IdNoa1I6i8jE
-         s+1tRYlXbK7t1t2hH+N9dkddWBGjCkZZZf8eYIgw=
+        b=NcuXUNefjH+KvRSKPLPKxd2LBdLhpCc7EKPxb39U/JnfIdjVbvfK84rpw6bm8JSVk
+         HDDALxK4szLcfe007eCm0janJEiETr8V6R02YA3SMtDggfR/v/eaMbf/RL3/5rr0Bd
+         PrJ5IqJLnkhjWmxALHM+IA8q/7wrVeoI/7MFeDfM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Feras Daoud <ferasda@nvidia.com>,
+        Roy Novich <royno@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 107/172] net: ipv6: unexport __init-annotated seg6_hmac_init()
-Date:   Mon, 13 Jun 2022 12:11:07 +0200
-Message-Id: <20220613094915.980170904@linuxfoundation.org>
+Subject: [PATCH 5.10 108/172] net/mlx5: Rearm the FW tracer after each tracer event
+Date:   Mon, 13 Jun 2022 12:11:08 +0200
+Message-Id: <20220613094916.230224893@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -51,50 +52,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Feras Daoud <ferasda@nvidia.com>
 
-[ Upstream commit 5801f064e35181c71857a80ff18af4dbec3c5f5c ]
+[ Upstream commit 8bf94e6414c9481bfa28269022688ab445d0081d ]
 
-EXPORT_SYMBOL and __init is a bad combination because the .init.text
-section is freed up after the initialization. Hence, modules cannot
-use symbols annotated __init. The access to a freed symbol may end up
-with kernel panic.
+The current design does not arm the tracer if traces are available before
+the tracer string database is fully loaded, leading to an unfunctional tracer.
+This fix will rearm the tracer every time the FW triggers tracer event
+regardless of the tracer strings database status.
 
-modpost used to detect it, but it has been broken for a decade.
-
-Recently, I fixed modpost so it started to warn it again, then this
-showed up in linux-next builds.
-
-There are two ways to fix it:
-
-  - Remove __init
-  - Remove EXPORT_SYMBOL
-
-I chose the latter for this case because the caller (net/ipv6/seg6.c)
-and the callee (net/ipv6/seg6_hmac.c) belong to the same module.
-It seems an internal function call in ipv6.ko.
-
-Fixes: bf355b8d2c30 ("ipv6: sr: add core files for SR HMAC support")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: c71ad41ccb0c ("net/mlx5: FW tracer, events handling")
+Signed-off-by: Feras Daoud <ferasda@nvidia.com>
+Signed-off-by: Roy Novich <royno@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/seg6_hmac.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv6/seg6_hmac.c b/net/ipv6/seg6_hmac.c
-index 85dddfe3a2c6..b9179708e3c1 100644
---- a/net/ipv6/seg6_hmac.c
-+++ b/net/ipv6/seg6_hmac.c
-@@ -400,7 +400,6 @@ int __init seg6_hmac_init(void)
- {
- 	return seg6_hmac_init_algo();
- }
--EXPORT_SYMBOL(seg6_hmac_init);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
+index 857be86b4a11..e8a4adccd2b2 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
+@@ -675,6 +675,9 @@ static void mlx5_fw_tracer_handle_traces(struct work_struct *work)
+ 	if (!tracer->owner)
+ 		return;
  
- int __net_init seg6_hmac_net_init(struct net *net)
- {
++	if (unlikely(!tracer->str_db.loaded))
++		goto arm;
++
+ 	block_count = tracer->buff.size / TRACER_BLOCK_SIZE_BYTE;
+ 	start_offset = tracer->buff.consumer_index * TRACER_BLOCK_SIZE_BYTE;
+ 
+@@ -732,6 +735,7 @@ static void mlx5_fw_tracer_handle_traces(struct work_struct *work)
+ 						      &tmp_trace_block[TRACES_PER_BLOCK - 1]);
+ 	}
+ 
++arm:
+ 	mlx5_fw_tracer_arm(dev);
+ }
+ 
+@@ -1138,8 +1142,7 @@ static int fw_tracer_event(struct notifier_block *nb, unsigned long action, void
+ 			queue_work(tracer->work_queue, &tracer->ownership_change_work);
+ 		break;
+ 	case MLX5_TRACER_SUBTYPE_TRACES_AVAILABLE:
+-		if (likely(tracer->str_db.loaded))
+-			queue_work(tracer->work_queue, &tracer->handle_traces_work);
++		queue_work(tracer->work_queue, &tracer->handle_traces_work);
+ 		break;
+ 	default:
+ 		mlx5_core_dbg(dev, "FWTracer: Event with unrecognized subtype: sub_type %d\n",
 -- 
 2.35.1
 
