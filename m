@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50369C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:21:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA4FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:21:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383024AbiFMOVh (ORCPT
+        id S1383097AbiFMOVn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:21:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41526 "EHLO
+        Mon, 13 Jun 2022 10:21:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383403AbiFMOPr (ORCPT
+        with ESMTP id S1383454AbiFMOPz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:15:47 -0400
+        Mon, 13 Jun 2022 10:15:55 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87AD49D4F2;
-        Mon, 13 Jun 2022 04:43:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3C9A9D4C9;
+        Mon, 13 Jun 2022 04:43:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7018DB80ECC;
-        Mon, 13 Jun 2022 11:43:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC687C3411C;
-        Mon, 13 Jun 2022 11:43:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 68402B80EDF;
+        Mon, 13 Jun 2022 11:43:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC75AC385A2;
+        Mon, 13 Jun 2022 11:43:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120588;
-        bh=u37f5qw+z5T9edUFvYgsC5/20H2VO66s+uXCiVmik1M=;
+        s=korg; t=1655120596;
+        bh=pXh3VEu7WJsLsz9Kzslh47oBg8A169fM3/LHeW39E14=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O5+4EFHFYJi+9D8D5Ny4Wqvufh6EDMg+qqpmnIukagLEQUx55dzDWm8GliE60XRXh
-         TBx0FN5dOwNMgWLFl8MfCO+qex3rURwuJqcLSAQ3bQhZXtq7tLbIvCkmfuOpdtIRYq
-         asvzpXrNVCvNyJvvlFlFjPL26AEkLMd9zgCJNwJM=
+        b=Da+L+gBgl3jFAwgoR3Lkg2JzFrM7DG5DjCOx2QxRrA+9rq0Evc2/wJaMi60zFHT96
+         HCBQcdUke/yxD+7tQoUhrkdyFRVpWpHPO/aARuyIBQcOkKn9iiHP1plHncXK8HxqTG
+         gCOX8qQFxAQ7kdlnfdk4/ccEYF3/wPyBINQ/E1Wg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Erwan Le Ray <erwan.leray@st.com>,
         =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 063/298] serial: sh-sci: Dont allow CS5-6
-Date:   Mon, 13 Jun 2022 12:09:17 +0200
-Message-Id: <20220613094926.859636093@linuxfoundation.org>
+Subject: [PATCH 5.17 066/298] serial: stm32-usart: Correct CSIZE, bits, and parity
+Date:   Mon, 13 Jun 2022 12:09:20 +0200
+Message-Id: <20220613094926.948237482@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -52,43 +52,57 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-[ Upstream commit 9b87162de8be26bf3156460b37deee6399fd0fcb ]
+[ Upstream commit 1deeda8d2877c18bc2b9eeee10dd6d2628852848 ]
 
-Only CS7 and CS8 seem supported but CSIZE is not sanitized from
-CS5 or CS6 to CS8.
+Add CSIZE sanitization for unsupported CSIZE configurations. In
+addition, if parity is asked for but CSx was unsupported, the sensible
+result is CS8+parity which requires setting USART_CR1_M0 like with 9
+bits.
 
-Set CSIZE correctly so that userspace knows the effective value.
-Incorrect CSIZE also results in miscalculation of the frame bits in
+Incorrect CSIZE results in miscalculation of the frame bits in
 tty_get_char_size() or in its predecessor where the roughly the same
 code is directly within uart_update_timeout().
 
-Fixes: 1da177e4c3f4 (Linux-2.6.12-rc2)
+Fixes: c8a9d043947b (serial: stm32: fix word length configuration)
+Cc: Erwan Le Ray <erwan.leray@st.com>
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/20220519081808.3776-6-ilpo.jarvinen@linux.intel.com
+Link: https://lore.kernel.org/r/20220519081808.3776-9-ilpo.jarvinen@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/sh-sci.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/tty/serial/stm32-usart.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 968967d722d4..e55895f0a4ff 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -2379,8 +2379,12 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
- 	int best_clk = -1;
- 	unsigned long flags;
- 
--	if ((termios->c_cflag & CSIZE) == CS7)
-+	if ((termios->c_cflag & CSIZE) == CS7) {
- 		smr_val |= SCSMR_CHR;
-+	} else {
-+		termios->c_cflag &= ~CSIZE;
-+		termios->c_cflag |= CS8;
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index 9570002d07e7..9bc970be59ba 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -1037,13 +1037,22 @@ static void stm32_usart_set_termios(struct uart_port *port,
+ 	 * CS8 or (CS7 + parity), 8 bits word aka [M1:M0] = 0b00
+ 	 * M0 and M1 already cleared by cr1 initialization.
+ 	 */
+-	if (bits == 9)
++	if (bits == 9) {
+ 		cr1 |= USART_CR1_M0;
+-	else if ((bits == 7) && cfg->has_7bits_data)
++	} else if ((bits == 7) && cfg->has_7bits_data) {
+ 		cr1 |= USART_CR1_M1;
+-	else if (bits != 8)
++	} else if (bits != 8) {
+ 		dev_dbg(port->dev, "Unsupported data bits config: %u bits\n"
+ 			, bits);
++		cflag &= ~CSIZE;
++		cflag |= CS8;
++		termios->c_cflag = cflag;
++		bits = 8;
++		if (cflag & PARENB) {
++			bits++;
++			cr1 |= USART_CR1_M0;
++		}
 +	}
- 	if (termios->c_cflag & PARENB)
- 		smr_val |= SCSMR_PE;
- 	if (termios->c_cflag & PARODD)
+ 
+ 	if (ofs->rtor != UNDEF_REG && (stm32_port->rx_ch ||
+ 				       (stm32_port->fifoen &&
 -- 
 2.35.1
 
