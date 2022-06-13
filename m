@@ -2,20 +2,19 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AEE5C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:56:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEFE6CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:56:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351140AbiFMU4X (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:56:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35244 "EHLO
+        id S241972AbiFMU4h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 16:56:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351912AbiFMUyC (ORCPT
+        with ESMTP id S1351913AbiFMUyC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 16:54:02 -0400
 Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46CF215A2A
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:18:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AAFF25E82
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:18:42 -0700 (PDT)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
         t=1655151521;
@@ -23,10 +22,10 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Iixdi0aUzLucxsbCg6IG+LbS3JzcqWGK/WM+ZRzVqS4=;
-        b=ojnNMVl0weA+1rfdDibEWQiEzf3u9AY6W77/wSQjT9KKfbHNrxLmCsJ0sZKkW8eSCG0dBh
-        +5YrObbqYTyKuVuT1F9XZeFHAhh5e4ObssVEFR3QS+xZkhK0CdzjtTkbI85bkE2UWrMY6E
-        WI2qCIZzoT7d6a6rI1j4nr/qLjTsYE4=
+        bh=uV62cC5DfHg/D8q7E9RvYjkrSokJV1eiZxRUfsD9VoU=;
+        b=kvRi5OcEoiHBckUmql9zWUb9FKC6wNd2nIhN5sD38XfgUnd8dK14JY90UXlC8uENnECQaQ
+        3OOnI245K8ZI+Nxmz+gn+P6ox1GkZo2TIpM9SiR9iPnRCP6c/hSq7HcQsVTtoLryjSydIl
+        Zft1R6rRme1veq8TWSAMk6UkoRJMi5M=
 From:   andrey.konovalov@linux.dev
 To:     Marco Elver <elver@google.com>,
         Alexander Potapenko <glider@google.com>
@@ -39,9 +38,9 @@ Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH 23/32] kasan: use kasan_addr_to_slab in print_address_description
-Date:   Mon, 13 Jun 2022 22:14:14 +0200
-Message-Id: <b53ed1a8acef1f17a8c2f98050d8f43bbc42a806.1655150842.git.andreyknvl@google.com>
+Subject: [PATCH 22/32] kasan: cosmetic changes in report.c
+Date:   Mon, 13 Jun 2022 22:14:13 +0200
+Message-Id: <cd0cb4d93e15c5092de8a31ba8c1d6f719aa4c7f.1655150842.git.andreyknvl@google.com>
 In-Reply-To: <cover.1655150842.git.andreyknvl@google.com>
 References: <cover.1655150842.git.andreyknvl@google.com>
 MIME-Version: 1.0
@@ -54,33 +53,47 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andrey Konovalov <andreyknvl@google.com>
 
-Use the kasan_addr_to_slab() helper in print_address_description()
-instead of separately invoking PageSlab() and page_slab().
+Do a few non-functional style fixes for the code in report.c.
 
 Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
 ---
- mm/kasan/report.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ mm/kasan/report.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
 diff --git a/mm/kasan/report.c b/mm/kasan/report.c
-index 879f949dc395..1dd6fc8a678f 100644
+index 7269b6249488..879f949dc395 100644
 --- a/mm/kasan/report.c
 +++ b/mm/kasan/report.c
-@@ -291,12 +291,12 @@ static inline bool init_task_stack_addr(const void *addr)
- static void print_address_description(void *addr, u8 tag)
+@@ -194,25 +194,22 @@ static void print_error_description(struct kasan_report_info *info)
+ static void print_track(struct kasan_track *track, const char *prefix)
  {
- 	struct page *page = kasan_addr_to_page(addr);
-+	struct slab *slab = kasan_addr_to_slab(addr);
+ 	pr_err("%s by task %u:\n", prefix, track->pid);
+-	if (track->stack) {
++	if (track->stack)
+ 		stack_depot_print(track->stack);
+-	} else {
++	else
+ 		pr_err("(stack is not available)\n");
+-	}
+ }
  
- 	dump_stack_lvl(KERN_ERR);
- 	pr_err("\n");
+ struct page *kasan_addr_to_page(const void *addr)
+ {
+-	if ((addr >= (void *)PAGE_OFFSET) &&
+-			(addr < high_memory))
++	if ((addr >= (void *)PAGE_OFFSET) && (addr < high_memory))
+ 		return virt_to_head_page(addr);
+ 	return NULL;
+ }
  
--	if (page && PageSlab(page)) {
--		struct slab *slab = page_slab(page);
-+	if (slab) {
- 		struct kmem_cache *cache = slab->slab_cache;
- 		void *object = nearest_obj(cache, slab,	addr);
- 
+ struct slab *kasan_addr_to_slab(const void *addr)
+ {
+-	if ((addr >= (void *)PAGE_OFFSET) &&
+-			(addr < high_memory))
++	if ((addr >= (void *)PAGE_OFFSET) && (addr < high_memory))
+ 		return virt_to_slab(addr);
+ 	return NULL;
+ }
 -- 
 2.25.1
 
