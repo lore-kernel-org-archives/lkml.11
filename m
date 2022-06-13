@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E52AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:26:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52FA5CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:26:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354425AbiFMM0n (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:26:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55632 "EHLO
+        id S237981AbiFMM04 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 08:26:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355142AbiFMMXy (ORCPT
+        with ESMTP id S1355432AbiFMMX4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:23:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DB2627B1A;
-        Mon, 13 Jun 2022 04:04:24 -0700 (PDT)
+        Mon, 13 Jun 2022 08:23:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AA56275C7;
+        Mon, 13 Jun 2022 04:04:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2153AB80D3A;
-        Mon, 13 Jun 2022 11:04:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80247C34114;
-        Mon, 13 Jun 2022 11:04:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C0FF2B80E92;
+        Mon, 13 Jun 2022 11:04:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27448C34114;
+        Mon, 13 Jun 2022 11:04:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118261;
-        bh=aRZPBIfUmeY/7zsPHU6zZqXyFI7wRPCiXmi7Q4AB3YU=;
+        s=korg; t=1655118295;
+        bh=mXb3EGnlfsQbZ7x/ORnIuJun0U/yrAkEu/I6uQIYaIM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k6AybMaHB9JNLG6c64ILDAMNDTnb9aLqbfWRv/7xHoeQbv0h9fERRK2HcIOC0JB7U
-         rS4+vikbGIfzV3KqEUohH4JjMQYh+kYPaz/BLspFNpX8wRnggrQkgAJ9CdNXQOmMPR
-         zAmoJVUqioXlInhPW6hNgJwtneg5gcaj1odGTVD4=
+        b=zU+ArAswCEzuhQqGml31dENu3sOciSAKfFbayeik+AN5kkkeVRE8s0QAnSHX9lu3n
+         ADo/8sja8zOph/irkxkFoiuwcYGQxWZPxNuSdrLL/O3IwtVYMr2kCPb+SHajtic9/8
+         oubHqz1pq4oPZ337NYiOt2cb3CgvGnyrw+zzXz3Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Mathias Nyman <mathias.nyman@linux.intel.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: [PATCH 4.19 283/287] Input: bcm5974 - set missing URB_NO_TRANSFER_DMA_MAP urb flag
-Date:   Mon, 13 Jun 2022 12:11:47 +0200
-Message-Id: <20220613094932.576208506@linuxfoundation.org>
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 024/172] rpmsg: qcom_smd: Fix returning 0 if irq_of_parse_and_map() fails
+Date:   Mon, 13 Jun 2022 12:09:44 +0200
+Message-Id: <20220613094856.233497791@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
-References: <20220613094923.832156175@linuxfoundation.org>
+In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
+References: <20220613094850.166931805@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,55 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathias Nyman <mathias.nyman@linux.intel.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-commit c42e65664390be7c1ef3838cd84956d3a2739d60 upstream.
+[ Upstream commit 59d6f72f6f9c92fec8757d9e29527da828e9281f ]
 
-The bcm5974 driver does the allocation and dma mapping of the usb urb
-data buffer, but driver does not set the URB_NO_TRANSFER_DMA_MAP flag
-to let usb core know the buffer is already mapped.
+irq_of_parse_and_map() returns 0 on failure, so this should not be
+passed further as error return code.
 
-usb core tries to map the already mapped buffer, causing a warning:
-"xhci_hcd 0000:00:14.0: rejecting DMA map of vmalloc memory"
-
-Fix this by setting the URB_NO_TRANSFER_DMA_MAP, letting usb core
-know buffer is already mapped by bcm5974 driver
-
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Cc: stable@vger.kernel.org
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215890
-Link: https://lore.kernel.org/r/20220606113636.588955-1-mathias.nyman@linux.intel.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1a358d350664 ("rpmsg: qcom_smd: Fix irq_of_parse_and_map() return value")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220423093932.32136-1-krzysztof.kozlowski@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/input/mouse/bcm5974.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/rpmsg/qcom_smd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/input/mouse/bcm5974.c
-+++ b/drivers/input/mouse/bcm5974.c
-@@ -956,17 +956,22 @@ static int bcm5974_probe(struct usb_inte
- 	if (!dev->tp_data)
- 		goto err_free_bt_buffer;
+diff --git a/drivers/rpmsg/qcom_smd.c b/drivers/rpmsg/qcom_smd.c
+index db5f6009fb49..a4db9f6100d2 100644
+--- a/drivers/rpmsg/qcom_smd.c
++++ b/drivers/rpmsg/qcom_smd.c
+@@ -1390,7 +1390,7 @@ static int qcom_smd_parse_edge(struct device *dev,
+ 	irq = irq_of_parse_and_map(node, 0);
+ 	if (!irq) {
+ 		dev_err(dev, "required smd interrupt missing\n");
+-		ret = irq;
++		ret = -EINVAL;
+ 		goto put_node;
+ 	}
  
--	if (dev->bt_urb)
-+	if (dev->bt_urb) {
- 		usb_fill_int_urb(dev->bt_urb, udev,
- 				 usb_rcvintpipe(udev, cfg->bt_ep),
- 				 dev->bt_data, dev->cfg.bt_datalen,
- 				 bcm5974_irq_button, dev, 1);
- 
-+		dev->bt_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
-+	}
-+
- 	usb_fill_int_urb(dev->tp_urb, udev,
- 			 usb_rcvintpipe(udev, cfg->tp_ep),
- 			 dev->tp_data, dev->cfg.tp_datalen,
- 			 bcm5974_irq_trackpad, dev, 1);
- 
-+	dev->tp_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
-+
- 	/* create bcm5974 device */
- 	usb_make_path(udev, dev->phys, sizeof(dev->phys));
- 	strlcat(dev->phys, "/input0", sizeof(dev->phys));
+-- 
+2.35.1
+
 
 
