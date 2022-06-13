@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4492CCA48D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E453FCCA48E
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:00:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357608AbiFMM7I (ORCPT
+        id S1357657AbiFMM7P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:59:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50312 "EHLO
+        Mon, 13 Jun 2022 08:59:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357954AbiFMMyu (ORCPT
+        with ESMTP id S1358024AbiFMMy7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:54:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D840C35846;
-        Mon, 13 Jun 2022 04:13:44 -0700 (PDT)
+        Mon, 13 Jun 2022 08:54:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B48AB1016;
+        Mon, 13 Jun 2022 04:13:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7607160B6B;
-        Mon, 13 Jun 2022 11:13:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84C3FC3411C;
-        Mon, 13 Jun 2022 11:13:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 44ACB608C3;
+        Mon, 13 Jun 2022 11:13:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57E87C3411C;
+        Mon, 13 Jun 2022 11:13:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118823;
-        bh=KqkjIvkx5HlX5i4jYc8pDhcK00H0SUYu29p7uFCi2Ws=;
+        s=korg; t=1655118837;
+        bh=rp7BVa+YdVp1no5nrT8jUWCSbXCylb1klRp57aAm3fM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NxDoz3liuOttmLdtGd4ulNEo9n9nqXak+Rp8hueG5v9iXtvoatNiQBjA8yjuEVpGB
-         ZOtCS9J+Qcr/+cH+DWfqwwhereEEhcRgdvrfle4XESjtTmDvroInrk/9iWkOdhhMGC
-         ydR1mI0wyBHacuMzLMu335/EqVnzmOXWbdmLu3cg=
+        b=J1oTwYt2duZ6S6YNRa6b5xdKbHSq10bNLGYkuJ5oAEGIvKhGFeV6FdaFCywTpvG0o
+         bHO4WJropnefLOkyznS55v33WI/7SCDmjdaHbYGgoNH7g/JJoZgT3RYEeUbqKl1tVw
+         dRhWMIW3mfsuMEyIZOdxRlQZJymVVAcMrN0MA3Fg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Leo Yan <leo.yan@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Mike Leach <mike.leach@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 040/247] coresight: cpu-debug: Replace mutex with mutex_trylock on panic notifier
-Date:   Mon, 13 Jun 2022 12:09:02 +0200
-Message-Id: <20220613094924.162601458@linuxfoundation.org>
+        stable@vger.kernel.org, Howard Chiu <howard_chiu@aspeedtech.com>,
+        Joel Stanley <joel@jms.id.au>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 045/247] ARM: dts: aspeed: ast2600-evb: Enable RX delay for MAC0/MAC1
+Date:   Mon, 13 Jun 2022 12:09:07 +0200
+Message-Id: <20220613094924.316187433@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -53,61 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guilherme G. Piccoli <gpiccoli@igalia.com>
+From: Howard Chiu <howard_chiu@aspeedtech.com>
 
-[ Upstream commit 1adff542d67a2ed1120955cb219bfff8a9c53f59 ]
+[ Upstream commit 4d338ee40ba89e508c5d3e1b4af956af7cb5e12e ]
 
-The panic notifier infrastructure executes registered callbacks when
-a panic event happens - such callbacks are executed in atomic context,
-with interrupts and preemption disabled in the running CPU and all other
-CPUs disabled. That said, mutexes in such context are not a good idea.
+Since mac0/1 and mac2/3 are physically located on different die,
+they have different properties by nature, which is mac0/1 has smaller delay step.
 
-This patch replaces a regular mutex with a mutex_trylock safer approach;
-given the nature of the mutex used in the driver, it should be pretty
-uncommon being unable to acquire such mutex in the panic path, hence
-no functional change should be observed (and if it is, that would be
-likely a deadlock with the regular mutex).
+The property 'phy-mode' on ast2600 mac0 and mac1 is recommended to set to 'rgmii-rxid'
+which enables the RX interface delay from the PHY chip.
+Refer page 45 of SDK User Guide v08.00
+https://github.com/AspeedTech-BMC/openbmc/releases/download/v08.00/SDK_User_Guide_v08.00.pdf
 
-Fixes: 2227b7c74634 ("coresight: add support for CPU debug module")
-Cc: Leo Yan <leo.yan@linaro.org>
-Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc: Mike Leach <mike.leach@linaro.org>
-Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
-Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
-Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-Link: https://lore.kernel.org/r/20220427224924.592546-10-gpiccoli@igalia.com
+Fixes: 2ca5646b5c2f ("ARM: dts: aspeed: Add AST2600 and EVB")
+Signed-off-by: Howard Chiu <howard_chiu@aspeedtech.com>
+Link: https://lore.kernel.org/r/SG2PR06MB23152A548AAE81140B57DD69E6E09@SG2PR06MB2315.apcprd06.prod.outlook.com
+Signed-off-by: Joel Stanley <joel@jms.id.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwtracing/coresight/coresight-cpu-debug.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ arch/arm/boot/dts/aspeed-ast2600-evb.dts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/hwtracing/coresight/coresight-cpu-debug.c b/drivers/hwtracing/coresight/coresight-cpu-debug.c
-index 00de46565bc4..c60442970c2a 100644
---- a/drivers/hwtracing/coresight/coresight-cpu-debug.c
-+++ b/drivers/hwtracing/coresight/coresight-cpu-debug.c
-@@ -380,9 +380,10 @@ static int debug_notifier_call(struct notifier_block *self,
- 	int cpu;
- 	struct debug_drvdata *drvdata;
+diff --git a/arch/arm/boot/dts/aspeed-ast2600-evb.dts b/arch/arm/boot/dts/aspeed-ast2600-evb.dts
+index b7eb552640cb..788448cdd6b3 100644
+--- a/arch/arm/boot/dts/aspeed-ast2600-evb.dts
++++ b/arch/arm/boot/dts/aspeed-ast2600-evb.dts
+@@ -103,7 +103,7 @@
+ &mac0 {
+ 	status = "okay";
  
--	mutex_lock(&debug_lock);
-+	/* Bail out if we can't acquire the mutex or the functionality is off */
-+	if (!mutex_trylock(&debug_lock))
-+		return NOTIFY_DONE;
+-	phy-mode = "rgmii";
++	phy-mode = "rgmii-rxid";
+ 	phy-handle = <&ethphy0>;
  
--	/* Bail out if the functionality is disabled */
- 	if (!debug_enable)
- 		goto skip_dump;
+ 	pinctrl-names = "default";
+@@ -114,7 +114,7 @@
+ &mac1 {
+ 	status = "okay";
  
-@@ -401,7 +402,7 @@ static int debug_notifier_call(struct notifier_block *self,
+-	phy-mode = "rgmii";
++	phy-mode = "rgmii-rxid";
+ 	phy-handle = <&ethphy1>;
  
- skip_dump:
- 	mutex_unlock(&debug_lock);
--	return 0;
-+	return NOTIFY_DONE;
- }
- 
- static struct notifier_block debug_notifier = {
+ 	pinctrl-names = "default";
 -- 
 2.35.1
 
