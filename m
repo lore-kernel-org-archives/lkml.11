@@ -2,60 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CF30CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:01:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19859C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:01:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346740AbiFMTBC (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:01:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44936 "EHLO
+        id S244193AbiFMTBH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 15:01:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346266AbiFMTAV (ORCPT
+        with ESMTP id S1346283AbiFMTAV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 15:00:21 -0400
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43A539969A
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 09:19:49 -0700 (PDT)
-Received: by mail-pf1-x44a.google.com with SMTP id x19-20020aa78f13000000b0051bdda60a06so2547734pfr.2
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 09:19:49 -0700 (PDT)
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E07BC996A0
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 09:19:52 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id h10-20020a170902f54a00b00166449db7f8so3308406plf.9
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 09:19:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=WzGiy8MvhiIUMi0s+wtsSIHmWc5cSwuMnyGQLZRW9iE=;
-        b=TmRZ8aVm8k7OvscC44C/b2jeDc4I79KMJqDidpu3fidjaRCDoHLjhsWb/Vr5AiMZTf
-         cYPhbxDt12l+cE3KFcvcEa5obW/XZsdbPKAx+2BliPFQIyKy0DePwMuknXTWQMVRf6Ed
-         QJw6IZfHxdVp+FEa2WnNHrxENVPpEzIH9VjXFoZZf+wPZH221AWWvXkvQv4YHeG+Ek44
-         bV8JTq23EsoRQyFSXipy4q7+fnGnu62yHj3vPpOCKUxgyJ8th5exzKEnDGvmoDc5arLu
-         JXgJLz6cmOKwTiyYPTkjsG80WWC99rp/aWetKZjQ6LK9KpqGhuP0AWxY6XgkEMzTYIWA
-         Onlg==
+        bh=9I7uKltHXpoc1RbLfcPLJVsVfHZ0eCsgaFUexrTgf3o=;
+        b=leF5nhpioM8/CvtViFOo+grXyz0OsGK1bY6iZu/BgiX3CYsUWq/uconuCVaEyVjYr5
+         EjeWA7/uDmZOGHXjUrKh3yixhtBbyll86EkMjZNqa1MyiauusB2D9llB6uEATIyavsVK
+         xQjQwQiuA51TaMzyY9TQQ86zjsPN/1hjSWtI6TWwKWZ0taUoUwpSZwrP8ovBgnyQX6AC
+         aQzAYM1ZGN1/9uJmgKkgId/GOf/HIcAAIqbu3bLYph3iYAWSBkhr96IWme6uyYQpKAi+
+         2eeO8Rrz/btlnjF8/hGbnJNBQk5kLysMGlgVNW1J2TMddBUG2VG4ciZEtn8n5kpiuvv+
+         hSFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=WzGiy8MvhiIUMi0s+wtsSIHmWc5cSwuMnyGQLZRW9iE=;
-        b=mG0Yl5ry13ENxrafmaIzH+GDEdcivtJONjgbkiHTvCzdvSAa52yNTWPYepbLSAneY7
-         q2BBhPWEjg5oCPDUkVoyB7lBUv6CZUozoy4UfvC8iaNHZg7gCWCy0EXgdHRLAwqvyyo1
-         ReZn4xFfMUkGM+qhGjccrrIrduc9TZG8Xz99IVmIHNesNsI6cCMlXxg/kLvilhYlRt0V
-         iKOK/nb8y3CRrwQjmY29G2IW6K0fE0OZlWR0YwwYcaGi+RLVskmWjLfBqbZNIkR9hQnv
-         2uf3L79CcJbKMfLtEPtzDgIx+MDzNLzlQyZpLb7v0SRbSY4h3IgfmQGCZ+UmP3SuOXl+
-         EW1g==
-X-Gm-Message-State: AJIora83Ko79LTOfF0OpEVVxzZyn72kBye38WzsovtIfLmZL7eveB4fV
-        wNWnm5eMq/iyth5ECXRc6XOGwnTlZDg=
-X-Google-Smtp-Source: AGRyM1tYM/Hx79fv6bDuIWPkGeu+wRbTZRlEQXOt3Rbnug4Kp1EytPfKuwr/kETntYYPlu30Xh55c7O7jd4=
+        bh=9I7uKltHXpoc1RbLfcPLJVsVfHZ0eCsgaFUexrTgf3o=;
+        b=ZbcXp5DJ2A0TB0fR2PLZJ9qUMw3udRoTOMN3AjWzT+j/uHGlKlKGcdkd57JpVwu4/J
+         0spC1Dt6Lwt33KpGr1SC1cxGbxdArYHaeUoC6zmysxM8gcdy4tFHi3eWy7yFgHw4DuSx
+         YQEGsgL9/72J9P0qMBC9h963YfKD8u8zYSZYNMNG7eJQ9mIxl7c6+dibDy5whMyxsS1w
+         fAlD7MTt8SGpvd0j08XFHcIz+gc+zO4t3AhcK7SOpHopItiukoi5mY3MifBtgN4+30Vx
+         s3EHn1kxU/Xx6Wg74WIQjsoM+LurzZYiADSL3FaTlLumf5t7exV1hnUveWSMLFongR8n
+         VSMw==
+X-Gm-Message-State: AOAM530MMSn2aicyiE+6pFe0dl50l7Cr5dJpp9b4dFbKlHWf+8AhAniB
+        8Ze9LZ43VaF92H3g44bl23AnGMcITOo=
+X-Google-Smtp-Source: ABdhPJz8x1yIAtSxTa0tDxdlfCIfJiE7WTFroIqwwhK+N/PnOZQuD+1B2/qyzYmUbBAqlYazonHvQR7eY8w=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:902:d551:b0:168:93b6:a94a with SMTP id
- z17-20020a170902d55100b0016893b6a94amr77699plf.149.1655137188739; Mon, 13 Jun
- 2022 09:19:48 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:c5:b0:51b:c452:47ce with SMTP id
+ e5-20020a056a0000c500b0051bc45247cemr122700pfj.52.1655137192373; Mon, 13 Jun
+ 2022 09:19:52 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Mon, 13 Jun 2022 16:19:40 +0000
+Date:   Mon, 13 Jun 2022 16:19:42 +0000
 In-Reply-To: <20220613161942.1586791-1-seanjc@google.com>
-Message-Id: <20220613161942.1586791-3-seanjc@google.com>
+Message-Id: <20220613161942.1586791-5-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220613161942.1586791-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH 2/4] KVM: selftests: Call a dummy helper in VM/vCPU ioctls()
- to enforce type
+Subject: [PATCH 4/4] KVM: selftests: Use kvm_has_cap(), not kvm_check_cap(),
+ where possible
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Andrew Jones <drjones@redhat.com>, kvm@vger.kernel.org,
@@ -65,103 +64,134 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace the goofy static_assert on the size of the @vm/@vcpu parameters
-with a call to a dummy helper, i.e. let the compiler naturally complain
-about an incompatible type instead of homebrewing a poor replacement.
+Replace calls to kvm_check_cap() that treat its return as a boolean with
+calls to kvm_has_cap().  Several instances of kvm_check_cap() were missed
+when kvm_has_cap() was introduced.
 
 Reported-by: Andrew Jones <drjones@redhat.com>
-Fixes: fcba483e8246 ("KVM: selftests: Sanity check input to ioctls() at build time")
+Fixes: 3ea9b809650b ("KVM: selftests: Add kvm_has_cap() to provide syntactic sugar")
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- .../selftests/kvm/include/kvm_util_base.h     | 57 ++++++++++---------
- 1 file changed, 31 insertions(+), 26 deletions(-)
+ tools/testing/selftests/kvm/aarch64/psci_test.c            | 2 +-
+ tools/testing/selftests/kvm/lib/x86_64/processor.c         | 4 ++--
+ tools/testing/selftests/kvm/s390x/sync_regs_test.c         | 2 +-
+ tools/testing/selftests/kvm/x86_64/pmu_event_filter_test.c | 2 +-
+ tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c     | 6 +++---
+ tools/testing/selftests/kvm/x86_64/smm_test.c              | 2 +-
+ tools/testing/selftests/kvm/x86_64/state_test.c            | 2 +-
+ 7 files changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index cdaea2383543..7ebfc8c7de17 100644
---- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-+++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -186,50 +186,55 @@ static inline bool kvm_has_cap(long cap)
- 	ioctl(fd, cmd, arg);							\
- })
+diff --git a/tools/testing/selftests/kvm/aarch64/psci_test.c b/tools/testing/selftests/kvm/aarch64/psci_test.c
+index a889e1cf5e4d..b665b534cb78 100644
+--- a/tools/testing/selftests/kvm/aarch64/psci_test.c
++++ b/tools/testing/selftests/kvm/aarch64/psci_test.c
+@@ -192,7 +192,7 @@ static void host_test_system_suspend(void)
  
--#define __kvm_ioctl(kvm_fd, cmd, arg)						\
-+#define __kvm_ioctl(kvm_fd, cmd, arg)				\
- 	kvm_do_ioctl(kvm_fd, cmd, arg)
+ int main(void)
+ {
+-	TEST_REQUIRE(kvm_check_cap(KVM_CAP_ARM_SYSTEM_SUSPEND));
++	TEST_REQUIRE(kvm_has_cap(KVM_CAP_ARM_SYSTEM_SUSPEND));
  
+ 	host_test_cpu_on();
+ 	host_test_system_suspend();
+diff --git a/tools/testing/selftests/kvm/lib/x86_64/processor.c b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+index 4a7de11d6f37..906132e70fa4 100644
+--- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
++++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
+@@ -991,7 +991,7 @@ struct kvm_x86_state *vcpu_save_state(struct kvm_vcpu *vcpu)
+ 	vcpu_regs_get(vcpu, &state->regs);
+ 	vcpu_save_xsave_state(vcpu, state);
  
--#define _kvm_ioctl(kvm_fd, cmd, name, arg)					\
--({										\
--	int ret = __kvm_ioctl(kvm_fd, cmd, arg);				\
--										\
--	TEST_ASSERT(!ret, __KVM_IOCTL_ERROR(name, ret));			\
-+#define _kvm_ioctl(kvm_fd, cmd, name, arg)			\
-+({								\
-+	int ret = __kvm_ioctl(kvm_fd, cmd, arg);		\
-+								\
-+	TEST_ASSERT(!ret, __KVM_IOCTL_ERROR(name, ret));	\
- })
+-	if (kvm_check_cap(KVM_CAP_XCRS))
++	if (kvm_has_cap(KVM_CAP_XCRS))
+ 		vcpu_xcrs_get(vcpu, &state->xcrs);
  
- #define kvm_ioctl(kvm_fd, cmd, arg) \
- 	_kvm_ioctl(kvm_fd, cmd, #cmd, arg)
+ 	vcpu_sregs_get(vcpu, &state->sregs);
+@@ -1022,7 +1022,7 @@ void vcpu_load_state(struct kvm_vcpu *vcpu, struct kvm_x86_state *state)
+ 	vcpu_sregs_set(vcpu, &state->sregs);
+ 	vcpu_msrs_set(vcpu, &state->msrs);
  
--#define __vm_ioctl(vm, cmd, arg)						\
--({										\
--	static_assert(sizeof(*(vm)) == sizeof(struct kvm_vm), "");		\
--	kvm_do_ioctl((vm)->fd, cmd, arg);					\
-+static __always_inline void static_assert_is_vm(struct kvm_vm *vm) { }
-+
-+#define __vm_ioctl(vm, cmd, arg)				\
-+({								\
-+	static_assert_is_vm(vm);				\
-+	kvm_do_ioctl((vm)->fd, cmd, arg);			\
- })
+-	if (kvm_check_cap(KVM_CAP_XCRS))
++	if (kvm_has_cap(KVM_CAP_XCRS))
+ 		vcpu_xcrs_set(vcpu, &state->xcrs);
  
--#define _vm_ioctl(vm, cmd, name, arg)						\
--({										\
--	int ret = __vm_ioctl(vm, cmd, arg);					\
--										\
--	TEST_ASSERT(!ret, __KVM_IOCTL_ERROR(name, ret));			\
-+#define _vm_ioctl(vm, cmd, name, arg)				\
-+({								\
-+	int ret = __vm_ioctl(vm, cmd, arg);			\
-+								\
-+	TEST_ASSERT(!ret, __KVM_IOCTL_ERROR(name, ret));	\
- })
+ 	vcpu_xsave_set(vcpu,  state->xsave);
+diff --git a/tools/testing/selftests/kvm/s390x/sync_regs_test.c b/tools/testing/selftests/kvm/s390x/sync_regs_test.c
+index b69710822c47..3fdb6e2598eb 100644
+--- a/tools/testing/selftests/kvm/s390x/sync_regs_test.c
++++ b/tools/testing/selftests/kvm/s390x/sync_regs_test.c
+@@ -229,7 +229,7 @@ int main(int argc, char *argv[])
+ 	struct kvm_vm *vm;
+ 	int idx;
  
--#define vm_ioctl(vm, cmd, arg)							\
-+#define vm_ioctl(vm, cmd, arg)					\
- 	_vm_ioctl(vm, cmd, #cmd, arg)
+-	TEST_REQUIRE(kvm_check_cap(KVM_CAP_SYNC_REGS));
++	TEST_REQUIRE(kvm_has_cap(KVM_CAP_SYNC_REGS));
  
--#define __vcpu_ioctl(vcpu, cmd, arg)						\
--({										\
--	static_assert(sizeof(*(vcpu)) == sizeof(struct kvm_vcpu), "");		\
--	kvm_do_ioctl((vcpu)->fd, cmd, arg);					\
-+
-+static __always_inline void static_assert_is_vcpu(struct kvm_vcpu *vcpu) { }
-+
-+#define __vcpu_ioctl(vcpu, cmd, arg)				\
-+({								\
-+	static_assert_is_vcpu(vcpu);				\
-+	kvm_do_ioctl((vcpu)->fd, cmd, arg);			\
- })
+ 	/* Tell stdout not to buffer its content */
+ 	setbuf(stdout, NULL);
+diff --git a/tools/testing/selftests/kvm/x86_64/pmu_event_filter_test.c b/tools/testing/selftests/kvm/x86_64/pmu_event_filter_test.c
+index 786b3a794f84..530a75fee92c 100644
+--- a/tools/testing/selftests/kvm/x86_64/pmu_event_filter_test.c
++++ b/tools/testing/selftests/kvm/x86_64/pmu_event_filter_test.c
+@@ -450,7 +450,7 @@ int main(int argc, char *argv[])
+ 	/* Tell stdout not to buffer its content */
+ 	setbuf(stdout, NULL);
  
--#define _vcpu_ioctl(vcpu, cmd, name, arg)					\
--({										\
--	int ret = __vcpu_ioctl(vcpu, cmd, arg);					\
--										\
--	TEST_ASSERT(!ret, __KVM_IOCTL_ERROR(name, ret));			\
-+#define _vcpu_ioctl(vcpu, cmd, name, arg)			\
-+({								\
-+	int ret = __vcpu_ioctl(vcpu, cmd, arg);			\
-+								\
-+	TEST_ASSERT(!ret, __KVM_IOCTL_ERROR(name, ret));	\
- })
+-	TEST_REQUIRE(kvm_check_cap(KVM_CAP_PMU_EVENT_FILTER));
++	TEST_REQUIRE(kvm_has_cap(KVM_CAP_PMU_EVENT_FILTER));
  
--#define vcpu_ioctl(vcpu, cmd, arg)						\
-+#define vcpu_ioctl(vcpu, cmd, arg)				\
- 	_vcpu_ioctl(vcpu, cmd, #cmd, arg)
+ 	TEST_REQUIRE(use_intel_pmu() || use_amd_pmu());
+ 	guest_code = use_intel_pmu() ? intel_guest_code : amd_guest_code;
+diff --git a/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c b/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c
+index 76ba6fc80e37..46018b247a04 100644
+--- a/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c
++++ b/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c
+@@ -411,16 +411,16 @@ int main(int argc, char *argv[])
  
- /*
+ 	have_sev_es = !!(cpuid->eax & X86_FEATURE_SEV_ES);
+ 
+-	if (kvm_check_cap(KVM_CAP_VM_MOVE_ENC_CONTEXT_FROM)) {
++	if (kvm_has_cap(KVM_CAP_VM_MOVE_ENC_CONTEXT_FROM)) {
+ 		test_sev_migrate_from(/* es= */ false);
+ 		if (have_sev_es)
+ 			test_sev_migrate_from(/* es= */ true);
+ 		test_sev_migrate_locking();
+ 		test_sev_migrate_parameters();
+-		if (kvm_check_cap(KVM_CAP_VM_COPY_ENC_CONTEXT_FROM))
++		if (kvm_has_cap(KVM_CAP_VM_COPY_ENC_CONTEXT_FROM))
+ 			test_sev_move_copy();
+ 	}
+-	if (kvm_check_cap(KVM_CAP_VM_COPY_ENC_CONTEXT_FROM)) {
++	if (kvm_has_cap(KVM_CAP_VM_COPY_ENC_CONTEXT_FROM)) {
+ 		test_sev_mirror(/* es= */ false);
+ 		if (have_sev_es)
+ 			test_sev_mirror(/* es= */ true);
+diff --git a/tools/testing/selftests/kvm/x86_64/smm_test.c b/tools/testing/selftests/kvm/x86_64/smm_test.c
+index 3cd1da388b52..921cbf117329 100644
+--- a/tools/testing/selftests/kvm/x86_64/smm_test.c
++++ b/tools/testing/selftests/kvm/x86_64/smm_test.c
+@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
+ 
+ 	vcpu_set_msr(vcpu, MSR_IA32_SMBASE, SMRAM_GPA);
+ 
+-	if (kvm_check_cap(KVM_CAP_NESTED_STATE)) {
++	if (kvm_has_cap(KVM_CAP_NESTED_STATE)) {
+ 		if (nested_svm_supported())
+ 			vcpu_alloc_svm(vm, &nested_gva);
+ 		else if (nested_vmx_supported())
+diff --git a/tools/testing/selftests/kvm/x86_64/state_test.c b/tools/testing/selftests/kvm/x86_64/state_test.c
+index 0bcd78cf7c79..e2f1f35e51ff 100644
+--- a/tools/testing/selftests/kvm/x86_64/state_test.c
++++ b/tools/testing/selftests/kvm/x86_64/state_test.c
+@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
+ 
+ 	vcpu_regs_get(vcpu, &regs1);
+ 
+-	if (kvm_check_cap(KVM_CAP_NESTED_STATE)) {
++	if (kvm_has_cap(KVM_CAP_NESTED_STATE)) {
+ 		if (nested_svm_supported())
+ 			vcpu_alloc_svm(vm, &nested_gva);
+ 		else if (nested_vmx_supported())
 -- 
 2.36.1.476.g0c4daa206d-goog
 
