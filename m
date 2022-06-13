@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2DA2CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1CA2CCA47B
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:35:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354976AbiFMLeU (ORCPT
+        id S1355056AbiFMLeY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:34:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49866 "EHLO
+        Mon, 13 Jun 2022 07:34:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354383AbiFML30 (ORCPT
+        with ESMTP id S1354395AbiFML31 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:29:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8EC12DEC;
-        Mon, 13 Jun 2022 03:43:53 -0700 (PDT)
+        Mon, 13 Jun 2022 07:29:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F6E9BF7E;
+        Mon, 13 Jun 2022 03:44:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E873B80D3C;
-        Mon, 13 Jun 2022 10:43:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2FF7C34114;
-        Mon, 13 Jun 2022 10:43:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E6DC61016;
+        Mon, 13 Jun 2022 10:44:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97F3AC34114;
+        Mon, 13 Jun 2022 10:44:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117031;
-        bh=96ceQgJASxyzZfSQvr0juwSMRmN1lL3Esf2pvX28VOk=;
+        s=korg; t=1655117042;
+        bh=2GxNHxTzYTOuyt9YaLzB4zVVZgJb0OBNOJq0mhVsJ8o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AIkkePMVzy9bVTFeg1SaS/hwVUNjujKm+28zB/DPMkMxavg0xbSnv6gHLTy3lkJ8+
-         5BYL2F4xxcSpKdmLnIiv/KS3tqFUKk7es0Q4NT5JHxb0Lm9w2uKZAYDXuwTnHs4DI0
-         XJ+J5k+dvg/P/VNUIKyvM0mdZ9s7whiEUIfUosKk=
+        b=xOhRpwCHJ0IncWS1No8eZukBjIjeqV1Z4DfGvg875Du67oBb4ZVPcKmQTdOH5qqGs
+         cczAoijvpdvtcerH75jk/ghFNsRnkQaDZOPNxcEttyveBH+3coZ/F2BHbgiPmhZCC+
+         9E2B1g8yoVoomoiJ2XXeb8Z6PCUKjtLwY0h5QW0g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Stephen Zhang <starzhangzsd@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Subject: [PATCH 5.4 273/411] MIPS: IP27: Remove incorrect `cpu_has_fpu override
-Date:   Mon, 13 Jun 2022 12:09:06 +0200
-Message-Id: <20220613094936.943749121@linuxfoundation.org>
+        stable@vger.kernel.org, Vivek Gautam <vivek.gautam@codeaurora.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.4 265/411] phy: qcom-qmp: fix struct clk leak on probe errors
+Date:   Mon, 13 Jun 2022 12:08:58 +0200
+Message-Id: <20220613094936.706573038@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,39 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej W. Rozycki <macro@orcam.me.uk>
+From: Johan Hovold <johan+linaro@kernel.org>
 
-commit 424c3781dd1cb401857585331eaaa425a13f2429 upstream.
+commit f0a4bc38a12f5a0cc5ad68670d9480e91e6a94df upstream.
 
-Remove unsupported forcing of `cpu_has_fpu' to 1, which makes the `nofpu'
-kernel parameter non-functional, and also causes a link error:
+Make sure to release the pipe clock reference in case of a late probe
+error (e.g. probe deferral).
 
-ld: arch/mips/kernel/traps.o: in function `trap_init':
-./arch/mips/include/asm/msa.h:(.init.text+0x348): undefined reference to `handle_fpe'
-ld: ./arch/mips/include/asm/msa.h:(.init.text+0x354): undefined reference to `handle_fpe'
-ld: ./arch/mips/include/asm/msa.h:(.init.text+0x360): undefined reference to `handle_fpe'
-
-where the CONFIG_MIPS_FP_SUPPORT configuration option has been disabled.
-
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Reported-by: Stephen Zhang <starzhangzsd@gmail.com>
-Fixes: 0ebb2f4159af ("MIPS: IP27: Update/restructure CPU overrides")
-Cc: stable@vger.kernel.org # v4.2+
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Fixes: e78f3d15e115 ("phy: qcom-qmp: new qmp phy driver for qcom-chipsets")
+Cc: stable@vger.kernel.org      # 4.12
+Cc: Vivek Gautam <vivek.gautam@codeaurora.org>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+Link: https://lore.kernel.org/r/20220427063243.32576-2-johan+linaro@kernel.org
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/mips/include/asm/mach-ip27/cpu-feature-overrides.h |    1 -
- 1 file changed, 1 deletion(-)
+ drivers/phy/qualcomm/phy-qcom-qmp.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/mips/include/asm/mach-ip27/cpu-feature-overrides.h
-+++ b/arch/mips/include/asm/mach-ip27/cpu-feature-overrides.h
-@@ -28,7 +28,6 @@
- #define cpu_has_6k_cache		0
- #define cpu_has_8k_cache		0
- #define cpu_has_tx39_cache		0
--#define cpu_has_fpu			1
- #define cpu_has_nofpuex			0
- #define cpu_has_32fpr			1
- #define cpu_has_counter			1
+--- a/drivers/phy/qualcomm/phy-qcom-qmp.c
++++ b/drivers/phy/qualcomm/phy-qcom-qmp.c
+@@ -1929,7 +1929,7 @@ int qcom_qmp_phy_create(struct device *d
+ 	 * all phys that don't need this.
+ 	 */
+ 	snprintf(prop_name, sizeof(prop_name), "pipe%d", id);
+-	qphy->pipe_clk = of_clk_get_by_name(np, prop_name);
++	qphy->pipe_clk = devm_get_clk_from_child(dev, np, prop_name);
+ 	if (IS_ERR(qphy->pipe_clk)) {
+ 		if (qmp->cfg->type == PHY_TYPE_PCIE ||
+ 		    qmp->cfg->type == PHY_TYPE_USB3) {
 
 
