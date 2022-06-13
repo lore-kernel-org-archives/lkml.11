@@ -2,127 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45110C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:37:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B732DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:40:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244967AbiFMTho (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:37:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40836 "EHLO
+        id S244948AbiFMTkQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 15:40:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241414AbiFMThU (ORCPT
+        with ESMTP id S245317AbiFMTkH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 15:37:20 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C89369CF0;
-        Mon, 13 Jun 2022 11:00:59 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id 15so6419932pfy.3;
-        Mon, 13 Jun 2022 11:00:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=jM/lvPuhC14LsEb9ZlEVVzCAu03nvQX/OUwWLzY69FM=;
-        b=RYsqMVjNGft/mA4IooAZRbob/vH4Mo9pz2WNFRyPqpKB7ZI7v1N453mnVzkf2rwPf1
-         2DsXUtAIOlbcJLG3RIesO2Cdl6+9dakwiWAYxMykcvkwKXxD2WESsQkWF+1tQYobZWhk
-         k4A5cBm4QluwxzMC9yB+NGTJm+pGk1ifFlSqDfI+Nrc66JDGkXlKEWLsX3IbUIMsiBii
-         uv55sk99KqDJPXyni0G8/7szT3++WIpQUjJPWsSMB182M/JK5oeX9kXYbLI8LD0qJB1n
-         eusYcktRqkfvzZvIuxjXerxetX1ofNtrhkAYkRsKWPYwOEROIbU39S1v7uNxwOoVg8Zx
-         GhqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition
-         :content-transfer-encoding:in-reply-to;
-        bh=jM/lvPuhC14LsEb9ZlEVVzCAu03nvQX/OUwWLzY69FM=;
-        b=zZ9jgZWWRoawinuCLRu9Dxn0H/CdBjfJwbx/CoGM16pjTe84glaoustppoPr0BJSuG
-         Th28WK/fRl0C3x7VF0b4MqgsMTxMi9OLJviBj5hFomGt/P/3HLDcIslx0iIVVupiLQcx
-         TwFnRB8RLkXL+hvCrBEyiZOxqIPryc1l8q52nPBe4RfrStY55g7L384mUy/AAq7fMohw
-         Z6hx+UcMUylXTiMsl87RwgEMy5CiEBuknz8XcYYJ/yc58WrLtEPTy7Lo1I/xlL2Vkw9X
-         LvZ1kQ7q7MAOHdT7y3Id2WQ8kg4nz/sShtyn/XKBoogPQ2v9sadknWEeU9Q7z5S5Dp6Z
-         wL3g==
-X-Gm-Message-State: AOAM532uOC5O248vZ1Ra7J49twFE/iY23ryV26zlabDYekLfUmTmXC+z
-        /yatT9wZOz+k8i5W9d0asEA=
-X-Google-Smtp-Source: ABdhPJzerRW5ZLwEcw3NkTOtUV9s/7qCL1sJwajuU3wrEwAlOqfrERwaZSOCvxbElHBNWiAPADzfaw==
-X-Received: by 2002:a63:5b42:0:b0:408:8710:13b0 with SMTP id l2-20020a635b42000000b00408871013b0mr710348pgm.584.1655143258429;
-        Mon, 13 Jun 2022 11:00:58 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::4:b964])
-        by smtp.gmail.com with ESMTPSA id q18-20020a63bc12000000b004088f213f68sm1802955pge.56.2022.06.13.11.00.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 11:00:57 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Mon, 13 Jun 2022 08:00:56 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
-Cc:     Waiman Long <longman@redhat.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Shuah Khan <shuah@kernel.org>, cgroups@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <guro@fb.com>, Phil Auld <pauld@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Marcelo Tosatti <mtosatti@redhat.com>
-Subject: Re: [PATCH v11 7/8] cgroup/cpuset: Update description of
- cpuset.cpus.partition in cgroup-v2.rst
-Message-ID: <Yqd7WMFj6AEyV3Cy@slm.duckdns.org>
-References: <20220510153413.400020-1-longman@redhat.com>
- <20220510153413.400020-8-longman@redhat.com>
- <YqYnQ4U4t6j/3UaL@slm.duckdns.org>
- <404171dc-0da3-21f2-5003-9718f875e967@redhat.com>
- <YqarMyNo9oHxhZFh@slm.duckdns.org>
- <20220613142452.GB6910@blackbody.suse.cz>
- <YqdzuSQuAeiPXQvy@slm.duckdns.org>
- <20220613175548.GB21665@blackbody.suse.cz>
+        Mon, 13 Jun 2022 15:40:07 -0400
+Received: from smtp-8faf.mail.infomaniak.ch (smtp-8faf.mail.infomaniak.ch [IPv6:2001:1600:3:17::8faf])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED3AC13E81;
+        Mon, 13 Jun 2022 11:06:12 -0700 (PDT)
+Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4LMKJ12cnCzMqMX3;
+        Mon, 13 Jun 2022 20:06:09 +0200 (CEST)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4LMKHx4fv8zlqQHK;
+        Mon, 13 Jun 2022 20:06:05 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1655143569;
+        bh=6V0xLAgnaKegpa6qvcm9opCXJieMVgO6NIinoOfSkmQ=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=B4dVtViDU3L7AvfOcgxrH+CTy/oyH6pNvblHsoGEy4jJ+KsICrtKzt/AwU1ndUlf7
+         O2UmFxfBQfnkJ3m69/GGGjclPGZf3OBSAKGAuc3MWf21IbPwsBmnGVruUTpjdTp/4k
+         z1LkPxgOJqO+z55Fav51erAELvxVmLaprQF/cwMo=
+Message-ID: <f6fbf06a-6507-a908-33ed-1218713de09b@digikod.net>
+Date:   Mon, 13 Jun 2022 20:06:04 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+User-Agent: 
+Content-Language: en-US
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        David Howells <dhowells@redhat.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        David Woodhouse <dwmw2@infradead.org>,
+        keyrings@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Eric Snowberg <eric.snowberg@oracle.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Tyler Hicks <tyhicks@linux.microsoft.com>
+References: <20220611172233.1494073-1-masahiroy@kernel.org>
+ <20220611172233.1494073-2-masahiroy@kernel.org>
+ <58a20890-557e-f31c-ed59-7e256445a26c@digikod.net>
+ <CAK7LNAQ3p2XiLO7tJSJ9JWnqRomCwjYeQy-Z3j0m904Yn6Av_g@mail.gmail.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [PATCH 2/4] certs: fix and refactor
+ CONFIG_SYSTEM_BLACKLIST_HASH_LIST build
+In-Reply-To: <CAK7LNAQ3p2XiLO7tJSJ9JWnqRomCwjYeQy-Z3j0m904Yn6Av_g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220613175548.GB21665@blackbody.suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
 
-On Mon, Jun 13, 2022 at 07:55:49PM +0200, Michal Koutn� wrote:
-> On Mon, Jun 13, 2022 at 07:28:25AM -1000, Tejun Heo <tj@kernel.org> wrote:
-> > I see. Is this part even necessary? All the .cpus files of the siblings are
-> > owned by the parent who's responsible for configuring both the mode that the
-> > cgroup subtree is gonna be in and their cpumasks. 
+On 13/06/2022 16:55, Masahiro Yamada wrote:
+> On Mon, Jun 13, 2022 at 9:34 PM Mickaël Salaün <mic@digikod.net> wrote:
+>>
+>>
+>>
+>> On 11/06/2022 19:22, Masahiro Yamada wrote:
+>>> Commit addf466389d9 ("certs: Check that builtin blacklist hashes are
+>>> valid") was applied 8 months after the submission.
+>>>
+>>> In the meantime, the base code had been removed by commit b8c96a6b466c
+>>> ("certs: simplify $(srctree)/ handling and remove config_filename
+>>> macro").
+>>>
+>>> Fix the Makefile.
+>>>
+>>> Create a local copy of $(CONFIG_SYSTEM_BLACKLIST_HASH_LIST). It is
+>>> included from certs/blacklist_hashes.c and also works as a timestamp.
+>>>
+>>> Send error messages from check-blacklist-hashes.awk to stderr instead
+>>> of stdout.
+>>>
+>>> Fixes: addf466389d9 ("certs: Check that builtin blacklist hashes are valid")
+>>> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+>>
+>> Reviewed-by: Mickaël Salaün <mic@linux.microsoft.com>
+>>
+>> As a side note, it may let an orphan certs/blacklist_hashes_checked file
+>> but we can't really do something about that and it's OK.
 > 
-> Do you mean such an example:
 > 
->     parent	cpuset.cpus=SET (root)	cpuset.cpus.partition=isolated 
->     `- child_1	cpuset.cpus=partition_of(SET) (root)	cpuset.cpus.partition=isolated
->     `- ...
->     `- child_n	cpuset.cpus=partition_of(SET) (root)	cpuset.cpus.partition=isolated
-> ?
+> GNU Make uses timestamps of files for dependency tracking,
+> so Kbuild keeps all intermediate files.
 > 
-> I don't think child_*/cpuset.cpus must be owned by root.
+> Keeping certs/blacklist_hashes_checked
+> is the right thing to do.
 
-I meant the parent.
+blacklist_hashes_checked is the file you replaced with 
+blacklist_hash_list, and is then not used in any Makefile anymore. There 
+is then no timestamp issue. I just wanted to mention that it is normal 
+that a git status will show it on build directories also used as source 
+directories that were already using such feature.
 
-> Actually, the root would only configure the parent, i.e.
-> parent/cpuset.cpus (whose changes would be disallowed to the
-> unprivileged tasks) and the distribution among siblings would up to the
-> whatever runs below.
+
+
 > 
-> > Given that all the other errors it can make are notified through
-> > "invalid (REASON)" in the mode file, wouldn't it fit better to notify
-> > cpus configuration error the same way too?
 > 
-> Do you suggest that a write into child_*/cpuset.cpus that'd not be
-> exclusive wrt a sibling would result in an error string in
-> parent/cpuset.cpus.partition?
-
-Yeah, I don't know why this part is different from any other errors that the
-parent can make.
-
-Thanks.
-
--- 
-tejun
+> 
+>> Thanks!
+>>
+>>> ---
+>>>
+>>>    certs/.gitignore         |  2 +-
+>>>    certs/Makefile           | 20 ++++++++++----------
+>>>    certs/blacklist_hashes.c |  2 +-
+>>>    3 files changed, 12 insertions(+), 12 deletions(-)
+>>>
+>>> diff --git a/certs/.gitignore b/certs/.gitignore
+>>> index 56637aceaf81..cec5465f31c1 100644
+>>> --- a/certs/.gitignore
+>>> +++ b/certs/.gitignore
+>>> @@ -1,5 +1,5 @@
+>>>    # SPDX-License-Identifier: GPL-2.0-only
+>>> -/blacklist_hashes_checked
+>>> +/blacklist_hash_list
+>>>    /extract-cert
+>>>    /x509_certificate_list
+>>>    /x509_revocation_list
+>>> diff --git a/certs/Makefile b/certs/Makefile
+>>> index cb1a9da3fc58..a8d628fd5f7b 100644
+>>> --- a/certs/Makefile
+>>> +++ b/certs/Makefile
+>>> @@ -7,22 +7,22 @@ obj-$(CONFIG_SYSTEM_TRUSTED_KEYRING) += system_keyring.o system_certificates.o c
+>>>    obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) += blacklist.o common.o
+>>>    obj-$(CONFIG_SYSTEM_REVOCATION_LIST) += revocation_certificates.o
+>>>    ifneq ($(CONFIG_SYSTEM_BLACKLIST_HASH_LIST),)
+>>> -quiet_cmd_check_blacklist_hashes = CHECK   $(patsubst "%",%,$(2))
+>>> -      cmd_check_blacklist_hashes = $(AWK) -f $(srctree)/scripts/check-blacklist-hashes.awk $(2); touch $@
+>>>
+>>> -$(eval $(call config_filename,SYSTEM_BLACKLIST_HASH_LIST))
+>>> +$(obj)/blacklist_hashes.o: $(obj)/blacklist_hash_list
+>>> +CFLAGS_blacklist_hashes.o := -I $(obj)
+>>>
+>>> -$(obj)/blacklist_hashes.o: $(obj)/blacklist_hashes_checked
+>>> +quiet_cmd_check_and_copy_blacklist_hash_list = GEN     $@
+>>> +      cmd_check_and_copy_blacklist_hash_list = \
+>>> +     $(AWK) -f $(srctree)/scripts/check-blacklist-hashes.awk $(CONFIG_SYSTEM_BLACKLIST_HASH_LIST) >&2; \
+>>> +     cat $(CONFIG_SYSTEM_BLACKLIST_HASH_LIST) > $@
+>>>
+>>> -CFLAGS_blacklist_hashes.o += -I$(srctree)
+>>> -
+>>> -targets += blacklist_hashes_checked
+>>> -$(obj)/blacklist_hashes_checked: $(SYSTEM_BLACKLIST_HASH_LIST_SRCPREFIX)$(SYSTEM_BLACKLIST_HASH_LIST_FILENAME) scripts/check-blacklist-hashes.awk FORCE
+>>> -     $(call if_changed,check_blacklist_hashes,$(SYSTEM_BLACKLIST_HASH_LIST_SRCPREFIX)$(CONFIG_SYSTEM_BLACKLIST_HASH_LIST))
+>>> +$(obj)/blacklist_hash_list: $(CONFIG_SYSTEM_BLACKLIST_HASH_LIST) FORCE
+>>> +     $(call if_changed,check_and_copy_blacklist_hash_list)
+>>>    obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) += blacklist_hashes.o
+>>>    else
+>>>    obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) += blacklist_nohashes.o
+>>>    endif
+>>> +targets += blacklist_hash_list
+>>>
+>>>    quiet_cmd_extract_certs  = CERT    $@
+>>>          cmd_extract_certs  = $(obj)/extract-cert $(extract-cert-in) $@
+>>> @@ -33,7 +33,7 @@ $(obj)/system_certificates.o: $(obj)/x509_certificate_list
+>>>    $(obj)/x509_certificate_list: $(CONFIG_SYSTEM_TRUSTED_KEYS) $(obj)/extract-cert FORCE
+>>>        $(call if_changed,extract_certs)
+>>>
+>>> -targets += x509_certificate_list blacklist_hashes_checked
+>>> +targets += x509_certificate_list
+>>>
+>>>    # If module signing is requested, say by allyesconfig, but a key has not been
+>>>    # supplied, then one will need to be generated to make sure the build does not
+>>> diff --git a/certs/blacklist_hashes.c b/certs/blacklist_hashes.c
+>>> index d5961aa3d338..86d66fe11348 100644
+>>> --- a/certs/blacklist_hashes.c
+>>> +++ b/certs/blacklist_hashes.c
+>>> @@ -2,6 +2,6 @@
+>>>    #include "blacklist.h"
+>>>
+>>>    const char __initconst *const blacklist_hashes[] = {
+>>> -#include CONFIG_SYSTEM_BLACKLIST_HASH_LIST
+>>> +#include "blacklist_hash_list"
+>>>        , NULL
+>>>    };
+> 
+> 
+> 
+> --
+> Best Regards
+> Masahiro Yamada
