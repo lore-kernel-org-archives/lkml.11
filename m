@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85282C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:26:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90CA0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:26:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244060AbiFMKZ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:25:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45762 "EHLO
+        id S244099AbiFMK0A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:26:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244999AbiFMKYV (ORCPT
+        with ESMTP id S245073AbiFMKYY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:24:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE4E1DF00;
-        Mon, 13 Jun 2022 03:18:33 -0700 (PDT)
+        Mon, 13 Jun 2022 06:24:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9711A205DF;
+        Mon, 13 Jun 2022 03:18:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 87E41B80E5C;
-        Mon, 13 Jun 2022 10:18:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03B9AC34114;
-        Mon, 13 Jun 2022 10:18:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F93DB80E92;
+        Mon, 13 Jun 2022 10:18:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC671C34114;
+        Mon, 13 Jun 2022 10:18:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115511;
-        bh=9yN++CsMDVfl9JvBg2aqRDLVDC8lQlieByJB/xWyZmk=;
+        s=korg; t=1655115514;
+        bh=7xf9iBHpNNLxSetGM17NzppiizC8ZCsYKWufW33KuuU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RwyK17s5Xf0nNDrWyqONotUS8mKY+0NALpqarmsqXY+m9G6YrYNN1mm3CWN5gdE4G
-         pL2YIVqVgAOvpDh7Z04TdfSYU8LpX8wJ0Gn1vD9V0KLvHh+NjPFxK4ZN+THPfkrYGP
-         DAJiwc+w8gZcPQf/XPN0d7h2/rB9OhbD+gWwjXtQ=
+        b=hhtunJxoASVIXrOFmVr9tGQkloMoSf+flxt8LGwz2mC6Pf7BF5Z8/z3QNDS+qxk9J
+         nFgJ7P6wmAFLYOUsfFicDc7g/Sbc3f6jOQ4WNvspOMcYX6D6LEYWKs5X5GysVVIyrL
+         BkkRypyMnRCh7YnKMSwo5mecvTh4R6J7TEcV7C2c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Patrik Jakobsson <patrik.r.jakobsson@gmail.com>
-Subject: [PATCH 4.9 102/167] gma500: fix an incorrect NULL check on list iterator
-Date:   Mon, 13 Jun 2022 12:09:36 +0200
-Message-Id: <20220613094904.690195421@linuxfoundation.org>
+        stable@vger.kernel.org, Akira Yokosawa <akiyks@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>
+Subject: [PATCH 4.9 103/167] docs/conf.py: Cope with removal of language=None in Sphinx 5.0.0
+Date:   Mon, 13 Jun 2022 12:09:37 +0200
+Message-Id: <20220613094904.906801705@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -48,49 +48,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Akira Yokosawa <akiyks@gmail.com>
 
-commit bdef417d84536715145f6dc9cc3275c46f26295a upstream.
+commit 627f01eab93d8671d4e4afee9b148f9998d20e7c upstream.
 
-The bug is here:
-	return crtc;
+One of the changes in Sphinx 5.0.0 [1] says [sic]:
 
-The list iterator value 'crtc' will *always* be set and non-NULL by
-list_for_each_entry(), so it is incorrect to assume that the iterator
-value will be NULL if the list is empty or no element is found.
+    5.0.0 final
 
-To fix the bug, return 'crtc' when found, otherwise return NULL.
+     - #10474: language does not accept None as it value.
+       The default value of language becomes to 'en' now.
 
+[1]: https://www.sphinx-doc.org/en/master/changes.html#release-5-0-0-released-may-30-2022
+
+It results in a new warning from Sphinx 5.0.0 [sic]:
+
+    WARNING: Invalid configuration value found: 'language = None'.
+    Update your configuration to a valid langauge code. Falling
+    back to 'en' (English).
+
+Silence the warning by using 'en'.
+It works with all the Sphinx versions required for building
+kernel documentation (1.7.9 or later).
+
+Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
+Link: https://lore.kernel.org/r/bd0c2ddc-2401-03cb-4526-79ca664e1cbe@gmail.com
 Cc: stable@vger.kernel.org
-fixes: 89c78134cc54d ("gma500: Add Poulsbo support")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Signed-off-by: Patrik Jakobsson <patrik.r.jakobsson@gmail.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220327052028.2013-1-xiam0nd.tong@gmail.com
+Signed-off-by: Jonathan Corbet <corbet@lwn.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/gma500/psb_intel_display.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ Documentation/conf.py |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/gma500/psb_intel_display.c
-+++ b/drivers/gpu/drm/gma500/psb_intel_display.c
-@@ -548,14 +548,15 @@ void psb_intel_crtc_init(struct drm_devi
+--- a/Documentation/conf.py
++++ b/Documentation/conf.py
+@@ -96,7 +96,7 @@ finally:
+ #
+ # This is also used if you do content translation via gettext catalogs.
+ # Usually you set "language" from the command line for these cases.
+-language = None
++language = 'en'
  
- struct drm_crtc *psb_intel_get_crtc_from_pipe(struct drm_device *dev, int pipe)
- {
--	struct drm_crtc *crtc = NULL;
-+	struct drm_crtc *crtc;
- 
- 	list_for_each_entry(crtc, &dev->mode_config.crtc_list, head) {
- 		struct gma_crtc *gma_crtc = to_gma_crtc(crtc);
-+
- 		if (gma_crtc->pipe == pipe)
--			break;
-+			return crtc;
- 	}
--	return crtc;
-+	return NULL;
- }
- 
- int gma_connector_clones(struct drm_device *dev, int type_mask)
+ # There are two options for replacing |today|: either, you set today to some
+ # non-false value, then it is used:
 
 
