@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0381CCCA481
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:41:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DD53C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:41:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378310AbiFMNlC (ORCPT
+        id S1378356AbiFMNlG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:41:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58196 "EHLO
+        Mon, 13 Jun 2022 09:41:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378583AbiFMNjB (ORCPT
+        with ESMTP id S1378634AbiFMNjG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:39:01 -0400
+        Mon, 13 Jun 2022 09:39:06 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70FD878903;
-        Mon, 13 Jun 2022 04:27:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC6767891A;
+        Mon, 13 Jun 2022 04:27:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B67AB80EA7;
-        Mon, 13 Jun 2022 11:27:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1A87C3411C;
-        Mon, 13 Jun 2022 11:27:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 55FB3B80EA8;
+        Mon, 13 Jun 2022 11:27:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7C4AC3411C;
+        Mon, 13 Jun 2022 11:27:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119661;
-        bh=en1CA4PgGFixgLpDhr7POFl9urAhKt9dpcuax8g1kts=;
+        s=korg; t=1655119664;
+        bh=5KK2CwmryHRpgwOVonR+RYx+OZFduKmyzbH94Fe4iJ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TKO1GF5yRp38AAFO9LHig/t1rx40v+0WButPNgAXHplurfcIZ4hsQNTvEBEyjzlse
-         IcaPPu3iBzOZAR+Q21TW7L5oXS6W7uRPTGzKIInYmos0XkE/8GRH+8k9X0rzZlr1/U
-         3/GR99ObkjhyHW13psyZ2bdG3SuoBb/4u8oG2eSo=
+        b=bAnGkDh0Q+X4C4Rbd/+Eb8HJCjnSR/bhvupe3KLfHlln8ABbU75kd67/m7tF5WHqo
+         ZHX8oKdmVuUmgTtSjDdnziShuoxLv4ujgWKEhAdTtETRurENJZCtRJNjuqIyEQy2mN
+         DXgCGihDVN8bQSVmMw+EP5uT9EvvhdfIonQfVj24=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@st.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        "kernelci.org bot" <bot@kernelci.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 073/339] serial: st-asc: Sanitize CSIZE and correct PARENB for CS7
-Date:   Mon, 13 Jun 2022 12:08:18 +0200
-Message-Id: <20220613094928.736274885@linuxfoundation.org>
+Subject: [PATCH 5.18 064/339] Revert "serial: 8250_mtk: Make sure to select the right FEATURE_SEL"
+Date:   Mon, 13 Jun 2022 12:08:09 +0200
+Message-Id: <20220613094928.464950203@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,47 +52,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-[ Upstream commit 52bb1cb7118564166b04d52387bd8403632f5190 ]
+[ Upstream commit f0136f65285bcfb7e8f90d1013723076a35acd51 ]
 
-Only CS7 and CS8 seem supported but CSIZE is not sanitized from CS5 or
-CS6 to CS8. In addition, ASC_CTL_MODE_7BIT_PAR suggests that CS7 has
-to have parity, thus add PARENB.
+It was found that some MediaTek SoCs are incompatible with this
+change. Also, this register was mistakenly understood as it was
+related to the 16550A register layout selection but, at least
+on some IPs, if not all, it's related to something else unknown.
 
-Incorrect CSIZE results in miscalculation of the frame bits in
-tty_get_char_size() or in its predecessor where the roughly the same
-code is directly within uart_update_timeout().
+This reverts commit 6f81fdded0d024c7d4084d434764f30bca1cd6b1.
 
-Fixes: c4b058560762 (serial:st-asc: Add ST ASC driver.)
-Cc: Srinivas Kandagatla <srinivas.kandagatla@st.com>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/20220519081808.3776-8-ilpo.jarvinen@linux.intel.com
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Fixes: 6f81fdded0d0 ("serial: 8250_mtk: Make sure to select the right FEATURE_SEL")
+Reported-by: "kernelci.org bot" <bot@kernelci.org>
+Link: https://lore.kernel.org/r/20220510122620.150342-1-angelogioacchino.delregno@collabora.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/st-asc.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/tty/serial/8250/8250_mtk.c | 7 -------
+ 1 file changed, 7 deletions(-)
 
-diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-index d7fd692286cf..1b0da603ab54 100644
---- a/drivers/tty/serial/st-asc.c
-+++ b/drivers/tty/serial/st-asc.c
-@@ -535,10 +535,14 @@ static void asc_set_termios(struct uart_port *port, struct ktermios *termios,
- 	/* set character length */
- 	if ((cflag & CSIZE) == CS7) {
- 		ctrl_val |= ASC_CTL_MODE_7BIT_PAR;
-+		cflag |= PARENB;
- 	} else {
- 		ctrl_val |= (cflag & PARENB) ?  ASC_CTL_MODE_8BIT_PAR :
- 						ASC_CTL_MODE_8BIT;
-+		cflag &= ~CSIZE;
-+		cflag |= CS8;
- 	}
-+	termios->c_cflag = cflag;
+diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
+index 21053db93ff1..54051ec7b499 100644
+--- a/drivers/tty/serial/8250/8250_mtk.c
++++ b/drivers/tty/serial/8250/8250_mtk.c
+@@ -54,9 +54,6 @@
+ #define MTK_UART_TX_TRIGGER	1
+ #define MTK_UART_RX_TRIGGER	MTK_UART_RX_SIZE
  
- 	/* set stop bit */
- 	ctrl_val |= (cflag & CSTOPB) ? ASC_CTL_STOP_2BIT : ASC_CTL_STOP_1BIT;
+-#define MTK_UART_FEATURE_SEL	39	/* Feature Selection register */
+-#define MTK_UART_FEAT_NEWRMAP	BIT(0)	/* Use new register map */
+-
+ #define MTK_UART_XON1		40	/* I/O: Xon character 1 */
+ #define MTK_UART_XOFF1		42	/* I/O: Xoff character 1 */
+ 
+@@ -575,10 +572,6 @@ static int mtk8250_probe(struct platform_device *pdev)
+ 		uart.dma = data->dma;
+ #endif
+ 
+-	/* Set AP UART new register map */
+-	writel(MTK_UART_FEAT_NEWRMAP, uart.port.membase +
+-	       (MTK_UART_FEATURE_SEL << uart.port.regshift));
+-
+ 	/* Disable Rate Fix function */
+ 	writel(0x0, uart.port.membase +
+ 			(MTK_UART_RATE_FIX << uart.port.regshift));
 -- 
 2.35.1
 
