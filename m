@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78FC2C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:26:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99F38C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:26:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377048AbiFMN0n (ORCPT
+        id S1377049AbiFMN0t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:26:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39936 "EHLO
+        Mon, 13 Jun 2022 09:26:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377116AbiFMNYY (ORCPT
+        with ESMTP id S1377281AbiFMNYu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:24:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A4CD6BFF8;
-        Mon, 13 Jun 2022 04:24:06 -0700 (PDT)
+        Mon, 13 Jun 2022 09:24:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6EB26BFFC;
+        Mon, 13 Jun 2022 04:24:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C1987B80EA7;
-        Mon, 13 Jun 2022 11:24:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33222C34114;
-        Mon, 13 Jun 2022 11:24:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0870160F18;
+        Mon, 13 Jun 2022 11:24:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09176C34114;
+        Mon, 13 Jun 2022 11:24:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119443;
-        bh=xZMuTpWursdJJdYloy8uMjAmfjbR/M9GPbci0Jb3eq4=;
+        s=korg; t=1655119446;
+        bh=pl/Mo2zTG3iyAG3IF2rzNQ79wq94PhZgwe/irXGYYwc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X7KNwHobug5Oj/YX3TAjKBJfRWeeU+kLPQiB9L416p7Qdm9qLWDQjIVEHm7a6BkZY
-         Iajv3eB1/gLNfyYkKLSRwzNIulERYJ74QeuhN4OVq7htTMAopGrdXmGCpsskAHN7P9
-         0vIwbzvoiQi4M0hiVxHInD+la8yU0f9HPrhOHhwM=
+        b=Oxel+z3f9MrJJQg2emA2a58wOcNgkDsONPGwS3EJ9rN0Aipf7NlMQdj/UyMGjytz5
+         AmXg7o5yXFlzrlqcgBnORGgRBoHzu9WV+4bg9LC8c2nLmyoYxHMeU7RlLU7J+5iqKv
+         evoo99QV0hvVY5JXBR7w20MFfqWgMHChQiXzaoG8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
-        Hangyu Hua <hbh25y@gmail.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 017/339] usb: usbip: fix a refcount leak in stub_probe()
-Date:   Mon, 13 Jun 2022 12:07:22 +0200
-Message-Id: <20220613094927.031372124@linuxfoundation.org>
+        Niels Dossche <dossche.niels@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 018/339] usb: usbip: add missing device lock on tweak configuration cmd
+Date:   Mon, 13 Jun 2022 12:07:23 +0200
+Message-Id: <20220613094927.060466003@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -49,47 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-[ Upstream commit 9ec4cbf1cc55d126759051acfe328d489c5d6e60 ]
+[ Upstream commit d088fabace2ca337b275d1d4b36db4fe7771e44f ]
 
-usb_get_dev() is called in stub_device_alloc(). When stub_probe() fails
-after that, usb_put_dev() needs to be called to release the reference.
+The function documentation of usb_set_configuration says that its
+callers should hold the device lock. This lock is held for all
+callsites except tweak_set_configuration_cmd. The code path can be
+executed for example when attaching a remote USB device.
+The solution is to surround the call by the device lock.
 
-Fix this by moving usb_put_dev() to sdev_free error path handling.
+This bug was found using my experimental own-developed static analysis
+tool, which reported the missing lock on v5.17.2. I manually verified
+this bug report by doing code review as well. I runtime checked that
+the required lock is not held. I compiled and runtime tested this on
+x86_64 with a USB mouse. After applying this patch, my analyser no
+longer reports this potential bug.
 
-Find this by code review.
-
-Fixes: 3ff67445750a ("usbip: fix error handling in stub_probe()")
+Fixes: 2c8c98158946 ("staging: usbip: let client choose device configuration")
 Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Link: https://lore.kernel.org/r/20220412020257.9767-1-hbh25y@gmail.com
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Link: https://lore.kernel.org/r/20220412165055.257113-1-dossche.niels@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/usbip/stub_dev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/usbip/stub_rx.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/usb/usbip/stub_dev.c b/drivers/usb/usbip/stub_dev.c
-index d8d3892e5a69..3c6d452e3bf4 100644
---- a/drivers/usb/usbip/stub_dev.c
-+++ b/drivers/usb/usbip/stub_dev.c
-@@ -393,7 +393,6 @@ static int stub_probe(struct usb_device *udev)
+diff --git a/drivers/usb/usbip/stub_rx.c b/drivers/usb/usbip/stub_rx.c
+index 325c22008e53..5dd41e8215e0 100644
+--- a/drivers/usb/usbip/stub_rx.c
++++ b/drivers/usb/usbip/stub_rx.c
+@@ -138,7 +138,9 @@ static int tweak_set_configuration_cmd(struct urb *urb)
+ 	req = (struct usb_ctrlrequest *) urb->setup_packet;
+ 	config = le16_to_cpu(req->wValue);
  
- err_port:
- 	dev_set_drvdata(&udev->dev, NULL);
--	usb_put_dev(udev);
- 
- 	/* we already have busid_priv, just lock busid_lock */
- 	spin_lock(&busid_priv->busid_lock);
-@@ -408,6 +407,7 @@ static int stub_probe(struct usb_device *udev)
- 	put_busid_priv(busid_priv);
- 
- sdev_free:
-+	usb_put_dev(udev);
- 	stub_device_free(sdev);
- 
- 	return rc;
++	usb_lock_device(sdev->udev);
+ 	err = usb_set_configuration(sdev->udev, config);
++	usb_unlock_device(sdev->udev);
+ 	if (err && err != -ENODEV)
+ 		dev_err(&sdev->udev->dev, "can't set config #%d, error %d\n",
+ 			config, err);
 -- 
 2.35.1
 
