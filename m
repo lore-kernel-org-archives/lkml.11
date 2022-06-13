@@ -2,51 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14B54CCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:48:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 673BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:48:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245232AbiFMUro (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:47:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52120 "EHLO
+        id S1345150AbiFMUr5 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 16:47:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350060AbiFMUqA (ORCPT
+        with ESMTP id S1350763AbiFMUqK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:46:00 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7D471AD
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:57:23 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id e11so6666805pfj.5
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:57:23 -0700 (PDT)
+        Mon, 13 Jun 2022 16:46:10 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4FD1FCD
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:57:28 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id 184so6469706pga.12
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:57:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=JHEBqvjkXFtcJ+qUBNW7+1Xm1a5ZEnXcUDy9oMekAWQ=;
-        b=XcS6UQmDf+C8m9YKYGOusnFCVffgrQStj//J+T4vtRpb8VgAsfxoTf7T3GaDso06eH
-         X95kIF4IKwG/8S1JhVbbu1qsZ3G9zyJTb/zdPBrNw3e3u+BsafMvCjumd1H2HqBLF6sR
-         vo5PIEn0Ap5GtqoJ/NomU+CELebXQIrQn0n2C4cFLCMrUu5MjFj33yt1uLkiNNMLY0Sz
-         WG4+Pal6iFcZuCcYFuVLCJ4D8uGDiCXrROR+P1liCdgg0xVZthTk9ga0rBKF1byxNBQp
-         mHgbrxODTBw7F49GcKmx80eRrSHJkNeSYWxOGbrGIt2oP4Xw3sss5OM9tn9bXFGZTI+y
-         w3lA==
+        bh=M1UYg7GTMwR8QvyF4WdR5Vji0u2SBVcigVMf7Zaauyw=;
+        b=EFASMhPxpi6FpSPPbhA4uIbL4jXzSRVgwCZf55APSkj+/eWAdAy8zvth5EBe2WERCi
+         cDGiWOtOniXXOIBMYlZXBGOhh09bhJWtLzz03ZX+6JmHSdzd1T/MlQGnem73/WOdTT+v
+         ALYzBwhbtHI9GDakDwasxjMQV3KLjZzE1f84EBn9oYaedpyFKb09rruVziY96M9e3Arg
+         tkfD2u8e1HkkbaSXwA1Atuva5Im7G6tJYq72sqiTRNzjOCe8UDRnawXFQ3uInBmpEoLZ
+         /49q91RgMJfoxOeMozLo4SpDinJna4mxoqvs687H+ikEiUHR2xU1+PXsepQJO79Pdd/s
+         XM6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=JHEBqvjkXFtcJ+qUBNW7+1Xm1a5ZEnXcUDy9oMekAWQ=;
-        b=7CgOr448QIH3ZCpmmB0EjcSCRiCewUEbag3Ndav0gTMa7bP0wetzib0XSsBq1xNj9E
-         aj9z6QxLFxgAze5bPwOAEe8Q2jVVIgjtzHpbcIRpIqoM2CJX/7LmqUSw4MZolRLcD4Kp
-         HSd1l26ZNrcga97javdOq3jo7vFn+IuJcdL+ynw8kXI9T+fyfLwfq1FwnZ3uBpaLYZxU
-         sOgAQN7BVQxozNkhGNvNhOl97/rZ0QxXNRLphP2KZ5zZR1d/kr6QmuRswqYMeuac7+6C
-         TaPVofZU37YrcE/0t3BlW+82NxBPW+8/esNMW8nd1E4ef19Tzt6TzsR8yQHGHN2EXt8P
-         dPjg==
-X-Gm-Message-State: AOAM53248GOZs6l5IY+E6thmIEpTmW7f8uTs36QO+jdbwRNxgvIaW6q2
-        mx5DlI7ZMyAh1yrvtJMQFpoQ1g==
-X-Google-Smtp-Source: ABdhPJxL8blns0CtPDB1nVU68TFXxXGjE2/ANBGPsJZvdFrheK2PZLnGISiJk46IluCp/UaTXYGycg==
-X-Received: by 2002:a63:5723:0:b0:3fd:d8b4:c19f with SMTP id l35-20020a635723000000b003fdd8b4c19fmr1081427pgb.137.1655150242909;
-        Mon, 13 Jun 2022 12:57:22 -0700 (PDT)
+        bh=M1UYg7GTMwR8QvyF4WdR5Vji0u2SBVcigVMf7Zaauyw=;
+        b=GOuRX9lb4JiO5kv9rEhXLd1Iqe8yDfeNscsa+bStKDRTMAxuMZiH1cWEvNE4orgFvn
+         DgxwxVOZco/9+P14ZRF8x55Tdect2DXnFvV5XfW7o915F830a4+XQyAnlB9qSuyBV7l+
+         QjCA3UXTmNjSeZuzSCE2p/+yZNZW7cksJgtsfbcJ/QnIB6hwKiRxBOY/FVLm6sQfDJWf
+         VSFqy1Sua68VmQZ97eFzhiaibFwRdWHIbT+DO5C9KuWbuGQNRRL+I+fDOaYHvJarmu1u
+         U76DZMngDsGZQgUkgYVVmT3EZggxPWpgdFGcTNPquc5hf1g9gjrUCQ8HyISGRZP+gwwW
+         wkbQ==
+X-Gm-Message-State: AOAM533/goCDjJQCn2YzOJNOZOq3M/qgrMc5IzSlej6spuVClfP62OR0
+        YHXoavMfgNG5smJkBKX8tJOU9g==
+X-Google-Smtp-Source: ABdhPJxZ2q40smO9yqIlwfspIo8/tXk9SfFuRqNdL0nhnFvTOu8EKTI+j14CKPw8n+7CXVPu4OrTgA==
+X-Received: by 2002:a63:b55:0:b0:3fd:a384:bd10 with SMTP id a21-20020a630b55000000b003fda384bd10mr1102840pgl.534.1655150248432;
+        Mon, 13 Jun 2022 12:57:28 -0700 (PDT)
 Received: from platform-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id q21-20020a170902edd500b0016797c33b6csm5509357plk.116.2022.06.13.12.57.20
+        by smtp.gmail.com with ESMTPSA id q21-20020a170902edd500b0016797c33b6csm5509357plk.116.2022.06.13.12.57.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 12:57:22 -0700 (PDT)
+        Mon, 13 Jun 2022 12:57:28 -0700 (PDT)
 From:   Brad Larson <brad@pensando.io>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
@@ -61,9 +62,9 @@ Cc:     linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
         robh+dt@kernel.org, samuel@sholland.org, fancer.lancer@gmail.com,
         suravee.suthikulpanit@amd.com, thomas.lendacky@amd.com,
         ulf.hansson@linaro.org, will@kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH v5 01/15] dt-bindings: arm: add AMD Pensando boards
-Date:   Mon, 13 Jun 2022 12:56:44 -0700
-Message-Id: <20220613195658.5607-2-brad@pensando.io>
+Subject: [PATCH v5 03/15] dt-bindings: spi: cdns: Add compatible for AMD Pensando Elba SoC
+Date:   Mon, 13 Jun 2022 12:56:46 -0700
+Message-Id: <20220613195658.5607-4-brad@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220613195658.5607-1-brad@pensando.io>
 References: <20220613195658.5607-1-brad@pensando.io>
@@ -73,46 +74,42 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Brad Larson <blarson@amd.com>
 
-Document the compatible for AMD Pensando Elba SoC boards.
+Document the cadence qspi controller compatible for AMD Pensando
+Elba SoC boards.  The Elba qspi fifo size is 1024.
 
 Signed-off-by: Brad Larson <blarson@amd.com>
 ---
- .../devicetree/bindings/arm/amd,pensando.yaml | 26 +++++++++++++++++++
- 1 file changed, 26 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/arm/amd,pensando.yaml
+ .../devicetree/bindings/spi/cdns,qspi-nor.yaml       | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/arm/amd,pensando.yaml b/Documentation/devicetree/bindings/arm/amd,pensando.yaml
-new file mode 100644
-index 000000000000..9f3dea681d24
---- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/amd,pensando.yaml
-@@ -0,0 +1,26 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/arm/amd,pensando.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml b/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml
+index 0a537fa3a641..9268a4882bfd 100644
+--- a/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml
++++ b/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml
+@@ -20,11 +20,23 @@ allOf:
+       required:
+         - power-domains
+ 
++  - if:
++      properties:
++        compatible:
++          enum:
++            - amd,pensando-elba-qspi
++    then:
++      properties:
++        cdns,fifo-depth:
++          enum: [ 128, 256, 1024 ]
++          default: 1024
 +
-+title: AMD Pensando SoC Platforms Device Tree Bindings
-+
-+maintainers:
-+  - Brad Larson <blarson@amd.com>
-+
-+properties:
-+  $nodename:
-+    const: "/"
-+  compatible:
-+    oneOf:
-+
-+      - description: Boards with Pensando Elba SoC
-+        items:
-+          - enum:
-+              - amd,pensando-elba-ortano
-+          - const: amd,pensando-elba
-+
-+additionalProperties: true
-+
-+...
+ properties:
+   compatible:
+     oneOf:
+       - items:
+           - enum:
++              - amd,pensando-elba-qspi
+               - ti,k2g-qspi
+               - ti,am654-ospi
+               - intel,lgm-qspi
 -- 
 2.17.1
 
