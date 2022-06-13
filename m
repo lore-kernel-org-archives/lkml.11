@@ -2,136 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F1E3C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 07:25:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1A58CCA47E
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 07:26:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239243AbiFMHZ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 03:25:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54518 "EHLO
+        id S239280AbiFMH04 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 03:26:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231854AbiFMHZz (ORCPT
+        with ESMTP id S231228AbiFMH0x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 03:25:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 43B691AD8B
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 00:25:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655105153;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=kYksMca6fLoLxDb1myDJYCvlRb5ZJzdkaQdlRH2BiTc=;
-        b=ezMEtHD42ipmADOGXA/325jg0hx0lmEuvi3t+/UacwRBjFZqeATzfckavcp+pE+V/kIRo7
-        QbAPte7dkvtfBfXcUQSD1xRW4TC8Q2+igCrvvJfbRMYfdoyTJ8R7htfmiS0b5GdFgOiBGf
-        z4um4ZBaNnNT0qpXIY51byqeZ1kSh5w=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-607-1_rwEuRdNQKn56kWiDvEtQ-1; Mon, 13 Jun 2022 03:25:51 -0400
-X-MC-Unique: 1_rwEuRdNQKn56kWiDvEtQ-1
-Received: by mail-ed1-f69.google.com with SMTP id ee46-20020a056402292e00b0042dd4d6054dso3437951edb.2
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 00:25:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kYksMca6fLoLxDb1myDJYCvlRb5ZJzdkaQdlRH2BiTc=;
-        b=3g3sTECLfU+hJ8Q5fy3IUjxukhz1mr8bHuWiDiUK3Z+7p2K6HjvjGvGdPEzkicDz31
-         9rcElKsIlwaFQpBs/2qEDCl5R8qKVB+HIcYMCf9I+Br3ddOkwImWZ+ZER5cDCZ4bXxZn
-         xG+R8OkPEqM8OV/tq2oIvvTmimKyUm+vcf04vstuYcZVoh05s807McDEhWnBQZsbgjFq
-         yIzGyqwoigNREzsNEkzi1mevj1j5ZRAwQkz27yIYqyrLXba3QjJtIQHRpmGmQ4TuK3D7
-         algYz7nBD4FMrJz9W2gDGLhWOKy+LAdFokHXVryyg7NhvRZBHWKuMWi0gCu2VOwO4zdD
-         Updw==
-X-Gm-Message-State: AOAM532ao+kQsxOq22ZsDoktHBmu8TpH9k/LupnJOjjmwuCpcmtu4uRc
-        534ciTUIhnUd70bS+ydF58xAzwVZ3Z78pD2jWjgKAChCgQODNDo+zF0GfiExUxM1Tvf9rXApyv2
-        aznAuzgPIxigR3WruI01zGILk
-X-Received: by 2002:a17:907:f9c:b0:711:734d:a9a2 with SMTP id kb28-20020a1709070f9c00b00711734da9a2mr38702879ejc.690.1655105150274;
-        Mon, 13 Jun 2022 00:25:50 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJywq0RchuwuzP0AXkw36tNaeodcHz4xR5kOU96aazMEKAZvn9HC1ZY+djep7p2gq2GI3QYqnQ==
-X-Received: by 2002:a17:907:f9c:b0:711:734d:a9a2 with SMTP id kb28-20020a1709070f9c00b00711734da9a2mr38702867ejc.690.1655105150094;
-        Mon, 13 Jun 2022 00:25:50 -0700 (PDT)
-Received: from redhat.com ([2a03:c5c0:107c:be5a:1a30:9f6d:4400:4adc])
-        by smtp.gmail.com with ESMTPSA id my6-20020a1709065a4600b006f3ef214db9sm3471983ejc.31.2022.06.13.00.25.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 00:25:49 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 03:25:44 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>, kernel@axis.com,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        linux-um@lists.infradead.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] um: virt-pci: set device ready in probe()
-Message-ID: <20220613032529-mutt-send-email-mst@kernel.org>
-References: <20220610151203.3492541-1-vincent.whitchurch@axis.com>
- <CACGkMEsf5p=JvHHjd_jtEwtdQijTR7ZAwetEuSG-oprF6RBsVA@mail.gmail.com>
+        Mon, 13 Jun 2022 03:26:53 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A481AD8B;
+        Mon, 13 Jun 2022 00:26:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655105212; x=1686641212;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=cvLueTdmhN3hJgNVAvOLkfvWJp0QJnKpGRgdoW7g6VE=;
+  b=nfRSQvRQpDQv+Q6YJ1mC2M6tWlpno4GogSkgD2LFC2EPr11am+Zanjvv
+   Ol0LQQRe3DAyQvVUn1qhyTU4/O1e6NFafDX9xJN+GMOJdkEV6gcBJqtiV
+   IAxIY2BvR55bJ6U77VsmuK8TF+ydQnny8YGaFNUnRQj22bvwQUdio40Gg
+   wmUH/feKABVAPrnWmaF/D1b+qMSUJsZd0BoE6cZxOQpr/TBH5xWInwfBd
+   XklN/4kvpUWufsOHSYe1CzKRntGlpiSlbw3SWYAtquO+Uvu9aWOKyjoD+
+   fsf0IuXsk9FzpL7BOBYvyv/uULNkANGXGttH8ee58lbxngDGWEZcUjMrs
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10376"; a="275728700"
+X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
+   d="scan'208";a="275728700"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 00:26:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
+   d="scan'208";a="582101815"
+Received: from fmsmsx604.amr.corp.intel.com ([10.18.126.84])
+  by orsmga007.jf.intel.com with ESMTP; 13 Jun 2022 00:26:52 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Mon, 13 Jun 2022 00:26:51 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Mon, 13 Jun 2022 00:26:51 -0700
+Received: from fmsmsx612.amr.corp.intel.com ([10.18.126.92]) by
+ fmsmsx612.amr.corp.intel.com ([10.18.126.92]) with mapi id 15.01.2308.027;
+ Mon, 13 Jun 2022 00:26:51 -0700
+From:   "Sang, Oliver" <oliver.sang@intel.com>
+To:     "Qiang, Chenyi" <chenyi.qiang@intel.com>
+CC:     Paolo Bonzini <pbonzini@redhat.com>,
+        "Christopherson,, Sean" <seanjc@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "Hu, Robert" <robert.hu@intel.com>,
+        "Chen, Farrah" <farrah.chen@intel.com>,
+        "Wei, Danmei" <danmei.wei@intel.com>,
+        "lkp@lists.01.org" <lkp@lists.01.org>, lkp <lkp@intel.com>,
+        "Hao, Xudong" <xudong.hao@intel.com>
+Subject: RE: [KVM]  a5202946dc: kernel-selftests.kvm.make_fail
+Thread-Topic: [KVM]  a5202946dc: kernel-selftests.kvm.make_fail
+Thread-Index: AQHYfsSs2wejXgf5QkCfnMMhu7wPqK1NLIaA///Dp1A=
+Date:   Mon, 13 Jun 2022 07:26:51 +0000
+Message-ID: <d16188160405497a9ea9b206e4178730@intel.com>
+References: <20220613012644.GA7252@xsang-OptiPlex-9020>
+ <SA2PR11MB50525D04633E934148F8132781AB9@SA2PR11MB5052.namprd11.prod.outlook.com>
+In-Reply-To: <SA2PR11MB50525D04633E934148F8132781AB9@SA2PR11MB5052.namprd11.prod.outlook.com>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.6.500.17
+x-originating-ip: [10.239.127.36]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACGkMEsf5p=JvHHjd_jtEwtdQijTR7ZAwetEuSG-oprF6RBsVA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 02:58:40PM +0800, Jason Wang wrote:
-> On Fri, Jun 10, 2022 at 11:12 PM Vincent Whitchurch
-> <vincent.whitchurch@axis.com> wrote:
-> >
-> > Call virtio_device_ready() to make this driver work after commit
-> > b4ec69d7e09 ("virtio: harden vring IRQ"), since the driver uses the
-> > virtqueues in the probe function.  (The virtio core sets the device
-> > ready when probe returns.)
-> >
-> > Fixes: 8b4ec69d7e09 ("virtio: harden vring IRQ")
-> > Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
-> > ---
-> >  arch/um/drivers/virt-pci.c | 7 ++++++-
-> >  1 file changed, 6 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/arch/um/drivers/virt-pci.c b/arch/um/drivers/virt-pci.c
-> > index 5c092a9153ea..027847023184 100644
-> > --- a/arch/um/drivers/virt-pci.c
-> > +++ b/arch/um/drivers/virt-pci.c
-> > @@ -544,6 +544,8 @@ static int um_pci_init_vqs(struct um_pci_device *dev)
-> >         dev->cmd_vq = vqs[0];
-> >         dev->irq_vq = vqs[1];
-> >
-> > +       virtio_device_ready(dev->vdev);
-> > +
-> >         for (i = 0; i < NUM_IRQ_MSGS; i++) {
-> >                 void *msg = kzalloc(MAX_IRQ_MSG_SIZE, GFP_KERNEL);
-> >
-> > @@ -587,7 +589,7 @@ static int um_pci_virtio_probe(struct virtio_device *vdev)
-> >         dev->irq = irq_alloc_desc(numa_node_id());
-> >         if (dev->irq < 0) {
-> >                 err = dev->irq;
-> > -               goto error;
-> > +               goto err_reset;
-> >         }
-> >         um_pci_devices[free].dev = dev;
-> >         vdev->priv = dev;
-> > @@ -604,6 +606,9 @@ static int um_pci_virtio_probe(struct virtio_device *vdev)
-> >
-> >         um_pci_rescan();
-> >         return 0;
-> > +err_reset:
-> > +       virtio_reset_device(vdev);
-> > +       vdev->config->del_vqs(vdev);
-> 
-> This part seems to be an independent fix.
-> 
-> Thanks
-
-
-Yes good point. I merged as is, oh well.
-
-> >  error:
-> >         mutex_unlock(&um_pci_mtx);
-> >         kfree(dev);
-> > --
-> > 2.34.1
-> >
-
+SGkgQ2hlbnlpLA0KDQo+IEZyb206IFFpYW5nLCBDaGVueWkgPGNoZW55aS5xaWFuZ0BpbnRlbC5j
+b20+DQo+IFNlbnQ6IE1vbmRheSwgSnVuZSAxMywgMjAyMiAxMjowMiBQTQ0KPiANCj4gSGkgT2xp
+dmVyDQo+IA0KPiBJIGZvdW5kIHRoaXMgaXNzdWUgaXMgYWxyZWFkeSBmaXhlZCBieSBTZWFuIGlu
+IHF1ZXVlIGJyYW5jaC4gVGhhbmtzIGZvciB5b3VyDQo+IHRlc3RpbmcgYW5kIHJlcG9ydC4NCg0K
+VGhhbmtzIGEgbG90IGZvciBpbmZvcm1hdGlvbiENCg0KPiANCj4gVGhhbmtzDQo+IENoZW55aQ0K
+PiANCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogU2FuZywgT2xpdmVyIDxv
+bGl2ZXIuc2FuZ0BpbnRlbC5jb20+DQo+IFNlbnQ6IE1vbmRheSwgSnVuZSAxMywgMjAyMiA5OjI3
+IEFNDQo+IFRvOiBRaWFuZywgQ2hlbnlpIDxjaGVueWkucWlhbmdAaW50ZWwuY29tPg0KPiBDYzog
+UGFvbG8gQm9uemluaSA8cGJvbnppbmlAcmVkaGF0LmNvbT47IENocmlzdG9waGVyc29uLCwgU2Vh
+bg0KPiA8c2VhbmpjQGdvb2dsZS5jb20+OyBMS01MIDxsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwu
+b3JnPjsNCj4ga3ZtQHZnZXIua2VybmVsLm9yZzsgSHUsIFJvYmVydCA8cm9iZXJ0Lmh1QGludGVs
+LmNvbT47IENoZW4sIEZhcnJhaA0KPiA8ZmFycmFoLmNoZW5AaW50ZWwuY29tPjsgV2VpLCBEYW5t
+ZWkgPGRhbm1laS53ZWlAaW50ZWwuY29tPjsNCj4gbGtwQGxpc3RzLjAxLm9yZzsgbGtwIDxsa3BA
+aW50ZWwuY29tPjsgSGFvLCBYdWRvbmcgPHh1ZG9uZy5oYW9AaW50ZWwuY29tPg0KPiBTdWJqZWN0
+OiBbS1ZNXSBhNTIwMjk0NmRjOiBrZXJuZWwtc2VsZnRlc3RzLmt2bS5tYWtlX2ZhaWwNCj4gDQo+
+IA0KPiANCj4gR3JlZXRpbmcsDQo+IA0KPiBGWUksIHdlIG5vdGljZWQgdGhlIGZvbGxvd2luZyBj
+b21taXQgKGJ1aWx0IHdpdGggZ2NjLTExKToNCj4gDQo+IGNvbW1pdDogYTUyMDI5NDZkYzdiMjBi
+ZjJhYmUxYmQzNWFkZjJmNDZhYTE1NWFjMCAoIktWTTogc2VsZnRlc3RzOiBBZGQgYQ0KPiB0ZXN0
+IHRvIGdldC9zZXQgdHJpcGxlIGZhdWx0IGV2ZW50IikgaHR0cHM6Ly9naXQua2VybmVsLm9yZy9j
+Z2l0L3ZpcnQva3ZtL2t2bS5naXQNCj4gbGJyLWZvci13ZWlqaWFuZw0KPiANCj4gaW4gdGVzdGNh
+c2U6IGtlcm5lbC1zZWxmdGVzdHMNCj4gdmVyc2lvbjoga2VybmVsLXNlbGZ0ZXN0cy14ODZfNjQt
+ZDg4OWIxNTEtMV8yMDIyMDYwOA0KPiB3aXRoIGZvbGxvd2luZyBwYXJhbWV0ZXJzOg0KPiANCj4g
+CWdyb3VwOiBrdm0NCj4gCXVjb2RlOiAweGVjDQo+IA0KPiB0ZXN0LWRlc2NyaXB0aW9uOiBUaGUg
+a2VybmVsIGNvbnRhaW5zIGEgc2V0IG9mICJzZWxmIHRlc3RzIiB1bmRlciB0aGUNCj4gdG9vbHMv
+dGVzdGluZy9zZWxmdGVzdHMvIGRpcmVjdG9yeS4gVGhlc2UgYXJlIGludGVuZGVkIHRvIGJlIHNt
+YWxsIHVuaXQgdGVzdHMgdG8NCj4gZXhlcmNpc2UgaW5kaXZpZHVhbCBjb2RlIHBhdGhzIGluIHRo
+ZSBrZXJuZWwuDQo+IHRlc3QtdXJsOiBodHRwczovL3d3dy5rZXJuZWwub3JnL2RvYy9Eb2N1bWVu
+dGF0aW9uL2tzZWxmdGVzdC50eHQNCj4gDQo+IA0KPiBvbiB0ZXN0IG1hY2hpbmU6IDggdGhyZWFk
+cyBJbnRlbChSKSBDb3JlKFRNKSBpNy02NzAwIENQVSBAIDMuNDBHSHogd2l0aCAyOEcNCj4gbWVt
+b3J5DQo+IA0KPiBjYXVzZWQgYmVsb3cgY2hhbmdlcyAocGxlYXNlIHJlZmVyIHRvIGF0dGFjaGVk
+IGRtZXNnL2ttc2cgZm9yIGVudGlyZQ0KPiBsb2cvYmFja3RyYWNlKToNCj4gDQo+IA0KPiANCj4g
+DQo+IElmIHlvdSBmaXggdGhlIGlzc3VlLCBraW5kbHkgYWRkIGZvbGxvd2luZyB0YWcNCj4gUmVw
+b3J0ZWQtYnk6IGtlcm5lbCB0ZXN0IHJvYm90IDxvbGl2ZXIuc2FuZ0BpbnRlbC5jb20+DQo+IA0K
+PiANCj4gDQo+IGdjYyAtV2FsbCAtV3N0cmljdC1wcm90b3R5cGVzIC1XdW5pbml0aWFsaXplZCAt
+TzIgLWcgLXN0ZD1nbnU5OSAtZm5vLXN0YWNrLQ0KPiBwcm90ZWN0b3IgLWZuby1QSUUgLUkuLi8u
+Li8uLi8uLi90b29scy9pbmNsdWRlIC1JLi4vLi4vLi4vLi4vdG9vbHMvYXJjaC94ODYvaW5jbHVk
+ZSAtDQo+IEkuLi8uLi8uLi8uLi91c3IvaW5jbHVkZS8gLUlpbmNsdWRlIC1JeDg2XzY0IC1JaW5j
+bHVkZS94ODZfNjQgLUkuLiAgICAtcHRocmVhZCAgLW5vLXBpZQ0KPiB4ODZfNjQvdHJpcGxlX2Zh
+dWx0X2V2ZW50X3Rlc3QuYyAvdXNyL3NyYy9wZXJmX3NlbGZ0ZXN0cy14ODZfNjQtcmhlbC04LjMt
+DQo+IGtzZWxmdGVzdHMtDQo+IGE1MjAyOTQ2ZGM3YjIwYmYyYWJlMWJkMzVhZGYyZjQ2YWExNTVh
+YzAvdG9vbHMvdGVzdGluZy9zZWxmdGVzdHMva3ZtL2xpYmsNCj4gdm0uYSAgLW8gL3Vzci9zcmMv
+cGVyZl9zZWxmdGVzdHMteDg2XzY0LXJoZWwtOC4zLWtzZWxmdGVzdHMtDQo+IGE1MjAyOTQ2ZGM3
+YjIwYmYyYWJlMWJkMzVhZGYyZjQ2YWExNTVhYzAvdG9vbHMvdGVzdGluZy9zZWxmdGVzdHMva3Zt
+L3g4Ng0KPiBfNjQvdHJpcGxlX2ZhdWx0X2V2ZW50X3Rlc3QNCj4geDg2XzY0L3RyaXBsZV9mYXVs
+dF9ldmVudF90ZXN0LmM6IEluIGZ1bmN0aW9uIOKAmG1haW7igJk6DQo+IHg4Nl82NC90cmlwbGVf
+ZmF1bHRfZXZlbnRfdGVzdC5jOjUwOjEwOiBlcnJvcjoNCj4g4oCYS1ZNX0NBUF9UUklQTEVfRkFV
+TFRfRVZFTlTigJkgdW5kZWNsYXJlZCAoZmlyc3QgdXNlIGluIHRoaXMgZnVuY3Rpb24pOyBkaWQg
+eW91DQo+IG1lYW4g4oCYS1ZNX0NBUF9YODZfVFJJUExFX0ZBVUxUX0VWRU5U4oCZPw0KPiAgICA1
+MCB8ICAgLmNhcCA9IEtWTV9DQVBfVFJJUExFX0ZBVUxUX0VWRU5ULA0KPiAgICAgICB8ICAgICAg
+ICAgIF5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+DQo+ICAgICAgIHwgICAgICAgICAgS1ZNX0NB
+UF9YODZfVFJJUExFX0ZBVUxUX0VWRU5UDQo+IHg4Nl82NC90cmlwbGVfZmF1bHRfZXZlbnRfdGVz
+dC5jOjUwOjEwOiBub3RlOiBlYWNoIHVuZGVjbGFyZWQgaWRlbnRpZmllciBpcw0KPiByZXBvcnRl
+ZCBvbmx5IG9uY2UgZm9yIGVhY2ggZnVuY3Rpb24gaXQgYXBwZWFycyBpbg0KPiBtYWtlOiAqKiog
+Wy4uL2xpYi5tazoxNTI6IC91c3Ivc3JjL3BlcmZfc2VsZnRlc3RzLXg4Nl82NC1yaGVsLTguMy1r
+c2VsZnRlc3RzLQ0KPiBhNTIwMjk0NmRjN2IyMGJmMmFiZTFiZDM1YWRmMmY0NmFhMTU1YWMwL3Rv
+b2xzL3Rlc3Rpbmcvc2VsZnRlc3RzL2t2bS94ODYNCj4gXzY0L3RyaXBsZV9mYXVsdF9ldmVudF90
+ZXN0XSBFcnJvciAxDQo+IG1ha2U6IExlYXZpbmcgZGlyZWN0b3J5ICcvdXNyL3NyYy9wZXJmX3Nl
+bGZ0ZXN0cy14ODZfNjQtcmhlbC04LjMta3NlbGZ0ZXN0cy0NCj4gYTUyMDI5NDZkYzdiMjBiZjJh
+YmUxYmQzNWFkZjJmNDZhYTE1NWFjMC90b29scy90ZXN0aW5nL3NlbGZ0ZXN0cy9rdm0nDQo+IA0K
+PiANCj4gDQo+IFRvIHJlcHJvZHVjZToNCj4gDQo+ICAgICAgICAgZ2l0IGNsb25lIGh0dHBzOi8v
+Z2l0aHViLmNvbS9pbnRlbC9sa3AtdGVzdHMuZ2l0DQo+ICAgICAgICAgY2QgbGtwLXRlc3RzDQo+
+ICAgICAgICAgc3VkbyBiaW4vbGtwIGluc3RhbGwgam9iLnlhbWwgICAgICAgICAgICMgam9iIGZp
+bGUgaXMgYXR0YWNoZWQgaW4gdGhpcyBlbWFpbA0KPiAgICAgICAgIGJpbi9sa3Agc3BsaXQtam9i
+IC0tY29tcGF0aWJsZSBqb2IueWFtbCAjIGdlbmVyYXRlIHRoZSB5YW1sIGZpbGUgZm9yIGxrcCBy
+dW4NCj4gICAgICAgICBzdWRvIGJpbi9sa3AgcnVuIGdlbmVyYXRlZC15YW1sLWZpbGUNCj4gDQo+
+ICAgICAgICAgIyBpZiBjb21lIGFjcm9zcyBhbnkgZmFpbHVyZSB0aGF0IGJsb2NrcyB0aGUgdGVz
+dCwNCj4gICAgICAgICAjIHBsZWFzZSByZW1vdmUgfi8ubGtwIGFuZCAvbGtwIGRpciB0byBydW4g
+ZnJvbSBhIGNsZWFuIHN0YXRlLg0KPiANCj4gDQo+IA0KPiAtLQ0KPiAwLURBWSBDSSBLZXJuZWwg
+VGVzdCBTZXJ2aWNlDQo+IGh0dHBzOi8vMDEub3JnL2xrcA0KPiANCj4gDQoNCg==
