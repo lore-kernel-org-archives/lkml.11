@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45E43CCA491
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9DABCCA490
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383147AbiFMOP0 (ORCPT
+        id S1383001AbiFMOPG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:15:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52002 "EHLO
+        Mon, 13 Jun 2022 10:15:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382262AbiFMOFi (ORCPT
+        with ESMTP id S1381973AbiFMOFA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:05:38 -0400
+        Mon, 13 Jun 2022 10:05:00 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7866394180;
-        Mon, 13 Jun 2022 04:40:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8205E92D30;
+        Mon, 13 Jun 2022 04:40:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B66AC61306;
-        Mon, 13 Jun 2022 11:40:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEE7BC34114;
-        Mon, 13 Jun 2022 11:40:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 79F0060EAE;
+        Mon, 13 Jun 2022 11:40:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8765DC34114;
+        Mon, 13 Jun 2022 11:40:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120432;
-        bh=cJI/Ff5eCY4YKk09fUdLQV5mFqySbVgI0sF7RBQJTzk=;
+        s=korg; t=1655120412;
+        bh=bC8T7uT7FYJDWO5DKqqBbB+YzNhKQdkD77ypdZPon1Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WivYVYtufpViLfzy4i1GAMQfokPqWHrOv2xT+n3V1FCv5f9y5sSw8N+pui7QotER1
-         pp1O9aLEtkHjWyHJci9E+cCS6HIyilD2PirH0nPwm3phUwc5p733bZ+vzRfiJb2udL
-         gKCaLNBI+pFvwvWDlnH6EoWM6BUTuQG7X8cX9jWM=
+        b=2mQ8oP0qMNcFJwb3Chsxhjo71XoiBKCbrU7i3aJ9wGFR4ncAC3guABkxwMeWHNSKf
+         da8Z1jBthnls9HziASnvNY1A3mpCjkYgyYM8PleCeQd0tncu505q6K36mxy1sL7m+D
+         UcLnpEDqeZgSE2TiQMf2wayV3V+KmsjYpxKRi5Po=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 030/298] iio: adc: stmpe-adc: Fix wait_for_completion_timeout return value check
-Date:   Mon, 13 Jun 2022 12:08:44 +0200
-Message-Id: <20220613094925.845754621@linuxfoundation.org>
+Subject: [PATCH 5.17 024/298] misc: fastrpc: fix an incorrect NULL check on list iterator
+Date:   Mon, 13 Jun 2022 12:08:38 +0200
+Message-Id: <20220613094925.662735700@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -51,65 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-[ Upstream commit d345b23200bcdbd2bd3582213d738c258b77718f ]
+[ Upstream commit 5ac11fe03a0a83042d1a040dbce4fa2fb5521e23 ]
 
-wait_for_completion_timeout() returns unsigned long not long.
-it returns 0 if timed out, and positive if completed.
-The check for <= 0 is ambiguous and should be == 0 here
-indicating timeout which is the only error case
+The bug is here:
+	if (!buf) {
 
-Fixes: e813dde6f833 ("iio: stmpe-adc: Use wait_for_completion_timeout")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Philippe Schenker <philippe.schenker@toradex.com>
-Link: https://lore.kernel.org/r/20220412065150.14486-1-linmq006@gmail.com
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+The list iterator value 'buf' will *always* be set and non-NULL
+by list_for_each_entry(), so it is incorrect to assume that the
+iterator value will be NULL if the list is empty (in this case, the
+check 'if (!buf) {' will always be false and never exit expectly).
+
+To fix the bug, use a new variable 'iter' as the list iterator,
+while use the original variable 'buf' as a dedicated pointer to
+point to the found element.
+
+Fixes: 2419e55e532de ("misc: fastrpc: add mmap/unmap support")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Link: https://lore.kernel.org/r/20220327062202.5720-1-xiam0nd.tong@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/stmpe-adc.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/misc/fastrpc.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/adc/stmpe-adc.c b/drivers/iio/adc/stmpe-adc.c
-index d2d405388499..83e0ac4467ca 100644
---- a/drivers/iio/adc/stmpe-adc.c
-+++ b/drivers/iio/adc/stmpe-adc.c
-@@ -61,7 +61,7 @@ struct stmpe_adc {
- static int stmpe_read_voltage(struct stmpe_adc *info,
- 		struct iio_chan_spec const *chan, int *val)
+diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
+index aa1682b94a23..45aaf54a7560 100644
+--- a/drivers/misc/fastrpc.c
++++ b/drivers/misc/fastrpc.c
+@@ -1353,17 +1353,18 @@ static int fastrpc_req_munmap_impl(struct fastrpc_user *fl,
+ 				   struct fastrpc_req_munmap *req)
  {
--	long ret;
-+	unsigned long ret;
+ 	struct fastrpc_invoke_args args[1] = { [0] = { 0 } };
+-	struct fastrpc_buf *buf, *b;
++	struct fastrpc_buf *buf = NULL, *iter, *b;
+ 	struct fastrpc_munmap_req_msg req_msg;
+ 	struct device *dev = fl->sctx->dev;
+ 	int err;
+ 	u32 sc;
  
- 	mutex_lock(&info->lock);
- 
-@@ -79,7 +79,7 @@ static int stmpe_read_voltage(struct stmpe_adc *info,
- 
- 	ret = wait_for_completion_timeout(&info->completion, STMPE_ADC_TIMEOUT);
- 
--	if (ret <= 0) {
-+	if (ret == 0) {
- 		stmpe_reg_write(info->stmpe, STMPE_REG_ADC_INT_STA,
- 				STMPE_ADC_CH(info->channel));
- 		mutex_unlock(&info->lock);
-@@ -96,7 +96,7 @@ static int stmpe_read_voltage(struct stmpe_adc *info,
- static int stmpe_read_temp(struct stmpe_adc *info,
- 		struct iio_chan_spec const *chan, int *val)
- {
--	long ret;
-+	unsigned long ret;
- 
- 	mutex_lock(&info->lock);
- 
-@@ -114,7 +114,7 @@ static int stmpe_read_temp(struct stmpe_adc *info,
- 
- 	ret = wait_for_completion_timeout(&info->completion, STMPE_ADC_TIMEOUT);
- 
--	if (ret <= 0) {
-+	if (ret == 0) {
- 		mutex_unlock(&info->lock);
- 		return -ETIMEDOUT;
+ 	spin_lock(&fl->lock);
+-	list_for_each_entry_safe(buf, b, &fl->mmaps, node) {
+-		if ((buf->raddr == req->vaddrout) && (buf->size == req->size))
++	list_for_each_entry_safe(iter, b, &fl->mmaps, node) {
++		if ((iter->raddr == req->vaddrout) && (iter->size == req->size)) {
++			buf = iter;
+ 			break;
+-		buf = NULL;
++		}
  	}
+ 	spin_unlock(&fl->lock);
+ 
 -- 
 2.35.1
 
