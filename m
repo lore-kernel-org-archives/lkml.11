@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8A84CCA489
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:04:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DB50CCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:04:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354162AbiFMNEs (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:04:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49954 "EHLO
+        id S235023AbiFMNEx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 09:04:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354880AbiFMMzu (ORCPT
+        with ESMTP id S1355981AbiFMMzR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:55:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1113911831;
-        Mon, 13 Jun 2022 04:16:42 -0700 (PDT)
+        Mon, 13 Jun 2022 08:55:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D787BB4B5;
+        Mon, 13 Jun 2022 04:15:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 992C660B6B;
-        Mon, 13 Jun 2022 11:16:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A412BC34114;
-        Mon, 13 Jun 2022 11:16:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A8DBB80EA7;
+        Mon, 13 Jun 2022 11:15:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A250C34114;
+        Mon, 13 Jun 2022 11:15:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119001;
-        bh=MNaiuG4N1VwUKOrgpMZ+BnxOCSCj0LiesIi3WOBys/I=;
+        s=korg; t=1655118934;
+        bh=7h4rZyqwtDdmYLoZ2kB4nYcPAMuofr5Hp9IrMWAmCj4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C0+4pNx6l6ESYLCptqfPJqOp9M6a6hvcB1Re7YJ+3LXCe0SJXRFAvZfTGdsu91mRl
-         2vJCuh3IJHjDbw9qblhBFJMjBoaH+D69BLYUzqt209xDM9RBkhjGedusvBf5Ao7cg9
-         80QnyPnvuhLG10y0BWMtKoPirNw4xLCCv3p0ScNw=
+        b=EAhzHgMxWS18uaKf06VjKS7B1P7BuSbEM0GSfm9sgg77oe9QuUqEaVQoLZBJbPe8i
+         4EtsK1thO2HdBuGsqsUOsoB4mjaKOpqxonHNFQY+LJlBs2d/lVV5ruD6kQtYTi3r1R
+         xPf0Yx4J+XdcyizzaLwXeOcTSkt5cWBJFHX6eWGs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haibo Chen <haibo.chen@nxp.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
+        stable@vger.kernel.org,
+        Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 104/247] gpio: pca953x: use the correct register address to do regcache sync
-Date:   Mon, 13 Jun 2022 12:10:06 +0200
-Message-Id: <20220613094926.111147019@linuxfoundation.org>
+Subject: [PATCH 5.15 053/247] serial: 8250_fintek: Check SER_RS485_RTS_* only with RS485
+Date:   Mon, 13 Jun 2022 12:09:15 +0200
+Message-Id: <20220613094924.564104849@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,74 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haibo Chen <haibo.chen@nxp.com>
+From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-[ Upstream commit 43624eda86c98b0de726d0b6f2516ccc3ef7313f ]
+[ Upstream commit af0179270977508df6986b51242825d7edd59caf ]
 
-For regcache_sync_region, need to use pca953x_recalc_addr() to get
-the real register address.
+SER_RS485_RTS_ON_SEND and SER_RS485_RTS_AFTER_SEND relate to behavior
+within RS485 operation. The driver checks if they have the same value
+which is not possible to realize with the hardware. The check is taken
+regardless of SER_RS485_ENABLED flag and -EINVAL is returned when the
+check fails, which creates problems.
 
-Fixes: b76574300504 ("gpio: pca953x: Restore registers after suspend/resume cycle")
-Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+This check makes it unnecessarily complicated to turn RS485 mode off as
+simple zeroed serial_rs485 struct will trigger that equal values check.
+In addition, the driver itself memsets its rs485 structure to zero when
+RS485 is disabled but if userspace would try to make an TIOCSRS485
+ioctl() call with the very same struct, it would end up failing with
+-EINVAL which doesn't make much sense.
+
+Resolve the problem by moving the check inside SER_RS485_ENABLED block.
+
+Fixes: 7ecc77011c6f ("serial: 8250_fintek: Return -EINVAL on invalid configuration")
+Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Link: https://lore.kernel.org/r/035c738-8ea5-8b17-b1d7-84a7b3aeaa51@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpio/gpio-pca953x.c | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+ drivers/tty/serial/8250/8250_fintek.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpio/gpio-pca953x.c b/drivers/gpio/gpio-pca953x.c
-index 8726921a1129..33683295a0bf 100644
---- a/drivers/gpio/gpio-pca953x.c
-+++ b/drivers/gpio/gpio-pca953x.c
-@@ -1108,20 +1108,21 @@ static int pca953x_regcache_sync(struct device *dev)
- {
- 	struct pca953x_chip *chip = dev_get_drvdata(dev);
- 	int ret;
-+	u8 regaddr;
+diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
+index 251f0018ae8c..dba5950b8d0e 100644
+--- a/drivers/tty/serial/8250/8250_fintek.c
++++ b/drivers/tty/serial/8250/8250_fintek.c
+@@ -200,12 +200,12 @@ static int fintek_8250_rs485_config(struct uart_port *port,
+ 	if (!pdata)
+ 		return -EINVAL;
  
- 	/*
- 	 * The ordering between direction and output is important,
- 	 * sync these registers first and only then sync the rest.
- 	 */
--	ret = regcache_sync_region(chip->regmap, chip->regs->direction,
--				   chip->regs->direction + NBANK(chip));
-+	regaddr = pca953x_recalc_addr(chip, chip->regs->direction, 0);
-+	ret = regcache_sync_region(chip->regmap, regaddr, regaddr + NBANK(chip));
- 	if (ret) {
- 		dev_err(dev, "Failed to sync GPIO dir registers: %d\n", ret);
- 		return ret;
- 	}
+-	/* Hardware do not support same RTS level on send and receive */
+-	if (!(rs485->flags & SER_RS485_RTS_ON_SEND) ==
+-			!(rs485->flags & SER_RS485_RTS_AFTER_SEND))
+-		return -EINVAL;
  
--	ret = regcache_sync_region(chip->regmap, chip->regs->output,
--				   chip->regs->output + NBANK(chip));
-+	regaddr = pca953x_recalc_addr(chip, chip->regs->output, 0);
-+	ret = regcache_sync_region(chip->regmap, regaddr, regaddr + NBANK(chip));
- 	if (ret) {
- 		dev_err(dev, "Failed to sync GPIO out registers: %d\n", ret);
- 		return ret;
-@@ -1129,16 +1130,18 @@ static int pca953x_regcache_sync(struct device *dev)
- 
- #ifdef CONFIG_GPIO_PCA953X_IRQ
- 	if (chip->driver_data & PCA_PCAL) {
--		ret = regcache_sync_region(chip->regmap, PCAL953X_IN_LATCH,
--					   PCAL953X_IN_LATCH + NBANK(chip));
-+		regaddr = pca953x_recalc_addr(chip, PCAL953X_IN_LATCH, 0);
-+		ret = regcache_sync_region(chip->regmap, regaddr,
-+					   regaddr + NBANK(chip));
- 		if (ret) {
- 			dev_err(dev, "Failed to sync INT latch registers: %d\n",
- 				ret);
- 			return ret;
- 		}
- 
--		ret = regcache_sync_region(chip->regmap, PCAL953X_INT_MASK,
--					   PCAL953X_INT_MASK + NBANK(chip));
-+		regaddr = pca953x_recalc_addr(chip, PCAL953X_INT_MASK, 0);
-+		ret = regcache_sync_region(chip->regmap, regaddr,
-+					   regaddr + NBANK(chip));
- 		if (ret) {
- 			dev_err(dev, "Failed to sync INT mask registers: %d\n",
- 				ret);
+ 	if (rs485->flags & SER_RS485_ENABLED) {
++		/* Hardware do not support same RTS level on send and receive */
++		if (!(rs485->flags & SER_RS485_RTS_ON_SEND) ==
++		    !(rs485->flags & SER_RS485_RTS_AFTER_SEND))
++			return -EINVAL;
+ 		memset(rs485->padding, 0, sizeof(rs485->padding));
+ 		config |= RS485_URA;
+ 	} else {
 -- 
 2.35.1
 
