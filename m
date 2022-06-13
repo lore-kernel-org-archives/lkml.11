@@ -2,123 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15DB9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:15:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A68BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:16:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359390AbiFMNPz (ORCPT
+        id S1359473AbiFMNQA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:15:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37022 "EHLO
+        Mon, 13 Jun 2022 09:16:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359258AbiFMNJo (ORCPT
+        with ESMTP id S1359257AbiFMNJo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 09:09:44 -0400
-Received: from smtpproxy21.qq.com (smtpbg701.qq.com [203.205.195.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BE6E20183
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 04:19:47 -0700 (PDT)
-X-QQ-mid: bizesmtp79t1655119156t8v5z557
-Received: from localhost.localdomain ( [58.240.82.166])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 13 Jun 2022 19:19:09 +0800 (CST)
-X-QQ-SSF: 01400000002000G0Q000B00A0000000
-X-QQ-FEAT: JRmPfD6HWhzxxqXoKc4lDmEGgd/42n5znbX7pLGemLE3r5lVrjvC2ONwBaySs
-        /HuRfbQD393oA3em2mY77GLsVsnkiePKD5SadgPjLo1d13QXsIMi0BBoqV4FR251RVPdAAs
-        3t/1R1R8pTObL98w6dYSHSzn4JYEpq8Rr5OjkUICeUm80FPrex1f/2BM2RWJ6fMW4sGubQx
-        CjqSv/kzt7T+KbtAbE+gElb/ABHEYlBRJhZlbMc+SzeBUWOWUi4Vwve+MsCeFvueQUpIlD7
-        p1dYJbRoy1fNE56Qu+Cvc7iB64jitvBFbq6E7fWNsF1H91xV9Jhja84L9IWckKPCix1uJTO
-        Hpx1Ugp4Hr0w4quf70Pi9YlK4FRrdgreGz7M7jN
-X-QQ-GoodBg: 2
-From:   Meng Tang <tangmeng@uniontech.com>
-To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org, bhelgaas@google.com
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Meng Tang <tangmeng@uniontech.com>
-Subject: [PATCH 5.10 1/2] commit 1d71eb53e451 ("Revert "PCI: Make pci_enable_ptm() private"")
-Date:   Mon, 13 Jun 2022 19:19:06 +0800
-Message-Id: <20220613111907.25490-1-tangmeng@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FF5E28E04;
+        Mon, 13 Jun 2022 04:19:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C13860F2B;
+        Mon, 13 Jun 2022 11:19:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2422FC34114;
+        Mon, 13 Jun 2022 11:19:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655119186;
+        bh=VDEMdKayyI9mHvjQiuo3UP5gP86R8hGnkAqeLT6SQmc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=aUphnpHkeiwAoEJ/p8vT5D+KX5PuNdMmyVw1T+WW0YoYkAXoe5UIYO25XR/O4RCFk
+         BOZwRoTreLZlx2xJ9Uee8lxlos9w3aqtMCDVsk32al/tAXuasg6YNqOvmA9bgnY9vP
+         VEXuy3v+N5DK0qzYmsGcagcnkPOnSi2+1nd5wzQU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jeff Layton <jlayton@kernel.org>,
+        David Howells <dhowells@redhat.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Mike Marshall <hubcap@omnibond.com>,
+        Gao Xiang <xiang@kernel.org>, linux-afs@lists.infradead.org,
+        v9fs-developer@lists.sourceforge.net, devel@lists.orangefs.org,
+        linux-erofs@lists.ozlabs.org, linux-cachefs@redhat.com,
+        linux-fsdevel@vger.kernel.org, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 164/247] iov_iter: Fix iter_xarray_get_pages{,_alloc}()
+Date:   Mon, 13 Jun 2022 12:11:06 +0200
+Message-Id: <20220613094927.932137292@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
+References: <20220613094922.843438024@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign10
-X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+From: David Howells <dhowells@redhat.com>
 
-Make pci_enable_ptm() accessible from the drivers.
+[ Upstream commit 6c77676645ad42993e0a8bdb8dafa517851a352a ]
 
-Exposing this to the driver enables the driver to use the
-'ptm_enabled' field of 'pci_dev' to check if PTM is enabled or not.
+The maths at the end of iter_xarray_get_pages() to calculate the actual
+size doesn't work under some circumstances, such as when it's been asked to
+extract a partial single page.  Various terms of the equation cancel out
+and you end up with actual == offset.  The same issue exists in
+iter_xarray_get_pages_alloc().
 
-This reverts commit ac6c26da29c1 ("PCI: Make pci_enable_ptm() private").
+Fix these to just use min() to select the lesser amount from between the
+amount of page content transcribed into the buffer, minus the offset, and
+the size limit specified.
 
-In the 5.10 kernel version, even to the latest confirmed version,
-the following error will still be reported when I225-V network card
-is used.
+This doesn't appear to have caused a problem yet upstream because network
+filesystems aren't getting the pages from an xarray iterator, but rather
+passing it directly to the socket, which just iterates over it.  Cachefiles
+*does* do DIO from one to/from ext4/xfs/btrfs/etc. but it always asks for
+whole pages to be written or read.
 
-kernel: [    1.031581] igc: probe of 0000:01:00.0 failed with error -2
-kernel: [    1.066574] igc: probe of 0000:02:00.0 failed with error -2
-kernel: [    1.096152] igc: probe of 0000:03:00.0 failed with error -2
-kernel: [    1.127251] igc: probe of 0000:04:00.0 failed with error -2
-
-Even though I confirmed that 7c496de538eebd8212dc2a3c9a468386b2640d4
-and 47bca7de6a4fb8dcb564c7ca4d885c91ed19e03 have been merged into the
-kernel 5.10, the bug is still occurred, and the
-"commit 1b5d73fb8624 ("igc: Enable PCIe PTM")" can fixes it.
-
-And this patch is the pre-patch of
-1b5d73fb862414106cf270a1a7300ce8ae77de83.
-
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
+Fixes: 7ff5062079ef ("iov_iter: Add ITER_XARRAY")
+Reported-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Alexander Viro <viro@zeniv.linux.org.uk>
+cc: Dominique Martinet <asmadeus@codewreck.org>
+cc: Mike Marshall <hubcap@omnibond.com>
+cc: Gao Xiang <xiang@kernel.org>
+cc: linux-afs@lists.infradead.org
+cc: v9fs-developer@lists.sourceforge.net
+cc: devel@lists.orangefs.org
+cc: linux-erofs@lists.ozlabs.org
+cc: linux-cachefs@redhat.com
+cc: linux-fsdevel@vger.kernel.org
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/pci.h   | 3 ---
- include/linux/pci.h | 7 +++++++
- 2 files changed, 7 insertions(+), 3 deletions(-)
+ lib/iov_iter.c | 20 ++++----------------
+ 1 file changed, 4 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-index a96dc6f53076..4084764bf0b1 100644
---- a/drivers/pci/pci.h
-+++ b/drivers/pci/pci.h
-@@ -585,11 +585,8 @@ static inline void pcie_ecrc_get_policy(char *str) { }
+diff --git a/lib/iov_iter.c b/lib/iov_iter.c
+index 6d146f77601d..be07eb24ab2f 100644
+--- a/lib/iov_iter.c
++++ b/lib/iov_iter.c
+@@ -1436,7 +1436,7 @@ static ssize_t iter_xarray_get_pages(struct iov_iter *i,
+ {
+ 	unsigned nr, offset;
+ 	pgoff_t index, count;
+-	size_t size = maxsize, actual;
++	size_t size = maxsize;
+ 	loff_t pos;
  
- #ifdef CONFIG_PCIE_PTM
- void pci_ptm_init(struct pci_dev *dev);
--int pci_enable_ptm(struct pci_dev *dev, u8 *granularity);
- #else
- static inline void pci_ptm_init(struct pci_dev *dev) { }
--static inline int pci_enable_ptm(struct pci_dev *dev, u8 *granularity)
--{ return -EINVAL; }
- #endif
+ 	if (!size || !maxpages)
+@@ -1463,13 +1463,7 @@ static ssize_t iter_xarray_get_pages(struct iov_iter *i,
+ 	if (nr == 0)
+ 		return 0;
  
- struct pci_dev_reset_methods {
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index bc5a1150f072..692ce678c5f1 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1599,6 +1599,13 @@ static inline bool pci_aer_available(void) { return false; }
+-	actual = PAGE_SIZE * nr;
+-	actual -= offset;
+-	if (nr == count && size > 0) {
+-		unsigned last_offset = (nr > 1) ? 0 : offset;
+-		actual -= PAGE_SIZE - (last_offset + size);
+-	}
+-	return actual;
++	return min(nr * PAGE_SIZE - offset, maxsize);
+ }
  
- bool pci_ats_disabled(void);
+ /* must be done on non-empty ITER_IOVEC one */
+@@ -1604,7 +1598,7 @@ static ssize_t iter_xarray_get_pages_alloc(struct iov_iter *i,
+ 	struct page **p;
+ 	unsigned nr, offset;
+ 	pgoff_t index, count;
+-	size_t size = maxsize, actual;
++	size_t size = maxsize;
+ 	loff_t pos;
  
-+#ifdef CONFIG_PCIE_PTM
-+int pci_enable_ptm(struct pci_dev *dev, u8 *granularity);
-+#else
-+static inline int pci_enable_ptm(struct pci_dev *dev, u8 *granularity)
-+{ return -EINVAL; }
-+#endif
-+
- void pci_cfg_access_lock(struct pci_dev *dev);
- bool pci_cfg_access_trylock(struct pci_dev *dev);
- void pci_cfg_access_unlock(struct pci_dev *dev);
+ 	if (!size)
+@@ -1633,13 +1627,7 @@ static ssize_t iter_xarray_get_pages_alloc(struct iov_iter *i,
+ 	if (nr == 0)
+ 		return 0;
+ 
+-	actual = PAGE_SIZE * nr;
+-	actual -= offset;
+-	if (nr == count && size > 0) {
+-		unsigned last_offset = (nr > 1) ? 0 : offset;
+-		actual -= PAGE_SIZE - (last_offset + size);
+-	}
+-	return actual;
++	return min(nr * PAGE_SIZE - offset, maxsize);
+ }
+ 
+ ssize_t iov_iter_get_pages_alloc(struct iov_iter *i,
 -- 
-2.20.1
+2.35.1
 
 
 
