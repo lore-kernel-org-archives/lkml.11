@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E118CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6934CCA482
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382242AbiFMONk (ORCPT
+        id S1382338AbiFMOOF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:13:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52990 "EHLO
+        Mon, 13 Jun 2022 10:14:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382614AbiFMOGH (ORCPT
+        with ESMTP id S1382676AbiFMOGL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:06:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23CFA95DF9;
-        Mon, 13 Jun 2022 04:41:03 -0700 (PDT)
+        Mon, 13 Jun 2022 10:06:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E655972AE;
+        Mon, 13 Jun 2022 04:41:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 867AD612E9;
-        Mon, 13 Jun 2022 11:41:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94DCDC34114;
-        Mon, 13 Jun 2022 11:41:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5793AB80ECE;
+        Mon, 13 Jun 2022 11:41:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3CB5C34114;
+        Mon, 13 Jun 2022 11:41:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120461;
-        bh=EO27XRrZvZM3OEMGUga+8QfaUgSMH/01Y5OujwF83w4=;
+        s=korg; t=1655120469;
+        bh=DWggWnX2xNbDWS0Nu1a/WLOOSmvEs+6Jfo+l1xZDVc0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h/zRiCXYxs3KZC4SNjFlT+acXQkmcKJrgX6vMJmGSo3Y1p7LWXuXd+nkBRYvgG12C
-         Wuo2CJlRpLl/LcpDGnSEz5+r19DwksGf0VaTJ/t46kIo968R6KF+rgZfNvjhumoyOP
-         Bb6ysF+bJaZWQo1ZV59ffFZAWokpt9FeKy4OTJqA=
+        b=0FK4LbjPEMMPr8iR8Oxnwj0HLrt1j9XjiqZ5DIjHXQJE1c/vbVAeFFUFXNc2/7Vl/
+         IluMeUrWgcG9ZMgrFZeukoYkMSDxuY3JGT14zitCiLcZeuARe8EQ/eeUT7/31gBLbU
+         CPHEs7Sy4gYTDvcHCWHJbzigQVxRFIgqi251Qi3A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
+        stable@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 018/298] pwm: lp3943: Fix duty calculation in case period was clamped
-Date:   Mon, 13 Jun 2022 12:08:32 +0200
-Message-Id: <20220613094925.482223210@linuxfoundation.org>
+Subject: [PATCH 5.17 044/298] watchdog: rzg2l_wdt: Fix reset control imbalance
+Date:   Mon, 13 Jun 2022 12:08:58 +0200
+Message-Id: <20220613094926.280675937@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -52,35 +52,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Biju Das <biju.das.jz@bp.renesas.com>
 
-[ Upstream commit 5e3b07ca5cc78cd4a987e78446849e41288d87cb ]
+[ Upstream commit 33d04d0fdba9fae18c7d58364643d2c606a43dba ]
 
-The hardware only supports periods <= 1.6 ms and if a bigger period is
-requested it is clamped to 1.6 ms. In this case duty_cycle might be bigger
-than 1.6 ms and then the duty cycle register is written with a value
-bigger than LP3943_MAX_DUTY. So clamp duty_cycle accordingly.
+Both rzg2l_wdt_probe() and rzg2l_wdt_start() calls reset_control_
+deassert() which results in a reset control imbalance.
 
-Fixes: af66b3c0934e ("pwm: Add LP3943 PWM driver")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+This patch fixes reset control imbalance by removing reset_control_
+deassert() from rzg2l_wdt_start() and replaces reset_control_assert with
+reset_control_reset in rzg2l_wdt_stop() as watchdog module can be stopped
+only by a module reset. This change will allow us to restart WDT after
+stop() by configuring WDT timeout and enable registers.
+
+Fixes: 2cbc5cd0b55fa2 ("watchdog: Add Watchdog Timer driver for RZ/G2L")
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Link: https://lore.kernel.org/r/20220225175320.11041-5-biju.das.jz@bp.renesas.com
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pwm/pwm-lp3943.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/watchdog/rzg2l_wdt.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/pwm/pwm-lp3943.c b/drivers/pwm/pwm-lp3943.c
-index ea17d446a627..2bd04ecb508c 100644
---- a/drivers/pwm/pwm-lp3943.c
-+++ b/drivers/pwm/pwm-lp3943.c
-@@ -125,6 +125,7 @@ static int lp3943_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
- 	if (err)
- 		return err;
+diff --git a/drivers/watchdog/rzg2l_wdt.c b/drivers/watchdog/rzg2l_wdt.c
+index 48dfe6e5e64f..88274704b260 100644
+--- a/drivers/watchdog/rzg2l_wdt.c
++++ b/drivers/watchdog/rzg2l_wdt.c
+@@ -88,7 +88,6 @@ static int rzg2l_wdt_start(struct watchdog_device *wdev)
+ {
+ 	struct rzg2l_wdt_priv *priv = watchdog_get_drvdata(wdev);
  
-+	duty_ns = min(duty_ns, period_ns);
- 	val = (u8)(duty_ns * LP3943_MAX_DUTY / period_ns);
+-	reset_control_deassert(priv->rstc);
+ 	pm_runtime_get_sync(wdev->parent);
  
- 	return lp3943_write_byte(lp3943, reg_duty, val);
+ 	/* Initialize time out */
+@@ -108,7 +107,7 @@ static int rzg2l_wdt_stop(struct watchdog_device *wdev)
+ 	struct rzg2l_wdt_priv *priv = watchdog_get_drvdata(wdev);
+ 
+ 	pm_runtime_put(wdev->parent);
+-	reset_control_assert(priv->rstc);
++	reset_control_reset(priv->rstc);
+ 
+ 	return 0;
+ }
 -- 
 2.35.1
 
