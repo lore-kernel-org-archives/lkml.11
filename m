@@ -2,46 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60789C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:25:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 357D9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:25:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376698AbiFMNZK (ORCPT
+        id S1376744AbiFMNZP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:25:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60642 "EHLO
+        Mon, 13 Jun 2022 09:25:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377487AbiFMNUk (ORCPT
+        with ESMTP id S1377496AbiFMNUl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:20:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35DD96B09A;
+        Mon, 13 Jun 2022 09:20:41 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4EAE6B0A2;
         Mon, 13 Jun 2022 04:23:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DDB6460FA3;
-        Mon, 13 Jun 2022 11:23:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF918C34114;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3B1CDCE1171;
         Mon, 13 Jun 2022 11:23:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23F75C34114;
+        Mon, 13 Jun 2022 11:23:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119424;
-        bh=LRovTWNrJCsTLIXvYoeSPRHPW26HvLCkuW3gGLLxCWw=;
+        s=korg; t=1655119421;
+        bh=KDwEIqy3lb1gbC7YNTnn2bzd2ityyWVXC7jlLPgLCWk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dKK1kFGkJpPXT48/prSFHdb3nykFejOYwd5yamrBXkWYqFoofBN+8NQ26UbO1GiNy
-         GHvXV8Sc2aS0z6tTTvvkHzNBlVbS9NzXvVchZSmkZhV5RYFR3Rt2MUSocyJk1UT3qV
-         r2hb+2YJT9h7RDs44/A4YzCujYp64572rtiCBm/o=
+        b=sdyML3cyJzzvPSbs27cNAg16ulLLe+UTr0geejJ2/chnJOXme10/M5KefUBUC8pCj
+         OKvfyRCUUyJPfSg/Q1xfuBYsQIYlJ4ey+6ohhDDLcskYFnwoebw/4qED3eojIoqWRN
+         IjHiHG9AOIFbjz+G8PeWb545ZN+tqqIU9FhUkwfA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Kees Cook <keescook@chromium.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-mips@vger.kernel.org, Manuel Lauss <manuel.lauss@gmail.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 010/339] tty: serial: owl: Fix missing clk_disable_unprepare() in owl_uart_probe
-Date:   Mon, 13 Jun 2022 12:07:15 +0200
-Message-Id: <20220613094926.821767274@linuxfoundation.org>
+Subject: [PATCH 5.18 001/339] pcmcia: db1xxx_ss: restrict to MIPS_DB1XXX boards
+Date:   Mon, 13 Jun 2022 12:07:06 +0200
+Message-Id: <20220613094926.546547842@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,34 +58,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit bcea0f547ec1a2ee44d429aaf0334633e386e67c ]
+[ Upstream commit 3928cf08334ed895a31458cbebd8d4ec6d84c080 ]
 
-Fix the missing clk_disable_unprepare() before return
-from owl_uart_probe() in the error handling case.
+When the MIPS_ALCHEMY board selection is MIPS_XXS1500 instead of
+MIPS_DB1XXX, the PCMCIA driver 'db1xxx_ss' has build errors due
+to missing DB1XXX symbols. The PCMCIA driver should be restricted
+to MIPS_DB1XXX instead of MIPS_ALCHEMY to fix this build error.
 
-Fixes: abf42d2f333b ("tty: serial: owl: add "much needed" clk_prepare_enable()")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220307105135.11698-1-linmq006@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+ERROR: modpost: "bcsr_read" [drivers/pcmcia/db1xxx_ss.ko] undefined!
+ERROR: modpost: "bcsr_mod" [drivers/pcmcia/db1xxx_ss.ko] undefined!
+
+Fixes: 42a4f17dc356 ("MIPS: Alchemy: remove SOC_AU1X00 in favor of MIPS_ALCHEMY")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc: linux-mips@vger.kernel.org
+Acked-by: Manuel Lauss <manuel.lauss@gmail.com>
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/owl-uart.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/pcmcia/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/owl-uart.c b/drivers/tty/serial/owl-uart.c
-index 5250bd7d390a..0866d749a9f4 100644
---- a/drivers/tty/serial/owl-uart.c
-+++ b/drivers/tty/serial/owl-uart.c
-@@ -731,6 +731,7 @@ static int owl_uart_probe(struct platform_device *pdev)
- 	owl_port->port.uartclk = clk_get_rate(owl_port->clk);
- 	if (owl_port->port.uartclk == 0) {
- 		dev_err(&pdev->dev, "clock rate is zero\n");
-+		clk_disable_unprepare(owl_port->clk);
- 		return -EINVAL;
- 	}
- 	owl_port->port.flags = UPF_BOOT_AUTOCONF | UPF_IOREMAP | UPF_LOW_LATENCY;
+diff --git a/drivers/pcmcia/Kconfig b/drivers/pcmcia/Kconfig
+index 2ce261cfff8e..89e4511e9c43 100644
+--- a/drivers/pcmcia/Kconfig
++++ b/drivers/pcmcia/Kconfig
+@@ -151,7 +151,7 @@ config TCIC
+ 
+ config PCMCIA_ALCHEMY_DEVBOARD
+ 	tristate "Alchemy Db/Pb1xxx PCMCIA socket services"
+-	depends on MIPS_ALCHEMY && PCMCIA
++	depends on MIPS_DB1XXX && PCMCIA
+ 	help
+ 	  Enable this driver of you want PCMCIA support on your Alchemy
+ 	  Db1000, Db/Pb1100, Db/Pb1500, Db/Pb1550, Db/Pb1200, DB1300
 -- 
 2.35.1
 
