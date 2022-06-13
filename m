@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35270CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FA3EC43334
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:06:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381117AbiFMODz (ORCPT
+        id S1381149AbiFMOEF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:03:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35756 "EHLO
+        Mon, 13 Jun 2022 10:04:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381394AbiFMN4c (ORCPT
+        with ESMTP id S1381406AbiFMN4d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:56:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 793F28AE42;
-        Mon, 13 Jun 2022 04:37:02 -0700 (PDT)
+        Mon, 13 Jun 2022 09:56:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86B04880D8;
+        Mon, 13 Jun 2022 04:36:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B0343612D0;
-        Mon, 13 Jun 2022 11:37:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF11AC34114;
-        Mon, 13 Jun 2022 11:37:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E058161306;
+        Mon, 13 Jun 2022 11:36:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3591C34114;
+        Mon, 13 Jun 2022 11:36:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120221;
-        bh=IBXMgi2m7jjJOg4V5lMk5wKC20WA1H57SOGcxCiq9to=;
+        s=korg; t=1655120218;
+        bh=sh2G4X4wFqnK2Zl2sU5zgIcGPX5ExeSw9GC5WbGyQy0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cu78cq8NblrXYQLwqeLRuJuEzRjWnskLBRfGxmY4D2gyzvhvw2/koub2DDgjYSvEK
-         LgA0hr+12NY6bWeyd5cbeaezWVBUIq0s1+oHr6wQLE9YZCS3gtdmUUvjbu8Fu0T872
-         VI8Bu1neAWoU1NrzvX2KBj70wQvJVUYQxMaPQvLM=
+        b=XBu+/JQmXQrQsaoov7l9kcRz/1GdruZhCHd3vph0EZUfpS5SAsZmezesQNIVl3wJL
+         3bXtoyS45bmO5tug0I112IDrlds4sNmGUyckcxsUnqGks4s74UI59J7bYCKPIvv2Ei
+         f5nx4guMOdNPfWPw1yRDl4SLnXtwkExST4cMVcGw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
         =?UTF-8?q?Andr=C3=A9=20Kapelrud?= <a.kapelrud@gmail.com>
-Subject: [PATCH 5.18 294/339] ALSA: usb-audio: Set up (implicit) sync for Saffire 6
-Date:   Mon, 13 Jun 2022 12:11:59 +0200
-Message-Id: <20220613094935.549912505@linuxfoundation.org>
+Subject: [PATCH 5.18 293/339] ALSA: usb-audio: Skip generic sync EP parse for secondary EP
+Date:   Mon, 13 Jun 2022 12:11:58 +0200
+Message-Id: <20220613094935.520691896@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,59 +51,36 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Takashi Iwai <tiwai@suse.de>
 
-commit e0469d6581aecb0e34e2ec64f39f88e6985cc52f upstream.
+commit efb75df105e82f076a85b9f2d81410428bcb55fc upstream.
 
-Focusrite Saffire 6 has fixed audioformat quirks with multiple
-endpoints assigned to a single altsetting.  Unfortunately the generic
-parser couldn't detect the sync endpoint correctly as the implicit
-sync due to the missing EP attribute bits.  In the former kernels, it
-used to work somehow casually, but it's been broken for a while after
-the large code change in 5.11.
+When ep_idx is already non-zero, it means usually a capture stream
+that is set up explicity by a fixed-format quirk, and applying the
+check for generic (non-implicit-fb) sync EPs might hit incorrectly,
+resulting in a bogus sync endpoint for the capture stream.
 
-This patch cures the regression by the following:
-- Allow the static quirk table to provide the sync EP information;
-  we just need to fill the fields and let the generic parser skipping
-  parsing if sync_ep is already set.
-- Add the sync endpoint information to the entry for Saffire 6.
+This patch adds a check for the ep_idx and skip if it's a secondary
+endpoint.  It's a part of the fixes for regressions on Saffire 6.
 
 Fixes: 7b0efea4baf0 ("ALSA: usb-audio: Add missing ep_idx in fixed EP quirks")
 Reported-and-tested-by: André Kapelrud <a.kapelrud@gmail.com>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220606160910.6926-3-tiwai@suse.de
+Link: https://lore.kernel.org/r/20220606160910.6926-2-tiwai@suse.de
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/usb/pcm.c          |    3 +++
- sound/usb/quirks-table.h |    7 ++++++-
- 2 files changed, 9 insertions(+), 1 deletion(-)
+ sound/usb/pcm.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 --- a/sound/usb/pcm.c
 +++ b/sound/usb/pcm.c
-@@ -291,6 +291,9 @@ int snd_usb_audioformat_set_sync_ep(stru
- 	bool is_playback;
- 	int err;
+@@ -304,7 +304,7 @@ int snd_usb_audioformat_set_sync_ep(stru
+ 	 * Generic sync EP handling
+ 	 */
  
-+	if (fmt->sync_ep)
-+		return 0; /* already set up */
-+
- 	alts = snd_usb_get_host_interface(chip, fmt->iface, fmt->altsetting);
- 	if (!alts)
+-	if (altsd->bNumEndpoints < 2)
++	if (fmt->ep_idx > 0 || altsd->bNumEndpoints < 2)
  		return 0;
---- a/sound/usb/quirks-table.h
-+++ b/sound/usb/quirks-table.h
-@@ -2658,7 +2658,12 @@ YAMAHA_DEVICE(0x7010, "UB99"),
- 					.nr_rates = 2,
- 					.rate_table = (unsigned int[]) {
- 						44100, 48000
--					}
-+					},
-+					.sync_ep = 0x82,
-+					.sync_iface = 0,
-+					.sync_altsetting = 1,
-+					.sync_ep_idx = 1,
-+					.implicit_fb = 1,
- 				}
- 			},
- 			{
+ 
+ 	is_playback = !(get_endpoint(alts, 0)->bEndpointAddress & USB_DIR_IN);
 
 
