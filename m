@@ -2,180 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4B52C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 09:09:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07B06C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 09:11:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240597AbiFMJJ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 05:09:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42334 "EHLO
+        id S240561AbiFMJLe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 05:11:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240490AbiFMJJf (ORCPT
+        with ESMTP id S231329AbiFMJL3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 05:09:35 -0400
-Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3A32EE09;
-        Mon, 13 Jun 2022 02:09:34 -0700 (PDT)
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 4F40B1A0B76;
-        Mon, 13 Jun 2022 11:09:33 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id BE8DA1A0B6F;
-        Mon, 13 Jun 2022 11:09:32 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id EBA96180219B;
-        Mon, 13 Jun 2022 17:09:30 +0800 (+08)
-From:   Richard Zhu <hongxing.zhu@nxp.com>
-To:     l.stach@pengutronix.de, bhelgaas@google.com, robh+dt@kernel.org,
-        broonie@kernel.org, lorenzo.pieralisi@arm.com, festevam@gmail.com,
-        francesco.dolcini@toradex.com
-Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, linux-imx@nxp.com
-Subject: [PATCH v10 7/7] PCI: imx6: Do not hide phy driver callbacks and refine the error handling
-Date:   Mon, 13 Jun 2022 16:55:38 +0800
-Message-Id: <1655110538-10914-8-git-send-email-hongxing.zhu@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1655110538-10914-1-git-send-email-hongxing.zhu@nxp.com>
-References: <1655110538-10914-1-git-send-email-hongxing.zhu@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Mon, 13 Jun 2022 05:11:29 -0400
+Received: from mail-qv1-f49.google.com (mail-qv1-f49.google.com [209.85.219.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7477F5A4;
+        Mon, 13 Jun 2022 02:11:28 -0700 (PDT)
+Received: by mail-qv1-f49.google.com with SMTP id 43so3946518qvb.3;
+        Mon, 13 Jun 2022 02:11:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0o2bWkZ5eL+Cgv0KyJpTUTbbygBAqPHJMqEpfwXn/fY=;
+        b=LGDUsHJO8Fn76tUqTfPSRsXSNprLSeRI+2L8yua+zvAQ0kfTBTFmbBwmGFEOtc0qie
+         7wqdBvG8mMnzSOOSrf5HwLRjGGZw5eWqWcNR4RiL7947AGAOrIySA6FBDQ0cQOqUzZ08
+         zyutMx9dq9J4Xb4Z4FdYZCFAobCkJngnOoMiANjC5Yd1Uu8r83ruCZ45RR5gZqrb50ES
+         sen8kXAa/MiNwDxltiwKcbEz7PEIftsho4TSILPovoGFqYA19geoCK9u/p2nQpYBG6lQ
+         v7xbUk3vAx6wdDVGfcsETmq8KhPWi388qVzUGZ0UNM4lZFHONAgdfbjwJq2aSV3bjCeK
+         UsPw==
+X-Gm-Message-State: AOAM533zM0AIqFywindqSoWo/0qWsD4XgxAYYa1gxnQvTyYLoKRdyQoT
+        cwPwPjkJjPelIDE1ouAvYbOp1gWMuRvNCw==
+X-Google-Smtp-Source: ABdhPJzMdhYtqJGs0UxkaBX5BQdmZWm/z02gU//ZqQh62x5yRueEdzOpgBcNnCnDxR7IgxIef3cViA==
+X-Received: by 2002:a0c:f88f:0:b0:46b:8c17:bd18 with SMTP id u15-20020a0cf88f000000b0046b8c17bd18mr31219431qvn.9.1655111487737;
+        Mon, 13 Jun 2022 02:11:27 -0700 (PDT)
+Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com. [209.85.128.180])
+        by smtp.gmail.com with ESMTPSA id v12-20020a05620a440c00b0069fc13ce23dsm6430815qkp.110.2022.06.13.02.11.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Jun 2022 02:11:27 -0700 (PDT)
+Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-30ec2aa3b6cso44391207b3.11;
+        Mon, 13 Jun 2022 02:11:27 -0700 (PDT)
+X-Received: by 2002:a81:f41:0:b0:313:4d6c:49db with SMTP id
+ 62-20020a810f41000000b003134d6c49dbmr33105243ywp.384.1655111486940; Mon, 13
+ Jun 2022 02:11:26 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220525151355.24175-1-wsa+renesas@sang-engineering.com> <YqZDAiB/taLwmamr@shikoro>
+In-Reply-To: <YqZDAiB/taLwmamr@shikoro>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 13 Jun 2022 11:11:15 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWO0zgmRKMpcSXSdshj6Fh8uu3Ch_FCVDEocdaVPaAUUQ@mail.gmail.com>
+Message-ID: <CAMuHMdWO0zgmRKMpcSXSdshj6Fh8uu3Ch_FCVDEocdaVPaAUUQ@mail.gmail.com>
+Subject: Re: [PATCH] arm64: dts: renesas: r8a779f0: Add thermal support
+To:     Wolfram Sang <wsa@kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linh Phung <linh.phung.jy@renesas.com>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-- Move the phy_power_on() to host_init and resume functions from
-  imx6_pcie_clk_enable().
-- Move the phy_init() to host_init and resume functions from
-  imx6_pcie_deassert_core_reset().
+Hi Wolfram,
 
-Refine the error handling in imx6_pcie_host_init() and
-imx6_pcie_resume_noirq() functions accordingly.
+On Sun, Jun 12, 2022 at 9:48 PM Wolfram Sang <wsa@kernel.org> wrote:
+> On Wed, May 25, 2022 at 05:13:55PM +0200, Wolfram Sang wrote:
+> > From: Linh Phung <linh.phung.jy@renesas.com>
+> >
+> > Add support for 3 TSC nodes of thermal. The 4th node is for the control
+> > domain and not for Linux.
+> >
+> > Signed-off-by: Linh Phung <linh.phung.jy@renesas.com>
+> > [wsa: rebased, fixed resource size, removed unused 4th node breaking probe]
+> > Signed-off-by: Wolfram Sang <wsa@kernel.org>
+>
+> Eeks, this should have been:
+>
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+>
+> Shall I resend?
 
-Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
----
- drivers/pci/controller/dwc/pci-imx6.c | 69 +++++++++++++++++++++------
- 1 file changed, 55 insertions(+), 14 deletions(-)
+No need to resend, I can fix that while applying.
+Unless you want to make other changes, which I believe is not the case,
+as only the DT bindings patch needed a new version?
 
-diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
-index ac6ec2d691a0..61d9fa0120b4 100644
---- a/drivers/pci/controller/dwc/pci-imx6.c
-+++ b/drivers/pci/controller/dwc/pci-imx6.c
-@@ -498,14 +498,6 @@ static int imx6_pcie_clk_enable(struct imx6_pcie *imx6_pcie)
- 		goto err_ref_clk;
- 	}
- 
--	switch (imx6_pcie->drvdata->variant) {
--	case IMX8MM:
--		if (phy_power_on(imx6_pcie->phy))
--			dev_err(dev, "unable to power on PHY\n");
--		break;
--	default:
--		break;
--	}
- 	/* allow the clocks to stabilize */
- 	usleep_range(200, 500);
- 	return 0;
-@@ -599,10 +591,6 @@ static int imx6_pcie_deassert_core_reset(struct imx6_pcie *imx6_pcie)
- 	case IMX8MQ:
- 		reset_control_deassert(imx6_pcie->pciephy_reset);
- 		break;
--	case IMX8MM:
--		if (phy_init(imx6_pcie->phy))
--			dev_err(dev, "waiting for phy ready timeout!\n");
--		break;
- 	case IMX7D:
- 		reset_control_deassert(imx6_pcie->pciephy_reset);
- 
-@@ -638,6 +626,7 @@ static int imx6_pcie_deassert_core_reset(struct imx6_pcie *imx6_pcie)
- 		usleep_range(200, 500);
- 		break;
- 	case IMX6Q:		/* Nothing to do */
-+	case IMX8MM:
- 		break;
- 	}
- 
-@@ -913,15 +902,39 @@ static int imx6_pcie_host_init(struct pcie_port *pp)
- 
- 	imx6_pcie_assert_core_reset(imx6_pcie);
- 	imx6_pcie_init_phy(imx6_pcie);
-+	if (imx6_pcie->phy) {
-+		ret = phy_power_on(imx6_pcie->phy);
-+		if (ret) {
-+			dev_err(dev, "pcie phy power up failed.\n");
-+			return ret;
-+		}
-+	}
-+
- 	ret = imx6_pcie_deassert_core_reset(imx6_pcie);
- 	if (ret < 0) {
- 		dev_err(dev, "pcie host init failed: %d\n", ret);
--		return ret;
-+		goto err_phy_off;
-+	}
-+	if (imx6_pcie->phy) {
-+		ret = phy_init(imx6_pcie->phy);
-+		if (ret) {
-+			dev_err(dev, "waiting for phy ready timeout!\n");
-+			goto err_phy_init;
-+		}
- 	}
- 
- 	imx6_setup_phy_mpll(imx6_pcie);
- 
- 	return 0;
-+
-+err_phy_init:
-+	imx6_pcie_clk_disable(imx6_pcie);
-+	if (imx6_pcie->vpcie)
-+		regulator_disable(imx6_pcie->vpcie);
-+err_phy_off:
-+	if (imx6_pcie->phy)
-+		phy_power_off(imx6_pcie->phy);
-+	return ret;
- }
- 
- static const struct dw_pcie_host_ops imx6_pcie_host_ops = {
-@@ -1026,12 +1039,40 @@ static int imx6_pcie_resume_noirq(struct device *dev)
- 
- 	imx6_pcie_assert_core_reset(imx6_pcie);
- 	imx6_pcie_init_phy(imx6_pcie);
--	imx6_pcie_deassert_core_reset(imx6_pcie);
-+	if (imx6_pcie->phy) {
-+		ret = phy_power_on(imx6_pcie->phy);
-+		if (ret) {
-+			dev_err(dev, "pcie phy power up failed.\n");
-+			return ret;
-+		}
-+	}
-+
-+	ret = imx6_pcie_deassert_core_reset(imx6_pcie);
-+	if (ret < 0) {
-+		dev_err(dev, "pcie deassert core reset failed: %d.\n", ret);
-+		goto err_phy_off;
-+	} else if (imx6_pcie->phy) {
-+		ret = phy_init(imx6_pcie->phy);
-+		if (ret) {
-+			dev_err(dev, "pcie phy init failed.\n");
-+			goto err_phy_init;
-+		}
-+	}
-+
- 	dw_pcie_setup_rc(pp);
- 	if (imx6_pcie->link_is_up)
- 		imx6_pcie_start_link(imx6_pcie->pci);
- 
- 	return 0;
-+
-+err_phy_init:
-+	imx6_pcie_clk_disable(imx6_pcie);
-+	if (imx6_pcie->vpcie)
-+		regulator_disable(imx6_pcie->vpcie);
-+err_phy_off:
-+	if (imx6_pcie->phy)
-+		phy_power_off(imx6_pcie->phy);
-+	return ret;
- }
- #endif
- 
--- 
-2.25.1
+Gr{oetje,eeting}s,
 
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
