@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AC3ECCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FC9ECCA488
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:00:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357102AbiFMM6c (ORCPT
+        id S1358604AbiFMM7x (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:58:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49552 "EHLO
+        Mon, 13 Jun 2022 08:59:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357836AbiFMMyq (ORCPT
+        with ESMTP id S1357982AbiFMMyw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:54:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FCD966692;
-        Mon, 13 Jun 2022 04:13:30 -0700 (PDT)
+        Mon, 13 Jun 2022 08:54:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8C4D3584E;
+        Mon, 13 Jun 2022 04:13:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AE463B80D31;
-        Mon, 13 Jun 2022 11:13:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13363C34114;
-        Mon, 13 Jun 2022 11:13:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 45277608C3;
+        Mon, 13 Jun 2022 11:13:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52164C3411F;
+        Mon, 13 Jun 2022 11:13:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118807;
-        bh=FPCtJIGId+3o2cgwL1VcU2bSODXmShM9hQCM1twwlq8=;
+        s=korg; t=1655118826;
+        bh=p7vjoNTJ7KZgrkLIozMqjn8b+Bo9+wKBHbdInNSdYDo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lp6kRZPdJOkKSvpUK5+uvGmoGE+Oidyk6tz6Q9p5jfIT1EdTizSfymAObMqFnj9Br
-         j8yaBWoIzEXHL3TGIxkPpX0z5MpFoD5exie7CaXwzQIqxiQcZcdXjNNcT8smziWJcb
-         VrZdkFs4OPHzW+h/i4fUOZ4Y0MV+Dq0M3xv7xyc0=
+        b=Om6qVEOc9ZXZ8nObYmkYz0XYGJXFvbWW1CUw1B0ho4hKDsrfV639+JIz7N+vNAQdp
+         kXMbQHmJLcZOCfswFPeUlJ+fw6tpKL/JdXsXsSiWcbUCL9xXF4SHRQuTN1idloaDg6
+         L0y4zffGGPI0UG11R+J3DyElb1Aq8t0cLqqV8hGY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Evan Green <evgreen@chromium.org>,
-        Johan Hovold <johan+linaro@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 035/247] phy: qcom-qmp: fix pipe-clock imbalance on power-on failure
-Date:   Mon, 13 Jun 2022 12:08:57 +0200
-Message-Id: <20220613094924.002277108@linuxfoundation.org>
+        stable@vger.kernel.org, Xin Xiong <xiongx18@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>,
+        Namjae Jeon <linkinjeon@kernel.org>,
+        Steve French <stfrench@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 041/247] ksmbd: fix reference count leak in smb_check_perm_dacl()
+Date:   Mon, 13 Jun 2022 12:09:03 +0200
+Message-Id: <20220613094924.193912250@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,38 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan+linaro@kernel.org>
+From: Xin Xiong <xiongx18@fudan.edu.cn>
 
-[ Upstream commit 5e73b2d9867998278479ccc065a8a8227a5513ef ]
+[ Upstream commit d21a580dafc69aa04f46e6099616146a536b0724 ]
 
-Make sure to disable the pipe clock also if ufs-reset deassertion fails
-during power on.
+The issue happens in a specific path in smb_check_perm_dacl(). When
+"id" and "uid" have the same value, the function simply jumps out of
+the loop without decrementing the reference count of the object
+"posix_acls", which is increased by get_acl() earlier. This may
+result in memory leaks.
 
-Note that the ufs-reset is asserted in qcom_qmp_phy_com_exit().
+Fix it by decreasing the reference count of "posix_acls" before
+jumping to label "check_access_bits".
 
-Fixes: c9b589791fc1 ("phy: qcom: Utilize UFS reset controller")
-Cc: Evan Green <evgreen@chromium.org>
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-Link: https://lore.kernel.org/r/20220502133130.4125-2-johan+linaro@kernel.org
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: 777cad1604d6 ("ksmbd: remove select FS_POSIX_ACL in Kconfig")
+Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
+Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+Acked-by: Namjae Jeon <linkinjeon@kernel.org>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/qualcomm/phy-qcom-qmp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ksmbd/smbacl.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/phy/qualcomm/phy-qcom-qmp.c b/drivers/phy/qualcomm/phy-qcom-qmp.c
-index 9bb19c4bfe79..ed69d455ac0e 100644
---- a/drivers/phy/qualcomm/phy-qcom-qmp.c
-+++ b/drivers/phy/qualcomm/phy-qcom-qmp.c
-@@ -4802,7 +4802,7 @@ static int qcom_qmp_phy_power_on(struct phy *phy)
- 
- 	ret = reset_control_deassert(qmp->ufs_reset);
- 	if (ret)
--		goto err_lane_rst;
-+		goto err_pcs_ready;
- 
- 	qcom_qmp_phy_configure(pcs_misc, cfg->regs, cfg->pcs_misc_tbl,
- 			       cfg->pcs_misc_tbl_num);
+diff --git a/fs/ksmbd/smbacl.c b/fs/ksmbd/smbacl.c
+index bd792db32623..7e57ffdb4ce3 100644
+--- a/fs/ksmbd/smbacl.c
++++ b/fs/ksmbd/smbacl.c
+@@ -1274,6 +1274,7 @@ int smb_check_perm_dacl(struct ksmbd_conn *conn, struct path *path,
+ 					if (!access_bits)
+ 						access_bits =
+ 							SET_MINIMUM_RIGHTS;
++					posix_acl_release(posix_acls);
+ 					goto check_access_bits;
+ 				}
+ 			}
 -- 
 2.35.1
 
