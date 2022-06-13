@@ -2,44 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 132D3CCA48B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65D71CCA48D
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:45:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379617AbiFMNoq (ORCPT
+        id S1379741AbiFMNpC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:44:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35964 "EHLO
+        Mon, 13 Jun 2022 09:45:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379205AbiFMNkC (ORCPT
+        with ESMTP id S1379215AbiFMNkD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:40:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9226B1DE;
-        Mon, 13 Jun 2022 04:29:57 -0700 (PDT)
+        Mon, 13 Jun 2022 09:40:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3915CE03;
+        Mon, 13 Jun 2022 04:30:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4471C61236;
-        Mon, 13 Jun 2022 11:29:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54391C34114;
-        Mon, 13 Jun 2022 11:29:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A233FB80EA7;
+        Mon, 13 Jun 2022 11:30:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE069C34114;
+        Mon, 13 Jun 2022 11:30:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119796;
-        bh=A4QkFLw7RYLtUaQJCr75vqo0MsGdNuKkf+KeCKGIbL0=;
+        s=korg; t=1655119810;
+        bh=gJVcHejTKcyuP/psQJV5MtzjcY2RzC0c8YvPepU7RPE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QRKFpH+LJrF/dL2/ELzkQGMSHcn/+BpVB484hJ1ZEMJiliQgltfSUZeWoTK61a9En
-         aPfAJj/YhcTiXP0+8i4nK7KMrl45uDi+J0oLvNDueWjB0+xZI9R7QKRDcugqla7mtq
-         nHjHzSP2efCqOwKdMQcoEPXwk4uf5n1aRGQ70P3I=
+        b=UUAlXZ6dRlwtnlzQVa+ExeLq5bQZ29PFHJ0v/J6KSzy4zLsU1/2gzuvUR3Ch+08W1
+         eK0hTu+Oz30BZMrhZISRDXmtgzAtsWMMR5UI5MMI2X/sTSeTqIBy05dqSX5y4Rrq12
+         GUP4V+uIWuXPlTm7IG7gfZhXLlq26O1cvUDCq6Hg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Thomas Osterried <thomas@osterried.de>
-Subject: [PATCH 5.18 143/339] ax25: Fix ax25 session cleanup problems
-Date:   Mon, 13 Jun 2022 12:09:28 +0200
-Message-Id: <20220613094931.021278225@linuxfoundation.org>
+        stable@vger.kernel.org, Ian Rogers <irogers@google.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Stephane Eranian <eranian@google.com>,
+        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 148/339] perf parse-events: Move slots event for the hybrid platform too
+Date:   Mon, 13 Jun 2022 12:09:33 +0200
+Message-Id: <20220613094931.172977154@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,182 +58,141 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Kan Liang <kan.liang@linux.intel.com>
 
-[ Upstream commit 7d8a3a477b3e25ada8dc71d22048c2ea417209a0 ]
+[ Upstream commit e0e14cdff31d326f81e0edbd5140f788c870756c ]
 
-There are session cleanup problems in ax25_release() and
-ax25_disconnect(). If we setup a session and then disconnect,
-the disconnected session is still in "LISTENING" state that
-is shown below.
+The commit 94dbfd6781a0e87b ("perf parse-events: Architecture specific
+leader override") introduced a feature to reorder the slots event to
+fulfill the restriction of the perf metrics topdown group. But the
+feature doesn't work on the hybrid machine.
 
-Active AX.25 sockets
-Dest       Source     Device  State        Vr/Vs    Send-Q  Recv-Q
-DL9SAU-4   DL9SAU-3   ???     LISTENING    000/000  0       0
-DL9SAU-3   DL9SAU-4   ???     LISTENING    000/000  0       0
+  $ perf stat -e "{cpu_core/instructions/,cpu_core/slots/,cpu_core/topdown-retiring/}" -a sleep 1
 
-The first reason is caused by del_timer_sync() in ax25_release().
-The timers of ax25 are used for correct session cleanup. If we use
-ax25_release() to close ax25 sessions and ax25_dev is not null,
-the del_timer_sync() functions in ax25_release() will execute.
-As a result, the sessions could not be cleaned up correctly,
-because the timers have stopped.
+   Performance counter stats for 'system wide':
 
-In order to solve this problem, this patch adds a device_up flag
-in ax25_dev in order to judge whether the device is up. If there
-are sessions to be cleaned up, the del_timer_sync() in
-ax25_release() will not execute. What's more, we add ax25_cb_del()
-in ax25_kill_by_device(), because the timers have been stopped
-and there are no functions that could delete ax25_cb if we do not
-call ax25_release(). Finally, we reorder the position of
-ax25_list_lock in ax25_cb_del() in order to synchronize among
-different functions that call ax25_cb_del().
+       <not counted>      cpu_core/instructions/
+       <not counted>      cpu_core/slots/
+     <not supported>      cpu_core/topdown-retiring/
 
-The second reason is caused by improper check in ax25_disconnect().
-The incoming ax25 sessions which ax25->sk is null will close
-heartbeat timer, because the check "if(!ax25->sk || ..)" is
-satisfied. As a result, the session could not be cleaned up properly.
+         1.002871801 seconds time elapsed
 
-In order to solve this problem, this patch changes the improper
-check to "if(ax25->sk && ..)" in ax25_disconnect().
+A hybrid platform has a different PMU name for the core PMUs, while
+current perf hard code the PMU name "cpu".
 
-What`s more, the ax25_disconnect() may be called twice, which is
-not necessary. For example, ax25_kill_by_device() calls
-ax25_disconnect() and sets ax25->state to AX25_STATE_0, but
-ax25_release() calls ax25_disconnect() again.
+Introduce a new function to check whether the system supports the perf
+metrics feature. The result is cached for the future usage.
 
-In order to solve this problem, this patch add a check in
-ax25_release(). If the flag of ax25->sk equals to SOCK_DEAD,
-the ax25_disconnect() in ax25_release() should not be executed.
+For X86, the core PMU name always has "cpu" prefix.
 
-Fixes: 82e31755e55f ("ax25: Fix UAF bugs in ax25 timers")
-Fixes: 8a367e74c012 ("ax25: Fix segfault after sock connection timeout")
-Reported-and-tested-by: Thomas Osterried <thomas@osterried.de>
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220530152158.108619-1-duoming@zju.edu.cn
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+With the patch:
+
+  $ perf stat -e "{cpu_core/instructions/,cpu_core/slots/,cpu_core/topdown-retiring/}" -a sleep 1
+
+   Performance counter stats for 'system wide':
+
+          76,337,010      cpu_core/slots/
+          10,416,809      cpu_core/instructions/
+          11,692,372      cpu_core/topdown-retiring/
+
+         1.002805453 seconds time elapsed
+
+Reviewed-by: Ian Rogers <irogers@google.com>
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Stephane Eranian <eranian@google.com>
+Cc: Xing Zhengjun <zhengjun.xing@linux.intel.com>
+Link: https://lore.kernel.org/r/20220518143900.1493980-5-kan.liang@linux.intel.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/ax25.h   |  1 +
- net/ax25/af_ax25.c   | 27 +++++++++++++++++----------
- net/ax25/ax25_dev.c  |  1 +
- net/ax25/ax25_subr.c |  2 +-
- 4 files changed, 20 insertions(+), 11 deletions(-)
+ tools/perf/arch/x86/util/evlist.c  |  5 +++--
+ tools/perf/arch/x86/util/topdown.c | 25 +++++++++++++++++++++++++
+ tools/perf/arch/x86/util/topdown.h |  7 +++++++
+ 3 files changed, 35 insertions(+), 2 deletions(-)
+ create mode 100644 tools/perf/arch/x86/util/topdown.h
 
-diff --git a/include/net/ax25.h b/include/net/ax25.h
-index 0f9790c455bb..a427a05672e2 100644
---- a/include/net/ax25.h
-+++ b/include/net/ax25.h
-@@ -228,6 +228,7 @@ typedef struct ax25_dev {
- 	ax25_dama_info		dama;
- #endif
- 	refcount_t		refcount;
-+	bool device_up;
- } ax25_dev;
+diff --git a/tools/perf/arch/x86/util/evlist.c b/tools/perf/arch/x86/util/evlist.c
+index 75564a7df15b..68f681ad54c1 100644
+--- a/tools/perf/arch/x86/util/evlist.c
++++ b/tools/perf/arch/x86/util/evlist.c
+@@ -3,6 +3,7 @@
+ #include "util/pmu.h"
+ #include "util/evlist.h"
+ #include "util/parse-events.h"
++#include "topdown.h"
  
- typedef struct ax25_cb {
-diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index 363d47f94532..289f355e1853 100644
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -62,12 +62,12 @@ static void ax25_free_sock(struct sock *sk)
-  */
- static void ax25_cb_del(ax25_cb *ax25)
- {
-+	spin_lock_bh(&ax25_list_lock);
- 	if (!hlist_unhashed(&ax25->ax25_node)) {
--		spin_lock_bh(&ax25_list_lock);
- 		hlist_del_init(&ax25->ax25_node);
--		spin_unlock_bh(&ax25_list_lock);
- 		ax25_cb_put(ax25);
- 	}
-+	spin_unlock_bh(&ax25_list_lock);
- }
+ #define TOPDOWN_L1_EVENTS	"{slots,topdown-retiring,topdown-bad-spec,topdown-fe-bound,topdown-be-bound}"
+ #define TOPDOWN_L2_EVENTS	"{slots,topdown-retiring,topdown-bad-spec,topdown-fe-bound,topdown-be-bound,topdown-heavy-ops,topdown-br-mispredict,topdown-fetch-lat,topdown-mem-bound}"
+@@ -25,12 +26,12 @@ struct evsel *arch_evlist__leader(struct list_head *list)
+ 
+ 	first = list_first_entry(list, struct evsel, core.node);
+ 
+-	if (!pmu_have_event("cpu", "slots"))
++	if (!topdown_sys_has_perf_metrics())
+ 		return first;
+ 
+ 	/* If there is a slots event and a topdown event then the slots event comes first. */
+ 	__evlist__for_each_entry(list, evsel) {
+-		if (evsel->pmu_name && !strcmp(evsel->pmu_name, "cpu") && evsel->name) {
++		if (evsel->pmu_name && !strncmp(evsel->pmu_name, "cpu", 3) && evsel->name) {
+ 			if (strcasestr(evsel->name, "slots")) {
+ 				slots = evsel;
+ 				if (slots == first)
+diff --git a/tools/perf/arch/x86/util/topdown.c b/tools/perf/arch/x86/util/topdown.c
+index 2f3d96aa92a5..f4d5422e9960 100644
+--- a/tools/perf/arch/x86/util/topdown.c
++++ b/tools/perf/arch/x86/util/topdown.c
+@@ -3,6 +3,31 @@
+ #include "api/fs/fs.h"
+ #include "util/pmu.h"
+ #include "util/topdown.h"
++#include "topdown.h"
++
++/* Check whether there is a PMU which supports the perf metrics. */
++bool topdown_sys_has_perf_metrics(void)
++{
++	static bool has_perf_metrics;
++	static bool cached;
++	struct perf_pmu *pmu;
++
++	if (cached)
++		return has_perf_metrics;
++
++	/*
++	 * The perf metrics feature is a core PMU feature.
++	 * The PERF_TYPE_RAW type is the type of a core PMU.
++	 * The slots event is only available when the core PMU
++	 * supports the perf metrics feature.
++	 */
++	pmu = perf_pmu__find_by_type(PERF_TYPE_RAW);
++	if (pmu && pmu_have_event(pmu->name, "slots"))
++		has_perf_metrics = true;
++
++	cached = true;
++	return has_perf_metrics;
++}
  
  /*
-@@ -81,6 +81,7 @@ static void ax25_kill_by_device(struct net_device *dev)
- 
- 	if ((ax25_dev = ax25_dev_ax25dev(dev)) == NULL)
- 		return;
-+	ax25_dev->device_up = false;
- 
- 	spin_lock_bh(&ax25_list_lock);
- again:
-@@ -91,6 +92,7 @@ static void ax25_kill_by_device(struct net_device *dev)
- 				spin_unlock_bh(&ax25_list_lock);
- 				ax25_disconnect(s, ENETUNREACH);
- 				s->ax25_dev = NULL;
-+				ax25_cb_del(s);
- 				spin_lock_bh(&ax25_list_lock);
- 				goto again;
- 			}
-@@ -103,6 +105,7 @@ static void ax25_kill_by_device(struct net_device *dev)
- 				dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
- 				ax25_dev_put(ax25_dev);
- 			}
-+			ax25_cb_del(s);
- 			release_sock(sk);
- 			spin_lock_bh(&ax25_list_lock);
- 			sock_put(sk);
-@@ -995,9 +998,11 @@ static int ax25_release(struct socket *sock)
- 	if (sk->sk_type == SOCK_SEQPACKET) {
- 		switch (ax25->state) {
- 		case AX25_STATE_0:
--			release_sock(sk);
--			ax25_disconnect(ax25, 0);
--			lock_sock(sk);
-+			if (!sock_flag(ax25->sk, SOCK_DEAD)) {
-+				release_sock(sk);
-+				ax25_disconnect(ax25, 0);
-+				lock_sock(sk);
-+			}
- 			ax25_destroy_socket(ax25);
- 			break;
- 
-@@ -1053,11 +1058,13 @@ static int ax25_release(struct socket *sock)
- 		ax25_destroy_socket(ax25);
- 	}
- 	if (ax25_dev) {
--		del_timer_sync(&ax25->timer);
--		del_timer_sync(&ax25->t1timer);
--		del_timer_sync(&ax25->t2timer);
--		del_timer_sync(&ax25->t3timer);
--		del_timer_sync(&ax25->idletimer);
-+		if (!ax25_dev->device_up) {
-+			del_timer_sync(&ax25->timer);
-+			del_timer_sync(&ax25->t1timer);
-+			del_timer_sync(&ax25->t2timer);
-+			del_timer_sync(&ax25->t3timer);
-+			del_timer_sync(&ax25->idletimer);
-+		}
- 		dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
- 		ax25_dev_put(ax25_dev);
- 	}
-diff --git a/net/ax25/ax25_dev.c b/net/ax25/ax25_dev.c
-index d2a244e1c260..5451be15e072 100644
---- a/net/ax25/ax25_dev.c
-+++ b/net/ax25/ax25_dev.c
-@@ -62,6 +62,7 @@ void ax25_dev_device_up(struct net_device *dev)
- 	ax25_dev->dev     = dev;
- 	dev_hold_track(dev, &ax25_dev->dev_tracker, GFP_ATOMIC);
- 	ax25_dev->forward = NULL;
-+	ax25_dev->device_up = true;
- 
- 	ax25_dev->values[AX25_VALUES_IPDEFMODE] = AX25_DEF_IPDEFMODE;
- 	ax25_dev->values[AX25_VALUES_AXDEFMODE] = AX25_DEF_AXDEFMODE;
-diff --git a/net/ax25/ax25_subr.c b/net/ax25/ax25_subr.c
-index 3a476e4f6cd0..9ff98f46dc6b 100644
---- a/net/ax25/ax25_subr.c
-+++ b/net/ax25/ax25_subr.c
-@@ -268,7 +268,7 @@ void ax25_disconnect(ax25_cb *ax25, int reason)
- 		del_timer_sync(&ax25->t3timer);
- 		del_timer_sync(&ax25->idletimer);
- 	} else {
--		if (!ax25->sk || !sock_flag(ax25->sk, SOCK_DESTROY))
-+		if (ax25->sk && !sock_flag(ax25->sk, SOCK_DESTROY))
- 			ax25_stop_heartbeat(ax25);
- 		ax25_stop_t1timer(ax25);
- 		ax25_stop_t2timer(ax25);
+  * Check whether we can use a group for top down.
+diff --git a/tools/perf/arch/x86/util/topdown.h b/tools/perf/arch/x86/util/topdown.h
+new file mode 100644
+index 000000000000..46bf9273e572
+--- /dev/null
++++ b/tools/perf/arch/x86/util/topdown.h
+@@ -0,0 +1,7 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _TOPDOWN_H
++#define _TOPDOWN_H 1
++
++bool topdown_sys_has_perf_metrics(void);
++
++#endif
 -- 
 2.35.1
 
