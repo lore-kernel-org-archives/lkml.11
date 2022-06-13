@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5246FCCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0C37CCA489
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:25:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383840AbiFMOYJ (ORCPT
+        id S1383380AbiFMOZh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:24:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52162 "EHLO
+        Mon, 13 Jun 2022 10:25:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383380AbiFMOWh (ORCPT
+        with ESMTP id S1383409AbiFMOWm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:22:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF86EA2070;
-        Mon, 13 Jun 2022 04:44:08 -0700 (PDT)
+        Mon, 13 Jun 2022 10:22:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0F50A26E0;
+        Mon, 13 Jun 2022 04:44:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 570466124E;
-        Mon, 13 Jun 2022 11:44:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 645F1C34114;
-        Mon, 13 Jun 2022 11:44:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 45E12B80E2C;
+        Mon, 13 Jun 2022 11:44:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A79D1C34114;
+        Mon, 13 Jun 2022 11:44:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120647;
-        bh=/Bg4g8vHBekmMYy2+0twhuYuS6JwS1fBZWxGWAKG2ec=;
+        s=korg; t=1655120645;
+        bh=uG0I/gJsRKxBuo++ROArv2w/vHAcrZRr6c1u6N1YxZ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H3+yVdEHD4K1oXig/lBV8xR4aA/iFqAUevGuOEHUcN/P1ZeVJywt/7Xs8weFt47ss
-         pu7nN7nB1PjeA+KgoM1BF+IIS0HGFh6SIt++IdgXv8g69rCSjbI/4KXCaeLaHoTrtp
-         l7wJLZEeKxGCfbIUzsZvwVWZs3ktMzWRwPHEyk9c=
+        b=gqBDzvw+trlm1XrQp7jWWAYCCLLcEnHH+3wJIMkM02vdgaCmp+ck2kkclD1Pzc/gf
+         1vTldbAQMU3WpEUNS0DaKJTU9pAfW9Jsw4o4Q4NhDSO1eS0ihuY7spUQ97Jgg2+g6i
+         +LwNzjCRVvdzl/j7Jy8IiohirE85o/d9GKlRx1xk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Si-Wei Liu <si-wei.liu@oracle.com>,
-        Jason Wang <jasowang@redhat.com>, Eli Cohen <elic@nvidia.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 106/298] vdpa: Fix error logic in vdpa_nl_cmd_dev_get_doit
-Date:   Mon, 13 Jun 2022 12:10:00 +0200
-Message-Id: <20220613094928.164597971@linuxfoundation.org>
+        stable@vger.kernel.org, Genjian Zhang <zhanggenjian@kylinos.cn>,
+        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 088/298] ep93xx: clock: Do not return the address of the freed memory
+Date:   Mon, 13 Jun 2022 12:09:42 +0200
+Message-Id: <20220613094927.618030909@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -51,52 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eli Cohen <elic@nvidia.com>
+From: Genjian Zhang <zhanggenjian123@gmail.com>
 
-[ Upstream commit 7a6691f1f89784f775fa0c54be57533445726068 ]
+[ Upstream commit 8a7322a3a05f75e8a4902bdf8129aecd37d54fe9 ]
 
-In vdpa_nl_cmd_dev_get_doit(), if the call to genlmsg_reply() fails we
-must not call nlmsg_free() since this is done inside genlmsg_reply().
+Avoid return freed memory addresses,Modified to the actual error
+return value of clk_register().
 
-Fix it.
-
-Fixes: bc0d90ee021f ("vdpa: Enable user to query vdpa device info")
-Reviewed-by: Si-Wei Liu <si-wei.liu@oracle.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
-Signed-off-by: Eli Cohen <elic@nvidia.com>
-Message-Id: <20220518133804.1075129-2-elic@nvidia.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Fixes: 9645ccc7bd7a ("ep93xx: clock: convert in-place to COMMON_CLK")
+Signed-off-by: Genjian Zhang <zhanggenjian@kylinos.cn>
+Acked-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vdpa/vdpa.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ arch/arm/mach-ep93xx/clock.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
-index 1ea525433a5c..4e7351110e43 100644
---- a/drivers/vdpa/vdpa.c
-+++ b/drivers/vdpa/vdpa.c
-@@ -756,14 +756,19 @@ static int vdpa_nl_cmd_dev_get_doit(struct sk_buff *skb, struct genl_info *info)
- 		goto mdev_err;
- 	}
- 	err = vdpa_dev_fill(vdev, msg, info->snd_portid, info->snd_seq, 0, info->extack);
--	if (!err)
--		err = genlmsg_reply(msg, info);
-+	if (err)
-+		goto mdev_err;
-+
-+	err = genlmsg_reply(msg, info);
-+	put_device(dev);
-+	mutex_unlock(&vdpa_dev_mutex);
-+	return err;
-+
- mdev_err:
- 	put_device(dev);
- err:
- 	mutex_unlock(&vdpa_dev_mutex);
--	if (err)
--		nlmsg_free(msg);
-+	nlmsg_free(msg);
- 	return err;
+diff --git a/arch/arm/mach-ep93xx/clock.c b/arch/arm/mach-ep93xx/clock.c
+index 28e0ae6e890e..00c2db101ce5 100644
+--- a/arch/arm/mach-ep93xx/clock.c
++++ b/arch/arm/mach-ep93xx/clock.c
+@@ -345,9 +345,10 @@ static struct clk_hw *clk_hw_register_ddiv(const char *name,
+ 	psc->hw.init = &init;
+ 
+ 	clk = clk_register(NULL, &psc->hw);
+-	if (IS_ERR(clk))
++	if (IS_ERR(clk)) {
+ 		kfree(psc);
+-
++		return ERR_CAST(clk);
++	}
+ 	return &psc->hw;
+ }
+ 
+@@ -452,9 +453,10 @@ static struct clk_hw *clk_hw_register_div(const char *name,
+ 	psc->hw.init = &init;
+ 
+ 	clk = clk_register(NULL, &psc->hw);
+-	if (IS_ERR(clk))
++	if (IS_ERR(clk)) {
+ 		kfree(psc);
+-
++		return ERR_CAST(clk);
++	}
+ 	return &psc->hw;
  }
  
 -- 
