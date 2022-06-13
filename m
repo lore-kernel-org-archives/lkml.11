@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C87D7C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7E5BC43334
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:04:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357672AbiFMNDi (ORCPT
+        id S1357720AbiFMNDr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:03:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45750 "EHLO
+        Mon, 13 Jun 2022 09:03:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358351AbiFMMzL (ORCPT
+        with ESMTP id S1354986AbiFMMzM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:55:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D83826F4;
-        Mon, 13 Jun 2022 04:15:08 -0700 (PDT)
+        Mon, 13 Jun 2022 08:55:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 374329FFF;
+        Mon, 13 Jun 2022 04:15:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BEA3D60B6B;
-        Mon, 13 Jun 2022 11:15:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCF50C34114;
-        Mon, 13 Jun 2022 11:15:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E61D1B80D31;
+        Mon, 13 Jun 2022 11:15:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A105C34114;
+        Mon, 13 Jun 2022 11:15:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118907;
-        bh=HV73AQN1kNcjmqMkArhjy0PLs8x/DcI7HaSRZwf/Jeg=;
+        s=korg; t=1655118923;
+        bh=aHzfA6oGqRNurQkGlWsaEsU5EAYtgpsc2v2fGQ8sZv4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wVexd7ii8FaqOnDmG4nYHOZaivLc1C0IhFaOF5UBjb3NWHNOWbAAoZIET1OdI2K23
-         /lHhpQbH/qAYuikpX+5ses3LErOdgfNAxgZ1zdu5BsNgpu4lXBbCKd0kg+Nsvh/15L
-         vRnAvQedXS2mCmK+lKbR21A1W4WxtXLtZQ8nfbPM=
+        b=0pcMr7UMPFDMX7eTGckTCpMolWrRlNg3/PhdyzlEBIBkxlDRAGMc9AjEut2oYg9jg
+         s/Fmwk4LNqIb6eG3gMq/tNWH8QFTZKIMmZl3JJbnGBI03PPeEHu9DNYPwU1/wBf9br
+         326BrDYp1G3RM41L1PdEE/i6pAP2wSFuzY4SblW8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 070/247] clocksource/drivers/oxnas-rps: Fix irq_of_parse_and_map() return value
-Date:   Mon, 13 Jun 2022 12:09:32 +0200
-Message-Id: <20220613094925.082500845@linuxfoundation.org>
+Subject: [PATCH 5.15 049/247] staging: r8188eu: add check for kzalloc
+Date:   Mon, 13 Jun 2022 12:09:11 +0200
+Message-Id: <20220613094924.439178209@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -52,35 +50,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 9c04a8ff03def4df3f81219ffbe1ec9b44ff5348 ]
+[ Upstream commit f94b47c6bde624d6c07f43054087607c52054a95 ]
 
-The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
+As kzalloc() may return null pointer, it should be better to
+check the return value and return error if fails in order
+to avoid dereference of null pointer.
+Moreover, the return value of rtw_alloc_hwxmits() should also
+be dealt with.
 
-Fixes: 89355274e1f7 ("clocksource/drivers/oxnas-rps: Add Oxford Semiconductor RPS Dual Timer")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20220422104101.55754-1-krzysztof.kozlowski@linaro.org
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Fixes: 15865124feed ("staging: r8188eu: introduce new core dir for RTL8188eu driver")
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20220518075957.514603-1-jiasheng@iscas.ac.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clocksource/timer-oxnas-rps.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/staging/r8188eu/core/rtw_xmit.c    | 13 +++++++++++--
+ drivers/staging/r8188eu/include/rtw_xmit.h |  2 +-
+ 2 files changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/clocksource/timer-oxnas-rps.c b/drivers/clocksource/timer-oxnas-rps.c
-index 56c0cc32d0ac..d514b44e67dd 100644
---- a/drivers/clocksource/timer-oxnas-rps.c
-+++ b/drivers/clocksource/timer-oxnas-rps.c
-@@ -236,7 +236,7 @@ static int __init oxnas_rps_timer_init(struct device_node *np)
- 	}
+diff --git a/drivers/staging/r8188eu/core/rtw_xmit.c b/drivers/staging/r8188eu/core/rtw_xmit.c
+index 46fe62c7c32c..0ee4f88a60d4 100644
+--- a/drivers/staging/r8188eu/core/rtw_xmit.c
++++ b/drivers/staging/r8188eu/core/rtw_xmit.c
+@@ -179,7 +179,12 @@ s32	_rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter)
  
- 	rps->irq = irq_of_parse_and_map(np, 0);
--	if (rps->irq < 0) {
-+	if (!rps->irq) {
- 		ret = -EINVAL;
- 		goto err_iomap;
+ 	pxmitpriv->free_xmit_extbuf_cnt = num_xmit_extbuf;
+ 
+-	rtw_alloc_hwxmits(padapter);
++	res = rtw_alloc_hwxmits(padapter);
++	if (res) {
++		res = _FAIL;
++		goto exit;
++	}
++
+ 	rtw_init_hwxmits(pxmitpriv->hwxmits, pxmitpriv->hwxmit_entry);
+ 
+ 	for (i = 0; i < 4; i++)
+@@ -1516,7 +1521,7 @@ s32 rtw_xmit_classifier(struct adapter *padapter, struct xmit_frame *pxmitframe)
+ 	return res;
+ }
+ 
+-void rtw_alloc_hwxmits(struct adapter *padapter)
++int rtw_alloc_hwxmits(struct adapter *padapter)
+ {
+ 	struct hw_xmit *hwxmits;
+ 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
+@@ -1524,6 +1529,8 @@ void rtw_alloc_hwxmits(struct adapter *padapter)
+ 	pxmitpriv->hwxmit_entry = HWXMIT_ENTRY;
+ 
+ 	pxmitpriv->hwxmits = kzalloc(sizeof(struct hw_xmit) * pxmitpriv->hwxmit_entry, GFP_KERNEL);
++	if (!pxmitpriv->hwxmits)
++		return -ENOMEM;
+ 
+ 	hwxmits = pxmitpriv->hwxmits;
+ 
+@@ -1540,6 +1547,8 @@ void rtw_alloc_hwxmits(struct adapter *padapter)
+ 		hwxmits[3] .sta_queue = &pxmitpriv->bk_pending;
+ 	} else {
  	}
++
++	return 0;
+ }
+ 
+ void rtw_free_hwxmits(struct adapter *padapter)
+diff --git a/drivers/staging/r8188eu/include/rtw_xmit.h b/drivers/staging/r8188eu/include/rtw_xmit.h
+index 5f6e2402e5c4..762a2fa3bd17 100644
+--- a/drivers/staging/r8188eu/include/rtw_xmit.h
++++ b/drivers/staging/r8188eu/include/rtw_xmit.h
+@@ -345,7 +345,7 @@ s32 rtw_txframes_sta_ac_pending(struct adapter *padapter,
+ void rtw_init_hwxmits(struct hw_xmit *phwxmit, int entry);
+ s32 _rtw_init_xmit_priv(struct xmit_priv *pxmitpriv, struct adapter *padapter);
+ void _rtw_free_xmit_priv(struct xmit_priv *pxmitpriv);
+-void rtw_alloc_hwxmits(struct adapter *padapter);
++int rtw_alloc_hwxmits(struct adapter *padapter);
+ void rtw_free_hwxmits(struct adapter *padapter);
+ s32 rtw_xmit(struct adapter *padapter, struct sk_buff **pkt);
+ 
 -- 
 2.35.1
 
