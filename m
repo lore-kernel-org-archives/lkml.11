@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CF8AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:45:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AB7BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:46:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244610AbiFMKpv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:45:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47076 "EHLO
+        id S1343857AbiFMKp7 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:45:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344383AbiFMKnK (ORCPT
+        with ESMTP id S1344440AbiFMKnW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:43:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 803CC201AF;
-        Mon, 13 Jun 2022 03:24:18 -0700 (PDT)
+        Mon, 13 Jun 2022 06:43:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 580C2DEB2;
+        Mon, 13 Jun 2022 03:24:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2CF70B80E93;
-        Mon, 13 Jun 2022 10:24:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83086C34114;
-        Mon, 13 Jun 2022 10:24:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E5E1260EF1;
+        Mon, 13 Jun 2022 10:24:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECD19C34114;
+        Mon, 13 Jun 2022 10:24:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115855;
-        bh=fUccMmsfOzKYZd6COXAYnrw2L2WSTwWeZlgrixzSPL4=;
+        s=korg; t=1655115861;
+        bh=2coxdtFwOui/42DUBZHhxWF1Tv1uA+X/Lsw8Kg5nJ8o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DSLouAitbcv04icFK/6k4lBWLz/vqDu6mKMaxwBKidvGBSVSqJ/TtprKKjQJojuyv
-         dg/6SQHxK0LMXKOSuT3gNrdr5w0/skXZ5xGpEC5cL+8XEqTr0oblHtmmd+4Pe/waVG
-         K8gKSxYp9fI5qBATX4F+1T3BSSGoaaM/dmbJFPTY=
+        b=kfQUFUmtOT0vXm46lQyxKDd0oHcT6H/mrQhjbALFVUTo+iDtDm+pR1isENpOLAJYJ
+         PC7ZZGadBonEhRw3z1GDhkTcVmT55Gc+oHXpJFl99DIteUlInKdL/Iyq+PPtKBUc2b
+         gprW7+3opi8h6zbpNmKV0XBbxn2gPvU9+l98ZjjM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheng Yongjun <zhengyongjun3@huawei.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 057/218] spi: img-spfi: Fix pm_runtime_get_sync() error checking
-Date:   Mon, 13 Jun 2022 12:08:35 +0200
-Message-Id: <20220613094921.218969567@linuxfoundation.org>
+        stable@vger.kernel.org, Amir Goldstein <amir73il@gmail.com>,
+        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 059/218] inotify: show inotify mask flags in proc fdinfo
+Date:   Mon, 13 Jun 2022 12:08:37 +0200
+Message-Id: <20220613094921.366923196@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -49,36 +49,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheng Yongjun <zhengyongjun3@huawei.com>
+From: Amir Goldstein <amir73il@gmail.com>
 
-[ Upstream commit cc470d55343056d6b2a5c32e10e0aad06f324078 ]
+[ Upstream commit a32e697cda27679a0327ae2cafdad8c7170f548f ]
 
-If the device is already in a runtime PM enabled state
-pm_runtime_get_sync() will return 1, so a test for negative
-value should be used to check for errors.
+The inotify mask flags IN_ONESHOT and IN_EXCL_UNLINK are not "internal
+to kernel" and should be exposed in procfs fdinfo so CRIU can restore
+them.
 
-Fixes: deba25800a12b ("spi: Add driver for IMG SPFI controller")
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
-Link: https://lore.kernel.org/r/20220422062641.10486-1-zhengyongjun3@huawei.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 6933599697c9 ("inotify: hide internal kernel bits from fdinfo")
+Link: https://lore.kernel.org/r/20220422120327.3459282-2-amir73il@gmail.com
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-img-spfi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/notify/fdinfo.c               | 11 ++---------
+ fs/notify/inotify/inotify.h      | 12 ++++++++++++
+ fs/notify/inotify/inotify_user.c |  2 +-
+ 3 files changed, 15 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/spi/spi-img-spfi.c b/drivers/spi/spi-img-spfi.c
-index 2a340234c85c..82ab1bc2196a 100644
---- a/drivers/spi/spi-img-spfi.c
-+++ b/drivers/spi/spi-img-spfi.c
-@@ -771,7 +771,7 @@ static int img_spfi_resume(struct device *dev)
- 	int ret;
+diff --git a/fs/notify/fdinfo.c b/fs/notify/fdinfo.c
+index 517f88c1dbe5..c62a87ee3b00 100644
+--- a/fs/notify/fdinfo.c
++++ b/fs/notify/fdinfo.c
+@@ -83,16 +83,9 @@ static void inotify_fdinfo(struct seq_file *m, struct fsnotify_mark *mark)
+ 	inode_mark = container_of(mark, struct inotify_inode_mark, fsn_mark);
+ 	inode = igrab(mark->connector->inode);
+ 	if (inode) {
+-		/*
+-		 * IN_ALL_EVENTS represents all of the mask bits
+-		 * that we expose to userspace.  There is at
+-		 * least one bit (FS_EVENT_ON_CHILD) which is
+-		 * used only internally to the kernel.
+-		 */
+-		u32 mask = mark->mask & IN_ALL_EVENTS;
+-		seq_printf(m, "inotify wd:%x ino:%lx sdev:%x mask:%x ignored_mask:%x ",
++		seq_printf(m, "inotify wd:%x ino:%lx sdev:%x mask:%x ignored_mask:0 ",
+ 			   inode_mark->wd, inode->i_ino, inode->i_sb->s_dev,
+-			   mask, mark->ignored_mask);
++			   inotify_mark_user_mask(mark));
+ 		show_mark_fhandle(m, inode);
+ 		seq_putc(m, '\n');
+ 		iput(inode);
+diff --git a/fs/notify/inotify/inotify.h b/fs/notify/inotify/inotify.h
+index c00d2caca894..63050e25c84d 100644
+--- a/fs/notify/inotify/inotify.h
++++ b/fs/notify/inotify/inotify.h
+@@ -21,6 +21,18 @@ static inline struct inotify_event_info *INOTIFY_E(struct fsnotify_event *fse)
+ 	return container_of(fse, struct inotify_event_info, fse);
+ }
  
- 	ret = pm_runtime_get_sync(dev);
--	if (ret) {
-+	if (ret < 0) {
- 		pm_runtime_put_noidle(dev);
- 		return ret;
- 	}
++/*
++ * INOTIFY_USER_FLAGS represents all of the mask bits that we expose to
++ * userspace.  There is at least one bit (FS_EVENT_ON_CHILD) which is
++ * used only internally to the kernel.
++ */
++#define INOTIFY_USER_MASK (IN_ALL_EVENTS | IN_ONESHOT | IN_EXCL_UNLINK)
++
++static inline __u32 inotify_mark_user_mask(struct fsnotify_mark *fsn_mark)
++{
++	return fsn_mark->mask & INOTIFY_USER_MASK;
++}
++
+ extern void inotify_ignored_and_remove_idr(struct fsnotify_mark *fsn_mark,
+ 					   struct fsnotify_group *group);
+ extern int inotify_handle_event(struct fsnotify_group *group,
+diff --git a/fs/notify/inotify/inotify_user.c b/fs/notify/inotify/inotify_user.c
+index 7cc7d3fb1862..2393956542bc 100644
+--- a/fs/notify/inotify/inotify_user.c
++++ b/fs/notify/inotify/inotify_user.c
+@@ -95,7 +95,7 @@ static inline __u32 inotify_arg_to_mask(u32 arg)
+ 	mask = (FS_IN_IGNORED | FS_EVENT_ON_CHILD | FS_UNMOUNT);
+ 
+ 	/* mask off the flags used to open the fd */
+-	mask |= (arg & (IN_ALL_EVENTS | IN_ONESHOT | IN_EXCL_UNLINK));
++	mask |= (arg & INOTIFY_USER_MASK);
+ 
+ 	return mask;
+ }
 -- 
 2.35.1
 
