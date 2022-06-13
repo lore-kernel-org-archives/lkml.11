@@ -2,117 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A22FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:20:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E800BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:20:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348254AbiFMTUM (ORCPT
+        id S1348317AbiFMTUS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:20:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39278 "EHLO
+        Mon, 13 Jun 2022 15:20:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233381AbiFMTQk (ORCPT
+        with ESMTP id S1351207AbiFMTT3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 15:16:40 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 200D3562DA;
-        Mon, 13 Jun 2022 10:28:28 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id z17so6331284pff.7;
-        Mon, 13 Jun 2022 10:28:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=yv4/HdDYVjkX/YAztaZebjL1a0eQClbhVe6udK7q55Q=;
-        b=R4KQhc65mAGubUVJTJuWOM9bF5a4E4aR2gWSHzop0dE6laiurPYFF44248RO1CN/49
-         WGb5A/2tKnAUyTlNMto07nWaja1JSdE0p5FCaIOBCx0GpqRcN6UnwOfVVvtl9+g0krxZ
-         UyaGiIURgykSXcIYLf9MJ59TgoMP3BburahgZgyuOCcoEL5Wno83fRLSagiwcmEG8Z7L
-         t+D45/nsuHfvfQfooZUVeKI2gOrZlvXwlvj0TJmpMa5ttYI7M3o7z2+dC2wBOYu6NLWy
-         f1G3g8SRqYk7jGR6uWZj9DZV2Cm8hnqHoeEfoRwikam2u3kgDwXnQ1m0xEMETKYD9EI3
-         X91Q==
+        Mon, 13 Jun 2022 15:19:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B434952E68
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:24:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655141058;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=yGvm3qwPoTuLTdX5NWsaOkcpvKYLKtr/ysaBv6CZIVc=;
+        b=TozptT0xEY1aP5OSkkSo+GH0XDUt1LkOJXV4DM6uNDVL4mSaJYLbvW0DZyVpgsA/Dvq3Is
+        WLwkGpPNIt0kVF3ZtqJ4b46smEQSQJe9RTrbk3PHJPfgLgZ8HUElwMmpo10NuNAtS/fpd3
+        X9RmSVuKXM08g1j+7ORIwJeImkhX7Ys=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-428-AfnhMt6vOumKmHm09ZLWog-1; Mon, 13 Jun 2022 13:24:17 -0400
+X-MC-Unique: AfnhMt6vOumKmHm09ZLWog-1
+Received: by mail-wm1-f72.google.com with SMTP id l4-20020a05600c1d0400b0039c60535405so2774385wms.6
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:24:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition
-         :content-transfer-encoding:in-reply-to;
-        bh=yv4/HdDYVjkX/YAztaZebjL1a0eQClbhVe6udK7q55Q=;
-        b=0exH7V8dY+pqJNYT4OggtW+Hh23cXrgGahMb/JlYa3qRTSehwxjPMub0injxdm8cwY
-         B/qffLeZ6pWLy8iBIWXUVvYW5Kp/cmrTmlgZuXyqykb5slIdWYgCz+mHqRAtRvGjc1hb
-         iSw+L3PGkkAEgSgAmUgvm3a2Ps7uZ21+DZN9aFbjTViJx/AESHWwGFJvYDuFVPhpYE9e
-         0ZAd3jIhp8ppxPQx2yNPXP4ePTTonXRdvBqYTqse1p2Gnc6KCtQfvrtfw3lYLKilS2Iz
-         1CWcWSivFD3hsxvOPPK10PBC1Yc1jnTdBgmCCziSXC91ZpfHZR3UAVrj2JBaLzXnmvMf
-         kYyw==
-X-Gm-Message-State: AOAM532V2dYmbTw9meKt93LIHTWvqHUw9tlO+1NtFg2JS63zQNjmtB3u
-        XQQ+S2UN3OJLNJtZbY8UYDQ=
-X-Google-Smtp-Source: AGRyM1v+z2rPkn1qb0UFNOFd9//S65o7RvxU3mSJDSoDEAw40pCYl1wX79IBkc8c8nQeVnqvpQb2Tg==
-X-Received: by 2002:a05:6a00:2392:b0:51b:fe0e:2b8 with SMTP id f18-20020a056a00239200b0051bfe0e02b8mr31643pfc.84.1655141307321;
-        Mon, 13 Jun 2022 10:28:27 -0700 (PDT)
-Received: from localhost (2603-800c-1a02-1bae-a7fa-157f-969a-4cde.res6.spectrum.com. [2603:800c:1a02:1bae:a7fa:157f:969a:4cde])
-        by smtp.gmail.com with ESMTPSA id b27-20020a63931b000000b003fe22d73d52sm5752410pge.74.2022.06.13.10.28.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 10:28:26 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Mon, 13 Jun 2022 07:28:25 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
-Cc:     Waiman Long <longman@redhat.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Shuah Khan <shuah@kernel.org>, cgroups@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <guro@fb.com>, Phil Auld <pauld@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Marcelo Tosatti <mtosatti@redhat.com>
-Subject: Re: [PATCH v11 7/8] cgroup/cpuset: Update description of
- cpuset.cpus.partition in cgroup-v2.rst
-Message-ID: <YqdzuSQuAeiPXQvy@slm.duckdns.org>
-References: <20220510153413.400020-1-longman@redhat.com>
- <20220510153413.400020-8-longman@redhat.com>
- <YqYnQ4U4t6j/3UaL@slm.duckdns.org>
- <404171dc-0da3-21f2-5003-9718f875e967@redhat.com>
- <YqarMyNo9oHxhZFh@slm.duckdns.org>
- <20220613142452.GB6910@blackbody.suse.cz>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=yGvm3qwPoTuLTdX5NWsaOkcpvKYLKtr/ysaBv6CZIVc=;
+        b=zt4aWBgFJhRhHeW0p998NprviVP51be9XfyLuHt6KoM5czPbKuQcZO8hFgs8jd6tWi
+         07k6Awl3gwwERzcl7rQRtH188KEP+0Al0mkcckaSg/jpkLm25B0DSsMOb15UtCoZ8cKP
+         jaZK7AHVUXzWlu1KLYzcVP2Sbe1aFXWWpsrsW5t56ayD7SiSiFXeb3LqJB3sA1GUDALY
+         l5EQd/9ocyZ+DUn3FjV0W0VVUwbLyUCE7D0XE6Qj7cL09m+0IwXtl6fBLYU+iN6v1DfT
+         cSyguIzdA5HD5pzr+qjQJylwaODAb0E7rM746U0efrgv0uL97fTCfYCLpzowhgJ8huzU
+         JOjA==
+X-Gm-Message-State: AJIora/wBBMH/OWn72fsNU9GpxPgni6a/KH7y2y3pN7+ZIhFzNO06GtO
+        fcRRsogFKcf+ekUcwnxGkWHyZV2HQxWv9tapz3z+WHh3PnPH29wX+VodK4AwWeiEzdee/08Tntt
+        sUXMuSr5Abl5RNsyXk1x4HDiNQu42Un/0zyu7NzQ3l1cEBc25g0NWi9IVEeUUJxqZxxdlVx7HKJ
+        w=
+X-Received: by 2002:a5d:5109:0:b0:218:40cc:a29b with SMTP id s9-20020a5d5109000000b0021840cca29bmr858421wrt.601.1655141055883;
+        Mon, 13 Jun 2022 10:24:15 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1umQvbmUV5kyQfsWQKm16COOgbaUu2gIG10MNTDJcGldHmXD3XO1wIjQhiRvT60PcbnoxxDAQ==
+X-Received: by 2002:a5d:5109:0:b0:218:40cc:a29b with SMTP id s9-20020a5d5109000000b0021840cca29bmr858386wrt.601.1655141055500;
+        Mon, 13 Jun 2022 10:24:15 -0700 (PDT)
+Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id d5-20020a5d5385000000b00213b93cff5fsm9082661wrv.98.2022.06.13.10.24.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Jun 2022 10:24:15 -0700 (PDT)
+Message-ID: <bbddcf97-7ab2-209b-e777-1874557491a3@redhat.com>
+Date:   Mon, 13 Jun 2022 19:24:14 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220613142452.GB6910@blackbody.suse.cz>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] Revert "fbdev: vesafb: Allow to be built if COMPILE_TEST
+ is enabled"
+Content-Language: en-US
+To:     linux-kernel@vger.kernel.org,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        linux-fbdev@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Helge Deller <deller@gmx.de>, dri-devel@lists.freedesktop.org,
+        Thomas Zimmermann <tzimmermann@suse.de>
+References: <20220610085450.1341880-1-javierm@redhat.com>
+ <YqMTI3yxmWq/f+Gp@phenom.ffwll.local>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <YqMTI3yxmWq/f+Gp@phenom.ffwll.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
-
-On Mon, Jun 13, 2022 at 04:24:52PM +0200, Michal Koutný wrote:
-> On Sun, Jun 12, 2022 at 05:12:51PM -1000, Tejun Heo <tj@kernel.org> wrote:
-> > On Sun, Jun 12, 2022 at 11:02:38PM -0400, Waiman Long wrote:
-> > > That is the behavior enforced by setting the CPU_EXCLUSIVE bit in cgroup v1.
-> > > I haven't explicitly change it to make it different in cgroup v2. The major
-> > > reason is that I don't want change to one cpuset to affect a sibling
-> > > partition as it may make the code more complicate to validate if a partition
-> > > is valid.
-> > 
-> > If at all possible, I'd really like to avoid situations where a parent can't
-> > withdraw resources due to something that a descendant does.
+On 6/10/22 11:47, Daniel Vetter wrote:
+> On Fri, Jun 10, 2022 at 10:54:50AM +0200, Javier Martinez Canillas wrote:
+>> This reverts commit fa0e256450f27a7d85f65c63f05e6897954a1d53. The kernel
+>> test robot reported that attempting to build the vesafb driver fails on
+>> some architectures, because these don't define a `struct screen_info`.
+>>
+>> This leads to linking errors, for example on parisc with allyesconfig:
+>>
+>>   hppa-linux-ld: drivers/video/fbdev/vesafb.o: in function `vesafb_probe':
+>>>> (.text+0x738): undefined reference to `screen_info'
+>>>> hppa-linux-ld: (.text+0x73c): undefined reference to `screen_info'
+>>    hppa-linux-ld: drivers/firmware/sysfb.o: in function `sysfb_init':
+>>>> (.init.text+0x28): undefined reference to `screen_info'
+>>>> hppa-linux-ld: (.init.text+0x30): undefined reference to `screen_info'
+>>    hppa-linux-ld: (.init.text+0x78): undefined reference to `screen_info'
+>>
+>> The goal of commit fa0e256450f2 ("fbdev: vesafb: Allow to be built if
+>> COMPILE_TEST is enabled") was to have more build coverage for the driver
+>> but it wrongly assumed that all architectures would define a screen_info.
+>>
+>> Reported-by: kernel test robot <lkp@intel.com>
+>> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
 > 
-> My understanding of the discussed paragraph is that the changes are only
-> disallowed only among siblings on one level (due to exclusivity rule,
-> checked in validate_change()). A change in parent won't affect
-> (non)exclusivity of (valid) children so it's simply allowed.
-> 
-> So the docs (and implementation by a quick look) is sensible.
+> Acked-by: Daniel Vetter <daniel.vetter@ffwll.ch>
 
-I see. Is this part even necessary? All the .cpus files of the siblings are
-owned by the parent who's responsible for configuring both the mode that the
-cgroup subtree is gonna be in and their cpumasks. Given that all the other
-errors it can make are notified through "invalid (REASON)" in the mode file,
-wouldn't it fit better to notify cpus configuration error the same way too?
-
-Thanks.
+Pushed to drm-misc (drm-misc-next). Thanks!
 
 -- 
-tejun
+Best regards,
+
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
+
