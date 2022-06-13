@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44AD0CCA47B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24B86CCA47C
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:00:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349471AbiFMLAR (ORCPT
+        id S1349416AbiFMLAN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:00:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43332 "EHLO
+        Mon, 13 Jun 2022 07:00:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350166AbiFMKyn (ORCPT
+        with ESMTP id S1350169AbiFMKyo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:54:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC785E020;
-        Mon, 13 Jun 2022 03:29:42 -0700 (PDT)
+        Mon, 13 Jun 2022 06:54:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 129D0CE27;
+        Mon, 13 Jun 2022 03:29:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5ABE560F09;
-        Mon, 13 Jun 2022 10:29:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C669C34114;
-        Mon, 13 Jun 2022 10:29:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B347BB80E95;
+        Mon, 13 Jun 2022 10:29:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 308E8C34114;
+        Mon, 13 Jun 2022 10:29:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116181;
-        bh=AXOBA65BddkvlexoXP5FgrUhECKQc/p2tp+kkr1ZyVw=;
+        s=korg; t=1655116184;
+        bh=zLNYGnhl3HROVhvLdtptN+k7B+4om0XZMN1MPs90rtQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vIgeDl5cZq6xtHA/7sqncTSOTdtKT9L7ZMmT+YO5OqhHljx00Pm3/XPEhXHKpfPTC
-         qQ6MQqfd0gmeuvJ7zQpRyeisXvxFfQi+A9VLG81+9E9JT1sYDwPzo7aTL1bsjQ2AnV
-         eJn354sBjwvycdOi5rwVUYUA+IK3XwKdMD5eu8KQ=
+        b=cezxAUu1Hy7rjA7rfa7zZ45rKnlrnrP3qrobQF6snOR0Oqe0uuPcSJBeyhHYzguL/
+         SmzXzzvTufTUQn5RkddcGUiT8OaREKfAwrLDVUKSIasSc+1nOMLqdbTag1zB8NHfIR
+         BplKq38ZlaYV/igqrj4BQG7AODigvW2uUgAETM6I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 028/411] media: cx25821: Fix the warning when removing the module
-Date:   Mon, 13 Jun 2022 12:05:01 +0200
-Message-Id: <20220613094929.346221037@linuxfoundation.org>
+        stable@vger.kernel.org, Xiao Yang <yangx.jy@fujitsu.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 4.14 137/218] RDMA/rxe: Generate a completion for unsupported/invalid opcode
+Date:   Mon, 13 Jun 2022 12:09:55 +0200
+Message-Id: <20220613094924.740783571@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,57 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Xiao Yang <yangx.jy@fujitsu.com>
 
-[ Upstream commit 2203436a4d24302871617373a7eb21bc17e38762 ]
+commit 2f917af777011c88e977b9b9a5d00b280d3a59ce upstream.
 
-When removing the module, we will get the following warning:
+Current rxe_requester() doesn't generate a completion when processing an
+unsupported/invalid opcode. If rxe driver doesn't support a new opcode
+(e.g. RDMA Atomic Write) and RDMA library supports it, an application
+using the new opcode can reproduce this issue. Fix the issue by calling
+"goto err;".
 
-[   14.746697] remove_proc_entry: removing non-empty directory 'irq/21', leaking at least 'cx25821[1]'
-[   14.747449] WARNING: CPU: 4 PID: 368 at fs/proc/generic.c:717 remove_proc_entry+0x389/0x3f0
-[   14.751611] RIP: 0010:remove_proc_entry+0x389/0x3f0
-[   14.759589] Call Trace:
-[   14.759792]  <TASK>
-[   14.759975]  unregister_irq_proc+0x14c/0x170
-[   14.760340]  irq_free_descs+0x94/0xe0
-[   14.760640]  mp_unmap_irq+0xb6/0x100
-[   14.760937]  acpi_unregister_gsi_ioapic+0x27/0x40
-[   14.761334]  acpi_pci_irq_disable+0x1d3/0x320
-[   14.761688]  pci_disable_device+0x1ad/0x380
-[   14.762027]  ? _raw_spin_unlock_irqrestore+0x2d/0x60
-[   14.762442]  ? cx25821_shutdown+0x20/0x9f0 [cx25821]
-[   14.762848]  cx25821_finidev+0x48/0xc0 [cx25821]
-[   14.763242]  pci_device_remove+0x92/0x240
-
-Fix this by freeing the irq before call pci_disable_device().
-
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 8700e3e7c485 ("Soft RoCE driver")
+Link: https://lore.kernel.org/r/20220410113513.27537-1-yangx.jy@fujitsu.com
+Signed-off-by: Xiao Yang <yangx.jy@fujitsu.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/pci/cx25821/cx25821-core.c | 2 +-
+ drivers/infiniband/sw/rxe/rxe_req.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/pci/cx25821/cx25821-core.c b/drivers/media/pci/cx25821/cx25821-core.c
-index 44839a6461e8..534829e352d1 100644
---- a/drivers/media/pci/cx25821/cx25821-core.c
-+++ b/drivers/media/pci/cx25821/cx25821-core.c
-@@ -1340,11 +1340,11 @@ static void cx25821_finidev(struct pci_dev *pci_dev)
- 	struct cx25821_dev *dev = get_cx25821(v4l2_dev);
+--- a/drivers/infiniband/sw/rxe/rxe_req.c
++++ b/drivers/infiniband/sw/rxe/rxe_req.c
+@@ -680,7 +680,7 @@ next_wqe:
+ 	opcode = next_opcode(qp, wqe, wqe->wr.opcode);
+ 	if (unlikely(opcode < 0)) {
+ 		wqe->status = IB_WC_LOC_QP_OP_ERR;
+-		goto exit;
++		goto err;
+ 	}
  
- 	cx25821_shutdown(dev);
--	pci_disable_device(pci_dev);
- 
- 	/* unregister stuff */
- 	if (pci_dev->irq)
- 		free_irq(pci_dev->irq, dev);
-+	pci_disable_device(pci_dev);
- 
- 	cx25821_dev_unregister(dev);
- 	v4l2_device_unregister(v4l2_dev);
--- 
-2.35.1
-
+ 	mask = rxe_opcode[opcode].mask;
 
 
