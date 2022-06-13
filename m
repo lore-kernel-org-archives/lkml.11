@@ -2,118 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA323C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:00:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35FCAC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:00:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357770AbiFMMAr (ORCPT
+        id S1357814AbiFMMAx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:00:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40930 "EHLO
+        Mon, 13 Jun 2022 08:00:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357822AbiFMLzb (ORCPT
+        with ESMTP id S1357841AbiFMLzd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:55:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 376A82F65C;
-        Mon, 13 Jun 2022 03:55:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 62B8F60F00;
-        Mon, 13 Jun 2022 10:55:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B5BAC34114;
-        Mon, 13 Jun 2022 10:55:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117757;
-        bh=jxEjlTK9mZXyhLDgzbjCleRTp+NO72RnmSqx3iFZMIY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RdA0Bfy7SEmEgDN97L9rToI/bF9p2i7KmYI0LhhDL3RWbFp/SVdFwu+l30MVqvwak
-         lS+DGi1YjG7AbGEgKQUBaLBD9KHbs2rguMYHKISnUYDHDidkr89iUuzrJuCeJDQx5/
-         +6Sx4GNaxGt16nQh7EnNlTTqz1V+6A0P07RZHEYk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Alistair Popple <apopple@nvidia.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Hugh Dickins <hughd@google.com>, Jan Kara <jack@suse.cz>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        Ross Zwisler <zwisler@kernel.org>,
-        Xiongchun Duan <duanxiongchun@bytedance.com>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Yang Shi <shy828301@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 121/287] dax: fix cache flush on PMD-mapped pages
-Date:   Mon, 13 Jun 2022 12:09:05 +0200
-Message-Id: <20220613094927.548793667@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
-References: <20220613094923.832156175@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 13 Jun 2022 07:55:33 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5E332F67A;
+        Mon, 13 Jun 2022 03:56:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1655117761; x=1686653761;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=vbuPPm2ZNkUse/X0oH12l21pmvWvlzFHAvFZQz0hTnA=;
+  b=mJ4H9cbcCxO+Uu9n74cyqMWQoGiDQ1+IMUtnAGj52zfZavn1sQnbr1DZ
+   oydIm9mRfuGDQvwld//R2pk6AgJqJI5IZ0BR1fAOrdyQcgofyRy6EyrD0
+   CCt0EV0SbVYFk+SatrX7DALZPtpoNoDPedi+S/iW2UX4EJqYYx0gF90V7
+   4=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 13 Jun 2022 03:56:01 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 03:56:00 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 13 Jun 2022 03:56:00 -0700
+Received: from [10.216.14.138] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 13 Jun
+ 2022 03:55:54 -0700
+Message-ID: <23bb9f5d-85fe-d7a7-d178-1185981f1b89@quicinc.com>
+Date:   Mon, 13 Jun 2022 16:25:51 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH 1/2] ASoC: dt-bindings: lpass-cpu: Update external mclck0
+ name
+Content-Language: en-US
+To:     Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>
+CC:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <lgirdwood@gmail.com>, <quic_plai@quicinc.com>,
+        <bgoswami@quicinc.com>, <perex@perex.cz>, <tiwai@suse.com>,
+        <srinivas.kandagatla@linaro.org>, <quic_rohkumar@quicinc.com>,
+        <linux-arm-msm@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>, <devicetree@vger.kernel.org>
+References: <1654169206-12255-1-git-send-email-quic_srivasam@quicinc.com>
+ <1654169206-12255-2-git-send-email-quic_srivasam@quicinc.com>
+ <20220602143245.GA2256965-robh@kernel.org> <YpjL3X73LyefYjI7@sirena.org.uk>
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Organization: Qualcomm
+In-Reply-To: <YpjL3X73LyefYjI7@sirena.org.uk>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Muchun Song <songmuchun@bytedance.com>
 
-[ Upstream commit e583b5c472bd23d450e06f148dc1f37be74f7666 ]
+On 6/2/2022 8:10 PM, Mark Brown wrote:
+Thanks for your time Mark Brown and Rob Herring!!!
+> On Thu, Jun 02, 2022 at 09:32:45AM -0500, Rob Herring wrote:
+>> On Thu, Jun 02, 2022 at 04:56:45PM +0530, Srinivasa Rao Mandadapu wrote:
+>>> Update "audio_cc_ext_mclk0" name to "core_cc_ext_mclk0",
+>>> as MI2S mclk is being used is from lpass core cc.
+>> This is safe to change breaking the ABI because ...
+> The driver was only just merged so didn't make it into a full
+> release.
+yes. DTS changes are still in review state.
+>
+>> Names are supposed to be local to the module, not based on their source.
+> Indeed.
 
-The flush_cache_page() only remove a PAGE_SIZE sized range from the cache.
-However, it does not cover the full pages in a THP except a head page.
-Replace it with flush_cache_range() to fix this issue.  This is just a
-documentation issue with the respect to properly documenting the expected
-usage of cache flushing before modifying the pmd.  However, in practice
-this is not a problem due to the fact that DAX is not available on
-architectures with virtually indexed caches per:
+Okay. Will take care next time. As external MCLK is supported from both 
+modules, audio cc and core cc,
 
-  commit d92576f1167c ("dax: does not work correctly with virtual aliasing caches")
-
-Link: https://lkml.kernel.org/r/20220403053957.10770-3-songmuchun@bytedance.com
-Fixes: f729c8c9b24f ("dax: wrprotect pmd_t in dax_mapping_entry_mkclean")
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Reviewed-by: Dan Williams <dan.j.williams@intel.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Cc: Alistair Popple <apopple@nvidia.com>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Cc: Hugh Dickins <hughd@google.com>
-Cc: Jan Kara <jack@suse.cz>
-Cc: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc: Matthew Wilcox <willy@infradead.org>
-Cc: Ralph Campbell <rcampbell@nvidia.com>
-Cc: Ross Zwisler <zwisler@kernel.org>
-Cc: Xiongchun Duan <duanxiongchun@bytedance.com>
-Cc: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Cc: Yang Shi <shy828301@gmail.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/dax.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/fs/dax.c b/fs/dax.c
-index d09701aa6f2f..7451efc5020c 100644
---- a/fs/dax.c
-+++ b/fs/dax.c
-@@ -907,7 +907,8 @@ static void dax_mapping_entry_mkclean(struct address_space *mapping,
- 			if (!pmd_dirty(*pmdp) && !pmd_write(*pmdp))
- 				goto unlock_pmd;
- 
--			flush_cache_page(vma, address, pfn);
-+			flush_cache_range(vma, address,
-+					  address + HPAGE_PMD_SIZE);
- 			pmd = pmdp_invalidate(vma, address, pmdp);
- 			pmd = pmd_wrprotect(pmd);
- 			pmd = pmd_mkclean(pmd);
--- 
-2.35.1
-
-
+for now it's mandatory to change the name to avoid confusion.
 
