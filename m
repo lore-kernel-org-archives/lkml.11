@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C2DFC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:02:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FD4CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:02:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380935AbiFMOCn (ORCPT
+        id S1380562AbiFMOCx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:02:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35480 "EHLO
+        Mon, 13 Jun 2022 10:02:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380925AbiFMNzg (ORCPT
+        with ESMTP id S1380951AbiFMNzl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:55:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED8D182179;
-        Mon, 13 Jun 2022 04:36:18 -0700 (PDT)
+        Mon, 13 Jun 2022 09:55:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9751384A1F;
+        Mon, 13 Jun 2022 04:36:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 003BE6130D;
-        Mon, 13 Jun 2022 11:36:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0864CC34114;
-        Mon, 13 Jun 2022 11:36:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3DFE4612A8;
+        Mon, 13 Jun 2022 11:36:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5362CC34114;
+        Mon, 13 Jun 2022 11:36:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120177;
-        bh=NdoOI/mdof+A4Uy4fR9Q85uef2kWgrggo63N4r2XOrk=;
+        s=korg; t=1655120182;
+        bh=GJNqqOKr0NBTjxoklh0NXy0vOn2yoYx8voMPjGc1T3A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1u0EsmT41ZerQqOsgwv6IUIzK9ZcVK/85BufU2jzzaZ+rbPI++lUqfuB4Niwye005
-         +nb9SadDMNiYL/jCB5OX8QLnDtMf60DqfYWHhm9x9bup144afkmnpvtKLb7Dak19Gr
-         04yHf0RhDNPSlYVJkkHGAIc5u6vtcILwbFph3Cow=
+        b=s3m6Wl373YXO4Z16W1lZcf2PoCPqnbxpPkz0PmuYrRvim+foJHvRZD3BIwKiStTtK
+         QNL5VV8w9RQmGkI/rlzemBe3e/M4R7uHAYdVyMJ+Q0cGKsdSR7d6U1TWyOZvfRanQF
+         NvSBwF1ocPHtmQzQGoyn6cQAXFYmQ8iPCA4wdIEU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Cyril Brulebois <kibi@debian.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
+        stable@vger.kernel.org, Xiubo Li <xiubli@redhat.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 278/339] Revert "PCI: brcmstb: Do not turn off WOL regulators on suspend"
-Date:   Mon, 13 Jun 2022 12:11:43 +0200
-Message-Id: <20220613094935.069895635@linuxfoundation.org>
+Subject: [PATCH 5.18 262/339] ceph: fix possible deadlock when holding Fwb to get inline_data
+Date:   Mon, 13 Jun 2022 12:11:27 +0200
+Message-Id: <20220613094934.597789562@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,124 +51,152 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Helgaas <bhelgaas@google.com>
+From: Xiubo Li <xiubli@redhat.com>
 
-[ Upstream commit 7894025c783ca36394d3afe49c8cfb4c830b82fe ]
+[ Upstream commit 825978fd6a0defc3c29d8a38b6cea76a0938d21e ]
 
-This reverts commit 11ed8b8624b8085f706864b4addcd304b1e4fc38.
+1, mount with wsync.
+2, create a file with O_RDWR, and the request was sent to mds.0:
 
-This is part of a revert of the following commits:
+   ceph_atomic_open()-->
+     ceph_mdsc_do_request(openc)
+     finish_open(file, dentry, ceph_open)-->
+       ceph_open()-->
+         ceph_init_file()-->
+           ceph_init_file_info()-->
+             ceph_uninline_data()-->
+             {
+               ...
+               if (inline_version == 1 || /* initial version, no data */
+                   inline_version == CEPH_INLINE_NONE)
+                     goto out_unlock;
+               ...
+             }
 
-  11ed8b8624b8 ("PCI: brcmstb: Do not turn off WOL regulators on suspend")
-  93e41f3fca3d ("PCI: brcmstb: Add control of subdevice voltage regulators")
-  67211aadcb4b ("PCI: brcmstb: Add mechanism to turn on subdev regulators")
-  830aa6f29f07 ("PCI: brcmstb: Split brcm_pcie_setup() into two funcs")
+The inline_version will be 1, which is the initial version for the
+new create file. And here the ci->i_inline_version will keep with 1,
+it's buggy.
 
-Cyril reported that 830aa6f29f07 ("PCI: brcmstb: Split brcm_pcie_setup()
-into two funcs"), which appeared in v5.17-rc1, broke booting on the
-Raspberry Pi Compute Module 4.  Apparently 830aa6f29f07 panics with an
-Asynchronous SError Interrupt, and after further commits here is a black
-screen on HDMI and no output on the serial console.
+3, buffer write to the file immediately:
 
-This does not seem to affect the Raspberry Pi 4 B.
+   ceph_write_iter()-->
+     ceph_get_caps(file, need=Fw, want=Fb, ...);
+     generic_perform_write()-->
+       a_ops->write_begin()-->
+         ceph_write_begin()-->
+           netfs_write_begin()-->
+             netfs_begin_read()-->
+               netfs_rreq_submit_slice()-->
+                 netfs_read_from_server()-->
+                   rreq->netfs_ops->issue_read()-->
+                     ceph_netfs_issue_read()-->
+                     {
+                       ...
+                       if (ci->i_inline_version != CEPH_INLINE_NONE &&
+                           ceph_netfs_issue_op_inline(subreq))
+                         return;
+                       ...
+                     }
+     ceph_put_cap_refs(ci, Fwb);
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215925
-Link: https://lore.kernel.org/r/20220511201856.808690-2-helgaas@kernel.org
-Reported-by: Cyril Brulebois <kibi@debian.org>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+The ceph_netfs_issue_op_inline() will send a getattr(Fsr) request to
+mds.1.
+
+4, then the mds.1 will request the rd lock for CInode::filelock from
+the auth mds.0, the mds.0 will do the CInode::filelock state transation
+from excl --> sync, but it need to revoke the Fxwb caps back from the
+clients.
+
+While the kernel client has aleady held the Fwb caps and waiting for
+the getattr(Fsr).
+
+It's deadlock!
+
+URL: https://tracker.ceph.com/issues/55377
+Signed-off-by: Xiubo Li <xiubli@redhat.com>
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pcie-brcmstb.c | 53 +++++----------------------
- 1 file changed, 9 insertions(+), 44 deletions(-)
+ fs/ceph/addr.c | 33 +++++++++++++++++++--------------
+ 1 file changed, 19 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/pci/controller/pcie-brcmstb.c b/drivers/pci/controller/pcie-brcmstb.c
-index 375c0c40bbf8..3edd63735948 100644
---- a/drivers/pci/controller/pcie-brcmstb.c
-+++ b/drivers/pci/controller/pcie-brcmstb.c
-@@ -333,7 +333,6 @@ struct brcm_pcie {
- 	void			(*bridge_sw_init_set)(struct brcm_pcie *pcie, u32 val);
- 	bool			refusal_mode;
- 	struct subdev_regulators *sr;
--	bool			ep_wakeup_capable;
- };
+diff --git a/fs/ceph/addr.c b/fs/ceph/addr.c
+index b6edcf89a429..adef10a6e5c7 100644
+--- a/fs/ceph/addr.c
++++ b/fs/ceph/addr.c
+@@ -1644,7 +1644,7 @@ int ceph_uninline_data(struct file *file)
+ 	struct inode *inode = file_inode(file);
+ 	struct ceph_inode_info *ci = ceph_inode(inode);
+ 	struct ceph_fs_client *fsc = ceph_inode_to_client(inode);
+-	struct ceph_osd_request *req;
++	struct ceph_osd_request *req = NULL;
+ 	struct ceph_cap_flush *prealloc_cf;
+ 	struct folio *folio = NULL;
+ 	u64 inline_version = CEPH_INLINE_NONE;
+@@ -1652,10 +1652,23 @@ int ceph_uninline_data(struct file *file)
+ 	int err = 0;
+ 	u64 len;
  
- static inline bool is_bmips(const struct brcm_pcie *pcie)
-@@ -1351,21 +1350,9 @@ static void brcm_pcie_turn_off(struct brcm_pcie *pcie)
- 	pcie->bridge_sw_init_set(pcie, 1);
- }
++	spin_lock(&ci->i_ceph_lock);
++	inline_version = ci->i_inline_version;
++	spin_unlock(&ci->i_ceph_lock);
++
++	dout("uninline_data %p %llx.%llx inline_version %llu\n",
++	     inode, ceph_vinop(inode), inline_version);
++
++	if (inline_version == CEPH_INLINE_NONE)
++		return 0;
++
+ 	prealloc_cf = ceph_alloc_cap_flush();
+ 	if (!prealloc_cf)
+ 		return -ENOMEM;
  
--static int pci_dev_may_wakeup(struct pci_dev *dev, void *data)
--{
--	bool *ret = data;
++	if (inline_version == 1) /* initial version, no data */
++		goto out_uninline;
++
+ 	folio = read_mapping_folio(inode->i_mapping, 0, file);
+ 	if (IS_ERR(folio)) {
+ 		err = PTR_ERR(folio);
+@@ -1664,17 +1677,6 @@ int ceph_uninline_data(struct file *file)
+ 
+ 	folio_lock(folio);
+ 
+-	spin_lock(&ci->i_ceph_lock);
+-	inline_version = ci->i_inline_version;
+-	spin_unlock(&ci->i_ceph_lock);
 -
--	if (device_may_wakeup(&dev->dev)) {
--		*ret = true;
--		dev_info(&dev->dev, "disable cancelled for wake-up device\n");
--	}
--	return (int) *ret;
--}
+-	dout("uninline_data %p %llx.%llx inline_version %llu\n",
+-	     inode, ceph_vinop(inode), inline_version);
 -
- static int brcm_pcie_suspend(struct device *dev)
- {
- 	struct brcm_pcie *pcie = dev_get_drvdata(dev);
--	struct pci_host_bridge *bridge = pci_host_bridge_from_priv(pcie);
- 	int ret;
+-	if (inline_version == 1 || /* initial version, no data */
+-	    inline_version == CEPH_INLINE_NONE)
+-		goto out_unlock;
+-
+ 	len = i_size_read(inode);
+ 	if (len > folio_size(folio))
+ 		len = folio_size(folio);
+@@ -1739,6 +1741,7 @@ int ceph_uninline_data(struct file *file)
+ 	ceph_update_write_metrics(&fsc->mdsc->metric, req->r_start_latency,
+ 				  req->r_end_latency, len, err);
  
- 	brcm_pcie_turn_off(pcie);
-@@ -1384,22 +1371,11 @@ static int brcm_pcie_suspend(struct device *dev)
- 	}
++out_uninline:
+ 	if (!err) {
+ 		int dirty;
  
- 	if (pcie->sr) {
--		/*
--		 * Now turn off the regulators, but if at least one
--		 * downstream device is enabled as a wake-up source, do not
--		 * turn off regulators.
--		 */
--		pcie->ep_wakeup_capable = false;
--		pci_walk_bus(bridge->bus, pci_dev_may_wakeup,
--			     &pcie->ep_wakeup_capable);
--		if (!pcie->ep_wakeup_capable) {
--			ret = regulator_bulk_disable(pcie->sr->num_supplies,
--						     pcie->sr->supplies);
--			if (ret) {
--				dev_err(dev, "Could not turn off regulators\n");
--				reset_control_reset(pcie->rescal);
--				return ret;
--			}
-+		ret = regulator_bulk_disable(pcie->sr->num_supplies, pcie->sr->supplies);
-+		if (ret) {
-+			dev_err(dev, "Could not turn off regulators\n");
-+			reset_control_reset(pcie->rescal);
-+			return ret;
- 		}
- 	}
- 	clk_disable_unprepare(pcie->clk);
-@@ -1420,21 +1396,10 @@ static int brcm_pcie_resume(struct device *dev)
- 		return ret;
- 
- 	if (pcie->sr) {
--		if (pcie->ep_wakeup_capable) {
--			/*
--			 * We are resuming from a suspend.  In the suspend we
--			 * did not disable the power supplies, so there is
--			 * no need to enable them (and falsely increase their
--			 * usage count).
--			 */
--			pcie->ep_wakeup_capable = false;
--		} else {
--			ret = regulator_bulk_enable(pcie->sr->num_supplies,
--						    pcie->sr->supplies);
--			if (ret) {
--				dev_err(dev, "Could not turn on regulators\n");
--				goto err_disable_clk;
--			}
-+		ret = regulator_bulk_enable(pcie->sr->num_supplies, pcie->sr->supplies);
-+		if (ret) {
-+			dev_err(dev, "Could not turn on regulators\n");
-+			goto err_disable_clk;
- 		}
- 	}
- 
+@@ -1757,8 +1760,10 @@ int ceph_uninline_data(struct file *file)
+ 	if (err == -ECANCELED)
+ 		err = 0;
+ out_unlock:
+-	folio_unlock(folio);
+-	folio_put(folio);
++	if (folio) {
++		folio_unlock(folio);
++		folio_put(folio);
++	}
+ out:
+ 	ceph_free_cap_flush(prealloc_cf);
+ 	dout("uninline_data %p %llx.%llx inline_version %llu = %d\n",
 -- 
 2.35.1
 
