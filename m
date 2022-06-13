@@ -2,46 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CB5EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:53:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2FF7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:55:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346042AbiFMKxP (ORCPT
+        id S1347690AbiFMKw3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:53:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59614 "EHLO
+        Mon, 13 Jun 2022 06:52:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348891AbiFMKtl (ORCPT
+        with ESMTP id S1348582AbiFMKt2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:49:41 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D05ACDFF4;
-        Mon, 13 Jun 2022 03:17:12 -0700 (PDT)
+        Mon, 13 Jun 2022 06:49:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6827C2E0AA;
+        Mon, 13 Jun 2022 03:27:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 95053CE1106;
-        Mon, 13 Jun 2022 10:17:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EE0DC34114;
-        Mon, 13 Jun 2022 10:17:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E99FCB80E95;
+        Mon, 13 Jun 2022 10:27:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EF8EC34114;
+        Mon, 13 Jun 2022 10:27:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115428;
-        bh=U8LQa6wfLg8oa/eSS6e4ejT7/fpc/kO3+1GrXW02XnY=;
+        s=korg; t=1655116020;
+        bh=jF8jZSlmfxE9qd0ZzdwmSA2Q2KJaePP+dIHkpy2PxbE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2i59gdLE/KY2VLYppBBzvmrjyuRVLh4zbgLxqmv4dnBlhA2knaxUi+bQvK91n3/+k
-         Urid5Oqsmn3WlxZUNjI7RqoaX21CtyYCyzmH8zVZthq8NtIS/kVrgQh5+fAFpWPJNT
-         f4B3Z+tntbL+2F4ro1INlnM1JSiDuFHOC/QOd+Zo=
+        b=eexn0QnwuCYVlSiy8YNwCvVdJ8ygPpL9eydaBs10gfeS6U1i4QozJ9LYD94W3u+PZ
+         c4Y446mAbo/zbAmaCHQ1u/UiU7luGoTtGhl+DJvmdI/2UkVHaXerxJSzivWMRB3sv6
+         ConypoEiq3j1rF4ttJVLAvj27syE3jcfX65ZivUY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
-        Alexander Aring <aahringo@redhat.com>,
-        David Teigland <teigland@redhat.com>
-Subject: [PATCH 4.9 081/167] dlm: fix plock invalid read
-Date:   Mon, 13 Jun 2022 12:09:15 +0200
-Message-Id: <20220613094859.920808676@linuxfoundation.org>
+        stable@vger.kernel.org, Kan Liang <kan.liang@linux.intel.com>,
+        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
+        Ian Rogers <irogers@google.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Alexander Shishkin <alexander.shishkin@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 101/218] perf jevents: Fix event syntax error caused by ExtSel
+Date:   Mon, 13 Jun 2022 12:09:19 +0200
+Message-Id: <20220613094923.616066466@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
-References: <20220613094840.720778945@linuxfoundation.org>
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,198 +57,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Aring <aahringo@redhat.com>
+From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
 
-commit 42252d0d2aa9b94d168241710a761588b3959019 upstream.
+[ Upstream commit f4df0dbbe62ee8e4405a57b27ccd54393971c773 ]
 
-This patch fixes an invalid read showed by KASAN. A unlock will allocate a
-"struct plock_op" and a followed send_op() will append it to a global
-send_list data structure. In some cases a followed dev_read() moves it
-to recv_list and dev_write() will cast it to "struct plock_xop" and access
-fields which are only available in those structures. At this point an
-invalid read happens by accessing those fields.
+In the origin code, when "ExtSel" is 1, the eventcode will change to
+"eventcode |= 1 << 21”. For event “UNC_Q_RxL_CREDITS_CONSUMED_VN0.DRS",
+its "ExtSel" is "1", its eventcode will change from 0x1E to 0x20001E,
+but in fact the eventcode should <=0x1FF, so this will cause the parse
+fail:
 
-To fix this issue the "callback" field is moved to "struct plock_op" to
-indicate that a cast to "plock_xop" is allowed and does the additional
-"plock_xop" handling if set.
+  # perf stat -e "UNC_Q_RxL_CREDITS_CONSUMED_VN0.DRS" -a sleep 0.1
+  event syntax error: '.._RxL_CREDITS_CONSUMED_VN0.DRS'
+                                    \___ value too big for format, maximum is 511
 
-Example of the KASAN output which showed the invalid read:
+On the perf kernel side, the kernel assumes the valid bits are continuous.
+It will adjust the 0x100 (bit 8 for perf tool) to bit 21 in HW.
 
-[ 2064.296453] ==================================================================
-[ 2064.304852] BUG: KASAN: slab-out-of-bounds in dev_write+0x52b/0x5a0 [dlm]
-[ 2064.306491] Read of size 8 at addr ffff88800ef227d8 by task dlm_controld/7484
-[ 2064.308168]
-[ 2064.308575] CPU: 0 PID: 7484 Comm: dlm_controld Kdump: loaded Not tainted 5.14.0+ #9
-[ 2064.310292] Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
-[ 2064.311618] Call Trace:
-[ 2064.312218]  dump_stack_lvl+0x56/0x7b
-[ 2064.313150]  print_address_description.constprop.8+0x21/0x150
-[ 2064.314578]  ? dev_write+0x52b/0x5a0 [dlm]
-[ 2064.315610]  ? dev_write+0x52b/0x5a0 [dlm]
-[ 2064.316595]  kasan_report.cold.14+0x7f/0x11b
-[ 2064.317674]  ? dev_write+0x52b/0x5a0 [dlm]
-[ 2064.318687]  dev_write+0x52b/0x5a0 [dlm]
-[ 2064.319629]  ? dev_read+0x4a0/0x4a0 [dlm]
-[ 2064.320713]  ? bpf_lsm_kernfs_init_security+0x10/0x10
-[ 2064.321926]  vfs_write+0x17e/0x930
-[ 2064.322769]  ? __fget_light+0x1aa/0x220
-[ 2064.323753]  ksys_write+0xf1/0x1c0
-[ 2064.324548]  ? __ia32_sys_read+0xb0/0xb0
-[ 2064.325464]  do_syscall_64+0x3a/0x80
-[ 2064.326387]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[ 2064.327606] RIP: 0033:0x7f807e4ba96f
-[ 2064.328470] Code: 89 54 24 18 48 89 74 24 10 89 7c 24 08 e8 39 87 f8 ff 48 8b 54 24 18 48 8b 74 24 10 41 89 c0 8b 7c 24 08 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 31 44 89 c7 48 89 44 24 08 e8 7c 87 f8 ff 48
-[ 2064.332902] RSP: 002b:00007ffd50cfe6e0 EFLAGS: 00000293 ORIG_RAX: 0000000000000001
-[ 2064.334658] RAX: ffffffffffffffda RBX: 000055cc3886eb30 RCX: 00007f807e4ba96f
-[ 2064.336275] RDX: 0000000000000040 RSI: 00007ffd50cfe7e0 RDI: 0000000000000010
-[ 2064.337980] RBP: 00007ffd50cfe7e0 R08: 0000000000000000 R09: 0000000000000001
-[ 2064.339560] R10: 000055cc3886eb30 R11: 0000000000000293 R12: 000055cc3886eb80
-[ 2064.341237] R13: 000055cc3886eb00 R14: 000055cc3886f590 R15: 0000000000000001
-[ 2064.342857]
-[ 2064.343226] Allocated by task 12438:
-[ 2064.344057]  kasan_save_stack+0x1c/0x40
-[ 2064.345079]  __kasan_kmalloc+0x84/0xa0
-[ 2064.345933]  kmem_cache_alloc_trace+0x13b/0x220
-[ 2064.346953]  dlm_posix_unlock+0xec/0x720 [dlm]
-[ 2064.348811]  do_lock_file_wait.part.32+0xca/0x1d0
-[ 2064.351070]  fcntl_setlk+0x281/0xbc0
-[ 2064.352879]  do_fcntl+0x5e4/0xfe0
-[ 2064.354657]  __x64_sys_fcntl+0x11f/0x170
-[ 2064.356550]  do_syscall_64+0x3a/0x80
-[ 2064.358259]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[ 2064.360745]
-[ 2064.361511] Last potentially related work creation:
-[ 2064.363957]  kasan_save_stack+0x1c/0x40
-[ 2064.365811]  __kasan_record_aux_stack+0xaf/0xc0
-[ 2064.368100]  call_rcu+0x11b/0xf70
-[ 2064.369785]  dlm_process_incoming_buffer+0x47d/0xfd0 [dlm]
-[ 2064.372404]  receive_from_sock+0x290/0x770 [dlm]
-[ 2064.374607]  process_recv_sockets+0x32/0x40 [dlm]
-[ 2064.377290]  process_one_work+0x9a8/0x16e0
-[ 2064.379357]  worker_thread+0x87/0xbf0
-[ 2064.381188]  kthread+0x3ac/0x490
-[ 2064.383460]  ret_from_fork+0x22/0x30
-[ 2064.385588]
-[ 2064.386518] Second to last potentially related work creation:
-[ 2064.389219]  kasan_save_stack+0x1c/0x40
-[ 2064.391043]  __kasan_record_aux_stack+0xaf/0xc0
-[ 2064.393303]  call_rcu+0x11b/0xf70
-[ 2064.394885]  dlm_process_incoming_buffer+0x47d/0xfd0 [dlm]
-[ 2064.397694]  receive_from_sock+0x290/0x770 [dlm]
-[ 2064.399932]  process_recv_sockets+0x32/0x40 [dlm]
-[ 2064.402180]  process_one_work+0x9a8/0x16e0
-[ 2064.404388]  worker_thread+0x87/0xbf0
-[ 2064.406124]  kthread+0x3ac/0x490
-[ 2064.408021]  ret_from_fork+0x22/0x30
-[ 2064.409834]
-[ 2064.410599] The buggy address belongs to the object at ffff88800ef22780
-[ 2064.410599]  which belongs to the cache kmalloc-96 of size 96
-[ 2064.416495] The buggy address is located 88 bytes inside of
-[ 2064.416495]  96-byte region [ffff88800ef22780, ffff88800ef227e0)
-[ 2064.422045] The buggy address belongs to the page:
-[ 2064.424635] page:00000000b6bef8bc refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0xef22
-[ 2064.428970] flags: 0xfffffc0000200(slab|node=0|zone=1|lastcpupid=0x1fffff)
-[ 2064.432515] raw: 000fffffc0000200 ffffea0000d68b80 0000001400000014 ffff888001041780
-[ 2064.436110] raw: 0000000000000000 0000000080200020 00000001ffffffff 0000000000000000
-[ 2064.439813] page dumped because: kasan: bad access detected
-[ 2064.442548]
-[ 2064.443310] Memory state around the buggy address:
-[ 2064.445988]  ffff88800ef22680: 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc fc
-[ 2064.449444]  ffff88800ef22700: 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc fc
-[ 2064.452941] >ffff88800ef22780: 00 00 00 00 00 00 00 00 00 00 00 fc fc fc fc fc
-[ 2064.456383]                                                     ^
-[ 2064.459386]  ffff88800ef22800: 00 00 00 00 00 00 00 00 00 fc fc fc fc fc fc fc
-[ 2064.462788]  ffff88800ef22880: 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc fc
-[ 2064.466239] ==================================================================
+DEFINE_UNCORE_FORMAT_ATTR(event_ext, event, "config:0-7,21");
 
-reproducer in python:
+So the perf tool follows the kernel side and just set bit8 other than bit21.
 
-import argparse
-import struct
-import fcntl
-import os
-
-parser = argparse.ArgumentParser()
-
-parser.add_argument('-f', '--file',
-		    help='file to use fcntl, must be on dlm lock filesystem e.g. gfs2')
-
-args = parser.parse_args()
-
-f = open(args.file, 'wb+')
-
-lockdata = struct.pack('hhllhh', fcntl.F_WRLCK,0,0,0,0,0)
-fcntl.fcntl(f, fcntl.F_SETLK, lockdata)
-lockdata = struct.pack('hhllhh', fcntl.F_UNLCK,0,0,0,0,0)
-fcntl.fcntl(f, fcntl.F_SETLK, lockdata)
-
-Fixes: 586759f03e2e ("gfs2: nfs lock support for gfs2")
-Cc: stable@vger.kernel.org
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
-Signed-off-by: Alexander Aring <aahringo@redhat.com>
-Signed-off-by: David Teigland <teigland@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: fedb2b518239cbc0 ("perf jevents: Add support for parsing uncore json files")
+Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+Signed-off-by: Xing Zhengjun <zhengjun.xing@linux.intel.com>
+Acked-by: Ian Rogers <irogers@google.com>
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Alexander Shishkin <alexander.shishkin@intel.com>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220525140410.1706851-1-zhengjun.xing@linux.intel.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/dlm/plock.c |   12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+ tools/perf/pmu-events/jevents.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/dlm/plock.c
-+++ b/fs/dlm/plock.c
-@@ -26,11 +26,11 @@ struct plock_op {
- 	struct list_head list;
- 	int done;
- 	struct dlm_plock_info info;
-+	int (*callback)(struct file_lock *fl, int result);
- };
- 
- struct plock_xop {
- 	struct plock_op xop;
--	int (*callback)(struct file_lock *fl, int result);
- 	void *fl;
- 	void *file;
- 	struct file_lock flc;
-@@ -132,19 +132,18 @@ int dlm_posix_lock(dlm_lockspace_t *lock
- 		/* fl_owner is lockd which doesn't distinguish
- 		   processes on the nfs client */
- 		op->info.owner	= (__u64) fl->fl_pid;
--		xop->callback	= fl->fl_lmops->lm_grant;
-+		op->callback	= fl->fl_lmops->lm_grant;
- 		locks_init_lock(&xop->flc);
- 		locks_copy_lock(&xop->flc, fl);
- 		xop->fl		= fl;
- 		xop->file	= file;
- 	} else {
- 		op->info.owner	= (__u64)(long) fl->fl_owner;
--		xop->callback	= NULL;
- 	}
- 
- 	send_op(op);
- 
--	if (xop->callback == NULL) {
-+	if (!op->callback) {
- 		rv = wait_event_interruptible(recv_wq, (op->done != 0));
- 		if (rv == -ERESTARTSYS) {
- 			log_debug(ls, "dlm_posix_lock: wait killed %llx",
-@@ -206,7 +205,7 @@ static int dlm_plock_callback(struct plo
- 	file = xop->file;
- 	flc = &xop->flc;
- 	fl = xop->fl;
--	notify = xop->callback;
-+	notify = op->callback;
- 
- 	if (op->info.rv) {
- 		notify(fl, op->info.rv);
-@@ -439,10 +438,9 @@ static ssize_t dev_write(struct file *fi
- 		if (op->info.fsid == info.fsid &&
- 		    op->info.number == info.number &&
- 		    op->info.owner == info.owner) {
--			struct plock_xop *xop = (struct plock_xop *)op;
- 			list_del_init(&op->list);
- 			memcpy(&op->info, &info, sizeof(info));
--			if (xop->callback)
-+			if (op->callback)
- 				do_callback = 1;
- 			else
- 				op->done = 1;
+diff --git a/tools/perf/pmu-events/jevents.c b/tools/perf/pmu-events/jevents.c
+index 8e487b2a37a6..dcfbbade657e 100644
+--- a/tools/perf/pmu-events/jevents.c
++++ b/tools/perf/pmu-events/jevents.c
+@@ -428,7 +428,7 @@ int json_events(const char *fn,
+ 			} else if (json_streq(map, field, "ExtSel")) {
+ 				char *code = NULL;
+ 				addfield(map, &code, "", "", val);
+-				eventcode |= strtoul(code, NULL, 0) << 21;
++				eventcode |= strtoul(code, NULL, 0) << 8;
+ 				free(code);
+ 			} else if (json_streq(map, field, "EventName")) {
+ 				addfield(map, &name, "", "", val);
+-- 
+2.35.1
+
 
 
