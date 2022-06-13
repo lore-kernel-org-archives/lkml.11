@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AE5BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:37:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBF92C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:37:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384898AbiFMOhp (ORCPT
+        id S1384154AbiFMOhv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:37:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46054 "EHLO
+        Mon, 13 Jun 2022 10:37:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383714AbiFMOex (ORCPT
+        with ESMTP id S1384105AbiFMOff (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:34:53 -0400
+        Mon, 13 Jun 2022 10:35:35 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE8194BFE6;
-        Mon, 13 Jun 2022 04:49:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D24E21831;
+        Mon, 13 Jun 2022 04:49:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1071D612D0;
-        Mon, 13 Jun 2022 11:49:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25166C34114;
-        Mon, 13 Jun 2022 11:49:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E2ACF61486;
+        Mon, 13 Jun 2022 11:49:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECE2AC3411B;
+        Mon, 13 Jun 2022 11:49:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120959;
-        bh=2TzWjZBR22TdjW+rGvG702WH61+cTsVrA4YQiC/Wc+E=;
+        s=korg; t=1655120962;
+        bh=6nfGQcmOO+nzmnVXs7EuA6e3s87z59d7FQhJE3qTKds=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UXkcJjdV6gK3t6JP7hFZBFbF0o/fDcpZ83LXdY8PSV3GbulT7fAc1bA9jsEgkHeh0
-         Y0nG4Tz0xzAqPufmbG79vZ6ltGrYnOKKM2a/pOekShuHpvUVuGp4nGAR/pytL+m5Hq
-         2YPyaZrhfRh/yNhxCfrHW+CWAit6/IbPYXvXZoUs=
+        b=ML3+mAibOzZ+ZD8j/r0o7r/UiPDPG3QDRq3OVRrfU69GpktpGqMmHMo+XpzbTnPzO
+         PFGWd9NIRt1G6XQ0FHvqBjLffRs4Hv6RpyFnpqWRhiJVBXOwmR6QpzhbWCgRzDdEMc
+         yAmje2tG9zuQEjqGzeJqYRM7XH4Qh9fxCDsdFCIQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-        Denis Ciocca <denis.ciocca@st.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        stable@vger.kernel.org,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Kees Cook <keescook@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 198/298] iio: st_sensors: Add a local lock for protecting odr
-Date:   Mon, 13 Jun 2022 12:11:32 +0200
-Message-Id: <20220613094931.110983615@linuxfoundation.org>
+Subject: [PATCH 5.17 199/298] lkdtm/usercopy: Expand size of "out of frame" object
+Date:   Mon, 13 Jun 2022 12:11:33 +0200
+Message-Id: <20220613094931.140942257@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -52,121 +52,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miquel Raynal <miquel.raynal@bootlin.com>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit 474010127e2505fc463236470908e1ff5ddb3578 ]
+[ Upstream commit f387e86d3a74407bdd9c5815820ac9d060962840 ]
 
-Right now the (framework) mlock lock is (ab)used for multiple purposes:
-1- protecting concurrent accesses over the odr local cache
-2- avoid changing samplig frequency whilst buffer is running
+To be sufficiently out of range for the usercopy test to see the lifetime
+mismatch, expand the size of the "bad" buffer, which will let it be
+beyond current_stack_pointer regardless of stack growth direction.
+Paired with the recent addition of stack depth checking under
+CONFIG_HARDENED_USERCOPY=y, this will correctly start tripping again.
 
-Let's start by handling situation #1 with a local lock.
-
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Cc: Denis Ciocca <denis.ciocca@st.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/r/20220207143840.707510-7-miquel.raynal@bootlin.com
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Reported-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Link: https://lore.kernel.org/lkml/762faf1b-0443-5ddf-4430-44a20cf2ec4d@collabora.com/
+Signed-off-by: Kees Cook <keescook@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../iio/common/st_sensors/st_sensors_core.c   | 24 ++++++++++++++-----
- include/linux/iio/common/st_sensors.h         |  3 +++
- 2 files changed, 21 insertions(+), 6 deletions(-)
+ drivers/misc/lkdtm/usercopy.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-index eb452d0c423c..5c7e4e725819 100644
---- a/drivers/iio/common/st_sensors/st_sensors_core.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-@@ -71,16 +71,18 @@ static int st_sensors_match_odr(struct st_sensor_settings *sensor_settings,
- 
- int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr)
- {
--	int err;
-+	int err = 0;
- 	struct st_sensor_odr_avl odr_out = {0, 0};
- 	struct st_sensor_data *sdata = iio_priv(indio_dev);
- 
-+	mutex_lock(&sdata->odr_lock);
-+
- 	if (!sdata->sensor_settings->odr.mask)
--		return 0;
-+		goto unlock_mutex;
- 
- 	err = st_sensors_match_odr(sdata->sensor_settings, odr, &odr_out);
- 	if (err < 0)
--		goto st_sensors_match_odr_error;
-+		goto unlock_mutex;
- 
- 	if ((sdata->sensor_settings->odr.addr ==
- 					sdata->sensor_settings->pw.addr) &&
-@@ -103,7 +105,9 @@ int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr)
- 	if (err >= 0)
- 		sdata->odr = odr_out.hz;
- 
--st_sensors_match_odr_error:
-+unlock_mutex:
-+	mutex_unlock(&sdata->odr_lock);
-+
- 	return err;
- }
- EXPORT_SYMBOL(st_sensors_set_odr);
-@@ -361,6 +365,8 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
- 	struct st_sensors_platform_data *of_pdata;
- 	int err = 0;
- 
-+	mutex_init(&sdata->odr_lock);
-+
- 	/* If OF/DT pdata exists, it will take precedence of anything else */
- 	of_pdata = st_sensors_dev_probe(indio_dev->dev.parent, pdata);
- 	if (IS_ERR(of_pdata))
-@@ -554,18 +560,24 @@ int st_sensors_read_info_raw(struct iio_dev *indio_dev,
- 		err = -EBUSY;
- 		goto out;
- 	} else {
-+		mutex_lock(&sdata->odr_lock);
- 		err = st_sensors_set_enable(indio_dev, true);
--		if (err < 0)
-+		if (err < 0) {
-+			mutex_unlock(&sdata->odr_lock);
- 			goto out;
-+		}
- 
- 		msleep((sdata->sensor_settings->bootime * 1000) / sdata->odr);
- 		err = st_sensors_read_axis_data(indio_dev, ch, val);
--		if (err < 0)
-+		if (err < 0) {
-+			mutex_unlock(&sdata->odr_lock);
- 			goto out;
-+		}
- 
- 		*val = *val >> ch->scan_type.shift;
- 
- 		err = st_sensors_set_enable(indio_dev, false);
-+		mutex_unlock(&sdata->odr_lock);
- 	}
- out:
- 	mutex_unlock(&indio_dev->mlock);
-diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-index 22f67845cdd3..db4a1b260348 100644
---- a/include/linux/iio/common/st_sensors.h
-+++ b/include/linux/iio/common/st_sensors.h
-@@ -237,6 +237,7 @@ struct st_sensor_settings {
-  * @hw_irq_trigger: if we're using the hardware interrupt on the sensor.
-  * @hw_timestamp: Latest timestamp from the interrupt handler, when in use.
-  * @buffer_data: Data used by buffer part.
-+ * @odr_lock: Local lock for preventing concurrent ODR accesses/changes
+diff --git a/drivers/misc/lkdtm/usercopy.c b/drivers/misc/lkdtm/usercopy.c
+index 9161ce7ed47a..3fead5efe523 100644
+--- a/drivers/misc/lkdtm/usercopy.c
++++ b/drivers/misc/lkdtm/usercopy.c
+@@ -30,12 +30,12 @@ static const unsigned char test_text[] = "This is a test.\n";
   */
- struct st_sensor_data {
- 	struct iio_trigger *trig;
-@@ -261,6 +262,8 @@ struct st_sensor_data {
- 	s64 hw_timestamp;
+ static noinline unsigned char *trick_compiler(unsigned char *stack)
+ {
+-	return stack + 0;
++	return stack + unconst;
+ }
  
- 	char buffer_data[ST_SENSORS_MAX_BUFFER_SIZE] ____cacheline_aligned;
+ static noinline unsigned char *do_usercopy_stack_callee(int value)
+ {
+-	unsigned char buf[32];
++	unsigned char buf[128];
+ 	int i;
+ 
+ 	/* Exercise stack to avoid everything living in registers. */
+@@ -43,7 +43,12 @@ static noinline unsigned char *do_usercopy_stack_callee(int value)
+ 		buf[i] = value & 0xff;
+ 	}
+ 
+-	return trick_compiler(buf);
++	/*
++	 * Put the target buffer in the middle of stack allocation
++	 * so that we don't step on future stack users regardless
++	 * of stack growth direction.
++	 */
++	return trick_compiler(&buf[(128/2)-32]);
+ }
+ 
+ static noinline void do_usercopy_stack(bool to_user, bool bad_frame)
+@@ -66,6 +71,12 @@ static noinline void do_usercopy_stack(bool to_user, bool bad_frame)
+ 		bad_stack -= sizeof(unsigned long);
+ 	}
+ 
++#ifdef ARCH_HAS_CURRENT_STACK_POINTER
++	pr_info("stack     : %px\n", (void *)current_stack_pointer);
++#endif
++	pr_info("good_stack: %px-%px\n", good_stack, good_stack + sizeof(good_stack));
++	pr_info("bad_stack : %px-%px\n", bad_stack, bad_stack + sizeof(good_stack));
 +
-+	struct mutex odr_lock;
- };
- 
- #ifdef CONFIG_IIO_BUFFER
+ 	user_addr = vm_mmap(NULL, 0, PAGE_SIZE,
+ 			    PROT_READ | PROT_WRITE | PROT_EXEC,
+ 			    MAP_ANONYMOUS | MAP_PRIVATE, 0);
 -- 
 2.35.1
 
