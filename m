@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E38B9CCA495
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:17:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDB4EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:17:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352322AbiFMLRY (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:17:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43236 "EHLO
+        id S238127AbiFMLR0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 07:17:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352553AbiFMLOA (ORCPT
+        with ESMTP id S1352571AbiFMLOC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:14:00 -0400
+        Mon, 13 Jun 2022 07:14:02 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F8C63616C;
-        Mon, 13 Jun 2022 03:36:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22A4436312;
+        Mon, 13 Jun 2022 03:36:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D1B2C60EF5;
-        Mon, 13 Jun 2022 10:36:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3F92C34114;
-        Mon, 13 Jun 2022 10:36:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 85A9561021;
+        Mon, 13 Jun 2022 10:36:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97E2DC34114;
+        Mon, 13 Jun 2022 10:36:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116588;
-        bh=wTL/YhKNf0DTayTEaRcXxDNUnVvYMZPFROyuLfG+zG4=;
+        s=korg; t=1655116591;
+        bh=7bYUv5/HbSb7PZkFLsP/eAj3Kb6ADnWQ5Tly32igEME=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DcHEWzXfMUOozL26YX+9Ih/c2FzOl5XJWFgo58GvF/iasj6zWjUUg0TwNJhccTOnd
-         9zfgr6NkgxscWWv0i3bWUPq44nxipFbg/tLa3mm3jf5MLVVxlxPPakNLCx83n20mVM
-         MNK0npgTxguZPfX0WpG7hzIHjTDX94j25uWzPLjA=
+        b=Q25mvf/hjwdI9opkTcrVrIqnzoiVco08MAE0uXvsk8cc8iLfibq0ZSgis9IzwABO1
+         lQBfDcmrGjxiXgbQdvTv4Ex/H/puk0a8U7nsgrNxylFCuh8XusVQslAngRAyKYiG05
+         57Va3l4phHo728yvNp14nkK/KH2jkcUbwS2iVvyU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Subject: [PATCH 4.14 208/218] ata: libata-transport: fix {dma|pio|xfer}_mode sysfs files
-Date:   Mon, 13 Jun 2022 12:11:06 +0200
-Message-Id: <20220613094926.933251321@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 104/411] ath9k_htc: fix potential out of bounds access with invalid rxstatus->rs_keyix
+Date:   Mon, 13 Jun 2022 12:06:17 +0200
+Message-Id: <20220613094931.795515265@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,75 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 72aad489f992871e908ff6d9055b26c6366fb864 upstream.
+[ Upstream commit 2dc509305cf956381532792cb8dceef2b1504765 ]
 
-The {dma|pio}_mode sysfs files are incorrectly documented as having a
-list of the supported DMA/PIO transfer modes, while the corresponding
-fields of the *struct* ata_device hold the transfer mode IDs, not masks.
+The "rxstatus->rs_keyix" eventually gets passed to test_bit() so we need to
+ensure that it is within the bitmap.
 
-To match these docs, the {dma|pio}_mode (and even xfer_mode!) sysfs
-files are handled by the ata_bitfield_name_match() macro which leads to
-reading such kind of nonsense from them:
+drivers/net/wireless/ath/ath9k/common.c:46 ath9k_cmn_rx_accept()
+error: passing untrusted data 'rx_stats->rs_keyix' to 'test_bit()'
 
-$ cat /sys/class/ata_device/dev3.0/pio_mode
-XFER_UDMA_7, XFER_UDMA_6, XFER_UDMA_5, XFER_UDMA_4, XFER_MW_DMA_4,
-XFER_PIO_6, XFER_PIO_5, XFER_PIO_4, XFER_PIO_3, XFER_PIO_2, XFER_PIO_1,
-XFER_PIO_0
-
-Using the correct ata_bitfield_name_search() macro fixes that:
-
-$ cat /sys/class/ata_device/dev3.0/pio_mode
-XFER_PIO_4
-
-While fixing the file documentation, somewhat reword the {dma|pio}_mode
-file doc and add a note about being mostly useful for PATA devices to
-the xfer_mode file doc...
-
-Fixes: d9027470b886 ("[libata] Add ATA transport class")
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Cc: stable@vger.kernel.org
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 4ed1a8d4a257 ("ath9k_htc: use ath9k_cmn_rx_accept")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220409061225.GA5447@kili
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/ABI/testing/sysfs-ata |    5 +++--
- drivers/ata/libata-transport.c      |    2 +-
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/wireless/ath/ath9k/htc_drv_txrx.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/Documentation/ABI/testing/sysfs-ata
-+++ b/Documentation/ABI/testing/sysfs-ata
-@@ -59,17 +59,18 @@ class
+diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
+index 628f45c8c06f..eeaf63de71bf 100644
+--- a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
++++ b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
+@@ -1005,6 +1005,14 @@ static bool ath9k_rx_prepare(struct ath9k_htc_priv *priv,
+ 		goto rx_next;
+ 	}
  
- dma_mode
++	if (rxstatus->rs_keyix >= ATH_KEYMAX &&
++	    rxstatus->rs_keyix != ATH9K_RXKEYIX_INVALID) {
++		ath_dbg(common, ANY,
++			"Invalid keyix, dropping (keyix: %d)\n",
++			rxstatus->rs_keyix);
++		goto rx_next;
++	}
++
+ 	/* Get the RX status information */
  
--	Transfer modes supported by the device when in DMA mode.
-+	DMA transfer mode used by the device.
- 	Mostly used by PATA device.
- 
- pio_mode
- 
--	Transfer modes supported by the device when in PIO mode.
-+	PIO transfer mode used by the device.
- 	Mostly used by PATA device.
- 
- xfer_mode
- 
- 	Current transfer mode.
-+	Mostly used by PATA device.
- 
- id
- 
---- a/drivers/ata/libata-transport.c
-+++ b/drivers/ata/libata-transport.c
-@@ -196,7 +196,7 @@ static struct {
- 	{ XFER_PIO_0,			"XFER_PIO_0" },
- 	{ XFER_PIO_SLOW,		"XFER_PIO_SLOW" }
- };
--ata_bitfield_name_match(xfer,ata_xfer_names)
-+ata_bitfield_name_search(xfer, ata_xfer_names)
- 
- /*
-  * ATA Port attributes
+ 	memset(rx_status, 0, sizeof(struct ieee80211_rx_status));
+-- 
+2.35.1
+
 
 
