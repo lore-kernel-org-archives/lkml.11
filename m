@@ -2,81 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 553C1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:27:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9F50CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:30:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244964AbiFMV1q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 17:27:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57422 "EHLO
+        id S1352015AbiFMVaC (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 17:30:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352146AbiFMV1S (ORCPT
+        with ESMTP id S1353142AbiFMV3T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 17:27:18 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA701DA51;
-        Mon, 13 Jun 2022 14:18:26 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id z14so1990001pjb.4;
-        Mon, 13 Jun 2022 14:18:26 -0700 (PDT)
+        Mon, 13 Jun 2022 17:29:19 -0400
+Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16457382
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:25:32 -0700 (PDT)
+Received: by mail-pf1-x449.google.com with SMTP id 18-20020a621512000000b0051b90b3a793so2844366pfv.8
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:25:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=njQUs4WLg/tZ3t8xvzsqGh4iIGBm2t8S2b1i9sg/WfE=;
-        b=ik1u/qh5X6+xXXy2kU64Cuq2LyBSI6nt5l9ZmJ2rw7u8kSyz+qbixJv6bkflYGCVAe
-         0J1vCbSU0SSngH1KhSKF6bBq0kVt82gFRfSMqElSda0DNiN6S4szVB2Le+x9OG6hx5vv
-         xTHuuTbWzeS6a/9kYkWUsbhORe+vsRX7oTlx1Z9cTbr3G6s0q3IwXP9pxoTl8Hu443lV
-         tEgKpjzCArz/SjuNsuTE8oJS8q/9mXL2RSuuD5yBpvzycjfmCJ8WzLEd9c1LT90rdbHB
-         9EaoY3RoPwKS7Hxk2T61IKjm6jgl37yXqxBrOMIxUQX1K6QPtTqw4SPvkk2HzMUYTpb5
-         aFbw==
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=NphrsrvGM2ysfafA1BnbkDe+v8oridLj8hF4hpwL2dk=;
+        b=UaWigyO27u2sBfxzJ5wByM0XODuTu6u5V7qsHyfP/HPKyAOcmdvCHk1hwQvAgh4ruy
+         Qd/rkJnn9bdgQRvedE1ZXlUV6Aa/Ke9FSLA+s0trhhwy8iJNrIfSJAjxcfn5ZziS9LYY
+         suku1u+ummjIygddnqgUKWI4xap5mZhk0oCYNVVMSjhKoRMVNap2wtYmj+ceoDRwE3YP
+         ZByl5fn4fjZkLqqT7+yhm7ZiztK45KGa3jnECz8cVDFzZXUQGjwQ50Tdpm6EPex/cqH2
+         uwTPUFFpH3Wr5Xn5vVJgN7Pvt13j/LOfdQ0HKE0APVdEbXU7jX7ZiWxqwzlGq5vriCYX
+         wO0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=njQUs4WLg/tZ3t8xvzsqGh4iIGBm2t8S2b1i9sg/WfE=;
-        b=5fuBSnd9xKFavIs9MsPiY7c9O+3v9+ELtWXD9e26fV6BE8owGI9tqEh8DizXz+kCYh
-         blSxBAK/KWzj6G0y46swrM68NRf4KShjjAtU2SB8qMEwTJfhYnou2LUwzGbdw70Ycdab
-         8ZOo8OFeJ4x4E6kgtboWZxYa5TUmuyEphA2K6FVP9wA30dVPNXqa1PWdF1SBIZ1FRCEG
-         wC1FAkmdhmEO5MUxo3LGCTxetQG19bRpfpjwpJhfmODdHHYw3BahKi/KGhwx2PqMI3QH
-         m5WtdzgEnBD+XukTJAu6jvjHE65ixVF7GsoZsWi0tQx8goBUzpiC+cGgjXLayX9leYmK
-         tgGg==
-X-Gm-Message-State: AJIora+dYH8tg99CFaCLak7ORUYHJ91AR8kBlIyaBs3moM9zbhaYKfDP
-        MahbO3xSHS3fnQwvjBSDcAI=
-X-Google-Smtp-Source: AGRyM1tj7L9ldCQI9Mre1KP949pz19+o72+lF5RZJH0rUd/m8kuxHn2Ij7wZ4c14EXr/RzPOoOhi9Q==
-X-Received: by 2002:a17:903:1206:b0:168:e5af:469d with SMTP id l6-20020a170903120600b00168e5af469dmr1216287plh.55.1655155106158;
-        Mon, 13 Jun 2022 14:18:26 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id s11-20020a63b40b000000b003fbdf7cc750sm5917979pgf.89.2022.06.13.14.18.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 14:18:25 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     bcm-kernel-feedback-list@broadcom.com,
-        William Zhang <william.zhang@broadcom.com>,
-        Linux ARM List <linux-arm-kernel@lists.infradead.org>
-Cc:     samyon.furman@broadcom.com, dan.beygelman@broadcom.com,
-        tomer.yacoby@broadcom.com, philippe.reynes@softathome.com,
-        kursad.oney@broadcom.com, anand.gore@broadcom.com,
-        joel.peshkin@broadcom.com,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] dt-bindings: arm64: Add BCM6856 SoC
-Date:   Mon, 13 Jun 2022 14:18:24 -0700
-Message-Id: <20220613211824.259406-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220608180437.31971-2-william.zhang@broadcom.com>
-References: <20220608180437.31971-1-william.zhang@broadcom.com> <20220608180437.31971-2-william.zhang@broadcom.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=NphrsrvGM2ysfafA1BnbkDe+v8oridLj8hF4hpwL2dk=;
+        b=w8r30+R0vd3ftHU5KyoUOjEy3GzjZ03f1tdtC6k0hpS4iHuH/CK1SE5j//Xh9megG2
+         +eE+zXilF09zT1mdJAcY1E9AUjyBdldztzMLqEk5XzMKDPGLVyl9gQkEwcuoy3piUIDn
+         gO8bL5GLYyzlYdwbTcyb1YVZFzVIIPFkGZM01YecCMRWn5pU8XdDnNBlV03KVgv1stGT
+         VRavvUdhdzPwodd8fhvVYVyOc/pCVj1Q42EytHbQzKjFfXgFHtVSWA/t/LgFnGvJQ3M1
+         Zgnavpyye+E9GIjVPsPQxQCh6BFU3lR6wMGPSJFE1bFjU7CO74OoWS/AfMrkY/QlJ4sg
+         Qnpg==
+X-Gm-Message-State: AJIora92g6P1q+sIlrkY+G1QEgn6Q0RpsMuaPyOHtSaZ0RoSevKUTXMy
+        sSO1BmN2+QTbGNcZnc3dagN4m4YXWA2x
+X-Google-Smtp-Source: AGRyM1uIxj1wGiaZ4qlThdtRyOdAttssYwQlrUBe6mjmg1rt0zRK6XHQtdF7fki40BpGMsRRihfZ2oz0TLCt
+X-Received: from sweer.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:e45])
+ (user=bgardon job=sendgmr) by 2002:a17:902:f688:b0:163:ee37:91c5 with SMTP id
+ l8-20020a170902f68800b00163ee3791c5mr959491plg.86.1655155531550; Mon, 13 Jun
+ 2022 14:25:31 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 21:25:16 +0000
+In-Reply-To: <20220613212523.3436117-1-bgardon@google.com>
+Message-Id: <20220613212523.3436117-4-bgardon@google.com>
+Mime-Version: 1.0
+References: <20220613212523.3436117-1-bgardon@google.com>
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+Subject: [PATCH v9 03/10] KVM: selftests: Read binary stats desc in lib
+From:   Ben Gardon <bgardon@google.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Peter Xu <peterx@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        David Matlack <dmatlack@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        David Dunn <daviddunn@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Junaid Shahid <junaids@google.com>,
+        Ben Gardon <bgardon@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed,  8 Jun 2022 11:04:35 -0700, William Zhang <william.zhang@broadcom.com> wrote:
-> Add BCM6856 SoC device tree description to bcmbca binding document.
-> 
-> Signed-off-by: William Zhang <william.zhang@broadcom.com>
-> ---
+Move the code to read the binary stats descriptors to the KVM selftests
+library. It will be re-used by other tests to check KVM behavior.
 
-Applied to https://github.com/Broadcom/stblinux/commits/devicetree/next, thanks!
---
-Florian
+No functional change intended.
+
+Reviewed-by: David Matlack <dmatlack@google.com>
+Reviewed-by: Peter Xu <peterx@redhat.com>
+Signed-off-by: Ben Gardon <bgardon@google.com>
+---
+ .../selftests/kvm/include/kvm_util_base.h     | 25 ++++++++++++++
+ .../selftests/kvm/kvm_binary_stats_test.c     | 16 +++------
+ tools/testing/selftests/kvm/lib/kvm_util.c    | 33 +++++++++++++++++++
+ 3 files changed, 63 insertions(+), 11 deletions(-)
+
+diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+index 3d3dd144f427..6c66c6ef485b 100644
+--- a/tools/testing/selftests/kvm/include/kvm_util_base.h
++++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+@@ -311,6 +311,31 @@ static inline void read_stats_header(int stats_fd, struct kvm_stats_header *head
+ 	TEST_ASSERT(ret == sizeof(*header), "Read stats header");
+ }
+ 
++struct kvm_stats_desc *read_stats_descriptors(int stats_fd,
++					      struct kvm_stats_header *header);
++
++static inline ssize_t get_stats_descriptor_size(struct kvm_stats_header *header)
++{
++	 /*
++	  * The base size of the descriptor is defined by KVM's ABI, but the
++	  * size of the name field is variable, as far as KVM's ABI is
++	  * concerned. For a given instance of KVM, the name field is the same
++	  * size for all stats and is provided in the overall stats header.
++	  */
++	return sizeof(struct kvm_stats_desc) + header->name_size;
++}
++
++static inline struct kvm_stats_desc *get_stats_descriptor(struct kvm_stats_desc *stats,
++							  int index,
++							  struct kvm_stats_header *header)
++{
++	/*
++	 * Note, size_desc includes the size of the name field, which is
++	 * variable. i.e. this is NOT equivalent to &stats_desc[i].
++	 */
++	return (void *)stats + index * get_stats_descriptor_size(header);
++}
++
+ void vm_create_irqchip(struct kvm_vm *vm);
+ 
+ void vm_set_user_memory_region(struct kvm_vm *vm, uint32_t slot, uint32_t flags,
+diff --git a/tools/testing/selftests/kvm/kvm_binary_stats_test.c b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
+index 64db17faacd2..9d3b9a0ce2ef 100644
+--- a/tools/testing/selftests/kvm/kvm_binary_stats_test.c
++++ b/tools/testing/selftests/kvm/kvm_binary_stats_test.c
+@@ -35,7 +35,7 @@ static void stats_test(int stats_fd)
+ 	/* Read kvm stats header */
+ 	read_stats_header(stats_fd, &header);
+ 
+-	size_desc = sizeof(*stats_desc) + header.name_size;
++	size_desc = get_stats_descriptor_size(&header);
+ 
+ 	/* Read kvm stats id string */
+ 	id = malloc(header.name_size);
+@@ -62,18 +62,12 @@ static void stats_test(int stats_fd)
+ 							header.data_offset),
+ 			"Descriptor block is overlapped with data block");
+ 
+-	/* Allocate memory for stats descriptors */
+-	stats_desc = calloc(header.num_desc, size_desc);
+-	TEST_ASSERT(stats_desc, "Allocate memory for stats descriptors");
+ 	/* Read kvm stats descriptors */
+-	ret = pread(stats_fd, stats_desc,
+-			size_desc * header.num_desc, header.desc_offset);
+-	TEST_ASSERT(ret == size_desc * header.num_desc,
+-			"Read KVM stats descriptors");
++	stats_desc = read_stats_descriptors(stats_fd, &header);
+ 
+ 	/* Sanity check for fields in descriptors */
+ 	for (i = 0; i < header.num_desc; ++i) {
+-		pdesc = (void *)stats_desc + i * size_desc;
++		pdesc = get_stats_descriptor(stats_desc, i, &header);
+ 		/* Check type,unit,base boundaries */
+ 		TEST_ASSERT((pdesc->flags & KVM_STATS_TYPE_MASK)
+ 				<= KVM_STATS_TYPE_MAX, "Unknown KVM stats type");
+@@ -129,7 +123,7 @@ static void stats_test(int stats_fd)
+ 			"Data size is not correct");
+ 	/* Check stats offset */
+ 	for (i = 0; i < header.num_desc; ++i) {
+-		pdesc = (void *)stats_desc + i * size_desc;
++		pdesc = get_stats_descriptor(stats_desc, i, &header);
+ 		TEST_ASSERT(pdesc->offset < size_data,
+ 			"Invalid offset (%u) for stats: %s",
+ 			pdesc->offset, pdesc->name);
+@@ -144,7 +138,7 @@ static void stats_test(int stats_fd)
+ 	/* Read kvm stats data one by one */
+ 	size_data = 0;
+ 	for (i = 0; i < header.num_desc; ++i) {
+-		pdesc = (void *)stats_desc + i * size_desc;
++		pdesc = get_stats_descriptor(stats_desc, i, &header);
+ 		ret = pread(stats_fd, stats_data,
+ 				pdesc->size * sizeof(*stats_data),
+ 				header.data_offset + size_data);
+diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
+index 39f2f5f1338f..fc957a385a0a 100644
+--- a/tools/testing/selftests/kvm/lib/kvm_util.c
++++ b/tools/testing/selftests/kvm/lib/kvm_util.c
+@@ -1857,3 +1857,36 @@ unsigned int vm_calc_num_guest_pages(enum vm_guest_mode mode, size_t size)
+ 	n = DIV_ROUND_UP(size, vm_guest_mode_params[mode].page_size);
+ 	return vm_adjust_num_guest_pages(mode, n);
+ }
++
++/*
++ * Read binary stats descriptors
++ *
++ * Input Args:
++ *   stats_fd - the file descriptor for the binary stats file from which to read
++ *   header - the binary stats metadata header corresponding to the given FD
++ *
++ * Output Args: None
++ *
++ * Return:
++ *   A pointer to a newly allocated series of stat descriptors.
++ *   Caller is responsible for freeing the returned kvm_stats_desc.
++ *
++ * Read the stats descriptors from the binary stats interface.
++ */
++struct kvm_stats_desc *read_stats_descriptors(int stats_fd,
++					      struct kvm_stats_header *header)
++{
++	struct kvm_stats_desc *stats_desc;
++	ssize_t desc_size, total_size, ret;
++
++	desc_size = get_stats_descriptor_size(header);
++	total_size = header->num_desc * desc_size;
++
++	stats_desc = calloc(header->num_desc, desc_size);
++	TEST_ASSERT(stats_desc, "Allocate memory for stats descriptors");
++
++	ret = pread(stats_fd, stats_desc, total_size, header->desc_offset);
++	TEST_ASSERT(ret == total_size, "Read KVM stats descriptors");
++
++	return stats_desc;
++}
+-- 
+2.36.1.476.g0c4daa206d-goog
+
