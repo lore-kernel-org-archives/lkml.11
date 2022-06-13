@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8E5ECCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D06AFCCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382175AbiFMONW (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:13:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51942 "EHLO
+        id S241244AbiFMOQJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 10:16:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382465AbiFMOFx (ORCPT
+        with ESMTP id S1381291AbiFMOIS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:05:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5231195A18;
-        Mon, 13 Jun 2022 04:40:50 -0700 (PDT)
+        Mon, 13 Jun 2022 10:08:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EEA4986DC;
+        Mon, 13 Jun 2022 04:41:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 142BC61236;
-        Mon, 13 Jun 2022 11:40:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F0EBC3411B;
-        Mon, 13 Jun 2022 11:40:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 73F62B80ECC;
+        Mon, 13 Jun 2022 11:41:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB28AC34114;
+        Mon, 13 Jun 2022 11:41:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120443;
-        bh=AsXd4pQ9cFEd10STZjFmrqlZ/EuZiXMpQlQ1ZA6OWnM=;
+        s=korg; t=1655120488;
+        bh=YbAO6dc61CTVZPXA3H0275LCoBrPznmVp9BrsF0I538=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PuX2Sy31aFQ/FqmRiUt44V+sVTGYfqdHTRXCHvI/rSektpUYgsPL/9I6WaZHfg67B
-         X7rxLaJzjx2nqmH1QBBxlL4rruzklacXyeye4TSBqMn/6C1HcMu+1G9UT2u4Z2kSA4
-         hOYws0WIFCFd3S02o9Xs50VCWN8g7ktI8JYmUZCc=
+        b=vlaIYLEMf591fzGKNh93Q7+vXot0PG37u51/EXCHbhdU1FrRfzdW+kel6fJLNfj5+
+         0/82tz+QyzTEgAfAkB5fQLWu/gG9ye859nKPcFhjsQeZ/CV/zK17riBhLHfRHQO6y6
+         yXdUd3x0+lhdGoCMUS29eQTTUuc2EMR4LyK3xnp8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Samuel Holland <samuel@sholland.org>,
-        Michael Riesch <michael.riesch@wolfvision.net>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 012/298] phy: rockchip-inno-usb2: Fix muxed interrupt support
-Date:   Mon, 13 Jun 2022 12:08:26 +0200
-Message-Id: <20220613094925.298273946@linuxfoundation.org>
+        Anup Patel <anup@brainfault.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 051/298] clocksource/drivers/riscv: Events are stopped during CPU suspend
+Date:   Mon, 13 Jun 2022 12:09:05 +0200
+Message-Id: <20220613094926.498513613@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -52,48 +52,36 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Samuel Holland <samuel@sholland.org>
 
-[ Upstream commit 6a98df08ccd55e87947d253b19925691763e755c ]
+[ Upstream commit 232ccac1bd9b5bfe73895f527c08623e7fa0752d ]
 
-This commit fixes two issues with the muxed interrupt handler. First,
-the OTG port has the "bvalid" interrupt enabled, not "linestate". Since
-only the linestate interrupt was handled, and not the bvalid interrupt,
-plugging in a cable to the OTG port caused an interrupt storm.
+Some implementations of the SBI time extension depend on hart-local
+state (for example, CSRs) that are lost or hardware that is powered
+down when a CPU is suspended. To be safe, the clockevents driver
+cannot assume that timer IRQs will be received during CPU suspend.
 
-Second, the return values from the individual port IRQ handlers need to
-be OR-ed together. Otherwise, the lack of an interrupt from the last
-port would cause the handler to erroneously return IRQ_NONE.
-
-Fixes: ed2b5a8e6b98 ("phy: phy-rockchip-inno-usb2: support muxed interrupts")
+Fixes: 62b019436814 ("clocksource: new RISC-V SBI timer driver")
 Signed-off-by: Samuel Holland <samuel@sholland.org>
-Tested-by: Michael Riesch <michael.riesch@wolfvision.net>
-Link: https://lore.kernel.org/r/20220414032258.40984-2-samuel@sholland.org
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Reviewed-by: Anup Patel <anup@brainfault.org>
+Link: https://lore.kernel.org/r/20220509012121.40031-1-samuel@sholland.org
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/rockchip/phy-rockchip-inno-usb2.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/clocksource/timer-riscv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-index eca77e44a4c1..cba5c32cbaee 100644
---- a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-+++ b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-@@ -940,8 +940,14 @@ static irqreturn_t rockchip_usb2phy_irq(int irq, void *data)
- 		if (!rport->phy)
- 			continue;
- 
--		/* Handle linestate irq for both otg port and host port */
--		ret = rockchip_usb2phy_linestate_irq(irq, rport);
-+		switch (rport->port_id) {
-+		case USB2PHY_PORT_OTG:
-+			ret |= rockchip_usb2phy_otg_mux_irq(irq, rport);
-+			break;
-+		case USB2PHY_PORT_HOST:
-+			ret |= rockchip_usb2phy_linestate_irq(irq, rport);
-+			break;
-+		}
- 	}
- 
- 	return ret;
+diff --git a/drivers/clocksource/timer-riscv.c b/drivers/clocksource/timer-riscv.c
+index 1767f8bf2013..593d5a957b69 100644
+--- a/drivers/clocksource/timer-riscv.c
++++ b/drivers/clocksource/timer-riscv.c
+@@ -34,7 +34,7 @@ static int riscv_clock_next_event(unsigned long delta,
+ static unsigned int riscv_clock_event_irq;
+ static DEFINE_PER_CPU(struct clock_event_device, riscv_clock_event) = {
+ 	.name			= "riscv_timer_clockevent",
+-	.features		= CLOCK_EVT_FEAT_ONESHOT,
++	.features		= CLOCK_EVT_FEAT_ONESHOT | CLOCK_EVT_FEAT_C3STOP,
+ 	.rating			= 100,
+ 	.set_next_event		= riscv_clock_next_event,
+ };
 -- 
 2.35.1
 
