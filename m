@@ -2,46 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59AFDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:40:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31947C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:40:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355363AbiFMLkR (ORCPT
+        id S1355483AbiFMLk1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:40:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56874 "EHLO
+        Mon, 13 Jun 2022 07:40:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355254AbiFMLa7 (ORCPT
+        with ESMTP id S1355249AbiFMLa7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:30:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1357F41F92;
-        Mon, 13 Jun 2022 03:47:00 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 997C941F80;
+        Mon, 13 Jun 2022 03:46:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 533DF61257;
-        Mon, 13 Jun 2022 10:46:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57F56C34114;
-        Mon, 13 Jun 2022 10:46:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 457A9B80D3B;
+        Mon, 13 Jun 2022 10:46:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 716DEC3411C;
+        Mon, 13 Jun 2022 10:46:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117218;
-        bh=MPbYGSYDH4oLsp81M+7tzECJbGhkal0aiEE+3tdFE/E=;
+        s=korg; t=1655117216;
+        bh=hcNVpNBGg8Koejpa/anU9b11/KPcDjzDRqKFTWJ2jRk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vbIev4FoiagObwe4Yw68Iw/8Gt6c6p1eGfrZyjwpyhyt2BL5ATxjOZ34bMjO0I2L+
-         iVUcnrd14Il0RoohqNkO50362TwPZAD6A1BqSvYflPfc0dGgJGHCagXPGI2Z+RrX9F
-         SZINN1d75yfEdK76NPopX2wRzdMKJZdS4ZobuFw8=
+        b=o6/7UKc3vTwyNFJ36b4owAAYrlDkGSZJK/aN0EF7OdPHM0aIa2y5lF0KVN3+PaFRz
+         LYH5mmui5DaCJObUBTaxHO7LiXX0QXCFW/UCa/PrUpURWXPEEubIJMJCbgmZpRICiV
+         sPjEctgLI1yPKHAKWqaUeFz40tN81tH5YdOXcuUY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Marios Levogiannis <marios.levogiannis@gmail.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.19 002/287] ALSA: hda/realtek - Fix microphone noise on ASUS TUF B550M-PLUS
-Date:   Mon, 13 Jun 2022 12:07:06 +0200
-Message-Id: <20220613094923.913702439@linuxfoundation.org>
+        stable@vger.kernel.org, Leo Yan <leo.yan@linaro.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        Joe Mario <jmario@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 336/411] perf c2c: Fix sorting in percent_rmt_hitm_cmp()
+Date:   Mon, 13 Jun 2022 12:10:09 +0200
+Message-Id: <20220613094938.794349093@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
-References: <20220613094923.832156175@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,68 +56,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marios Levogiannis <marios.levogiannis@gmail.com>
+From: Leo Yan <leo.yan@linaro.org>
 
-commit 9bfa7b36343c7d84370bc61c9ed774635b05e4eb upstream.
+[ Upstream commit b24192a17337abbf3f44aaa75e15df14a2d0016e ]
 
-Set microphone pins 0x18 (rear) and 0x19 (front) to VREF_50 to fix the
-microphone noise on ASUS TUF B550M-PLUS which uses the ALCS1200A codec.
-The initial value was VREF_80.
+The function percent_rmt_hitm_cmp() wrongly uses local HITMs for
+sorting remote HITMs.
 
-The same issue is also present on Windows using both the default Windows
-driver and all tested Realtek drivers before version 6.0.9049.1. Comparing
-Realtek driver 6.0.9049.1 (the first one without the microphone noise) to
-Realtek driver 6.0.9047.1 (the last one with the microphone noise)
-revealed that the fix is the result of setting pins 0x18 and 0x19 to
-VREF_50.
+Since this function is to sort cache lines for remote HITMs, this patch
+changes to use 'rmt_hitm' field for correct sorting.
 
-This fix may also work for other boards that have been reported to have
-the same microphone issue and use the ALC1150 and ALCS1200A codecs, since
-these codecs are similar and the fix in the Realtek driver on Windows is
-common for both. However, it is currently enabled only for ASUS TUF
-B550M-PLUS as this is the only board that could be tested.
-
-Signed-off-by: Marios Levogiannis <marios.levogiannis@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220530074131.12258-1-marios.levogiannis@gmail.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 9cb3500afc0980c5 ("perf c2c report: Add hitm/store percent related sort keys")
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
+Acked-by: Namhyung Kim <namhyung@kernel.org>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Joe Mario <jmario@redhat.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220530084253.750190-1-leo.yan@linaro.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/patch_realtek.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ tools/perf/builtin-c2c.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -1916,6 +1916,7 @@ enum {
- 	ALC1220_FIXUP_CLEVO_PB51ED_PINS,
- 	ALC887_FIXUP_ASUS_AUDIO,
- 	ALC887_FIXUP_ASUS_HMIC,
-+	ALCS1200A_FIXUP_MIC_VREF,
- };
+diff --git a/tools/perf/builtin-c2c.c b/tools/perf/builtin-c2c.c
+index d3e0ea06d78d..29d460c30176 100644
+--- a/tools/perf/builtin-c2c.c
++++ b/tools/perf/builtin-c2c.c
+@@ -953,8 +953,8 @@ percent_rmt_hitm_cmp(struct perf_hpp_fmt *fmt __maybe_unused,
+ 	double per_left;
+ 	double per_right;
  
- static void alc889_fixup_coef(struct hda_codec *codec,
-@@ -2461,6 +2462,14 @@ static const struct hda_fixup alc882_fix
- 		.chained = true,
- 		.chain_id = ALC887_FIXUP_ASUS_AUDIO,
- 	},
-+	[ALCS1200A_FIXUP_MIC_VREF] = {
-+		.type = HDA_FIXUP_PINCTLS,
-+		.v.pins = (const struct hda_pintbl[]) {
-+			{ 0x18, PIN_VREF50 }, /* rear mic */
-+			{ 0x19, PIN_VREF50 }, /* front mic */
-+			{}
-+		}
-+	},
- };
+-	per_left  = PERCENT(left, lcl_hitm);
+-	per_right = PERCENT(right, lcl_hitm);
++	per_left  = PERCENT(left, rmt_hitm);
++	per_right = PERCENT(right, rmt_hitm);
  
- static const struct snd_pci_quirk alc882_fixup_tbl[] = {
-@@ -2498,6 +2507,7 @@ static const struct snd_pci_quirk alc882
- 	SND_PCI_QUIRK(0x1043, 0x835f, "Asus Eee 1601", ALC888_FIXUP_EEE1601),
- 	SND_PCI_QUIRK(0x1043, 0x84bc, "ASUS ET2700", ALC887_FIXUP_ASUS_BASS),
- 	SND_PCI_QUIRK(0x1043, 0x8691, "ASUS ROG Ranger VIII", ALC882_FIXUP_GPIO3),
-+	SND_PCI_QUIRK(0x1043, 0x8797, "ASUS TUF B550M-PLUS", ALCS1200A_FIXUP_MIC_VREF),
- 	SND_PCI_QUIRK(0x104d, 0x9043, "Sony Vaio VGC-LN51JGB", ALC882_FIXUP_NO_PRIMARY_HP),
- 	SND_PCI_QUIRK(0x104d, 0x9044, "Sony VAIO AiO", ALC882_FIXUP_NO_PRIMARY_HP),
- 	SND_PCI_QUIRK(0x104d, 0x9047, "Sony Vaio TT", ALC889_FIXUP_VAIO_TT),
+ 	return per_left - per_right;
+ }
+-- 
+2.35.1
+
 
 
