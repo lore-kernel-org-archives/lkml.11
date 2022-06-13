@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EDFCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:07:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAD85C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:07:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351679AbiFMLH0 (ORCPT
+        id S1351691AbiFMLHh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:07:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57644 "EHLO
+        Mon, 13 Jun 2022 07:07:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351182AbiFMK7R (ORCPT
+        with ESMTP id S1350090AbiFMK7g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:59:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E977126AC1;
-        Mon, 13 Jun 2022 03:32:47 -0700 (PDT)
+        Mon, 13 Jun 2022 06:59:36 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B53CC3120C;
+        Mon, 13 Jun 2022 03:33:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 100B1B80EA7;
-        Mon, 13 Jun 2022 10:32:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 668E1C34114;
-        Mon, 13 Jun 2022 10:32:44 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3F4ABCE0EEB;
+        Mon, 13 Jun 2022 10:32:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12697C34114;
+        Mon, 13 Jun 2022 10:32:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116364;
-        bh=6poQA8HptYF9vPIgarkR6mmoUzdWP/wv3YOZWLj7vEM=;
+        s=korg; t=1655116370;
+        bh=uue5EE1JeN8GGNUFiqBSIhubZNl+E5Jqm/EiHbqvVJ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x5p3WGICda3zUxUnLUTw1Q25wqfRrVntLFJmcy3i1V/+2aQCkGtm0acQnE5jbMtsk
-         AcpUQW9VFUzaoTvb0HU5p8lfLxRK85N2HEioRIWGasL/IFQFKP8dsCMXnRgSJeZBJb
-         HE1mL1P98Ur0b7QoYkfi2QPiVjOl6xSiJ+S/zFdE=
+        b=Xmq/nhtTY9lenDyasPA5E8awsNHBrFk/ft8nAUPnxDuQnUm0v1oC+TncmRI1WLmfa
+         2Ur+o4hPlWbBqNvhDzT0pqObiDNYi2HVUZeFhrM2rvoozip0SZaw8UXxOB3rMpnjBc
+         o+gIROQATmPaSBWWdXVeCQK4GQFlTOQbPlyUtcvw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 168/218] i2c: cadence: Increase timeout per message if necessary
-Date:   Mon, 13 Jun 2022 12:10:26 +0200
-Message-Id: <20220613094925.697851112@linuxfoundation.org>
+        stable@vger.kernel.org, Peng Wu <wupeng58@huawei.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 070/411] ARM: versatile: Add missing of_node_put in dcscb_init
+Date:   Mon, 13 Jun 2022 12:05:43 +0200
+Message-Id: <20220613094930.776135315@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,62 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucas Tanure <tanureal@opensource.cirrus.com>
+From: Peng Wu <wupeng58@huawei.com>
 
-[ Upstream commit 96789dce043f5bff8b7d62aa28d52a7c59403a84 ]
+[ Upstream commit 23b44f9c649bbef10b45fa33080cd8b4166800ae ]
 
-Timeout as 1 second sets an upper limit on the length
-of the transfer executed, but there is no maximum length
-of a write or read message set in i2c_adapter_quirks for
-this controller.
+The device_node pointer is returned by of_find_compatible_node
+with refcount incremented. We should use of_node_put() to avoid
+the refcount leak.
 
-This upper limit affects devices that require sending
-large firmware blobs over I2C.
-
-To remove that limitation, calculate the minimal time
-necessary, plus some wiggle room, for every message and
-use it instead of the default one second, if more than
-one second.
-
-Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
-Acked-by: Michal Simek <michal.simek@xilinx.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Peng Wu <wupeng58@huawei.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Link: https://lore.kernel.org/r/20220428230356.69418-1-linus.walleij@linaro.org'
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-cadence.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ arch/arm/mach-vexpress/dcscb.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/i2c/busses/i2c-cadence.c b/drivers/i2c/busses/i2c-cadence.c
-index c5475bb4fae6..2150afdcc083 100644
---- a/drivers/i2c/busses/i2c-cadence.c
-+++ b/drivers/i2c/busses/i2c-cadence.c
-@@ -511,7 +511,7 @@ static void cdns_i2c_master_reset(struct i2c_adapter *adap)
- static int cdns_i2c_process_msg(struct cdns_i2c *id, struct i2c_msg *msg,
- 		struct i2c_adapter *adap)
- {
--	unsigned long time_left;
-+	unsigned long time_left, msg_timeout;
- 	u32 reg;
- 
- 	id->p_msg = msg;
-@@ -536,8 +536,16 @@ static int cdns_i2c_process_msg(struct cdns_i2c *id, struct i2c_msg *msg,
- 	else
- 		cdns_i2c_msend(id);
- 
-+	/* Minimal time to execute this message */
-+	msg_timeout = msecs_to_jiffies((1000 * msg->len * BITS_PER_BYTE) / id->i2c_clk);
-+	/* Plus some wiggle room */
-+	msg_timeout += msecs_to_jiffies(500);
-+
-+	if (msg_timeout < adap->timeout)
-+		msg_timeout = adap->timeout;
-+
- 	/* Wait for the signal of completion */
--	time_left = wait_for_completion_timeout(&id->xfer_done, adap->timeout);
-+	time_left = wait_for_completion_timeout(&id->xfer_done, msg_timeout);
- 	if (time_left == 0) {
- 		cdns_i2c_master_reset(adap);
- 		dev_err(id->adap.dev.parent,
+diff --git a/arch/arm/mach-vexpress/dcscb.c b/arch/arm/mach-vexpress/dcscb.c
+index 46a903c88c6a..f553cde614f9 100644
+--- a/arch/arm/mach-vexpress/dcscb.c
++++ b/arch/arm/mach-vexpress/dcscb.c
+@@ -143,6 +143,7 @@ static int __init dcscb_init(void)
+ 	if (!node)
+ 		return -ENODEV;
+ 	dcscb_base = of_iomap(node, 0);
++	of_node_put(node);
+ 	if (!dcscb_base)
+ 		return -EADDRNOTAVAIL;
+ 	cfg = readl_relaxed(dcscb_base + DCS_CFG_R);
 -- 
 2.35.1
 
