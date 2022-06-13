@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B555CCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:25:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 834ECCCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:25:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383791AbiFMOYA (ORCPT
+        id S1383662AbiFMOXp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:24:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52892 "EHLO
+        Mon, 13 Jun 2022 10:23:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382933AbiFMOVV (ORCPT
+        with ESMTP id S1383124AbiFMOT4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:21:21 -0400
+        Mon, 13 Jun 2022 10:19:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72DE9A2060;
-        Mon, 13 Jun 2022 04:43:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F73145AD5;
+        Mon, 13 Jun 2022 04:43:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E24DDB80E2C;
-        Mon, 13 Jun 2022 11:43:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37F04C34114;
-        Mon, 13 Jun 2022 11:43:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8490EB80D3A;
+        Mon, 13 Jun 2022 11:43:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAFC1C34114;
+        Mon, 13 Jun 2022 11:43:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120636;
-        bh=vgKo32g688iQ+3jnemU02qj9Di+VAnXSWSB12XS0bkQ=;
+        s=korg; t=1655120612;
+        bh=jFnYDH/ga59f/Td+EUa/dt0CS7+r9A8tKGC76gbt254=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s60zLo+sBW00tl9LGqgOLTeFk3199TvbnoDVxToq8HQ9zdHzDXhmB70LtD9D31ckx
-         nNSFD8uaz/8nHeamtcdk6CfzU7SqmTyDCN0tXpo6zhTXo8glgREIpkRjCBU+sfGaIz
-         pbcWOSNEkb1G7R5Yz5RtFUiwYXCWglOwMT39Ohe0=
+        b=Ul2DsvLk2SnN2Ef9RORnyUxHr7ZM+r7SHue8FlxsZBrG7pTi5fzOUrxf+ZhrFaRiN
+         GvwWd5i6F+gENXj6UuvGDHumDyzyYrQbMU1SDWUw1NIO1p5PvDcZ8N2D4pT4lIY8ju
+         TecG8h6CAPewcesJq1YJ13IZpfNFgwuDmdK2/Z5E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tianhao Zhao <tizhao@redhat.com>,
-        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 103/298] sfc: fix wrong tx channel offset with efx_separate_tx_channels
-Date:   Mon, 13 Jun 2022 12:09:57 +0200
-Message-Id: <20220613094928.075637456@linuxfoundation.org>
+        stable@vger.kernel.org, Yu Kuai <yukuai3@huawei.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 096/298] nbd: dont clear NBD_CMD_INFLIGHT flag if request is not completed
+Date:   Mon, 13 Jun 2022 12:09:50 +0200
+Message-Id: <20220613094927.861650360@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -51,64 +49,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Íñigo Huguet <ihuguet@redhat.com>
+From: Yu Kuai <yukuai3@huawei.com>
 
-[ Upstream commit c308dfd1b43ef0d4c3e57b741bb3462eb7a7f4a2 ]
+[ Upstream commit 2895f1831e911ca87d4efdf43e35eb72a0c7e66e ]
 
-tx_channel_offset is calculated in efx_allocate_msix_channels, but it is
-also calculated again in efx_set_channels because it was originally done
-there, and when efx_allocate_msix_channels was introduced it was
-forgotten to be removed from efx_set_channels.
+Otherwise io will hung because request will only be completed if the
+cmd has the flag 'NBD_CMD_INFLIGHT'.
 
-Moreover, the old calculation is wrong when using
-efx_separate_tx_channels because now we can have XDP channels after the
-TX channels, so n_channels - n_tx_channels doesn't point to the first TX
-channel.
-
-Remove the old calculation from efx_set_channels, and add the
-initialization of this variable if MSI or legacy interrupts are used,
-next to the initialization of the rest of the related variables, where
-it was missing.
-
-Fixes: 3990a8fffbda ("sfc: allocate channels for XDP tx queues")
-Reported-by: Tianhao Zhao <tizhao@redhat.com>
-Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 07175cb1baf4 ("nbd: make sure request completion won't concurrent")
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+Link: https://lore.kernel.org/r/20220521073749.3146892-4-yukuai3@huawei.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/sfc/efx_channels.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/block/nbd.c | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/efx_channels.c b/drivers/net/ethernet/sfc/efx_channels.c
-index eec0db76d888..8ab9358a1c3d 100644
---- a/drivers/net/ethernet/sfc/efx_channels.c
-+++ b/drivers/net/ethernet/sfc/efx_channels.c
-@@ -309,6 +309,7 @@ int efx_probe_interrupts(struct efx_nic *efx)
- 		efx->n_channels = 1;
- 		efx->n_rx_channels = 1;
- 		efx->n_tx_channels = 1;
-+		efx->tx_channel_offset = 0;
- 		efx->n_xdp_channels = 0;
- 		efx->xdp_channel_offset = efx->n_channels;
- 		rc = pci_enable_msi(efx->pci_dev);
-@@ -329,6 +330,7 @@ int efx_probe_interrupts(struct efx_nic *efx)
- 		efx->n_channels = 1 + (efx_separate_tx_channels ? 1 : 0);
- 		efx->n_rx_channels = 1;
- 		efx->n_tx_channels = 1;
-+		efx->tx_channel_offset = 1;
- 		efx->n_xdp_channels = 0;
- 		efx->xdp_channel_offset = efx->n_channels;
- 		efx->legacy_irq = efx->pci_dev->irq;
-@@ -957,10 +959,6 @@ int efx_set_channels(struct efx_nic *efx)
- 	struct efx_channel *channel;
- 	int rc;
+diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
+index 284557041336..ed678037ba6d 100644
+--- a/drivers/block/nbd.c
++++ b/drivers/block/nbd.c
+@@ -404,13 +404,14 @@ static enum blk_eh_timer_return nbd_xmit_timeout(struct request *req,
+ 	if (!mutex_trylock(&cmd->lock))
+ 		return BLK_EH_RESET_TIMER;
  
--	efx->tx_channel_offset =
--		efx_separate_tx_channels ?
--		efx->n_channels - efx->n_tx_channels : 0;
--
- 	if (efx->xdp_tx_queue_count) {
- 		EFX_WARN_ON_PARANOID(efx->xdp_tx_queues);
+-	if (!__test_and_clear_bit(NBD_CMD_INFLIGHT, &cmd->flags)) {
++	if (!test_bit(NBD_CMD_INFLIGHT, &cmd->flags)) {
+ 		mutex_unlock(&cmd->lock);
+ 		return BLK_EH_DONE;
+ 	}
+ 
+ 	if (!refcount_inc_not_zero(&nbd->config_refs)) {
+ 		cmd->status = BLK_STS_TIMEOUT;
++		__clear_bit(NBD_CMD_INFLIGHT, &cmd->flags);
+ 		mutex_unlock(&cmd->lock);
+ 		goto done;
+ 	}
+@@ -479,6 +480,7 @@ static enum blk_eh_timer_return nbd_xmit_timeout(struct request *req,
+ 	dev_err_ratelimited(nbd_to_dev(nbd), "Connection timed out\n");
+ 	set_bit(NBD_RT_TIMEDOUT, &config->runtime_flags);
+ 	cmd->status = BLK_STS_IOERR;
++	__clear_bit(NBD_CMD_INFLIGHT, &cmd->flags);
+ 	mutex_unlock(&cmd->lock);
+ 	sock_shutdown(nbd);
+ 	nbd_config_put(nbd);
+@@ -746,7 +748,7 @@ static struct nbd_cmd *nbd_handle_reply(struct nbd_device *nbd, int index,
+ 	cmd = blk_mq_rq_to_pdu(req);
+ 
+ 	mutex_lock(&cmd->lock);
+-	if (!__test_and_clear_bit(NBD_CMD_INFLIGHT, &cmd->flags)) {
++	if (!test_bit(NBD_CMD_INFLIGHT, &cmd->flags)) {
+ 		dev_err(disk_to_dev(nbd->disk), "Suspicious reply %d (status %u flags %lu)",
+ 			tag, cmd->status, cmd->flags);
+ 		ret = -ENOENT;
+@@ -855,8 +857,16 @@ static void recv_work(struct work_struct *work)
+ 		}
+ 
+ 		rq = blk_mq_rq_from_pdu(cmd);
+-		if (likely(!blk_should_fake_timeout(rq->q)))
+-			blk_mq_complete_request(rq);
++		if (likely(!blk_should_fake_timeout(rq->q))) {
++			bool complete;
++
++			mutex_lock(&cmd->lock);
++			complete = __test_and_clear_bit(NBD_CMD_INFLIGHT,
++							&cmd->flags);
++			mutex_unlock(&cmd->lock);
++			if (complete)
++				blk_mq_complete_request(rq);
++		}
+ 		percpu_ref_put(&q->q_usage_counter);
+ 	}
  
 -- 
 2.35.1
