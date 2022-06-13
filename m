@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E27BBCCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:07:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C806AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:07:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358688AbiFMMHr (ORCPT
+        id S1358270AbiFMMHu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:07:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54170 "EHLO
+        Mon, 13 Jun 2022 08:07:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359030AbiFMMFK (ORCPT
+        with ESMTP id S1359141AbiFMMFS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:05:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 971C625C55;
-        Mon, 13 Jun 2022 03:58:38 -0700 (PDT)
+        Mon, 13 Jun 2022 08:05:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A97B95131F;
+        Mon, 13 Jun 2022 03:58:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE8A461257;
-        Mon, 13 Jun 2022 10:58:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBBBAC34114;
-        Mon, 13 Jun 2022 10:58:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6405BB80E5E;
+        Mon, 13 Jun 2022 10:58:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD339C34114;
+        Mon, 13 Jun 2022 10:58:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117917;
-        bh=IFL+ra9dCTVwdOrXgane0wMJwEGfhky5g1UMWUvXbXk=;
+        s=korg; t=1655117931;
+        bh=2BfCWfxJf6F3Zh9341yIuILb5YUsJs8hcUkBONJNSQs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZCJnP81NJ0px+LijMQeTiXFMveybhPNMgQBBT1t7V69KxFzi2OYJffcqO8QpsKcg1
-         rwkhY/FosdUsd7j2TBYniqJuw+sbl6kbiu+x8Vjop/UHW+sIj1KdSFeQOo8p8y3pPr
-         F1IZak0zAAhkCln37N4V6Zpzo45L8grO0KpidNTI=
+        b=Np8pb8tyiqmw08sdk43fSQTZ+6pNnNUyVBSKkiNJgR9+Fpgd0+arjG/UlbLrT12K1
+         StyNLs/xGcl9S2Y26pufKeHMVdTfkGSQ1mcxL/H9DU1asUAguHSgbbD2f2SrL/s+Dk
+         Ukuno/WvxTpbDG89eSx8VUGk51n+x9SW1hlZQHmI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>
-Subject: [PATCH 4.19 177/287] ASoC: rt5514: Fix event generation for "DSP Voice Wake Up" control
-Date:   Mon, 13 Jun 2022 12:10:01 +0200
-Message-Id: <20220613094929.238289721@linuxfoundation.org>
+        stable@vger.kernel.org, Catrinel Catrinescu <cc@80211.de>,
+        Felix Fietkau <nbd@nbd.name>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH 4.19 170/287] mac80211: upgrade passive scan to active scan on DFS channels after beacon rx
+Date:   Mon, 13 Jun 2022 12:09:54 +0200
+Message-Id: <20220613094929.030217958@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -48,34 +50,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Felix Fietkau <nbd@nbd.name>
 
-commit 4213ff556740bb45e2d9ff0f50d056c4e7dd0921 upstream.
+commit b041b7b9de6e1d4362de855ab90f9d03ef323edd upstream.
 
-The driver has a custom put function for "DSP Voice Wake Up" which does
-not generate event notifications on change, instead returning 0. Since we
-already exit early in the case that there is no change this can be fixed
-by unconditionally returning 1 at the end of the function.
+In client mode, we can't connect to hidden SSID APs or SSIDs not advertised
+in beacons on DFS channels, since we're forced to passive scan. Fix this by
+sending out a probe request immediately after the first beacon, if active
+scan was requested by the user.
 
-Signed-off-by: Mark Brown <broonie@kernel.org>
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220428162444.3883147-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Reported-by: Catrinel Catrinescu <cc@80211.de>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Link: https://lore.kernel.org/r/20220420104907.36275-1-nbd@nbd.name
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/rt5514.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/mac80211/ieee80211_i.h |    5 +++++
+ net/mac80211/scan.c        |   20 ++++++++++++++++++++
+ 2 files changed, 25 insertions(+)
 
---- a/sound/soc/codecs/rt5514.c
-+++ b/sound/soc/codecs/rt5514.c
-@@ -422,7 +422,7 @@ static int rt5514_dsp_voice_wake_up_put(
- 		}
+--- a/net/mac80211/ieee80211_i.h
++++ b/net/mac80211/ieee80211_i.h
+@@ -1072,6 +1072,9 @@ struct tpt_led_trigger {
+  *	a scan complete for an aborted scan.
+  * @SCAN_HW_CANCELLED: Set for our scan work function when the scan is being
+  *	cancelled.
++ * @SCAN_BEACON_WAIT: Set whenever we're passive scanning because of radar/no-IR
++ *	and could send a probe request after receiving a beacon.
++ * @SCAN_BEACON_DONE: Beacon received, we can now send a probe request
+  */
+ enum {
+ 	SCAN_SW_SCANNING,
+@@ -1080,6 +1083,8 @@ enum {
+ 	SCAN_COMPLETED,
+ 	SCAN_ABORTED,
+ 	SCAN_HW_CANCELLED,
++	SCAN_BEACON_WAIT,
++	SCAN_BEACON_DONE,
+ };
+ 
+ /**
+--- a/net/mac80211/scan.c
++++ b/net/mac80211/scan.c
+@@ -222,6 +222,16 @@ void ieee80211_scan_rx(struct ieee80211_
+ 	if (likely(!sdata1 && !sdata2))
+ 		return;
+ 
++	if (test_and_clear_bit(SCAN_BEACON_WAIT, &local->scanning)) {
++		/*
++		 * we were passive scanning because of radar/no-IR, but
++		 * the beacon/proberesp rx gives us an opportunity to upgrade
++		 * to active scan
++		 */
++		 set_bit(SCAN_BEACON_DONE, &local->scanning);
++		 ieee80211_queue_delayed_work(&local->hw, &local->scan_work, 0);
++	}
++
+ 	if (ieee80211_is_probe_resp(mgmt->frame_control)) {
+ 		struct cfg80211_scan_request *scan_req;
+ 		struct cfg80211_sched_scan_request *sched_scan_req;
+@@ -706,6 +716,8 @@ static int __ieee80211_start_scan(struct
+ 						IEEE80211_CHAN_RADAR)) ||
+ 		    !req->n_ssids) {
+ 			next_delay = IEEE80211_PASSIVE_CHANNEL_TIME;
++			if (req->n_ssids)
++				set_bit(SCAN_BEACON_WAIT, &local->scanning);
+ 		} else {
+ 			ieee80211_scan_state_send_probe(local, &next_delay);
+ 			next_delay = IEEE80211_CHANNEL_TIME;
+@@ -886,6 +898,8 @@ static void ieee80211_scan_state_set_cha
+ 	    !scan_req->n_ssids) {
+ 		*next_delay = IEEE80211_PASSIVE_CHANNEL_TIME;
+ 		local->next_scan_state = SCAN_DECISION;
++		if (scan_req->n_ssids)
++			set_bit(SCAN_BEACON_WAIT, &local->scanning);
+ 		return;
  	}
  
--	return 0;
-+	return 1;
- }
+@@ -978,6 +992,8 @@ void ieee80211_scan_work(struct work_str
+ 			goto out;
+ 	}
  
- static const struct snd_kcontrol_new rt5514_snd_controls[] = {
++	clear_bit(SCAN_BEACON_WAIT, &local->scanning);
++
+ 	/*
+ 	 * as long as no delay is required advance immediately
+ 	 * without scheduling a new work
+@@ -988,6 +1004,10 @@ void ieee80211_scan_work(struct work_str
+ 			goto out_complete;
+ 		}
+ 
++		if (test_and_clear_bit(SCAN_BEACON_DONE, &local->scanning) &&
++		    local->next_scan_state == SCAN_DECISION)
++			local->next_scan_state = SCAN_SEND_PROBE;
++
+ 		switch (local->next_scan_state) {
+ 		case SCAN_DECISION:
+ 			/* if no more bands/channels left, complete scan */
 
 
