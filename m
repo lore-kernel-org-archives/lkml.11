@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2C83C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:45:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4C65CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:45:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354985AbiFMMoS (ORCPT
+        id S1355426AbiFMMo3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:44:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56212 "EHLO
+        Mon, 13 Jun 2022 08:44:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354676AbiFMMi5 (ORCPT
+        with ESMTP id S1357586AbiFMMj4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:38:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AB625DA18;
-        Mon, 13 Jun 2022 04:08:33 -0700 (PDT)
+        Mon, 13 Jun 2022 08:39:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EA3E5E146;
+        Mon, 13 Jun 2022 04:10:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5F8AB80EA7;
-        Mon, 13 Jun 2022 11:08:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DC5AC34114;
-        Mon, 13 Jun 2022 11:08:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6771360B77;
+        Mon, 13 Jun 2022 11:10:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70DB6C34114;
+        Mon, 13 Jun 2022 11:10:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118510;
-        bh=tu/8KKiOkbWt2AvZ7ioCyRwCklb4rKIQxJpxvnK/u+k=;
+        s=korg; t=1655118607;
+        bh=l5ObCqWV5DtUWe/84mfk11TbqDN6Yq+o0TqAqpuILE8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TZNNfLnVVEue4RzC7GHG60Y3KnWd+8ZJO4sm6zJJKiFsQsOF/F9auB64xMzgfVwgN
-         H7CU9qWASGcDdi4iTZ1+YuS9bV6BRKYA8RLlci7zepAygBIXwc9t2fxhq4uaWWysZu
-         IL595KUZ4PC7/pI5PLJ3yw4difr18LiJIpg4ZSlA=
+        b=UdjzRD3XJXnv1sEWja1VJs1UnVSZ/nG2F8hoD+hZUMaEDJ8VqIsDT/jZwAYccwdNM
+         gPzsNCFziNZl+qgHph3mLJMnQ69yGDEJkS7xI3qfrgAk3nFLt9OKG9qDXjaI9Pv/Nn
+         R3cp5x78rjYTlG3MmL1EJyv4o5uj7V9XOoh6TyB4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Michal Kubecek <mkubecek@suse.cz>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 102/172] net: dsa: lantiq_gswip: Fix refcount leak in gswip_gphy_fw_list
-Date:   Mon, 13 Jun 2022 12:11:02 +0200
-Message-Id: <20220613094914.853031341@linuxfoundation.org>
+Subject: [PATCH 5.10 137/172] Revert "net: af_key: add check for pfkey_broadcast in function pfkey_process"
+Date:   Mon, 13 Jun 2022 12:11:37 +0200
+Message-Id: <20220613094921.659363970@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -50,41 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Michal Kubecek <mkubecek@suse.cz>
 
-[ Upstream commit 0737e018a05e2aa352828c52bdeed3b02cff2930 ]
+[ Upstream commit 9c90c9b3e50e16d03c7f87d63e9db373974781e0 ]
 
-Every iteration of for_each_available_child_of_node() decrements
-the reference count of the previous node.
-when breaking early from a for_each_available_child_of_node() loop,
-we need to explicitly call of_node_put() on the gphy_fw_np.
-Add missing of_node_put() to avoid refcount leak.
+This reverts commit 4dc2a5a8f6754492180741facf2a8787f2c415d7.
 
-Fixes: 14fceff4771e ("net: dsa: Add Lantiq / Intel DSA driver for vrx200")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220605072335.11257-1-linmq006@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+A non-zero return value from pfkey_broadcast() does not necessarily mean
+an error occurred as this function returns -ESRCH when no registered
+listener received the message. In particular, a call with
+BROADCAST_PROMISC_ONLY flag and null one_sk argument can never return
+zero so that this commit in fact prevents processing any PF_KEY message.
+One visible effect is that racoon daemon fails to find encryption
+algorithms like aes and refuses to start.
+
+Excluding -ESRCH return value would fix this but it's not obvious that
+we really want to bail out here and most other callers of
+pfkey_broadcast() also ignore the return value. Also, as pointed out by
+Steffen Klassert, PF_KEY is kind of deprecated and newer userspace code
+should use netlink instead so that we should only disturb the code for
+really important fixes.
+
+v2: add a comment explaining why is the return value ignored
+
+Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/lantiq_gswip.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/key/af_key.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
-index 4abae06499a9..70895e480683 100644
---- a/drivers/net/dsa/lantiq_gswip.c
-+++ b/drivers/net/dsa/lantiq_gswip.c
-@@ -1981,8 +1981,10 @@ static int gswip_gphy_fw_list(struct gswip_priv *priv,
- 	for_each_available_child_of_node(gphy_fw_list_np, gphy_fw_np) {
- 		err = gswip_gphy_fw_probe(priv, &priv->gphy_fw[i],
- 					  gphy_fw_np, i);
--		if (err)
-+		if (err) {
-+			of_node_put(gphy_fw_np);
- 			goto remove_gphy;
-+		}
- 		i++;
- 	}
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index 6b7ed5568c09..2aa16a171285 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -2830,10 +2830,12 @@ static int pfkey_process(struct sock *sk, struct sk_buff *skb, const struct sadb
+ 	void *ext_hdrs[SADB_EXT_MAX];
+ 	int err;
  
+-	err = pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
+-			      BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
+-	if (err)
+-		return err;
++	/* Non-zero return value of pfkey_broadcast() does not always signal
++	 * an error and even on an actual error we may still want to process
++	 * the message so rather ignore the return value.
++	 */
++	pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
++			BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
+ 
+ 	memset(ext_hdrs, 0, sizeof(ext_hdrs));
+ 	err = parse_exthdrs(skb, hdr, ext_hdrs);
 -- 
 2.35.1
 
