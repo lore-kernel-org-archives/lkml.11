@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2399C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:30:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B2E8CCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:30:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245073AbiFMK1g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:27:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49676 "EHLO
+        id S245348AbiFMK1l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:27:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343668AbiFMKYz (ORCPT
+        with ESMTP id S1343779AbiFMKZB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:24:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05AAA23BF7;
-        Mon, 13 Jun 2022 03:19:24 -0700 (PDT)
+        Mon, 13 Jun 2022 06:25:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A963CE28;
+        Mon, 13 Jun 2022 03:19:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7A52B80E5C;
-        Mon, 13 Jun 2022 10:19:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37E9FC385A2;
-        Mon, 13 Jun 2022 10:19:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B56560B8E;
+        Mon, 13 Jun 2022 10:19:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD1DDC34114;
+        Mon, 13 Jun 2022 10:19:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115561;
-        bh=Q6we5W8Kv/u+NRHNhRSbKfDoneXxz/vnoRI9lsCPipU=;
+        s=korg; t=1655115567;
+        bh=OSx5Plsy9bUj2pyXOeEwEF2U7wIAunktWya3GWs0sF0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OMxqhwi0tdqNWFASx1lBM5E1ku+6HjPyCgUCptkhGNdwX0K41u20VlVHU5I+GiI9X
-         ezQ3uoJggjo4rElRGon0e6XXfHftW27SL7IDn5Eii7hpQYR0zmlvTDNOtsNIstLyEF
-         Ty37ivMa+hRgStsuRuYWMmr6gEt4SjkX6H+N0P+0=
+        b=LskNaxqXeDN3TDOG9iYPEEFRzivkM4RsyeHlqxSGDTR4FItDFS4SnRHbXiErDyzEi
+         eksiMx8n2wXxXIZErmGAlhG1gZ2BXUgu0AoPag4Go//NsuSV+XufGLY8XvCQDx1ZSz
+         EemmaiGLH4sIKp/ZZF25/ScUeI2JaiKlto3+2n+k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
+        Srinivas Kandagatla <srinivas.kandagatla@st.com>,
         =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 118/167] serial: txx9: Dont allow CS5-6
-Date:   Mon, 13 Jun 2022 12:09:52 +0200
-Message-Id: <20220613094908.404110971@linuxfoundation.org>
+Subject: [PATCH 4.9 120/167] serial: st-asc: Sanitize CSIZE and correct PARENB for CS7
+Date:   Mon, 13 Jun 2022 12:09:54 +0200
+Message-Id: <20220613094908.870484747@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -51,38 +52,45 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-[ Upstream commit 79ac88655dc0551e3571ad16bdabdbe65d61553e ]
+[ Upstream commit 52bb1cb7118564166b04d52387bd8403632f5190 ]
 
-Only CS7 and CS8 are supported but CSIZE is not sanitized with
-CS5 or CS6 to CS8.
+Only CS7 and CS8 seem supported but CSIZE is not sanitized from CS5 or
+CS6 to CS8. In addition, ASC_CTL_MODE_7BIT_PAR suggests that CS7 has
+to have parity, thus add PARENB.
 
-Set CSIZE correctly so that userspace knows the effective value.
-Incorrect CSIZE also results in miscalculation of the frame bits in
+Incorrect CSIZE results in miscalculation of the frame bits in
 tty_get_char_size() or in its predecessor where the roughly the same
 code is directly within uart_update_timeout().
 
-Fixes: 1da177e4c3f4 (Linux-2.6.12-rc2)
+Fixes: c4b058560762 (serial:st-asc: Add ST ASC driver.)
+Cc: Srinivas Kandagatla <srinivas.kandagatla@st.com>
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/20220519081808.3776-5-ilpo.jarvinen@linux.intel.com
+Link: https://lore.kernel.org/r/20220519081808.3776-8-ilpo.jarvinen@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/serial_txx9.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/serial/st-asc.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/tty/serial/serial_txx9.c b/drivers/tty/serial/serial_txx9.c
-index ffb3fb1bda9e..61e0b65c3aaf 100644
---- a/drivers/tty/serial/serial_txx9.c
-+++ b/drivers/tty/serial/serial_txx9.c
-@@ -652,6 +652,8 @@ serial_txx9_set_termios(struct uart_port *port, struct ktermios *termios,
- 	case CS6:	/* not supported */
- 	case CS8:
- 		cval |= TXX9_SILCR_UMODE_8BIT;
-+		termios->c_cflag &= ~CSIZE;
-+		termios->c_cflag |= CS8;
- 		break;
+diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+index 379e5bd37df9..b845cd05e350 100644
+--- a/drivers/tty/serial/st-asc.c
++++ b/drivers/tty/serial/st-asc.c
+@@ -509,10 +509,14 @@ static void asc_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	/* set character length */
+ 	if ((cflag & CSIZE) == CS7) {
+ 		ctrl_val |= ASC_CTL_MODE_7BIT_PAR;
++		cflag |= PARENB;
+ 	} else {
+ 		ctrl_val |= (cflag & PARENB) ?  ASC_CTL_MODE_8BIT_PAR :
+ 						ASC_CTL_MODE_8BIT;
++		cflag &= ~CSIZE;
++		cflag |= CS8;
  	}
++	termios->c_cflag = cflag;
  
+ 	/* set stop bit */
+ 	ctrl_val |= (cflag & CSTOPB) ? ASC_CTL_STOP_2BIT : ASC_CTL_STOP_1BIT;
 -- 
 2.35.1
 
