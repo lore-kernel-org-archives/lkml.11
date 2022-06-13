@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 430BFC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73FF3CCA47B
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:06:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381796AbiFMOEt (ORCPT
+        id S1381892AbiFMOEz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:04:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34830 "EHLO
+        Mon, 13 Jun 2022 10:04:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381565AbiFMN45 (ORCPT
+        with ESMTP id S1381640AbiFMN5D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:56:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16DCA8B086;
-        Mon, 13 Jun 2022 04:37:15 -0700 (PDT)
+        Mon, 13 Jun 2022 09:57:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 240235F79;
+        Mon, 13 Jun 2022 04:37:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6C38AB80EC7;
-        Mon, 13 Jun 2022 11:37:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8B96C34114;
-        Mon, 13 Jun 2022 11:37:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B183612D2;
+        Mon, 13 Jun 2022 11:37:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 266B4C34114;
+        Mon, 13 Jun 2022 11:37:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120232;
-        bh=2Bnq75o17SAeC1aGnsuLEf+b1BM26FPk/fvf4u8So08=;
+        s=korg; t=1655120240;
+        bh=NeRGJsTd+8ow5SSHdLq19FLakGfB6AOFr65nju1xt/M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tJRothVroaUtAjcpoeMa/wrjyRxhSysyPk8cGZHfpbpzUDeSBXpJOvsSX7eAyjcOD
-         mTfvy2hN5ia+zSgjORLbPruQwJ/hh6+16LoYh+SIZJYqhsWN5b2BVKmmLwdYROHPpK
-         lokKwNF14Ye13VKbxmsWzBllI80iQuPwNlpCJndA=
+        b=Ya1u09gHt1qMtcbzb7dpV8zQEhf/DbyQKzAmMyx67pPBeFyGcPw1SPC/wju53S05I
+         787AqxHIU9fBHi3c7M7WaeyV3vTZeoyoxrTI32p/eDDCKgZR088iSMACqp/sF0zReW
+         MGSVS2a1D2QxBDL9l/FGHy62+1HbOLKUOfIzn3c8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shyam Prasad N <sprasad@microsoft.com>,
-        Enzo Matsumiya <ematsumiya@suse.de>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.18 298/339] cifs: return errors during session setup during reconnects
-Date:   Mon, 13 Jun 2022 12:12:03 +0200
-Message-Id: <20220613094935.803460548@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Michael English <michael.english@seagate.com>,
+        Muhammad Ahmad <muhammad.ahmad@seagate.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Hannes Reinecke <hare@suse.de>,
+        Tyler Erickson <tyler.erickson@seagate.com>,
+        Christoph Hellwig <hch@lst.de>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.18 301/339] scsi: sd: Fix interpretation of VPD B9h length
+Date:   Mon, 13 Jun 2022 12:12:06 +0200
+Message-Id: <20220613094935.891462941@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,37 +55,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shyam Prasad N <sprasad@microsoft.com>
+From: Tyler Erickson <tyler.erickson@seagate.com>
 
-commit 8ea21823aa584b55ba4b861307093b78054b0c1b upstream.
+commit f92de9d110429e39929a49240d823251c2fe903e upstream.
 
-During reconnects, we check the return value from
-cifs_negotiate_protocol, and have handlers for both success
-and failures. But if that passes, and cifs_setup_session
-returns any errors other than -EACCES, we do not handle
-that. This fix adds a handler for that, so that we don't
-go ahead and try a tree_connect on a failed session.
+Fixing the interpretation of the length of the B9h VPD page (Concurrent
+Positioning Ranges). Adding 4 is necessary as the first 4 bytes of the page
+is the header with page number and length information.  Adding 3 was likely
+a misinterpretation of the SBC-5 specification which sets all offsets
+starting at zero.
 
-Signed-off-by: Shyam Prasad N <sprasad@microsoft.com>
-Reviewed-by: Enzo Matsumiya <ematsumiya@suse.de>
+This fixes the error in dmesg:
+
+[ 9.014456] sd 1:0:0:0: [sda] Invalid Concurrent Positioning Ranges VPD page
+
+Link: https://lore.kernel.org/r/20220602225113.10218-4-tyler.erickson@seagate.com
+Fixes: e815d36548f0 ("scsi: sd: add concurrent positioning ranges support")
 Cc: stable@vger.kernel.org
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Tested-by: Michael English <michael.english@seagate.com>
+Reviewed-by: Muhammad Ahmad <muhammad.ahmad@seagate.com>
+Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Signed-off-by: Tyler Erickson <tyler.erickson@seagate.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/cifs/smb2pdu.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/scsi/sd.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/cifs/smb2pdu.c
-+++ b/fs/cifs/smb2pdu.c
-@@ -288,6 +288,9 @@ smb2_reconnect(__le16 smb2_command, stru
- 			mutex_unlock(&ses->session_mutex);
- 			rc = -EHOSTDOWN;
- 			goto failed;
-+		} else if (rc) {
-+			mutex_unlock(&ses->session_mutex);
-+			goto out;
- 		}
- 	} else {
- 		mutex_unlock(&ses->session_mutex);
+--- a/drivers/scsi/sd.c
++++ b/drivers/scsi/sd.c
+@@ -3067,7 +3067,7 @@ static void sd_read_cpr(struct scsi_disk
+ 		goto out;
+ 
+ 	/* We must have at least a 64B header and one 32B range descriptor */
+-	vpd_len = get_unaligned_be16(&buffer[2]) + 3;
++	vpd_len = get_unaligned_be16(&buffer[2]) + 4;
+ 	if (vpd_len > buf_len || vpd_len < 64 + 32 || (vpd_len & 31)) {
+ 		sd_printk(KERN_ERR, sdkp,
+ 			  "Invalid Concurrent Positioning Ranges VPD page\n");
 
 
