@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96316CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:45:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0497DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:45:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357562AbiFMMpB (ORCPT
+        id S1355125AbiFMMo0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:45:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56246 "EHLO
+        Mon, 13 Jun 2022 08:44:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355434AbiFMMjI (ORCPT
+        with ESMTP id S1355421AbiFMMjI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 08:39:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE8785DD1D;
-        Mon, 13 Jun 2022 04:09:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5129A33881;
+        Mon, 13 Jun 2022 04:08:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8AD016062B;
-        Mon, 13 Jun 2022 11:09:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97C79C34114;
-        Mon, 13 Jun 2022 11:09:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1EFB6062B;
+        Mon, 13 Jun 2022 11:08:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F321AC34114;
+        Mon, 13 Jun 2022 11:08:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118544;
-        bh=wWcjedB+7mw61TMPIyLnpnCEkYX4YAzFPBp1VoBb2Fk=;
+        s=korg; t=1655118538;
+        bh=WanT25jlSxEd+8KaNIKchPADk9tb+27J3bIDNrN2/tg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KMf3GwgLnMKvl08zk02b+oQnGzJjYG5/BWDtsX8fRpXQs4Oy1/cKjSzReEYVY8ph4
-         dACZaJvAkwnuCqfOQF0z+y/xhmU71ur83uBlwNWgEDXKNbxcxcK8jQqla6gFA28DUr
-         FTqLd2YumWauqKebscjY5bpoWOfBo1zSEANanaK4=
+        b=VfAGeV+AN7iSSahWytcgOrDdpsAZKxPMu+i1+nsCdtlRn1taG7JBnOWeitqz/pbON
+         7OjbU1XGOvbz22Tx7wB/8H3SG0lThi8fseEg388NxDuIgAAlPn2URzUKa0tKNmxScP
+         lFiPUYOfHDmcR73VKvzwkawWiD05XwkImYPUtLBA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 087/172] NFSv4: Dont hold the layoutget locks across multiple RPC calls
-Date:   Mon, 13 Jun 2022 12:10:47 +0200
-Message-Id: <20220613094911.313838683@linuxfoundation.org>
+Subject: [PATCH 5.10 095/172] ata: pata_octeon_cf: Fix refcount leak in octeon_cf_probe
+Date:   Mon, 13 Jun 2022 12:10:55 +0200
+Message-Id: <20220613094913.227443086@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -51,37 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 6949493884fe88500de4af182588e071cf1544ee ]
+[ Upstream commit 10d6bdf532902be1d8aa5900b3c03c5671612aa2 ]
 
-When doing layoutget as part of the open() compound, we have to be
-careful to release the layout locks before we can call any further RPC
-calls, such as setattr(). The reason is that those calls could trigger
-a recall, which could deadlock.
+of_find_device_by_node() takes reference, we should use put_device()
+to release it when not need anymore.
+Add missing put_device() to avoid refcount leak.
 
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Fixes: 43f01da0f279 ("MIPS/OCTEON/ata: Convert pata_octeon_cf.c to use device tree.")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/nfs4proc.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/ata/pata_octeon_cf.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
-index b6d60e69043a..b22da4e3165b 100644
---- a/fs/nfs/nfs4proc.c
-+++ b/fs/nfs/nfs4proc.c
-@@ -3086,6 +3086,10 @@ static int _nfs4_open_and_get_state(struct nfs4_opendata *opendata,
- 	}
- 
- out:
-+	if (opendata->lgp) {
-+		nfs4_lgopen_release(opendata->lgp);
-+		opendata->lgp = NULL;
-+	}
- 	if (!opendata->cancelled)
- 		nfs4_sequence_free_slot(&opendata->o_res.seq_res);
- 	return ret;
+diff --git a/drivers/ata/pata_octeon_cf.c b/drivers/ata/pata_octeon_cf.c
+index b5a3f710d76d..4cc8a1027888 100644
+--- a/drivers/ata/pata_octeon_cf.c
++++ b/drivers/ata/pata_octeon_cf.c
+@@ -888,12 +888,14 @@ static int octeon_cf_probe(struct platform_device *pdev)
+ 				int i;
+ 				res_dma = platform_get_resource(dma_dev, IORESOURCE_MEM, 0);
+ 				if (!res_dma) {
++					put_device(&dma_dev->dev);
+ 					of_node_put(dma_node);
+ 					return -EINVAL;
+ 				}
+ 				cf_port->dma_base = (u64)devm_ioremap(&pdev->dev, res_dma->start,
+ 									 resource_size(res_dma));
+ 				if (!cf_port->dma_base) {
++					put_device(&dma_dev->dev);
+ 					of_node_put(dma_node);
+ 					return -EINVAL;
+ 				}
+@@ -903,6 +905,7 @@ static int octeon_cf_probe(struct platform_device *pdev)
+ 					irq = i;
+ 					irq_handler = octeon_cf_interrupt;
+ 				}
++				put_device(&dma_dev->dev);
+ 			}
+ 			of_node_put(dma_node);
+ 		}
 -- 
 2.35.1
 
