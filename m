@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A095FCCA485
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:00:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2030ECCA48A
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:00:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358098AbiFML70 (ORCPT
+        id S1358218AbiFML7p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:59:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55938 "EHLO
+        Mon, 13 Jun 2022 07:59:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356657AbiFMLux (ORCPT
+        with ESMTP id S1357081AbiFMLwr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:50:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87DA8D10E;
-        Mon, 13 Jun 2022 03:55:01 -0700 (PDT)
+        Mon, 13 Jun 2022 07:52:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A2022496A;
+        Mon, 13 Jun 2022 03:55:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 23FEC60EFE;
-        Mon, 13 Jun 2022 10:55:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37910C34114;
-        Mon, 13 Jun 2022 10:55:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 367B760EFE;
+        Mon, 13 Jun 2022 10:55:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FEC1C34114;
+        Mon, 13 Jun 2022 10:55:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117700;
-        bh=lwGUoTqvlgocRTw2hxr/X5mUBTGEKQRqVn9MQ8udl2o=;
+        s=korg; t=1655117730;
+        bh=qj9kc3Rdta5egmC5sSG3Rk829TRTfWb6UP5H+wlWJgo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UZVbbpj1VeNaE3bqq+/AwrNxwplCR0WO0wqneXbwPpaTVBUOjXoC1QDB6nhMf6BlL
-         QJVO95jJrNF78H44nmyd411LriZNGmJCotfgSX60DIOq2MiC5haSdeUv2TGTYBKlE5
-         khjaQPP7IqqOFUbJ8OI7F0t8fCGLyFmGLgrgsMdY=
+        b=psEs7mQmA6xFbUNVfxQgkq0HsVbK5dAc5kiFdCop4FtHHkY92NvMjvXgVfwFF/LsC
+         127t/x6VfRjJEBEIQEVPMfZRsKgGjnkt0PDP98vEmIlFdE8PGzZfz4cvmVzHRiwgFN
+         VFrobgvAwMQv6S5PjJQL+AIxveDq6SZHl7O32eSM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Jessica Zhang <quic_jesszhan@quicinc.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        stable@vger.kernel.org, Michael Rodin <mrodin@de.adit-jv.com>,
+        LUU HOAI <hoai.luu.ub@renesas.com>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 088/287] drm/msm/mdp5: Return error code in mdp5_pipe_release when deadlock is detected
-Date:   Mon, 13 Jun 2022 12:08:32 +0200
-Message-Id: <20220613094926.546323454@linuxfoundation.org>
+Subject: [PATCH 4.19 099/287] media: vsp1: Fix offset calculation for plane cropping
+Date:   Mon, 13 Jun 2022 12:08:43 +0200
+Message-Id: <20220613094926.882562592@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -52,131 +53,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jessica Zhang <quic_jesszhan@quicinc.com>
+From: Michael Rodin <mrodin@de.adit-jv.com>
 
-[ Upstream commit d59be579fa932c46b908f37509f319cbd4ca9a68 ]
+[ Upstream commit 5f25abec8f21b7527c1223a354d23c270befddb3 ]
 
-mdp5_get_global_state runs the risk of hitting a -EDEADLK when acquiring
-the modeset lock, but currently mdp5_pipe_release doesn't check for if
-an error is returned. Because of this, there is a possibility of
-mdp5_pipe_release hitting a NULL dereference error.
+The vertical subsampling factor is currently not considered in the
+offset calculation for plane cropping done in rpf_configure_partition.
+This causes a distortion (shift of the color plane) when formats with
+the vsub factor larger than 1 are used (e.g. NV12, see
+vsp1_video_formats in vsp1_pipe.c). This commit considers vsub factor
+for all planes except plane 0 (luminance).
 
-To avoid this, let's have mdp5_pipe_release check if
-mdp5_get_global_state returns an error and propogate that error.
+Drop generalization of the offset calculation to reduce the binary size.
 
-Changes since v1:
-- Separated declaration and initialization of *new_state to avoid
-  compiler warning
-- Fixed some spelling mistakes in commit message
-
-Changes since v2:
-- Return 0 in case where hwpipe is NULL as this is considered normal
-  behavior
-- Added 2nd patch in series to fix a similar NULL dereference issue in
-  mdp5_mixer_release
-
-Reported-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
-Signed-off-by: Jessica Zhang <quic_jesszhan@quicinc.com>
-Fixes: 7907a0d77cb4 ("drm/msm/mdp5: Use the new private_obj state")
-Reviewed-by: Rob Clark <robdclark@gmail.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/485179/
-Link: https://lore.kernel.org/r/20220505214051.155-1-quic_jesszhan@quicinc.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Fixes: e5ad37b64de9 ("[media] v4l: vsp1: Add cropping support")
+Signed-off-by: Michael Rodin <mrodin@de.adit-jv.com>
+Signed-off-by: LUU HOAI <hoai.luu.ub@renesas.com>
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c  | 15 +++++++++++----
- drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.h  |  2 +-
- drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c | 20 ++++++++++++++++----
- 3 files changed, 28 insertions(+), 9 deletions(-)
+ drivers/media/platform/vsp1/vsp1_rpf.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
-index 1ef26bc63163..88de12225582 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
-@@ -130,18 +130,23 @@ int mdp5_pipe_assign(struct drm_atomic_state *s, struct drm_plane *plane,
- 	return 0;
- }
+diff --git a/drivers/media/platform/vsp1/vsp1_rpf.c b/drivers/media/platform/vsp1/vsp1_rpf.c
+index f8005b60b9d2..abaf4dde3802 100644
+--- a/drivers/media/platform/vsp1/vsp1_rpf.c
++++ b/drivers/media/platform/vsp1/vsp1_rpf.c
+@@ -290,11 +290,11 @@ static void rpf_configure_partition(struct vsp1_entity *entity,
+ 		     + crop.left * fmtinfo->bpp[0] / 8;
  
--void mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe)
-+int mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe)
- {
- 	struct msm_drm_private *priv = s->dev->dev_private;
- 	struct mdp5_kms *mdp5_kms = to_mdp5_kms(to_mdp_kms(priv->kms));
- 	struct mdp5_global_state *state = mdp5_get_global_state(s);
--	struct mdp5_hw_pipe_state *new_state = &state->hwpipe;
-+	struct mdp5_hw_pipe_state *new_state;
+ 	if (format->num_planes > 1) {
++		unsigned int bpl = format->plane_fmt[1].bytesperline;
+ 		unsigned int offset;
  
- 	if (!hwpipe)
--		return;
-+		return 0;
-+
-+	if (IS_ERR(state))
-+		return PTR_ERR(state);
-+
-+	new_state = &state->hwpipe;
- 
- 	if (WARN_ON(!new_state->hwpipe_to_plane[hwpipe->idx]))
--		return;
-+		return -EINVAL;
- 
- 	DBG("%s: release from plane %s", hwpipe->name,
- 		new_state->hwpipe_to_plane[hwpipe->idx]->name);
-@@ -152,6 +157,8 @@ void mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe)
+-		offset = crop.top * format->plane_fmt[1].bytesperline
+-		       + crop.left / fmtinfo->hsub
+-		       * fmtinfo->bpp[1] / 8;
++		offset = crop.top / fmtinfo->vsub * bpl
++		       + crop.left / fmtinfo->hsub * fmtinfo->bpp[1] / 8;
+ 		mem.addr[1] += offset;
+ 		mem.addr[2] += offset;
  	}
- 
- 	new_state->hwpipe_to_plane[hwpipe->idx] = NULL;
-+
-+	return 0;
- }
- 
- void mdp5_pipe_destroy(struct mdp5_hw_pipe *hwpipe)
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.h b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.h
-index bb2b0ac7aa2b..072db6a99b85 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.h
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.h
-@@ -48,7 +48,7 @@ int mdp5_pipe_assign(struct drm_atomic_state *s, struct drm_plane *plane,
- 		     uint32_t caps, uint32_t blkcfg,
- 		     struct mdp5_hw_pipe **hwpipe,
- 		     struct mdp5_hw_pipe **r_hwpipe);
--void mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe);
-+int mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe);
- 
- struct mdp5_hw_pipe *mdp5_pipe_init(enum mdp5_pipe pipe,
- 		uint32_t reg_offset, uint32_t caps);
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
-index 3d8eaa25bea0..501d7989b9a5 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
-@@ -402,12 +402,24 @@ static int mdp5_plane_atomic_check_with_state(struct drm_crtc_state *crtc_state,
- 				mdp5_state->r_hwpipe = NULL;
- 
- 
--			mdp5_pipe_release(state->state, old_hwpipe);
--			mdp5_pipe_release(state->state, old_right_hwpipe);
-+			ret = mdp5_pipe_release(state->state, old_hwpipe);
-+			if (ret)
-+				return ret;
-+
-+			ret = mdp5_pipe_release(state->state, old_right_hwpipe);
-+			if (ret)
-+				return ret;
-+
- 		}
- 	} else {
--		mdp5_pipe_release(state->state, mdp5_state->hwpipe);
--		mdp5_pipe_release(state->state, mdp5_state->r_hwpipe);
-+		ret = mdp5_pipe_release(state->state, mdp5_state->hwpipe);
-+		if (ret)
-+			return ret;
-+
-+		ret = mdp5_pipe_release(state->state, mdp5_state->r_hwpipe);
-+		if (ret)
-+			return ret;
-+
- 		mdp5_state->hwpipe = mdp5_state->r_hwpipe = NULL;
- 	}
- 
 -- 
 2.35.1
 
