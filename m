@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 752BAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:35:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FFF5C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:35:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377878AbiFMNfM (ORCPT
+        id S1377731AbiFMNdp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:35:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50712 "EHLO
+        Mon, 13 Jun 2022 09:33:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378511AbiFMNbo (ORCPT
+        with ESMTP id S1378060AbiFMNau (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:31:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEE5B703EB;
-        Mon, 13 Jun 2022 04:26:14 -0700 (PDT)
+        Mon, 13 Jun 2022 09:30:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C8BD241;
+        Mon, 13 Jun 2022 04:25:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 19F6761038;
-        Mon, 13 Jun 2022 11:26:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25E54C341C5;
-        Mon, 13 Jun 2022 11:26:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 12144B80EB6;
+        Mon, 13 Jun 2022 11:25:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76B61C34114;
+        Mon, 13 Jun 2022 11:25:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119573;
-        bh=P2WvBvhNObln23cDiRXI50hZO+1ujw4dGKh/BQBU3KY=;
+        s=korg; t=1655119528;
+        bh=Ag5ss0LGA89ufCYoaNA2Cd4xvnIBH+rHrF/uUkOMu0I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZamHkhetZCOUjBD982UhCCC5YbZVu61E/Qa2UcZlTd2k4iAYTEeCR4CeFzG0IgJjT
-         dtbS6c7rIjL1gJWebKE5QqFYAaCau/Nn/oW/C550qekcYn1GYKa76537uyW3w/V0b3
-         VOKSI9K5FCR9/9owfu0Gcoj1WO9wLeLaWNgRigaQ=
+        b=lA9wvNT3ED2VIgKmBvc2wzkLGX3RWGa3kdPFhZfOfDtNGxPvL/v/AOXexkuzCqusI
+         ENsdMac6CQPAwtYj7GDrj2h0BmzDYmZfNj9mw0+jo5/p28k69gdqx//EjpQK4B+tgp
+         FqB4tGpS6oao/+vAc5eZlBlcJrUqddJFGqAFj3DM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        stable@vger.kernel.org, Zheng Yongjun <zhengyongjun3@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 044/339] power: supply: ab8500_fg: Allocate wq in probe
-Date:   Mon, 13 Jun 2022 12:07:49 +0200
-Message-Id: <20220613094927.858126177@linuxfoundation.org>
+Subject: [PATCH 5.18 026/339] usb: dwc3: pci: Fix pm_runtime_get_sync() error checking
+Date:   Mon, 13 Jun 2022 12:07:31 +0200
+Message-Id: <20220613094927.303914756@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,78 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Walleij <linus.walleij@linaro.org>
+From: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-[ Upstream commit 010ddb813f3554cbbf8bd13b731452236a2c8017 ]
+[ Upstream commit a03e2ddab8e735e2cc315609b297b300e9cc60d2 ]
 
-The workqueue is allocated in bind() but all interrupts are
-registered in probe().
+If the device is already in a runtime PM enabled state
+pm_runtime_get_sync() will return 1, so a test for negative
+value should be used to check for errors.
 
-Some interrupts put work on the workqueue, which can have
-bad side effects.
-
-Allocate the workqueue in probe() instead, destroy it in
-.remove() and make unbind() simply flush the workqueue.
-
-Fixes: 1c1f13a006ed ("power: supply: ab8500: Move to componentized binding")
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Fixes: 8eed00b237a28 ("usb: dwc3: pci: Runtime resume child device from wq")
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+Link: https://lore.kernel.org/r/20220422062652.10575-1-zhengyongjun3@huawei.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/supply/ab8500_fg.c | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+ drivers/usb/dwc3/dwc3-pci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/power/supply/ab8500_fg.c b/drivers/power/supply/ab8500_fg.c
-index 97ac588a9e9c..ec8a404d71b4 100644
---- a/drivers/power/supply/ab8500_fg.c
-+++ b/drivers/power/supply/ab8500_fg.c
-@@ -3037,13 +3037,6 @@ static int ab8500_fg_bind(struct device *dev, struct device *master,
- {
- 	struct ab8500_fg *di = dev_get_drvdata(dev);
+diff --git a/drivers/usb/dwc3/dwc3-pci.c b/drivers/usb/dwc3/dwc3-pci.c
+index 2e19e0e4ea53..ba51de7dd760 100644
+--- a/drivers/usb/dwc3/dwc3-pci.c
++++ b/drivers/usb/dwc3/dwc3-pci.c
+@@ -288,7 +288,7 @@ static void dwc3_pci_resume_work(struct work_struct *work)
+ 	int ret;
  
--	/* Create a work queue for running the FG algorithm */
--	di->fg_wq = alloc_ordered_workqueue("ab8500_fg_wq", WQ_MEM_RECLAIM);
--	if (di->fg_wq == NULL) {
--		dev_err(dev, "failed to create work queue\n");
--		return -ENOMEM;
--	}
--
- 	di->bat_cap.max_mah_design = di->bm->bi->charge_full_design_uah;
- 	di->bat_cap.max_mah = di->bat_cap.max_mah_design;
- 	di->vbat_nom_uv = di->bm->bi->voltage_max_design_uv;
-@@ -3067,8 +3060,7 @@ static void ab8500_fg_unbind(struct device *dev, struct device *master,
- 	if (ret)
- 		dev_err(dev, "failed to disable coulomb counter\n");
- 
--	destroy_workqueue(di->fg_wq);
--	flush_scheduled_work();
-+	flush_workqueue(di->fg_wq);
- }
- 
- static const struct component_ops ab8500_fg_component_ops = {
-@@ -3117,6 +3109,13 @@ static int ab8500_fg_probe(struct platform_device *pdev)
- 	ab8500_fg_charge_state_to(di, AB8500_FG_CHARGE_INIT);
- 	ab8500_fg_discharge_state_to(di, AB8500_FG_DISCHARGE_INIT);
- 
-+	/* Create a work queue for running the FG algorithm */
-+	di->fg_wq = alloc_ordered_workqueue("ab8500_fg_wq", WQ_MEM_RECLAIM);
-+	if (di->fg_wq == NULL) {
-+		dev_err(dev, "failed to create work queue\n");
-+		return -ENOMEM;
-+	}
-+
- 	/* Init work for running the fg algorithm instantly */
- 	INIT_WORK(&di->fg_work, ab8500_fg_instant_work);
- 
-@@ -3227,6 +3226,8 @@ static int ab8500_fg_remove(struct platform_device *pdev)
- {
- 	struct ab8500_fg *di = platform_get_drvdata(pdev);
- 
-+	destroy_workqueue(di->fg_wq);
-+	flush_scheduled_work();
- 	component_del(&pdev->dev, &ab8500_fg_component_ops);
- 	list_del(&di->node);
- 	ab8500_fg_sysfs_exit(di);
+ 	ret = pm_runtime_get_sync(&dwc3->dev);
+-	if (ret) {
++	if (ret < 0) {
+ 		pm_runtime_put_sync_autosuspend(&dwc3->dev);
+ 		return;
+ 	}
 -- 
 2.35.1
 
