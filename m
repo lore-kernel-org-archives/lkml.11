@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACA09CCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:07:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40D93C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:07:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358601AbiFMMHV (ORCPT
+        id S1358617AbiFMMH0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:07:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59800 "EHLO
+        Mon, 13 Jun 2022 08:07:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358868AbiFMMEz (ORCPT
+        with ESMTP id S1357822AbiFMMCM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:04:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FDB450455;
-        Mon, 13 Jun 2022 03:57:59 -0700 (PDT)
+        Mon, 13 Jun 2022 08:02:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE79A25295;
+        Mon, 13 Jun 2022 03:57:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B512FB80D3A;
-        Mon, 13 Jun 2022 10:57:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D1CBC34114;
-        Mon, 13 Jun 2022 10:57:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F35CFB80EA7;
+        Mon, 13 Jun 2022 10:57:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BB34C3411C;
+        Mon, 13 Jun 2022 10:57:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117876;
-        bh=LRWRfcT9EZj9+yfD0l9tY7R/KoEQVzOpr6MYzMIoa5g=;
+        s=korg; t=1655117832;
+        bh=E4hLPGxB1Iz8cyKuTnx9lgZ6riJcDgBDUNxqThTQUb8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rhRW7YkFpl1AaTXWc38+lQ+WMmXvxmDYVAR1cxOlpNwJ6MqJIC5C9KYQ/8VOqUWYr
-         yB1iUbzAYmp98HoAIDhmJ76IzTGrMaghwC/XJvH9Phq/hmNA7ndG+uV1eunkCpsYLe
-         wBYd3sMQq6tanUZDNbQaMLoNglBK0+d00XWvwtTk=
+        b=UJ+xeSoFJknXPacRyDsIebHZN02hFe+gCfDhPP/xrUPbXKugm0VPLrURNK2d5Epc/
+         6CNQOErY0HwuEfWSVMaAMHe9agenjoH5OMUaFtm2ktz9B1rWWynPP4G/90RfnDp7Kl
+         B1yqdfns0y0gM/iiPaGVcTogLGsLGIAQBmgTDVCw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Song Liu <song@kernel.org>
-Subject: [PATCH 4.19 164/287] md: fix an incorrect NULL check in md_reload_sb
-Date:   Mon, 13 Jun 2022 12:09:48 +0200
-Message-Id: <20220613094928.849964226@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Ye Bin <yebin10@huawei.com>, Jan Kara <jack@suse.cz>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 4.19 148/287] ext4: fix bug_on in ext4_writepages
+Date:   Mon, 13 Jun 2022 12:09:32 +0200
+Message-Id: <20220613094928.364422589@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -49,57 +50,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Ye Bin <yebin10@huawei.com>
 
-commit 64c54d9244a4efe9bc6e9c98e13c4bbb8bb39083 upstream.
+commit ef09ed5d37b84d18562b30cf7253e57062d0db05 upstream.
 
-The bug is here:
-	if (!rdev || rdev->desc_nr != nr) {
+we got issue as follows:
+EXT4-fs error (device loop0): ext4_mb_generate_buddy:1141: group 0, block bitmap and bg descriptor inconsistent: 25 vs 31513 free cls
+------------[ cut here ]------------
+kernel BUG at fs/ext4/inode.c:2708!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
+CPU: 2 PID: 2147 Comm: rep Not tainted 5.18.0-rc2-next-20220413+ #155
+RIP: 0010:ext4_writepages+0x1977/0x1c10
+RSP: 0018:ffff88811d3e7880 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 0000000000000001 RCX: ffff88811c098000
+RDX: 0000000000000000 RSI: ffff88811c098000 RDI: 0000000000000002
+RBP: ffff888128140f50 R08: ffffffffb1ff6387 R09: 0000000000000000
+R10: 0000000000000007 R11: ffffed10250281ea R12: 0000000000000001
+R13: 00000000000000a4 R14: ffff88811d3e7bb8 R15: ffff888128141028
+FS:  00007f443aed9740(0000) GS:ffff8883aef00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020007200 CR3: 000000011c2a4000 CR4: 00000000000006e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ do_writepages+0x130/0x3a0
+ filemap_fdatawrite_wbc+0x83/0xa0
+ filemap_flush+0xab/0xe0
+ ext4_alloc_da_blocks+0x51/0x120
+ __ext4_ioctl+0x1534/0x3210
+ __x64_sys_ioctl+0x12c/0x170
+ do_syscall_64+0x3b/0x90
 
-The list iterator value 'rdev' will *always* be set and non-NULL
-by rdev_for_each_rcu(), so it is incorrect to assume that the
-iterator value will be NULL if the list is empty or no element
-found (In fact, it will be a bogus pointer to an invalid struct
-object containing the HEAD). Otherwise it will bypass the check
-and lead to invalid memory access passing the check.
+It may happen as follows:
+1. write inline_data inode
+vfs_write
+  new_sync_write
+    ext4_file_write_iter
+      ext4_buffered_write_iter
+        generic_perform_write
+          ext4_da_write_begin
+            ext4_da_write_inline_data_begin -> If inline data size too
+            small will allocate block to write, then mapping will has
+            dirty page
+                ext4_da_convert_inline_data_to_extent ->clear EXT4_STATE_MAY_INLINE_DATA
+2. fallocate
+do_vfs_ioctl
+  ioctl_preallocate
+    vfs_fallocate
+      ext4_fallocate
+        ext4_convert_inline_data
+          ext4_convert_inline_data_nolock
+            ext4_map_blocks -> fail will goto restore data
+            ext4_restore_inline_data
+              ext4_create_inline_data
+              ext4_write_inline_data
+              ext4_set_inode_state -> set inode EXT4_STATE_MAY_INLINE_DATA
+3. writepages
+__ext4_ioctl
+  ext4_alloc_da_blocks
+    filemap_flush
+      filemap_fdatawrite_wbc
+        do_writepages
+          ext4_writepages
+            if (ext4_has_inline_data(inode))
+              BUG_ON(ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA))
 
-To fix the bug, use a new variable 'iter' as the list iterator,
-while using the original variable 'pdev' as a dedicated pointer to
-point to the found element.
+The root cause of this issue is we destory inline data until call
+ext4_writepages under delay allocation mode.  But there maybe already
+convert from inline to extent.  To solve this issue, we call
+filemap_flush first..
 
-Cc: stable@vger.kernel.org
-Fixes: 70bcecdb1534 ("md-cluster: Improve md_reload_sb to be less error prone")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Signed-off-by: Song Liu <song@kernel.org>
+Cc: stable@kernel.org
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220516122634.1690462-1-yebin10@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/md.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ fs/ext4/inline.c |   12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
---- a/drivers/md/md.c
-+++ b/drivers/md/md.c
-@@ -9325,16 +9325,18 @@ static int read_rdev(struct mddev *mddev
- 
- void md_reload_sb(struct mddev *mddev, int nr)
- {
--	struct md_rdev *rdev;
-+	struct md_rdev *rdev = NULL, *iter;
- 	int err;
- 
- 	/* Find the rdev */
--	rdev_for_each_rcu(rdev, mddev) {
--		if (rdev->desc_nr == nr)
-+	rdev_for_each_rcu(iter, mddev) {
-+		if (iter->desc_nr == nr) {
-+			rdev = iter;
- 			break;
-+		}
+--- a/fs/ext4/inline.c
++++ b/fs/ext4/inline.c
+@@ -2021,6 +2021,18 @@ int ext4_convert_inline_data(struct inod
+ 	if (!ext4_has_inline_data(inode)) {
+ 		ext4_clear_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
+ 		return 0;
++	} else if (!ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA)) {
++		/*
++		 * Inode has inline data but EXT4_STATE_MAY_INLINE_DATA is
++		 * cleared. This means we are in the middle of moving of
++		 * inline data to delay allocated block. Just force writeout
++		 * here to finish conversion.
++		 */
++		error = filemap_flush(inode->i_mapping);
++		if (error)
++			return error;
++		if (!ext4_has_inline_data(inode))
++			return 0;
  	}
  
--	if (!rdev || rdev->desc_nr != nr) {
-+	if (!rdev) {
- 		pr_warn("%s: %d Could not find rdev with nr %d\n", __func__, __LINE__, nr);
- 		return;
- 	}
+ 	needed_blocks = ext4_writepage_trans_blocks(inode);
 
 
