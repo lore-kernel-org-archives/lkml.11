@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A106ACCA481
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:07:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1DF3CCA485
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:07:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380832AbiFMOHB (ORCPT
+        id S1380913AbiFMOHK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:07:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36842 "EHLO
+        Mon, 13 Jun 2022 10:07:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380551AbiFMN7F (ORCPT
+        with ESMTP id S1380286AbiFMOAC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:59:05 -0400
+        Mon, 13 Jun 2022 10:00:02 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 499A98CB2E;
-        Mon, 13 Jun 2022 04:37:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC858D6BA;
+        Mon, 13 Jun 2022 04:38:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C4DFB80E2C;
-        Mon, 13 Jun 2022 11:37:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA73DC3411C;
-        Mon, 13 Jun 2022 11:37:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0D7B7B80ECD;
+        Mon, 13 Jun 2022 11:38:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D1D0C34114;
+        Mon, 13 Jun 2022 11:37:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120265;
-        bh=FnCeao+/GWV3XE4N4cPu+iNp9VP0bsdVQ0g152ZehB8=;
+        s=korg; t=1655120278;
+        bh=va27Whq9MlqmSQeciQ1mgy6bmhWVQAuq24GMVFNoUUM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QLK6tsiAg3+A3EWoGSEmDILytSiWTC8shJVJAxeS/38CBX/DGlH+oZydRzy5DCB72
-         f4aTaB14ht0WtXenmG0iziLljC8P8f49Gnk9TL4EM7t4zut9q56ZO6vBIFXE3f/TJN
-         gpU2W2T8wJxo/9vooPtig+/10S8DgWegkaG5xQGY=
+        b=JmB7736erJ7Ed5bGWwxeQSuLDL8iSNjFmOlJvjbS8y7w/jjvH3+KUkKLub3Zp05KO
+         i7r3oNZv2El1dRwtkH4w8L2JzD6RX9TTg5FMJKQ44gfmvCD0rbtD/bWgG+ECYNLSAc
+         5HzYFS6gA3YwkFQxx+0p1OGwaYCDb5WWuF5QsfFc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jorge Lopez <jorge.lopez2@hp.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 291/339] platform/x86: hp-wmi: Resolve WMI query failures on some devices
-Date:   Mon, 13 Jun 2022 12:11:56 +0200
-Message-Id: <20220613094935.462088879@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Frode Nordahl <frode.nordahl@canonical.com>,
+        Ilya Maximets <i.maximets@ovn.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.18 315/339] net: openvswitch: fix misuse of the cached connection on tuple changes
+Date:   Mon, 13 Jun 2022 12:12:20 +0200
+Message-Id: <20220613094936.303552729@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,79 +51,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jorge Lopez <jorge.lopez2@hp.com>
+From: Ilya Maximets <i.maximets@ovn.org>
 
-[ Upstream commit dc6a6ab58379f25bf991d8e4a13b001ed806e881 ]
+commit 2061ecfdf2350994e5b61c43e50e98a7a70e95ee upstream.
 
-WMI queries fail on some devices where the ACPI method HWMC
-unconditionally attempts to create Fields beyond the buffer
-if the buffer is too small, this breaks essential features
-such as power profiles:
+If packet headers changed, the cached nfct is no longer relevant
+for the packet and attempt to re-use it leads to the incorrect packet
+classification.
 
-         CreateByteField (Arg1, 0x10, D008)
-         CreateByteField (Arg1, 0x11, D009)
-         CreateByteField (Arg1, 0x12, D010)
-         CreateDWordField (Arg1, 0x10, D032)
-         CreateField (Arg1, 0x80, 0x0400, D128)
+This issue is causing broken connectivity in OpenStack deployments
+with OVS/OVN due to hairpin traffic being unexpectedly dropped.
 
-In cases where args->data had zero length, ACPI BIOS Error
-(bug): AE_AML_BUFFER_LIMIT, Field [D008] at bit
-offset/length 128/8 exceeds size of target Buffer (128 bits)
-(20211217/dsopcode-198) was obtained.
+The setup has datapath flows with several conntrack actions and tuple
+changes between them:
 
-ACPI BIOS Error (bug): AE_AML_BUFFER_LIMIT, Field [D009] at bit
-offset/length 136/8 exceeds size of target Buffer (136bits)
-(20211217/dsopcode-198)
+  actions:ct(commit,zone=8,mark=0/0x1,nat(src)),
+          set(eth(src=00:00:00:00:00:01,dst=00:00:00:00:00:06)),
+          set(ipv4(src=172.18.2.10,dst=192.168.100.6,ttl=62)),
+          ct(zone=8),recirc(0x4)
 
-The original code created a buffer size of 128 bytes regardless if
-the WMI call required a smaller buffer or not.  This particular
-behavior occurs in older BIOS and reproduced in OMEN laptops.  Newer
-BIOS handles buffer sizes properly and meets the latest specification
-requirements.  This is the reason why testing with a dynamically
-allocated buffer did not uncover any failures with the test systems at
-hand.
+After the first ct() action the packet headers are almost fully
+re-written.  The next ct() tries to re-use the existing nfct entry
+and marks the packet as invalid, so it gets dropped later in the
+pipeline.
 
-This patch was tested on several OMEN, Elite, and Zbooks.  It was
-confirmed the patch resolves HPWMI_FAN GET/SET calls in an OMEN
-Laptop 15-ek0xxx.  No problems were reported when testing on several Elite
-and Zbooks notebooks.
+Clearing the cached conntrack entry whenever packet tuple is changed
+to avoid the issue.
 
-Fixes: 4b4967cbd268 ("platform/x86: hp-wmi: Changing bios_args.data to be dynamically allocated")
-Signed-off-by: Jorge Lopez <jorge.lopez2@hp.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Link: https://lore.kernel.org/r/20220608212923.8585-2-jorge.lopez2@hp.com
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The flow key should not be cleared though, because we should still
+be able to match on the ct_state if the recirculation happens after
+the tuple change but before the next ct() action.
+
+Cc: stable@vger.kernel.org
+Fixes: 7f8a436eaa2c ("openvswitch: Add conntrack action")
+Reported-by: Frode Nordahl <frode.nordahl@canonical.com>
+Link: https://mail.openvswitch.org/pipermail/ovs-discuss/2022-May/051829.html
+Link: https://bugs.launchpad.net/ubuntu/+source/ovn/+bug/1967856
+Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+Link: https://lore.kernel.org/r/20220606221140.488984-1-i.maximets@ovn.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/platform/x86/hp-wmi.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ net/openvswitch/actions.c   |    6 ++++++
+ net/openvswitch/conntrack.c |    4 +++-
+ 2 files changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/platform/x86/hp-wmi.c b/drivers/platform/x86/hp-wmi.c
-index 0e9a25b56e0e..d3540dd62d06 100644
---- a/drivers/platform/x86/hp-wmi.c
-+++ b/drivers/platform/x86/hp-wmi.c
-@@ -290,14 +290,16 @@ static int hp_wmi_perform_query(int query, enum hp_wmi_command command,
- 	struct bios_return *bios_return;
- 	union acpi_object *obj = NULL;
- 	struct bios_args *args = NULL;
--	int mid, actual_outsize, ret;
-+	int mid, actual_insize, actual_outsize;
- 	size_t bios_args_size;
-+	int ret;
+--- a/net/openvswitch/actions.c
++++ b/net/openvswitch/actions.c
+@@ -373,6 +373,7 @@ static void set_ip_addr(struct sk_buff *
+ 	update_ip_l4_checksum(skb, nh, *addr, new_addr);
+ 	csum_replace4(&nh->check, *addr, new_addr);
+ 	skb_clear_hash(skb);
++	ovs_ct_clear(skb, NULL);
+ 	*addr = new_addr;
+ }
  
- 	mid = encode_outsize_for_pvsz(outsize);
- 	if (WARN_ON(mid < 0))
- 		return mid;
+@@ -420,6 +421,7 @@ static void set_ipv6_addr(struct sk_buff
+ 		update_ipv6_checksum(skb, l4_proto, addr, new_addr);
  
--	bios_args_size = struct_size(args, data, insize);
-+	actual_insize = max(insize, 128);
-+	bios_args_size = struct_size(args, data, actual_insize);
- 	args = kmalloc(bios_args_size, GFP_KERNEL);
- 	if (!args)
- 		return -ENOMEM;
--- 
-2.35.1
-
+ 	skb_clear_hash(skb);
++	ovs_ct_clear(skb, NULL);
+ 	memcpy(addr, new_addr, sizeof(__be32[4]));
+ }
+ 
+@@ -660,6 +662,7 @@ static int set_nsh(struct sk_buff *skb,
+ static void set_tp_port(struct sk_buff *skb, __be16 *port,
+ 			__be16 new_port, __sum16 *check)
+ {
++	ovs_ct_clear(skb, NULL);
+ 	inet_proto_csum_replace2(check, skb, *port, new_port, false);
+ 	*port = new_port;
+ }
+@@ -699,6 +702,7 @@ static int set_udp(struct sk_buff *skb,
+ 		uh->dest = dst;
+ 		flow_key->tp.src = src;
+ 		flow_key->tp.dst = dst;
++		ovs_ct_clear(skb, NULL);
+ 	}
+ 
+ 	skb_clear_hash(skb);
+@@ -761,6 +765,8 @@ static int set_sctp(struct sk_buff *skb,
+ 	sh->checksum = old_csum ^ old_correct_csum ^ new_csum;
+ 
+ 	skb_clear_hash(skb);
++	ovs_ct_clear(skb, NULL);
++
+ 	flow_key->tp.src = sh->source;
+ 	flow_key->tp.dst = sh->dest;
+ 
+--- a/net/openvswitch/conntrack.c
++++ b/net/openvswitch/conntrack.c
+@@ -1342,7 +1342,9 @@ int ovs_ct_clear(struct sk_buff *skb, st
+ 
+ 	nf_ct_put(ct);
+ 	nf_ct_set(skb, NULL, IP_CT_UNTRACKED);
+-	ovs_ct_fill_key(skb, key, false);
++
++	if (key)
++		ovs_ct_fill_key(skb, key, false);
+ 
+ 	return 0;
+ }
 
 
