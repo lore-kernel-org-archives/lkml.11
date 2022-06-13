@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA04DCCA48E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4F3ACCA48D
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:34:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377696AbiFMNdn (ORCPT
+        id S1377799AbiFMNeA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:33:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50630 "EHLO
+        Mon, 13 Jun 2022 09:34:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378047AbiFMNas (ORCPT
+        with ESMTP id S1378093AbiFMNaw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:30:48 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDF646EC65;
-        Mon, 13 Jun 2022 04:25:29 -0700 (PDT)
+        Mon, 13 Jun 2022 09:30:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 945256EC61;
+        Mon, 13 Jun 2022 04:25:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C3553CE1171;
-        Mon, 13 Jun 2022 11:25:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D269DC3411C;
-        Mon, 13 Jun 2022 11:25:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2999A61038;
+        Mon, 13 Jun 2022 11:25:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06CF7C34114;
+        Mon, 13 Jun 2022 11:25:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119526;
-        bh=1xszyAWmAXrHPNwGf/ECL0SC2iB4AxurzvpCenhi4aY=;
+        s=korg; t=1655119534;
+        bh=pxwfveOQbs3q4CWvuvWKEN9ZYUsSv29hVviNEHGwBkA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dmpEywhhtE6KCqpqYzURtPgOEBeqRaCe7FXCLWFJdSSagr6k82PZv1XgqG5Da/fFF
-         3Xmxn43s/3o1WIpssZU+jrXK3f+Va8HClsWBfLKdGDFV27RQbP9aeMKQ1wHigFxiW7
-         Pn7wk7iYHR3u50lCvqDuWT7BDSMYKTe8aMSSpFkI=
+        b=URHO8aOBrOeTZnKupBLkpkGMuPj6NqkKojjbCYvIhkz6cGKhtxGWRdAGf0JPgw5f+
+         9vpEsJhQ6cdDGAhv5jczsdJeA5idxKTQaqes6HbeIJR1ruVUOqTw0Xkrncnp0Btnun
+         sEaN9/iyVjVZD7N2240SrOMAcYf42T7PHU9miNeE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wesley Cheng <quic_wcheng@quicinc.com>,
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 025/339] usb: dwc3: gadget: Replace list_for_each_entry_safe() if using giveback
-Date:   Mon, 13 Jun 2022 12:07:30 +0200
-Message-Id: <20220613094927.273339008@linuxfoundation.org>
+Subject: [PATCH 5.18 028/339] misc: fastrpc: fix an incorrect NULL check on list iterator
+Date:   Mon, 13 Jun 2022 12:07:33 +0200
+Message-Id: <20220613094927.366173223@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -49,112 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wesley Cheng <quic_wcheng@quicinc.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-[ Upstream commit bf594d1d0c1d7b895954018043536ffd327844f9 ]
+[ Upstream commit 5ac11fe03a0a83042d1a040dbce4fa2fb5521e23 ]
 
-The list_for_each_entry_safe() macro saves the current item (n) and
-the item after (n+1), so that n can be safely removed without
-corrupting the list.  However, when traversing the list and removing
-items using gadget giveback, the DWC3 lock is briefly released,
-allowing other routines to execute.  There is a situation where, while
-items are being removed from the cancelled_list using
-dwc3_gadget_ep_cleanup_cancelled_requests(), the pullup disable
-routine is running in parallel (due to UDC unbind).  As the cleanup
-routine removes n, and the pullup disable removes n+1, once the
-cleanup retakes the DWC3 lock, it references a request who was already
-removed/handled.  With list debug enabled, this leads to a panic.
-Ensure all instances of the macro are replaced where gadget giveback
-is used.
+The bug is here:
+	if (!buf) {
 
-Example call stack:
+The list iterator value 'buf' will *always* be set and non-NULL
+by list_for_each_entry(), so it is incorrect to assume that the
+iterator value will be NULL if the list is empty (in this case, the
+check 'if (!buf) {' will always be false and never exit expectly).
 
-Thread#1:
-__dwc3_gadget_ep_set_halt() - CLEAR HALT
-  -> dwc3_gadget_ep_cleanup_cancelled_requests()
-    ->list_for_each_entry_safe()
-    ->dwc3_gadget_giveback(n)
-      ->dwc3_gadget_del_and_unmap_request()- n deleted[cancelled_list]
-      ->spin_unlock
-      ->Thread#2 executes
-      ...
-    ->dwc3_gadget_giveback(n+1)
-      ->Already removed!
+To fix the bug, use a new variable 'iter' as the list iterator,
+while use the original variable 'buf' as a dedicated pointer to
+point to the found element.
 
-Thread#2:
-dwc3_gadget_pullup()
-  ->waiting for dwc3 spin_lock
-  ...
-  ->Thread#1 released lock
-  ->dwc3_stop_active_transfers()
-    ->dwc3_remove_requests()
-      ->fetches n+1 item from cancelled_list (n removed by Thread#1)
-      ->dwc3_gadget_giveback()
-        ->dwc3_gadget_del_and_unmap_request()- n+1 deleted[cancelled_list]
-        ->spin_unlock
-
-Fixes: d4f1afe5e896 ("usb: dwc3: gadget: move requests to cancelled_list")
-Signed-off-by: Wesley Cheng <quic_wcheng@quicinc.com>
-Link: https://lore.kernel.org/r/20220414183521.23451-1-quic_wcheng@quicinc.com
+Fixes: 2419e55e532de ("misc: fastrpc: add mmap/unmap support")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Link: https://lore.kernel.org/r/20220327062202.5720-1-xiam0nd.tong@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/dwc3/gadget.c | 20 ++++++++++++++++----
- 1 file changed, 16 insertions(+), 4 deletions(-)
+ drivers/misc/fastrpc.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
-index 026fc360cc50..6936d8ce8981 100644
---- a/drivers/usb/dwc3/gadget.c
-+++ b/drivers/usb/dwc3/gadget.c
-@@ -2001,10 +2001,10 @@ static void dwc3_gadget_ep_skip_trbs(struct dwc3_ep *dep, struct dwc3_request *r
- static void dwc3_gadget_ep_cleanup_cancelled_requests(struct dwc3_ep *dep)
+diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
+index 29cf292c0aba..93ebd174d848 100644
+--- a/drivers/misc/fastrpc.c
++++ b/drivers/misc/fastrpc.c
+@@ -1606,17 +1606,18 @@ static int fastrpc_req_munmap_impl(struct fastrpc_user *fl,
+ 				   struct fastrpc_req_munmap *req)
  {
- 	struct dwc3_request		*req;
--	struct dwc3_request		*tmp;
- 	struct dwc3			*dwc = dep->dwc;
+ 	struct fastrpc_invoke_args args[1] = { [0] = { 0 } };
+-	struct fastrpc_buf *buf, *b;
++	struct fastrpc_buf *buf = NULL, *iter, *b;
+ 	struct fastrpc_munmap_req_msg req_msg;
+ 	struct device *dev = fl->sctx->dev;
+ 	int err;
+ 	u32 sc;
  
--	list_for_each_entry_safe(req, tmp, &dep->cancelled_list, list) {
-+	while (!list_empty(&dep->cancelled_list)) {
-+		req = next_request(&dep->cancelled_list);
- 		dwc3_gadget_ep_skip_trbs(dep, req);
- 		switch (req->status) {
- 		case DWC3_REQUEST_STATUS_DISCONNECTED:
-@@ -2021,6 +2021,12 @@ static void dwc3_gadget_ep_cleanup_cancelled_requests(struct dwc3_ep *dep)
- 			dwc3_gadget_giveback(dep, req, -ECONNRESET);
+ 	spin_lock(&fl->lock);
+-	list_for_each_entry_safe(buf, b, &fl->mmaps, node) {
+-		if ((buf->raddr == req->vaddrout) && (buf->size == req->size))
++	list_for_each_entry_safe(iter, b, &fl->mmaps, node) {
++		if ((iter->raddr == req->vaddrout) && (iter->size == req->size)) {
++			buf = iter;
  			break;
- 		}
-+		/*
-+		 * The endpoint is disabled, let the dwc3_remove_requests()
-+		 * handle the cleanup.
-+		 */
-+		if (!dep->endpoint.desc)
-+			break;
+-		buf = NULL;
++		}
  	}
- }
- 
-@@ -3333,15 +3339,21 @@ static void dwc3_gadget_ep_cleanup_completed_requests(struct dwc3_ep *dep,
- 		const struct dwc3_event_depevt *event, int status)
- {
- 	struct dwc3_request	*req;
--	struct dwc3_request	*tmp;
- 
--	list_for_each_entry_safe(req, tmp, &dep->started_list, list) {
-+	while (!list_empty(&dep->started_list)) {
- 		int ret;
- 
-+		req = next_request(&dep->started_list);
- 		ret = dwc3_gadget_ep_cleanup_completed_request(dep, event,
- 				req, status);
- 		if (ret)
- 			break;
-+		/*
-+		 * The endpoint is disabled, let the dwc3_remove_requests()
-+		 * handle the cleanup.
-+		 */
-+		if (!dep->endpoint.desc)
-+			break;
- 	}
- }
+ 	spin_unlock(&fl->lock);
  
 -- 
 2.35.1
