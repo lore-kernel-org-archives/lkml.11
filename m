@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C62D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:36:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 763B7C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:37:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354994AbiFMLgu (ORCPT
+        id S1355015AbiFMLg6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:36:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51748 "EHLO
+        Mon, 13 Jun 2022 07:36:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354648AbiFML3t (ORCPT
+        with ESMTP id S1354644AbiFML3s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:29:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C26EA2A729;
-        Mon, 13 Jun 2022 03:45:19 -0700 (PDT)
+        Mon, 13 Jun 2022 07:29:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 834B029CBF;
+        Mon, 13 Jun 2022 03:45:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3108A60FDB;
-        Mon, 13 Jun 2022 10:45:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B34AC34114;
-        Mon, 13 Jun 2022 10:45:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 341D3B80D3C;
+        Mon, 13 Jun 2022 10:45:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 952A5C34114;
+        Mon, 13 Jun 2022 10:45:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117118;
-        bh=/FzyOH71urNZyAIOe//wJh5fam/TnFMtc33o5CDYOds=;
+        s=korg; t=1655117115;
+        bh=whWcgIcAKow3MItdKC2ltqT2clk6qkQ3/wx3WuEen0s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TOH7zaeUOPC5H4SEFsUz+pCn91pOUlslrxrJ6lpnIyDoAazPbRUropHLRUNX3SiyJ
-         A6a7oN0SUjuzV13KwpUYXRBcjUlaaLEorUPL4/OCYoaW2CTcOuvcO6lLP/ZG6kPq2v
-         dZIqHt30RcjPgs+QoxxlaYvotJ4Bs9N2hd0rt9uY=
+        b=I8oNyXh8GbvuODC5kkcuybNrMeZ75WLFXAPhxrGcJXDcs/P0Ru1bklNkLD95K0u/9
+         Eqhuer5eqyJryqRyyA7FW5RsWuqb6/lgis1QnGp4Cjlr563BZeCGJs7yNLtTCmCMnZ
+         Iqduovo4KlL56gvCYTXv45SM8y5RhUtK83f7VwlU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Thierry Reding <thierry.reding@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 293/411] rpmsg: qcom_smd: Fix irq_of_parse_and_map() return value
-Date:   Mon, 13 Jun 2022 12:09:26 +0200
-Message-Id: <20220613094937.544692055@linuxfoundation.org>
+Subject: [PATCH 5.4 292/411] pwm: lp3943: Fix duty calculation in case period was clamped
+Date:   Mon, 13 Jun 2022 12:09:25 +0200
+Message-Id: <20220613094937.514737141@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -51,34 +52,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit 1a358d35066487d228a68303d808bc4721c6b1b9 ]
+[ Upstream commit 5e3b07ca5cc78cd4a987e78446849e41288d87cb ]
 
-The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
+The hardware only supports periods <= 1.6 ms and if a bigger period is
+requested it is clamped to 1.6 ms. In this case duty_cycle might be bigger
+than 1.6 ms and then the duty cycle register is written with a value
+bigger than LP3943_MAX_DUTY. So clamp duty_cycle accordingly.
 
-Fixes: 53e2822e56c7 ("rpmsg: Introduce Qualcomm SMD backend")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220422105326.78713-1-krzysztof.kozlowski@linaro.org
+Fixes: af66b3c0934e ("pwm: Add LP3943 PWM driver")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rpmsg/qcom_smd.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pwm/pwm-lp3943.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/rpmsg/qcom_smd.c b/drivers/rpmsg/qcom_smd.c
-index 19903de6268d..db5f6009fb49 100644
---- a/drivers/rpmsg/qcom_smd.c
-+++ b/drivers/rpmsg/qcom_smd.c
-@@ -1388,7 +1388,7 @@ static int qcom_smd_parse_edge(struct device *dev,
- 		edge->name = node->name;
+diff --git a/drivers/pwm/pwm-lp3943.c b/drivers/pwm/pwm-lp3943.c
+index bf3f14fb5f24..05e4120fd702 100644
+--- a/drivers/pwm/pwm-lp3943.c
++++ b/drivers/pwm/pwm-lp3943.c
+@@ -125,6 +125,7 @@ static int lp3943_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	if (err)
+ 		return err;
  
- 	irq = irq_of_parse_and_map(node, 0);
--	if (irq < 0) {
-+	if (!irq) {
- 		dev_err(dev, "required smd interrupt missing\n");
- 		ret = irq;
- 		goto put_node;
++	duty_ns = min(duty_ns, period_ns);
+ 	val = (u8)(duty_ns * LP3943_MAX_DUTY / period_ns);
+ 
+ 	return lp3943_write_byte(lp3943, reg_duty, val);
 -- 
 2.35.1
 
