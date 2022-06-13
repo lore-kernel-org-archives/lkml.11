@@ -2,116 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91F28C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:24:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16BFDC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:24:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351603AbiFMMYg (ORCPT
+        id S1352800AbiFMMYm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:24:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56382 "EHLO
+        Mon, 13 Jun 2022 08:24:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351517AbiFMMW0 (ORCPT
+        with ESMTP id S1348009AbiFMMWl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:22:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF500579BD;
-        Mon, 13 Jun 2022 04:03:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DF7F614A8;
-        Mon, 13 Jun 2022 11:03:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 260ADC34114;
-        Mon, 13 Jun 2022 11:03:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118208;
-        bh=ZjjU0/dkLm5kXM0wvK8rlULMZPZvcNcrfRe3LCRpX7M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tkWsrtNaPi/yQSnEB1662H17Ty8RBT87qLZ92jjJ8dD1j8KJJ8QwfQKDqt0pdEYKu
-         J+0NVmLjLYdyZ9zalEFMWOcVbe34pjizfGH2pcfPKoaSyim3gURXm3Jp2hBv2q1xIH
-         /QRIOfBtkN8b9Wr9NDjj+bC9grazLDal+5F6zcaY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Venky Shankar <vshankar@redhat.com>,
-        Xiubo Li <xiubli@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 267/287] ceph: allow ceph.dir.rctime xattr to be updatable
-Date:   Mon, 13 Jun 2022 12:11:31 +0200
-Message-Id: <20220613094932.099299261@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
-References: <20220613094923.832156175@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 13 Jun 2022 08:22:41 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A604557B15
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 04:03:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655118211; x=1686654211;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=I0+AQdJdP0W9uMbzGijxcDYistK8Ld2UH8HmZHjvd38=;
+  b=NTTcVcTeAXZDv3MLrWhiLxEhI/ecERZ0G1tp3Ho8MsSO2CJ00v6lqKEB
+   EPJE4DTN7UJG5KWg89DMxFvaPkP8qmyrsiTFMOEMoUkgcNfiBZqgDHbNX
+   cLJ6dD6WWOLmHKpdhMr6OEVyQ/OPhaN88pXesImmzJOHyUZn/smHu/53m
+   MdCvxY/NcExYekKo27KjFr0dHNz05eslts+/7s/kIUm8+pjixqJvZjsuV
+   ZdW+bCOKq42r+QrJc5KMQj3yDetbTpraHxOZfFTUK6pxcWO2NLuWItjNg
+   lC6tGbNTkuVpAutWtWLfNOXCyVK382ggpiKKTeeYLb3QOPwlvNbd1Dtlp
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10376"; a="342220115"
+X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
+   d="scan'208";a="342220115"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 04:03:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
+   d="scan'208";a="829742491"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 13 Jun 2022 04:03:28 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o0hqy-000KkH-4J;
+        Mon, 13 Jun 2022 11:03:28 +0000
+Date:   Mon, 13 Jun 2022 19:03:00 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Peter Gonda <pgonda@google.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Subject: arch/x86/kvm/svm/sev.c:1605:30: warning: parameter 'role' set but
+ not used
+Message-ID: <202206131853.x4KJwC5Q-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Venky Shankar <vshankar@redhat.com>
+Hi Peter,
 
-[ Upstream commit d7a2dc523085f8b8c60548ceedc696934aefeb0e ]
+FYI, the error/warning still remains.
 
-`rctime' has been a pain point in cephfs due to its buggy
-nature - inconsistent values reported and those sorts.
-Fixing rctime is non-trivial needing an overall redesign
-of the entire nested statistics infrastructure.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   b13baccc3850ca8b8cccbf8ed9912dbaa0fdf7f3
+commit: 0c2c7c069285374fc8feacddc0498f8ab7627117 KVM: SEV: Mark nested locking of vcpu->lock
+date:   5 weeks ago
+config: x86_64-buildonly-randconfig-r005-20220613 (https://download.01.org/0day-ci/archive/20220613/202206131853.x4KJwC5Q-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d378268ead93c85803c270277f0243737b536ae7)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0c2c7c069285374fc8feacddc0498f8ab7627117
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 0c2c7c069285374fc8feacddc0498f8ab7627117
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/kvm/ drivers/media/platform/qcom/camss/
 
-As a workaround, PR
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-     http://github.com/ceph/ceph/pull/37938
+All warnings (new ones prefixed by >>):
 
-allows this extended attribute to be manually set. This allows
-users to "fixup" inconsistent rctime values. While this sounds
-messy, its probably the wisest approach allowing users/scripts
-to workaround buggy rctime values.
+>> arch/x86/kvm/svm/sev.c:1605:30: warning: parameter 'role' set but not used [-Wunused-but-set-parameter]
+                                           enum sev_migration_role role)
+                                                                   ^
+   1 warning generated.
 
-The above PR enables Ceph MDS to allow manually setting
-rctime extended attribute with the corresponding user-land
-changes. We may as well allow the same to be done via kclient
-for parity.
 
-Signed-off-by: Venky Shankar <vshankar@redhat.com>
-Reviewed-by: Xiubo Li <xiubli@redhat.com>
-Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/ceph/xattr.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+vim +/role +1605 arch/x86/kvm/svm/sev.c
 
-diff --git a/fs/ceph/xattr.c b/fs/ceph/xattr.c
-index a09ce27ab220..6fa9a784676b 100644
---- a/fs/ceph/xattr.c
-+++ b/fs/ceph/xattr.c
-@@ -273,6 +273,14 @@ static size_t ceph_vxattrcb_quota_max_files(struct ceph_inode_info *ci,
- 	}
- #define XATTR_RSTAT_FIELD(_type, _name)			\
- 	XATTR_NAME_CEPH(_type, _name, VXATTR_FLAG_RSTAT)
-+#define XATTR_RSTAT_FIELD_UPDATABLE(_type, _name)			\
-+	{								\
-+		.name = CEPH_XATTR_NAME(_type, _name),			\
-+		.name_size = sizeof (CEPH_XATTR_NAME(_type, _name)),	\
-+		.getxattr_cb = ceph_vxattrcb_ ## _type ## _ ## _name,	\
-+		.exists_cb = NULL,					\
-+		.flags = VXATTR_FLAG_RSTAT,				\
-+	}
- #define XATTR_LAYOUT_FIELD(_type, _name, _field)			\
- 	{								\
- 		.name = CEPH_XATTR_NAME2(_type, _name, _field),	\
-@@ -310,7 +318,7 @@ static struct ceph_vxattr ceph_dir_vxattrs[] = {
- 	XATTR_RSTAT_FIELD(dir, rfiles),
- 	XATTR_RSTAT_FIELD(dir, rsubdirs),
- 	XATTR_RSTAT_FIELD(dir, rbytes),
--	XATTR_RSTAT_FIELD(dir, rctime),
-+	XATTR_RSTAT_FIELD_UPDATABLE(dir, rctime),
- 	{
- 		.name = "ceph.quota",
- 		.name_size = sizeof("ceph.quota"),
+  1603	
+  1604	static int sev_lock_vcpus_for_migration(struct kvm *kvm,
+> 1605						enum sev_migration_role role)
+  1606	{
+  1607		struct kvm_vcpu *vcpu;
+  1608		unsigned long i, j;
+  1609		bool first = true;
+  1610	
+  1611		kvm_for_each_vcpu(i, vcpu, kvm) {
+  1612			if (mutex_lock_killable_nested(&vcpu->mutex, role))
+  1613				goto out_unlock;
+  1614	
+  1615			if (first) {
+  1616				/*
+  1617				 * Reset the role to one that avoids colliding with
+  1618				 * the role used for the first vcpu mutex.
+  1619				 */
+  1620				role = SEV_NR_MIGRATION_ROLES;
+  1621				first = false;
+  1622			} else {
+  1623				mutex_release(&vcpu->mutex.dep_map, _THIS_IP_);
+  1624			}
+  1625		}
+  1626	
+  1627		return 0;
+  1628	
+  1629	out_unlock:
+  1630	
+  1631		first = true;
+  1632		kvm_for_each_vcpu(j, vcpu, kvm) {
+  1633			if (i == j)
+  1634				break;
+  1635	
+  1636			if (first)
+  1637				first = false;
+  1638			else
+  1639				mutex_acquire(&vcpu->mutex.dep_map, role, 0, _THIS_IP_);
+  1640	
+  1641	
+  1642			mutex_unlock(&vcpu->mutex);
+  1643		}
+  1644		return -EINTR;
+  1645	}
+  1646	
+
 -- 
-2.35.1
-
-
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
