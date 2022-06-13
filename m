@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BFDBCCA481
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:47:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 783CDC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:47:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349592AbiFMUrA (ORCPT
+        id S1350869AbiFMUrE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:47:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54694 "EHLO
+        Mon, 13 Jun 2022 16:47:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350558AbiFMUqE (ORCPT
+        with ESMTP id S1350859AbiFMUqP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:46:04 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2534280
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:57:26 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id h192so6501849pgc.4
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:57:26 -0700 (PDT)
+        Mon, 13 Jun 2022 16:46:15 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEAF563E8
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:57:35 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id cx11so6586264pjb.1
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:57:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=KlpSKj9JOxZWHiDBe4+ujhnALAH7aoziqzJ/soAilmk=;
-        b=qA9A4Fka8Wr2+BYttjs3IXzbkv10TKHVOFBIwcQb402ENC23qLAb96PDlp0HKFtHBH
-         gDn+EHjSB7rG1NrjM3fc+UPI7M4UaryOzbZTzN9dePt5MZX8Zt8qNc/gPUU5fqPBW3ZN
-         VAw6uNCQxKRg6aj/KdwWkJlIzXQI6o4ZpYvzgYIAAWL/+S7hygXB8d4kporCLmEXflT2
-         TaAmtyCZeXZHTZklEHwGuUctzGtnA/kWBeA72Wqku9EPOKs8kLdPJGW3ULmR86feFpI3
-         zxFMLUez4AQcauxfanrHS0k5QqGdbfh8MUPF5vICDRmYX1oxgmLcJ0twh10uuY5tEvzu
-         j3Hw==
+        bh=CxeTCAcTP8AUI8T+Y1RRaiE90Utk4Y2UEreNjJtF518=;
+        b=K/v2jO5IdTe/h76LE2Jxy/tvRZn9AmCccVf1AkXLWlMIzbkmxYm/ZwgFbNO6+3O/Kt
+         4V9MpxjJroIQakw44BkG+KTieiewz5bO7dRHXDEYbW2tFWdQITQLEFjkVgAgZ++w3zb3
+         yQ+q0XcGD9QYgULfH+JLrJSAajGFvEvYoFa98mhY72p+MamwyB57K4GpYYQK7hqwOIWw
+         GxxplsF/k6yXLLYJLUdbfWE7FYArvAyiFDSlvX3GjiDAqFHAQUD9anUbzfRM7jJ3VuHK
+         rRt50hbqOH9hhJjNwcJWT8Nait8EO2Mt3MiqE6MXiqHbK1X2Lj1c0ICx66Z5Xo82ZRC5
+         ysjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=KlpSKj9JOxZWHiDBe4+ujhnALAH7aoziqzJ/soAilmk=;
-        b=7AFfgzSPZqQWzSIRiWHxw91niK3Z1ZfmVdXZROlHaGOu1ki5cyaz5v1WhlCn0tiNsA
-         SPL4GXHCuQx+9H6Bk94P8YbJ76YaKAhlZbdfPQwCwqHr7p4R5aAkgrwTx80/mNI8MrzK
-         QWqH694xnwNN3jkY+2KUcRcp344/f7QWRpKU0tSTvqZYh5HfvJsFPOqQB18HIFeea/FD
-         bH0RTgSd5+Abeqt6jBB+YGt7sbmPlzO2hebRtEukFtw19Va7z3mV/xrQggzGvYpFNn55
-         mLIQvcA5u7x/wldib15phYcCGgolVF6lmMXpkuQ1uzNhY8zk6J89PwaPi9VaNMxlbUg8
-         erxA==
-X-Gm-Message-State: AOAM533X5xsKqqg+1lrkcbJvZQbgu1a8W1ySfysG/RUE+ddu4zgW9+Pc
-        MrPgJn+8Lsuz2x3mki0AhTyNOg==
-X-Google-Smtp-Source: ABdhPJwbv7pRTFzk4+nbaX7oGqRi9qzhXvoemRqwa0xYJcXUwR3JB4aRyw3D7Z04QgbHW03QXG4fdw==
-X-Received: by 2002:a63:234f:0:b0:405:3981:be7 with SMTP id u15-20020a63234f000000b0040539810be7mr1085120pgm.15.1655150246205;
-        Mon, 13 Jun 2022 12:57:26 -0700 (PDT)
+        bh=CxeTCAcTP8AUI8T+Y1RRaiE90Utk4Y2UEreNjJtF518=;
+        b=pAaxASm0Qo5hKUeG/sSZPgtGR/pbcLvTJB67VahTuG/9/5EpBBHx0VjR6QZDpsMn9m
+         Q2nFuwmJK3LZfQemEs1hwVHRMLLu8CcHHMDjbHxuFuYf4Lw4zWxBm2VXOV4ibofrhqjA
+         gO8iu/Eugd7vCruo0GexwR9ekIdQeTBYN6C3fI9QFUIVKYXCdulc/57R6jYZ88qGVgmx
+         6uRBuY7x8x5MW+IBRFer8+EBMiXyvTo+8IVQ5KWzb626Xs/9vDOzHqQ/OSJq4EVfhzq6
+         Ely1X7oKqiqUqWYjzKWBw5J14ef+hXFTpOFXAwcs9876CDHkOE9MzNmqoDiGu4Y8xW3A
+         h51A==
+X-Gm-Message-State: AJIora8Hq2xSvpg+ER0DzTM2y6P7fokwGF4wmTipmFTIW9P8aA04naFt
+        0P7Bcy5u+1gRW12FGhNci4cWNg==
+X-Google-Smtp-Source: AGRyM1uaxRjzT8MWjnK6bWvdvwkw+v6UKaPUZDECQDILWdwJMIHOst5z4ufQem0zzfJHU5KaXms+Sw==
+X-Received: by 2002:a17:902:a613:b0:168:a216:f3ff with SMTP id u19-20020a170902a61300b00168a216f3ffmr584840plq.21.1655150254961;
+        Mon, 13 Jun 2022 12:57:34 -0700 (PDT)
 Received: from platform-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id q21-20020a170902edd500b0016797c33b6csm5509357plk.116.2022.06.13.12.57.24
+        by smtp.gmail.com with ESMTPSA id q21-20020a170902edd500b0016797c33b6csm5509357plk.116.2022.06.13.12.57.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 12:57:25 -0700 (PDT)
+        Mon, 13 Jun 2022 12:57:34 -0700 (PDT)
 From:   Brad Larson <brad@pensando.io>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
@@ -62,9 +62,9 @@ Cc:     linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
         robh+dt@kernel.org, samuel@sholland.org, fancer.lancer@gmail.com,
         suravee.suthikulpanit@amd.com, thomas.lendacky@amd.com,
         ulf.hansson@linaro.org, will@kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH v5 02/15] dt-bindings: mmc: cdns: Add AMD Pensando Elba SoC binding
-Date:   Mon, 13 Jun 2022 12:56:45 -0700
-Message-Id: <20220613195658.5607-3-brad@pensando.io>
+Subject: [PATCH v5 06/15] dt-bindings: mfd: amd,pensando-elbasr: Add AMD Pensando Elba System Resource chip
+Date:   Mon, 13 Jun 2022 12:56:49 -0700
+Message-Id: <20220613195658.5607-7-brad@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220613195658.5607-1-brad@pensando.io>
 References: <20220613195658.5607-1-brad@pensando.io>
@@ -74,43 +74,117 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Brad Larson <blarson@amd.com>
 
-AMD Pensando Elba ARM 64-bit SoC is integrated with this IP and
-explicitly controls byte-lane enables.
+Add support for the AMD Pensando Elba SoC System Resource chip
+using the SPI interface.  The Elba SR is a Multi-function Device
+supporting device register access using CS0, smbus interface for
+FRU and board peripherals using CS1, dual Lattice I2C masters for
+transceiver management using CS2, and CS3 for flash access.
 
 Signed-off-by: Brad Larson <blarson@amd.com>
 ---
- .../devicetree/bindings/mmc/cdns,sdhci.yaml        | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ .../bindings/mfd/amd,pensando-elbasr.yaml     | 93 +++++++++++++++++++
+ 1 file changed, 93 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mfd/amd,pensando-elbasr.yaml
 
-diff --git a/Documentation/devicetree/bindings/mmc/cdns,sdhci.yaml b/Documentation/devicetree/bindings/mmc/cdns,sdhci.yaml
-index 4207fed62dfe..35bc4cf6f214 100644
---- a/Documentation/devicetree/bindings/mmc/cdns,sdhci.yaml
-+++ b/Documentation/devicetree/bindings/mmc/cdns,sdhci.yaml
-@@ -13,10 +13,24 @@ maintainers:
- allOf:
-   - $ref: mmc-controller.yaml
- 
-+  - if:
-+      properties:
-+        compatible:
-+          enum:
-+            - amd,pensando-elba-sd4hc
-+    then:
-+      properties:
-+        reg:
-+          items:
-+            - description: Cadence host controller registers
-+            - description: Byte-lane control register
-+          minItems: 2
+diff --git a/Documentation/devicetree/bindings/mfd/amd,pensando-elbasr.yaml b/Documentation/devicetree/bindings/mfd/amd,pensando-elbasr.yaml
+new file mode 100644
+index 000000000000..13356800b1cf
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/amd,pensando-elbasr.yaml
+@@ -0,0 +1,93 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/mfd/amd,pensando-elbasr.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- properties:
-   compatible:
-     items:
-       - enum:
-+          - amd,pensando-elba-sd4hc
-           - microchip,mpfs-sd4hc
-           - socionext,uniphier-sd4hc
-       - const: cdns,sd4hc
++title: AMD Pensando Elba SoC Resource Controller bindings
++
++description: |
++  AMD Pensando Elba SoC Resource Controller bindings attached to a SPI bus.
++
++maintainers:
++  - Brad Larson <blarson@amd.com>
++
++properties:
++  compatible:
++    items:
++      - enum:
++          - amd,pensando-elbasr
++      - const: simple-mfd
++
++  spi-max-frequency:
++    description: Maximum SPI frequency of the device in Hz.
++
++  reg:
++    maxItems: 1
++
++  '#address-cells':
++    const: 1
++
++  '#size-cells':
++    const: 0
++
++  interrupts:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - spi-max-frequency
++
++patternProperties:
++  '^reset-controller@[a-f0-9]+$':
++    $ref: ../reset/amd,pensando-elbasr-reset.yaml
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/reset/amd,pensando-elba-reset.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    spi0 {
++        #address-cells = <1>;
++        #size-cells = <0>;
++        num-cs = <4>;
++
++        spi@0 {
++          compatible = "amd,pensando-elbasr", "simple-mfd";
++          reg = <0>;
++          #address-cells = <1>;
++          #size-cells = <0>;
++          spi-max-frequency = <12000000>;
++
++          rstc: reset-controller@0 {
++            compatible = "amd,pensando-elbasr-reset";
++            reg = <0>;
++            #reset-cells = <1>;
++          };
++        };
++
++        spi@1 {
++          compatible = "amd,pensando-elbasr", "simple-mfd";
++          reg = <1>;
++          spi-max-frequency = <12000000>;
++        };
++
++        spi@2 {
++          compatible = "amd,pensando-elbasr", "simple-mfd";
++          reg = <2>;
++          spi-max-frequency = <12000000>;
++          interrupt-parent = <&porta>;
++          interrupts = <0 IRQ_TYPE_LEVEL_LOW>;
++        };
++
++        spi@3 {
++          compatible = "amd,pensando-elbasr", "simple-mfd";
++          reg = <3>;
++          spi-max-frequency = <12000000>;
++        };
++    };
++
++...
 -- 
 2.17.1
 
