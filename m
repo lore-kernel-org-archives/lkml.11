@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14E45C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:02:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7B8CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:03:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240260AbiFMNCv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:02:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49900 "EHLO
+        id S1352709AbiFMNDA (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 09:03:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354672AbiFMMzL (ORCPT
+        with ESMTP id S1354771AbiFMMzL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 08:55:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 754B6635A;
-        Mon, 13 Jun 2022 04:15:16 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6B7B11C;
+        Mon, 13 Jun 2022 04:15:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 12420608C3;
-        Mon, 13 Jun 2022 11:15:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BB5CC3411F;
-        Mon, 13 Jun 2022 11:15:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 90485B80D31;
+        Mon, 13 Jun 2022 11:15:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E38FBC3411E;
+        Mon, 13 Jun 2022 11:15:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118915;
-        bh=vHhGX7IffV7uK4yuqXhZapoqPd4WxprMmYKXJZTDpNA=;
+        s=korg; t=1655118918;
+        bh=CDbbO8rl9pvSj3vXHiV8m5yh2vVfOs7Vfub+T62+gUo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vuern9tMlxwO+hGjDglIxhlGmxd7zlrEQWluX/Skt5ODzLUqXdeAvhCkitWaFp42g
-         i285ATRLEj7rnU1RfpvzAJAXgwO74FOBSRZV3HwhTbdyzPa1KMuQNz6eFOB1DMdcIt
-         BVNAvlniabB51rc4Pw3kZgQWd9GWFGZktfyLs3jE=
+        b=rk8Ptog2Wkl1pqVmDHzz6mVJTUzAGyn52kIyizoyC7lwkYOwFP5NuSIwNVtN8zAzG
+         fC9K3qRpxR3HBbZrwzuJGu/i64I7pb2rDPLB75Cdr+hpdChPlqphpwC9HtQt78fego
+         luVgPs+JBidsHqJ1OpSyMdpe+uJtcLklaRbp8xmg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 073/247] net: ethernet: mtk_eth_soc: out of bounds read in mtk_hwlro_get_fdir_entry()
-Date:   Mon, 13 Jun 2022 12:09:35 +0200
-Message-Id: <20220613094925.173791142@linuxfoundation.org>
+Subject: [PATCH 5.15 074/247] net: ethernet: ti: am65-cpsw-nuss: Fix some refcount leaks
+Date:   Mon, 13 Jun 2022 12:09:36 +0200
+Message-Id: <20220613094925.203534986@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -49,35 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit e7e7104e2d5ddf3806a28695670f21bef471f1e1 ]
+[ Upstream commit 5dd89d2fc438457811cbbec07999ce0d80051ff5 ]
 
-The "fsp->location" variable comes from user via ethtool_get_rxnfc().
-Check that it is valid to prevent an out of bounds read.
+of_get_child_by_name() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+am65_cpsw_init_cpts() and am65_cpsw_nuss_probe() don't release
+the refcount in error case.
+Add missing of_node_put() to avoid refcount leak.
 
-Fixes: 7aab747e5563 ("net: ethernet: mediatek: add ethtool functions to configure RX flows of HW LRO")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Fixes: b1f66a5bee07 ("net: ethernet: ti: am65-cpsw-nuss: enable packet timestamping support")
+Fixes: 93a76530316a ("net: ethernet: ti: introduce am65x/j721e gigabit eth subsystem driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index ee1fd472e925..d2d7160b789c 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -1991,6 +1991,9 @@ static int mtk_hwlro_get_fdir_entry(struct net_device *dev,
- 	struct ethtool_rx_flow_spec *fsp =
- 		(struct ethtool_rx_flow_spec *)&cmd->fs;
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+index 130346f74ee8..ea9d073e87fa 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
++++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+@@ -1802,6 +1802,7 @@ static int am65_cpsw_init_cpts(struct am65_cpsw_common *common)
+ 	if (IS_ERR(cpts)) {
+ 		int ret = PTR_ERR(cpts);
  
-+	if (fsp->location >= ARRAY_SIZE(mac->hwlro_ip))
-+		return -EINVAL;
-+
- 	/* only tcp dst ipv4 is meaningful, others are meaningless */
- 	fsp->flow_type = TCP_V4_FLOW;
- 	fsp->h_u.tcp_ip4_spec.ip4dst = ntohl(mac->hwlro_ip[fsp->location]);
++		of_node_put(node);
+ 		if (ret == -EOPNOTSUPP) {
+ 			dev_info(dev, "cpts disabled\n");
+ 			return 0;
+@@ -2668,9 +2669,9 @@ static int am65_cpsw_nuss_probe(struct platform_device *pdev)
+ 	if (!node)
+ 		return -ENOENT;
+ 	common->port_num = of_get_child_count(node);
++	of_node_put(node);
+ 	if (common->port_num < 1 || common->port_num > AM65_CPSW_MAX_PORTS)
+ 		return -ENOENT;
+-	of_node_put(node);
+ 
+ 	common->rx_flow_id_base = -1;
+ 	init_completion(&common->tdown_complete);
 -- 
 2.35.1
 
