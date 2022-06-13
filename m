@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B5BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:11:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC440C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:11:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381918AbiFMOLx (ORCPT
+        id S1381929AbiFMOL6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:11:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52022 "EHLO
+        Mon, 13 Jun 2022 10:11:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381465AbiFMOEW (ORCPT
+        with ESMTP id S1381470AbiFMOEW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 10:04:22 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6659C24096;
-        Mon, 13 Jun 2022 04:39:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4664C2BB3E;
+        Mon, 13 Jun 2022 04:39:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 01DCA612AB;
-        Mon, 13 Jun 2022 11:39:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EA19C34114;
-        Mon, 13 Jun 2022 11:39:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AE33D6135C;
+        Mon, 13 Jun 2022 11:39:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9749C341CD;
+        Mon, 13 Jun 2022 11:39:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120385;
-        bh=nWlHbFt5Uap75riJ2GUbp+TbOqb9iuUikZhFb+SDzRI=;
+        s=korg; t=1655120388;
+        bh=vZ5I9oovriQng6VNxcT+i8NCMdFdAWfl2YeDrd4tqvg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yLtEcLt7Zhoj6NHDGhYLx9eVV0dllPg4hN48XT7N/pEQoI+E+6AOI2k8wip4gnDz/
-         X/L+MW2PIMm0l6xCYSer6pEUjcOMeRqGjr2eMcwIlBAZdRXcCYJKvJ4AF1HErX/XM3
-         OZXlyr/Enjl2JOntdntDEjMDHWw8GmaeX4k7+u8o=
+        b=oeXQvVPWU8NgUV9oU5dDgY+PfQe/qvGSMHEcuZG0vPmMGiYdOmjzOd+4BSSOe1mu0
+         O8S2+qfNTDl9S+VhIfabSjJzvCg4rOgI0xlD4JgAwmNRzebfK5cLvJrNeO0J58kJw8
+         cd6pJFqtktTG36tQ2Qt88p6gbogEcXxOmr3Ovehk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Wang Weiyang <wangweiyang2@huawei.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 006/298] tty: goldfish: Use tty_port_destroy() to destroy port
-Date:   Mon, 13 Jun 2022 12:08:20 +0200
-Message-Id: <20220613094925.113878706@linuxfoundation.org>
+Subject: [PATCH 5.17 007/298] tty: serial: owl: Fix missing clk_disable_unprepare() in owl_uart_probe
+Date:   Mon, 13 Jun 2022 12:08:21 +0200
+Message-Id: <20220613094925.144068187@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,46 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Weiyang <wangweiyang2@huawei.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 507b05063d1b7a1fcb9f7d7c47586fc4f3508f98 ]
+[ Upstream commit bcea0f547ec1a2ee44d429aaf0334633e386e67c ]
 
-In goldfish_tty_probe(), the port initialized through tty_port_init()
-should be destroyed in error paths.In goldfish_tty_remove(), qtty->port
-also should be destroyed or else might leak resources.
+Fix the missing clk_disable_unprepare() before return
+from owl_uart_probe() in the error handling case.
 
-Fix the above by calling tty_port_destroy().
-
-Fixes: 666b7793d4bf ("goldfish: tty driver")
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Wang Weiyang <wangweiyang2@huawei.com>
-Link: https://lore.kernel.org/r/20220328115844.86032-1-wangweiyang2@huawei.com
+Fixes: abf42d2f333b ("tty: serial: owl: add "much needed" clk_prepare_enable()")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220307105135.11698-1-linmq006@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/goldfish.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/serial/owl-uart.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/goldfish.c b/drivers/tty/goldfish.c
-index 10c13b93ed52..9355d97ff591 100644
---- a/drivers/tty/goldfish.c
-+++ b/drivers/tty/goldfish.c
-@@ -405,6 +405,7 @@ static int goldfish_tty_probe(struct platform_device *pdev)
- err_tty_register_device_failed:
- 	free_irq(irq, qtty);
- err_dec_line_count:
-+	tty_port_destroy(&qtty->port);
- 	goldfish_tty_current_line_count--;
- 	if (goldfish_tty_current_line_count == 0)
- 		goldfish_tty_delete_driver();
-@@ -426,6 +427,7 @@ static int goldfish_tty_remove(struct platform_device *pdev)
- 	iounmap(qtty->base);
- 	qtty->base = NULL;
- 	free_irq(qtty->irq, pdev);
-+	tty_port_destroy(&qtty->port);
- 	goldfish_tty_current_line_count--;
- 	if (goldfish_tty_current_line_count == 0)
- 		goldfish_tty_delete_driver();
+diff --git a/drivers/tty/serial/owl-uart.c b/drivers/tty/serial/owl-uart.c
+index 91f1eb0058d7..9a6611cfc18e 100644
+--- a/drivers/tty/serial/owl-uart.c
++++ b/drivers/tty/serial/owl-uart.c
+@@ -731,6 +731,7 @@ static int owl_uart_probe(struct platform_device *pdev)
+ 	owl_port->port.uartclk = clk_get_rate(owl_port->clk);
+ 	if (owl_port->port.uartclk == 0) {
+ 		dev_err(&pdev->dev, "clock rate is zero\n");
++		clk_disable_unprepare(owl_port->clk);
+ 		return -EINVAL;
+ 	}
+ 	owl_port->port.flags = UPF_BOOT_AUTOCONF | UPF_IOREMAP | UPF_LOW_LATENCY;
 -- 
 2.35.1
 
