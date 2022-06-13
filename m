@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA1E5C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:41:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 665C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:41:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352883AbiFMMl0 (ORCPT
+        id S1351633AbiFMMlp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:41:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50000 "EHLO
+        Mon, 13 Jun 2022 08:41:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355667AbiFMMjQ (ORCPT
+        with ESMTP id S1356546AbiFMMj0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:39:16 -0400
+        Mon, 13 Jun 2022 08:39:26 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39E7F33887;
-        Mon, 13 Jun 2022 04:09:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E51933E25;
+        Mon, 13 Jun 2022 04:09:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5B64B80E93;
-        Mon, 13 Jun 2022 11:09:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E04BC34114;
-        Mon, 13 Jun 2022 11:09:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5DDD5B80EAB;
+        Mon, 13 Jun 2022 11:09:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0140C36B0D;
+        Mon, 13 Jun 2022 11:09:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118557;
-        bh=Af1Twr37yZkIfi9hel/4jCo9eqfsFUDhK9Nk8JM5iS8=;
+        s=korg; t=1655118591;
+        bh=dRhl+0ZIA8Pvzu/ZT8H8P/SjOwt/mVfWRByUffY5xfs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tHUepwuZVXo4Rf/LtAF6+rP4fQR2dLOqqLPWgS8BMnaqJKMG7u8m+7MqYbbL4o7NM
-         yxJca88pesf9ZK+Gd6NZ5B7aW1ZhVvd7TOahQ2nAGzsykSeF52jUkDZk7SZd1KZJr2
-         LXCP4EX+q96CvF+cMLmdieXJtzfx0xZ2iAcAz894=
+        b=C5vC+ohtegc8O3/bVQxrFBhxY8uMNiIrBH2KwlJaa/qH/8tsUiql/YOJI/z1orGB3
+         6ySwSecKw828MJqIrd2pdUaTBTp3yhrxbTsymQjNY81QMGdVQUwWEDuOfZYwTw/aoV
+         XBszKclS5W/rrZ6IKqguYw4wBmcvFoD0mRAtjUQM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 119/172] drivers: staging: rtl8192u: Fix deadlock in ieee80211_beacons_stop()
-Date:   Mon, 13 Jun 2022 12:11:19 +0200
-Message-Id: <20220613094918.993261392@linuxfoundation.org>
+Subject: [PATCH 5.10 106/172] net: xfrm: unexport __init-annotated xfrm4_protocol_init()
+Date:   Mon, 13 Jun 2022 12:11:06 +0200
+Message-Id: <20220613094915.750225675@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -49,52 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-[ Upstream commit 806c7b53414934ba2a39449b31fd1a038e500273 ]
+[ Upstream commit 4a388f08d8784af48f352193d2b72aaf167a57a1 ]
 
-There is a deadlock in ieee80211_beacons_stop(), which is shown below:
+EXPORT_SYMBOL and __init is a bad combination because the .init.text
+section is freed up after the initialization. Hence, modules cannot
+use symbols annotated __init. The access to a freed symbol may end up
+with kernel panic.
 
-   (Thread 1)              |      (Thread 2)
-                           | ieee80211_send_beacon()
-ieee80211_beacons_stop()   |  mod_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | ieee80211_send_beacon_cb()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
+modpost used to detect it, but it has been broken for a decade.
 
-We hold ieee->beacon_lock in position (1) of thread 1 and use
-del_timer_sync() to wait timer to stop, but timer handler
-also need ieee->beacon_lock in position (2) of thread 2.
-As a result, ieee80211_beacons_stop() will block forever.
+Recently, I fixed modpost so it started to warn it again, then this
+showed up in linux-next builds.
 
-This patch extracts del_timer_sync() from the protection of
-spin_lock_irqsave(), which could let timer handler to obtain
-the needed lock.
+There are two ways to fix it:
 
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417135407.109536-1-duoming@zju.edu.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  - Remove __init
+  - Remove EXPORT_SYMBOL
+
+I chose the latter for this case because the only in-tree call-site,
+net/ipv4/xfrm4_policy.c is never compiled as modular.
+(CONFIG_XFRM is boolean)
+
+Fixes: 2f32b51b609f ("xfrm: Introduce xfrm_input_afinfo to access the the callbacks properly")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Acked-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/xfrm4_protocol.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
-index 690b664df8fa..56a447651644 100644
---- a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
-+++ b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
-@@ -528,9 +528,9 @@ static void ieee80211_beacons_stop(struct ieee80211_device *ieee)
- 	spin_lock_irqsave(&ieee->beacon_lock, flags);
- 
- 	ieee->beacon_txing = 0;
--	del_timer_sync(&ieee->beacon_timer);
- 
- 	spin_unlock_irqrestore(&ieee->beacon_lock, flags);
-+	del_timer_sync(&ieee->beacon_timer);
+diff --git a/net/ipv4/xfrm4_protocol.c b/net/ipv4/xfrm4_protocol.c
+index ea595c8549c7..cfd46222ef91 100644
+--- a/net/ipv4/xfrm4_protocol.c
++++ b/net/ipv4/xfrm4_protocol.c
+@@ -307,4 +307,3 @@ void __init xfrm4_protocol_init(void)
+ {
+ 	xfrm_input_register_afinfo(&xfrm4_input_afinfo);
  }
- 
- void ieee80211_stop_send_beacons(struct ieee80211_device *ieee)
+-EXPORT_SYMBOL(xfrm4_protocol_init);
 -- 
 2.35.1
 
