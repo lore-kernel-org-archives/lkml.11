@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15307CCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64845C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:25:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384504AbiFMOZp (ORCPT
+        id S1384519AbiFMOZx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:25:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53686 "EHLO
+        Mon, 13 Jun 2022 10:25:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382866AbiFMOWn (ORCPT
+        with ESMTP id S1383135AbiFMOWt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:22:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39879A26FF;
-        Mon, 13 Jun 2022 04:44:13 -0700 (PDT)
+        Mon, 13 Jun 2022 10:22:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C902346141;
+        Mon, 13 Jun 2022 04:44:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9EFDB80D31;
-        Mon, 13 Jun 2022 11:44:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CB21C34114;
-        Mon, 13 Jun 2022 11:44:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04FAA61236;
+        Mon, 13 Jun 2022 11:44:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16FB3C34114;
+        Mon, 13 Jun 2022 11:44:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120650;
-        bh=hHXElzreZ9LF69NloOsVdVXf/pv3tv3lyHSk/iLVSBM=;
+        s=korg; t=1655120653;
+        bh=XNjxLmJGu8ecZt2msTS2AZnlRK5Hazu7g1QlCE2HidA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y1uW94obYBJyfTICNxeXGx+Ze5MzwqIADCL5XPEKP9n8mrLR3+1aC3SAXQayeMMR9
-         uv/gRzACib/JAdxMreUswFqE/eB+uGxbv15ZuLTgjxxEGsLAkaW3njyjMKn9R29EVh
-         h+3R3Aw1pXigdFGp8NuKLnVtpXSFEcrvN9HMG4YQ=
+        b=Qu2gq5ZPjFI+1qSh2OyQTV/hpN6HVyS1NPkj5iyOXExOHwoNotrpmMfi8y/O9jOfU
+         aHXHuCU68yZ6gxbGDBwmqOe701AG0bQdeADBWQ/jY++cBb8nXcy44+zbZ+G/Pzai8D
+         BwZxp+Ss4xW9EvRR7uWcp8w8DyJwLzT4KyRRaE0g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 107/298] virtio: pci: Fix an error handling path in vp_modern_probe()
-Date:   Mon, 13 Jun 2022 12:10:01 +0200
-Message-Id: <20220613094928.194453365@linuxfoundation.org>
+Subject: [PATCH 5.17 108/298] net/mlx5: Dont use already freed action pointer
+Date:   Mon, 13 Jun 2022 12:10:02 +0200
+Message-Id: <20220613094928.223823872@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -51,35 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Leon Romanovsky <leonro@nvidia.com>
 
-[ Upstream commit 7a836a2aba09479c8e71fa43249eecc4af945f61 ]
+[ Upstream commit 80b2bd737d0e833e6a2b77e482e5a714a79c86a4 ]
 
-If an error occurs after a successful pci_request_selected_regions() call,
-it should be undone by a corresponding pci_release_selected_regions() call,
-as already done in vp_modern_remove().
+The call to mlx5dr_action_destroy() releases "action" memory. That
+pointer is set to miss_action later and generates the following smatch
+error:
 
-Fixes: fd502729fbbf ("virtio-pci: introduce modern device module")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Message-Id: <237109725aad2c3c03d14549f777b1927c84b045.1648977064.git.christophe.jaillet@wanadoo.fr>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+ drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c:53 set_miss_action()
+ warn: 'action' was already freed.
+
+Make sure that the pointer is always valid by setting NULL after destroy.
+
+Fixes: 6a48faeeca10 ("net/mlx5: Add direct rule fs_cmd implementation")
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/virtio/virtio_pci_modern_dev.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/virtio/virtio_pci_modern_dev.c b/drivers/virtio/virtio_pci_modern_dev.c
-index e8b3ff2b9fbc..6f6187fe8893 100644
---- a/drivers/virtio/virtio_pci_modern_dev.c
-+++ b/drivers/virtio/virtio_pci_modern_dev.c
-@@ -340,6 +340,7 @@ int vp_modern_probe(struct virtio_pci_modern_device *mdev)
- err_map_isr:
- 	pci_iounmap(pci_dev, mdev->common);
- err_map_common:
-+	pci_release_selected_regions(pci_dev, mdev->modern_bars);
- 	return err;
- }
- EXPORT_SYMBOL_GPL(vp_modern_probe);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
+index 05393fe11132..caeaa3c29353 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
+@@ -44,11 +44,10 @@ static int set_miss_action(struct mlx5_flow_root_namespace *ns,
+ 	err = mlx5dr_table_set_miss_action(ft->fs_dr_table.dr_table, action);
+ 	if (err && action) {
+ 		err = mlx5dr_action_destroy(action);
+-		if (err) {
+-			action = NULL;
+-			mlx5_core_err(ns->dev, "Failed to destroy action (%d)\n",
+-				      err);
+-		}
++		if (err)
++			mlx5_core_err(ns->dev,
++				      "Failed to destroy action (%d)\n", err);
++		action = NULL;
+ 	}
+ 	ft->fs_dr_table.miss_action = action;
+ 	if (old_miss_action) {
 -- 
 2.35.1
 
