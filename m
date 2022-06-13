@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D74CCCA497
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DE6FCCA47B
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:46:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357097AbiFMLpj (ORCPT
+        id S1357077AbiFMLpe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:45:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46274 "EHLO
+        Mon, 13 Jun 2022 07:45:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354436AbiFMLjr (ORCPT
+        with ESMTP id S1355868AbiFMLjp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:39:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52D372D1F6;
-        Mon, 13 Jun 2022 03:50:04 -0700 (PDT)
+        Mon, 13 Jun 2022 07:39:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05E762D1E5;
+        Mon, 13 Jun 2022 03:50:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CD78612C9;
-        Mon, 13 Jun 2022 10:50:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A997C34114;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 22ECFB80E8D;
         Mon, 13 Jun 2022 10:50:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A3C3C3411E;
+        Mon, 13 Jun 2022 10:49:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117402;
-        bh=umaa8jCu5E8/u6FLaiQrSe6BnyGZgLVOs7bGDzT3q7o=;
+        s=korg; t=1655117399;
+        bh=5bjCs0Jb6YhCJb+AC+LjaNtTWCV4wyc3dEm0P48ZKAQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KdUd4Z0zyXInOMDkdWbgOtgsbqeHIidN85SmtKNFk3so81FWt2+Q9O+qLtpWu3E8a
-         3yuuPo2ftl2g078wMAeRokOvCkpgRWro2yLspHDevu2EeG6TuSpWXtHzbt+MRzt9Dp
-         khq9iL8kR8v++AfISiklzPkQZ37H+e8V4bPetDns=
+        b=muXF5hCwOREMHkfk2zQZZUq/ijXEyVl/x2KH+OV6+DdQqj2bHxk+y7zns183PRvgj
+         Bi6Lh8CgUw4kqNjSieR6QFCUJm9mVJe7Qzsi9pu/hO4CcM1/A/MCsf6RJphZccMH7E
+         gaLzEaP7SaA3o2ep2V4Qu7y/HoVjqIGtBNIxhXtc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, syzkaller <syzkaller@googlegroups.com>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 034/287] rtlwifi: Use pr_warn instead of WARN_ONCE
-Date:   Mon, 13 Jun 2022 12:07:38 +0200
-Message-Id: <20220613094924.898848839@linuxfoundation.org>
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 371/411] drivers: staging: rtl8192e: Fix deadlock in rtllib_beacons_stop()
+Date:   Mon, 13 Jun 2022 12:10:44 +0200
+Message-Id: <20220613094939.805618249@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
-References: <20220613094923.832156175@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,37 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit ad732da434a2936128769216eddaece3b1af4588 ]
+[ Upstream commit 9b6bdbd9337de3917945847bde262a34a87a6303 ]
 
-This memory allocation failure can be triggered by fault injection or
-high pressure testing, resulting a WARN.
+There is a deadlock in rtllib_beacons_stop(), which is shown
+below:
 
-Fix this by replacing WARN with pr_warn.
+   (Thread 1)              |      (Thread 2)
+                           | rtllib_send_beacon()
+rtllib_beacons_stop()      |  mod_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | rtllib_send_beacon_cb()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
 
-Reported-by: syzkaller <syzkaller@googlegroups.com>
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220511014453.1621366-1-dzm91@hust.edu.cn
+We hold ieee->beacon_lock in position (1) of thread 1 and
+use del_timer_sync() to wait timer to stop, but timer handler
+also need ieee->beacon_lock in position (2) of thread 2.
+As a result, rtllib_beacons_stop() will block forever.
+
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irqsave(), which could let timer handler to obtain
+the needed lock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417141641.124388-1-duoming@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtlwifi/usb.c | 2 +-
+ drivers/staging/rtl8192e/rtllib_softmac.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/usb.c b/drivers/net/wireless/realtek/rtlwifi/usb.c
-index 3d6c0d8c71d7..395671383ca9 100644
---- a/drivers/net/wireless/realtek/rtlwifi/usb.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/usb.c
-@@ -1042,7 +1042,7 @@ int rtl_usb_probe(struct usb_interface *intf,
- 	hw = ieee80211_alloc_hw(sizeof(struct rtl_priv) +
- 				sizeof(struct rtl_usb_priv), &rtl_ops);
- 	if (!hw) {
--		WARN_ONCE(true, "rtl_usb: ieee80211 alloc failed\n");
-+		pr_warn("rtl_usb: ieee80211 alloc failed\n");
- 		return -ENOMEM;
- 	}
- 	rtlpriv = hw->priv;
+diff --git a/drivers/staging/rtl8192e/rtllib_softmac.c b/drivers/staging/rtl8192e/rtllib_softmac.c
+index 4ff8fd694c60..0154f5791b12 100644
+--- a/drivers/staging/rtl8192e/rtllib_softmac.c
++++ b/drivers/staging/rtl8192e/rtllib_softmac.c
+@@ -651,9 +651,9 @@ static void rtllib_beacons_stop(struct rtllib_device *ieee)
+ 	spin_lock_irqsave(&ieee->beacon_lock, flags);
+ 
+ 	ieee->beacon_txing = 0;
+-	del_timer_sync(&ieee->beacon_timer);
+ 
+ 	spin_unlock_irqrestore(&ieee->beacon_lock, flags);
++	del_timer_sync(&ieee->beacon_timer);
+ 
+ }
+ 
 -- 
 2.35.1
 
