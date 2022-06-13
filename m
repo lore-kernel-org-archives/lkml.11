@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E63ACCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCB8FCCA48A
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:09:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358868AbiFMMIs (ORCPT
+        id S1359130AbiFMMJC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:08:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59602 "EHLO
+        Mon, 13 Jun 2022 08:09:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359167AbiFMMFX (ORCPT
+        with ESMTP id S1358702AbiFMMEg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:05:23 -0400
+        Mon, 13 Jun 2022 08:04:36 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FC8B186E6;
-        Mon, 13 Jun 2022 03:59:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B310D50006;
+        Mon, 13 Jun 2022 03:57:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3A96CB80D3A;
-        Mon, 13 Jun 2022 10:59:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A84FC34114;
-        Mon, 13 Jun 2022 10:59:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 29653B80D3A;
+        Mon, 13 Jun 2022 10:57:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83615C34114;
+        Mon, 13 Jun 2022 10:57:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117961;
-        bh=iNaHd+ffUe8p/DJleaSemuG/9140p10jjbfDSYuI9Uo=;
+        s=korg; t=1655117862;
+        bh=inTd+OvQqc7ZGHRQcLzAuhCDyTfspiFvyQADRH4U39g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2wZRwZaWdHeeLKWHH3Jqfhtz7GCA+KMqKxFKHNCePI/FbEYbEYuSkOnn62OxwXy0W
-         sIS69qCHutS69MnW+GNevSa5hFXgiafvPZbCSx4ykkGygHo8jbppCYCekNmhzvjtZM
-         2D6l21pFmjx3BpL2F0739Pz78MM62kO9LDZb23nU=
+        b=1t9kM5WQZfjtpuXh5zsSpao9NzAGyqQXbkLkRyAExcuD6IVVnq3At9yIdiiqoQDWe
+         ZwK+ZT03HFjtgrOfJzEucFXoGud4MjTrSBLaXwwpUs83yG5UlYkhDify2NJNE5YQkm
+         N+9iLsQZHLtFjtAOH2nkCMw358Yduiyrd8mC07Hg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
-        Niels Dossche <dossche.niels@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 193/287] usb: usbip: add missing device lock on tweak configuration cmd
-Date:   Mon, 13 Jun 2022 12:10:17 +0200
-Message-Id: <20220613094929.718555399@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 137/287] video: fbdev: clcdfb: Fix refcount leak in clcdfb_of_vram_setup
+Date:   Mon, 13 Jun 2022 12:09:21 +0200
+Message-Id: <20220613094928.032262659@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -50,47 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit d088fabace2ca337b275d1d4b36db4fe7771e44f ]
+[ Upstream commit b23789a59fa6f00e98a319291819f91fbba0deb8 ]
 
-The function documentation of usb_set_configuration says that its
-callers should hold the device lock. This lock is held for all
-callsites except tweak_set_configuration_cmd. The code path can be
-executed for example when attaching a remote USB device.
-The solution is to surround the call by the device lock.
+of_parse_phandle() returns a node pointer with refcount incremented, we should
+use of_node_put() on it when not need anymore.  Add missing of_node_put() to
+avoid refcount leak.
 
-This bug was found using my experimental own-developed static analysis
-tool, which reported the missing lock on v5.17.2. I manually verified
-this bug report by doing code review as well. I runtime checked that
-the required lock is not held. I compiled and runtime tested this on
-x86_64 with a USB mouse. After applying this patch, my analyser no
-longer reports this potential bug.
-
-Fixes: 2c8c98158946 ("staging: usbip: let client choose device configuration")
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Link: https://lore.kernel.org/r/20220412165055.257113-1-dossche.niels@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d10715be03bd ("video: ARM CLCD: Add DT support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/usbip/stub_rx.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/video/fbdev/amba-clcd.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/usb/usbip/stub_rx.c b/drivers/usb/usbip/stub_rx.c
-index 8c55cd833098..b88eeaee637a 100644
---- a/drivers/usb/usbip/stub_rx.c
-+++ b/drivers/usb/usbip/stub_rx.c
-@@ -138,7 +138,9 @@ static int tweak_set_configuration_cmd(struct urb *urb)
- 	req = (struct usb_ctrlrequest *) urb->setup_packet;
- 	config = le16_to_cpu(req->wValue);
+diff --git a/drivers/video/fbdev/amba-clcd.c b/drivers/video/fbdev/amba-clcd.c
+index 38c1f324ce15..549f78e77255 100644
+--- a/drivers/video/fbdev/amba-clcd.c
++++ b/drivers/video/fbdev/amba-clcd.c
+@@ -838,12 +838,15 @@ static int clcdfb_of_vram_setup(struct clcd_fb *fb)
+ 		return -ENODEV;
  
-+	usb_lock_device(sdev->udev);
- 	err = usb_set_configuration(sdev->udev, config);
-+	usb_unlock_device(sdev->udev);
- 	if (err && err != -ENODEV)
- 		dev_err(&sdev->udev->dev, "can't set config #%d, error %d\n",
- 			config, err);
+ 	fb->fb.screen_base = of_iomap(memory, 0);
+-	if (!fb->fb.screen_base)
++	if (!fb->fb.screen_base) {
++		of_node_put(memory);
+ 		return -ENOMEM;
++	}
+ 
+ 	fb->fb.fix.smem_start = of_translate_address(memory,
+ 			of_get_address(memory, 0, &size, NULL));
+ 	fb->fb.fix.smem_len = size;
++	of_node_put(memory);
+ 
+ 	return 0;
+ }
 -- 
 2.35.1
 
