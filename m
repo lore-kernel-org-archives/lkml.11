@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1FF7C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:47:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 953C3C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:47:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385642AbiFMOrt (ORCPT
+        id S1385660AbiFMOr5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:47:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35788 "EHLO
+        Mon, 13 Jun 2022 10:47:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386118AbiFMOoh (ORCPT
+        with ESMTP id S1386242AbiFMOoz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:44:37 -0400
+        Mon, 13 Jun 2022 10:44:55 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAE66B6438;
-        Mon, 13 Jun 2022 04:51:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 588DFB7175;
+        Mon, 13 Jun 2022 04:51:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C17B6133B;
-        Mon, 13 Jun 2022 11:51:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83BCCC34114;
-        Mon, 13 Jun 2022 11:51:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A98B61425;
+        Mon, 13 Jun 2022 11:51:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C32DC34114;
+        Mon, 13 Jun 2022 11:51:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655121077;
-        bh=KkEwSdV0Df7GKOOH0Kp16NI1mitGNhdo6IBAn9lPEgY=;
+        s=korg; t=1655121091;
+        bh=2H2CyXv2Ye91YOMEfo5u5VeHXj+oImPJDnj3yXu5duQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AGVFxHl9NnHlHFT9Wi/5uaMxjQ1GAxPILGLmU8qCFV6OM1pa3CDH5eL1C9ly7nbCf
-         W8ojJ8SpcpeRYTA87uqzrKRX9L99bOZgFaxiXrJWZB8uL5nSlGwVBT32hRJ6q5m/EO
-         57tr02v6uELMIxEiCAMj87ezN56iEVDexk2h0C58=
+        b=OKFtyq0KFt27FDsT4RwHG/sNrtHAYrDJy4/76i/YRfK4vB2rR6a+UngNnWs18jQ8q
+         NEl2aj68OKZZmtypehbm6PXPSAz/nNNNebhBTk02qPHnVNb3wzMqeS1PKCqeUmH7Ed
+         iqYv2YpYrj17f04Yz55zmDnuz218wXmgR/ZRQfOo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Satadru Pramanik <satadru@gmail.com>,
-        "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.17 263/298] cifs: fix reconnect on smb3 mount types
-Date:   Mon, 13 Jun 2022 12:12:37 +0200
-Message-Id: <20220613094933.049752706@linuxfoundation.org>
+        stable@vger.kernel.org, Cyril Brulebois <kibi@debian.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 245/298] Revert "PCI: brcmstb: Add control of subdevice voltage regulators"
+Date:   Mon, 13 Jun 2022 12:12:19 +0200
+Message-Id: <20220613094932.516560707@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,88 +50,197 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paulo Alcantara <pc@cjr.nz>
+From: Bjorn Helgaas <bhelgaas@google.com>
 
-commit c36ee7dab7749f7be21f7a72392744490b2a9a2b upstream.
+[ Upstream commit 212942609d83b591f5a2f2691df122d13aa3a87d ]
 
-cifs.ko defines two file system types: cifs & smb3, and
-__cifs_get_super() was not including smb3 file system type when
-looking up superblocks, therefore failing to reconnect tcons in
-cifs_tree_connect().
+This reverts commit 93e41f3fca3d4a0f927b784012338c37f80a8a80.
 
-Fix this by calling iterate_supers_type() on both file system types.
+This is part of a revert of the following commits:
 
-Link: https://lore.kernel.org/r/CAFrh3J9soC36+BVuwHB=g9z_KB5Og2+p2_W+BBoBOZveErz14w@mail.gmail.com
-Cc: stable@vger.kernel.org
-Tested-by: Satadru Pramanik <satadru@gmail.com>
-Reported-by: Satadru Pramanik <satadru@gmail.com>
-Signed-off-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  11ed8b8624b8 ("PCI: brcmstb: Do not turn off WOL regulators on suspend")
+  93e41f3fca3d ("PCI: brcmstb: Add control of subdevice voltage regulators")
+  67211aadcb4b ("PCI: brcmstb: Add mechanism to turn on subdev regulators")
+  830aa6f29f07 ("PCI: brcmstb: Split brcm_pcie_setup() into two funcs")
+
+Cyril reported that 830aa6f29f07 ("PCI: brcmstb: Split brcm_pcie_setup()
+into two funcs"), which appeared in v5.17-rc1, broke booting on the
+Raspberry Pi Compute Module 4.  Apparently 830aa6f29f07 panics with an
+Asynchronous SError Interrupt, and after further commits here is a black
+screen on HDMI and no output on the serial console.
+
+This does not seem to affect the Raspberry Pi 4 B.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215925
+Link: https://lore.kernel.org/r/20220511201856.808690-3-helgaas@kernel.org
+Reported-by: Cyril Brulebois <kibi@debian.org>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/cifsfs.c |    2 +-
- fs/cifs/cifsfs.h |    2 +-
- fs/cifs/misc.c   |   27 ++++++++++++++++-----------
- 3 files changed, 18 insertions(+), 13 deletions(-)
+ drivers/pci/controller/pcie-brcmstb.c | 83 ++-------------------------
+ 1 file changed, 5 insertions(+), 78 deletions(-)
 
---- a/fs/cifs/cifsfs.c
-+++ b/fs/cifs/cifsfs.c
-@@ -1084,7 +1084,7 @@ struct file_system_type cifs_fs_type = {
+diff --git a/drivers/pci/controller/pcie-brcmstb.c b/drivers/pci/controller/pcie-brcmstb.c
+index 3edd63735948..fd464d38fecb 100644
+--- a/drivers/pci/controller/pcie-brcmstb.c
++++ b/drivers/pci/controller/pcie-brcmstb.c
+@@ -196,8 +196,6 @@ static inline void brcm_pcie_bridge_sw_init_set_generic(struct brcm_pcie *pcie,
+ static inline void brcm_pcie_perst_set_4908(struct brcm_pcie *pcie, u32 val);
+ static inline void brcm_pcie_perst_set_7278(struct brcm_pcie *pcie, u32 val);
+ static inline void brcm_pcie_perst_set_generic(struct brcm_pcie *pcie, u32 val);
+-static int brcm_pcie_linkup(struct brcm_pcie *pcie);
+-static int brcm_pcie_add_bus(struct pci_bus *bus);
+ 
+ enum {
+ 	RGR1_SW_INIT_1,
+@@ -331,8 +329,6 @@ struct brcm_pcie {
+ 	u32			hw_rev;
+ 	void			(*perst_set)(struct brcm_pcie *pcie, u32 val);
+ 	void			(*bridge_sw_init_set)(struct brcm_pcie *pcie, u32 val);
+-	bool			refusal_mode;
+-	struct subdev_regulators *sr;
  };
- MODULE_ALIAS_FS("cifs");
  
--static struct file_system_type smb3_fs_type = {
-+struct file_system_type smb3_fs_type = {
- 	.owner = THIS_MODULE,
- 	.name = "smb3",
- 	.init_fs_context = smb3_init_fs_context,
---- a/fs/cifs/cifsfs.h
-+++ b/fs/cifs/cifsfs.h
-@@ -38,7 +38,7 @@ static inline unsigned long cifs_get_tim
- 	return (unsigned long) dentry->d_fsdata;
+ static inline bool is_bmips(const struct brcm_pcie *pcie)
+@@ -501,34 +497,6 @@ static int pci_subdev_regulators_add_bus(struct pci_bus *bus)
+ 	return 0;
  }
  
--extern struct file_system_type cifs_fs_type;
-+extern struct file_system_type cifs_fs_type, smb3_fs_type;
- extern const struct address_space_operations cifs_addr_ops;
- extern const struct address_space_operations cifs_addr_ops_smallbuf;
- 
---- a/fs/cifs/misc.c
-+++ b/fs/cifs/misc.c
-@@ -1209,18 +1209,23 @@ static struct super_block *__cifs_get_su
- 		.data = data,
- 		.sb = NULL,
- 	};
-+	struct file_system_type **fs_type = (struct file_system_type *[]) {
-+		&cifs_fs_type, &smb3_fs_type, NULL,
-+	};
- 
--	iterate_supers_type(&cifs_fs_type, f, &sd);
+-static int brcm_pcie_add_bus(struct pci_bus *bus)
+-{
+-	struct device *dev = &bus->dev;
+-	struct brcm_pcie *pcie = (struct brcm_pcie *) bus->sysdata;
+-	int ret;
 -
--	if (!sd.sb)
--		return ERR_PTR(-EINVAL);
+-	if (!dev->of_node || !bus->parent || !pci_is_root_bus(bus->parent))
+-		return 0;
+-
+-	ret = pci_subdev_regulators_add_bus(bus);
+-	if (ret)
+-		return ret;
+-
+-	/* Grab the regulators for suspend/resume */
+-	pcie->sr = bus->dev.driver_data;
+-
 -	/*
--	 * Grab an active reference in order to prevent automounts (DFS links)
--	 * of expiring and then freeing up our cifs superblock pointer while
--	 * we're doing failover.
+-	 * If we have failed linkup there is no point to return an error as
+-	 * currently it will cause a WARNING() from pci_alloc_child_bus().
+-	 * We return 0 and turn on the "refusal_mode" so that any further
+-	 * accesses to the pci_dev just get 0xffffffff
 -	 */
--	cifs_sb_active(sd.sb);
--	return sd.sb;
-+	for (; *fs_type; fs_type++) {
-+		iterate_supers_type(*fs_type, f, &sd);
-+		if (sd.sb) {
-+			/*
-+			 * Grab an active reference in order to prevent automounts (DFS links)
-+			 * of expiring and then freeing up our cifs superblock pointer while
-+			 * we're doing failover.
-+			 */
-+			cifs_sb_active(sd.sb);
-+			return sd.sb;
-+		}
-+	}
-+	return ERR_PTR(-EINVAL);
- }
+-	if (brcm_pcie_linkup(pcie) != 0)
+-		pcie->refusal_mode = true;
+-
+-	return 0;
+-}
+-
+ static void pci_subdev_regulators_remove_bus(struct pci_bus *bus)
+ {
+ 	struct device *dev = &bus->dev;
+@@ -857,18 +825,6 @@ static void __iomem *brcm_pcie_map_conf(struct pci_bus *bus, unsigned int devfn,
+ 	/* Accesses to the RC go right to the RC registers if slot==0 */
+ 	if (pci_is_root_bus(bus))
+ 		return PCI_SLOT(devfn) ? NULL : base + where;
+-	if (pcie->refusal_mode) {
+-		/*
+-		 * At this point we do not have link.  There will be a CPU
+-		 * abort -- a quirk with this controller --if Linux tries
+-		 * to read any config-space registers besides those
+-		 * targeting the host bridge.  To prevent this we hijack
+-		 * the address to point to a safe access that will return
+-		 * 0xffffffff.
+-		 */
+-		writel(0xffffffff, base + PCIE_MISC_RC_BAR2_CONFIG_HI);
+-		return base + PCIE_MISC_RC_BAR2_CONFIG_HI + (where & 0x3);
+-	}
  
- static void __cifs_put_super(struct super_block *sb)
+ 	/* For devices, write to the config space index register */
+ 	idx = PCIE_ECAM_OFFSET(bus->number, devfn, 0);
+@@ -897,7 +853,7 @@ static struct pci_ops brcm_pcie_ops = {
+ 	.map_bus = brcm_pcie_map_conf,
+ 	.read = pci_generic_config_read,
+ 	.write = pci_generic_config_write,
+-	.add_bus = brcm_pcie_add_bus,
++	.add_bus = pci_subdev_regulators_add_bus,
+ 	.remove_bus = pci_subdev_regulators_remove_bus,
+ };
+ 
+@@ -1370,14 +1326,6 @@ static int brcm_pcie_suspend(struct device *dev)
+ 		return ret;
+ 	}
+ 
+-	if (pcie->sr) {
+-		ret = regulator_bulk_disable(pcie->sr->num_supplies, pcie->sr->supplies);
+-		if (ret) {
+-			dev_err(dev, "Could not turn off regulators\n");
+-			reset_control_reset(pcie->rescal);
+-			return ret;
+-		}
+-	}
+ 	clk_disable_unprepare(pcie->clk);
+ 
+ 	return 0;
+@@ -1395,17 +1343,9 @@ static int brcm_pcie_resume(struct device *dev)
+ 	if (ret)
+ 		return ret;
+ 
+-	if (pcie->sr) {
+-		ret = regulator_bulk_enable(pcie->sr->num_supplies, pcie->sr->supplies);
+-		if (ret) {
+-			dev_err(dev, "Could not turn on regulators\n");
+-			goto err_disable_clk;
+-		}
+-	}
+-
+ 	ret = reset_control_reset(pcie->rescal);
+ 	if (ret)
+-		goto err_regulator;
++		goto err_disable_clk;
+ 
+ 	ret = brcm_phy_start(pcie);
+ 	if (ret)
+@@ -1437,9 +1377,6 @@ static int brcm_pcie_resume(struct device *dev)
+ 
+ err_reset:
+ 	reset_control_rearm(pcie->rescal);
+-err_regulator:
+-	if (pcie->sr)
+-		regulator_bulk_disable(pcie->sr->num_supplies, pcie->sr->supplies);
+ err_disable_clk:
+ 	clk_disable_unprepare(pcie->clk);
+ 	return ret;
+@@ -1571,17 +1508,7 @@ static int brcm_pcie_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, pcie);
+ 
+-	ret = pci_host_probe(bridge);
+-	if (!ret && !brcm_pcie_link_up(pcie))
+-		ret = -ENODEV;
+-
+-	if (ret) {
+-		brcm_pcie_remove(pdev);
+-		return ret;
+-	}
+-
+-	return 0;
+-
++	return pci_host_probe(bridge);
+ fail:
+ 	__brcm_pcie_remove(pcie);
+ 	return ret;
+@@ -1590,8 +1517,8 @@ static int brcm_pcie_probe(struct platform_device *pdev)
+ MODULE_DEVICE_TABLE(of, brcm_pcie_match);
+ 
+ static const struct dev_pm_ops brcm_pcie_pm_ops = {
+-	.suspend_noirq = brcm_pcie_suspend,
+-	.resume_noirq = brcm_pcie_resume,
++	.suspend = brcm_pcie_suspend,
++	.resume = brcm_pcie_resume,
+ };
+ 
+ static struct platform_driver brcm_pcie_driver = {
+-- 
+2.35.1
+
 
 
