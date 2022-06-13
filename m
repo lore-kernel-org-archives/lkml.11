@@ -2,86 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6EDDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:14:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D03B4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:14:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235012AbiFMVOj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 17:14:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42006 "EHLO
+        id S1352168AbiFMVOn (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 17:14:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351816AbiFMVNR (ORCPT
+        with ESMTP id S1352171AbiFMVNX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 17:13:17 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7241942A1D;
-        Mon, 13 Jun 2022 13:53:09 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id bg6so13503084ejb.0;
-        Mon, 13 Jun 2022 13:53:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=0xKpA2CkarcNm8NsicwZmWQkXSJdlfuX89TYCY5IOVo=;
-        b=oqcBeVuuOMRJM412U3KFCHQa2M87fcxpRnxTqck08gJQDouywpryfANrktU2bzTpFl
-         fsd1PpSOY3yl1qhqTmYGgpebhL0fZQk5JejqxS4kHZJPGxXieBsaGZgWRYC8IkhYJqZh
-         ueGwr+q0B7dEVqMyenU1G8A3iOt7yHSiRqN1gKyA6OySiWaxwsgiKg4xobRn2m2xgN9L
-         PF1cdR1mlZyG0pNLiDxgUQHDpgxWuY1TcsM5HWYgAXIKM34kElxXrTKcOd94PT5IMdd5
-         PXBxlmbyTMjE1mQOwAw3YJIKodTKz5uLmBLvnaVTXDoPzwJh3RnHoqVInxNL4eyJBJZd
-         EgEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=0xKpA2CkarcNm8NsicwZmWQkXSJdlfuX89TYCY5IOVo=;
-        b=zESkymhMT1LM2CixGurHFWZGGoIz5J1wmKIu95gEcytUcdPj6FrmcfZBihcb1MZ4Bw
-         6bsbUDRx9aFjbCiJFg4Ow/mNvfdl3CvmsrYdwhar/xUoMbH7PBgOukX4ghMDWSD7dsQi
-         QBumx4kBDa3YdozoFfX4ecu7CVofcjNjxOuEiQXN06gVXv9yGRCgCcE0t3Ub5HANBMqZ
-         1lIx2HmvzLU2Npe5ChSKDAl+BJXnggiYUKZ1hjHRYq4x/Rn3OjyWcwLn+2Zal6FZP4kQ
-         SJFAthFxJ3T3ujxj2C4ykX6TaiPjJuG8O1KeLXwU7+K4Wqg8HT9FeePpGzADNgZDl8Pg
-         ByqA==
-X-Gm-Message-State: AOAM533AvZCkzo3gMnREBQNeaR5BllSHoiou4LKIoE9iFRNcZVSAz6y0
-        FAnN1D3YdVcgvWWfVHukdZSlOCYa93x23Q==
-X-Google-Smtp-Source: ABdhPJwfkzRmgw0YzkxGU9voWfn/nUs7UdNN6/bLuU+oxejU3G6rzltetr68M0tPwtfEuI1tzCNTQw==
-X-Received: by 2002:a17:906:a383:b0:6f5:132c:1a14 with SMTP id k3-20020a170906a38300b006f5132c1a14mr1410151ejz.21.1655153587911;
-        Mon, 13 Jun 2022 13:53:07 -0700 (PDT)
-Received: from kista.localnet (213-161-3-76.dynamic.telemach.net. [213.161.3.76])
-        by smtp.gmail.com with ESMTPSA id gl6-20020a170906e0c600b006fec63e564bsm4224434ejb.30.2022.06.13.13.53.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 13:53:07 -0700 (PDT)
-From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To:     Chen-Yu Tsai <wens@csie.org>, Samuel Holland <samuel@sholland.org>
-Cc:     Samuel Holland <samuel@sholland.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev
-Subject: Re: Re: [PATCH 1/2] ARM: dts: sunxi: Use constants for RTC clock indexes
-Date:   Mon, 13 Jun 2022 22:53:06 +0200
-Message-ID: <2632539.mvXUDI8C0e@kista>
-In-Reply-To: <5831557.lOV4Wx5bFT@kista>
-References: <20220607012438.18183-1-samuel@sholland.org> <5831557.lOV4Wx5bFT@kista>
+        Mon, 13 Jun 2022 17:13:23 -0400
+Received: from smtp.smtpout.orange.fr (smtp02.smtpout.orange.fr [80.12.242.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52B6AB45
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:53:59 -0700 (PDT)
+Received: from pop-os.home ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id 0r4Lo7Na9EMbD0r4Log35N; Mon, 13 Jun 2022 22:53:56 +0200
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Mon, 13 Jun 2022 22:53:56 +0200
+X-ME-IP: 90.11.190.129
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        netdev@vger.kernel.org
+Subject: [PATCH] net: bgmac: Fix an erroneous kfree() in bgmac_remove()
+Date:   Mon, 13 Jun 2022 22:53:50 +0200
+Message-Id: <a026153108dd21239036a032b95c25b5cece253b.1655153616.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dne nedelja, 12. junij 2022 ob 22:45:47 CEST je Jernej =C5=A0krabec napisal=
-(a):
-> Dne torek, 07. junij 2022 ob 03:24:37 CEST je Samuel Holland napisal(a):
-> > The binding header provides descriptive names for the RTC clock indexes,
-> > since the indexes were arbitrarily chosen by the binding, not by the
-> > hardware. Let's use the names, so the meaning is clearer.
-> >=20
-> > Signed-off-by: Samuel Holland <samuel@sholland.org>
->=20
-> Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+'bgmac' is part of a managed resource allocated with bgmac_alloc(). It
+should not be freed explicitly.
 
-Applied both, thanks!
+Remove the erroneous kfree() from the .remove() function.
 
-Best regards,
-Jernej
+Fixes: 34a5102c3235 ("net: bgmac: allocate struct bgmac just once & don't copy it"
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/net/ethernet/broadcom/bgmac-bcma.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-
+diff --git a/drivers/net/ethernet/broadcom/bgmac-bcma.c b/drivers/net/ethernet/broadcom/bgmac-bcma.c
+index e6f48786949c..02bd3cf9a260 100644
+--- a/drivers/net/ethernet/broadcom/bgmac-bcma.c
++++ b/drivers/net/ethernet/broadcom/bgmac-bcma.c
+@@ -332,7 +332,6 @@ static void bgmac_remove(struct bcma_device *core)
+ 	bcma_mdio_mii_unregister(bgmac->mii_bus);
+ 	bgmac_enet_remove(bgmac);
+ 	bcma_set_drvdata(core, NULL);
+-	kfree(bgmac);
+ }
+ 
+ static struct bcma_driver bgmac_bcma_driver = {
+-- 
+2.34.1
 
