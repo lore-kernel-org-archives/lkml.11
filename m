@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45006CCA495
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:46:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 098B1CCA49D
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:46:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356986AbiFMLpS (ORCPT
+        id S1357013AbiFMLpU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:45:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43848 "EHLO
+        Mon, 13 Jun 2022 07:45:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355823AbiFMLjm (ORCPT
+        with ESMTP id S1355722AbiFMLjf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:39:42 -0400
+        Mon, 13 Jun 2022 07:39:35 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 546662CE21;
-        Mon, 13 Jun 2022 03:49:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99CFD2CCAA;
+        Mon, 13 Jun 2022 03:49:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C3B660AEB;
-        Mon, 13 Jun 2022 10:49:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9827CC3411C;
-        Mon, 13 Jun 2022 10:49:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E54FC612E7;
+        Mon, 13 Jun 2022 10:49:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F314CC3411C;
+        Mon, 13 Jun 2022 10:49:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117397;
-        bh=CmzaiCE6+SXzp7lDT1daqpaJ9oOcu7NO70qIm9BZRvM=;
+        s=korg; t=1655117388;
+        bh=VXl2zwaLrzJhmKisP41An05vrIbOHeLzXarsvU7kk8M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kYoPSJROLIgghVYtBrnLPPxeTv3hAClssRbGFw+m79kQxMgl7t32tj32kCzk9+l6I
-         7KrpPUrgOtx+40A3NoUypbwtzOU1f1h7Qw1U8R/ezWlYrQ1LRwChrmYZ7GgXo2CHCL
-         0RVMSScr6z6mAugqiH1LeFfpkCFWKd9RspdDi2BY=
+        b=BMnAboiQ0nv2LnnJRnh8arxG6f6HdE1S2PaeGwXoioo8FJc9V8Lg+Bwfxexa9ff1g
+         7pVweRhtLziGtPFxUQqaVh+UPK3La9dO5ZB7zsdkbF83bvy6xUBWA+ScAZ0O5vK9mS
+         23LabzjrY+q9OjIle8OyV5Yfmemf3MMupHjQUCDE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>,
-        Corey Minyard <cminyard@mvista.com>,
+        stable@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Huang Guobin <huangguobin4@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 033/287] ipmi:ssif: Check for NULL msg when handling events and messages
-Date:   Mon, 13 Jun 2022 12:07:37 +0200
-Message-Id: <20220613094924.868619898@linuxfoundation.org>
+Subject: [PATCH 5.4 369/411] tty: Fix a possible resource leak in icom_probe
+Date:   Mon, 13 Jun 2022 12:10:42 +0200
+Message-Id: <20220613094939.747714387@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
-References: <20220613094923.832156175@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,73 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Corey Minyard <cminyard@mvista.com>
+From: Huang Guobin <huangguobin4@huawei.com>
 
-[ Upstream commit 7602b957e2404e5f98d9a40b68f1fd27f0028712 ]
+[ Upstream commit ee157a79e7c82b01ae4c25de0ac75899801f322c ]
 
-Even though it's not possible to get into the SSIF_GETTING_MESSAGES and
-SSIF_GETTING_EVENTS states without a valid message in the msg field,
-it's probably best to be defensive here and check and print a log, since
-that means something else went wrong.
+When pci_read_config_dword failed, call pci_release_regions() and
+pci_disable_device() to recycle the resource previously allocated.
 
-Also add a default clause to that switch statement to release the lock
-and print a log, in case the state variable gets messed up somehow.
-
-Reported-by: Haowen Bai <baihaowen@meizu.com>
-Signed-off-by: Corey Minyard <cminyard@mvista.com>
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
+Link: https://lore.kernel.org/r/20220331091005.3290753-1-huangguobin4@huawei.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/ipmi/ipmi_ssif.c | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+ drivers/tty/serial/icom.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/char/ipmi/ipmi_ssif.c b/drivers/char/ipmi/ipmi_ssif.c
-index fec679433f72..fd1a487443f0 100644
---- a/drivers/char/ipmi/ipmi_ssif.c
-+++ b/drivers/char/ipmi/ipmi_ssif.c
-@@ -801,6 +801,14 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
- 		break;
- 
- 	case SSIF_GETTING_EVENTS:
-+		if (!msg) {
-+			/* Should never happen, but just in case. */
-+			dev_warn(&ssif_info->client->dev,
-+				 "No message set while getting events\n");
-+			ipmi_ssif_unlock_cond(ssif_info, flags);
-+			break;
-+		}
-+
- 		if ((result < 0) || (len < 3) || (msg->rsp[2] != 0)) {
- 			/* Error getting event, probably done. */
- 			msg->done(msg);
-@@ -824,6 +832,14 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
- 		break;
- 
- 	case SSIF_GETTING_MESSAGES:
-+		if (!msg) {
-+			/* Should never happen, but just in case. */
-+			dev_warn(&ssif_info->client->dev,
-+				 "No message set while getting messages\n");
-+			ipmi_ssif_unlock_cond(ssif_info, flags);
-+			break;
-+		}
-+
- 		if ((result < 0) || (len < 3) || (msg->rsp[2] != 0)) {
- 			/* Error getting event, probably done. */
- 			msg->done(msg);
-@@ -846,6 +862,13 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
- 			deliver_recv_msg(ssif_info, msg);
- 		}
- 		break;
-+
-+	default:
-+		/* Should never happen, but just in case. */
-+		dev_warn(&ssif_info->client->dev,
-+			 "Invalid state in message done handling: %d\n",
-+			 ssif_info->ssif_state);
-+		ipmi_ssif_unlock_cond(ssif_info, flags);
+diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
+index 624f3d541c68..d047380259b5 100644
+--- a/drivers/tty/serial/icom.c
++++ b/drivers/tty/serial/icom.c
+@@ -1499,7 +1499,7 @@ static int icom_probe(struct pci_dev *dev,
+ 	retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg);
+ 	if (retval) {
+ 		dev_err(&dev->dev, "PCI Config read FAILED\n");
+-		return retval;
++		goto probe_exit0;
  	}
  
- 	flags = ipmi_ssif_lock_cond(ssif_info, &oflags);
+ 	pci_write_config_dword(dev, PCI_COMMAND,
 -- 
 2.35.1
 
