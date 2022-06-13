@@ -2,85 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF002CCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:59:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7093BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:59:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352270AbiFMU7C (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:59:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40796 "EHLO
+        id S241680AbiFMU7c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 16:59:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352277AbiFMUyU (ORCPT
+        with ESMTP id S241312AbiFMUzM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:54:20 -0400
-Received: from mail-oa1-f51.google.com (mail-oa1-f51.google.com [209.85.160.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B672A96C;
-        Mon, 13 Jun 2022 13:22:42 -0700 (PDT)
-Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-f2a4c51c45so9889752fac.9;
-        Mon, 13 Jun 2022 13:22:42 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=KWClgfWpgHG+VAivQTnsEGKmEl3BheN2a8JGL0usIbE=;
-        b=x71qOj9Dke4QPwcNw8orbLy973iV1rsHM5hgNxApmrJE/i4zqPSuovyQfgGwXrez92
-         vIUuhdtmJsTzg+E62m0ne8gaqzztvV/873LFliGnFSl3v/BXA7tqHPcu2d51XXgJsrSq
-         QBvnQhFv3QcMm4p+yiqDwJCsCFohVaKnjTsh5zlDIuGuA2XkbL7rkzjscxxVVRUO4Qxo
-         bUhNkh5bKU67BOBBgMYct6gzloSoISHCs8jw2PPJ4OzR5l6Fr2Or8ArdXyRMKEWwlGz1
-         N4ammCOa0+VtSIcwdO5AwXR8s/MxwOzIZR8neJc7imCfynbEzanwWr8vhhBKqnJ0JhRh
-         YN6A==
-X-Gm-Message-State: AJIora8+ESIvvZBDexq29bmap3YIBSWFU5WfDkk92iYnmaPq7BnT/+sJ
-        u848ni8oHHlBPSTDA4c6WuN1kQRUPQ==
-X-Google-Smtp-Source: AGRyM1uYY8kwAc52zC+3YVt186Rqlx1c75177h/UvxedvgIBWt2vywhFxGucs6f9z45JMqELRcEFAQ==
-X-Received: by 2002:a05:6870:c88a:b0:f2:8d92:318a with SMTP id er10-20020a056870c88a00b000f28d92318amr302337oab.281.1655151761607;
-        Mon, 13 Jun 2022 13:22:41 -0700 (PDT)
-Received: from robh.at.kernel.org ([2607:fb90:20d2:bb97:4381:7341:60ed:a4a1])
-        by smtp.gmail.com with ESMTPSA id a21-20020a4ad1d5000000b0035eb4e5a6b2sm4211689oos.8.2022.06.13.13.22.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 13:22:41 -0700 (PDT)
-Received: (nullmailer pid 7891 invoked by uid 1000);
-        Mon, 13 Jun 2022 20:15:01 -0000
-Date:   Mon, 13 Jun 2022 14:15:01 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 08/18] PCI: dwc: Add trailing new-line literals to the
- log messages
-Message-ID: <20220613201501.GD4188875-robh@kernel.org>
-References: <20220610082535.12802-1-Sergey.Semin@baikalelectronics.ru>
- <20220610082535.12802-9-Sergey.Semin@baikalelectronics.ru>
+        Mon, 13 Jun 2022 16:55:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFB462BD0
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:26:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5680BB815A2
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 20:26:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70DE5C3411F;
+        Mon, 13 Jun 2022 20:26:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655151980;
+        bh=7Jrg9tuqGHw4ta7aGW741BHtoMi+5FEfHRShEJ6GnTM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JrCj6Br1YGXni35gDMsHp7Ju9c/0fAKL/CrFxcvhyZGI5OWSPU7AlGI3SHYJcMfMA
+         GTONfmmpaXx6gCHYmCEcUUAYOvH4ihiHxRO8li5UKaFAx2rgW1eu0HCNllrLX5DvuX
+         46hI7ZIKM+FrN8QAnwwuoEh7dv+J+CVMzuIN7csuIqxN6aqlofvV3hyyO95BDg3pS6
+         9VyH6HGqivVYKZVI2dxoGm6K3FWdHsf4J0yGzNez+GQZ06siLHw1g3f4wZKesjGQ6/
+         1o0Qni5yu+rLDwpf2kR4sZp39Vi55RLhm3dnJ18wKdeprvMD4cXm7R18wABRl9pMbs
+         BJgv+pMyCwyVw==
+Date:   Mon, 13 Jun 2022 13:26:17 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, patches@lists.linux.dev,
+        Jessica Clarke <jrtc27@jrtc27.com>
+Subject: Re: [PATCH] riscv: Fix ALT_THEAD_PMA's asm parameters
+Message-ID: <YqedafxlnoXauefj@dev-arch.thelio-3990X>
+References: <20220518184529.454008-1-nathan@kernel.org>
+ <Yo7opc/A8ITue0/4@dev-arch.thelio-3990X>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220610082535.12802-9-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <Yo7opc/A8ITue0/4@dev-arch.thelio-3990X>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 11:25:24AM +0300, Serge Semin wrote:
-> There are two places in the DW PCIe controller driver, which omit the
-> trailing newlines in the log info and warn messages. Not having them there
-> will cause leaving the messages in the printk ring buffer until a next
-> '\n'-terminated message is printed (it will consequently cause the buffer
-> flush). As it isn't what the corresponding code implies let's add the
-> new-line characters in the messages.
+On Wed, May 25, 2022 at 07:40:37PM -0700, Nathan Chancellor wrote:
+> Small ping on this and https://lore.kernel.org/20220516214520.3252074-1-nathan@kernel.org/.
 > 
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> ---
->  drivers/pci/controller/dwc/pcie-designware-host.c | 2 +-
->  drivers/pci/controller/dwc/pcie-designware.c      | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
+> Our builds on -next have been broken for a week now. Hopefully these can
+> make the first RISC-V pull request to avoid mainline being broken in the
+> same fashion.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+One more small ping. The patch linked above made it into 5.19-rc1 but
+this one has not been applied so our builds are still broken.
+
+Cheers,
+Nathan
+
+> On Wed, May 18, 2022 at 11:45:29AM -0700, Nathan Chancellor wrote:
+> > After commit a35707c3d850 ("riscv: add memory-type errata for T-Head"),
+> > builds with LLVM's integrated assembler fail like:
+> > 
+> >   In file included from arch/riscv/kernel/asm-offsets.c:10:
+> >   In file included from ./include/linux/mm.h:29:
+> >   In file included from ./include/linux/pgtable.h:6:
+> >   In file included from ./arch/riscv/include/asm/pgtable.h:114:
+> >   ./arch/riscv/include/asm/pgtable-64.h:210:2: error: invalid input constraint '0' in asm
+> >           ALT_THEAD_PMA(prot_val);
+> >           ^
+> >   ./arch/riscv/include/asm/errata_list.h:88:4: note: expanded from macro 'ALT_THEAD_PMA'
+> >           : "0"(_val),                                                    \
+> >             ^
+> > 
+> > This was reported upstream to LLVM where Jessica pointed out a couple of
+> > issues with the existing implementation of ALT_THEAD_PMA:
+> > 
+> > * t3 is modified but not listed in the clobbers list.
+> > 
+> > * "+r"(_val) marks _val as both an input and output of the asm but then
+> >   "0"(_val) marks _val as an input matching constraint, which does not
+> >   make much sense in this situation, as %1 is not actually used in the
+> >   asm and matching constraints are designed to be used for different
+> >   inputs that need to use the same register.
+> > 
+> > Drop the matching contraint and shift all the operands by one, as %1 is
+> > unused, and mark t3 as clobbered. This resolves the build error and goes
+> > not cause any problems with GNU as.
+> > 
+> > Fixes: a35707c3d850 ("riscv: add memory-type errata for T-Head")
+> > Link: https://github.com/ClangBuiltLinux/linux/issues/1641
+> > Link: https://github.com/llvm/llvm-project/issues/55514
+> > Link: https://gcc.gnu.org/onlinedocs/gcc/Simple-Constraints.html
+> > Suggested-by: Jessica Clarke <jrtc27@jrtc27.com>
+> > Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+> > ---
+> >  arch/riscv/include/asm/errata_list.h | 14 +++++++-------
+> >  1 file changed, 7 insertions(+), 7 deletions(-)
+> > 
+> > diff --git a/arch/riscv/include/asm/errata_list.h b/arch/riscv/include/asm/errata_list.h
+> > index 9e2888dbb5b1..416ead0f9a65 100644
+> > --- a/arch/riscv/include/asm/errata_list.h
+> > +++ b/arch/riscv/include/asm/errata_list.h
+> > @@ -75,20 +75,20 @@ asm volatile(ALTERNATIVE(						\
+> >  	"nop\n\t"							\
+> >  	"nop\n\t"							\
+> >  	"nop",								\
+> > -	"li      t3, %2\n\t"						\
+> > -	"slli    t3, t3, %4\n\t"					\
+> > +	"li      t3, %1\n\t"						\
+> > +	"slli    t3, t3, %3\n\t"					\
+> >  	"and     t3, %0, t3\n\t"					\
+> >  	"bne     t3, zero, 2f\n\t"					\
+> > -	"li      t3, %3\n\t"						\
+> > -	"slli    t3, t3, %4\n\t"					\
+> > +	"li      t3, %2\n\t"						\
+> > +	"slli    t3, t3, %3\n\t"					\
+> >  	"or      %0, %0, t3\n\t"					\
+> >  	"2:",  THEAD_VENDOR_ID,						\
+> >  		ERRATA_THEAD_PBMT, CONFIG_ERRATA_THEAD_PBMT)		\
+> >  	: "+r"(_val)							\
+> > -	: "0"(_val),							\
+> > -	  "I"(_PAGE_MTMASK_THEAD >> ALT_THEAD_PBMT_SHIFT),		\
+> > +	: "I"(_PAGE_MTMASK_THEAD >> ALT_THEAD_PBMT_SHIFT),		\
+> >  	  "I"(_PAGE_PMA_THEAD >> ALT_THEAD_PBMT_SHIFT),			\
+> > -	  "I"(ALT_THEAD_PBMT_SHIFT))
+> > +	  "I"(ALT_THEAD_PBMT_SHIFT)					\
+> > +	: "t3")
+> >  #else
+> >  #define ALT_THEAD_PMA(_val)
+> >  #endif
+> > 
+> > base-commit: 93c0651617a62a69717299f1464dda798af8bebb
+> > -- 
+> > 2.36.1
+> > 
+> > 
+> > _______________________________________________
+> > linux-riscv mailing list
+> > linux-riscv@lists.infradead.org
+> > http://lists.infradead.org/mailman/listinfo/linux-riscv
+> 
