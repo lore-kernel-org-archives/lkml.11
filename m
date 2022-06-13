@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1DC3C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:06:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D501C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:07:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358429AbiFMNGz (ORCPT
+        id S1358514AbiFMNG6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:06:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51152 "EHLO
+        Mon, 13 Jun 2022 09:06:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354182AbiFMMzi (ORCPT
+        with ESMTP id S1354177AbiFMMzh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:55:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6140B10FF0;
-        Mon, 13 Jun 2022 04:16:25 -0700 (PDT)
+        Mon, 13 Jun 2022 08:55:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F5F3101F7;
+        Mon, 13 Jun 2022 04:16:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DA91060B60;
-        Mon, 13 Jun 2022 11:16:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E823CC34114;
-        Mon, 13 Jun 2022 11:16:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1023F60B6B;
+        Mon, 13 Jun 2022 11:16:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13569C34114;
+        Mon, 13 Jun 2022 11:16:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118984;
-        bh=g9IIzdz8fFZu4zLpGSUu9Qx+xG/NwPMEEzYsxd6wuio=;
+        s=korg; t=1655118981;
+        bh=8AIjeACgi+bYisPTA5NfM+ueUeKZiAQSrBsRTbbfHbY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vK2MsvvJTEgCvFzdl7wdVdZBA3FiAAsDcgdMzQRLZ/8pqiVs1oasGOnB8ZXUv1Ktk
-         kYTJnaplERr9I2Mv9bAHeRcDLjlFLdaBNTr3KGUm0e83YGKqZsFpaIZxSkoK13My71
-         HQBYDhiQb35GG3pC4FQ7uBx/Rjpptjrc9jRU3yuo=
+        b=dWS2KHFyfWtSzDPKTepCpZAV8qBFd7p7Lsw2KXDuIeFVshSp7YBrTjLUNlff/vVW+
+         eE6StTiDPwj7HsuCT8WMEZZGOCTC6Yu5ZVbHKZhDicL4gCQKsgqp9xOOKT3SYI4E87
+         68nNOLkygdws4SEDwobJIbocZ2I2mWpgBslkkwmM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guoju Fang <gjfang@linux.alibaba.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 098/247] net: sched: add barrier to fix packet stuck problem for lockless qdisc
-Date:   Mon, 13 Jun 2022 12:10:00 +0200
-Message-Id: <20220613094925.927928910@linuxfoundation.org>
+Subject: [PATCH 5.15 097/247] net/mlx5e: Update netdev features after changing XDP state
+Date:   Mon, 13 Jun 2022 12:09:59 +0200
+Message-Id: <20220613094925.898900831@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,68 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guoju Fang <gjfang@linux.alibaba.com>
+From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-[ Upstream commit 2e8728c955ce0624b958eee6e030a37aca3a5d86 ]
+[ Upstream commit f6279f113ad593971999c877eb69dc3d36a75894 ]
 
-In qdisc_run_end(), the spin_unlock() only has store-release semantic,
-which guarantees all earlier memory access are visible before it. But
-the subsequent test_bit() has no barrier semantics so may be reordered
-ahead of the spin_unlock(). The store-load reordering may cause a packet
-stuck problem.
+Some features (LRO, HW GRO) conflict with XDP. If there is an attempt to
+enable such features while XDP is active, they will be set to `off
+[requested on]`. In order to activate these features after XDP is turned
+off, the driver needs to call netdev_update_features(). This commit adds
+this missing call after XDP state changes.
 
-The concurrent operations can be described as below,
-         CPU 0                      |          CPU 1
-   qdisc_run_end()                  |     qdisc_run_begin()
-          .                         |           .
- ----> /* may be reorderd here */   |           .
-|         .                         |           .
-|     spin_unlock()                 |         set_bit()
-|         .                         |         smp_mb__after_atomic()
- ---- test_bit()                    |         spin_trylock()
-          .                         |          .
-
-Consider the following sequence of events:
-    CPU 0 reorder test_bit() ahead and see MISSED = 0
-    CPU 1 calls set_bit()
-    CPU 1 calls spin_trylock() and return fail
-    CPU 0 executes spin_unlock()
-
-At the end of the sequence, CPU 0 calls spin_unlock() and does nothing
-because it see MISSED = 0. The skb on CPU 1 has beed enqueued but no one
-take it, until the next cpu pushing to the qdisc (if ever ...) will
-notice and dequeue it.
-
-This patch fix this by adding one explicit barrier. As spin_unlock() and
-test_bit() ordering is a store-load ordering, a full memory barrier
-smp_mb() is needed here.
-
-Fixes: a90c57f2cedd ("net: sched: fix packet stuck problem for lockless qdisc")
-Signed-off-by: Guoju Fang <gjfang@linux.alibaba.com>
-Link: https://lore.kernel.org/r/20220528101628.120193-1-gjfang@linux.alibaba.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: cf6e34c8c22f ("net/mlx5e: Properly block LRO when XDP is enabled")
+Fixes: b0617e7b3500 ("net/mlx5e: Properly block HW GRO when XDP is enabled")
+Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/sch_generic.h | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index 9e9ff13adda8..1958d1260fe9 100644
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -202,6 +202,12 @@ static inline void qdisc_run_end(struct Qdisc *qdisc)
- 	if (qdisc->flags & TCQ_F_NOLOCK) {
- 		spin_unlock(&qdisc->seqlock);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 7efb898e9f96..e00648094fc2 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -4181,6 +4181,11 @@ static int mlx5e_xdp_set(struct net_device *netdev, struct bpf_prog *prog)
  
-+		/* spin_unlock() only has store-release semantic. The unlock
-+		 * and test_bit() ordering is a store-load ordering, so a full
-+		 * memory barrier is needed here.
-+		 */
-+		smp_mb();
+ unlock:
+ 	mutex_unlock(&priv->state_lock);
 +
- 		if (unlikely(test_bit(__QDISC_STATE_MISSED,
- 				      &qdisc->state)))
- 			__netif_schedule(qdisc);
++	/* Need to fix some features. */
++	if (!err)
++		netdev_update_features(netdev);
++
+ 	return err;
+ }
+ 
 -- 
 2.35.1
 
