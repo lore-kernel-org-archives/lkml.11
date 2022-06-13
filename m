@@ -2,97 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA35FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:55:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F960C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:55:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346499AbiFMKzQ (ORCPT
+        id S1346964AbiFMKzV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:55:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59008 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344551AbiFMKvP (ORCPT
+        Mon, 13 Jun 2022 06:55:21 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:55278 "EHLO
+        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346494AbiFMKvI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:51:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3E36240A9;
-        Mon, 13 Jun 2022 03:27:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B703F60F0F;
-        Mon, 13 Jun 2022 10:27:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0904C34114;
-        Mon, 13 Jun 2022 10:27:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116048;
-        bh=+hGjQKfDNGnTsMzTo9PMesAjDFTq1kh+tT1+3aPgf3c=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ig8VQbKKDeKuzyl95wyQmLEMQCbZ/OiFrG0ulQyybNnKFKOr/Konk3W0Kj1OQx5e4
-         QFhqpgJeBIz+RxtRtQ7kYIgdigJDpT0Xj7bTrZpEJRHUpqBCWqukiRO60j7ZEjBu06
-         mJiYRx2I/Xl76jhBEyT1y3U9EDYpTvA4qHBcS6vY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
-        Niels Dossche <dossche.niels@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 013/411] mwifiex: add mutex lock for call in mwifiex_dfs_chan_sw_work_queue
-Date:   Mon, 13 Jun 2022 12:04:46 +0200
-Message-Id: <20220613094928.897048372@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Mon, 13 Jun 2022 06:51:08 -0400
+Received: from localhost (cpc147930-brnt3-2-0-cust60.4-2.cable.virginm.net [86.15.196.61])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id 2DBC183EA40E;
+        Mon, 13 Jun 2022 03:51:04 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 11:50:58 +0100 (BST)
+Message-Id: <20220613.115058.818063822562949798.davem@davemloft.net>
+To:     longli@microsoft.com, longli@linuxonhyperv.com
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, kuba@kernel.org,
+        pabeni@redhat.com, jgg@ziepe.ca, leon@kernel.org,
+        edumazet@google.com, shiraz.saleem@intel.com,
+        sharmaajay@microsoft.com, linux-hyperv@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: Re: [Patch v3 03/12] net: mana: Handle vport sharing between
+ devices
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1655068494-16440-4-git-send-email-longli@linuxonhyperv.com>
+References: <1655068494-16440-1-git-send-email-longli@linuxonhyperv.com>
+        <1655068494-16440-4-git-send-email-longli@linuxonhyperv.com>
+X-Mailer: Mew version 6.8 on Emacs 27.2
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Mon, 13 Jun 2022 03:51:08 -0700 (PDT)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: longli@linuxonhyperv.com
+Date: Sun, 12 Jun 2022 14:14:45 -0700
 
-[ Upstream commit 3e12968f6d12a34b540c39cbd696a760cc4616f0 ]
+> +int mana_cfg_vport(struct mana_port_context *apc, u32 protection_dom_id,
+> +		   u32 doorbell_pg_id)
+>  {
+> +	/* Ethernet driver and IB driver can't take the port at the same time */
+> +	refcount_inc(&apc->port_use_count);
+> +	if (refcount_read(&apc->port_use_count) > 2) {
 
-cfg80211_ch_switch_notify uses ASSERT_WDEV_LOCK to assert that
-net_device->ieee80211_ptr->mtx (which is the same as priv->wdev.mtx)
-is held during the function's execution.
-mwifiex_dfs_chan_sw_work_queue is one of its callers, which does not
-hold that lock, therefore violating the assertion.
-Add a lock around the call.
+This is a racy test, the count could change after the test against
+'2'.  It would be nice if there was a primitive to do the increment
+and test atomically, but I fail to see one that matches this scenerio
+currently.
 
-Disclaimer:
-I am currently working on a static analyser to detect missing locks.
-This was a reported case. I manually verified the report by looking
-at the code, so that I do not send wrong information or patches.
-After concluding that this seems to be a true positive, I created
-this patch.
-However, as I do not in fact have this particular hardware,
-I was unable to test it.
-
-Reviewed-by: Brian Norris <briannorris@chromium.org>
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220321225515.32113-1-dossche.niels@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/wireless/marvell/mwifiex/11h.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/net/wireless/marvell/mwifiex/11h.c b/drivers/net/wireless/marvell/mwifiex/11h.c
-index 238accfe4f41..c4176e357b22 100644
---- a/drivers/net/wireless/marvell/mwifiex/11h.c
-+++ b/drivers/net/wireless/marvell/mwifiex/11h.c
-@@ -303,5 +303,7 @@ void mwifiex_dfs_chan_sw_work_queue(struct work_struct *work)
- 
- 	mwifiex_dbg(priv->adapter, MSG,
- 		    "indicating channel switch completion to kernel\n");
-+	mutex_lock(&priv->wdev.mtx);
- 	cfg80211_ch_switch_notify(priv->netdev, &priv->dfs_chandef);
-+	mutex_unlock(&priv->wdev.mtx);
- }
--- 
-2.35.1
-
-
+Thank you.
 
