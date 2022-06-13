@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAEA3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:21:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 567E3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:21:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382815AbiFMOVQ (ORCPT
+        id S1382940AbiFMOVW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:21:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33972 "EHLO
+        Mon, 13 Jun 2022 10:21:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383154AbiFMOP0 (ORCPT
+        with ESMTP id S1383292AbiFMOPj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:15:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEA949CF00;
-        Mon, 13 Jun 2022 04:42:52 -0700 (PDT)
+        Mon, 13 Jun 2022 10:15:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9730A9D056;
+        Mon, 13 Jun 2022 04:43:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3D30B80E2C;
-        Mon, 13 Jun 2022 11:42:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 620D2C34114;
-        Mon, 13 Jun 2022 11:42:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EFFA61367;
+        Mon, 13 Jun 2022 11:43:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CCC9C34114;
+        Mon, 13 Jun 2022 11:43:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120540;
-        bh=saYAZQ/zUpv9HU9dMbICeJUkrrOAVUZwJAKm+QR8hnY=;
+        s=korg; t=1655120582;
+        bh=QBQJ6swq7EWXQKkoRU41DrY3exXvzkeYPw+ZRQE5tWA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lO8RuXuGadJKo/cq5SbKEveJ79NTp+ct7a/tXo71qEJkY6wvL1h1jgTQXoXNN/tfp
-         12z5WcrZfxvcKrNbIeiduEdxiJfb7odYfft9PV6aBnZl5vzOICI6TboJGltxXSP8OX
-         niSXh4566XI73HP9z3hp6G5l4GvhVP2HYBYY3JmQ=
+        b=OpRityvoaxfV3PcbTYixR3Px2f80YrXZZ+RvsulhjxUK+B8DV5KhHA/JDv25qRiXb
+         WQU0p3xd2EdlUYtZzouFIVlMlwG0fheYMY0LTtZEVMfth3e43Yem+DTDR2Vf2HH5ok
+         xTb0FSVw8P4dcuio5xm6dDqCIeu02F+y4OZzpfzI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhang Wensheng <zhangwensheng5@huawei.com>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 070/298] driver core: fix deadlock in __device_attach
-Date:   Mon, 13 Jun 2022 12:09:24 +0200
-Message-Id: <20220613094927.069555361@linuxfoundation.org>
+Subject: [PATCH 5.17 084/298] net: ethernet: mtk_eth_soc: out of bounds read in mtk_hwlro_get_fdir_entry()
+Date:   Mon, 13 Jun 2022 12:09:38 +0200
+Message-Id: <20220613094927.495088542@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -49,77 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Wensheng <zhangwensheng5@huawei.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit b232b02bf3c205b13a26dcec08e53baddd8e59ed ]
+[ Upstream commit e7e7104e2d5ddf3806a28695670f21bef471f1e1 ]
 
-In __device_attach function, The lock holding logic is as follows:
-...
-__device_attach
-device_lock(dev)      // get lock dev
-  async_schedule_dev(__device_attach_async_helper, dev); // func
-    async_schedule_node
-      async_schedule_node_domain(func)
-        entry = kzalloc(sizeof(struct async_entry), GFP_ATOMIC);
-	/* when fail or work limit, sync to execute func, but
-	   __device_attach_async_helper will get lock dev as
-	   well, which will lead to A-A deadlock.  */
-	if (!entry || atomic_read(&entry_count) > MAX_WORK) {
-	  func;
-	else
-	  queue_work_node(node, system_unbound_wq, &entry->work)
-  device_unlock(dev)
+The "fsp->location" variable comes from user via ethtool_get_rxnfc().
+Check that it is valid to prevent an out of bounds read.
 
-As shown above, when it is allowed to do async probes, because of
-out of memory or work limit, async work is not allowed, to do
-sync execute instead. it will lead to A-A deadlock because of
-__device_attach_async_helper getting lock dev.
-
-To fix the deadlock, move the async_schedule_dev outside device_lock,
-as we can see, in async_schedule_node_domain, the parameter of
-queue_work_node is system_unbound_wq, so it can accept concurrent
-operations. which will also not change the code logic, and will
-not lead to deadlock.
-
-Fixes: 765230b5f084 ("driver-core: add asynchronous probing support for drivers")
-Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
-Link: https://lore.kernel.org/r/20220518074516.1225580-1-zhangwensheng5@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 7aab747e5563 ("net: ethernet: mediatek: add ethtool functions to configure RX flows of HW LRO")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/dd.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-index 7e079fa3795b..977e94cf669e 100644
---- a/drivers/base/dd.c
-+++ b/drivers/base/dd.c
-@@ -945,6 +945,7 @@ static void __device_attach_async_helper(void *_dev, async_cookie_t cookie)
- static int __device_attach(struct device *dev, bool allow_async)
- {
- 	int ret = 0;
-+	bool async = false;
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index f02d07ec5ccb..a50090e62c8f 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -1949,6 +1949,9 @@ static int mtk_hwlro_get_fdir_entry(struct net_device *dev,
+ 	struct ethtool_rx_flow_spec *fsp =
+ 		(struct ethtool_rx_flow_spec *)&cmd->fs;
  
- 	device_lock(dev);
- 	if (dev->p->dead) {
-@@ -983,7 +984,7 @@ static int __device_attach(struct device *dev, bool allow_async)
- 			 */
- 			dev_dbg(dev, "scheduling asynchronous probe\n");
- 			get_device(dev);
--			async_schedule_dev(__device_attach_async_helper, dev);
-+			async = true;
- 		} else {
- 			pm_request_idle(dev);
- 		}
-@@ -993,6 +994,8 @@ static int __device_attach(struct device *dev, bool allow_async)
- 	}
- out_unlock:
- 	device_unlock(dev);
-+	if (async)
-+		async_schedule_dev(__device_attach_async_helper, dev);
- 	return ret;
- }
- 
++	if (fsp->location >= ARRAY_SIZE(mac->hwlro_ip))
++		return -EINVAL;
++
+ 	/* only tcp dst ipv4 is meaningful, others are meaningless */
+ 	fsp->flow_type = TCP_V4_FLOW;
+ 	fsp->h_u.tcp_ip4_spec.ip4dst = ntohl(mac->hwlro_ip[fsp->location]);
 -- 
 2.35.1
 
