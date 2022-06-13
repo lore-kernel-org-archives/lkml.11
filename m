@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61EE9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:51:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 283E6C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:51:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379776AbiFMNvK (ORCPT
+        id S1379798AbiFMNvQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:51:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41926 "EHLO
+        Mon, 13 Jun 2022 09:51:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379596AbiFMNoo (ORCPT
+        with ESMTP id S1379610AbiFMNop (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:44:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27827DC4;
-        Mon, 13 Jun 2022 04:32:26 -0700 (PDT)
+        Mon, 13 Jun 2022 09:44:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 250DE40A0B;
+        Mon, 13 Jun 2022 04:32:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B7DEC6124B;
-        Mon, 13 Jun 2022 11:32:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD45BC34114;
-        Mon, 13 Jun 2022 11:32:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 905A461037;
+        Mon, 13 Jun 2022 11:32:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A876C34114;
+        Mon, 13 Jun 2022 11:32:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119945;
-        bh=vx54AwVCPZ4+ezTG7ZF+FlU4VqwEwS32vgxQfHlSwF4=;
+        s=korg; t=1655119934;
+        bh=E/IU0xHrBMG9vGH0wEumoaAiXmB+YxtkyC8ef4+wQlU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bZFbIfBPA3sR9N4Ago8DXExeGrTbyUYdZBWvcN3HJyuNxMA+co4zXlTsGPrlYJYZp
-         lVwstjXflw0/vMMi6HYHUVoIXHQc2O9RgJPj6JfXjkAuxykc4msAW/1yOGyP74z6jL
-         XwNnA+gN7e1iFnFKjHe7/EQo0XbkmPjD8q0ioCJE=
+        b=LDDLENIdDZ1+9RjQsrp89IfLoVvp4GLVvFfAykQ4Y3GSSSGIuw1UdVs3pmENPL+l0
+         Dr1qdGeQvk33TNO6ZbtM39KhbmsuOrdzHiDo6ZUxWDevST3ZOYCiUc6T30ZG8Hz94E
+         Ageew33i/x3Xm6YZX8+pJaQL/il15FFtR9BDQx6o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Taehee Yoo <ap420073@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 194/339] net: ethernet: bgmac: Fix refcount leak in bcma_mdio_mii_register
-Date:   Mon, 13 Jun 2022 12:10:19 +0200
-Message-Id: <20220613094932.552731401@linuxfoundation.org>
+Subject: [PATCH 5.18 191/339] amt: fix wrong usage of pskb_may_pull()
+Date:   Mon, 13 Jun 2022 12:10:16 +0200
+Message-Id: <20220613094932.464117412@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,36 +50,180 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Taehee Yoo <ap420073@gmail.com>
 
-[ Upstream commit b8d91399775c55162073bb2aca061ec42e3d4bc1 ]
+[ Upstream commit f55a07074fdd38cab8c097ac5bd397d68eff733c ]
 
-of_get_child_by_name() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+It adds missing pskb_may_pull() in amt_update_handler() and
+amt_multicast_data_handler().
+And it fixes wrong parameter of pskb_may_pull() in
+amt_advertisement_handler() and amt_membership_query_handler().
 
-Fixes: 55954f3bfdac ("net: ethernet: bgmac: move BCMA MDIO Phy code into a separate file")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://lore.kernel.org/r/20220603133238.44114-1-linmq006@gmail.com
+Reported-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: cbc21dc1cfe9 ("amt: add data plane of amt interface")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/amt.c | 55 +++++++++++++++++++++++++++++++----------------
+ 1 file changed, 37 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c b/drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c
-index 086739e4f40a..9b83d5361699 100644
---- a/drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c
-+++ b/drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c
-@@ -234,6 +234,7 @@ struct mii_bus *bcma_mdio_mii_register(struct bgmac *bgmac)
- 	np = of_get_child_by_name(core->dev.of_node, "mdio");
+diff --git a/drivers/net/amt.c b/drivers/net/amt.c
+index 22d7da749a24..fbb03562cb95 100644
+--- a/drivers/net/amt.c
++++ b/drivers/net/amt.c
+@@ -2220,8 +2220,7 @@ static bool amt_advertisement_handler(struct amt_dev *amt, struct sk_buff *skb)
+ 	struct amt_header_advertisement *amta;
+ 	int hdr_size;
  
- 	err = of_mdiobus_register(mii_bus, np);
-+	of_node_put(np);
- 	if (err) {
- 		dev_err(&core->dev, "Registration of mii bus failed\n");
- 		goto err_free_bus;
+-	hdr_size = sizeof(*amta) - sizeof(struct amt_header);
+-
++	hdr_size = sizeof(*amta) + sizeof(struct udphdr);
+ 	if (!pskb_may_pull(skb, hdr_size))
+ 		return true;
+ 
+@@ -2251,19 +2250,27 @@ static bool amt_multicast_data_handler(struct amt_dev *amt, struct sk_buff *skb)
+ 	struct ethhdr *eth;
+ 	struct iphdr *iph;
+ 
++	hdr_size = sizeof(*amtmd) + sizeof(struct udphdr);
++	if (!pskb_may_pull(skb, hdr_size))
++		return true;
++
+ 	amtmd = (struct amt_header_mcast_data *)(udp_hdr(skb) + 1);
+ 	if (amtmd->reserved || amtmd->version)
+ 		return true;
+ 
+-	hdr_size = sizeof(*amtmd) + sizeof(struct udphdr);
+ 	if (iptunnel_pull_header(skb, hdr_size, htons(ETH_P_IP), false))
+ 		return true;
++
+ 	skb_reset_network_header(skb);
+ 	skb_push(skb, sizeof(*eth));
+ 	skb_reset_mac_header(skb);
+ 	skb_pull(skb, sizeof(*eth));
+ 	eth = eth_hdr(skb);
++
++	if (!pskb_may_pull(skb, sizeof(*iph)))
++		return true;
+ 	iph = ip_hdr(skb);
++
+ 	if (iph->version == 4) {
+ 		if (!ipv4_is_multicast(iph->daddr))
+ 			return true;
+@@ -2274,6 +2281,9 @@ static bool amt_multicast_data_handler(struct amt_dev *amt, struct sk_buff *skb)
+ 	} else if (iph->version == 6) {
+ 		struct ipv6hdr *ip6h;
+ 
++		if (!pskb_may_pull(skb, sizeof(*ip6h)))
++			return true;
++
+ 		ip6h = ipv6_hdr(skb);
+ 		if (!ipv6_addr_is_multicast(&ip6h->daddr))
+ 			return true;
+@@ -2306,8 +2316,7 @@ static bool amt_membership_query_handler(struct amt_dev *amt,
+ 	struct iphdr *iph;
+ 	int hdr_size, len;
+ 
+-	hdr_size = sizeof(*amtmq) - sizeof(struct amt_header);
+-
++	hdr_size = sizeof(*amtmq) + sizeof(struct udphdr);
+ 	if (!pskb_may_pull(skb, hdr_size))
+ 		return true;
+ 
+@@ -2315,22 +2324,27 @@ static bool amt_membership_query_handler(struct amt_dev *amt,
+ 	if (amtmq->reserved || amtmq->version)
+ 		return true;
+ 
+-	hdr_size = sizeof(*amtmq) + sizeof(struct udphdr) - sizeof(*eth);
++	hdr_size -= sizeof(*eth);
+ 	if (iptunnel_pull_header(skb, hdr_size, htons(ETH_P_TEB), false))
+ 		return true;
++
+ 	oeth = eth_hdr(skb);
+ 	skb_reset_mac_header(skb);
+ 	skb_pull(skb, sizeof(*eth));
+ 	skb_reset_network_header(skb);
+ 	eth = eth_hdr(skb);
++	if (!pskb_may_pull(skb, sizeof(*iph)))
++		return true;
++
+ 	iph = ip_hdr(skb);
+ 	if (iph->version == 4) {
+-		if (!ipv4_is_multicast(iph->daddr))
+-			return true;
+ 		if (!pskb_may_pull(skb, sizeof(*iph) + AMT_IPHDR_OPTS +
+ 				   sizeof(*ihv3)))
+ 			return true;
+ 
++		if (!ipv4_is_multicast(iph->daddr))
++			return true;
++
+ 		ihv3 = skb_pull(skb, sizeof(*iph) + AMT_IPHDR_OPTS);
+ 		skb_reset_transport_header(skb);
+ 		skb_push(skb, sizeof(*iph) + AMT_IPHDR_OPTS);
+@@ -2345,15 +2359,17 @@ static bool amt_membership_query_handler(struct amt_dev *amt,
+ 		ip_eth_mc_map(iph->daddr, eth->h_dest);
+ #if IS_ENABLED(CONFIG_IPV6)
+ 	} else if (iph->version == 6) {
+-		struct ipv6hdr *ip6h = ipv6_hdr(skb);
+ 		struct mld2_query *mld2q;
++		struct ipv6hdr *ip6h;
+ 
+-		if (!ipv6_addr_is_multicast(&ip6h->daddr))
+-			return true;
+ 		if (!pskb_may_pull(skb, sizeof(*ip6h) + AMT_IP6HDR_OPTS +
+ 				   sizeof(*mld2q)))
+ 			return true;
+ 
++		ip6h = ipv6_hdr(skb);
++		if (!ipv6_addr_is_multicast(&ip6h->daddr))
++			return true;
++
+ 		mld2q = skb_pull(skb, sizeof(*ip6h) + AMT_IP6HDR_OPTS);
+ 		skb_reset_transport_header(skb);
+ 		skb_push(skb, sizeof(*ip6h) + AMT_IP6HDR_OPTS);
+@@ -2389,23 +2405,23 @@ static bool amt_update_handler(struct amt_dev *amt, struct sk_buff *skb)
+ {
+ 	struct amt_header_membership_update *amtmu;
+ 	struct amt_tunnel_list *tunnel;
+-	struct udphdr *udph;
+ 	struct ethhdr *eth;
+ 	struct iphdr *iph;
+-	int len;
++	int len, hdr_size;
+ 
+ 	iph = ip_hdr(skb);
+-	udph = udp_hdr(skb);
+ 
+-	if (__iptunnel_pull_header(skb, sizeof(*udph), skb->protocol,
+-				   false, false))
++	hdr_size = sizeof(*amtmu) + sizeof(struct udphdr);
++	if (!pskb_may_pull(skb, hdr_size))
+ 		return true;
+ 
+-	amtmu = (struct amt_header_membership_update *)skb->data;
++	amtmu = (struct amt_header_membership_update *)(udp_hdr(skb) + 1);
+ 	if (amtmu->reserved || amtmu->version)
+ 		return true;
+ 
+-	skb_pull(skb, sizeof(*amtmu));
++	if (iptunnel_pull_header(skb, hdr_size, skb->protocol, false))
++		return true;
++
+ 	skb_reset_network_header(skb);
+ 
+ 	list_for_each_entry_rcu(tunnel, &amt->tunnel_list, list) {
+@@ -2426,6 +2442,9 @@ static bool amt_update_handler(struct amt_dev *amt, struct sk_buff *skb)
+ 	return true;
+ 
+ report:
++	if (!pskb_may_pull(skb, sizeof(*iph)))
++		return true;
++
+ 	iph = ip_hdr(skb);
+ 	if (iph->version == 4) {
+ 		if (ip_mc_check_igmp(skb)) {
 -- 
 2.35.1
 
