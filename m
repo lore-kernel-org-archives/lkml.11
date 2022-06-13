@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74F7CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:48:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D9FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:48:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353503AbiFMMr6 (ORCPT
+        id S1353557AbiFMMsC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:47:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56668 "EHLO
+        Mon, 13 Jun 2022 08:48:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353471AbiFMMmz (ORCPT
+        with ESMTP id S1353723AbiFMMnk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:42:55 -0400
+        Mon, 13 Jun 2022 08:43:40 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F36F606DA;
-        Mon, 13 Jun 2022 04:10:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA2D860A92;
+        Mon, 13 Jun 2022 04:10:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A5363B80EB0;
-        Mon, 13 Jun 2022 11:10:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B06AC34114;
-        Mon, 13 Jun 2022 11:10:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 215C9B80D31;
+        Mon, 13 Jun 2022 11:10:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A26CC3411C;
+        Mon, 13 Jun 2022 11:10:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118651;
-        bh=pI2ljiuk7dCiKqhekhuJ5q6HEqr8FYM75WCe+WPnMNo=;
+        s=korg; t=1655118656;
+        bh=7ZJdOB8NWztNFmJga+HULPqObVqV573O24/WNfw5IOk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=udbkuphot9znox0FCGP8XoRJePs/a4Il+Y5Qn8I6NUTnmiAC5jZ8KohxXS0PyvXPW
-         kql+08JnOhoLhYxzc42ZZdz6VL+EPpvYHPFlReL1C5XY5/PlrhVkE7MFEpSzNd4o++
-         bDjwZOdAFdDhhgjMKZmeYPbZSdAl9sZCuQ3Rsi68=
+        b=lB3sgca/4URaVcOZmE0hMvIvl1l12qW4G2Ki2brctRYoxZqxW0N0Ep3TqEn35f2m5
+         4iPUccd92YiiAXwijkVXNqhnd1V9kpoWJV9xT4gRMgkJwJMqyCmw9lHNDquJBskDVz
+         t9KrykhOASE7a6msiHt8soSFSKuE7SVRvEehnduQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shyam Prasad N <sprasad@microsoft.com>,
-        Enzo Matsumiya <ematsumiya@suse.de>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.10 153/172] cifs: return errors during session setup during reconnects
-Date:   Mon, 13 Jun 2022 12:11:53 +0200
-Message-Id: <20220613094922.842342072@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Subject: [PATCH 5.10 155/172] ata: libata-transport: fix {dma|pio|xfer}_mode sysfs files
+Date:   Mon, 13 Jun 2022 12:11:55 +0200
+Message-Id: <20220613094922.926435506@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -50,37 +49,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shyam Prasad N <sprasad@microsoft.com>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-commit 8ea21823aa584b55ba4b861307093b78054b0c1b upstream.
+commit 72aad489f992871e908ff6d9055b26c6366fb864 upstream.
 
-During reconnects, we check the return value from
-cifs_negotiate_protocol, and have handlers for both success
-and failures. But if that passes, and cifs_setup_session
-returns any errors other than -EACCES, we do not handle
-that. This fix adds a handler for that, so that we don't
-go ahead and try a tree_connect on a failed session.
+The {dma|pio}_mode sysfs files are incorrectly documented as having a
+list of the supported DMA/PIO transfer modes, while the corresponding
+fields of the *struct* ata_device hold the transfer mode IDs, not masks.
 
-Signed-off-by: Shyam Prasad N <sprasad@microsoft.com>
-Reviewed-by: Enzo Matsumiya <ematsumiya@suse.de>
+To match these docs, the {dma|pio}_mode (and even xfer_mode!) sysfs
+files are handled by the ata_bitfield_name_match() macro which leads to
+reading such kind of nonsense from them:
+
+$ cat /sys/class/ata_device/dev3.0/pio_mode
+XFER_UDMA_7, XFER_UDMA_6, XFER_UDMA_5, XFER_UDMA_4, XFER_MW_DMA_4,
+XFER_PIO_6, XFER_PIO_5, XFER_PIO_4, XFER_PIO_3, XFER_PIO_2, XFER_PIO_1,
+XFER_PIO_0
+
+Using the correct ata_bitfield_name_search() macro fixes that:
+
+$ cat /sys/class/ata_device/dev3.0/pio_mode
+XFER_PIO_4
+
+While fixing the file documentation, somewhat reword the {dma|pio}_mode
+file doc and add a note about being mostly useful for PATA devices to
+the xfer_mode file doc...
+
+Fixes: d9027470b886 ("[libata] Add ATA transport class")
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
 Cc: stable@vger.kernel.org
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/cifs/smb2pdu.c |    3 +++
- 1 file changed, 3 insertions(+)
+ Documentation/ABI/testing/sysfs-ata |   11 ++++++-----
+ drivers/ata/libata-transport.c      |    2 +-
+ 2 files changed, 7 insertions(+), 6 deletions(-)
 
---- a/fs/cifs/smb2pdu.c
-+++ b/fs/cifs/smb2pdu.c
-@@ -281,6 +281,9 @@ smb2_reconnect(__le16 smb2_command, stru
- 			ses->binding_chan = NULL;
- 			mutex_unlock(&tcon->ses->session_mutex);
- 			goto failed;
-+		} else if (rc) {
-+			mutex_unlock(&ses->session_mutex);
-+			goto out;
- 		}
- 	}
- 	/*
+--- a/Documentation/ABI/testing/sysfs-ata
++++ b/Documentation/ABI/testing/sysfs-ata
+@@ -107,13 +107,14 @@ Description:
+ 				described in ATA8 7.16 and 7.17. Only valid if
+ 				the device is not a PM.
+ 
+-		pio_mode:	(RO) Transfer modes supported by the device when
+-				in PIO mode. Mostly used by PATA device.
++		pio_mode:	(RO) PIO transfer mode used by the device.
++				Mostly used by PATA devices.
+ 
+-		xfer_mode:	(RO) Current transfer mode
++		xfer_mode:	(RO) Current transfer mode. Mostly used by
++				PATA devices.
+ 
+-		dma_mode:	(RO) Transfer modes supported by the device when
+-				in DMA mode. Mostly used by PATA device.
++		dma_mode:	(RO) DMA transfer mode used by the device.
++				Mostly used by PATA devices.
+ 
+ 		class:		(RO) Device class. Can be "ata" for disk,
+ 				"atapi" for packet device, "pmp" for PM, or
+--- a/drivers/ata/libata-transport.c
++++ b/drivers/ata/libata-transport.c
+@@ -196,7 +196,7 @@ static struct {
+ 	{ XFER_PIO_0,			"XFER_PIO_0" },
+ 	{ XFER_PIO_SLOW,		"XFER_PIO_SLOW" }
+ };
+-ata_bitfield_name_match(xfer,ata_xfer_names)
++ata_bitfield_name_search(xfer, ata_xfer_names)
+ 
+ /*
+  * ATA Port attributes
 
 
