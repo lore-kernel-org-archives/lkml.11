@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F014CCA483
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:01:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24786CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:01:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356394AbiFMNAV (ORCPT
+        id S1356964AbiFMNBR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:00:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50410 "EHLO
+        Mon, 13 Jun 2022 09:01:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358059AbiFMMzB (ORCPT
+        with ESMTP id S1358091AbiFMMzD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:55:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC1BD3586A;
-        Mon, 13 Jun 2022 04:14:09 -0700 (PDT)
+        Mon, 13 Jun 2022 08:55:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E0D9590;
+        Mon, 13 Jun 2022 04:14:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3ED6E608C3;
-        Mon, 13 Jun 2022 11:14:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BDA5C34114;
-        Mon, 13 Jun 2022 11:14:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 34A3460B60;
+        Mon, 13 Jun 2022 11:14:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 413C3C3411C;
+        Mon, 13 Jun 2022 11:14:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118848;
-        bh=DVuoSLpXFYn0xvPXOjmci7OKoKFd0NEQdP8HpaluuNQ=;
+        s=korg; t=1655118859;
+        bh=EO27XRrZvZM3OEMGUga+8QfaUgSMH/01Y5OujwF83w4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wASjNLDlhfjFe5zpt6u8kMrpEjujxd24L9eAjT4y5Bt5UVq8Gx0kj2A7bgpFjTf3/
-         Zqg9hzQEiCY0a0r9UfekeCvZQQnNMD22aRdm/MC0NcFac3x7FUYzOq94o1MrC7cVXa
-         EHWJeN3wUiQdN11FWvBNuZ6/17AmL6Dav6qPwksk=
+        b=FFSyrkxDcalFghBqTuMMXYK9aDSd1h3srN10vNHezmnsDJaD457lVEKArGE9aPDSS
+         dykTFwlXBRrlR/CWqzG1dEmJIiHo0B8wuMGWpcJKsM44eHJQyLuWn/HPr/HOp+NY5g
+         fz85MbzFVOhT1hLmUbS/KCPDmAjUo/MWI+F6pa4Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Thierry Reding <thierry.reding@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 023/247] firmware: stratix10-svc: fix a missing check on list iterator
-Date:   Mon, 13 Jun 2022 12:08:45 +0200
-Message-Id: <20220613094923.635875579@linuxfoundation.org>
+Subject: [PATCH 5.15 017/247] pwm: lp3943: Fix duty calculation in case period was clamped
+Date:   Mon, 13 Jun 2022 12:08:39 +0200
+Message-Id: <20220613094923.451054502@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -49,58 +52,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit 5a0793ac66ac0e254d292f129a4d6c526f9f2aff ]
+[ Upstream commit 5e3b07ca5cc78cd4a987e78446849e41288d87cb ]
 
-The bug is here:
-	pmem->vaddr = NULL;
+The hardware only supports periods <= 1.6 ms and if a bigger period is
+requested it is clamped to 1.6 ms. In this case duty_cycle might be bigger
+than 1.6 ms and then the duty cycle register is written with a value
+bigger than LP3943_MAX_DUTY. So clamp duty_cycle accordingly.
 
-The list iterator 'pmem' will point to a bogus position containing
-HEAD if the list is empty or no element is found. This case must
-be checked before any use of the iterator, otherwise it will
-lead to a invalid memory access.
-
-To fix this bug, just gen_pool_free/set NULL/list_del() and return
-when found, otherwise list_del HEAD and return;
-
-Fixes: 7ca5ce896524f ("firmware: add Intel Stratix10 service layer driver")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Link: https://lore.kernel.org/r/20220414035609.2239-1-xiam0nd.tong@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: af66b3c0934e ("pwm: Add LP3943 PWM driver")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/stratix10-svc.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/pwm/pwm-lp3943.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/firmware/stratix10-svc.c b/drivers/firmware/stratix10-svc.c
-index 53c7e3f8cfde..7dd0ac1a0cfc 100644
---- a/drivers/firmware/stratix10-svc.c
-+++ b/drivers/firmware/stratix10-svc.c
-@@ -941,17 +941,17 @@ EXPORT_SYMBOL_GPL(stratix10_svc_allocate_memory);
- void stratix10_svc_free_memory(struct stratix10_svc_chan *chan, void *kaddr)
- {
- 	struct stratix10_svc_data_mem *pmem;
--	size_t size = 0;
+diff --git a/drivers/pwm/pwm-lp3943.c b/drivers/pwm/pwm-lp3943.c
+index ea17d446a627..2bd04ecb508c 100644
+--- a/drivers/pwm/pwm-lp3943.c
++++ b/drivers/pwm/pwm-lp3943.c
+@@ -125,6 +125,7 @@ static int lp3943_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	if (err)
+ 		return err;
  
- 	list_for_each_entry(pmem, &svc_data_mem, node)
- 		if (pmem->vaddr == kaddr) {
--			size = pmem->size;
--			break;
-+			gen_pool_free(chan->ctrl->genpool,
-+				       (unsigned long)kaddr, pmem->size);
-+			pmem->vaddr = NULL;
-+			list_del(&pmem->node);
-+			return;
- 		}
++	duty_ns = min(duty_ns, period_ns);
+ 	val = (u8)(duty_ns * LP3943_MAX_DUTY / period_ns);
  
--	gen_pool_free(chan->ctrl->genpool, (unsigned long)kaddr, size);
--	pmem->vaddr = NULL;
--	list_del(&pmem->node);
-+	list_del(&svc_data_mem);
- }
- EXPORT_SYMBOL_GPL(stratix10_svc_free_memory);
- 
+ 	return lp3943_write_byte(lp3943, reg_duty, val);
 -- 
 2.35.1
 
