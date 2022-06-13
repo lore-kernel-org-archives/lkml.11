@@ -2,134 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9546ECCA483
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:12:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11A7DCCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:13:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239700AbiFMIMQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 04:12:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36426 "EHLO
+        id S239645AbiFMINJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 04:13:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239558AbiFMILe (ORCPT
+        with ESMTP id S239861AbiFMIMV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 04:11:34 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78A9E1E3EE;
-        Mon, 13 Jun 2022 01:11:32 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LM43f4RsPz1K9V7;
-        Mon, 13 Jun 2022 16:09:34 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 13 Jun 2022 16:11:02 +0800
-Received: from thunder-town.china.huawei.com (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 13 Jun 2022 16:11:01 +0800
-From:   Zhen Lei <thunder.leizhen@huawei.com>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        <x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        <devicetree@vger.kernel.org>, Dave Young <dyoung@redhat.com>,
-        Baoquan He <bhe@redhat.com>, Vivek Goyal <vgoyal@redhat.com>,
-        <kexec@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Jonathan Corbet <corbet@lwn.net>, <linux-doc@vger.kernel.org>
-CC:     Zhen Lei <thunder.leizhen@huawei.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Feng Zhou <zhoufeng.zf@bytedance.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Chen Zhou <dingguo.cz@antgroup.com>,
-        "John Donnelly" <John.p.donnelly@oracle.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>
-Subject: [PATCH 1/5] arm64: kdump: Provide default size when crashkernel=Y,low is not specified
-Date:   Mon, 13 Jun 2022 16:09:28 +0800
-Message-ID: <20220613080932.663-2-thunder.leizhen@huawei.com>
-X-Mailer: git-send-email 2.26.0.windows.1
-In-Reply-To: <20220613080932.663-1-thunder.leizhen@huawei.com>
-References: <20220613080932.663-1-thunder.leizhen@huawei.com>
+        Mon, 13 Jun 2022 04:12:21 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9233E1EC6A
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 01:12:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655107933;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zylh1uwH3+G7KCcoxsL8sX4hSmvWfJyfd8skUX3SqY0=;
+        b=axQK7uuju7sP5HSR22bEUsIqoPHvFMW4uPxKTyKDaDwLXo8/7kKmqDTxKCuOe8uxvjvi7u
+        ono7Y2nsgEPnGyIdgdDEx4Uo3suCfWYdrNyqv58JTaKhth2HESvjOkQTXMhbDCgAFs0KJa
+        NKNK5ryneGb/PJkum1jxfJBpfKiW+3w=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-96-OJe-sgY3MqalywSEQ2_dwA-1; Mon, 13 Jun 2022 04:12:12 -0400
+X-MC-Unique: OJe-sgY3MqalywSEQ2_dwA-1
+Received: by mail-qv1-f71.google.com with SMTP id kc24-20020a056214411800b0046d93b71e48so3414193qvb.3
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 01:12:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=zylh1uwH3+G7KCcoxsL8sX4hSmvWfJyfd8skUX3SqY0=;
+        b=4Rpt0qSKODWadXReKI3XBgHBEmsYxYHAmXyxijNoRsA2yZhwR9UFhwoUD/uWgq6W50
+         5OhdeyL/bRztvsLN6nzBbf/5/rnSAmj/gtmNhjU8xqtWbE+Ays1vOcR91XHSf4qLDnF+
+         UH3EKyAAwmA4MRqo1aFS+A8nxebmvQDoC7sauGNLXrP547bJSzVZ0ODndXuCV1dBx1fC
+         4/DVdZbuEXhdP/O613sL1mBKvPiQXQItHu8ekrh20ICuTBROvzmRpfkNpFUy0CbpMThG
+         tp45EF2xQYPDi2dWXomW0h3iRFJo/CSmAxLkq3iOzhPDS5zDJpr1202bMCrdRQQmEn8d
+         Vyhg==
+X-Gm-Message-State: AOAM533X+34n/3TWpO6kv9Z9n2GQiC1Q76xA0ACkENqU5L7JyYjwyj0x
+        hxqUYzmq0RoAzrEzlPwGXB5K1ZhYfjl69mJ9ner9H1QC288e7lfa/Sf5VExQqYdnuG7RfisGZ2o
+        OgSsMUF2IE9AWu9u8E4zyKeqa
+X-Received: by 2002:a05:622a:1829:b0:304:ef78:8385 with SMTP id t41-20020a05622a182900b00304ef788385mr29662307qtc.251.1655107931898;
+        Mon, 13 Jun 2022 01:12:11 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxjLbgha+Atbwd2/672pHZ9TBWRG8nE6aGEjsg4713GAJdcGUXYTIFRS5oET6rQnKiNs5SleA==
+X-Received: by 2002:a05:622a:1829:b0:304:ef78:8385 with SMTP id t41-20020a05622a182900b00304ef788385mr29662298qtc.251.1655107931645;
+        Mon, 13 Jun 2022 01:12:11 -0700 (PDT)
+Received: from [192.168.0.3] (ip-109-42-115-130.web.vodafone.de. [109.42.115.130])
+        by smtp.gmail.com with ESMTPSA id j1-20020a05620a410100b006a65c58db99sm6390714qko.64.2022.06.13.01.12.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Jun 2022 01:12:11 -0700 (PDT)
+Message-ID: <2d8bcbb1-ee9d-8e88-b01d-88b80da86f13@redhat.com>
+Date:   Mon, 13 Jun 2022 10:12:06 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 000/144] KVM: selftests: Overhaul APIs, purge VCPU_ID
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>,
+        Anup Patel <anup@brainfault.org>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        KVM General <kvm@vger.kernel.org>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Andrew Jones <drjones@redhat.com>,
+        David Matlack <dmatlack@google.com>,
+        Ben Gardon <bgardon@google.com>,
+        Oliver Upton <oupton@google.com>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
+        Sean Christopherson <sean.j.christopherson@intel.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Cornelia Huck <cohuck@redhat.com>
+References: <20220603004331.1523888-1-seanjc@google.com>
+ <21570ac1-e684-7983-be00-ba8b3f43a9ee@redhat.com>
+ <CAAhSdy0_50KshS1rAcOjtFBUu=R7a0uXYa76vNibD_n7s=q6XA@mail.gmail.com>
+ <CAAhSdy1N9vwX1aXkdVEvO=MLV7TEWKMB2jxpNNfzT2LUQ-Q01A@mail.gmail.com>
+ <YqIKYOtQTvrGpmPV@google.com> <YqKRrK7SwO0lz/6e@google.com>
+ <YqKXExV4BOVRbOVc@google.com>
+From:   Thomas Huth <thuth@redhat.com>
+In-Reply-To: <YqKXExV4BOVRbOVc@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To be consistent with the implementation of x86 and improve cross-platform
-user experience. Try to allocate at least 256 MiB low memory automatically
-when crashkernel=Y,low is not specified.
+On 10/06/2022 02.57, Sean Christopherson wrote:
+> +s390 folks...
+> 
+> On Fri, Jun 10, 2022, Sean Christopherson wrote:
+>> On Thu, Jun 09, 2022, Sean Christopherson wrote:
+>>> On Thu, Jun 09, 2022, Anup Patel wrote:
+>>>> On Wed, Jun 8, 2022 at 9:26 PM Anup Patel <anup@brainfault.org> wrote:
+>>>>>
+>>>>> On Tue, Jun 7, 2022 at 8:57 PM Paolo Bonzini <pbonzini@redhat.com> wrote:
+>>>>>>
+>>>>>> Marc, Christian, Anup, can you please give this a go?
+>>>>>
+>>>>> Sure, I will try this series.
+>>>>
+>>>> I tried to apply this series on top of kvm/next and kvm/queue but
+>>>> I always get conflicts. It seems this series is dependent on other
+>>>> in-flight patches.
+>>>
+>>> Hrm, that's odd, it's based directly on kvm/queue, commit 55371f1d0c01 ("KVM: ...).
+>>
+>> Duh, Paolo updated kvm/queue.  Where's Captain Obvious when you need him...
+>>
+>>>> Is there a branch somewhere in a public repo ?
+>>>
+>>> https://github.com/sean-jc/linux/tree/x86/selftests_overhaul
+>>
+>> I pushed a new version that's based on the current kvm/queue, commit 5e9402ac128b.
+>> arm and x86 look good (though I've yet to test on AMD).
+>>
+>> Thomas,
+>> If you get a chance, could you rerun the s390 tests?  The recent refactorings to
+>> use TAP generated some fun conflicts.
 
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
----
- Documentation/admin-guide/kernel-parameters.txt |  8 +-------
- arch/arm64/mm/init.c                            | 12 +++++++++++-
- 2 files changed, 12 insertions(+), 8 deletions(-)
+Still works fine!
+Tested-by: Thomas Huth <thuth@redhat.com>
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 8090130b544b070..61b179232b68001 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -843,7 +843,7 @@
- 			available.
- 			It will be ignored if crashkernel=X is specified.
- 	crashkernel=size[KMG],low
--			[KNL, X86-64] range under 4G. When crashkernel=X,high
-+			[KNL, X86-64, ARM64] range under 4G. When crashkernel=X,high
- 			is passed, kernel could allocate physical memory region
- 			above 4G, that cause second kernel crash on system
- 			that require some amount of low memory, e.g. swiotlb
-@@ -857,12 +857,6 @@
- 			It will be ignored when crashkernel=X,high is not used
- 			or memory reserved is below 4G.
- 
--			[KNL, ARM64] range in low memory.
--			This one lets the user specify a low range in the
--			DMA zone for the crash dump kernel.
--			It will be ignored when crashkernel=X,high is not used
--			or memory reserved is located in the DMA zones.
--
- 	cryptomgr.notests
- 			[KNL] Disable crypto self-tests
- 
-diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-index 339ee84e5a61a0b..5390f361208ccf7 100644
---- a/arch/arm64/mm/init.c
-+++ b/arch/arm64/mm/init.c
-@@ -96,6 +96,14 @@ phys_addr_t __ro_after_init arm64_dma_phys_limit = PHYS_MASK + 1;
- #define CRASH_ADDR_LOW_MAX		arm64_dma_phys_limit
- #define CRASH_ADDR_HIGH_MAX		(PHYS_MASK + 1)
- 
-+/*
-+ * This is an empirical value in x86_64 and taken here directly. Please
-+ * refer to the code comment in reserve_crashkernel_low() of x86_64 for more
-+ * details.
-+ */
-+#define DEFAULT_CRASH_KERNEL_LOW_SIZE	\
-+	max(swiotlb_size_or_default() + (8UL << 20), 256UL << 20)
-+
- static int __init reserve_crashkernel_low(unsigned long long low_size)
- {
- 	unsigned long long low_base;
-@@ -147,7 +155,9 @@ static void __init reserve_crashkernel(void)
- 		 * is not allowed.
- 		 */
- 		ret = parse_crashkernel_low(cmdline, 0, &crash_low_size, &crash_base);
--		if (ret && (ret != -ENOENT))
-+		if (ret == -ENOENT)
-+			crash_low_size = DEFAULT_CRASH_KERNEL_LOW_SIZE;
-+		else if (ret)
- 			return;
- 
- 		crash_max = CRASH_ADDR_HIGH_MAX;
--- 
-2.25.1
+>> Speaking of TAP, I added a patch to convert __TEST_REQUIRE to use ksft_exit_skip()
+>> instead of KVM's custom print_skip().  The s390 tests are being converted to use
+>> TAP output, I couldn't see any advantage of KVM's arbitrary "skipping test" over
+>> TAP-friendly output, and converting everything is far easier than special casing s390.
+
+Sounds like a good idea to me. I already considered starting to convert some 
+x86 tests, too 
+(https://lore.kernel.org/linux-kselftest/20220429071149.488114-1-thuth@redhat.com 
+), but didn't get much feedback there yet, but anyway, we'll be better 
+prepared with your change for that now.
+
+  Thomas
 
