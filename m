@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB722C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:34:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 248E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:34:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354406AbiFMMdf (ORCPT
+        id S1354609AbiFMMdj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:33:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41336 "EHLO
+        Mon, 13 Jun 2022 08:33:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358694AbiFMM3p (ORCPT
+        with ESMTP id S1358748AbiFMM3q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:29:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F3C75A596;
+        Mon, 13 Jun 2022 08:29:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCC2C5A598;
         Mon, 13 Jun 2022 04:06:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 78DA960F9A;
-        Mon, 13 Jun 2022 11:06:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9041DC34114;
-        Mon, 13 Jun 2022 11:06:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 277E961435;
+        Mon, 13 Jun 2022 11:06:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33BF3C34114;
+        Mon, 13 Jun 2022 11:06:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118385;
-        bh=4uPzDoDtm+L7EnFXiMH8EH9hH4YgpoC0Sl0c04Rut6E=;
+        s=korg; t=1655118407;
+        bh=Us5cevsHlpX53cLnlX7pKUx0cNQOjP1PciUAUcFtUUA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cs3xXuMHqIUc5xPu76ips+a9MCG2ksXTNZy+J9q/otGD4Ukd3et1g79cDqQ8nLoHq
-         JdwCg0NMMR2OXB+fe79H2/zlwBfHyUoOAuI84f+u1rRTlpdpCKhNWre+3FC4DmR6Xx
-         Rl/xwHqqwm3WYKjardlPHIXoNvTZ/TMk7fVIT0gQ=
+        b=iZ057T+8yPvKjKlpOd6/tjHaSlcI6xSe49JLMMBlA2K18WdBwzb0KlUUM2Resmhch
+         fe0DJ5gWLWUDSa5uPBsUTEWVaWt3T5zKcXbUXYw2ea4DXU/P5/wxhh7jUQYzovr3gu
+         zvMxOQeIw/0CTjVfMNZ0yApF85r6Ypk3+UPK+bd4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
-        Richard Weinberger <richard@nod.at>,
+        stable@vger.kernel.org, Changcheng Liu <jerrliu@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 057/172] ubi: ubi_create_volume: Fix use-after-free when volume creation failed
-Date:   Mon, 13 Jun 2022 12:10:17 +0200
-Message-Id: <20220613094904.063967172@linuxfoundation.org>
+Subject: [PATCH 5.10 065/172] net/mlx5: correct ECE offset in query qp output
+Date:   Mon, 13 Jun 2022 12:10:25 +0200
+Message-Id: <20220613094906.041920103@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -50,46 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhihao Cheng <chengzhihao1@huawei.com>
+From: Changcheng Liu <jerrliu@nvidia.com>
 
-[ Upstream commit 8c03a1c21d72210f81cb369cc528e3fde4b45411 ]
+[ Upstream commit 3fc2a9e89b3508a5cc0c324f26d7b4740ba8c456 ]
 
-There is an use-after-free problem for 'eba_tbl' in ubi_create_volume()'s
-error handling path:
+ECE field should be after opt_param_mask in query qp output.
 
-  ubi_eba_replace_table(vol, eba_tbl)
-    vol->eba_tbl = tbl
-out_mapping:
-  ubi_eba_destroy_table(eba_tbl)   // Free 'eba_tbl'
-out_unlock:
-  put_device(&vol->dev)
-    vol_release
-      kfree(tbl->entries)	  // UAF
-
-Fix it by removing redundant 'eba_tbl' releasing.
-Fetch a reproducer in [Link].
-
-Fixes: 493cfaeaa0c9b ("mtd: utilize new cdev_device_add helper function")
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215965
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Fixes: 6b646a7e4af6 ("net/mlx5: Add ability to read and write ECE options")
+Signed-off-by: Changcheng Liu <jerrliu@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/ubi/vmt.c | 1 -
- 1 file changed, 1 deletion(-)
+ include/linux/mlx5/mlx5_ifc.h | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/mtd/ubi/vmt.c b/drivers/mtd/ubi/vmt.c
-index 1bc7b3a05604..6ea95ade4ca6 100644
---- a/drivers/mtd/ubi/vmt.c
-+++ b/drivers/mtd/ubi/vmt.c
-@@ -309,7 +309,6 @@ int ubi_create_volume(struct ubi_device *ubi, struct ubi_mkvol_req *req)
- 	ubi->volumes[vol_id] = NULL;
- 	ubi->vol_count -= 1;
- 	spin_unlock(&ubi->volumes_lock);
--	ubi_eba_destroy_table(eba_tbl);
- out_acc:
- 	spin_lock(&ubi->volumes_lock);
- 	ubi->rsvd_pebs -= vol->reserved_pebs;
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index eba1f1cbc9fb..6ca97729b54a 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -4877,12 +4877,11 @@ struct mlx5_ifc_query_qp_out_bits {
+ 
+ 	u8         syndrome[0x20];
+ 
+-	u8         reserved_at_40[0x20];
+-	u8         ece[0x20];
++	u8         reserved_at_40[0x40];
+ 
+ 	u8         opt_param_mask[0x20];
+ 
+-	u8         reserved_at_a0[0x20];
++	u8         ece[0x20];
+ 
+ 	struct mlx5_ifc_qpc_bits qpc;
+ 
 -- 
 2.35.1
 
