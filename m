@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07E23C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:52:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CD1DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:52:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356908AbiFMLv7 (ORCPT
+        id S1356917AbiFMLwD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:51:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35600 "EHLO
+        Mon, 13 Jun 2022 07:52:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357515AbiFMLqS (ORCPT
+        with ESMTP id S1357535AbiFMLqU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:46:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F25F8DFE0;
-        Mon, 13 Jun 2022 03:52:29 -0700 (PDT)
+        Mon, 13 Jun 2022 07:46:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D951AE71;
+        Mon, 13 Jun 2022 03:52:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0AAF9B80D3A;
-        Mon, 13 Jun 2022 10:52:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71382C34114;
-        Mon, 13 Jun 2022 10:52:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 165386135F;
+        Mon, 13 Jun 2022 10:52:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22755C34114;
+        Mon, 13 Jun 2022 10:52:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117546;
-        bh=hMR4mJxRTbcnFioLYn9YBF9bnoQ3ApVCooUwafH/D54=;
+        s=korg; t=1655117552;
+        bh=jKvlRLiX/pLSuJlbO74Zn3Gv8I0bAvcaloQk1F8KwSs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LIB6Y1rPLR+1U0iQ1tiBqrUMbdPwdfsxUn4m6G1UuXTyNrax6g0xm0ARoHjudlUAt
-         v3ujXqgw2ggi8k3AC4ncCuv9E/z4wClq3IGblC+qSybCjdeQIcZFtiyNJSSgQrdoFb
-         Lc4MSNeH/prxrWbJ/xLA0GBgiUZO6fai5gp4L4oU=
+        b=GunpOyh+S7/5fJZX2eo6mFuR7O/G/G4f22BVq0mePhMlDhxK72wAWpIKoY3KNGuUI
+         zd9nwVJurd3FtKzGmJ2Nsimj6s0LdQ4fjU8q45dPSB4MtHwN6D69mncFbSws/Kp+7p
+         uPMmHk0VRsFWgwkNfGDVlnVBLnU5l+mWStZCxUyM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Venky Shankar <vshankar@redhat.com>,
-        Xiubo Li <xiubli@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>,
+        stable@vger.kernel.org, Gong Yuanjun <ruc_gongyuanjun@163.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 388/411] ceph: allow ceph.dir.rctime xattr to be updatable
-Date:   Mon, 13 Jun 2022 12:11:01 +0200
-Message-Id: <20220613094940.305918929@linuxfoundation.org>
+Subject: [PATCH 5.4 389/411] drm/radeon: fix a possible null pointer dereference
+Date:   Mon, 13 Jun 2022 12:11:02 +0200
+Message-Id: <20220613094940.337055872@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -51,65 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Venky Shankar <vshankar@redhat.com>
+From: Gong Yuanjun <ruc_gongyuanjun@163.com>
 
-[ Upstream commit d7a2dc523085f8b8c60548ceedc696934aefeb0e ]
+[ Upstream commit a2b28708b645c5632dc93669ab06e97874c8244f ]
 
-`rctime' has been a pain point in cephfs due to its buggy
-nature - inconsistent values reported and those sorts.
-Fixing rctime is non-trivial needing an overall redesign
-of the entire nested statistics infrastructure.
+In radeon_fp_native_mode(), the return value of drm_mode_duplicate()
+is assigned to mode, which will lead to a NULL pointer dereference
+on failure of drm_mode_duplicate(). Add a check to avoid npd.
 
-As a workaround, PR
+The failure status of drm_cvt_mode() on the other path is checked too.
 
-     http://github.com/ceph/ceph/pull/37938
-
-allows this extended attribute to be manually set. This allows
-users to "fixup" inconsistent rctime values. While this sounds
-messy, its probably the wisest approach allowing users/scripts
-to workaround buggy rctime values.
-
-The above PR enables Ceph MDS to allow manually setting
-rctime extended attribute with the corresponding user-land
-changes. We may as well allow the same to be done via kclient
-for parity.
-
-Signed-off-by: Venky Shankar <vshankar@redhat.com>
-Reviewed-by: Xiubo Li <xiubli@redhat.com>
-Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ceph/xattr.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/radeon/radeon_connectors.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/fs/ceph/xattr.c b/fs/ceph/xattr.c
-index cb18ee637cb7..4bcf0226818d 100644
---- a/fs/ceph/xattr.c
-+++ b/fs/ceph/xattr.c
-@@ -316,6 +316,14 @@ static ssize_t ceph_vxattrcb_snap_btime(struct ceph_inode_info *ci, char *val,
+diff --git a/drivers/gpu/drm/radeon/radeon_connectors.c b/drivers/gpu/drm/radeon/radeon_connectors.c
+index bc63f4cecf5d..ca6ccd69424e 100644
+--- a/drivers/gpu/drm/radeon/radeon_connectors.c
++++ b/drivers/gpu/drm/radeon/radeon_connectors.c
+@@ -477,6 +477,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
+ 	    native_mode->vdisplay != 0 &&
+ 	    native_mode->clock != 0) {
+ 		mode = drm_mode_duplicate(dev, native_mode);
++		if (!mode)
++			return NULL;
+ 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
+ 		drm_mode_set_name(mode);
+ 
+@@ -491,6 +493,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
+ 		 * simpler.
+ 		 */
+ 		mode = drm_cvt_mode(dev, native_mode->hdisplay, native_mode->vdisplay, 60, true, false, false);
++		if (!mode)
++			return NULL;
+ 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
+ 		DRM_DEBUG_KMS("Adding cvt approximation of native panel mode %s\n", mode->name);
  	}
- #define XATTR_RSTAT_FIELD(_type, _name)			\
- 	XATTR_NAME_CEPH(_type, _name, VXATTR_FLAG_RSTAT)
-+#define XATTR_RSTAT_FIELD_UPDATABLE(_type, _name)			\
-+	{								\
-+		.name = CEPH_XATTR_NAME(_type, _name),			\
-+		.name_size = sizeof (CEPH_XATTR_NAME(_type, _name)),	\
-+		.getxattr_cb = ceph_vxattrcb_ ## _type ## _ ## _name,	\
-+		.exists_cb = NULL,					\
-+		.flags = VXATTR_FLAG_RSTAT,				\
-+	}
- #define XATTR_LAYOUT_FIELD(_type, _name, _field)			\
- 	{								\
- 		.name = CEPH_XATTR_NAME2(_type, _name, _field),	\
-@@ -353,7 +361,7 @@ static struct ceph_vxattr ceph_dir_vxattrs[] = {
- 	XATTR_RSTAT_FIELD(dir, rfiles),
- 	XATTR_RSTAT_FIELD(dir, rsubdirs),
- 	XATTR_RSTAT_FIELD(dir, rbytes),
--	XATTR_RSTAT_FIELD(dir, rctime),
-+	XATTR_RSTAT_FIELD_UPDATABLE(dir, rctime),
- 	{
- 		.name = "ceph.dir.pin",
- 		.name_size = sizeof("ceph.dir.pin"),
 -- 
 2.35.1
 
