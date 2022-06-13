@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DF8ECCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28558CCA47B
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:24:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353511AbiFMLX5 (ORCPT
+        id S1353378AbiFMLXm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:23:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46688 "EHLO
+        Mon, 13 Jun 2022 07:23:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353701AbiFMLQO (ORCPT
+        with ESMTP id S1353664AbiFMLQK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:16:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 122DC13DF5;
-        Mon, 13 Jun 2022 03:39:15 -0700 (PDT)
+        Mon, 13 Jun 2022 07:16:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2EF713CFF;
+        Mon, 13 Jun 2022 03:38:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AFF21B80E94;
-        Mon, 13 Jun 2022 10:39:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15792C34114;
-        Mon, 13 Jun 2022 10:39:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7D104B80EA8;
+        Mon, 13 Jun 2022 10:38:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF785C3411C;
+        Mon, 13 Jun 2022 10:38:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116752;
-        bh=wZ6bpjLFFWsrDbNeK7eH9VtgXKAFIb/EwJS2dgwHWtI=;
+        s=korg; t=1655116730;
+        bh=7agJsc/WXzZAfFP3rDLQLuaD2uvLx9yEAoeeaXFPjTY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mQ9M6VKB2ftQ87hs5Gc4iHAjJX/LMQn3cqGZVsMm9hIbN07guy2aIIJCFEUNO/yKv
-         meX1980vqN/xlPRFmtQUaFNR+nDGsaYKEpOxxtBYXU96cnningfWU3nnnRk6OBFJ9+
-         z7GEnY0oXLvMSU0QOtSptSdqLL/M+gLphAGRVyEI=
+        b=AxdISOsOImqKcMW+Y/XIrmqiW+j60ko1FYmIS3RouAiTAMzT+uXgGkjTDjTbfRKXH
+         RCGuGr2zHWeBE+3XqJzA1zMIjfYJ/DyknvElRREfdwBAu7IiWfXf+r1KZ7mnLoB0VN
+         kJZfb+habh33nZ5dR39YyKrAOWCy5cxKEcohqod0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        stable@vger.kernel.org, Phil Elwell <phil@raspberrypi.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 161/411] PCI: rockchip: Fix find_first_zero_bit() limit
-Date:   Mon, 13 Jun 2022 12:07:14 +0200
-Message-Id: <20220613094933.489513865@linuxfoundation.org>
+Subject: [PATCH 5.4 164/411] ARM: dts: bcm2835-rpi-zero-w: Fix GPIO line name for Wifi/BT
+Date:   Mon, 13 Jun 2022 12:07:17 +0200
+Message-Id: <20220613094933.579805640@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,35 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Phil Elwell <phil@raspberrypi.com>
 
-[ Upstream commit 096950e230b8d83645c7cf408b9f399f58c08b96 ]
+[ Upstream commit 2c663e5e5bbf2a5b85e0f76ccb69663f583c3e33 ]
 
-The ep->ob_region_map bitmap is a long and it has BITS_PER_LONG bits.
+The GPIOs 30 to 39 are connected to the Cypress CYW43438 (Wifi/BT).
+So fix the GPIO line names accordingly.
 
-Link: https://lore.kernel.org/r/20220315065944.GB13572@kili
-Fixes: cf590b078391 ("PCI: rockchip: Add EP driver for Rockchip PCIe controller")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Fixes: 2c7c040c73e9 ("ARM: dts: bcm2835: Add Raspberry Pi Zero W")
+Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pcie-rockchip-ep.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ arch/arm/boot/dts/bcm2835-rpi-zero-w.dts | 22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/pci/controller/pcie-rockchip-ep.c b/drivers/pci/controller/pcie-rockchip-ep.c
-index d743b0a48988..b82edefffd15 100644
---- a/drivers/pci/controller/pcie-rockchip-ep.c
-+++ b/drivers/pci/controller/pcie-rockchip-ep.c
-@@ -263,8 +263,7 @@ static int rockchip_pcie_ep_map_addr(struct pci_epc *epc, u8 fn,
- 	struct rockchip_pcie *pcie = &ep->rockchip;
- 	u32 r;
- 
--	r = find_first_zero_bit(&ep->ob_region_map,
--				sizeof(ep->ob_region_map) * BITS_PER_LONG);
-+	r = find_first_zero_bit(&ep->ob_region_map, BITS_PER_LONG);
- 	/*
- 	 * Region 0 is reserved for configuration space and shouldn't
- 	 * be used elsewhere per TRM, so leave it out.
+diff --git a/arch/arm/boot/dts/bcm2835-rpi-zero-w.dts b/arch/arm/boot/dts/bcm2835-rpi-zero-w.dts
+index f65448c01e31..34a85ad9f03c 100644
+--- a/arch/arm/boot/dts/bcm2835-rpi-zero-w.dts
++++ b/arch/arm/boot/dts/bcm2835-rpi-zero-w.dts
+@@ -74,16 +74,18 @@
+ 			  "GPIO27",
+ 			  "SDA0",
+ 			  "SCL0",
+-			  "NC", /* GPIO30 */
+-			  "NC", /* GPIO31 */
+-			  "NC", /* GPIO32 */
+-			  "NC", /* GPIO33 */
+-			  "NC", /* GPIO34 */
+-			  "NC", /* GPIO35 */
+-			  "NC", /* GPIO36 */
+-			  "NC", /* GPIO37 */
+-			  "NC", /* GPIO38 */
+-			  "NC", /* GPIO39 */
++			  /* Used by BT module */
++			  "CTS0",
++			  "RTS0",
++			  "TXD0",
++			  "RXD0",
++			  /* Used by Wifi */
++			  "SD1_CLK",
++			  "SD1_CMD",
++			  "SD1_DATA0",
++			  "SD1_DATA1",
++			  "SD1_DATA2",
++			  "SD1_DATA3",
+ 			  "CAM_GPIO1", /* GPIO40 */
+ 			  "WL_ON", /* GPIO41 */
+ 			  "NC", /* GPIO42 */
 -- 
 2.35.1
 
