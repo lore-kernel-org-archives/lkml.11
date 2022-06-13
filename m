@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42DC5CCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ABB2CCA48B
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:00:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358299AbiFML7w (ORCPT
+        id S1358345AbiFML7y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:59:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55954 "EHLO
+        Mon, 13 Jun 2022 07:59:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357136AbiFMLwz (ORCPT
+        with ESMTP id S1357158AbiFMLxC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:52:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C97924BCB;
-        Mon, 13 Jun 2022 03:55:38 -0700 (PDT)
+        Mon, 13 Jun 2022 07:53:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2A72EA37;
+        Mon, 13 Jun 2022 03:55:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4B419B80E59;
-        Mon, 13 Jun 2022 10:55:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3B3DC34114;
-        Mon, 13 Jun 2022 10:55:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E945560EFE;
+        Mon, 13 Jun 2022 10:55:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06706C34114;
+        Mon, 13 Jun 2022 10:55:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117736;
-        bh=PE7qwkUl+1sJkVQ8ze9ovkv0xy2qYkwaH6yi71o0g8M=;
+        s=korg; t=1655117741;
+        bh=7B6Q9xxBeao43cVsBV0jSdgwxpsYwSK1CIoCX6P4GGc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lRNI+nTr4+grSxes8dr5HLVj9/AGPXq+/AlbVo2KWM/vaW3C/wNyiILc5jEyyM8U4
-         jXJLKMSYTENySNvgzv34B2bBM7A+q+wlUfwWw50BonCERY/u7o1t26EsiVSIuF7bD2
-         /EEtqbm4TRDi5DU7YsoX4p85XjhTZuX7IH85RZ4k=
+        b=i5hQwDJK+lk4ldJepnP5AqFc/ZlcAaOz3i8JT2Eow0r0HCUIra/h5vRWilXMmAZbn
+         cP7kQVvHuun42KHG5q+jsrLQwqC9D44XUWXWeHCCFgWeFp7NQc9X2JVkmkuzsj3QHt
+         FP70AEHNRnBU+7KTWO3TooOaIL+Auju4bNgsgQHg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Ungerer <gerg@linux-m68k.org>,
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        Ritesh Harjani <ritesh.list@gmail.com>,
+        Lukas Czerner <lczerner@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 101/287] m68k: math-emu: Fix dependencies of math emulation support
-Date:   Mon, 13 Jun 2022 12:08:45 +0200
-Message-Id: <20220613094926.942134620@linuxfoundation.org>
+Subject: [PATCH 4.19 103/287] ext4: reject the commit option on ext2 filesystems
+Date:   Mon, 13 Jun 2022 12:08:47 +0200
+Message-Id: <20220613094927.002780450@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -51,54 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert@linux-m68k.org>
+From: Eric Biggers <ebiggers@google.com>
 
-[ Upstream commit ed6bc6bf0a7d75e80eb1df883c09975ebb74e590 ]
+[ Upstream commit cb8435dc8ba33bcafa41cf2aa253794320a3b8df ]
 
-If CONFIG_M54xx=y, CONFIG_MMU=y, and CONFIG_M68KFPU_EMU=y:
+The 'commit' option is only applicable for ext3 and ext4 filesystems,
+and has never been accepted by the ext2 filesystem driver, so the ext4
+driver shouldn't allow it on ext2 filesystems.
 
-    {standard input}:272: Error: invalid instruction for this architecture; needs 68000 or higher (68000 [68ec000, 68hc000, 68hc001, 68008, 68302, 68306, 68307, 68322, 68356], 68010, 68020 [68k, 68ec020], 68030 [68ec030], 68040 [68ec040], 68060 [68ec060], cpu32 [68330, 68331, 68332, 68333, 68334, 68336, 68340, 68341, 68349, 68360], fidoa [fido]) -- statement `sub.b %d1,%d3' ignored
-    {standard input}:609: Error: invalid instruction for this architecture; needs 68020 or higher (68020 [68k, 68ec020], 68030 [68ec030], 68040 [68ec040], 68060 [68ec060]) -- statement `bfextu 4(%a1){%d0,#8},%d0' ignored
-    {standard input}:752: Error: operands mismatch -- statement `mulu.l 4(%a0),%d3:%d0' ignored
-    {standard input}:1155: Error: operands mismatch -- statement `divu.l %d0,%d3:%d7' ignored
+This fixes a failure in xfstest ext4/053.
 
-The math emulation support code is intended for 68020 and higher, and
-uses several instructions or instruction modes not available on coldfire
-or 68000.
-
-Originally, the dependency of M68KFPU_EMU on MMU was fine, as MMU
-support was only available on 68020 or higher.  But this assumption
-was broken by the introduction of MMU support for M547x and M548x.
-
-Drop the dependency on MMU, as the code should work fine on 68020 and up
-without MMU (which are not yet supported by Linux, though).
-Add dependencies on M68KCLASSIC (to rule out Coldfire) and FPU (kernel
-has some type of floating-point support --- be it hardware or software
-emulated, to rule out anything below 68020).
-
-Fixes: 1f7034b9616e6f14 ("m68k: allow ColdFire 547x and 548x CPUs to be built with MMU enabled")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Reviewed-by: Greg Ungerer <gerg@linux-m68k.org>
-Link: https://lore.kernel.org/r/18c34695b7c95107f60ccca82a4ff252f3edf477.1652446117.git.geert@linux-m68k.org
+Fixes: 8dc0aa8cf0f7 ("ext4: check incompatible mount options while mounting ext2/3")
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Reviewed-by: Ritesh Harjani <ritesh.list@gmail.com>
+Reviewed-by: Lukas Czerner <lczerner@redhat.com>
+Link: https://lore.kernel.org/r/20220510183232.172615-1-ebiggers@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/m68k/Kconfig.cpu | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ext4/super.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/m68k/Kconfig.cpu b/arch/m68k/Kconfig.cpu
-index 21f00349af52..b2fd1e2fbd89 100644
---- a/arch/m68k/Kconfig.cpu
-+++ b/arch/m68k/Kconfig.cpu
-@@ -308,7 +308,7 @@ comment "Processor Specific Options"
- 
- config M68KFPU_EMU
- 	bool "Math emulation support"
--	depends on MMU
-+	depends on M68KCLASSIC && FPU
- 	help
- 	  At some point in the future, this will cause floating-point math
- 	  instructions to be emulated by the kernel on machines that lack a
+diff --git a/fs/ext4/super.c b/fs/ext4/super.c
+index 6893b87c7354..bf120842a307 100644
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -1688,6 +1688,7 @@ static const struct mount_opts {
+ 	 MOPT_EXT4_ONLY | MOPT_CLEAR},
+ 	{Opt_warn_on_error, EXT4_MOUNT_WARN_ON_ERROR, MOPT_SET},
+ 	{Opt_nowarn_on_error, EXT4_MOUNT_WARN_ON_ERROR, MOPT_CLEAR},
++	{Opt_commit, 0, MOPT_NO_EXT2},
+ 	{Opt_nojournal_checksum, EXT4_MOUNT_JOURNAL_CHECKSUM,
+ 	 MOPT_EXT4_ONLY | MOPT_CLEAR},
+ 	{Opt_journal_checksum, EXT4_MOUNT_JOURNAL_CHECKSUM,
 -- 
 2.35.1
 
