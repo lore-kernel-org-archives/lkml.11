@@ -2,108 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7776C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:33:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A0D8C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:34:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236911AbiFMRdr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 13:33:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39808 "EHLO
+        id S241850AbiFMRe5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 13:34:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238067AbiFMRcl (ORCPT
+        with ESMTP id S240749AbiFMReM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 13:32:41 -0400
-Received: from outbound-smtp30.blacknight.com (outbound-smtp30.blacknight.com [81.17.249.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7019D554BF
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 05:56:35 -0700 (PDT)
-Received: from mail.blacknight.com (pemlinmail06.blacknight.ie [81.17.255.152])
-        by outbound-smtp30.blacknight.com (Postfix) with ESMTPS id 9C80EBAAA9
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:56:33 +0100 (IST)
-Received: (qmail 27785 invoked from network); 13 Jun 2022 12:56:33 -0000
-Received: from unknown (HELO morpheus.112glenside.lan) (mgorman@techsingularity.net@[84.203.198.246])
-  by 81.17.254.9 with ESMTPA; 13 Jun 2022 12:56:33 -0000
-From:   Mel Gorman <mgorman@techsingularity.net>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@kernel.org>,
-        Hugh Dickins <hughd@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Mel Gorman <mgorman@techsingularity.net>
-Subject: [PATCH v4 00/7] Drain remote per-cpu directly
-Date:   Mon, 13 Jun 2022 13:56:15 +0100
-Message-Id: <20220613125622.18628-1-mgorman@techsingularity.net>
-X-Mailer: git-send-email 2.35.3
+        Mon, 13 Jun 2022 13:34:12 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69D0FE032
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 05:56:05 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1o0jbm-00029k-GG; Mon, 13 Jun 2022 14:55:54 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1o0jbk-0001fo-7K; Mon, 13 Jun 2022 14:55:52 +0200
+Date:   Mon, 13 Jun 2022 14:55:52 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michal Kubecek <mkubecek@suse.cz>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v1 1/1] net: phy: add remote fault support
+Message-ID: <20220613125552.GA4536@pengutronix.de>
+References: <20220608093403.3999446-1-o.rempel@pengutronix.de>
+ <YqS+zYHf6eHMWJlD@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YqS+zYHf6eHMWJlD@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This replaces the existing version on mm-unstable. The biggest difference
-is replacing local_lock entirely which is the last patch. The other changes
-are minor fixes reported by Hugh and Vlastimil.
+On Sat, Jun 11, 2022 at 06:11:57PM +0200, Andrew Lunn wrote:
+> > diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+> > index c67bf3060173..6c55c7f9b680 100644
+> > --- a/drivers/net/phy/phy-c45.c
+> > +++ b/drivers/net/phy/phy-c45.c
+> > @@ -205,7 +205,7 @@ static int genphy_c45_baset1_an_config_aneg(struct phy_device *phydev)
+> >  		break;
+> >  	case MASTER_SLAVE_CFG_UNKNOWN:
+> >  	case MASTER_SLAVE_CFG_UNSUPPORTED:
+> > -		return 0;
+> > +		break;
+> >  	default:
+> >  		phydev_warn(phydev, "Unsupported Master/Slave mode\n");
+> >  		return -EOPNOTSUPP;
+> > @@ -223,11 +223,16 @@ static int genphy_c45_baset1_an_config_aneg(struct phy_device *phydev)
+> >  		break;
+> >  	}
+> >  
+> > +	if (phydev->remote_fault_set >= REMOTE_FAULT_CFG_ERROR)
+> > +		adv_l |= MDIO_AN_T1_ADV_L_REMOTE_FAULT;
+> > +
+> >  	adv_l |= linkmode_adv_to_mii_t1_adv_l_t(phydev->advertising);
+> >  
+> >  	ret = phy_modify_mmd_changed(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_L,
+> > -				     (MDIO_AN_T1_ADV_L_FORCE_MS | MDIO_AN_T1_ADV_L_PAUSE_CAP
+> > -				     | MDIO_AN_T1_ADV_L_PAUSE_ASYM), adv_l);
+> > +				     (MDIO_AN_T1_ADV_L_FORCE_MS |
+> > +				      MDIO_AN_T1_ADV_L_PAUSE_CAP |
+> > +				      MDIO_AN_T1_ADV_L_PAUSE_ASYM |
+> > +				      MDIO_AN_T1_ADV_L_REMOTE_FAULT), adv_l);
+> 
+> Since this is part of config_aneg, i assume you have to trigger an
+> renegotiation, which will put the link down for a while. Is that
+> actually required? Can the fault indicator be set at runtime without a
+> full auto-neg? I suppose for a fault indicator, it probably does not
+> matter, there is a fault... 
+According to IEEE 802.3-2018:
+"28.2.3.5 Remote fault sensing function
 
-Changelog since v3
-o Checkpatch fixes from mm-unstable					(akpm)
-o Replace local_lock with spinlock					(akpm)
-o Remove IRQ-disabled check in free_unref_page_list as it triggers
-  a false positive							(hughd)
-o Take an unlikely check out of the rmqueue fast path			(vbabka)
+The Remote Fault function may indicate to the Link Partner that a fault
+condition has occurred using the Remote Fault bit and, optionally, the Next
+Page function
+...
+A Local Device may indicate it has sensed a fault to its Link Partner by
+setting the Remote Fault bit in the Auto-Negotiation advertisement register and
+renegotiating.
 
-Some setups, notably NOHZ_FULL CPUs, may be running realtime or
-latency-sensitive applications that cannot tolerate interference due to
-per-cpu drain work queued by __drain_all_pages().  Introduce a new
-mechanism to remotely drain the per-cpu lists. It is made possible by
-remotely locking 'struct per_cpu_pages' new per-cpu spinlocks.  This has
-two advantages, the time to drain is more predictable and other unrelated
-tasks are not interrupted.
+If the Local Device sets the Remote Fault bit to logic one, it may also use the
+Next Page function to specify information about the fault that has occurred.
+Remote Fault Message Page Codes have been specified for this purpose.
+..."
 
-This series has the same intent as Nicolas' series "mm/page_alloc: Remote
-per-cpu lists drain support" -- avoid interference of a high priority task
-due to a workqueue item draining per-cpu page lists.  While many workloads
-can tolerate a brief interruption, it may cause a real-time task running
-on a NOHZ_FULL CPU to miss a deadline and at minimum, the draining is
-non-deterministic.
+If I see it correctly, there is no way to notify about remote fault when
+the link is up. The remote fault bit is transferred withing Link Code
+Word as part of FLP burst. At least in this part of specification.
 
-Currently an IRQ-safe local_lock protects the page allocator per-cpu
-lists.  The local_lock on its own prevents migration and the IRQ disabling
-protects from corruption due to an interrupt arriving while a page
-allocation is in progress.
+> But i'm wondering about future extensions which might want to send values
+> when the link is up. I've seen some PHYs indicate their make/model, etc.
+> What sort of API would be needed for that?
 
-This series adjusts the locking.  A spinlock is added to struct
-per_cpu_pages to protect the list contents while local_lock_irq is
-ultimately replaced by just the spinlock in the final patch.  This allows
-a remote CPU to safely. Follow-on work should allow the local_irq_save
-to be converted to a local_irq to avoid IRQs being disabled/enabled in
-most cases.
+We understand the spec that the Base Link Code Word and the optional (extended)
+next pages are only send during autoneg. The local PHY capabilities (link
+speed, duplex, remote fault...) are communicated via the Base Link Code Word.
+So from our point of view it seems local to put the next pages next to the
+local PHY capabilities. If the user space wants to set a next page, the
+interface could be similar to remote fault, but we need to transfer more a
+whole page, not just a single bit :) via netlink.
 
-Patch 1 is a cosmetic patch to clarify when page->lru is storing buddy pages
-	and when it is storing per-cpu pages.
+> It might also be useful if we could send an event to userspace when
+> the receive state changes, so there is no need to poll. I thought
+> something link a linkstate message was broadcast under some
+> conditions? That again my suggest ksetting is maybe not the best place
+> for this?
 
-Patch 2 shrinks per_cpu_pages to make room for a spin lock. Strictly speaking
-	this is not necessary but it avoids per_cpu_pages consuming another
-	cache line.
+So receiving remote fault information via linkstate and send remote fault via
+ksetting?
 
-Patch 3 is a preparation patch to avoid code duplication.
+The next logical question is, if a remote fault is RX'ed (potentially with a
+reason) who will react on this. There might be different policies on how to
+react on same reason.
 
-Patch 4 is a simple micro-optimisation that improves code flow necessary for
-	a later patch to avoid code duplication.
+> I see no problem in exposing this information, but i would like to be
+> sure we get the API correct.
 
-Patch 5 uses a spin_lock to protect the per_cpu_pages contents while still
-	relying on local_lock to prevent migration, stabilise the pcp
-	lookup and prevent IRQ reentrancy.
+ACK!
 
-Patch 6 remote drains per-cpu pages directly instead of using a workqueue.
-
-Patch 7 uses a normal spinlock instead of local_lock for remote draining
-
- include/linux/mm_types.h |   5 +
- include/linux/mmzone.h   |  12 +-
- mm/page_alloc.c          | 404 ++++++++++++++++++++++++---------------
- 3 files changed, 266 insertions(+), 155 deletions(-)
-
+Regards,
+Oleksij & Marc
 -- 
-2.35.3
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
