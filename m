@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99233C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:26:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB15CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:26:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353747AbiFML0Q (ORCPT
+        id S1353764AbiFML01 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:26:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56150 "EHLO
+        Mon, 13 Jun 2022 07:26:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353434AbiFMLTo (ORCPT
+        with ESMTP id S1353487AbiFMLTq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:19:44 -0400
+        Mon, 13 Jun 2022 07:19:46 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E79B3B002;
-        Mon, 13 Jun 2022 03:41:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC6193B039;
+        Mon, 13 Jun 2022 03:41:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CF409B80EA3;
-        Mon, 13 Jun 2022 10:41:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 304EDC3411C;
-        Mon, 13 Jun 2022 10:41:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 81BC6B80EA7;
+        Mon, 13 Jun 2022 10:41:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5F4EC34114;
+        Mon, 13 Jun 2022 10:41:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116873;
-        bh=710qDeAQ+M2wd+oQnN+CKC6Zb5QNapd+zSvcMbkNVZ8=;
+        s=korg; t=1655116876;
+        bh=iNqspggipeUsbiMfTH6H+Ij0XcKQnipbgyxVjleXhoA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hQZyt5xby/6XAippub76DF5pOvT6awuJEoI8+bfrgwHTLdDE/e5unTE9bkMCeu6u2
-         OvL18VSjGGTHXyMcSjqmGfpnHiGdlp6LFX/1G0p0tsWfETaP0AqXuaQ0x1W9TDCE9B
-         DOBNr3E0fBhNHsJk+g7YBYpUH0SMmvtgzRCuNTQ8=
+        b=crpbkRfp39h5GBuyAcR8iIT8zY/4HaK/h6L7y64/9jewDN7B173Wpyk5aI4WeR4kC
+         F9v0ToVGRjHMxXBdiZKxoUU1g+L/6FSCnlplkFhWHqDdVizArYFJG0oc6Eu+uyoWNn
+         6b4zgIOH0tVcOxbWa1qYfCt7lox+HOqsMpxnhsvs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Douglas Miller <doug.miller@cornelisnetworks.com>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 194/411] RDMA/hfi1: Prevent use of lock before it is initialized
-Date:   Mon, 13 Jun 2022 12:07:47 +0200
-Message-Id: <20220613094934.478195288@linuxfoundation.org>
+        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
+        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.4 209/411] f2fs: fix to avoid f2fs_bug_on() in dec_valid_node_count()
+Date:   Mon, 13 Jun 2022 12:08:02 +0200
+Message-Id: <20220613094934.924107208@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -52,72 +49,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Douglas Miller <doug.miller@cornelisnetworks.com>
+From: Chao Yu <chao@kernel.org>
 
-[ Upstream commit 05c03dfd09c069c4ffd783b47b2da5dcc9421f2c ]
+commit 4d17e6fe9293d57081ffdc11e1cf313e25e8fd9e upstream.
 
-If there is a failure during probe of hfi1 before the sdma_map_lock is
-initialized, the call to hfi1_free_devdata() will attempt to use a lock
-that has not been initialized. If the locking correctness validator is on
-then an INFO message and stack trace resembling the following may be seen:
+As Yanming reported in bugzilla:
 
-  INFO: trying to register non-static key.
-  The code is fine but needs lockdep annotation, or maybe
-  you didn't initialize this object before use?
-  turning off the locking correctness validator.
-  Call Trace:
-  register_lock_class+0x11b/0x880
-  __lock_acquire+0xf3/0x7930
-  lock_acquire+0xff/0x2d0
-  _raw_spin_lock_irq+0x46/0x60
-  sdma_clean+0x42a/0x660 [hfi1]
-  hfi1_free_devdata+0x3a7/0x420 [hfi1]
-  init_one+0x867/0x11a0 [hfi1]
-  pci_device_probe+0x40e/0x8d0
+https://bugzilla.kernel.org/show_bug.cgi?id=215897
 
-The use of sdma_map_lock in sdma_clean() is for freeing the sdma_map
-memory, and sdma_map is not allocated/initialized until after
-sdma_map_lock has been initialized. This code only needs to be run if
-sdma_map is not NULL, and so checking for that condition will avoid trying
-to use the lock before it is initialized.
+I have encountered a bug in F2FS file system in kernel v5.17.
 
-Fixes: 473291b3ea0e ("IB/hfi1: Fix for early release of sdma context")
-Fixes: 7724105686e7 ("IB/hfi1: add driver files")
-Link: https://lore.kernel.org/r/20220520183701.48973.72434.stgit@awfm-01.cornelisnetworks.com
-Reported-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Douglas Miller <doug.miller@cornelisnetworks.com>
-Signed-off-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The kernel should enable CONFIG_KASAN=y and CONFIG_KASAN_INLINE=y. You can
+reproduce the bug by running the following commands:
+
+The kernel message is shown below:
+
+kernel BUG at fs/f2fs/f2fs.h:2511!
+Call Trace:
+ f2fs_remove_inode_page+0x2a2/0x830
+ f2fs_evict_inode+0x9b7/0x1510
+ evict+0x282/0x4e0
+ do_unlinkat+0x33a/0x540
+ __x64_sys_unlinkat+0x8e/0xd0
+ do_syscall_64+0x3b/0x90
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+The root cause is: .total_valid_block_count or .total_valid_node_count
+could fuzzed to zero, then once dec_valid_node_count() was called, it
+will cause BUG_ON(), this patch fixes to print warning info and set
+SBI_NEED_FSCK into CP instead of panic.
+
+Cc: stable@vger.kernel.org
+Reported-by: Ming Yan <yanming@tju.edu.cn>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/hw/hfi1/sdma.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ fs/f2fs/f2fs.h |   14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/infiniband/hw/hfi1/sdma.c b/drivers/infiniband/hw/hfi1/sdma.c
-index 248be21acdbe..2a684fc6056e 100644
---- a/drivers/infiniband/hw/hfi1/sdma.c
-+++ b/drivers/infiniband/hw/hfi1/sdma.c
-@@ -1329,11 +1329,13 @@ void sdma_clean(struct hfi1_devdata *dd, size_t num_engines)
- 		kvfree(sde->tx_ring);
- 		sde->tx_ring = NULL;
- 	}
--	spin_lock_irq(&dd->sde_map_lock);
--	sdma_map_free(rcu_access_pointer(dd->sdma_map));
--	RCU_INIT_POINTER(dd->sdma_map, NULL);
--	spin_unlock_irq(&dd->sde_map_lock);
--	synchronize_rcu();
-+	if (rcu_access_pointer(dd->sdma_map)) {
-+		spin_lock_irq(&dd->sde_map_lock);
-+		sdma_map_free(rcu_access_pointer(dd->sdma_map));
-+		RCU_INIT_POINTER(dd->sdma_map, NULL);
-+		spin_unlock_irq(&dd->sde_map_lock);
-+		synchronize_rcu();
-+	}
- 	kfree(dd->per_sdma);
- 	dd->per_sdma = NULL;
+--- a/fs/f2fs/f2fs.h
++++ b/fs/f2fs/f2fs.h
+@@ -2100,11 +2100,17 @@ static inline void dec_valid_node_count(
+ {
+ 	spin_lock(&sbi->stat_lock);
  
--- 
-2.35.1
-
+-	f2fs_bug_on(sbi, !sbi->total_valid_block_count);
+-	f2fs_bug_on(sbi, !sbi->total_valid_node_count);
++	if (unlikely(!sbi->total_valid_block_count ||
++			!sbi->total_valid_node_count)) {
++		f2fs_warn(sbi, "dec_valid_node_count: inconsistent block counts, total_valid_block:%u, total_valid_node:%u",
++			  sbi->total_valid_block_count,
++			  sbi->total_valid_node_count);
++		set_sbi_flag(sbi, SBI_NEED_FSCK);
++	} else {
++		sbi->total_valid_block_count--;
++		sbi->total_valid_node_count--;
++	}
+ 
+-	sbi->total_valid_node_count--;
+-	sbi->total_valid_block_count--;
+ 	if (sbi->reserved_blocks &&
+ 		sbi->current_reserved_blocks < sbi->reserved_blocks)
+ 		sbi->current_reserved_blocks++;
 
 
