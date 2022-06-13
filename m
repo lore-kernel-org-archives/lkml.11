@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CD1DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:52:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29585CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:52:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356917AbiFMLwD (ORCPT
+        id S1356935AbiFMLwK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:52:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43146 "EHLO
+        Mon, 13 Jun 2022 07:52:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357535AbiFMLqU (ORCPT
+        with ESMTP id S1357556AbiFMLqV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:46:20 -0400
+        Mon, 13 Jun 2022 07:46:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D951AE71;
-        Mon, 13 Jun 2022 03:52:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5653313DC2;
+        Mon, 13 Jun 2022 03:52:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 165386135F;
-        Mon, 13 Jun 2022 10:52:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22755C34114;
-        Mon, 13 Jun 2022 10:52:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D741E61361;
+        Mon, 13 Jun 2022 10:52:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E32D1C34114;
+        Mon, 13 Jun 2022 10:52:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117552;
-        bh=jKvlRLiX/pLSuJlbO74Zn3Gv8I0bAvcaloQk1F8KwSs=;
+        s=korg; t=1655117555;
+        bh=hDXdLF5ENWcg3WB2nDomqCFki0mDsKU29sCXnXCbdvc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GunpOyh+S7/5fJZX2eo6mFuR7O/G/G4f22BVq0mePhMlDhxK72wAWpIKoY3KNGuUI
-         zd9nwVJurd3FtKzGmJ2Nsimj6s0LdQ4fjU8q45dPSB4MtHwN6D69mncFbSws/Kp+7p
-         uPMmHk0VRsFWgwkNfGDVlnVBLnU5l+mWStZCxUyM=
+        b=r+VEJk6nmey56Yjro9KHmBajyR1gpyLLrKFR/ozyKlZohmh7XV4hxhXefBMFqDFJf
+         cnV+q6YQr0m0I90k8TrOY8Op7rzFpIJ5pRWp2ltWf7QzySQq2xIAhJTxGRY19RINDV
+         uljGc/khbTmqdvnepgMwNL7olIh4WJDb/6qqiSd0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gong Yuanjun <ruc_gongyuanjun@163.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 389/411] drm/radeon: fix a possible null pointer dereference
-Date:   Mon, 13 Jun 2022 12:11:02 +0200
-Message-Id: <20220613094940.337055872@linuxfoundation.org>
+Subject: [PATCH 4.19 050/287] ARM: dts: exynos: add atmel,24c128 fallback to Samsung EEPROM
+Date:   Mon, 13 Jun 2022 12:07:54 +0200
+Message-Id: <20220613094925.385219808@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
+References: <20220613094923.832156175@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,45 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gong Yuanjun <ruc_gongyuanjun@163.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit a2b28708b645c5632dc93669ab06e97874c8244f ]
+[ Upstream commit f038e8186fbc5723d7d38c6fa1d342945107347e ]
 
-In radeon_fp_native_mode(), the return value of drm_mode_duplicate()
-is assigned to mode, which will lead to a NULL pointer dereference
-on failure of drm_mode_duplicate(). Add a check to avoid npd.
+The Samsung s524ad0xd1 EEPROM should use atmel,24c128 fallback,
+according to the AT24 EEPROM bindings.
 
-The failure status of drm_cvt_mode() on the other path is checked too.
-
-Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Reported-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220426183443.243113-1-krzysztof.kozlowski@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/radeon/radeon_connectors.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/arm/boot/dts/exynos5250-smdk5250.dts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/radeon/radeon_connectors.c b/drivers/gpu/drm/radeon/radeon_connectors.c
-index bc63f4cecf5d..ca6ccd69424e 100644
---- a/drivers/gpu/drm/radeon/radeon_connectors.c
-+++ b/drivers/gpu/drm/radeon/radeon_connectors.c
-@@ -477,6 +477,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
- 	    native_mode->vdisplay != 0 &&
- 	    native_mode->clock != 0) {
- 		mode = drm_mode_duplicate(dev, native_mode);
-+		if (!mode)
-+			return NULL;
- 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
- 		drm_mode_set_name(mode);
+diff --git a/arch/arm/boot/dts/exynos5250-smdk5250.dts b/arch/arm/boot/dts/exynos5250-smdk5250.dts
+index 80479ed69070..95a93ef80d97 100644
+--- a/arch/arm/boot/dts/exynos5250-smdk5250.dts
++++ b/arch/arm/boot/dts/exynos5250-smdk5250.dts
+@@ -127,7 +127,7 @@
+ 	samsung,i2c-max-bus-freq = <20000>;
  
-@@ -491,6 +493,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
- 		 * simpler.
- 		 */
- 		mode = drm_cvt_mode(dev, native_mode->hdisplay, native_mode->vdisplay, 60, true, false, false);
-+		if (!mode)
-+			return NULL;
- 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
- 		DRM_DEBUG_KMS("Adding cvt approximation of native panel mode %s\n", mode->name);
- 	}
+ 	eeprom@50 {
+-		compatible = "samsung,s524ad0xd1";
++		compatible = "samsung,s524ad0xd1", "atmel,24c128";
+ 		reg = <0x50>;
+ 	};
+ 
+@@ -286,7 +286,7 @@
+ 	samsung,i2c-max-bus-freq = <20000>;
+ 
+ 	eeprom@51 {
+-		compatible = "samsung,s524ad0xd1";
++		compatible = "samsung,s524ad0xd1", "atmel,24c128";
+ 		reg = <0x51>;
+ 	};
+ 
 -- 
 2.35.1
 
