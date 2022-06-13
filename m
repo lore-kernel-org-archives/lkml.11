@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2EACCCA480
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A294ECCA481
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:31:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385285AbiFMObA (ORCPT
+        id S1385264AbiFMOaz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:31:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53636 "EHLO
+        Mon, 13 Jun 2022 10:30:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384350AbiFMOZS (ORCPT
+        with ESMTP id S1384335AbiFMOZQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:25:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A65E649B72;
-        Mon, 13 Jun 2022 04:47:02 -0700 (PDT)
+        Mon, 13 Jun 2022 10:25:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B56B48E6B;
+        Mon, 13 Jun 2022 04:47:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 89C496146B;
-        Mon, 13 Jun 2022 11:47:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93096C341C0;
-        Mon, 13 Jun 2022 11:47:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 61625B80EE0;
+        Mon, 13 Jun 2022 11:46:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C23BEC3411B;
+        Mon, 13 Jun 2022 11:46:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120821;
-        bh=EmEjY/2oupTS6JKEbxG775P6fh8XyKSAcBZ6LBmEp34=;
+        s=korg; t=1655120818;
+        bh=gJVpB7T37wyoUJOyInE1sOTyR+6HawgA6LXykwcBDEg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w8+gRMeeT35fRithfUCJ5bJMF/z4J4VS5mD7p2q1vooNH8JwFoD33+Ha79lsoNex1
-         X2YUkweNWniJPHrsVjWy0nH6Bs3DA9ELozrRDGNkgtsMHkFM+vdMX6fPvtRT8psSbr
-         TOfgX7SW5SBwqdbsX8Xo9EHGIK6uK2Q0swP0swfs=
+        b=QHsh4//Xfrp+Orb/MKhcuOPhuzkTMzGSaIxcttDL/p8yiL4wIslhDNa0YztaoE/0C
+         dbSzPTxinGSSIkOE3JlYjj1TB/lCgdWHPqqXNkhNaLrEau5qJEKLxgBQv+rpgb+/pY
+         HgcyU2EobMq9B/fAdkDuBvHtq1JWPvj6yh2hKvho=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hugh Dickens <hughd@google.com>,
-        Greg Ungerer <gerg@linux-m68k.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 145/298] m68knommu: set ZERO_PAGE() to the allocated zeroed page
-Date:   Mon, 13 Jun 2022 12:10:39 +0200
-Message-Id: <20220613094929.337591505@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Lucas Tanure <tanureal@opensource.cirrus.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 144/298] i2c: cadence: Increase timeout per message if necessary
+Date:   Mon, 13 Jun 2022 12:10:38 +0200
+Message-Id: <20220613094929.308508365@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,45 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Greg Ungerer <gerg@linux-m68k.org>
+From: Lucas Tanure <tanureal@opensource.cirrus.com>
 
-[ Upstream commit dc068f46217970d9516f16cd37972a01d50dc055 ]
+[ Upstream commit 96789dce043f5bff8b7d62aa28d52a7c59403a84 ]
 
-The non-MMU m68k pagetable ZERO_PAGE() macro is being set to the
-somewhat non-sensical value of "virt_to_page(0)". The zeroth page
-is not in any way guaranteed to be a page full of "0". So the result
-is that ZERO_PAGE() will almost certainly contain random values.
+Timeout as 1 second sets an upper limit on the length
+of the transfer executed, but there is no maximum length
+of a write or read message set in i2c_adapter_quirks for
+this controller.
 
-We already allocate a real "empty_zero_page" in the mm setup code shared
-between MMU m68k and non-MMU m68k. It is just not hooked up to the
-ZERO_PAGE() macro for the non-MMU m68k case.
+This upper limit affects devices that require sending
+large firmware blobs over I2C.
 
-Fix ZERO_PAGE() to use the allocated "empty_zero_page" pointer.
+To remove that limitation, calculate the minimal time
+necessary, plus some wiggle room, for every message and
+use it instead of the default one second, if more than
+one second.
 
-I am not aware of any specific issues caused by the old code.
-
-Link: https://lore.kernel.org/linux-m68k/2a462b23-5b8e-bbf4-ec7d-778434a3b9d7@google.com/T/#t
-Reported-by: Hugh Dickens <hughd@google.com>
-Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
+Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
+Acked-by: Michal Simek <michal.simek@xilinx.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/m68k/include/asm/pgtable_no.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/i2c/busses/i2c-cadence.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/arch/m68k/include/asm/pgtable_no.h b/arch/m68k/include/asm/pgtable_no.h
-index 87151d67d91e..bce5ca56c388 100644
---- a/arch/m68k/include/asm/pgtable_no.h
-+++ b/arch/m68k/include/asm/pgtable_no.h
-@@ -42,7 +42,8 @@ extern void paging_init(void);
-  * ZERO_PAGE is a global shared page that is always zero: used
-  * for zero-mapped memory areas etc..
-  */
--#define ZERO_PAGE(vaddr)	(virt_to_page(0))
-+extern void *empty_zero_page;
-+#define ZERO_PAGE(vaddr)	(virt_to_page(empty_zero_page))
+diff --git a/drivers/i2c/busses/i2c-cadence.c b/drivers/i2c/busses/i2c-cadence.c
+index 805c77143a0f..b4c1ad19cdae 100644
+--- a/drivers/i2c/busses/i2c-cadence.c
++++ b/drivers/i2c/busses/i2c-cadence.c
+@@ -760,7 +760,7 @@ static void cdns_i2c_master_reset(struct i2c_adapter *adap)
+ static int cdns_i2c_process_msg(struct cdns_i2c *id, struct i2c_msg *msg,
+ 		struct i2c_adapter *adap)
+ {
+-	unsigned long time_left;
++	unsigned long time_left, msg_timeout;
+ 	u32 reg;
  
- /*
-  * All 32bit addresses are effectively valid for vmalloc...
+ 	id->p_msg = msg;
+@@ -785,8 +785,16 @@ static int cdns_i2c_process_msg(struct cdns_i2c *id, struct i2c_msg *msg,
+ 	else
+ 		cdns_i2c_msend(id);
+ 
++	/* Minimal time to execute this message */
++	msg_timeout = msecs_to_jiffies((1000 * msg->len * BITS_PER_BYTE) / id->i2c_clk);
++	/* Plus some wiggle room */
++	msg_timeout += msecs_to_jiffies(500);
++
++	if (msg_timeout < adap->timeout)
++		msg_timeout = adap->timeout;
++
+ 	/* Wait for the signal of completion */
+-	time_left = wait_for_completion_timeout(&id->xfer_done, adap->timeout);
++	time_left = wait_for_completion_timeout(&id->xfer_done, msg_timeout);
+ 	if (time_left == 0) {
+ 		cdns_i2c_master_reset(adap);
+ 		dev_err(id->adap.dev.parent,
 -- 
 2.35.1
 
