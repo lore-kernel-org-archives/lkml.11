@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E90B7CCA493
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:20:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B06ECCA48C
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:20:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376970AbiFMNTp (ORCPT
+        id S1377155AbiFMNUE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:19:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41612 "EHLO
+        Mon, 13 Jun 2022 09:20:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376260AbiFMNKq (ORCPT
+        with ESMTP id S1358973AbiFMNIq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:10:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E1C25BE72;
-        Mon, 13 Jun 2022 04:21:40 -0700 (PDT)
+        Mon, 13 Jun 2022 09:08:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA9731FCFF;
+        Mon, 13 Jun 2022 04:19:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 22174B80EAA;
-        Mon, 13 Jun 2022 11:21:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76098C34114;
-        Mon, 13 Jun 2022 11:21:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AA79EB80EA7;
+        Mon, 13 Jun 2022 11:19:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2BA4C34114;
+        Mon, 13 Jun 2022 11:19:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119297;
-        bh=O1BECb1BwhYEIW1CUebpdzDbEJQLtGkgaLnnWW6lRNQ=;
+        s=korg; t=1655119141;
+        bh=mMjDWJlacooFiZ2ImmHkyR7vekvzqW++iLlyOOmOz5s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yPCRmRWOnd+ctDFeE9FWUwzyYRufK5dfVY3H5SKAe+se4yhN+ZFjb+BhXwO1mj8DL
-         esNhfTGOyCGTZUkEr3pCYIEnReSzP4yutS1ss7sIqIiLNuGCSAVI10bkGgbE6Q1jo5
-         4xFaunG6l2t90+kWvKXKvIUayTE+mrCOKOBNRReA=
+        b=YD1q5cgsw4BWW8hBd/C7CPccO23/f/SUFvi0Ocw4d6GhmSTqz9SlNAa1Wgdn9Q63h
+         1faH1JDACpH9lE5S91wIESwYjMRrMyDeCFfv1rlYJTaSwpZhY7BTAILt/k6+SqeqVC
+         PgpnZ7vCdt3gx5ZHIhe2TCeA0391MjgL2cwwdaqI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
-        Fam Zheng <fam.zheng@bytedance.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 212/247] vringh: Fix loop descriptors check in the indirect cases
-Date:   Mon, 13 Jun 2022 12:11:54 +0200
-Message-Id: <20220613094929.370619513@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Maher Sanalla <msanalla@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Mark Bloch <mbloch@nvidia.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 155/247] net/mlx5: Fix mlx5_get_next_dev() peer device matching
+Date:   Mon, 13 Jun 2022 12:10:57 +0200
+Message-Id: <20220613094927.656795102@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -52,61 +53,120 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xie Yongji <xieyongji@bytedance.com>
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-[ Upstream commit dbd29e0752286af74243cf891accf472b2f3edd8 ]
+[ Upstream commit 1c5de097bea31760c3f0467ac0c84ba0dc3525d5 ]
 
-We should use size of descriptor chain to test loop condition
-in the indirect case. And another statistical count is also introduced
-for indirect descriptors to avoid conflict with the statistical count
-of direct descriptors.
+In some use-cases, mlx5 instances will need to search for their peer
+device (the other port on the same HCA). For that, mlx5 device matching
+mechanism relied on auxiliary_find_device() to search, and used a bad matching
+callback function.
 
-Fixes: f87d0fbb5798 ("vringh: host-side implementation of virtio rings.")
-Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-Signed-off-by: Fam Zheng <fam.zheng@bytedance.com>
-Message-Id: <20220505100910.137-1-xieyongji@bytedance.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
+This approach has two issues:
+
+1) next_phys_dev() the matching function, assumed all devices are
+   of the type mlx5_adev (mlx5 auxiliary device) which is wrong and
+   could lead to crashes, this worked for a while, since only lately
+   other drivers started registering auxiliary devices.
+
+2) using the auxiliary class bus (auxiliary_find_device) to search for
+   mlx5_core_dev devices, who are actually PCIe device instances, is wrong.
+   This works since mlx5_core always has at least one mlx5_adev instance
+   hanging around in the aux bus.
+
+As suggested by others we can fix 1. by comparing device names prefixes
+if they have the string "mlx5_core" in them, which is not a best practice !
+but even with that fixed, still 2. needs fixing, we are trying to
+match pcie device peers so we should look in the right bus (pci bus),
+hence this fix.
+
+The fix:
+1) search the pci bus for mlx5 peer devices, instead of the aux bus
+2) to validated devices are the same type "mlx5_core_dev" compare if
+   they have the same driver, which is bulletproof.
+
+   This wouldn't have worked with the aux bus since the various mlx5 aux
+   device types don't share the same driver, even if they share the same device
+   wrapper struct (mlx5_adev) "which helped to find the parent device"
+
+Fixes: a925b5e309c9 ("net/mlx5: Register mlx5 devices to auxiliary virtual bus")
+Reported-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Reported-by: Maher Sanalla <msanalla@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Reviewed-by: Mark Bloch <mbloch@nvidia.com>
+Reviewed-by: Maher Sanalla <msanalla@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vhost/vringh.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/dev.c | 34 +++++++++++++------
+ 1 file changed, 23 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
-index 14e2043d7685..eab55accf381 100644
---- a/drivers/vhost/vringh.c
-+++ b/drivers/vhost/vringh.c
-@@ -292,7 +292,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
- 	     int (*copy)(const struct vringh *vrh,
- 			 void *dst, const void *src, size_t len))
- {
--	int err, count = 0, up_next, desc_max;
-+	int err, count = 0, indirect_count = 0, up_next, desc_max;
- 	struct vring_desc desc, *descs;
- 	struct vringh_range range = { -1ULL, 0 }, slowrange;
- 	bool slow = false;
-@@ -349,7 +349,12 @@ __vringh_iov(struct vringh *vrh, u16 i,
- 			continue;
- 		}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/dev.c b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
+index 94411b34799e..949f12ede3d2 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/dev.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
+@@ -559,18 +559,32 @@ static int _next_phys_dev(struct mlx5_core_dev *mdev,
+ 	return 1;
+ }
  
--		if (count++ == vrh->vring.num) {
-+		if (up_next == -1)
-+			count++;
-+		else
-+			indirect_count++;
++static void *pci_get_other_drvdata(struct device *this, struct device *other)
++{
++	if (this->driver != other->driver)
++		return NULL;
 +
-+		if (count > vrh->vring.num || indirect_count > desc_max) {
- 			vringh_bad("Descriptor loop in %p", descs);
- 			err = -ELOOP;
- 			goto fail;
-@@ -411,6 +416,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
- 				i = return_from_indirect(vrh, &up_next,
- 							 &descs, &desc_max);
- 				slow = false;
-+				indirect_count = 0;
- 			} else
- 				break;
- 		}
++	return pci_get_drvdata(to_pci_dev(other));
++}
++
+ static int next_phys_dev(struct device *dev, const void *data)
+ {
+-	struct mlx5_adev *madev = container_of(dev, struct mlx5_adev, adev.dev);
+-	struct mlx5_core_dev *mdev = madev->mdev;
++	struct mlx5_core_dev *mdev, *this = (struct mlx5_core_dev *)data;
++
++	mdev = pci_get_other_drvdata(this->device, dev);
++	if (!mdev)
++		return 0;
+ 
+ 	return _next_phys_dev(mdev, data);
+ }
+ 
+ static int next_phys_dev_lag(struct device *dev, const void *data)
+ {
+-	struct mlx5_adev *madev = container_of(dev, struct mlx5_adev, adev.dev);
+-	struct mlx5_core_dev *mdev = madev->mdev;
++	struct mlx5_core_dev *mdev, *this = (struct mlx5_core_dev *)data;
++
++	mdev = pci_get_other_drvdata(this->device, dev);
++	if (!mdev)
++		return 0;
+ 
+ 	if (!MLX5_CAP_GEN(mdev, vport_group_manager) ||
+ 	    !MLX5_CAP_GEN(mdev, lag_master) ||
+@@ -583,19 +597,17 @@ static int next_phys_dev_lag(struct device *dev, const void *data)
+ static struct mlx5_core_dev *mlx5_get_next_dev(struct mlx5_core_dev *dev,
+ 					       int (*match)(struct device *dev, const void *data))
+ {
+-	struct auxiliary_device *adev;
+-	struct mlx5_adev *madev;
++	struct device *next;
+ 
+ 	if (!mlx5_core_is_pf(dev))
+ 		return NULL;
+ 
+-	adev = auxiliary_find_device(NULL, dev, match);
+-	if (!adev)
++	next = bus_find_device(&pci_bus_type, NULL, dev, match);
++	if (!next)
+ 		return NULL;
+ 
+-	madev = container_of(adev, struct mlx5_adev, adev);
+-	put_device(&adev->dev);
+-	return madev->mdev;
++	put_device(next);
++	return pci_get_drvdata(to_pci_dev(next));
+ }
+ 
+ /* Must be called with intf_mutex held */
 -- 
 2.35.1
 
