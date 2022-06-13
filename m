@@ -2,165 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 644B4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:10:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5936C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:12:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349539AbiFMUKT (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:10:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46588 "EHLO
+        id S243151AbiFMUM4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 16:12:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244314AbiFMUJy (ORCPT
+        with ESMTP id S241940AbiFMUMo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:09:54 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D78327B09;
-        Mon, 13 Jun 2022 11:44:06 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id i29so10295937lfp.3;
-        Mon, 13 Jun 2022 11:44:06 -0700 (PDT)
+        Mon, 13 Jun 2022 16:12:44 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B54F94D9C9
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 11:47:31 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id s10so7147168ljh.12
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 11:47:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0ZkWwoMHmOjNQD8c/MvUfXL++UZYPGh4KCJsTnGxYJw=;
-        b=Z+Yudr03xA3T6wpYkyh8SrfLyupr9tKRPXD2+loi9r1VgLEXt7mHVHwW3LxTRx3VWN
-         0Bvs/G/b44NykMzol8sPhaGMPeS8oJn6GsRn+i2F/l4O+alIlH6P3DPJ8S7rZvjyNvKz
-         dYQnIrxwajkFFEjZDvcR8XbHf8NjM1vCUwNbFhWOFRiWCJZAWQWUZDBtasCP2EoN9JTX
-         8h6DkoP78r1+u6nYjPtm+tFZQwlpq43t0JqtR2xs5CgrCf4Z8QnJuzsHlN7c3fS2NF5t
-         JKcqwrHRaWdw72u+q03PA6TDElEccD8O96TnmUiM+VQSveZbykIbyfzovzJP88LmtFk4
-         u1Cg==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gnUSbe8CiTQ19HP1QRaMovzHPwVV5AH7oRueQxzbr2w=;
+        b=psqvyg4bPOOObXvl93Zxro9XA/ODLoG6iBN8VzURq2kWrUR7F3BHDeeHNMu0CFKyIh
+         Niks5hKvSuVELNC275GXW5lNVLONvG604XONrgXtzQCBbODYI+FiNC4UHOy01ziKEw6P
+         PnJJ8X8mCYdNE116ke64zsX9sSqEcXHCfXLltO9UXIpqgB60u1m1gOJgKSvqZ2Vu7Rt3
+         Fab5Mj4u35jsb3FBf1q2tLM98qhaB60LVo3lH+ODCh+pfDogtGE59OZmPCThjZAo5F3C
+         uARnmPJ0E0/9jMWP5IEUMjK7PRjAVPO04tktB/Od36POLALwftkbezadySNHJrj1LtR7
+         bRTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0ZkWwoMHmOjNQD8c/MvUfXL++UZYPGh4KCJsTnGxYJw=;
-        b=UWorLSM19cgDotaZEjH0SFgId4+9ljX4Srq0dRxAF7AG9hZX+pSVwNGRIGosIzP0vC
-         ABXCw79ZKYYY0osJHB50hhxjpjql6s92qaa/Kf2NMPUENAzNsMKiJQsEbi5kKuirMtDd
-         8DzAYB68kC+hdJpqvc5iM5+64uqnN7lbkMKQYaZpTMVCzooOoBtsBNdfPCTGwhWjiax9
-         mK8OLBYTzIf1cP4Lerwzrdbj2xMpyTmIyfTHkgCg3rOZeVw4DEQhzmfiWRquDfdD7AXa
-         4OhZAuG84DPGnVMygUF/UOhZY/L7VQWtJ+OuhyRigQfUwOqGqXHlck5Id74yCNd9ZzGP
-         KZig==
-X-Gm-Message-State: AJIora/tdi/k58V5Z7swx+oPiTYuaQqZGlKnCCMrEDgUuGKVRrItSLfA
-        EFZcNccOCfe5L5+1GbrHyno=
-X-Google-Smtp-Source: AGRyM1vgWfFYu5VOKFpQZS6GlNe0ObJ6V5Ly2KIsrTrNXkPdaPRbPZAnYJyJY7yrTN5mYDLInEEhdw==
-X-Received: by 2002:a05:6512:31c3:b0:479:3c8a:b39f with SMTP id j3-20020a05651231c300b004793c8ab39fmr680193lfe.111.1655145844744;
-        Mon, 13 Jun 2022 11:44:04 -0700 (PDT)
-Received: from localhost.localdomain ([94.103.229.27])
-        by smtp.gmail.com with ESMTPSA id b15-20020ac247ef000000b004787d3cbc67sm1073598lfp.219.2022.06.13.11.44.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 11:44:02 -0700 (PDT)
-From:   Pavel Skripkin <paskripkin@gmail.com>
-To:     toke@toke.dk, kvalo@kernel.org, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        syzbot+03110230a11411024147@syzkaller.appspotmail.com,
-        syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
-Subject: [PATCH v6 1/2] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
-Date:   Mon, 13 Jun 2022 21:43:59 +0300
-Message-Id: <d57bbedc857950659bfacac0ab48790c1eda00c8.1655145743.git.paskripkin@gmail.com>
-X-Mailer: git-send-email 2.36.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gnUSbe8CiTQ19HP1QRaMovzHPwVV5AH7oRueQxzbr2w=;
+        b=eDv0wUxJq5/7NXH0SMGp/cjqzExnbx0AHLaCmgQBnZGCxSwpzjtTqHT7wUag2grhvA
+         5R9zqUnMTDZ5GfLzBWsosj/EMo4uD8F5PKv4/5OpLw7gJQpgS3HDqFeJcujx/iHq4IQl
+         ffOjQrrRazCk/FtO/RbFCsNm/ijDVakBxnD3RV07KAMZ0ywqlfNhZpWEeqacjiNEP6bl
+         7QRpRtkTRYAXZOT624NiRI+4e6q+NZaDZ3G7WRt8Tg5yXp8iEnImE8aYoD3v73MoownJ
+         cXOuFCaDQ/DLa2oxKBgfL6Dkb1HHLGzVxoOyr+uORKtzI4Muudtd3hZF/hzcT2D1doZK
+         wkAA==
+X-Gm-Message-State: AJIora93gunuSytSzOP3t8SfpBU0IAB0mOAmSbsTC2+F9rqm/SFoGPkF
+        0uMZJBn/+fB0daUoQOGbADZKOyjpYIjwbapwgeMJ
+X-Google-Smtp-Source: AGRyM1uMA1RswQj/kRbYWxpa2gpbkIqW/H3Lhp9QgKWhkKjVKtC7uz71CWdrVgWOGoL64GzPA+QRw4qUugKbzHueGjo=
+X-Received: by 2002:a05:651c:1581:b0:255:48d1:fdae with SMTP id
+ h1-20020a05651c158100b0025548d1fdaemr472476ljq.286.1655146049852; Mon, 13 Jun
+ 2022 11:47:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220609221702.347522-1-morbo@google.com> <20220609221702.347522-9-morbo@google.com>
+ <YqYTExy0IpVbunBL@equinox>
+In-Reply-To: <YqYTExy0IpVbunBL@equinox>
+From:   Bill Wendling <morbo@google.com>
+Date:   Mon, 13 Jun 2022 11:47:18 -0700
+Message-ID: <CAGG=3QVc4STHym0hszpr1SP=RYWag5=J-MB-zhz4JzNZnRnbvg@mail.gmail.com>
+Subject: Re: [PATCH 08/12] cdrom: use correct format characters
+To:     Phillip Potter <phil@philpotter.co.uk>
+Cc:     Bill Wendling <isanbard@gmail.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Jan Kara <jack@suse.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>,
+        Ross Philipson <ross.philipson@oracle.com>,
+        Daniel Kiper <daniel.kiper@oracle.com>,
+        linux-edac@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        linux-mm@kvack.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, Networking <netdev@vger.kernel.org>,
+        alsa-devel@alsa-project.org,
+        clang-built-linux <llvm@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Syzbot reported use-after-free Read in ath9k_hif_usb_rx_cb() [0]. The
-problem was in incorrect htc_handle->drv_priv initialization.
+On Sun, Jun 12, 2022 at 9:23 AM Phillip Potter <phil@philpotter.co.uk> wrote:
+>
+> On Thu, Jun 09, 2022 at 10:16:27PM +0000, Bill Wendling wrote:
+> > From: Bill Wendling <isanbard@gmail.com>
+> >
+> > When compiling with -Wformat, clang emits the following warnings:
+> >
+> > drivers/cdrom/cdrom.c:3454:48: error: format string is not a string literal (potentially insecure) [-Werror,-Wformat-security]
+> >         ret = scnprintf(info + *pos, max_size - *pos, header);
+> >                                                       ^~~~~~
+> >
+> > Use a string literal for the format string.
+> >
+> > Link: https://github.com/ClangBuiltLinux/linux/issues/378
+> > Signed-off-by: Bill Wendling <isanbard@gmail.com>
+> > ---
+> >  drivers/cdrom/cdrom.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/cdrom/cdrom.c b/drivers/cdrom/cdrom.c
+> > index 416f723a2dbb..52b40120c76e 100644
+> > --- a/drivers/cdrom/cdrom.c
+> > +++ b/drivers/cdrom/cdrom.c
+> > @@ -3451,7 +3451,7 @@ static int cdrom_print_info(const char *header, int val, char *info,
+> >       struct cdrom_device_info *cdi;
+> >       int ret;
+> >
+> > -     ret = scnprintf(info + *pos, max_size - *pos, header);
+> > +     ret = scnprintf(info + *pos, max_size - *pos, "%s", header);
+> >       if (!ret)
+> >               return 1;
+> >
+> > --
+> > 2.36.1.255.ge46751e96f-goog
+> >
+>
+> Hi Bill,
+>
+> Thank you for the patch, much appreciated.
+>
+> Looking at this though, all callers of cdrom_print_info() provide 'header'
+> as a string literal defined within the driver, when making the call.
+> Therefore, I'm not convinced this change is necessary for cdrom.c -
+> that said, in this particular use case I don't think it would hurt
+> either.
+>
+> I've followed the other responses on parts of this series, so I
+> understand that a different solution is potentially in the works.
+> Thought I'd respond anyway though out of courtesy.
+>
+Thanks, Phillip.
 
-Probable call trace which can trigger use-after-free:
+I pointed out in a separate response that this specific warning is
+disabled by default, but when I ran into while hacking stuff there
+weren't a lot of places where the warning popped up (at least for x86
+builds) and thought it would be a nice cleanup. I understand if you
+don't think this patch is necessary for your code. There are some
+places where visual inspection of the code is "good enough" to ensure
+that nothing untoward will happen (Greg pointed out a similar thing in
+an mm/ file).
 
-ath9k_htc_probe_device()
-  /* htc_handle->drv_priv = priv; */
-  ath9k_htc_wait_for_target()      <--- Failed
-  ieee80211_free_hw()		   <--- priv pointer is freed
-
-<IRQ>
-...
-ath9k_hif_usb_rx_cb()
-  ath9k_hif_usb_rx_stream()
-   RX_STAT_INC()		<--- htc_handle->drv_priv access
-
-In order to not add fancy protection for drv_priv we can move
-htc_handle->drv_priv initialization at the end of the
-ath9k_htc_probe_device() and add helper macro to make
-all *_STAT_* macros NULL safe, since syzbot has reported related NULL
-deref in that macros [1]
-
-Link: https://syzkaller.appspot.com/bug?id=6ead44e37afb6866ac0c7dd121b4ce07cb665f60 [0]
-Link: https://syzkaller.appspot.com/bug?id=b8101ffcec107c0567a0cd8acbbacec91e9ee8de [1]
-Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
-Reported-and-tested-by: syzbot+03110230a11411024147@syzkaller.appspotmail.com
-Reported-and-tested-by: syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
----
-
-Changes since v5:
-	- No changes
-
-Changes since v4:
-	s/save/safe/ in commit message
-
-Changes since v3:
-	- s/SAVE/SAFE/
-	- Added links to syzkaller reports
-
-Changes since v2:
-	- My send-email script forgot, that mailing lists exist.
-	  Added back all related lists
-
-Changes since v1:
-	- Removed clean-ups and moved them to 2/2
-
----
- drivers/net/wireless/ath/ath9k/htc.h          | 10 +++++-----
- drivers/net/wireless/ath/ath9k/htc_drv_init.c |  3 ++-
- 2 files changed, 7 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/net/wireless/ath/ath9k/htc.h b/drivers/net/wireless/ath/ath9k/htc.h
-index 6b45e63fa..e3d546ef7 100644
---- a/drivers/net/wireless/ath/ath9k/htc.h
-+++ b/drivers/net/wireless/ath/ath9k/htc.h
-@@ -327,11 +327,11 @@ static inline struct ath9k_htc_tx_ctl *HTC_SKB_CB(struct sk_buff *skb)
- }
- 
- #ifdef CONFIG_ATH9K_HTC_DEBUGFS
--
--#define TX_STAT_INC(c) (hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
--#define TX_STAT_ADD(c, a) (hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
--#define RX_STAT_INC(c) (hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
--#define RX_STAT_ADD(c, a) (hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
-+#define __STAT_SAFE(expr) (hif_dev->htc_handle->drv_priv ? (expr) : 0)
-+#define TX_STAT_INC(c) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c++)
-+#define TX_STAT_ADD(c, a) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.tx_stats.c += a)
-+#define RX_STAT_INC(c) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c++)
-+#define RX_STAT_ADD(c, a) __STAT_SAFE(hif_dev->htc_handle->drv_priv->debug.skbrx_stats.c += a)
- #define CAB_STAT_INC   priv->debug.tx_stats.cab_queued++
- 
- #define TX_QSTAT_INC(q) (priv->debug.tx_stats.queue_stats[q]++)
-diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_init.c b/drivers/net/wireless/ath/ath9k/htc_drv_init.c
-index ff61ae34e..07ac88fb1 100644
---- a/drivers/net/wireless/ath/ath9k/htc_drv_init.c
-+++ b/drivers/net/wireless/ath/ath9k/htc_drv_init.c
-@@ -944,7 +944,6 @@ int ath9k_htc_probe_device(struct htc_target *htc_handle, struct device *dev,
- 	priv->hw = hw;
- 	priv->htc = htc_handle;
- 	priv->dev = dev;
--	htc_handle->drv_priv = priv;
- 	SET_IEEE80211_DEV(hw, priv->dev);
- 
- 	ret = ath9k_htc_wait_for_target(priv);
-@@ -965,6 +964,8 @@ int ath9k_htc_probe_device(struct htc_target *htc_handle, struct device *dev,
- 	if (ret)
- 		goto err_init;
- 
-+	htc_handle->drv_priv = priv;
-+
- 	return 0;
- 
- err_init:
--- 
-2.36.1
-
+Cheers!
+-bw
