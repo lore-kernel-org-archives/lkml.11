@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DB50CCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:04:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8496BCCA487
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:04:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235023AbiFMNEx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:04:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49816 "EHLO
+        id S1358761AbiFMNEo (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 09:04:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355981AbiFMMzR (ORCPT
+        with ESMTP id S1354814AbiFMMzu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:55:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D787BB4B5;
-        Mon, 13 Jun 2022 04:15:36 -0700 (PDT)
+        Mon, 13 Jun 2022 08:55:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B100711A3F;
+        Mon, 13 Jun 2022 04:16:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A8DBB80EA7;
-        Mon, 13 Jun 2022 11:15:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A250C34114;
-        Mon, 13 Jun 2022 11:15:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 61C1DB80E93;
+        Mon, 13 Jun 2022 11:16:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B64DCC34114;
+        Mon, 13 Jun 2022 11:16:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118934;
-        bh=7h4rZyqwtDdmYLoZ2kB4nYcPAMuofr5Hp9IrMWAmCj4=;
+        s=korg; t=1655118998;
+        bh=l2YBfg34tk5X/O+rDM5zgYJ6lyiB2LpFE7Bnqfy9WVc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EAhzHgMxWS18uaKf06VjKS7B1P7BuSbEM0GSfm9sgg77oe9QuUqEaVQoLZBJbPe8i
-         4EtsK1thO2HdBuGsqsUOsoB4mjaKOpqxonHNFQY+LJlBs2d/lVV5ruD6kQtYTi3r1R
-         xPf0Yx4J+XdcyizzaLwXeOcTSkt5cWBJFHX6eWGs=
+        b=GxfrQvuSu9q8yR0TCzqd5s86MzeGyzAx07h8zM+LcZyIUbEqTEeGJmTSBkZn7LxUT
+         sfk1NIXC3fm6jj7AyVFHMAjt0TV0h8tV2qAB9xt07eyy7xYMykQySSFZ0eWNMkrMjh
+         WOPXWCgl8ShXILkKweQHJJUwD4twapCETSim0sq4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        stable@vger.kernel.org, Fabien Parent <fparent@baylibre.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 053/247] serial: 8250_fintek: Check SER_RS485_RTS_* only with RS485
-Date:   Mon, 13 Jun 2022 12:09:15 +0200
-Message-Id: <20220613094924.564104849@linuxfoundation.org>
+Subject: [PATCH 5.15 103/247] regulator: mt6315-regulator: fix invalid allowed mode
+Date:   Mon, 13 Jun 2022 12:10:05 +0200
+Message-Id: <20220613094926.080039626@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,56 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+From: Fabien Parent <fparent@baylibre.com>
 
-[ Upstream commit af0179270977508df6986b51242825d7edd59caf ]
+[ Upstream commit 28cbc2d4c54c09a427b18a1604740efb6b2cc2d6 ]
 
-SER_RS485_RTS_ON_SEND and SER_RS485_RTS_AFTER_SEND relate to behavior
-within RS485 operation. The driver checks if they have the same value
-which is not possible to realize with the hardware. The check is taken
-regardless of SER_RS485_ENABLED flag and -EINVAL is returned when the
-check fails, which creates problems.
+In the binding example, the regulator mode 4 is shown as a valid mode,
+but the driver actually only support mode 0 to 2:
 
-This check makes it unnecessarily complicated to turn RS485 mode off as
-simple zeroed serial_rs485 struct will trigger that equal values check.
-In addition, the driver itself memsets its rs485 structure to zero when
-RS485 is disabled but if userspace would try to make an TIOCSRS485
-ioctl() call with the very same struct, it would end up failing with
--EINVAL which doesn't make much sense.
+This generates an error in dmesg when copy/pasting the binding example:
+[    0.306080] vbuck1: invalid regulator-allowed-modes element 4
+[    0.307290] vbuck2: invalid regulator-allowed-modes element 4
 
-Resolve the problem by moving the check inside SER_RS485_ENABLED block.
+This commit fixes this error by removing the invalid mode from the
+examples.
 
-Fixes: 7ecc77011c6f ("serial: 8250_fintek: Return -EINVAL on invalid configuration")
-Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/035c738-8ea5-8b17-b1d7-84a7b3aeaa51@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 977fb5b58469 ("regulator: document binding for MT6315 regulator")
+Signed-off-by: Fabien Parent <fparent@baylibre.com>
+Link: https://lore.kernel.org/r/20220529154613.337559-1-fparent@baylibre.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_fintek.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ .../devicetree/bindings/regulator/mt6315-regulator.yaml       | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
-index 251f0018ae8c..dba5950b8d0e 100644
---- a/drivers/tty/serial/8250/8250_fintek.c
-+++ b/drivers/tty/serial/8250/8250_fintek.c
-@@ -200,12 +200,12 @@ static int fintek_8250_rs485_config(struct uart_port *port,
- 	if (!pdata)
- 		return -EINVAL;
+diff --git a/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml b/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
+index 5d2d989de893..37402c370fbb 100644
+--- a/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
++++ b/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
+@@ -55,7 +55,7 @@ examples:
+           regulator-min-microvolt = <300000>;
+           regulator-max-microvolt = <1193750>;
+           regulator-enable-ramp-delay = <256>;
+-          regulator-allowed-modes = <0 1 2 4>;
++          regulator-allowed-modes = <0 1 2>;
+         };
  
--	/* Hardware do not support same RTS level on send and receive */
--	if (!(rs485->flags & SER_RS485_RTS_ON_SEND) ==
--			!(rs485->flags & SER_RS485_RTS_AFTER_SEND))
--		return -EINVAL;
- 
- 	if (rs485->flags & SER_RS485_ENABLED) {
-+		/* Hardware do not support same RTS level on send and receive */
-+		if (!(rs485->flags & SER_RS485_RTS_ON_SEND) ==
-+		    !(rs485->flags & SER_RS485_RTS_AFTER_SEND))
-+			return -EINVAL;
- 		memset(rs485->padding, 0, sizeof(rs485->padding));
- 		config |= RS485_URA;
- 	} else {
+         vbuck3 {
+@@ -63,7 +63,7 @@ examples:
+           regulator-min-microvolt = <300000>;
+           regulator-max-microvolt = <1193750>;
+           regulator-enable-ramp-delay = <256>;
+-          regulator-allowed-modes = <0 1 2 4>;
++          regulator-allowed-modes = <0 1 2>;
+         };
+       };
+     };
 -- 
 2.35.1
 
