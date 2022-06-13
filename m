@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CCDCC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:10:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62EDCC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:10:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352051AbiFMLKU (ORCPT
+        id S1352064AbiFMLKZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:10:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45188 "EHLO
+        Mon, 13 Jun 2022 07:10:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351891AbiFMLFM (ORCPT
+        with ESMTP id S1351885AbiFMLFL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:05:12 -0400
+        Mon, 13 Jun 2022 07:05:11 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6153B8E;
-        Mon, 13 Jun 2022 03:34:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51CBDE7;
+        Mon, 13 Jun 2022 03:34:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DD744B80E93;
-        Mon, 13 Jun 2022 10:34:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51393C34114;
-        Mon, 13 Jun 2022 10:34:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 10AD4B80E93;
+        Mon, 13 Jun 2022 10:34:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DB20C34114;
+        Mon, 13 Jun 2022 10:34:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116483;
-        bh=SFRuixEsN+amgdTSvKETLyT24V/gjRjW52/3P4yayTA=;
+        s=korg; t=1655116472;
+        bh=x3KhVWC0ll/qL0hqYrVnjfMXp95Ww5ZMIt+AkkTdFUI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q1J92IuBWwrRK5lxGO8x7mFeRXEuzEV/HnhZuEJcjjR+zf8/jPvH5zIxWxbaq13Ke
-         KDAfGLfOmBUcf6ndKuIIqMktA8O+TttHowSM/O4LgQkDAQ+3cLAI0ck35rsm2dGzg1
-         XOUsCSp4MyVpHgHvmntZglodw7Bom03KkHEE9iig=
+        b=IhQdUgDNf4vYE7E/m2Iz1JaohBrIFYG8db7LD/Inffk0TUtiYtOSRdE4weI47tf7s
+         LdvN87roJjowIhGk0foBKLKeyqgKf6MxUcny30LPkkbBV7Yp4QWW4c6k2KurjUuaoN
+         kJvMJfg0KlhDqR6PIWBT/JM8/RisJ/AAtOe/UjbE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 085/411] ASoC: mediatek: Fix missing of_node_put in mt2701_wm8960_machine_probe
-Date:   Mon, 13 Jun 2022 12:05:58 +0200
-Message-Id: <20220613094931.230064802@linuxfoundation.org>
+Subject: [PATCH 4.14 187/218] drivers: tty: serial: Fix deadlock in sa1100_set_termios()
+Date:   Mon, 13 Jun 2022 12:10:45 +0200
+Message-Id: <20220613094926.286902618@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,57 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 05654431a18fe24e5e46a375d98904134628a102 ]
+[ Upstream commit 62b2caef400c1738b6d22f636c628d9f85cd4c4c ]
 
-This node pointer is returned by of_parse_phandle() with
-refcount incremented in this function.
-Calling of_node_put() to avoid the refcount leak.
+There is a deadlock in sa1100_set_termios(), which is shown
+below:
 
-Fixes: 8625c1dbd876 ("ASoC: mediatek: Add mt2701-wm8960 machine driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220404093526.30004-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+   (Thread 1)              |      (Thread 2)
+                           | sa1100_enable_ms()
+sa1100_set_termios()       |  mod_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | sa1100_timeout()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
+
+We hold sport->port.lock in position (1) of thread 1 and
+use del_timer_sync() to wait timer to stop, but timer handler
+also need sport->port.lock in position (2) of thread 2. As a result,
+sa1100_set_termios() will block forever.
+
+This patch moves del_timer_sync() before spin_lock_irqsave()
+in order to prevent the deadlock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417111626.7802-1-duoming@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/mediatek/mt2701/mt2701-wm8960.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/tty/serial/sa1100.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/mediatek/mt2701/mt2701-wm8960.c b/sound/soc/mediatek/mt2701/mt2701-wm8960.c
-index 8c4c89e4c616..b9ad42112ea1 100644
---- a/sound/soc/mediatek/mt2701/mt2701-wm8960.c
-+++ b/sound/soc/mediatek/mt2701/mt2701-wm8960.c
-@@ -129,7 +129,8 @@ static int mt2701_wm8960_machine_probe(struct platform_device *pdev)
- 	if (!codec_node) {
- 		dev_err(&pdev->dev,
- 			"Property 'audio-codec' missing or invalid\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto put_platform_node;
- 	}
- 	for_each_card_prelinks(card, i, dai_link) {
- 		if (dai_link->codecs->name)
-@@ -140,7 +141,7 @@ static int mt2701_wm8960_machine_probe(struct platform_device *pdev)
- 	ret = snd_soc_of_parse_audio_routing(card, "audio-routing");
- 	if (ret) {
- 		dev_err(&pdev->dev, "failed to parse audio-routing: %d\n", ret);
--		return ret;
-+		goto put_codec_node;
+diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
+index fd3d1329d48c..68eb1c9faa29 100644
+--- a/drivers/tty/serial/sa1100.c
++++ b/drivers/tty/serial/sa1100.c
+@@ -452,6 +452,8 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16); 
+ 	quot = uart_get_divisor(port, baud);
+ 
++	del_timer_sync(&sport->timer);
++
+ 	spin_lock_irqsave(&sport->port.lock, flags);
+ 
+ 	sport->port.read_status_mask &= UTSR0_TO_SM(UTSR0_TFS);
+@@ -482,8 +484,6 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
+ 				UTSR1_TO_SM(UTSR1_ROR);
  	}
  
- 	ret = devm_snd_soc_register_card(&pdev->dev, card);
-@@ -148,6 +149,10 @@ static int mt2701_wm8960_machine_probe(struct platform_device *pdev)
- 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
- 			__func__, ret);
- 
-+put_codec_node:
-+	of_node_put(codec_node);
-+put_platform_node:
-+	of_node_put(platform_node);
- 	return ret;
- }
- 
+-	del_timer_sync(&sport->timer);
+-
+ 	/*
+ 	 * Update the per-port timeout.
+ 	 */
 -- 
 2.35.1
 
