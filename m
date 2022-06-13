@@ -2,167 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A731C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 16:13:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B95CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 16:16:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243845AbiFMQNR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 12:13:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52270 "EHLO
+        id S235286AbiFMQQR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 12:16:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238939AbiFMQMW (ORCPT
+        with ESMTP id S241505AbiFMQPz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 12:12:22 -0400
-Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A83A62BB3E
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 07:05:08 -0700 (PDT)
-Received: by mail-qk1-x731.google.com with SMTP id x75so4046782qkb.12
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 07:05:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=2uvE+96AE40B5D9SEjeoO7wUD1uHjMFwPLFqz90kcxE=;
-        b=dhkeAwwgmJlGzbqP5cKO5yLsH/U26Gg3xkWAY1YDtWkEqWqqMDu4/K2hbstXMpqTSt
-         GevejCeT7ehQNUzIuilK4w9PZtRdFNTH26tQfyXq+7VhTmBIyKexpdsgAhhEf7dGSY9A
-         e2P9ajY9fxHp4OjbsaXhXua5poKwvGYLlLNYZUXSnHx4lpV41r1OhdF3rxdM8XF4lMa7
-         Z7qKbIm4tZMzoIGOoDyqnTUxCEq9zf9du61mze01jJwzOslP5UDhE8fwTbL6GzbdbDFU
-         F/zYbS7/c4ljC/t6b+yADrrzc3m1CbW5quBJDoo4LKkAUMF9JuPAjFv9J3fRQk2Wy/TB
-         x38A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2uvE+96AE40B5D9SEjeoO7wUD1uHjMFwPLFqz90kcxE=;
-        b=ySo8QW0XA4IBHByngbBmIFmYCgNakPiN6jd0XQjpYnPJ64rr0I29C5bg09TehGPrn/
-         BPhHJeuICkPBNY+KpTAuBItfmfamdguwEaNM3PrLWIsgquTxariZ6EXf6ZqJh1Fuapdh
-         IgKJIOtnU3vrlnrOTX8iQUjNY1jNVTDD4npq0KjAleirK3DKLUcGzubsqdSiSe5gJqQ3
-         1aSgr/KULwSkHnZxhzoqN8cfIZXylmDfAjTAytG3uDGGZOSdcwpH3rXimpF4+RYBL7Pj
-         xqtAZlN+YsHzNcnm8ZuDLS0lPyWSJBmbO92e8VBbPVyjsHu2/SRpYtjnuWkAu7t/WAt/
-         RvXQ==
-X-Gm-Message-State: AOAM530Yrxr/f7m6giexVtLbeUyhipgOyKehuW10aF8SvS2MrwsnxIbL
-        JkZRhW8Bs5uVvKMLaVBrAvqkFg==
-X-Google-Smtp-Source: ABdhPJyntuMEPzVmsjPDsujYll/edMXAZwa1KP/bBEQ5QkN5fmiDoOpCV9ywmDfGrdr9D/Utn3G6Og==
-X-Received: by 2002:a05:620a:4409:b0:6a7:8480:a89d with SMTP id v9-20020a05620a440900b006a78480a89dmr45807qkp.9.1655129107199;
-        Mon, 13 Jun 2022 07:05:07 -0700 (PDT)
-Received: from localhost ([2620:10d:c091:480::1:2c45])
-        by smtp.gmail.com with ESMTPSA id q14-20020a05620a024e00b0069fc13ce1f2sm6565301qkn.35.2022.06.13.07.05.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 07:05:06 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 10:05:06 -0400
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc:     Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>, linux-mm@kvack.org,
-        akpm@linux-foundation.org, Wei Xu <weixugc@google.com>,
-        Huang Ying <ying.huang@intel.com>,
-        Greg Thelen <gthelen@google.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        David Rientjes <rientjes@google.com>
-Subject: Re: [PATCH v5 1/9] mm/demotion: Add support for explicit memory tiers
-Message-ID: <YqdEEhJFr3SlfvSJ@cmpxchg.org>
-References: <20220603134237.131362-2-aneesh.kumar@linux.ibm.com>
- <YqCuE87gCcrnAiXG@cmpxchg.org>
- <YqDGYjgjcS5OoS3P@cmpxchg.org>
- <a4af7598-7bd3-0e70-a434-b1237ca403d6@linux.ibm.com>
- <YqDncfLeEeBaosrY@cmpxchg.org>
- <02ee2c97-3bca-8eb6-97d8-1f8743619453@linux.ibm.com>
- <YqH74WaUzJlb+smt@cmpxchg.org>
- <20220609152243.00000332@Huawei.com>
- <YqJa4N/VlS4zN4vf@cmpxchg.org>
- <20220610105708.0000679b@Huawei.com>
+        Mon, 13 Jun 2022 12:15:55 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 573C21BBAC7;
+        Mon, 13 Jun 2022 07:11:31 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 55EEF21BF6;
+        Mon, 13 Jun 2022 14:11:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1655129490; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9E+o4Ky9bBY7s0UMfZpgf+q0GGL3GUPMLh+CXNxGns8=;
+        b=nonkym9/vs+hiD9DrLlSt8bXIOiX+sGqXWJEFlSqj0bab/6szJrEIzEQXNcn2iKV8aUJko
+        fm5MrnZUcboOH3W064euvLQTExmPomsFbHbWqVqkUN4OcYaUaEVRD1jQsjgfDkxE1JSpXG
+        9vWHbrw+WA20V32PwtEuztdW/OkWLaE=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id E9DBD2C141;
+        Mon, 13 Jun 2022 14:11:29 +0000 (UTC)
+Date:   Mon, 13 Jun 2022 16:11:29 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Christian =?iso-8859-1?Q?K=F6nig?= 
+        <ckoenig.leichtzumerken@gmail.com>
+Cc:     Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        intel-gfx@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
+        nouveau@lists.freedesktop.org, linux-tegra@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        alexander.deucher@amd.com, daniel@ffwll.ch,
+        viro@zeniv.linux.org.uk, akpm@linux-foundation.org,
+        hughd@google.com, andrey.grodzovsky@amd.com
+Subject: Re: [PATCH 03/13] mm: shmem: provide oom badness for shmem files
+Message-ID: <YqdFkfLVFUD5K6EK@dhcp22.suse.cz>
+References: <YqIMmK18mb/+s5de@dhcp22.suse.cz>
+ <3f7d3d96-0858-fb6d-07a3-4c18964f888e@gmail.com>
+ <YqMuq/ZrV8loC3jE@dhcp22.suse.cz>
+ <2e7e050e-04eb-0c0a-0675-d7f1c3ae7aed@amd.com>
+ <YqNSSFQELx/LeEHR@dhcp22.suse.cz>
+ <288528c3-411e-fb25-2f08-92d4bb9f1f13@gmail.com>
+ <Yqbq/Q5jz2ou87Jx@dhcp22.suse.cz>
+ <b8b9aba5-575e-8a34-e627-79bef4ed7f97@amd.com>
+ <YqcpZY3Xx7Mk2ROH@dhcp22.suse.cz>
+ <34daa8ab-a9f4-8f7b-0ea7-821bc36b9497@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220610105708.0000679b@Huawei.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <34daa8ab-a9f4-8f7b-0ea7-821bc36b9497@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 10:57:08AM +0100, Jonathan Cameron wrote:
-> On Thu, 9 Jun 2022 16:41:04 -0400
-> Johannes Weiner <hannes@cmpxchg.org> wrote:
-> > On Thu, Jun 09, 2022 at 03:22:43PM +0100, Jonathan Cameron wrote:
-> > Would it make more sense to have the platform/devicetree/driver
-> > provide more fine-grained distance values similar to NUMA distances,
-> > and have a driver-scope tunable to override/correct? And then have the
-> > distance value function as the unique tier ID and rank in one.
+On Mon 13-06-22 14:55:54, Christian König wrote:
+> Am 13.06.22 um 14:11 schrieb Michal Hocko:
+> > [SNIP]
+> > > > > Alternative I could try to track the "owner" of a buffer (e.g. a shmem
+> > > > > file), but then it can happen that one processes creates the object and
+> > > > > another one is writing to it and actually allocating the memory.
+> > > > If you can enforce that the owner is really responsible for the
+> > > > allocation then all should be fine. That would require MAP_POPULATE like
+> > > > semantic and I suspect this is not really feasible with the existing
+> > > > userspace. It would be certainly hard to enforce for bad players.
+> > > I've tried this today and the result was: "BUG: Bad rss-counter state
+> > > mm:000000008751d9ff type:MM_FILEPAGES val:-571286".
+> > > 
+> > > The problem is once more that files are not informed when the process
+> > > clones. So what happened is that somebody called fork() with an mm_struct
+> > > I've accounted my pages to. The result is just that we messed up the
+> > > rss_stats and  the the "BUG..." above.
+> > > 
+> > > The key difference between normal allocated pages and the resources here is
+> > > just that we are not bound to an mm_struct in any way.
+> > It is not really clear to me what exactly you have tried.
 > 
-> Absolutely a good thing to provide that information, but it's black
-> magic. There are too many contradicting metrics (latency vs bandwidth etc)
-> even not including a more complex system model like Jerome Glisse proposed
-> a few years back. https://lore.kernel.org/all/20190118174512.GA3060@redhat.com/
-> CXL 2.0 got this more right than anything else I've seen as provides
-> discoverable topology along with details like latency to cross between
-> particular switch ports.  Actually using that data (other than by throwing
-> it to userspace controls for HPC apps etc) is going to take some figuring out.
-> Even the question of what + how we expose this info to userspace is non
-> obvious.
-
-Right, I don't think those would be scientifically accurate - but
-neither is a number between 1 and 3. The way I look at it is more
-about spreading out the address space a bit, to allow expressing
-nuanced differences without risking conflicts and overlaps. Hopefully
-this results in the shipped values stabilizing over time and thus
-requiring less and less intervention and overriding from userspace.
-
-> > Going further, it could be useful to separate the business of hardware
-> > properties (and configuring quirks) from the business of configuring
-> > MM policies that should be applied to the resulting tier hierarchy.
-> > They're somewhat orthogonal tuning tasks, and one of them might become
-> > obsolete before the other (if the quality of distance values provided
-> > by drivers improves before the quality of MM heuristics ;). Separating
-> > them might help clarify the interface for both designers and users.
-> > 
-> > E.g. a memdev class scope with a driver-wide distance value, and a
-> > memdev scope for per-device values that default to "inherit driver
-> > value". The memtier subtree would then have an r/o structure, but
-> > allow tuning per-tier interleaving ratio[1], demotion rules etc.
+> I've tried to track the "owner" of a driver connection by keeping a
+> reference to the mm_struct who created this connection inside our file
+> private and then use add_mm_counter() to account all the allocations of the
+> driver to this mm_struct.
 > 
-> Ok that makes sense.  I'm not sure if that ends up as an implementation
-> detail, or effects the userspace interface of this particular element.
-> 
-> I'm not sure completely read only is flexible enough (though mostly RO is fine)
-> as we keep sketching out cases where any attempt to do things automatically
-> does the wrong thing and where we need to add an extra tier to get
-> everything to work.  Short of having a lot of tiers I'm not sure how
-> we could have the default work well.  Maybe a lot of "tiers" is fine
-> though perhaps we need to rename them if going this way and then they
-> don't really work as current concept of tier.
-> 
-> Imagine a system with subtle difference between different memories such
-> as 10% latency increase for same bandwidth.  To get an advantage from
-> demoting to such a tier will require really stable usage and long
-> run times. Whilst you could design a demotion scheme that takes that
-> into account, I think we are a long way from that today.
+> This works to the extend that now the right process is killed in an OOM
+> situation. The problem with this approach is that the driver is not informed
+> about operations like fork() or clone(), so what happens is that after a
+> fork()/clone() we have an unbalanced rss-counter.
 
-Good point: there can be a clear hardware difference, but it's a
-policy choice whether the MM should treat them as one or two tiers.
+Yes, I do not think you can make per-process accounting without a
+concept of the per-process ownership.
 
-What do you think of a per-driver/per-device (overridable) distance
-number, combined with a configurable distance cutoff for what
-constitutes separate tiers. E.g. cutoff=20 means two devices with
-distances of 10 and 20 respectively would be in the same tier, devices
-with 10 and 100 would be in separate ones. The kernel then generates
-and populates the tiers based on distances and grouping cutoff, and
-populates the memtier directory tree and nodemasks in sysfs.
+> Let me maybe get back to the initial question: We have resources which are
+> not related to the virtual address space of a process, how should we tell
+> the OOM killer about them?
 
-It could be simple tier0, tier1, tier2 numbering again, but the
-numbers now would mean something to the user. A rank tunable is no
-longer necessary.
+I would say memcg, but we have discussed this already...
 
-I think even the nodemasks in the memtier tree could be read-only
-then, since corrections should only be necessary when either the
-device distance is wrong or the tier grouping cutoff.
+I do not think that exposing a resource (in a form of a counter
+or something like that) is sufficient. The existing oom killer
+implementation is hevily process centric (with memcg extension for
+grouping but not changing the overall design in principle). If you
+want to make it aware of resources which are not directly accounted to
+processes then a a new implementation is necessary IMHO. You would need
+to evaluate those resources and kill all the tasks that can hold on that
+resource.
 
-Can you think of scenarios where that scheme would fall apart?
+This is also the reason why I am not really fan of the per file
+badness because it adds a notion of resource that is not process bound
+in general so it will add all sorts of weird runtime corner cases which
+are impossible to anticipate [*]. Maybe that will work in some scenarios
+but definitely not something to be done by default without users opting
+into that and being aware of consequences. 
+
+There have been discussions that the existing oom implementation cannot
+fit all potential usecases so maybe we need to finally decide to use a
+plugable, BPFable etc architecture allow implementations that fit
+specific needs.
+
+[*] I know it is not directly related but kinda similar. In the past
+we used to have heuristics to consider work done as a resource . That is
+kill younger processes preferably to reduce the damage.  This has turned
+out to have a very unpredictable behavior and many complains by
+users. Situation has improved when the selection was solely based on
+rss. This has its own cons of course but at least they are predictable.
+-- 
+Michal Hocko
+SUSE Labs
