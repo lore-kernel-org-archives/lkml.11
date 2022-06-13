@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B42DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:32:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97008C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:32:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352246AbiFMMcZ (ORCPT
+        id S1349559AbiFMMcd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:32:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41878 "EHLO
+        Mon, 13 Jun 2022 08:32:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357799AbiFMM32 (ORCPT
+        with ESMTP id S1357792AbiFMM32 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 08:29:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E5DA5A161;
-        Mon, 13 Jun 2022 04:06:34 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E566B5A17D;
+        Mon, 13 Jun 2022 04:06:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C2F0614DC;
-        Mon, 13 Jun 2022 11:06:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76A53C34114;
-        Mon, 13 Jun 2022 11:06:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E720FB80EB0;
+        Mon, 13 Jun 2022 11:06:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C0C1C34114;
+        Mon, 13 Jun 2022 11:06:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118377;
-        bh=c2tgN3p+zjBZ0UI8I3rzEyvmKixlS5QbGliVZrXxf60=;
+        s=korg; t=1655118380;
+        bh=8BoynCpX+u4I5/YqdrBHR3fbnfwcdAcU8vKEBjbNWAQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aAtHU7n6vCVOVGYCj29+QkYm/zMjLqvULxGhKwhHJ9eMPDyxP/+fDvdNZCtEwe2SL
-         KUsSE44faOCOt5QVKF4gbON/N2Dp0K1xI0oBj2gWBLnbqQy1mpNgek6FFmBrgkT8R2
-         /TY+qxvlLaM0O2QXTHoTQl8HbXtdVyoBdLUlCAVA=
+        b=PgiFo8SgRTvBIoiFc009+n+runA1n1IKsoq1LhbC1B+G2/fCyCfLP0rzHF9QxkKqK
+         VTmRbr8BacxIQhkzYiSArwq67g4RKHrJZ7psUXPAku9lnSCiP3neWKSop8tkyJ8PBD
+         W5sHhsGqGh7LJrMPnK6dUvgS/be3aM6KfMqHWQAQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Leo Yan <leo.yan@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Mike Leach <mike.leach@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 027/172] coresight: cpu-debug: Replace mutex with mutex_trylock on panic notifier
-Date:   Mon, 13 Jun 2022 12:09:47 +0200
-Message-Id: <20220613094856.943105489@linuxfoundation.org>
+Subject: [PATCH 5.10 047/172] ASoC: fsl_sai: Fix FSL_SAI_xDR/xFR definition
+Date:   Mon, 13 Jun 2022 12:10:07 +0200
+Message-Id: <20220613094901.706782846@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -53,61 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guilherme G. Piccoli <gpiccoli@igalia.com>
+From: Shengjiu Wang <shengjiu.wang@nxp.com>
 
-[ Upstream commit 1adff542d67a2ed1120955cb219bfff8a9c53f59 ]
+[ Upstream commit e4dd748dc87cf431af7b3954963be0d9f6150217 ]
 
-The panic notifier infrastructure executes registered callbacks when
-a panic event happens - such callbacks are executed in atomic context,
-with interrupts and preemption disabled in the running CPU and all other
-CPUs disabled. That said, mutexes in such context are not a good idea.
+There are multiple xDR and xFR registers, the index is
+from 0 to 7. FSL_SAI_xDR and FSL_SAI_xFR is abandoned,
+replace them with FSL_SAI_xDR0 and FSL_SAI_xFR0.
 
-This patch replaces a regular mutex with a mutex_trylock safer approach;
-given the nature of the mutex used in the driver, it should be pretty
-uncommon being unable to acquire such mutex in the panic path, hence
-no functional change should be observed (and if it is, that would be
-likely a deadlock with the regular mutex).
-
-Fixes: 2227b7c74634 ("coresight: add support for CPU debug module")
-Cc: Leo Yan <leo.yan@linaro.org>
-Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc: Mike Leach <mike.leach@linaro.org>
-Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
-Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
-Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-Signed-off-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-Link: https://lore.kernel.org/r/20220427224924.592546-10-gpiccoli@igalia.com
+Fixes: 4f7a0728b530 ("ASoC: fsl_sai: Add support for SAI new version")
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Link: https://lore.kernel.org/r/1653284661-18964-1-git-send-email-shengjiu.wang@nxp.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwtracing/coresight/coresight-cpu-debug.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ sound/soc/fsl/fsl_sai.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/hwtracing/coresight/coresight-cpu-debug.c b/drivers/hwtracing/coresight/coresight-cpu-debug.c
-index 2dcf13de751f..1e98562f4287 100644
---- a/drivers/hwtracing/coresight/coresight-cpu-debug.c
-+++ b/drivers/hwtracing/coresight/coresight-cpu-debug.c
-@@ -379,9 +379,10 @@ static int debug_notifier_call(struct notifier_block *self,
- 	int cpu;
- 	struct debug_drvdata *drvdata;
+diff --git a/sound/soc/fsl/fsl_sai.h b/sound/soc/fsl/fsl_sai.h
+index 4bbcd0dbe8f1..8923c680f0e0 100644
+--- a/sound/soc/fsl/fsl_sai.h
++++ b/sound/soc/fsl/fsl_sai.h
+@@ -80,8 +80,8 @@
+ #define FSL_SAI_xCR3(tx, ofs)	(tx ? FSL_SAI_TCR3(ofs) : FSL_SAI_RCR3(ofs))
+ #define FSL_SAI_xCR4(tx, ofs)	(tx ? FSL_SAI_TCR4(ofs) : FSL_SAI_RCR4(ofs))
+ #define FSL_SAI_xCR5(tx, ofs)	(tx ? FSL_SAI_TCR5(ofs) : FSL_SAI_RCR5(ofs))
+-#define FSL_SAI_xDR(tx, ofs)	(tx ? FSL_SAI_TDR(ofs) : FSL_SAI_RDR(ofs))
+-#define FSL_SAI_xFR(tx, ofs)	(tx ? FSL_SAI_TFR(ofs) : FSL_SAI_RFR(ofs))
++#define FSL_SAI_xDR0(tx)	(tx ? FSL_SAI_TDR0 : FSL_SAI_RDR0)
++#define FSL_SAI_xFR0(tx)	(tx ? FSL_SAI_TFR0 : FSL_SAI_RFR0)
+ #define FSL_SAI_xMR(tx)		(tx ? FSL_SAI_TMR : FSL_SAI_RMR)
  
--	mutex_lock(&debug_lock);
-+	/* Bail out if we can't acquire the mutex or the functionality is off */
-+	if (!mutex_trylock(&debug_lock))
-+		return NOTIFY_DONE;
- 
--	/* Bail out if the functionality is disabled */
- 	if (!debug_enable)
- 		goto skip_dump;
- 
-@@ -400,7 +401,7 @@ static int debug_notifier_call(struct notifier_block *self,
- 
- skip_dump:
- 	mutex_unlock(&debug_lock);
--	return 0;
-+	return NOTIFY_DONE;
- }
- 
- static struct notifier_block debug_notifier = {
+ /* SAI Transmit/Receive Control Register */
 -- 
 2.35.1
 
