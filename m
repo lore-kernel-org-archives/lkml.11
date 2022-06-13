@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACA50C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:22:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CC7DCCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:22:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382662AbiFMOWj (ORCPT
+        id S1382958AbiFMOWo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:22:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41574 "EHLO
+        Mon, 13 Jun 2022 10:22:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383555AbiFMOQF (ORCPT
+        with ESMTP id S1383564AbiFMOQG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:16:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A61009EB60;
-        Mon, 13 Jun 2022 04:43:24 -0700 (PDT)
+        Mon, 13 Jun 2022 10:16:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B4799EB7D;
+        Mon, 13 Jun 2022 04:43:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A7670B80D31;
-        Mon, 13 Jun 2022 11:43:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E472C3411B;
-        Mon, 13 Jun 2022 11:43:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B81D613F9;
+        Mon, 13 Jun 2022 11:43:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 697C4C34114;
+        Mon, 13 Jun 2022 11:43:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120601;
-        bh=BLK0FkCC59iYGwOJeMojtafFTczPpvl2QeNDU3bI/vQ=;
+        s=korg; t=1655120606;
+        bh=TGB8fvzfl3YhMocGqLbDYunFAdllXXLShxgvHAoCEIk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y9ZjJmoDOdJmWRz36Y2agfl74NWbWJucidEAolTLKDJcRh7tuZVG6jutPhGImeif4
-         +TJqieVGdJUGK+9apBhtYSFWvuGUSiAFOsitZdmilzQkbHIGxjb8knxJ2FX9PC9CMa
-         4/elQgTi4pMOtH3unKy43T30TPC8rtlwQM2Hrckc=
+        b=NmyKRuO26tFJjZB5ED4Haknjuv1NkE0yCMZ873n8xYLruFOhj73rq0SUJPi3VlWwo
+         aM2r7lNiwu8tjPC1QPlpV51h6Vz+YssSANl0okWxrn/eIRaxr3V2jkxLk5pRpyYIPV
+         ChUQ7V2b49rLvGjH31kxNDRZA7KD+95CAGBxY+Ac=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Romain Naour <romain.naour@smile.fr>,
-        Tony Lindgren <tony@atomide.com>,
+        stable@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 068/298] bus: ti-sysc: Fix warnings for unbind for serial
-Date:   Mon, 13 Jun 2022 12:09:22 +0200
-Message-Id: <20220613094927.009154999@linuxfoundation.org>
+Subject: [PATCH 5.17 060/298] serial: digicolor-usart: Dont allow CS5-6
+Date:   Mon, 13 Jun 2022 12:09:14 +0200
+Message-Id: <20220613094926.769236669@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,43 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Lindgren <tony@atomide.com>
+From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-[ Upstream commit c337125b8834f9719dfda0e40b25eaa266f1b8cf ]
+[ Upstream commit fd63031b8c0763addcecdefe0e0c59d49646204e ]
 
-We can get "failed to disable" clock_unprepare warnings on unbind at least
-for the serial console device if the unbind is done before the device has
-been idled.
+Only CS7 and CS8 seem supported but CSIZE is not sanitized to CS8 in
+the default: block.
 
-As some devices are using deferred idle, we must check the status for
-pending idle work to idle the device.
+Set CSIZE correctly so that userspace knows the effective value.
+Incorrect CSIZE also results in miscalculation of the frame bits in
+tty_get_char_size() or in its predecessor where the roughly the same
+code is directly within uart_update_timeout().
 
-Fixes: 76f0f772e469 ("bus: ti-sysc: Improve handling for no-reset-on-init and no-idle-on-init")
-Cc: Romain Naour <romain.naour@smile.fr>
-Reviewed-by: Romain Naour <romain.naour@smile.fr>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
-Link: https://lore.kernel.org/r/20220512053021.61650-1-tony@atomide.com
+Fixes: 5930cb3511df (serial: driver for Conexant Digicolor USART)
+Acked-by: Baruch Siach <baruch@tkos.co.il>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Link: https://lore.kernel.org/r/20220519081808.3776-3-ilpo.jarvinen@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bus/ti-sysc.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/tty/serial/digicolor-usart.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/bus/ti-sysc.c b/drivers/bus/ti-sysc.c
-index 7a1b1f9e4933..70d00cea9d22 100644
---- a/drivers/bus/ti-sysc.c
-+++ b/drivers/bus/ti-sysc.c
-@@ -3395,7 +3395,9 @@ static int sysc_remove(struct platform_device *pdev)
- 	struct sysc *ddata = platform_get_drvdata(pdev);
- 	int error;
+diff --git a/drivers/tty/serial/digicolor-usart.c b/drivers/tty/serial/digicolor-usart.c
+index c7f81aa1ce91..5fea9bf86e85 100644
+--- a/drivers/tty/serial/digicolor-usart.c
++++ b/drivers/tty/serial/digicolor-usart.c
+@@ -309,6 +309,8 @@ static void digicolor_uart_set_termios(struct uart_port *port,
+ 	case CS8:
+ 	default:
+ 		config |= UA_CONFIG_CHAR_LEN;
++		termios->c_cflag &= ~CSIZE;
++		termios->c_cflag |= CS8;
+ 		break;
+ 	}
  
--	cancel_delayed_work_sync(&ddata->idle_work);
-+	/* Device can still be enabled, see deferred idle quirk in probe */
-+	if (cancel_delayed_work_sync(&ddata->idle_work))
-+		ti_sysc_idle(&ddata->idle_work.work);
- 
- 	error = pm_runtime_resume_and_get(ddata->dev);
- 	if (error < 0) {
 -- 
 2.35.1
 
