@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F173DCCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2762CCA47F
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:06:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381690AbiFMOEl (ORCPT
+        id S1381590AbiFMOEc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:04:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34832 "EHLO
+        Mon, 13 Jun 2022 10:04:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381214AbiFMN4O (ORCPT
+        with ESMTP id S1380823AbiFMNzK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:56:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 217D7880C8;
-        Mon, 13 Jun 2022 04:36:42 -0700 (PDT)
+        Mon, 13 Jun 2022 09:55:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D11F7819A3;
+        Mon, 13 Jun 2022 04:36:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 51754612AC;
-        Mon, 13 Jun 2022 11:36:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62CE1C34114;
-        Mon, 13 Jun 2022 11:36:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7EBBFB80EC8;
+        Mon, 13 Jun 2022 11:35:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4FE6C34114;
+        Mon, 13 Jun 2022 11:35:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120201;
-        bh=WNRbdnu9zN71jyTXYMJ9X9d3clP+NxZi3j+Y7jPJ+cM=;
+        s=korg; t=1655120158;
+        bh=hfRMViOCfvBLVUHj4KYsbjEGrRKSChZANtWUT50oN6c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vdd/QaSWBP5IADRBYhSBh4s0Y8jbDLsYSmEQQe8iyxdXKG4c5MAOmJRICvRjUMfdv
-         BEgqD5CT65qCwrLBajaMSkl5U2h0NIA4M4dKrVMOsNTIiI1mkm5eQ4ypOWR4/homLx
-         uvDY0h8Lz+HesThshr4wWpvdlDVyhip8907g3B6M=
+        b=rq2XSbZbf5TM0ALxio+1pAsZv/VJaaHug6iTItBeN0Rn2New7dOT9NbeOMIDy4o8z
+         VkFucI4srRHbvIE7DhXGWf6imduCcY+Unw5hJ6u/awUBZ2zYpurTCYx9WEPk+SlIwB
+         eGOVeqVn+LJTvN6F1OR0Ch2IVtiAgGgzLlQ1VTaA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gong Yuanjun <ruc_gongyuanjun@163.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 267/339] drm/amd/pm: fix a potential gpu_metrics_table memory leak
-Date:   Mon, 13 Jun 2022 12:11:32 +0200
-Message-Id: <20220613094934.745789090@linuxfoundation.org>
+Subject: [PATCH 5.18 271/339] modpost: fix undefined behavior of is_arm_mapping_symbol()
+Date:   Mon, 13 Jun 2022 12:11:36 +0200
+Message-Id: <20220613094934.863595158@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,32 +50,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gong Yuanjun <ruc_gongyuanjun@163.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-[ Upstream commit d2f4460a3d9502513419f06cc376c7ade49d5753 ]
+[ Upstream commit d6b732666a1bae0df3c3ae06925043bba34502b1 ]
 
-gpu_metrics_table is allocated in yellow_carp_init_smc_tables() but
-not freed in yellow_carp_fini_smc_tables().
+The return value of is_arm_mapping_symbol() is unpredictable when "$"
+is passed in.
 
-Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+strchr(3) says:
+  The strchr() and strrchr() functions return a pointer to the matched
+  character or NULL if the character is not found. The terminating null
+  byte is considered part of the string, so that if c is specified as
+  '\0', these functions return a pointer to the terminator.
+
+When str[1] is '\0', strchr("axtd", str[1]) is not NULL, and str[2] is
+referenced (i.e. buffer overrun).
+
+Test code
+---------
+
+  char str1[] = "abc";
+  char str2[] = "ab";
+
+  strcpy(str1, "$");
+  strcpy(str2, "$");
+
+  printf("test1: %d\n", is_arm_mapping_symbol(str1));
+  printf("test2: %d\n", is_arm_mapping_symbol(str2));
+
+Result
+------
+
+  test1: 0
+  test2: 1
+
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c | 3 +++
- 1 file changed, 3 insertions(+)
+ scripts/mod/modpost.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c
-index 87257b1b028f..feff4f8c927c 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.c
-@@ -190,6 +190,9 @@ static int yellow_carp_fini_smc_tables(struct smu_context *smu)
- 	kfree(smu_table->watermarks_table);
- 	smu_table->watermarks_table = NULL;
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index d81019db9da4..b28344fd7408 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -1267,7 +1267,8 @@ static int secref_whitelist(const struct sectioncheck *mismatch,
  
-+	kfree(smu_table->gpu_metrics_table);
-+	smu_table->gpu_metrics_table = NULL;
-+
- 	return 0;
+ static inline int is_arm_mapping_symbol(const char *str)
+ {
+-	return str[0] == '$' && strchr("axtd", str[1])
++	return str[0] == '$' &&
++	       (str[1] == 'a' || str[1] == 'd' || str[1] == 't' || str[1] == 'x')
+ 	       && (str[2] == '\0' || str[2] == '.');
  }
  
 -- 
