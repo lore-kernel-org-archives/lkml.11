@@ -2,98 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 252E4C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:19:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F901C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:19:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348080AbiFMVS7 (ORCPT
+        id S1352031AbiFMVTF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 17:18:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51968 "EHLO
+        Mon, 13 Jun 2022 17:19:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352090AbiFMVSU (ORCPT
+        with ESMTP id S1352015AbiFMVSG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 17:18:20 -0400
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C60B12082;
-        Mon, 13 Jun 2022 14:00:58 -0700 (PDT)
-Received: by mail-qt1-x829.google.com with SMTP id hh4so4780893qtb.10;
-        Mon, 13 Jun 2022 14:00:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=gWdErLqInvM1ccInRYlKQ/aTN1Wa+cjq/iTF3o1VN9I=;
-        b=bwIHsfewcGBOdBcc4rM9cpENx12C9rDMD5KZHB4fAEQ0jH9IzRN3Dwvr09S3VKJqvk
-         Es8clTWrPeBKgS6xy/z1URARKdS6mjSErjKmkU+FWHmnd7pO02dQD8/gYhYero6NlcWt
-         4l6GBn0FcjAP/gkAmdbj5oQmu9q3Mk/vbYK/1Qnn1Ip6Zs1EPyCLwbiBusqamrJscW6v
-         PtrI6E0EeSMq7nAckFG9FI5ftWlkP/sah696iveqSZwnP9nzEFC3LkCjMgJcwMvuM49K
-         YsjspgYUNaZ3fCT5rnHdeEjNwCX1oJYeXB13oecOzikt5rmLP29UawZa4c09dN16fRHE
-         Sc9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=gWdErLqInvM1ccInRYlKQ/aTN1Wa+cjq/iTF3o1VN9I=;
-        b=xyW39CT16w68Fn+dCpYfiQ7Jc1TCwDRSCYmFeLBdS6viDPZ3Pg5OtYIRu7PkYD+lPW
-         6EdyyP8QSNnHqRcHwwczAurEaBCOGInYJRr3LlS1XvA+pziY0x6Zrpfo2G6zCnt/lyFZ
-         fG7ybJ8OWvP/Dtv8iEhDEezHWQNEQE+TrhvITEAMI6E6F1dLNi1XirXjV0YlCV/O+g+d
-         DdNoT7K3hUfIMcdgSqXJVS/gUUHkZyFkXOJZSn6OiTQhpI7x6EMhILELsdGqyAjRsrWh
-         jFA/bz04+bmyYCyG3n1CY+ygOUFtBFoswoxLWYZvOp3c/5Ds76n/6+eIpu9shF0k/PBP
-         qIWw==
-X-Gm-Message-State: AOAM531PazIdoIrmALqhc5ADwQZhzbSgqJEsAnkAvpfBk+Gm5d3CTWhu
-        xRgUV61P3walXuo5Q7gyG1E=
-X-Google-Smtp-Source: ABdhPJw/GpF9MPk9/djp9w3tlTLFzalidGv3+Xfed7VOMHSvwTI2pZM9UEx9e3K1b3XAttVm4dg/8Q==
-X-Received: by 2002:ac8:7fc1:0:b0:304:ed32:4463 with SMTP id b1-20020ac87fc1000000b00304ed324463mr1562341qtk.504.1655154057141;
-        Mon, 13 Jun 2022 14:00:57 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id y11-20020ac87c8b000000b00304eb8e880dsm5532781qtv.23.2022.06.13.14.00.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Jun 2022 14:00:56 -0700 (PDT)
-Message-ID: <4d56c202-ed90-4385-6075-568ab7c8aa5c@gmail.com>
-Date:   Mon, 13 Jun 2022 14:00:53 -0700
+        Mon, 13 Jun 2022 17:18:06 -0400
+Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D8C147060
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:00:45 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id 39565C01D; Mon, 13 Jun 2022 23:00:43 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1655154043; bh=hbjlIsPkm7Pdw1vKt/fEMjXNUukRrKqZfsATzfBGdhI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=aUclKhe0qUUXxJVj3as+72ZyUR2Mdt4qSYLf9TJPdVbqDzlPkitddPgzPxxC7T4M0
+         ILx6q0v/NOVegp1C4dD/nxABDGhU7MqoFue+UZALvKJZdzBC6WGWdx0Ho9EdsuRlqr
+         ptXjp7XPNwomOPNtQyaM/N+Otti4b6vZDbcbpxfx+5rG3zDVXWBkrsmfXixReV3O4b
+         Lp7KEN2/IlVOcNN6fCCfdqpShAD1oNqcrVgK3v7oTfyBsEJrXzO1tEM/v3OrbXa8yg
+         GZN6OtHSlkFBfikloQO/9d5m3ZgQgYlZRg+pgCdl5fk+JJ25YRLeGo+4RXbrtrX3iR
+         cNPTTOPtWZYlQ==
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 67266C009;
+        Mon, 13 Jun 2022 23:00:41 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1655154042; bh=hbjlIsPkm7Pdw1vKt/fEMjXNUukRrKqZfsATzfBGdhI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=xFktnS+NHA+NVGMei1DidQmfBeYBsl1yQecTuPCUxTmkNTgCiGsnrsFDvr9LVfBWJ
+         qZ8gR8rqIdPe9IPllqYo9KS3S8+pLDE8m/KKH/RFrp4DPKaE7+J4syA2zJV7lRDY/Z
+         byYBoa5nMq3LE7oHKCEO8bosF5fSAwoh9yNv2evr3hs8LC0/1euxRhBb2EKi5UZWQx
+         VsE5pxM77qWoZn34VzKH91rX/5J2pBuHeSt5XNMvtVN2TCLv2MzNPPOpfwn5bmrQ90
+         GDUhj2w7DdmFtWphQCJUAuFVU0oTUBnwaxN09sw0w3jqAx5GVL7hzxhu89Bf+vWiUS
+         KCEx2zDqREJow==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id d2cce1e8;
+        Mon, 13 Jun 2022 21:00:36 +0000 (UTC)
+Date:   Tue, 14 Jun 2022 06:00:21 +0900
+From:   Dominique Martinet <asmadeus@codewreck.org>
+To:     Tyler Hicks <tyhicks@linux.microsoft.com>
+Cc:     Christian Schoenebeck <linux_oss@crudebyte.com>,
+        v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 00/06] fid refcounting improvements and fixes
+Message-ID: <YqelZWe4BJfDkYEd@codewreck.org>
+References: <20220612085330.1451496-1-asmadeus@codewreck.org>
+ <20220613202053.GI7401@sequoia>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 5.15 000/251] 5.15.47-rc2 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-References: <20220613181847.216528857@linuxfoundation.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220613181847.216528857@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220613202053.GI7401@sequoia>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/13/22 11:19, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.47 release.
-> There are 251 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+Tyler Hicks wrote on Mon, Jun 13, 2022 at 03:20:53PM -0500:
+> On 2022-06-12 17:53:23, Dominique Martinet wrote:
+> > @@ -222,7 +221,8 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct dentry *dentry,
+> >                  * We need to hold rename lock when doing a multipath
+> >                  * walk to ensure none of the patch component change
+> >                  */
+> > -               fid = p9_client_walk(old_fid, l, &wnames[i], clone);
+> > +               fid = p9_client_walk(old_fid, l, &wnames[i],
+> > +                                    old_fid == root_fid /* clone */);
 > 
-> Responses should be made by Wed, 15 Jun 2022 18:18:03 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.47-rc2.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
+> This is no problem at all. The rebased patches look good to me. Squash
+> your fix to my fix and it should be ready to go.
 
-On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
+Thanks for all your reviews :)
+I've rebased my branch if you want to check:
+https://github.com/martinetd/linux/commits/9p-next
 
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+We've just started a cycle so I'll submit the first three patches (fixes
+to stable) next week, and the rest for when 5.20 cycle starts.
+Feel free to remind me if it looks like I forgot.
 -- 
-Florian
+Dominique
