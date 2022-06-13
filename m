@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0EC6CCA496
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E13F6CCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383277AbiFMOPi (ORCPT
+        id S1382852AbiFMOOv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:15:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51880 "EHLO
+        Mon, 13 Jun 2022 10:14:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382454AbiFMOFw (ORCPT
+        with ESMTP id S1381405AbiFMOET (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:05:52 -0400
+        Mon, 13 Jun 2022 10:04:19 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB0FC95A12;
-        Mon, 13 Jun 2022 04:40:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AF3B2BB21;
+        Mon, 13 Jun 2022 04:39:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6C76DB80ECD;
-        Mon, 13 Jun 2022 11:40:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7858C3411C;
-        Mon, 13 Jun 2022 11:40:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 30416B80E2C;
+        Mon, 13 Jun 2022 11:39:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 967D8C34114;
+        Mon, 13 Jun 2022 11:39:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120446;
-        bh=xZMuTpWursdJJdYloy8uMjAmfjbR/M9GPbci0Jb3eq4=;
+        s=korg; t=1655120358;
+        bh=vWbARA00wjVLuTq3CJWOYllIBl+Aw2U9+t+Gx7wI78k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Uekb8D5MYgskGV/JVK46QPnCoUW7I3chDwVZxAaqW98HZFGdppQX0WqdAjlRhD1xK
-         lxNTMiZQ0VPObb34nvvyjedcc/nocuaadDw9PQSWZrbXKqcc0D5DoQKBn3BLkmIuk+
-         g/Q5eknmN2CYLQNtZMSHmInpcZ/GGxqNEGGGHNy8=
+        b=BScsI7JPOwwca+4gDIsHekfvXlrBOtW8Tev5m5dJnxTdOxIi/Qfv1drzMHERcMoOW
+         Kd/p40syI807/cD+9Uq8o0h4ktmK5so/fIBW23hVVUANiu4pbRr8Q6srj2abvGAgmh
+         yr3d9RH65ma8fZM2fXwOYmma8NrILh8dbFmh6WF0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
-        Hangyu Hua <hbh25y@gmail.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 013/298] usb: usbip: fix a refcount leak in stub_probe()
-Date:   Mon, 13 Jun 2022 12:08:27 +0200
-Message-Id: <20220613094925.328239498@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Aurabindo Pillai <aurabindo.pillai@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.18 331/339] drm/amd/display: remove stale config guards
+Date:   Mon, 13 Jun 2022 12:12:36 +0200
+Message-Id: <20220613094936.780544733@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
-References: <20220613094924.913340374@linuxfoundation.org>
+In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
+References: <20220613094926.497929857@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,49 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Aurabindo Pillai <aurabindo.pillai@amd.com>
 
-[ Upstream commit 9ec4cbf1cc55d126759051acfe328d489c5d6e60 ]
+commit fd843d03418ead2bba369159bb19b60e9d4b7b1e upstream.
 
-usb_get_dev() is called in stub_device_alloc(). When stub_probe() fails
-after that, usb_put_dev() needs to be called to release the reference.
+This code should be executed.
 
-Fix this by moving usb_put_dev() to sdev_free error path handling.
-
-Find this by code review.
-
-Fixes: 3ff67445750a ("usbip: fix error handling in stub_probe()")
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Link: https://lore.kernel.org/r/20220412020257.9767-1-hbh25y@gmail.com
+Signed-off-by: Aurabindo Pillai <aurabindo.pillai@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/usbip/stub_dev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c |    2 --
+ drivers/gpu/drm/amd/display/dc/dml/dml_wrapper.c               |    2 --
+ 2 files changed, 4 deletions(-)
 
-diff --git a/drivers/usb/usbip/stub_dev.c b/drivers/usb/usbip/stub_dev.c
-index d8d3892e5a69..3c6d452e3bf4 100644
---- a/drivers/usb/usbip/stub_dev.c
-+++ b/drivers/usb/usbip/stub_dev.c
-@@ -393,7 +393,6 @@ static int stub_probe(struct usb_device *udev)
+--- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c
++++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c
+@@ -41,9 +41,7 @@
  
- err_port:
- 	dev_set_drvdata(&udev->dev, NULL);
--	usb_put_dev(udev);
+ #include "dc_dmub_srv.h"
  
- 	/* we already have busid_priv, just lock busid_lock */
- 	spin_lock(&busid_priv->busid_lock);
-@@ -408,6 +407,7 @@ static int stub_probe(struct usb_device *udev)
- 	put_busid_priv(busid_priv);
+-#if defined (CONFIG_DRM_AMD_DC_DP2_0)
+ #include "dc_link_dp.h"
+-#endif
  
- sdev_free:
-+	usb_put_dev(udev);
- 	stub_device_free(sdev);
- 
- 	return rc;
--- 
-2.35.1
-
+ #define TO_CLK_MGR_DCN315(clk_mgr)\
+ 	container_of(clk_mgr, struct clk_mgr_dcn315, base)
+--- a/drivers/gpu/drm/amd/display/dc/dml/dml_wrapper.c
++++ b/drivers/gpu/drm/amd/display/dc/dml/dml_wrapper.c
+@@ -1284,10 +1284,8 @@ static bool is_dtbclk_required(struct dc
+ 	for (i = 0; i < dc->res_pool->pipe_count; i++) {
+ 		if (!context->res_ctx.pipe_ctx[i].stream)
+ 			continue;
+-#if defined (CONFIG_DRM_AMD_DC_DP2_0)
+ 		if (is_dp_128b_132b_signal(&context->res_ctx.pipe_ctx[i]))
+ 			return true;
+-#endif
+ 	}
+ 	return false;
+ }
 
 
