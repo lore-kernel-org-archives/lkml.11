@@ -2,421 +2,318 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFC70C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:30:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55BC2C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:31:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352355AbiFMVa6 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 17:30:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57372 "EHLO
+        id S236312AbiFMVbB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 17:31:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352837AbiFMV26 (ORCPT
+        with ESMTP id S1353189AbiFMV3Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 17:28:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 42C9218D
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:22:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655155367;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=WoV34cLLDoYjPAUbIqILI+x6vFxD/nkRPtK+w2oUoZY=;
-        b=ewEhN6Jk6uIOmsQ30D3YaGC02/NhIy52jN0xV3XLXbCsa7qhsf2QjEbgwJXu2epNtdpgf5
-        BboUDTOsslVcYpfp0J3DI2QkZ7x76gCWNXaaAjZqSlbRz5ed21P8OLMmIIjHaYCdu5KGmS
-        by177mQGw/Lymou6Vt2bTOSOr69LnC8=
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com
- [209.85.166.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-39-ZCdPt9BPPyaznv6ckrI_7Q-1; Mon, 13 Jun 2022 17:22:46 -0400
-X-MC-Unique: ZCdPt9BPPyaznv6ckrI_7Q-1
-Received: by mail-io1-f71.google.com with SMTP id w21-20020a5d9cd5000000b00669e6796a8aso1983404iow.7
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:22:46 -0700 (PDT)
+        Mon, 13 Jun 2022 17:29:25 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6202C62
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:25:41 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id s10-20020a170902a50a00b00162359521c9so3634058plq.23
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:25:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=ff4fVSapUxUvxB9n2Zl0T+CskRaCkgl+6PL+fmMltA8=;
+        b=ViU1g4IXRwdIhNofi8BH7fqSlsEv32y03c03Y02Vk+QIDq1vArSJfsn201yYUkUbKU
+         W3wDGy7regdl6SSjmTlUtL/0MFrnZ2IRaUNkIhYCgtkhWjpK8MrVkbXRM4Eb8MDkWugK
+         0lI0IiD+26eyChVxDUVkVRAkcq2Vl4RoWM2d3NAH12Ghc5c6J2AmU1t2rl0vEEMQ5AZe
+         6zdP/Q8wKiY4QjpSFP+4ff37r2dHTqSe/FrRLG7AWzOfhzcMX+pTN749wHNbdLSveyk6
+         My1v8Hy/fMfpucWLbFm1eX5AVIOvif7SuHa5wVg0G1IWQDTWfruof1pjyqRjVfu3Ni+7
+         rQ8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=WoV34cLLDoYjPAUbIqILI+x6vFxD/nkRPtK+w2oUoZY=;
-        b=mkq0GNNrpgjfW4NnfdeKIQ8m22QyJdabn+SiQnwNBgxw3T+Dlm+DIDG1wv1rgbz1DN
-         7wcjrc4Rrz0Lr+jTqriBHnKS9mV9opEjkmTh/mMuQ3qntXriuCa4fjMmSrQzIgxGRGJq
-         mAq0jvxlN8McDJH25SSyTKrRUTslNwkYLLE//bQtLGSQrVzddFfsjnDZui/0q6p4G2rP
-         aJwL/tFCrJmGJzgHasBSK+RsG+s75cw0i6je+wuOKKHzadg7FOM7AohP86NPtqv5IHgs
-         f3mEwoMzkhgxDBrlT2RK/89Vq2mxxna0dGe9xPj2wBg7CX5hneRxpfrXgyGNTUJQxVA7
-         CPMg==
-X-Gm-Message-State: AOAM5336dMgdBkhBILYrlgKSGIp1TA2su1/kfo+GjUDUQglI0ijQj9Ar
-        p9byeS1O3ByJbtTfvaQ7jzfZs29flkYW+Wv34qAmuP6Qn6hZ4RnfrxsZX6JzekKlADNb6Dc3o+M
-        08nNvg4wJkELOOoc3uKHZosRv
-X-Received: by 2002:a6b:2b42:0:b0:669:ba8d:faa4 with SMTP id r63-20020a6b2b42000000b00669ba8dfaa4mr844839ior.190.1655155365269;
-        Mon, 13 Jun 2022 14:22:45 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzAiuUukB6suaMPqu2/EfWNPgO7Jei7NOVANncvQ8h2ykYATz9opIrXqt4LNNeD+SSu9JFTzg==
-X-Received: by 2002:a6b:2b42:0:b0:669:ba8d:faa4 with SMTP id r63-20020a6b2b42000000b00669ba8dfaa4mr844826ior.190.1655155364935;
-        Mon, 13 Jun 2022 14:22:44 -0700 (PDT)
-Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
-        by smtp.gmail.com with ESMTPSA id w20-20020a029694000000b00331d98c9a7fsm3988207jai.40.2022.06.13.14.22.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 14:22:44 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 17:22:42 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     Nadav Amit <nadav.amit@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Hugh Dickins <hughd@google.com>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Peter Collingbourne <pcc@google.com>
-Subject: Re: [PATCH v2] mm/mprotect: try avoiding write faults for exclusive
- anonymous pages when changing protection
-Message-ID: <YqeqoitbPzww9gWg@xz-m1.local>
-References: <20220610181436.84713-1-david@redhat.com>
- <5DFB7262-6E32-4984-A346-B7DE5040B12F@gmail.com>
- <YqeTSj98t/KfOAJ9@xz-m1.local>
- <9b38302c-ed93-8825-f543-6ce8878748f9@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <9b38302c-ed93-8825-f543-6ce8878748f9@redhat.com>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=ff4fVSapUxUvxB9n2Zl0T+CskRaCkgl+6PL+fmMltA8=;
+        b=I3u+kq47fwIGzHL/VB0UK0u9altplnA2cSw80QFFBaw6cR0TPuex1PJV/wGakiOuPe
+         nFo3TYHLki/9hivPwR1t5xPiAT2ILGzY3qoKqUJpbn2CJv1LLVeCGCFeclQRz9tBJDp7
+         VPPjbNgeEareSsdwE2RbNzSbbeZLp/2y41zm1d9c5N1jEroA5niHBDtxq3KDNMlDGLeJ
+         mD8Lj22xy6N40vseJNpDd80hz29qIwSmDcKfkc/Ut55wFb6lQhso09Oj3o8NVeWV/kjw
+         eWP3ipMSUvKR9Zm25aAPTnMDNgSvLH2E5Aw+jBPTDhT3/xVuJnpGa6d1guUwHPkH28wE
+         97/g==
+X-Gm-Message-State: AOAM533tbj0clHfuE/PQpv+UDwsukwv7BCgzQj+eebQMj74xfdl9NnDm
+        1xMRhNEM8AezprEZbsfiVUL3rKwwhItP
+X-Google-Smtp-Source: AGRyM1ujH/8wJgnWLOU39KDbFOQcd+ADIaJJ+FNow/hKmegWIyz+ttFnHcvrApS9oLsLGz/ShD1JOxE+KHhq
+X-Received: from sweer.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:e45])
+ (user=bgardon job=sendgmr) by 2002:aa7:92d2:0:b0:51b:4d60:6475 with SMTP id
+ k18-20020aa792d2000000b0051b4d606475mr1251862pfa.73.1655155541209; Mon, 13
+ Jun 2022 14:25:41 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 21:25:22 +0000
+In-Reply-To: <20220613212523.3436117-1-bgardon@google.com>
+Message-Id: <20220613212523.3436117-10-bgardon@google.com>
+Mime-Version: 1.0
+References: <20220613212523.3436117-1-bgardon@google.com>
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+Subject: [PATCH v9 09/10] KVM: selftests: Test disabling NX hugepages on a VM
+From:   Ben Gardon <bgardon@google.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Peter Xu <peterx@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        David Matlack <dmatlack@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        David Dunn <daviddunn@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Junaid Shahid <junaids@google.com>,
+        Ben Gardon <bgardon@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 10:10:16PM +0200, David Hildenbrand wrote:
-> On 13.06.22 21:43, Peter Xu wrote:
-> > Hi, David,
-> > 
-> > On Fri, Jun 10, 2022 at 11:42:06AM -0700, Nadav Amit wrote:
-> >> On Jun 10, 2022, at 11:14 AM, David Hildenbrand <david@redhat.com> wrote:
-> >>
-> >>> Similar to our MM_CP_DIRTY_ACCT handling for shared, writable mappings, we
-> >>> can try mapping anonymous pages writable if they are exclusive,
-> >>> the PTE is already dirty, and no special handling applies. Mapping the
-> >>> PTE writable is essentially the same thing the write fault handler would do
-> >>> in this case.
-> >>>
-> >>> Special handling is required for uffd-wp and softdirty tracking, so take
-> >>> care of that properly. Also, leave PROT_NONE handling alone for now;
-> >>> in the future, we could similarly extend the logic in do_numa_page() or
-> >>> use pte_mk_savedwrite() here. Note that we'll now also check for uffd-wp in
-> >>> case of VM_SHARED -- which is harmless and prepares for uffd-wp support for
-> >>> shmem.
-> >>>
-> >>> While this improves mprotect(PROT_READ)+mprotect(PROT_READ|PROT_WRITE)
-> >>> performance, it should also be a valuable optimization for uffd-wp, when
-> >>> un-protecting.
-> >>>
-> >>> Applying the same logic to PMDs (anonymous THP, anonymous hugetlb) is
-> >>> probably not worth the trouble, but could similarly be added if there is
-> >>> demand.
-> > 
-> > My memory was that Andrea had a version that used to have thp optimized
-> > too.  It'll be a slight pity to lose it if still possible, then we treat
-> > thp and small pages the same logic and be all fair.  Or is there any other
-> > challenge that we're facing?
-> 
-> Not really, but I assume performance gain will be minimal and might not
-> be worth the trouble.
-> 
-> I'm fairly busy (and not aware of Andreas version), so I can look at
-> this, but it will be part of a separate patch because it will go on my
-> TODO list. Not mad if someone beats me to it ;)
+Add an argument to the NX huge pages test to test disabling the feature
+on a VM using the new capability.
 
-Just for the reference:
+Reviewed-by: David Matlack <dmatlack@google.com>
+Signed-off-by: Ben Gardon <bgardon@google.com>
+---
+ .../selftests/kvm/include/kvm_util_base.h     |   6 +
+ .../selftests/kvm/x86_64/nx_huge_pages_test.c | 134 ++++++++++++------
+ .../kvm/x86_64/nx_huge_pages_test.sh          |  14 +-
+ 3 files changed, 106 insertions(+), 48 deletions(-)
 
-https://github.com/aagit/aa/commit/34cd0d78db407af06d35a06b24be8e92593964be
-
-> 
-> > 
-> >>>
-> >>> Results of a simple microbenchmark on my Ryzen 9 3900X, comparing the new
-> >>> optimization (avoiding write faults) during mprotect() with softdirty
-> >>> tracking, where we require a write fault.
-> > 
-> > Are we comparing the mprotect() sequence operations against softdirty
-> > clearing operation?  Would it make more sense if we compare the same
-> > mprotect() sequence to kernels that are before/after this patch applied?
-> 
-> For simplicity I compared on the same kernel, one time exploting the
-> optimization and one time disabling the optimization via softdirty.
-> 
-> I can also simply measure without+with. Extra work for me to combine
-> outputs :P
-
-Well, still that's normally how we work on these, don't we? :)
-
-Still note that the SOFTDIRTY check (I think) was still reverted..  I meant
-I kept thinking below check "vma->vm_flags & VM_SOFTDIRTY" should be
-"!(vma->vm_flags & VM_SOFTDIRTY)", but again that's separate change so feel
-free to ignore as we've discussed, but please make sure even if you want to
-compare with softdirty that's taking into account.
-
-> 
-> > 
-> >>>
-> >>>  Running 1000 iterations each
-> >>>
-> >>>  ==========================================================
-> >>>  Measuring memset() of 4096 bytes
-> >>>   First write access:
-> >>>    Min: 169 ns, Max: 8997 ns, Avg: 830 ns
-> >>>   Second write access:
-> >>>    Min: 80 ns, Max: 251 ns, Avg: 168 ns
-> >>>   Write access after mprotect(PROT_READ)+mprotect(PROT_READ|PROT_WRITE):
-> >>>    Min: 180 ns, Max: 290 ns, Avg: 190 ns
-> >>>   Write access after clearing softdirty:
-> >>>    Min: 451 ns, Max: 1774 ns, Avg: 470 ns
-> >>>  -> mprotect = 1.131 * second [avg]
-> >>>  -> mprotect = 0.404 * softdirty [avg]
-> > 
-> > (I don't understand these two lines.. but maybe I'm the only one?)
-> 
-> Most probably not.
-> 
-> "mprotect(PROT_READ)+mprotect(PROT_READ|PROT_WRITE)" needs 113,1% the
-> runtime compared with the "second write" access.
-> 
-> "mprotect(PROT_READ)+mprotect(PROT_READ|PROT_WRITE)" needs 40% of the
-> runtime compared with disabling the optimization via softdirty tracking.
-> 
-> I may find time to clean that up a bit more to make it easier to consume
-> for humans.
-
-I see, thanks.  Appending the explanation after the test result will also
-work for me.
-
-I'm curious is that 113.1% came from tlb miss?  If that's the case, I'd
-suggest drop those comparisons if there's a new version, since they're
-probably not helping to explain what this patch is changing (avoid page
-faluts), and IMHO it can slightly confuse reviewers, if you agree.
-
-> 
-> > 
-> >>>  ----------------------------------------------------------
-> >>>  Measuring single byte access per page of 4096 bytes
-> >>>   First write access:
-> >>>    Min: 761 ns, Max: 1152 ns, Avg: 784 ns
-> >>>   Second write access:
-> >>>    Min: 130 ns, Max: 181 ns, Avg: 137 ns
-> >>>   Write access after mprotect(PROT_READ)+mprotect(PROT_READ|PROT_WRITE):
-> >>>    Min: 150 ns, Max: 1553 ns, Avg: 155 ns
-> >>>   Write access after clearing softdirty:
-> >>>    Min: 169 ns, Max: 1783 ns, Avg: 432 ns
-> >>>  -> mprotect = 1.131 * second [avg]
-> >>>  -> mprotect = 0.359 * softdirty [avg]
-> >>>  ==========================================================
-> >>>  Measuring memset() of 16384 bytes
-> >>>   First write access:
-> >>>    Min: 1594 ns, Max: 3497 ns, Avg: 2143 ns
-> >>>   Second write access:
-> >>>    Min: 250 ns, Max: 381 ns, Avg: 260 ns
-> >>>   Write access after mprotect(PROT_READ)+mprotect(PROT_READ|PROT_WRITE):
-> >>>    Min: 290 ns, Max: 1643 ns, Avg: 300 ns
-> >>>   Write access after clearing softdirty:
-> >>>    Min: 1242 ns, Max: 8987 ns, Avg: 1297 ns
-> >>>  -> mprotect = 1.154 * second [avg]
-> >>>  -> mprotect = 0.231 * softdirty [avg]
-> >>>  ----------------------------------------------------------
-> >>>  Measuring single byte access per page of 16384 bytes
-> >>>   First write access:
-> >>>    Min: 1953 ns, Max: 2945 ns, Avg: 2008 ns
-> >>>   Second write access:
-> >>>    Min: 130 ns, Max: 912 ns, Avg: 142 ns
-> >>>   Write access after mprotect(PROT_READ)+mprotect(PROT_READ|PROT_WRITE):
-> >>>    Min: 160 ns, Max: 240 ns, Avg: 166 ns
-> >>>   Write access after clearing softdirty:
-> >>>    Min: 1112 ns, Max: 1513 ns, Avg: 1126 ns
-> >>>  -> mprotect = 1.169 * second [avg]
-> >>>  -> mprotect = 0.147 * softdirty [avg]
-> >>>  ==========================================================
-> >>>  Measuring memset() of 65536 bytes
-> >>>   First write access:
-> >>>    Min: 7524 ns, Max: 15650 ns, Avg: 7680 ns
-> >>>   Second write access:
-> >>>    Min: 251 ns, Max: 1323 ns, Avg: 648 ns
-> >>>   Write access after mprotect(PROT_READ)+mprotect(PROT_READ|PROT_WRITE):
-> >>>    Min: 270 ns, Max: 1282 ns, Avg: 736 ns
-> >>>   Write access after clearing softdirty:
-> >>>    Min: 4558 ns, Max: 12524 ns, Avg: 4623 ns
-> >>>  -> mprotect = 1.136 * second [avg]
-> >>>  -> mprotect = 0.159 * softdirty [avg]
-> >>>  ----------------------------------------------------------
-> >>>  Measuring single byte access per page of 65536 bytes
-> >>>   First write access:
-> >>>    Min: 7083 ns, Max: 9027 ns, Avg: 7241 ns
-> >>>   Second write access:
-> >>>    Min: 140 ns, Max: 201 ns, Avg: 156 ns
-> >>>   Write access after mprotect(PROT_READ)+mprotect(PROT_READ|PROT_WRITE):
-> >>>    Min: 190 ns, Max: 451 ns, Avg: 197 ns
-> >>>   Write access after clearing softdirty:
-> >>>    Min: 3707 ns, Max: 5119 ns, Avg: 3958 ns
-> >>>  -> mprotect = 1.263 * second [avg]
-> >>>  -> mprotect = 0.050 * softdirty [avg]
-> >>>  ==========================================================
-> >>>  Measuring memset() of 524288 bytes
-> >>>   First write access:
-> >>>    Min: 58470 ns, Max: 87754 ns, Avg: 59353 ns
-> >>>   Second write access:
-> >>>    Min: 5180 ns, Max: 6863 ns, Avg: 5318 ns
-> >>>   Write access after mprotect(PROT_READ)+mprotect(PROT_READ|PROT_WRITE):
-> >>>    Min: 5871 ns, Max: 9358 ns, Avg: 6028 ns
-> >>>   Write access after clearing softdirty:
-> >>>    Min: 35797 ns, Max: 41338 ns, Avg: 36710 ns
-> >>>  -> mprotect = 1.134 * second [avg]
-> >>>  -> mprotect = 0.164 * softdirty [avg]
-> >>>  ----------------------------------------------------------
-> >>>  Measuring single byte access per page of 524288 bytes
-> >>>   First write access:
-> >>>    Min: 53751 ns, Max: 59431 ns, Avg: 54506 ns
-> >>>   Second write access:
-> >>>    Min: 781 ns, Max: 2194 ns, Avg: 1123 ns
-> >>>   Write access after mprotect(PROT_READ)+mprotect(PROT_READ|PROT_WRITE):
-> >>>    Min: 161 ns, Max: 1282 ns, Avg: 622 ns
-> >>>   Write access after clearing softdirty:
-> >>>    Min: 30888 ns, Max: 34565 ns, Avg: 31229 ns
-> >>>  -> mprotect = 0.554 * second [avg]
-> >>>  -> mprotect = 0.020 * softdirty [avg]
-> >>>
-> >>> Cc: Linus Torvalds <torvalds@linux-foundation.org>
-> >>> Cc: Andrew Morton <akpm@linux-foundation.org>
-> >>> Cc: Nadav Amit <nadav.amit@gmail.com>
-> >>> Cc: Dave Hansen <dave.hansen@intel.com>
-> >>> Cc: Andrea Arcangeli <aarcange@redhat.com>
-> >>> Cc: Peter Xu <peterx@redhat.com>
-> >>> Cc: Yang Shi <shy828301@gmail.com>
-> >>> Cc: Hugh Dickins <hughd@google.com>
-> >>> Cc: Mel Gorman <mgorman@techsingularity.net>
-> >>> Signed-off-by: David Hildenbrand <david@redhat.com>
-> >>> ---
-> >>>
-> >>> v1 -> v2:
-> >>> * Rebased on v5.19-rc1
-> >>> * Rerun benchmark
-> >>> * Fix minor spelling issues in subject+description
-> >>> * Drop IS_ENABLED(CONFIG_MEM_SOFT_DIRTY) check
-> >>> * Move pte_write() check into caller
-> >>>
-> >>> ---
-> >>> mm/mprotect.c | 67 ++++++++++++++++++++++++++++++++++++++++++---------
-> >>> 1 file changed, 55 insertions(+), 12 deletions(-)
-> >>>
-> >>> diff --git a/mm/mprotect.c b/mm/mprotect.c
-> >>> index ba5592655ee3..728772bf41c7 100644
-> >>> --- a/mm/mprotect.c
-> >>> +++ b/mm/mprotect.c
-> >>> @@ -38,6 +38,45 @@
-> >>>
-> >>> #include "internal.h"
-> >>>
-> >>> +static inline bool can_change_pte_writable(struct vm_area_struct *vma,
-> >>> +					   unsigned long addr, pte_t pte,
-> >>> +					   unsigned long cp_flags)
-> >>> +{
-> >>> +	struct page *page;
-> >>> +
-> >>> +	if ((vma->vm_flags & VM_SHARED) && !(cp_flags & MM_CP_DIRTY_ACCT))
-> >>> +		/*
-> >>> +		 * MM_CP_DIRTY_ACCT is only expressive for shared mappings;
-> >>> +		 * without MM_CP_DIRTY_ACCT, there is nothing to do.
-> >>> +		 */
-> >>> +		return false;
-> >>> +
-> >>> +	if (pte_protnone(pte) || !pte_dirty(pte))
-> >>> +		return false;
-> >>> +
-> >>> +	/* Do we need write faults for softdirty tracking? */
-> >>> +	if ((vma->vm_flags & VM_SOFTDIRTY) && !pte_soft_dirty(pte))
-> >>> +		return false;
-> >>> +
-> >>> +	/* Do we need write faults for uffd-wp tracking? */
-> >>> +	if (userfaultfd_pte_wp(vma, pte))
-> >>> +		return false;
-> >>> +
-> >>> +	if (!(vma->vm_flags & VM_SHARED)) {
-> >>> +		/*
-> >>> +		 * We can only special-case on exclusive anonymous pages,
-> >>> +		 * because we know that our write-fault handler similarly would
-> >>> +		 * map them writable without any additional checks while holding
-> >>> +		 * the PT lock.
-> >>> +		 */
-> >>> +		page = vm_normal_page(vma, addr, pte);
-> >>> +		if (!page || !PageAnon(page) || !PageAnonExclusive(page))
-> >>> +			return false;
-> >>> +	}
-> >>> +
-> >>> +	return true;
-> >>> +}
-> >>> +
-> >>
-> >> Looks good in general. Just wondering (out loud) whether it makes more sense
-> >> to do all the vm_flags and cp_flags related checks in one of the callers
-> >> (mprotect_fixup()?) and propagate whether to try to write-unprotect in
-> >> cp_flags (e.g., by introducing new MM_CP_TRY_WRITE_UNPROTECT).
-> > 
-> > I can see why David put it like that, because most of the checks are on
-> > ptes not vm_flags.
-> > 
-> > But I also agree on this point, especially if to put it in another way:
-> > IMHO it'll be confusing if we keey MM_CP_DIRTY_ACCT==false for all private
-> > pages even if we're going to take them into account and do smart unprotect
-> > operations.
-> > 
-> > So I'm wondering whether we could still at least move vm_flags check into
-> > the mprotect_fixup() as suggested by Nadav, perhaps something like:
-> > 
-> > diff --git a/mm/mprotect.c b/mm/mprotect.c
-> > index ba5592655ee3..aefd5fe982af 100644
-> > --- a/mm/mprotect.c
-> > +++ b/mm/mprotect.c
-> > @@ -583,7 +583,11 @@ mprotect_fixup(struct mmu_gather *tlb, struct vm_area_struct *vma,
-> >          * held in write mode.
-> >          */
-> >         vma->vm_flags = newflags;
-> > -       dirty_accountable = vma_wants_writenotify(vma, vma->vm_page_prot);
-> > +       if (vma->vm_flags & VM_SHARED)
-> > +               dirty_accountable = vma_wants_writenotify(vma, vma->vm_page_prot);
-> > +       else
-> > +               /* For private mappings, only if it's writable */
-> > +               dirty_accountable = vma->vm_flags & VM_WRITE;
-> >         vma_set_page_prot(vma);
-> >  
-> >         change_protection(tlb, vma, start, end, vma->vm_page_prot,
-> > 
-> > Then IIUC we could drop both the VM_WRITE check in change_pte_range(), and
-> > also the VM_SHARED check above in can_change_pte_writable().  Not sure
-> > whether that'll look slightly cleaner.
-> 
-> I'll give it a shot and most probably rename dirty_accountable to
-> something more expressive -- like Nadav proposed, for example.
-
-Sure.
-
-> 
-> > 
-> > I'm also copying Peter Collingbourne <pcc@google.com> because afaict he
-> > proposed the initial idea (maybe worth some credit in the commit message?),
-> 
-> Do you have a link to that conversation? Either my memory is messing
-> with me or I did this without reading that mail (which I think, because
-> it simply made sense with PageAnonExclusive at hand). Still, I can add a
-> reference to that mail and mention that this was suggested earlier by
-> Peter C..
-
-I see, no worry then I thought it was coming from that.  In this case I'm
-not sure whether it's still needed.
-
-PeterC's v1 was here:
-
-https://lore.kernel.org/linux-mm/20201212053152.3783250-1-pcc@google.com/
-
-But there're a bunch of versions:
-
-https://lore.kernel.org/linux-mm/?q=mm%3A+improve+mprotect%28R%7CW%29+efficiency+on+pages+referenced+once
-
-Thanks,
-
+diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+index 81ab7adfbef5..537b8a047d6e 100644
+--- a/tools/testing/selftests/kvm/include/kvm_util_base.h
++++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+@@ -804,4 +804,10 @@ static inline void virt_dump(FILE *stream, struct kvm_vm *vm, uint8_t indent)
+ 	virt_arch_dump(stream, vm, indent);
+ }
+ 
++
++static inline int __vm_disable_nx_huge_pages(struct kvm_vm *vm)
++{
++	return __vm_enable_cap(vm, KVM_CAP_VM_DISABLE_NX_HUGE_PAGES, 0);
++}
++
+ #endif /* SELFTEST_KVM_UTIL_BASE_H */
+diff --git a/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.c b/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.c
+index 5fa61d225787..cc6421716400 100644
+--- a/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.c
++++ b/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.c
+@@ -107,53 +107,34 @@ static void wait_for_reclaim(int reclaim_period_ms)
+ 	nanosleep(&ts, NULL);
+ }
+ 
+-static void help(char *name)
+-{
+-	puts("");
+-	printf("usage: %s [-h] [-p period_ms] [-t token]\n", name);
+-	puts("");
+-	printf(" -p: The NX reclaim period in miliseconds.\n");
+-	printf(" -t: The magic token to indicate environment setup is done.\n");
+-	puts("");
+-	exit(0);
+-}
+-
+-int main(int argc, char **argv)
++void run_test(int reclaim_period_ms, bool disable_nx_huge_pages,
++	      bool reboot_permissions)
+ {
+-	int reclaim_period_ms = 0, token = 0, opt;
+ 	struct kvm_vcpu *vcpu;
+ 	struct kvm_vm *vm;
+ 	void *hva;
++	int r;
+ 
+-	while ((opt = getopt(argc, argv, "hp:t:")) != -1) {
+-		switch (opt) {
+-		case 'p':
+-			reclaim_period_ms = atoi(optarg);
+-			break;
+-		case 't':
+-			token = atoi(optarg);
+-			break;
+-		case 'h':
+-		default:
+-			help(argv[0]);
+-			break;
+-		}
+-	}
+-
+-	if (token != MAGIC_TOKEN) {
+-		print_skip("This test must be run with the magic token %d.\n"
+-			   "This is done by nx_huge_pages_test.sh, which\n"
+-			   "also handles environment setup for the test.",
+-			   MAGIC_TOKEN);
+-		exit(KSFT_SKIP);
+-	}
++	vm = vm_create(1);
+ 
+-	if (!reclaim_period_ms) {
+-		print_skip("The NX reclaim period must be specified and non-zero");
+-		exit(KSFT_SKIP);
++	if (disable_nx_huge_pages) {
++		/*
++		 * Cannot run the test without NX huge pages if the kernel
++		 * does not support it.
++		 */
++		if (!kvm_check_cap(KVM_CAP_VM_DISABLE_NX_HUGE_PAGES))
++			return;
++
++		r = __vm_disable_nx_huge_pages(vm);
++		if (reboot_permissions) {
++			TEST_ASSERT(!r, "Disabling NX huge pages should succeed if process has reboot permissions");
++		} else {
++			TEST_ASSERT(r == -1 && errno == EPERM,
++				    "This process should not have permission to disable NX huge pages");
++			return;
++		}
+ 	}
+ 
+-	vm = vm_create(1);
+ 	vcpu = vm_vcpu_add(vm, 0, guest_code);
+ 
+ 	vm_userspace_mem_region_add(vm, VM_MEM_SRC_ANONYMOUS_HUGETLB,
+@@ -187,31 +168,38 @@ int main(int argc, char **argv)
+ 	/*
+ 	 * Next, the guest will execute from the first huge page, causing it
+ 	 * to be remapped at 4k.
++	 *
++	 * If NX huge pages are disabled, this should have no effect.
+ 	 */
+ 	vcpu_run(vcpu);
+-	check_2m_page_count(vm, 1);
+-	check_split_count(vm, 1);
++	check_2m_page_count(vm, disable_nx_huge_pages ? 2 : 1);
++	check_split_count(vm, disable_nx_huge_pages ? 0 : 1);
+ 
+ 	/*
+ 	 * Executing from the third huge page (previously unaccessed) will
+ 	 * cause part to be mapped at 4k.
++	 *
++	 * If NX huge pages are disabled, it should be mapped at 2M.
+ 	 */
+ 	vcpu_run(vcpu);
+-	check_2m_page_count(vm, 1);
+-	check_split_count(vm, 2);
++	check_2m_page_count(vm, disable_nx_huge_pages ? 3 : 1);
++	check_split_count(vm, disable_nx_huge_pages ? 0 : 2);
+ 
+ 	/* Reading from the first huge page again should have no effect. */
+ 	vcpu_run(vcpu);
+-	check_2m_page_count(vm, 1);
+-	check_split_count(vm, 2);
++	check_2m_page_count(vm, disable_nx_huge_pages ? 3 : 1);
++	check_split_count(vm, disable_nx_huge_pages ? 0 : 2);
+ 
+ 	/* Give recovery thread time to run. */
+ 	wait_for_reclaim(reclaim_period_ms);
+ 
+ 	/*
+ 	 * Now that the reclaimer has run, all the split pages should be gone.
++	 *
++	 * If NX huge pages are disabled, the relaimer will not run, so
++	 * nothing should change from here on.
+ 	 */
+-	check_2m_page_count(vm, 1);
++	check_2m_page_count(vm, disable_nx_huge_pages ? 3 : 1);
+ 	check_split_count(vm, 0);
+ 
+ 	/*
+@@ -219,10 +207,62 @@ int main(int argc, char **argv)
+ 	 * reading from it causes a huge page mapping to be installed.
+ 	 */
+ 	vcpu_run(vcpu);
+-	check_2m_page_count(vm, 2);
++	check_2m_page_count(vm, disable_nx_huge_pages ? 3 : 2);
+ 	check_split_count(vm, 0);
+ 
+ 	kvm_vm_free(vm);
++}
++
++static void help(char *name)
++{
++	puts("");
++	printf("usage: %s [-h] [-p period_ms] [-t token]\n", name);
++	puts("");
++	printf(" -p: The NX reclaim period in miliseconds.\n");
++	printf(" -t: The magic token to indicate environment setup is done.\n");
++	printf(" -r: The test has reboot permissions and can disable NX huge pages.\n");
++	puts("");
++	exit(0);
++}
++
++int main(int argc, char **argv)
++{
++	int reclaim_period_ms = 0, token = 0, opt;
++	bool reboot_permissions = false;
++
++	while ((opt = getopt(argc, argv, "hp:t:r")) != -1) {
++		switch (opt) {
++		case 'p':
++			reclaim_period_ms = atoi(optarg);
++			break;
++		case 't':
++			token = atoi(optarg);
++			break;
++		case 'r':
++			reboot_permissions = true;
++			break;
++		case 'h':
++		default:
++			help(argv[0]);
++			break;
++		}
++	}
++
++	if (token != MAGIC_TOKEN) {
++		print_skip("This test must be run with the magic token %d.\n"
++			   "This is done by nx_huge_pages_test.sh, which\n"
++			   "also handles environment setup for the test.",
++			   MAGIC_TOKEN);
++		exit(KSFT_SKIP);
++	}
++
++	if (!reclaim_period_ms) {
++		print_skip("The NX reclaim period must be specified and non-zero");
++		exit(KSFT_SKIP);
++	}
++
++	run_test(reclaim_period_ms, false, reboot_permissions);
++	run_test(reclaim_period_ms, true, reboot_permissions);
+ 
+ 	return 0;
+ }
+diff --git a/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.sh b/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.sh
+index 4e090a84f5f3..6bd8e026ee61 100755
+--- a/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.sh
++++ b/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.sh
+@@ -20,6 +20,8 @@ function sudo_echo () {
+ 	echo "$1" | sudo tee -a "$2" > /dev/null
+ }
+ 
++NXECUTABLE="$(dirname $0)/nx_huge_pages_test"
++
+ (
+ 	set -e
+ 
+@@ -28,7 +30,17 @@ function sudo_echo () {
+ 	sudo_echo 100 /sys/module/kvm/parameters/nx_huge_pages_recovery_period_ms
+ 	sudo_echo "$(( $HUGE_PAGES + 3 ))" /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+ 
+-	"$(dirname $0)"/nx_huge_pages_test -t 887563923 -p 100
++	# Test with reboot permissions
++	if [ $(whoami) != "root" ] ; then
++		sudo setcap cap_sys_boot+ep $NXECUTABLE
++	fi
++	$NXECUTABLE -t 887563923 -p 100 -r
++
++	# Test without reboot permissions
++	if [ $(whoami) != "root" ] ; then
++		sudo setcap cap_sys_boot-ep $NXECUTABLE
++		$NXECUTABLE -t 887563923 -p 100
++	fi
+ )
+ RET=$?
+ 
 -- 
-Peter Xu
+2.36.1.476.g0c4daa206d-goog
 
