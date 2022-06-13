@@ -2,48 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76DE6C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:11:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E83AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:11:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381772AbiFMOLV (ORCPT
+        id S1381849AbiFMOLg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:11:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51966 "EHLO
+        Mon, 13 Jun 2022 10:11:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381423AbiFMOEU (ORCPT
+        with ESMTP id S1381440AbiFMOEV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:04:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C03A324088;
-        Mon, 13 Jun 2022 04:39:25 -0700 (PDT)
+        Mon, 13 Jun 2022 10:04:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F22DE2BB31;
+        Mon, 13 Jun 2022 04:39:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77CDFB80D31;
-        Mon, 13 Jun 2022 11:39:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9B2AC34114;
-        Mon, 13 Jun 2022 11:39:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB962B80E2C;
+        Mon, 13 Jun 2022 11:39:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01605C34114;
+        Mon, 13 Jun 2022 11:39:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120363;
-        bh=KKeoL48rZJn6/zPjlSpjTvPqmKvNat2ujrv+PiAbrHo=;
+        s=korg; t=1655120371;
+        bh=ki2qefTm409uZD7i1XoIBXQY54So3nahLBbsGRgRzEs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dai8hT/ksq0ZpTsGloE8ujMas7R601v+aZw7z75aXzOVTrzmn4V6AewB6o0MRMad9
-         8/tWY5bWdgULFZvvxklI39FxD5mwI0LHIzyTD9TFh7q3vFTVjny62nySttmdzPZFYO
-         kr9E57sWw6OkRJLPYoyMLEHftL1b6bpaKtzfQZ1Q=
+        b=lVeANvF39t0NDiHNZEXsroG8y4uT9JYsSSdYyCjhRv9B0ABWIwC5jip/1GKNyhZ1J
+         zeBcStCDxT+MeIHKWBCunoK5DRtfaxpsRm7Cr9rHwXTfpTJv5JWVLhj1BLwJn78NdK
+         To+u4LmD7DInYf60/Cb3cB4QK0r/ZA9KtsWConZw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Laurent Vivier <lvivier@redhat.com>,
-        syzbot+5b59d6d459306a556f54@syzkaller.appspotmail.com
-Subject: [PATCH 5.18 333/339] virtio-rng: make device ready before making request
-Date:   Mon, 13 Jun 2022 12:12:38 +0200
-Message-Id: <20220613094936.838435545@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Kees Cook <keescook@chromium.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-mips@vger.kernel.org, Manuel Lauss <manuel.lauss@gmail.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 001/298] pcmcia: db1xxx_ss: restrict to MIPS_DB1XXX boards
+Date:   Mon, 13 Jun 2022 12:08:15 +0200
+Message-Id: <20220613094924.962856311@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
-References: <20220613094926.497929857@linuxfoundation.org>
+In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
+References: <20220613094924.913340374@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -51,44 +58,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason Wang <jasowang@redhat.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit 228432551bd8783211e494ab35f42a4344580502 upstream.
+[ Upstream commit 3928cf08334ed895a31458cbebd8d4ec6d84c080 ]
 
-Current virtio-rng does a entropy request before DRIVER_OK, this
-violates the spec:
+When the MIPS_ALCHEMY board selection is MIPS_XXS1500 instead of
+MIPS_DB1XXX, the PCMCIA driver 'db1xxx_ss' has build errors due
+to missing DB1XXX symbols. The PCMCIA driver should be restricted
+to MIPS_DB1XXX instead of MIPS_ALCHEMY to fix this build error.
 
-virtio spec requires that all drivers set DRIVER_OK
-before using devices.
+ERROR: modpost: "bcsr_read" [drivers/pcmcia/db1xxx_ss.ko] undefined!
+ERROR: modpost: "bcsr_mod" [drivers/pcmcia/db1xxx_ss.ko] undefined!
 
-Further, kernel will ignore the interrupt after commit
-8b4ec69d7e09 ("virtio: harden vring IRQ").
-
-Fixing this by making device ready before the request.
-
-Cc: stable@vger.kernel.org
-Fixes: 8b4ec69d7e09 ("virtio: harden vring IRQ")
-Fixes: f7f510ec1957 ("virtio: An entropy device, as suggested by hpa.")
-Reported-and-tested-by: syzbot+5b59d6d459306a556f54@syzkaller.appspotmail.com
-Signed-off-by: Jason Wang <jasowang@redhat.com>
-Message-Id: <20220608061422.38437-1-jasowang@redhat.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Reviewed-by: Laurent Vivier <lvivier@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 42a4f17dc356 ("MIPS: Alchemy: remove SOC_AU1X00 in favor of MIPS_ALCHEMY")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc: linux-mips@vger.kernel.org
+Acked-by: Manuel Lauss <manuel.lauss@gmail.com>
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/hw_random/virtio-rng.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/pcmcia/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/char/hw_random/virtio-rng.c
-+++ b/drivers/char/hw_random/virtio-rng.c
-@@ -159,6 +159,8 @@ static int probe_common(struct virtio_de
- 		goto err_find;
- 	}
+diff --git a/drivers/pcmcia/Kconfig b/drivers/pcmcia/Kconfig
+index ab53eab635f6..1740a63b814d 100644
+--- a/drivers/pcmcia/Kconfig
++++ b/drivers/pcmcia/Kconfig
+@@ -151,7 +151,7 @@ config TCIC
  
-+	virtio_device_ready(vdev);
-+
- 	/* we always have a pending entropy request */
- 	request_entropy(vi);
- 
+ config PCMCIA_ALCHEMY_DEVBOARD
+ 	tristate "Alchemy Db/Pb1xxx PCMCIA socket services"
+-	depends on MIPS_ALCHEMY && PCMCIA
++	depends on MIPS_DB1XXX && PCMCIA
+ 	help
+ 	  Enable this driver of you want PCMCIA support on your Alchemy
+ 	  Db1000, Db/Pb1100, Db/Pb1500, Db/Pb1550, Db/Pb1200, DB1300
+-- 
+2.35.1
+
 
 
