@@ -2,85 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 056BBC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:17:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E90B6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:17:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376289AbiFMNR2 (ORCPT
+        id S1376266AbiFMNRT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:17:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41612 "EHLO
+        Mon, 13 Jun 2022 09:17:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359325AbiFMNJt (ORCPT
+        with ESMTP id S1359332AbiFMNJt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 09:09:49 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0F431F2C3;
-        Mon, 13 Jun 2022 04:20:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1655119208; x=1686655208;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Py8zRXdzOiFvbMocJpc5Z5DwAynLOWkd9TOuzKCbQu8=;
-  b=eBulPHkUg4syZ9EmsaTAT5IRpb/e+7rNus4jc+AQ5VELvxBhUER4tDRs
-   vYgit07mGTvAB412VaHowoD5wqjnHk86tq5rxqld0RewRNf8yomC/kPVJ
-   NSOluJ++y5GYEAf7SmOZC2ZU9stzFx9JgLfQOxMtRNPy7zgKQqA7u/o5K
-   lVATRxRoYBCmWhuxSHN8CR12vk6HXOF7KigfM3hgAA0fMIlr5IwQlI8O3
-   xs3mIhU3f0WLYT8TUgR49ypHalEqpuoJjzBuY9/N2OtxO0DAioYiassse
-   K9etMkTObI2r1qqq3V0JgLAmDQnHWNTuzl2OKybh7RIY5o78cku+A/Tur
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="163066307"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Jun 2022 04:20:08 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 13 Jun 2022 04:20:06 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Mon, 13 Jun 2022 04:20:04 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        "Lee Jones" <lee.jones@linaro.org>
-CC:     Daire McNamara <daire.mcnamara@microchip.com>,
-        <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>,
-        Conor Dooley <conor.dooley@microchip.com>
-Subject: [PATCH v2 2/2] MAINTAINERS: add pwm to PolarFire SoC entry
-Date:   Mon, 13 Jun 2022 12:18:00 +0100
-Message-ID: <20220613111759.1550578-3-conor.dooley@microchip.com>
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A732839155;
+        Mon, 13 Jun 2022 04:20:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 03D9D60B6B;
+        Mon, 13 Jun 2022 11:20:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DAA7C34114;
+        Mon, 13 Jun 2022 11:20:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655119217;
+        bh=aT6YvPhoPElGUTTysLZKWXB1UMLXmkhkzGyEYMZj38o=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=BHYjNakHHkBMqdsauLT2fpKtn6pTWk7Gc9+RZAYL/cWuxH7SFjhGaZUkglO+GncON
+         pKTMZ9DE13KMaQKE5o7xA8uhAhm9U9E7otF3Y0iuuDjNU3O/Hu2a8Y111Imx6JlQlB
+         A8RB2qB+AugAYK1Uixdkg424VMv0VtUENlzrBoBU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 165/247] iio: dummy: iio_simple_dummy: check the return value of kstrdup()
+Date:   Mon, 13 Jun 2022 12:11:07 +0200
+Message-Id: <20220613094927.963104757@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613111759.1550578-1-conor.dooley@microchip.com>
-References: <20220613111759.1550578-1-conor.dooley@microchip.com>
+In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
+References: <20220613094922.843438024@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the newly introduced pwm driver to the existing PolarFire SoC entry.
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+[ Upstream commit ba93642188a6fed754bf7447f638bc410e05a929 ]
+
+kstrdup() is also a memory allocation-related function, it returns NULL
+when some memory errors happen. So it is better to check the return
+value of it so to catch the memory error in time. Besides, there should
+have a kfree() to clear up the allocation if we get a failure later in
+this function to prevent memory leak.
+
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Link: https://lore.kernel.org/r/tencent_C920CFCC33B9CC1C63141FE1334A39FF8508@qq.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iio/dummy/iio_simple_dummy.c | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f1b4b77daa5f..d0b39fa4f309 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -17091,6 +17091,7 @@ L:	linux-riscv@lists.infradead.org
- S:	Supported
- F:	arch/riscv/boot/dts/microchip/
- F:	drivers/mailbox/mailbox-mpfs.c
-+F:	drivers/pwm/pwm-microchip-core.c
- F:	drivers/soc/microchip/
- F:	include/soc/microchip/mpfs.h
+diff --git a/drivers/iio/dummy/iio_simple_dummy.c b/drivers/iio/dummy/iio_simple_dummy.c
+index c0b7ef900735..c24f609c2ade 100644
+--- a/drivers/iio/dummy/iio_simple_dummy.c
++++ b/drivers/iio/dummy/iio_simple_dummy.c
+@@ -575,10 +575,9 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	 */
+ 
+ 	swd = kzalloc(sizeof(*swd), GFP_KERNEL);
+-	if (!swd) {
+-		ret = -ENOMEM;
+-		goto error_kzalloc;
+-	}
++	if (!swd)
++		return ERR_PTR(-ENOMEM);
++
+ 	/*
+ 	 * Allocate an IIO device.
+ 	 *
+@@ -590,7 +589,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	indio_dev = iio_device_alloc(parent, sizeof(*st));
+ 	if (!indio_dev) {
+ 		ret = -ENOMEM;
+-		goto error_ret;
++		goto error_free_swd;
+ 	}
+ 
+ 	st = iio_priv(indio_dev);
+@@ -616,6 +615,10 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	 *    indio_dev->name = spi_get_device_id(spi)->name;
+ 	 */
+ 	indio_dev->name = kstrdup(name, GFP_KERNEL);
++	if (!indio_dev->name) {
++		ret = -ENOMEM;
++		goto error_free_device;
++	}
+ 
+ 	/* Provide description of available channels */
+ 	indio_dev->channels = iio_dummy_channels;
+@@ -632,7 +635,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 
+ 	ret = iio_simple_dummy_events_register(indio_dev);
+ 	if (ret < 0)
+-		goto error_free_device;
++		goto error_free_name;
+ 
+ 	ret = iio_simple_dummy_configure_buffer(indio_dev);
+ 	if (ret < 0)
+@@ -649,11 +652,12 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	iio_simple_dummy_unconfigure_buffer(indio_dev);
+ error_unregister_events:
+ 	iio_simple_dummy_events_unregister(indio_dev);
++error_free_name:
++	kfree(indio_dev->name);
+ error_free_device:
+ 	iio_device_free(indio_dev);
+-error_ret:
++error_free_swd:
+ 	kfree(swd);
+-error_kzalloc:
+ 	return ERR_PTR(ret);
+ }
  
 -- 
-2.36.1
+2.35.1
+
+
 
