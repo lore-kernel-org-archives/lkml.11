@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA95EC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D00CACCA47B
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:55:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357213AbiFMLx0 (ORCPT
+        id S1357238AbiFMLxi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:53:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43194 "EHLO
+        Mon, 13 Jun 2022 07:53:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356408AbiFMLtC (ORCPT
+        with ESMTP id S1356649AbiFMLtX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:49:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C77C4C429;
-        Mon, 13 Jun 2022 03:53:06 -0700 (PDT)
+        Mon, 13 Jun 2022 07:49:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8262E4CD6E;
+        Mon, 13 Jun 2022 03:53:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 085F461257;
-        Mon, 13 Jun 2022 10:53:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1952AC3411E;
-        Mon, 13 Jun 2022 10:53:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 17057B80E92;
+        Mon, 13 Jun 2022 10:53:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67A50C34114;
+        Mon, 13 Jun 2022 10:53:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117585;
-        bh=H1M60+BrT2ByOxv5b0kmC68kUF0xPfhVc/90+HkxAfA=;
+        s=korg; t=1655117590;
+        bh=3TpWI1KdoN8i7CxcBm0R+0xZDhLuJMO/7QjZY2GbSkk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=malUd19eGahSWj5RhYga+Q8uFQzi2r3Yc3yoQxp14iIdR6dSeYDNdkjZhirIy/win
-         La/yrYh5lEwnUf8KnLNSbC9jpv+fg24aHcnn/FeYbWzQ3eqexI2IXl6hifb0SoFa0Z
-         CBau6JFhBRAnFyK6NYS4NA1ss809S7650LtbChCE=
+        b=UmgxQUC6okVSk6cCNPjZW0mH+cTEYl6BKekwN7juMdKQf0Nbjsscj0pTMyUrZ8YBS
+         Ex1RnIxdFBrCRy3nw3YhYcRz56OOHHVNEhKKjnKuAt5yO5C201UG8b2BLC4AI6AdCu
+         1ZuRKRuJD1ZBgStiVf9RyFptN+vquqWgmUpCaiBQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 066/287] drm/vc4: txp: Force alpha to be 0xff if its disabled
-Date:   Mon, 13 Jun 2022 12:08:10 +0200
-Message-Id: <20220613094925.872116733@linuxfoundation.org>
+Subject: [PATCH 4.19 067/287] nl80211: show SSID for P2P_GO interfaces
+Date:   Mon, 13 Jun 2022 12:08:11 +0200
+Message-Id: <20220613094925.902247184@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -50,45 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 5453343a88ede8b12812fced81ecd24cb888ccc3 ]
+[ Upstream commit a75971bc2b8453630e9f85e0beaa4da8db8277a3 ]
 
-If we use a format that has padding instead of the alpha component (such
-as XRGB8888), it appears that the Transposer will fill the padding to 0,
-disregarding what was stored in the input buffer padding.
+There's no real reason not to send the SSID to userspace
+when it requests information about P2P_GO, it is, in that
+respect, exactly the same as AP interfaces. Fix that.
 
-This leads to issues with IGT, since it will set the padding to 0xff,
-but will then compare the CRC of the two frames which will thus fail.
-Another nice side effect is that it is now possible to just use the
-buffer as ARGB.
-
-Fixes: 008095e065a8 ("drm/vc4: Add support for the transposer block")
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
-Link: https://lore.kernel.org/r/20220328153659.2382206-4-maxime@cerno.tech
+Fixes: 44905265bc15 ("nl80211: don't expose wdev->ssid for most interfaces")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Link: https://lore.kernel.org/r/20220318134656.14354ae223f0.Ia25e85a512281b92e1645d4160766a4b1a471597@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_txp.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ net/wireless/nl80211.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_txp.c b/drivers/gpu/drm/vc4/vc4_txp.c
-index 9b7810c3dd65..3b56558a5d65 100644
---- a/drivers/gpu/drm/vc4/vc4_txp.c
-+++ b/drivers/gpu/drm/vc4/vc4_txp.c
-@@ -317,6 +317,12 @@ static void vc4_txp_connector_atomic_commit(struct drm_connector *conn,
- 
- 	if (fb->format->has_alpha)
- 		ctrl |= TXP_ALPHA_ENABLE;
-+	else
-+		/*
-+		 * If TXP_ALPHA_ENABLE isn't set and TXP_ALPHA_INVERT is, the
-+		 * hardware will force the output padding to be 0xff.
-+		 */
-+		ctrl |= TXP_ALPHA_INVERT;
- 
- 	gem = drm_fb_cma_get_gem_obj(fb, 0);
- 	TXP_WRITE(TXP_DST_PTR, gem->paddr + fb->offsets[0]);
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index 2799ff117f5a..534f57363f4a 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -2885,6 +2885,7 @@ static int nl80211_send_iface(struct sk_buff *msg, u32 portid, u32 seq, int flag
+ 	wdev_lock(wdev);
+ 	switch (wdev->iftype) {
+ 	case NL80211_IFTYPE_AP:
++	case NL80211_IFTYPE_P2P_GO:
+ 		if (wdev->ssid_len &&
+ 		    nla_put(msg, NL80211_ATTR_SSID, wdev->ssid_len, wdev->ssid))
+ 			goto nla_put_failure_locked;
 -- 
 2.35.1
 
