@@ -2,99 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25F67C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 22:14:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7CD0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 22:14:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236012AbiFMWOT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 18:14:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50938 "EHLO
+        id S236438AbiFMWO0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 18:14:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231726AbiFMWOR (ORCPT
+        with ESMTP id S231726AbiFMWOZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 18:14:17 -0400
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF4623BFC
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 15:14:16 -0700 (PDT)
-Received: by mail-qk1-x72a.google.com with SMTP id p63so5100958qkd.10
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 15:14:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=marek-ca.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DUiAeAfmEZIvnaedz68FdfSLl3Zzr0m6IgnYQsJx0+M=;
-        b=L+MVtYj3pR9bGDgWW1ZLh6MEJL2EQuCpnYM8vbzG/AZc/TBQPbd5vwrc1jSCxsampk
-         bDLP9XlkJpzVtfLiX6GJwl/7eZ+ooP+cOkck5THn2TZOmDlb0ItuoiArFCtKfuX0xWRi
-         2SZD13n1AUaET9GxI3D6Y8qeqM4CIMesN2KBpO7+Rn5w/sUPtySQ90rNHUuUhu7/fYBX
-         YzMXPg2zpJpcTXdpC8ftkbyUEXsv5PFHCcISDkPc23cPcaBJYbzjZ83/0DXASvENCMHc
-         2S7+RfLPulb9pZJurQTv7Zt70tMZmNeVXMQH1nUcxQrfJYL/z9PQz7mUEgmKPnBPmMoj
-         DnTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DUiAeAfmEZIvnaedz68FdfSLl3Zzr0m6IgnYQsJx0+M=;
-        b=FuSYZQJS6e97hYc7gx/mAyW7QwuGRd/1F59wdqh7WXR40d3vB0usQ0nRmUC0ZHSh7T
-         fe86AXBmJCB2w2qmqEEJSTIqiwr6y+oNNsFij0tX9Zdmieh4jxc39n/pV2GeNTRAgcgD
-         4fjD+MQYT+Iz7f1f5dRXye2EuIuIV2A7pweXY9zcLcXKyq8Zxge1l1C9LLcYTbUdm9cF
-         0yZqwoWzNdKn8SbNhAHzTpsb3/hxa7elXE4VDn2TSC4jR9i/5BrM+TapGKTGhssOIyFE
-         zyvkyqJ4bLEzVtji9WtDKHLT+WgpR8lQecoh59GLBITN2/9aDoNd+m8lcoHQB1fnR3E1
-         er7g==
-X-Gm-Message-State: AOAM5332oMzSuQO0U35RGE7Byx+8IWDmcGXOpiG9CKS+l/jzpvzqSnPh
-        PGsjELg1orr6ECDC3D+QPWgpMw==
-X-Google-Smtp-Source: ABdhPJz8SZxKA/0hDuOp4+Jhg9OT2Vji6pJSqJnR7maEE5yHqeZHat7TCXVM+y1Uv/5GzBpK9Bpq3w==
-X-Received: by 2002:a05:620a:4252:b0:67e:8977:db80 with SMTP id w18-20020a05620a425200b0067e8977db80mr1813022qko.483.1655158455792;
-        Mon, 13 Jun 2022 15:14:15 -0700 (PDT)
-Received: from localhost.localdomain (modemcable134.222-177-173.mc.videotron.ca. [173.177.222.134])
-        by smtp.gmail.com with ESMTPSA id l11-20020ac84ccb000000b002f92b74ba99sm5700569qtv.13.2022.06.13.15.14.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 15:14:15 -0700 (PDT)
-From:   Jonathan Marek <jonathan@marek.ca>
-To:     freedreno@lists.freedesktop.org
-Cc:     Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jordan Crouse <jordan@cosmicpenguin.net>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-arm-msm@vger.kernel.org (open list:DRM DRIVER FOR MSM ADRENO GPU),
-        dri-devel@lists.freedesktop.org (open list:DRM DRIVER FOR MSM ADRENO
-        GPU), linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v2] drm/msm: use for_each_sgtable_sg to iterate over scatterlist
-Date:   Mon, 13 Jun 2022 18:10:19 -0400
-Message-Id: <20220613221019.11399-1-jonathan@marek.ca>
-X-Mailer: git-send-email 2.26.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 13 Jun 2022 18:14:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADE3C23BFC
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 15:14:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 45CBE6141B
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 22:14:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21C7CC34114;
+        Mon, 13 Jun 2022 22:14:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1655158463;
+        bh=eD273+X+BzkXpDaLR2HObkBXeSp56Ex7Sjo+sd7QsqM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qeHwFwq8QhV6jatQoViVN070e1CQc33l8WBYFHHVDnoEmiPdN59AyOi+Fbjb0+ACj
+         fvwMLeAP0DaeW2CUVwXG3gK8tX9SEUH3uRQcJOQIXbP+WLsoXw0H7WIIILt1q/aNY6
+         UJBjIUmr9+vvW8dePY20LfTuRKDqaYCsp6fAQrLY=
+Date:   Mon, 13 Jun 2022 15:14:22 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Stephen Brennan <stephen.s.brennan@oracle.com>
+Cc:     Baoquan He <bhe@redhat.com>, linux-kernel@vger.kernel.org,
+        kexec@lists.infradead.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Dave Young <dyoung@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Bixuan Cui <cuibixuan@huawei.com>,
+        David Vernet <void@manifault.com>,
+        Vivek Goyal <vgoyal@redhat.com>,
+        Sami Tolvanen <samitolvanen@google.com>
+Subject: Re: [PATCH 0/2] Expose kallsyms data in vmcoreinfo note
+Message-Id: <20220613151422.e2173f14909b9149fec8e0a6@linux-foundation.org>
+In-Reply-To: <87edzsrzqn.fsf@oracle.com>
+References: <20220517000508.777145-1-stephen.s.brennan@oracle.com>
+        <20220613142609.3e4be0f2f45671341450232d@linux-foundation.org>
+        <87edzsrzqn.fsf@oracle.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The dma_map_sgtable() call (used to invalidate cache) overwrites sgt->nents
-with 1, so msm_iommu_pagetable_map maps only the first physical segment.
+On Mon, 13 Jun 2022 14:59:44 -0700 Stephen Brennan <stephen.s.brennan@oracle.com> wrote:
 
-To fix this problem use for_each_sgtable_sg(), which uses orig_nents.
+> >> Related discussion around the BTF side of this:
+> >> https://lore.kernel.org/bpf/586a6288-704a-f7a7-b256-e18a675927df@oracle.com/T/#u
+> >> 
+> >> Some work-in-progress branches using this feature:
+> >> https://github.com/brenns10/dwarves/tree/remove_percpu_restriction_1
+> >> https://github.com/brenns10/drgn/tree/kallsyms_plus_btf
+> >
+> > What's the story on using gdb with this?
+> 
+> There is no story with GDB as of yet. I was already familiar with the
+> code of drgn when I started down this path, so that's what I used. Drgn
+> happens to have a very extensible type system which made it quite simple
+> to do. I'd love to see support for doing this with GDB, and might look
+> into the feasibility of it, but it's not on my roadmap right now.
 
-Fixes: b145c6e65eb0 ("drm/msm: Add support to create a local pagetable")
-Signed-off-by: Jonathan Marek <jonathan@marek.ca>
----
-v2: use for_each_sgtable_sg and update commit message
-
- drivers/gpu/drm/msm/msm_iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
-index bcaddbba564df..a54ed354578b5 100644
---- a/drivers/gpu/drm/msm/msm_iommu.c
-+++ b/drivers/gpu/drm/msm/msm_iommu.c
-@@ -58,7 +58,7 @@ static int msm_iommu_pagetable_map(struct msm_mmu *mmu, u64 iova,
- 	u64 addr = iova;
- 	unsigned int i;
- 
--	for_each_sg(sgt->sgl, sg, sgt->nents, i) {
-+	for_each_sgtable_sg(sgt, sg, i) {
- 		size_t size = sg->length;
- 		phys_addr_t phys = sg_phys(sg);
- 
--- 
-2.26.1
-
+Naive question - could some standalone tool take this kallsyms-based
+info, combine it with a core image and create a minimally-dwarfified
+file which any debugger can munch on?
