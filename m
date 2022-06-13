@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 136D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:48:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E56F7C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:48:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244702AbiFMKr5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:47:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36836 "EHLO
+        id S237057AbiFMKsD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:48:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347898AbiFMKoG (ORCPT
+        with ESMTP id S1348075AbiFMKoI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:44:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C42C20BD8;
-        Mon, 13 Jun 2022 03:25:14 -0700 (PDT)
+        Mon, 13 Jun 2022 06:44:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6CC320F49;
+        Mon, 13 Jun 2022 03:25:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 216ED60EFB;
-        Mon, 13 Jun 2022 10:25:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D5E9C34114;
-        Mon, 13 Jun 2022 10:25:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 81E20B80E93;
+        Mon, 13 Jun 2022 10:25:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9044C34114;
+        Mon, 13 Jun 2022 10:25:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115913;
-        bh=xzGCfSZLzTsBiin7Dgz+G3EE85Jy2LOqbeb2Sx8S30o=;
+        s=korg; t=1655115916;
+        bh=QO1vEa+m3jO9JUmuL0HAHMWrZwYOkvWhBQS391t7hzc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2KPLErRKufUCTyAX65hLfrl/Fm9tc4c9jiefe5FAOYas5AP/WJdX8nCN5mM6dK55q
-         TOPgIEGn925wqnvO0nPAVGxVz++a4e+lGPm25/6obYxR2T+o1NRhnHcx6NGfHCMfyI
-         Xg8Wt5DkIDXKNvA5FB5fGfMZcfGukpEN1YH0a5qE=
+        b=i35W5hbsrD1HJHA8Z2hfQwbDiF5hqv7Jlo5zSDlQXHIIqTAVwsc0tAqDV9oNi100H
+         rIHEzS8KHu6NPYHMW9/WocYu/K2l6lEcJHhm9/ebDaniCNLjEkF1eQ4/g61GCHXdpm
+         PPJcjckV6/vzSF/dErhud3rKqedBUlQEzjJmBhf4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Mel Gorman <mel@csn.ul.ie>,
+        Minchan Kim <minchan.kim@gmail.com>,
+        KAMEZAWA Hiroyuki <kamezawa.hiroyu@jp.fujitsu.com>,
+        KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 087/218] pinctrl: mvebu: Fix irq_of_parse_and_map() return value
-Date:   Mon, 13 Jun 2022 12:09:05 +0200
-Message-Id: <20220613094923.172492679@linuxfoundation.org>
+Subject: [PATCH 4.14 088/218] drivers/base/node.c: fix compaction sysfs file leak
+Date:   Mon, 13 Jun 2022 12:09:06 +0200
+Message-Id: <20220613094923.204982271@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -50,34 +54,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Miaohe Lin <linmiaohe@huawei.com>
 
-[ Upstream commit 71bc7cf3be65bab441e03667cf215c557712976c ]
+[ Upstream commit da63dc84befaa9e6079a0bc363ff0eaa975f9073 ]
 
-The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
+Compaction sysfs file is created via compaction_register_node in
+register_node.  But we forgot to remove it in unregister_node.  Thus
+compaction sysfs file is leaked.  Using compaction_unregister_node to fix
+this issue.
 
-Fixes: 2f227605394b ("pinctrl: armada-37xx: Add irqchip support")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220422105339.78810-1-krzysztof.kozlowski@linaro.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Link: https://lkml.kernel.org/r/20220401070905.43679-1-linmiaohe@huawei.com
+Fixes: ed4a6d7f0676 ("mm: compaction: add /sys trigger for per-node memory compaction")
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Rafael J. Wysocki <rafael@kernel.org>
+Cc: Mel Gorman <mel@csn.ul.ie>
+Cc: Minchan Kim <minchan.kim@gmail.com>
+Cc: KAMEZAWA Hiroyuki <kamezawa.hiroyu@jp.fujitsu.com>
+Cc: KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/mvebu/pinctrl-armada-37xx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/base/node.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-index 9f7d917458c7..d90aae2a5cfd 100644
---- a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-+++ b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-@@ -710,7 +710,7 @@ static int armada_37xx_irqchip_register(struct platform_device *pdev,
- 	for (i = 0; i < nr_irq_parent; i++) {
- 		int irq = irq_of_parse_and_map(np, i);
+diff --git a/drivers/base/node.c b/drivers/base/node.c
+index 5c39f14d15a5..57eef6b24448 100644
+--- a/drivers/base/node.c
++++ b/drivers/base/node.c
+@@ -337,6 +337,7 @@ static int register_node(struct node *node, int num)
+  */
+ void unregister_node(struct node *node)
+ {
++	compaction_unregister_node(node);
+ 	hugetlb_unregister_node(node);		/* no-op, if memoryless node */
  
--		if (irq < 0)
-+		if (!irq)
- 			continue;
- 
- 		gpiochip_set_chained_irqchip(gc, irqchip, irq,
+ 	device_unregister(&node->dev);
 -- 
 2.35.1
 
