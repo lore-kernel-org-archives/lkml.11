@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1012EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:41:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E020FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:41:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355779AbiFMLlm (ORCPT
+        id S1355794AbiFMLlo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:41:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56132 "EHLO
+        Mon, 13 Jun 2022 07:41:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354584AbiFMLd3 (ORCPT
+        with ESMTP id S1354885AbiFMLeN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:33:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A69073968A;
-        Mon, 13 Jun 2022 03:47:29 -0700 (PDT)
+        Mon, 13 Jun 2022 07:34:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0244242A34;
+        Mon, 13 Jun 2022 03:47:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 10AF86112A;
-        Mon, 13 Jun 2022 10:47:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25AEBC34114;
-        Mon, 13 Jun 2022 10:47:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 27853B80D3F;
+        Mon, 13 Jun 2022 10:47:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54601C3411F;
+        Mon, 13 Jun 2022 10:47:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117248;
-        bh=h22vLYdgdva+a54IzP5sYoSo8XOMrX/sUBB6usoDs/o=;
+        s=korg; t=1655117256;
+        bh=F0EYgoPzitgp8Y9vT+TpnbuD2i0rrUHXv1A1VLg05qg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LQGPxNDMfK0iOjmj+u2doCP+vnx/vron9+75G0e4NgmO5rbmhtR3n2cdNhtX6Cn7r
-         6dIlAQ7xXI+e87zZmn3Ie3EqJwkzxnJLGUvUDGL3rLAty4dF0WjqUfLj1hg3cR9Lz5
-         SbZHF5XOXXbljHUr0lTbhZmk8jHpWse54trmsYGc=
+        b=MrtJCdE/TIzGwMQEsuLdPp4NKWjK81RULXDZCvyc1PNdsXAn+hk8ymjB9E6CcwCj0
+         yjKea39WClxQ+zqekkcwqV6MR1EOvCFirJNvVCZyRMEyHfP4UY6ist62w0NhuW/NI5
+         BLVum0H0PSiaunBfzvgnMyQIcyTPWifjPiMHYbyQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Laurent Fasnacht <laurent.fasnacht@proton.ch>,
-        Neal Cardwell <ncardwell@google.com>,
+        stable@vger.kernel.org,
+        syzbot+e820fdc8ce362f2dea51@syzkaller.appspotmail.com,
+        Jon Maloy <jmaloy@redhat.com>,
+        Hoang Le <hoang.h.le@dektech.com.au>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 333/411] tcp: tcp_rtx_synack() can be called from process context
-Date:   Mon, 13 Jun 2022 12:10:06 +0200
-Message-Id: <20220613094938.707534130@linuxfoundation.org>
+Subject: [PATCH 5.4 335/411] tipc: check attribute length for bearer name
+Date:   Mon, 13 Jun 2022 12:10:08 +0200
+Message-Id: <20220613094938.765432242@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -52,90 +53,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Hoang Le <hoang.h.le@dektech.com.au>
 
-[ Upstream commit 0a375c822497ed6ad6b5da0792a12a6f1af10c0b ]
+[ Upstream commit 7f36f798f89bf32c0164049cb0e3fd1af613d0bb ]
 
-Laurent reported the enclosed report [1]
+syzbot reported uninit-value:
+=====================================================
+BUG: KMSAN: uninit-value in string_nocheck lib/vsprintf.c:644 [inline]
+BUG: KMSAN: uninit-value in string+0x4f9/0x6f0 lib/vsprintf.c:725
+ string_nocheck lib/vsprintf.c:644 [inline]
+ string+0x4f9/0x6f0 lib/vsprintf.c:725
+ vsnprintf+0x2222/0x3650 lib/vsprintf.c:2806
+ vprintk_store+0x537/0x2150 kernel/printk/printk.c:2158
+ vprintk_emit+0x28b/0xab0 kernel/printk/printk.c:2256
+ vprintk_default+0x86/0xa0 kernel/printk/printk.c:2283
+ vprintk+0x15f/0x180 kernel/printk/printk_safe.c:50
+ _printk+0x18d/0x1cf kernel/printk/printk.c:2293
+ tipc_enable_bearer net/tipc/bearer.c:371 [inline]
+ __tipc_nl_bearer_enable+0x2022/0x22a0 net/tipc/bearer.c:1033
+ tipc_nl_bearer_enable+0x6c/0xb0 net/tipc/bearer.c:1042
+ genl_family_rcv_msg_doit net/netlink/genetlink.c:731 [inline]
 
-This bug triggers with following coditions:
+- Do sanity check the attribute length for TIPC_NLA_BEARER_NAME.
+- Do not use 'illegal name' in printing message.
 
-0) Kernel built with CONFIG_DEBUG_PREEMPT=y
-
-1) A new passive FastOpen TCP socket is created.
-   This FO socket waits for an ACK coming from client to be a complete
-   ESTABLISHED one.
-2) A socket operation on this socket goes through lock_sock()
-   release_sock() dance.
-3) While the socket is owned by the user in step 2),
-   a retransmit of the SYN is received and stored in socket backlog.
-4) At release_sock() time, the socket backlog is processed while
-   in process context.
-5) A SYNACK packet is cooked in response of the SYN retransmit.
-6) -> tcp_rtx_synack() is called in process context.
-
-Before blamed commit, tcp_rtx_synack() was always called from BH handler,
-from a timer handler.
-
-Fix this by using TCP_INC_STATS() & NET_INC_STATS()
-which do not assume caller is in non preemptible context.
-
-[1]
-BUG: using __this_cpu_add() in preemptible [00000000] code: epollpep/2180
-caller is tcp_rtx_synack.part.0+0x36/0xc0
-CPU: 10 PID: 2180 Comm: epollpep Tainted: G           OE     5.16.0-0.bpo.4-amd64 #1  Debian 5.16.12-1~bpo11+1
-Hardware name: Supermicro SYS-5039MC-H8TRF/X11SCD-F, BIOS 1.7 11/23/2021
-Call Trace:
- <TASK>
- dump_stack_lvl+0x48/0x5e
- check_preemption_disabled+0xde/0xe0
- tcp_rtx_synack.part.0+0x36/0xc0
- tcp_rtx_synack+0x8d/0xa0
- ? kmem_cache_alloc+0x2e0/0x3e0
- ? apparmor_file_alloc_security+0x3b/0x1f0
- inet_rtx_syn_ack+0x16/0x30
- tcp_check_req+0x367/0x610
- tcp_rcv_state_process+0x91/0xf60
- ? get_nohz_timer_target+0x18/0x1a0
- ? lock_timer_base+0x61/0x80
- ? preempt_count_add+0x68/0xa0
- tcp_v4_do_rcv+0xbd/0x270
- __release_sock+0x6d/0xb0
- release_sock+0x2b/0x90
- sock_setsockopt+0x138/0x1140
- ? __sys_getsockname+0x7e/0xc0
- ? aa_sk_perm+0x3e/0x1a0
- __sys_setsockopt+0x198/0x1e0
- __x64_sys_setsockopt+0x21/0x30
- do_syscall_64+0x38/0xc0
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Fixes: 168a8f58059a ("tcp: TCP Fast Open Server - main code path")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: Laurent Fasnacht <laurent.fasnacht@proton.ch>
-Acked-by: Neal Cardwell <ncardwell@google.com>
-Link: https://lore.kernel.org/r/20220530213713.601888-1-eric.dumazet@gmail.com
+Reported-by: syzbot+e820fdc8ce362f2dea51@syzkaller.appspotmail.com
+Fixes: cb30a63384bc ("tipc: refactor function tipc_enable_bearer()")
+Acked-by: Jon Maloy <jmaloy@redhat.com>
+Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
+Link: https://lore.kernel.org/r/20220602063053.5892-1-hoang.h.le@dektech.com.au
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_output.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/tipc/bearer.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 67493ec6318a..739fc69cdcc6 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -3869,8 +3869,8 @@ int tcp_rtx_synack(const struct sock *sk, struct request_sock *req)
- 	tcp_rsk(req)->txhash = net_tx_rndhash();
- 	res = af_ops->send_synack(sk, NULL, &fl, req, NULL, TCP_SYNACK_NORMAL);
- 	if (!res) {
--		__TCP_INC_STATS(sock_net(sk), TCP_MIB_RETRANSSEGS);
--		__NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPSYNRETRANS);
-+		TCP_INC_STATS(sock_net(sk), TCP_MIB_RETRANSSEGS);
-+		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPSYNRETRANS);
- 		if (unlikely(tcp_passive_fastopen(sk)))
- 			tcp_sk(sk)->total_retrans++;
- 		trace_tcp_retransmit_synack(sk, req);
+diff --git a/net/tipc/bearer.c b/net/tipc/bearer.c
+index 8bd2454cc89d..577f71dd63fb 100644
+--- a/net/tipc/bearer.c
++++ b/net/tipc/bearer.c
+@@ -248,9 +248,8 @@ static int tipc_enable_bearer(struct net *net, const char *name,
+ 	u32 i;
+ 
+ 	if (!bearer_name_validate(name, &b_names)) {
+-		errstr = "illegal name";
+ 		NL_SET_ERR_MSG(extack, "Illegal name");
+-		goto rejected;
++		return res;
+ 	}
+ 
+ 	if (prio > TIPC_MAX_LINK_PRI && prio != TIPC_MEDIA_LINK_PRI) {
 -- 
 2.35.1
 
