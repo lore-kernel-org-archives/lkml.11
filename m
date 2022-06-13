@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AB21C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:32:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C793C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:32:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349649AbiFMMcM (ORCPT
+        id S1348717AbiFMMcR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:32:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41424 "EHLO
+        Mon, 13 Jun 2022 08:32:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357565AbiFMM3S (ORCPT
+        with ESMTP id S1357717AbiFMM31 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:29:18 -0400
+        Mon, 13 Jun 2022 08:29:27 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CBDB5A0AE;
-        Mon, 13 Jun 2022 04:06:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 010C65A14D;
+        Mon, 13 Jun 2022 04:06:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB4B6B80D3A;
-        Mon, 13 Jun 2022 11:06:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 451D5C34114;
-        Mon, 13 Jun 2022 11:06:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58434B80EAA;
+        Mon, 13 Jun 2022 11:06:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFE69C34114;
+        Mon, 13 Jun 2022 11:06:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118388;
-        bh=hRtCWbJIiky/IJSgSMEZ2RkjSFGQID5cKf6r0rRfTxA=;
+        s=korg; t=1655118375;
+        bh=eVVGLClJE3cjfMM7K64saHd3yZhNqEe/Dyi1Il2NU1k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QZa7ZAouaoyzIqk3N8C0YOtLUtB4lmJ0gBqQzdsivolF2mJDcTVV2TPBDA1w5qbj6
-         /UQDRJQaRLfodMXJMIkW1VBNxmsk0ZR4b0jeTTLnS3mlaq2kN9Lq9Lg9/yO+yOVLXE
-         7xFX8duHlqaGabIG9vbzMNObC5GDJgbaBAvzQQSc=
+        b=XbpvHDjXPOFXcU3DC4MjFuqFo5xRFqqnENsdrAG1K3wcpMyhB+0lpkDtDvJK9POrb
+         UuZ3P+zIp8cITxbtw3ov+7yvNAkCE/ddRbGtJQ+EIvq7wMGP/qa8+QKsspzERZBhpk
+         Oe/pOhIlzxaUpgX/O7OE9jrmV83DWp04d8G0lP68=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Menglong Dong <imagedong@tencent.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jiang Biao <benbjiang@tencent.com>,
-        Hao Peng <flyingpeng@tencent.com>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 058/172] bpf: Fix probe read error in ___bpf_prog_run()
-Date:   Mon, 13 Jun 2022 12:10:18 +0200
-Message-Id: <20220613094904.276782386@linuxfoundation.org>
+Subject: [PATCH 5.10 036/172] serial: txx9: Dont allow CS5-6
+Date:   Mon, 13 Jun 2022 12:09:56 +0200
+Message-Id: <20220613094859.052644494@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -53,93 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-[ Upstream commit caff1fa4118cec4dfd4336521ebd22a6408a1e3e ]
+[ Upstream commit 79ac88655dc0551e3571ad16bdabdbe65d61553e ]
 
-I think there is something wrong with BPF_PROBE_MEM in ___bpf_prog_run()
-in big-endian machine. Let's make a test and see what will happen if we
-want to load a 'u16' with BPF_PROBE_MEM.
+Only CS7 and CS8 are supported but CSIZE is not sanitized with
+CS5 or CS6 to CS8.
 
-Let's make the src value '0x0001', the value of dest register will become
-0x0001000000000000, as the value will be loaded to the first 2 byte of
-DST with following code:
+Set CSIZE correctly so that userspace knows the effective value.
+Incorrect CSIZE also results in miscalculation of the frame bits in
+tty_get_char_size() or in its predecessor where the roughly the same
+code is directly within uart_update_timeout().
 
-  bpf_probe_read_kernel(&DST, SIZE, (const void *)(long) (SRC + insn->off));
-
-Obviously, the value in DST is not correct. In fact, we can compare
-BPF_PROBE_MEM with LDX_MEM_H:
-
-  DST = *(SIZE *)(unsigned long) (SRC + insn->off);
-
-If the memory load is done by LDX_MEM_H, the value in DST will be 0x1 now.
-
-And I think this error results in the test case 'test_bpf_sk_storage_map'
-failing:
-
-  test_bpf_sk_storage_map:PASS:bpf_iter_bpf_sk_storage_map__open_and_load 0 nsec
-  test_bpf_sk_storage_map:PASS:socket 0 nsec
-  test_bpf_sk_storage_map:PASS:map_update 0 nsec
-  test_bpf_sk_storage_map:PASS:socket 0 nsec
-  test_bpf_sk_storage_map:PASS:map_update 0 nsec
-  test_bpf_sk_storage_map:PASS:socket 0 nsec
-  test_bpf_sk_storage_map:PASS:map_update 0 nsec
-  test_bpf_sk_storage_map:PASS:attach_iter 0 nsec
-  test_bpf_sk_storage_map:PASS:create_iter 0 nsec
-  test_bpf_sk_storage_map:PASS:read 0 nsec
-  test_bpf_sk_storage_map:FAIL:ipv6_sk_count got 0 expected 3
-  $10/26 bpf_iter/bpf_sk_storage_map:FAIL
-
-The code of the test case is simply, it will load sk->sk_family to the
-register with BPF_PROBE_MEM and check if it is AF_INET6. With this patch,
-now the test case 'bpf_iter' can pass:
-
-  $10  bpf_iter:OK
-
-Fixes: 2a02759ef5f8 ("bpf: Add support for BTF pointers to interpreter")
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Reviewed-by: Jiang Biao <benbjiang@tencent.com>
-Reviewed-by: Hao Peng <flyingpeng@tencent.com>
-Cc: Ilya Leoshkevich <iii@linux.ibm.com>
-Link: https://lore.kernel.org/bpf/20220524021228.533216-1-imagedong@tencent.com
+Fixes: 1da177e4c3f4 (Linux-2.6.12-rc2)
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Link: https://lore.kernel.org/r/20220519081808.3776-5-ilpo.jarvinen@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/bpf/core.c | 14 +++++---------
- 1 file changed, 5 insertions(+), 9 deletions(-)
+ drivers/tty/serial/serial_txx9.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index d3a1f25f8ec2..845a4c052433 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -1653,6 +1653,11 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn, u64 *stack)
- 		CONT;							\
- 	LDX_MEM_##SIZEOP:						\
- 		DST = *(SIZE *)(unsigned long) (SRC + insn->off);	\
-+		CONT;							\
-+	LDX_PROBE_MEM_##SIZEOP:						\
-+		bpf_probe_read_kernel(&DST, sizeof(SIZE),		\
-+				      (const void *)(long) (SRC + insn->off));	\
-+		DST = *((SIZE *)&DST);					\
- 		CONT;
+diff --git a/drivers/tty/serial/serial_txx9.c b/drivers/tty/serial/serial_txx9.c
+index 7a07e7272de1..7beec331010c 100644
+--- a/drivers/tty/serial/serial_txx9.c
++++ b/drivers/tty/serial/serial_txx9.c
+@@ -644,6 +644,8 @@ serial_txx9_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	case CS6:	/* not supported */
+ 	case CS8:
+ 		cval |= TXX9_SILCR_UMODE_8BIT;
++		termios->c_cflag &= ~CSIZE;
++		termios->c_cflag |= CS8;
+ 		break;
+ 	}
  
- 	LDST(B,   u8)
-@@ -1660,15 +1665,6 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn, u64 *stack)
- 	LDST(W,  u32)
- 	LDST(DW, u64)
- #undef LDST
--#define LDX_PROBE(SIZEOP, SIZE)							\
--	LDX_PROBE_MEM_##SIZEOP:							\
--		bpf_probe_read_kernel(&DST, SIZE, (const void *)(long) (SRC + insn->off));	\
--		CONT;
--	LDX_PROBE(B,  1)
--	LDX_PROBE(H,  2)
--	LDX_PROBE(W,  4)
--	LDX_PROBE(DW, 8)
--#undef LDX_PROBE
- 
- 	STX_XADD_W: /* lock xadd *(u32 *)(dst_reg + off16) += src_reg */
- 		atomic_add((u32) SRC, (atomic_t *)(unsigned long)
 -- 
 2.35.1
 
