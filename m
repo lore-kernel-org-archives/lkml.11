@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62EDCC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:10:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B20F0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:10:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352064AbiFMLKZ (ORCPT
+        id S1352072AbiFMLK3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:10:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45212 "EHLO
+        Mon, 13 Jun 2022 07:10:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351885AbiFMLFL (ORCPT
+        with ESMTP id S1351882AbiFMLFL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:05:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51CBDE7;
-        Mon, 13 Jun 2022 03:34:35 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29138272;
+        Mon, 13 Jun 2022 03:34:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 10AD4B80E93;
-        Mon, 13 Jun 2022 10:34:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DB20C34114;
-        Mon, 13 Jun 2022 10:34:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B9E8960F9A;
+        Mon, 13 Jun 2022 10:34:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CACE2C34114;
+        Mon, 13 Jun 2022 10:34:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116472;
-        bh=x3KhVWC0ll/qL0hqYrVnjfMXp95Ww5ZMIt+AkkTdFUI=;
+        s=korg; t=1655116470;
+        bh=JzLTZvIxI/bUbu0r41iCl9hj9nz0AwpHT9/b+qTUprg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IhQdUgDNf4vYE7E/m2Iz1JaohBrIFYG8db7LD/Inffk0TUtiYtOSRdE4weI47tf7s
-         LdvN87roJjowIhGk0foBKLKeyqgKf6MxUcny30LPkkbBV7Yp4QWW4c6k2KurjUuaoN
-         kJvMJfg0KlhDqR6PIWBT/JM8/RisJ/AAtOe/UjbE=
+        b=KHy7DKnj4cfLGEED/a1dqnAfNW8qqTYu4Nz5AeEwuuDAYFYViYTy6WfTKa4LGemIw
+         w4A1o5HbYF13QuD5/hcDjWy0sa3td18cqO5lVkW8nE5GLtv96iHsku+VC3laMhInh4
+         t7Ky3XngSUrXkPqKzsgzApSZb90pNO/kwdZaj1eM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        stable@vger.kernel.org, Lucas Stach <l.stach@pengutronix.de>,
+        Robert Foss <robert.foss@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 187/218] drivers: tty: serial: Fix deadlock in sa1100_set_termios()
-Date:   Mon, 13 Jun 2022 12:10:45 +0200
-Message-Id: <20220613094926.286902618@linuxfoundation.org>
+Subject: [PATCH 5.4 083/411] drm/bridge: adv7511: clean up CEC adapter when probe fails
+Date:   Mon, 13 Jun 2022 12:05:56 +0200
+Message-Id: <20220613094931.170533764@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,59 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Lucas Stach <l.stach@pengutronix.de>
 
-[ Upstream commit 62b2caef400c1738b6d22f636c628d9f85cd4c4c ]
+[ Upstream commit 7ed2b0dabf7a22874cb30f8878df239ef638eb53 ]
 
-There is a deadlock in sa1100_set_termios(), which is shown
-below:
+When the probe routine fails we also need to clean up the
+CEC adapter registered in adv7511_cec_init().
 
-   (Thread 1)              |      (Thread 2)
-                           | sa1100_enable_ms()
-sa1100_set_termios()       |  mod_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | sa1100_timeout()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
-
-We hold sport->port.lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need sport->port.lock in position (2) of thread 2. As a result,
-sa1100_set_termios() will block forever.
-
-This patch moves del_timer_sync() before spin_lock_irqsave()
-in order to prevent the deadlock.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417111626.7802-1-duoming@zju.edu.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 3b1b975003e4 ("drm: adv7511/33: add HDMI CEC support")
+Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+Reviewed-by: Robert Foss <robert.foss@linaro.org>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220321104705.2804423-1-l.stach@pengutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/sa1100.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/bridge/adv7511/adv7511_drv.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
-index fd3d1329d48c..68eb1c9faa29 100644
---- a/drivers/tty/serial/sa1100.c
-+++ b/drivers/tty/serial/sa1100.c
-@@ -452,6 +452,8 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
- 	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16); 
- 	quot = uart_get_divisor(port, baud);
+diff --git a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
+index 9e13e466e72c..e7bf32f234d7 100644
+--- a/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
++++ b/drivers/gpu/drm/bridge/adv7511/adv7511_drv.c
+@@ -1225,6 +1225,7 @@ static int adv7511_probe(struct i2c_client *i2c, const struct i2c_device_id *id)
+ 	return 0;
  
-+	del_timer_sync(&sport->timer);
-+
- 	spin_lock_irqsave(&sport->port.lock, flags);
- 
- 	sport->port.read_status_mask &= UTSR0_TO_SM(UTSR0_TFS);
-@@ -482,8 +484,6 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
- 				UTSR1_TO_SM(UTSR1_ROR);
- 	}
- 
--	del_timer_sync(&sport->timer);
--
- 	/*
- 	 * Update the per-port timeout.
- 	 */
+ err_unregister_cec:
++	cec_unregister_adapter(adv7511->cec_adap);
+ 	i2c_unregister_device(adv7511->i2c_cec);
+ 	if (adv7511->cec_clk)
+ 		clk_disable_unprepare(adv7511->cec_clk);
 -- 
 2.35.1
 
