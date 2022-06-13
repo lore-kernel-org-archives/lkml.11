@@ -2,52 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70B55C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:11:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE20C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:12:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358799AbiFMNLp (ORCPT
+        id S1358919AbiFMNMK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:11:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35582 "EHLO
+        Mon, 13 Jun 2022 09:12:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352790AbiFMNFo (ORCPT
+        with ESMTP id S1357373AbiFMNGV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:05:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55A60377F1;
-        Mon, 13 Jun 2022 04:18:32 -0700 (PDT)
+        Mon, 13 Jun 2022 09:06:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF5537031;
+        Mon, 13 Jun 2022 04:18:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 05E15B80EAF;
-        Mon, 13 Jun 2022 11:18:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B6E5C34114;
-        Mon, 13 Jun 2022 11:18:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 45523B80E59;
+        Mon, 13 Jun 2022 11:18:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2E74C34114;
+        Mon, 13 Jun 2022 11:18:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119094;
-        bh=ZoIQx/4KSETmL1Fddvq3W5LMPWCMPRJ+iRqS9vyiepg=;
+        s=korg; t=1655119103;
+        bh=tHIsGFpR7q/TosDWqEXy1dnboeAXtwvPMfpL3sWrWzo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k0YFFCGrUNSTJL7EjPLHGLQRO32iTmds5BjLZx6NttooVY9fBdqbxBZALpjihwLDO
-         SBhLaLwbIX4mttbZIdHTXXFzKqFOgRTIH0ycLN/COM+Pmdbw/idyP8lETJapvb67Ml
-         tX6sTQKTyhvJ0XYzhOSSApajjvgYllQ+Z2FZW5zk=
+        b=xPSeiv6qlzeGszAGWr+5rzVsCyPWahFw+DjMEO2wL7xImEp/Cb8c9a9jNZbGMGguq
+         6zXuNF3EVwuWLxPHncu71y/93WIt6Jw+hLahZcD8Nt9TI4UbEQgHTvacNFBQJDTXQB
+         EB92NGoq/jsne/719dt+eTPLBGlj4J1NTzAWq944=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Padmanabha Srinivasaiah <treasure4paddy@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 112/247] bootconfig: Make the bootconfig.o as a normal object file
-Date:   Mon, 13 Jun 2022 12:10:14 +0200
-Message-Id: <20220613094926.359805431@linuxfoundation.org>
+Subject: [PATCH 5.15 105/247] afs: Fix infinite loop found by xfstest generic/676
+Date:   Mon, 13 Jun 2022 12:10:07 +0200
+Message-Id: <20220613094926.141733828@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -59,43 +52,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masami Hiramatsu <mhiramat@kernel.org>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit 6014a23638cdee63a71ef13c51d7c563eb5829ee ]
+[ Upstream commit 17eabd42560f4636648ad65ba5b20228071e2363 ]
 
-Since the APIs defined in the bootconfig.o are not individually used,
-it is meaningless to build it as library by lib-y. Use obj-y for that.
+In AFS, a directory is handled as a file that the client downloads and
+parses locally for the purposes of performing lookup and getdents
+operations.  The in-kernel afs filesystem has a number of functions that
+do this.
 
-Link: https://lkml.kernel.org/r/164921225875.1090670.15565363126983098971.stgit@devnote2
+A directory file is arranged as a series of 2K blocks divided into
+32-byte slots, where a directory entry occupies one or more slots, plus
+each block starts with one or more metadata blocks.
 
-Cc: Padmanabha Srinivasaiah <treasure4paddy@gmail.com>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: Randy Dunlap <rdunlap@infradead.org>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Cc: Sami Tolvanen <samitolvanen@google.com>
-Cc: Nathan Chancellor <nathan@kernel.org>
-Cc: Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Reported-by: Masahiro Yamada <masahiroy@kernel.org>
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+When parsing a block, if the last slots are occupied by a dirent that
+occupies more than a single slot and the file position points at a slot
+that's not the initial one, the logic in afs_dir_iterate_block() that
+skips over it won't advance the file pointer to the end of it.  This
+will cause an infinite loop in getdents() as it will keep retrying that
+block and failing to advance beyond the final entry.
+
+Fix this by advancing the file pointer if the next entry will be beyond
+it when we skip a block.
+
+This was found by the generic/676 xfstest but can also be triggered with
+something like:
+
+	~/xfstests-dev/src/t_readdir_3 /xfstest.test/z 4000 1
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: David Howells <dhowells@redhat.com>
+Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
+Tested-by: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Link: http://lore.kernel.org/r/165391973497.110268.2939296942213894166.stgit@warthog.procyon.org.uk/
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/afs/dir.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/lib/Makefile b/lib/Makefile
-index a841be5244ac..6cf97c60b00b 100644
---- a/lib/Makefile
-+++ b/lib/Makefile
-@@ -275,7 +275,7 @@ $(foreach file, $(libfdt_files), \
- 	$(eval CFLAGS_$(file) = -I $(srctree)/scripts/dtc/libfdt))
- lib-$(CONFIG_LIBFDT) += $(libfdt_files)
+diff --git a/fs/afs/dir.c b/fs/afs/dir.c
+index 4579bbda4634..948a808a964d 100644
+--- a/fs/afs/dir.c
++++ b/fs/afs/dir.c
+@@ -486,8 +486,11 @@ static int afs_dir_iterate_block(struct afs_vnode *dvnode,
+ 		}
  
--lib-$(CONFIG_BOOT_CONFIG) += bootconfig.o
-+obj-$(CONFIG_BOOT_CONFIG) += bootconfig.o
+ 		/* skip if starts before the current position */
+-		if (offset < curr)
++		if (offset < curr) {
++			if (next > curr)
++				ctx->pos = blkoff + next * sizeof(union afs_xdr_dirent);
+ 			continue;
++		}
  
- obj-$(CONFIG_RBTREE_TEST) += rbtree_test.o
- obj-$(CONFIG_INTERVAL_TREE_TEST) += interval_tree_test.o
+ 		/* found the next entry */
+ 		if (!dir_emit(ctx, dire->u.name, nlen,
 -- 
 2.35.1
 
