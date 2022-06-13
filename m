@@ -2,148 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3391AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:35:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E235C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:36:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231388AbiFMSfq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:35:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35664 "EHLO
+        id S241591AbiFMSgu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:36:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245511AbiFMSf2 (ORCPT
+        with ESMTP id S234187AbiFMSg0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 14:35:28 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D1AE6439;
-        Mon, 13 Jun 2022 08:42:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655134972; x=1686670972;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=m8YDmG7CVT6t+y4DSNge1YApMVBVkN5F0wgxXF4G1vY=;
-  b=GkvQlMNowfxqLWzbnndmKWBVBmDaRoTR4/HwZaMXNJ6R81d2Ko6RHw3L
-   67u+/aaWpJ3F6B8fX7BNWhoAplRMGkklANHvxUZR7p+bItDyiJcqMDEu0
-   TOF3YPOfQVYTBHkDh+80A9penvjZetUtJyr4kQvpzRV2/whWobq2qbXhS
-   g=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 13 Jun 2022 08:42:52 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 08:42:51 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 13 Jun 2022 08:42:51 -0700
-Received: from [10.110.74.141] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 13 Jun
- 2022 08:42:49 -0700
-Message-ID: <b12a3e95-44b2-7075-2b77-f382f0d38cf7@quicinc.com>
-Date:   Mon, 13 Jun 2022 08:42:48 -0700
+        Mon, 13 Jun 2022 14:36:26 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A80CE5D3
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 07:55:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=VercitidOszaGDjS+BMhFv5MEfnrKBbaE0pJ9WADgZw=; b=o408WJyjnfJecMp+5RgXCA7Fqa
+        04pyM6jxVc6WfSx3wJY1WH0iEbewQ7TJKdUJYJHg4e1nBjGbkS6IHOeSq3gqUSmayeM5d0ZRsCBg8
+        kWoqHu8a6fXDtUwcw8mrDw2cpOkAY4WK5/+YpQigyXnq7sWJl/tmsl5fW830IFS/Ntw6N8d5evFnE
+        vIgAb5hV0bd7iS8wuoXK1epsVtpF1njIjoez8GZe2AT5k4FU1ked9Tzzk7JDgcwyQQ8LFrM01TDlK
+        5kX7rRRmwlR5KT9+dGQCeDTxREtN5WXE/JqB4qZcNy5PR2lVg1R6F+doIV5B1KYXKtvEQQ7vk5GrX
+        Vji1RjQQ==;
+Received: from dhcp-077-249-017-003.chello.nl ([77.249.17.3] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o0lTV-007aym-3u; Mon, 13 Jun 2022 14:55:29 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 3FE99300472;
+        Mon, 13 Jun 2022 16:55:28 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 3011D201A578F; Mon, 13 Jun 2022 16:55:28 +0200 (CEST)
+Date:   Mon, 13 Jun 2022 16:55:28 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Ravi Bangoria <ravi.bangoria@amd.com>
+Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com,
+        jolsa@redhat.com, namhyung@kernel.org, songliubraving@fb.com,
+        eranian@google.com, alexey.budankov@linux.intel.com,
+        ak@linux.intel.com, mark.rutland@arm.com, megha.dey@intel.com,
+        frederic@kernel.org, maddy@linux.ibm.com, irogers@google.com,
+        kim.phillips@amd.com, linux-kernel@vger.kernel.org,
+        santosh.shukla@amd.com
+Subject: Re: [RFC v2] perf: Rewrite core context handling
+Message-ID: <YqdP4NExuwOHdC0G@hirez.programming.kicks-ass.net>
+References: <20220113134743.1292-1-ravi.bangoria@amd.com>
+ <YqdLH+ZU/sf4n0pa@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v4] drm/msm/dp: force link training for display resolution
- change
-Content-Language: en-US
-To:     Stephen Boyd <swboyd@chromium.org>, <agross@kernel.org>,
-        <airlied@linux.ie>, <bjorn.andersson@linaro.org>,
-        <daniel@ffwll.ch>, <dianders@chromium.org>,
-        <dmitry.baryshkov@linaro.org>, <robdclark@gmail.com>,
-        <sean@poorly.run>, <vkoul@kernel.org>
-CC:     <quic_abhinavk@quicinc.com>, <quic_aravindh@quicinc.com>,
-        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <1653687133-32331-1-git-send-email-quic_khsieh@quicinc.com>
- <CAE-0n519jUEQK565OFVevvyoF49rgTazf4McjKmDS8mfDrWwyQ@mail.gmail.com>
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-In-Reply-To: <CAE-0n519jUEQK565OFVevvyoF49rgTazf4McjKmDS8mfDrWwyQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YqdLH+ZU/sf4n0pa@hirez.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Jun 13, 2022 at 04:35:11PM +0200, Peter Zijlstra wrote:
+> @@ -12125,6 +12232,8 @@ SYSCALL_DEFINE5(perf_event_open,
+>  		goto err_task;
+>  	}
+>  
+> +	// XXX premature; what if this is allowed, but we get moved to a PMU
+> +	// that doesn't have this.
+>  	if (is_sampling_event(event)) {
+>  		if (event->pmu->capabilities & PERF_PMU_CAP_NO_INTERRUPT) {
+>  			err = -EOPNOTSUPP;
 
-On 6/10/2022 2:04 PM, Stephen Boyd wrote:
-> Quoting Kuogee Hsieh (2022-05-27 14:32:13)
->> During display resolution changes display have to be disabled first
->> followed by display enabling with new resolution. Display disable
->> will turn off both pixel clock and main link clock so that main link
->> have to be re trained during display enable to have new video stream
-> s/re/re-/
->
->> flow again. At current implementation, display enable function manually
->> kicks up irq_hpd_handle which will read panel link status and start link
->> training if link status is not in sync state. However, there is rare
->> case that a particular panel links status keep staying in sync for
->> some period of time after main link had been shut down previously at
->> display disabled. Main link retraining will not be executed by
->> irq_hdp_handle() if the link status read from pane shows it is in
-> s/pane/panel/
->
->> sync state. If this was happen, then video stream of newer display
->> resolution will fail to be transmitted to panel due to main link is
->> not in sync between host and panel. This patch force main link always
->> be retrained during display enable procedure to prevent this rare
->> failed case from happening. Also this implementation are more
->> efficient than manual kicking off irq_hpd_handle function.
-> The description makes it sound like the link status is not updated,
-> sometimes. Isn't that the real issue here? Not that link training needs
-> to be done again (which it always does apparently), but that disabling
-> the display doesn't wait for the link to go down. Or disabling the link
-> is causing some sort of glitch on the sink causing it to report the
-> status as OK when it really isn't.
-
-As soon as mainlink teared down, sink has to reflect the mainlink at out 
-of synch state in real time.
-
-link re-training always required for display resolution changes since 
-resolution changes will involve link configuration changes, such as 2 
-lanes change to 1 changes or 5.7G link rate changes to 2.7G or vise 
-versa. Therefore there is no need to check sinker's main link status to 
-decide re training is required or not.
-
-
-
->> Changes in v2:
->> -- set force_link_train flag on DP only (is_edp == false)
->>
->> Changes in v3:
->> -- revise commit  text
->> -- add Fixes tag
->>
->> Changes in v4:
->> -- revise commit  text
->>
->> Fixes: 62671d2ef24b ("drm/msm/dp: fixes wrong connection state caused by failure of link train")
->> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
->> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
->> index c388323..370348d 100644
->> --- a/drivers/gpu/drm/msm/dp/dp_display.c
->> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
->> @@ -1688,10 +1689,14 @@ void dp_bridge_enable(struct drm_bridge *drm_bridge)
->>
->>          state =  dp_display->hpd_state;
->>
->> -       if (state == ST_DISPLAY_OFF)
->> +       if (state == ST_DISPLAY_OFF) {
->>                  dp_display_host_phy_init(dp_display);
->>
->> -       dp_display_enable(dp_display, 0);
->> +               if (!dp->is_edp)
-> Does this assume eDP has one resolution? I don't understand why eDP is
-> special here, especially if eDP has more than one resolution available
-> it seems like we would want to retrain the link regardless.
->
->> +                       force_link_train = true;
->> +       }
->> +
->> +       dp_display_enable(dp_display, force_link_train);
->>
->>          rc = dp_display_post_enable(dp);
->>          if (rc) {
+No; this really should be against the event's native PMU. If the event
+can't natively sample, it can't sample when placed in another group
+either.
