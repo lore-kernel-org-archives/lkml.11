@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C4F7CCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BACCCCA483
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:11:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359131AbiFMNJ2 (ORCPT
+        id S1359149AbiFMNJe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:09:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50360 "EHLO
+        Mon, 13 Jun 2022 09:09:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357635AbiFMM7J (ORCPT
+        with ESMTP id S1357886AbiFMM71 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:59:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89EFFBC08;
-        Mon, 13 Jun 2022 04:17:53 -0700 (PDT)
+        Mon, 13 Jun 2022 08:59:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94FBF1D0C1;
+        Mon, 13 Jun 2022 04:18:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 87DFCB80EA8;
-        Mon, 13 Jun 2022 11:17:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2561C34114;
-        Mon, 13 Jun 2022 11:17:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 17C6E60EF1;
+        Mon, 13 Jun 2022 11:17:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27DABC34114;
+        Mon, 13 Jun 2022 11:17:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119070;
-        bh=Wwdj1T6USH3co4gF2VcgO1aHK75MJbjaGejTGlFHUT8=;
+        s=korg; t=1655119078;
+        bh=cBNoKy+IGKV7SgB+Q/JlwdAQKU47fU+zsPcVUFd+UFo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=et1w4K1WKS1sdSwL2DnRu4a8dQTzo9tqwdZ9YsH8o6ZahNoOhfzzp+qnnGuBnKBek
-         UmQqpRxa5hKBK7Q9w0/0AIeo3tYd9EYIj2R7O3dGj0QCWZpgKKvxbESfFrz6KwIzHG
-         4e+n4oOaxG+LCNPsNAfLv2a6Tvv9816KGHQ5PSJc=
+        b=CerFDlW8O4zeB/dLi2J2DT2DHrLywcRfHURlGhQLETX4hdNIp1FDcNeDGqEe7ee94
+         21pzpZqOdvoTcDNMAFBAfWk5ozcpae7j3QUNJTlYTJEyPrw3WAfw8E9aai7El2W2S0
+         p4AedXIBMv0PvlZd54L3w1D2pJOgneYiMW7a4Afc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kinglong Mee <kinglongmee@gmail.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        stable@vger.kernel.org, Yi Chen <yiche@redhat.com>,
+        Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 129/247] xprtrdma: treat all calls not a bcall when bc_serv is NULL
-Date:   Mon, 13 Jun 2022 12:10:31 +0200
-Message-Id: <20220613094926.873283886@linuxfoundation.org>
+Subject: [PATCH 5.15 132/247] netfilter: nat: really support inet nat without l3 address
+Date:   Mon, 13 Jun 2022 12:10:34 +0200
+Message-Id: <20220613094926.963491832@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -51,71 +51,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kinglong Mee <kinglongmee@gmail.com>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit 11270e7ca268e8d61b5d9e5c3a54bd1550642c9c ]
+[ Upstream commit 282e5f8fe907dc3f2fbf9f2103b0e62ffc3a68a5 ]
 
-When a rdma server returns a fault format reply, nfs v3 client may
-treats it as a bcall when bc service is not exist.
+When no l3 address is given, priv->family is set to NFPROTO_INET and
+the evaluation function isn't called.
 
-The debug message at rpcrdma_bc_receive_call are,
+Call it too so l4-only rewrite can work.
+Also add a test case for this.
 
-[56579.837169] RPC:       rpcrdma_bc_receive_call: callback XID
-00000001, length=20
-[56579.837174] RPC:       rpcrdma_bc_receive_call: 00 00 00 01 00 00 00
-00 00 00 00 00 00 00 00 00 00 00 00 04
-
-After that, rpcrdma_bc_receive_call will meets NULL pointer as,
-
-[  226.057890] BUG: unable to handle kernel NULL pointer dereference at
-00000000000000c8
-...
-[  226.058704] RIP: 0010:_raw_spin_lock+0xc/0x20
-...
-[  226.059732] Call Trace:
-[  226.059878]  rpcrdma_bc_receive_call+0x138/0x327 [rpcrdma]
-[  226.060011]  __ib_process_cq+0x89/0x170 [ib_core]
-[  226.060092]  ib_cq_poll_work+0x26/0x80 [ib_core]
-[  226.060257]  process_one_work+0x1a7/0x360
-[  226.060367]  ? create_worker+0x1a0/0x1a0
-[  226.060440]  worker_thread+0x30/0x390
-[  226.060500]  ? create_worker+0x1a0/0x1a0
-[  226.060574]  kthread+0x116/0x130
-[  226.060661]  ? kthread_flush_work_fn+0x10/0x10
-[  226.060724]  ret_from_fork+0x35/0x40
-...
-
-Signed-off-by: Kinglong Mee <kinglongmee@gmail.com>
-Reviewed-by: Chuck Lever <chuck.lever@oracle.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Fixes: a33f387ecd5aa ("netfilter: nft_nat: allow to specify layer 4 protocol NAT only")
+Reported-by: Yi Chen <yiche@redhat.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/xprtrdma/rpc_rdma.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ net/netfilter/nft_nat.c                      |  3 +-
+ tools/testing/selftests/netfilter/nft_nat.sh | 43 ++++++++++++++++++++
+ 2 files changed, 45 insertions(+), 1 deletion(-)
 
-diff --git a/net/sunrpc/xprtrdma/rpc_rdma.c b/net/sunrpc/xprtrdma/rpc_rdma.c
-index c335c1361564..e9c69e9f4299 100644
---- a/net/sunrpc/xprtrdma/rpc_rdma.c
-+++ b/net/sunrpc/xprtrdma/rpc_rdma.c
-@@ -1120,6 +1120,7 @@ static bool
- rpcrdma_is_bcall(struct rpcrdma_xprt *r_xprt, struct rpcrdma_rep *rep)
- #if defined(CONFIG_SUNRPC_BACKCHANNEL)
+diff --git a/net/netfilter/nft_nat.c b/net/netfilter/nft_nat.c
+index be1595d6979d..db8f9116eeb4 100644
+--- a/net/netfilter/nft_nat.c
++++ b/net/netfilter/nft_nat.c
+@@ -334,7 +334,8 @@ static void nft_nat_inet_eval(const struct nft_expr *expr,
  {
-+	struct rpc_xprt *xprt = &r_xprt->rx_xprt;
- 	struct xdr_stream *xdr = &rep->rr_stream;
- 	__be32 *p;
+ 	const struct nft_nat *priv = nft_expr_priv(expr);
  
-@@ -1143,6 +1144,10 @@ rpcrdma_is_bcall(struct rpcrdma_xprt *r_xprt, struct rpcrdma_rep *rep)
- 	if (*p != cpu_to_be32(RPC_CALL))
- 		return false;
+-	if (priv->family == nft_pf(pkt))
++	if (priv->family == nft_pf(pkt) ||
++	    priv->family == NFPROTO_INET)
+ 		nft_nat_eval(expr, regs, pkt);
+ }
  
-+	/* No bc service. */
-+	if (xprt->bc_serv == NULL)
-+		return false;
+diff --git a/tools/testing/selftests/netfilter/nft_nat.sh b/tools/testing/selftests/netfilter/nft_nat.sh
+index 781fa2d9ea9d..032f2de6e14e 100755
+--- a/tools/testing/selftests/netfilter/nft_nat.sh
++++ b/tools/testing/selftests/netfilter/nft_nat.sh
+@@ -374,6 +374,45 @@ EOF
+ 	return $lret
+ }
+ 
++test_local_dnat_portonly()
++{
++	local family=$1
++	local daddr=$2
++	local lret=0
++	local sr_s
++	local sr_r
 +
- 	/* Now that we are sure this is a backchannel call,
- 	 * advance to the RPC header.
- 	 */
++ip netns exec "$ns0" nft -f /dev/stdin <<EOF
++table $family nat {
++	chain output {
++		type nat hook output priority 0; policy accept;
++		meta l4proto tcp dnat to :2000
++
++	}
++}
++EOF
++	if [ $? -ne 0 ]; then
++		if [ $family = "inet" ];then
++			echo "SKIP: inet port test"
++			test_inet_nat=false
++			return
++		fi
++		echo "SKIP: Could not add $family dnat hook"
++		return
++	fi
++
++	echo SERVER-$family | ip netns exec "$ns1" timeout 5 socat -u STDIN TCP-LISTEN:2000 &
++	sc_s=$!
++
++	result=$(ip netns exec "$ns0" timeout 1 socat TCP:$daddr:2000 STDOUT)
++
++	if [ "$result" = "SERVER-inet" ];then
++		echo "PASS: inet port rewrite without l3 address"
++	else
++		echo "ERROR: inet port rewrite"
++		ret=1
++	fi
++}
+ 
+ test_masquerade6()
+ {
+@@ -1135,6 +1174,10 @@ fi
+ reset_counters
+ test_local_dnat ip
+ test_local_dnat6 ip6
++
++reset_counters
++test_local_dnat_portonly inet 10.0.1.99
++
+ reset_counters
+ $test_inet_nat && test_local_dnat inet
+ $test_inet_nat && test_local_dnat6 inet
 -- 
 2.35.1
 
