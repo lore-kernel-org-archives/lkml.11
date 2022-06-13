@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ECA8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 16:59:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8637DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 16:59:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238173AbiFMQ7u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 12:59:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48108 "EHLO
+        id S240501AbiFMQ7z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 12:59:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242639AbiFMQ6s (ORCPT
+        with ESMTP id S243259AbiFMQ67 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 12:58:48 -0400
+        Mon, 13 Jun 2022 12:58:59 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB681BE150;
-        Mon, 13 Jun 2022 04:52:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60B5AC0453;
+        Mon, 13 Jun 2022 04:52:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BCBC2B80ECD;
-        Mon, 13 Jun 2022 11:52:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 216A1C34114;
-        Mon, 13 Jun 2022 11:52:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C4504B80EDF;
+        Mon, 13 Jun 2022 11:52:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FCB7C34114;
+        Mon, 13 Jun 2022 11:52:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655121143;
-        bh=zLwGP0JHz18RrqK8aoEs9PBVqjjKIkNSSPITEh8DSxo=;
+        s=korg; t=1655121170;
+        bh=N3SENHFWNvF/jyYFxBVQBKZjFCo8OA2evfTi+Khb1nc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C2+VQNERt8Gx6nXffv3s2gWUBVUKEVtp/R23KNno8ZXML6RZiP9n0yiX4iqJi5fyb
-         TgzwZqALYnwDeo7ctzd8YsWnupNytiPkDAkBHx+SUjidtw4wFmS/PUbslEDgudez6m
-         iYOM7fVr2sbwY3p+Jy2+OtXgnu+T8fdE40pdv2/E=
+        b=rW+aTwA0jYKMO6UYrnW+WL43Yr2qyB2A1Rdmtn8y1Wkz0cEt0gXHNWu2JRNzyub37
+         TeaXXKlvVGHH6CW9Og3Oi4rVlXqESIFchW3byMLzxR5M0h8uyfTXXx5EKcgo7QFahl
+         GoOxSFaUp8WmUjOdMw2aYYpRCFm/SKCeraLacF7w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Leo Liu <leo.liu@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.17 287/298] drm/amdgpu: update VCN codec support for Yellow Carp
-Date:   Mon, 13 Jun 2022 12:13:01 +0200
-Message-Id: <20220613094933.784461500@linuxfoundation.org>
+        stable@vger.kernel.org, Martin Faltesek <mfaltesek@google.com>,
+        Guenter Roeck <groeck@chromium.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.17 274/298] nfc: st21nfca: fix incorrect validating logic in EVT_TRANSACTION
+Date:   Mon, 13 Jun 2022 12:12:48 +0200
+Message-Id: <20220613094933.388821262@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -48,33 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Deucher <alexander.deucher@amd.com>
+From: Martin Faltesek <mfaltesek@google.com>
 
-commit 97e50305542f384741a5b45699aba349fe9fca73 upstream.
+commit 77e5fe8f176a525523ae091d6fd0fbb8834c156d upstream.
 
-Supports AV1.  Mesa already has support for this and
-doesn't rely on the kernel caps for yellow carp, so
-this was already working from an application perspective.
+The first validation check for EVT_TRANSACTION has two different checks
+tied together with logical AND. One is a check for minimum packet length,
+and the other is for a valid aid_tag. If either condition is true (fails),
+then an error should be triggered.  The fix is to change && to ||.
 
-Fixes: 554398174d98 ("amdgpu/nv.c - Added video codec support for Yellow Carp")
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/2002
-Reviewed-by: Leo Liu <leo.liu@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fixes: 26fc6c7f02cb ("NFC: st21nfca: Add HCI transaction event support")
 Cc: stable@vger.kernel.org
+Signed-off-by: Martin Faltesek <mfaltesek@google.com>
+Reviewed-by: Guenter Roeck <groeck@chromium.org>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/nv.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/nfc/st21nfca/se.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/amd/amdgpu/nv.c
-+++ b/drivers/gpu/drm/amd/amdgpu/nv.c
-@@ -170,6 +170,7 @@ static const struct amdgpu_video_codec_i
- 	{codec_info_build(AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_HEVC, 8192, 4352, 186)},
- 	{codec_info_build(AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_VP9, 8192, 4352, 0)},
- 	{codec_info_build(AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_JPEG, 4096, 4096, 0)},
-+	{codec_info_build(AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_AV1, 8192, 4352, 0)},
- };
+--- a/drivers/nfc/st21nfca/se.c
++++ b/drivers/nfc/st21nfca/se.c
+@@ -315,7 +315,7 @@ int st21nfca_connectivity_event_received
+ 		 * AID		81	5 to 16
+ 		 * PARAMETERS	82	0 to 255
+ 		 */
+-		if (skb->len < NFC_MIN_AID_LENGTH + 2 &&
++		if (skb->len < NFC_MIN_AID_LENGTH + 2 ||
+ 		    skb->data[0] != NFC_EVT_TRANSACTION_AID_TAG)
+ 			return -EPROTO;
  
- static const struct amdgpu_video_codecs yc_video_codecs_decode = {
 
 
