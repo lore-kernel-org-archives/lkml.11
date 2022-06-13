@@ -2,82 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F901C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:19:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C41D5C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:19:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352031AbiFMVTF (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 17:19:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50656 "EHLO
+        id S234423AbiFMVTJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 17:19:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352015AbiFMVSG (ORCPT
+        with ESMTP id S1352565AbiFMVSl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 17:18:06 -0400
-Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D8C147060
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:00:45 -0700 (PDT)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id 39565C01D; Mon, 13 Jun 2022 23:00:43 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1655154043; bh=hbjlIsPkm7Pdw1vKt/fEMjXNUukRrKqZfsATzfBGdhI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=aUclKhe0qUUXxJVj3as+72ZyUR2Mdt4qSYLf9TJPdVbqDzlPkitddPgzPxxC7T4M0
-         ILx6q0v/NOVegp1C4dD/nxABDGhU7MqoFue+UZALvKJZdzBC6WGWdx0Ho9EdsuRlqr
-         ptXjp7XPNwomOPNtQyaM/N+Otti4b6vZDbcbpxfx+5rG3zDVXWBkrsmfXixReV3O4b
-         Lp7KEN2/IlVOcNN6fCCfdqpShAD1oNqcrVgK3v7oTfyBsEJrXzO1tEM/v3OrbXa8yg
-         GZN6OtHSlkFBfikloQO/9d5m3ZgQgYlZRg+pgCdl5fk+JJ25YRLeGo+4RXbrtrX3iR
-         cNPTTOPtWZYlQ==
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id 67266C009;
-        Mon, 13 Jun 2022 23:00:41 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1655154042; bh=hbjlIsPkm7Pdw1vKt/fEMjXNUukRrKqZfsATzfBGdhI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=xFktnS+NHA+NVGMei1DidQmfBeYBsl1yQecTuPCUxTmkNTgCiGsnrsFDvr9LVfBWJ
-         qZ8gR8rqIdPe9IPllqYo9KS3S8+pLDE8m/KKH/RFrp4DPKaE7+J4syA2zJV7lRDY/Z
-         byYBoa5nMq3LE7oHKCEO8bosF5fSAwoh9yNv2evr3hs8LC0/1euxRhBb2EKi5UZWQx
-         VsE5pxM77qWoZn34VzKH91rX/5J2pBuHeSt5XNMvtVN2TCLv2MzNPPOpfwn5bmrQ90
-         GDUhj2w7DdmFtWphQCJUAuFVU0oTUBnwaxN09sw0w3jqAx5GVL7hzxhu89Bf+vWiUS
-         KCEx2zDqREJow==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id d2cce1e8;
-        Mon, 13 Jun 2022 21:00:36 +0000 (UTC)
-Date:   Tue, 14 Jun 2022 06:00:21 +0900
-From:   Dominique Martinet <asmadeus@codewreck.org>
-To:     Tyler Hicks <tyhicks@linux.microsoft.com>
-Cc:     Christian Schoenebeck <linux_oss@crudebyte.com>,
-        v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 00/06] fid refcounting improvements and fixes
-Message-ID: <YqelZWe4BJfDkYEd@codewreck.org>
-References: <20220612085330.1451496-1-asmadeus@codewreck.org>
- <20220613202053.GI7401@sequoia>
+        Mon, 13 Jun 2022 17:18:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28B91DD8
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:01:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA242612AC
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 21:01:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FAC3C3411C;
+        Mon, 13 Jun 2022 21:01:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655154112;
+        bh=vcKhLJGty8fRjACIP56lec3c1EKA3zWGxjiI4GHW7hE=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=N61NkFAnobZGU9JICOgwqYhN4nDjiVuFw+blY5ECbPgDZfZYymS4/kjTl+NAdwonV
+         SKJWaDjlZL3LtEN9PlwOCOlmq2up8jeENuMESIkM7ytyV6s3X7MpEJ83hbjMY8BJTP
+         i6/X2JQB0hgmNUz+Wq8cu7kE0n1jZ5cKnFZ/XritiMvTWAUqWszooEKTDYnQb9OIMV
+         Irn3ILHUsGOsayNPoJOFP0gKo/XX14Ud2VeK3AuzSpDrNm6Zrt/vX2dVZa+spK9SMy
+         KivWf+TnmoH9n4KlJ7QAUSsHVxytknolmH69TxrHQToRFlN78VSYWAGkvBazJOxObN
+         Vo3iczqtuU+wQ==
+Message-ID: <9a7e0b6087540c9f868d60cbfc88ccefa8070a1b.camel@kernel.org>
+Subject: Re: [PATCH v4 1/3] tracing: eprobe: remove duplicate is_good_name()
+ operation
+From:   Tom Zanussi <zanussi@kernel.org>
+To:     Linyu Yuan <quic_linyyuan@quicinc.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>
+Cc:     linux-kernel@vger.kernel.org
+Date:   Mon, 13 Jun 2022 16:01:49 -0500
+In-Reply-To: <1654171861-24014-2-git-send-email-quic_linyyuan@quicinc.com>
+References: <1654171861-24014-1-git-send-email-quic_linyyuan@quicinc.com>
+         <1654171861-24014-2-git-send-email-quic_linyyuan@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+User-Agent: Evolution 3.44.1-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220613202053.GI7401@sequoia>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Tyler Hicks wrote on Mon, Jun 13, 2022 at 03:20:53PM -0500:
-> On 2022-06-12 17:53:23, Dominique Martinet wrote:
-> > @@ -222,7 +221,8 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct dentry *dentry,
-> >                  * We need to hold rename lock when doing a multipath
-> >                  * walk to ensure none of the patch component change
-> >                  */
-> > -               fid = p9_client_walk(old_fid, l, &wnames[i], clone);
-> > +               fid = p9_client_walk(old_fid, l, &wnames[i],
-> > +                                    old_fid == root_fid /* clone */);
-> 
-> This is no problem at all. The rebased patches look good to me. Squash
-> your fix to my fix and it should be ready to go.
+SGkgTGluaHUsCgpPbiBUaHUsIDIwMjItMDYtMDIgYXQgMjA6MTAgKzA4MDAsIExpbnl1IFl1YW4g
+d3JvdGU6Cj4gdHJhY2Vwcm9iZV9wYXJzZV9ldmVudF9uYW1lKCkgYWxyZWFkeSB2YWxpZGF0ZSBn
+cm91cCBhbmQgZXZlbnQgbmFtZSwKPiB0aGVyZSBpcyBubyBuZWVkIHRvIGNhbGwgaXNfZ29vZF9u
+YW1lKCkgYWZ0ZXIgaXQuCj4gCj4gU2lnbmVkLW9mZi1ieTogTGlueXUgWXVhbiA8cXVpY19saW55
+eXVhbkBxdWljaW5jLmNvbT4KPiAtLS0KPiB2MjogZHJvcCB2MSBjaGFuZ2UgYXMgaXQgaXMgTkFD
+Sy4KPiDCoMKgwqAgYWRkIGl0IHRvIHJlbW92ZSBkdXBsaWNhdGUgaXNfZ29vZF9uYW1lKCkuCj4g
+djM6IG1vdmUgaXQgYXMgZmlyc3QgcGF0Y2guCj4gdjQ6IG5vIGNoYW5nZQo+IAo+IMKga2VybmVs
+L3RyYWNlL3RyYWNlX2Vwcm9iZS5jIHwgNCAtLS0tCj4gwqAxIGZpbGUgY2hhbmdlZCwgNCBkZWxl
+dGlvbnMoLSkKPiAKPiBkaWZmIC0tZ2l0IGEva2VybmVsL3RyYWNlL3RyYWNlX2Vwcm9iZS5jCj4g
+Yi9rZXJuZWwvdHJhY2UvdHJhY2VfZXByb2JlLmMKPiBpbmRleCA3ZDQ0Nzg1Li4xN2Q2NGUzIDEw
+MDY0NAo+IC0tLSBhL2tlcm5lbC90cmFjZS90cmFjZV9lcHJvYmUuYwo+ICsrKyBiL2tlcm5lbC90
+cmFjZS90cmFjZV9lcHJvYmUuYwo+IEBAIC04NzgsMTYgKzg3OCwxMiBAQCBzdGF0aWMgaW50IF9f
+dHJhY2VfZXByb2JlX2NyZWF0ZShpbnQgYXJnYywKPiBjb25zdCBjaGFyICphcmd2W10pCj4gwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBzYW5pdGl6ZV9ldmVudF9uYW1lKGJ1ZjEpOwo+
+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgZXZlbnQgPSBidWYxOwo+IMKgwqDCoMKg
+wqDCoMKgwqB9Cj4gLcKgwqDCoMKgwqDCoMKgaWYgKCFpc19nb29kX25hbWUoZXZlbnQpIHx8ICFp
+c19nb29kX25hbWUoZ3JvdXApKQo+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBnb3Rv
+IHBhcnNlX2Vycm9yOwoKdHJhY2Vwcm9iZV9wYXJzZV9ldmVudF9uYW1lKCkgaXMgb25seSBjYWxs
+ZWQgaWYgKGV2ZW50KS4gIEluIHRoZQohZXZlbnTCoGNhc2UsIHdvdWxkbid0IHRoZSBpc19nb29k
+X25hbWUoKSBjaGVja3Mgc3RpbGwgYmUgbmVlZGVkIChzaW5jZQppbiB0aGF0IGNhc2UgYnVmMSBp
+cyBhc3NpZ25lZCB0byBldmVudCk/Cgo+IMKgCj4gwqDCoMKgwqDCoMKgwqDCoHN5c19ldmVudCA9
+IGFyZ3ZbMV07Cj4gwqDCoMKgwqDCoMKgwqDCoHJldCA9IHRyYWNlcHJvYmVfcGFyc2VfZXZlbnRf
+bmFtZSgmc3lzX2V2ZW50LCAmc3lzX25hbWUsCj4gYnVmMiwKPiDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgIHN5c19ldmVudCAtIGFyZ3ZbMV0pOwo+IMKgwqDCoMKgwqDCoMKgwqBpZiAocmV0IHx8
+ICFzeXNfbmFtZSkKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGdvdG8gcGFyc2Vf
+ZXJyb3I7Cj4gLcKgwqDCoMKgwqDCoMKgaWYgKCFpc19nb29kX25hbWUoc3lzX2V2ZW50KSB8fCAh
+aXNfZ29vZF9uYW1lKHN5c19uYW1lKSkKPiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+Z290byBwYXJzZV9lcnJvcjsKCkkgYWdyZWUgdGhpcyBvbmUgaXNuJ3QgbmVlZGVkLgoKVGhhbmtz
+LAoKVG9tCgo+IMKgCj4gwqDCoMKgwqDCoMKgwqDCoG11dGV4X2xvY2soJmV2ZW50X211dGV4KTsK
+PiDCoMKgwqDCoMKgwqDCoMKgZXZlbnRfY2FsbCA9IGZpbmRfYW5kX2dldF9ldmVudChzeXNfbmFt
+ZSwgc3lzX2V2ZW50KTsKCg==
 
-Thanks for all your reviews :)
-I've rebased my branch if you want to check:
-https://github.com/martinetd/linux/commits/9p-next
-
-We've just started a cycle so I'll submit the first three patches (fixes
-to stable) next week, and the rest for when 5.20 cycle starts.
-Feel free to remind me if it looks like I forgot.
--- 
-Dominique
