@@ -2,141 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59731C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF17FCCA480
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:59:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351537AbiFMU6Z (ORCPT
+        id S1352184AbiFMU66 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:58:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52574 "EHLO
+        Mon, 13 Jun 2022 16:58:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348741AbiFMUnW (ORCPT
+        with ESMTP id S1352164AbiFMUyO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:43:22 -0400
-Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EAB53CFF9;
-        Mon, 13 Jun 2022 12:47:25 -0700 (PDT)
-Received: from [192.168.1.103] (178.176.74.127) by msexch01.omp.ru
- (10.188.4.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.14; Mon, 13 Jun
- 2022 22:47:17 +0300
-Subject: Re: [PATCH 4.14 208/218] ata: libata-transport: fix
- {dma|pio|xfer}_mode sysfs files
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <stable@vger.kernel.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>
-References: <20220613094908.257446132@linuxfoundation.org>
- <20220613094926.933251321@linuxfoundation.org>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <7089e1f1-b017-85f2-84bf-d6e792011b9e@omp.ru>
-Date:   Mon, 13 Jun 2022 22:47:17 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Mon, 13 Jun 2022 16:54:14 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C50DB857;
+        Mon, 13 Jun 2022 13:20:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=KNSY/4MRKQGA0e53i6BGkqSv8r1BdiuacVK4fX068bM=; b=D9Zwkz6L1ZS3ZNBp0ThENt14z6
+        X3LjNufcYo/Gv90ywbVGZn2PrAYmEZmmuqzdMVq2fVHDcEGEjjn6tRWFgEgjLdCMBbr0S7WAb/Dc/
+        S+GYoU8ErQmFfc2zc76yluxAv5p853ep/tOllb5wHh7Ce8lAR2LfqhW8UmiIv6lEigrUNNDezQKjw
+        sS+Ml3IDFcrkHWp3cSZ5zuf48URPzVsCnyckp4nK4RSIpapQ58HRcfEZi53+fNOhb2N6xtLerajxA
+        CtuMaRVXvWZnNwe55sa1L4S+16GpEI3Q3Mn+WryCDBpAHw/a2UsweeKpAB+NRFk/ev0xQ6ggb0qOl
+        ZBIflXgQ==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o0qXn-007fGw-IA; Mon, 13 Jun 2022 20:20:16 +0000
+Message-ID: <23dd79db-87e3-14b5-e844-d596730bf057@infradead.org>
+Date:   Mon, 13 Jun 2022 13:20:07 -0700
 MIME-Version: 1.0
-In-Reply-To: <20220613094926.933251321@linuxfoundation.org>
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2 13/15] leds: mt6370: Add Mediatek MT6370 current sink
+ type LED Indicator support
 Content-Language: en-US
+To:     ChiaEn Wu <peterwu.pub@gmail.com>, jic23@kernel.org,
+        lars@metafoo.de, matthias.bgg@gmail.com, lee.jones@linaro.org,
+        daniel.thompson@linaro.org, jingoohan1@gmail.com, pavel@ucw.cz,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
+Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        szunichen@gmail.com, ChiYuan Huang <cy_huang@richtek.com>
+References: <20220613111146.25221-1-peterwu.pub@gmail.com>
+ <20220613111146.25221-14-peterwu.pub@gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220613111146.25221-14-peterwu.pub@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [178.176.74.127]
-X-ClientProxiedBy: msexch01.omp.ru (10.188.4.12) To msexch01.omp.ru
- (10.188.4.12)
-X-KSE-ServerInfo: msexch01.omp.ru, 9
-X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 06/13/2022 19:30:34
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 59
-X-KSE-AntiSpam-Info: Lua profiles 171077 [Jun 13 2022]
-X-KSE-AntiSpam-Info: Version: 5.9.20.0
-X-KSE-AntiSpam-Info: Envelope from: s.shtylyov@omp.ru
-X-KSE-AntiSpam-Info: LuaCore: 489 489 b67d2e276d358fa514f5991440453e6a402e3a26
-X-KSE-AntiSpam-Info: {rep_avail}
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: {relay has no DNS name}
-X-KSE-AntiSpam-Info: {SMTP from is not routable}
-X-KSE-AntiSpam-Info: {Found in DNSBL: 178.176.74.127 in (user)
- b.barracudacentral.org}
-X-KSE-AntiSpam-Info: 178.176.74.127:7.1.2;omp.ru:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
-X-KSE-AntiSpam-Info: ApMailHostAddress: 178.176.74.127
-X-KSE-AntiSpam-Info: {DNS response errors}
-X-KSE-AntiSpam-Info: Rate: 59
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dmarc=temperror header.from=omp.ru;spf=temperror
- smtp.mailfrom=omp.ru;dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 06/13/2022 19:33:00
-X-KSE-AttachmentFiltering-Interceptor-Info: protection disabled
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: Clean, bases: 6/13/2022 4:53:00 PM
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/13/22 1:11 PM, Greg Kroah-Hartman wrote:
+Hi--
 
-> From: Sergey Shtylyov <s.shtylyov@omp.ru>
-> 
-> commit 72aad489f992871e908ff6d9055b26c6366fb864 upstream.
-> 
-> The {dma|pio}_mode sysfs files are incorrectly documented as having a
-> list of the supported DMA/PIO transfer modes, while the corresponding
-> fields of the *struct* ata_device hold the transfer mode IDs, not masks.
-> 
-> To match these docs, the {dma|pio}_mode (and even xfer_mode!) sysfs
-> files are handled by the ata_bitfield_name_match() macro which leads to
-> reading such kind of nonsense from them:
-> 
-> $ cat /sys/class/ata_device/dev3.0/pio_mode
-> XFER_UDMA_7, XFER_UDMA_6, XFER_UDMA_5, XFER_UDMA_4, XFER_MW_DMA_4,
-> XFER_PIO_6, XFER_PIO_5, XFER_PIO_4, XFER_PIO_3, XFER_PIO_2, XFER_PIO_1,
-> XFER_PIO_0
-> 
-> Using the correct ata_bitfield_name_search() macro fixes that:
-> 
-> $ cat /sys/class/ata_device/dev3.0/pio_mode
-> XFER_PIO_4
-> 
-> While fixing the file documentation, somewhat reword the {dma|pio}_mode
-> file doc and add a note about being mostly useful for PATA devices to
-> the xfer_mode file doc...
-> 
-> Fixes: d9027470b886 ("[libata] Add ATA transport class")
-> Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> ---
->  Documentation/ABI/testing/sysfs-ata |    5 +++--
->  drivers/ata/libata-transport.c      |    2 +-
->  2 files changed, 4 insertions(+), 3 deletions(-)
-> 
-> --- a/Documentation/ABI/testing/sysfs-ata
-> +++ b/Documentation/ABI/testing/sysfs-ata
-> @@ -59,17 +59,18 @@ class
+On 6/13/22 04:11, ChiaEn Wu wrote:
+> diff --git a/drivers/leds/Kconfig b/drivers/leds/Kconfig
+> index 6090e647daee..61e6ec416cb0 100644
+> --- a/drivers/leds/Kconfig
+> +++ b/drivers/leds/Kconfig
+> @@ -244,6 +244,17 @@ config LEDS_MT6323
+>  	  This option enables support for on-chip LED drivers found on
+>  	  Mediatek MT6323 PMIC.
 >  
->  dma_mode
->  
-> -	Transfer modes supported by the device when in DMA mode.
-> +	DMA transfer mode used by the device.
->  	Mostly used by PATA device.
->  
->  pio_mode
->  
-> -	Transfer modes supported by the device when in PIO mode.
-> +	PIO transfer mode used by the device.
->  	Mostly used by PATA device.
->  
->  xfer_mode
->  
->  	Current transfer mode.
-> +	Mostly used by PATA device.
+> +config LEDS_MT6370_RGB
+> +	tristate "LED Support for Mediatek MT6370 PMIC"
+> +	depends on LEDS_CLASS
+> +	depends on MFD_MT6370
+> +	select LINEAR_RANGE
+> +	help
+> +	  Say Y here to enable support for MT6370_RGB LED device.
+> +	  In MT6370, there're four channel current-sink LED driver that support
 
-   Missed s/device/devices/, as I've reported already...
+Please spell out "there are" instead of using an unusual contraction.
+Also:
+	                                                    drivers that support
 
-MBR, Sergey
+> +	  hardware pattern for reg, pwm, breath mode. Isink4 channel
+
+	                            PWM,
+What is "reg"?
+
+> +	  can also be used as a CHG_VIN power good indicator.
+
+-- 
+~Randy
