@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBB58C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:10:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A67AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:10:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355694AbiFMMKQ (ORCPT
+        id S1355313AbiFMMK3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:10:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59110 "EHLO
+        Mon, 13 Jun 2022 08:10:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358605AbiFMMEW (ORCPT
+        with ESMTP id S1359154AbiFMMFT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:04:22 -0400
+        Mon, 13 Jun 2022 08:05:19 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CBB7427D3;
-        Mon, 13 Jun 2022 03:57:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4C1A13F14;
+        Mon, 13 Jun 2022 03:59:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 43F9A61346;
-        Mon, 13 Jun 2022 10:57:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5014FC34114;
-        Mon, 13 Jun 2022 10:57:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 80C7B611B3;
+        Mon, 13 Jun 2022 10:59:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CED2C34114;
+        Mon, 13 Jun 2022 10:59:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117851;
-        bh=+7lMIGEEM0SyYdAaiK7TVCobrDsuPE+uowxjx/D62q8=;
+        s=korg; t=1655117944;
+        bh=f3DN3R4qDTmG+VEo6CC4DF1yy9+sS/4k6P6oCJko18Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mONa9Q4/t44pm63p3Ac2DnWeoUbvu2Jd2dTcWlY/TkJx2rp7BBv/98OH3DvlLALx6
-         3OcmV26ZGNBaz1+PyTYosNUXF03lHhIMOw/V6MAFukJO1MknDrxOcd+umLcXyQL3mA
-         yxTZRdoq1objwEqUetnGRqPIIuBJ4i6LPe5hUiAI=
+        b=P8ycLD3BkchYfnwqTAvkX9Tb0cTfM7lHiOGCJT2oonRn/quCYdVRlJro5PTWV1Wbk
+         psvCWAy4pq2nm3DbiBaZhAAFQr4FIheJ5Gz8pBXWB/x/FgjpWKWtcALMTLjY7SqJGX
+         9LQvqt810S19HLbvjfTK0Ts5QsRGntWBBhG6RAvw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 4.19 143/287] wifi: mac80211: fix use-after-free in chanctx code
-Date:   Mon, 13 Jun 2022 12:09:27 +0200
-Message-Id: <20220613094928.212812400@linuxfoundation.org>
+        stable@vger.kernel.org, Mike Kravetz <mike.kravetz@oracle.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 4.19 175/287] hugetlb: fix huge_pmd_unshare address update
+Date:   Mon, 13 Jun 2022 12:09:59 +0200
+Message-Id: <20220613094929.178122027@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -49,48 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Mike Kravetz <mike.kravetz@oracle.com>
 
-commit 2965c4cdf7ad9ce0796fac5e57debb9519ea721e upstream.
+commit 48381273f8734d28ef56a5bdf1966dd8530111bc upstream.
 
-In ieee80211_vif_use_reserved_context(), when we have an
-old context and the new context's replace_state is set to
-IEEE80211_CHANCTX_REPLACE_NONE, we free the old context
-in ieee80211_vif_use_reserved_reassign(). Therefore, we
-cannot check the old_ctx anymore, so we should set it to
-NULL after this point.
+The routine huge_pmd_unshare() is passed a pointer to an address
+associated with an area which may be unshared.  If unshare is successful
+this address is updated to 'optimize' callers iterating over huge page
+addresses.  For the optimization to work correctly, address should be
+updated to the last huge page in the unmapped/unshared area.  However, in
+the common case where the passed address is PUD_SIZE aligned, the address
+is incorrectly updated to the address of the preceding huge page.  That
+wastes CPU cycles as the unmapped/unshared range is scanned twice.
 
-However, since the new_ctx replace state is clearly not
-IEEE80211_CHANCTX_REPLACES_OTHER, we're not going to do
-anything else in this function and can just return to
-avoid accessing the freed old_ctx.
-
-Cc: stable@vger.kernel.org
-Fixes: 5bcae31d9cb1 ("mac80211: implement multi-vif in-place reservations")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220601091926.df419d91b165.I17a9b3894ff0b8323ce2afdb153b101124c821e5@changeid
+Link: https://lkml.kernel.org/r/20220524205003.126184-1-mike.kravetz@oracle.com
+Fixes: 39dde65c9940 ("shared page table for hugetlb page")
+Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
+Acked-by: Muchun Song <songmuchun@bytedance.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/mac80211/chan.c |    7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ mm/hugetlb.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/net/mac80211/chan.c
-+++ b/net/mac80211/chan.c
-@@ -1638,12 +1638,9 @@ int ieee80211_vif_use_reserved_context(s
- 
- 	if (new_ctx->replace_state == IEEE80211_CHANCTX_REPLACE_NONE) {
- 		if (old_ctx)
--			err = ieee80211_vif_use_reserved_reassign(sdata);
--		else
--			err = ieee80211_vif_use_reserved_assign(sdata);
-+			return ieee80211_vif_use_reserved_reassign(sdata);
- 
--		if (err)
--			return err;
-+		return ieee80211_vif_use_reserved_assign(sdata);
- 	}
- 
- 	/*
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -4837,7 +4837,14 @@ int huge_pmd_unshare(struct mm_struct *m
+ 	pud_clear(pud);
+ 	put_page(virt_to_page(ptep));
+ 	mm_dec_nr_pmds(mm);
+-	*addr = ALIGN(*addr, HPAGE_SIZE * PTRS_PER_PTE) - HPAGE_SIZE;
++	/*
++	 * This update of passed address optimizes loops sequentially
++	 * processing addresses in increments of huge page size (PMD_SIZE
++	 * in this case).  By clearing the pud, a PUD_SIZE area is unmapped.
++	 * Update address to the 'last page' in the cleared area so that
++	 * calling loop can move to first page past this area.
++	 */
++	*addr |= PUD_SIZE - PMD_SIZE;
+ 	return 1;
+ }
+ #define want_pmd_share()	(1)
 
 
