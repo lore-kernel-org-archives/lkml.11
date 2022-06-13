@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBC67C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:41:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8019C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:41:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345268AbiFMKlt (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:41:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35070 "EHLO
+        id S245687AbiFMKl4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:41:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348284AbiFMKje (ORCPT
+        with ESMTP id S1348400AbiFMKji (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:39:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9764E20F72;
-        Mon, 13 Jun 2022 03:23:23 -0700 (PDT)
+        Mon, 13 Jun 2022 06:39:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF9C2220E5;
+        Mon, 13 Jun 2022 03:23:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4193BB80E90;
-        Mon, 13 Jun 2022 10:23:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A772BC34114;
-        Mon, 13 Jun 2022 10:23:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C89460EF5;
+        Mon, 13 Jun 2022 10:23:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75B77C3411E;
+        Mon, 13 Jun 2022 10:23:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115801;
-        bh=VNGegGaAd/ly1LXiAX5vOyIxqZbuAAy6Z7qocNNz9Qg=;
+        s=korg; t=1655115803;
+        bh=ZtsaDR2IWu8SvqQ6ynaqLlc+4Y8bj/DYVgveu4E+KqU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iMLjwVYfPP3xDVSPqc2ktr8bt2N2Gi5uVRicCv0FXLsoCBxLMG7R0zVz47N1jjH3I
-         nFUV18axS+tSJ5TYAKds41wdSWtahLUl/mDrINdcnPuhWBrhU3kRJODF4dSkadlecz
-         zLP9s9PC+3XCfil0aT5z739iqYWw0s8qIGsanwq0=
+        b=pKeFaXJd6M27+chx8CembQusmzsxLIG+hq1TPQ6jSxK3t6hG0DMevcxaHZuoBTXnH
+         VSWx3g8+PhhD3u0VPebhh7Z50/Jr7oRz8+pPHcpFEg7aNKpQ+nB53yjfGxkHWHhomd
+         8fI1QIC8JgQpZmYvbMFE7gt+Ghy9l7Gygx+7QTtM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
+        stable@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>,
+        Corey Minyard <cminyard@mvista.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 035/218] ARM: dts: ox820: align interrupt controller node name with dtschema
-Date:   Mon, 13 Jun 2022 12:08:13 +0200
-Message-Id: <20220613094916.614126863@linuxfoundation.org>
+Subject: [PATCH 4.14 026/218] ipmi:ssif: Check for NULL msg when handling events and messages
+Date:   Mon, 13 Jun 2022 12:08:04 +0200
+Message-Id: <20220613094914.510203556@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -51,35 +49,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Corey Minyard <cminyard@mvista.com>
 
-[ Upstream commit fbcd5ad7a419ad40644a0bb8b4152bc660172d8a ]
+[ Upstream commit 7602b957e2404e5f98d9a40b68f1fd27f0028712 ]
 
-Fixes dtbs_check warnings like:
+Even though it's not possible to get into the SSIF_GETTING_MESSAGES and
+SSIF_GETTING_EVENTS states without a valid message in the msg field,
+it's probably best to be defensive here and check and print a log, since
+that means something else went wrong.
 
-  gic@1000: $nodename:0: 'gic@1000' does not match '^interrupt-controller(@[0-9a-f,]+)*$'
+Also add a default clause to that switch statement to release the lock
+and print a log, in case the state variable gets messed up somehow.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Acked-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20220317115705.450427-1-krzysztof.kozlowski@canonical.com
+Reported-by: Haowen Bai <baihaowen@meizu.com>
+Signed-off-by: Corey Minyard <cminyard@mvista.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/ox820.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/char/ipmi/ipmi_ssif.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-diff --git a/arch/arm/boot/dts/ox820.dtsi b/arch/arm/boot/dts/ox820.dtsi
-index 8355cb034525..3382b1a9cac9 100644
---- a/arch/arm/boot/dts/ox820.dtsi
-+++ b/arch/arm/boot/dts/ox820.dtsi
-@@ -286,7 +286,7 @@
- 				clocks = <&armclk>;
- 			};
+diff --git a/drivers/char/ipmi/ipmi_ssif.c b/drivers/char/ipmi/ipmi_ssif.c
+index cf87bfe971e6..171c54c86356 100644
+--- a/drivers/char/ipmi/ipmi_ssif.c
++++ b/drivers/char/ipmi/ipmi_ssif.c
+@@ -816,6 +816,14 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
+ 		break;
  
--			gic: gic@1000 {
-+			gic: interrupt-controller@1000 {
- 				compatible = "arm,arm11mp-gic";
- 				interrupt-controller;
- 				#interrupt-cells = <3>;
+ 	case SSIF_GETTING_EVENTS:
++		if (!msg) {
++			/* Should never happen, but just in case. */
++			dev_warn(&ssif_info->client->dev,
++				 "No message set while getting events\n");
++			ipmi_ssif_unlock_cond(ssif_info, flags);
++			break;
++		}
++
+ 		if ((result < 0) || (len < 3) || (msg->rsp[2] != 0)) {
+ 			/* Error getting event, probably done. */
+ 			msg->done(msg);
+@@ -839,6 +847,14 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
+ 		break;
+ 
+ 	case SSIF_GETTING_MESSAGES:
++		if (!msg) {
++			/* Should never happen, but just in case. */
++			dev_warn(&ssif_info->client->dev,
++				 "No message set while getting messages\n");
++			ipmi_ssif_unlock_cond(ssif_info, flags);
++			break;
++		}
++
+ 		if ((result < 0) || (len < 3) || (msg->rsp[2] != 0)) {
+ 			/* Error getting event, probably done. */
+ 			msg->done(msg);
+@@ -861,6 +877,13 @@ static void msg_done_handler(struct ssif_info *ssif_info, int result,
+ 			deliver_recv_msg(ssif_info, msg);
+ 		}
+ 		break;
++
++	default:
++		/* Should never happen, but just in case. */
++		dev_warn(&ssif_info->client->dev,
++			 "Invalid state in message done handling: %d\n",
++			 ssif_info->ssif_state);
++		ipmi_ssif_unlock_cond(ssif_info, flags);
+ 	}
+ 
+ 	flags = ipmi_ssif_lock_cond(ssif_info, &oflags);
 -- 
 2.35.1
 
