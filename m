@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12703CCA480
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31138CCA47F
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:00:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357999AbiFML7D (ORCPT
+        id S1358017AbiFML7H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:59:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55928 "EHLO
+        Mon, 13 Jun 2022 07:59:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356658AbiFMLuy (ORCPT
+        with ESMTP id S1356672AbiFMLuy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:50:54 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59197DFF1;
-        Mon, 13 Jun 2022 03:55:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63520E083;
+        Mon, 13 Jun 2022 03:55:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 75D96B80D3F;
-        Mon, 13 Jun 2022 10:55:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBB30C3411C;
-        Mon, 13 Jun 2022 10:55:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EAC93B80E07;
+        Mon, 13 Jun 2022 10:55:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51E35C34114;
+        Mon, 13 Jun 2022 10:55:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117703;
-        bh=oQPAN4chqWIIPG6atT+E2ldnFSAde1cFsl4zzRUvJZg=;
+        s=korg; t=1655117708;
+        bh=nrVeHpIgn7J3nKIpieEQnJ34POixDE+cOV4Gfi9TLDA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FyRG0dPV2Sr4C9Rj6w8zOTRpMHjjqNBhVeyI0vBXUst8y9OAQpmFS/r1Y/0Evbp4s
-         cVLbrJPlJHezmIKHBa5u2lxlEQw6ciMkbmHLKk79TH247nQJf97eb2rj/PdQbjaFC4
-         21gCjOzlaAxu9Eh73YhkCTqBpIC/z1dBnz4wJFtA=
+        b=f6Ky5qksAqWUmp7EJfEc7wlZEZNcTxNu/OT5GfEyqcbec6ECaDPrP/RbBiY150DNc
+         3NPfnUzxVUUwrrVvADQq761CpsquuXVl46DJT+NLEdGFcgjw8F/ogQXgmXIkmEwtSI
+         vOwvviDSekNnxoLJAwLW+KyBXpsia1yJqfmsPxYY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Jessica Zhang <quic_jesszhan@quicinc.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        stable@vger.kernel.org,
+        Kaiwan N Billimoria <kaiwan.billimoria@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 089/287] drm/msm/mdp5: Return error code in mdp5_mixer_release when deadlock is detected
-Date:   Mon, 13 Jun 2022 12:08:33 +0200
-Message-Id: <20220613094926.576495995@linuxfoundation.org>
+Subject: [PATCH 4.19 095/287] scripts/faddr2line: Fix overlapping text section failures
+Date:   Mon, 13 Jun 2022 12:08:39 +0200
+Message-Id: <20220613094926.759497486@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -52,105 +52,269 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jessica Zhang <quic_jesszhan@quicinc.com>
+From: Josh Poimboeuf <jpoimboe@kernel.org>
 
-[ Upstream commit ca75f6f7c6f89365e40f10f641b15981b1f07c31 ]
+[ Upstream commit 1d1a0e7c5100d332583e20b40aa8c0a8ed3d7849 ]
 
-There is a possibility for mdp5_get_global_state to return
--EDEADLK when acquiring the modeset lock, but currently global_state in
-mdp5_mixer_release doesn't check for if an error is returned.
+There have been some recent reports of faddr2line failures:
 
-To avoid a NULL dereference error, let's have mdp5_mixer_release
-check if an error is returned and propagate that error.
+  $ scripts/faddr2line sound/soundcore.ko sound_devnode+0x5/0x35
+  bad symbol size: base: 0x0000000000000000 end: 0x0000000000000000
 
-Reported-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
-Signed-off-by: Jessica Zhang <quic_jesszhan@quicinc.com>
-Fixes: 7907a0d77cb4 ("drm/msm/mdp5: Use the new private_obj state")
-Reviewed-by: Rob Clark <robdclark@gmail.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/485181/
-Link: https://lore.kernel.org/r/20220505214051.155-2-quic_jesszhan@quicinc.com
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+  $ ./scripts/faddr2line vmlinux.o enter_from_user_mode+0x24
+  bad symbol size: base: 0x0000000000005fe0 end: 0x0000000000005fe0
+
+The problem is that faddr2line is based on 'nm', which has a major
+limitation: it doesn't know how to distinguish between different text
+sections.  So if an offset exists in multiple text sections in the
+object, it may fail.
+
+Rewrite faddr2line to be section-aware, by basing it on readelf.
+
+Fixes: 67326666e2d4 ("scripts: add script for translating stack dump function offsets")
+Reported-by: Kaiwan N Billimoria <kaiwan.billimoria@gmail.com>
+Reported-by: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Link: https://lore.kernel.org/r/29ff99f86e3da965b6e46c1cc2d72ce6528c17c3.1652382321.git.jpoimboe@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c  | 10 ++++++++--
- drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c | 15 +++++++++++----
- drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h |  4 ++--
- 3 files changed, 21 insertions(+), 8 deletions(-)
+ scripts/faddr2line | 150 +++++++++++++++++++++++++++++----------------
+ 1 file changed, 97 insertions(+), 53 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
-index aa28a43ff842..76639a108ff5 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
-@@ -537,9 +537,15 @@ int mdp5_crtc_setup_pipeline(struct drm_crtc *crtc,
- 		if (ret)
- 			return ret;
+diff --git a/scripts/faddr2line b/scripts/faddr2line
+index a0149db00be7..226c3f559dc5 100755
+--- a/scripts/faddr2line
++++ b/scripts/faddr2line
+@@ -44,17 +44,6 @@
+ set -o errexit
+ set -o nounset
  
--		mdp5_mixer_release(new_crtc_state->state, old_mixer);
-+		ret = mdp5_mixer_release(new_crtc_state->state, old_mixer);
-+		if (ret)
-+			return ret;
-+
- 		if (old_r_mixer) {
--			mdp5_mixer_release(new_crtc_state->state, old_r_mixer);
-+			ret = mdp5_mixer_release(new_crtc_state->state, old_r_mixer);
-+			if (ret)
-+				return ret;
-+
- 			if (!need_right_mixer)
- 				pipeline->r_mixer = NULL;
- 		}
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c
-index 113e6b569562..9c8275300b55 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c
-@@ -127,21 +127,28 @@ int mdp5_mixer_assign(struct drm_atomic_state *s, struct drm_crtc *crtc,
- 	return 0;
+-READELF="${CROSS_COMPILE:-}readelf"
+-ADDR2LINE="${CROSS_COMPILE:-}addr2line"
+-SIZE="${CROSS_COMPILE:-}size"
+-NM="${CROSS_COMPILE:-}nm"
+-
+-command -v awk >/dev/null 2>&1 || die "awk isn't installed"
+-command -v ${READELF} >/dev/null 2>&1 || die "readelf isn't installed"
+-command -v ${ADDR2LINE} >/dev/null 2>&1 || die "addr2line isn't installed"
+-command -v ${SIZE} >/dev/null 2>&1 || die "size isn't installed"
+-command -v ${NM} >/dev/null 2>&1 || die "nm isn't installed"
+-
+ usage() {
+ 	echo "usage: faddr2line [--list] <object file> <func+offset> <func+offset>..." >&2
+ 	exit 1
+@@ -69,6 +58,14 @@ die() {
+ 	exit 1
  }
  
--void mdp5_mixer_release(struct drm_atomic_state *s, struct mdp5_hw_mixer *mixer)
-+int mdp5_mixer_release(struct drm_atomic_state *s, struct mdp5_hw_mixer *mixer)
- {
- 	struct mdp5_global_state *global_state = mdp5_get_global_state(s);
--	struct mdp5_hw_mixer_state *new_state = &global_state->hwmixer;
-+	struct mdp5_hw_mixer_state *new_state;
- 
- 	if (!mixer)
--		return;
-+		return 0;
++READELF="${CROSS_COMPILE:-}readelf"
++ADDR2LINE="${CROSS_COMPILE:-}addr2line"
++AWK="awk"
 +
-+	if (IS_ERR(global_state))
-+		return PTR_ERR(global_state);
++command -v ${AWK} >/dev/null 2>&1 || die "${AWK} isn't installed"
++command -v ${READELF} >/dev/null 2>&1 || die "${READELF} isn't installed"
++command -v ${ADDR2LINE} >/dev/null 2>&1 || die "${ADDR2LINE} isn't installed"
 +
-+	new_state = &global_state->hwmixer;
+ # Try to figure out the source directory prefix so we can remove it from the
+ # addr2line output.  HACK ALERT: This assumes that start_kernel() is in
+ # kernel/init.c!  This only works for vmlinux.  Otherwise it falls back to
+@@ -76,7 +73,7 @@ die() {
+ find_dir_prefix() {
+ 	local objfile=$1
  
- 	if (WARN_ON(!new_state->hwmixer_to_crtc[mixer->idx]))
--		return;
-+		return -EINVAL;
+-	local start_kernel_addr=$(${READELF} -sW $objfile | awk '$8 == "start_kernel" {printf "0x%s", $2}')
++	local start_kernel_addr=$(${READELF} --symbols --wide $objfile | ${AWK} '$8 == "start_kernel" {printf "0x%s", $2}')
+ 	[[ -z $start_kernel_addr ]] && return
  
- 	DBG("%s: release from crtc %s", mixer->name,
- 	    new_state->hwmixer_to_crtc[mixer->idx]->name);
+ 	local file_line=$(${ADDR2LINE} -e $objfile $start_kernel_addr)
+@@ -97,86 +94,133 @@ __faddr2line() {
+ 	local dir_prefix=$3
+ 	local print_warnings=$4
  
- 	new_state->hwmixer_to_crtc[mixer->idx] = NULL;
+-	local func=${func_addr%+*}
++	local sym_name=${func_addr%+*}
+ 	local offset=${func_addr#*+}
+ 	offset=${offset%/*}
+-	local size=
+-	[[ $func_addr =~ "/" ]] && size=${func_addr#*/}
++	local user_size=
++	[[ $func_addr =~ "/" ]] && user_size=${func_addr#*/}
+ 
+-	if [[ -z $func ]] || [[ -z $offset ]] || [[ $func = $func_addr ]]; then
++	if [[ -z $sym_name ]] || [[ -z $offset ]] || [[ $sym_name = $func_addr ]]; then
+ 		warn "bad func+offset $func_addr"
+ 		DONE=1
+ 		return
+ 	fi
+ 
+ 	# Go through each of the object's symbols which match the func name.
+-	# In rare cases there might be duplicates.
+-	file_end=$(${SIZE} -Ax $objfile | awk '$1 == ".text" {print $2}')
+-	while read symbol; do
+-		local fields=($symbol)
+-		local sym_base=0x${fields[0]}
+-		local sym_type=${fields[1]}
+-		local sym_end=${fields[3]}
+-
+-		# calculate the size
+-		local sym_size=$(($sym_end - $sym_base))
++	# In rare cases there might be duplicates, in which case we print all
++	# matches.
++	while read line; do
++		local fields=($line)
++		local sym_addr=0x${fields[1]}
++		local sym_elf_size=${fields[2]}
++		local sym_sec=${fields[6]}
 +
-+	return 0;
++		# Get the section size:
++		local sec_size=$(${READELF} --section-headers --wide $objfile |
++			sed 's/\[ /\[/' |
++			${AWK} -v sec=$sym_sec '$1 == "[" sec "]" { print "0x" $6; exit }')
++
++		if [[ -z $sec_size ]]; then
++			warn "bad section size: section: $sym_sec"
++			DONE=1
++			return
++		fi
++
++		# Calculate the symbol size.
++		#
++		# Unfortunately we can't use the ELF size, because kallsyms
++		# also includes the padding bytes in its size calculation.  For
++		# kallsyms, the size calculation is the distance between the
++		# symbol and the next symbol in a sorted list.
++		local sym_size
++		local cur_sym_addr
++		local found=0
++		while read line; do
++			local fields=($line)
++			cur_sym_addr=0x${fields[1]}
++			local cur_sym_elf_size=${fields[2]}
++			local cur_sym_name=${fields[7]:-}
++
++			if [[ $cur_sym_addr = $sym_addr ]] &&
++			   [[ $cur_sym_elf_size = $sym_elf_size ]] &&
++			   [[ $cur_sym_name = $sym_name ]]; then
++				found=1
++				continue
++			fi
++
++			if [[ $found = 1 ]]; then
++				sym_size=$(($cur_sym_addr - $sym_addr))
++				[[ $sym_size -lt $sym_elf_size ]] && continue;
++				found=2
++				break
++			fi
++		done < <(${READELF} --symbols --wide $objfile | ${AWK} -v sec=$sym_sec '$7 == sec' | sort --key=2)
++
++		if [[ $found = 0 ]]; then
++			warn "can't find symbol: sym_name: $sym_name sym_sec: $sym_sec sym_addr: $sym_addr sym_elf_size: $sym_elf_size"
++			DONE=1
++			return
++		fi
++
++		# If nothing was found after the symbol, assume it's the last
++		# symbol in the section.
++		[[ $found = 1 ]] && sym_size=$(($sec_size - $sym_addr))
++
+ 		if [[ -z $sym_size ]] || [[ $sym_size -le 0 ]]; then
+-			warn "bad symbol size: base: $sym_base end: $sym_end"
++			warn "bad symbol size: sym_addr: $sym_addr cur_sym_addr: $cur_sym_addr"
+ 			DONE=1
+ 			return
+ 		fi
++
+ 		sym_size=0x$(printf %x $sym_size)
+ 
+-		# calculate the address
+-		local addr=$(($sym_base + $offset))
++		# Calculate the section address from user-supplied offset:
++		local addr=$(($sym_addr + $offset))
+ 		if [[ -z $addr ]] || [[ $addr = 0 ]]; then
+-			warn "bad address: $sym_base + $offset"
++			warn "bad address: $sym_addr + $offset"
+ 			DONE=1
+ 			return
+ 		fi
+ 		addr=0x$(printf %x $addr)
+ 
+-		# weed out non-function symbols
+-		if [[ $sym_type != t ]] && [[ $sym_type != T ]]; then
+-			[[ $print_warnings = 1 ]] &&
+-				echo "skipping $func address at $addr due to non-function symbol of type '$sym_type'"
+-			continue
+-		fi
+-
+-		# if the user provided a size, make sure it matches the symbol's size
+-		if [[ -n $size ]] && [[ $size -ne $sym_size ]]; then
++		# If the user provided a size, make sure it matches the symbol's size:
++		if [[ -n $user_size ]] && [[ $user_size -ne $sym_size ]]; then
+ 			[[ $print_warnings = 1 ]] &&
+-				echo "skipping $func address at $addr due to size mismatch ($size != $sym_size)"
++				echo "skipping $sym_name address at $addr due to size mismatch ($user_size != $sym_size)"
+ 			continue;
+ 		fi
+ 
+-		# make sure the provided offset is within the symbol's range
++		# Make sure the provided offset is within the symbol's range:
+ 		if [[ $offset -gt $sym_size ]]; then
+ 			[[ $print_warnings = 1 ]] &&
+-				echo "skipping $func address at $addr due to size mismatch ($offset > $sym_size)"
++				echo "skipping $sym_name address at $addr due to size mismatch ($offset > $sym_size)"
+ 			continue
+ 		fi
+ 
+-		# separate multiple entries with a blank line
++		# In case of duplicates or multiple addresses specified on the
++		# cmdline, separate multiple entries with a blank line:
+ 		[[ $FIRST = 0 ]] && echo
+ 		FIRST=0
+ 
+-		# pass real address to addr2line
+-		echo "$func+$offset/$sym_size:"
+-		local file_lines=$(${ADDR2LINE} -fpie $objfile $addr | sed "s; $dir_prefix\(\./\)*; ;")
+-		[[ -z $file_lines ]] && return
++		echo "$sym_name+$offset/$sym_size:"
+ 
++		# Pass section address to addr2line and strip absolute paths
++		# from the output:
++		local output=$(${ADDR2LINE} -fpie $objfile $addr | sed "s; $dir_prefix\(\./\)*; ;")
++		[[ -z $output ]] && continue
++
++		# Default output (non --list):
+ 		if [[ $LIST = 0 ]]; then
+-			echo "$file_lines" | while read -r line
++			echo "$output" | while read -r line
+ 			do
+ 				echo $line
+ 			done
+ 			DONE=1;
+-			return
++			continue
+ 		fi
+ 
+-		# show each line with context
+-		echo "$file_lines" | while read -r line
++		# For --list, show each line with its corresponding source code:
++		echo "$output" | while read -r line
+ 		do
+ 			echo
+ 			echo $line
+@@ -184,12 +228,12 @@ __faddr2line() {
+ 			n1=$[$n-5]
+ 			n2=$[$n+5]
+ 			f=$(echo $line | sed 's/.*at \(.\+\):.*/\1/g')
+-			awk 'NR>=strtonum("'$n1'") && NR<=strtonum("'$n2'") { if (NR=='$n') printf(">%d<", NR); else printf(" %d ", NR); printf("\t%s\n", $0)}' $f
++			${AWK} 'NR>=strtonum("'$n1'") && NR<=strtonum("'$n2'") { if (NR=='$n') printf(">%d<", NR); else printf(" %d ", NR); printf("\t%s\n", $0)}' $f
+ 		done
+ 
+ 		DONE=1
+ 
+-	done < <(${NM} -n $objfile | awk -v fn=$func -v end=$file_end '$3 == fn { found=1; line=$0; start=$1; next } found == 1 { found=0; print line, "0x"$1 } END {if (found == 1) print line, end; }')
++	done < <(${READELF} --symbols --wide $objfile | ${AWK} -v fn=$sym_name '$4 == "FUNC" && $8 == fn')
  }
  
- void mdp5_mixer_destroy(struct mdp5_hw_mixer *mixer)
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h
-index 9be94f567fbd..6bcb0b544665 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h
-@@ -41,7 +41,7 @@ void mdp5_mixer_destroy(struct mdp5_hw_mixer *lm);
- int mdp5_mixer_assign(struct drm_atomic_state *s, struct drm_crtc *crtc,
- 		      uint32_t caps, struct mdp5_hw_mixer **mixer,
- 		      struct mdp5_hw_mixer **r_mixer);
--void mdp5_mixer_release(struct drm_atomic_state *s,
--			struct mdp5_hw_mixer *mixer);
-+int mdp5_mixer_release(struct drm_atomic_state *s,
-+		       struct mdp5_hw_mixer *mixer);
- 
- #endif /* __MDP5_LM_H__ */
+ [[ $# -lt 2 ]] && usage
 -- 
 2.35.1
 
