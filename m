@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A652BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:20:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB31C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:20:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382289AbiFMOUk (ORCPT
+        id S1382380AbiFMOUn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:20:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41754 "EHLO
+        Mon, 13 Jun 2022 10:20:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382928AbiFMOO5 (ORCPT
+        with ESMTP id S1382833AbiFMOOu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:14:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7696D9AE72;
-        Mon, 13 Jun 2022 04:42:37 -0700 (PDT)
+        Mon, 13 Jun 2022 10:14:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B4796C0F9;
+        Mon, 13 Jun 2022 04:42:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B160BB80EB3;
-        Mon, 13 Jun 2022 11:42:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 272A9C34114;
-        Mon, 13 Jun 2022 11:42:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 54DDD6146F;
+        Mon, 13 Jun 2022 11:42:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61248C34114;
+        Mon, 13 Jun 2022 11:42:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120554;
-        bh=HV73AQN1kNcjmqMkArhjy0PLs8x/DcI7HaSRZwf/Jeg=;
+        s=korg; t=1655120551;
+        bh=2L3Li2aghsPQKZQsUcCWtyC+HFxNtTVnLt/yZ8qCiIg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s9oUruVGCGrM5BjJ/haZV4+JZ249KnOQGQ5efWWZ7awmLY6eWP29UniW9ogVET6ue
-         Fk6s0AV7JsnvomInBIpS9ebqvzRtYjBg37yrdXvbuWJf4C0CKAoqMb2o5S8t/5aspK
-         aD2J5aM5cDas2jLk4JtZ0CqbuacwEJBDz8fbKDtk=
+        b=s92j/CXToKO5wkcPRIU/r0OGXg4y7cKdQui208t07ROjjo977CWzxzipxToCNb1fJ
+         aKhvPj+zOBxtT8m9n/3EFGlljLgNEenoDnQgI3uuF49u3niY+wjSfDB2LjhLEcF/67
+         IhxP2eZ2WE31yF4m9U8l8f0heDzBjMwSih9fhT9k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 075/298] clocksource/drivers/oxnas-rps: Fix irq_of_parse_and_map() return value
-Date:   Mon, 13 Jun 2022 12:09:29 +0200
-Message-Id: <20220613094927.221328000@linuxfoundation.org>
+Subject: [PATCH 5.17 074/298] ASoC: fsl_sai: Fix FSL_SAI_xDR/xFR definition
+Date:   Mon, 13 Jun 2022 12:09:28 +0200
+Message-Id: <20220613094927.192002532@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -52,35 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Shengjiu Wang <shengjiu.wang@nxp.com>
 
-[ Upstream commit 9c04a8ff03def4df3f81219ffbe1ec9b44ff5348 ]
+[ Upstream commit e4dd748dc87cf431af7b3954963be0d9f6150217 ]
 
-The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
+There are multiple xDR and xFR registers, the index is
+from 0 to 7. FSL_SAI_xDR and FSL_SAI_xFR is abandoned,
+replace them with FSL_SAI_xDR0 and FSL_SAI_xFR0.
 
-Fixes: 89355274e1f7 ("clocksource/drivers/oxnas-rps: Add Oxford Semiconductor RPS Dual Timer")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20220422104101.55754-1-krzysztof.kozlowski@linaro.org
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Fixes: 4f7a0728b530 ("ASoC: fsl_sai: Add support for SAI new version")
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Link: https://lore.kernel.org/r/1653284661-18964-1-git-send-email-shengjiu.wang@nxp.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clocksource/timer-oxnas-rps.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/fsl/fsl_sai.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/clocksource/timer-oxnas-rps.c b/drivers/clocksource/timer-oxnas-rps.c
-index 56c0cc32d0ac..d514b44e67dd 100644
---- a/drivers/clocksource/timer-oxnas-rps.c
-+++ b/drivers/clocksource/timer-oxnas-rps.c
-@@ -236,7 +236,7 @@ static int __init oxnas_rps_timer_init(struct device_node *np)
- 	}
+diff --git a/sound/soc/fsl/fsl_sai.h b/sound/soc/fsl/fsl_sai.h
+index 9aaf231bc024..93da86009c75 100644
+--- a/sound/soc/fsl/fsl_sai.h
++++ b/sound/soc/fsl/fsl_sai.h
+@@ -80,8 +80,8 @@
+ #define FSL_SAI_xCR3(tx, ofs)	(tx ? FSL_SAI_TCR3(ofs) : FSL_SAI_RCR3(ofs))
+ #define FSL_SAI_xCR4(tx, ofs)	(tx ? FSL_SAI_TCR4(ofs) : FSL_SAI_RCR4(ofs))
+ #define FSL_SAI_xCR5(tx, ofs)	(tx ? FSL_SAI_TCR5(ofs) : FSL_SAI_RCR5(ofs))
+-#define FSL_SAI_xDR(tx, ofs)	(tx ? FSL_SAI_TDR(ofs) : FSL_SAI_RDR(ofs))
+-#define FSL_SAI_xFR(tx, ofs)	(tx ? FSL_SAI_TFR(ofs) : FSL_SAI_RFR(ofs))
++#define FSL_SAI_xDR0(tx)	(tx ? FSL_SAI_TDR0 : FSL_SAI_RDR0)
++#define FSL_SAI_xFR0(tx)	(tx ? FSL_SAI_TFR0 : FSL_SAI_RFR0)
+ #define FSL_SAI_xMR(tx)		(tx ? FSL_SAI_TMR : FSL_SAI_RMR)
  
- 	rps->irq = irq_of_parse_and_map(np, 0);
--	if (rps->irq < 0) {
-+	if (!rps->irq) {
- 		ret = -EINVAL;
- 		goto err_iomap;
- 	}
+ /* SAI Transmit/Receive Control Register */
 -- 
 2.35.1
 
