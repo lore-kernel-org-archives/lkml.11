@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A0B4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:07:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C34B5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:08:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358815AbiFMNHw (ORCPT
+        id S1358824AbiFMNH6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:07:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50422 "EHLO
+        Mon, 13 Jun 2022 09:07:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239217AbiFMMzV (ORCPT
+        with ESMTP id S234906AbiFMMzV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 08:55:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 907A6DFC8;
-        Mon, 13 Jun 2022 04:16:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18ED6D12E;
+        Mon, 13 Jun 2022 04:16:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D03960B6B;
-        Mon, 13 Jun 2022 11:16:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EC9CC34114;
-        Mon, 13 Jun 2022 11:16:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A8CE960EAE;
+        Mon, 13 Jun 2022 11:15:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7834C3411E;
+        Mon, 13 Jun 2022 11:15:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118964;
-        bh=JvD0aaCdi1KOqBVa71WtDHZ7Uwi3CKeJnRuEToyDQoY=;
+        s=korg; t=1655118959;
+        bh=cokuF+EmG7THmip/f1ZMHWS/tW/vYaqu9L+68+z/nek=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NSY+4BoBgiy4QEgqIVM31+s8wvW39iIxqkg2EkaQMGaAqkgwO4vr6a0tEC4myczHX
-         jvs5YWV9stRx2BLpuJ95FhYAH6+Fz4GPECt3cwuGqmzefOlvBxmqcn0I6FsEaR+cdB
-         18tLvjph9UnjvxnMTVnPS3SvEUv2wT8lRNQpHkEM=
+        b=WD3lZFi39bOtJpnYnf9Eyf8+1L1R8gqSvnJw19EU5sDWjaySyMh7zpWCVKneOvYPl
+         g2PhYTVnuDTqhJ20CWwjp0wvE/lGKYGr10HGJuK5qPLjxsDMDuTVAtawnY1bt3yfy6
+         VOTo3t9ddoHfOoRU0S6ZC8L1ShtWWeFWAkE7YuyM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 092/247] virtio: pci: Fix an error handling path in vp_modern_probe()
-Date:   Mon, 13 Jun 2022 12:09:54 +0200
-Message-Id: <20220613094925.747641168@linuxfoundation.org>
+        stable@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 090/247] block: make bioset_exit() fully resilient against being called twice
+Date:   Mon, 13 Jun 2022 12:09:52 +0200
+Message-Id: <20220613094925.686356643@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -51,35 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Jens Axboe <axboe@kernel.dk>
 
-[ Upstream commit 7a836a2aba09479c8e71fa43249eecc4af945f61 ]
+[ Upstream commit 605f7415ecfb426610195dd6c7577b30592b3369 ]
 
-If an error occurs after a successful pci_request_selected_regions() call,
-it should be undone by a corresponding pci_release_selected_regions() call,
-as already done in vp_modern_remove().
+Most of bioset_exit() is fine being called twice, as it clears the
+various allocations etc when they are freed. The exception is
+bio_alloc_cache_destroy(), which does not clear ->cache when it has
+freed it.
 
-Fixes: fd502729fbbf ("virtio-pci: introduce modern device module")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Message-Id: <237109725aad2c3c03d14549f777b1927c84b045.1648977064.git.christophe.jaillet@wanadoo.fr>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+This isn't necessarily a bug, but can be if buggy users does call the
+exit path more then once, or with just a memset() bioset which has
+never been initialized. dm appears to be one such user.
+
+Fixes: be4d234d7aeb ("bio: add allocation cache abstraction")
+Link: https://lore.kernel.org/linux-block/YpK7m+14A+pZKs5k@casper.infradead.org/
+Reported-by: Matthew Wilcox <willy@infradead.org>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/virtio/virtio_pci_modern_dev.c | 1 +
+ block/bio.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/virtio/virtio_pci_modern_dev.c b/drivers/virtio/virtio_pci_modern_dev.c
-index e11ed748e661..9ab66e44738e 100644
---- a/drivers/virtio/virtio_pci_modern_dev.c
-+++ b/drivers/virtio/virtio_pci_modern_dev.c
-@@ -340,6 +340,7 @@ int vp_modern_probe(struct virtio_pci_modern_device *mdev)
- err_map_isr:
- 	pci_iounmap(pci_dev, mdev->common);
- err_map_common:
-+	pci_release_selected_regions(pci_dev, mdev->modern_bars);
- 	return err;
+diff --git a/block/bio.c b/block/bio.c
+index 9b28381412d2..8381c6690dd6 100644
+--- a/block/bio.c
++++ b/block/bio.c
+@@ -665,6 +665,7 @@ static void bio_alloc_cache_destroy(struct bio_set *bs)
+ 		bio_alloc_cache_prune(cache, -1U);
+ 	}
+ 	free_percpu(bs->cache);
++	bs->cache = NULL;
  }
- EXPORT_SYMBOL_GPL(vp_modern_probe);
+ 
+ /**
 -- 
 2.35.1
 
