@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 022D7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:52:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45677C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:53:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344021AbiFMKwt (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:52:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47932 "EHLO
+        id S244542AbiFMKw7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:52:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348636AbiFMKta (ORCPT
+        with ESMTP id S1348762AbiFMKtf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:49:30 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 893372E0BA;
-        Mon, 13 Jun 2022 03:27:06 -0700 (PDT)
+        Mon, 13 Jun 2022 06:49:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98AAC2E692;
+        Mon, 13 Jun 2022 03:27:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EC97DCE0EEB;
-        Mon, 13 Jun 2022 10:27:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 073BFC34114;
-        Mon, 13 Jun 2022 10:27:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2F10FB80E94;
+        Mon, 13 Jun 2022 10:27:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88246C34114;
+        Mon, 13 Jun 2022 10:27:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116023;
-        bh=QooOaZj5AtTvxIJbbtRZNKitn1Re3sKl1qSBz6sPd1w=;
+        s=korg; t=1655116028;
+        bh=+wk2EABwxlb5J2SZ0+gM5lgp+xcxklX2wYWqEH/OWII=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YYR/46rRUyeTcpGqol4BiGmh3Hb8H7owrnxrOe4vAS9Ui8oca690sG85A2dSjiGK3
-         tvUJofnU2l8ZgLFKvY7zJjDcyD1r45QfO2aTRCRp58MnJls1gn/k4AwZCZvWBSLHzA
-         aTI8Q99ia7Y56tfTbFyVO7+gCCEKS+BdM3zY1QBY=
+        b=0YWipDs7Skjz/5u8JV1y3Xhto6FwlTfqrFvjCeBnKgibmAqn3dZ/qWUBlwP6zPTzX
+         mqP3m8H+X9alvhqo4pCmWp9eAZ/2OfxwI4SfkUuyJ0ZFdDn2qB93ap4cB3Ya3UqS9P
+         jINeTU8QGJbN9UbWsKREq5dYIY0g7Am1iVLkXV9k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Monish Kumar R <monish.kumar.r@intel.com>
-Subject: [PATCH 5.4 004/411] USB: new quirk for Dell Gen 2 devices
-Date:   Mon, 13 Jun 2022 12:04:37 +0200
-Message-Id: <20220613094928.624207292@linuxfoundation.org>
+        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
+        Kees Cook <keescook@chromium.org>,
+        Oleg Nesterov <oleg@redhat.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: [PATCH 5.4 009/411] ptrace: Reimplement PTRACE_KILL by always sending SIGKILL
+Date:   Mon, 13 Jun 2022 12:04:42 +0200
+Message-Id: <20220613094928.775306086@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -48,34 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Monish Kumar R <monish.kumar.r@intel.com>
+From: Eric W. Biederman <ebiederm@xmission.com>
 
-commit 97fa5887cf283bb75ffff5f6b2c0e71794c02400 upstream.
+commit 6a2d90ba027adba528509ffa27097cffd3879257 upstream.
 
-Add USB_QUIRK_NO_LPM and USB_QUIRK_RESET_RESUME quirks for Dell usb gen
-2 device to not fail during enumeration.
+The current implementation of PTRACE_KILL is buggy and has been for
+many years as it assumes it's target has stopped in ptrace_stop.  At a
+quick skim it looks like this assumption has existed since ptrace
+support was added in linux v1.0.
 
-Found this bug on own testing
+While PTRACE_KILL has been deprecated we can not remove it as
+a quick search with google code search reveals many existing
+programs calling it.
 
-Signed-off-by: Monish Kumar R <monish.kumar.r@intel.com>
-Cc: stable <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220520130044.17303-1-monish.kumar.r@intel.com
+When the ptracee is not stopped at ptrace_stop some fields would be
+set that are ignored except in ptrace_stop.  Making the userspace
+visible behavior of PTRACE_KILL a noop in those case.
+
+As the usual rules are not obeyed it is not clear what the
+consequences are of calling PTRACE_KILL on a running process.
+Presumably userspace does not do this as it achieves nothing.
+
+Replace the implementation of PTRACE_KILL with a simple
+send_sig_info(SIGKILL) followed by a return 0.  This changes the
+observable user space behavior only in that PTRACE_KILL on a process
+not stopped in ptrace_stop will also kill it.  As that has always
+been the intent of the code this seems like a reasonable change.
+
+Cc: stable@vger.kernel.org
+Reported-by: Al Viro <viro@zeniv.linux.org.uk>
+Suggested-by: Al Viro <viro@zeniv.linux.org.uk>
+Tested-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: Oleg Nesterov <oleg@redhat.com>
+Link: https://lkml.kernel.org/r/20220505182645.497868-7-ebiederm@xmission.com
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/core/quirks.c |    3 +++
- 1 file changed, 3 insertions(+)
+ arch/x86/kernel/step.c |    3 +--
+ kernel/ptrace.c        |    5 ++---
+ 2 files changed, 3 insertions(+), 5 deletions(-)
 
---- a/drivers/usb/core/quirks.c
-+++ b/drivers/usb/core/quirks.c
-@@ -511,6 +511,9 @@ static const struct usb_device_id usb_qu
- 	/* DJI CineSSD */
- 	{ USB_DEVICE(0x2ca3, 0x0031), .driver_info = USB_QUIRK_NO_LPM },
+--- a/arch/x86/kernel/step.c
++++ b/arch/x86/kernel/step.c
+@@ -175,8 +175,7 @@ void set_task_blockstep(struct task_stru
+ 	 *
+ 	 * NOTE: this means that set/clear TIF_BLOCKSTEP is only safe if
+ 	 * task is current or it can't be running, otherwise we can race
+-	 * with __switch_to_xtra(). We rely on ptrace_freeze_traced() but
+-	 * PTRACE_KILL is not safe.
++	 * with __switch_to_xtra(). We rely on ptrace_freeze_traced().
+ 	 */
+ 	local_irq_disable();
+ 	debugctl = get_debugctlmsr();
+--- a/kernel/ptrace.c
++++ b/kernel/ptrace.c
+@@ -1219,9 +1219,8 @@ int ptrace_request(struct task_struct *c
+ 		return ptrace_resume(child, request, data);
  
-+	/* DELL USB GEN2 */
-+	{ USB_DEVICE(0x413c, 0xb062), .driver_info = USB_QUIRK_NO_LPM | USB_QUIRK_RESET_RESUME },
-+
- 	/* VCOM device */
- 	{ USB_DEVICE(0x4296, 0x7570), .driver_info = USB_QUIRK_CONFIG_INTF_STRINGS },
+ 	case PTRACE_KILL:
+-		if (child->exit_state)	/* already dead */
+-			return 0;
+-		return ptrace_resume(child, request, SIGKILL);
++		send_sig_info(SIGKILL, SEND_SIG_NOINFO, child);
++		return 0;
  
+ #ifdef CONFIG_HAVE_ARCH_TRACEHOOK
+ 	case PTRACE_GETREGSET:
 
 
