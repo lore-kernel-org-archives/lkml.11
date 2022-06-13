@@ -2,75 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FA6BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:36:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45110C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:37:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239505AbiFMTgc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:36:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40938 "EHLO
+        id S244967AbiFMTho (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 15:37:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241245AbiFMTgM (ORCPT
+        with ESMTP id S241414AbiFMThU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 15:36:12 -0400
-Received: from mail-il1-f181.google.com (mail-il1-f181.google.com [209.85.166.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 023793FDB3;
-        Mon, 13 Jun 2022 11:03:21 -0700 (PDT)
-Received: by mail-il1-f181.google.com with SMTP id p1so4826308ilj.9;
-        Mon, 13 Jun 2022 11:03:20 -0700 (PDT)
+        Mon, 13 Jun 2022 15:37:20 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C89369CF0;
+        Mon, 13 Jun 2022 11:00:59 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id 15so6419932pfy.3;
+        Mon, 13 Jun 2022 11:00:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=jM/lvPuhC14LsEb9ZlEVVzCAu03nvQX/OUwWLzY69FM=;
+        b=RYsqMVjNGft/mA4IooAZRbob/vH4Mo9pz2WNFRyPqpKB7ZI7v1N453mnVzkf2rwPf1
+         2DsXUtAIOlbcJLG3RIesO2Cdl6+9dakwiWAYxMykcvkwKXxD2WESsQkWF+1tQYobZWhk
+         k4A5cBm4QluwxzMC9yB+NGTJm+pGk1ifFlSqDfI+Nrc66JDGkXlKEWLsX3IbUIMsiBii
+         uv55sk99KqDJPXyni0G8/7szT3++WIpQUjJPWsSMB182M/JK5oeX9kXYbLI8LD0qJB1n
+         eusYcktRqkfvzZvIuxjXerxetX1ofNtrhkAYkRsKWPYwOEROIbU39S1v7uNxwOoVg8Zx
+         GhqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=oHzia+bhaBA7DMXVkKIrTmOmhwAsD0Y7KThGYZ8Hdc4=;
-        b=v7TbA+Nz78VTC/4yKG1e+Zp2e1pWPUTnBI/vhWqgJyZokJVUsFuTd2vKuuQ0UlPltx
-         Aw8uGHYpeqza/aRWnX2SD3ZrNuY3zQvbg88HYUdnUQh+Gq5PiT8e2fi8tQMPCz5Dq6ZH
-         JmwFTTF9/S6yxyo1k8uyP8mgZ/Lzeuiby3wwZzf+gG9MFenAyV4cQGZ9HS1i8/rd0qJW
-         o0KJr/Kmit5eUUx2qec34iiyDx4GtL2xlYFduk7IBM9K4Y5DxiZpVWoO+PyfVmq+O9lo
-         2EtP9bddITJUTkg4zIzyRPEQiUPH9DEYyOLWxxAkJHeEeSlp3mXXin556VweUBpSth4e
-         ZAIQ==
-X-Gm-Message-State: AJIora9U4g0AdCuK9grGUhNgeLyV54+n8p7a6ASJjkauUu3JuAxbMBtJ
-        +/kX+UX9P+74eRWanHOMMA==
-X-Google-Smtp-Source: AGRyM1sAK2tNW0/E5Y94TDRjcKisI2L7QGgHIU7/awk1+gkGynbDfPu/INUy24XIlHKadZ/NU5nSIg==
-X-Received: by 2002:a05:6e02:1b0c:b0:2d3:bfdf:e3c5 with SMTP id i12-20020a056e021b0c00b002d3bfdfe3c5mr631830ilv.138.1655143400248;
-        Mon, 13 Jun 2022 11:03:20 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id c2-20020a92c8c2000000b002d11397f4f9sm4191996ilq.74.2022.06.13.11.03.18
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition
+         :content-transfer-encoding:in-reply-to;
+        bh=jM/lvPuhC14LsEb9ZlEVVzCAu03nvQX/OUwWLzY69FM=;
+        b=zZ9jgZWWRoawinuCLRu9Dxn0H/CdBjfJwbx/CoGM16pjTe84glaoustppoPr0BJSuG
+         Th28WK/fRl0C3x7VF0b4MqgsMTxMi9OLJviBj5hFomGt/P/3HLDcIslx0iIVVupiLQcx
+         TwFnRB8RLkXL+hvCrBEyiZOxqIPryc1l8q52nPBe4RfrStY55g7L384mUy/AAq7fMohw
+         Z6hx+UcMUylXTiMsl87RwgEMy5CiEBuknz8XcYYJ/yc58WrLtEPTy7Lo1I/xlL2Vkw9X
+         LvZ1kQ7q7MAOHdT7y3Id2WQ8kg4nz/sShtyn/XKBoogPQ2v9sadknWEeU9Q7z5S5Dp6Z
+         wL3g==
+X-Gm-Message-State: AOAM532uOC5O248vZ1Ra7J49twFE/iY23ryV26zlabDYekLfUmTmXC+z
+        /yatT9wZOz+k8i5W9d0asEA=
+X-Google-Smtp-Source: ABdhPJzerRW5ZLwEcw3NkTOtUV9s/7qCL1sJwajuU3wrEwAlOqfrERwaZSOCvxbElHBNWiAPADzfaw==
+X-Received: by 2002:a63:5b42:0:b0:408:8710:13b0 with SMTP id l2-20020a635b42000000b00408871013b0mr710348pgm.584.1655143258429;
+        Mon, 13 Jun 2022 11:00:58 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::4:b964])
+        by smtp.gmail.com with ESMTPSA id q18-20020a63bc12000000b004088f213f68sm1802955pge.56.2022.06.13.11.00.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 11:03:19 -0700 (PDT)
-Received: (nullmailer pid 3990444 invoked by uid 1000);
-        Mon, 13 Jun 2022 18:03:18 -0000
-Date:   Mon, 13 Jun 2022 12:03:18 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     William Zhang <william.zhang@broadcom.com>
-Cc:     anand.gore@broadcom.com, samyon.furman@broadcom.com,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
-        f.fainelli@gmail.com, devicetree@vger.kernel.org,
-        Linux ARM List <linux-arm-kernel@lists.infradead.org>,
-        kursad.oney@broadcom.com, joel.peshkin@broadcom.com,
-        linux-kernel@vger.kernel.org, philippe.reynes@softathome.com,
-        tomer.yacoby@broadcom.com, dan.beygelman@broadcom.com
-Subject: Re: [PATCH 1/3] dt-bindings: arm: Add BCM63148 SoC
-Message-ID: <20220613180318.GA3990308-robh@kernel.org>
-References: <20220610002113.14483-1-william.zhang@broadcom.com>
- <20220610002113.14483-2-william.zhang@broadcom.com>
+        Mon, 13 Jun 2022 11:00:57 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Mon, 13 Jun 2022 08:00:56 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+Cc:     Waiman Long <longman@redhat.com>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Shuah Khan <shuah@kernel.org>, cgroups@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Roman Gushchin <guro@fb.com>, Phil Auld <pauld@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Marcelo Tosatti <mtosatti@redhat.com>
+Subject: Re: [PATCH v11 7/8] cgroup/cpuset: Update description of
+ cpuset.cpus.partition in cgroup-v2.rst
+Message-ID: <Yqd7WMFj6AEyV3Cy@slm.duckdns.org>
+References: <20220510153413.400020-1-longman@redhat.com>
+ <20220510153413.400020-8-longman@redhat.com>
+ <YqYnQ4U4t6j/3UaL@slm.duckdns.org>
+ <404171dc-0da3-21f2-5003-9718f875e967@redhat.com>
+ <YqarMyNo9oHxhZFh@slm.duckdns.org>
+ <20220613142452.GB6910@blackbody.suse.cz>
+ <YqdzuSQuAeiPXQvy@slm.duckdns.org>
+ <20220613175548.GB21665@blackbody.suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220610002113.14483-2-william.zhang@broadcom.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220613175548.GB21665@blackbody.suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 09 Jun 2022 17:21:11 -0700, William Zhang wrote:
-> Add BCM63148 SoC device tree description to bcmbca binding document.
-> 
-> Signed-off-by: William Zhang <william.zhang@broadcom.com>
-> ---
-> 
->  Documentation/devicetree/bindings/arm/bcm/brcm,bcmbca.yaml | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
+Hello,
 
-Acked-by: Rob Herring <robh@kernel.org>
+On Mon, Jun 13, 2022 at 07:55:49PM +0200, Michal Koutný wrote:
+> On Mon, Jun 13, 2022 at 07:28:25AM -1000, Tejun Heo <tj@kernel.org> wrote:
+> > I see. Is this part even necessary? All the .cpus files of the siblings are
+> > owned by the parent who's responsible for configuring both the mode that the
+> > cgroup subtree is gonna be in and their cpumasks. 
+> 
+> Do you mean such an example:
+> 
+>     parent	cpuset.cpus=SET (root)	cpuset.cpus.partition=isolated 
+>     `- child_1	cpuset.cpus=partition_of(SET) (root)	cpuset.cpus.partition=isolated
+>     `- ...
+>     `- child_n	cpuset.cpus=partition_of(SET) (root)	cpuset.cpus.partition=isolated
+> ?
+> 
+> I don't think child_*/cpuset.cpus must be owned by root.
+
+I meant the parent.
+
+> Actually, the root would only configure the parent, i.e.
+> parent/cpuset.cpus (whose changes would be disallowed to the
+> unprivileged tasks) and the distribution among siblings would up to the
+> whatever runs below.
+> 
+> > Given that all the other errors it can make are notified through
+> > "invalid (REASON)" in the mode file, wouldn't it fit better to notify
+> > cpus configuration error the same way too?
+> 
+> Do you suggest that a write into child_*/cpuset.cpus that'd not be
+> exclusive wrt a sibling would result in an error string in
+> parent/cpuset.cpus.partition?
+
+Yeah, I don't know why this part is different from any other errors that the
+parent can make.
+
+Thanks.
+
+-- 
+tejun
