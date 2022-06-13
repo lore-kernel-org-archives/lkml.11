@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7C1EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16F01C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:25:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353751AbiFMLYz (ORCPT
+        id S1353148AbiFMLY7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:24:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46718 "EHLO
+        Mon, 13 Jun 2022 07:24:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352627AbiFMLQ4 (ORCPT
+        with ESMTP id S1352659AbiFMLQ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:16:56 -0400
+        Mon, 13 Jun 2022 07:16:57 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9472C38BF9;
-        Mon, 13 Jun 2022 03:40:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C87D038D8A;
+        Mon, 13 Jun 2022 03:40:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E0B15B80EA3;
-        Mon, 13 Jun 2022 10:40:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D5A9C3411C;
-        Mon, 13 Jun 2022 10:40:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CF615B80EAC;
+        Mon, 13 Jun 2022 10:40:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17D2BC34114;
+        Mon, 13 Jun 2022 10:40:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116810;
-        bh=MU2+vNNvD/C4Et7c0mjGwxnPA8RogRxCydOV6Jl+oY8=;
+        s=korg; t=1655116813;
+        bh=jbPHclukVovYqcjdvFI+HXUslo5TjyCHenAKCIjMEsc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Eg+nkekb1nHCLOXXkwF8QtLMN9fNmw1nL4wy1tRinVKsjxbGrx2CzIFgPxfEBFzgU
-         vesG1VR7E0rnemEhk3RV4zErCo/TAAbwXkXx9NheNV7RkWHkGqUs+6dvApd2cSPlr/
-         Z2plP+ySpd8FOKqVVp3i2D2GLnAjwH3bq8Pyu8gI=
+        b=U+2ct6BXJaJTpFdMr00tvy/go1cSSTRHd9I69hXU9xbqWjN0ySTf5wTCOTplzCzfm
+         x4x0+Scee6Ub6gWMYqvtHKzMOoZmCodafT7JAfDzIK3jV8mS7bdcIxF3scJAxJA4Ch
+         GJ8utM+5QbBKPQTOZTIH1mJQVzAWTnihObFhsTo0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Bj=C3=B6rn=20Ard=C3=B6?= <bjorn.ardo@axis.com>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
+        stable@vger.kernel.org, Alexey Dobriyan <adobriyan@gmail.com>,
+        hui li <juanfengpy@gmail.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 193/411] mailbox: forward the hrtimer if not queued and under a lock
-Date:   Mon, 13 Jun 2022 12:07:46 +0200
-Message-Id: <20220613094934.448101736@linuxfoundation.org>
+Subject: [PATCH 5.4 182/411] proc: fix dentry/inode overinstantiating under /proc/${pid}/net
+Date:   Mon, 13 Jun 2022 12:07:35 +0200
+Message-Id: <20220613094934.116938638@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -51,107 +52,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Björn Ardö <bjorn.ardo@axis.com>
+From: Alexey Dobriyan <adobriyan@gmail.com>
 
-[ Upstream commit bca1a1004615efe141fd78f360ecc48c60bc4ad5 ]
+[ Upstream commit 7055197705709c59b8ab77e6a5c7d46d61edd96e ]
 
-This reverts commit c7dacf5b0f32957b24ef29df1207dc2cd8307743,
-"mailbox: avoid timer start from callback"
+When a process exits, /proc/${pid}, and /proc/${pid}/net dentries are
+flushed.  However some leaf dentries like /proc/${pid}/net/arp_cache
+aren't.  That's because respective PDEs have proc_misc_d_revalidate() hook
+which returns 1 and leaves dentries/inodes in the LRU.
 
-The previous commit was reverted since it lead to a race that
-caused the hrtimer to not be started at all. The check for
-hrtimer_active() in msg_submit() will return true if the
-callback function txdone_hrtimer() is currently running. This
-function could return HRTIMER_NORESTART and then the timer
-will not be restarted, and also msg_submit() will not start
-the timer. This will lead to a message actually being submitted
-but no timer will start to check for its compleation.
+Force revalidation/lookup on everything under /proc/${pid}/net by
+inheriting proc_net_dentry_ops.
 
-The original fix that added checking hrtimer_active() was added to
-avoid a warning with hrtimer_forward. Looking in the kernel
-another solution to avoid this warning is to check hrtimer_is_queued()
-before calling hrtimer_forward_now() instead. This however requires a
-lock so the timer is not started by msg_submit() inbetween this check
-and the hrtimer_forward() call.
-
-Fixes: c7dacf5b0f32 ("mailbox: avoid timer start from callback")
-Signed-off-by: Björn Ardö <bjorn.ardo@axis.com>
-Signed-off-by: Jassi Brar <jaswinder.singh@linaro.org>
+[akpm@linux-foundation.org: coding-style cleanups]
+Link: https://lkml.kernel.org/r/YjdVHgildbWO7diJ@localhost.localdomain
+Fixes: c6c75deda813 ("proc: fix lookup in /proc/net subdirectories after setns(2)")
+Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
+Reported-by: hui li <juanfengpy@gmail.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mailbox/mailbox.c          | 19 +++++++++++++------
- include/linux/mailbox_controller.h |  1 +
- 2 files changed, 14 insertions(+), 6 deletions(-)
+ fs/proc/generic.c  | 3 +++
+ fs/proc/proc_net.c | 3 +++
+ 2 files changed, 6 insertions(+)
 
-diff --git a/drivers/mailbox/mailbox.c b/drivers/mailbox/mailbox.c
-index 3e7d4b20ab34..4229b9b5da98 100644
---- a/drivers/mailbox/mailbox.c
-+++ b/drivers/mailbox/mailbox.c
-@@ -82,11 +82,11 @@ static void msg_submit(struct mbox_chan *chan)
- exit:
- 	spin_unlock_irqrestore(&chan->lock, flags);
+diff --git a/fs/proc/generic.c b/fs/proc/generic.c
+index 8c3dbe13e647..372b4dad4863 100644
+--- a/fs/proc/generic.c
++++ b/fs/proc/generic.c
+@@ -446,6 +446,9 @@ static struct proc_dir_entry *__proc_create(struct proc_dir_entry **parent,
+ 	proc_set_user(ent, (*parent)->uid, (*parent)->gid);
  
--	/* kick start the timer immediately to avoid delays */
- 	if (!err && (chan->txdone_method & TXDONE_BY_POLL)) {
--		/* but only if not already active */
--		if (!hrtimer_active(&chan->mbox->poll_hrt))
--			hrtimer_start(&chan->mbox->poll_hrt, 0, HRTIMER_MODE_REL);
-+		/* kick start the timer immediately to avoid delays */
-+		spin_lock_irqsave(&chan->mbox->poll_hrt_lock, flags);
-+		hrtimer_start(&chan->mbox->poll_hrt, 0, HRTIMER_MODE_REL);
-+		spin_unlock_irqrestore(&chan->mbox->poll_hrt_lock, flags);
- 	}
- }
+ 	ent->proc_dops = &proc_misc_dentry_ops;
++	/* Revalidate everything under /proc/${pid}/net */
++	if ((*parent)->proc_dops == &proc_net_dentry_ops)
++		pde_force_lookup(ent);
  
-@@ -120,20 +120,26 @@ static enum hrtimer_restart txdone_hrtimer(struct hrtimer *hrtimer)
- 		container_of(hrtimer, struct mbox_controller, poll_hrt);
- 	bool txdone, resched = false;
- 	int i;
-+	unsigned long flags;
+ out:
+ 	return ent;
+diff --git a/fs/proc/proc_net.c b/fs/proc/proc_net.c
+index 313b7c751867..9cd5b47199cb 100644
+--- a/fs/proc/proc_net.c
++++ b/fs/proc/proc_net.c
+@@ -343,6 +343,9 @@ static __net_init int proc_net_ns_init(struct net *net)
  
- 	for (i = 0; i < mbox->num_chans; i++) {
- 		struct mbox_chan *chan = &mbox->chans[i];
+ 	proc_set_user(netd, uid, gid);
  
- 		if (chan->active_req && chan->cl) {
--			resched = true;
- 			txdone = chan->mbox->ops->last_tx_done(chan);
- 			if (txdone)
- 				tx_tick(chan, 0);
-+			else
-+				resched = true;
- 		}
- 	}
- 
- 	if (resched) {
--		hrtimer_forward_now(hrtimer, ms_to_ktime(mbox->txpoll_period));
-+		spin_lock_irqsave(&mbox->poll_hrt_lock, flags);
-+		if (!hrtimer_is_queued(hrtimer))
-+			hrtimer_forward_now(hrtimer, ms_to_ktime(mbox->txpoll_period));
-+		spin_unlock_irqrestore(&mbox->poll_hrt_lock, flags);
++	/* Seed dentry revalidation for /proc/${pid}/net */
++	pde_force_lookup(netd);
 +
- 		return HRTIMER_RESTART;
- 	}
- 	return HRTIMER_NORESTART;
-@@ -500,6 +506,7 @@ int mbox_controller_register(struct mbox_controller *mbox)
- 		hrtimer_init(&mbox->poll_hrt, CLOCK_MONOTONIC,
- 			     HRTIMER_MODE_REL);
- 		mbox->poll_hrt.function = txdone_hrtimer;
-+		spin_lock_init(&mbox->poll_hrt_lock);
- 	}
- 
- 	for (i = 0; i < mbox->num_chans; i++) {
-diff --git a/include/linux/mailbox_controller.h b/include/linux/mailbox_controller.h
-index 36d6ce673503..6fee33cb52f5 100644
---- a/include/linux/mailbox_controller.h
-+++ b/include/linux/mailbox_controller.h
-@@ -83,6 +83,7 @@ struct mbox_controller {
- 				      const struct of_phandle_args *sp);
- 	/* Internal to API */
- 	struct hrtimer poll_hrt;
-+	spinlock_t poll_hrt_lock;
- 	struct list_head node;
- };
- 
+ 	err = -EEXIST;
+ 	net_statd = proc_net_mkdir(net, "stat", netd);
+ 	if (!net_statd)
 -- 
 2.35.1
 
