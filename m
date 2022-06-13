@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FECFCCA489
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42DC5CCA48C
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:00:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358247AbiFML7t (ORCPT
+        id S1358299AbiFML7w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:59:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55952 "EHLO
+        Mon, 13 Jun 2022 07:59:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357137AbiFMLwz (ORCPT
+        with ESMTP id S1357136AbiFMLwz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:52:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADB5C24BCE;
-        Mon, 13 Jun 2022 03:55:39 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C97924BCB;
+        Mon, 13 Jun 2022 03:55:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A1C260F00;
-        Mon, 13 Jun 2022 10:55:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AB78C34114;
-        Mon, 13 Jun 2022 10:55:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B419B80E59;
+        Mon, 13 Jun 2022 10:55:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3B3DC34114;
+        Mon, 13 Jun 2022 10:55:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117738;
-        bh=bjrHw/Xr6v9zTEdBs3j4Gs0dTzhcfZHlUUh3qQXlcpE=;
+        s=korg; t=1655117736;
+        bh=PE7qwkUl+1sJkVQ8ze9ovkv0xy2qYkwaH6yi71o0g8M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SVm9lCQPhlwFe7od6y9MgWqhCWb3RNFuMOBJzi1RpgSmFXKhIZNQh5DJwGGvZVaio
-         brB9HT1QZ0tDv+f6OXnleUBx2yq/iypCjz7L2r9bLGsk/GvVmU9PutyaBqdrJ4thIt
-         2rktumMDhv7S22jqpnwsDgw9alMKh0JflhWWvIKc=
+        b=lRNI+nTr4+grSxes8dr5HLVj9/AGPXq+/AlbVo2KWM/vaW3C/wNyiILc5jEyyM8U4
+         jXJLKMSYTENySNvgzv34B2bBM7A+q+wlUfwWw50BonCERY/u7o1t26EsiVSIuF7bD2
+         /EEtqbm4TRDi5DU7YsoX4p85XjhTZuX7IH85RZ4k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 102/287] sctp: read sk->sk_bound_dev_if once in sctp_rcv()
-Date:   Mon, 13 Jun 2022 12:08:46 +0200
-Message-Id: <20220613094926.971408729@linuxfoundation.org>
+Subject: [PATCH 4.19 101/287] m68k: math-emu: Fix dependencies of math emulation support
+Date:   Mon, 13 Jun 2022 12:08:45 +0200
+Message-Id: <20220613094926.942134620@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -53,47 +51,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
 
-[ Upstream commit a20ea298071f46effa3aaf965bf9bb34c901db3f ]
+[ Upstream commit ed6bc6bf0a7d75e80eb1df883c09975ebb74e590 ]
 
-sctp_rcv() reads sk->sk_bound_dev_if twice while the socket
-is not locked. Another cpu could change this field under us.
+If CONFIG_M54xx=y, CONFIG_MMU=y, and CONFIG_M68KFPU_EMU=y:
 
-Fixes: 0fd9a65a76e8 ("[SCTP] Support SO_BINDTODEVICE socket option on incoming packets.")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Neil Horman <nhorman@tuxdriver.com>
-Cc: Vlad Yasevich <vyasevich@gmail.com>
-Cc: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+    {standard input}:272: Error: invalid instruction for this architecture; needs 68000 or higher (68000 [68ec000, 68hc000, 68hc001, 68008, 68302, 68306, 68307, 68322, 68356], 68010, 68020 [68k, 68ec020], 68030 [68ec030], 68040 [68ec040], 68060 [68ec060], cpu32 [68330, 68331, 68332, 68333, 68334, 68336, 68340, 68341, 68349, 68360], fidoa [fido]) -- statement `sub.b %d1,%d3' ignored
+    {standard input}:609: Error: invalid instruction for this architecture; needs 68020 or higher (68020 [68k, 68ec020], 68030 [68ec030], 68040 [68ec040], 68060 [68ec060]) -- statement `bfextu 4(%a1){%d0,#8},%d0' ignored
+    {standard input}:752: Error: operands mismatch -- statement `mulu.l 4(%a0),%d3:%d0' ignored
+    {standard input}:1155: Error: operands mismatch -- statement `divu.l %d0,%d3:%d7' ignored
+
+The math emulation support code is intended for 68020 and higher, and
+uses several instructions or instruction modes not available on coldfire
+or 68000.
+
+Originally, the dependency of M68KFPU_EMU on MMU was fine, as MMU
+support was only available on 68020 or higher.  But this assumption
+was broken by the introduction of MMU support for M547x and M548x.
+
+Drop the dependency on MMU, as the code should work fine on 68020 and up
+without MMU (which are not yet supported by Linux, though).
+Add dependencies on M68KCLASSIC (to rule out Coldfire) and FPU (kernel
+has some type of floating-point support --- be it hardware or software
+emulated, to rule out anything below 68020).
+
+Fixes: 1f7034b9616e6f14 ("m68k: allow ColdFire 547x and 548x CPUs to be built with MMU enabled")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Reviewed-by: Greg Ungerer <gerg@linux-m68k.org>
+Link: https://lore.kernel.org/r/18c34695b7c95107f60ccca82a4ff252f3edf477.1652446117.git.geert@linux-m68k.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sctp/input.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/m68k/Kconfig.cpu | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/sctp/input.c b/net/sctp/input.c
-index 64dc2923a21b..0e2503e536ed 100644
---- a/net/sctp/input.c
-+++ b/net/sctp/input.c
-@@ -104,6 +104,7 @@ int sctp_rcv(struct sk_buff *skb)
- 	struct sctp_chunk *chunk;
- 	union sctp_addr src;
- 	union sctp_addr dest;
-+	int bound_dev_if;
- 	int family;
- 	struct sctp_af *af;
- 	struct net *net = dev_net(skb->dev);
-@@ -181,7 +182,8 @@ int sctp_rcv(struct sk_buff *skb)
- 	 * If a frame arrives on an interface and the receiving socket is
- 	 * bound to another interface, via SO_BINDTODEVICE, treat it as OOTB
- 	 */
--	if (sk->sk_bound_dev_if && (sk->sk_bound_dev_if != af->skb_iif(skb))) {
-+	bound_dev_if = READ_ONCE(sk->sk_bound_dev_if);
-+	if (bound_dev_if && (bound_dev_if != af->skb_iif(skb))) {
- 		if (transport) {
- 			sctp_transport_put(transport);
- 			asoc = NULL;
+diff --git a/arch/m68k/Kconfig.cpu b/arch/m68k/Kconfig.cpu
+index 21f00349af52..b2fd1e2fbd89 100644
+--- a/arch/m68k/Kconfig.cpu
++++ b/arch/m68k/Kconfig.cpu
+@@ -308,7 +308,7 @@ comment "Processor Specific Options"
+ 
+ config M68KFPU_EMU
+ 	bool "Math emulation support"
+-	depends on MMU
++	depends on M68KCLASSIC && FPU
+ 	help
+ 	  At some point in the future, this will cause floating-point math
+ 	  instructions to be emulated by the kernel on machines that lack a
 -- 
 2.35.1
 
