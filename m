@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18892C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:40:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD805C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:40:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355657AbiFMLku (ORCPT
+        id S1355698AbiFMLk5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:40:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59838 "EHLO
+        Mon, 13 Jun 2022 07:40:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354327AbiFMLcK (ORCPT
+        with ESMTP id S1354358AbiFMLcR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:32:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C56B0424B1;
-        Mon, 13 Jun 2022 03:47:14 -0700 (PDT)
+        Mon, 13 Jun 2022 07:32:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06813424B7;
+        Mon, 13 Jun 2022 03:47:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 86898B80D3F;
-        Mon, 13 Jun 2022 10:47:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F04CCC3411E;
-        Mon, 13 Jun 2022 10:47:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 965116112A;
+        Mon, 13 Jun 2022 10:47:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3F5AC34114;
+        Mon, 13 Jun 2022 10:47:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117232;
-        bh=FKpxib1Fao5D8iyfn7ORHettx1m3y/0jX2WAkgZ/shw=;
+        s=korg; t=1655117235;
+        bh=2YNfuwdMsGXTIWbZJF9jNk6c9Dj6DXMPOKVnNhrjD5M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nsOzZ6KEFrZnv3EUeypV2lWCvkyY9iFLx+3cnOu3t3Xg6p7nmta3dVbVY3J0QRWvK
-         Rhxj1smQdH6blB64BjqI47VUd3W5hrx5DpKTpTcE734k6rT9j++MFBRJlAL9GVHF3N
-         8kKSMyB9ynikg5qYL3Jn9rh8qRpwJV3chEiXqHIk=
+        b=hXyeicdolYqSONcPlzR7lE6m/sAoJu6Kd+bl2DFBTjQuUQB1PInSUKbeK6rIJbD+Y
+         SGJ0iM/Lc8xbXbge9QLVBQYvu/OR0hG1avb6RCXhT4nm0RkzlxIZWWY5t6qbZ1ehPw
+         DKvNK8RbltTPNTWgl45uDHfGlop2UNRXTcWMaHVo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Max Filippov <jcmvbkbc@gmail.com>,
-        Kees Cook <keescook@chromium.org>,
-        Oleg Nesterov <oleg@redhat.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 4.19 005/287] ptrace/xtensa: Replace PT_SINGLESTEP with TIF_SINGLESTEP
-Date:   Mon, 13 Jun 2022 12:07:09 +0200
-Message-Id: <20220613094924.006615734@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
+        Mark-PK Tsai <mark-pk.tsai@mediatek.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 339/411] tracing: Avoid adding tracer option before update_tracer_options
+Date:   Mon, 13 Jun 2022 12:10:12 +0200
+Message-Id: <20220613094938.880650020@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
-References: <20220613094923.832156175@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,83 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric W. Biederman <ebiederm@xmission.com>
+From: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
 
-commit 4a3d2717d140401df7501a95e454180831a0c5af upstream.
+[ Upstream commit ef9188bcc6ca1d8a2ad83e826b548e6820721061 ]
 
-xtensa is the last user of the PT_SINGLESTEP flag.  Changing tsk->ptrace in
-user_enable_single_step and user_disable_single_step without locking could
-potentiallly cause problems.
+To prepare for support asynchronous tracer_init_tracefs initcall,
+avoid calling create_trace_option_files before __update_tracer_options.
+Otherwise, create_trace_option_files will show warning because
+some tracers in trace_types list are already in tr->topts.
 
-So use a thread info flag instead of a flag in tsk->ptrace.  Use TIF_SINGLESTEP
-that xtensa already had defined but unused.
+For example, hwlat_tracer call register_tracer in late_initcall,
+and global_trace.dir is already created in tracing_init_dentry,
+hwlat_tracer will be put into tr->topts.
+Then if the __update_tracer_options is executed after hwlat_tracer
+registered, create_trace_option_files find that hwlat_tracer is
+already in tr->topts.
 
-Remove the definitions of PT_SINGLESTEP and PT_BLOCKSTEP as they have no more users.
+Link: https://lkml.kernel.org/r/20220426122407.17042-2-mark-pk.tsai@mediatek.com
 
-Cc: stable@vger.kernel.org
-Acked-by: Max Filippov <jcmvbkbc@gmail.com>
-Tested-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: Oleg Nesterov <oleg@redhat.com>
-Link: https://lkml.kernel.org/r/20220505182645.497868-4-ebiederm@xmission.com
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/lkml/20220322133339.GA32582@xsang-OptiPlex-9020/
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/xtensa/kernel/ptrace.c |    4 ++--
- arch/xtensa/kernel/signal.c |    4 ++--
- include/linux/ptrace.h      |    6 ------
- 3 files changed, 4 insertions(+), 10 deletions(-)
+ kernel/trace/trace.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
---- a/arch/xtensa/kernel/ptrace.c
-+++ b/arch/xtensa/kernel/ptrace.c
-@@ -35,12 +35,12 @@
- 
- void user_enable_single_step(struct task_struct *child)
- {
--	child->ptrace |= PT_SINGLESTEP;
-+	set_tsk_thread_flag(child, TIF_SINGLESTEP);
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index ce9165de019c..55da88f18342 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -5638,12 +5638,18 @@ static void tracing_set_nop(struct trace_array *tr)
+ 	tr->current_trace = &nop_trace;
  }
  
- void user_disable_single_step(struct task_struct *child)
++static bool tracer_options_updated;
++
+ static void add_tracer_options(struct trace_array *tr, struct tracer *t)
  {
--	child->ptrace &= ~PT_SINGLESTEP;
-+	clear_tsk_thread_flag(child, TIF_SINGLESTEP);
- }
- 
- /*
---- a/arch/xtensa/kernel/signal.c
-+++ b/arch/xtensa/kernel/signal.c
-@@ -455,7 +455,7 @@ static void do_signal(struct pt_regs *re
- 		/* Set up the stack frame */
- 		ret = setup_frame(&ksig, sigmask_to_save(), regs);
- 		signal_setup_done(ret, &ksig, 0);
--		if (current->ptrace & PT_SINGLESTEP)
-+		if (test_thread_flag(TIF_SINGLESTEP))
- 			task_pt_regs(current)->icountlevel = 1;
- 
+ 	/* Only enable if the directory has been created already. */
+ 	if (!tr->dir)
  		return;
-@@ -481,7 +481,7 @@ static void do_signal(struct pt_regs *re
- 	/* If there's no signal to deliver, we just restore the saved mask.  */
- 	restore_saved_sigmask();
  
--	if (current->ptrace & PT_SINGLESTEP)
-+	if (test_thread_flag(TIF_SINGLESTEP))
- 		task_pt_regs(current)->icountlevel = 1;
- 	return;
++	/* Only create trace option files after update_tracer_options finish */
++	if (!tracer_options_updated)
++		return;
++
+ 	create_trace_option_files(tr, t);
  }
---- a/include/linux/ptrace.h
-+++ b/include/linux/ptrace.h
-@@ -40,12 +40,6 @@ extern int ptrace_access_vm(struct task_
- #define PT_EXITKILL		(PTRACE_O_EXITKILL << PT_OPT_FLAG_SHIFT)
- #define PT_SUSPEND_SECCOMP	(PTRACE_O_SUSPEND_SECCOMP << PT_OPT_FLAG_SHIFT)
  
--/* single stepping state bits (used on ARM and PA-RISC) */
--#define PT_SINGLESTEP_BIT	31
--#define PT_SINGLESTEP		(1<<PT_SINGLESTEP_BIT)
--#define PT_BLOCKSTEP_BIT	30
--#define PT_BLOCKSTEP		(1<<PT_BLOCKSTEP_BIT)
--
- extern long arch_ptrace(struct task_struct *child, long request,
- 			unsigned long addr, unsigned long data);
- extern int ptrace_readdata(struct task_struct *tsk, unsigned long src, char __user *dst, int len);
+@@ -8391,6 +8397,7 @@ static void __update_tracer_options(struct trace_array *tr)
+ static void update_tracer_options(struct trace_array *tr)
+ {
+ 	mutex_lock(&trace_types_lock);
++	tracer_options_updated = true;
+ 	__update_tracer_options(tr);
+ 	mutex_unlock(&trace_types_lock);
+ }
+-- 
+2.35.1
+
 
 
