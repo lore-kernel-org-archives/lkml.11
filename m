@@ -2,44 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6D25CCA483
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:49:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C077CCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:49:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348178AbiFMKtL (ORCPT
+        id S1348471AbiFMKtX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:49:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42174 "EHLO
+        Mon, 13 Jun 2022 06:49:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245124AbiFMKpf (ORCPT
+        with ESMTP id S244569AbiFMKqY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:45:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F10272BB00;
-        Mon, 13 Jun 2022 03:25:44 -0700 (PDT)
+        Mon, 13 Jun 2022 06:46:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CF402BB08;
+        Mon, 13 Jun 2022 03:25:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D9AE860F0B;
-        Mon, 13 Jun 2022 10:25:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7765C3411F;
-        Mon, 13 Jun 2022 10:25:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B60460F13;
+        Mon, 13 Jun 2022 10:25:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41E26C3411E;
+        Mon, 13 Jun 2022 10:25:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115943;
-        bh=36Zrg68NAiHkWfHvcxxtjEKPT6SjuU9L+QXdBxVKI2s=;
+        s=korg; t=1655115948;
+        bh=oApSn8bhkmu3ZHZl6cHkPXdUbNMGrllZUuT2wqqkiJE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iOt/t6VR1eD6REegm/b1Ehmb3C2dkFH/M3jibeQC+ULeU0szPLFCptlEc2Zo34P88
-         0JgdgZI6U7Acj3oKxlVHVAYdSJ8MauvdHDvxigtsR6kqiJZT5aS/hc/+uo3Sv0hNgz
-         zn3XiDMAUm7Naq7L3j7/ROLIhK2CkIcZ2Fza302U=
+        b=XQRF0BoSeZWnlQ+X+4covATnaBh0VE6vi41/F50VCeM6V25wxq0XmnLpRZ0WP3kf3
+         2ElAn3gxVty5rpHYHlLIBvsSM9zuQmEM8fWefk9v0Lf2bCILatFJrY6uYXnEZATCRJ
+         QbhKwmqPs0Smnn1h1B4+TE2n8Wn0bQmJvw+PLS9I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Igor Zhbanov <izh1979@gmail.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Joe Mario <jmario@redhat.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 090/218] powerpc/idle: Fix return value of __setup() handler
-Date:   Mon, 13 Jun 2022 12:09:08 +0200
-Message-Id: <20220613094923.268682066@linuxfoundation.org>
+Subject: [PATCH 4.14 100/218] perf c2c: Use stdio interface if slang is not supported
+Date:   Mon, 13 Jun 2022 12:09:18 +0200
+Message-Id: <20220613094923.584769204@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -51,42 +56,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Leo Yan <leo.yan@linaro.org>
 
-[ Upstream commit b793a01000122d2bd133ba451a76cc135b5e162c ]
+[ Upstream commit c4040212bc97d16040712a410335f93bc94d2262 ]
 
-__setup() handlers should return 1 to obsolete_checksetup() in
-init/main.c to indicate that the boot option has been handled.
+If the slang lib is not installed on the system, perf c2c tool disables TUI
+mode and roll back to use stdio mode;  but the flag 'c2c.use_stdio' is
+missed to set true and thus it wrongly applies UI quirks in the function
+ui_quirks().
 
-A return of 0 causes the boot option/value to be listed as an Unknown
-kernel parameter and added to init's (limited) argument or environment
-strings.
+This commit forces to use stdio interface if slang is not supported, and
+it can avoid to apply the UI quirks and show the correct metric header.
 
-Also, error return codes don't mean anything to obsolete_checksetup() --
-only non-zero (usually 1) or zero. So return 1 from powersave_off().
+Before:
 
-Fixes: 302eca184fb8 ("[POWERPC] cell: use ppc_md->power_save instead of cbe_idle_loop")
-Reported-by: Igor Zhbanov <izh1979@gmail.com>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220502192925.19954-1-rdunlap@infradead.org
+=================================================
+      Shared Cache Line Distribution Pareto
+=================================================
+  -------------------------------------------------------------------------------
+      0        0        0       99        0        0        0      0xaaaac17d6000
+  -------------------------------------------------------------------------------
+    0.00%    0.00%    6.06%    0.00%    0.00%    0.00%   0x20   N/A       0      0xaaaac17c25ac         0         0        43       375    18469         2  [.] 0x00000000000025ac  memstress         memstress[25ac]   0
+    0.00%    0.00%   93.94%    0.00%    0.00%    0.00%   0x29   N/A       0      0xaaaac17c3e88         0         0       173       180      135         2  [.] 0x0000000000003e88  memstress         memstress[3e88]   0
+
+After:
+
+=================================================
+      Shared Cache Line Distribution Pareto
+=================================================
+  -------------------------------------------------------------------------------
+      0        0        0       99        0        0        0      0xaaaac17d6000
+  -------------------------------------------------------------------------------
+           0.00%    0.00%    6.06%    0.00%    0.00%    0.00%                0x20   N/A       0      0xaaaac17c25ac         0         0        43       375    18469         2  [.] 0x00000000000025ac  memstress         memstress[25ac]   0
+           0.00%    0.00%   93.94%    0.00%    0.00%    0.00%                0x29   N/A       0      0xaaaac17c3e88         0         0       173       180      135         2  [.] 0x0000000000003e88  memstress         memstress[3e88]   0
+
+Fixes: 5a1a99cd2e4e1557 ("perf c2c report: Add main TUI browser")
+Reported-by: Joe Mario <jmario@redhat.com>
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Link: http://lore.kernel.org/lkml/20220526145400.611249-1-leo.yan@linaro.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/idle.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/perf/builtin-c2c.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/kernel/idle.c b/arch/powerpc/kernel/idle.c
-index d7216c9abda1..ca79aacfeda2 100644
---- a/arch/powerpc/kernel/idle.c
-+++ b/arch/powerpc/kernel/idle.c
-@@ -41,7 +41,7 @@ static int __init powersave_off(char *arg)
- {
- 	ppc_md.power_save = NULL;
- 	cpuidle_disable = IDLE_POWERSAVE_OFF;
--	return 0;
-+	return 1;
- }
- __setup("powersave=off", powersave_off);
+diff --git a/tools/perf/builtin-c2c.c b/tools/perf/builtin-c2c.c
+index 264d458bfe2a..9cbd8b0d5b77 100644
+--- a/tools/perf/builtin-c2c.c
++++ b/tools/perf/builtin-c2c.c
+@@ -2552,9 +2552,7 @@ static int perf_c2c__report(int argc, const char **argv)
+ 		   "the input file to process"),
+ 	OPT_INCR('N', "node-info", &c2c.node_info,
+ 		 "show extra node info in report (repeat for more info)"),
+-#ifdef HAVE_SLANG_SUPPORT
+ 	OPT_BOOLEAN(0, "stdio", &c2c.use_stdio, "Use the stdio interface"),
+-#endif
+ 	OPT_BOOLEAN(0, "stats", &c2c.stats_only,
+ 		    "Display only statistic tables (implies --stdio)"),
+ 	OPT_BOOLEAN(0, "full-symbols", &c2c.symbol_full,
+@@ -2581,6 +2579,10 @@ static int perf_c2c__report(int argc, const char **argv)
+ 	if (argc)
+ 		usage_with_options(report_c2c_usage, options);
+ 
++#ifndef HAVE_SLANG_SUPPORT
++	c2c.use_stdio = true;
++#endif
++
+ 	if (c2c.stats_only)
+ 		c2c.use_stdio = true;
  
 -- 
 2.35.1
