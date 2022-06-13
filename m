@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42F2FCCA48D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACB4FCCA491
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:39:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355663AbiFMLjW (ORCPT
+        id S1355811AbiFMLjm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:39:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50600 "EHLO
+        Mon, 13 Jun 2022 07:39:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354947AbiFMLaU (ORCPT
+        with ESMTP id S1355161AbiFMLat (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:30:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 199D0403FD;
-        Mon, 13 Jun 2022 03:46:08 -0700 (PDT)
+        Mon, 13 Jun 2022 07:30:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30B2B4133F;
+        Mon, 13 Jun 2022 03:46:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 947B6B80D3C;
-        Mon, 13 Jun 2022 10:46:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1666C34114;
-        Mon, 13 Jun 2022 10:46:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C3D7861257;
+        Mon, 13 Jun 2022 10:46:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3CF3C34114;
+        Mon, 13 Jun 2022 10:46:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117165;
-        bh=Ok3La8mRQV7bu6LFgpuG/TAdbgySw0P+nNilnEqF8j0=;
+        s=korg; t=1655117199;
+        bh=HV73AQN1kNcjmqMkArhjy0PLs8x/DcI7HaSRZwf/Jeg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NjNbEgBdXRXx8sTcq69oEeKIPrHugmNb3qdAoYRV6nVJjKpbsoa00ZJMomm+ijZ0O
-         vSVUeEHsGGuAt4iLbDRymD/s1IMRoIekBpV/kfqZ26tssVpU/jvP5wJCJ9Wv8F2ho3
-         yrde7wy2WET7Slm6zUBQMlmXDtZSGx9fi84B0ZYY=
+        b=fID+/4v0cEDF2mbdUI0AGv6CHlIJzBag3RfXG8f3fE3BDi9bl+bP9+mORCvbdLfx7
+         suD5TScbDx4GLWbtdFO4qcihzjtoWRpY9SeP/kr4UQ8pkDcKx8F1Un5VDEjLo7hiXd
+         xO/z2M9/jEue4ux0sAVn2JNQNp77MgzHzfCPjEbs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Manivannan Sadhasivam <mani@kernel.org>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 309/411] serial: rda-uart: Dont allow CS5-6
-Date:   Mon, 13 Jun 2022 12:09:42 +0200
-Message-Id: <20220613094938.014578255@linuxfoundation.org>
+Subject: [PATCH 5.4 321/411] clocksource/drivers/oxnas-rps: Fix irq_of_parse_and_map() return value
+Date:   Mon, 13 Jun 2022 12:09:54 +0200
+Message-Id: <20220613094938.359979991@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,41 +52,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit 098333a9c7d12bb3ce44c82f08b4d810c44d31b0 ]
+[ Upstream commit 9c04a8ff03def4df3f81219ffbe1ec9b44ff5348 ]
 
-Only CS7 and CS8 are supported but CSIZE is not sanitized after
-fallthrough from CS5 or CS6 to CS7.
+The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
 
-Set CSIZE correctly so that userspace knows the effective value.
-Incorrect CSIZE also results in miscalculation of the frame bits in
-tty_get_char_size() or in its predecessor where the roughly the same
-code is directly within uart_update_timeout().
-
-Fixes: c10b13325ced (tty: serial: Add RDA8810PL UART driver)
-Cc: Manivannan Sadhasivam <mani@kernel.org>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/20220519081808.3776-4-ilpo.jarvinen@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 89355274e1f7 ("clocksource/drivers/oxnas-rps: Add Oxford Semiconductor RPS Dual Timer")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220422104101.55754-1-krzysztof.kozlowski@linaro.org
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/rda-uart.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/clocksource/timer-oxnas-rps.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/rda-uart.c b/drivers/tty/serial/rda-uart.c
-index ff9a27d48bca..877d86ff6819 100644
---- a/drivers/tty/serial/rda-uart.c
-+++ b/drivers/tty/serial/rda-uart.c
-@@ -262,6 +262,8 @@ static void rda_uart_set_termios(struct uart_port *port,
- 		/* Fall through */
- 	case CS7:
- 		ctrl &= ~RDA_UART_DBITS_8;
-+		termios->c_cflag &= ~CSIZE;
-+		termios->c_cflag |= CS7;
- 		break;
- 	default:
- 		ctrl |= RDA_UART_DBITS_8;
+diff --git a/drivers/clocksource/timer-oxnas-rps.c b/drivers/clocksource/timer-oxnas-rps.c
+index 56c0cc32d0ac..d514b44e67dd 100644
+--- a/drivers/clocksource/timer-oxnas-rps.c
++++ b/drivers/clocksource/timer-oxnas-rps.c
+@@ -236,7 +236,7 @@ static int __init oxnas_rps_timer_init(struct device_node *np)
+ 	}
+ 
+ 	rps->irq = irq_of_parse_and_map(np, 0);
+-	if (rps->irq < 0) {
++	if (!rps->irq) {
+ 		ret = -EINVAL;
+ 		goto err_iomap;
+ 	}
 -- 
 2.35.1
 
