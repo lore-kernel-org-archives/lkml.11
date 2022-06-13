@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6E59C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:18:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B381FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:18:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382573AbiFMOSA (ORCPT
+        id S1382583AbiFMOSG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:18:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57898 "EHLO
+        Mon, 13 Jun 2022 10:18:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381103AbiFMOKg (ORCPT
+        with ESMTP id S1381387AbiFMOLB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:10:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83A882D1E3;
-        Mon, 13 Jun 2022 04:42:07 -0700 (PDT)
+        Mon, 13 Jun 2022 10:11:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B1FD996A7;
+        Mon, 13 Jun 2022 04:42:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9B555B80EB2;
-        Mon, 13 Jun 2022 11:41:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E791DC34114;
-        Mon, 13 Jun 2022 11:41:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5707A60EAE;
+        Mon, 13 Jun 2022 11:41:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FBACC34114;
+        Mon, 13 Jun 2022 11:41:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120518;
-        bh=wKYQNm6xG3nOwG/8tiktpJg4CqIDjgkr82oZoP7izT4=;
+        s=korg; t=1655120512;
+        bh=uJ9QvgGDukh7QF8+CD8vD4uIYQ5lNJe9QAK7iyDkAzY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ibSR8U0fTQivdfTFvOonOyByoT7jxau/B54GXM/JEsvYLSdPdZUyDdqiUXZzMSHqr
-         up58GENHjlCsNL+sgT6yDuQJGoJShDJsz1+SFZxGlhpyqB8pVNqfVUMK3O6LR+uTxU
-         guB6xlr0U7LnhqqJYizQijfLDAVMm9L9ceHMwlJs=
+        b=gZJrfZlQoAvIEUyVvcZv3iiJx9/JqIC0otWAfr02WPmHiwbua7BfXAx68B44Z/62C
+         45XdnN0Kc2e3IXYOxBYEDpJAfAXTh40ip6y2Uj7FmXRv8JB7bw1S0SQhwqtj9rvh5W
+         aiTUFyp4xw5uO7XGSsP/1eNg02/YIoW4mEBSBrFw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        stable@vger.kernel.org, Sean Anderson <sean.anderson@seco.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 038/298] power: supply: ab8500_fg: Allocate wq in probe
-Date:   Mon, 13 Jun 2022 12:08:52 +0200
-Message-Id: <20220613094926.091998782@linuxfoundation.org>
+Subject: [PATCH 5.17 059/298] serial: uartlite: Fix BRKINT clearing
+Date:   Mon, 13 Jun 2022 12:09:13 +0200
+Message-Id: <20220613094926.739968981@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,78 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Walleij <linus.walleij@linaro.org>
+From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-[ Upstream commit 010ddb813f3554cbbf8bd13b731452236a2c8017 ]
+[ Upstream commit 3f7fed405c118607d4d42255f2572072db728399 ]
 
-The workqueue is allocated in bind() but all interrupts are
-registered in probe().
+BRKINT is within c_iflag rather than c_cflag.
 
-Some interrupts put work on the workqueue, which can have
-bad side effects.
-
-Allocate the workqueue in probe() instead, destroy it in
-.remove() and make unbind() simply flush the workqueue.
-
-Fixes: 1c1f13a006ed ("power: supply: ab8500: Move to componentized binding")
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Fixes: ea017f5853e9 (tty: serial: uartlite: Prevent changing fixed parameters)
+Reviewed-by: Sean Anderson <sean.anderson@seco.com>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Link: https://lore.kernel.org/r/20220519081808.3776-2-ilpo.jarvinen@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/supply/ab8500_fg.c | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+ drivers/tty/serial/uartlite.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/power/supply/ab8500_fg.c b/drivers/power/supply/ab8500_fg.c
-index 09a4cbd69676..23adcb597ff9 100644
---- a/drivers/power/supply/ab8500_fg.c
-+++ b/drivers/power/supply/ab8500_fg.c
-@@ -2995,13 +2995,6 @@ static int ab8500_fg_bind(struct device *dev, struct device *master,
- {
- 	struct ab8500_fg *di = dev_get_drvdata(dev);
+diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+index e1fa52d31474..7c788c697f3e 100644
+--- a/drivers/tty/serial/uartlite.c
++++ b/drivers/tty/serial/uartlite.c
+@@ -321,7 +321,8 @@ static void ulite_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	struct uartlite_data *pdata = port->private_data;
  
--	/* Create a work queue for running the FG algorithm */
--	di->fg_wq = alloc_ordered_workqueue("ab8500_fg_wq", WQ_MEM_RECLAIM);
--	if (di->fg_wq == NULL) {
--		dev_err(dev, "failed to create work queue\n");
--		return -ENOMEM;
--	}
--
- 	di->bat_cap.max_mah_design = di->bm->bi->charge_full_design_uah;
- 	di->bat_cap.max_mah = di->bat_cap.max_mah_design;
- 	di->vbat_nom_uv = di->bm->bi->voltage_max_design_uv;
-@@ -3025,8 +3018,7 @@ static void ab8500_fg_unbind(struct device *dev, struct device *master,
- 	if (ret)
- 		dev_err(dev, "failed to disable coulomb counter\n");
+ 	/* Set termios to what the hardware supports */
+-	termios->c_cflag &= ~(BRKINT | CSTOPB | PARENB | PARODD | CSIZE);
++	termios->c_iflag &= ~BRKINT;
++	termios->c_cflag &= ~(CSTOPB | PARENB | PARODD | CSIZE);
+ 	termios->c_cflag |= pdata->cflags & (PARENB | PARODD | CSIZE);
+ 	tty_termios_encode_baud_rate(termios, pdata->baud, pdata->baud);
  
--	destroy_workqueue(di->fg_wq);
--	flush_scheduled_work();
-+	flush_workqueue(di->fg_wq);
- }
- 
- static const struct component_ops ab8500_fg_component_ops = {
-@@ -3070,6 +3062,13 @@ static int ab8500_fg_probe(struct platform_device *pdev)
- 	ab8500_fg_charge_state_to(di, AB8500_FG_CHARGE_INIT);
- 	ab8500_fg_discharge_state_to(di, AB8500_FG_DISCHARGE_INIT);
- 
-+	/* Create a work queue for running the FG algorithm */
-+	di->fg_wq = alloc_ordered_workqueue("ab8500_fg_wq", WQ_MEM_RECLAIM);
-+	if (di->fg_wq == NULL) {
-+		dev_err(dev, "failed to create work queue\n");
-+		return -ENOMEM;
-+	}
-+
- 	/* Init work for running the fg algorithm instantly */
- 	INIT_WORK(&di->fg_work, ab8500_fg_instant_work);
- 
-@@ -3181,6 +3180,8 @@ static int ab8500_fg_remove(struct platform_device *pdev)
- 	int ret = 0;
- 	struct ab8500_fg *di = platform_get_drvdata(pdev);
- 
-+	destroy_workqueue(di->fg_wq);
-+	flush_scheduled_work();
- 	component_del(&pdev->dev, &ab8500_fg_component_ops);
- 	list_del(&di->node);
- 	ab8500_fg_sysfs_exit(di);
 -- 
 2.35.1
 
