@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8725C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:24:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 101EDCCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:24:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353267AbiFMLXY (ORCPT
+        id S1353339AbiFMLXb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:23:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46692 "EHLO
+        Mon, 13 Jun 2022 07:23:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353703AbiFMLQO (ORCPT
+        with ESMTP id S1353663AbiFMLQK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:16:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 286AD13E00;
-        Mon, 13 Jun 2022 03:39:19 -0700 (PDT)
+        Mon, 13 Jun 2022 07:16:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F84838BDA;
+        Mon, 13 Jun 2022 03:38:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B8B2260FFD;
-        Mon, 13 Jun 2022 10:39:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD3ACC34114;
-        Mon, 13 Jun 2022 10:39:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C035BB80EAC;
+        Mon, 13 Jun 2022 10:38:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F280C34114;
+        Mon, 13 Jun 2022 10:38:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116758;
-        bh=H+6XSFESsu3j17+OL3yTMd1DwPEEmFwLDglx60VInyM=;
+        s=korg; t=1655116727;
+        bh=nKTfZeuLrKxdwEf0gmHdzEbNZIZRCIXzPoBOQmXgezQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IrcWbhRJQ26biglJANTi7JmPC97f2Hh0Gwjx4fLYE6+Wpp5NSU8PhGVsnZvBqFS+m
-         qytlqTEoSKLFZFR1YdQnZ5h7/RoGZDoe40brBi+pzX371+6bLy7XDApKWB5wVuMJlx
-         zWKwNAGlKMx1d669sJN222K+y1qQBvv0dFXN1kAI=
+        b=oM/4zx8QCZMSmjpnsChN2JxW+JSb6AKW5jhzwZLAuL4hbJgfMTo/usiQ7i/efkiHi
+         hC5gnbFDiN5VBECGWvf2DXnSRJoShFLKobrg+hNm0AeJdIwo7etfNKyGqsg1DUiXjD
+         wJOX3jTjPdGruODPcYH2m3hTfDz5RlBkLsWrb1xg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
-        Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        stable@vger.kernel.org, liuyacan <liuyacan@corp.netease.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 163/411] can: xilinx_can: mark bit timing constants as const
-Date:   Mon, 13 Jun 2022 12:07:16 +0200
-Message-Id: <20220613094933.549758697@linuxfoundation.org>
+Subject: [PATCH 5.4 155/411] net/smc: postpone sk_refcnt increment in connect()
+Date:   Mon, 13 Jun 2022 12:07:08 +0200
+Message-Id: <20220613094933.311476944@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -52,44 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Kleine-Budde <mkl@pengutronix.de>
+From: liuyacan <liuyacan@corp.netease.com>
 
-[ Upstream commit ae38fda02996d43d9fb09f16e81e0008704dd524 ]
+[ Upstream commit 75c1edf23b95a9c66923d9269d8e86e4dbde151f ]
 
-This patch marks the bit timing constants as const.
+Same trigger condition as commit 86434744. When setsockopt runs
+in parallel to a connect(), and switch the socket into fallback
+mode. Then the sk_refcnt is incremented in smc_connect(), but
+its state stay in SMC_INIT (NOT SMC_ACTIVE). This cause the
+corresponding sk_refcnt decrement in __smc_release() will not be
+performed.
 
-Fixes: c223da689324 ("can: xilinx_can: Add support for CANFD FD frames")
-Link: https://lore.kernel.org/all/20220317203119.792552-1-mkl@pengutronix.de
-Cc: Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
-Cc: Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: 86434744fedf ("net/smc: add fallback check to connect()")
+Signed-off-by: liuyacan <liuyacan@corp.netease.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/xilinx_can.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/smc/af_smc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
-index 008d3d492bd1..be3811311db2 100644
---- a/drivers/net/can/xilinx_can.c
-+++ b/drivers/net/can/xilinx_can.c
-@@ -239,7 +239,7 @@ static const struct can_bittiming_const xcan_bittiming_const_canfd = {
- };
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index a5a8cca46bd5..394491692a07 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -877,9 +877,9 @@ static int smc_connect(struct socket *sock, struct sockaddr *addr,
+ 	if (rc && rc != -EINPROGRESS)
+ 		goto out;
  
- /* AXI CANFD Data Bittiming constants as per AXI CANFD 1.0 specs */
--static struct can_bittiming_const xcan_data_bittiming_const_canfd = {
-+static const struct can_bittiming_const xcan_data_bittiming_const_canfd = {
- 	.name = DRIVER_NAME,
- 	.tseg1_min = 1,
- 	.tseg1_max = 16,
-@@ -265,7 +265,7 @@ static const struct can_bittiming_const xcan_bittiming_const_canfd2 = {
- };
- 
- /* AXI CANFD 2.0 Data Bittiming constants as per AXI CANFD 2.0 spec */
--static struct can_bittiming_const xcan_data_bittiming_const_canfd2 = {
-+static const struct can_bittiming_const xcan_data_bittiming_const_canfd2 = {
- 	.name = DRIVER_NAME,
- 	.tseg1_min = 1,
- 	.tseg1_max = 32,
+-	sock_hold(&smc->sk); /* sock put in passive closing */
+ 	if (smc->use_fallback)
+ 		goto out;
++	sock_hold(&smc->sk); /* sock put in passive closing */
+ 	if (flags & O_NONBLOCK) {
+ 		if (schedule_work(&smc->connect_work))
+ 			smc->connect_nonblock = 1;
 -- 
 2.35.1
 
