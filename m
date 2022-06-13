@@ -2,31 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 777DEC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:57:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73B30C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:57:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350468AbiFMU5G (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:57:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40762 "EHLO
+        id S241179AbiFMU5M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 16:57:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352078AbiFMUyJ (ORCPT
+        with ESMTP id S1352088AbiFMUyK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:54:09 -0400
-Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCCEB1A07A
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:19:44 -0700 (PDT)
+        Mon, 13 Jun 2022 16:54:10 -0400
+Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39DBA2A243
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:19:47 -0700 (PDT)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1655151583;
+        t=1655151585;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=i8Ujjn8ODA+o6f5+82XskCVtNKiV5I0P+bzfQLYNt08=;
-        b=tNdYTuepZITenpSdu58grTXSjaXt9OL81buen5Wm+++wlMotQfJq9n+UcKkTTT5gZ+gc4f
-        uF7AU1aiTFH85x0uVzzaLfcIcYPfeoCLX+3KfygTgZO4Vq+i5p7QD74yy+0ekX5HwMhW75
-        QJqnizRPQmY2NxNZs3S4Cds/DJ8v8dA=
+        bh=4luxyHsp81FOFiUT/6yoqfYUWRQbE1ZGpW4pjt9Mu8s=;
+        b=wrqv7ohOF96qGiSQuPggQGcjaCvog98ApGuHxDFierBEUu/M31pb0J67CQIkajDOQYJQER
+        YuDnSp2V6YbPoBkcPXwEnEdjyMR+pJGczOFfBWwr4cvGnkAYWCX7vQpjjcSJ9wtyoKpbVh
+        ZPeMiUpOhK1ShOgWWyVcqDCuLD/pVRs=
 From:   andrey.konovalov@linux.dev
 To:     Marco Elver <elver@google.com>,
         Alexander Potapenko <glider@google.com>
@@ -39,9 +38,9 @@ Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH 24/32] kasan: move kasan_addr_to_slab to common.c
-Date:   Mon, 13 Jun 2022 22:14:15 +0200
-Message-Id: <5ea6f55fb645405bb52cb15b8d30544ba3f189b0.1655150842.git.andreyknvl@google.com>
+Subject: [PATCH 28/32] kasan: fill in cache and object in complete_report_info
+Date:   Mon, 13 Jun 2022 22:14:19 +0200
+Message-Id: <1e3e75cbcf4f258701b325dbad8b2a43c2633b7b.1655150842.git.andreyknvl@google.com>
 In-Reply-To: <cover.1655150842.git.andreyknvl@google.com>
 References: <cover.1655150842.git.andreyknvl@google.com>
 MIME-Version: 1.0
@@ -54,51 +53,91 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andrey Konovalov <andreyknvl@google.com>
 
-Move the definition of kasan_addr_to_slab() to the common KASAN code,
-as this function is not only used by the reporting code.
+Add cache and object fields to kasan_report_info and fill them in in
+complete_report_info() instead of fetching them in the middle of the
+report printing code.
+
+This allows the reporting code to get access to the object information
+before starting printing the report. One of the following patches uses
+this information to determine the bug type with the tag-based modes.
 
 Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
 ---
- mm/kasan/common.c | 7 +++++++
- mm/kasan/report.c | 7 -------
- 2 files changed, 7 insertions(+), 7 deletions(-)
+ mm/kasan/kasan.h  |  2 ++
+ mm/kasan/report.c | 21 +++++++++++++--------
+ 2 files changed, 15 insertions(+), 8 deletions(-)
 
-diff --git a/mm/kasan/common.c b/mm/kasan/common.c
-index 519fd0b3040b..5d5b4cfae503 100644
---- a/mm/kasan/common.c
-+++ b/mm/kasan/common.c
-@@ -30,6 +30,13 @@
- #include "kasan.h"
- #include "../slab.h"
+diff --git a/mm/kasan/kasan.h b/mm/kasan/kasan.h
+index 0261d1530055..b9bd9f1656bf 100644
+--- a/mm/kasan/kasan.h
++++ b/mm/kasan/kasan.h
+@@ -156,6 +156,8 @@ struct kasan_report_info {
  
-+struct slab *kasan_addr_to_slab(const void *addr)
-+{
-+	if ((addr >= (void *)PAGE_OFFSET) && (addr < high_memory))
-+		return virt_to_slab(addr);
-+	return NULL;
-+}
-+
- depot_stack_handle_t kasan_save_stack(gfp_t flags, bool can_alloc)
- {
- 	unsigned long entries[KASAN_STACK_DEPTH];
+ 	/* Filled in by the common reporting code. */
+ 	void *first_bad_addr;
++	struct kmem_cache *cache;
++	void *object;
+ };
+ 
+ /* Do not change the struct layout: compiler ABI. */
 diff --git a/mm/kasan/report.c b/mm/kasan/report.c
-index 1dd6fc8a678f..ed8234516bab 100644
+index 214ba7cb654c..a6b36eb4c33b 100644
 --- a/mm/kasan/report.c
 +++ b/mm/kasan/report.c
-@@ -207,13 +207,6 @@ struct page *kasan_addr_to_page(const void *addr)
- 	return NULL;
+@@ -281,19 +281,16 @@ static inline bool init_task_stack_addr(const void *addr)
+ 			sizeof(init_thread_union.stack));
  }
  
--struct slab *kasan_addr_to_slab(const void *addr)
--{
--	if ((addr >= (void *)PAGE_OFFSET) && (addr < high_memory))
--		return virt_to_slab(addr);
--	return NULL;
--}
--
- static void describe_object_addr(struct kmem_cache *cache, void *object,
- 				const void *addr)
+-static void print_address_description(void *addr, u8 tag)
++static void print_address_description(void *addr, u8 tag,
++				      struct kasan_report_info *info)
  {
+ 	struct page *page = addr_to_page(addr);
+-	struct slab *slab = kasan_addr_to_slab(addr);
+ 
+ 	dump_stack_lvl(KERN_ERR);
+ 	pr_err("\n");
+ 
+-	if (slab) {
+-		struct kmem_cache *cache = slab->slab_cache;
+-		void *object = nearest_obj(cache, slab,	addr);
+-
+-		describe_object(cache, object, addr, tag);
++	if (info->cache && info->object) {
++		describe_object(info->cache, info->object, addr, tag);
+ 		pr_err("\n");
+ 	}
+ 
+@@ -400,7 +397,7 @@ static void print_report(struct kasan_report_info *info)
+ 	pr_err("\n");
+ 
+ 	if (addr_has_metadata(addr)) {
+-		print_address_description(addr, tag);
++		print_address_description(addr, tag, info);
+ 		print_memory_metadata(info->first_bad_addr);
+ 	} else {
+ 		dump_stack_lvl(KERN_ERR);
+@@ -410,12 +407,20 @@ static void print_report(struct kasan_report_info *info)
+ static void complete_report_info(struct kasan_report_info *info)
+ {
+ 	void *addr = kasan_reset_tag(info->access_addr);
++	struct slab *slab;
+ 
+ 	if (info->is_free)
+ 		info->first_bad_addr = addr;
+ 	else
+ 		info->first_bad_addr = kasan_find_first_bad_addr(
+ 					info->access_addr, info->access_size);
++
++	slab = kasan_addr_to_slab(addr);
++	if (slab) {
++		info->cache = slab->slab_cache;
++		info->object = nearest_obj(info->cache, slab, addr);
++	} else
++		info->cache = info->object = NULL;
+ }
+ 
+ void kasan_report_invalid_free(void *ptr, unsigned long ip)
 -- 
 2.25.1
 
