@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A98EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:41:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF7DCC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:41:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378482AbiFMNlk (ORCPT
+        id S1378508AbiFMNlp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:41:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33362 "EHLO
+        Mon, 13 Jun 2022 09:41:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378860AbiFMNjX (ORCPT
+        with ESMTP id S1378911AbiFMNjY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:39:23 -0400
+        Mon, 13 Jun 2022 09:39:24 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56FF17937A;
-        Mon, 13 Jun 2022 04:28:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF0F0793A4;
+        Mon, 13 Jun 2022 04:28:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C853E6114A;
-        Mon, 13 Jun 2022 11:28:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7C44C34114;
-        Mon, 13 Jun 2022 11:28:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 072CA61243;
+        Mon, 13 Jun 2022 11:28:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 130E0C3411E;
+        Mon, 13 Jun 2022 11:28:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119686;
-        bh=AWG9gvMcYACCQztBZWgs0FhjmGr5NkuGSG93WBuDqX0=;
+        s=korg; t=1655119697;
+        bh=rrdUq0+U2ydsV3HuaJAwxcFjpuqb+aKuO/e9fbI9Kmg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vSPKZZyETxh8CWR9KMqGeaFYMQAhR0Cyz//y5oacxXDu8g2RgOoodqICl8tnBzqDr
-         UWd/6OHqRldU86Z21jkV1pHsXpOJWjVBuh1DV1mrKBURkNiuaIsENZa82zXBBapIwH
-         oCYJXw/+9vsD2SxpXtz989T2z7ZAG/ze0XOXALWA=
+        b=AhWMC1qNHTsfVHC5NH/vQUQti5pgkTfUWvhlNb/P/NoW7d43GDMI2ODXectv9AJn6
+         xw9X1jgVA4EwhsHsP2DAZXiCrvNEDT9eztToQgy7lNxfZ7sS9Xf0RXfBSdg6vcZIao
+         cSWVDoILXPD7//8KjmM3R0wR7Tt+66zT/R22J0/c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mykola Lysenko <mykolal@fb.com>,
-        Song Liu <song@kernel.org>, David Vernet <void@manifault.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        stable@vger.kernel.org, liuyacan <liuyacan@corp.netease.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 103/339] selftests/bpf: fix stacktrace_build_id with missing kprobe/urandom_read
-Date:   Mon, 13 Jun 2022 12:08:48 +0200
-Message-Id: <20220613094929.637161973@linuxfoundation.org>
+Subject: [PATCH 5.18 089/339] net/smc: set ini->smcrv2.ib_dev_v2 to NULL if SMC-Rv2 is unavailable
+Date:   Mon, 13 Jun 2022 12:08:34 +0200
+Message-Id: <20220613094929.215867138@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,48 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Song Liu <song@kernel.org>
+From: liuyacan <liuyacan@corp.netease.com>
 
-[ Upstream commit 59ed76fe2f981bccde37bdddb465f260a96a2404 ]
+[ Upstream commit b3b1a17538d3ef6a9667b2271216fd16d7678ab5 ]
 
-Kernel function urandom_read is replaced with urandom_read_iter.
-Therefore, kprobe on urandom_read is not working any more:
+In the process of checking whether RDMAv2 is available, the current
+implementation first sets ini->smcrv2.ib_dev_v2, and then allocates
+smc buf desc and register rmb, but the latter may fail. In this case,
+the pointer should be reset.
 
-[root@eth50-1 bpf]# ./test_progs -n 161
-test_stacktrace_build_id:PASS:skel_open_and_load 0 nsec
-libbpf: kprobe perf_event_open() failed: No such file or directory
-libbpf: prog 'oncpu': failed to create kprobe 'urandom_read+0x0' \
-        perf event: No such file or directory
-libbpf: prog 'oncpu': failed to auto-attach: -2
-test_stacktrace_build_id:FAIL:attach_tp err -2
-161     stacktrace_build_id:FAIL
-
-Fix this by replacing urandom_read with urandom_read_iter in the test.
-
-Fixes: 1b388e7765f2 ("random: convert to using fops->read_iter()")
-Reported-by: Mykola Lysenko <mykolal@fb.com>
-Signed-off-by: Song Liu <song@kernel.org>
-Acked-by: David Vernet <void@manifault.com>
-Link: https://lore.kernel.org/r/20220526191608.2364049-1-song@kernel.org
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Fixes: e49300a6bf62 ("net/smc: add listen processing for SMC-Rv2")
+Signed-off-by: liuyacan <liuyacan@corp.netease.com>
+Reviewed-by: Karsten Graul <kgraul@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220525085408.812273-1-liuyacan@corp.netease.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/progs/test_stacktrace_build_id.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/smc/af_smc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/testing/selftests/bpf/progs/test_stacktrace_build_id.c b/tools/testing/selftests/bpf/progs/test_stacktrace_build_id.c
-index 6c62bfb8bb6f..0c4426592a26 100644
---- a/tools/testing/selftests/bpf/progs/test_stacktrace_build_id.c
-+++ b/tools/testing/selftests/bpf/progs/test_stacktrace_build_id.c
-@@ -39,7 +39,7 @@ struct {
- 	__type(value, stack_trace_t);
- } stack_amap SEC(".maps");
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index 45a24d24210f..540b32d86d9b 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -2136,6 +2136,7 @@ static void smc_find_rdma_v2_device_serv(struct smc_sock *new_smc,
  
--SEC("kprobe/urandom_read")
-+SEC("kprobe/urandom_read_iter")
- int oncpu(struct pt_regs *args)
- {
- 	__u32 max_len = sizeof(struct bpf_stack_build_id)
+ not_found:
+ 	ini->smcr_version &= ~SMC_V2;
++	ini->smcrv2.ib_dev_v2 = NULL;
+ 	ini->check_smcrv2 = false;
+ }
+ 
 -- 
 2.35.1
 
