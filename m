@@ -2,108 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2510AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:45:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D90A5CCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:45:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354676AbiFMMpO (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:45:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50022 "EHLO
+        id S235448AbiFMMpg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 08:45:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355719AbiFMMjR (ORCPT
+        with ESMTP id S1357911AbiFMMkG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:39:17 -0400
+        Mon, 13 Jun 2022 08:40:06 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C29652AD5;
-        Mon, 13 Jun 2022 04:09:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2633D5E765;
+        Mon, 13 Jun 2022 04:10:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8350FB80EA7;
-        Mon, 13 Jun 2022 11:09:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3D37C34114;
-        Mon, 13 Jun 2022 11:09:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118566;
-        bh=mvNu4Qn76gbVGewx4xZapsgMTrdO5EFsAIFPwRuC+0w=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qA9VBcWrXQmCRx8nGuvZK970LF6zqTJ0gygdbVbhfYPbmQGK+HQtOwc4yu97/KU8K
-         ZGCJUuPBHjFbjI5FCVsZM6bHejwvvPeUHuF+WwqHdGezBSqPBeQPy6QI/LcyaWPGlb
-         Ce0GmRo3mceQtWa36WfayPvaJwm6F0PVEMZNl9Sg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 122/172] drivers: tty: serial: Fix deadlock in sa1100_set_termios()
-Date:   Mon, 13 Jun 2022 12:11:22 +0200
-Message-Id: <20220613094919.816380215@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
-References: <20220613094850.166931805@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id A92F0B80EAB;
+        Mon, 13 Jun 2022 11:10:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A13AC34114;
+        Mon, 13 Jun 2022 11:10:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655118612;
+        bh=ysTzCSVV24kvBgFjlX37clypDz+WRKQW7bm6VX99N10=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=j+3XFoKIFhQ5IRWE2YKcIEKmkDj65GURycRWtlKhP6Oa6O9W6aHk/KNvdBFm1Vruw
+         12tCPj7tlVyHiQpYNrXRZEcpldtcMcdqrbkOGiOPqUqJgBr5qN6qRlwiRnAt6pQ6+p
+         CickUkUhWokIQhG70B869TI/Efx/rdNOpkT2hRv6eujimd/HU4pxACA1k05mdQxsMU
+         illFBOfWe6g32VoeTkUw+z0pJe7Z2CSwIzCvpsnFVowTBfAu3x3X0eAjX7LRydIpGO
+         67x4ezUn3JXwTbpujxEAyRanPOsdjI6bLu6NNzr/QOj7obO+QT2kwwyeQNzbqCQfaQ
+         sg32Fq7sBw54A==
+Date:   Mon, 13 Jun 2022 12:10:05 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     ChiYuan Huang <u0084500@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>, dmitry.torokhov@gmail.com,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        cy_huang <cy_huang@richtek.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+        linux-input@vger.kernel.org
+Subject: Re: [PATCH 3/4] regulator: rt5120: Add PMIC regulator support
+Message-ID: <YqcbDfceSusNea6v@sirena.org.uk>
+References: <1654581161-12349-1-git-send-email-u0084500@gmail.com>
+ <1654581161-12349-4-git-send-email-u0084500@gmail.com>
+ <Yp+gS6r5Kpi33Ags@sirena.org.uk>
+ <CADiBU38+0vp3Dv6i7uYzCwR431PKBr-HNQnY0Qe7fvvRYGEJmw@mail.gmail.com>
+ <YqB19O/HYvEAxdiM@sirena.org.uk>
+ <CADiBU390XRXZ2yx5CT2NxhN3aROHXcxs7w2d-xhB6+EYn+uTfA@mail.gmail.com>
+ <YqMlDVMlukNAns5S@sirena.org.uk>
+ <CADiBU383BxOttuoLdF2GjXHasoPMc634wsMr3zLC=v74OBGUmw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="kKAeemGxMnyjw3U9"
+Content-Disposition: inline
+In-Reply-To: <CADiBU383BxOttuoLdF2GjXHasoPMc634wsMr3zLC=v74OBGUmw@mail.gmail.com>
+X-Cookie: innovate, v.:
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 62b2caef400c1738b6d22f636c628d9f85cd4c4c ]
+--kKAeemGxMnyjw3U9
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-There is a deadlock in sa1100_set_termios(), which is shown
-below:
+On Mon, Jun 13, 2022 at 09:49:31AM +0800, ChiYuan Huang wrote:
+> Mark Brown <broonie@kernel.org> =E6=96=BC 2022=E5=B9=B46=E6=9C=8810=E6=97=
+=A5 =E9=80=B1=E4=BA=94 =E4=B8=8B=E5=8D=887:03=E5=AF=AB=E9=81=93=EF=BC=9A
 
-   (Thread 1)              |      (Thread 2)
-                           | sa1100_enable_ms()
-sa1100_set_termios()       |  mod_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | sa1100_timeout()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
+> > > Not just buck2/3, buck2/3/4/ldo/exten all need the dynamic handling.
 
-We hold sport->port.lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need sport->port.lock in position (2) of thread 2. As a result,
-sa1100_set_termios() will block forever.
+> > Why do the others need it?
 
-This patch moves del_timer_sync() before spin_lock_irqsave()
-in order to prevent the deadlock.
+> Sometimes, for this kind of general purpose PMIC, it need to provide
+> the flexibility.
+> Cause buck2 and ldo can already be fixed by the external resistor,
+> buck3 and buck4 seems to be fixed by IC default.
+> So there may be the same part number and use the postfix to be
+> different like as 5120'A'/5120'B', etc...
+> And use it to define the voltage for the different IC default for
+> buck3 and buck4, and exten behavior.
+> That's due to the different application use the different power on
+> sequence and default voltages.l
 
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417111626.7802-1-duoming@zju.edu.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/serial/sa1100.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Variants should have separate compatibles, and if the code is doing
+something fixed then it shouldn't make any difference if that fixed
+thing is written in code or as a data table.
 
-diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
-index f5fab1dd96bc..aa1cf2ae17a9 100644
---- a/drivers/tty/serial/sa1100.c
-+++ b/drivers/tty/serial/sa1100.c
-@@ -448,6 +448,8 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
- 	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16); 
- 	quot = uart_get_divisor(port, baud);
- 
-+	del_timer_sync(&sport->timer);
-+
- 	spin_lock_irqsave(&sport->port.lock, flags);
- 
- 	sport->port.read_status_mask &= UTSR0_TO_SM(UTSR0_TFS);
-@@ -478,8 +480,6 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
- 				UTSR1_TO_SM(UTSR1_ROR);
- 	}
- 
--	del_timer_sync(&sport->timer);
--
- 	/*
- 	 * Update the per-port timeout.
- 	 */
--- 
-2.35.1
+> > > If I put 'of_parce_cb' to make core handling it, the input parameter
+> > > 'init_data' is declared as const.
+> > > I cannot override the 'apply_uV'.
 
+> > > Right?
 
+> > Yes, that's by design.
 
+> I have traced the code for 'of_get_regulator_init_data' and
+> 'set_machine_constraints' in regulator register.
+> If I cannot overwrite apply_uV variable, it will cause the
+> regulator_register return -EINVAL.
+
+We have a very large number of fixed voltage regulators in use on
+various systems which manage perfectly fine without this.  If the
+constraints are trying to set something invalid then they're what=20
+should be fixed.
+
+> Is the below flow that you suggested?
+> 1. of_parse_cb to check min_uV and max_uV, and fill in the fixed_uV in
+> regulator_desc
+
+No, the device should just know what voltage the fixed voltage
+regulators in the device have.
+
+> 2. provide the duummy set/get voltage  to make set_machine_constraints
+> not return '-EINVAL'.
+
+No, people just shouldn't be trying to set the voltage for fixed voltage
+regulators.  If the regulators are configurable in hardware then provide
+DT properties for whatever is configured (eg, resistors).
+
+--kKAeemGxMnyjw3U9
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmKnGwwACgkQJNaLcl1U
+h9CZTQf+MOr5Tyexj1+FN015faiQEB0fmG1qwq3H8bJuCG4cXNbat74r3mZUHc9R
+9vgt/GYZln2pSsYaqUZvwUCJCpVJ1fUYmZBeadw9ECnIzKYr6Y8d3C0+YwKOSUGQ
+soD0Mh7OPgJfgpnGQMadJfhgddOeWaMGdTT4MMOLaHoyV/kCtakyDmHX+VLq5xC7
+r98sZqQXxP2VVLB9Ij6DwNOEHFhwZmgKUR9jzH0xJ8DMgpCMSbw9K/ny823RW9DP
+EcN2dzFLEWndO2nzlv1KBTAXJjiZBuh7X6xT0QX476rDymRslI5yz/zRMH9vqAeA
+SKR8ryOaNcglNAljdt3CIQgubFOqVw==
+=Jknu
+-----END PGP SIGNATURE-----
+
+--kKAeemGxMnyjw3U9--
