@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB81DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:00:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8730C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:00:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239823AbiFMLAZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:00:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39522 "EHLO
+        id S1349645AbiFMLAh (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 07:00:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350199AbiFMKyp (ORCPT
+        with ESMTP id S1350191AbiFMKyo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:54:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28C55FC;
-        Mon, 13 Jun 2022 03:30:12 -0700 (PDT)
+        Mon, 13 Jun 2022 06:54:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D63A4E003;
+        Mon, 13 Jun 2022 03:30:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C866FB80E95;
-        Mon, 13 Jun 2022 10:30:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B952C34114;
-        Mon, 13 Jun 2022 10:30:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7173260EF5;
+        Mon, 13 Jun 2022 10:30:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81787C34114;
+        Mon, 13 Jun 2022 10:30:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116209;
-        bh=1bHKVpQyhEW1w0URJKjGqU3yZrzSpBsz2kNzQOdOcTI=;
+        s=korg; t=1655116206;
+        bh=1oaoX4ok9yeMVtkHfkvusLYM5Kis7pHtPy11PUfzcqY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SYOM0I/DU2P8Y3AbvR5QZVHxyRmb7t4V7ik9c4q38MT9qtEC1odK9wO1ctKPP0bsD
-         lxoUkfQNrqNK/Dxk61y9Ol0V3RZyd2GpscBWif4IZvGyu1owemwNfVdZxTwhpJK5YN
-         n77JWvoJMjSpaGjrDRcWiKSR3VjQarT9JNxRAsn8=
+        b=fN59j++UfNpzld4VmBfi95e4j91co+6hXcw50+PsJdGNtTeQlbiqXmLkllM03oGa6
+         2rOoYpmIeyU7+f9k0MLXQCw/V26Yyky/EhCBTzMCq53HwM2qYQSW+yDej+RyFfgbiw
+         Vz4upnDHIzXZpFNJ2lI2aDBbm1X0agYKHWr+iLzs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        John Ogness <john.ogness@linutronix.de>,
+        stable@vger.kernel.org, Thomas Richter <tmricht@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 151/218] serial: meson: acquire port->lock in startup()
-Date:   Mon, 13 Jun 2022 12:10:09 +0200
-Message-Id: <20220613094925.171526660@linuxfoundation.org>
+Subject: [PATCH 5.4 043/411] s390/preempt: disable __preempt_count_add() optimization for PROFILE_ALL_BRANCHES
+Date:   Mon, 13 Jun 2022 12:05:16 +0200
+Message-Id: <20220613094929.802349685@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,96 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Ogness <john.ogness@linutronix.de>
+From: Heiko Carstens <hca@linux.ibm.com>
 
-[ Upstream commit 589f892ac8ef244e47c5a00ffd8605daa1eaef8e ]
+[ Upstream commit 63678eecec57fc51b778be3da35a397931287170 ]
 
-The uart_ops startup() callback is called without interrupts
-disabled and without port->lock locked, relatively late during the
-boot process (from the call path of console_on_rootfs()). If the
-device is a console, it was already previously registered and could
-be actively printing messages.
+gcc 12 does not (always) optimize away code that should only be generated
+if parameters are constant and within in a certain range. This depends on
+various obscure kernel config options, however in particular
+PROFILE_ALL_BRANCHES can trigger this compile error:
 
-Since the startup() callback is reading/writing registers used by
-the console write() callback (AML_UART_CONTROL), its access must
-be synchronized using the port->lock. Currently it is not.
+In function ‘__atomic_add_const’,
+    inlined from ‘__preempt_count_add.part.0’ at ./arch/s390/include/asm/preempt.h:50:3:
+./arch/s390/include/asm/atomic_ops.h:80:9: error: impossible constraint in ‘asm’
+   80 |         asm volatile(                                                   \
+      |         ^~~
 
-The startup() callback is the only function that explicitly enables
-interrupts. Without the synchronization, it is possible that
-interrupts become accidentally permanently disabled.
+Workaround this by simply disabling the optimization for
+PROFILE_ALL_BRANCHES, since the kernel will be so slow, that this
+optimization won't matter at all.
 
-CPU0                           CPU1
-meson_serial_console_write     meson_uart_startup
---------------------------     ------------------
-spin_lock(port->lock)
-val = readl(AML_UART_CONTROL)
-uart_console_write()
-                               writel(INT_EN, AML_UART_CONTROL)
-writel(val, AML_UART_CONTROL)
-spin_unlock(port->lock)
-
-Add port->lock synchronization to meson_uart_startup() to avoid
-racing with meson_serial_console_write().
-
-Also add detailed comments to meson_uart_reset() explaining why it
-is *not* using port->lock synchronization.
-
-Link: https://lore.kernel.org/lkml/2a82eae7-a256-f70c-fd82-4e510750906e@samsung.com
-Fixes: ff7693d079e5 ("ARM: meson: serial: add MesonX SoC on-chip uart driver")
-Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Acked-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
-Link: https://lore.kernel.org/r/20220508103547.626355-1-john.ogness@linutronix.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Thomas Richter <tmricht@linux.ibm.com>
+Reviewed-by: Sven Schnelle <svens@linux.ibm.com>
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/meson_uart.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ arch/s390/include/asm/preempt.h | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
-index 07c0f98be3ac..2bb5ab508321 100644
---- a/drivers/tty/serial/meson_uart.c
-+++ b/drivers/tty/serial/meson_uart.c
-@@ -253,6 +253,14 @@ static const char *meson_uart_type(struct uart_port *port)
- 	return (port->type == PORT_MESON) ? "meson_uart" : NULL;
+diff --git a/arch/s390/include/asm/preempt.h b/arch/s390/include/asm/preempt.h
+index b5ea9e14c017..3dcd8ab3db73 100644
+--- a/arch/s390/include/asm/preempt.h
++++ b/arch/s390/include/asm/preempt.h
+@@ -52,10 +52,17 @@ static inline bool test_preempt_need_resched(void)
+ 
+ static inline void __preempt_count_add(int val)
+ {
+-	if (__builtin_constant_p(val) && (val >= -128) && (val <= 127))
+-		__atomic_add_const(val, &S390_lowcore.preempt_count);
+-	else
+-		__atomic_add(val, &S390_lowcore.preempt_count);
++	/*
++	 * With some obscure config options and CONFIG_PROFILE_ALL_BRANCHES
++	 * enabled, gcc 12 fails to handle __builtin_constant_p().
++	 */
++	if (!IS_ENABLED(CONFIG_PROFILE_ALL_BRANCHES)) {
++		if (__builtin_constant_p(val) && (val >= -128) && (val <= 127)) {
++			__atomic_add_const(val, &S390_lowcore.preempt_count);
++			return;
++		}
++	}
++	__atomic_add(val, &S390_lowcore.preempt_count);
  }
  
-+/*
-+ * This function is called only from probe() using a temporary io mapping
-+ * in order to perform a reset before setting up the device. Since the
-+ * temporarily mapped region was successfully requested, there can be no
-+ * console on this port at this time. Hence it is not necessary for this
-+ * function to acquire the port->lock. (Since there is no console on this
-+ * port at this time, the port->lock is not initialized yet.)
-+ */
- static void meson_uart_reset(struct uart_port *port)
- {
- 	u32 val;
-@@ -267,9 +275,12 @@ static void meson_uart_reset(struct uart_port *port)
- 
- static int meson_uart_startup(struct uart_port *port)
- {
-+	unsigned long flags;
- 	u32 val;
- 	int ret = 0;
- 
-+	spin_lock_irqsave(&port->lock, flags);
-+
- 	val = readl(port->membase + AML_UART_CONTROL);
- 	val |= AML_UART_CLR_ERR;
- 	writel(val, port->membase + AML_UART_CONTROL);
-@@ -285,6 +296,8 @@ static int meson_uart_startup(struct uart_port *port)
- 	val = (AML_UART_RECV_IRQ(1) | AML_UART_XMIT_IRQ(port->fifosize / 2));
- 	writel(val, port->membase + AML_UART_MISC);
- 
-+	spin_unlock_irqrestore(&port->lock, flags);
-+
- 	ret = request_irq(port->irq, meson_uart_interrupt, 0,
- 			  port->name, port);
- 
+ static inline void __preempt_count_sub(int val)
 -- 
 2.35.1
 
