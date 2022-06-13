@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E13FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:20:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70D85C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:20:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376357AbiFMNSR (ORCPT
+        id S1376390AbiFMNSc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:18:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43460 "EHLO
+        Mon, 13 Jun 2022 09:18:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359443AbiFMNJy (ORCPT
+        with ESMTP id S1359479AbiFMNJ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:09:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E893139699;
-        Mon, 13 Jun 2022 04:20:39 -0700 (PDT)
+        Mon, 13 Jun 2022 09:09:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B0B43A18D;
+        Mon, 13 Jun 2022 04:20:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5C8DEB80D31;
-        Mon, 13 Jun 2022 11:20:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4CAEC34114;
-        Mon, 13 Jun 2022 11:20:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7182B60F16;
+        Mon, 13 Jun 2022 11:20:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CC6EC34114;
+        Mon, 13 Jun 2022 11:20:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119237;
-        bh=ZGTc8NAbbTjfxFouD80Ckbaghw1HwQote5WRz/Lbuus=;
+        s=korg; t=1655119253;
+        bh=6nfGQcmOO+nzmnVXs7EuA6e3s87z59d7FQhJE3qTKds=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sGf2GORvA9U7bHqvf0rNidX7hrUhIdwKST9KRedbTukGVeJWUyG9n4aI9Qn5dqwXi
-         OT2aY8dbfem7DzskCgtJQA4jVIN2N1Q01NZzRygrFS3WQ3DqndfilXyDMLG4Z5D/TE
-         VmGslA5TwKzjxF76xFyPnuz9VoZPv/oRn3lqYtUo=
+        b=0pBAx25Z7mMg0QML+aNVgqy9PknqGvQcBf9bxcBMm2PnAHy2MjaDgMtGDXWtYxssh
+         8lcudWwxWUiZCp9/PkqQYV6NRtP9qk5M8V9h3aXTT1RJfpF44A1vluc3ZgGJVi5lTW
+         vkUPneb7/5kcYHucRjAwUaPG8gFEPt/FEfMFMYf4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        syzbot+6f5ecd144854c0d8580b@syzkaller.appspotmail.com,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Wang Cheng <wanngchenng@gmail.com>,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Kees Cook <keescook@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 189/247] staging: rtl8712: fix uninit-value in r871xu_drv_init()
-Date:   Mon, 13 Jun 2022 12:11:31 +0200
-Message-Id: <20220613094928.684630224@linuxfoundation.org>
+Subject: [PATCH 5.15 168/247] lkdtm/usercopy: Expand size of "out of frame" object
+Date:   Mon, 13 Jun 2022 12:11:10 +0200
+Message-Id: <20220613094928.054005217@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -52,86 +52,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Cheng <wanngchenng@gmail.com>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit 0458e5428e5e959d201a40ffe71d762a79ecedc4 ]
+[ Upstream commit f387e86d3a74407bdd9c5815820ac9d060962840 ]
 
-When 'tmpU1b' returns from r8712_read8(padapter, EE_9346CR) is 0,
-'mac[6]' will not be initialized.
+To be sufficiently out of range for the usercopy test to see the lifetime
+mismatch, expand the size of the "bad" buffer, which will let it be
+beyond current_stack_pointer regardless of stack growth direction.
+Paired with the recent addition of stack depth checking under
+CONFIG_HARDENED_USERCOPY=y, this will correctly start tripping again.
 
-BUG: KMSAN: uninit-value in r871xu_drv_init+0x2d54/0x3070 drivers/staging/rtl8712/usb_intf.c:541
- r871xu_drv_init+0x2d54/0x3070 drivers/staging/rtl8712/usb_intf.c:541
- usb_probe_interface+0xf19/0x1600 drivers/usb/core/driver.c:396
- really_probe+0x653/0x14b0 drivers/base/dd.c:596
- __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:752
- driver_probe_device drivers/base/dd.c:782 [inline]
- __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:899
- bus_for_each_drv+0x2d6/0x3f0 drivers/base/bus.c:427
- __device_attach+0x593/0x8e0 drivers/base/dd.c:970
- device_initial_probe+0x4a/0x60 drivers/base/dd.c:1017
- bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487
- device_add+0x1fff/0x26e0 drivers/base/core.c:3405
- usb_set_configuration+0x37e9/0x3ed0 drivers/usb/core/message.c:2170
- usb_generic_driver_probe+0x13c/0x300 drivers/usb/core/generic.c:238
- usb_probe_device+0x309/0x570 drivers/usb/core/driver.c:293
- really_probe+0x653/0x14b0 drivers/base/dd.c:596
- __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:752
- driver_probe_device drivers/base/dd.c:782 [inline]
- __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:899
- bus_for_each_drv+0x2d6/0x3f0 drivers/base/bus.c:427
- __device_attach+0x593/0x8e0 drivers/base/dd.c:970
- device_initial_probe+0x4a/0x60 drivers/base/dd.c:1017
- bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487
- device_add+0x1fff/0x26e0 drivers/base/core.c:3405
- usb_new_device+0x1b8e/0x2950 drivers/usb/core/hub.c:2566
- hub_port_connect drivers/usb/core/hub.c:5358 [inline]
- hub_port_connect_change drivers/usb/core/hub.c:5502 [inline]
- port_event drivers/usb/core/hub.c:5660 [inline]
- hub_event+0x58e3/0x89e0 drivers/usb/core/hub.c:5742
- process_one_work+0xdb6/0x1820 kernel/workqueue.c:2307
- worker_thread+0x10b3/0x21e0 kernel/workqueue.c:2454
- kthread+0x3c7/0x500 kernel/kthread.c:377
- ret_from_fork+0x1f/0x30
-
-Local variable mac created at:
- r871xu_drv_init+0x1771/0x3070 drivers/staging/rtl8712/usb_intf.c:394
- usb_probe_interface+0xf19/0x1600 drivers/usb/core/driver.c:396
-
-KMSAN: uninit-value in r871xu_drv_init
-https://syzkaller.appspot.com/bug?id=3cd92b1d85428b128503bfa7a250294c9ae00bd8
-
-Reported-by: <syzbot+6f5ecd144854c0d8580b@syzkaller.appspotmail.com>
-Tested-by: <syzbot+6f5ecd144854c0d8580b@syzkaller.appspotmail.com>
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Wang Cheng <wanngchenng@gmail.com>
-Link: https://lore.kernel.org/r/14c3886173dfa4597f0704547c414cfdbcd11d16.1652618244.git.wanngchenng@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Link: https://lore.kernel.org/lkml/762faf1b-0443-5ddf-4430-44a20cf2ec4d@collabora.com/
+Signed-off-by: Kees Cook <keescook@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8712/usb_intf.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/misc/lkdtm/usercopy.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/staging/rtl8712/usb_intf.c b/drivers/staging/rtl8712/usb_intf.c
-index a61dd96ab2a4..6db2493e6d3a 100644
---- a/drivers/staging/rtl8712/usb_intf.c
-+++ b/drivers/staging/rtl8712/usb_intf.c
-@@ -536,13 +536,13 @@ static int r871xu_drv_init(struct usb_interface *pusb_intf,
- 		} else {
- 			AutoloadFail = false;
- 		}
--		if (((mac[0] == 0xff) && (mac[1] == 0xff) &&
-+		if ((!AutoloadFail) ||
-+		    ((mac[0] == 0xff) && (mac[1] == 0xff) &&
- 		     (mac[2] == 0xff) && (mac[3] == 0xff) &&
- 		     (mac[4] == 0xff) && (mac[5] == 0xff)) ||
- 		    ((mac[0] == 0x00) && (mac[1] == 0x00) &&
- 		     (mac[2] == 0x00) && (mac[3] == 0x00) &&
--		     (mac[4] == 0x00) && (mac[5] == 0x00)) ||
--		     (!AutoloadFail)) {
-+		     (mac[4] == 0x00) && (mac[5] == 0x00))) {
- 			mac[0] = 0x00;
- 			mac[1] = 0xe0;
- 			mac[2] = 0x4c;
+diff --git a/drivers/misc/lkdtm/usercopy.c b/drivers/misc/lkdtm/usercopy.c
+index 9161ce7ed47a..3fead5efe523 100644
+--- a/drivers/misc/lkdtm/usercopy.c
++++ b/drivers/misc/lkdtm/usercopy.c
+@@ -30,12 +30,12 @@ static const unsigned char test_text[] = "This is a test.\n";
+  */
+ static noinline unsigned char *trick_compiler(unsigned char *stack)
+ {
+-	return stack + 0;
++	return stack + unconst;
+ }
+ 
+ static noinline unsigned char *do_usercopy_stack_callee(int value)
+ {
+-	unsigned char buf[32];
++	unsigned char buf[128];
+ 	int i;
+ 
+ 	/* Exercise stack to avoid everything living in registers. */
+@@ -43,7 +43,12 @@ static noinline unsigned char *do_usercopy_stack_callee(int value)
+ 		buf[i] = value & 0xff;
+ 	}
+ 
+-	return trick_compiler(buf);
++	/*
++	 * Put the target buffer in the middle of stack allocation
++	 * so that we don't step on future stack users regardless
++	 * of stack growth direction.
++	 */
++	return trick_compiler(&buf[(128/2)-32]);
+ }
+ 
+ static noinline void do_usercopy_stack(bool to_user, bool bad_frame)
+@@ -66,6 +71,12 @@ static noinline void do_usercopy_stack(bool to_user, bool bad_frame)
+ 		bad_stack -= sizeof(unsigned long);
+ 	}
+ 
++#ifdef ARCH_HAS_CURRENT_STACK_POINTER
++	pr_info("stack     : %px\n", (void *)current_stack_pointer);
++#endif
++	pr_info("good_stack: %px-%px\n", good_stack, good_stack + sizeof(good_stack));
++	pr_info("bad_stack : %px-%px\n", bad_stack, bad_stack + sizeof(good_stack));
++
+ 	user_addr = vm_mmap(NULL, 0, PAGE_SIZE,
+ 			    PROT_READ | PROT_WRITE | PROT_EXEC,
+ 			    MAP_ANONYMOUS | MAP_PRIVATE, 0);
 -- 
 2.35.1
 
