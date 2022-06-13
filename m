@@ -2,55 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BB93CCA47D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C591CCA481
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 22:58:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241392AbiFMW6M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 18:58:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57190 "EHLO
+        id S245724AbiFMW60 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 18:58:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234219AbiFMW5a (ORCPT
+        with ESMTP id S235127AbiFMW5g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 18:57:30 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C9A270C
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 15:57:26 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2fed274f3fbso10220107b3.17
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 15:57:26 -0700 (PDT)
+        Mon, 13 Jun 2022 18:57:36 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60F1921BD
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 15:57:30 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id z67-20020a254c46000000b0065cd3d2e67eso6149273yba.7
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 15:57:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=reply-to:date:message-id:mime-version:subject:from:to:cc;
-        bh=BqcYaynfjY3B1HPR6nmJnp/4eztkVj8MCX0aS8dr66w=;
-        b=m7+gnRx3yjoJ6EBdiUGNJi+jpn7Wy5ewGgx2olla1k0Wc18wJYVBdukH3stWRnwmDW
-         Q+uUszfsdUcF/Olg1vYO1mDVWQJH94hCIpDZTizRBLLxM0Ou5Zsbna03MMUAzYZ6/Id9
-         RFp8cuvy/z9lpLAxy/dRMmI4rdQAbyyfhTyPBVWkYbuCqkoWH//+XQ5+vWvPXBkSVj6u
-         a4/hvjkHJbJ/2k+5KdsxIbNlk18lAPI97xnEcDc92lZtI5itEAQ7YvoKp1Vxmwbyg4s1
-         DL42THcEvci4xrG0nptaxS6iLN1c07Zwo3gDVvDPJBXh5QuECKcLojeuYLYxqby7Lu9D
-         aXmQ==
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=66YOE3D++YjiCQYAOPbfPb7xNbNJtfXwRmXra4+Vga0=;
+        b=OGQQT/kEl+HJEIxg1pFOPK9rS28ovUya8ri7Z+Zs4qy6oaWb7o7khwI7JVXjbdrJXe
+         DLQxDiuUabALcAyEtJUjYxq2JOljiWGRFUIj7pSxS7hoG/Zy2Bv/zq2FowrMCezO3plx
+         X1ECBFm5XlSTdkMkilClv/2pAGu+Cq4sz1O2+6Cyo9AJdmdxqvjUlHg1v/bxfGMWajBQ
+         gPBXlGgq38ijIWB767GbrfGwhU4V3hw0R4AdHzTldbQWT1tIWyhGKf1Fln1qYgTg6daa
+         0Bm/KBbPyObSermiYbLLx6MB+OJvj+oL+15400uar6hxXbM5fdgTHTVkDhWKGJynREYW
+         r4vA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:message-id:mime-version:subject
-         :from:to:cc;
-        bh=BqcYaynfjY3B1HPR6nmJnp/4eztkVj8MCX0aS8dr66w=;
-        b=n5uib1p/T3Mfcrc1lBmO+gcjzwuSaMZIi0VtWmLjpzIbIqoEymGY28egAxXyqARFkb
-         micxHCoIuWcvjhl3qi/8uzL+Wuld/ZMWHKGot/JNMNiZTdNBc/RQEv05sSOItRaUMjBr
-         rOOFdwjGx1X9H2bs4fd3lBNV/CKucUd/Cb5lBEeyQziZp/Syk6ZRA0IRCi+XeCPzxucc
-         ZPFu9ugU7/xAb5DpjqamVDUAxxGe85EepHpufhZZzybXcaXvff1M9Cj1OdUtjUoXEj0S
-         636TCbTUcds1pBTtKD2p4m0eJkd2helwLJUQVQAXOZq7BLQQjabGA+nuYhkyT8MeNzpj
-         MIuA==
-X-Gm-Message-State: AJIora+A8RdZT1SGL7B+KRUyXoyo6knk9GSEKWMIb9K9jPbJZpqiO2A+
-        M7YwFjmijt0CT0ZjNHongh09xOFHNZQ=
-X-Google-Smtp-Source: AGRyM1vFGnbGn0GbwGAUaNrqZvft0HGw+nji3FJdtHYUf5pdiU9xGYC1wxD7QAwzeO1I3Ppm00eUY2/4GCM=
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=66YOE3D++YjiCQYAOPbfPb7xNbNJtfXwRmXra4+Vga0=;
+        b=finDOoWwDWisodwhvdUV7XDIHOZB1Zy+FRNAwpKj5ZwhJUPrc7XSQJGMLzTXRrkcR3
+         6B2Gsnwjj8adTcpvS7ta3OkvbxLTOfD2YmsuJFYtdK3vQe4lvOP071KBdVSLk5wrw3Hy
+         SUxWSOIas0GDoT4hOXWyMrPduy0t4aRdA66uJbkMDNwSBecXZko5VlN3koGwBgEVG2+B
+         /NSc8hwwo3Cwa2jdJVwyJjNhRfDaz3jOhIdKUtmW2Bws+uY5fSYGBJdNh9Rf6MWCtnuo
+         dpwJkdfnjB+1WvYTb6z1V5sub9Iukhn+rGqwPVtcpp6a5jIde5VnMmT2Odz+llEzR53m
+         TgWw==
+X-Gm-Message-State: AJIora8y7SnUy8GFLevCYnHwFiJZZ9zWRZ3fg0qz5zJCZngznc8UcBSo
+        xx9KoNHSkN1pa9g0nA5czeCLtGOt2hE=
+X-Google-Smtp-Source: AGRyM1vFi9XO4bi7ATHD/tcJRWZuWdYliTFf3K/ZUTGXuMM7BsmCw/F9cNYih8H8aUm6iETOgytGKbTPvGk=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a25:97c8:0:b0:664:7592:a904 with SMTP id
- j8-20020a2597c8000000b006647592a904mr2032248ybo.28.1655161046067; Mon, 13 Jun
- 2022 15:57:26 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a5b:101:0:b0:64d:ae10:3d26 with SMTP id
+ 1-20020a5b0101000000b0064dae103d26mr1933397ybx.103.1655161049615; Mon, 13 Jun
+ 2022 15:57:29 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Mon, 13 Jun 2022 22:57:15 +0000
-Message-Id: <20220613225723.2734132-1-seanjc@google.com>
+Date:   Mon, 13 Jun 2022 22:57:17 +0000
+In-Reply-To: <20220613225723.2734132-1-seanjc@google.com>
+Message-Id: <20220613225723.2734132-3-seanjc@google.com>
 Mime-Version: 1.0
+References: <20220613225723.2734132-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH 0/8] KVM: x86/mmu: Use separate namespaces gPTEs and SPTEs
+Subject: [PATCH 2/8] KVM: VMX: Refactor 32-bit PSE PT creation to avoid using
+ MMU macro
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -64,49 +68,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clean up the x86 MMU code to use separate namespaces for guest PTEs and
-shadow PTEs.  While there is most definitely overlap, especially in
-attribute bits, the rules for walking gPTEs and for generating/walking
-SPTEs differ in subtle ways, e.g. see commit fc9bf2e087ef ("KVM: x86/mmu:
-Do not apply HPA (memory encryption) mask to GPAs").  The paging32 macros
-in particular should never be used outside of paging_tmpl.h.
+Compute the number of PTEs to be filled for the 32-bit PSE page tables
+using the page size and the size of each entry.  While using the MMU's
+PT32_ENT_PER_PAGE macro is arguably better in isolation, removing VMX's
+usage will allow a future namespacing cleanup to move the guest page
+table macros into paging_tmpl.h, out of the reach of code that isn't
+directly related to shadow paging.
 
-Separating gPTEs from SPTEs actually provides for nice cleanups (see the
-diffstat) as KVM has ended up with a fair bit of copy+paste code that can
-be deduplicated once KVM isn't trying to use PT64_* defines for both gPTEs
-and SPTEs.
+No functional change intended.
 
-This is a spiritual successor to patches 4-7 of the series[*] that added
-the aformentenioned commit.
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+---
+ arch/x86/kvm/vmx/vmx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-[*] https://lore.kernel.org/all/20210623230552.4027702-1-seanjc@google.com
-
-Sean Christopherson (8):
-  KVM: x86/mmu: Drop unused CMPXCHG macro from paging_tmpl.h
-  KVM: VMX: Refactor 32-bit PSE PT creation to avoid using MMU macro
-  KVM: x86/mmu: Bury 32-bit PSE paging helpers in paging_tmpl.h
-  KVM: x86/mmu: Dedup macros for computing various page table masks
-  KVM: x86/mmu: Use separate namespaces for guest PTEs and shadow PTEs
-  KVM: x86/mmu: Use common macros to compute 32/64-bit paging masks
-  KVM: x86/mmu: Truncate paging32's PT_BASE_ADDR_MASK to 32 bits
-  KVM: x86/mmu: Use common logic for computing the 32/64-bit base PA
-    mask
-
- arch/x86/kvm/mmu.h              | 10 ------
- arch/x86/kvm/mmu/mmu.c          | 64 ++++++++-------------------------
- arch/x86/kvm/mmu/mmu_internal.h | 17 +++++++++
- arch/x86/kvm/mmu/paging.h       | 14 --------
- arch/x86/kvm/mmu/paging_tmpl.h  | 56 ++++++++++++++++-------------
- arch/x86/kvm/mmu/spte.c         |  2 +-
- arch/x86/kvm/mmu/spte.h         | 28 +++++++--------
- arch/x86/kvm/mmu/tdp_iter.c     |  6 ++--
- arch/x86/kvm/mmu/tdp_mmu.c      |  6 ++--
- arch/x86/kvm/vmx/vmx.c          |  2 +-
- 10 files changed, 83 insertions(+), 122 deletions(-)
- delete mode 100644 arch/x86/kvm/mmu/paging.h
-
-
-base-commit: 8baacf67c76c560fed954ac972b63e6e59a6fba0
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 5e14e4c40007..b774f8c1b952 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -3704,7 +3704,7 @@ static int init_rmode_identity_map(struct kvm *kvm)
+ 	}
+ 
+ 	/* Set up identity-mapping pagetable for EPT in real mode */
+-	for (i = 0; i < PT32_ENT_PER_PAGE; i++) {
++	for (i = 0; i < (PAGE_SIZE / sizeof(tmp)); i++) {
+ 		tmp = (i << 22) + (_PAGE_PRESENT | _PAGE_RW | _PAGE_USER |
+ 			_PAGE_ACCESSED | _PAGE_DIRTY | _PAGE_PSE);
+ 		if (__copy_to_user(uaddr + i * sizeof(tmp), &tmp, sizeof(tmp))) {
 -- 
 2.36.1.476.g0c4daa206d-goog
 
