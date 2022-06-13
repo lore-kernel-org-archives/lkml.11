@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60BC3CCA48B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4145ACCA489
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:34:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384723AbiFMOe2 (ORCPT
+        id S1384668AbiFMOeW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:34:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34070 "EHLO
+        Mon, 13 Jun 2022 10:34:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385333AbiFMObE (ORCPT
+        with ESMTP id S1385141AbiFMOak (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:31:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6315A98BA;
-        Mon, 13 Jun 2022 04:48:48 -0700 (PDT)
+        Mon, 13 Jun 2022 10:30:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10071A86BD;
+        Mon, 13 Jun 2022 04:48:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53AE4B80D31;
-        Mon, 13 Jun 2022 11:48:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A736EC34114;
-        Mon, 13 Jun 2022 11:48:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A10DB80EB3;
+        Mon, 13 Jun 2022 11:48:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F309AC34114;
+        Mon, 13 Jun 2022 11:48:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120900;
-        bh=0kTaFpef1BwMfsjh+msVDWsWfwPI65+qIGZ47BekVm4=;
+        s=korg; t=1655120916;
+        bh=ux7IuVmMI8o15RzsRZcZNkGPWCqiFNkdIdCURxZuwdY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JjJ6TBQ8K+WoRjRib0dSjCuEfCoHNn8JgfHnpzN49Kk8Ln8WBX5/qq8TEhX+qFclt
-         x6hfFUzFgjlouXwaKlD7HDnCsFgsiTWSCsxl8gWl8N08IZhT4uNRm3iC84jibbKnaq
-         jpxwuZaU/FUDp92Y2vB139QZ7roUzhNOL/3Uv3GA=
+        b=AyKVPqdhHGsozeMPGto6M5ux8X4ooao939VDzzuZKsbsUNqnRHMkS4wMNPEELBbKX
+         cjj/LzWP6rMqpm//TF8OQKwi0T1wr7PrVu2sKRXiwUuG0kMhy6Do1ASwfC9/DX5frh
+         rmw5xBWMcZsgtl5PvKN2Vu8C3q72B2hvrjetm2hQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 191/298] net: dsa: mv88e6xxx: use BMSR_ANEGCOMPLETE bit for filling an_complete
-Date:   Mon, 13 Jun 2022 12:11:25 +0200
-Message-Id: <20220613094930.897998791@linuxfoundation.org>
+Subject: [PATCH 5.17 205/298] drivers: staging: rtl8192u: Fix deadlock in ieee80211_beacons_stop()
+Date:   Mon, 13 Jun 2022 12:11:39 +0200
+Message-Id: <20220613094931.323650151@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -52,111 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Behún <kabel@kernel.org>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 47e96930d6e6106d5252e85b868d3c7e29296de0 ]
+[ Upstream commit 806c7b53414934ba2a39449b31fd1a038e500273 ]
 
-Commit ede359d8843a ("net: dsa: mv88e6xxx: Link in pcs_get_state() if AN
-is bypassed") added the ability to link if AN was bypassed, and added
-filling of state->an_complete field, but set it to true if AN was
-enabled in BMCR, not when AN was reported complete in BMSR.
+There is a deadlock in ieee80211_beacons_stop(), which is shown below:
 
-This was done because for some reason, when I wanted to use BMSR value
-to infer an_complete, I was looking at BMSR_ANEGCAPABLE bit (which was
-always 1), instead of BMSR_ANEGCOMPLETE bit.
+   (Thread 1)              |      (Thread 2)
+                           | ieee80211_send_beacon()
+ieee80211_beacons_stop()   |  mod_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | ieee80211_send_beacon_cb()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
 
-Use BMSR_ANEGCOMPLETE for filling state->an_complete.
+We hold ieee->beacon_lock in position (1) of thread 1 and use
+del_timer_sync() to wait timer to stop, but timer handler
+also need ieee->beacon_lock in position (2) of thread 2.
+As a result, ieee80211_beacons_stop() will block forever.
 
-Fixes: ede359d8843a ("net: dsa: mv88e6xxx: Link in pcs_get_state() if AN is bypassed")
-Signed-off-by: Marek Behún <kabel@kernel.org>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irqsave(), which could let timer handler to obtain
+the needed lock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417135407.109536-1-duoming@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/mv88e6xxx/serdes.c | 27 +++++++++++----------------
- 1 file changed, 11 insertions(+), 16 deletions(-)
+ drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6xxx/serdes.c
-index 2b05ead515cd..6ae7a0ed9e0b 100644
---- a/drivers/net/dsa/mv88e6xxx/serdes.c
-+++ b/drivers/net/dsa/mv88e6xxx/serdes.c
-@@ -50,22 +50,17 @@ static int mv88e6390_serdes_write(struct mv88e6xxx_chip *chip,
+diff --git a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
+index 1a43979939a8..79f3fbe25556 100644
+--- a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
++++ b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
+@@ -528,9 +528,9 @@ static void ieee80211_beacons_stop(struct ieee80211_device *ieee)
+ 	spin_lock_irqsave(&ieee->beacon_lock, flags);
+ 
+ 	ieee->beacon_txing = 0;
+-	del_timer_sync(&ieee->beacon_timer);
+ 
+ 	spin_unlock_irqrestore(&ieee->beacon_lock, flags);
++	del_timer_sync(&ieee->beacon_timer);
  }
  
- static int mv88e6xxx_serdes_pcs_get_state(struct mv88e6xxx_chip *chip,
--					  u16 ctrl, u16 status, u16 lpa,
-+					  u16 bmsr, u16 lpa, u16 status,
- 					  struct phylink_link_state *state)
- {
- 	state->link = !!(status & MV88E6390_SGMII_PHY_STATUS_LINK);
-+	state->an_complete = !!(bmsr & BMSR_ANEGCOMPLETE);
- 
- 	if (status & MV88E6390_SGMII_PHY_STATUS_SPD_DPL_VALID) {
- 		/* The Spped and Duplex Resolved register is 1 if AN is enabled
- 		 * and complete, or if AN is disabled. So with disabled AN we
--		 * still get here on link up. But we want to set an_complete
--		 * only if AN was enabled, thus we look at BMCR_ANENABLE.
--		 * (According to 802.3-2008 section 22.2.4.2.10, we should be
--		 *  able to get this same value from BMSR_ANEGCAPABLE, but tests
--		 *  show that these Marvell PHYs don't conform to this part of
--		 *  the specificaion - BMSR_ANEGCAPABLE is simply always 1.)
-+		 * still get here on link up.
- 		 */
--		state->an_complete = !!(ctrl & BMCR_ANENABLE);
- 		state->duplex = status &
- 				MV88E6390_SGMII_PHY_STATUS_DUPLEX_FULL ?
- 			                         DUPLEX_FULL : DUPLEX_HALF;
-@@ -191,12 +186,12 @@ int mv88e6352_serdes_pcs_config(struct mv88e6xxx_chip *chip, int port,
- int mv88e6352_serdes_pcs_get_state(struct mv88e6xxx_chip *chip, int port,
- 				   int lane, struct phylink_link_state *state)
- {
--	u16 lpa, status, ctrl;
-+	u16 bmsr, lpa, status;
- 	int err;
- 
--	err = mv88e6352_serdes_read(chip, MII_BMCR, &ctrl);
-+	err = mv88e6352_serdes_read(chip, MII_BMSR, &bmsr);
- 	if (err) {
--		dev_err(chip->dev, "can't read Serdes PHY control: %d\n", err);
-+		dev_err(chip->dev, "can't read Serdes BMSR: %d\n", err);
- 		return err;
- 	}
- 
-@@ -212,7 +207,7 @@ int mv88e6352_serdes_pcs_get_state(struct mv88e6xxx_chip *chip, int port,
- 		return err;
- 	}
- 
--	return mv88e6xxx_serdes_pcs_get_state(chip, ctrl, status, lpa, state);
-+	return mv88e6xxx_serdes_pcs_get_state(chip, bmsr, lpa, status, state);
- }
- 
- int mv88e6352_serdes_pcs_an_restart(struct mv88e6xxx_chip *chip, int port,
-@@ -915,13 +910,13 @@ int mv88e6390_serdes_pcs_config(struct mv88e6xxx_chip *chip, int port,
- static int mv88e6390_serdes_pcs_get_state_sgmii(struct mv88e6xxx_chip *chip,
- 	int port, int lane, struct phylink_link_state *state)
- {
--	u16 lpa, status, ctrl;
-+	u16 bmsr, lpa, status;
- 	int err;
- 
- 	err = mv88e6390_serdes_read(chip, lane, MDIO_MMD_PHYXS,
--				    MV88E6390_SGMII_BMCR, &ctrl);
-+				    MV88E6390_SGMII_BMSR, &bmsr);
- 	if (err) {
--		dev_err(chip->dev, "can't read Serdes PHY control: %d\n", err);
-+		dev_err(chip->dev, "can't read Serdes PHY BMSR: %d\n", err);
- 		return err;
- 	}
- 
-@@ -939,7 +934,7 @@ static int mv88e6390_serdes_pcs_get_state_sgmii(struct mv88e6xxx_chip *chip,
- 		return err;
- 	}
- 
--	return mv88e6xxx_serdes_pcs_get_state(chip, ctrl, status, lpa, state);
-+	return mv88e6xxx_serdes_pcs_get_state(chip, bmsr, lpa, status, state);
- }
- 
- static int mv88e6390_serdes_pcs_get_state_10g(struct mv88e6xxx_chip *chip,
+ void ieee80211_stop_send_beacons(struct ieee80211_device *ieee)
 -- 
 2.35.1
 
