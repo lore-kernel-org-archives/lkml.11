@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F947C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:51:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9712EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:51:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378217AbiFMNvh (ORCPT
+        id S1379897AbiFMNvk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:51:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39888 "EHLO
+        Mon, 13 Jun 2022 09:51:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378502AbiFMNm6 (ORCPT
+        with ESMTP id S1379736AbiFMNo7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:42:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E1B02B19B;
-        Mon, 13 Jun 2022 04:31:36 -0700 (PDT)
+        Mon, 13 Jun 2022 09:44:59 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012AA38B1;
+        Mon, 13 Jun 2022 04:32:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A03C16125A;
-        Mon, 13 Jun 2022 11:31:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4865C36B06;
-        Mon, 13 Jun 2022 11:31:34 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B51F9CE1166;
+        Mon, 13 Jun 2022 11:32:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D0E7C34114;
+        Mon, 13 Jun 2022 11:32:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119895;
-        bh=yRje9zJj6k4Qpu7HfECVlAhlL7PYsk56cdaU6S3uQd0=;
+        s=korg; t=1655119947;
+        bh=U5YQJHSj04ogWj8kHnUJp6R+UQwf5EflSvuli1TWa3A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2t1VcmSiZn3oE1GV1rO2fTLWT6mf3Eg8zGdPq2OaARKKsqPrSSHQmsIjxWYMx+O5J
-         EQuBejBRYb3tjMyIMhgvxtu2Y/gZnh08NT0Bbj6V/AvPhi627/k2q8SzbdeHsUOFth
-         QExM8tazfxgak7y6dug3a/XY6gtk1RVXx/IosaFg=
+        b=ZX2c9b4xYGsepBenO9CDDVhdcn8TxbATitBD9/8lvk59ie4ap8szo8ovYD6Y4gs+2
+         eym3inIbjcypsVexWK31NoIXM4uBMlk/AB6WyECcar36Ixb2qazWXHFQ7wAJ320261
+         v+ArILFwgj2bwaFmfea0NyNLL9r4jeWg8Ifz/4aI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jeff Xie <xiehuan09@gmail.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        stable@vger.kernel.org, Kinglong Mee <kinglongmee@gmail.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 157/339] tracing: Make tp_printk work on syscall tracepoints
-Date:   Mon, 13 Jun 2022 12:09:42 +0200
-Message-Id: <20220613094931.447448061@linuxfoundation.org>
+Subject: [PATCH 5.18 176/339] xprtrdma: treat all calls not a bcall when bc_serv is NULL
+Date:   Mon, 13 Jun 2022 12:10:01 +0200
+Message-Id: <20220613094932.014077945@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,114 +51,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeff Xie <xiehuan09@gmail.com>
+From: Kinglong Mee <kinglongmee@gmail.com>
 
-[ Upstream commit cb1c45fb68b8a4285ccf750842b1136f26cfe267 ]
+[ Upstream commit 11270e7ca268e8d61b5d9e5c3a54bd1550642c9c ]
 
-Currently the tp_printk option has no effect on syscall tracepoint.
-When adding the kernel option parameter tp_printk, then:
+When a rdma server returns a fault format reply, nfs v3 client may
+treats it as a bcall when bc service is not exist.
 
-echo 1 > /sys/kernel/debug/tracing/events/syscalls/enable
+The debug message at rpcrdma_bc_receive_call are,
 
-When running any application, no trace information is printed on the
-terminal.
+[56579.837169] RPC:       rpcrdma_bc_receive_call: callback XID
+00000001, length=20
+[56579.837174] RPC:       rpcrdma_bc_receive_call: 00 00 00 01 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 04
 
-Now added printk for syscall tracepoints.
+After that, rpcrdma_bc_receive_call will meets NULL pointer as,
 
-Link: https://lkml.kernel.org/r/20220410145025.681144-1-xiehuan09@gmail.com
+[  226.057890] BUG: unable to handle kernel NULL pointer dereference at
+00000000000000c8
+...
+[  226.058704] RIP: 0010:_raw_spin_lock+0xc/0x20
+...
+[  226.059732] Call Trace:
+[  226.059878]  rpcrdma_bc_receive_call+0x138/0x327 [rpcrdma]
+[  226.060011]  __ib_process_cq+0x89/0x170 [ib_core]
+[  226.060092]  ib_cq_poll_work+0x26/0x80 [ib_core]
+[  226.060257]  process_one_work+0x1a7/0x360
+[  226.060367]  ? create_worker+0x1a0/0x1a0
+[  226.060440]  worker_thread+0x30/0x390
+[  226.060500]  ? create_worker+0x1a0/0x1a0
+[  226.060574]  kthread+0x116/0x130
+[  226.060661]  ? kthread_flush_work_fn+0x10/0x10
+[  226.060724]  ret_from_fork+0x35/0x40
+...
 
-Signed-off-by: Jeff Xie <xiehuan09@gmail.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Kinglong Mee <kinglongmee@gmail.com>
+Reviewed-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/trace_syscalls.c | 35 +++++++++++------------------------
- 1 file changed, 11 insertions(+), 24 deletions(-)
+ net/sunrpc/xprtrdma/rpc_rdma.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/kernel/trace/trace_syscalls.c b/kernel/trace/trace_syscalls.c
-index f755bde42fd0..b69e207012c9 100644
---- a/kernel/trace/trace_syscalls.c
-+++ b/kernel/trace/trace_syscalls.c
-@@ -154,7 +154,7 @@ print_syscall_enter(struct trace_iterator *iter, int flags,
- 			goto end;
+diff --git a/net/sunrpc/xprtrdma/rpc_rdma.c b/net/sunrpc/xprtrdma/rpc_rdma.c
+index 281ddb87ac8d..190a4de239c8 100644
+--- a/net/sunrpc/xprtrdma/rpc_rdma.c
++++ b/net/sunrpc/xprtrdma/rpc_rdma.c
+@@ -1121,6 +1121,7 @@ static bool
+ rpcrdma_is_bcall(struct rpcrdma_xprt *r_xprt, struct rpcrdma_rep *rep)
+ #if defined(CONFIG_SUNRPC_BACKCHANNEL)
+ {
++	struct rpc_xprt *xprt = &r_xprt->rx_xprt;
+ 	struct xdr_stream *xdr = &rep->rr_stream;
+ 	__be32 *p;
  
- 		/* parameter types */
--		if (tr->trace_flags & TRACE_ITER_VERBOSE)
-+		if (tr && tr->trace_flags & TRACE_ITER_VERBOSE)
- 			trace_seq_printf(s, "%s ", entry->types[i]);
+@@ -1144,6 +1145,10 @@ rpcrdma_is_bcall(struct rpcrdma_xprt *r_xprt, struct rpcrdma_rep *rep)
+ 	if (*p != cpu_to_be32(RPC_CALL))
+ 		return false;
  
- 		/* parameter values */
-@@ -296,9 +296,7 @@ static void ftrace_syscall_enter(void *data, struct pt_regs *regs, long id)
- 	struct trace_event_file *trace_file;
- 	struct syscall_trace_enter *entry;
- 	struct syscall_metadata *sys_data;
--	struct ring_buffer_event *event;
--	struct trace_buffer *buffer;
--	unsigned int trace_ctx;
-+	struct trace_event_buffer fbuffer;
- 	unsigned long args[6];
- 	int syscall_nr;
- 	int size;
-@@ -321,20 +319,16 @@ static void ftrace_syscall_enter(void *data, struct pt_regs *regs, long id)
- 
- 	size = sizeof(*entry) + sizeof(unsigned long) * sys_data->nb_args;
- 
--	trace_ctx = tracing_gen_ctx();
--
--	event = trace_event_buffer_lock_reserve(&buffer, trace_file,
--			sys_data->enter_event->event.type, size, trace_ctx);
--	if (!event)
-+	entry = trace_event_buffer_reserve(&fbuffer, trace_file, size);
-+	if (!entry)
- 		return;
- 
--	entry = ring_buffer_event_data(event);
-+	entry = ring_buffer_event_data(fbuffer.event);
- 	entry->nr = syscall_nr;
- 	syscall_get_arguments(current, regs, args);
- 	memcpy(entry->args, args, sizeof(unsigned long) * sys_data->nb_args);
- 
--	event_trigger_unlock_commit(trace_file, buffer, event, entry,
--				    trace_ctx);
-+	trace_event_buffer_commit(&fbuffer);
- }
- 
- static void ftrace_syscall_exit(void *data, struct pt_regs *regs, long ret)
-@@ -343,9 +337,7 @@ static void ftrace_syscall_exit(void *data, struct pt_regs *regs, long ret)
- 	struct trace_event_file *trace_file;
- 	struct syscall_trace_exit *entry;
- 	struct syscall_metadata *sys_data;
--	struct ring_buffer_event *event;
--	struct trace_buffer *buffer;
--	unsigned int trace_ctx;
-+	struct trace_event_buffer fbuffer;
- 	int syscall_nr;
- 
- 	syscall_nr = trace_get_syscall_nr(current, regs);
-@@ -364,20 +356,15 @@ static void ftrace_syscall_exit(void *data, struct pt_regs *regs, long ret)
- 	if (!sys_data)
- 		return;
- 
--	trace_ctx = tracing_gen_ctx();
--
--	event = trace_event_buffer_lock_reserve(&buffer, trace_file,
--			sys_data->exit_event->event.type, sizeof(*entry),
--			trace_ctx);
--	if (!event)
-+	entry = trace_event_buffer_reserve(&fbuffer, trace_file, sizeof(*entry));
-+	if (!entry)
- 		return;
- 
--	entry = ring_buffer_event_data(event);
-+	entry = ring_buffer_event_data(fbuffer.event);
- 	entry->nr = syscall_nr;
- 	entry->ret = syscall_get_return_value(current, regs);
- 
--	event_trigger_unlock_commit(trace_file, buffer, event, entry,
--				    trace_ctx);
-+	trace_event_buffer_commit(&fbuffer);
- }
- 
- static int reg_event_syscall_enter(struct trace_event_file *file,
++	/* No bc service. */
++	if (xprt->bc_serv == NULL)
++		return false;
++
+ 	/* Now that we are sure this is a backchannel call,
+ 	 * advance to the RPC header.
+ 	 */
 -- 
 2.35.1
 
