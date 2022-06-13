@@ -2,130 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C94AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 09:37:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81F0EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 09:38:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240866AbiFMJhq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 05:37:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56632 "EHLO
+        id S240887AbiFMJif (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 05:38:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240304AbiFMJhm (ORCPT
+        with ESMTP id S240948AbiFMJi2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 05:37:42 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A52C1275F;
-        Mon, 13 Jun 2022 02:37:41 -0700 (PDT)
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LM5vX2ft9z67PMv;
-        Mon, 13 Jun 2022 17:32:40 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Mon, 13 Jun 2022 11:37:39 +0200
-Received: from [10.195.33.253] (10.195.33.253) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 13 Jun 2022 10:37:38 +0100
-Message-ID: <04540488-ec07-3bc2-a997-b7f64b0ba606@huawei.com>
-Date:   Mon, 13 Jun 2022 10:40:46 +0100
+        Mon, 13 Jun 2022 05:38:28 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4BCE1114F;
+        Mon, 13 Jun 2022 02:38:26 -0700 (PDT)
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25D79lhg021764;
+        Mon, 13 Jun 2022 11:38:16 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=selector1;
+ bh=O8ZTMrDMtW5Qr5jLCUZYMVMlYqPLGwlTXQ4IA0vXJ8c=;
+ b=uHnnMrnu1IhyBSK8TCHspcxv7eQiFIMh9/Sb7incVMenGogyRJ6wbJ0XytyfvmRA03b3
+ JsdWgYIdHfPq2va3ULtrOkyGce8sFArQDAMPvMmXqHEFaxZM37OFJEcQ6qqMmU+477Gq
+ hLNlOO9N/L+JTJQurWs+taGnpLjmZnx7i3EX9deBOmRZQzC2oxL6/iEZaRhu5+YY41NX
+ khW9LC2OxiaaTXBH1u91EzoAnQH8QU3tiocwZSOD1uJ7UFpYchSefIJ6XSXCkcxhgz3G
+ 9QY0EOLNoYAoo4eTrOLuaeGW1Rbbd2LbsEWmxhSWZVPoAnvUc0o+5inzjhngRJkADUtm Hg== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gmgfmb64u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 13 Jun 2022 11:38:16 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 9A8FD100034;
+        Mon, 13 Jun 2022 11:38:15 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 8E34721515F;
+        Mon, 13 Jun 2022 11:38:15 +0200 (CEST)
+Received: from localhost (10.75.127.48) by SHFDAG1NODE1.st.com (10.75.129.69)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Mon, 13 Jun
+ 2022 11:38:15 +0200
+From:   Alexandre Torgue <alexandre.torgue@foss.st.com>
+To:     <robh+dt@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] dt-bindings: rcc: stm32: select the "secure" path for stm32mp13
+Date:   Mon, 13 Jun 2022 11:38:15 +0200
+Message-ID: <20220613093815.18334-1-alexandre.torgue@foss.st.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH RFC v2 04/18] scsi: core: Add support to send reserved
- commands
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        <axboe@kernel.dk>, <jejb@linux.ibm.com>,
-        <martin.petersen@oracle.com>, <brking@us.ibm.com>, <hare@suse.de>,
-        <hch@lst.de>
-CC:     <linux-block@vger.kernel.org>, <linux-ide@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
-        <chenxiang66@hisilicon.com>
-References: <1654770559-101375-1-git-send-email-john.garry@huawei.com>
- <1654770559-101375-5-git-send-email-john.garry@huawei.com>
- <3f519a72-bb43-b1f0-c85d-a2ea4596f2f2@opensource.wdc.com>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <3f519a72-bb43-b1f0-c85d-a2ea4596f2f2@opensource.wdc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.195.33.253]
-X-ClientProxiedBy: lhreml746-chm.china.huawei.com (10.201.108.196) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.48]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-13_03,2022-06-09_02,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/06/2022 08:03, Damien Le Moal wrote:
->> +	if (shost->nr_reserved_cmds && !sht->reserved_queuecommand) {
->> +		shost_printk(KERN_ERR, shost,
->> +			"nr_reserved_cmds set but no method to queue\n");
->> +		goto fail;
-> This would be a driver implementation bug.
+Like for stm32mp15, when stm32 RCC node is used to interact with a secure
+context (using clock SCMI protocol), a different path has to be used for
+yaml verification.
 
-It would be a driver bug, but it probably makes the driver utterly 
-useless and there is no point in continuing (to try to add). If the 
-driver supports reserved commands then they are prob essential to make 
-the driver function.
+Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
 
-> So what about a WARN() here ?
+---
 
-Maybe but I really do not see a point in continuing
+Hi Rob, Krzysztof, 
 
-> 
->> +	}
->> +
->>   	/* Use min_t(int, ...) in case shost->can_queue exceeds SHRT_MAX */
->>   	shost->cmd_per_lun = min_t(int, shost->cmd_per_lun,
->>   				   shost->can_queue);
->> diff --git a/drivers/scsi/scsi_lib.c b/drivers/scsi/scsi_lib.c
->> index f6e53c6d913c..8c8b4c6767d9 100644
->> --- a/drivers/scsi/scsi_lib.c
->> +++ b/drivers/scsi/scsi_lib.c
->> @@ -1422,6 +1422,16 @@ static void scsi_complete(struct request *rq)
->>   	struct scsi_cmnd *cmd = blk_mq_rq_to_pdu(rq);
->>   	enum scsi_disposition disposition;
->>   
->> +	if (scsi_is_reserved_cmd(cmd)) {
->> +		struct scsi_device *sdev = cmd->device;
->> +
->> +		scsi_mq_uninit_cmd(cmd);
->> +		scsi_device_unbusy(sdev, cmd);
->> +		__blk_mq_end_request(rq, 0);
->> +
->> +		return;
->> +	}
->> +
->>   	INIT_LIST_HEAD(&cmd->eh_entry);
->>   
->>   	atomic_inc(&cmd->device->iodone_cnt);
->> @@ -1706,6 +1716,28 @@ static blk_status_t scsi_queue_rq(struct blk_mq_hw_ctx *hctx,
->>   
->>   	WARN_ON_ONCE(cmd->budget_token < 0);
->>   
->> +	if (scsi_is_reserved_cmd(cmd)) {
->> +		unsigned char *host_scribble = cmd->host_scribble;
->> +
->> +		if (!(req->rq_flags & RQF_DONTPREP)) {
->> +			ret = scsi_prepare_cmd(req);
->> +			if (ret != BLK_STS_OK) {
->> +
-> Stray blank line.
+If you agree with this patch, I'll apply it directly in my STM32 tree.
 
-ok
+Thanks
+Alex
 
-> 
->> +				goto out_dec_host_busy;
->> +			}
-> No need for the curly brackets here.
+diff --git a/Documentation/devicetree/bindings/clock/st,stm32mp1-rcc.yaml b/Documentation/devicetree/bindings/clock/st,stm32mp1-rcc.yaml
+index f8c474227807..242fe922b035 100644
+--- a/Documentation/devicetree/bindings/clock/st,stm32mp1-rcc.yaml
++++ b/Documentation/devicetree/bindings/clock/st,stm32mp1-rcc.yaml
+@@ -78,6 +78,7 @@ if:
+       contains:
+         enum:
+           - st,stm32mp1-rcc-secure
++          - st,stm32mp13-rcc
+ then:
+   properties:
+     clocks:
+-- 
+2.17.1
 
-ok
-
-> 
->> +
->> +			req->rq_flags |= RQF_DONTPREP;
->> +		} else {
->> +			clear_bit(SCMD_STATE_COMPLETE, &cmd->state);
->> +		}
-
-Thanks,
-John
