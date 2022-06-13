@@ -2,110 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC4F9C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:16:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4394BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:16:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359816AbiFMNQr (ORCPT
+        id S1359841AbiFMNQv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:16:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43460 "EHLO
+        Mon, 13 Jun 2022 09:16:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359302AbiFMNJr (ORCPT
+        with ESMTP id S1359316AbiFMNJs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:09:47 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 554DF28E06;
-        Mon, 13 Jun 2022 04:20:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1655119203; x=1686655203;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=+Z7LwiQq63QPFqjyunT+jVzk6Ngr6unTuvtymNkZK5w=;
-  b=BwOmVlLlT7k5TNs7jMUOTyPwLc5tdDeGjHhHgDoswAUc8W3cwEJfoM8w
-   IdZj8+n53cAuyS3hbmUuUAGKQOz6FzL6AkQQjWxNoJmAPLNw/UtkOFtsg
-   LuT2O2DzMLlzL/ko60/xFzI2Y6gvNrjSEB+vMDQLmVQDZnBSd57GQeY7l
-   MsLqI+ses+XeT8bx2+efY3Ej3sslpxLnKBWk3rz4+q46wHEBWE/ZXufVx
-   E33cdhMUB4Ea1hnQ7KzljIBaY0qG3iCub9uC4A4f9RLh/AWVcPYTJZjCb
-   a2jHXoJvZNSRD1KmhQl0kKz0YXuENpVCd/ZPirJiSp6jzWo8eqvGNfhlK
-   A==;
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="163066291"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Jun 2022 04:20:02 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 13 Jun 2022 04:20:01 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Mon, 13 Jun 2022 04:19:59 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        "Lee Jones" <lee.jones@linaro.org>
-CC:     Daire McNamara <daire.mcnamara@microchip.com>,
-        <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>,
-        Conor Dooley <conor.dooley@microchip.com>
-Subject: [PATCH v2 0/2] Add support for Microchip's pwm fpga core
-Date:   Mon, 13 Jun 2022 12:17:58 +0100
-Message-ID: <20220613111759.1550578-1-conor.dooley@microchip.com>
+        Mon, 13 Jun 2022 09:09:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0922C38DAE;
+        Mon, 13 Jun 2022 04:20:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 845C860F18;
+        Mon, 13 Jun 2022 11:20:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9491AC34114;
+        Mon, 13 Jun 2022 11:20:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655119206;
+        bh=YrV3nqLP+jAT5CvSK+m0J/RN1V+pBDdcZX8TEWWHFFg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=IR2s1dMKMQgiLMl2kbXLieOq2RiJRx8WwGfbroZcdI9ytqO6t7KVFmfwEM5R3gvFu
+         /Hz5GwRKrHrJbfk6wHQHpVR02aww4Tq8TCLLs2Ev4Pm+It8G0iOLYozSgAgE7accv1
+         fdwfAcc9UHwGCML5EUSz21u2AxJ+jl4eCK7VsJQQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        Evan Green <evgreen@chromium.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 179/247] USB: hcd-pci: Fully suspend across freeze/thaw cycle
+Date:   Mon, 13 Jun 2022 12:11:21 +0200
+Message-Id: <20220613094928.384093393@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
+References: <20220613094922.843438024@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey Uwe,
-Got a v2 for you...
-I added some comments explaining the calculations and a documentation link
-so hopefully things are a bit easier to follow.
+From: Evan Green <evgreen@chromium.org>
 
-Code wise, I went through and sorted out a bunch of issues that cycling
-through the different periods/duties threw up. Along the way I found
-some other problems - especially with the longer periods which I have
-fixed. I also added a write to the sync register in the apply function,
-which will resolve to a NOP for channels without "shadow registers".
+[ Upstream commit 63acaa8e9c65dc34dc249440216f8e977f5d2748 ]
 
-Other than that, I managed to ditch the mchp_core_pwm_registers struct
-entirely but had to add a short delay before reading back the registers
-in order to compute the duty.
+The documentation for the freeze() method says that it "should quiesce
+the device so that it doesn't generate IRQs or DMA". The unspoken
+consequence of not doing this is that MSIs aimed at non-boot CPUs may
+get fully lost if they're sent during the period where the target CPU is
+offline.
 
-Thanks,
-Conor.
+The current callbacks for USB HCD do not fully quiesce interrupts,
+specifically on XHCI. Change to use the full suspend/resume flow for
+freeze/thaw to ensure interrupts are fully quiesced. This fixes issues
+where USB devices fail to thaw during hibernation because XHCI misses
+its interrupt and cannot recover.
 
-Changes from v1:
-- account for edge "quirk" while inverted
-- block changing enabled channels' period
-- document the hardware/driver limitations
-- rearrange get_state() more logically
-- fix cast sizes in get_state()
-- fix remove() and probe error paths
-- delete mchp_core_pwm_registers
-- simplify .apply() logic
-- don't warn in calculate_base()
-- fix period calculation
-- fix duty cycle calculation
-- add COREPWM prefix to defines
-- add a documentation link
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Evan Green <evgreen@chromium.org>
+Link: https://lore.kernel.org/r/20220421103751.v3.2.I8226c7fdae88329ef70957b96a39b346c69a914e@changeid
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/usb/core/hcd-pci.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Conor Dooley (2):
-  pwm: add microchip soft ip corePWM driver
-  MAINTAINERS: add pwm to PolarFire SoC entry
-
- MAINTAINERS                      |   1 +
- drivers/pwm/Kconfig              |  10 +
- drivers/pwm/Makefile             |   1 +
- drivers/pwm/pwm-microchip-core.c | 310 +++++++++++++++++++++++++++++++
- 4 files changed, 322 insertions(+)
- create mode 100644 drivers/pwm/pwm-microchip-core.c
-
-
-base-commit: 61114e734ccb804bc12561ab4020745e02c468c2
+diff --git a/drivers/usb/core/hcd-pci.c b/drivers/usb/core/hcd-pci.c
+index d630cccd2e6e..5af810cd8a58 100644
+--- a/drivers/usb/core/hcd-pci.c
++++ b/drivers/usb/core/hcd-pci.c
+@@ -616,10 +616,10 @@ const struct dev_pm_ops usb_hcd_pci_pm_ops = {
+ 	.suspend_noirq	= hcd_pci_suspend_noirq,
+ 	.resume_noirq	= hcd_pci_resume_noirq,
+ 	.resume		= hcd_pci_resume,
+-	.freeze		= check_root_hub_suspended,
++	.freeze		= hcd_pci_suspend,
+ 	.freeze_noirq	= check_root_hub_suspended,
+ 	.thaw_noirq	= NULL,
+-	.thaw		= NULL,
++	.thaw		= hcd_pci_resume,
+ 	.poweroff	= hcd_pci_suspend,
+ 	.poweroff_noirq	= hcd_pci_suspend_noirq,
+ 	.restore_noirq	= hcd_pci_resume_noirq,
 -- 
-2.36.1
+2.35.1
+
+
 
