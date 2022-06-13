@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0CCDCCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEF82CCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:32:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354242AbiFMLby (ORCPT
+        id S1354257AbiFMLb5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:31:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45960 "EHLO
+        Mon, 13 Jun 2022 07:31:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353255AbiFMLZe (ORCPT
+        with ESMTP id S1353847AbiFMLZg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:25:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E465E3CFC4;
-        Mon, 13 Jun 2022 03:42:30 -0700 (PDT)
+        Mon, 13 Jun 2022 07:25:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9816366B3;
+        Mon, 13 Jun 2022 03:42:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3647DB80EB4;
-        Mon, 13 Jun 2022 10:42:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83F3EC34114;
-        Mon, 13 Jun 2022 10:42:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A82EB80EB0;
+        Mon, 13 Jun 2022 10:42:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCF74C34114;
+        Mon, 13 Jun 2022 10:42:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116947;
-        bh=RZgDdum0msf2g8pnmfSjWw5PkHFRPMvuZw+fPrm/v+8=;
+        s=korg; t=1655116945;
+        bh=29fvOx1BpldyPHpNr++3cI0NtJkOscyQmWiEVh3pRqk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eeI6Y7wt7y75zw4QR0uE73oaYBo7szKRrAuPyUkUqgwARwzP39JHIcLV3XJZo3ZWz
-         phezxRGO1GzYog3UbskE4vhmBrZrATZuN6P4F00sw4XPcKvKowL4yUuAQQYYWAGptZ
-         nXl5hyzcN41qLIKv+1L52FWT8HWXHkJgIjh2BnTM=
+        b=ayIhcRZmD+VEEgWEbCUqBVKs7NlFAQu2+vhenrwrZZrpPwpZKdcoL0UUdrfk4KUVV
+         J0wgSisvLM69RHk0SgLcY7sTHum9g9s9PqRLHWNEqmDJxZpyeyK9GgTsRuijCHhvpO
+         ffnNQOMQFMIs1ZEjM5G9dpjhq55Ls2hZBL9gm3y4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexander Aring <aahringo@redhat.com>,
-        David Teigland <teigland@redhat.com>
-Subject: [PATCH 5.4 235/411] dlm: fix missing lkb refcount handling
-Date:   Mon, 13 Jun 2022 12:08:28 +0200
-Message-Id: <20220613094935.831402076@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        Ajay Kaher <akaher@vmware.com>,
+        Aaron Adams <edg-e@nccgroup.com>
+Subject: [PATCH 5.4 222/411] netfilter: nf_tables: disallow non-stateful expression in sets earlier
+Date:   Mon, 13 Jun 2022 12:08:15 +0200
+Message-Id: <20220613094935.305988335@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -49,74 +50,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Aring <aahringo@redhat.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit 1689c169134f4b5a39156122d799b7dca76d8ddb upstream.
+commit 520778042ccca019f3ffa136dd0ca565c486cedd upstream.
 
-We always call hold_lkb(lkb) if we increment lkb->lkb_wait_count.
-So, we always need to call unhold_lkb(lkb) if we decrement
-lkb->lkb_wait_count. This patch will add missing unhold_lkb(lkb) if we
-decrement lkb->lkb_wait_count. In case of setting lkb->lkb_wait_count to
-zero we need to countdown until reaching zero and call unhold_lkb(lkb).
-The waiters list unhold_lkb(lkb) can be removed because it's done for
-the last lkb_wait_count decrement iteration as it's done in
-_remove_from_waiters().
+Since 3e135cd499bf ("netfilter: nft_dynset: dynamic stateful expression
+instantiation"), it is possible to attach stateful expressions to set
+elements.
 
-This issue was discovered by a dlm gfs2 test case which use excessively
-dlm_unlock(LKF_CANCEL) feature. Probably the lkb->lkb_wait_count value
-never reached above 1 if this feature isn't used and so it was not
-discovered before.
+cd5125d8f518 ("netfilter: nf_tables: split set destruction in deactivate
+and destroy phase") introduces conditional destruction on the object to
+accomodate transaction semantics.
 
-The testcase ended in a rsb on the rsb keep data structure with a
-refcount of 1 but no lkb was associated with it, which is itself
-an invalid behaviour. A side effect of that was a condition in which
-the dlm was sending remove messages in a looping behaviour. With this
-patch that has not been reproduced.
+nft_expr_init() calls expr->ops->init() first, then check for
+NFT_STATEFUL_EXPR, this stills allows to initialize a non-stateful
+lookup expressions which points to a set, which might lead to UAF since
+the set is not properly detached from the set->binding for this case.
+Anyway, this combination is non-sense from nf_tables perspective.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Alexander Aring <aahringo@redhat.com>
-Signed-off-by: David Teigland <teigland@redhat.com>
+This patch fixes this problem by checking for NFT_STATEFUL_EXPR before
+expr->ops->init() is called.
+
+The reporter provides a KASAN splat and a poc reproducer (similar to
+those autogenerated by syzbot to report use-after-free errors). It is
+unknown to me if they are using syzbot or if they use similar automated
+tool to locate the bug that they are reporting.
+
+For the record, this is the KASAN splat.
+
+[   85.431824] ==================================================================
+[   85.432901] BUG: KASAN: use-after-free in nf_tables_bind_set+0x81b/0xa20
+[   85.433825] Write of size 8 at addr ffff8880286f0e98 by task poc/776
+[   85.434756]
+[   85.434999] CPU: 1 PID: 776 Comm: poc Tainted: G        W         5.18.0+ #2
+[   85.436023] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
+
+Fixes: 0b2d8a7b638b ("netfilter: nf_tables: add helper functions for expression handling")
+Reported-and-tested-by: Aaron Adams <edg-e@nccgroup.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+[Ajay: Regenerated the patch for v5.4.y]
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/dlm/lock.c |   11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ net/netfilter/nf_tables_api.c |   16 ++++++++++------
+ net/netfilter/nft_dynset.c    |    3 ---
+ 2 files changed, 10 insertions(+), 9 deletions(-)
 
---- a/fs/dlm/lock.c
-+++ b/fs/dlm/lock.c
-@@ -1551,6 +1551,7 @@ static int _remove_from_waiters(struct d
- 		lkb->lkb_wait_type = 0;
- 		lkb->lkb_flags &= ~DLM_IFL_OVERLAP_CANCEL;
- 		lkb->lkb_wait_count--;
-+		unhold_lkb(lkb);
- 		goto out_del;
- 	}
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -2267,27 +2267,31 @@ struct nft_expr *nft_expr_init(const str
  
-@@ -1577,6 +1578,7 @@ static int _remove_from_waiters(struct d
- 		log_error(ls, "remwait error %x reply %d wait_type %d overlap",
- 			  lkb->lkb_id, mstype, lkb->lkb_wait_type);
- 		lkb->lkb_wait_count--;
-+		unhold_lkb(lkb);
- 		lkb->lkb_wait_type = 0;
- 	}
+ 	err = nf_tables_expr_parse(ctx, nla, &info);
+ 	if (err < 0)
+-		goto err1;
++		goto err_expr_parse;
++
++	err = -EOPNOTSUPP;
++	if (!(info.ops->type->flags & NFT_EXPR_STATEFUL))
++		goto err_expr_stateful;
  
-@@ -5312,11 +5314,16 @@ int dlm_recover_waiters_post(struct dlm_
- 		lkb->lkb_flags &= ~DLM_IFL_OVERLAP_UNLOCK;
- 		lkb->lkb_flags &= ~DLM_IFL_OVERLAP_CANCEL;
- 		lkb->lkb_wait_type = 0;
--		lkb->lkb_wait_count = 0;
-+		/* drop all wait_count references we still
-+		 * hold a reference for this iteration.
-+		 */
-+		while (lkb->lkb_wait_count) {
-+			lkb->lkb_wait_count--;
-+			unhold_lkb(lkb);
-+		}
- 		mutex_lock(&ls->ls_waiters_mutex);
- 		list_del_init(&lkb->lkb_wait_reply);
- 		mutex_unlock(&ls->ls_waiters_mutex);
--		unhold_lkb(lkb); /* for waiters list */
+ 	err = -ENOMEM;
+ 	expr = kzalloc(info.ops->size, GFP_KERNEL);
+ 	if (expr == NULL)
+-		goto err2;
++		goto err_expr_stateful;
  
- 		if (oc || ou) {
- 			/* do an unlock or cancel instead of resending */
+ 	err = nf_tables_newexpr(ctx, &info, expr);
+ 	if (err < 0)
+-		goto err3;
++		goto err_expr_new;
+ 
+ 	return expr;
+-err3:
++err_expr_new:
+ 	kfree(expr);
+-err2:
++err_expr_stateful:
+ 	owner = info.ops->type->owner;
+ 	if (info.ops->type->release_ops)
+ 		info.ops->type->release_ops(info.ops);
+ 
+ 	module_put(owner);
+-err1:
++err_expr_parse:
+ 	return ERR_PTR(err);
+ }
+ 
+--- a/net/netfilter/nft_dynset.c
++++ b/net/netfilter/nft_dynset.c
+@@ -204,9 +204,6 @@ static int nft_dynset_init(const struct
+ 			return PTR_ERR(priv->expr);
+ 
+ 		err = -EOPNOTSUPP;
+-		if (!(priv->expr->ops->type->flags & NFT_EXPR_STATEFUL))
+-			goto err1;
+-
+ 		if (priv->expr->ops->type->flags & NFT_EXPR_GC) {
+ 			if (set->flags & NFT_SET_TIMEOUT)
+ 				goto err1;
 
 
