@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 673BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:48:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9397DCCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:48:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345150AbiFMUr5 (ORCPT
+        id S1347577AbiFMUsR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:47:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52610 "EHLO
+        Mon, 13 Jun 2022 16:48:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350763AbiFMUqK (ORCPT
+        with ESMTP id S244816AbiFMUqe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:46:10 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4FD1FCD
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:57:28 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id 184so6469706pga.12
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:57:28 -0700 (PDT)
+        Mon, 13 Jun 2022 16:46:34 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFA853138E
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:57:48 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id d129so6484578pgc.9
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:57:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=M1UYg7GTMwR8QvyF4WdR5Vji0u2SBVcigVMf7Zaauyw=;
-        b=EFASMhPxpi6FpSPPbhA4uIbL4jXzSRVgwCZf55APSkj+/eWAdAy8zvth5EBe2WERCi
-         cDGiWOtOniXXOIBMYlZXBGOhh09bhJWtLzz03ZX+6JmHSdzd1T/MlQGnem73/WOdTT+v
-         ALYzBwhbtHI9GDakDwasxjMQV3KLjZzE1f84EBn9oYaedpyFKb09rruVziY96M9e3Arg
-         tkfD2u8e1HkkbaSXwA1Atuva5Im7G6tJYq72sqiTRNzjOCe8UDRnawXFQ3uInBmpEoLZ
-         /49q91RgMJfoxOeMozLo4SpDinJna4mxoqvs687H+ikEiUHR2xU1+PXsepQJO79Pdd/s
-         XM6A==
+        bh=J8i7pxRlATiJaJBMzj2+HHtob8Vj/qK6ZZPtSwIgoXA=;
+        b=4qrarwpvCbsYDA44xLBUmDZl3kMBPWrb+F1ZrdAepjnpLQDfe+RK2X+Qb1qy2HapQj
+         4451teUpU/58Miy4Ynx46DefK0t5OD4nXXCM25B11//M6G0FmbHeFYSzhL9MJuF6Zd83
+         UGxn9A6rgvd1Wj1l+x0C4pKUcBryFEJIHgp62bC/EKjCI9hr1mxOjIN/zggt56yOIu1L
+         sanCt6I/aOxlK/r1yTsCMVKWZYtDSeCE67NyH42occfi4WX9xoGOB5b5X/UxVbc/NtFu
+         1apJZ9JVsNYbZunD+od5wCTrHxE9G2NblKyZknT/uhu1qv1qW6L/3DnXsFrwncbu7gu9
+         zInA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=M1UYg7GTMwR8QvyF4WdR5Vji0u2SBVcigVMf7Zaauyw=;
-        b=GOuRX9lb4JiO5kv9rEhXLd1Iqe8yDfeNscsa+bStKDRTMAxuMZiH1cWEvNE4orgFvn
-         DgxwxVOZco/9+P14ZRF8x55Tdect2DXnFvV5XfW7o915F830a4+XQyAnlB9qSuyBV7l+
-         QjCA3UXTmNjSeZuzSCE2p/+yZNZW7cksJgtsfbcJ/QnIB6hwKiRxBOY/FVLm6sQfDJWf
-         VSFqy1Sua68VmQZ97eFzhiaibFwRdWHIbT+DO5C9KuWbuGQNRRL+I+fDOaYHvJarmu1u
-         U76DZMngDsGZQgUkgYVVmT3EZggxPWpgdFGcTNPquc5hf1g9gjrUCQ8HyISGRZP+gwwW
-         wkbQ==
-X-Gm-Message-State: AOAM533/goCDjJQCn2YzOJNOZOq3M/qgrMc5IzSlej6spuVClfP62OR0
-        YHXoavMfgNG5smJkBKX8tJOU9g==
-X-Google-Smtp-Source: ABdhPJxZ2q40smO9yqIlwfspIo8/tXk9SfFuRqNdL0nhnFvTOu8EKTI+j14CKPw8n+7CXVPu4OrTgA==
-X-Received: by 2002:a63:b55:0:b0:3fd:a384:bd10 with SMTP id a21-20020a630b55000000b003fda384bd10mr1102840pgl.534.1655150248432;
-        Mon, 13 Jun 2022 12:57:28 -0700 (PDT)
+        bh=J8i7pxRlATiJaJBMzj2+HHtob8Vj/qK6ZZPtSwIgoXA=;
+        b=VZODIbRk8fQ4n35Vg+6aA2JMszgHjEFJ7vo/y31iINwfPQg1BBhmENTjzgTj8tFU5o
+         yzSwV1SgJIDw15R0baf3KbrPcfWv81JxpuEflzpnvePcxI2vbQCVrXHuhAwJSHH/LN4s
+         AIOwXv19B4ryG8Y2ogLX3y4z10iFeOGU+h2oSTuMShVS3WgbtwiqK1PaNT0wgNhxT729
+         IqF0FsQG/AQMuA/TZ6Bi9SJn9JeER+43P7svW8Kei7V/xzjfFiIfrvVyUwc0nlAYlsXS
+         NF8jRMDYC7V19t9svJHO0z5h4k8IaswviCpAHCYBK/y6zvBcvjZNAtsEzRxVBwGU1qSq
+         FF0w==
+X-Gm-Message-State: AOAM533X9wG1bj+msokdE3vjNsrDzRH7XUPBH6BB0a08KYzdWgDrz3CC
+        wJgSrQvPEdF2/W35wRAVZjP18A==
+X-Google-Smtp-Source: ABdhPJyVrR6Wo8rj+rowp622HlFPPwHbw9lplrBcYIho2FBEyOY5wXti9Sz89w7Ii5CZaDeZigAAEw==
+X-Received: by 2002:a62:a50c:0:b0:510:6b52:cd87 with SMTP id v12-20020a62a50c000000b005106b52cd87mr985088pfm.30.1655150268035;
+        Mon, 13 Jun 2022 12:57:48 -0700 (PDT)
 Received: from platform-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id q21-20020a170902edd500b0016797c33b6csm5509357plk.116.2022.06.13.12.57.26
+        by smtp.gmail.com with ESMTPSA id q21-20020a170902edd500b0016797c33b6csm5509357plk.116.2022.06.13.12.57.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 12:57:28 -0700 (PDT)
+        Mon, 13 Jun 2022 12:57:47 -0700 (PDT)
 From:   Brad Larson <brad@pensando.io>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
@@ -62,9 +62,9 @@ Cc:     linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
         robh+dt@kernel.org, samuel@sholland.org, fancer.lancer@gmail.com,
         suravee.suthikulpanit@amd.com, thomas.lendacky@amd.com,
         ulf.hansson@linaro.org, will@kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH v5 03/15] dt-bindings: spi: cdns: Add compatible for AMD Pensando Elba SoC
-Date:   Mon, 13 Jun 2022 12:56:46 -0700
-Message-Id: <20220613195658.5607-4-brad@pensando.io>
+Subject: [PATCH v5 12/15] spi: dw: Add support for AMD Pensando Elba SoC
+Date:   Mon, 13 Jun 2022 12:56:55 -0700
+Message-Id: <20220613195658.5607-13-brad@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220613195658.5607-1-brad@pensando.io>
 References: <20220613195658.5607-1-brad@pensando.io>
@@ -74,42 +74,108 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Brad Larson <blarson@amd.com>
 
-Document the cadence qspi controller compatible for AMD Pensando
-Elba SoC boards.  The Elba qspi fifo size is 1024.
+The AMD Pensando Elba SoC includes a DW apb_ssi v4 controller
+with device specific chip-select control.  The Elba SoC
+provides four chip-selects where the native DW IP supports
+two chip-selects.  The Elba DW_SPI instance has two native
+CS signals that are always overridden.
 
 Signed-off-by: Brad Larson <blarson@amd.com>
 ---
- .../devicetree/bindings/spi/cdns,qspi-nor.yaml       | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/spi/spi-dw-mmio.c | 66 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 66 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml b/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml
-index 0a537fa3a641..9268a4882bfd 100644
---- a/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml
-+++ b/Documentation/devicetree/bindings/spi/cdns,qspi-nor.yaml
-@@ -20,11 +20,23 @@ allOf:
-       required:
-         - power-domains
+diff --git a/drivers/spi/spi-dw-mmio.c b/drivers/spi/spi-dw-mmio.c
+index 5101c4c6017b..6b7a557759bd 100644
+--- a/drivers/spi/spi-dw-mmio.c
++++ b/drivers/spi/spi-dw-mmio.c
+@@ -53,6 +53,24 @@ struct dw_spi_mscc {
+ 	void __iomem        *spi_mst; /* Not sparx5 */
+ };
  
-+  - if:
-+      properties:
-+        compatible:
-+          enum:
-+            - amd,pensando-elba-qspi
-+    then:
-+      properties:
-+        cdns,fifo-depth:
-+          enum: [ 128, 256, 1024 ]
-+          default: 1024
++struct dw_spi_elba {
++	struct regmap *syscon;
++};
 +
- properties:
-   compatible:
-     oneOf:
-       - items:
-           - enum:
-+              - amd,pensando-elba-qspi
-               - ti,k2g-qspi
-               - ti,am654-ospi
-               - intel,lgm-qspi
++/*
++ * Elba SoC does not use ssi, pin override is used for cs 0,1 and
++ * gpios for cs 2,3 as defined in the device tree.
++ *
++ * cs:  |       1               0
++ * bit: |---3-------2-------1-------0
++ *      |  cs1   cs1_ovr   cs0   cs0_ovr
++ */
++#define ELBA_SPICS_REG			0x2468
++#define ELBA_SPICS_SHIFT(cs)		(2 * (cs))
++#define ELBA_SPICS_MASK(cs)		(0x3 << ELBA_SPICS_SHIFT(cs))
++#define ELBA_SPICS_SET(cs, val)	\
++			((((val) << 1) | 0x1) << ELBA_SPICS_SHIFT(cs))
++
+ /*
+  * The Designware SPI controller (referred to as master in the documentation)
+  * automatically deasserts chip select when the tx fifo is empty. The chip
+@@ -238,6 +256,53 @@ static int dw_spi_canaan_k210_init(struct platform_device *pdev,
+ 	return 0;
+ }
+ 
++static void dw_spi_elba_override_cs(struct dw_spi_elba *dwselba, int cs, int enable)
++{
++	regmap_update_bits(dwselba->syscon, ELBA_SPICS_REG, ELBA_SPICS_MASK(cs),
++			   ELBA_SPICS_SET(cs, enable));
++}
++
++static void dw_spi_elba_set_cs(struct spi_device *spi, bool enable)
++{
++	struct dw_spi *dws = spi_master_get_devdata(spi->master);
++	struct dw_spi_mmio *dwsmmio = container_of(dws, struct dw_spi_mmio, dws);
++	struct dw_spi_elba *dwselba = dwsmmio->priv;
++	u8 cs;
++
++	cs = spi->chip_select;
++	if (cs < 2)
++		dw_spi_elba_override_cs(dwselba, spi->chip_select, enable);
++
++	/*
++	 * The DW SPI controller needs a native CS bit selected to start
++	 * the serial engine.
++	 */
++	spi->chip_select = 0;
++	dw_spi_set_cs(spi, enable);
++	spi->chip_select = cs;
++}
++
++static int dw_spi_elba_init(struct platform_device *pdev,
++			    struct dw_spi_mmio *dwsmmio)
++{
++	struct dw_spi_elba *dwselba;
++	struct regmap *regmap;
++
++	regmap = syscon_regmap_lookup_by_compatible("amd,pensando-elba-syscon");
++	if (IS_ERR(regmap))
++		return PTR_ERR(regmap);
++
++	dwselba = devm_kzalloc(&pdev->dev, sizeof(*dwselba), GFP_KERNEL);
++	if (!dwselba)
++		return -ENOMEM;
++	dwselba->syscon = regmap;
++
++	dwsmmio->priv = dwselba;
++	dwsmmio->dws.set_cs = dw_spi_elba_set_cs;
++
++	return 0;
++}
++
+ static int dw_spi_mmio_probe(struct platform_device *pdev)
+ {
+ 	int (*init_func)(struct platform_device *pdev,
+@@ -352,6 +417,7 @@ static const struct of_device_id dw_spi_mmio_of_match[] = {
+ 	{ .compatible = "intel,keembay-ssi", .data = dw_spi_keembay_init},
+ 	{ .compatible = "microchip,sparx5-spi", dw_spi_mscc_sparx5_init},
+ 	{ .compatible = "canaan,k210-spi", dw_spi_canaan_k210_init},
++	{ .compatible = "amd,pensando-elba-spi", .data = dw_spi_elba_init},
+ 	{ /* end of table */}
+ };
+ MODULE_DEVICE_TABLE(of, dw_spi_mmio_of_match);
 -- 
 2.17.1
 
