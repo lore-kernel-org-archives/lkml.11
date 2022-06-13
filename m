@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BE63C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:51:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B897C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:51:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379814AbiFMNvT (ORCPT
+        id S1379849AbiFMNva (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:51:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42640 "EHLO
+        Mon, 13 Jun 2022 09:51:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379622AbiFMNoq (ORCPT
+        with ESMTP id S1379647AbiFMNou (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:44:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0BBB21D;
-        Mon, 13 Jun 2022 04:32:19 -0700 (PDT)
+        Mon, 13 Jun 2022 09:44:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCFD2387;
+        Mon, 13 Jun 2022 04:32:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14AEEB80E59;
-        Mon, 13 Jun 2022 11:32:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75BF5C34114;
-        Mon, 13 Jun 2022 11:32:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 543D960F18;
+        Mon, 13 Jun 2022 11:32:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 613DCC34114;
+        Mon, 13 Jun 2022 11:32:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119936;
-        bh=mzQkOGi6Z/4axvMuJrr6EBChc74BlEAhUFAbMuOYvy4=;
+        s=korg; t=1655119939;
+        bh=2pZZmn90fZNl8oQ1llHY7CXKxY/XUUSbCwhFa6pV6uM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JtgufO27FuLy50719JkQd8jKRKG3OfxnpBPe3Ib9x7qAdpezk/so+vFNIIgpeESbW
-         QJEJfR5ToHehAp8mO3UppSDM2cX4lAnOBRVzHLLBkOB97ELD9/RbBpBPChM9GfsGRV
-         aXP7U2Gvp0NMX+CzFtDz9/Am9SY/XowgZKrQXD+0=
+        b=oznKMb9YGVXDhXAktJm3Aks/rGdj7VhzXc6q1M8O2cTtRKtR6oL1dB9plsZ+b52Bm
+         oXw73rHpYvaAkFmIOoJCCTPV1ksFcgNwBLa1uIN8hapEj2gCJmhTSej2DrCQXzDdMh
+         f4PugjORVMFqT6bhsewP5wzKoZ6oMPF/RpGXgfQo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Chao Yu <chao.yu@oppo.com>,
+        Jaegeuk Kim <jaegeuk@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 192/339] amt: fix possible null-ptr-deref in amt_rcv()
-Date:   Mon, 13 Jun 2022 12:10:17 +0200
-Message-Id: <20220613094932.493965447@linuxfoundation.org>
+Subject: [PATCH 5.18 175/339] f2fs: fix to tag gcing flag on page during file defragment
+Date:   Mon, 13 Jun 2022 12:10:00 +0200
+Message-Id: <20220613094931.984935186@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -52,42 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Taehee Yoo <ap420073@gmail.com>
+From: Chao Yu <chao@kernel.org>
 
-[ Upstream commit d16207f92a4a823c48b4ea953ad51f4483456768 ]
+[ Upstream commit 2d1fe8a86bf5e0663866fd0da83c2af1e1b0e362 ]
 
-When amt interface receives amt message, it tries to obtain amt private
-data from sock.
-If there is no amt private data, it frees an skb immediately.
-After kfree_skb(), it increases the rx_dropped stats.
-But in order to use rx_dropped, amt private data is needed.
-So, it makes amt_rcv() to do not increase rx_dropped stats when it can
-not obtain amt private data.
+In order to garantee migrated data be persisted during checkpoint,
+otherwise out-of-order persistency between data and node may cause
+data corruption after SPOR.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Fixes: 1a1a0e80e005 ("amt: fix possible memory leak in amt_rcv()")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/amt.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ fs/f2fs/file.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/amt.c b/drivers/net/amt.c
-index fbb03562cb95..2815db7ee2a3 100644
---- a/drivers/net/amt.c
-+++ b/drivers/net/amt.c
-@@ -2698,7 +2698,8 @@ static int amt_rcv(struct sock *sk, struct sk_buff *skb)
- 	amt = rcu_dereference_sk_user_data(sk);
- 	if (!amt) {
- 		err = true;
--		goto drop;
-+		kfree_skb(skb);
-+		goto out;
- 	}
+diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
+index 176e97b985e6..5d1b97e852e7 100644
+--- a/fs/f2fs/file.c
++++ b/fs/f2fs/file.c
+@@ -2687,6 +2687,7 @@ static int f2fs_defragment_range(struct f2fs_sb_info *sbi,
+ 			}
  
- 	skb->dev = amt->dev;
+ 			set_page_dirty(page);
++			set_page_private_gcing(page);
+ 			f2fs_put_page(page, 1);
+ 
+ 			idx++;
 -- 
 2.35.1
 
