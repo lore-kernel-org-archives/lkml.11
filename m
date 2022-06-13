@@ -2,96 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B9C9C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:10:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BB23CCA483
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:10:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347254AbiFMTKj (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:10:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56070 "EHLO
+        id S242187AbiFMTKp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 15:10:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346763AbiFMTIG (ORCPT
+        with ESMTP id S1349241AbiFMTIo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 15:08:06 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ACBD26134
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:04:14 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id 129so6092474pgc.2
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:04:14 -0700 (PDT)
+        Mon, 13 Jun 2022 15:08:44 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E17650028
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:06:02 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id c21so7960675wrb.1
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:06:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=mYjZASrY0U2vsg4+Z3fayp87EJ3UDw4wIJr7nvni9Ek=;
-        b=kNia3fP4ii7v3FKDIFgRBPRWs8JCjCOQhwBs1YRrgihciGcfP3UczdQ1NP3WROY9gc
-         SZq3nrWT95sCnM+OdH/rH54w6vklvee85Zaway/3supSPaXdEbvAZ28Zcq2Eshaug/N/
-         holljJi3raKp7VZN0MKBK/+0OmDZGbgPymy7Y=
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KoHbfQqPxgY9yzkcDMM8WJkeOP/2rasHhf0aBaG7YMk=;
+        b=CGQlrM5BP7x7O5U5HXhVD5E6vhiC48JFPNq/iEHbZugUGF1PH9mRo1PEbdLg95PhIT
+         85sgUpFKPx6kQ0goj4wa4ZGoO+Agj+ijb78wILvKTIUWV4R1ylkwaTwj+QJNJ59U3kV2
+         EvmdCDyDRC6z34zBOyxBfhggAWuE5PeN3eIW7NxGN0nA1/Ff9Mlb5Dpwf6qQHpvIU873
+         CYR4KBRtjQ6a/yi3Qft7sU6fZOAU5sBJsiPl6NCNDhcKTH294QdGfYDpV70YW4zda0vY
+         0pahJvLUSaRLuf63uiUYZCaC4Jvi0Vs7J+7ZzBHghgaKHmKJvIquFADEf+ZbvuP2pIaT
+         t5GA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mYjZASrY0U2vsg4+Z3fayp87EJ3UDw4wIJr7nvni9Ek=;
-        b=do49fy4MyKxNJ1Q0gE5uJEruh+ZphgW5Zhwa7C/Hyli8A1pRHZtq+TOAupFmtzO/yK
-         4Yh3CtZbFi5Meo6uLEFTw7ZRI8Tef1Jc1M5C+45jl1b/E6LDkSDZSSEHDHahL8434BOU
-         /ApB3FFVROQj4Zd02J0YPuKIYSn7u/eSAWmUvdnWzY7v96rPojQ7zLT/wjnt8K/owRt/
-         kZ1Hmv/PQ+D33pzYGRfIyH1TaPDo/DHxqbgjgZdCblTw9t1QZu4XcwJ3nxRZHJ56qVfs
-         cEiok2qQNCYRBdEFNR5fzFbNLk+0HyNAnNnxS4b+WvBQiK8LQDVeN2I6AjNynw4JOGqE
-         b8Wg==
-X-Gm-Message-State: AOAM533StX8WH7CwVLXe+1txUdgY8/zRnDNYYGy00dHosXKlg2wX+RUa
-        MN/btygeQo8mdp4q4KF2fY0EqA==
-X-Google-Smtp-Source: ABdhPJxK4IuPlzJj4yZnVw7e7eKF60w/wpE1r9dvdOhFJv4qrE5RYKrR7ZvbsO0AYyeNTkD2MhrnGQ==
-X-Received: by 2002:a05:6a00:8d3:b0:51e:740f:8d60 with SMTP id s19-20020a056a0008d300b0051e740f8d60mr269277pfu.55.1655139853944;
-        Mon, 13 Jun 2022 10:04:13 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id h30-20020aa79f5e000000b00519cfca8e30sm5615501pfr.209.2022.06.13.10.04.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 10:04:13 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 10:04:12 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Sami Tolvanen <samitolvanen@google.com>
-Cc:     linux-kernel@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        linux-hardening@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, llvm@lists.linux.dev
-Subject: Re: [RFC PATCH v3 00/20] KCFI support
-Message-ID: <202206131001.6BA9933C@keescook>
-References: <20220610233513.1798771-1-samitolvanen@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KoHbfQqPxgY9yzkcDMM8WJkeOP/2rasHhf0aBaG7YMk=;
+        b=ffk21EnCx8vvu4d4hc8+OUW/q8pV1RCHw94G25ATBUTaRDMJc67LQryNcB2WqGWjat
+         LFQFm6OPAiKLqWmJxumcs+iKX70Cnk8nLOF8jKR3w92gS971slbpPvimkyXRSfMXTa13
+         STmMAtSTjxjHYc9JZCFFTLMK3h48Ql0RssVUr5ESicFgJ0WQ0bmr8OsExb9RAea2U769
+         8W1QEXyXSDjexJLkvEpdQNzpjH7nap75OuMGNXA+f+Lvgz74TvHSctibHASFV5eubJn6
+         wodBjPyJvmh4KDARbq+OPX2ji6PdU3SmzHliCz8S5EcbOdMmQCopbALxEJhopCe7zh5Y
+         X0Kw==
+X-Gm-Message-State: AJIora+1GMrMhYKb2vSWO0UxYlZI+Z0B1jt/v8cSEoh2BqL6TobRIQx/
+        J80TB8S0f0dUCIoN/jDVyjtDNvy2exbdQcmklfEydQ==
+X-Google-Smtp-Source: AGRyM1vH+ZqkS8LKL5LOCrHzAkkw8d8wc3YcYVokHj4BKFHYsc3/bdOlTwXRmbj6z9xJr4PtQ+69Y4b8cHmSbVkBgOY=
+X-Received: by 2002:adf:f688:0:b0:215:6e4d:4103 with SMTP id
+ v8-20020adff688000000b002156e4d4103mr779245wrp.372.1655139960476; Mon, 13 Jun
+ 2022 10:06:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220610233513.1798771-1-samitolvanen@google.com>
+References: <20220610194435.2268290-7-yosryahmed@google.com>
+ <202206110544.D5cTU0WQ-lkp@intel.com> <CAJD7tkZqCrqx0UFHVXv3VMNNk8YJrJGtVVy_tP3GDTryh375PQ@mail.gmail.com>
+ <20220611195706.j62cqsodmlnd2ba3@macbook-pro-3.dhcp.thefacebook.com>
+In-Reply-To: <20220611195706.j62cqsodmlnd2ba3@macbook-pro-3.dhcp.thefacebook.com>
+From:   Yosry Ahmed <yosryahmed@google.com>
+Date:   Mon, 13 Jun 2022 10:05:24 -0700
+Message-ID: <CAJD7tkba1Ojd+jd7WCa5Lc4sr=3e=4E4_UviHyhLtPfxZcyzpA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 6/8] cgroup: bpf: enable bpf programs to
+ integrate with rstat
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     kernel test robot <lkp@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Michal Hocko <mhocko@kernel.org>, kbuild-all@lists.01.org,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        David Rientjes <rientjes@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 04:34:53PM -0700, Sami Tolvanen wrote:
-> KCFI is a proposed forward-edge control-flow integrity scheme for
-> Clang, which is more suitable for kernel use than the existing CFI
-> scheme used by CONFIG_CFI_CLANG. KCFI doesn't require LTO, doesn't
-> alter function references to point to a jump table, and won't break
-> function address equality. The latest LLVM patch is here:
-> 
->   https://reviews.llvm.org/D119296
-> 
-> This RFC series replaces the current arm64 CFI implementation with
-> KCFI and adds support for x86_64.
+On Sat, Jun 11, 2022 at 12:57 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Fri, Jun 10, 2022 at 02:30:00PM -0700, Yosry Ahmed wrote:
+> >
+> > AFAICT these failures are because the patch series depends on a patch
+> > in the mailing list [1] that is not in bpf-next, as explained by the
+> > cover letter.
+> >
+> > [1] https://lore.kernel.org/bpf/20220421140740.459558-5-benjamin.tissoires@redhat.com/
+>
+> You probably want to rebase and include that patch as patch 1 in your series
+> preserving Benjamin's SOB and cc-ing him on the series.
+> Otherwise we cannot land the set, BPF CI cannot test it, and review is hard to do.
 
-I think the "RFC" prefix for this series can be dropped. :)
-
-It looks to me like all of Peter's concerns have been addressed. I'd say
-let's get the Clang side landed, and once that's done, land this via x86
--tip?
-
-Peter and Will does this sound right to you? It touches arm64, so if
--tip isn't okay, I could take it in one of my trees?
-
--- 
-Kees Cook
+Sounds good. Will rebase do that and send a v3.
