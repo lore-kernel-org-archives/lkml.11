@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4619C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:36:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D233FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:36:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377473AbiFMNgJ (ORCPT
+        id S1377967AbiFMNgL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:36:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46912 "EHLO
+        Mon, 13 Jun 2022 09:36:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378129AbiFMNay (ORCPT
+        with ESMTP id S1378335AbiFMNbV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:30:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57C1CEBA;
-        Mon, 13 Jun 2022 04:25:41 -0700 (PDT)
+        Mon, 13 Jun 2022 09:31:21 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48C2E70345;
+        Mon, 13 Jun 2022 04:25:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A091560F18;
-        Mon, 13 Jun 2022 11:25:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE387C36B08;
-        Mon, 13 Jun 2022 11:25:39 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B6C6FCE1184;
+        Mon, 13 Jun 2022 11:25:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF1DFC3411E;
+        Mon, 13 Jun 2022 11:25:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119540;
-        bh=IVjXOW8RIGiL5phsUl4Pc2qplnLo+TV0JfVmuDGxz8s=;
+        s=korg; t=1655119554;
+        bh=1okDpxG+2HAeH3YlR9vj5KO6UWz/SMYp93/ULZFDgus=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q0Z7AZWIdHFJICfDKuNl+ikDdZdLQ/3WKPS10T/X+xrD3xdLZ74cu9Ii19lduY4lB
-         55OZbLqCpC+SH/COGTqTCTSqdZ9po99qSCP5qYWl4fYx5gZ6zueHSCkHx64iHiO5xQ
-         v4l6pvhZUoAfh7MkJ0+7z2S1L3/wypjHRGC7S7Qo=
+        b=iyBXpyPh4Ob2CIHFLACGvYDm/52WJsXHxdvYPtZj7NSuhgo7pU+CTvWhJamjQ453p
+         B/N0O0M+QH3SR4xDag7lzbBhVd/KrlcnlB4reZKOuYF38xfoyDSo845iENV/vrT1yn
+         7eSp3HVEQiSZZfGcY4wfDb0EUq7DV6xYRMtawzXs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Li Jun <jun.li@nxp.com>, Chanwoo Choi <cw00.choi@samsung.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 020/339] usb: musb: Fix missing of_node_put() in omap2430_probe
-Date:   Mon, 13 Jun 2022 12:07:25 +0200
-Message-Id: <20220613094927.121085023@linuxfoundation.org>
+Subject: [PATCH 5.18 055/339] extcon: ptn5150: Add queue work sync before driver release
+Date:   Mon, 13 Jun 2022 12:08:00 +0200
+Message-Id: <20220613094928.191538668@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -49,34 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Li Jun <jun.li@nxp.com>
 
-[ Upstream commit 424bef51fa530389b0b9008c9e144e40c10e8458 ]
+[ Upstream commit 782cd939cbe0f569197cd1c9b0477ee213167f04 ]
 
-The device_node pointer is returned by of_parse_phandle() with refcount
-incremented. We should use of_node_put() on it when done.
+Add device managed action to sync pending queue work, otherwise
+the queued work may run after the work is destroyed.
 
-Fixes: 8934d3e4d0e7 ("usb: musb: omap2430: Don't use omap_get_control_dev()")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220309111033.24487-1-linmq006@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 4ed754de2d66 ("extcon: Add support for ptn5150 extcon driver")
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Li Jun <jun.li@nxp.com>
+Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/musb/omap2430.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/extcon/extcon-ptn5150.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/usb/musb/omap2430.c b/drivers/usb/musb/omap2430.c
-index d2b7e613eb34..f571a65ae6ee 100644
---- a/drivers/usb/musb/omap2430.c
-+++ b/drivers/usb/musb/omap2430.c
-@@ -362,6 +362,7 @@ static int omap2430_probe(struct platform_device *pdev)
- 	control_node = of_parse_phandle(np, "ctrl-module", 0);
- 	if (control_node) {
- 		control_pdev = of_find_device_by_node(control_node);
-+		of_node_put(control_node);
- 		if (!control_pdev) {
- 			dev_err(&pdev->dev, "Failed to get control device\n");
- 			ret = -EINVAL;
+diff --git a/drivers/extcon/extcon-ptn5150.c b/drivers/extcon/extcon-ptn5150.c
+index 5b9a3cf8df26..2a7874108df8 100644
+--- a/drivers/extcon/extcon-ptn5150.c
++++ b/drivers/extcon/extcon-ptn5150.c
+@@ -194,6 +194,13 @@ static int ptn5150_init_dev_type(struct ptn5150_info *info)
+ 	return 0;
+ }
+ 
++static void ptn5150_work_sync_and_put(void *data)
++{
++	struct ptn5150_info *info = data;
++
++	cancel_work_sync(&info->irq_work);
++}
++
+ static int ptn5150_i2c_probe(struct i2c_client *i2c)
+ {
+ 	struct device *dev = &i2c->dev;
+@@ -284,6 +291,10 @@ static int ptn5150_i2c_probe(struct i2c_client *i2c)
+ 	if (ret)
+ 		return -EINVAL;
+ 
++	ret = devm_add_action_or_reset(dev, ptn5150_work_sync_and_put, info);
++	if (ret)
++		return ret;
++
+ 	/*
+ 	 * Update current extcon state if for example OTG connection was there
+ 	 * before the probe
 -- 
 2.35.1
 
