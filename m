@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 171D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:26:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01D05C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:26:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244516AbiFMK0l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:26:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45692 "EHLO
+        id S244558AbiFMK0q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:26:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245439AbiFMKYl (ORCPT
+        with ESMTP id S245417AbiFMKYj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:24:41 -0400
+        Mon, 13 Jun 2022 06:24:39 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52DFBDEEB;
-        Mon, 13 Jun 2022 03:19:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADF9BCE1E;
+        Mon, 13 Jun 2022 03:19:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E24DB60AE6;
-        Mon, 13 Jun 2022 10:19:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA524C34114;
-        Mon, 13 Jun 2022 10:19:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 437FC60AE7;
+        Mon, 13 Jun 2022 10:19:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 554C7C34114;
+        Mon, 13 Jun 2022 10:18:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115545;
-        bh=UXNWwokMFBEXV9YK4jvGcZ5ekW+m7+NpJOTBgQ5x0mQ=;
+        s=korg; t=1655115539;
+        bh=AQWhoYE5i3A/aRNfvTMVQ3y/FBcBv5MortRqr/HeOV0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f8GdETM9jM9Ua8jozdDFeDZnObF4HVA3DlC4g0v5ExDf9fu3DHQYe5wBFbk9ZK9eA
-         hk2Rak73sJrswLxqiYUUC+89lkU+QF5jzRExs50dAFmW/HoF1N6TRsEFNMNNEgbsjV
-         HsF8OKnMl4dv01QZJejyE03J0UVm6Rb4qnilVAXQ=
+        b=piMR/mMH8v09SofDcXkzsmaryyv7PFcDLoeY2Ex7tW2tDVkdSVuNpeEqTK7ZUWb7I
+         KaQmZ2p6Etd3gPiSzpGixhkDFPCZyfO36myrQuwfMmEvPtSciUX+U+4ryA+XwpgIED
+         YRnz4IqT2PF++90d5dQNAZfiHrqDdiMk/rEzAtXQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiao Yang <yangx.jy@fujitsu.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 4.9 105/167] RDMA/rxe: Generate a completion for unsupported/invalid opcode
-Date:   Mon, 13 Jun 2022 12:09:39 +0200
-Message-Id: <20220613094905.390238755@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 113/167] pwm: lp3943: Fix duty calculation in case period was clamped
+Date:   Mon, 13 Jun 2022 12:09:47 +0200
+Message-Id: <20220613094907.288759066@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -48,35 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiao Yang <yangx.jy@fujitsu.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-commit 2f917af777011c88e977b9b9a5d00b280d3a59ce upstream.
+[ Upstream commit 5e3b07ca5cc78cd4a987e78446849e41288d87cb ]
 
-Current rxe_requester() doesn't generate a completion when processing an
-unsupported/invalid opcode. If rxe driver doesn't support a new opcode
-(e.g. RDMA Atomic Write) and RDMA library supports it, an application
-using the new opcode can reproduce this issue. Fix the issue by calling
-"goto err;".
+The hardware only supports periods <= 1.6 ms and if a bigger period is
+requested it is clamped to 1.6 ms. In this case duty_cycle might be bigger
+than 1.6 ms and then the duty cycle register is written with a value
+bigger than LP3943_MAX_DUTY. So clamp duty_cycle accordingly.
 
-Fixes: 8700e3e7c485 ("Soft RoCE driver")
-Link: https://lore.kernel.org/r/20220410113513.27537-1-yangx.jy@fujitsu.com
-Signed-off-by: Xiao Yang <yangx.jy@fujitsu.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: af66b3c0934e ("pwm: Add LP3943 PWM driver")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/sw/rxe/rxe_req.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pwm/pwm-lp3943.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/infiniband/sw/rxe/rxe_req.c
-+++ b/drivers/infiniband/sw/rxe/rxe_req.c
-@@ -677,7 +677,7 @@ next_wqe:
- 	opcode = next_opcode(qp, wqe, wqe->wr.opcode);
- 	if (unlikely(opcode < 0)) {
- 		wqe->status = IB_WC_LOC_QP_OP_ERR;
--		goto exit;
-+		goto err;
- 	}
+diff --git a/drivers/pwm/pwm-lp3943.c b/drivers/pwm/pwm-lp3943.c
+index 872ea76a4f19..4612315687cd 100644
+--- a/drivers/pwm/pwm-lp3943.c
++++ b/drivers/pwm/pwm-lp3943.c
+@@ -128,6 +128,7 @@ static int lp3943_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	if (err)
+ 		return err;
  
- 	mask = rxe_opcode[opcode].mask;
++	duty_ns = min(duty_ns, period_ns);
+ 	val = (u8)(duty_ns * LP3943_MAX_DUTY / period_ns);
+ 
+ 	return lp3943_write_byte(lp3943, reg_duty, val);
+-- 
+2.35.1
+
 
 
