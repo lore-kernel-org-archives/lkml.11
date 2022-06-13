@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC622C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:57:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0DCFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:57:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357722AbiFML5V (ORCPT
+        id S1357736AbiFML5b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:57:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57126 "EHLO
+        Mon, 13 Jun 2022 07:57:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356540AbiFMLup (ORCPT
+        with ESMTP id S1356558AbiFMLup (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:50:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C59248F0;
-        Mon, 13 Jun 2022 03:54:20 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC1E42657B;
+        Mon, 13 Jun 2022 03:54:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C7FA160EFE;
-        Mon, 13 Jun 2022 10:54:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4361C3411C;
-        Mon, 13 Jun 2022 10:54:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8814960F9A;
+        Mon, 13 Jun 2022 10:54:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91361C34114;
+        Mon, 13 Jun 2022 10:54:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117659;
-        bh=X81TXcQsbM3JP+rnKmnLCWvuUufT7T3nLihF8iLBM0g=;
+        s=korg; t=1655117661;
+        bh=ix45NMYnhPTdqswFILcqFEMM4VRwxKhmL4d0TY9LdVY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qna38wUAvCaJbB4/pfaB4vBe/31EBjOhLjoq4ME4d8N6eS1ABhUtJB7DgjAIKk4Tj
-         IZi0vBazFl7ihDYQLMXMaTEQJKadl78thvxzg9T/KxcnCzUWD04rPPnqlt/+PdLuXe
-         9ixYNvUOEBVv2T7xdvMqgLBuqvJvtw1PghYVH3Q4=
+        b=yRn+ZeCBIhSvB4IuRiH/JA51OCI1j5Uxal4UpZbFIRKqTI/6TPwtXzmYm9PfLjFpH
+         hwQAdSCGZ88CA2PF6rjaTOGcjLnx3ovKWgz8G81dzC5HE/GlbJavXT5UtcLIHPwbb3
+         aLLBrXyBCwMnntSxFH7qpyO+EsH1/H2Myd/jlbYM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 072/287] HID: elan: Fix potential double free in elan_input_configured
-Date:   Mon, 13 Jun 2022 12:08:16 +0200
-Message-Id: <20220613094926.054136751@linuxfoundation.org>
+        stable@vger.kernel.org, NeilBrown <neilb@suse.de>,
+        Pascal Hambourg <pascal@plouf.fr.eu.org>,
+        Song Liu <song@kernel.org>
+Subject: [PATCH 5.4 410/411] md/raid0: Ignore RAID0 layout if the second zone has only one device
+Date:   Mon, 13 Jun 2022 12:11:23 +0200
+Message-Id: <20220613094941.114865346@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
-References: <20220613094923.832156175@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,51 +50,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Pascal Hambourg <pascal@plouf.fr.eu.org>
 
-[ Upstream commit 1af20714fedad238362571620be0bd690ded05b6 ]
+commit ea23994edc4169bd90d7a9b5908c6ccefd82fa40 upstream.
 
-'input' is a managed resource allocated with devm_input_allocate_device(),
-so there is no need to call input_free_device() explicitly or
-there will be a double free.
+The RAID0 layout is irrelevant if all members have the same size so the
+array has only one zone. It is *also* irrelevant if the array has two
+zones and the second zone has only one device, for example if the array
+has two members of different sizes.
 
-According to the doc of devm_input_allocate_device():
- * Managed input devices do not need to be explicitly unregistered or
- * freed as it will be done automatically when owner device unbinds from
- * its driver (or binding fails).
+So in that case it makes sense to allow assembly even when the layout is
+undefined, like what is done when the array has only one zone.
 
-Fixes: b7429ea53d6c ("HID: elan: Fix memleak in elan_input_configured")
-Fixes: 9a6a4193d65b ("HID: Add driver for USB ELAN Touchpad")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Acked-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reviewed-by: NeilBrown <neilb@suse.de>
+Signed-off-by: Pascal Hambourg <pascal@plouf.fr.eu.org>
+Signed-off-by: Song Liu <song@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/hid-elan.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/md/raid0.c |   31 ++++++++++++++++---------------
+ 1 file changed, 16 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/hid/hid-elan.c b/drivers/hid/hid-elan.c
-index 7139227edb28..63077fb23026 100644
---- a/drivers/hid/hid-elan.c
-+++ b/drivers/hid/hid-elan.c
-@@ -192,7 +192,6 @@ static int elan_input_configured(struct hid_device *hdev, struct hid_input *hi)
- 	ret = input_mt_init_slots(input, ELAN_MAX_FINGERS, INPUT_MT_POINTER);
- 	if (ret) {
- 		hid_err(hdev, "Failed to init elan MT slots: %d\n", ret);
--		input_free_device(input);
- 		return ret;
+--- a/drivers/md/raid0.c
++++ b/drivers/md/raid0.c
+@@ -143,21 +143,6 @@ static int create_strip_zones(struct mdd
+ 	pr_debug("md/raid0:%s: FINAL %d zones\n",
+ 		 mdname(mddev), conf->nr_strip_zones);
+ 
+-	if (conf->nr_strip_zones == 1) {
+-		conf->layout = RAID0_ORIG_LAYOUT;
+-	} else if (mddev->layout == RAID0_ORIG_LAYOUT ||
+-		   mddev->layout == RAID0_ALT_MULTIZONE_LAYOUT) {
+-		conf->layout = mddev->layout;
+-	} else if (default_layout == RAID0_ORIG_LAYOUT ||
+-		   default_layout == RAID0_ALT_MULTIZONE_LAYOUT) {
+-		conf->layout = default_layout;
+-	} else {
+-		pr_err("md/raid0:%s: cannot assemble multi-zone RAID0 with default_layout setting\n",
+-		       mdname(mddev));
+-		pr_err("md/raid0: please set raid0.default_layout to 1 or 2\n");
+-		err = -ENOTSUPP;
+-		goto abort;
+-	}
+ 	/*
+ 	 * now since we have the hard sector sizes, we can make sure
+ 	 * chunk size is a multiple of that sector size
+@@ -288,6 +273,22 @@ static int create_strip_zones(struct mdd
+ 			 (unsigned long long)smallest->sectors);
  	}
  
-@@ -204,7 +203,6 @@ static int elan_input_configured(struct hid_device *hdev, struct hid_input *hi)
- 		hid_err(hdev, "Failed to register elan input device: %d\n",
- 			ret);
- 		input_mt_destroy_slots(input);
--		input_free_device(input);
- 		return ret;
- 	}
++	if (conf->nr_strip_zones == 1 || conf->strip_zone[1].nb_dev == 1) {
++		conf->layout = RAID0_ORIG_LAYOUT;
++	} else if (mddev->layout == RAID0_ORIG_LAYOUT ||
++		   mddev->layout == RAID0_ALT_MULTIZONE_LAYOUT) {
++		conf->layout = mddev->layout;
++	} else if (default_layout == RAID0_ORIG_LAYOUT ||
++		   default_layout == RAID0_ALT_MULTIZONE_LAYOUT) {
++		conf->layout = default_layout;
++	} else {
++		pr_err("md/raid0:%s: cannot assemble multi-zone RAID0 with default_layout setting\n",
++		       mdname(mddev));
++		pr_err("md/raid0: please set raid0.default_layout to 1 or 2\n");
++		err = -EOPNOTSUPP;
++		goto abort;
++	}
++
+ 	pr_debug("md/raid0:%s: done.\n", mdname(mddev));
+ 	*private_conf = conf;
  
--- 
-2.35.1
-
 
 
