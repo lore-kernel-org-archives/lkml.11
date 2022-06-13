@@ -2,83 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAD9CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:19:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43E6CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:19:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352190AbiFMVTZ (ORCPT
+        id S1352108AbiFMVTy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 17:19:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49110 "EHLO
+        Mon, 13 Jun 2022 17:19:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242616AbiFMVSO (ORCPT
+        with ESMTP id S1351619AbiFMVTk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 17:18:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F30C7194;
-        Mon, 13 Jun 2022 14:00:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A19BDB815A5;
-        Mon, 13 Jun 2022 21:00:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F2B4C3411F;
-        Mon, 13 Jun 2022 21:00:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655154047;
-        bh=7cR/HIM39RZS+/Gct0Pn2ccowEs6vcCKYQXInEktR40=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OYLawBgGrChJgJnwK1oOYSdZnfgpnca8149uZFLeuqxofoDISTLKvJIx9JzswvwMH
-         tGCHsP70MdAvqXEQpJ+bIQrjRVs1P7GdiLh8S8wUk7STzYwW80H8V986q5KOY1QttW
-         rYrVcXdtyFKIUYe1HB1CajzBp0gF4Ik5AHZuquxLNapAbACU/AhKa+dXKC+d8hMuP1
-         F0Nkpb1AehPsFLM8e49OXdq25D9F5XHrDjquBQQtHoejofytcHIZBeNZPsO6k5yvUE
-         5oBfneOfSetCnZOE3RmuL5GItEIlt5wwVG6UoAf4cevBW9AI2BffpAA++LRcAHZr/p
-         uZAVPoOf6wBlg==
-From:   Dinh Nguyen <dinguyen@kernel.org>
-To:     jarkko.nikula@linux.intel.com
-Cc:     dinguyen@kernel.org, andriy.shevchenko@linux.intel.com,
-        mika.westerberg@linux.intel.com, robh+dt@kernel.org,
-        krzk+dt@kernel.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Mon, 13 Jun 2022 17:19:40 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8128A28E03;
+        Mon, 13 Jun 2022 14:02:30 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id n28so8868301edb.9;
+        Mon, 13 Jun 2022 14:02:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Q+yaULdwu+rPL5G3MbWME0SaA5eeeXALvtNnWDC8wYA=;
+        b=Z3Zp+je1tvgRYJne1HFf3ZU8TV5rQ6wVEdKi2Ozg9+v/gZF1Q7EdGSU49t7iJbACzr
+         T60Bn+ddWAdg5eWnfRIB9uAQwPTuvHmXB917v7IPvts0r3jpZWWefU7QacBSK9uwNFZN
+         c8GDDbZqjrTisqwCR/vGfpKSHzXLv/V+6/OyOkGb3CTI6/dQ/4ke0F++EiV+3On1WacQ
+         mGnKAGI887a7ydBLuwYrYT6GHYTtqoYE77UDQ/X/KatV2tWb1fkYwcG9r1PuYSR9PBZZ
+         /+aq1qaKfHXxUomXC+UZrSaEeyNsTVPKnZeOxKLokpF8ku2eturrAlCy4DJg5gNozN0P
+         fAcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Q+yaULdwu+rPL5G3MbWME0SaA5eeeXALvtNnWDC8wYA=;
+        b=x12TKCMwoUf84195LPg4t8aXMvOx9tXNNd+YxdEtJPibWUooPxdJEJS4cFGtjqZaXd
+         I8fpGlYF9FuXeDMKonISCDTUafYQlVAQ6CaeH0AXv2tFG8SkTzI2LnlrJqSySr1MSNnj
+         4FIgtxclYXl5Aa5B277G8Xqzyvv+87Z1+ubQw0Z3UvLhl7QBD2ddMSKlPdkflYS2u9Cj
+         EWa9wSMQBoHS6U/54+P0BvY9uSlIOmUm85UHjxSdiKIdRYpZnN3B0vs1Rqq2Cn/hRoCK
+         jhQkbsiV0l57MEUvuwxDmzuFN76c74YzvA4LWikVRgQ0GC5sEQl1y4nIWNhgXVAUWIRP
+         dEQw==
+X-Gm-Message-State: AOAM531zOLablglAG6yFJXUjDPWvbR760MRCa6dQW6ZZ0SQoZdIB8PYk
+        QocmBAWO1vM4KKNh1v6+VB0=
+X-Google-Smtp-Source: ABdhPJxQQjQlNd90jfnjQ5cdDCsNYWfxsyeGYqf4sXuU6zLN/1BV9Z4Vj7CJU7eESLv+NSnM2GcZAQ==
+X-Received: by 2002:a05:6402:3293:b0:42e:18a:d6eb with SMTP id f19-20020a056402329300b0042e018ad6ebmr1871193eda.293.1655154148518;
+        Mon, 13 Jun 2022 14:02:28 -0700 (PDT)
+Received: from kista.localnet (213-161-3-76.dynamic.telemach.net. [213.161.3.76])
+        by smtp.gmail.com with ESMTPSA id q23-20020a1709064cd700b006feed212f50sm874123ejt.184.2022.06.13.14.02.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 14:02:28 -0700 (PDT)
+From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        arm@kernel.org, soc@kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Samuel Holland <samuel@sholland.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCHv3 2/2] dt-bindings: i2c: dw: Add Intel's SoCFPGA I2C controller
-Date:   Mon, 13 Jun 2022 16:00:32 -0500
-Message-Id: <20220613210032.773826-2-dinguyen@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220613210032.773826-1-dinguyen@kernel.org>
-References: <20220613210032.773826-1-dinguyen@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH v2 06/48] ARM: dts: allwinner: align gpio-key node names with dtschema
+Date:   Mon, 13 Jun 2022 23:02:22 +0200
+Message-ID: <4743697.31r3eYUQgx@kista>
+In-Reply-To: <20220609113911.380368-5-krzysztof.kozlowski@linaro.org>
+References: <20220609113721.379932-1-krzysztof.kozlowski@linaro.org> <20220609113911.380368-5-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The I2C pins on Intel's SoCFPGA platform are not connected to GPIOs and
-thus cannot be recovered by the standard GPIO method.
+Dne =C4=8Detrtek, 09. junij 2022 ob 13:39:08 CEST je Krzysztof Kozlowski=20
+napisal(a):
+> The node names should be generic and DT schema expects certain pattern
+> (e.g. with key/button/switch).
+>=20
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Document the "intel,socfpga-i2c" binding.
+Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
----
-v3: no changes
-v2: Added Acked-by
----
- Documentation/devicetree/bindings/i2c/snps,designware-i2c.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+Best regards,
+Jernej
 
-diff --git a/Documentation/devicetree/bindings/i2c/snps,designware-i2c.yaml b/Documentation/devicetree/bindings/i2c/snps,designware-i2c.yaml
-index d9293c57f573..a130059e97ab 100644
---- a/Documentation/devicetree/bindings/i2c/snps,designware-i2c.yaml
-+++ b/Documentation/devicetree/bindings/i2c/snps,designware-i2c.yaml
-@@ -33,6 +33,8 @@ properties:
-           - const: snps,designware-i2c
-       - description: Baikal-T1 SoC System I2C controller
-         const: baikal,bt1-sys-i2c
-+      - description: Intel's SoCFPGA I2C controller
-+        const: intel,socfpga-i2c
- 
-   reg:
-     minItems: 1
--- 
-2.25.1
 
