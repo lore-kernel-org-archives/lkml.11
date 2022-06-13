@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D2D0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:17:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAB1EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:17:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352418AbiFMLRq (ORCPT
+        id S1352444AbiFMLRy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:17:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43240 "EHLO
+        Mon, 13 Jun 2022 07:17:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352664AbiFMLOK (ORCPT
+        with ESMTP id S1352703AbiFMLOP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:14:10 -0400
+        Mon, 13 Jun 2022 07:14:15 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D605B366B0;
-        Mon, 13 Jun 2022 03:36:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C81A5369E2;
+        Mon, 13 Jun 2022 03:36:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D0FA6610AB;
-        Mon, 13 Jun 2022 10:36:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B78F0C385A5;
-        Mon, 13 Jun 2022 10:36:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5925160FDB;
+        Mon, 13 Jun 2022 10:36:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69165C3411F;
+        Mon, 13 Jun 2022 10:36:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116599;
-        bh=VLAUu/pBbU0WbMGamu1ApVdJKC+8dNefuYHs3rDbbgo=;
+        s=korg; t=1655116604;
+        bh=TtCQ9ABrjBw4VAKXsDwqp3XM1jZ8Z2HinXXx+WVj3NM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jU4nROSlNmV04WICNuK1p73iwjCy7fTLwpVDXkbo7jiyF9Pe9/F8EpFWc76cb0Mte
-         vXUzvCG/HPZNKhYlq4658UUvVz2L/Zyf0El/qkdtKdBzJ3UAoK0BaNkhnAPYBm2kVr
-         V5lzQKZPo+SUQt/hC9TzxBUHVsd/hDyFJwfpbANE=
+        b=mURYbwZnAoX5lOa1BVux31CKLMmzXONFbywgoFZCPoQ/W3ETyCYpj8TU7iKvMSxLN
+         K82/QpgvHS9vzQXw8nke9BPzo+/ynt9Imkhp2ML5Tu/Ct/lVVu2Mpu5eC04vPD50fS
+         E1d0ZZgoBuIiE5NTlW6IQhSuNQK3EjYvrnVXttxk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Martin Faltesek <mfaltesek@google.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.14 210/218] nfc: st21nfca: fix memory leaks in EVT_TRANSACTION handling
-Date:   Mon, 13 Jun 2022 12:11:08 +0200
-Message-Id: <20220613094926.993839081@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Olivier Matz <olivier.matz@6wind.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 4.14 211/218] ixgbe: fix bcast packets Rx on VF after promisc removal
+Date:   Mon, 13 Jun 2022 12:11:09 +0200
+Message-Id: <20220613094927.025008184@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -51,59 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Faltesek <mfaltesek@google.com>
+From: Olivier Matz <olivier.matz@6wind.com>
 
-commit 996419e0594abb311fb958553809f24f38e7abbe upstream.
+commit 803e9895ea2b0fe80bc85980ae2d7a7e44037914 upstream.
 
-Error paths do not free previously allocated memory. Add devm_kfree() to
-those failure paths.
+After a VF requested to remove the promiscuous flag on an interface, the
+broadcast packets are not received anymore. This breaks some protocols
+like ARP.
 
-Fixes: 26fc6c7f02cb ("NFC: st21nfca: Add HCI transaction event support")
-Fixes: 4fbcc1a4cb20 ("nfc: st21nfca: Fix potential buffer overflows in EVT_TRANSACTION")
+In ixgbe_update_vf_xcast_mode(), we should keep the IXGBE_VMOLR_BAM
+bit (Broadcast Accept) on promiscuous removal.
+
+This flag is already set by default in ixgbe_set_vmolr() on VF reset.
+
+Fixes: 8443c1a4b192 ("ixgbe, ixgbevf: Add new mbox API xcast mode")
 Cc: stable@vger.kernel.org
-Signed-off-by: Martin Faltesek <mfaltesek@google.com>
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Cc: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Signed-off-by: Olivier Matz <olivier.matz@6wind.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nfc/st21nfca/se.c |   13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/nfc/st21nfca/se.c
-+++ b/drivers/nfc/st21nfca/se.c
-@@ -332,22 +332,29 @@ int st21nfca_connectivity_event_received
- 		transaction->aid_len = skb->data[1];
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
+@@ -1156,9 +1156,9 @@ static int ixgbe_update_vf_xcast_mode(st
  
- 		/* Checking if the length of the AID is valid */
--		if (transaction->aid_len > sizeof(transaction->aid))
-+		if (transaction->aid_len > sizeof(transaction->aid)) {
-+			devm_kfree(dev, transaction);
- 			return -EINVAL;
-+		}
- 
- 		memcpy(transaction->aid, &skb->data[2],
- 		       transaction->aid_len);
- 
- 		/* Check next byte is PARAMETERS tag (82) */
- 		if (skb->data[transaction->aid_len + 2] !=
--		    NFC_EVT_TRANSACTION_PARAMS_TAG)
-+		    NFC_EVT_TRANSACTION_PARAMS_TAG) {
-+			devm_kfree(dev, transaction);
- 			return -EPROTO;
-+		}
- 
- 		transaction->params_len = skb->data[transaction->aid_len + 3];
- 
- 		/* Total size is allocated (skb->len - 2) minus fixed array members */
--		if (transaction->params_len > ((skb->len - 2) - sizeof(struct nfc_evt_transaction)))
-+		if (transaction->params_len > ((skb->len - 2) -
-+		    sizeof(struct nfc_evt_transaction))) {
-+			devm_kfree(dev, transaction);
- 			return -EINVAL;
-+		}
- 
- 		memcpy(transaction->params, skb->data +
- 		       transaction->aid_len + 4, transaction->params_len);
+ 	switch (xcast_mode) {
+ 	case IXGBEVF_XCAST_MODE_NONE:
+-		disable = IXGBE_VMOLR_BAM | IXGBE_VMOLR_ROMPE |
++		disable = IXGBE_VMOLR_ROMPE |
+ 			  IXGBE_VMOLR_MPE | IXGBE_VMOLR_UPE | IXGBE_VMOLR_VPE;
+-		enable = 0;
++		enable = IXGBE_VMOLR_BAM;
+ 		break;
+ 	case IXGBEVF_XCAST_MODE_MULTI:
+ 		disable = IXGBE_VMOLR_MPE | IXGBE_VMOLR_UPE | IXGBE_VMOLR_VPE;
 
 
