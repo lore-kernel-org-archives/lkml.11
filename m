@@ -2,193 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8CA3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:54:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04E9BCCA47E
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:54:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240398AbiFMIyK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 04:54:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46804 "EHLO
+        id S240430AbiFMIyf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 04:54:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240541AbiFMIxO (ORCPT
+        with ESMTP id S240394AbiFMIyd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 04:53:14 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73E635F92
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 01:53:13 -0700 (PDT)
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com [209.85.221.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 295CC3FDE5
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 08:53:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1655110390;
-        bh=fhdPlI5rmS+APeBJNR4lTD/VgT4RAcbvyvwt5HUOiAU=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=QZppZfZQC9zfTlLFsdKR0nR4BzrR1pk4aSQuV2X8ILjYJiwsNMnkwaDhobT0lGKon
-         /JuuXVmbnqb4gfruYvhWMWdXPHpPutDflTJDJ3LukehvWxI7FXJJHm/bJhx+8vdrC9
-         8MPZT9Ow+zwo6NLN9hj2Vbi4nr/zxdI0+1ISB+xRydnb5wTXzZ+Uvy2MipdsyIsZNm
-         DOtaPZgqJEH2u/VP1siOD3Q6BQV47Usdi13KiwHXklpNUn4c5osl+psRp1GNmAbWGZ
-         qO5GRnKpoL45sUh29OexeffsFOqvboi7EP2HBwT035CRzzrJTfD/A+4XMj+KY8avLD
-         V7BOfQzjC0Zcw==
-Received: by mail-wr1-f69.google.com with SMTP id i10-20020a5d55ca000000b002103d76ffcaso609898wrw.17
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 01:53:10 -0700 (PDT)
+        Mon, 13 Jun 2022 04:54:33 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 55284B7CA
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 01:54:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655110472;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4KjgQ8HGSq2J7WMLesh9KTKYS17SXSbspP3uqq4OPEY=;
+        b=fYNQLHgRyTIBajkD+aEFtrn1cx5ouBEW41xdXYJ5Y6BQhIXIZqXM2whFMokk7VRlqGaVVB
+        iuBZiAhEAUAb4O7dbjM9EMzo09oyOEIOGK5Btli+wX3O6P0/ChpiS6+2rcrs4rU99Ad9JJ
+        p3vMW83ZS1GX17JmrDggc4ufYH7knSo=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-445-GjE_7YxlPmCpgpqoHg-0gg-1; Mon, 13 Jun 2022 04:54:30 -0400
+X-MC-Unique: GjE_7YxlPmCpgpqoHg-0gg-1
+Received: by mail-qv1-f72.google.com with SMTP id r14-20020ad4576e000000b0046bbacd783bso3451139qvx.14
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 01:54:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fhdPlI5rmS+APeBJNR4lTD/VgT4RAcbvyvwt5HUOiAU=;
-        b=pUc2dL0WZywitCeexKxgRDIHstbjNWvpOUW5boRevvj5TW7TuqUwIUZl3Cdh8ezlhI
-         xkDOXz7eU2TXu3ob/NrrtliAlTaMh6dEmsBtSigfSShzqpRrjmJPObNVUwzwimddgaHN
-         9eP+6HevX8E3F8V2UhoHHQcvEa5D2iHnICH+BoaAqa+eVFiB/T6gcNd/F7z371+VOQgT
-         LgQOyRCUwmAKe8uqk0w3kZ6qAVw0iqLqDG9EXWTv2gbNOhebCuwYY2PQuDXvhKMQDWSC
-         5hffJTcWS2lPwDXyeyH987tVvZssce6gRWbVT2oBZyZIsL4YjRpYV4hn4M7eWCnLA1dF
-         hBMw==
-X-Gm-Message-State: AOAM533oeoiSQQAUn0nHHP63mk5jGUWcrY9OhN0U14OGTTwX/V/+Bk2j
-        jE0HWzYo8p+9cn/6ToS45HibMmih4JEYkT3MIOfJiajRpLmGa7xfExtzC9ghRPy8GZ7Wp9QCG+9
-        aQFPNBFOFnOBlCPFXR7zEO/isfzaajPnC0IuMWx5oug==
-X-Received: by 2002:a05:600c:3d98:b0:39c:5cad:ab58 with SMTP id bi24-20020a05600c3d9800b0039c5cadab58mr13009692wmb.100.1655110389699;
-        Mon, 13 Jun 2022 01:53:09 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw4t5KV7LAtTb4dE0wLpkTfSRrdGgNSzReoTM8ZcUo1rFG7gBn3Z6s34yNb3QgrtEjmt4i1Jg==
-X-Received: by 2002:a05:600c:3d98:b0:39c:5cad:ab58 with SMTP id bi24-20020a05600c3d9800b0039c5cadab58mr13009667wmb.100.1655110389455;
-        Mon, 13 Jun 2022 01:53:09 -0700 (PDT)
-Received: from alex.home (lfbn-gre-1-146-29.w90-112.abo.wanadoo.fr. [90.112.113.29])
-        by smtp.gmail.com with ESMTPSA id z16-20020adfec90000000b0020cff559b1dsm7957794wrn.47.2022.06.13.01.53.08
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=4KjgQ8HGSq2J7WMLesh9KTKYS17SXSbspP3uqq4OPEY=;
+        b=4LeK0lJmLAEVx2vzar59Yggm1z7Wp1fcSAhKhINIRZyYUKf7nRv7GPrV5Dfmv5CV67
+         3XH+YyqrXZRCg8gHfzkagWWruJ26a+22XJWravOhIXvU+KKKYL2iM8W+DaCBWgyviNmQ
+         tn/ZTDvc7XNYiOPuyxhM0eAaP3gaOr1hpRSTNeCcj6nnYZMEuuXuVS7LZdguDBAJftqr
+         h5z3gzWocNSM5rj5yPTCRKIrUAFeN7id1EaI4Ljrj3sF7QcoyFIe+1D0gcEd7LrHRZaZ
+         WyrZDJLZmcwBJAl6O42v0RVi76uWt7D4TLfBZB/4KybaFOSwdq5fLesRdIowQbXXUU2o
+         3WVw==
+X-Gm-Message-State: AOAM530UR2/zi1LYDX2EMt7fXL/sqhPfQ+QALLJrEQ54FKQSJaseEGwG
+        56DIqcq9XIaVGGRbG7SVb8Da65lJ5fL7zjceskcIG4XMrRWsSsgTwnth3/YsBJVN2FFSuRRRQUC
+        cXLcMAiR/3UMEDhFN2RKf5JrZ
+X-Received: by 2002:a37:a781:0:b0:6a6:9b4c:fc8d with SMTP id q123-20020a37a781000000b006a69b4cfc8dmr34331662qke.657.1655110470067;
+        Mon, 13 Jun 2022 01:54:30 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxLKAhytZFfLQQeuW9E/Pm2tvxqTqKSiAxOefCJ0tsCfeagh1tGD4fU7pLQNZ/nHVdj1LceZg==
+X-Received: by 2002:a37:a781:0:b0:6a6:9b4c:fc8d with SMTP id q123-20020a37a781000000b006a69b4cfc8dmr34331656qke.657.1655110469837;
+        Mon, 13 Jun 2022 01:54:29 -0700 (PDT)
+Received: from sgarzare-redhat (host-79-46-200-40.retail.telecomitalia.it. [79.46.200.40])
+        by smtp.gmail.com with ESMTPSA id i198-20020a379fcf000000b006a73aefce28sm5814643qke.30.2022.06.13.01.54.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 01:53:09 -0700 (PDT)
-From:   Alexandre Ghiti <alexandre.ghiti@canonical.com>
-To:     =?UTF-8?q?Heiko=20St=C3=BCbner?= <heiko@sntech.de>,
-        Guo Ren <guoren@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Anup Patel <anup@brainfault.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, kvm-riscv@lists.infradead.org
-Cc:     Alexandre Ghiti <alexandre.ghiti@canonical.com>
-Subject: [PATCH -fixes v2] riscv: Fix missing PAGE_PFN_MASK
-Date:   Mon, 13 Jun 2022 10:53:07 +0200
-Message-Id: <20220613085307.260256-1-alexandre.ghiti@canonical.com>
-X-Mailer: git-send-email 2.34.1
+        Mon, 13 Jun 2022 01:54:29 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 10:54:20 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        Krasnov Arseniy <oxffffaa@gmail.com>
+Subject: Re: [RFC PATCH v2 0/8] virtio/vsock: experimental zerocopy receive
+Message-ID: <20220613085420.e4limzn3dneuhu6y@sgarzare-redhat>
+References: <e37fdf9b-be80-35e1-ae7b-c9dfeae3e3db@sberdevices.ru>
+ <20220609085428.idi4qzydhdpzszzw@sgarzare-redhat>
+ <1c58ec1f-f991-4527-726a-9f45c2ff5684@sberdevices.ru>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <1c58ec1f-f991-4527-726a-9f45c2ff5684@sberdevices.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are a bunch of functions that use the PFN from a page table entry
-that end up with the svpbmt upper-bits because they are missing the newly
-introduced PAGE_PFN_MASK which leads to wrong addresses conversions and
-then crash: fix this by adding this mask.
+On Thu, Jun 09, 2022 at 12:33:32PM +0000, Arseniy Krasnov wrote:
+>On 09.06.2022 11:54, Stefano Garzarella wrote:
+>> Hi Arseniy,
+>> I left some comments in the patches, and I'm adding something also here:
+>Thanks for comments
+>>
+>> On Fri, Jun 03, 2022 at 05:27:56AM +0000, Arseniy Krasnov wrote:
+>>>                              INTRODUCTION
+>>>
+>>>     Hello, this is experimental implementation of virtio vsock zerocopy
+>>> receive. It was inspired by TCP zerocopy receive by Eric Dumazet. This API uses
+>>> same idea: call 'mmap()' on socket's descriptor, then every 'getsockopt()' will
+>>> fill provided vma area with pages of virtio RX buffers. After received data was
+>>> processed by user, pages must be freed by 'madvise()'  call with MADV_DONTNEED
+>>> flag set(if user won't call 'madvise()', next 'getsockopt()' will fail).
+>>
+>> If it is not too time-consuming, can we have a table/list to compare this and the TCP zerocopy?
+>You mean compare API with more details?
 
-Fixes: 100631b48ded ("riscv: Fix accessing pfn bits in PTEs for non-32bit variants")
-Signed-off-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
----
- arch/riscv/include/asm/pgtable-64.h | 12 ++++++------
- arch/riscv/include/asm/pgtable.h    |  6 +++---
- arch/riscv/kvm/mmu.c                |  2 +-
- 3 files changed, 10 insertions(+), 10 deletions(-)
+Yes, maybe a comparison from the user's point of view to do zero-copy 
+with TCP and VSOCK.
 
-diff --git a/arch/riscv/include/asm/pgtable-64.h b/arch/riscv/include/asm/pgtable-64.h
-index 5c2aba5efbd0..dc42375c2357 100644
---- a/arch/riscv/include/asm/pgtable-64.h
-+++ b/arch/riscv/include/asm/pgtable-64.h
-@@ -175,7 +175,7 @@ static inline pud_t pfn_pud(unsigned long pfn, pgprot_t prot)
- 
- static inline unsigned long _pud_pfn(pud_t pud)
- {
--	return pud_val(pud) >> _PAGE_PFN_SHIFT;
-+	return __page_val_to_pfn(pud_val(pud));
- }
- 
- static inline pmd_t *pud_pgtable(pud_t pud)
-@@ -278,13 +278,13 @@ static inline p4d_t pfn_p4d(unsigned long pfn, pgprot_t prot)
- 
- static inline unsigned long _p4d_pfn(p4d_t p4d)
- {
--	return p4d_val(p4d) >> _PAGE_PFN_SHIFT;
-+	return __page_val_to_pfn(p4d_val(p4d));
- }
- 
- static inline pud_t *p4d_pgtable(p4d_t p4d)
- {
- 	if (pgtable_l4_enabled)
--		return (pud_t *)pfn_to_virt(p4d_val(p4d) >> _PAGE_PFN_SHIFT);
-+		return (pud_t *)pfn_to_virt(__page_val_to_pfn(p4d_val(p4d)));
- 
- 	return (pud_t *)pud_pgtable((pud_t) { p4d_val(p4d) });
- }
-@@ -292,7 +292,7 @@ static inline pud_t *p4d_pgtable(p4d_t p4d)
- 
- static inline struct page *p4d_page(p4d_t p4d)
- {
--	return pfn_to_page(p4d_val(p4d) >> _PAGE_PFN_SHIFT);
-+	return pfn_to_page(__page_val_to_pfn(p4d_val(p4d)));
- }
- 
- #define pud_index(addr) (((addr) >> PUD_SHIFT) & (PTRS_PER_PUD - 1))
-@@ -347,7 +347,7 @@ static inline void pgd_clear(pgd_t *pgd)
- static inline p4d_t *pgd_pgtable(pgd_t pgd)
- {
- 	if (pgtable_l5_enabled)
--		return (p4d_t *)pfn_to_virt(pgd_val(pgd) >> _PAGE_PFN_SHIFT);
-+		return (p4d_t *)pfn_to_virt(__page_val_to_pfn(pgd_val(pgd)));
- 
- 	return (p4d_t *)p4d_pgtable((p4d_t) { pgd_val(pgd) });
- }
-@@ -355,7 +355,7 @@ static inline p4d_t *pgd_pgtable(pgd_t pgd)
- 
- static inline struct page *pgd_page(pgd_t pgd)
- {
--	return pfn_to_page(pgd_val(pgd) >> _PAGE_PFN_SHIFT);
-+	return pfn_to_page(__page_val_to_pfn(pgd_val(pgd)));
- }
- #define pgd_page(pgd)	pgd_page(pgd)
- 
-diff --git a/arch/riscv/include/asm/pgtable.h b/arch/riscv/include/asm/pgtable.h
-index 1d1be9d9419c..5dbd6610729b 100644
---- a/arch/riscv/include/asm/pgtable.h
-+++ b/arch/riscv/include/asm/pgtable.h
-@@ -261,7 +261,7 @@ static inline pgd_t pfn_pgd(unsigned long pfn, pgprot_t prot)
- 
- static inline unsigned long _pgd_pfn(pgd_t pgd)
- {
--	return pgd_val(pgd) >> _PAGE_PFN_SHIFT;
-+	return __page_val_to_pfn(pgd_val(pgd));
- }
- 
- static inline struct page *pmd_page(pmd_t pmd)
-@@ -590,14 +590,14 @@ static inline pmd_t pmd_mkinvalid(pmd_t pmd)
- 	return __pmd(pmd_val(pmd) & ~(_PAGE_PRESENT|_PAGE_PROT_NONE));
- }
- 
--#define __pmd_to_phys(pmd)  (pmd_val(pmd) >> _PAGE_PFN_SHIFT << PAGE_SHIFT)
-+#define __pmd_to_phys(pmd)  (__page_val_to_pfn(pmd_val(pmd)) << PAGE_SHIFT)
- 
- static inline unsigned long pmd_pfn(pmd_t pmd)
- {
- 	return ((__pmd_to_phys(pmd) & PMD_MASK) >> PAGE_SHIFT);
- }
- 
--#define __pud_to_phys(pud)  (pud_val(pud) >> _PAGE_PFN_SHIFT << PAGE_SHIFT)
-+#define __pud_to_phys(pud)  (__page_val_to_pfn(pud_val(pud)) << PAGE_SHIFT)
- 
- static inline unsigned long pud_pfn(pud_t pud)
- {
-diff --git a/arch/riscv/kvm/mmu.c b/arch/riscv/kvm/mmu.c
-index 1c00695ebee7..9826073fbc67 100644
---- a/arch/riscv/kvm/mmu.c
-+++ b/arch/riscv/kvm/mmu.c
-@@ -54,7 +54,7 @@ static inline unsigned long gstage_pte_index(gpa_t addr, u32 level)
- 
- static inline unsigned long gstage_pte_page_vaddr(pte_t pte)
- {
--	return (unsigned long)pfn_to_virt(pte_val(pte) >> _PAGE_PFN_SHIFT);
-+	return (unsigned long)pfn_to_virt(__page_val_to_pfn(pte_val(pte)));
- }
- 
- static int gstage_page_size_to_level(unsigned long page_size, u32 *out_level)
--- 
-2.34.1
+>>
+>>>
+>>>                                 DETAILS
+>>>
+>>>     Here is how mapping with mapped pages looks exactly: first page mapping
+>>> contains array of trimmed virtio vsock packet headers (in contains only length
+>>> of data on the corresponding page and 'flags' field):
+>>>
+>>>     struct virtio_vsock_usr_hdr {
+>>>         uint32_t length;
+>>>         uint32_t flags;
+>>>         uint32_t copy_len;
+>>>     };
+>>>
+>>> Field  'length' allows user to know exact size of payload within each sequence
+>>> of pages and 'flags' allows user to handle SOCK_SEQPACKET flags(such as message
+>>> bounds or record bounds). Field 'copy_len' is described below in 'v1->v2' part.
+>>> All other pages are data pages from RX queue.
+>>>
+>>>             Page 0      Page 1      Page N
+>>>
+>>>     [ hdr1 .. hdrN ][ data ] .. [ data ]
+>>>           |        |       ^           ^
+>>>           |        |       |           |
+>>>           |        *-------------------*
+>>>           |                |
+>>>           |                |
+>>>           *----------------*
+>>>
+>>>     Of course, single header could represent array of pages (when packet's
+>>> buffer is bigger than one page).So here is example of detailed mapping layout
+>>> for some set of packages. Lets consider that we have the following sequence  of
+>>> packages: 56 bytes, 4096 bytes and 8200 bytes. All pages: 0,1,2,3,4 and 5 will
+>>> be inserted to user's vma(vma is large enough).
+>>
+>> In order to have a "userspace polling-friendly approach" and reduce number of syscall, can we allow for example the userspace to mmap at least the first header before packets arrive.
+>> Then the userspace can poll a flag or other fields in the header to understand that there are new packets.
+>You mean to avoid 'poll()' syscall, user will spin on some flag, provided by kernel on some mapped page? I think yes. This is ok. Also i think, that i can avoid 'madvise' call
+>to clear memory mapping before each 'getsockopt()' - let 'getsockopt()' do 'madvise()' job by removing pages from previous data. In this case only one system call is needed - 'getsockopt()'.
+
+Yes, that's right. I mean to support both, poll() for interrupt-based 
+applications and the ability to actively poll a variable in the shared 
+memory for applications that want to minimize latency.
+
+Thanks,
+Stefano
 
