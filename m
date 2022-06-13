@@ -2,106 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CEA6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 22:45:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A9E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 22:47:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244919AbiFMWpB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 18:45:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46464 "EHLO
+        id S231249AbiFMWrt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 18:47:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229671AbiFMWo6 (ORCPT
+        with ESMTP id S229671AbiFMWrq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 18:44:58 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F201C31377;
-        Mon, 13 Jun 2022 15:44:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655160298; x=1686696298;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Jnn+jXJ31MGDLO6HdQ23ZKYS4Lu1ffv8Vgu9+kjL8aI=;
-  b=Lsfd4hpCgKmyE/Ya0rcg/Uf3PNm7atVvbCRJ498CPI9Y10uNcEuBvUi7
-   0PoKZlD698jsDr5gkzdVVUAWBo87IEWUeMUdcHm88mU7JEVM1++pb4p4F
-   whTkLn7nyDbPOE/86zmrI3FX9q669r608sVfP3dEHKALQAVeI//7s38dg
-   Y=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 13 Jun 2022 15:44:57 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 15:44:57 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 13 Jun 2022 15:44:56 -0700
-Received: from [10.111.164.34] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 13 Jun
- 2022 15:44:54 -0700
-Message-ID: <d6668a3f-d977-53e3-966c-ed4e7fd603e1@quicinc.com>
-Date:   Mon, 13 Jun 2022 15:44:52 -0700
+        Mon, 13 Jun 2022 18:47:46 -0400
+X-Greylist: delayed 1140 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 13 Jun 2022 15:47:45 PDT
+Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B3130572;
+        Mon, 13 Jun 2022 15:47:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=+COkvdNrG6nWHW8DeXVNn4pSIXXVecQkufUo12vTZqM=; b=F1GaohTqdVyGbYtsxIq1ypUFSB
+        P1lDuj/SfIxIUbtNOkI8o8CmCXWpPq/1+OMrMMOxMWjRQoykrHF01Bq4OG0vxR0hKM5bbwC9uWOd9
+        2/mdrfapr7kM/8zZ6/tsuHr3nPIYSd/WzF2XWntJS3FWWPOug6sDaEw/SFUeb0PMXbBSmi7lByhJm
+        GA2PvhnaqVNF03pAh+K/YYGKB64ks4khKPFs48hRmwGveqm7TfpcG87sSbrydMzgtxbcH248jh/q/
+        d6pEaGxSHgZi/+SunJ6dUdtnr+ZWQL5awJRvRUba+eqJscSETAyFR+DCrVKsFj874VH3hJcv8Nh/L
+        0SgvT1OQ==;
+Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
+        id 1o0sXy-0005E5-FL;
+        Mon, 13 Jun 2022 22:28:34 +0000
+Date:   Mon, 13 Jun 2022 23:28:34 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Dan Williams <dan.j.williams@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        nvdimm@lists.linux.dev, David Howells <dhowells@redhat.com>
+Subject: Re: [RFC][PATCH] fix short copy handling in copy_mc_pipe_to_iter()
+Message-ID: <Yqe6EjGTpkvJUU28@ZenIV>
+References: <YqaAcKsd6uGfIQzM@zeniv-ca.linux.org.uk>
+ <CAHk-=wjmCzdNDCt6L8-N33WSRaYjnj0=yTc_JG8A_Pd7ZEtEJw@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [Freedreno] [PATCH] drm/msm: Make msm_gem_free_object() static
-Content-Language: en-US
-To:     Rob Clark <robdclark@gmail.com>, <dri-devel@lists.freedesktop.org>
-CC:     Rob Clark <robdclark@chromium.org>,
-        David Airlie <airlied@linux.ie>,
-        <linux-arm-msm@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Sean Paul <sean@poorly.run>, Daniel Vetter <daniel@ffwll.ch>,
-        "Dmitry Baryshkov" <dmitry.baryshkov@linaro.org>,
-        <freedreno@lists.freedesktop.org>
-References: <20220613204910.2651747-1-robdclark@gmail.com>
-From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
-In-Reply-To: <20220613204910.2651747-1-robdclark@gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wjmCzdNDCt6L8-N33WSRaYjnj0=yTc_JG8A_Pd7ZEtEJw@mail.gmail.com>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Jun 13, 2022 at 10:54:36AM -0700, Linus Torvalds wrote:
+> On Sun, Jun 12, 2022 at 5:10 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
+> >
+> > Unlike other copying operations on ITER_PIPE, copy_mc_to_iter() can
+> > result in a short copy.  In that case we need to trim the unused
+> > buffers, as well as the length of partially filled one - it's not
+> > enough to set ->head, ->iov_offset and ->count to reflect how
+> > much had we copied.  Not hard to fix, fortunately...
+> >
+> > I'd put a helper (pipe_discard_from(pipe, head)) into pipe_fs_i.h,
+> > rather than iov_iter.c -
+> 
+> Actually, since this "copy_mc_xyz()" stuff is going to be entirely
+> impossible to debug and replicate for any normal situation, I would
+> suggest we take the approach that we (long ago) used to take with
+> copy_from_user(): zero out the destination buffer, so that developers
+> that can't test the faulting behavior don't have to worry about it.
+> 
+> And then the existing code is fine: it will break out of the loop, but
+> it won't do the odd revert games and the "randomnoise.len -= rem"
+> thing that I can't wrap my head around.
+> 
+> Hmm?
 
+Not really - we would need to zero the rest of those pages somehow.
+They are already allocated and linked into pipe; leaving them
+there (and subsequent ones hadn't seen any stores whatsoever - they
+are fresh out of alloc_page(GFP_USER)) is a non-starter.
 
-On 6/13/2022 1:49 PM, Rob Clark wrote:
-> From: Rob Clark <robdclark@chromium.org>
-> 
-> Misc small cleanup I noticed.  Not called from another object file since
-> 3c9edd9c85f5 ("drm/msm: Introduce GEM object funcs")
-> 
-> Signed-off-by: Rob Clark <robdclark@chromium.org>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-> ---
->   drivers/gpu/drm/msm/msm_gem.c | 2 +-
->   drivers/gpu/drm/msm/msm_gem.h | 1 -
->   2 files changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
-> index 35845e273d81..3ef7ada59392 100644
-> --- a/drivers/gpu/drm/msm/msm_gem.c
-> +++ b/drivers/gpu/drm/msm/msm_gem.c
-> @@ -1004,7 +1004,7 @@ void msm_gem_describe_objects(struct list_head *list, struct seq_file *m)
->   #endif
->   
->   /* don't call directly!  Use drm_gem_object_put() */
-> -void msm_gem_free_object(struct drm_gem_object *obj)
-> +static void msm_gem_free_object(struct drm_gem_object *obj)
->   {
->   	struct msm_gem_object *msm_obj = to_msm_bo(obj);
->   	struct drm_device *dev = obj->dev;
-> diff --git a/drivers/gpu/drm/msm/msm_gem.h b/drivers/gpu/drm/msm/msm_gem.h
-> index 6b7d5bb3b575..d608339c1643 100644
-> --- a/drivers/gpu/drm/msm/msm_gem.h
-> +++ b/drivers/gpu/drm/msm/msm_gem.h
-> @@ -175,7 +175,6 @@ void msm_gem_active_get(struct drm_gem_object *obj, struct msm_gpu *gpu);
->   void msm_gem_active_put(struct drm_gem_object *obj);
->   int msm_gem_cpu_prep(struct drm_gem_object *obj, uint32_t op, ktime_t *timeout);
->   int msm_gem_cpu_fini(struct drm_gem_object *obj);
-> -void msm_gem_free_object(struct drm_gem_object *obj);
->   int msm_gem_new_handle(struct drm_device *dev, struct drm_file *file,
->   		uint32_t size, uint32_t flags, uint32_t *handle, char *name);
->   struct drm_gem_object *msm_gem_new(struct drm_device *dev,
+We could do allocation as we go, but that's a much more intrusive
+change...
+
+BTW, speaking of pipes:
+static inline unsigned int pipe_space_for_user(unsigned int head, unsigned int tail,
+                                               struct pipe_inode_info *pipe)
+{
+        unsigned int p_occupancy, p_space;
+
+        p_occupancy = pipe_occupancy(head, tail);
+        if (p_occupancy >= pipe->max_usage)
+                return 0;
+        p_space = pipe->ring_size - p_occupancy;
+        if (p_space > pipe->max_usage)
+                p_space = pipe->max_usage;
+        return p_space;
+}
+
+OK, if head - tail >= max_usage, we get 0.  Fair enough, since
+pipe_full() callers will get "it's full, sod off" in that situation.
+But...  what the hell is the rest doing?  p_space is the amount of
+slots not in use.  So we return the lesser of it and max_usage?
+
+Suppose we have 128 slots in the ring, with max_usage being below
+that (e.g. 64).  63 slots are in use; you can add at most one.
+And p_space is 65, so this sucker will return 64.
+
+Dave, could you explain what's going on there?  Note that pipe_write()
+does *not* use that thing at all; it's only splice (i.e. ITER_PIPE
+stuff) that is using it.
+
+What's wrong with
+        p_occupancy = pipe_occupancy(head, tail);
+        if (p_occupancy >= pipe->max_usage)
+                return 0;
+	else
+		return pipe->max_usage - p_occupancy;
+
+which would match the way you are using ->max_usage in pipe_write()
+et.al.  Including the use in copy_page_to_iter_pipe(), BTW...
