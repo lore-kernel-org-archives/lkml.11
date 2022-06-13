@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B381FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:18:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5340AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:18:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382583AbiFMOSG (ORCPT
+        id S1381987AbiFMOSP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:18:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59938 "EHLO
+        Mon, 13 Jun 2022 10:18:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381387AbiFMOLB (ORCPT
+        with ESMTP id S1381470AbiFMOL7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:11:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B1FD996A7;
-        Mon, 13 Jun 2022 04:42:06 -0700 (PDT)
+        Mon, 13 Jun 2022 10:11:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CE539A983;
+        Mon, 13 Jun 2022 04:42:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5707A60EAE;
-        Mon, 13 Jun 2022 11:41:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FBACC34114;
-        Mon, 13 Jun 2022 11:41:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 18F69B80EDE;
+        Mon, 13 Jun 2022 11:42:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73B03C34114;
+        Mon, 13 Jun 2022 11:42:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120512;
-        bh=uJ9QvgGDukh7QF8+CD8vD4uIYQ5lNJe9QAK7iyDkAzY=;
+        s=korg; t=1655120523;
+        bh=RAPHGV+rtvwWQJEXunWfr637QO4/abkhlqk7qVnMv14=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gZJrfZlQoAvIEUyVvcZv3iiJx9/JqIC0otWAfr02WPmHiwbua7BfXAx68B44Z/62C
-         45XdnN0Kc2e3IXYOxBYEDpJAfAXTh40ip6y2Uj7FmXRv8JB7bw1S0SQhwqtj9rvh5W
-         aiTUFyp4xw5uO7XGSsP/1eNg02/YIoW4mEBSBrFw=
+        b=nhTEIv/z40GCSERNGwcRTsuOmbOfhEDmHleYt9nNrvGYdZgoJIG3wqS+FGyOUlQhR
+         EB8Ku/XuZ8/888qyraWqEhB3h9E8epoPy0u5l5mRa7S2CXAIF72WARBveJfjNgHKtY
+         oQcE9ItCWvkxwMqn4f8izGtAvmP88sfkBmV5Yl0o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Anderson <sean.anderson@seco.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        stable@vger.kernel.org, Miroslav Benes <mbenes@suse.cz>,
+        Emil Velikov <emil.l.velikov@gmail.com>,
+        Jessica Yu <jeyu@kernel.org>,
+        Quentin Perret <qperret@google.com>,
+        Matthias Maennich <maennich@google.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 059/298] serial: uartlite: Fix BRKINT clearing
-Date:   Mon, 13 Jun 2022 12:09:13 +0200
-Message-Id: <20220613094926.739968981@linuxfoundation.org>
+Subject: [PATCH 5.17 040/298] export: fix string handling of namespace in EXPORT_SYMBOL_NS
+Date:   Mon, 13 Jun 2022 12:08:54 +0200
+Message-Id: <20220613094926.154151769@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,35 +54,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-[ Upstream commit 3f7fed405c118607d4d42255f2572072db728399 ]
+[ Upstream commit d143b9db8069f0e2a0fa34484e806a55a0dd4855 ]
 
-BRKINT is within c_iflag rather than c_cflag.
+Commit c3a6cf19e695 ("export: avoid code duplication in
+include/linux/export.h") broke the ability for a defined string to be
+used as a namespace value.  Fix this up by using stringify to properly
+encode the namespace name.
 
-Fixes: ea017f5853e9 (tty: serial: uartlite: Prevent changing fixed parameters)
-Reviewed-by: Sean Anderson <sean.anderson@seco.com>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/20220519081808.3776-2-ilpo.jarvinen@linux.intel.com
+Fixes: c3a6cf19e695 ("export: avoid code duplication in include/linux/export.h")
+Cc: Miroslav Benes <mbenes@suse.cz>
+Cc: Emil Velikov <emil.l.velikov@gmail.com>
+Cc: Jessica Yu <jeyu@kernel.org>
+Cc: Quentin Perret <qperret@google.com>
+Cc: Matthias Maennich <maennich@google.com>
+Reviewed-by: Masahiro Yamada <masahiroy@kernel.org>
+Link: https://lore.kernel.org/r/20220427090442.2105905-1-gregkh@linuxfoundation.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/uartlite.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ include/linux/export.h | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-index e1fa52d31474..7c788c697f3e 100644
---- a/drivers/tty/serial/uartlite.c
-+++ b/drivers/tty/serial/uartlite.c
-@@ -321,7 +321,8 @@ static void ulite_set_termios(struct uart_port *port, struct ktermios *termios,
- 	struct uartlite_data *pdata = port->private_data;
+diff --git a/include/linux/export.h b/include/linux/export.h
+index 27d848712b90..5910ccb66ca2 100644
+--- a/include/linux/export.h
++++ b/include/linux/export.h
+@@ -2,6 +2,8 @@
+ #ifndef _LINUX_EXPORT_H
+ #define _LINUX_EXPORT_H
  
- 	/* Set termios to what the hardware supports */
--	termios->c_cflag &= ~(BRKINT | CSTOPB | PARENB | PARODD | CSIZE);
-+	termios->c_iflag &= ~BRKINT;
-+	termios->c_cflag &= ~(CSTOPB | PARENB | PARODD | CSIZE);
- 	termios->c_cflag |= pdata->cflags & (PARENB | PARODD | CSIZE);
- 	tty_termios_encode_baud_rate(termios, pdata->baud, pdata->baud);
++#include <linux/stringify.h>
++
+ /*
+  * Export symbols from the kernel to modules.  Forked from module.h
+  * to reduce the amount of pointless cruft we feed to gcc when only
+@@ -154,7 +156,6 @@ struct kernel_symbol {
+ #endif /* CONFIG_MODULES */
+ 
+ #ifdef DEFAULT_SYMBOL_NAMESPACE
+-#include <linux/stringify.h>
+ #define _EXPORT_SYMBOL(sym, sec)	__EXPORT_SYMBOL(sym, sec, __stringify(DEFAULT_SYMBOL_NAMESPACE))
+ #else
+ #define _EXPORT_SYMBOL(sym, sec)	__EXPORT_SYMBOL(sym, sec, "")
+@@ -162,8 +163,8 @@ struct kernel_symbol {
+ 
+ #define EXPORT_SYMBOL(sym)		_EXPORT_SYMBOL(sym, "")
+ #define EXPORT_SYMBOL_GPL(sym)		_EXPORT_SYMBOL(sym, "_gpl")
+-#define EXPORT_SYMBOL_NS(sym, ns)	__EXPORT_SYMBOL(sym, "", #ns)
+-#define EXPORT_SYMBOL_NS_GPL(sym, ns)	__EXPORT_SYMBOL(sym, "_gpl", #ns)
++#define EXPORT_SYMBOL_NS(sym, ns)	__EXPORT_SYMBOL(sym, "", __stringify(ns))
++#define EXPORT_SYMBOL_NS_GPL(sym, ns)	__EXPORT_SYMBOL(sym, "_gpl", __stringify(ns))
+ 
+ #endif /* !__ASSEMBLY__ */
  
 -- 
 2.35.1
