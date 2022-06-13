@@ -2,116 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 934ADC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:55:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16676C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:55:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386263AbiFMOzN (ORCPT
+        id S1386332AbiFMOzQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:55:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45268 "EHLO
+        Mon, 13 Jun 2022 10:55:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386816AbiFMOyY (ORCPT
+        with ESMTP id S1386949AbiFMOyh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:54:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F495CEB98;
-        Mon, 13 Jun 2022 04:57:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A8FDDB80EB2;
-        Mon, 13 Jun 2022 11:52:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2707DC3411B;
-        Mon, 13 Jun 2022 11:52:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655121121;
-        bh=eSd1ELFsAoy1oMuc2JFhD/6t5LSqKBh+HAHIcUu/rcE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BjpsHzsD8bXgZIDJIZPhFbL58M0GLeu5tSgegD+sbUznBlYSlZCqcfTxPffdnPf3X
-         AHCPHB+Grj0RtwRFQem3d9hXvtcAgnDl0YVrxb07BbA28OsGgKK2QLTyy9lRKGntCS
-         F1IsqgIqV2UBP+A0vjGr/HHQ62bQyr5GhAiGHsA0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH 5.17 280/298] vduse: Fix NULL pointer dereference on sysfs access
-Date:   Mon, 13 Jun 2022 12:12:54 +0200
-Message-Id: <20220613094933.574939149@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
-References: <20220613094924.913340374@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Mon, 13 Jun 2022 10:54:37 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3DE8CE5F9;
+        Mon, 13 Jun 2022 04:57:08 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id s1so6805772wra.9;
+        Mon, 13 Jun 2022 04:57:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=6TuJuerUWJ8EtOROL8wReDLxoePQoYwCsoov/k8HMWg=;
+        b=gf9LBZYFHf0KNaMSaE7tF715h96Jnv2U9DTHOIX1cCAIYCWDQzAvUke7pFZjwLhzUq
+         sVeVobVZ0jPIphEKmLbjmpSC5FHi2qeEv2Z+V2myfcalV6E7DK+pe3JX/lXmgXFH9kOt
+         ntPg+5+S0pl//HDHNYXTaZYjbnIjTOcPxBrzTaGpGopYjVOpOU0w2uPBBPb8hE4L5+/C
+         LYjWQe7ThdziR8KideulKhoEoYWZyjQh+hc14xUq7ZQe0RdCaJRVLPttJKmiK+xEfF/K
+         52K2zdnD7bPEdCdyVRp+SnYC+pQ88eBJB9a25ljv+Ck89DPJNceRbuErlZ9V4Fy18gdK
+         /UNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=6TuJuerUWJ8EtOROL8wReDLxoePQoYwCsoov/k8HMWg=;
+        b=TinEZqPJ8PG7y9vMb+GHH+znz3eSEL/+m+ztbprgQCxKWyzmzbLAc+qrFvFT4bqpqp
+         ZAMGDdpwdUtAIHdhQ9UAtarRIZN6GyW6offehLQTJlJk1H/kKWC2YFw996O10vkpWSFN
+         MZy27hRr55QN8x6PyS9ZW1I2mH+eqBp9gIOGi9LYoVznsOquy+xZFio62LIJsui5dVnd
+         moMyledykwR0CusJgT71QHX8gTZwYRrSLsVSkarxe5x0jf/PN+gUV1MG2AObF6YaGbVR
+         smqd7Wjt5XT9VSz2U+Ljl0VTA8MtKXt4nplzJBbNA9IToHowVHFLUr0cMnW2tmznx8yw
+         lqVg==
+X-Gm-Message-State: AOAM533ZLxY8afySBGCAbpHcEawgU5qz9f67jv7EBkEb53DkXIwYyE0g
+        Hx1xqUdmXLSQwWINembOLwqtqqgBK6s=
+X-Google-Smtp-Source: ABdhPJw2cZFX7WimZ6Mnf7xBkyQlGQD4CktwSjYghR9IhrDJiyy6H5yezCDMK0B8BFcbsTyu8UtMGQ==
+X-Received: by 2002:a05:6000:226:b0:217:851a:4300 with SMTP id l6-20020a056000022600b00217851a4300mr42651926wrz.389.1655121418721;
+        Mon, 13 Jun 2022 04:56:58 -0700 (PDT)
+Received: from felia.fritz.box (200116b8260df50011e978c0f780de03.dip.versatel-1u1.de. [2001:16b8:260d:f500:11e9:78c0:f780:de03])
+        by smtp.gmail.com with ESMTPSA id t1-20020a5d6a41000000b00218468314d7sm8330144wrw.62.2022.06.13.04.56.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 04:56:58 -0700 (PDT)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        linux-input@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] MAINTAINERS: add include/dt-bindings/input to INPUT DRIVERS
+Date:   Mon, 13 Jun 2022 13:56:54 +0200
+Message-Id: <20220613115654.28117-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xie Yongji <xieyongji@bytedance.com>
+Maintainers of the directory Documentation/devicetree/bindings/input
+are also the maintainers of the corresponding directory
+include/dt-bindings/input.
 
-commit b27ee76c74dc831d6e092eaebc2dfc9c0beed1c9 upstream.
+Add the file entry for include/dt-bindings/input to the appropriate
+section in MAINTAINERS.
 
-The control device has no drvdata. So we will get a
-NULL pointer dereference when accessing control
-device's msg_timeout attribute via sysfs:
-
-[ 132.841881][ T3644] BUG: kernel NULL pointer dereference, address: 00000000000000f8
-[ 132.850619][ T3644] RIP: 0010:msg_timeout_show (drivers/vdpa/vdpa_user/vduse_dev.c:1271)
-[ 132.869447][ T3644] dev_attr_show (drivers/base/core.c:2094)
-[ 132.870215][ T3644] sysfs_kf_seq_show (fs/sysfs/file.c:59)
-[ 132.871164][ T3644] ? device_remove_bin_file (drivers/base/core.c:2088)
-[ 132.872082][ T3644] kernfs_seq_show (fs/kernfs/file.c:164)
-[ 132.872838][ T3644] seq_read_iter (fs/seq_file.c:230)
-[ 132.873578][ T3644] ? __vmalloc_area_node (mm/vmalloc.c:3041)
-[ 132.874532][ T3644] kernfs_fop_read_iter (fs/kernfs/file.c:238)
-[ 132.875513][ T3644] __kernel_read (fs/read_write.c:440 (discriminator 1))
-[ 132.876319][ T3644] kernel_read (fs/read_write.c:459)
-[ 132.877129][ T3644] kernel_read_file (fs/kernel_read_file.c:94)
-[ 132.877978][ T3644] kernel_read_file_from_fd (include/linux/file.h:45 fs/kernel_read_file.c:186)
-[ 132.879019][ T3644] __do_sys_finit_module (kernel/module.c:4207)
-[ 132.879930][ T3644] __ia32_sys_finit_module (kernel/module.c:4189)
-[ 132.880930][ T3644] do_int80_syscall_32 (arch/x86/entry/common.c:112 arch/x86/entry/common.c:132)
-[ 132.881847][ T3644] entry_INT80_compat (arch/x86/entry/entry_64_compat.S:419)
-
-To fix it, don't create the unneeded attribute for
-control device anymore.
-
-Fixes: c8a6153b6c59 ("vduse: Introduce VDUSE - vDPA Device in Userspace")
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-Message-Id: <20220426073656.229-1-xieyongji@bytedance.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 ---
- drivers/vdpa/vdpa_user/vduse_dev.c |    7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+Dmitry, please pick this MAINTAINERS addition to your section.
 
---- a/drivers/vdpa/vdpa_user/vduse_dev.c
-+++ b/drivers/vdpa/vdpa_user/vduse_dev.c
-@@ -1344,9 +1344,9 @@ static int vduse_create_dev(struct vduse
- 
- 	dev->minor = ret;
- 	dev->msg_timeout = VDUSE_MSG_DEFAULT_TIMEOUT;
--	dev->dev = device_create(vduse_class, NULL,
--				 MKDEV(MAJOR(vduse_major), dev->minor),
--				 dev, "%s", config->name);
-+	dev->dev = device_create_with_groups(vduse_class, NULL,
-+				MKDEV(MAJOR(vduse_major), dev->minor),
-+				dev, vduse_dev_groups, "%s", config->name);
- 	if (IS_ERR(dev->dev)) {
- 		ret = PTR_ERR(dev->dev);
- 		goto err_dev;
-@@ -1595,7 +1595,6 @@ static int vduse_init(void)
- 		return PTR_ERR(vduse_class);
- 
- 	vduse_class->devnode = vduse_devnode;
--	vduse_class->dev_groups = vduse_dev_groups;
- 
- 	ret = alloc_chrdev_region(&vduse_major, 0, VDUSE_DEV_MAX, "vduse");
- 	if (ret)
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 503b8042784e..262ed53d544a 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -9815,6 +9815,7 @@ F:	Documentation/devicetree/bindings/input/
+ F:	Documentation/devicetree/bindings/serio/
+ F:	Documentation/input/
+ F:	drivers/input/
++F:	include/dt-bindings/input/
+ F:	include/linux/input.h
+ F:	include/linux/input/
+ F:	include/uapi/linux/input-event-codes.h
+-- 
+2.17.1
 
