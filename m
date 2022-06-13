@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6FDFC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:42:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1471ECCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:42:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378262AbiFMNmR (ORCPT
+        id S1378301AbiFMNm0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:42:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60274 "EHLO
+        Mon, 13 Jun 2022 09:42:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378980AbiFMNjd (ORCPT
+        with ESMTP id S1378994AbiFMNjf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:39:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FC62793B7;
-        Mon, 13 Jun 2022 04:28:23 -0700 (PDT)
+        Mon, 13 Jun 2022 09:39:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E67F7937F;
+        Mon, 13 Jun 2022 04:28:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6138BB80D3A;
-        Mon, 13 Jun 2022 11:28:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4475C34114;
-        Mon, 13 Jun 2022 11:28:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 068D36114A;
+        Mon, 13 Jun 2022 11:28:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 122A5C3411E;
+        Mon, 13 Jun 2022 11:28:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119700;
-        bh=f9WPULOGIs30Qh+gAi1tpU505UmF8eRJzh//NO3M3Lc=;
+        s=korg; t=1655119705;
+        bh=8PGhjs0A2YdVyurjxtWzr47UU3TE7+riO+Iw8NBZlA8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IF1URcVnA4Aq2fEPKmRkDvAHUyhlpbCOPP0fniLwgBD7MHCZY0KvLwKy2TQn9UgM5
-         +IQW7qPVoH/KTjiMPbQyvqo/nFc/ayygde2LXiisYdowjLRJ4k8RZH/LOBQcD5x8iE
-         t6VoCwrI89H019epkay+UKz95XK/zAGavk92P+48=
+        b=l7ZE1NUunO3w4Sp4gwbDHLMiz6K0V/1M8WyJcY3uzW+AmNXh1+bkWPPyoIRVNUJ8c
+         OHS1FUK6aTGuvAKudIvKqLPUDg4wpL0fXc531oQ4LaqywA4QiBWs7+XHG/lwhIp/2d
+         sOOyFsllkxgJ7er0OtI9ZdXy0yyf3xEgIX8MtTBQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhang Wensheng <zhangwensheng5@huawei.com>,
-        Yu Kuai <yukuai3@huawei.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 107/339] nbd: fix possible overflow on first_minor in nbd_dev_add()
-Date:   Mon, 13 Jun 2022 12:08:52 +0200
-Message-Id: <20220613094929.756746786@linuxfoundation.org>
+        stable@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 091/339] drm/amdgpu: Off by one in dm_dmub_outbox1_low_irq()
+Date:   Mon, 13 Jun 2022 12:08:36 +0200
+Message-Id: <20220613094929.275871423@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,71 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Wensheng <zhangwensheng5@huawei.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 858f1bf65d3d9c00b5e2d8ca87dc79ed88267c98 ]
+[ Upstream commit a35faec3db0e13aac8ea720bc1a3503081dd5a3d ]
 
-When 'index' is a big numbers, it may become negative which forced
-to 'int'. then 'index << part_shift' might overflow to a positive
-value that is not greater than '0xfffff', then sysfs might complains
-about duplicate creation. Because of this, move the 'index' judgment
-to the front will fix it and be better.
+The > ARRAY_SIZE() should be >= ARRAY_SIZE() to prevent an out of bounds
+access.
 
-Fixes: b0d9111a2d53 ("nbd: use an idr to keep track of nbd devices")
-Fixes: 940c264984fd ("nbd: fix possible overflow for 'first_minor' in nbd_dev_add()")
-Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-Reviewed-by: Josef Bacik <josef@toxicpanda.com>
-Link: https://lore.kernel.org/r/20220521073749.3146892-6-yukuai3@huawei.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: e27c41d5b068 ("drm/amd/display: Support for DMUB HPD interrupt handling")
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/nbd.c | 23 ++++++++++++-----------
- 1 file changed, 12 insertions(+), 11 deletions(-)
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
-index ed678037ba6d..c860a9930855 100644
---- a/drivers/block/nbd.c
-+++ b/drivers/block/nbd.c
-@@ -1814,17 +1814,7 @@ static struct nbd_device *nbd_dev_add(int index, unsigned int refs)
- 	refcount_set(&nbd->refs, 0);
- 	INIT_LIST_HEAD(&nbd->list);
- 	disk->major = NBD_MAJOR;
--
--	/* Too big first_minor can cause duplicate creation of
--	 * sysfs files/links, since index << part_shift might overflow, or
--	 * MKDEV() expect that the max bits of first_minor is 20.
--	 */
- 	disk->first_minor = index << part_shift;
--	if (disk->first_minor < index || disk->first_minor > MINORMASK) {
--		err = -EINVAL;
--		goto out_free_work;
--	}
--
- 	disk->minors = 1 << part_shift;
- 	disk->fops = &nbd_fops;
- 	disk->private_data = nbd;
-@@ -1929,8 +1919,19 @@ static int nbd_genl_connect(struct sk_buff *skb, struct genl_info *info)
- 	if (!netlink_capable(skb, CAP_SYS_ADMIN))
- 		return -EPERM;
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+index 62139ff35476..8dd03de7c277 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -771,7 +771,7 @@ static void dm_dmub_outbox1_low_irq(void *interrupt_params)
  
--	if (info->attrs[NBD_ATTR_INDEX])
-+	if (info->attrs[NBD_ATTR_INDEX]) {
- 		index = nla_get_u32(info->attrs[NBD_ATTR_INDEX]);
-+
-+		/*
-+		 * Too big first_minor can cause duplicate creation of
-+		 * sysfs files/links, since index << part_shift might overflow, or
-+		 * MKDEV() expect that the max bits of first_minor is 20.
-+		 */
-+		if (index < 0 || index > MINORMASK >> part_shift) {
-+			printk(KERN_ERR "nbd: illegal input index %d\n", index);
-+			return -EINVAL;
-+		}
-+	}
- 	if (!info->attrs[NBD_ATTR_SOCKETS]) {
- 		printk(KERN_ERR "nbd: must specify at least one socket\n");
- 		return -EINVAL;
+ 		do {
+ 			dc_stat_get_dmub_notification(adev->dm.dc, &notify);
+-			if (notify.type > ARRAY_SIZE(dm->dmub_thread_offload)) {
++			if (notify.type >= ARRAY_SIZE(dm->dmub_thread_offload)) {
+ 				DRM_ERROR("DM: notify type %d invalid!", notify.type);
+ 				continue;
+ 			}
 -- 
 2.35.1
 
