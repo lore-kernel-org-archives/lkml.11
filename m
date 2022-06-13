@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 584C9C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:11:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2B51C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:11:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351756AbiFMLLc (ORCPT
+        id S1352296AbiFMLLj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:11:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45608 "EHLO
+        Mon, 13 Jun 2022 07:11:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352083AbiFMLJV (ORCPT
+        with ESMTP id S1352118AbiFMLJX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:09:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFCFD33E32;
-        Mon, 13 Jun 2022 03:35:24 -0700 (PDT)
+        Mon, 13 Jun 2022 07:09:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFEAD33EB7;
+        Mon, 13 Jun 2022 03:35:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 70AEB60F9A;
-        Mon, 13 Jun 2022 10:35:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85632C34114;
-        Mon, 13 Jun 2022 10:35:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 173AEB80EB1;
+        Mon, 13 Jun 2022 10:35:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D79EC34114;
+        Mon, 13 Jun 2022 10:35:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116516;
-        bh=EoOtVIPnZtBAk5PHnk/EdTVPGj9ymbTn6H6YTfuhnkE=;
+        s=korg; t=1655116527;
+        bh=3StrEeXF8qKQ4qZZKKBEVe7p3su1uFzC+xShw9AKJ2A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1ou7X/oUSWBywbw75uuTXKGa6RZFCfV046Z7MIlAOUddLdO7epX7NMCYAL35LeVdH
-         Le/MOMorYybK1SklpZ46F5yLUO2dQiqMP6zbA+EX4fNUlE8HRgx2P13SEsXkqu/n9k
-         UX/oPgXQkBIcRyJ0Rztb444iEE0dvY1S70cpMcyA=
+        b=qkspgdOvm2dTe8kfLMWPLos27vk80BbjZkbmmQ3zOPYelr/9y6kV5Ns8I2kv+1k9p
+         QKk3mevkTxwuiUghw+olHw2QQDjPcvNcG2eW41bpXWoLzbHN3KNQJkSIxpwcvip/cY
+         kz3JvMzrke7f4RlJBIwMr9bQMe40UPcgjDIVMDmQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Robert Foss <robert.foss@linaro.org>,
+        stable@vger.kernel.org, Michal Kubecek <mkubecek@suse.cz>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 100/411] drm/bridge: Fix error handling in analogix_dp_probe
-Date:   Mon, 13 Jun 2022 12:06:13 +0200
-Message-Id: <20220613094931.678424952@linuxfoundation.org>
+Subject: [PATCH 4.14 198/218] Revert "net: af_key: add check for pfkey_broadcast in function pfkey_process"
+Date:   Mon, 13 Jun 2022 12:10:56 +0200
+Message-Id: <20220613094926.627315543@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,78 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Michal Kubecek <mkubecek@suse.cz>
 
-[ Upstream commit 9f15930bb2ef9f031d62ffc49629cbae89137733 ]
+[ Upstream commit 9c90c9b3e50e16d03c7f87d63e9db373974781e0 ]
 
-In the error handling path, the clk_prepare_enable() function
-call should be balanced by a corresponding 'clk_disable_unprepare()'
-call, as already done in the remove function.
+This reverts commit 4dc2a5a8f6754492180741facf2a8787f2c415d7.
 
-Fixes: 3424e3a4f844 ("drm: bridge: analogix/dp: split exynos dp driver to bridge directory")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220420011644.25730-1-linmq006@gmail.com
+A non-zero return value from pfkey_broadcast() does not necessarily mean
+an error occurred as this function returns -ESRCH when no registered
+listener received the message. In particular, a call with
+BROADCAST_PROMISC_ONLY flag and null one_sk argument can never return
+zero so that this commit in fact prevents processing any PF_KEY message.
+One visible effect is that racoon daemon fails to find encryption
+algorithms like aes and refuses to start.
+
+Excluding -ESRCH return value would fix this but it's not obvious that
+we really want to bail out here and most other callers of
+pfkey_broadcast() also ignore the return value. Also, as pointed out by
+Steffen Klassert, PF_KEY is kind of deprecated and newer userspace code
+should use netlink instead so that we should only disturb the code for
+really important fixes.
+
+v2: add a comment explaining why is the return value ignored
+
+Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../gpu/drm/bridge/analogix/analogix_dp_core.c | 18 +++++++++++++-----
- 1 file changed, 13 insertions(+), 5 deletions(-)
+ net/key/af_key.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-index 1f26890a8da6..3db0a631a6be 100644
---- a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-+++ b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-@@ -1696,8 +1696,10 @@ analogix_dp_probe(struct device *dev, struct analogix_dp_plat_data *plat_data)
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index 990de0702b79..035123bf7259 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -2834,10 +2834,12 @@ static int pfkey_process(struct sock *sk, struct sk_buff *skb, const struct sadb
+ 	void *ext_hdrs[SADB_EXT_MAX];
+ 	int err;
  
- 	dp->reg_base = devm_ioremap_resource(&pdev->dev, res);
--	if (IS_ERR(dp->reg_base))
--		return ERR_CAST(dp->reg_base);
-+	if (IS_ERR(dp->reg_base)) {
-+		ret = PTR_ERR(dp->reg_base);
-+		goto err_disable_clk;
-+	}
+-	err = pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
+-			      BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
+-	if (err)
+-		return err;
++	/* Non-zero return value of pfkey_broadcast() does not always signal
++	 * an error and even on an actual error we may still want to process
++	 * the message so rather ignore the return value.
++	 */
++	pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
++			BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
  
- 	dp->force_hpd = of_property_read_bool(dev->of_node, "force-hpd");
- 
-@@ -1709,7 +1711,8 @@ analogix_dp_probe(struct device *dev, struct analogix_dp_plat_data *plat_data)
- 	if (IS_ERR(dp->hpd_gpiod)) {
- 		dev_err(dev, "error getting HDP GPIO: %ld\n",
- 			PTR_ERR(dp->hpd_gpiod));
--		return ERR_CAST(dp->hpd_gpiod);
-+		ret = PTR_ERR(dp->hpd_gpiod);
-+		goto err_disable_clk;
- 	}
- 
- 	if (dp->hpd_gpiod) {
-@@ -1729,7 +1732,8 @@ analogix_dp_probe(struct device *dev, struct analogix_dp_plat_data *plat_data)
- 
- 	if (dp->irq == -ENXIO) {
- 		dev_err(&pdev->dev, "failed to get irq\n");
--		return ERR_PTR(-ENODEV);
-+		ret = -ENODEV;
-+		goto err_disable_clk;
- 	}
- 
- 	ret = devm_request_threaded_irq(&pdev->dev, dp->irq,
-@@ -1738,11 +1742,15 @@ analogix_dp_probe(struct device *dev, struct analogix_dp_plat_data *plat_data)
- 					irq_flags, "analogix-dp", dp);
- 	if (ret) {
- 		dev_err(&pdev->dev, "failed to request irq\n");
--		return ERR_PTR(ret);
-+		goto err_disable_clk;
- 	}
- 	disable_irq(dp->irq);
- 
- 	return dp;
-+
-+err_disable_clk:
-+	clk_disable_unprepare(dp->clock);
-+	return ERR_PTR(ret);
- }
- EXPORT_SYMBOL_GPL(analogix_dp_probe);
- 
+ 	memset(ext_hdrs, 0, sizeof(ext_hdrs));
+ 	err = parse_exthdrs(skb, hdr, ext_hdrs);
 -- 
 2.35.1
 
