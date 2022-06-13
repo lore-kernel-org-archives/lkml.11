@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF19AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:15:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3C3DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:15:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239835AbiFMIPZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 04:15:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43788 "EHLO
+        id S239882AbiFMIPh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 04:15:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239782AbiFMIPM (ORCPT
+        with ESMTP id S239860AbiFMIP1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 04:15:12 -0400
+        Mon, 13 Jun 2022 04:15:27 -0400
 Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9805B2F0;
-        Mon, 13 Jun 2022 01:15:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B05E2D53;
+        Mon, 13 Jun 2022 01:15:22 -0700 (PDT)
 Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25D80q1D026381;
-        Mon, 13 Jun 2022 10:14:57 +0200
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25D2DrHF009489;
+        Mon, 13 Jun 2022 10:15:13 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
  mime-version : subject : to : cc : references : from : in-reply-to :
  content-type : content-transfer-encoding; s=selector1;
- bh=j4qE4CmTOLx19pyEhsVTVJ4dGM7++a3J2NmTTXvsYqk=;
- b=EPUc7+MiS5BXCGfIiySRsWC6NvcAXPwukwv/vxIgWPnuMQx8XwZszulbaKyPkKPUPvsz
- rvDPbpPWfTvOJ0Sb+PFava+1lk6RiaENZoOxO92cDQ7t+URjL2gaoYIdVsRMwZ4MUOnk
- RmnWCy099u4GUQvotA9d9rnm6LNt6wQNju+JWFOpWyIhVflE3BQeCi7lIBPyzFlcglr1
- gs4LCSwIaxsV2yIVTHUEfOLyXoERNmF3TNbdtvwcvuKoVmY2+A4GUYUMy93SSc7SzSVl
- qiUBxl5HxNqZ1vbrtt9zRfJxV9D0+dMFm3RPgAGpRu5RvbklHX+olxIT4xr/69VGssDJ rA== 
+ bh=2jPMFCFi0BBGHxBZTXR7BgbxjmNy1phYwPLYn9sIx+I=;
+ b=fycCi7tuCzPCsk/AGUc3qGuLzwcUAF+6E5uQ4mlnI0fz2Ixwd1blkhTmZEjxRE0HfYWY
+ igQmzsumf53gQ5ID3fFg/+KCJcEv+F0IY/dY3MXnJcEkHpJAlo+Oo0mLf4+VYlNuTIDw
+ w9j4sXnLzKD5KOSaliD5KAlJJcgI6LbDvYrQBxcfnI/lKyW8ANM9/R0GZYYTZcg9zgGD
+ 32SoLa02gf+LaUAg4QMom0Zf74qsEgFMlCxEtTqXe+33eo47/chHZGRSG1XgmDRKdx3B
+ c0YNScwKX/VfVO0B4TecF81XCdeugQk3X68PJ63E0R3DVDqjdhA8vHRY1Oe0zbKFIglK ZQ== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gmg6a2jm2-1
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gmg6a2jp5-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 13 Jun 2022 10:14:57 +0200
+        Mon, 13 Jun 2022 10:15:13 +0200
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id E391310002A;
-        Mon, 13 Jun 2022 10:14:56 +0200 (CEST)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 6FA7610002A;
+        Mon, 13 Jun 2022 10:15:12 +0200 (CEST)
 Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id DEA23212311;
-        Mon, 13 Jun 2022 10:14:56 +0200 (CEST)
-Received: from [10.201.21.93] (10.75.127.118) by SHFDAG1NODE1.st.com
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 6B1B72128AD;
+        Mon, 13 Jun 2022 10:15:12 +0200 (CEST)
+Received: from [10.201.21.93] (10.75.127.116) by SHFDAG1NODE1.st.com
  (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Mon, 13 Jun
- 2022 10:14:56 +0200
-Message-ID: <feca044e-deed-6c93-897f-59ab8ed2ba21@foss.st.com>
-Date:   Mon, 13 Jun 2022 10:14:55 +0200
+ 2022 10:15:10 +0200
+Message-ID: <cd9121fb-4953-2a06-5a48-728dc4ca6caa@foss.st.com>
+Date:   Mon, 13 Jun 2022 10:15:10 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [PATCH 1/2] ARM: dts: stm32: fix missing internally connected
- voltage regulator for OSD32MP1
+Subject: Re: [PATCH 2/2] ARM: dts: stm32: correct vcc-supply for eeprom on
+ stm32mp15xx-osd32
 Content-Language: en-US
 To:     =?UTF-8?Q?Leonard_G=c3=b6hrs?= <l.goehrs@pengutronix.de>,
         Rob Herring <robh+dt@kernel.org>,
@@ -58,11 +58,12 @@ CC:     <kernel@pengutronix.de>, <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>
 References: <20220603094422.2112746-1-l.goehrs@pengutronix.de>
+ <20220603094422.2112746-2-l.goehrs@pengutronix.de>
 From:   Alexandre TORGUE <alexandre.torgue@foss.st.com>
-In-Reply-To: <20220603094422.2112746-1-l.goehrs@pengutronix.de>
+In-Reply-To: <20220603094422.2112746-2-l.goehrs@pengutronix.de>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.75.127.118]
+X-Originating-IP: [10.75.127.116]
 X-ClientProxiedBy: GPXDAG2NODE5.st.com (10.75.127.69) To SHFDAG1NODE1.st.com
  (10.75.129.69)
 X-Proofpoint-Virus-Version: vendor=baseguard
@@ -72,32 +73,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Leonard
+Hi
 
 On 6/3/22 11:44, Leonard Göhrs wrote:
-> According to the OSD32MP1 Power System overview[1] ldo3's input is always
-> internally connected to vdd_ddr.
+> According to the OSD32MP1 Power System overview[1] the EEPROM is connected to
+> the VDD line and not to some single-purpose fixed regulator.
+> Set the EEPROM supply according to the diagram to eliminate this parent-less
+> regulator.
 > 
 > [1]: https://octavosystems.com/app_notes/osd32mp1-power-system-overview/#connections
 > 
 > Signed-off-by: Leonard Göhrs <l.goehrs@pengutronix.de>
 > ---
->   arch/arm/boot/dts/stm32mp15xx-osd32.dtsi | 1 +
->   1 file changed, 1 insertion(+)
+>   arch/arm/boot/dts/stm32mp15xx-osd32.dtsi | 8 +-------
+>   1 file changed, 1 insertion(+), 7 deletions(-)
 > 
 > diff --git a/arch/arm/boot/dts/stm32mp15xx-osd32.dtsi b/arch/arm/boot/dts/stm32mp15xx-osd32.dtsi
-> index 6706d8311a66..e997c4953fd1 100644
+> index e997c4953fd1..935b7084b5a2 100644
 > --- a/arch/arm/boot/dts/stm32mp15xx-osd32.dtsi
 > +++ b/arch/arm/boot/dts/stm32mp15xx-osd32.dtsi
-> @@ -78,6 +78,7 @@ regulators {
->   			compatible = "st,stpmic1-regulators";
+> @@ -50,12 +50,6 @@ retram: retram@38000000 {
+>   			no-map;
+>   		};
+>   	};
+> -
+> -	reg_sip_eeprom: regulator_eeprom {
+> -		compatible = "regulator-fixed";
+> -		regulator-name = "sip_eeprom";
+> -		regulator-always-on;
+> -	};
+>   };
 >   
->   			ldo1-supply = <&v3v3>;
-> +			ldo3-supply = <&vdd_ddr>;
->   			ldo6-supply = <&v3v3>;
->   			pwr_sw1-supply = <&bst_out>;
+>   &i2c4 {
+> @@ -204,7 +198,7 @@ pmic_watchdog: watchdog {
 >   
-
+>   	sip_eeprom: eeprom@50 {
+>   		compatible = "atmel,24c32";
+> -		vcc-supply = <&reg_sip_eeprom>;
+> +		vcc-supply = <&vdd>;
+>   		reg = <0x50>;
+>   	};
+>   };
 
 Applied on stm32-next.
 
