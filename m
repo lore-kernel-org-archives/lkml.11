@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A33D0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:20:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80C38C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:20:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242626AbiFMKUX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:20:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60658 "EHLO
+        id S242661AbiFMKU0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:20:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242682AbiFMKSb (ORCPT
+        with ESMTP id S242789AbiFMKSg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:18:31 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C67D4DF37;
-        Mon, 13 Jun 2022 03:16:17 -0700 (PDT)
+        Mon, 13 Jun 2022 06:18:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43CAE20BEF;
+        Mon, 13 Jun 2022 03:16:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0DAB2CE1106;
-        Mon, 13 Jun 2022 10:16:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0534CC34114;
-        Mon, 13 Jun 2022 10:16:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E5D8FB80E95;
+        Mon, 13 Jun 2022 10:16:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EDB3C34114;
+        Mon, 13 Jun 2022 10:16:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115374;
-        bh=9AWYvwpbknsiS/4G3LdwateIgFBMMn2KK4bA6s5Ljp4=;
+        s=korg; t=1655115382;
+        bh=N1dnNiaQZ8dPQI6cLQ+KpB/HglecVQwnL9DV4rJIFTI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0e/1RHeoLnw2NwUi+U31MgZtBhCkn5m4mqskBta8LEbctKEbLLNWDpKCMv0rETY4C
-         0E0yPnWUcqH4zRvr+RPDtgNgOCyrNrArJX36shcsXM6kL/fEBA/Jjcff4B0vjbveLX
-         I2+zQhBNvDAItHAKN/bwoZKo4/BMV2xLrUGd4Kfo=
+        b=D03XLdyZr4gUT+xLD/LenUu5FtaSMryeVRSbL+ixANmEUaE5XRydUnajKjFlfuSKg
+         PWa9h7HZOl423dT/9W9dcdf/AtjpOYUexNnmGsko1tT4w904OIlNAXbMiMp2WES6ks
+         YTR/IPdyidYW7cFWLaGmbm4SJ9QNNzRv4VfLGFRQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 051/167] drm/msm: return an error pointer in msm_gem_prime_get_sg_table()
-Date:   Mon, 13 Jun 2022 12:08:45 +0200
-Message-Id: <20220613094852.941038391@linuxfoundation.org>
+Subject: [PATCH 4.9 054/167] regulator: pfuze100: Fix refcount leak in pfuze_parse_regulators_dt
+Date:   Mon, 13 Jun 2022 12:08:48 +0200
+Message-Id: <20220613094853.590423975@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -49,38 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit cf575e31611eb6dccf08fad02e57e35b2187704d ]
+[ Upstream commit afaa7b933ef00a2d3262f4d1252087613fb5c06d ]
 
-The msm_gem_prime_get_sg_table() needs to return error pointers on
-error.  This is called from drm_gem_map_dma_buf() and returning a
-NULL will lead to a crash in that function.
+of_node_get() returns a node with refcount incremented.
+Calling of_node_put() to drop the reference when not needed anymore.
 
-Fixes: ac45146733b0 ("drm/msm: fix msm_gem_prime_get_sg_table()")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/485023/
-Link: https://lore.kernel.org/r/YnOmtS5tfENywR9m@kili
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Fixes: 3784b6d64dc5 ("regulator: pfuze100: add pfuze100 regulator driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220511113506.45185-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/msm_gem_prime.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/regulator/pfuze100-regulator.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/msm_gem_prime.c b/drivers/gpu/drm/msm/msm_gem_prime.c
-index 13403c6da6c7..7e4664968106 100644
---- a/drivers/gpu/drm/msm/msm_gem_prime.c
-+++ b/drivers/gpu/drm/msm/msm_gem_prime.c
-@@ -26,7 +26,7 @@ struct sg_table *msm_gem_prime_get_sg_table(struct drm_gem_object *obj)
- 	int npages = obj->size >> PAGE_SHIFT;
+diff --git a/drivers/regulator/pfuze100-regulator.c b/drivers/regulator/pfuze100-regulator.c
+index ffb1f61d2c75..998c7c972e60 100644
+--- a/drivers/regulator/pfuze100-regulator.c
++++ b/drivers/regulator/pfuze100-regulator.c
+@@ -407,6 +407,7 @@ static int pfuze_parse_regulators_dt(struct pfuze_chip *chip)
+ 	parent = of_get_child_by_name(np, "regulators");
+ 	if (!parent) {
+ 		dev_err(dev, "regulators node not found\n");
++		of_node_put(np);
+ 		return -EINVAL;
+ 	}
  
- 	if (WARN_ON(!msm_obj->pages))  /* should have already pinned! */
--		return NULL;
-+		return ERR_PTR(-ENOMEM);
+@@ -431,6 +432,7 @@ static int pfuze_parse_regulators_dt(struct pfuze_chip *chip)
+ 	}
  
- 	return drm_prime_pages_to_sg(msm_obj->pages, npages);
- }
+ 	of_node_put(parent);
++	of_node_put(np);
+ 	if (ret < 0) {
+ 		dev_err(dev, "Error parsing regulator init data: %d\n",
+ 			ret);
 -- 
 2.35.1
 
