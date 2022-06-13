@@ -2,93 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7799C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:37:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD074C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:38:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238379AbiFMShU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:37:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34732 "EHLO
+        id S243590AbiFMSiK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:38:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245712AbiFMShC (ORCPT
+        with ESMTP id S1343558AbiFMShy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 14:37:02 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7695D2452;
-        Mon, 13 Jun 2022 07:56:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=kgaOivgVuvl4d3T7CdI1Azd7OrRQH+RXo0cFw9RJT0A=; b=vTPQmgu4pXETpWR2FDU/YUpQJ/
-        yWyuh6FtLojBT7/urS3VWhyK0anC/w0ol6jnZKvZTUTF144Ff5aBbZAPEibZNQGKwIv+QfmlQkcHg
-        mMI2vk8fqokyNWjX4Ofc8+PMPtGEPAI5RLTJHHsDa05vUNdcxr7sdY5GZHF5YI8dmNag=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1o0lUb-006kmW-Sz; Mon, 13 Jun 2022 16:56:37 +0200
-Date:   Mon, 13 Jun 2022 16:56:37 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michal Kubecek <mkubecek@suse.cz>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v1 1/1] net: phy: add remote fault support
-Message-ID: <YqdQJepq3Klvr5n5@lunn.ch>
-References: <20220608093403.3999446-1-o.rempel@pengutronix.de>
- <YqS+zYHf6eHMWJlD@lunn.ch>
- <20220613125552.GA4536@pengutronix.de>
+        Mon, 13 Jun 2022 14:37:54 -0400
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6550D12C
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 08:39:12 -0700 (PDT)
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id CA0F93FBEC
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 15:39:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1655134750;
+        bh=qIyjHtlgmZ2mGqkFBQdbyeKZViSqALiGs38sp6wvC98=;
+        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+         To:Cc:Content-Type;
+        b=NWN6xl1rQc3IeMce4T2C756RdXCnpI1wKrY5L8VKAvWYMxLujkqawnukKEnyt1my3
+         PlpPqe8rew0yUFUlmBh0aEuY2RA3WzPwx2aGyNtF8G3FqU31jE0Hi5in50rae8OJZc
+         ISbwryEsg6LZoidnoUz8GA2pbNylVk6sy3f63FiqLJWy+Y1ZowcVyx5I900y8CTZLi
+         7AN/yZdQ1qMD85BxpHC1RUiqfy3LWy8EetociBl8ho+cR/7XUDyLy98UVcvl37WNUU
+         zOjCnwlWNXCwxSSa53ucXz880GTB/XKNH7tr5GqeW8/VA+51ElXKvt9ov9rra+oLh8
+         lB0SbW5ZZmBNw==
+Received: by mail-il1-f198.google.com with SMTP id a2-20020a923302000000b002d1ad5053feso4795442ilf.17
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 08:39:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qIyjHtlgmZ2mGqkFBQdbyeKZViSqALiGs38sp6wvC98=;
+        b=3A2oqwtceBHJRzkIYOgD0d0tJLbOZS7sxSJ148MyVNSEbyi737ZPam3SmzU6O/m+Jc
+         43VFMQuK4AAmsWuZwrQ2awQaS5G+5FlcgLWQVnttIajJ8nhfoPuCwo3eFwtFSlG3KYNM
+         PQ5L2pBInn5qf/bYj34Xk8nkxO+xbJy83Cocfy/nEi2ppxBBM0Dica37sIzVvz/xTgqW
+         AEde7JnDgYNGx9qgvh+atdstpVuXWbhSfKNE9Eh13prkncGeNY3eQQ+74532zNUFnrzR
+         j3WFd0yr806KwNserpOXs0QIO6nc/DSogDAeNs0ywwkAf6hMMknSyTwNnFQmgp6frgY1
+         /FhA==
+X-Gm-Message-State: AOAM533O2y9FakibhCBf+DPCRHxAyYJXjRDMPPNF/LZuXrQk7pDhVtE6
+        B1yeaWQuNG9auuOzSicUKMzbSsHvuqRxcnBw27DRYdYSGnGwsBEX401mw79NKBOpbk1r36bFETL
+        TIuvKX1/TiLrfOcHBykV7SkJV7lp+F3EZWyXqqKU0H3O/+c7jgVCqLStpRQ==
+X-Received: by 2002:a05:6638:144d:b0:332:fa9:28a9 with SMTP id l13-20020a056638144d00b003320fa928a9mr201877jad.237.1655134749717;
+        Mon, 13 Jun 2022 08:39:09 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwXNtA+ciI6OWgaT4ebrOdHTZuUKQ3+cRYrYw1j3M7psuLRVjd2hmONX/3HkZzlJ0grCgnTwnE68cXxcjLf3ns=
+X-Received: by 2002:a05:6638:144d:b0:332:fa9:28a9 with SMTP id
+ l13-20020a056638144d00b003320fa928a9mr201863jad.237.1655134749505; Mon, 13
+ Jun 2022 08:39:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220613125552.GA4536@pengutronix.de>
+References: <20220516103329.516952-1-dimitri.ledkov@canonical.com>
+In-Reply-To: <20220516103329.516952-1-dimitri.ledkov@canonical.com>
+From:   =?UTF-8?B?RGltaXRyaSBKb2huIExlZGtvdiDwn4+z77iP4oCN8J+MiA==?= 
+        <dimitri.ledkov@canonical.com>
+Date:   Mon, 13 Jun 2022 16:38:33 +0100
+Message-ID: <CADWks+ZBZo1OQyV4wwx9=tnXa4Vn+KVNpQyAZq7HULJmO1D97A@mail.gmail.com>
+Subject: Re: [PATCH v2] Bluetooth: btintel: Correctly declare all module
+ firmware files
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> If I see it correctly, there is no way to notify about remote fault when
-> the link is up. The remote fault bit is transferred withing Link Code
-> Word as part of FLP burst. At least in this part of specification.
+Hi Marcel
 
-Thanks for looking at the specification. So ksetting does seem like
-the right API.
+Does this v2 patch address the concerns you mentioned in your review
+of the v1 patch at
+https://lore.kernel.org/linux-bluetooth/3EA82A93-D167-482D-AAF4-D781B77A4646@holtmann.org/
+?
 
-Sorry, i won't have time to look at the specification until tomorrow.
-The next question is, is it a separate value, or as more link mode
-bits? Or a mixture of both? Is there a capability bit somewhere to
-indicate this PHY can advertise a remote fault? That would suggest we
-want a ETHTOOL_LINK_MODE_REMOTE_FAULT_BIT, which we can set in
-supported and maybe see in lpa? Set it in advertising when indicating
-a fault. The actual fault value could then be in a separate value
-which gets written to the extended page? Does 802.3 allow a remote
-fault to be indicated but without the reason?
+Or can you explain a bit more how I misunderstood your request?
 
-> So receiving remote fault information via linkstate and send remote fault via
-> ksetting?
+This patch correctly documents the strict patterns of dozens or so
+existing firmware files which this driver can load for each of the hw
+variants.
 
-We could also just broadcast the results of a ksetting get to
-userspace?
+On Mon, 16 May 2022 at 11:33, Dimitri John Ledkov
+<dimitri.ledkov@canonical.com> wrote:
+>
+> Strictly encode patterns of supported hw_variants of firmware files
+> the kernel driver supports requesting. This now includes many missing
+> and previously undeclared module firmware files for 0x07, 0x08,
+> 0x11-0x14 hw_variants.
+>
+> This especially affects environments that only install firmware files
+> declared and referenced by the kernel modules. In such environments,
+> only the declared firmware files are copied resulting in most Intel
+> Bluetooth devices not working. I.e. host-only dracut-install initrds,
+> or Ubuntu Core kernel snaps.
+>
+> BugLink: https://bugs.launchpad.net/bugs/1970819
+> Signed-off-by: Dimitri John Ledkov <dimitri.ledkov@canonical.com>
+> ---
+>
+>  Changes since v1:
+>  - encode strict patterns of supported firmware files for each of the
+>    supported hw_variant generations.
+>
+>  v1 submission link
+>   https://lore.kernel.org/linux-bluetooth/20220509163259.1513242-1-dimitri.ledkov@canonical.com/
+>
+>  drivers/bluetooth/btintel.c | 23 +++++++++++++++++++----
+>  1 file changed, 19 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/bluetooth/btintel.c b/drivers/bluetooth/btintel.c
+> index 06514ed66022..17022758b5bd 100644
+> --- a/drivers/bluetooth/btintel.c
+> +++ b/drivers/bluetooth/btintel.c
+> @@ -2654,7 +2654,22 @@ MODULE_AUTHOR("Marcel Holtmann <marcel@holtmann.org>");
+>  MODULE_DESCRIPTION("Bluetooth support for Intel devices ver " VERSION);
+>  MODULE_VERSION(VERSION);
+>  MODULE_LICENSE("GPL");
+> -MODULE_FIRMWARE("intel/ibt-11-5.sfi");
+> -MODULE_FIRMWARE("intel/ibt-11-5.ddc");
+> -MODULE_FIRMWARE("intel/ibt-12-16.sfi");
+> -MODULE_FIRMWARE("intel/ibt-12-16.ddc");
+> +/* hw_variant 0x07 0x08 */
+> +MODULE_FIRMWARE("intel/ibt-hw-37.7.*-fw-*.*.*.*.*.bseq");
+> +MODULE_FIRMWARE("intel/ibt-hw-37.7.bseq");
+> +MODULE_FIRMWARE("intel/ibt-hw-37.8.*-fw-*.*.*.*.*.bseq");
+> +MODULE_FIRMWARE("intel/ibt-hw-37.8.bseq");
+> +/* hw_variant 0x0b 0x0c */
+> +MODULE_FIRMWARE("intel/ibt-11-*.sfi");
+> +MODULE_FIRMWARE("intel/ibt-12-*.sfi");
+> +MODULE_FIRMWARE("intel/ibt-11-*.ddc");
+> +MODULE_FIRMWARE("intel/ibt-12-*.ddc");
+> +/* hw_variant 0x11 0x12 0x13 0x14 */
+> +MODULE_FIRMWARE("intel/ibt-17-*-*.sfi");
+> +MODULE_FIRMWARE("intel/ibt-18-*-*.sfi");
+> +MODULE_FIRMWARE("intel/ibt-19-*-*.sfi");
+> +MODULE_FIRMWARE("intel/ibt-20-*-*.sfi");
+> +MODULE_FIRMWARE("intel/ibt-17-*-*.ddc");
+> +MODULE_FIRMWARE("intel/ibt-18-*-*.ddc");
+> +MODULE_FIRMWARE("intel/ibt-19-*-*.ddc");
+> +MODULE_FIRMWARE("intel/ibt-20-*-*.ddc");
+> --
+> 2.32.0
+>
 
-I don't have easy access to a machine at the moment. What does
 
-ip monitor all
+-- 
+Happy Pride,
 
-show when a link is configured up, but autoneg fails? And when autoneg
-is successful but indicates a remote fault? Are there any existing
-messages sent to userspace?
-
-> The next logical question is, if a remote fault is RX'ed (potentially with a
-> reason) who will react on this. There might be different policies on how to
-> react on same reason.
-
-Policy goes in userspace, is the general rule.
-
-The only exception might be, if we decide to make use of one of these
-to silence the link to allow cabling testing. We probably want the
-kernel to try to do that.
-
-       Andrew
+Dimitri
