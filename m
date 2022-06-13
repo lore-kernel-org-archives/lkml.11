@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C8BACCA480
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B517BCCA483
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 22:58:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243093AbiFMW6Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 18:58:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57416 "EHLO
+        id S1344302AbiFMW62 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 18:58:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235357AbiFMW5h (ORCPT
+        with ESMTP id S232490AbiFMW5g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 18:57:37 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 597D0270C
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 15:57:33 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id j4-20020a170902da8400b00168b0b2341dso3759413plx.5
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 15:57:33 -0700 (PDT)
+        Mon, 13 Jun 2022 18:57:36 -0400
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60C2CFFB
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 15:57:28 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id g14-20020a17090a128e00b001e882d66615so3237879pja.9
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 15:57:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=bo31PGP16JR8fO1mwvO3YvvmHEE1iup/pKqJeMLN6sA=;
-        b=e6mdfRC+yH8DEWKDztiUFCOlT+hLyEMdHwuptEyVZvR7QErW1ltJvFMXWlbIAQ4lHk
-         fdDqosiVo/VvRX2iE5aDMrJNpDubEIcXcMdNNA/0okoOvrSjGMRXYe4W1zkuAk5/BZp2
-         gnhSE7S3N7sIdLVMWGaTn5VGHy3W2iUCuqlT73kH3PdWRutT1JjLcfvgdGaYX68NyyHE
-         DQxB3IZ3F0jx3PdAT4BQ7grTnkyjeShTZCWLd7oRwuGGM/neE1o60pxJeijrzYCK4cxq
-         fPdHCnHZjYU9Bk64kKdbG9A9js+5u65/J4O9KULfONepX4MT4682ciloSt125Ndg/dmU
-         tJmA==
+        bh=dqOTd+rrEbe0Ho1KL+nrXG1TMVjZBcGq3Scgu3Hlczc=;
+        b=G2vOugzu0HbRynHAIdfDvh7H6N8NAGp6OeQXZpZEPcoDoGxCjUfJtyrMb3Sup/4kFm
+         UNEVjfAQsq1t27BPYIgf8RCWCi+Kl0Guq5Kaqyvj5Mp3Z5yiTWq1cFX3kk0m0Yo5MGZM
+         OLllczkwvkBu2yDMqgQWndoHXH8PHXWQEKtSreWMXQc4uBTLX2YAOnUxIKr+f03kcCQw
+         uFOQ6XzWTYeVn2eIKI8Gor8qkHvlybXEyCdJlgV5yjSekW3oBiCWRRwvh81U/BlPNR8R
+         RrrZh7vfuqRkfsThIb8YazidnNzNDqp6XwpoE/MARqV0PlZdygplQfsvxUQZ7BVh7aRn
+         VluQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=bo31PGP16JR8fO1mwvO3YvvmHEE1iup/pKqJeMLN6sA=;
-        b=1FUIB4tTmMAHnLv/DbrjGuGtBHHTFuUdMvZzoacLwtMTRSCV1qlzhZEcwgm1pA85bq
-         3swDi7ZTwE9BfkeztFV1CKVs3C0hMWPpCoq0Su4b7gD72/f7WsWuAdcDsEzF03PrRUTb
-         LBQpr37dUgxTVEkLKg3NLcaCN7w+YfL+KYMpb28Qfx5H3WJivzLkLzXK82s2YkUPX1zt
-         72ur10Z5BQ4nbmEl/onzopHwP6fGbfjgVvLHIdb59m5BmndP1mMFyBlnPLIdAu21AkRo
-         3wLqKxIhWOxOP1wMGugxlawWxLVvoxI9Nug8b1y4XGGujWrSUGwiTs6tY7TMFypcGdwe
-         EOCQ==
-X-Gm-Message-State: AOAM5301Rg3AeIIReZ0e4ls2JdcwMhxtN9lciOjF//lpj763okIry0sN
-        9KvFi4xwP3ac4S/Ad52j7qsUhF1FIu0=
-X-Google-Smtp-Source: ABdhPJwWEaECxcGZhw2o4gKX7Dh5diIt/fzvRU1hWYTIrwPktOsvYDx1piS89RKElwqnExMrOQPTBO35hlY=
+        bh=dqOTd+rrEbe0Ho1KL+nrXG1TMVjZBcGq3Scgu3Hlczc=;
+        b=sthPyDIUj+UfDS8GexorbkW4GgWl8oQszbE0IcrYJNqGBSqUFMjjV1L9j9+D7tgS9O
+         aEzuzz0YeDg/VSMdPr4XAewBjVnLcjl+xbaOgUWVg3tF16nGckh4Wjx3+2ik4nnE3p3d
+         LSfQYu5avLvXrHX/VA12VMZUAuBHsGflO+t9b3mUQwKtt+E7NB/E95yzwQx+Ubs9+MZq
+         wuLaMxYoAfZLN8Y1pJi9B44SnCoNzz4toRynZPdtAxOD9bzVOB9JAvXU2VZFi86HGcE0
+         V5UkBVUgPmMsDLu7QMlEAoQB23LzNdQpeocTL2fpCQq5BbRks/Fxzst0DB/v6ojyBigs
+         b8gw==
+X-Gm-Message-State: AJIora8hgP8Ue7PdItC5cyqgjaO0WOosnHm86yVsjngcfMoliMk2s9Uc
+        y2djtxLqyfKsnCenNC7+YxBFNZZSXXA=
+X-Google-Smtp-Source: AGRyM1s2pBEr39PeNzqKK5HLiCeXP22OWsE3v+YL7CLPBqUac5YpEvSaxDH40rsOJG+z5l0HV6tHa3Sk/h4=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:aa7:831d:0:b0:51e:ec7a:82a7 with SMTP id
- bk29-20020aa7831d000000b0051eec7a82a7mr1583270pfb.51.1655161053132; Mon, 13
- Jun 2022 15:57:33 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:902:b909:b0:167:8c44:9bc1 with SMTP id
+ bf9-20020a170902b90900b001678c449bc1mr1584462plb.47.1655161047715; Mon, 13
+ Jun 2022 15:57:27 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Mon, 13 Jun 2022 22:57:19 +0000
+Date:   Mon, 13 Jun 2022 22:57:16 +0000
 In-Reply-To: <20220613225723.2734132-1-seanjc@google.com>
-Message-Id: <20220613225723.2734132-5-seanjc@google.com>
+Message-Id: <20220613225723.2734132-2-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220613225723.2734132-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH 4/8] KVM: x86/mmu: Dedup macros for computing various page
- table masks
+Subject: [PATCH 1/8] KVM: x86/mmu: Drop unused CMPXCHG macro from paging_tmpl.h
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -68,136 +68,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Provide common helper macros to generate various masks, shifts, etc...
-for 32-bit vs. 64-bit page tables.  Only the inputs differ, the actual
-calculations are identical.
+Drop the CMPXCHG macro from paging_tmpl.h, it's no longer used now that
+KVM uses a common uaccess helper to do 8-byte CMPXCHG.
 
-No functional change intended.
-
+Fixes: f122dfe44768 ("KVM: x86: Use __try_cmpxchg_user() to update guest PTE A/D bits")
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/mmu.h              |  4 ++--
- arch/x86/kvm/mmu/mmu.c          | 15 ++++++---------
- arch/x86/kvm/mmu/mmu_internal.h | 14 ++++++++++++++
- arch/x86/kvm/mmu/paging.h       |  9 +++++----
- arch/x86/kvm/mmu/spte.h         |  7 +++----
- 5 files changed, 30 insertions(+), 19 deletions(-)
+ arch/x86/kvm/mmu/paging_tmpl.h | 6 ------
+ 1 file changed, 6 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
-index d1021e34ac15..6efe6bd7fb6e 100644
---- a/arch/x86/kvm/mmu.h
-+++ b/arch/x86/kvm/mmu.h
-@@ -7,9 +7,9 @@
- #include "cpuid.h"
- 
- #define PT64_PT_BITS 9
--#define PT64_ENT_PER_PAGE (1 << PT64_PT_BITS)
-+#define PT64_ENT_PER_PAGE __PT_ENT_PER_PAGE(PT64_PT_BITS)
- #define PT32_PT_BITS 10
--#define PT32_ENT_PER_PAGE (1 << PT32_PT_BITS)
-+#define PT32_ENT_PER_PAGE __PT_ENT_PER_PAGE(PT32_PT_BITS)
- 
- #define PT_WRITABLE_SHIFT 1
- #define PT_USER_SHIFT 2
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index f1961fe3fe67..afe3deaa0d95 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -113,23 +113,20 @@ module_param(dbg, bool, 0644);
- 
- #define PT32_LEVEL_BITS 10
- 
--#define PT32_LEVEL_SHIFT(level) \
--		(PAGE_SHIFT + (level - 1) * PT32_LEVEL_BITS)
-+#define PT32_LEVEL_SHIFT(level) __PT_LEVEL_SHIFT(level, PT32_LEVEL_BITS)
- 
- #define PT32_LVL_OFFSET_MASK(level) \
--	(PT32_BASE_ADDR_MASK & ((1ULL << (PAGE_SHIFT + (((level) - 1) \
--						* PT32_LEVEL_BITS))) - 1))
--
--#define PT32_INDEX(address, level)\
--	(((address) >> PT32_LEVEL_SHIFT(level)) & ((1 << PT32_LEVEL_BITS) - 1))
-+	__PT_LVL_OFFSET_MASK(PT32_BASE_ADDR_MASK, level, PT32_LEVEL_BITS)
- 
-+#define PT32_INDEX(address, level) __PT_INDEX(address, level, PT32_LEVEL_BITS)
- 
- #define PT32_BASE_ADDR_MASK PAGE_MASK
-+
- #define PT32_DIR_BASE_ADDR_MASK \
- 	(PAGE_MASK & ~((1ULL << (PAGE_SHIFT + PT32_LEVEL_BITS)) - 1))
-+
- #define PT32_LVL_ADDR_MASK(level) \
--	(PAGE_MASK & ~((1ULL << (PAGE_SHIFT + (((level) - 1) \
--					    * PT32_LEVEL_BITS))) - 1))
-+	__PT_LVL_ADDR_MASK(PT32_BASE_ADDR_MASK, level, PT32_LEVEL_BITS)
- 
- #include <trace/events/kvm.h>
- 
-diff --git a/arch/x86/kvm/mmu/mmu_internal.h b/arch/x86/kvm/mmu/mmu_internal.h
-index bd2a26897b97..5e1e3c8f8aaa 100644
---- a/arch/x86/kvm/mmu/mmu_internal.h
-+++ b/arch/x86/kvm/mmu/mmu_internal.h
-@@ -20,6 +20,20 @@ extern bool dbg;
- #define MMU_WARN_ON(x) do { } while (0)
- #endif
- 
-+/* Page table builder macros common to shadow (host) PTEs and guest PTEs. */
-+#define __PT_LEVEL_SHIFT(level, bits_per_level)	\
-+	(PAGE_SHIFT + ((level) - 1) * (bits_per_level))
-+#define __PT_INDEX(address, level, bits_per_level) \
-+	(((address) >> __PT_LEVEL_SHIFT(level, bits_per_level)) & ((1 << (bits_per_level)) - 1))
-+
-+#define __PT_LVL_ADDR_MASK(base_addr_mask, level, bits_per_level) \
-+	((base_addr_mask) & ~((1ULL << (PAGE_SHIFT + (((level) - 1) * (bits_per_level)))) - 1))
-+
-+#define __PT_LVL_OFFSET_MASK(base_addr_mask, level, bits_per_level) \
-+	((base_addr_mask) & ((1ULL << (PAGE_SHIFT + (((level) - 1) * (bits_per_level)))) - 1))
-+
-+#define __PT_ENT_PER_PAGE(bits_per_level)  (1 << (bits_per_level))
-+
- /*
-  * Unlike regular MMU roots, PAE "roots", a.k.a. PDPTEs/PDPTRs, have a PRESENT
-  * bit, and thus are guaranteed to be non-zero when valid.  And, when a guest
-diff --git a/arch/x86/kvm/mmu/paging.h b/arch/x86/kvm/mmu/paging.h
-index de8ab323bb70..23f3f64b8092 100644
---- a/arch/x86/kvm/mmu/paging.h
-+++ b/arch/x86/kvm/mmu/paging.h
-@@ -4,11 +4,12 @@
- #define __KVM_X86_PAGING_H
- 
- #define GUEST_PT64_BASE_ADDR_MASK (((1ULL << 52) - 1) & ~(u64)(PAGE_SIZE-1))
-+
- #define PT64_LVL_ADDR_MASK(level) \
--	(GUEST_PT64_BASE_ADDR_MASK & ~((1ULL << (PAGE_SHIFT + (((level) - 1) \
--						* PT64_LEVEL_BITS))) - 1))
-+	__PT_LVL_ADDR_MASK(GUEST_PT64_BASE_ADDR_MASK, level, PT64_LEVEL_BITS)
-+
- #define PT64_LVL_OFFSET_MASK(level) \
--	(GUEST_PT64_BASE_ADDR_MASK & ((1ULL << (PAGE_SHIFT + (((level) - 1) \
--						* PT64_LEVEL_BITS))) - 1))
-+	__PT_LVL_OFFSET_MASK(GUEST_PT64_BASE_ADDR_MASK, level, PT64_LEVEL_BITS)
-+
- #endif /* __KVM_X86_PAGING_H */
- 
-diff --git a/arch/x86/kvm/mmu/spte.h b/arch/x86/kvm/mmu/spte.h
-index 0127bb6e3c7d..d5a8183b7232 100644
---- a/arch/x86/kvm/mmu/spte.h
-+++ b/arch/x86/kvm/mmu/spte.h
-@@ -55,11 +55,10 @@ static_assert(SPTE_TDP_AD_ENABLED_MASK == 0);
- 
- #define PT64_LEVEL_BITS 9
- 
--#define PT64_LEVEL_SHIFT(level) \
--		(PAGE_SHIFT + (level - 1) * PT64_LEVEL_BITS)
-+#define PT64_LEVEL_SHIFT(level) __PT_LEVEL_SHIFT(level, PT64_LEVEL_BITS)
-+
-+#define PT64_INDEX(address, level) __PT_INDEX(address, level, PT64_LEVEL_BITS)
- 
--#define PT64_INDEX(address, level)\
--	(((address) >> PT64_LEVEL_SHIFT(level)) & ((1 << PT64_LEVEL_BITS) - 1))
- #define SHADOW_PT_INDEX(addr, level) PT64_INDEX(addr, level)
- 
- /*
+diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
+index fe35d8fd3276..f595c4b8657f 100644
+--- a/arch/x86/kvm/mmu/paging_tmpl.h
++++ b/arch/x86/kvm/mmu/paging_tmpl.h
+@@ -34,7 +34,6 @@
+ 	#define PT_HAVE_ACCESSED_DIRTY(mmu) true
+ 	#ifdef CONFIG_X86_64
+ 	#define PT_MAX_FULL_LEVELS PT64_ROOT_MAX_LEVEL
+-	#define CMPXCHG "cmpxchgq"
+ 	#else
+ 	#define PT_MAX_FULL_LEVELS 2
+ 	#endif
+@@ -51,7 +50,6 @@
+ 	#define PT_GUEST_DIRTY_SHIFT PT_DIRTY_SHIFT
+ 	#define PT_GUEST_ACCESSED_SHIFT PT_ACCESSED_SHIFT
+ 	#define PT_HAVE_ACCESSED_DIRTY(mmu) true
+-	#define CMPXCHG "cmpxchgl"
+ #elif PTTYPE == PTTYPE_EPT
+ 	#define pt_element_t u64
+ 	#define guest_walker guest_walkerEPT
+@@ -64,9 +62,6 @@
+ 	#define PT_GUEST_DIRTY_SHIFT 9
+ 	#define PT_GUEST_ACCESSED_SHIFT 8
+ 	#define PT_HAVE_ACCESSED_DIRTY(mmu) (!(mmu)->cpu_role.base.ad_disabled)
+-	#ifdef CONFIG_X86_64
+-	#define CMPXCHG "cmpxchgq"
+-	#endif
+ 	#define PT_MAX_FULL_LEVELS PT64_ROOT_MAX_LEVEL
+ #else
+ 	#error Invalid PTTYPE value
+@@ -1100,7 +1095,6 @@ static int FNAME(sync_page)(struct kvm_vcpu *vcpu, struct kvm_mmu_page *sp)
+ #undef PT_MAX_FULL_LEVELS
+ #undef gpte_to_gfn
+ #undef gpte_to_gfn_lvl
+-#undef CMPXCHG
+ #undef PT_GUEST_ACCESSED_MASK
+ #undef PT_GUEST_DIRTY_MASK
+ #undef PT_GUEST_DIRTY_SHIFT
 -- 
 2.36.1.476.g0c4daa206d-goog
 
