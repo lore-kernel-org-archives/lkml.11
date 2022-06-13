@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC3C8CCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:20:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C45DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:20:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353290AbiFMLTi (ORCPT
+        id S1353344AbiFMLTk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:19:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41668 "EHLO
+        Mon, 13 Jun 2022 07:19:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353171AbiFMLPK (ORCPT
+        with ESMTP id S1353184AbiFMLPL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:15:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E243D167D0;
-        Mon, 13 Jun 2022 03:37:43 -0700 (PDT)
+        Mon, 13 Jun 2022 07:15:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE1021706C;
+        Mon, 13 Jun 2022 03:37:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3619CB80E93;
-        Mon, 13 Jun 2022 10:37:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A772CC34114;
-        Mon, 13 Jun 2022 10:37:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 67C82610A0;
+        Mon, 13 Jun 2022 10:37:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74790C34114;
+        Mon, 13 Jun 2022 10:37:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116661;
-        bh=QcTT9tWSEZAh16mynkwIDPHeS0sPX5L9CulWKauULAU=;
+        s=korg; t=1655116663;
+        bh=ZxbUcwez3WdEnE9tY/sNxfsE6rTp4gQ6TFB5pkMV2RI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cRybTqmSuf1/WH8KfHuW2Ltl6ZN7sytKrXTob5z2BKmIgDGceu9KWhL/qvw/bsS9b
-         NUV1jsoRD6ew0sq0O2gZX0etRr+uduanyRlMKmVhKf4yyYKSHIW+Bn4ebPltXwoHKF
-         ZIym9UizuTCjQ/zNX0VWwtTYdQI8xhYdu07VnHzs=
+        b=gxrEoKg6Nv78L/lLL3vrYe/mSTsz5dCkvRu//X18lEmRKv7chzcqNnA68G00SwjIe
+         TfScTzNH7fk5uKGtkom+sE2cxF26qs8rN+I8PsCS4t+ariMnAnMlODHyNR86rc+MUh
+         PZ5BEeEj4BPMCDI570sa8aWn3u2odVHt/0ofzU3o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Rodin <mrodin@de.adit-jv.com>,
-        LUU HOAI <hoai.luu.ub@renesas.com>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 139/411] media: vsp1: Fix offset calculation for plane cropping
-Date:   Mon, 13 Jun 2022 12:06:52 +0200
-Message-Id: <20220613094932.838140321@linuxfoundation.org>
+Subject: [PATCH 5.4 128/411] iomap: iomap_write_failed fix
+Date:   Mon, 13 Jun 2022 12:06:41 +0200
+Message-Id: <20220613094932.510827363@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -53,49 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Rodin <mrodin@de.adit-jv.com>
+From: Andreas Gruenbacher <agruenba@redhat.com>
 
-[ Upstream commit 5f25abec8f21b7527c1223a354d23c270befddb3 ]
+[ Upstream commit b71450e2cc4b3c79f33c5bd276d152af9bd54f79 ]
 
-The vertical subsampling factor is currently not considered in the
-offset calculation for plane cropping done in rpf_configure_partition.
-This causes a distortion (shift of the color plane) when formats with
-the vsub factor larger than 1 are used (e.g. NV12, see
-vsp1_video_formats in vsp1_pipe.c). This commit considers vsub factor
-for all planes except plane 0 (luminance).
+The @lend parameter of truncate_pagecache_range() should be the offset
+of the last byte of the hole, not the first byte beyond it.
 
-Drop generalization of the offset calculation to reduce the binary size.
-
-Fixes: e5ad37b64de9 ("[media] v4l: vsp1: Add cropping support")
-Signed-off-by: Michael Rodin <mrodin@de.adit-jv.com>
-Signed-off-by: LUU HOAI <hoai.luu.ub@renesas.com>
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: ae259a9c8593 ("fs: introduce iomap infrastructure")
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/vsp1/vsp1_rpf.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ fs/iomap/buffered-io.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/vsp1/vsp1_rpf.c b/drivers/media/platform/vsp1/vsp1_rpf.c
-index 85587c1b6a37..75083cb234fe 100644
---- a/drivers/media/platform/vsp1/vsp1_rpf.c
-+++ b/drivers/media/platform/vsp1/vsp1_rpf.c
-@@ -291,11 +291,11 @@ static void rpf_configure_partition(struct vsp1_entity *entity,
- 		     + crop.left * fmtinfo->bpp[0] / 8;
+diff --git a/fs/iomap/buffered-io.c b/fs/iomap/buffered-io.c
+index 5c73751adb2d..53cd7b2bb580 100644
+--- a/fs/iomap/buffered-io.c
++++ b/fs/iomap/buffered-io.c
+@@ -535,7 +535,8 @@ iomap_write_failed(struct inode *inode, loff_t pos, unsigned len)
+ 	 * write started inside the existing inode size.
+ 	 */
+ 	if (pos + len > i_size)
+-		truncate_pagecache_range(inode, max(pos, i_size), pos + len);
++		truncate_pagecache_range(inode, max(pos, i_size),
++					 pos + len - 1);
+ }
  
- 	if (format->num_planes > 1) {
-+		unsigned int bpl = format->plane_fmt[1].bytesperline;
- 		unsigned int offset;
- 
--		offset = crop.top * format->plane_fmt[1].bytesperline
--		       + crop.left / fmtinfo->hsub
--		       * fmtinfo->bpp[1] / 8;
-+		offset = crop.top / fmtinfo->vsub * bpl
-+		       + crop.left / fmtinfo->hsub * fmtinfo->bpp[1] / 8;
- 		mem.addr[1] += offset;
- 		mem.addr[2] += offset;
- 	}
+ static int
 -- 
 2.35.1
 
