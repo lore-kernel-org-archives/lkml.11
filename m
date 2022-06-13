@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D81A8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:27:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07C37CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:27:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355046AbiFMM0r (ORCPT
+        id S1355167AbiFMM0v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:26:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33954 "EHLO
+        Mon, 13 Jun 2022 08:26:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355207AbiFMMXz (ORCPT
+        with ESMTP id S1355163AbiFMMXy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:23:55 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3A7F31527;
-        Mon, 13 Jun 2022 04:04:30 -0700 (PDT)
+        Mon, 13 Jun 2022 08:23:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94B4431526;
+        Mon, 13 Jun 2022 04:04:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id F36D6CE1177;
-        Mon, 13 Jun 2022 11:04:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E941BC34114;
-        Mon, 13 Jun 2022 11:04:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 31788613E9;
+        Mon, 13 Jun 2022 11:04:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37924C34114;
+        Mon, 13 Jun 2022 11:04:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118267;
-        bh=IX8PliXKKHYaP0JoT3enw6KZ7tfMGRWPHXWjYG82G7o=;
+        s=korg; t=1655118264;
+        bh=rqinfutKL3M6hou2/VgkhouO7dioKxx7K3s7hMRl+RI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KeMorl00odgNIqDmexkEj+MucU1loUB94tM2YdFW8lVDyK5btuIcSCAyF7sva+YSt
-         Y0yMajyt77LrX0q8YzylkZMvrq+vAewViaGTrBJesCr7PznnLGZWrniMCD/xsgraBh
-         bBeeUOLbgojxReIOkDqJnn3mWNQdInvwD3XiWUzo=
+        b=djt/NbvCrAqUCSNwq4IbG16v4K/RtE2vG32f9HzqbgPpkm5uS/l4smgvvzOhCk92Z
+         99f26URyUG2uNWtX0Aclqu1mJSsiIk54eW6eCWeAEsoUcnitLyz16gLOK3zSu94Qcr
+         lg/SSTzLECEJG659VxaL4hksxjBuBRLF6rZ+MEyQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, NeilBrown <neilb@suse.de>,
-        Pascal Hambourg <pascal@plouf.fr.eu.org>,
-        Song Liu <song@kernel.org>
-Subject: [PATCH 4.19 285/287] md/raid0: Ignore RAID0 layout if the second zone has only one device
-Date:   Mon, 13 Jun 2022 12:11:49 +0200
-Message-Id: <20220613094932.636667976@linuxfoundation.org>
+        stable@vger.kernel.org, Ariel Miculas <ariel.miculas@belden.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 4.19 284/287] powerpc/32: Fix overread/overwrite of thread_struct via ptrace
+Date:   Mon, 13 Jun 2022 12:11:48 +0200
+Message-Id: <20220613094932.605917669@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -50,72 +50,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pascal Hambourg <pascal@plouf.fr.eu.org>
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-commit ea23994edc4169bd90d7a9b5908c6ccefd82fa40 upstream.
+commit 8e1278444446fc97778a5e5c99bca1ce0bbc5ec9 upstream.
 
-The RAID0 layout is irrelevant if all members have the same size so the
-array has only one zone. It is *also* irrelevant if the array has two
-zones and the second zone has only one device, for example if the array
-has two members of different sizes.
+The ptrace PEEKUSR/POKEUSR (aka PEEKUSER/POKEUSER) API allows a process
+to read/write registers of another process.
 
-So in that case it makes sense to allow assembly even when the layout is
-undefined, like what is done when the array has only one zone.
+To get/set a register, the API takes an index into an imaginary address
+space called the "USER area", where the registers of the process are
+laid out in some fashion.
 
-Reviewed-by: NeilBrown <neilb@suse.de>
-Signed-off-by: Pascal Hambourg <pascal@plouf.fr.eu.org>
-Signed-off-by: Song Liu <song@kernel.org>
+The kernel then maps that index to a particular register in its own data
+structures and gets/sets the value.
+
+The API only allows a single machine-word to be read/written at a time.
+So 4 bytes on 32-bit kernels and 8 bytes on 64-bit kernels.
+
+The way floating point registers (FPRs) are addressed is somewhat
+complicated, because double precision float values are 64-bit even on
+32-bit CPUs. That means on 32-bit kernels each FPR occupies two
+word-sized locations in the USER area. On 64-bit kernels each FPR
+occupies one word-sized location in the USER area.
+
+Internally the kernel stores the FPRs in an array of u64s, or if VSX is
+enabled, an array of pairs of u64s where one half of each pair stores
+the FPR. Which half of the pair stores the FPR depends on the kernel's
+endianness.
+
+To handle the different layouts of the FPRs depending on VSX/no-VSX and
+big/little endian, the TS_FPR() macro was introduced.
+
+Unfortunately the TS_FPR() macro does not take into account the fact
+that the addressing of each FPR differs between 32-bit and 64-bit
+kernels. It just takes the index into the "USER area" passed from
+userspace and indexes into the fp_state.fpr array.
+
+On 32-bit there are 64 indexes that address FPRs, but only 32 entries in
+the fp_state.fpr array, meaning the user can read/write 256 bytes past
+the end of the array. Because the fp_state sits in the middle of the
+thread_struct there are various fields than can be overwritten,
+including some pointers. As such it may be exploitable.
+
+It has also been observed to cause systems to hang or otherwise
+misbehave when using gdbserver, and is probably the root cause of this
+report which could not be easily reproduced:
+  https://lore.kernel.org/linuxppc-dev/dc38afe9-6b78-f3f5-666b-986939e40fc6@keymile.com/
+
+Rather than trying to make the TS_FPR() macro even more complicated to
+fix the bug, or add more macros, instead add a special-case for 32-bit
+kernels. This is more obvious and hopefully avoids a similar bug
+happening again in future.
+
+Note that because 32-bit kernels never have VSX enabled the code doesn't
+need to consider TS_FPRWIDTH/OFFSET at all. Add a BUILD_BUG_ON() to
+ensure that 32-bit && VSX is never enabled.
+
+Fixes: 87fec0514f61 ("powerpc: PTRACE_PEEKUSR/PTRACE_POKEUSER of FPR registers in little endian builds")
+Cc: stable@vger.kernel.org # v3.13+
+Reported-by: Ariel Miculas <ariel.miculas@belden.com>
+Tested-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220609133245.573565-1-mpe@ellerman.id.au
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/raid0.c |   31 ++++++++++++++++---------------
- 1 file changed, 16 insertions(+), 15 deletions(-)
+ arch/powerpc/kernel/ptrace.c |   18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
 
---- a/drivers/md/raid0.c
-+++ b/drivers/md/raid0.c
-@@ -150,21 +150,6 @@ static int create_strip_zones(struct mdd
- 	pr_debug("md/raid0:%s: FINAL %d zones\n",
- 		 mdname(mddev), conf->nr_strip_zones);
+--- a/arch/powerpc/kernel/ptrace.c
++++ b/arch/powerpc/kernel/ptrace.c
+@@ -3007,8 +3007,13 @@ long arch_ptrace(struct task_struct *chi
  
--	if (conf->nr_strip_zones == 1) {
--		conf->layout = RAID0_ORIG_LAYOUT;
--	} else if (mddev->layout == RAID0_ORIG_LAYOUT ||
--		   mddev->layout == RAID0_ALT_MULTIZONE_LAYOUT) {
--		conf->layout = mddev->layout;
--	} else if (default_layout == RAID0_ORIG_LAYOUT ||
--		   default_layout == RAID0_ALT_MULTIZONE_LAYOUT) {
--		conf->layout = default_layout;
--	} else {
--		pr_err("md/raid0:%s: cannot assemble multi-zone RAID0 with default_layout setting\n",
--		       mdname(mddev));
--		pr_err("md/raid0: please set raid0.default_layout to 1 or 2\n");
--		err = -ENOTSUPP;
--		goto abort;
--	}
- 	/*
- 	 * now since we have the hard sector sizes, we can make sure
- 	 * chunk size is a multiple of that sector size
-@@ -295,6 +280,22 @@ static int create_strip_zones(struct mdd
- 			 (unsigned long long)smallest->sectors);
- 	}
+ 			flush_fp_to_thread(child);
+ 			if (fpidx < (PT_FPSCR - PT_FPR0))
+-				memcpy(&tmp, &child->thread.TS_FPR(fpidx),
+-				       sizeof(long));
++				if (IS_ENABLED(CONFIG_PPC32)) {
++					// On 32-bit the index we are passed refers to 32-bit words
++					tmp = ((u32 *)child->thread.fp_state.fpr)[fpidx];
++				} else {
++					memcpy(&tmp, &child->thread.TS_FPR(fpidx),
++					       sizeof(long));
++				}
+ 			else
+ 				tmp = child->thread.fp_state.fpscr;
+ 		}
+@@ -3040,8 +3045,13 @@ long arch_ptrace(struct task_struct *chi
  
-+	if (conf->nr_strip_zones == 1 || conf->strip_zone[1].nb_dev == 1) {
-+		conf->layout = RAID0_ORIG_LAYOUT;
-+	} else if (mddev->layout == RAID0_ORIG_LAYOUT ||
-+		   mddev->layout == RAID0_ALT_MULTIZONE_LAYOUT) {
-+		conf->layout = mddev->layout;
-+	} else if (default_layout == RAID0_ORIG_LAYOUT ||
-+		   default_layout == RAID0_ALT_MULTIZONE_LAYOUT) {
-+		conf->layout = default_layout;
-+	} else {
-+		pr_err("md/raid0:%s: cannot assemble multi-zone RAID0 with default_layout setting\n",
-+		       mdname(mddev));
-+		pr_err("md/raid0: please set raid0.default_layout to 1 or 2\n");
-+		err = -EOPNOTSUPP;
-+		goto abort;
-+	}
-+
- 	pr_debug("md/raid0:%s: done.\n", mdname(mddev));
- 	*private_conf = conf;
- 
+ 			flush_fp_to_thread(child);
+ 			if (fpidx < (PT_FPSCR - PT_FPR0))
+-				memcpy(&child->thread.TS_FPR(fpidx), &data,
+-				       sizeof(long));
++				if (IS_ENABLED(CONFIG_PPC32)) {
++					// On 32-bit the index we are passed refers to 32-bit words
++					((u32 *)child->thread.fp_state.fpr)[fpidx] = data;
++				} else {
++					memcpy(&child->thread.TS_FPR(fpidx), &data,
++					       sizeof(long));
++				}
+ 			else
+ 				child->thread.fp_state.fpscr = data;
+ 			ret = 0;
 
 
