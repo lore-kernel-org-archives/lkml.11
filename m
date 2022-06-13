@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB551CCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBBCFCCA483
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:45:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379269AbiFMNn4 (ORCPT
+        id S1379368AbiFMNoJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:43:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36178 "EHLO
+        Mon, 13 Jun 2022 09:44:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379146AbiFMNjz (ORCPT
+        with ESMTP id S1379176AbiFMNj7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:39:55 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9C503DA7D;
-        Mon, 13 Jun 2022 04:28:58 -0700 (PDT)
+        Mon, 13 Jun 2022 09:39:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C86DC22B08;
+        Mon, 13 Jun 2022 04:29:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 55717CE110D;
-        Mon, 13 Jun 2022 11:28:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2ABAFC34114;
-        Mon, 13 Jun 2022 11:28:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 656CE61046;
+        Mon, 13 Jun 2022 11:29:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7609AC34114;
+        Mon, 13 Jun 2022 11:29:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119735;
-        bh=3Avsel2L6qQgV3X7BOOhbwHe0V7A+QJopTMpCRyGBJc=;
+        s=korg; t=1655119760;
+        bh=TePMGL027OeoN3YPEQtjTuC4DQGr2olKyCBqVIpjZK8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dZg32QZE3c4cKYfeab8DpQsvn4gWqSoZ248JZiYfC+6gsIilN3Xjhd8d6QFAphu03
-         WDfmcpWEa7FxQ36Le8HPd0+oQvANWwUs2X19zsmJhQf4OI0gNpCsGFjsEOSo/eJ61U
-         hDW5O/QTmjlqZE7Z86dJepsWhxkMRJ1eOMDB1yzE=
+        b=gWuuMRW9Hhhg8xufHjDJkAcgs/EWY/bSDs2cE4TgzE7+zvyrNBtIL8e2BCXjjgVD1
+         3i8ISdfIq1UpJZeFWL6UOTdF9ILAmFQjpbBA216c8WQgbk8jHVyx9cZPuIJH49oMJD
+         t7jhmVi8qchwkoh4TTiDb2bgYcHzXm9WjAylKoLY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Weizhao Ouyang <o451686892@gmail.com>,
-        Gao Xiang <hsiangkao@linux.alibaba.com>,
-        Yue Hu <huyue2@coolpad.com>, Chao Yu <chao@kernel.org>,
+        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 121/339] erofs: fix backmost member of z_erofs_decompress_frontend
-Date:   Mon, 13 Jun 2022 12:09:06 +0200
-Message-Id: <20220613094930.178767865@linuxfoundation.org>
+Subject: [PATCH 5.18 129/339] net/mlx5e: Update netdev features after changing XDP state
+Date:   Mon, 13 Jun 2022 12:09:14 +0200
+Message-Id: <20220613094930.422406155@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,37 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Weizhao Ouyang <o451686892@gmail.com>
+From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-[ Upstream commit 4398d3c31b582db0d640b23434bf344a6c8df57c ]
+[ Upstream commit f6279f113ad593971999c877eb69dc3d36a75894 ]
 
-Initialize 'backmost' to true in DECOMPRESS_FRONTEND_INIT.
+Some features (LRO, HW GRO) conflict with XDP. If there is an attempt to
+enable such features while XDP is active, they will be set to `off
+[requested on]`. In order to activate these features after XDP is turned
+off, the driver needs to call netdev_update_features(). This commit adds
+this missing call after XDP state changes.
 
-Fixes: 5c6dcc57e2e5 ("erofs: get rid of `struct z_erofs_collector'")
-Signed-off-by: Weizhao Ouyang <o451686892@gmail.com>
-Reviewed-by: Gao Xiang <hsiangkao@linux.alibaba.com>
-Reviewed-by: Yue Hu <huyue2@coolpad.com>
-Reviewed-by: Chao Yu <chao@kernel.org>
-Link: https://lore.kernel.org/r/20220530075114.918874-1-o451686892@gmail.com
-Signed-off-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+Fixes: cf6e34c8c22f ("net/mlx5e: Properly block LRO when XDP is enabled")
+Fixes: b0617e7b3500 ("net/mlx5e: Properly block HW GRO when XDP is enabled")
+Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/erofs/zdata.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/fs/erofs/zdata.c b/fs/erofs/zdata.c
-index e6dea6dfca16..3e3e96043b5b 100644
---- a/fs/erofs/zdata.c
-+++ b/fs/erofs/zdata.c
-@@ -214,7 +214,7 @@ struct z_erofs_decompress_frontend {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 6a35af2c2c8b..58b6c8b82fd0 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -4581,6 +4581,11 @@ static int mlx5e_xdp_set(struct net_device *netdev, struct bpf_prog *prog)
  
- #define DECOMPRESS_FRONTEND_INIT(__i) { \
- 	.inode = __i, .owned_head = Z_EROFS_PCLUSTER_TAIL, \
--	.mode = COLLECT_PRIMARY_FOLLOWED }
-+	.mode = COLLECT_PRIMARY_FOLLOWED, .backmost = true }
+ unlock:
+ 	mutex_unlock(&priv->state_lock);
++
++	/* Need to fix some features. */
++	if (!err)
++		netdev_update_features(netdev);
++
+ 	return err;
+ }
  
- static struct page *z_pagemap_global[Z_EROFS_VMAP_GLOBAL_PAGES];
- static DEFINE_MUTEX(z_pagemap_global_lock);
 -- 
 2.35.1
 
