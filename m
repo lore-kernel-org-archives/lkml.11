@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63D38CCA49F
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:46:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06804CCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:46:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355628AbiFMLqi (ORCPT
+        id S1354800AbiFMLqm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:46:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46118 "EHLO
+        Mon, 13 Jun 2022 07:46:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355710AbiFMLk6 (ORCPT
+        with ESMTP id S1355636AbiFMLmJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:40:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A2C02DD42;
-        Mon, 13 Jun 2022 03:50:09 -0700 (PDT)
+        Mon, 13 Jun 2022 07:42:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A9D12E097;
+        Mon, 13 Jun 2022 03:50:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8803B612C9;
-        Mon, 13 Jun 2022 10:50:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D1FEC341C5;
-        Mon, 13 Jun 2022 10:50:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E51B1B80E56;
+        Mon, 13 Jun 2022 10:50:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AF53C34114;
+        Mon, 13 Jun 2022 10:50:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117408;
-        bh=JPc5ATt74aBSyqf5YJ+9MP8PPRtJCzzOXwDCZkRdpo8=;
+        s=korg; t=1655117410;
+        bh=pqhJmF9qXFmlGCy4O3OHm8/2Lk2t6X69Xz6V9YTOae8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pq99FAhiiSezXGIELlPa6aRaiDLHUh8y8Nz4u8jEVgJ6GHrr5VSBdFLrQUd0JRRkx
-         z4DALiDxMR4tPZ3lWNAK5fhCPhWe74LNvADDbCEJ2c++t478RO8up4jLew0Lm19aft
-         628CLZEgqblkPJOBk9ITtLrMJZXed2Nq40f1Mcp8=
+        b=TMg4++9B1PgirrwttPeYKHQJAkzkYXS2uzjSJ935XGhGCR1FZkLxBASuz4/VEIOdL
+         Iw4EBktQiDWS5YTK0YYrn8Ka4ly/5E1M1za0onw+tVJmKgl/v62yTDTJBd/fTSFhuk
+         Isy4u3zp3qQiOZ0INe5S+6aa3HWy+3Tk4Xu0+RAI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 035/287] media: cec-adap.c: fix is_configuring state
-Date:   Mon, 13 Jun 2022 12:07:39 +0200
-Message-Id: <20220613094924.929317257@linuxfoundation.org>
+Subject: [PATCH 5.4 373/411] drivers: tty: serial: Fix deadlock in sa1100_set_termios()
+Date:   Mon, 13 Jun 2022 12:10:46 +0200
+Message-Id: <20220613094939.862821266@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
-References: <20220613094923.832156175@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,69 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 59267fc34f4900dcd2ec3295f6be04b79aee2186 ]
+[ Upstream commit 62b2caef400c1738b6d22f636c628d9f85cd4c4c ]
 
-If an adapter is trying to claim a free logical address then it is
-in the 'is_configuring' state. If during that process the cable is
-disconnected (HPD goes low, which in turn invalidates the physical
-address), then cec_adap_unconfigure() is called, and that set the
-is_configuring boolean to false, even though the thread that's
-trying to claim an LA is still running.
+There is a deadlock in sa1100_set_termios(), which is shown
+below:
 
-Don't touch the is_configuring bool in cec_adap_unconfigure(), it
-will eventually be cleared by the thread. By making that change
-the cec_config_log_addr() function also had to change: it was
-aborting if is_configuring became false (since that is what
-cec_adap_unconfigure() did), but that no longer works. Instead
-check if the physical address is invalid. That is a much
-more appropriate check anyway.
+   (Thread 1)              |      (Thread 2)
+                           | sa1100_enable_ms()
+sa1100_set_termios()       |  mod_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | sa1100_timeout()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
 
-This fixes a bug where the the adapter could be disabled even
-though the device was still configuring. This could cause POLL
-transmits to time out.
+We hold sport->port.lock in position (1) of thread 1 and
+use del_timer_sync() to wait timer to stop, but timer handler
+also need sport->port.lock in position (2) of thread 2. As a result,
+sa1100_set_termios() will block forever.
 
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+This patch moves del_timer_sync() before spin_lock_irqsave()
+in order to prevent the deadlock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417111626.7802-1-duoming@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/cec/cec-adap.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/tty/serial/sa1100.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/cec/cec-adap.c b/drivers/media/cec/cec-adap.c
-index 5eeadab15a5f..a42043379d67 100644
---- a/drivers/media/cec/cec-adap.c
-+++ b/drivers/media/cec/cec-adap.c
-@@ -1218,7 +1218,7 @@ static int cec_config_log_addr(struct cec_adapter *adap,
- 		 * While trying to poll the physical address was reset
- 		 * and the adapter was unconfigured, so bail out.
- 		 */
--		if (!adap->is_configuring)
-+		if (adap->phys_addr == CEC_PHYS_ADDR_INVALID)
- 			return -EINTR;
+diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
+index 8e618129e65c..ff4b44bdf6b6 100644
+--- a/drivers/tty/serial/sa1100.c
++++ b/drivers/tty/serial/sa1100.c
+@@ -454,6 +454,8 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16); 
+ 	quot = uart_get_divisor(port, baud);
  
- 		if (err)
-@@ -1276,7 +1276,6 @@ static void cec_adap_unconfigure(struct cec_adapter *adap)
- 	    adap->phys_addr != CEC_PHYS_ADDR_INVALID)
- 		WARN_ON(adap->ops->adap_log_addr(adap, CEC_LOG_ADDR_INVALID));
- 	adap->log_addrs.log_addr_mask = 0;
--	adap->is_configuring = false;
- 	adap->is_configured = false;
- 	memset(adap->phys_addrs, 0xff, sizeof(adap->phys_addrs));
- 	cec_flush(adap);
-@@ -1469,9 +1468,10 @@ static int cec_config_thread_func(void *arg)
- 	for (i = 0; i < las->num_log_addrs; i++)
- 		las->log_addr[i] = CEC_LOG_ADDR_INVALID;
- 	cec_adap_unconfigure(adap);
-+	adap->is_configuring = false;
- 	adap->kthread_config = NULL;
--	mutex_unlock(&adap->lock);
- 	complete(&adap->config_completion);
-+	mutex_unlock(&adap->lock);
- 	return 0;
- }
++	del_timer_sync(&sport->timer);
++
+ 	spin_lock_irqsave(&sport->port.lock, flags);
  
+ 	sport->port.read_status_mask &= UTSR0_TO_SM(UTSR0_TFS);
+@@ -484,8 +486,6 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
+ 				UTSR1_TO_SM(UTSR1_ROR);
+ 	}
+ 
+-	del_timer_sync(&sport->timer);
+-
+ 	/*
+ 	 * Update the per-port timeout.
+ 	 */
 -- 
 2.35.1
 
