@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D31FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:02:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14E45C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:02:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238169AbiFMNCl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:02:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45318 "EHLO
+        id S240260AbiFMNCv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 09:02:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358323AbiFMMzK (ORCPT
+        with ESMTP id S1354672AbiFMMzL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:55:10 -0400
+        Mon, 13 Jun 2022 08:55:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC7E51E7;
-        Mon, 13 Jun 2022 04:14:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 754B6635A;
+        Mon, 13 Jun 2022 04:15:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8893260B6B;
-        Mon, 13 Jun 2022 11:14:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97E53C3411C;
-        Mon, 13 Jun 2022 11:14:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 12420608C3;
+        Mon, 13 Jun 2022 11:15:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BB5CC3411F;
+        Mon, 13 Jun 2022 11:15:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118899;
-        bh=0+3cOnk2z3C+1fmNZLPemFHmvE1ZEFxh/Sv4oC37mqs=;
+        s=korg; t=1655118915;
+        bh=vHhGX7IffV7uK4yuqXhZapoqPd4WxprMmYKXJZTDpNA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cV7VVtBUuKYqnIFXKAOHvcor8zzCqHMdSBc/AgvQeNZzKtwWbtKbtDCuJokuuS7/c
-         K7UMCjFb+sOwmul10YC/2Jk9IL1W+QO0i9QoQhNxeg0BsZi8Llzrh32Zrir5heOitJ
-         KjtCtNrbTkhutDHzrZ555zyZE1YVd7ncq4Rmydjc=
+        b=vuern9tMlxwO+hGjDglIxhlGmxd7zlrEQWluX/Skt5ODzLUqXdeAvhCkitWaFp42g
+         i285ATRLEj7rnU1RfpvzAJAXgwO74FOBSRZV3HwhTbdyzPa1KMuQNz6eFOB1DMdcIt
+         BVNAvlniabB51rc4Pw3kZgQWd9GWFGZktfyLs3jE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 067/247] watchdog: ts4800_wdt: Fix refcount leak in ts4800_wdt_probe
-Date:   Mon, 13 Jun 2022 12:09:29 +0200
-Message-Id: <20220613094924.990995949@linuxfoundation.org>
+Subject: [PATCH 5.15 073/247] net: ethernet: mtk_eth_soc: out of bounds read in mtk_hwlro_get_fdir_entry()
+Date:   Mon, 13 Jun 2022 12:09:35 +0200
+Message-Id: <20220613094925.173791142@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,47 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 5d24df3d690809952528e7a19a43d84bc5b99d44 ]
+[ Upstream commit e7e7104e2d5ddf3806a28695670f21bef471f1e1 ]
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
-Add  missing of_node_put() in some error paths.
+The "fsp->location" variable comes from user via ethtool_get_rxnfc().
+Check that it is valid to prevent an out of bounds read.
 
-Fixes: bf9006399939 ("watchdog: ts4800: add driver for TS-4800 watchdog")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Link: https://lore.kernel.org/r/20220511114203.47420-1-linmq006@gmail.com
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
+Fixes: 7aab747e5563 ("net: ethernet: mediatek: add ethtool functions to configure RX flows of HW LRO")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/watchdog/ts4800_wdt.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/watchdog/ts4800_wdt.c b/drivers/watchdog/ts4800_wdt.c
-index c137ad2bd5c3..0ea554c7cda5 100644
---- a/drivers/watchdog/ts4800_wdt.c
-+++ b/drivers/watchdog/ts4800_wdt.c
-@@ -125,13 +125,16 @@ static int ts4800_wdt_probe(struct platform_device *pdev)
- 	ret = of_property_read_u32_index(np, "syscon", 1, &reg);
- 	if (ret < 0) {
- 		dev_err(dev, "no offset in syscon\n");
-+		of_node_put(syscon_np);
- 		return ret;
- 	}
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index ee1fd472e925..d2d7160b789c 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -1991,6 +1991,9 @@ static int mtk_hwlro_get_fdir_entry(struct net_device *dev,
+ 	struct ethtool_rx_flow_spec *fsp =
+ 		(struct ethtool_rx_flow_spec *)&cmd->fs;
  
- 	/* allocate memory for watchdog struct */
- 	wdt = devm_kzalloc(dev, sizeof(*wdt), GFP_KERNEL);
--	if (!wdt)
-+	if (!wdt) {
-+		of_node_put(syscon_np);
- 		return -ENOMEM;
-+	}
- 
- 	/* set regmap and offset to know where to write */
- 	wdt->feed_offset = reg;
++	if (fsp->location >= ARRAY_SIZE(mac->hwlro_ip))
++		return -EINVAL;
++
+ 	/* only tcp dst ipv4 is meaningful, others are meaningless */
+ 	fsp->flow_type = TCP_V4_FLOW;
+ 	fsp->h_u.tcp_ip4_spec.ip4dst = ntohl(mac->hwlro_ip[fsp->location]);
 -- 
 2.35.1
 
