@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4D26C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED500CCA47F
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:09:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351985AbiFMLJL (ORCPT
+        id S1352023AbiFMLJQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:09:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45178 "EHLO
+        Mon, 13 Jun 2022 07:09:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351656AbiFMLEu (ORCPT
+        with ESMTP id S1351681AbiFMLEv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:04:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 772D427B29;
-        Mon, 13 Jun 2022 03:33:45 -0700 (PDT)
+        Mon, 13 Jun 2022 07:04:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4130326F6;
+        Mon, 13 Jun 2022 03:33:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC01260AE6;
-        Mon, 13 Jun 2022 10:33:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB9EFC34114;
-        Mon, 13 Jun 2022 10:33:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D837B80EA7;
+        Mon, 13 Jun 2022 10:33:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB65BC34114;
+        Mon, 13 Jun 2022 10:33:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116423;
-        bh=UjN40bD9Kovb1IG9JeutwK3mTWfJKUmz62dH6ycF1q4=;
+        s=korg; t=1655116426;
+        bh=xry6IlibLXy31UeppTQTdRP7qqE+LKAPoRAOS75hzqo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=clhuf+lkRvMFByW1z4BVo3NYHg1750ZGrkCH6JwuV3I+G1f9QCrOQ4+d5TF1iEmP/
-         2AAayxgzxtTD/LeS8Grt4XfEZqf4QQI4echeI4jaYgLPavuVP26Tzl7+dOQUEEM+XZ
-         3jKn3sdHiWdxJekAOYwJ9j9NLo+yRdJz0V8Xd+t0=
+        b=NgCg6qTPs9FH9IiJI/ZcYSgO6iT/x/YkuyDs7OVnaR7uS/eYK5kUEeQeJLsw0f1sX
+         z5Ap/N42lxMSB9vLzGWmi/lvvHXx90kOFBBvWMCBt0bWv6G+Bw4Oa+FfcD1GrYoaTU
+         i7UdS9N0c4b9CjY+z01MHyjf4Z1ykGnDRKV//JLY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 178/218] net: ipv6: unexport __init-annotated seg6_hmac_init()
-Date:   Mon, 13 Jun 2022 12:10:36 +0200
-Message-Id: <20220613094926.006229211@linuxfoundation.org>
+        stable@vger.kernel.org, Yicong Yang <yangyicong@hisilicon.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Jay Zhou <jianjay.zhou@huawei.com>
+Subject: [PATCH 5.4 073/411] PCI: Avoid pci_dev_lock() AB/BA deadlock with sriov_numvfs_store()
+Date:   Mon, 13 Jun 2022 12:05:46 +0200
+Message-Id: <20220613094930.867850069@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,50 +51,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Yicong Yang <yangyicong@hisilicon.com>
 
-[ Upstream commit 5801f064e35181c71857a80ff18af4dbec3c5f5c ]
+[ Upstream commit a91ee0e9fca9d7501286cfbced9b30a33e52740a ]
 
-EXPORT_SYMBOL and __init is a bad combination because the .init.text
-section is freed up after the initialization. Hence, modules cannot
-use symbols annotated __init. The access to a freed symbol may end up
-with kernel panic.
+The sysfs sriov_numvfs_store() path acquires the device lock before the
+config space access lock:
 
-modpost used to detect it, but it has been broken for a decade.
+  sriov_numvfs_store
+    device_lock                 # A (1) acquire device lock
+    sriov_configure
+      vfio_pci_sriov_configure  # (for example)
+        vfio_pci_core_sriov_configure
+          pci_disable_sriov
+            sriov_disable
+              pci_cfg_access_lock
+                pci_wait_cfg    # B (4) wait for dev->block_cfg_access == 0
 
-Recently, I fixed modpost so it started to warn it again, then this
-showed up in linux-next builds.
+Previously, pci_dev_lock() acquired the config space access lock before the
+device lock:
 
-There are two ways to fix it:
+  pci_dev_lock
+    pci_cfg_access_lock
+      dev->block_cfg_access = 1 # B (2) set dev->block_cfg_access = 1
+    device_lock                 # A (3) wait for device lock
 
-  - Remove __init
-  - Remove EXPORT_SYMBOL
+Any path that uses pci_dev_lock(), e.g., pci_reset_function(), may
+deadlock with sriov_numvfs_store() if the operations occur in the sequence
+(1) (2) (3) (4).
 
-I chose the latter for this case because the caller (net/ipv6/seg6.c)
-and the callee (net/ipv6/seg6_hmac.c) belong to the same module.
-It seems an internal function call in ipv6.ko.
+Avoid the deadlock by reversing the order in pci_dev_lock() so it acquires
+the device lock before the config space access lock, the same as the
+sriov_numvfs_store() path.
 
-Fixes: bf355b8d2c30 ("ipv6: sr: add core files for SR HMAC support")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[bhelgaas: combined and adapted commit log from Jay Zhou's independent
+subsequent posting:
+https://lore.kernel.org/r/20220404062539.1710-1-jianjay.zhou@huawei.com]
+Link: https://lore.kernel.org/linux-pci/1583489997-17156-1-git-send-email-yangyicong@hisilicon.com/
+Also-posted-by: Jay Zhou <jianjay.zhou@huawei.com>
+Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/seg6_hmac.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/pci/pci.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/net/ipv6/seg6_hmac.c b/net/ipv6/seg6_hmac.c
-index 558fe8cc6d43..ad5f8d521402 100644
---- a/net/ipv6/seg6_hmac.c
-+++ b/net/ipv6/seg6_hmac.c
-@@ -405,7 +405,6 @@ int __init seg6_hmac_init(void)
- {
- 	return seg6_hmac_init_algo();
- }
--EXPORT_SYMBOL(seg6_hmac_init);
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index d539eb379743..c988aa425ac9 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -4915,18 +4915,18 @@ static int pci_dev_reset_slot_function(struct pci_dev *dev, int probe)
  
- int __net_init seg6_hmac_net_init(struct net *net)
+ static void pci_dev_lock(struct pci_dev *dev)
  {
+-	pci_cfg_access_lock(dev);
+ 	/* block PM suspend, driver probe, etc. */
+ 	device_lock(&dev->dev);
++	pci_cfg_access_lock(dev);
+ }
+ 
+ /* Return 1 on successful lock, 0 on contention */
+ static int pci_dev_trylock(struct pci_dev *dev)
+ {
+-	if (pci_cfg_access_trylock(dev)) {
+-		if (device_trylock(&dev->dev))
++	if (device_trylock(&dev->dev)) {
++		if (pci_cfg_access_trylock(dev))
+ 			return 1;
+-		pci_cfg_access_unlock(dev);
++		device_unlock(&dev->dev);
+ 	}
+ 
+ 	return 0;
+@@ -4934,8 +4934,8 @@ static int pci_dev_trylock(struct pci_dev *dev)
+ 
+ static void pci_dev_unlock(struct pci_dev *dev)
+ {
+-	device_unlock(&dev->dev);
+ 	pci_cfg_access_unlock(dev);
++	device_unlock(&dev->dev);
+ }
+ 
+ static void pci_dev_save_and_disable(struct pci_dev *dev)
 -- 
 2.35.1
 
