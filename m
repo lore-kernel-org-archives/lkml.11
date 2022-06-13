@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12C7FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:02:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2533DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:02:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358320AbiFMMCw (ORCPT
+        id S1358344AbiFMMCy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:02:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41548 "EHLO
+        Mon, 13 Jun 2022 08:02:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358360AbiFML7z (ORCPT
+        with ESMTP id S1358191AbiFML7h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:59:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 338AC4EDF8;
-        Mon, 13 Jun 2022 03:56:53 -0700 (PDT)
+        Mon, 13 Jun 2022 07:59:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A2934DF7E;
+        Mon, 13 Jun 2022 03:56:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8A3ADB80D3A;
-        Mon, 13 Jun 2022 10:56:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2EC0C34114;
-        Mon, 13 Jun 2022 10:56:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A1EBC6139D;
+        Mon, 13 Jun 2022 10:56:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AECCCC34114;
+        Mon, 13 Jun 2022 10:56:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117810;
-        bh=tx6HgN386WLwB2WB8TgNOq4Nshf8cgFom7qnPkHSvdU=;
+        s=korg; t=1655117794;
+        bh=HTFSOGHBWdRDwUFiV3IKhBF8OEM33YNKdbdeRaZD1kI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MYh3H8jVGfmCdNmbXI4f4lLX7G6vpi6hJ1iFaUlkarEkL49DIpf5bU6437bgG8OIP
-         DjjKtu6YdiWxTVAB+StOkUm/JJnd3mxz568hjFG3taQsPZsnAPhn+Gzq12Oek/LNqZ
-         Kl1qVwdGk7soD/Mtd52+XSFtzImPbneu7GYfXHdg=
+        b=uZ0wmuBRgNZ4chIBX6Be7U1G76rUmkbpOPLaDmtL5WCIw5Z82+BTSpMZeQ4/ZXlAV
+         VSnMUHRloKAOzEbd/zHolyKBUfeWsvyJzJk0lM2Mr1vl9O0Dd5jv6hL+bG0a9WC5Z6
+         oROUBibufwL/w6tsAEG3PnI3ytvUleroM1KonJ6Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 127/287] Input: sparcspkr - fix refcount leak in bbc_beep_probe
-Date:   Mon, 13 Jun 2022 12:09:11 +0200
-Message-Id: <20220613094927.731485350@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 134/287] i2c: at91: use dma safe buffers
+Date:   Mon, 13 Jun 2022 12:09:18 +0200
+Message-Id: <20220613094927.943345073@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -50,36 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Michael Walle <michael@walle.cc>
 
-[ Upstream commit c8994b30d71d64d5dcc9bc0edbfdf367171aa96f ]
+[ Upstream commit 03fbb903c8bf7e53e101e8d9a7b261264317c411 ]
 
-of_find_node_by_path() calls of_find_node_opts_by_path(),
-which returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() to avoid refcount leak.
+The supplied buffer might be on the stack and we get the following error
+message:
+[    3.312058] at91_i2c e0070600.i2c: rejecting DMA map of vmalloc memory
 
-Fixes: 9c1a5077fdca ("input: Rewrite sparcspkr device probing.")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220516081018.42728-1-linmq006@gmail.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Use i2c_{get,put}_dma_safe_msg_buf() to get a DMA-able memory region if
+necessary.
+
+Fixes: 60937b2cdbf9 ("i2c: at91: add dma support")
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/input/misc/sparcspkr.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/i2c/busses/i2c-at91.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/input/misc/sparcspkr.c b/drivers/input/misc/sparcspkr.c
-index 4a5afc7fe96e..f6e1f38267d9 100644
---- a/drivers/input/misc/sparcspkr.c
-+++ b/drivers/input/misc/sparcspkr.c
-@@ -204,6 +204,7 @@ static int bbc_beep_probe(struct platform_device *op)
+diff --git a/drivers/i2c/busses/i2c-at91.c b/drivers/i2c/busses/i2c-at91.c
+index d51bf536bdf7..d5119a2adf5d 100644
+--- a/drivers/i2c/busses/i2c-at91.c
++++ b/drivers/i2c/busses/i2c-at91.c
+@@ -757,6 +757,7 @@ static int at91_twi_xfer(struct i2c_adapter *adap, struct i2c_msg *msg, int num)
+ 	unsigned int_addr_flag = 0;
+ 	struct i2c_msg *m_start = msg;
+ 	bool is_read;
++	u8 *dma_buf;
  
- 	info = &state->u.bbc;
- 	info->clock_freq = of_getintprop_default(dp, "clock-frequency", 0);
-+	of_node_put(dp);
- 	if (!info->clock_freq)
- 		goto out_free;
+ 	dev_dbg(&adap->dev, "at91_xfer: processing %d messages:\n", num);
  
+@@ -804,7 +805,17 @@ static int at91_twi_xfer(struct i2c_adapter *adap, struct i2c_msg *msg, int num)
+ 	dev->msg = m_start;
+ 	dev->recv_len_abort = false;
+ 
++	if (dev->use_dma) {
++		dma_buf = i2c_get_dma_safe_msg_buf(m_start, 1);
++		if (!dma_buf) {
++			ret = -ENOMEM;
++			goto out;
++		}
++		dev->buf = dma_buf;
++	}
++
+ 	ret = at91_do_twi_transfer(dev);
++	i2c_put_dma_safe_msg_buf(dma_buf, m_start, !ret);
+ 
+ 	ret = (ret < 0) ? ret : num;
+ out:
 -- 
 2.35.1
 
