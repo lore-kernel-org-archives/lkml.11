@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72CE2CCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31343CCA485
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:09:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352200AbiFMLJ2 (ORCPT
+        id S1352065AbiFMLJU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:09:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42510 "EHLO
+        Mon, 13 Jun 2022 07:09:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351752AbiFMLE7 (ORCPT
+        with ESMTP id S1351712AbiFMLEz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:04:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76B3A32EE8;
-        Mon, 13 Jun 2022 03:33:56 -0700 (PDT)
+        Mon, 13 Jun 2022 07:04:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 879233206A;
+        Mon, 13 Jun 2022 03:33:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C0D160FC9;
-        Mon, 13 Jun 2022 10:33:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CFDBC34114;
-        Mon, 13 Jun 2022 10:33:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 16EFFB80EA3;
+        Mon, 13 Jun 2022 10:33:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B6FAC34114;
+        Mon, 13 Jun 2022 10:33:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116434;
-        bh=EAB0sFpBWApDmm/5hoRD6cLlg+kbsbnjhf66J8G8h6g=;
+        s=korg; t=1655116417;
+        bh=kxf9ci/BCQtqhZJhZS8r0uz52LFijqgOzZISz+S4H7A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0aWv868ZVwCodcmFJOG0rsJdAA4IlmbGTQkIcN9H3INrvBqYUHAnvaX5jA0iIjNu+
-         OE11qaha1Pb6l+1+jCxuHBLgMhXrEgoasIvO7gcquTKgd7LDzATviZyEzpNSSbcI4a
-         Rx9GiCBq8Lq3X0LK7xcRPa7dEsLdR3baWisGUOng=
+        b=VI/n4QZsjGibicoXIM8tId1qnEWGpyJrkJe8EMcg5FcZgmamKPbG481QgL2feFh50
+         lZ+Uime+PZ8BCodexh84DKFpG3xJgzl5idCjVm52y0MOSVtFjDcJ8c3qb81bmzIYw7
+         HS5WODueTiptpaZV3LT6G+r7ieQb6cSolQWuX3YA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>,
-        Jani Nikula <jani.nikula@intel.com>,
+        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 082/411] drm/edid: fix invalid EDID extension block filtering
-Date:   Mon, 13 Jun 2022 12:05:55 +0200
-Message-Id: <20220613094931.140199973@linuxfoundation.org>
+Subject: [PATCH 4.14 177/218] net: xfrm: unexport __init-annotated xfrm4_protocol_init()
+Date:   Mon, 13 Jun 2022 12:10:35 +0200
+Message-Id: <20220613094925.975978630@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,53 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jani Nikula <jani.nikula@intel.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-[ Upstream commit 3aefc722ff52076407203b6af9713de567993adf ]
+[ Upstream commit 4a388f08d8784af48f352193d2b72aaf167a57a1 ]
 
-The invalid EDID block filtering uses the number of valid EDID
-extensions instead of all EDID extensions for looping the extensions in
-the copy. This is fine, by coincidence, if all the invalid blocks are at
-the end of the EDID. However, it's completely broken if there are
-invalid extensions in the middle; the invalid blocks are included and
-valid blocks are excluded.
+EXPORT_SYMBOL and __init is a bad combination because the .init.text
+section is freed up after the initialization. Hence, modules cannot
+use symbols annotated __init. The access to a freed symbol may end up
+with kernel panic.
 
-Fix it by modifying the base block after, not before, the copy.
+modpost used to detect it, but it has been broken for a decade.
 
-Fixes: 14544d0937bf ("drm/edid: Only print the bad edid when aborting")
-Reported-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Signed-off-by: Jani Nikula <jani.nikula@intel.com>
-Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220330170426.349248-1-jani.nikula@intel.com
+Recently, I fixed modpost so it started to warn it again, then this
+showed up in linux-next builds.
+
+There are two ways to fix it:
+
+  - Remove __init
+  - Remove EXPORT_SYMBOL
+
+I chose the latter for this case because the only in-tree call-site,
+net/ipv4/xfrm4_policy.c is never compiled as modular.
+(CONFIG_XFRM is boolean)
+
+Fixes: 2f32b51b609f ("xfrm: Introduce xfrm_input_afinfo to access the the callbacks properly")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Acked-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_edid.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/ipv4/xfrm4_protocol.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/drm_edid.c b/drivers/gpu/drm/drm_edid.c
-index aeeab1b57aad..2dc6dd6230d7 100644
---- a/drivers/gpu/drm/drm_edid.c
-+++ b/drivers/gpu/drm/drm_edid.c
-@@ -1702,9 +1702,6 @@ struct edid *drm_do_get_edid(struct drm_connector *connector,
- 
- 		connector_bad_edid(connector, edid, edid[0x7e] + 1);
- 
--		edid[EDID_LENGTH-1] += edid[0x7e] - valid_extensions;
--		edid[0x7e] = valid_extensions;
--
- 		new = kmalloc_array(valid_extensions + 1, EDID_LENGTH,
- 				    GFP_KERNEL);
- 		if (!new)
-@@ -1721,6 +1718,9 @@ struct edid *drm_do_get_edid(struct drm_connector *connector,
- 			base += EDID_LENGTH;
- 		}
- 
-+		new[EDID_LENGTH - 1] += new[0x7e] - valid_extensions;
-+		new[0x7e] = valid_extensions;
-+
- 		kfree(edid);
- 		edid = new;
- 	}
+diff --git a/net/ipv4/xfrm4_protocol.c b/net/ipv4/xfrm4_protocol.c
+index 8dd0e6ab8606..0e1f5dc2766b 100644
+--- a/net/ipv4/xfrm4_protocol.c
++++ b/net/ipv4/xfrm4_protocol.c
+@@ -297,4 +297,3 @@ void __init xfrm4_protocol_init(void)
+ {
+ 	xfrm_input_register_afinfo(&xfrm4_input_afinfo);
+ }
+-EXPORT_SYMBOL(xfrm4_protocol_init);
 -- 
 2.35.1
 
