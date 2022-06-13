@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18837C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:22:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 721BEC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:22:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383312AbiFMOWv (ORCPT
+        id S1383172AbiFMOW4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:22:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41882 "EHLO
+        Mon, 13 Jun 2022 10:22:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381962AbiFMOQS (ORCPT
+        with ESMTP id S1381967AbiFMOQS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 10:16:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8297EA005E;
-        Mon, 13 Jun 2022 04:43:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C16D2A0076;
+        Mon, 13 Jun 2022 04:43:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5ECCC6146C;
-        Mon, 13 Jun 2022 11:43:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 712FEC34114;
-        Mon, 13 Jun 2022 11:43:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BAE666124E;
+        Mon, 13 Jun 2022 11:43:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6E24C34114;
+        Mon, 13 Jun 2022 11:43:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120590;
-        bh=Y1PrFQd2z7ks6vExBBUqZskoendISOySkhLR5eHinlc=;
+        s=korg; t=1655120604;
+        bh=uocWnAIGDj1N1SgxSfZcGZiwjslXY7sezSgDHKrzoow=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i4FqH5/zZUUojN14cKhl8P42fuczxS2wxM4BOc7IqYj6eYsh98DrpTO0E8sJQ/+z2
-         LBL7wvde87FQOA0R8nlFh2qHp3ftVC6buxS/vbIfoQOz4NEJeRH7vx+5lE0wFRKL8J
-         JMo+h2J9aTDRVxFyT8J3ZI4XsGiuLErx6ej3OlcI=
+        b=hm+gtZDNz1TC+N5Hb3qQxwix4MdH8CRoduU7rQIYR1g6ASqhx9GcY9krU17OcB0Bu
+         DDTvTypCZ8x9k/a5qzvfYpFfmWKWgawGSjeVyHq4rNOzDDLtjDtzj6/ilE7gYPDR2I
+         Gz5HNfxdNZm/eDsXoN5Ev6fp31gUg2TAKOkpRAU0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Walmsley <paul.walmsley@sifive.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        stable@vger.kernel.org, Schspa Shi <schspa@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 064/298] serial: sifive: Sanitize CSIZE and c_iflag
-Date:   Mon, 13 Jun 2022 12:09:18 +0200
-Message-Id: <20220613094926.889268399@linuxfoundation.org>
+Subject: [PATCH 5.17 069/298] driver: base: fix UAF when driver_attach failed
+Date:   Mon, 13 Jun 2022 12:09:23 +0200
+Message-Id: <20220613094927.039700488@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,53 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+From: Schspa Shi <schspa@gmail.com>
 
-[ Upstream commit c069d2756c01ed36121fae6a42c14fdf1325c71d ]
+[ Upstream commit 310862e574001a97ad02272bac0fd13f75f42a27 ]
 
-Only CS8 is supported but CSIZE was not sanitized to CS8.
+When driver_attach(drv); failed, the driver_private will be freed.
+But it has been added to the bus, which caused a UAF.
 
-Set CSIZE correctly so that userspace knows the effective value.
-Incorrect CSIZE also results in miscalculation of the frame bits in
-tty_get_char_size() or in its predecessor where the roughly the same
-code is directly within uart_update_timeout().
+To fix it, we need to delete it from the bus when failed.
 
-Similarly, INPCK, PARMRK, and BRKINT are reported textually unsupported
-but were not cleared in termios c_iflag which is the machine-readable
-format.
-
-Fixes: 45c054d0815b (tty: serial: add driver for the SiFive UART)
-Cc: Paul Walmsley <paul.walmsley@sifive.com>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/20220519081808.3776-7-ilpo.jarvinen@linux.intel.com
+Fixes: 190888ac01d0 ("driver core: fix possible missing of device probe")
+Signed-off-by: Schspa Shi <schspa@gmail.com>
+Link: https://lore.kernel.org/r/20220513112444.45112-1-schspa@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/sifive.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/base/bus.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c
-index fff0b7916f3d..cba44483cb03 100644
---- a/drivers/tty/serial/sifive.c
-+++ b/drivers/tty/serial/sifive.c
-@@ -666,12 +666,16 @@ static void sifive_serial_set_termios(struct uart_port *port,
- 	int rate;
- 	char nstop;
+diff --git a/drivers/base/bus.c b/drivers/base/bus.c
+index 97936ec49bde..7ca47e5b3c1f 100644
+--- a/drivers/base/bus.c
++++ b/drivers/base/bus.c
+@@ -617,7 +617,7 @@ int bus_add_driver(struct device_driver *drv)
+ 	if (drv->bus->p->drivers_autoprobe) {
+ 		error = driver_attach(drv);
+ 		if (error)
+-			goto out_unregister;
++			goto out_del_list;
+ 	}
+ 	module_add_driver(drv->owner, drv);
  
--	if ((termios->c_cflag & CSIZE) != CS8)
-+	if ((termios->c_cflag & CSIZE) != CS8) {
- 		dev_err_once(ssp->port.dev, "only 8-bit words supported\n");
-+		termios->c_cflag &= ~CSIZE;
-+		termios->c_cflag |= CS8;
-+	}
- 	if (termios->c_iflag & (INPCK | PARMRK))
- 		dev_err_once(ssp->port.dev, "parity checking not supported\n");
- 	if (termios->c_iflag & BRKINT)
- 		dev_err_once(ssp->port.dev, "BREAK detection not supported\n");
-+	termios->c_iflag &= ~(INPCK|PARMRK|BRKINT);
+@@ -644,6 +644,8 @@ int bus_add_driver(struct device_driver *drv)
  
- 	/* Set number of stop bits */
- 	nstop = (termios->c_cflag & CSTOPB) ? 2 : 1;
+ 	return 0;
+ 
++out_del_list:
++	klist_del(&priv->knode_bus);
+ out_unregister:
+ 	kobject_put(&priv->kobj);
+ 	/* drv->p is freed in driver_release()  */
 -- 
 2.35.1
 
