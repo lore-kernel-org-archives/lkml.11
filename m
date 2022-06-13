@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEBC9C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 789D2CCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382152AbiFMONU (ORCPT
+        id S1382286AbiFMONz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:13:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52584 "EHLO
+        Mon, 13 Jun 2022 10:13:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382393AbiFMOFt (ORCPT
+        with ESMTP id S1382630AbiFMOGI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:05:49 -0400
+        Mon, 13 Jun 2022 10:06:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE50B954A5;
-        Mon, 13 Jun 2022 04:40:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DEFB95A1D;
+        Mon, 13 Jun 2022 04:41:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6709561454;
-        Mon, 13 Jun 2022 11:40:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72D29C341C6;
-        Mon, 13 Jun 2022 11:40:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 51A2F6124E;
+        Mon, 13 Jun 2022 11:41:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 628FBC34114;
+        Mon, 13 Jun 2022 11:41:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120437;
-        bh=4vviVn1+C2VUpSO971tgRUItAVlhTOzZO6vrIeqv1ME=;
+        s=korg; t=1655120463;
+        bh=HRL1W3H3oXzbvv3ZmLRhHB16qHoYyZT0QHPA9gHqHuw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2Kom8vuyp6ypdewAWVguhWFdtaEHfA95jXIqE+rrq9p2deGQmhFk8RJjzCqGbWVBb
-         baVzuV6yKRZ/EqbNAUtlABbPNMMhFAz778mBfN9y8I8O8NGNvn/0eDsmB3S8JxGs9m
-         G5oN4khC/hsmJJocO6Nz+KOyMCcWuWZPK/Lxym8s=
+        b=FR5ocm3Wf35abg6wDK3WfvixYbvKvRki5Zxsch1QzuaHvAoDfs+6vKHDxExgugyqL
+         onSf6xTWk/ekfHAyQG4h/Vkw6KB1i5K4N57tG3l6nAvn8mu4IZumUoveYCU2nAkBcN
+         vDN9RFXzhM5qM9Hn5imKEocra50dsj7/qI/px1zA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Cixi Geng <cixi.geng1@unisoc.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 032/298] iio: adc: sc27xx: fix read big scale voltage not right
-Date:   Mon, 13 Jun 2022 12:08:46 +0200
-Message-Id: <20220613094925.906266113@linuxfoundation.org>
+Subject: [PATCH 5.17 009/298] serial: 8250_aspeed_vuart: Fix potential NULL dereference in aspeed_vuart_probe
+Date:   Mon, 13 Jun 2022 12:08:23 +0200
+Message-Id: <20220613094925.205304903@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -51,38 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cixi Geng <cixi.geng1@unisoc.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit ad930a75613282400179361e220e58b87386b8c7 ]
+[ Upstream commit 0e0fd55719fa081de6f9e5d9e6cef48efb04d34a ]
 
-Fix wrong configuration value of SC27XX_ADC_SCALE_MASK and
-SC27XX_ADC_SCALE_SHIFT by spec documetation.
+platform_get_resource() may fail and return NULL, so we should
+better check it's return value to avoid a NULL pointer dereference.
 
-Fixes: 5df362a6cf49c (iio: adc: Add Spreadtrum SC27XX PMICs ADC support)
-Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
-Reviewed-by: Baolin Wang <baolin.wang7@gmail.com>
-Link: https://lore.kernel.org/r/20220419142458.884933-3-gengcixi@gmail.com
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Fixes: 54da3e381c2b ("serial: 8250_aspeed_vuart: use UPF_IOREMAP to set up register mapping")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220404143842.16960-1-linmq006@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/sc27xx_adc.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_aspeed_vuart.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
-index 00098caf6d9e..aee076c8e2b1 100644
---- a/drivers/iio/adc/sc27xx_adc.c
-+++ b/drivers/iio/adc/sc27xx_adc.c
-@@ -36,8 +36,8 @@
+diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+index c2cecc6f47db..179bb1375636 100644
+--- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
++++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+@@ -429,6 +429,8 @@ static int aspeed_vuart_probe(struct platform_device *pdev)
+ 	timer_setup(&vuart->unthrottle_timer, aspeed_vuart_unthrottle_exp, 0);
  
- /* Bits and mask definition for SC27XX_ADC_CH_CFG register */
- #define SC27XX_ADC_CHN_ID_MASK		GENMASK(4, 0)
--#define SC27XX_ADC_SCALE_MASK		GENMASK(10, 8)
--#define SC27XX_ADC_SCALE_SHIFT		8
-+#define SC27XX_ADC_SCALE_MASK		GENMASK(10, 9)
-+#define SC27XX_ADC_SCALE_SHIFT		9
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res)
++		return -EINVAL;
  
- /* Bits definitions for SC27XX_ADC_INT_EN registers */
- #define SC27XX_ADC_IRQ_EN		BIT(0)
+ 	memset(&port, 0, sizeof(port));
+ 	port.port.private_data = vuart;
 -- 
 2.35.1
 
