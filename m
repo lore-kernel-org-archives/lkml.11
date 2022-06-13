@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8333BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:17:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB8E1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:17:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242093AbiFMKRS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:17:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60976 "EHLO
+        id S241719AbiFMKRb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:17:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241612AbiFMKQu (ORCPT
+        with ESMTP id S241683AbiFMKOv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:16:50 -0400
+        Mon, 13 Jun 2022 06:14:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD392DFFC;
-        Mon, 13 Jun 2022 03:15:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DAB35F49;
+        Mon, 13 Jun 2022 03:14:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EDD13614BF;
-        Mon, 13 Jun 2022 10:15:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D265C34114;
-        Mon, 13 Jun 2022 10:15:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7431B61499;
+        Mon, 13 Jun 2022 10:14:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82D10C34114;
+        Mon, 13 Jun 2022 10:14:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115316;
-        bh=qToVZsXl134a53xo2VcsV0MaOUoIecEvvSYgrba1pOU=;
+        s=korg; t=1655115277;
+        bh=8Ic3YfIspf4SZu0wJZZZYDsTRyDu74+FGba6hXMd06o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wy/UvP8bPL90mdxmV29Rctz50I8wsC2mSfRznpRxB9NNT0xLYU2tHEnEltbPLqvZc
-         8TxYcTO7iMQ8YgoZ3LBld0bYVIzQNMcVOZa0dKMXxoHewtIgBzwDZOU5UZ1Ua11GOq
-         nqVJYWhgA0vyiFs/8QLo6hcvKwiN6RZ1scwGAuCk=
+        b=fJp70URJjVFQbFlBfP34w/mOt2CzMg+a5LA+PVJ2sVo1SVzUQang1qOICrumFQcXb
+         /qVNVLt/inUoxkmibJ7/zSAy9k3YaP858DXL90diZ9t6jsKLA5dsE5UNKczU5dPyC8
+         YW4bfzsAEcpZZYz33Ey3PrAe3ZUTWGNbGJievAjY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peng Wu <wupeng58@huawei.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 030/167] ARM: versatile: Add missing of_node_put in dcscb_init
-Date:   Mon, 13 Jun 2022 12:08:24 +0200
-Message-Id: <20220613094847.886843985@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 018/167] ASoC: dapm: Dont fold register value changes into notifications
+Date:   Mon, 13 Jun 2022 12:08:12 +0200
+Message-Id: <20220613094845.163516319@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -49,35 +48,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Wu <wupeng58@huawei.com>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit 23b44f9c649bbef10b45fa33080cd8b4166800ae ]
+[ Upstream commit ad685980469b9f9b99d4d6ea05f4cb8f57cb2234 ]
 
-The device_node pointer is returned by of_find_compatible_node
-with refcount incremented. We should use of_node_put() to avoid
-the refcount leak.
+DAPM tracks and reports the value presented to the user from DAPM controls
+separately to the register value, these may diverge during initialisation
+or when an autodisable control is in use.
 
-Signed-off-by: Peng Wu <wupeng58@huawei.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Link: https://lore.kernel.org/r/20220428230356.69418-1-linus.walleij@linaro.org'
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+When writing DAPM controls we currently report that a change has occurred
+if either the DAPM value or the value stored in the register has changed,
+meaning that if the two are out of sync we may appear to report a spurious
+event to userspace. Since we use this folded in value for nothing other
+than the value reported to userspace simply drop the folding in of the
+register change.
+
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220428161833.3690050-1-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-vexpress/dcscb.c | 1 +
- 1 file changed, 1 insertion(+)
+ sound/soc/soc-dapm.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/arch/arm/mach-vexpress/dcscb.c b/arch/arm/mach-vexpress/dcscb.c
-index 5cedcf572104..3e86cff1d4d3 100644
---- a/arch/arm/mach-vexpress/dcscb.c
-+++ b/arch/arm/mach-vexpress/dcscb.c
-@@ -146,6 +146,7 @@ static int __init dcscb_init(void)
- 	if (!node)
- 		return -ENODEV;
- 	dcscb_base = of_iomap(node, 0);
-+	of_node_put(node);
- 	if (!dcscb_base)
- 		return -EADDRNOTAVAIL;
- 	cfg = readl_relaxed(dcscb_base + DCS_CFG_R);
+diff --git a/sound/soc/soc-dapm.c b/sound/soc/soc-dapm.c
+index 878a4fc97f04..40bf50cd87bc 100644
+--- a/sound/soc/soc-dapm.c
++++ b/sound/soc/soc-dapm.c
+@@ -3165,7 +3165,6 @@ int snd_soc_dapm_put_volsw(struct snd_kcontrol *kcontrol,
+ 			update.val = val;
+ 			card->update = &update;
+ 		}
+-		change |= reg_change;
+ 
+ 		ret = soc_dapm_mixer_update_power(card, kcontrol, connect);
+ 
+@@ -3270,7 +3269,6 @@ int snd_soc_dapm_put_enum_double(struct snd_kcontrol *kcontrol,
+ 			update.val = val;
+ 			card->update = &update;
+ 		}
+-		change |= reg_change;
+ 
+ 		ret = soc_dapm_mux_update_power(card, kcontrol, item[0], e);
+ 
 -- 
 2.35.1
 
