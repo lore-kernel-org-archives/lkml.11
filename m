@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53C97C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:21:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5F71C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:21:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382505AbiFMOVC (ORCPT
+        id S1382618AbiFMOVD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:21:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41610 "EHLO
+        Mon, 13 Jun 2022 10:21:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382980AbiFMOPB (ORCPT
+        with ESMTP id S1383030AbiFMOPI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:15:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EDBB9B1B2;
-        Mon, 13 Jun 2022 04:42:43 -0700 (PDT)
+        Mon, 13 Jun 2022 10:15:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4816E9C2C7;
+        Mon, 13 Jun 2022 04:42:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0C112B80EDD;
-        Mon, 13 Jun 2022 11:42:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73E48C34114;
-        Mon, 13 Jun 2022 11:42:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EAFB8612D0;
+        Mon, 13 Jun 2022 11:42:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06C27C34114;
+        Mon, 13 Jun 2022 11:42:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120559;
-        bh=LScDcHeqMPl2Kp8KDh49fGvlTXdrmkknJXbg85f/YUk=;
+        s=korg; t=1655120566;
+        bh=fk0snry+InHU+B4/QPetFWBQtBuKmh2RmoCROynAung=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A3M2KYtPfPxYPO071CjglnKRLIBw0JdD2fFcUDVvyacPiHLt/726H9Qq6FR0F9l3t
-         bulLR12A5dV+S2eSZVjcu5qkWqzGFVsnq/kiBeZJ4FoCoq3WqC47NA/iclDg2dvX9V
-         dHKWBYRNxsRvEQmfCTjECJrBDg96f5zAm55OqOZQ=
+        b=TisOdVl3B1ivfciQE07nlor//UL0IQ3A9h5z9/v/ckOqNnF50hPER18D7baMH3Sim
+         yOm7YRWvOiVb/QDqq7IaJmyo/kQEKCrkhdIbO5M+LImIY6m9JhICkVOJmqxUDOes2J
+         hyyk0bx6ehCUwuvlWuJrX9a27kKMHPszF54yqSYs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Taehee Yoo <ap420073@gmail.com>,
+        stable@vger.kernel.org, liuyacan <liuyacan@corp.netease.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 077/298] amt: fix return value of amt_update_handler()
-Date:   Mon, 13 Jun 2022 12:09:31 +0200
-Message-Id: <20220613094927.282335867@linuxfoundation.org>
+Subject: [PATCH 5.17 079/298] net/smc: set ini->smcrv2.ib_dev_v2 to NULL if SMC-Rv2 is unavailable
+Date:   Mon, 13 Jun 2022 12:09:33 +0200
+Message-Id: <20220613094927.342258382@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,36 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Taehee Yoo <ap420073@gmail.com>
+From: liuyacan <liuyacan@corp.netease.com>
 
-[ Upstream commit ac1dbf55981b88d64312858ea06e3e63001f085d ]
+[ Upstream commit b3b1a17538d3ef6a9667b2271216fd16d7678ab5 ]
 
-If a relay receives an update message, it lookup a tunnel.
-and if there is no tunnel for that message, it should be treated
-as an error, not a success.
-But amt_update_handler() returns false, which means success.
+In the process of checking whether RDMAv2 is available, the current
+implementation first sets ini->smcrv2.ib_dev_v2, and then allocates
+smc buf desc and register rmb, but the latter may fail. In this case,
+the pointer should be reset.
 
-Fixes: cbc21dc1cfe9 ("amt: add data plane of amt interface")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+Fixes: e49300a6bf62 ("net/smc: add listen processing for SMC-Rv2")
+Signed-off-by: liuyacan <liuyacan@corp.netease.com>
+Reviewed-by: Karsten Graul <kgraul@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220525085408.812273-1-liuyacan@corp.netease.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/amt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/smc/af_smc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/amt.c b/drivers/net/amt.c
-index fb774d568baa..6205282a09e5 100644
---- a/drivers/net/amt.c
-+++ b/drivers/net/amt.c
-@@ -2423,7 +2423,7 @@ static bool amt_update_handler(struct amt_dev *amt, struct sk_buff *skb)
- 		}
- 	}
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index b9fe31834354..4bc6b16669f3 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -1973,6 +1973,7 @@ static void smc_find_rdma_v2_device_serv(struct smc_sock *new_smc,
  
--	return false;
-+	return true;
+ not_found:
+ 	ini->smcr_version &= ~SMC_V2;
++	ini->smcrv2.ib_dev_v2 = NULL;
+ 	ini->check_smcrv2 = false;
+ }
  
- report:
- 	iph = ip_hdr(skb);
 -- 
 2.35.1
 
