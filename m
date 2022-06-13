@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CEEEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:31:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03160CCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:31:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354051AbiFMLbg (ORCPT
+        id S1354076AbiFMLbm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:31:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56234 "EHLO
+        Mon, 13 Jun 2022 07:31:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353252AbiFMLXX (ORCPT
+        with ESMTP id S1353663AbiFMLYS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:23:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEA983CFD9;
-        Mon, 13 Jun 2022 03:42:17 -0700 (PDT)
+        Mon, 13 Jun 2022 07:24:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BECE813D67;
+        Mon, 13 Jun 2022 03:42:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CA856124E;
-        Mon, 13 Jun 2022 10:42:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 532CFC3411C;
-        Mon, 13 Jun 2022 10:42:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 023E3B80E94;
+        Mon, 13 Jun 2022 10:42:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FCC9C34114;
+        Mon, 13 Jun 2022 10:42:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116936;
-        bh=lptjIbfjvPh4VLrsFCHu56P80wT5kg7CgE16oZFFLtE=;
+        s=korg; t=1655116939;
+        bh=n+qJvALMCv5MoMuwEOWidACoeDxGUQxdZNNnpfPP+fc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DNWHbg1zXWosvdonqKxpdQsw/t0SIE9vofmTNh8sPyossn588XizkkBogc2NuOMIB
-         QNbG2YlyH+3E04vYXh6eMAW/VXu2IGVMSUFdtCxIISytzhxErKLzp55J5WE91LzV4h
-         TL9FeYLyAk348lNuUqkGSl/m2PorN6CrCImUd6n8=
+        b=2QoUi/3HubrgQtAZHVwC/MznUxZipF8peLJ+uR3UYkZxZli8yrwm/Bne0dXJKbuuA
+         PlrckQCiwi+S4gRRg+21Aj2GEm9PUATEdKH66rQev2/k0PaeK9PSsF0AMK4Tt0l1JR
+         Z2oQW8pGyFNHrpLYAdXZsOk0nqjeY9+HnOP6ORpI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Masami Hiramatsu <mhiramat@kernel.org>,
-        Tom Zanussi <zanussi@kernel.org>,
-        Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.4 229/411] tracing: Fix potential double free in create_var_ref()
-Date:   Mon, 13 Jun 2022 12:08:22 +0200
-Message-Id: <20220613094935.509364076@linuxfoundation.org>
+        stable@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH 5.4 230/411] PCI/PM: Fix bridge_d3_blacklist[] Elo i2 overwrite of Gigabyte X299
+Date:   Mon, 13 Jun 2022 12:08:23 +0200
+Message-Id: <20220613094935.538317127@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -51,48 +48,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+From: Bjorn Helgaas <bhelgaas@google.com>
 
-commit 99696a2592bca641eb88cc9a80c90e591afebd0f upstream.
+commit 12068bb346db5776d0ec9bb4cd073f8427a1ac92 upstream.
 
-In create_var_ref(), init_var_ref() is called to initialize the fields
-of variable ref_field, which is allocated in the previous function call
-to create_hist_field(). Function init_var_ref() allocates the
-corresponding fields such as ref_field->system, but frees these fields
-when the function encounters an error. The caller later calls
-destroy_hist_field() to conduct error handling, which frees the fields
-and the variable itself. This results in double free of the fields which
-are already freed in the previous function.
+92597f97a40b ("PCI/PM: Avoid putting Elo i2 PCIe Ports in D3cold") omitted
+braces around the new Elo i2 entry, so it overwrote the existing Gigabyte
+X299 entry.  Add the appropriate braces.
 
-Fix this by storing NULL to the corresponding fields when they are freed
-in init_var_ref().
+Found by:
 
-Link: https://lkml.kernel.org/r/20220425063739.3859998-1-keitasuzuki.park@sslab.ics.keio.ac.jp
+  $ make W=1 drivers/pci/pci.o
+    CC      drivers/pci/pci.o
+  drivers/pci/pci.c:2974:12: error: initialized field overwritten [-Werror=override-init]
+   2974 |   .ident = "Elo i2",
+        |            ^~~~~~~~
 
-Fixes: 067fe038e70f ("tracing: Add variable reference handling to hist triggers")
-CC: stable@vger.kernel.org
-Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
-Reviewed-by: Tom Zanussi <zanussi@kernel.org>
-Signed-off-by: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Link: https://lore.kernel.org/r/20220526221258.GA409855@bhelgaas
+Fixes: 92597f97a40b ("PCI/PM: Avoid putting Elo i2 PCIe Ports in D3cold")
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Cc: stable@vger.kernel.org  # v5.15+
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace_events_hist.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/pci/pci.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/kernel/trace/trace_events_hist.c
-+++ b/kernel/trace/trace_events_hist.c
-@@ -2695,8 +2695,11 @@ static int init_var_ref(struct hist_fiel
- 	return err;
-  free:
- 	kfree(ref_field->system);
-+	ref_field->system = NULL;
- 	kfree(ref_field->event_name);
-+	ref_field->event_name = NULL;
- 	kfree(ref_field->name);
-+	ref_field->name = NULL;
- 
- 	goto out;
- }
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -2613,6 +2613,8 @@ static const struct dmi_system_id bridge
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "Gigabyte Technology Co., Ltd."),
+ 			DMI_MATCH(DMI_BOARD_NAME, "X299 DESIGNARE EX-CF"),
+ 		},
++	},
++	{
+ 		/*
+ 		 * Downstream device is not accessible after putting a root port
+ 		 * into D3cold and back into D0 on Elo i2.
 
 
