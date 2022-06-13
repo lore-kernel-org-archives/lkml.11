@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37A05C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:07:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A0B4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:07:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358803AbiFMNHn (ORCPT
+        id S1358815AbiFMNHw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:07:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50432 "EHLO
+        Mon, 13 Jun 2022 09:07:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238842AbiFMMzV (ORCPT
+        with ESMTP id S239217AbiFMMzV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 08:55:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59E55DE9F;
-        Mon, 13 Jun 2022 04:16:04 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 907A6DFC8;
+        Mon, 13 Jun 2022 04:16:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 17842B80E93;
-        Mon, 13 Jun 2022 11:16:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DE70C34114;
-        Mon, 13 Jun 2022 11:16:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D03960B6B;
+        Mon, 13 Jun 2022 11:16:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EC9CC34114;
+        Mon, 13 Jun 2022 11:16:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118961;
-        bh=KG2kk7cL6bCUC7FITWZq4H+9m9GoMnSkpW4cXAC5fwQ=;
+        s=korg; t=1655118964;
+        bh=JvD0aaCdi1KOqBVa71WtDHZ7Uwi3CKeJnRuEToyDQoY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iYvEeoM7dHJKnkwmtrbG845E8aQrg4CTkLwE56BzW5kgqBbjnR/iaHFDLcxUsW5sz
-         UOMBHz4JiwajCMMMCehj9zLxyp3veDao3uX9nrGZbBQxBiaFXEPGol6qK+SRTR7OvJ
-         OsOyJ/JejhIkffFrGIafC10Au+PdWuwDVEXsbtYU=
+        b=NSY+4BoBgiy4QEgqIVM31+s8wvW39iIxqkg2EkaQMGaAqkgwO4vr6a0tEC4myczHX
+         jvs5YWV9stRx2BLpuJ95FhYAH6+Fz4GPECt3cwuGqmzefOlvBxmqcn0I6FsEaR+cdB
+         18tLvjph9UnjvxnMTVnPS3SvEUv2wT8lRNQpHkEM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Si-Wei Liu <si-wei.liu@oracle.com>,
-        Jason Wang <jasowang@redhat.com>, Eli Cohen <elic@nvidia.com>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         "Michael S. Tsirkin" <mst@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 091/247] vdpa: Fix error logic in vdpa_nl_cmd_dev_get_doit
-Date:   Mon, 13 Jun 2022 12:09:53 +0200
-Message-Id: <20220613094925.716808472@linuxfoundation.org>
+Subject: [PATCH 5.15 092/247] virtio: pci: Fix an error handling path in vp_modern_probe()
+Date:   Mon, 13 Jun 2022 12:09:54 +0200
+Message-Id: <20220613094925.747641168@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -51,54 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eli Cohen <elic@nvidia.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 7a6691f1f89784f775fa0c54be57533445726068 ]
+[ Upstream commit 7a836a2aba09479c8e71fa43249eecc4af945f61 ]
 
-In vdpa_nl_cmd_dev_get_doit(), if the call to genlmsg_reply() fails we
-must not call nlmsg_free() since this is done inside genlmsg_reply().
+If an error occurs after a successful pci_request_selected_regions() call,
+it should be undone by a corresponding pci_release_selected_regions() call,
+as already done in vp_modern_remove().
 
-Fix it.
-
-Fixes: bc0d90ee021f ("vdpa: Enable user to query vdpa device info")
-Reviewed-by: Si-Wei Liu <si-wei.liu@oracle.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
-Signed-off-by: Eli Cohen <elic@nvidia.com>
-Message-Id: <20220518133804.1075129-2-elic@nvidia.com>
+Fixes: fd502729fbbf ("virtio-pci: introduce modern device module")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Message-Id: <237109725aad2c3c03d14549f777b1927c84b045.1648977064.git.christophe.jaillet@wanadoo.fr>
 Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vdpa/vdpa.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ drivers/virtio/virtio_pci_modern_dev.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
-index 12bf3d16a40f..86571498c1c2 100644
---- a/drivers/vdpa/vdpa.c
-+++ b/drivers/vdpa/vdpa.c
-@@ -558,14 +558,19 @@ static int vdpa_nl_cmd_dev_get_doit(struct sk_buff *skb, struct genl_info *info)
- 		goto mdev_err;
- 	}
- 	err = vdpa_dev_fill(vdev, msg, info->snd_portid, info->snd_seq, 0, info->extack);
--	if (!err)
--		err = genlmsg_reply(msg, info);
-+	if (err)
-+		goto mdev_err;
-+
-+	err = genlmsg_reply(msg, info);
-+	put_device(dev);
-+	mutex_unlock(&vdpa_dev_mutex);
-+	return err;
-+
- mdev_err:
- 	put_device(dev);
- err:
- 	mutex_unlock(&vdpa_dev_mutex);
--	if (err)
--		nlmsg_free(msg);
-+	nlmsg_free(msg);
+diff --git a/drivers/virtio/virtio_pci_modern_dev.c b/drivers/virtio/virtio_pci_modern_dev.c
+index e11ed748e661..9ab66e44738e 100644
+--- a/drivers/virtio/virtio_pci_modern_dev.c
++++ b/drivers/virtio/virtio_pci_modern_dev.c
+@@ -340,6 +340,7 @@ int vp_modern_probe(struct virtio_pci_modern_device *mdev)
+ err_map_isr:
+ 	pci_iounmap(pci_dev, mdev->common);
+ err_map_common:
++	pci_release_selected_regions(pci_dev, mdev->modern_bars);
  	return err;
  }
- 
+ EXPORT_SYMBOL_GPL(vp_modern_probe);
 -- 
 2.35.1
 
