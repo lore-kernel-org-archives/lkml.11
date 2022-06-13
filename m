@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75F28C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:39:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9822ACCA48E
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:39:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355744AbiFMLjg (ORCPT
+        id S1355780AbiFMLji (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:39:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56646 "EHLO
+        Mon, 13 Jun 2022 07:39:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355122AbiFMLar (ORCPT
+        with ESMTP id S1355157AbiFMLat (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:30:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1F3241310;
-        Mon, 13 Jun 2022 03:46:29 -0700 (PDT)
+        Mon, 13 Jun 2022 07:30:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 426B641335;
+        Mon, 13 Jun 2022 03:46:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CF13261248;
-        Mon, 13 Jun 2022 10:46:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFD86C34114;
-        Mon, 13 Jun 2022 10:46:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01ECFB80D3B;
+        Mon, 13 Jun 2022 10:46:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B9ECC34114;
+        Mon, 13 Jun 2022 10:46:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117188;
-        bh=UxEwJ9Vf0nfXIgKZW6JZYJJ2nK1Zls3Fp5k0TbD0Ehk=;
+        s=korg; t=1655117193;
+        bh=0+3cOnk2z3C+1fmNZLPemFHmvE1ZEFxh/Sv4oC37mqs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pOjRu/6lmt10tYzuIbgVH083fu8Sj6kpRSC7aEEs71BnmjzS7y/Mx4bYQIOhgm+xs
-         wGyaow0h7d+eGS/f1riS1jXptPztZ+2AJ95NIL8HGJDvge2QiNidKl+T9lYnc4OIKv
-         oqZwweXwr+Q84Sksphj0CkPsl4vrZEcGIZ2+wRLw=
+        b=K+JuXegmVMiJmUn6lXPrx8tDTD0c04sX7lnrPWqVD9q3hdZObSUAXRc8g527ZosAe
+         wiVa916vAIjKrcqh5vz+vKfzNSWgHXiXNr1sTfeDalmpTtSoLQ6Peqy5mQ1qZ0VI/C
+         PpnrwDJOSNcaiw2yJCrs/xb3UVo2cTWPNH2yMxeA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Schspa Shi <schspa@gmail.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 317/411] driver: base: fix UAF when driver_attach failed
-Date:   Mon, 13 Jun 2022 12:09:50 +0200
-Message-Id: <20220613094938.244953882@linuxfoundation.org>
+Subject: [PATCH 5.4 319/411] watchdog: ts4800_wdt: Fix refcount leak in ts4800_wdt_probe
+Date:   Mon, 13 Jun 2022 12:09:52 +0200
+Message-Id: <20220613094938.303388610@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -49,46 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Schspa Shi <schspa@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 310862e574001a97ad02272bac0fd13f75f42a27 ]
+[ Upstream commit 5d24df3d690809952528e7a19a43d84bc5b99d44 ]
 
-When driver_attach(drv); failed, the driver_private will be freed.
-But it has been added to the bus, which caused a UAF.
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+Add  missing of_node_put() in some error paths.
 
-To fix it, we need to delete it from the bus when failed.
-
-Fixes: 190888ac01d0 ("driver core: fix possible missing of device probe")
-Signed-off-by: Schspa Shi <schspa@gmail.com>
-Link: https://lore.kernel.org/r/20220513112444.45112-1-schspa@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: bf9006399939 ("watchdog: ts4800: add driver for TS-4800 watchdog")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Link: https://lore.kernel.org/r/20220511114203.47420-1-linmq006@gmail.com
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/bus.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/watchdog/ts4800_wdt.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/base/bus.c b/drivers/base/bus.c
-index a1d1e8256324..7d7d28f498ed 100644
---- a/drivers/base/bus.c
-+++ b/drivers/base/bus.c
-@@ -620,7 +620,7 @@ int bus_add_driver(struct device_driver *drv)
- 	if (drv->bus->p->drivers_autoprobe) {
- 		error = driver_attach(drv);
- 		if (error)
--			goto out_unregister;
-+			goto out_del_list;
+diff --git a/drivers/watchdog/ts4800_wdt.c b/drivers/watchdog/ts4800_wdt.c
+index c137ad2bd5c3..0ea554c7cda5 100644
+--- a/drivers/watchdog/ts4800_wdt.c
++++ b/drivers/watchdog/ts4800_wdt.c
+@@ -125,13 +125,16 @@ static int ts4800_wdt_probe(struct platform_device *pdev)
+ 	ret = of_property_read_u32_index(np, "syscon", 1, &reg);
+ 	if (ret < 0) {
+ 		dev_err(dev, "no offset in syscon\n");
++		of_node_put(syscon_np);
+ 		return ret;
  	}
- 	module_add_driver(drv->owner, drv);
  
-@@ -647,6 +647,8 @@ int bus_add_driver(struct device_driver *drv)
+ 	/* allocate memory for watchdog struct */
+ 	wdt = devm_kzalloc(dev, sizeof(*wdt), GFP_KERNEL);
+-	if (!wdt)
++	if (!wdt) {
++		of_node_put(syscon_np);
+ 		return -ENOMEM;
++	}
  
- 	return 0;
- 
-+out_del_list:
-+	klist_del(&priv->knode_bus);
- out_unregister:
- 	kobject_put(&priv->kobj);
- 	/* drv->p is freed in driver_release()  */
+ 	/* set regmap and offset to know where to write */
+ 	wdt->feed_offset = reg;
 -- 
 2.35.1
 
