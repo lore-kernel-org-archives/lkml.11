@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79A97C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:07:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47FA3C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:08:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351715AbiFMLHx (ORCPT
+        id S1351723AbiFMLH7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:07:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57666 "EHLO
+        Mon, 13 Jun 2022 07:07:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349524AbiFMLAc (ORCPT
+        with ESMTP id S1349520AbiFMLAX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:00:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E879C31354;
+        Mon, 13 Jun 2022 07:00:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AF0730F60;
         Mon, 13 Jun 2022 03:33:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BBB2360FB1;
-        Mon, 13 Jun 2022 10:32:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA1E6C34114;
-        Mon, 13 Jun 2022 10:32:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C08560FEA;
+        Mon, 13 Jun 2022 10:33:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8374C34114;
+        Mon, 13 Jun 2022 10:33:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116373;
-        bh=cKRrTbnI+d4+LE1Ydfu6A33V3P+MWNPCyFbzbhkVuKc=;
+        s=korg; t=1655116384;
+        bh=LauyIngqKhHgUdFrZjftbaUlMZvP3vHjbGSVAmxtyFI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UmAyAn06+6GrEUvtJFMt0MD/KyXLbnPGTOs8HTRnwWkdvnqA83oUg5B0sK2KXGI08
-         Cne3VrPHAkGw788ooMvN2nJDt00VfEux4sA1R4zYQP1d5LZoKZGcXk2B4AAtFjgTw4
-         MCIob7jnmD62FBHvDEVeVWOvO4aL8PrO7cqC2kxM=
+        b=WGOaOA59ziwEmZbSn5LnQoUDQ6TAcyY6Rw8WOZ9j4xdS9ddCmls13g+NwhayHsykU
+         R56EVrebs/9Od/9HZTnoNAL8A1aE0cNQTTlFsKYYyc4ImADprns0drhPMRp2xlw3+d
+         iB/Cyb0vU+bZsSZoUTRgYp/54EtpXUfZiDoCzpTM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vasily Averin <vvs@openvz.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 074/411] tracing: incorrect isolate_mote_t cast in mm_vmscan_lru_isolate
-Date:   Mon, 13 Jun 2022 12:05:47 +0200
-Message-Id: <20220613094930.897166778@linuxfoundation.org>
+Subject: [PATCH 4.14 181/218] iio: dummy: iio_simple_dummy: check the return value of kstrdup()
+Date:   Mon, 13 Jun 2022 12:10:39 +0200
+Message-Id: <20220613094926.098095663@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,51 +50,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vasily Averin <vvs@openvz.org>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-[ Upstream commit 2b132903de7124dd9a758be0c27562e91a510848 ]
+[ Upstream commit ba93642188a6fed754bf7447f638bc410e05a929 ]
 
-Fixes following sparse warnings:
+kstrdup() is also a memory allocation-related function, it returns NULL
+when some memory errors happen. So it is better to check the return
+value of it so to catch the memory error in time. Besides, there should
+have a kfree() to clear up the allocation if we get a failure later in
+this function to prevent memory leak.
 
-  CHECK   mm/vmscan.c
-mm/vmscan.c: note: in included file (through
-include/trace/trace_events.h, include/trace/define_trace.h,
-include/trace/events/vmscan.h):
-./include/trace/events/vmscan.h:281:1: sparse: warning:
- cast to restricted isolate_mode_t
-./include/trace/events/vmscan.h:281:1: sparse: warning:
- restricted isolate_mode_t degrades to integer
-
-Link: https://lkml.kernel.org/r/e85d7ff2-fd10-53f8-c24e-ba0458439c1b@openvz.org
-Signed-off-by: Vasily Averin <vvs@openvz.org>
-Acked-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Link: https://lore.kernel.org/r/tencent_C920CFCC33B9CC1C63141FE1334A39FF8508@qq.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/trace/events/vmscan.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/dummy/iio_simple_dummy.c | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
 
-diff --git a/include/trace/events/vmscan.h b/include/trace/events/vmscan.h
-index a5ab2973e8dc..57184c02e3b9 100644
---- a/include/trace/events/vmscan.h
-+++ b/include/trace/events/vmscan.h
-@@ -283,7 +283,7 @@ TRACE_EVENT(mm_vmscan_lru_isolate,
- 		__field(unsigned long, nr_scanned)
- 		__field(unsigned long, nr_skipped)
- 		__field(unsigned long, nr_taken)
--		__field(isolate_mode_t, isolate_mode)
-+		__field(unsigned int, isolate_mode)
- 		__field(int, lru)
- 	),
+diff --git a/drivers/iio/dummy/iio_simple_dummy.c b/drivers/iio/dummy/iio_simple_dummy.c
+index ad3410e528b6..7fef76f0b5c7 100644
+--- a/drivers/iio/dummy/iio_simple_dummy.c
++++ b/drivers/iio/dummy/iio_simple_dummy.c
+@@ -572,10 +572,9 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	struct iio_sw_device *swd;
  
-@@ -294,7 +294,7 @@ TRACE_EVENT(mm_vmscan_lru_isolate,
- 		__entry->nr_scanned = nr_scanned;
- 		__entry->nr_skipped = nr_skipped;
- 		__entry->nr_taken = nr_taken;
--		__entry->isolate_mode = isolate_mode;
-+		__entry->isolate_mode = (__force unsigned int)isolate_mode;
- 		__entry->lru = lru;
- 	),
+ 	swd = kzalloc(sizeof(*swd), GFP_KERNEL);
+-	if (!swd) {
+-		ret = -ENOMEM;
+-		goto error_kzalloc;
+-	}
++	if (!swd)
++		return ERR_PTR(-ENOMEM);
++
+ 	/*
+ 	 * Allocate an IIO device.
+ 	 *
+@@ -587,7 +586,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	indio_dev = iio_device_alloc(sizeof(*st));
+ 	if (!indio_dev) {
+ 		ret = -ENOMEM;
+-		goto error_ret;
++		goto error_free_swd;
+ 	}
+ 
+ 	st = iio_priv(indio_dev);
+@@ -618,6 +617,10 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	 *    indio_dev->name = spi_get_device_id(spi)->name;
+ 	 */
+ 	indio_dev->name = kstrdup(name, GFP_KERNEL);
++	if (!indio_dev->name) {
++		ret = -ENOMEM;
++		goto error_free_device;
++	}
+ 
+ 	/* Provide description of available channels */
+ 	indio_dev->channels = iio_dummy_channels;
+@@ -634,7 +637,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 
+ 	ret = iio_simple_dummy_events_register(indio_dev);
+ 	if (ret < 0)
+-		goto error_free_device;
++		goto error_free_name;
+ 
+ 	ret = iio_simple_dummy_configure_buffer(indio_dev);
+ 	if (ret < 0)
+@@ -651,11 +654,12 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	iio_simple_dummy_unconfigure_buffer(indio_dev);
+ error_unregister_events:
+ 	iio_simple_dummy_events_unregister(indio_dev);
++error_free_name:
++	kfree(indio_dev->name);
+ error_free_device:
+ 	iio_device_free(indio_dev);
+-error_ret:
++error_free_swd:
+ 	kfree(swd);
+-error_kzalloc:
+ 	return ERR_PTR(ret);
+ }
  
 -- 
 2.35.1
