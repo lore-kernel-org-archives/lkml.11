@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D49C4CCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F11EECCA487
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:00:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358139AbiFML7e (ORCPT
+        id S1358192AbiFML7i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:59:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57144 "EHLO
+        Mon, 13 Jun 2022 07:59:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357049AbiFMLwp (ORCPT
+        with ESMTP id S1357043AbiFMLwp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:52:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DF71220CE;
-        Mon, 13 Jun 2022 03:55:28 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7ABF220C1;
+        Mon, 13 Jun 2022 03:55:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7472260EFE;
-        Mon, 13 Jun 2022 10:55:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8884CC34114;
-        Mon, 13 Jun 2022 10:55:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82CB5B80EAA;
+        Mon, 13 Jun 2022 10:55:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA102C34114;
+        Mon, 13 Jun 2022 10:55:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117727;
-        bh=sELfsL7R04gHFsBTxos23N12m385pyivDoZwxC2LLS4=;
+        s=korg; t=1655117725;
+        bh=b322/1BkvgbHz4jnXSytj74Ne1OwGJ8tk3k1Vru9dvs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x8/+wDH8G5Kr5xvfwhJ2/L0OLEjaC7MTL2addS0Y0hgQSva0Ol60XTzVc62zdQg4h
-         ojsPpXrXuMXH4W7/6saN/zV1adA+M3hmE3LQxpnpHwGWDHtv09K21cmP8+IBZu/flZ
-         jHf2mLXIWE6yILdG7gl7Geuvc90vKs4/mdVBXm6M=
+        b=qCPwaN+UG+AJd/W9Fil/+4ErfixOAgpeFZmI9zr0FO45kGU13y3tHe2C5ZU0S4nGK
+         lfkgHCsnA4bxlh766wJoKucp1BqSDq8vuq6XV+ovlyOm6+n9PoGKQ5uba5Qym7wJzx
+         4BkFzPaPPGaQLpdl+zqciYVnqFDrA+ATjaAQ+tTc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        syzbot+1a247e36149ffd709a9b@syzkaller.appspotmail.com
-Subject: [PATCH 4.19 098/287] media: pvrusb2: fix array-index-out-of-bounds in pvr2_i2c_core_init
-Date:   Mon, 13 Jun 2022 12:08:42 +0200
-Message-Id: <20220613094926.851868115@linuxfoundation.org>
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 097/287] media: exynos4-is: Change clk_disable to clk_disable_unprepare
+Date:   Mon, 13 Jun 2022 12:08:41 +0200
+Message-Id: <20220613094926.820919370@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -52,56 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 471bec68457aaf981add77b4f590d65dd7da1059 ]
+[ Upstream commit 9fadab72a6916c7507d7fedcd644859eef995078 ]
 
-Syzbot reported that -1 is used as array index. The problem was in
-missing validation check.
+The corresponding API for clk_prepare_enable is clk_disable_unprepare,
+other than clk_disable.
 
-hdw->unit_number is initialized with -1 and then if init table walk fails
-this value remains unchanged. Since code blindly uses this member for
-array indexing adding sanity check is the easiest fix for that.
+Fix this by changing clk_disable to clk_disable_unprepare.
 
-hdw->workpoll initialization moved upper to prevent warning in
-__flush_work.
-
-Reported-and-tested-by: syzbot+1a247e36149ffd709a9b@syzkaller.appspotmail.com
-
-Fixes: d855497edbfb ("V4L/DVB (4228a): pvrusb2 to kernel 2.6.18")
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Fixes: b4155d7d5b2c ("[media] exynos4-is: Ensure fimc-is clocks are not enabled until properly configured")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/pvrusb2/pvrusb2-hdw.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/media/platform/exynos4-is/fimc-is.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
-index 21ccbbd70dce..bbb5ff16abd6 100644
---- a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
-+++ b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
-@@ -2561,6 +2561,11 @@ struct pvr2_hdw *pvr2_hdw_create(struct usb_interface *intf,
- 	} while (0);
- 	mutex_unlock(&pvr2_unit_mtx);
- 
-+	INIT_WORK(&hdw->workpoll, pvr2_hdw_worker_poll);
-+
-+	if (hdw->unit_number == -1)
-+		goto fail;
-+
- 	cnt1 = 0;
- 	cnt2 = scnprintf(hdw->name+cnt1,sizeof(hdw->name)-cnt1,"pvrusb2");
- 	cnt1 += cnt2;
-@@ -2572,8 +2577,6 @@ struct pvr2_hdw *pvr2_hdw_create(struct usb_interface *intf,
- 	if (cnt1 >= sizeof(hdw->name)) cnt1 = sizeof(hdw->name)-1;
- 	hdw->name[cnt1] = 0;
- 
--	INIT_WORK(&hdw->workpoll,pvr2_hdw_worker_poll);
--
- 	pvr2_trace(PVR2_TRACE_INIT,"Driver unit number is %d, name is %s",
- 		   hdw->unit_number,hdw->name);
- 
+diff --git a/drivers/media/platform/exynos4-is/fimc-is.c b/drivers/media/platform/exynos4-is/fimc-is.c
+index 0fe9be93fabe..0f3f82bd4d20 100644
+--- a/drivers/media/platform/exynos4-is/fimc-is.c
++++ b/drivers/media/platform/exynos4-is/fimc-is.c
+@@ -144,7 +144,7 @@ static int fimc_is_enable_clocks(struct fimc_is *is)
+ 			dev_err(&is->pdev->dev, "clock %s enable failed\n",
+ 				fimc_is_clocks[i]);
+ 			for (--i; i >= 0; i--)
+-				clk_disable(is->clocks[i]);
++				clk_disable_unprepare(is->clocks[i]);
+ 			return ret;
+ 		}
+ 		pr_debug("enabled clock: %s\n", fimc_is_clocks[i]);
 -- 
 2.35.1
 
