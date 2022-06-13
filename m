@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E7D3C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:56:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 591FAC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:56:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350606AbiFMU4C (ORCPT
+        id S1350654AbiFMU4G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:56:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40250 "EHLO
+        Mon, 13 Jun 2022 16:56:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351519AbiFMUxj (ORCPT
+        with ESMTP id S1351900AbiFMUyC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:53:39 -0400
-Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 694BD186E0
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:17:40 -0700 (PDT)
+        Mon, 13 Jun 2022 16:54:02 -0400
+Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64D7225C6B
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:18:40 -0700 (PDT)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1655151457;
+        t=1655151519;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=vo/QgRsJex180B/MZOFV4gS3W10znq++oNOGcslvwl0=;
-        b=Dl9JaXiPgE3KB2W9PytyX2Ydb8CErjoRbyqdS1Z4vTV2EHG4vJto9UgmTzKVC+tzN4k6r4
-        KDwziMj6rUu7nd8whB1jFF7vvWI6sRETVADmv38Uoj7/ZNOexQsxpkRPRqeeSDyuwqGEvH
-        BwEOie7GxwDdyuGfRMy3sQ8YZis7ANg=
+        bh=jgPdc9N08SZf7w3C2n6o7Rgh7KKDeUV8LWJsDjGx3bA=;
+        b=NmokpH+0cZI1My+Kia6o4N/O4CH1Ohkjye7zoCZBpU1Oofm2/IDEHcGCtizwC2kU/Qynz0
+        kCcd+7/0tQh3lhwo+1v6s5zZk7oX4ARtAEv77wfd1kD14waBO/6XQfX/fRbKwWkaT26638
+        Eap9dZbPU9cl4Q2BDYbidCoIAg6Cj8c=
 From:   andrey.konovalov@linux.dev
 To:     Marco Elver <elver@google.com>,
         Alexander Potapenko <glider@google.com>
@@ -39,9 +39,9 @@ Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH 17/32] kasan: only define metadata structs for Generic mode
-Date:   Mon, 13 Jun 2022 22:14:08 +0200
-Message-Id: <f3c8fd1efaf7f1e9a486d4acfd4f154cc546333c.1655150842.git.andreyknvl@google.com>
+Subject: [PATCH 19/32] kasan: pass tagged pointers to kasan_save_alloc/free_info
+Date:   Mon, 13 Jun 2022 22:14:10 +0200
+Message-Id: <9363b16202fb04a3223de714e70b7a6b72c4367e.1655150842.git.andreyknvl@google.com>
 In-Reply-To: <cover.1655150842.git.andreyknvl@google.com>
 References: <cover.1655150842.git.andreyknvl@google.com>
 MIME-Version: 1.0
@@ -54,52 +54,81 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andrey Konovalov <andreyknvl@google.com>
 
-Hide the definitions of kasan_alloc_meta and kasan_free_meta under
-an ifdef CONFIG_KASAN_GENERIC check, as these structures are now only
-used when the Generic mode is enabled.
+Pass tagged pointers to kasan_save_alloc/free_info().
+
+This is a preparatory patch to simplify other changes in the series.
 
 Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
 ---
- mm/kasan/kasan.h | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+ mm/kasan/common.c  | 4 ++--
+ mm/kasan/generic.c | 3 +--
+ mm/kasan/kasan.h   | 2 +-
+ mm/kasan/tags.c    | 3 +--
+ 4 files changed, 5 insertions(+), 7 deletions(-)
 
+diff --git a/mm/kasan/common.c b/mm/kasan/common.c
+index f937b6c9e86a..519fd0b3040b 100644
+--- a/mm/kasan/common.c
++++ b/mm/kasan/common.c
+@@ -227,7 +227,7 @@ static inline bool ____kasan_slab_free(struct kmem_cache *cache, void *object,
+ 		return false;
+ 
+ 	if (kasan_stack_collection_enabled())
+-		kasan_save_free_info(cache, object, tag);
++		kasan_save_free_info(cache, tagged_object);
+ 
+ 	return kasan_quarantine_put(cache, object);
+ }
+@@ -316,7 +316,7 @@ void * __must_check __kasan_slab_alloc(struct kmem_cache *cache,
+ 
+ 	/* Save alloc info (if possible) for non-kmalloc() allocations. */
+ 	if (kasan_stack_collection_enabled() && !cache->kasan_info.is_kmalloc)
+-		kasan_save_alloc_info(cache, (void *)object, flags);
++		kasan_save_alloc_info(cache, tagged_object, flags);
+ 
+ 	return tagged_object;
+ }
+diff --git a/mm/kasan/generic.c b/mm/kasan/generic.c
+index f6bef347de87..aff39af3c532 100644
+--- a/mm/kasan/generic.c
++++ b/mm/kasan/generic.c
+@@ -500,8 +500,7 @@ void kasan_save_alloc_info(struct kmem_cache *cache, void *object, gfp_t flags)
+ 		kasan_set_track(&alloc_meta->alloc_track, flags);
+ }
+ 
+-void kasan_save_free_info(struct kmem_cache *cache,
+-				void *object, u8 tag)
++void kasan_save_free_info(struct kmem_cache *cache, void *object)
+ {
+ 	struct kasan_free_meta *free_meta;
+ 
 diff --git a/mm/kasan/kasan.h b/mm/kasan/kasan.h
-index ab2cd3ff10f3..30ec9ebf52c3 100644
+index 30ec9ebf52c3..e8329935fbfb 100644
 --- a/mm/kasan/kasan.h
 +++ b/mm/kasan/kasan.h
-@@ -192,14 +192,12 @@ struct kasan_track {
- 	depot_stack_handle_t stack;
- };
+@@ -308,7 +308,7 @@ static inline void kasan_init_object_meta(struct kmem_cache *cache, const void *
+ depot_stack_handle_t kasan_save_stack(gfp_t flags, bool can_alloc);
+ void kasan_set_track(struct kasan_track *track, gfp_t flags);
+ void kasan_save_alloc_info(struct kmem_cache *cache, void *object, gfp_t flags);
+-void kasan_save_free_info(struct kmem_cache *cache, void *object, u8 tag);
++void kasan_save_free_info(struct kmem_cache *cache, void *object);
+ struct kasan_track *kasan_get_alloc_track(struct kmem_cache *cache,
+ 						void *object);
+ struct kasan_track *kasan_get_free_track(struct kmem_cache *cache,
+diff --git a/mm/kasan/tags.c b/mm/kasan/tags.c
+index 4f24669085e9..fd11d10a4ffc 100644
+--- a/mm/kasan/tags.c
++++ b/mm/kasan/tags.c
+@@ -21,8 +21,7 @@ void kasan_save_alloc_info(struct kmem_cache *cache, void *object, gfp_t flags)
+ {
+ }
  
-+#ifdef CONFIG_KASAN_GENERIC
-+
- struct kasan_alloc_meta {
- 	struct kasan_track alloc_track;
--	/* Generic mode stores free track in kasan_free_meta. */
--#ifdef CONFIG_KASAN_GENERIC
-+	/* Free track is stored in kasan_free_meta. */
- 	depot_stack_handle_t aux_stack[2];
--#else
--	struct kasan_track free_track;
--#endif
- };
+-void kasan_save_free_info(struct kmem_cache *cache,
+-				void *object, u8 tag)
++void kasan_save_free_info(struct kmem_cache *cache, void *object)
+ {
+ }
  
- struct qlist_node {
-@@ -218,12 +216,12 @@ struct qlist_node {
-  * After that, slab allocator stores the freelist pointer in the object.
-  */
- struct kasan_free_meta {
--#ifdef CONFIG_KASAN_GENERIC
- 	struct qlist_node quarantine_link;
- 	struct kasan_track free_track;
--#endif
- };
- 
-+#endif /* CONFIG_KASAN_GENERIC */
-+
- #if IS_ENABLED(CONFIG_KASAN_KUNIT_TEST)
- /* Used in KUnit-compatible KASAN tests. */
- struct kunit_kasan_status {
 -- 
 2.25.1
 
