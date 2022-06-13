@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B1E6CCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB1DACCA48E
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:20:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376804AbiFMNTd (ORCPT
+        id S1377203AbiFMNUH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:19:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42500 "EHLO
+        Mon, 13 Jun 2022 09:20:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359708AbiFMNK1 (ORCPT
+        with ESMTP id S1359027AbiFMNJC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:10:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 178A63B3E5;
-        Mon, 13 Jun 2022 04:21:23 -0700 (PDT)
+        Mon, 13 Jun 2022 09:09:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D46A828720;
+        Mon, 13 Jun 2022 04:19:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 86DFAB80E93;
-        Mon, 13 Jun 2022 11:21:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E01D0C3411C;
-        Mon, 13 Jun 2022 11:21:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 33D8660EAE;
+        Mon, 13 Jun 2022 11:19:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4666FC34114;
+        Mon, 13 Jun 2022 11:19:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119281;
-        bh=/jPP7lIUmE9GUjpjIM4+gDDulH7aXZoJpiG+E6DR/Tg=;
+        s=korg; t=1655119149;
+        bh=D152uMmjUrD38CeiS2u5/G3PcPxeCPUmfJLv+unTGM8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SM+hp9LT0v6X3p+XahupmVMj9zW24KI3yUIVHk3zohtYufZOT+THkS3uiQUwF/4Zp
-         Om4C7uvjtVZlv+xWTaNaPkkP6ziAn1xZjjjvPOXdvCqNVN4sd6x7O/gAdJrXtNw01Z
-         URa6i4FLa09nkTaQrAPedpAwyqSqUxiSNvC8jLa4=
+        b=mBBOkoJJW8gikEvjqemfBhVjltGX/LCOo9OL1de1kDq6/rXHQ8ni3F0sbPkahmHUY
+         QBEIWJFqqqvV8SpevdtD7ucV14earcHMyRFZAPy8cxYYOMWbJjqdPSteECros6YDpV
+         CkVlDIViPkeEUd6/kJkPaAs/6A24wYQONUQrY6cc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hou Tao <houtao1@huawei.com>,
-        Yu Kuai <yukuai3@huawei.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 206/247] nbd: fix race between nbd_alloc_config() and module removal
-Date:   Mon, 13 Jun 2022 12:11:48 +0200
-Message-Id: <20220613094929.191015695@linuxfoundation.org>
+        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 158/247] ip_gre: test csum_start instead of transport header
+Date:   Mon, 13 Jun 2022 12:11:00 +0200
+Message-Id: <20220613094927.748237738@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -51,122 +53,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Kuai <yukuai3@huawei.com>
+From: Willem de Bruijn <willemb@google.com>
 
-[ Upstream commit c55b2b983b0fa012942c3eb16384b2b722caa810 ]
+[ Upstream commit 8d21e9963bec1aad2280cdd034c8993033ef2948 ]
 
-When nbd module is being removing, nbd_alloc_config() may be
-called concurrently by nbd_genl_connect(), although try_module_get()
-will return false, but nbd_alloc_config() doesn't handle it.
+GRE with TUNNEL_CSUM will apply local checksum offload on
+CHECKSUM_PARTIAL packets.
 
-The race may lead to the leak of nbd_config and its related
-resources (e.g, recv_workq) and oops in nbd_read_stat() due
-to the unload of nbd module as shown below:
+ipgre_xmit must validate csum_start after an optional skb_pull,
+else lco_csum may trigger an overflow. The original check was
 
-  BUG: kernel NULL pointer dereference, address: 0000000000000040
-  Oops: 0000 [#1] SMP PTI
-  CPU: 5 PID: 13840 Comm: kworker/u17:33 Not tainted 5.14.0+ #1
-  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
-  Workqueue: knbd16-recv recv_work [nbd]
-  RIP: 0010:nbd_read_stat.cold+0x130/0x1a4 [nbd]
-  Call Trace:
-   recv_work+0x3b/0xb0 [nbd]
-   process_one_work+0x1ed/0x390
-   worker_thread+0x4a/0x3d0
-   kthread+0x12a/0x150
-   ret_from_fork+0x22/0x30
+	if (csum && skb_checksum_start(skb) < skb->data)
+		return -EINVAL;
 
-Fixing it by checking the return value of try_module_get()
-in nbd_alloc_config(). As nbd_alloc_config() may return ERR_PTR(-ENODEV),
-assign nbd->config only when nbd_alloc_config() succeeds to ensure
-the value of nbd->config is binary (valid or NULL).
+This had false positives when skb_checksum_start is undefined:
+when ip_summed is not CHECKSUM_PARTIAL. A discussed refinement
+was straightforward
 
-Also adding a debug message to check the reference counter
-of nbd_config during module removal.
+	if (csum && skb->ip_summed == CHECKSUM_PARTIAL &&
+	    skb_checksum_start(skb) < skb->data)
+		return -EINVAL;
 
-Signed-off-by: Hou Tao <houtao1@huawei.com>
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-Reviewed-by: Josef Bacik <josef@toxicpanda.com>
-Link: https://lore.kernel.org/r/20220521073749.3146892-3-yukuai3@huawei.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+But was eventually revised more thoroughly:
+- restrict the check to the only branch where needed, in an
+  uncommon GRE path that uses header_ops and calls skb_pull.
+- test skb_transport_header, which is set along with csum_start
+  in skb_partial_csum_set in the normal header_ops datapath.
+
+Turns out skbs can arrive in this branch without the transport
+header set, e.g., through BPF redirection.
+
+Revise the check back to check csum_start directly, and only if
+CHECKSUM_PARTIAL. Do leave the check in the updated location.
+Check field regardless of whether TUNNEL_CSUM is configured.
+
+Link: https://lore.kernel.org/netdev/YS+h%2FtqCJJiQei+W@shredder/
+Link: https://lore.kernel.org/all/20210902193447.94039-2-willemdebruijn.kernel@gmail.com/T/#u
+Fixes: 8a0ed250f911 ("ip_gre: validate csum_start only on pull")
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Willem de Bruijn <willemb@google.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+Link: https://lore.kernel.org/r/20220606132107.3582565-1-willemdebruijn.kernel@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/nbd.c | 28 +++++++++++++++++++---------
- 1 file changed, 19 insertions(+), 9 deletions(-)
+ net/ipv4/ip_gre.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
-index 4be8ae20d1da..b31eb9c7f239 100644
---- a/drivers/block/nbd.c
-+++ b/drivers/block/nbd.c
-@@ -1467,15 +1467,20 @@ static struct nbd_config *nbd_alloc_config(void)
- {
- 	struct nbd_config *config;
- 
-+	if (!try_module_get(THIS_MODULE))
-+		return ERR_PTR(-ENODEV);
-+
- 	config = kzalloc(sizeof(struct nbd_config), GFP_NOFS);
--	if (!config)
--		return NULL;
-+	if (!config) {
-+		module_put(THIS_MODULE);
-+		return ERR_PTR(-ENOMEM);
-+	}
-+
- 	atomic_set(&config->recv_threads, 0);
- 	init_waitqueue_head(&config->recv_wq);
- 	init_waitqueue_head(&config->conn_wait);
- 	config->blksize_bits = NBD_DEF_BLKSIZE_BITS;
- 	atomic_set(&config->live_connections, 0);
--	try_module_get(THIS_MODULE);
- 	return config;
- }
- 
-@@ -1502,12 +1507,13 @@ static int nbd_open(struct block_device *bdev, fmode_t mode)
- 			mutex_unlock(&nbd->config_lock);
- 			goto out;
- 		}
--		config = nbd->config = nbd_alloc_config();
--		if (!config) {
--			ret = -ENOMEM;
-+		config = nbd_alloc_config();
-+		if (IS_ERR(config)) {
-+			ret = PTR_ERR(config);
- 			mutex_unlock(&nbd->config_lock);
- 			goto out;
- 		}
-+		nbd->config = config;
- 		refcount_set(&nbd->config_refs, 1);
- 		refcount_inc(&nbd->refs);
- 		mutex_unlock(&nbd->config_lock);
-@@ -1914,13 +1920,14 @@ static int nbd_genl_connect(struct sk_buff *skb, struct genl_info *info)
- 		nbd_put(nbd);
- 		return -EINVAL;
+diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
+index 276a3b7b0e9c..f23528c77539 100644
+--- a/net/ipv4/ip_gre.c
++++ b/net/ipv4/ip_gre.c
+@@ -629,21 +629,20 @@ static netdev_tx_t ipgre_xmit(struct sk_buff *skb,
  	}
--	config = nbd->config = nbd_alloc_config();
--	if (!nbd->config) {
-+	config = nbd_alloc_config();
-+	if (IS_ERR(config)) {
- 		mutex_unlock(&nbd->config_lock);
- 		nbd_put(nbd);
- 		printk(KERN_ERR "nbd: couldn't allocate config\n");
--		return -ENOMEM;
-+		return PTR_ERR(config);
- 	}
-+	nbd->config = config;
- 	refcount_set(&nbd->config_refs, 1);
- 	set_bit(NBD_RT_BOUND, &config->runtime_flags);
  
-@@ -2493,6 +2500,9 @@ static void __exit nbd_cleanup(void)
- 	while (!list_empty(&del_list)) {
- 		nbd = list_first_entry(&del_list, struct nbd_device, list);
- 		list_del_init(&nbd->list);
-+		if (refcount_read(&nbd->config_refs))
-+			printk(KERN_ERR "nbd: possibly leaking nbd_config (ref %d)\n",
-+					refcount_read(&nbd->config_refs));
- 		if (refcount_read(&nbd->refs) != 1)
- 			printk(KERN_ERR "nbd: possibly leaking a device\n");
- 		nbd_put(nbd);
+ 	if (dev->header_ops) {
+-		const int pull_len = tunnel->hlen + sizeof(struct iphdr);
+-
+ 		if (skb_cow_head(skb, 0))
+ 			goto free_skb;
+ 
+ 		tnl_params = (const struct iphdr *)skb->data;
+ 
+-		if (pull_len > skb_transport_offset(skb))
+-			goto free_skb;
+-
+ 		/* Pull skb since ip_tunnel_xmit() needs skb->data pointing
+ 		 * to gre header.
+ 		 */
+-		skb_pull(skb, pull_len);
++		skb_pull(skb, tunnel->hlen + sizeof(struct iphdr));
+ 		skb_reset_mac_header(skb);
++
++		if (skb->ip_summed == CHECKSUM_PARTIAL &&
++		    skb_checksum_start(skb) < skb->data)
++			goto free_skb;
+ 	} else {
+ 		if (skb_cow_head(skb, dev->needed_headroom))
+ 			goto free_skb;
 -- 
 2.35.1
 
