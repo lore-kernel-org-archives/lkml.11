@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7B8CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:03:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 115B0C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:03:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352709AbiFMNDA (ORCPT
+        id S1356272AbiFMNDE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:03:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50222 "EHLO
+        Mon, 13 Jun 2022 09:03:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354771AbiFMMzL (ORCPT
+        with ESMTP id S1358355AbiFMMzL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 08:55:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6B7B11C;
-        Mon, 13 Jun 2022 04:15:20 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43D095F6E;
+        Mon, 13 Jun 2022 04:15:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 90485B80D31;
-        Mon, 13 Jun 2022 11:15:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E38FBC3411E;
-        Mon, 13 Jun 2022 11:15:17 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9510ACE1177;
+        Mon, 13 Jun 2022 11:15:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FFB4C34114;
+        Mon, 13 Jun 2022 11:15:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118918;
-        bh=CDbbO8rl9pvSj3vXHiV8m5yh2vVfOs7Vfub+T62+gUo=;
+        s=korg; t=1655118909;
+        bh=ckANyrkMqg8JdbVw/F++oS0RepEeTBciE0XRiI5cdxU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rk8Ptog2Wkl1pqVmDHzz6mVJTUzAGyn52kIyizoyC7lwkYOwFP5NuSIwNVtN8zAzG
-         fC9K3qRpxR3HBbZrwzuJGu/i64I7pb2rDPLB75Cdr+hpdChPlqphpwC9HtQt78fego
-         luVgPs+JBidsHqJ1OpSyMdpe+uJtcLklaRbp8xmg=
+        b=h+5jdvnRRrv6Oss+PaNc3uKz+W+7cQvTbzFe3mMaYGog/xxqQlAolzILzuDgqmTQ6
+         dM4kAneQSdWDKxZJZIOgzvVCOM1rCy2urF6Uez9HelqdMQ3Q0AjV22wZGYmXkRDIFJ
+         jlL/AggNs0UxRJQIk10bYkcKJdC8lZr5aTUQtl8Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Harald Freudenberger <freude@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 074/247] net: ethernet: ti: am65-cpsw-nuss: Fix some refcount leaks
-Date:   Mon, 13 Jun 2022 12:09:36 +0200
-Message-Id: <20220613094925.203534986@linuxfoundation.org>
+Subject: [PATCH 5.15 071/247] s390/crypto: fix scatterwalk_unmap() callers in AES-GCM
+Date:   Mon, 13 Jun 2022 12:09:33 +0200
+Message-Id: <20220613094925.112908283@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,48 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Jann Horn <jannh@google.com>
 
-[ Upstream commit 5dd89d2fc438457811cbbec07999ce0d80051ff5 ]
+[ Upstream commit bd52cd5e23f134019b23f0c389db0f9a436e4576 ]
 
-of_get_child_by_name() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-am65_cpsw_init_cpts() and am65_cpsw_nuss_probe() don't release
-the refcount in error case.
-Add missing of_node_put() to avoid refcount leak.
+The argument of scatterwalk_unmap() is supposed to be the void* that was
+returned by the previous scatterwalk_map() call.
+The s390 AES-GCM implementation was instead passing the pointer to the
+struct scatter_walk.
 
-Fixes: b1f66a5bee07 ("net: ethernet: ti: am65-cpsw-nuss: enable packet timestamping support")
-Fixes: 93a76530316a ("net: ethernet: ti: introduce am65x/j721e gigabit eth subsystem driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+This doesn't actually break anything because scatterwalk_unmap() only uses
+its argument under CONFIG_HIGHMEM and ARCH_HAS_FLUSH_ON_KUNMAP.
+
+Fixes: bf7fa038707c ("s390/crypto: add s390 platform specific aes gcm support.")
+Signed-off-by: Jann Horn <jannh@google.com>
+Acked-by: Harald Freudenberger <freude@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220517143047.3054498-1-jannh@google.com
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ti/am65-cpsw-nuss.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/s390/crypto/aes_s390.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-index 130346f74ee8..ea9d073e87fa 100644
---- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-+++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-@@ -1802,6 +1802,7 @@ static int am65_cpsw_init_cpts(struct am65_cpsw_common *common)
- 	if (IS_ERR(cpts)) {
- 		int ret = PTR_ERR(cpts);
+diff --git a/arch/s390/crypto/aes_s390.c b/arch/s390/crypto/aes_s390.c
+index 54c7536f2482..1023e9d43d44 100644
+--- a/arch/s390/crypto/aes_s390.c
++++ b/arch/s390/crypto/aes_s390.c
+@@ -701,7 +701,7 @@ static inline void _gcm_sg_unmap_and_advance(struct gcm_sg_walk *gw,
+ 					     unsigned int nbytes)
+ {
+ 	gw->walk_bytes_remain -= nbytes;
+-	scatterwalk_unmap(&gw->walk);
++	scatterwalk_unmap(gw->walk_ptr);
+ 	scatterwalk_advance(&gw->walk, nbytes);
+ 	scatterwalk_done(&gw->walk, 0, gw->walk_bytes_remain);
+ 	gw->walk_ptr = NULL;
+@@ -776,7 +776,7 @@ static int gcm_out_walk_go(struct gcm_sg_walk *gw, unsigned int minbytesneeded)
+ 		goto out;
+ 	}
  
-+		of_node_put(node);
- 		if (ret == -EOPNOTSUPP) {
- 			dev_info(dev, "cpts disabled\n");
- 			return 0;
-@@ -2668,9 +2669,9 @@ static int am65_cpsw_nuss_probe(struct platform_device *pdev)
- 	if (!node)
- 		return -ENOENT;
- 	common->port_num = of_get_child_count(node);
-+	of_node_put(node);
- 	if (common->port_num < 1 || common->port_num > AM65_CPSW_MAX_PORTS)
- 		return -ENOENT;
--	of_node_put(node);
+-	scatterwalk_unmap(&gw->walk);
++	scatterwalk_unmap(gw->walk_ptr);
+ 	gw->walk_ptr = NULL;
  
- 	common->rx_flow_id_base = -1;
- 	init_completion(&common->tdown_complete);
+ 	gw->ptr = gw->buf;
 -- 
 2.35.1
 
