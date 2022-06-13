@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30580CCA48B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2132CCCA488
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:46:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356464AbiFMLof (ORCPT
+        id S1356429AbiFMLod (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:44:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55128 "EHLO
+        Mon, 13 Jun 2022 07:44:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355713AbiFMLje (ORCPT
+        with ESMTP id S1355675AbiFMLjX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:39:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 646072CC98;
-        Mon, 13 Jun 2022 03:49:48 -0700 (PDT)
+        Mon, 13 Jun 2022 07:39:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183202C678;
+        Mon, 13 Jun 2022 03:49:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ED7E3B80E8D;
-        Mon, 13 Jun 2022 10:49:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44B8AC3411E;
-        Mon, 13 Jun 2022 10:49:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 76045612E7;
+        Mon, 13 Jun 2022 10:49:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88269C3411C;
+        Mon, 13 Jun 2022 10:49:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117385;
-        bh=o5pO4LCMS5/b+2fU+WThBdm9r/1xafoD8Nszr9ODGqE=;
+        s=korg; t=1655117382;
+        bh=519MV+5N65k7kjuH3RLOH+9PVU1TJ2Gio8/uba4+zHU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SaYbDVZpeqrENWPyW7jtFIUczHbbBj/xCfQR4qPEotQ6BdFBgIL4IFvg+UNW9IiAa
-         PeFiVEimtczMwwiOhC1TsVaPznPbuZ5fU+yEnATHQpgzEvcH4ytAXi2jt8yISD1KhF
-         tDO2DB/LuePyrfBQTRiLWn9eicuIKK8zmxba+Cu4=
+        b=By6jrEduFwkQrap7gVwlr1qCXMjL3DygkzgyBU5rZA8dZl/qioucWr1w5bs5yzOHd
+         /i0mublOBl0ryObFvfkUtgvZAoyOZd4GUICyblVPy9mNr0jGR+AQ1HsjTdsCCW2Xef
+         MmYTBto9yvMxcJRRXyV+8LB2qpa+IHsqzTBm2ow0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Richter <tmricht@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 031/287] s390/preempt: disable __preempt_count_add() optimization for PROFILE_ALL_BRANCHES
-Date:   Mon, 13 Jun 2022 12:07:35 +0200
-Message-Id: <20220613094924.807804000@linuxfoundation.org>
+Subject: [PATCH 5.4 363/411] net: altera: Fix refcount leak in altera_tse_mdio_create
+Date:   Mon, 13 Jun 2022 12:10:36 +0200
+Message-Id: <20220613094939.575669469@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
-References: <20220613094923.832156175@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,59 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heiko Carstens <hca@linux.ibm.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 63678eecec57fc51b778be3da35a397931287170 ]
+[ Upstream commit 11ec18b1d8d92b9df307d31950dcba0b3dd7283c ]
 
-gcc 12 does not (always) optimize away code that should only be generated
-if parameters are constant and within in a certain range. This depends on
-various obscure kernel config options, however in particular
-PROFILE_ALL_BRANCHES can trigger this compile error:
+Every iteration of for_each_child_of_node() decrements
+the reference count of the previous node.
+When break from a for_each_child_of_node() loop,
+we need to explicitly call of_node_put() on the child node when
+not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-In function ‘__atomic_add_const’,
-    inlined from ‘__preempt_count_add.part.0’ at ./arch/s390/include/asm/preempt.h:50:3:
-./arch/s390/include/asm/atomic_ops.h:80:9: error: impossible constraint in ‘asm’
-   80 |         asm volatile(                                                   \
-      |         ^~~
-
-Workaround this by simply disabling the optimization for
-PROFILE_ALL_BRANCHES, since the kernel will be so slow, that this
-optimization won't matter at all.
-
-Reported-by: Thomas Richter <tmricht@linux.ibm.com>
-Reviewed-by: Sven Schnelle <svens@linux.ibm.com>
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+Fixes: bbd2190ce96d ("Altera TSE: Add main and header file for Altera Ethernet Driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220607041144.7553-1-linmq006@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/include/asm/preempt.h | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/altera/altera_tse_main.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/arch/s390/include/asm/preempt.h b/arch/s390/include/asm/preempt.h
-index 23a14d187fb1..1aebf09fbcd8 100644
---- a/arch/s390/include/asm/preempt.h
-+++ b/arch/s390/include/asm/preempt.h
-@@ -50,10 +50,17 @@ static inline bool test_preempt_need_resched(void)
+diff --git a/drivers/net/ethernet/altera/altera_tse_main.c b/drivers/net/ethernet/altera/altera_tse_main.c
+index 1f8c3b669dc1..f36536114790 100644
+--- a/drivers/net/ethernet/altera/altera_tse_main.c
++++ b/drivers/net/ethernet/altera/altera_tse_main.c
+@@ -163,7 +163,8 @@ static int altera_tse_mdio_create(struct net_device *dev, unsigned int id)
+ 	mdio = mdiobus_alloc();
+ 	if (mdio == NULL) {
+ 		netdev_err(dev, "Error allocating MDIO bus\n");
+-		return -ENOMEM;
++		ret = -ENOMEM;
++		goto put_node;
+ 	}
  
- static inline void __preempt_count_add(int val)
- {
--	if (__builtin_constant_p(val) && (val >= -128) && (val <= 127))
--		__atomic_add_const(val, &S390_lowcore.preempt_count);
--	else
--		__atomic_add(val, &S390_lowcore.preempt_count);
-+	/*
-+	 * With some obscure config options and CONFIG_PROFILE_ALL_BRANCHES
-+	 * enabled, gcc 12 fails to handle __builtin_constant_p().
-+	 */
-+	if (!IS_ENABLED(CONFIG_PROFILE_ALL_BRANCHES)) {
-+		if (__builtin_constant_p(val) && (val >= -128) && (val <= 127)) {
-+			__atomic_add_const(val, &S390_lowcore.preempt_count);
-+			return;
-+		}
-+	}
-+	__atomic_add(val, &S390_lowcore.preempt_count);
+ 	mdio->name = ALTERA_TSE_RESOURCE_NAME;
+@@ -180,6 +181,7 @@ static int altera_tse_mdio_create(struct net_device *dev, unsigned int id)
+ 			   mdio->id);
+ 		goto out_free_mdio;
+ 	}
++	of_node_put(mdio_node);
+ 
+ 	if (netif_msg_drv(priv))
+ 		netdev_info(dev, "MDIO bus %s: created\n", mdio->id);
+@@ -189,6 +191,8 @@ static int altera_tse_mdio_create(struct net_device *dev, unsigned int id)
+ out_free_mdio:
+ 	mdiobus_free(mdio);
+ 	mdio = NULL;
++put_node:
++	of_node_put(mdio_node);
+ 	return ret;
  }
  
- static inline void __preempt_count_sub(int val)
 -- 
 2.35.1
 
