@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E2A6C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:25:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E25AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:25:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353184AbiFMLZd (ORCPT
+        id S1353527AbiFMLZh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:25:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46692 "EHLO
+        Mon, 13 Jun 2022 07:25:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352886AbiFMLTB (ORCPT
+        with ESMTP id S1353033AbiFMLTH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:19:01 -0400
+        Mon, 13 Jun 2022 07:19:07 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47A0F289A5;
-        Mon, 13 Jun 2022 03:40:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44A7239BBB;
+        Mon, 13 Jun 2022 03:40:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 22347611E6;
-        Mon, 13 Jun 2022 10:40:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EDE2C34114;
-        Mon, 13 Jun 2022 10:40:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E403611B3;
+        Mon, 13 Jun 2022 10:40:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3753CC34114;
+        Mon, 13 Jun 2022 10:40:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116843;
-        bh=jfe85s2VWaB63elD4lJMi0XDEoLbF+zQNm8u1KsBBFM=;
+        s=korg; t=1655116854;
+        bh=ZDk6kHbE5NZZtZhEVqGSXcmEA2VzDFdAT0wvqreQCts=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iiuz7m3Z6MR8dhxm6EUa80+j6OwKwNjzphMuL3K5yY6KjgLE21MFxcJDLSezT21xc
-         cicGUjKAGf3SlCZ8QWLzTOH6qV7m4VIpfeqgptNXJVpLtanGoZPXgxPPp0X2VZvsP7
-         wQJkvg1vCVVzs4oS3As/7uBFnfcFGOhRyIM+8BKk=
+        b=H8lq2moK//+P/zb7mQaPFLHJ898LusFBHswLXDjPF0NTo5u0y87q7xMJvWfq6lbNF
+         1dZq3fUvdEH3Z+0IWXD9odzgGB3DEwogy5DrjCExwCD3MsGwd0KLMFmzUwPD8/2Q9M
+         LPGpUQX0zaNPmQhSzn8PlxQiLbZzpH6a26iMfFzk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 205/411] dmaengine: stm32-mdma: remove GISR1 register
-Date:   Mon, 13 Jun 2022 12:07:58 +0200
-Message-Id: <20220613094934.805145200@linuxfoundation.org>
+        stable@vger.kernel.org, Yong Wu <yong.wu@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 197/411] iommu/mediatek: Add list_del in mtk_iommu_remove
+Date:   Mon, 13 Jun 2022 12:07:50 +0200
+Message-Id: <20220613094934.569520075@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,71 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amelie Delaunay <amelie.delaunay@foss.st.com>
+From: Yong Wu <yong.wu@mediatek.com>
 
-[ Upstream commit 9d6a2d92e450926c483e45eaf426080a19219f4e ]
+[ Upstream commit ee55f75e4bcade81d253163641b63bef3e76cac4 ]
 
-GISR1 was described in a not up-to-date documentation when the stm32-mdma
-driver has been developed. This register has not been added in reference
-manual of STM32 SoC with MDMA, which have only 32 MDMA channels.
-So remove it from stm32-mdma driver.
+Lack the list_del in the mtk_iommu_remove, and remove
+bus_set_iommu(*, NULL) since there may be several iommu HWs.
+we can not bus_set_iommu null when one iommu driver unbind.
 
-Fixes: a4ffb13c8946 ("dmaengine: Add STM32 MDMA driver")
-Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
-Link: https://lore.kernel.org/r/20220504155322.121431-2-amelie.delaunay@foss.st.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+This could be a fix for mt2712 which support 2 M4U HW and list them.
+
+Fixes: 7c3a2ec02806 ("iommu/mediatek: Merge 2 M4U HWs into one iommu domain")
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+Link: https://lore.kernel.org/r/20220503071427.2285-6-yong.wu@mediatek.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/stm32-mdma.c | 21 +++++----------------
- 1 file changed, 5 insertions(+), 16 deletions(-)
+ drivers/iommu/mtk_iommu.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/dma/stm32-mdma.c b/drivers/dma/stm32-mdma.c
-index a05355d1292e..c902c2480640 100644
---- a/drivers/dma/stm32-mdma.c
-+++ b/drivers/dma/stm32-mdma.c
-@@ -40,7 +40,6 @@
- 					 STM32_MDMA_SHIFT(mask))
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index c2f6c78fee44..18d7c818a174 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -769,8 +769,7 @@ static int mtk_iommu_remove(struct platform_device *pdev)
+ 	iommu_device_sysfs_remove(&data->iommu);
+ 	iommu_device_unregister(&data->iommu);
  
- #define STM32_MDMA_GISR0		0x0000 /* MDMA Int Status Reg 1 */
--#define STM32_MDMA_GISR1		0x0004 /* MDMA Int Status Reg 2 */
+-	if (iommu_present(&platform_bus_type))
+-		bus_set_iommu(&platform_bus_type, NULL);
++	list_del(&data->list);
  
- /* MDMA Channel x interrupt/status register */
- #define STM32_MDMA_CISR(x)		(0x40 + 0x40 * (x)) /* x = 0..62 */
-@@ -196,7 +195,7 @@
- 
- #define STM32_MDMA_MAX_BUF_LEN		128
- #define STM32_MDMA_MAX_BLOCK_LEN	65536
--#define STM32_MDMA_MAX_CHANNELS		63
-+#define STM32_MDMA_MAX_CHANNELS		32
- #define STM32_MDMA_MAX_REQUESTS		256
- #define STM32_MDMA_MAX_BURST		128
- #define STM32_MDMA_VERY_HIGH_PRIORITY	0x11
-@@ -1351,21 +1350,11 @@ static irqreturn_t stm32_mdma_irq_handler(int irq, void *devid)
- 
- 	/* Find out which channel generates the interrupt */
- 	status = readl_relaxed(dmadev->base + STM32_MDMA_GISR0);
--	if (status) {
--		id = __ffs(status);
--	} else {
--		status = readl_relaxed(dmadev->base + STM32_MDMA_GISR1);
--		if (!status) {
--			dev_dbg(mdma2dev(dmadev), "spurious it\n");
--			return IRQ_NONE;
--		}
--		id = __ffs(status);
--		/*
--		 * As GISR0 provides status for channel id from 0 to 31,
--		 * so GISR1 provides status for channel id from 32 to 62
--		 */
--		id += 32;
-+	if (!status) {
-+		dev_dbg(mdma2dev(dmadev), "spurious it\n");
-+		return IRQ_NONE;
- 	}
-+	id = __ffs(status);
- 
- 	chan = &dmadev->chan[id];
- 	if (!chan) {
+ 	clk_disable_unprepare(data->bclk);
+ 	devm_free_irq(&pdev->dev, data->irq, data);
 -- 
 2.35.1
 
