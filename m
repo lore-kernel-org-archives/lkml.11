@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6510FCCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:34:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B307CCA483
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:34:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355837AbiFMMeA (ORCPT
+        id S1356300AbiFMMeD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:34:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41802 "EHLO
+        Mon, 13 Jun 2022 08:34:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355440AbiFMMaW (ORCPT
+        with ESMTP id S1351131AbiFMMaM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:30:22 -0400
+        Mon, 13 Jun 2022 08:30:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BDCA5B889;
-        Mon, 13 Jun 2022 04:07:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA3435B3D9;
+        Mon, 13 Jun 2022 04:07:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B8AE060F9A;
-        Mon, 13 Jun 2022 11:06:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 931A1C34114;
-        Mon, 13 Jun 2022 11:06:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE293614A1;
+        Mon, 13 Jun 2022 11:06:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 070FDC34114;
+        Mon, 13 Jun 2022 11:06:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118419;
-        bh=i4UrdNh/w1HqKxEbhvH7EbnVz3Tuhaih/X1iFaZXl0E=;
+        s=korg; t=1655118413;
+        bh=pQ9JYYcHm9GS02sX537UncrdtSqbROorluuFN+6UxEo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u3+ohHfRn8Pj3VDYeBfSYGNKeDkAld5rAQtyrGptphioBC9mstKmZCkV1OnGvDD15
-         3VYPAEIEKpS71riP7HMzZULDTVSCw52DigS/V3KZ7HkQodKjl4Qkoxv/VnQlKgLtuX
-         Oey74g0dNEW5rh/yfspo86S7e185Ms8chhyWwsKU=
+        b=qjIeeHp73/sHK5JEUnsEApL6YKLRAMlT/v8BjNJnb/609iV2C0OwcxDael3tuq7SZ
+         gB+Y3Sg7RvaONbttl3ZHvp+XFq40JSjK2q2Gxo4W7wlwdXwtRe1PWxTM/L3AOZE8HM
+         L2tb/mUCGfNJR6umbLGcHdpXWhc5/e+fnw6JQgTg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vincent Ray <vray@kalrayinc.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 050/172] net: sched: fixed barrier to prevent skbuff sticking in qdisc backlog
-Date:   Mon, 13 Jun 2022 12:10:10 +0200
-Message-Id: <20220613094902.444603190@linuxfoundation.org>
+Subject: [PATCH 5.10 066/172] net/mlx5e: Update netdev features after changing XDP state
+Date:   Mon, 13 Jun 2022 12:10:26 +0200
+Message-Id: <20220613094906.246763280@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -51,138 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Ray <vray@kalrayinc.com>
+From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-[ Upstream commit a54ce3703613e41fe1d98060b62ec09a3984dc28 ]
+[ Upstream commit f6279f113ad593971999c877eb69dc3d36a75894 ]
 
-In qdisc_run_begin(), smp_mb__before_atomic() used before test_bit()
-does not provide any ordering guarantee as test_bit() is not an atomic
-operation. This, added to the fact that the spin_trylock() call at
-the beginning of qdisc_run_begin() does not guarantee acquire
-semantics if it does not grab the lock, makes it possible for the
-following statement :
+Some features (LRO, HW GRO) conflict with XDP. If there is an attempt to
+enable such features while XDP is active, they will be set to `off
+[requested on]`. In order to activate these features after XDP is turned
+off, the driver needs to call netdev_update_features(). This commit adds
+this missing call after XDP state changes.
 
-if (test_bit(__QDISC_STATE_MISSED, &qdisc->state))
-
-to be executed before an enqueue operation called before
-qdisc_run_begin().
-
-As a result the following race can happen :
-
-           CPU 1                             CPU 2
-
-      qdisc_run_begin()               qdisc_run_begin() /* true */
-        set(MISSED)                            .
-      /* returns false */                      .
-          .                            /* sees MISSED = 1 */
-          .                            /* so qdisc not empty */
-          .                            __qdisc_run()
-          .                                    .
-          .                              pfifo_fast_dequeue()
- ----> /* may be done here */                  .
-|         .                                clear(MISSED)
-|         .                                    .
-|         .                                smp_mb __after_atomic();
-|         .                                    .
-|         .                                /* recheck the queue */
-|         .                                /* nothing => exit   */
-|   enqueue(skb1)
-|         .
-|   qdisc_run_begin()
-|         .
-|     spin_trylock() /* fail */
-|         .
-|     smp_mb__before_atomic() /* not enough */
-|         .
- ---- if (test_bit(MISSED))
-        return false;   /* exit */
-
-In the above scenario, CPU 1 and CPU 2 both try to grab the
-qdisc->seqlock at the same time. Only CPU 2 succeeds and enters the
-bypass code path, where it emits its skb then calls __qdisc_run().
-
-CPU1 fails, sets MISSED and goes down the traditionnal enqueue() +
-dequeue() code path. But when executing qdisc_run_begin() for the
-second time, after enqueuing its skbuff, it sees the MISSED bit still
-set (by itself) and consequently chooses to exit early without setting
-it again nor trying to grab the spinlock again.
-
-Meanwhile CPU2 has seen MISSED = 1, cleared it, checked the queue
-and found it empty, so it returned.
-
-At the end of the sequence, we end up with skb1 enqueued in the
-backlog, both CPUs out of __dev_xmit_skb(), the MISSED bit not set,
-and no __netif_schedule() called made. skb1 will now linger in the
-qdisc until somebody later performs a full __qdisc_run(). Associated
-to the bypass capacity of the qdisc, and the ability of the TCP layer
-to avoid resending packets which it knows are still in the qdisc, this
-can lead to serious traffic "holes" in a TCP connection.
-
-We fix this by replacing the smp_mb__before_atomic() / test_bit() /
-set_bit() / smp_mb__after_atomic() sequence inside qdisc_run_begin()
-by a single test_and_set_bit() call, which is more concise and
-enforces the needed memory barriers.
-
-Fixes: 89837eb4b246 ("net: sched: add barrier to ensure correct ordering for lockless qdisc")
-Signed-off-by: Vincent Ray <vray@kalrayinc.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/20220526001746.2437669-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: cf6e34c8c22f ("net/mlx5e: Properly block LRO when XDP is enabled")
+Fixes: b0617e7b3500 ("net/mlx5e: Properly block HW GRO when XDP is enabled")
+Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/sch_generic.h | 36 ++++++++----------------------------
- 1 file changed, 8 insertions(+), 28 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index 1042c449e7db..769764bda7a8 100644
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -163,37 +163,17 @@ static inline bool qdisc_run_begin(struct Qdisc *qdisc)
- 		if (spin_trylock(&qdisc->seqlock))
- 			goto nolock_empty;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index d9cc0ed6c5f7..cfc3bfcb04a2 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -4576,6 +4576,11 @@ static int mlx5e_xdp_set(struct net_device *netdev, struct bpf_prog *prog)
  
--		/* Paired with smp_mb__after_atomic() to make sure
--		 * STATE_MISSED checking is synchronized with clearing
--		 * in pfifo_fast_dequeue().
-+		/* No need to insist if the MISSED flag was already set.
-+		 * Note that test_and_set_bit() also gives us memory ordering
-+		 * guarantees wrt potential earlier enqueue() and below
-+		 * spin_trylock(), both of which are necessary to prevent races
- 		 */
--		smp_mb__before_atomic();
--
--		/* If the MISSED flag is set, it means other thread has
--		 * set the MISSED flag before second spin_trylock(), so
--		 * we can return false here to avoid multi cpus doing
--		 * the set_bit() and second spin_trylock() concurrently.
--		 */
--		if (test_bit(__QDISC_STATE_MISSED, &qdisc->state))
-+		if (test_and_set_bit(__QDISC_STATE_MISSED, &qdisc->state))
- 			return false;
+ unlock:
+ 	mutex_unlock(&priv->state_lock);
++
++	/* Need to fix some features. */
++	if (!err)
++		netdev_update_features(netdev);
++
+ 	return err;
+ }
  
--		/* Set the MISSED flag before the second spin_trylock(),
--		 * if the second spin_trylock() return false, it means
--		 * other cpu holding the lock will do dequeuing for us
--		 * or it will see the MISSED flag set after releasing
--		 * lock and reschedule the net_tx_action() to do the
--		 * dequeuing.
--		 */
--		set_bit(__QDISC_STATE_MISSED, &qdisc->state);
--
--		/* spin_trylock() only has load-acquire semantic, so use
--		 * smp_mb__after_atomic() to ensure STATE_MISSED is set
--		 * before doing the second spin_trylock().
--		 */
--		smp_mb__after_atomic();
--
--		/* Retry again in case other CPU may not see the new flag
--		 * after it releases the lock at the end of qdisc_run_end().
-+		/* Try to take the lock again to make sure that we will either
-+		 * grab it or the CPU that still has it will see MISSED set
-+		 * when testing it in qdisc_run_end()
- 		 */
- 		if (!spin_trylock(&qdisc->seqlock))
- 			return false;
 -- 
 2.35.1
 
