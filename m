@@ -2,210 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE7F0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 16:40:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7430C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 16:44:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237110AbiFMQkK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 12:40:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37264 "EHLO
+        id S235462AbiFMQoj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 12:44:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236744AbiFMQjJ (ORCPT
+        with ESMTP id S242085AbiFMQnx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 12:39:09 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C73DB1DF111;
-        Mon, 13 Jun 2022 07:28:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655130497; x=1686666497;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=KP/RtJ4ZbidU6pQAsuDuxGJHOq1DZRgu4MLwVnb1vSc=;
-  b=nZ4f2sDTG15jrz1DGLOnhQHXv3GhUXrvyz47ym57C/DAuKNt7wDDJ0Se
-   3mE8LSmvW3SiDyFth8uXdNANq09zBAuCoOgjLdJJUiKsfKG1NtMEqCquY
-   nYqHUtutoc5XrVutVvFOyshKO4JgjkA5XFWO3YSlFi2gAf67tsEltOHUN
-   duLUeSdv2TbTx6amjXiBl0UKruQtKhj18TsVACiZ+wQ5iMjaqrvnb2Aup
-   RliFsKqg11hMzvijo5XML9KuoVYmHkYKVcRBXohqEad+jVWjII1p/8t/m
-   Ps+PBQIzFVQS7Wv8C/+uKjqiJOQkPt6S/UVilueZMfqJkw6C2zYFbtszk
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="303696222"
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="303696222"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 07:28:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="651457890"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga004.fm.intel.com with ESMTP; 13 Jun 2022 07:28:06 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25DES5uk026148;
-        Mon, 13 Jun 2022 15:28:05 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Yury Norov <yury.norov@gmail.com>,
-        "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matt Turner <mattst88@gmail.com>,
-        Brian Cain <bcain@quicinc.com>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kees Cook <keescook@chromium.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>,
-        Tony Luck <tony.luck@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        "open list:QUALCOMM HEXAGON..." <linux-hexagon@vger.kernel.org>,
-        "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 0/6] bitops: let optimize out non-atomic bitops on compile-time constants
-Date:   Mon, 13 Jun 2022 16:26:45 +0200
-Message-Id: <20220613142645.1176423-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <CAMuHMdUZCaPN2B6bvmja9rDm3qCc4mYYAOSEB2W0R0pws8peqw@mail.gmail.com>
-References: <20220610113427.908751-1-alexandr.lobakin@intel.com>
+        Mon, 13 Jun 2022 12:43:53 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA0171E44C7;
+        Mon, 13 Jun 2022 07:33:30 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 70B73240012;
+        Mon, 13 Jun 2022 14:33:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1655130805;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bgOZd2Vfi/HOg/3HSQWoHmC0I40OMrwKOFV6lIb9Er8=;
+        b=hmpaT1nlbdsUsiDbvJJ5b8jKhvR0VWiONZKXcYKwV/z4P2/qqrPITPWpwH0Q6BYB7ZrvyQ
+        dtKjBYlUL0itD3g5yMn5SgZe6KlVJEhDvQpHyiU1dGsqbSoIpgDwUsdIiw7xiO+2e8s+sh
+        8ubboH3yegNVQRlhprAWMI+KeS5osYC9sNH+gG/qfRI9eIJg8zgz5dU8bPW71avfKFkRNv
+        vVmrm5Q/u8FZMx/dPC2GqSa7I1PVw8yI2Kcdr4SiFFr/wkhv7HZKxPEnqo5lBSbq/2o4kI
+        +kvAK5PRFOet6Y8LLfyf7DtGdfaUKozXAsm9sLiYxXS16mbgYU/wSUXi6H1xWA==
+Date:   Mon, 13 Jun 2022 16:33:21 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tom Rini <trini@konsulko.com>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        linux-arm-kernel@lists.infradead.org, u-boot@lists.denx.de,
+        devicetree@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+Subject: Re: [PATCH V3 1/2] mtd: allow getting MTD device associated with a
+ specific DT node
+Message-ID: <20220613163321.6c3ccb5e@xps-13>
+In-Reply-To: <ad084c13-55fc-8506-f768-49a0c6ae4f7f@gmail.com>
+References: <20220611204651.19947-1-zajec5@gmail.com>
+        <20220613160411.48b07515@xps-13>
+        <ad084c13-55fc-8506-f768-49a0c6ae4f7f@gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Mon, 13 Jun 2022 09:35:16 +0200
+Hi Rafa=C5=82,
 
-> Hi Alexander,
-> 
-> On Fri, Jun 10, 2022 at 1:35 PM Alexander Lobakin
-> <alexandr.lobakin@intel.com> wrote:
-> > While I was working on converting some structure fields from a fixed
-> > type to a bitmap, I started observing code size increase not only in
-> > places where the code works with the converted structure fields, but
-> > also where the converted vars were on the stack. That said, the
-> > following code:
-> >
-> >         DECLARE_BITMAP(foo, BITS_PER_LONG) = { }; // -> unsigned long foo[1];
-> >         unsigned long bar = BIT(BAR_BIT);
-> >         unsigned long baz = 0;
-> >
-> >         __set_bit(FOO_BIT, foo);
-> >         baz |=3D BIT(BAZ_BIT);
-> >
-> >         BUILD_BUG_ON(!__builtin_constant_p(test_bit(FOO_BIT, foo));
-> >         BUILD_BUG_ON(!__builtin_constant_p(bar & BAR_BIT));
-> >         BUILD_BUG_ON(!__builtin_constant_p(baz & BAZ_BIT));
-> >
-> > triggers the first assertion on x86_64, which means that the
-> > compiler is unable to evaluate it to a compile-time initializer
-> > when the architecture-specific bitop is used even if it's obvious.
-> > I found that this is due to that many architecture-specific
-> > non-atomic bitop implementations use inline asm or other hacks which
-> > are faster or more robust when working with "real" variables (i.e.
-> > fields from the structures etc.), but the compilers have no clue how
-> > to optimize them out when called on compile-time constants.
-> >
-> > So, in order to let the compiler optimize out such cases, expand the
-> > test_bit() and __*_bit() definitions with a compile-time condition
-> > check, so that they will pick the generic C non-atomic bitop
-> > implementations when all of the arguments passed are compile-time
-> > constants, which means that the result will be a compile-time
-> > constant as well and the compiler will produce more efficient and
-> > simple code in 100% cases (no changes when there's at least one
-> > non-compile-time-constant argument).
-> > The condition itself:
-> >
-> > if (
-> > __builtin_constant_p(nr) &&     /* <- bit position is constant */
-> > __builtin_constant_p(!!addr) && /* <- compiler knows bitmap addr is
-> >                                       always either NULL or not */
-> > addr &&                         /* <- bitmap addr is not NULL */
-> > __builtin_constant_p(*addr)     /* <- compiler knows the value of
-> >                                       the target bitmap */
-> > )
-> >         /* then pick the generic C variant
-> > else
-> >         /* old code path, arch-specific
-> >
-> > I also tried __is_constexpr() as suggested by Andy, but it was
-> > always returning 0 ('not a constant') for the 2,3 and 4th
-> > conditions.
-> >
-> > The savings are architecture, compiler and compiler flags dependent,
-> > for example, on x86_64 -O2:
-> >
-> > GCC 12: add/remove: 78/29 grow/shrink: 332/525 up/down: 31325/-61560 (-30235)
-> > LLVM 13: add/remove: 79/76 grow/shrink: 184/537 up/down: 55076/-141892 (-86816)
-> > LLVM 14: add/remove: 10/3 grow/shrink: 93/138 up/down: 3705/-6992 (-3287)
-> >
-> > and ARM64 (courtesy of Mark[0]):
-> >
-> > GCC 11: add/remove: 92/29 grow/shrink: 933/2766 up/down: 39340/-82580 (-43240)
-> > LLVM 14: add/remove: 21/11 grow/shrink: 620/651 up/down: 12060/-15824 (-3764)
-> >
-> > And the following:
-> >
-> >         DECLARE_BITMAP(flags, __IP_TUNNEL_FLAG_NUM) = { };
-> >         __be16 flags;
-> >
-> >         __set_bit(IP_TUNNEL_CSUM_BIT, flags);
-> >
-> >         tun_flags = cpu_to_be16(*flags & U16_MAX);
-> >
-> >         if (test_bit(IP_TUNNEL_VTI_BIT, flags))
-> >                 tun_flags |= VTI_ISVTI;
-> >
-> >         BUILD_BUG_ON(!__builtin_constant_p(tun_flags));
-> >
-> > doesn't blow up anymore, so that we now can e.g. use fixed bitmaps
-> > in compile-time assertions etc.
-> >
-> > The series has been in intel-next for a while with no reported issues.
-> >
-> > From v1[1]:
-> > * change 'gen_' prefixes to '_generic' to disambiguate from
-> >   'generated' etc. (Mark);
-> > * define a separate 'const_' set to use in the optimization to keep
-> >   the generic test_bit() atomic-safe (Marco);
-> > * unify arch_{test,__*}_bit() as well and include them in the type
-> >   check;
-> > * add more relevant and up-to-date bloat-o-meter results, including
-> >   ARM64 (me, Mark);
-> > * pick a couple '*-by' tags (Mark, Yury).
-> 
-> Thanks for the update!
-> 
-> On m68k, using gcc version 9.4.0 (Ubuntu 9.4.0-1ubuntu1~20.04), this
-> blows up immediately with:
+zajec5@gmail.com wrote on Mon, 13 Jun 2022 16:15:34 +0200:
 
-Yeah I saw the kernel bot report already, sorry for that >_< Fixed
-in v3 already, will send in 1-2 days.
+> On 13.06.2022 16:04, Miquel Raynal wrote:
+> >> @@ -1154,6 +1154,34 @@ int __get_mtd_device(struct mtd_info *mtd)
+> >>   }
+> >>   EXPORT_SYMBOL_GPL(__get_mtd_device); =20
+> >>   >> +/** =20
+> >> + * of_get_mtd_device_by_node - obtain an MTD device associated with a=
+ given node
+> >> + *
+> >> + * @np: device tree node
+> >> + */
+> >> +struct mtd_info *of_get_mtd_device_by_node(struct device_node *np) =20
+> >=20
+> > Shall we try to use a more of-agnostic syntax or is it too complex here=
+? =20
+>=20
+> I need some extra hint, please. This is how many similar functions look
+> like:
 
-> 
->   CC      kernel/bounds.s
-> In file included from include/linux/bits.h:22,
+I know most implementation today use of_ functions directly but it
+seems like there is a global move towards fwnodes now, and I was
+wondering if using those instead (which might also apply to other types
+of "nodes" than DT ones) could be possible.
 
-[...]
+But looking into existing implementations, I came across the pwm implem
+which features:
+- of_pwm_get()
+- acpi_pwm_get()
 
->       | ^~~~~~~~~~~~~~~~
-> 
-> Gr{oetje,eeting}s,
-> 
->                         Geert
-> 
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-> 
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
+And finally a fwnode_pwm_get() which does:
+
+	if (is_of_node())
+		of_pwm_get():
+	else if (is_acpi_node())
+		acpi_pwm_get();
+
+So actually my suggestion is meaningless. I'm fine with the current
+approach.
+
+Acked-by: Miquel Raynal <miquel.raynal@bootlin.com>
+
+
+>=20
+> $ grep -E -r "(get|find).*_by_node" ./include/*
+> ./include/drm/drm_mipi_dsi.h:struct mipi_dsi_host *of_find_mipi_dsi_host_=
+by_node(struct device_node *node);
+> ./include/drm/drm_mipi_dsi.h:struct mipi_dsi_device *of_find_mipi_dsi_dev=
+ice_by_node(struct device_node *np);
+> ./include/linux/usb/phy.h:extern struct usb_phy *devm_usb_get_phy_by_node=
+(struct device *dev,
+> ./include/linux/usb/phy.h:static inline struct usb_phy *devm_usb_get_phy_=
+by_node(struct device *dev,
+> ./include/linux/extcon.h:struct extcon_dev *extcon_find_edev_by_node(stru=
+ct device_node *node);
+> ./include/linux/extcon.h:static inline struct extcon_dev *extcon_find_ede=
+v_by_node(struct device_node *node)
+> ./include/linux/of_net.h:extern struct net_device *of_find_net_device_by_=
+node(struct device_node *np);
+> ./include/linux/of_net.h:static inline struct net_device *of_find_net_dev=
+ice_by_node(struct device_node *np)
+> ./include/linux/devfreq.h:struct devfreq *devfreq_get_devfreq_by_node(str=
+uct device_node *node);
+> ./include/linux/devfreq.h:static inline struct devfreq *devfreq_get_devfr=
+eq_by_node(struct device_node *node)
+> ./include/linux/of_platform.h:extern struct platform_device *of_find_devi=
+ce_by_node(struct device_node *np);
+> ./include/linux/of_platform.h:static inline struct platform_device *of_fi=
+nd_device_by_node(struct device_node *np)
+> ./include/linux/backlight.h:struct backlight_device *of_find_backlight_by=
+_node(struct device_node *node);
+> ./include/linux/backlight.h:of_find_backlight_by_node(struct device_node =
+*node)
+> ./include/linux/i2c.h:struct i2c_client *of_find_i2c_device_by_node(struc=
+t device_node *node);
+> ./include/linux/i2c.h:struct i2c_adapter *of_find_i2c_adapter_by_node(str=
+uct device_node *node);
+> ./include/linux/i2c.h:struct i2c_adapter *of_get_i2c_adapter_by_node(stru=
+ct device_node *node);
+> ./include/linux/i2c.h:static inline struct i2c_client *of_find_i2c_device=
+_by_node(struct device_node *node)
+> ./include/linux/i2c.h:static inline struct i2c_adapter *of_find_i2c_adapt=
+er_by_node(struct device_node *node)
+> ./include/linux/i2c.h:static inline struct i2c_adapter *of_get_i2c_adapte=
+r_by_node(struct device_node *node)
+>=20
+>=20
+> >> +{
+> >> +	struct mtd_info *mtd =3D NULL;
+> >> +	struct mtd_info *tmp;
+> >> +	int err;
+> >> +
+> >> +	mutex_lock(&mtd_table_mutex);
+> >> +
+> >> +	err =3D -ENODEV;
+> >> +	mtd_for_each_device(tmp) {
+> >> +		if (mtd_get_of_node(tmp) =3D=3D np) {
+> >> +			mtd =3D tmp;
+> >> +			err =3D __get_mtd_device(mtd);
+> >> +			break;
+> >> +		}
+> >> +	}
+> >> +
+> >> +	mutex_unlock(&mtd_table_mutex);
+> >> +
+> >> +	return err ? ERR_PTR(err) : mtd;
+> >> +}
+> >> +EXPORT_SYMBOL_GPL(of_get_mtd_device_by_node);
+> >> +
+> >>   /**
+> >>    *	get_mtd_device_nm - obtain a validated handle for an MTD device by
+> >>    *	device name =20
+>=20
+
 
 Thanks,
-Olek
+Miqu=C3=A8l
