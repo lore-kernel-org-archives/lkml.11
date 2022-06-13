@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D1C1CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C103CCA47F
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:49:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356663AbiFMMsz (ORCPT
+        id S1356961AbiFMMs5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:48:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33142 "EHLO
+        Mon, 13 Jun 2022 08:48:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353571AbiFMMnC (ORCPT
+        with ESMTP id S1357389AbiFMMoz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:43:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F2AB606FC;
-        Mon, 13 Jun 2022 04:10:57 -0700 (PDT)
+        Mon, 13 Jun 2022 08:44:55 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71CB1612BA;
+        Mon, 13 Jun 2022 04:11:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 83FCCB80EA7;
-        Mon, 13 Jun 2022 11:10:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D240FC34114;
-        Mon, 13 Jun 2022 11:10:42 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2357DCE1171;
+        Mon, 13 Jun 2022 11:11:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 192F6C34114;
+        Mon, 13 Jun 2022 11:11:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118643;
-        bh=u7IYr3xHt6zjUsYbe5rv2BB9TYgoCtrosryJQ3AJNdM=;
+        s=korg; t=1655118678;
+        bh=f3njAHxycOP+Tg5PZtQu3STCEq0/Vzp/9auvE2RBrmQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UljzC4nnvcKQiA2zae5of9RsDs0jhPfbVlF2Pd/Eb3dTC5n/hXiKqdHJMEwxadU8W
-         wqosK0NuecadcIUo5ono6wLiLa+7sh7STRZGC5zNTjzl/oxW1C9259nJ++RTk0ohow
-         DD9CNmxhfCaKDtdKSFQ4dpFE928d8Fik4ZD/DYJo=
+        b=R1AutG4zXHHC6CYNNPNNnP2VBU8t+TDLO5h031MSqxA6K95WYaivC2Lc7tOERZgP6
+         G+zi1HBBp3S1EU+BA60xGZ3zxk4C+LxKqlkZSHOtXQZvVHYSFxEvA9i4n9Kf+tRuQQ
+         BErwb8AZqZ/gM4BfaNpUygJ1YBOcZT0hNrh0Gjxs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
+        Fam Zheng <fam.zheng@bytedance.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 123/172] drivers: usb: host: Fix deadlock in oxu_bus_suspend()
-Date:   Mon, 13 Jun 2022 12:11:23 +0200
-Message-Id: <20220613094920.063959333@linuxfoundation.org>
+Subject: [PATCH 5.10 149/172] vringh: Fix loop descriptors check in the indirect cases
+Date:   Mon, 13 Jun 2022 12:11:49 +0200
+Message-Id: <20220613094922.630998236@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -49,52 +52,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Xie Yongji <xieyongji@bytedance.com>
 
-[ Upstream commit 4d378f2ae58138d4c55684e1d274e7dd94aa6524 ]
+[ Upstream commit dbd29e0752286af74243cf891accf472b2f3edd8 ]
 
-There is a deadlock in oxu_bus_suspend(), which is shown below:
+We should use size of descriptor chain to test loop condition
+in the indirect case. And another statistical count is also introduced
+for indirect descriptors to avoid conflict with the statistical count
+of direct descriptors.
 
-   (Thread 1)              |      (Thread 2)
-                           | timer_action()
-oxu_bus_suspend()          |  mod_timer()
- spin_lock_irq() //(1)     |  (wait a time)
- ...                       | oxu_watchdog()
- del_timer_sync()          |  spin_lock_irq() //(2)
- (wait timer to stop)      |  ...
-
-We hold oxu->lock in position (1) of thread 1, and use
-del_timer_sync() to wait timer to stop, but timer handler
-also need oxu->lock in position (2) of thread 2. As a result,
-oxu_bus_suspend() will block forever.
-
-This patch extracts del_timer_sync() from the protection of
-spin_lock_irq(), which could let timer handler to obtain
-the needed lock.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417120305.64577-1-duoming@zju.edu.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: f87d0fbb5798 ("vringh: host-side implementation of virtio rings.")
+Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+Signed-off-by: Fam Zheng <fam.zheng@bytedance.com>
+Message-Id: <20220505100910.137-1-xieyongji@bytedance.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/oxu210hp-hcd.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/vhost/vringh.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/usb/host/oxu210hp-hcd.c b/drivers/usb/host/oxu210hp-hcd.c
-index e832909a924f..6df2881cd7b9 100644
---- a/drivers/usb/host/oxu210hp-hcd.c
-+++ b/drivers/usb/host/oxu210hp-hcd.c
-@@ -3908,8 +3908,10 @@ static int oxu_bus_suspend(struct usb_hcd *hcd)
+diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+index 0bd7e64331f0..5a0340c85dc6 100644
+--- a/drivers/vhost/vringh.c
++++ b/drivers/vhost/vringh.c
+@@ -274,7 +274,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
+ 	     int (*copy)(const struct vringh *vrh,
+ 			 void *dst, const void *src, size_t len))
+ {
+-	int err, count = 0, up_next, desc_max;
++	int err, count = 0, indirect_count = 0, up_next, desc_max;
+ 	struct vring_desc desc, *descs;
+ 	struct vringh_range range = { -1ULL, 0 }, slowrange;
+ 	bool slow = false;
+@@ -331,7 +331,12 @@ __vringh_iov(struct vringh *vrh, u16 i,
+ 			continue;
  		}
- 	}
  
-+	spin_unlock_irq(&oxu->lock);
- 	/* turn off now-idle HC */
- 	del_timer_sync(&oxu->watchdog);
-+	spin_lock_irq(&oxu->lock);
- 	ehci_halt(oxu);
- 	hcd->state = HC_STATE_SUSPENDED;
- 
+-		if (count++ == vrh->vring.num) {
++		if (up_next == -1)
++			count++;
++		else
++			indirect_count++;
++
++		if (count > vrh->vring.num || indirect_count > desc_max) {
+ 			vringh_bad("Descriptor loop in %p", descs);
+ 			err = -ELOOP;
+ 			goto fail;
+@@ -393,6 +398,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
+ 				i = return_from_indirect(vrh, &up_next,
+ 							 &descs, &desc_max);
+ 				slow = false;
++				indirect_count = 0;
+ 			} else
+ 				break;
+ 		}
 -- 
 2.35.1
 
