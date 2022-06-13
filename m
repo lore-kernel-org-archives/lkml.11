@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6C84CCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:32:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C28E0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:32:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244062AbiFMKcj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:32:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33520 "EHLO
+        id S244468AbiFMKcq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:32:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245439AbiFMKau (ORCPT
+        with ESMTP id S1345873AbiFMKaL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:30:50 -0400
+        Mon, 13 Jun 2022 06:30:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6DE26ADB;
-        Mon, 13 Jun 2022 03:21:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 557AC13F6C;
+        Mon, 13 Jun 2022 03:21:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C2C5160B8B;
-        Mon, 13 Jun 2022 10:21:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6F7FC34114;
-        Mon, 13 Jun 2022 10:21:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9146E60AE8;
+        Mon, 13 Jun 2022 10:21:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6A42C34114;
+        Mon, 13 Jun 2022 10:21:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115682;
-        bh=wTL/YhKNf0DTayTEaRcXxDNUnVvYMZPFROyuLfG+zG4=;
+        s=korg; t=1655115663;
+        bh=yl3jrND5U1Or25BPXn+pHgU7me4egZGSZ+x487ubYJo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DdYiRFZTbwplRAgc5gL9o1lnr76JdSzr+M+0idMEn5RDiTUGUkNwHuoVQXTId/uVS
-         mLV0j4ya5Hhp0Fn+4pQDtVvncFA9A47jPl3M0FV42YWSNuhj+XPvEE2+7eaXwj6XB0
-         Fcqe42oaCWh83GrkFvyAHwpckuJpUwvZ+P5M8tTw=
+        b=jFNOqeCrnbnFKegdepNtug03QkcFLMj1Vnfh8dYTkmUSFh2txD9rK04vz3Ki+96Xs
+         Cm+JN/D7gI/u9xwcj8HDKG8blDTkPgkjCL9cvG0zP6szAUW8TWTnojIXeKTm4oecfl
+         Ywh775w4jquDlYmWsG2YWGT7Lu9zofKqPhQqOndc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Subject: [PATCH 4.9 160/167] ata: libata-transport: fix {dma|pio|xfer}_mode sysfs files
-Date:   Mon, 13 Jun 2022 12:10:34 +0200
-Message-Id: <20220613094918.497423809@linuxfoundation.org>
+        stable@vger.kernel.org, Ariel Miculas <ariel.miculas@belden.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 4.9 164/167] powerpc/32: Fix overread/overwrite of thread_struct via ptrace
+Date:   Mon, 13 Jun 2022 12:10:38 +0200
+Message-Id: <20220613094919.437056428@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -48,75 +49,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-commit 72aad489f992871e908ff6d9055b26c6366fb864 upstream.
+commit 8e1278444446fc97778a5e5c99bca1ce0bbc5ec9 upstream.
 
-The {dma|pio}_mode sysfs files are incorrectly documented as having a
-list of the supported DMA/PIO transfer modes, while the corresponding
-fields of the *struct* ata_device hold the transfer mode IDs, not masks.
+The ptrace PEEKUSR/POKEUSR (aka PEEKUSER/POKEUSER) API allows a process
+to read/write registers of another process.
 
-To match these docs, the {dma|pio}_mode (and even xfer_mode!) sysfs
-files are handled by the ata_bitfield_name_match() macro which leads to
-reading such kind of nonsense from them:
+To get/set a register, the API takes an index into an imaginary address
+space called the "USER area", where the registers of the process are
+laid out in some fashion.
 
-$ cat /sys/class/ata_device/dev3.0/pio_mode
-XFER_UDMA_7, XFER_UDMA_6, XFER_UDMA_5, XFER_UDMA_4, XFER_MW_DMA_4,
-XFER_PIO_6, XFER_PIO_5, XFER_PIO_4, XFER_PIO_3, XFER_PIO_2, XFER_PIO_1,
-XFER_PIO_0
+The kernel then maps that index to a particular register in its own data
+structures and gets/sets the value.
 
-Using the correct ata_bitfield_name_search() macro fixes that:
+The API only allows a single machine-word to be read/written at a time.
+So 4 bytes on 32-bit kernels and 8 bytes on 64-bit kernels.
 
-$ cat /sys/class/ata_device/dev3.0/pio_mode
-XFER_PIO_4
+The way floating point registers (FPRs) are addressed is somewhat
+complicated, because double precision float values are 64-bit even on
+32-bit CPUs. That means on 32-bit kernels each FPR occupies two
+word-sized locations in the USER area. On 64-bit kernels each FPR
+occupies one word-sized location in the USER area.
 
-While fixing the file documentation, somewhat reword the {dma|pio}_mode
-file doc and add a note about being mostly useful for PATA devices to
-the xfer_mode file doc...
+Internally the kernel stores the FPRs in an array of u64s, or if VSX is
+enabled, an array of pairs of u64s where one half of each pair stores
+the FPR. Which half of the pair stores the FPR depends on the kernel's
+endianness.
 
-Fixes: d9027470b886 ("[libata] Add ATA transport class")
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Cc: stable@vger.kernel.org
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+To handle the different layouts of the FPRs depending on VSX/no-VSX and
+big/little endian, the TS_FPR() macro was introduced.
+
+Unfortunately the TS_FPR() macro does not take into account the fact
+that the addressing of each FPR differs between 32-bit and 64-bit
+kernels. It just takes the index into the "USER area" passed from
+userspace and indexes into the fp_state.fpr array.
+
+On 32-bit there are 64 indexes that address FPRs, but only 32 entries in
+the fp_state.fpr array, meaning the user can read/write 256 bytes past
+the end of the array. Because the fp_state sits in the middle of the
+thread_struct there are various fields than can be overwritten,
+including some pointers. As such it may be exploitable.
+
+It has also been observed to cause systems to hang or otherwise
+misbehave when using gdbserver, and is probably the root cause of this
+report which could not be easily reproduced:
+  https://lore.kernel.org/linuxppc-dev/dc38afe9-6b78-f3f5-666b-986939e40fc6@keymile.com/
+
+Rather than trying to make the TS_FPR() macro even more complicated to
+fix the bug, or add more macros, instead add a special-case for 32-bit
+kernels. This is more obvious and hopefully avoids a similar bug
+happening again in future.
+
+Note that because 32-bit kernels never have VSX enabled the code doesn't
+need to consider TS_FPRWIDTH/OFFSET at all. Add a BUILD_BUG_ON() to
+ensure that 32-bit && VSX is never enabled.
+
+Fixes: 87fec0514f61 ("powerpc: PTRACE_PEEKUSR/PTRACE_POKEUSER of FPR registers in little endian builds")
+Cc: stable@vger.kernel.org # v3.13+
+Reported-by: Ariel Miculas <ariel.miculas@belden.com>
+Tested-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220609133245.573565-1-mpe@ellerman.id.au
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/ABI/testing/sysfs-ata |    5 +++--
- drivers/ata/libata-transport.c      |    2 +-
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ arch/powerpc/kernel/ptrace.c |   18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
 
---- a/Documentation/ABI/testing/sysfs-ata
-+++ b/Documentation/ABI/testing/sysfs-ata
-@@ -59,17 +59,18 @@ class
+--- a/arch/powerpc/kernel/ptrace.c
++++ b/arch/powerpc/kernel/ptrace.c
+@@ -2938,8 +2938,13 @@ long arch_ptrace(struct task_struct *chi
  
- dma_mode
+ 			flush_fp_to_thread(child);
+ 			if (fpidx < (PT_FPSCR - PT_FPR0))
+-				memcpy(&tmp, &child->thread.TS_FPR(fpidx),
+-				       sizeof(long));
++				if (IS_ENABLED(CONFIG_PPC32)) {
++					// On 32-bit the index we are passed refers to 32-bit words
++					tmp = ((u32 *)child->thread.fp_state.fpr)[fpidx];
++				} else {
++					memcpy(&tmp, &child->thread.TS_FPR(fpidx),
++					       sizeof(long));
++				}
+ 			else
+ 				tmp = child->thread.fp_state.fpscr;
+ 		}
+@@ -2971,8 +2976,13 @@ long arch_ptrace(struct task_struct *chi
  
--	Transfer modes supported by the device when in DMA mode.
-+	DMA transfer mode used by the device.
- 	Mostly used by PATA device.
- 
- pio_mode
- 
--	Transfer modes supported by the device when in PIO mode.
-+	PIO transfer mode used by the device.
- 	Mostly used by PATA device.
- 
- xfer_mode
- 
- 	Current transfer mode.
-+	Mostly used by PATA device.
- 
- id
- 
---- a/drivers/ata/libata-transport.c
-+++ b/drivers/ata/libata-transport.c
-@@ -196,7 +196,7 @@ static struct {
- 	{ XFER_PIO_0,			"XFER_PIO_0" },
- 	{ XFER_PIO_SLOW,		"XFER_PIO_SLOW" }
- };
--ata_bitfield_name_match(xfer,ata_xfer_names)
-+ata_bitfield_name_search(xfer, ata_xfer_names)
- 
- /*
-  * ATA Port attributes
+ 			flush_fp_to_thread(child);
+ 			if (fpidx < (PT_FPSCR - PT_FPR0))
+-				memcpy(&child->thread.TS_FPR(fpidx), &data,
+-				       sizeof(long));
++				if (IS_ENABLED(CONFIG_PPC32)) {
++					// On 32-bit the index we are passed refers to 32-bit words
++					((u32 *)child->thread.fp_state.fpr)[fpidx] = data;
++				} else {
++					memcpy(&child->thread.TS_FPR(fpidx), &data,
++					       sizeof(long));
++				}
+ 			else
+ 				child->thread.fp_state.fpscr = data;
+ 			ret = 0;
 
 
