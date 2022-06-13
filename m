@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECAD4CCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:49:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81415C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:50:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356089AbiFMLtv (ORCPT
+        id S1356168AbiFMLuE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:49:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60828 "EHLO
+        Mon, 13 Jun 2022 07:50:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357475AbiFMLqM (ORCPT
+        with ESMTP id S1356199AbiFMLn4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:46:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B298637B;
-        Mon, 13 Jun 2022 03:52:22 -0700 (PDT)
+        Mon, 13 Jun 2022 07:43:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4CD246B3C;
+        Mon, 13 Jun 2022 03:50:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 050566135C;
-        Mon, 13 Jun 2022 10:52:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12C88C34114;
-        Mon, 13 Jun 2022 10:52:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 79D6A61343;
+        Mon, 13 Jun 2022 10:50:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 862D1C34114;
+        Mon, 13 Jun 2022 10:50:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117541;
-        bh=8XodZh5sCr/MfT0L5lf3vACVky82khXDRn8yFleVMQg=;
+        s=korg; t=1655117432;
+        bh=9fscbB/2/WC67uRuZ4ZUNRPLnqkEBlREFuhjDFoHd/s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PxdRnd1Xk+rdgTUnB0r0m3kTicm1yI4wL80mgjHvnmdrwNwmvU/yRjVz6gTurywKO
-         7Em2TUFgUjX0x5rN2ejSqvF/ffjnU3QnQ8jATHLg5r2Xdbr0thPzZL8s8Lue836Fhg
-         IOhIEBk0XhOAQk9jCaPW4BzusJYkt+TfBQ5zbZiw=
+        b=rTortXwutidUatrl05405/BArWE9gmi+fyGvsR4QtrDzzIX8grxJLDFX2BMksCqkA
+         xw2+bxwwwGigUF5XIOooozDc15tLSCcHQX/nP49WNdoZZhgdazyNwmHMCt2ZhbdXUR
+         b5bQf7spWh51dwy8X7YrG1xPUgr+J7Vgzsfjn8Rk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>,
+        stable@vger.kernel.org,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Kees Cook <keescook@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 396/411] cifs: version operations for smb20 unneeded when legacy support disabled
-Date:   Mon, 13 Jun 2022 12:11:09 +0200
-Message-Id: <20220613094940.538389739@linuxfoundation.org>
+Subject: [PATCH 5.4 367/411] lkdtm/usercopy: Expand size of "out of frame" object
+Date:   Mon, 13 Jun 2022 12:10:40 +0200
+Message-Id: <20220613094939.690561949@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,94 +52,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steve French <stfrench@microsoft.com>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit 7ef93ffccd55fb0ba000ed16ef6a81cd7dee07b5 ]
+[ Upstream commit f387e86d3a74407bdd9c5815820ac9d060962840 ]
 
-We should not be including unused smb20 specific code when legacy
-support is disabled (CONFIG_CIFS_ALLOW_INSECURE_LEGACY turned
-off).  For example smb2_operations and smb2_values aren't used
-in that case.  Over time we can move more and more SMB1/CIFS and SMB2.0
-code into the insecure legacy ifdefs
+To be sufficiently out of range for the usercopy test to see the lifetime
+mismatch, expand the size of the "bad" buffer, which will let it be
+beyond current_stack_pointer regardless of stack growth direction.
+Paired with the recent addition of stack depth checking under
+CONFIG_HARDENED_USERCOPY=y, this will correctly start tripping again.
 
-Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Reported-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Link: https://lore.kernel.org/lkml/762faf1b-0443-5ddf-4430-44a20cf2ec4d@collabora.com/
+Signed-off-by: Kees Cook <keescook@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/cifsglob.h | 4 +++-
- fs/cifs/smb2ops.c  | 7 ++++++-
- 2 files changed, 9 insertions(+), 2 deletions(-)
+ drivers/misc/lkdtm/usercopy.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
 
-diff --git a/fs/cifs/cifsglob.h b/fs/cifs/cifsglob.h
-index 9c0e348cb00f..414936989255 100644
---- a/fs/cifs/cifsglob.h
-+++ b/fs/cifs/cifsglob.h
-@@ -1930,11 +1930,13 @@ extern mempool_t *cifs_mid_poolp;
- 
- /* Operations for different SMB versions */
- #define SMB1_VERSION_STRING	"1.0"
-+#define SMB20_VERSION_STRING    "2.0"
-+#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
- extern struct smb_version_operations smb1_operations;
- extern struct smb_version_values smb1_values;
--#define SMB20_VERSION_STRING	"2.0"
- extern struct smb_version_operations smb20_operations;
- extern struct smb_version_values smb20_values;
-+#endif /* CIFS_ALLOW_INSECURE_LEGACY */
- #define SMB21_VERSION_STRING	"2.1"
- extern struct smb_version_operations smb21_operations;
- extern struct smb_version_values smb21_values;
-diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
-index 7985fe25850b..57164563eec6 100644
---- a/fs/cifs/smb2ops.c
-+++ b/fs/cifs/smb2ops.c
-@@ -3487,11 +3487,13 @@ smb3_set_oplock_level(struct cifsInodeInfo *cinode, __u32 oplock,
- 	}
- }
- 
-+#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
- static bool
- smb2_is_read_op(__u32 oplock)
+diff --git a/drivers/misc/lkdtm/usercopy.c b/drivers/misc/lkdtm/usercopy.c
+index e172719dd86d..4617c63b1026 100644
+--- a/drivers/misc/lkdtm/usercopy.c
++++ b/drivers/misc/lkdtm/usercopy.c
+@@ -30,12 +30,12 @@ static const unsigned char test_text[] = "This is a test.\n";
+  */
+ static noinline unsigned char *trick_compiler(unsigned char *stack)
  {
- 	return oplock == SMB2_OPLOCK_LEVEL_II;
- }
-+#endif /* CIFS_ALLOW_INSECURE_LEGACY */
- 
- static bool
- smb21_is_read_op(__u32 oplock)
-@@ -4573,7 +4575,7 @@ smb2_make_node(unsigned int xid, struct inode *inode,
- 	return rc;
+-	return stack + 0;
++	return stack + unconst;
  }
  
--
-+#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
- struct smb_version_operations smb20_operations = {
- 	.compare_fids = smb2_compare_fids,
- 	.setup_request = smb2_setup_request,
-@@ -4670,6 +4672,7 @@ struct smb_version_operations smb20_operations = {
- 	.fiemap = smb3_fiemap,
- 	.llseek = smb3_llseek,
- };
-+#endif /* CIFS_ALLOW_INSECURE_LEGACY */
+ static noinline unsigned char *do_usercopy_stack_callee(int value)
+ {
+-	unsigned char buf[32];
++	unsigned char buf[128];
+ 	int i;
  
- struct smb_version_operations smb21_operations = {
- 	.compare_fids = smb2_compare_fids,
-@@ -4987,6 +4990,7 @@ struct smb_version_operations smb311_operations = {
- 	.llseek = smb3_llseek,
- };
+ 	/* Exercise stack to avoid everything living in registers. */
+@@ -43,7 +43,12 @@ static noinline unsigned char *do_usercopy_stack_callee(int value)
+ 		buf[i] = value & 0xff;
+ 	}
  
-+#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
- struct smb_version_values smb20_values = {
- 	.version_string = SMB20_VERSION_STRING,
- 	.protocol_id = SMB20_PROT_ID,
-@@ -5007,6 +5011,7 @@ struct smb_version_values smb20_values = {
- 	.signing_required = SMB2_NEGOTIATE_SIGNING_REQUIRED,
- 	.create_lease_size = sizeof(struct create_lease),
- };
-+#endif /* ALLOW_INSECURE_LEGACY */
+-	return trick_compiler(buf);
++	/*
++	 * Put the target buffer in the middle of stack allocation
++	 * so that we don't step on future stack users regardless
++	 * of stack growth direction.
++	 */
++	return trick_compiler(&buf[(128/2)-32]);
+ }
  
- struct smb_version_values smb21_values = {
- 	.version_string = SMB21_VERSION_STRING,
+ static noinline void do_usercopy_stack(bool to_user, bool bad_frame)
+@@ -66,6 +71,12 @@ static noinline void do_usercopy_stack(bool to_user, bool bad_frame)
+ 		bad_stack -= sizeof(unsigned long);
+ 	}
+ 
++#ifdef ARCH_HAS_CURRENT_STACK_POINTER
++	pr_info("stack     : %px\n", (void *)current_stack_pointer);
++#endif
++	pr_info("good_stack: %px-%px\n", good_stack, good_stack + sizeof(good_stack));
++	pr_info("bad_stack : %px-%px\n", bad_stack, bad_stack + sizeof(good_stack));
++
+ 	user_addr = vm_mmap(NULL, 0, PAGE_SIZE,
+ 			    PROT_READ | PROT_WRITE | PROT_EXEC,
+ 			    MAP_ANONYMOUS | MAP_PRIVATE, 0);
 -- 
 2.35.1
 
