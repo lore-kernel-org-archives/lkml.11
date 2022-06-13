@@ -2,72 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D03B4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:14:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA126C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:14:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352168AbiFMVOn (ORCPT
+        id S1352183AbiFMVOq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 17:14:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37150 "EHLO
+        Mon, 13 Jun 2022 17:14:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352171AbiFMVNX (ORCPT
+        with ESMTP id S1352090AbiFMVNI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 17:13:23 -0400
-Received: from smtp.smtpout.orange.fr (smtp02.smtpout.orange.fr [80.12.242.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52B6AB45
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:53:59 -0700 (PDT)
-Received: from pop-os.home ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id 0r4Lo7Na9EMbD0r4Log35N; Mon, 13 Jun 2022 22:53:56 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Mon, 13 Jun 2022 22:53:56 +0200
-X-ME-IP: 90.11.190.129
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        netdev@vger.kernel.org
-Subject: [PATCH] net: bgmac: Fix an erroneous kfree() in bgmac_remove()
-Date:   Mon, 13 Jun 2022 22:53:50 +0200
-Message-Id: <a026153108dd21239036a032b95c25b5cece253b.1655153616.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
+        Mon, 13 Jun 2022 17:13:08 -0400
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B80F2393DF
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:52:41 -0700 (PDT)
+Received: by mail-oi1-x229.google.com with SMTP id q11so9153918oih.10
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:52:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Ie2xrfdugqSnUY/lUmZJBYqEw/Jj5HQgDROYZDI7Ljg=;
+        b=q8Sos2zHH2cqeJpqAWGopwq4BFpy5d162ZHvWsGBGzD8dXmnX4TsH4oGd9xtjxFj3k
+         kkiT7ORHTaWO7TVdzrFrUtvSJwyodFHKf3kDLk5zfyB6+Q4t7bACoSZoThK4QulFXt66
+         4eu47sTHknmVkiiSbjTEY+HxauLbTxzPeZ3t8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Ie2xrfdugqSnUY/lUmZJBYqEw/Jj5HQgDROYZDI7Ljg=;
+        b=2BTagNmBRGJKz/ZTRxxdjqJTzA/79KBvd8kRgwKLGEXSwrqp8MDigqb+uLTFATWVn0
+         zhdPb7sy3W4CLmN+ssYS8jRFXcCTAurin51vg+4ZxhBAf923rcLPBfOhiXBVCbbRlZNL
+         UqnK3UC0ZLtQu4gpLSVaywfwUxZuLhDa4SxEnMELatRnDN1jmgJwJ6CM/iEZwu22shFI
+         ++n4u1cGVXP+spHifOqH8ZwxsEECmss5pvPPEs7K7kioh7tlWKb65priM065pa3+RIka
+         W4nSQaZ+euFdODEBEcUJaWSQHAz6aDNEgLPu89LSr6fO/9cwfe3je4hSczNAK7kDvlrX
+         Cz2w==
+X-Gm-Message-State: AOAM531+gspUQfDPTzRz97z4rQH/BlZdnSfK3vL4miik1O7Ok0xDWIr+
+        PRlDKk81HOxg+zjIPEp9CvkFKA==
+X-Google-Smtp-Source: ABdhPJxwqO943xteTGAgFieA/vZp5/Zn/6Qxyj5rF6Le0Sf8rKMQHGa/+OpWxWOapQGjDXa0MQVMLw==
+X-Received: by 2002:a05:6808:2394:b0:326:d5d6:a4ba with SMTP id bp20-20020a056808239400b00326d5d6a4bamr321996oib.67.1655153561069;
+        Mon, 13 Jun 2022 13:52:41 -0700 (PDT)
+Received: from [192.168.0.41] ([184.4.90.121])
+        by smtp.gmail.com with ESMTPSA id dv8-20020a056870d88800b000f5eb6b409bsm4444747oab.45.2022.06.13.13.52.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Jun 2022 13:52:40 -0700 (PDT)
+Message-ID: <e1b62234-9b8a-e7c2-2946-5ef9f6f23a08@cloudflare.com>
+Date:   Mon, 13 Jun 2022 15:52:38 -0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3] cred: Propagate security_prepare_creds() error code
+Content-Language: en-US
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-aio@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-cachefs@redhat.com, linux-cifs@vger.kernel.org,
+        samba-technical@lists.samba.org, linux-mm@kvack.org,
+        linux-nfs@vger.kernel.org, linux-unionfs@vger.kernel.org,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        keyrings@vger.kernel.org, selinux@vger.kernel.org,
+        serge@hallyn.com, amir73il@gmail.com, kernel-team@cloudflare.com,
+        Jeff Moyer <jmoyer@redhat.com>,
+        Paul Moore <paul@paul-moore.com>
+References: <20220608150942.776446-1-fred@cloudflare.com>
+ <87tu8oze94.fsf@email.froward.int.ebiederm.org>
+From:   Frederick Lawler <fred@cloudflare.com>
+In-Reply-To: <87tu8oze94.fsf@email.froward.int.ebiederm.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-'bgmac' is part of a managed resource allocated with bgmac_alloc(). It
-should not be freed explicitly.
+Hi Eric,
 
-Remove the erroneous kfree() from the .remove() function.
+On 6/13/22 12:04 PM, Eric W. Biederman wrote:
+> Frederick Lawler <fred@cloudflare.com> writes:
+> 
+>> While experimenting with the security_prepare_creds() LSM hook, we
+>> noticed that our EPERM error code was not propagated up the callstack.
+>> Instead ENOMEM is always returned.  As a result, some tools may send a
+>> confusing error message to the user:
+>>
+>> $ unshare -rU
+>> unshare: unshare failed: Cannot allocate memory
+>>
+>> A user would think that the system didn't have enough memory, when
+>> instead the action was denied.
+>>
+>> This problem occurs because prepare_creds() and prepare_kernel_cred()
+>> return NULL when security_prepare_creds() returns an error code. Later,
+>> functions calling prepare_creds() and prepare_kernel_cred() return
+>> ENOMEM because they assume that a NULL meant there was no memory
+>> allocated.
+>>
+>> Fix this by propagating an error code from security_prepare_creds() up
+>> the callstack.
+> 
+> Why would it make sense for security_prepare_creds to return an error
+> code other than ENOMEM?
+>  > That seems a bit of a violation of what that function is supposed to do
+>
 
-Fixes: 34a5102c3235 ("net: bgmac: allocate struct bgmac just once & don't copy it"
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- drivers/net/ethernet/broadcom/bgmac-bcma.c | 1 -
- 1 file changed, 1 deletion(-)
+The API allows LSM authors to decide what error code is returned from 
+the cred_prepare hook. security_task_alloc() is a similar hook, and has 
+its return code propagated.
 
-diff --git a/drivers/net/ethernet/broadcom/bgmac-bcma.c b/drivers/net/ethernet/broadcom/bgmac-bcma.c
-index e6f48786949c..02bd3cf9a260 100644
---- a/drivers/net/ethernet/broadcom/bgmac-bcma.c
-+++ b/drivers/net/ethernet/broadcom/bgmac-bcma.c
-@@ -332,7 +332,6 @@ static void bgmac_remove(struct bcma_device *core)
- 	bcma_mdio_mii_unregister(bgmac->mii_bus);
- 	bgmac_enet_remove(bgmac);
- 	bcma_set_drvdata(core, NULL);
--	kfree(bgmac);
- }
- 
- static struct bcma_driver bgmac_bcma_driver = {
--- 
-2.34.1
+I'm proposing we follow security_task_allocs() pattern, and add 
+visibility for failure cases in prepare_creds().
+
+> I have probably missed a very interesting discussion where that was
+> mentioned but I don't see link to the discussion or anything explaining
+> why we want to do that in this change.
+> 
+
+AFAIK, this is the start of the discussion.
+
+> Eric
+> 
+
 
