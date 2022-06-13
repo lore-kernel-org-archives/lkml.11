@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE1DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:58:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 718A3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:58:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357839AbiFML6M (ORCPT
+        id S1357143AbiFML6R (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:58:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53800 "EHLO
+        Mon, 13 Jun 2022 07:58:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356622AbiFMLur (ORCPT
+        with ESMTP id S1356621AbiFMLur (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:50:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5B942EA23;
-        Mon, 13 Jun 2022 03:54:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AC4022B27;
+        Mon, 13 Jun 2022 03:54:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EB6D61259;
-        Mon, 13 Jun 2022 10:54:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89A7FC34114;
-        Mon, 13 Jun 2022 10:54:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 26CF160F00;
+        Mon, 13 Jun 2022 10:54:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38F2BC34114;
+        Mon, 13 Jun 2022 10:54:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117683;
-        bh=T4X4CGi/PKic3jmJn+xe4/n8tjwhtnDobrqP1cKMuac=;
+        s=korg; t=1655117678;
+        bh=aumf9yAoZ5XHJ9DWTFSBRcccitJ4jRF/Eo0ETcWmvzQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nmdSrK5f0jpko5ki3xBzNtWu0PndvisXdokNffk2oSCjmOLuQFQ+d3TMYUKzQWmZN
-         iptjVnVsoUxdU4JzZSoSKwFHVkBauODd+BMA2y+jzGOMeOAM9RTDEAJPETvE70GB2F
-         yZgb5BNt6N+Q/l/lcHRykhSBFuwQ2zGuovTGxS2Y=
+        b=XOOOXAFs+qyCRocM6qwGi//r7Duzawsmq8SZtNiBOl/whZQcG1+9uHWWVUYD347sW
+         28fMfKXdsfWrFOjx6Ec1cKwELD7wDNG5UOIL8AVPEqXlAoe05v8HeHBicAAdPEtgDj
+         T3CCSGcLwOxAaPGWhJkPZXDYp8xG/uWyXrSRj9KE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
+        stable@vger.kernel.org,
+        Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ravi Bangoria <ravi.bangoria@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 082/287] drm/msm/dsi: fix error checks and return values for DSI xmit functions
-Date:   Mon, 13 Jun 2022 12:08:26 +0200
-Message-Id: <20220613094926.363713500@linuxfoundation.org>
+Subject: [PATCH 4.19 092/287] perf/amd/ibs: Use interrupt regs ip for stack unwinding
+Date:   Mon, 13 Jun 2022 12:08:36 +0200
+Message-Id: <20220613094926.668894523@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -52,82 +52,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Ravi Bangoria <ravi.bangoria@amd.com>
 
-[ Upstream commit f0e7e9ed379c012c4d6b09a09b868accc426223c ]
+[ Upstream commit 3d47083b9ff46863e8374ad3bb5edb5e464c75f8 ]
 
-As noticed by Dan ([1] an the followup thread) there are multiple issues
-with the return values for MSM DSI command transmission callback. In
-the error case it can easily return a positive value when it should
-have returned a proper error code.
+IbsOpRip is recorded when IBS interrupt is triggered. But there is
+a skid from the time IBS interrupt gets triggered to the time the
+interrupt is presented to the core. Meanwhile processor would have
+moved ahead and thus IbsOpRip will be inconsistent with rsp and rbp
+recorded as part of the interrupt regs. This causes issues while
+unwinding stack using the ORC unwinder as it needs consistent rip,
+rsp and rbp. Fix this by using rip from interrupt regs instead of
+IbsOpRip for stack unwinding.
 
-This commits attempts to fix these issues both in TX and in RX paths.
-
-[1]: https://lore.kernel.org/linux-arm-msm/20211001123617.GH2283@kili/
-
-Fixes: a689554ba6ed ("drm/msm: Initial add DSI connector support")
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Tested-by: Marijn Suijten <marijn.suijten@somainline.org>
-Patchwork: https://patchwork.freedesktop.org/patch/480501/
-Link: https://lore.kernel.org/r/20220401231104.967193-1-dmitry.baryshkov@linaro.org
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Fixes: ee9f8fce99640 ("x86/unwind: Add the ORC unwinder")
+Reported-by: Dmitry Monakhov <dmtrmonakhov@yandex-team.ru>
+Suggested-by: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Ravi Bangoria <ravi.bangoria@amd.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220429051441.14251-1-ravi.bangoria@amd.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dsi/dsi_host.c | 21 ++++++++++++++-------
- 1 file changed, 14 insertions(+), 7 deletions(-)
+ arch/x86/events/amd/ibs.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/dsi/dsi_host.c b/drivers/gpu/drm/msm/dsi/dsi_host.c
-index 9abfb19ea7ed..56cfa0a03fd5 100644
---- a/drivers/gpu/drm/msm/dsi/dsi_host.c
-+++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
-@@ -1354,10 +1354,10 @@ static int dsi_cmds2buf_tx(struct msm_dsi_host *msm_host,
- 			dsi_get_bpp(msm_host->format) / 8;
+diff --git a/arch/x86/events/amd/ibs.c b/arch/x86/events/amd/ibs.c
+index 2d9e1372b070..d157d0adef06 100644
+--- a/arch/x86/events/amd/ibs.c
++++ b/arch/x86/events/amd/ibs.c
+@@ -324,6 +324,16 @@ static int perf_ibs_init(struct perf_event *event)
+ 	hwc->config_base = perf_ibs->msr;
+ 	hwc->config = config;
  
- 	len = dsi_cmd_dma_add(msm_host, msg);
--	if (!len) {
-+	if (len < 0) {
- 		pr_err("%s: failed to add cmd type = 0x%x\n",
- 			__func__,  msg->type);
--		return -EINVAL;
-+		return len;
++	/*
++	 * rip recorded by IbsOpRip will not be consistent with rsp and rbp
++	 * recorded as part of interrupt regs. Thus we need to use rip from
++	 * interrupt regs while unwinding call stack. Setting _EARLY flag
++	 * makes sure we unwind call-stack before perf sample rip is set to
++	 * IbsOpRip.
++	 */
++	if (event->attr.sample_type & PERF_SAMPLE_CALLCHAIN)
++		event->attr.sample_type |= __PERF_SAMPLE_CALLCHAIN_EARLY;
++
+ 	return 0;
+ }
+ 
+@@ -693,6 +703,14 @@ static int perf_ibs_handle_irq(struct perf_ibs *perf_ibs, struct pt_regs *iregs)
+ 		data.raw = &raw;
  	}
  
- 	/* for video mode, do not send cmds more than
-@@ -1376,10 +1376,14 @@ static int dsi_cmds2buf_tx(struct msm_dsi_host *msm_host,
- 	}
- 
- 	ret = dsi_cmd_dma_tx(msm_host, len);
--	if (ret < len) {
--		pr_err("%s: cmd dma tx failed, type=0x%x, data0=0x%x, len=%d\n",
--			__func__, msg->type, (*(u8 *)(msg->tx_buf)), len);
--		return -ECOMM;
-+	if (ret < 0) {
-+		pr_err("%s: cmd dma tx failed, type=0x%x, data0=0x%x, len=%d, ret=%d\n",
-+			__func__, msg->type, (*(u8 *)(msg->tx_buf)), len, ret);
-+		return ret;
-+	} else if (ret < len) {
-+		pr_err("%s: cmd dma tx failed, type=0x%x, data0=0x%x, ret=%d len=%d\n",
-+			__func__, msg->type, (*(u8 *)(msg->tx_buf)), ret, len);
-+		return -EIO;
- 	}
- 
- 	return len;
-@@ -2105,9 +2109,12 @@ int msm_dsi_host_cmd_rx(struct mipi_dsi_host *host,
- 		}
- 
- 		ret = dsi_cmds2buf_tx(msm_host, msg);
--		if (ret < msg->tx_len) {
-+		if (ret < 0) {
- 			pr_err("%s: Read cmd Tx failed, %d\n", __func__, ret);
- 			return ret;
-+		} else if (ret < msg->tx_len) {
-+			pr_err("%s: Read cmd Tx failed, too short: %d\n", __func__, ret);
-+			return -ECOMM;
- 		}
- 
- 		/*
++	/*
++	 * rip recorded by IbsOpRip will not be consistent with rsp and rbp
++	 * recorded as part of interrupt regs. Thus we need to use rip from
++	 * interrupt regs while unwinding call stack.
++	 */
++	if (event->attr.sample_type & PERF_SAMPLE_CALLCHAIN)
++		data.callchain = perf_callchain(event, iregs);
++
+ 	throttle = perf_event_overflow(event, &data, &regs);
+ out:
+ 	if (throttle) {
 -- 
 2.35.1
 
