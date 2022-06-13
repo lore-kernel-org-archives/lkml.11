@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5F19CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:45:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96316CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:45:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357445AbiFMMo6 (ORCPT
+        id S1357562AbiFMMpB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:44:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50006 "EHLO
+        Mon, 13 Jun 2022 08:45:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355687AbiFMMjR (ORCPT
+        with ESMTP id S1355434AbiFMMjI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:39:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32AE3EA3;
-        Mon, 13 Jun 2022 04:09:23 -0700 (PDT)
+        Mon, 13 Jun 2022 08:39:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE8785DD1D;
+        Mon, 13 Jun 2022 04:09:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3DD1B80EA8;
-        Mon, 13 Jun 2022 11:09:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37A34C34114;
-        Mon, 13 Jun 2022 11:09:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8AD016062B;
+        Mon, 13 Jun 2022 11:09:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97C79C34114;
+        Mon, 13 Jun 2022 11:09:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118560;
-        bh=U/JNCbzFYz5H1YnYXfF3XJT4L5e+nT43zDrhKeKSZhc=;
+        s=korg; t=1655118544;
+        bh=wWcjedB+7mw61TMPIyLnpnCEkYX4YAzFPBp1VoBb2Fk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=imWCwmi8yN9sIwMGLX7l7WZ4ArNLZLDYxErC3pyfKxMTvnrKw0qvLHVKEGDz5svgh
-         xcdCYja2o4s0dsoawfaeHG7H2Q0+iEUpGlRFTn85xv8sJ+dQXKLUENe1RyYqrpCK2U
-         US4OgBzgVngXrYdGcLqOEi16yz14zM7TubIjnW+k=
+        b=KMf3GwgLnMKvl08zk02b+oQnGzJjYG5/BWDtsX8fRpXQs4Oy1/cKjSzReEYVY8ph4
+         dACZaJvAkwnuCqfOQF0z+y/xhmU71ur83uBlwNWgEDXKNbxcxcK8jQqla6gFA28DUr
+         FTqLd2YumWauqKebscjY5bpoWOfBo1zSEANanaK4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 120/172] drivers: staging: rtl8192e: Fix deadlock in rtllib_beacons_stop()
-Date:   Mon, 13 Jun 2022 12:11:20 +0200
-Message-Id: <20220613094919.253750069@linuxfoundation.org>
+Subject: [PATCH 5.10 087/172] NFSv4: Dont hold the layoutget locks across multiple RPC calls
+Date:   Mon, 13 Jun 2022 12:10:47 +0200
+Message-Id: <20220613094911.313838683@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -49,53 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 9b6bdbd9337de3917945847bde262a34a87a6303 ]
+[ Upstream commit 6949493884fe88500de4af182588e071cf1544ee ]
 
-There is a deadlock in rtllib_beacons_stop(), which is shown
-below:
+When doing layoutget as part of the open() compound, we have to be
+careful to release the layout locks before we can call any further RPC
+calls, such as setattr(). The reason is that those calls could trigger
+a recall, which could deadlock.
 
-   (Thread 1)              |      (Thread 2)
-                           | rtllib_send_beacon()
-rtllib_beacons_stop()      |  mod_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | rtllib_send_beacon_cb()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
-
-We hold ieee->beacon_lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need ieee->beacon_lock in position (2) of thread 2.
-As a result, rtllib_beacons_stop() will block forever.
-
-This patch extracts del_timer_sync() from the protection of
-spin_lock_irqsave(), which could let timer handler to obtain
-the needed lock.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417141641.124388-1-duoming@zju.edu.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8192e/rtllib_softmac.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/nfs/nfs4proc.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/staging/rtl8192e/rtllib_softmac.c b/drivers/staging/rtl8192e/rtllib_softmac.c
-index e8e72f79ca00..aeb6f015fdda 100644
---- a/drivers/staging/rtl8192e/rtllib_softmac.c
-+++ b/drivers/staging/rtl8192e/rtllib_softmac.c
-@@ -651,9 +651,9 @@ static void rtllib_beacons_stop(struct rtllib_device *ieee)
- 	spin_lock_irqsave(&ieee->beacon_lock, flags);
+diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
+index b6d60e69043a..b22da4e3165b 100644
+--- a/fs/nfs/nfs4proc.c
++++ b/fs/nfs/nfs4proc.c
+@@ -3086,6 +3086,10 @@ static int _nfs4_open_and_get_state(struct nfs4_opendata *opendata,
+ 	}
  
- 	ieee->beacon_txing = 0;
--	del_timer_sync(&ieee->beacon_timer);
- 
- 	spin_unlock_irqrestore(&ieee->beacon_lock, flags);
-+	del_timer_sync(&ieee->beacon_timer);
- 
- }
- 
+ out:
++	if (opendata->lgp) {
++		nfs4_lgopen_release(opendata->lgp);
++		opendata->lgp = NULL;
++	}
+ 	if (!opendata->cancelled)
+ 		nfs4_sequence_free_slot(&opendata->o_res.seq_res);
+ 	return ret;
 -- 
 2.35.1
 
