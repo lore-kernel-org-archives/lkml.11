@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE023C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:35:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0975FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:36:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354586AbiFMLfZ (ORCPT
+        id S1354612AbiFMLfe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:35:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50858 "EHLO
+        Mon, 13 Jun 2022 07:35:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354424AbiFML33 (ORCPT
+        with ESMTP id S1354426AbiFML33 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:29:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1BFBD101;
-        Mon, 13 Jun 2022 03:44:16 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 154A8DE99;
+        Mon, 13 Jun 2022 03:44:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DFFE6112A;
-        Mon, 13 Jun 2022 10:44:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B104C3411C;
-        Mon, 13 Jun 2022 10:44:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A89046112A;
+        Mon, 13 Jun 2022 10:44:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B305EC34114;
+        Mon, 13 Jun 2022 10:44:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117055;
-        bh=fpAJU8/iPB4K4ACuHGmuYZDZKbmw+g26GaUydW1SeHg=;
+        s=korg; t=1655117064;
+        bh=IAVbfGTRA6I43BJFnxsN8vzB8Joruj/IdTtsLWXc08Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1znlzhzAGDHZLGYWBFbMUR7FcqmHao2pQAqbBYF1lwOZ7YajwIJunKFT9asHtVEJZ
-         ItT0gdEVdZ/MsNEBlo8AIXLYtskXpbjZrzR8mQyuf0bC044+XRZDLxcLmeWBIb1SoJ
-         Vr272tzxbhpRNqxJWipVZRefTCSm/Sa0Y5jrUxD8=
+        b=1Q0PJO2Henn1hYRd1rU1twCLXVx6Brh0uPkqdI/k49eoqoYQhlPiO09iUMZyE5NIa
+         VJgIplcHSsRYyypmYONTyxlKdCVSEyN1SEY0xjS3EghRvqDKJ8j6WHdqkMX3DtEN2i
+         wTqPLkRGkbfh9rjv7nVqZD+KcEB4Zc3+YzBMlE48=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Christian Lamparter <chunkeey@gmail.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>
-Subject: [PATCH 5.4 260/411] carl9170: tx: fix an incorrect use of list iterator
-Date:   Mon, 13 Jun 2022 12:08:53 +0200
-Message-Id: <20220613094936.560911342@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 285/411] tty: serial: owl: Fix missing clk_disable_unprepare() in owl_uart_probe
+Date:   Mon, 13 Jun 2022 12:09:18 +0200
+Message-Id: <20220613094937.304784853@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,44 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 54a6f29522da3c914da30e50721dedf51046449a upstream.
+[ Upstream commit bcea0f547ec1a2ee44d429aaf0334633e386e67c ]
 
-If the previous list_for_each_entry_continue_rcu() don't exit early
-(no goto hit inside the loop), the iterator 'cvif' after the loop
-will be a bogus pointer to an invalid structure object containing
-the HEAD (&ar->vif_list). As a result, the use of 'cvif' after that
-will lead to a invalid memory access (i.e., 'cvif->id': the invalid
-pointer dereference when return back to/after the callsite in the
-carl9170_update_beacon()).
+Fix the missing clk_disable_unprepare() before return
+from owl_uart_probe() in the error handling case.
 
-The original intention should have been to return the valid 'cvif'
-when found in list, NULL otherwise. So just return NULL when no
-entry found, to fix this bug.
-
-Cc: stable@vger.kernel.org
-Fixes: 1f1d9654e183c ("carl9170: refactor carl9170_update_beacon")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Acked-by: Christian Lamparter <chunkeey@gmail.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220328122820.1004-1-xiam0nd.tong@gmail.com
+Fixes: abf42d2f333b ("tty: serial: owl: add "much needed" clk_prepare_enable()")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220307105135.11698-1-linmq006@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/carl9170/tx.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/tty/serial/owl-uart.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/net/wireless/ath/carl9170/tx.c
-+++ b/drivers/net/wireless/ath/carl9170/tx.c
-@@ -1557,6 +1557,9 @@ static struct carl9170_vif_info *carl917
- 					goto out;
- 			}
- 		} while (ar->beacon_enabled && i--);
-+
-+		/* no entry found in list */
-+		return NULL;
+diff --git a/drivers/tty/serial/owl-uart.c b/drivers/tty/serial/owl-uart.c
+index c55c8507713c..e87953f8a768 100644
+--- a/drivers/tty/serial/owl-uart.c
++++ b/drivers/tty/serial/owl-uart.c
+@@ -695,6 +695,7 @@ static int owl_uart_probe(struct platform_device *pdev)
+ 	owl_port->port.uartclk = clk_get_rate(owl_port->clk);
+ 	if (owl_port->port.uartclk == 0) {
+ 		dev_err(&pdev->dev, "clock rate is zero\n");
++		clk_disable_unprepare(owl_port->clk);
+ 		return -EINVAL;
  	}
- 
- out:
+ 	owl_port->port.flags = UPF_BOOT_AUTOCONF | UPF_IOREMAP | UPF_LOW_LATENCY;
+-- 
+2.35.1
+
 
 
