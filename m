@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8BEEC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:36:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 418BFCCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:37:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352789AbiFMMgS (ORCPT
+        id S1351790AbiFMMhT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:36:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49996 "EHLO
+        Mon, 13 Jun 2022 08:37:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357563AbiFMMe3 (ORCPT
+        with ESMTP id S1353353AbiFMMf2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:34:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A38E61C106;
-        Mon, 13 Jun 2022 04:07:51 -0700 (PDT)
+        Mon, 13 Jun 2022 08:35:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D1931C915;
+        Mon, 13 Jun 2022 04:07:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 97452B80D31;
-        Mon, 13 Jun 2022 11:07:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E69FEC34114;
-        Mon, 13 Jun 2022 11:07:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AFFA60906;
+        Mon, 13 Jun 2022 11:07:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24C9FC34114;
+        Mon, 13 Jun 2022 11:07:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118469;
-        bh=RtEXNlkzwJJXelVxr5GQUBzq7Qc5cnQyf3vlI1HEOQg=;
+        s=korg; t=1655118466;
+        bh=M6GNObdT38NasueEcuZx7LUs0CCTPyAhpWWgfvkvyPY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FcwttFP6YIda3cSxy7iKREQ3Jd9TyWPdyifbHwoYtfCo9Izm787NsJ2gdy8Xlf76W
-         f0QIj37u+AKOmoT5BDuz8CAZPxwjbn6ofby0iBy4iNtD9sjpzNXh0IrGSZoGiu0tAR
-         Iu13jIZvJ53RvtnozwOpJkZ0/ypEJDUL2SEB1PqM=
+        b=a1GaukBiPoBrWsRvqRynq3Wx3F2WGI216SDlFpqVyTnqaeDSbau56WPqcLRVWpTEO
+         o7ybwGOFOYaOO9Y9mBDvIelsUioX3+1xdzKE2orcyzzeI2CHVNUrDTgFWy42lyh9NX
+         3zfu45i7Nnkk4HRKYU8u8oF0SV5YFUEbVhEVJ1hU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haibo Chen <haibo.chen@nxp.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 069/172] gpio: pca953x: use the correct register address to do regcache sync
-Date:   Mon, 13 Jun 2022 12:10:29 +0200
-Message-Id: <20220613094907.013759674@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 086/172] dmaengine: zynqmp_dma: In struct zynqmp_dma_chan fix desc_size data type
+Date:   Mon, 13 Jun 2022 12:10:46 +0200
+Message-Id: <20220613094911.091016427@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -50,74 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haibo Chen <haibo.chen@nxp.com>
+From: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
 
-[ Upstream commit 43624eda86c98b0de726d0b6f2516ccc3ef7313f ]
+[ Upstream commit f9a9f43a62a04ec3183fb0da9226c7706eed0115 ]
 
-For regcache_sync_region, need to use pca953x_recalc_addr() to get
-the real register address.
+In zynqmp_dma_alloc/free_chan_resources functions there is a
+potential overflow in the below expressions.
 
-Fixes: b76574300504 ("gpio: pca953x: Restore registers after suspend/resume cycle")
-Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+dma_alloc_coherent(chan->dev, (2 * chan->desc_size *
+		   ZYNQMP_DMA_NUM_DESCS),
+		   &chan->desc_pool_p, GFP_KERNEL);
+
+dma_free_coherent(chan->dev,(2 * ZYNQMP_DMA_DESC_SIZE(chan) *
+                 ZYNQMP_DMA_NUM_DESCS),
+                chan->desc_pool_v, chan->desc_pool_p);
+
+The arguments desc_size and ZYNQMP_DMA_NUM_DESCS were 32 bit. Though
+this overflow condition is not observed but it is a potential problem
+in the case of 32-bit multiplication. Hence fix it by changing the
+desc_size data type to size_t.
+
+In addition to coverity fix it also reuse ZYNQMP_DMA_DESC_SIZE macro in
+dma_alloc_coherent API argument.
+
+Addresses-Coverity: Event overflow_before_widen.
+Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Link: https://lore.kernel.org/r/1652166762-18317-2-git-send-email-radhey.shyam.pandey@xilinx.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpio/gpio-pca953x.c | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+ drivers/dma/xilinx/zynqmp_dma.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpio/gpio-pca953x.c b/drivers/gpio/gpio-pca953x.c
-index e936e1eb1f95..bb4ca064447e 100644
---- a/drivers/gpio/gpio-pca953x.c
-+++ b/drivers/gpio/gpio-pca953x.c
-@@ -1107,20 +1107,21 @@ static int pca953x_regcache_sync(struct device *dev)
- {
- 	struct pca953x_chip *chip = dev_get_drvdata(dev);
- 	int ret;
-+	u8 regaddr;
- 
- 	/*
- 	 * The ordering between direction and output is important,
- 	 * sync these registers first and only then sync the rest.
- 	 */
--	ret = regcache_sync_region(chip->regmap, chip->regs->direction,
--				   chip->regs->direction + NBANK(chip));
-+	regaddr = pca953x_recalc_addr(chip, chip->regs->direction, 0);
-+	ret = regcache_sync_region(chip->regmap, regaddr, regaddr + NBANK(chip));
- 	if (ret) {
- 		dev_err(dev, "Failed to sync GPIO dir registers: %d\n", ret);
- 		return ret;
+diff --git a/drivers/dma/xilinx/zynqmp_dma.c b/drivers/dma/xilinx/zynqmp_dma.c
+index 5fecf5aa6e85..7e6be076e9d3 100644
+--- a/drivers/dma/xilinx/zynqmp_dma.c
++++ b/drivers/dma/xilinx/zynqmp_dma.c
+@@ -232,7 +232,7 @@ struct zynqmp_dma_chan {
+ 	bool is_dmacoherent;
+ 	struct tasklet_struct tasklet;
+ 	bool idle;
+-	u32 desc_size;
++	size_t desc_size;
+ 	bool err;
+ 	u32 bus_width;
+ 	u32 src_burst_len;
+@@ -490,7 +490,8 @@ static int zynqmp_dma_alloc_chan_resources(struct dma_chan *dchan)
  	}
  
--	ret = regcache_sync_region(chip->regmap, chip->regs->output,
--				   chip->regs->output + NBANK(chip));
-+	regaddr = pca953x_recalc_addr(chip, chip->regs->output, 0);
-+	ret = regcache_sync_region(chip->regmap, regaddr, regaddr + NBANK(chip));
- 	if (ret) {
- 		dev_err(dev, "Failed to sync GPIO out registers: %d\n", ret);
- 		return ret;
-@@ -1128,16 +1129,18 @@ static int pca953x_regcache_sync(struct device *dev)
- 
- #ifdef CONFIG_GPIO_PCA953X_IRQ
- 	if (chip->driver_data & PCA_PCAL) {
--		ret = regcache_sync_region(chip->regmap, PCAL953X_IN_LATCH,
--					   PCAL953X_IN_LATCH + NBANK(chip));
-+		regaddr = pca953x_recalc_addr(chip, PCAL953X_IN_LATCH, 0);
-+		ret = regcache_sync_region(chip->regmap, regaddr,
-+					   regaddr + NBANK(chip));
- 		if (ret) {
- 			dev_err(dev, "Failed to sync INT latch registers: %d\n",
- 				ret);
- 			return ret;
- 		}
- 
--		ret = regcache_sync_region(chip->regmap, PCAL953X_INT_MASK,
--					   PCAL953X_INT_MASK + NBANK(chip));
-+		regaddr = pca953x_recalc_addr(chip, PCAL953X_INT_MASK, 0);
-+		ret = regcache_sync_region(chip->regmap, regaddr,
-+					   regaddr + NBANK(chip));
- 		if (ret) {
- 			dev_err(dev, "Failed to sync INT mask registers: %d\n",
- 				ret);
+ 	chan->desc_pool_v = dma_alloc_coherent(chan->dev,
+-					       (2 * chan->desc_size * ZYNQMP_DMA_NUM_DESCS),
++					       (2 * ZYNQMP_DMA_DESC_SIZE(chan) *
++					       ZYNQMP_DMA_NUM_DESCS),
+ 					       &chan->desc_pool_p, GFP_KERNEL);
+ 	if (!chan->desc_pool_v)
+ 		return -ENOMEM;
 -- 
 2.35.1
 
