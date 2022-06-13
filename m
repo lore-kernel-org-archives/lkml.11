@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E23DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:36:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38DEEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:36:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345983AbiFMKgh (ORCPT
+        id S1346070AbiFMKgm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:36:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42078 "EHLO
+        Mon, 13 Jun 2022 06:36:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346939AbiFMKej (ORCPT
+        with ESMTP id S1346949AbiFMKej (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 06:34:39 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E44FB2709;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E47F82721;
         Mon, 13 Jun 2022 03:22:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D7A4DCE0EEB;
-        Mon, 13 Jun 2022 10:22:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0931C34114;
-        Mon, 13 Jun 2022 10:22:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E86A60B8B;
+        Mon, 13 Jun 2022 10:22:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E3F7C34114;
+        Mon, 13 Jun 2022 10:22:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115748;
-        bh=kvByzdNQK2btTZ+fpFAvasfh10IP/7TU2FF2HCwqQdA=;
+        s=korg; t=1655115751;
+        bh=eMPpJKwA8BTKycbUU9Cu8i3R9Q5hXb8qPpxRbTtLBFI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TX5y2osss+UgMqQXxVp938QSQNuslBwFTosBGROq2+cEsK2EfNBe1TCGcaS6czO9F
-         S2tOABfQXGqws2vO1aSc/Hv1Eu9WIIa90QD9YZ+MBYPypbSrBPkPbjdCEU1i+5A0hH
-         j6G44rbyp5Ddcw9keKP6K86C7aYcxe8lVcs6N088=
+        b=lvIFRGhEBhapPUAfYVdIWivWHpDIJ3PVM7nOqTxZS6Cteuvjz5HgNv4eKTWHtrTZ9
+         g6q/iJBgFaxhiiOiAEV5X3FphVb0ebhbuw0sCTul9an7vWZp9u/eX6HT1IzMBqFdpd
+         b3yc431IJyptGmo9/PhedPaMSOnXzOHGBoVbVZPk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Luca Weiss <luca.weiss@fairphone.com>,
-        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 017/218] media: venus: hfi: avoid null dereference in deinit
-Date:   Mon, 13 Jun 2022 12:07:55 +0200
-Message-Id: <20220613094912.414041489@linuxfoundation.org>
+Subject: [PATCH 4.14 018/218] media: pci: cx23885: Fix the error handling in cx23885_initdev()
+Date:   Mon, 13 Jun 2022 12:07:56 +0200
+Message-Id: <20220613094912.633693709@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -51,39 +51,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luca Weiss <luca.weiss@fairphone.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 86594f6af867b5165d2ba7b5a71fae3a5961e56c ]
+[ Upstream commit e8123311cf06d7dae71e8c5fe78e0510d20cd30b ]
 
-If venus_probe fails at pm_runtime_put_sync the error handling first
-calls hfi_destroy and afterwards hfi_core_deinit. As hfi_destroy sets
-core->ops to NULL, hfi_core_deinit cannot call the core_deinit function
-anymore.
+When the driver fails to call the dma_set_mask(), the driver will get
+the following splat:
 
-Avoid this null pointer derefence by skipping the call when necessary.
+[   55.853884] BUG: KASAN: use-after-free in __process_removed_driver+0x3c/0x240
+[   55.854486] Read of size 8 at addr ffff88810de60408 by task modprobe/590
+[   55.856822] Call Trace:
+[   55.860327]  __process_removed_driver+0x3c/0x240
+[   55.861347]  bus_for_each_dev+0x102/0x160
+[   55.861681]  i2c_del_driver+0x2f/0x50
 
-Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
-Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+This is because the driver has initialized the i2c related resources
+in cx23885_dev_setup() but not released them in error handling, fix this
+bug by modifying the error path that jumps after failing to call the
+dma_set_mask().
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/qcom/venus/hfi.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/media/pci/cx23885/cx23885-core.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/media/platform/qcom/venus/hfi.c b/drivers/media/platform/qcom/venus/hfi.c
-index ba29fd4d4984..7d1d3e64007c 100644
---- a/drivers/media/platform/qcom/venus/hfi.c
-+++ b/drivers/media/platform/qcom/venus/hfi.c
-@@ -117,6 +117,9 @@ int hfi_core_deinit(struct venus_core *core, bool blocking)
- 		mutex_lock(&core->lock);
+diff --git a/drivers/media/pci/cx23885/cx23885-core.c b/drivers/media/pci/cx23885/cx23885-core.c
+index 4612f26fcd6d..6f297caf5540 100644
+--- a/drivers/media/pci/cx23885/cx23885-core.c
++++ b/drivers/media/pci/cx23885/cx23885-core.c
+@@ -2005,7 +2005,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
+ 	err = pci_set_dma_mask(pci_dev, 0xffffffff);
+ 	if (err) {
+ 		pr_err("%s/0: Oops: no 32bit PCI DMA ???\n", dev->name);
+-		goto fail_ctrl;
++		goto fail_dma_set_mask;
  	}
  
-+	if (!core->ops)
-+		goto unlock;
-+
- 	ret = core->ops->core_deinit(core);
+ 	err = request_irq(pci_dev->irq, cx23885_irq,
+@@ -2013,7 +2013,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
+ 	if (err < 0) {
+ 		pr_err("%s: can't get IRQ %d\n",
+ 		       dev->name, pci_dev->irq);
+-		goto fail_irq;
++		goto fail_dma_set_mask;
+ 	}
  
- 	if (!ret)
+ 	switch (dev->board) {
+@@ -2035,7 +2035,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
+ 
+ 	return 0;
+ 
+-fail_irq:
++fail_dma_set_mask:
+ 	cx23885_dev_unregister(dev);
+ fail_ctrl:
+ 	v4l2_ctrl_handler_free(hdl);
 -- 
 2.35.1
 
