@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 945B8CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5246FCCA482
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:25:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383594AbiFMOXj (ORCPT
+        id S1383840AbiFMOYJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:23:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42324 "EHLO
+        Mon, 13 Jun 2022 10:24:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383029AbiFMOTo (ORCPT
+        with ESMTP id S1383380AbiFMOWh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:19:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6CCB2DAAB;
-        Mon, 13 Jun 2022 04:43:46 -0700 (PDT)
+        Mon, 13 Jun 2022 10:22:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF86EA2070;
+        Mon, 13 Jun 2022 04:44:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 66D84B80D31;
-        Mon, 13 Jun 2022 11:43:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDE49C34114;
-        Mon, 13 Jun 2022 11:43:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 570466124E;
+        Mon, 13 Jun 2022 11:44:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 645F1C34114;
+        Mon, 13 Jun 2022 11:44:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120623;
-        bh=t8f/zEGuKOgoaHcue8rHHQ2DmueQpjmcDbqocU6hnjU=;
+        s=korg; t=1655120647;
+        bh=/Bg4g8vHBekmMYy2+0twhuYuS6JwS1fBZWxGWAKG2ec=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mXRsMKOYpTAHbT7RjyGIzaUm6bcolsaCO1dpPYrNE14/4CPIIH2YZKQq0w1IgQl2m
-         FdCCwQ5sZ9BepoUixLZFUBhiAbUNAfsxZC4SvRQjtedfu1v/CxVV8Ho6/Vv28kpNs/
-         m6pZ2CsBgu3+npKdLKnbLtrsM8Eg6rGlR2xppGzM=
+        b=H3+yVdEHD4K1oXig/lBV8xR4aA/iFqAUevGuOEHUcN/P1ZeVJywt/7Xs8weFt47ss
+         pu7nN7nB1PjeA+KgoM1BF+IIS0HGFh6SIt++IdgXv8g69rCSjbI/4KXCaeLaHoTrtp
+         l7wJLZEeKxGCfbIUzsZvwVWZs3ktMzWRwPHEyk9c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yu Xiao <yu.xiao@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Si-Wei Liu <si-wei.liu@oracle.com>,
+        Jason Wang <jasowang@redhat.com>, Eli Cohen <elic@nvidia.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 100/298] nfp: only report pause frame configuration for physical device
-Date:   Mon, 13 Jun 2022 12:09:54 +0200
-Message-Id: <20220613094927.984506257@linuxfoundation.org>
+Subject: [PATCH 5.17 106/298] vdpa: Fix error logic in vdpa_nl_cmd_dev_get_doit
+Date:   Mon, 13 Jun 2022 12:10:00 +0200
+Message-Id: <20220613094928.164597971@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -51,44 +51,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Xiao <yu.xiao@corigine.com>
+From: Eli Cohen <elic@nvidia.com>
 
-[ Upstream commit 0649e4d63420ebc8cbebef3e9d39e12ffc5eb9fa ]
+[ Upstream commit 7a6691f1f89784f775fa0c54be57533445726068 ]
 
-Only report pause frame configuration for physical device. Logical
-port of both PCI PF and PCI VF do not support it.
+In vdpa_nl_cmd_dev_get_doit(), if the call to genlmsg_reply() fails we
+must not call nlmsg_free() since this is done inside genlmsg_reply().
 
-Fixes: 9fdc5d85a8fe ("nfp: update ethtool reporting of pauseframe control")
-Signed-off-by: Yu Xiao <yu.xiao@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fix it.
+
+Fixes: bc0d90ee021f ("vdpa: Enable user to query vdpa device info")
+Reviewed-by: Si-Wei Liu <si-wei.liu@oracle.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Eli Cohen <elic@nvidia.com>
+Message-Id: <20220518133804.1075129-2-elic@nvidia.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/vdpa/vdpa.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-index e0c27471bcdb..5e2631aafdb6 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-@@ -287,8 +287,6 @@ nfp_net_get_link_ksettings(struct net_device *netdev,
+diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
+index 1ea525433a5c..4e7351110e43 100644
+--- a/drivers/vdpa/vdpa.c
++++ b/drivers/vdpa/vdpa.c
+@@ -756,14 +756,19 @@ static int vdpa_nl_cmd_dev_get_doit(struct sk_buff *skb, struct genl_info *info)
+ 		goto mdev_err;
+ 	}
+ 	err = vdpa_dev_fill(vdev, msg, info->snd_portid, info->snd_seq, 0, info->extack);
+-	if (!err)
+-		err = genlmsg_reply(msg, info);
++	if (err)
++		goto mdev_err;
++
++	err = genlmsg_reply(msg, info);
++	put_device(dev);
++	mutex_unlock(&vdpa_dev_mutex);
++	return err;
++
+ mdev_err:
+ 	put_device(dev);
+ err:
+ 	mutex_unlock(&vdpa_dev_mutex);
+-	if (err)
+-		nlmsg_free(msg);
++	nlmsg_free(msg);
+ 	return err;
+ }
  
- 	/* Init to unknowns */
- 	ethtool_link_ksettings_add_link_mode(cmd, supported, FIBRE);
--	ethtool_link_ksettings_add_link_mode(cmd, supported, Pause);
--	ethtool_link_ksettings_add_link_mode(cmd, advertising, Pause);
- 	cmd->base.port = PORT_OTHER;
- 	cmd->base.speed = SPEED_UNKNOWN;
- 	cmd->base.duplex = DUPLEX_UNKNOWN;
-@@ -296,6 +294,8 @@ nfp_net_get_link_ksettings(struct net_device *netdev,
- 	port = nfp_port_from_netdev(netdev);
- 	eth_port = nfp_port_get_eth_port(port);
- 	if (eth_port) {
-+		ethtool_link_ksettings_add_link_mode(cmd, supported, Pause);
-+		ethtool_link_ksettings_add_link_mode(cmd, advertising, Pause);
- 		cmd->base.autoneg = eth_port->aneg != NFP_ANEG_DISABLED ?
- 			AUTONEG_ENABLE : AUTONEG_DISABLE;
- 		nfp_net_set_fec_link_mode(eth_port, cmd);
 -- 
 2.35.1
 
