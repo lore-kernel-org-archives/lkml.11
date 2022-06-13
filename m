@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EFF9C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B805CCA47F
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:21:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352801AbiFMLS4 (ORCPT
+        id S1353001AbiFMLTF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:18:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43192 "EHLO
+        Mon, 13 Jun 2022 07:19:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352866AbiFMLOk (ORCPT
+        with ESMTP id S1352939AbiFMLOr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:14:40 -0400
+        Mon, 13 Jun 2022 07:14:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0730D36E1B;
-        Mon, 13 Jun 2022 03:37:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2234AB42;
+        Mon, 13 Jun 2022 03:37:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80DD6B80E5C;
-        Mon, 13 Jun 2022 10:37:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF02EC34114;
-        Mon, 13 Jun 2022 10:37:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3961DB80E5C;
+        Mon, 13 Jun 2022 10:37:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6856DC34114;
+        Mon, 13 Jun 2022 10:37:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116629;
-        bh=x670tVTLv1Wl9ytjK1XjW8nb05EI5g72lbb/qJUtRkg=;
+        s=korg; t=1655116637;
+        bh=PNpFq7h1G9LFVeSA5bAyphQTJKA44jIomN5kteAE1EI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ks40tW7s1Dsni7+cRWY99fS42QXmbmDn8KuW4Uavgx4LFl3WFJ1RIHXh/MEStSLCT
-         Juzj5BR/lc042/lzfMnULX6sA2azWfdzjiw0q14krlvhu2kzqu6A6mU1E/VxBImAy+
-         lFEysZCH1trGWGUsNwfmn+IayujWD7Ggt4isiD24=
+        b=Rx8U4PV4wjiRbyK+lPFJflbcwnGJlB5UG2uklRBqrdAoOFzQ1B+Ofb+4LsN6f/rGT
+         NVZGOIKVQgG0l7fk59lz7VHngMHPLpm20HkrkPOG0FQTAaL55XbqVlNaA+pkni6Lo8
+         h2xgVswgb5yetMdICKby/llUPJBywwRa/mIhjNn0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Lv Ruyi <lv.ruyi@zte.com.cn>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 116/411] drm/msm/hdmi: fix error check return value of irq_of_parse_and_map()
-Date:   Mon, 13 Jun 2022 12:06:29 +0200
-Message-Id: <20220613094932.155962542@linuxfoundation.org>
+        stable@vger.kernel.org, Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 119/411] x86: Fix return value of __setup handlers
+Date:   Mon, 13 Jun 2022 12:06:32 +0200
+Message-Id: <20220613094932.244380722@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -52,41 +50,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Ruyi <lv.ruyi@zte.com.cn>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 03371e4fbdeb7f596cbceacb59e474248b6d95ac ]
+[ Upstream commit 12441ccdf5e2f5a01a46e344976cbbd3d46845c9 ]
 
-The irq_of_parse_and_map() function returns 0 on failure, and does not
-return a negative value anyhow, so never enter this conditional branch.
+__setup() handlers should return 1 to obsolete_checksetup() in
+init/main.c to indicate that the boot option has been handled. A return
+of 0 causes the boot option/value to be listed as an Unknown kernel
+parameter and added to init's (limited) argument (no '=') or environment
+(with '=') strings. So return 1 from these x86 __setup handlers.
 
-Fixes: f6a8eaca0ea1 ("drm/msm/mdp5: use irqdomains")
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Patchwork: https://patchwork.freedesktop.org/patch/483294/
-Link: https://lore.kernel.org/r/20220425091831.3500487-1-lv.ruyi@zte.com.cn
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Examples:
+
+  Unknown kernel command line parameters "apicpmtimer
+    BOOT_IMAGE=/boot/bzImage-517rc8 vdso=1 ring3mwait=disable", will be
+    passed to user space.
+
+  Run /sbin/init as init process
+   with arguments:
+     /sbin/init
+     apicpmtimer
+   with environment:
+     HOME=/
+     TERM=linux
+     BOOT_IMAGE=/boot/bzImage-517rc8
+     vdso=1
+     ring3mwait=disable
+
+Fixes: 2aae950b21e4 ("x86_64: Add vDSO for x86-64 with gettimeofday/clock_gettime/getcpu")
+Fixes: 77b52b4c5c66 ("x86: add "debugpat" boot option")
+Fixes: e16fd002afe2 ("x86/cpufeature: Enable RING3MWAIT for Knights Landing")
+Fixes: b8ce33590687 ("x86_64: convert to clock events")
+Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
+Link: https://lore.kernel.org/r/20220314012725.26661-1-rdunlap@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/hdmi/hdmi.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/x86/entry/vdso/vma.c   | 2 +-
+ arch/x86/kernel/apic/apic.c | 2 +-
+ arch/x86/kernel/cpu/intel.c | 2 +-
+ arch/x86/mm/pat.c           | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/hdmi/hdmi.c b/drivers/gpu/drm/msm/hdmi/hdmi.c
-index a0fd62b6ec99..e4c9ff934e5b 100644
---- a/drivers/gpu/drm/msm/hdmi/hdmi.c
-+++ b/drivers/gpu/drm/msm/hdmi/hdmi.c
-@@ -315,9 +315,9 @@ int msm_hdmi_modeset_init(struct hdmi *hdmi,
- 	}
+diff --git a/arch/x86/entry/vdso/vma.c b/arch/x86/entry/vdso/vma.c
+index f5937742b290..3613cfb83c6d 100644
+--- a/arch/x86/entry/vdso/vma.c
++++ b/arch/x86/entry/vdso/vma.c
+@@ -323,7 +323,7 @@ int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
+ static __init int vdso_setup(char *s)
+ {
+ 	vdso64_enabled = simple_strtoul(s, NULL, 0);
+-	return 0;
++	return 1;
+ }
+ __setup("vdso=", vdso_setup);
  
- 	hdmi->irq = irq_of_parse_and_map(pdev->dev.of_node, 0);
--	if (hdmi->irq < 0) {
--		ret = hdmi->irq;
--		DRM_DEV_ERROR(dev->dev, "failed to get irq: %d\n", ret);
-+	if (!hdmi->irq) {
-+		ret = -EINVAL;
-+		DRM_DEV_ERROR(dev->dev, "failed to get irq\n");
- 		goto fail;
- 	}
+diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
+index 4e4476b832be..68c734032523 100644
+--- a/arch/x86/kernel/apic/apic.c
++++ b/arch/x86/kernel/apic/apic.c
+@@ -168,7 +168,7 @@ static __init int setup_apicpmtimer(char *s)
+ {
+ 	apic_calibrate_pmtmr = 1;
+ 	notsc_setup(NULL);
+-	return 0;
++	return 1;
+ }
+ __setup("apicpmtimer", setup_apicpmtimer);
+ #endif
+diff --git a/arch/x86/kernel/cpu/intel.c b/arch/x86/kernel/cpu/intel.c
+index 11d5c5950e2d..44688917d51f 100644
+--- a/arch/x86/kernel/cpu/intel.c
++++ b/arch/x86/kernel/cpu/intel.c
+@@ -97,7 +97,7 @@ static bool ring3mwait_disabled __read_mostly;
+ static int __init ring3mwait_disable(char *__unused)
+ {
+ 	ring3mwait_disabled = true;
+-	return 0;
++	return 1;
+ }
+ __setup("ring3mwait=disable", ring3mwait_disable);
+ 
+diff --git a/arch/x86/mm/pat.c b/arch/x86/mm/pat.c
+index 35b2e35c2203..c7c4e2f8c6a5 100644
+--- a/arch/x86/mm/pat.c
++++ b/arch/x86/mm/pat.c
+@@ -75,7 +75,7 @@ int pat_debug_enable;
+ static int __init pat_debug_setup(char *str)
+ {
+ 	pat_debug_enable = 1;
+-	return 0;
++	return 1;
+ }
+ __setup("debugpat", pat_debug_setup);
  
 -- 
 2.35.1
