@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2379CCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D08ACCCA483
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:59:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351243AbiFMK71 (ORCPT
+        id S1351294AbiFMK7d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:59:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44390 "EHLO
+        Mon, 13 Jun 2022 06:59:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350161AbiFMKyn (ORCPT
+        with ESMTP id S1350104AbiFMKym (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:54:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CCEAE01D;
-        Mon, 13 Jun 2022 03:29:40 -0700 (PDT)
+        Mon, 13 Jun 2022 06:54:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 565E6DFD3;
+        Mon, 13 Jun 2022 03:29:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AE2F860EF5;
-        Mon, 13 Jun 2022 10:29:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF6B5C34114;
-        Mon, 13 Jun 2022 10:29:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0D36EB80E90;
+        Mon, 13 Jun 2022 10:29:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61086C34114;
+        Mon, 13 Jun 2022 10:29:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116179;
-        bh=mgQMZk3YCkkOfUycHOQCalGo9HoLkPlC8SZN+PzfRLw=;
+        s=korg; t=1655116151;
+        bh=meTKEfhwvJQNPNSEHlua5iCIaCbkJ5tZEhnI42ZDXNY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DuZdrSmWH1TXuxD+n2TZZ9tUs6AO/6nH6q3yg9q0F79Ur23bB47Nhb2M3SQeezLMh
-         47SRZ0PqnVnbnrVAMM7bYKJZdJD9xxQBmCGX44/1E/Y8VKpcR76XiUXV29Kn0P/YaU
-         o9/sJHUU4E4rIvHwB8CppW3xe7rox2nXIBzeHFtc=
+        b=yxuDh9qVcB8VGP6TWjvUUR+r5FMpeUE2dg5apUzw93KDwi+kGu/PTG0o3ZU1IDqwf
+         N2ujC5K4djmCdPzVVvX/nFuzLeTpzztZB+feMDUCpyKKMsT0lcN7SWSTgjAGSy/37m
+         zkbIQRa4cXeNPtgekpUXVwYv2xfBLBpug/Yh4zL0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vivek Gautam <vivek.gautam@codeaurora.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Johan Hovold <johan+linaro@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 4.14 136/218] phy: qcom-qmp: fix reset-controller leak on probe errors
-Date:   Mon, 13 Jun 2022 12:09:54 +0200
-Message-Id: <20220613094924.709135071@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Evan Quan <evan.quan@amd.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 033/411] drm/amd/pm: fix the compile warning
+Date:   Mon, 13 Jun 2022 12:05:06 +0200
+Message-Id: <20220613094929.497844586@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,54 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan+linaro@kernel.org>
+From: Evan Quan <evan.quan@amd.com>
 
-commit 4d2900f20edfe541f75756a00deeb2ffe7c66bc1 upstream.
+[ Upstream commit 555238d92ac32dbad2d77ad2bafc48d17391990c ]
 
-Make sure to release the lane reset controller in case of a late probe
-error (e.g. probe deferral).
+Fix the compile warning below:
+drivers/gpu/drm/amd/amdgpu/../pm/legacy-dpm/kv_dpm.c:1641
+kv_get_acp_boot_level() warn: always true condition '(table->entries[i]->clk >= 0) => (0-u32max >= 0)'
 
-Note that due to the reset controller being defined in devicetree in
-"lane" child nodes, devm_reset_control_get_exclusive() cannot be used
-directly.
-
-Fixes: e78f3d15e115 ("phy: qcom-qmp: new qmp phy driver for qcom-chipsets")
-Cc: stable@vger.kernel.org      # 4.12
-Cc: Vivek Gautam <vivek.gautam@codeaurora.org>
-Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220427063243.32576-3-johan+linaro@kernel.org
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: kernel test robot <lkp@intel.com>
+CC: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Evan Quan <evan.quan@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/qualcomm/phy-qcom-qmp.c |    9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/gpu/drm/amd/amdgpu/kv_dpm.c | 14 +-------------
+ 1 file changed, 1 insertion(+), 13 deletions(-)
 
---- a/drivers/phy/qualcomm/phy-qcom-qmp.c
-+++ b/drivers/phy/qualcomm/phy-qcom-qmp.c
-@@ -1086,6 +1086,11 @@ static const struct phy_ops qcom_qmp_phy
- 	.owner		= THIS_MODULE,
- };
+diff --git a/drivers/gpu/drm/amd/amdgpu/kv_dpm.c b/drivers/gpu/drm/amd/amdgpu/kv_dpm.c
+index 4b3faaccecb9..c8a5a5698edd 100644
+--- a/drivers/gpu/drm/amd/amdgpu/kv_dpm.c
++++ b/drivers/gpu/drm/amd/amdgpu/kv_dpm.c
+@@ -1609,19 +1609,7 @@ static int kv_update_samu_dpm(struct amdgpu_device *adev, bool gate)
  
-+static void qcom_qmp_reset_control_put(void *data)
-+{
-+	reset_control_put(data);
-+}
-+
- static
- int qcom_qmp_phy_create(struct device *dev, struct device_node *np, int id)
+ static u8 kv_get_acp_boot_level(struct amdgpu_device *adev)
  {
-@@ -1145,6 +1150,10 @@ int qcom_qmp_phy_create(struct device *d
- 			dev_err(dev, "failed to get lane%d reset\n", id);
- 			return PTR_ERR(qphy->lane_rst);
- 		}
-+		ret = devm_add_action_or_reset(dev, qcom_qmp_reset_control_put,
-+					       qphy->lane_rst);
-+		if (ret)
-+			return ret;
- 	}
+-	u8 i;
+-	struct amdgpu_clock_voltage_dependency_table *table =
+-		&adev->pm.dpm.dyn_state.acp_clock_voltage_dependency_table;
+-
+-	for (i = 0; i < table->count; i++) {
+-		if (table->entries[i].clk >= 0) /* XXX */
+-			break;
+-	}
+-
+-	if (i >= table->count)
+-		i = table->count - 1;
+-
+-	return i;
++	return 0;
+ }
  
- 	generic_phy = devm_phy_create(dev, np, &qcom_qmp_phy_gen_ops);
+ static void kv_update_acp_boot_level(struct amdgpu_device *adev)
+-- 
+2.35.1
+
 
 
