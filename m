@@ -2,84 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4754AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:22:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 912DCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:22:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348610AbiFMMWT (ORCPT
+        id S1351225AbiFMMW0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:22:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53690 "EHLO
+        Mon, 13 Jun 2022 08:22:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359251AbiFMMTu (ORCPT
+        with ESMTP id S1359388AbiFMMUB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:19:50 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60C4257124;
+        Mon, 13 Jun 2022 08:20:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 617195712D
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 04:03:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655118197;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=j5D3sK3qxzP9CGnwsiLKPN/J+KjY10e+k7sKDOcqT5o=;
+        b=BpQnBRJkM+s/JPW3AwqucdVXJhFoPad+rXc4rMel291fDEE1AjZBJQ88JKERjhwpplUGai
+        DGZ4TwlSg4wGbtLQMq+9g3npiZCOgkqTcQuNFKN/X0Fj/yyXdrwBb/3ABekRgqiTHfQ2oV
+        0mtJwwvbcaZFCI9nUr/hdp0tQssaqLQ=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-616-wPg0jZeZMPWH7Wo7fLryEw-1; Mon, 13 Jun 2022 07:03:16 -0400
+X-MC-Unique: wPg0jZeZMPWH7Wo7fLryEw-1
+Received: by mail-wm1-f69.google.com with SMTP id m23-20020a05600c3b1700b0039c6e3c169aso3027049wms.2
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 04:03:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=j5D3sK3qxzP9CGnwsiLKPN/J+KjY10e+k7sKDOcqT5o=;
+        b=SPRDYBj9xh2HXZQoseBZuwuzNVDDLNn+MEyboAJMstEhttcCoH59H7zMtwsJepcf02
+         oNsQcyMfSQ8WAFC/dwKEfQMn9rmABAQLlw6JTxOuoArCffGH1elKb9XG7XImh8b7TGcA
+         Ks5XhLAjEfMdb8XHa9HmOI5sm7MU3GctNIACyu+JEdImnDx2QQiqYbIqxedV4h/pBRQT
+         UXZ5mB31Dj4s+p1qmEwznRm/B8gk+PbX1uK8jtL0c0dWzRPO/Fy30ogbk6LKnz0e44SA
+         fQr2MWLRDthosYBc/SPhDcZWNGEvDQXvGMZawfs0T1IGgwE82Csb5fcJpXtZf7VI7t1G
+         cpUA==
+X-Gm-Message-State: AOAM530JiPJHXWJd04n+HTzCKT66HRHCIJTgyMg8/LgGtKRexU14Qm2H
+        lSc+RZF7BSihvM0kHUw/+wxkYysIcXzqBTIGaiOUeBfAu9n7tABhbGh9Xa/6XM7LdlvkmpS4sCu
+        jvRCndPPmN1Ai0J+/o9ioPbL2
+X-Received: by 2002:a05:600c:3508:b0:39c:8240:5538 with SMTP id h8-20020a05600c350800b0039c82405538mr13049414wmq.165.1655118195260;
         Mon, 13 Jun 2022 04:03:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D9C48CE1109;
-        Mon, 13 Jun 2022 11:03:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6F62C34114;
-        Mon, 13 Jun 2022 11:03:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118192;
-        bh=uRigg8fIIg6l/+7lAYLi3QurrDBUaA7JBpnQ08/37W0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pckMtHFaFZsTl0rtISJfFIHJkpw0HBibnTLEQGxV8IMi4mMk0pv3lqtqf0APoHMa0
-         WbWvI6A529NC9iP6PnLZ9qUfB5QvxOsHuJNBbfD0p0wwXNumUo//esOvS3zw8ma84q
-         OX+pFfQuC6dwgMv81unJJKhcllNcV9eobyqWAPdE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, huangwenhui <huangwenhuia@uniontech.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.19 275/287] ALSA: hda/conexant - Fix loopback issue with CX20632
-Date:   Mon, 13 Jun 2022 12:11:39 +0200
-Message-Id: <20220613094932.336571883@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
-References: <20220613094923.832156175@linuxfoundation.org>
-User-Agent: quilt/0.66
+X-Google-Smtp-Source: ABdhPJyDoO2UACoWH0XUMegJUwRA9D70xt70UBbXMGCQlKNX3UWoHBV/NMn9vGGLzctDprJh1GcUdg==
+X-Received: by 2002:a05:600c:3508:b0:39c:8240:5538 with SMTP id h8-20020a05600c350800b0039c82405538mr13049370wmq.165.1655118194993;
+        Mon, 13 Jun 2022 04:03:14 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c706:bd00:963c:5455:c10e:fa6f? (p200300cbc706bd00963c5455c10efa6f.dip0.t-ipconnect.de. [2003:cb:c706:bd00:963c:5455:c10e:fa6f])
+        by smtp.gmail.com with ESMTPSA id s7-20020a5d4247000000b0021018642ff8sm8136796wrr.76.2022.06.13.04.03.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Jun 2022 04:03:14 -0700 (PDT)
+Message-ID: <4c4cf0a8-aab6-2a17-e1f9-59d6700821b7@redhat.com>
+Date:   Mon, 13 Jun 2022 13:03:12 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v4 4/6] mm: Limit warning message in vmemmap_verify() to
+ once
+Content-Language: en-US
+To:     Wupeng Ma <mawupeng1@huawei.com>, corbet@lwn.net, will@kernel.org,
+        ardb@kernel.org, catalin.marinas@arm.com
+Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        dvhart@infradead.org, andy@infradead.org, rppt@kernel.org,
+        akpm@linux-foundation.org, paul.walmsley@sifive.com,
+        palmer@dabbelt.com, aou@eecs.berkeley.edu, paulmck@kernel.org,
+        keescook@chromium.org, songmuchun@bytedance.com,
+        rdunlap@infradead.org, damien.lemoal@opensource.wdc.com,
+        swboyd@chromium.org, wei.liu@kernel.org, robin.murphy@arm.com,
+        anshuman.khandual@arm.com, thunder.leizhen@huawei.com,
+        wangkefeng.wang@huawei.com, gpiccoli@igalia.com,
+        chenhuacai@kernel.org, geert@linux-m68k.org,
+        vijayb@linux.microsoft.com, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-mm@kvack.org, linux-riscv@lists.infradead.org
+References: <20220613082147.183145-1-mawupeng1@huawei.com>
+ <20220613082147.183145-5-mawupeng1@huawei.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220613082147.183145-5-mawupeng1@huawei.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: huangwenhui <huangwenhuia@uniontech.com>
+On 13.06.22 10:21, Wupeng Ma wrote:
+> From: Ma Wupeng <mawupeng1@huawei.com>
+> 
+> For a system only have limited mirrored memory or some numa node without
+> mirrored memory, the per node vmemmap page_structs prefer to allocate
+> memory from mirrored region, which will lead to vmemmap_verify() in
+> vmemmap_populate_basepages() report lots of warning message.
+> 
+> This patch change the frequency of "potential offnode page_structs" warning
+> messages to only once to avoid a very long print during bootup.
+> 
+> Signed-off-by: Ma Wupeng <mawupeng1@huawei.com>
+> ---
+>  mm/sparse-vmemmap.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/mm/sparse-vmemmap.c b/mm/sparse-vmemmap.c
+> index f4fa61dbbee3..f34c6889b0a6 100644
+> --- a/mm/sparse-vmemmap.c
+> +++ b/mm/sparse-vmemmap.c
+> @@ -528,7 +528,7 @@ void __meminit vmemmap_verify(pte_t *pte, int node,
+>  	int actual_node = early_pfn_to_nid(pfn);
+>  
+>  	if (node_distance(actual_node, node) > LOCAL_DISTANCE)
+> -		pr_warn("[%lx-%lx] potential offnode page_structs\n",
+> +		pr_warn_once("[%lx-%lx] potential offnode page_structs\n",
+>  			start, end - 1);
+>  }
+>  
 
-commit d5ea7544c32ba27c2c5826248e4ff58bd50a2518 upstream.
+Acked-by: David Hildenbrand <david@redhat.com>
 
-On a machine with CX20632, Alsamixer doesn't have 'Loopback
-Mixing' and 'Line'.
+-- 
+Thanks,
 
-Signed-off-by: huangwenhui <huangwenhuia@uniontech.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220607065631.10708-1-huangwenhuia@uniontech.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- sound/pci/hda/patch_conexant.c |    7 +++++++
- 1 file changed, 7 insertions(+)
-
---- a/sound/pci/hda/patch_conexant.c
-+++ b/sound/pci/hda/patch_conexant.c
-@@ -1025,6 +1025,13 @@ static int patch_conexant_auto(struct hd
- 		snd_hda_pick_fixup(codec, cxt5051_fixup_models,
- 				   cxt5051_fixups, cxt_fixups);
- 		break;
-+	case 0x14f15098:
-+		codec->pin_amp_workaround = 1;
-+		spec->gen.mixer_nid = 0x22;
-+		spec->gen.add_stereo_mix_input = HDA_HINT_STEREO_MIX_AUTO;
-+		snd_hda_pick_fixup(codec, cxt5066_fixup_models,
-+				   cxt5066_fixups, cxt_fixups);
-+		break;
- 	case 0x14f150f2:
- 		codec->power_save_node = 1;
- 		/* Fall through */
-
+David / dhildenb
 
