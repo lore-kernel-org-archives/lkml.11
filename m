@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 846B6CCA486
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:47:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D883CCA48A
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:47:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386435AbiFMOqC (ORCPT
+        id S1385791AbiFMOqG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:46:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35180 "EHLO
+        Mon, 13 Jun 2022 10:46:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385743AbiFMOnr (ORCPT
+        with ESMTP id S1385778AbiFMOnu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:43:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA79B36D1;
-        Mon, 13 Jun 2022 04:50:57 -0700 (PDT)
+        Mon, 13 Jun 2022 10:43:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1C5EB2EB5;
+        Mon, 13 Jun 2022 04:50:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 528D8B80EE7;
-        Mon, 13 Jun 2022 11:50:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8DB3C3411B;
-        Mon, 13 Jun 2022 11:50:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 16505B80EE0;
+        Mon, 13 Jun 2022 11:50:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C28DC34114;
+        Mon, 13 Jun 2022 11:50:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655121056;
-        bh=uhW25EozutZzWs6MSLcekzyeWE4XPsjrZvvnzpYVt2M=;
+        s=korg; t=1655121039;
+        bh=fBo64BZPeJDj+fAp8E68AIy/DBb/g/71roqjCJgbJno=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g6M9u1rvUBzKIWh6A7MwW+tW1hoFt8C27HAifYScbzIpVjROMhCVeb+H5zP+QNbkj
-         6bKlWm7zb4jJuecaE7blkBVODj1GPEStXxyAUzrCQaxmX5nykjNLY8ZXGR1McWO5ea
-         ziPEMJInF0rL6TWrqWyREEjXVIR7zN4FUbIC6h0s=
+        b=Mh1Uvroe0+8bnL9qZ9SVioSSMObXzMFzbRilKLg62Qul+hmSHHgs0W6UMM4zbWL3W
+         oIsrbRxzyv0iu1frwKjvZgx2D3M4a1UC4F0bM85B6kDQXsvco57LrKiTOa5gu/AT+x
+         G8T7HqEvv3MJ6k8FAjVRevinTZUB2THRIZMHV53k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bedant Patnaik <bedant.patnaik@gmail.com>,
-        Jorge Lopez <jorge.lopez2@hp.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 256/298] platform/x86: hp-wmi: Use zero insize parameter only when supported
-Date:   Mon, 13 Jun 2022 12:12:30 +0200
-Message-Id: <20220613094932.841909472@linuxfoundation.org>
+        stable@vger.kernel.org, Hou Tao <houtao1@huawei.com>,
+        Yu Kuai <yukuai3@huawei.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 242/298] nbd: fix race between nbd_alloc_config() and module removal
+Date:   Mon, 13 Jun 2022 12:12:16 +0200
+Message-Id: <20220613094932.426756218@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -51,136 +51,122 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bedant Patnaik <bedant.patnaik@gmail.com>
+From: Yu Kuai <yukuai3@huawei.com>
 
-[ Upstream commit 65f936f3535950d2643eac5bf34a735a0e428cdd ]
+[ Upstream commit c55b2b983b0fa012942c3eb16384b2b722caa810 ]
 
-commit be9d73e64957 ("platform/x86: hp-wmi: Fix 0x05 error code reported by
-several WMI calls") and commit 12b19f14a21a ("platform/x86: hp-wmi: Fix
-hp_wmi_read_int() reporting error (0x05)") cause ACPI BIOS Error (bug):
-Attempt to CreateField of length zero (20211217/dsopcode-133) because of
-the ACPI method HWMC, which unconditionally creates a Field of
-size (insize*8) bits:
-	CreateField (Arg1, 0x80, (Local5 * 0x08), DAIN)
-In cases where args->insize = 0, the Field size is 0, resulting in
-an error.
+When nbd module is being removing, nbd_alloc_config() may be
+called concurrently by nbd_genl_connect(), although try_module_get()
+will return false, but nbd_alloc_config() doesn't handle it.
 
-Fix this by using zero insize only if 0x5 error code is returned
+The race may lead to the leak of nbd_config and its related
+resources (e.g, recv_workq) and oops in nbd_read_stat() due
+to the unload of nbd module as shown below:
 
-Tested on Omen 15 AMD (2020) board ID: 8786.
+  BUG: kernel NULL pointer dereference, address: 0000000000000040
+  Oops: 0000 [#1] SMP PTI
+  CPU: 5 PID: 13840 Comm: kworker/u17:33 Not tainted 5.14.0+ #1
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
+  Workqueue: knbd16-recv recv_work [nbd]
+  RIP: 0010:nbd_read_stat.cold+0x130/0x1a4 [nbd]
+  Call Trace:
+   recv_work+0x3b/0xb0 [nbd]
+   process_one_work+0x1ed/0x390
+   worker_thread+0x4a/0x3d0
+   kthread+0x12a/0x150
+   ret_from_fork+0x22/0x30
 
-Fixes: be9d73e64957 ("platform/x86: hp-wmi: Fix 0x05 error code reported by several WMI calls")
-Signed-off-by: Bedant Patnaik <bedant.patnaik@gmail.com>
-Tested-by: Jorge Lopez <jorge.lopez2@hp.com>
-Link: https://lore.kernel.org/r/41be46743d21c78741232a47bbb5f1cdbcc3d21e.camel@gmail.com
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Fixing it by checking the return value of try_module_get()
+in nbd_alloc_config(). As nbd_alloc_config() may return ERR_PTR(-ENODEV),
+assign nbd->config only when nbd_alloc_config() succeeds to ensure
+the value of nbd->config is binary (valid or NULL).
+
+Also adding a debug message to check the reference counter
+of nbd_config during module removal.
+
+Signed-off-by: Hou Tao <houtao1@huawei.com>
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+Reviewed-by: Josef Bacik <josef@toxicpanda.com>
+Link: https://lore.kernel.org/r/20220521073749.3146892-3-yukuai3@huawei.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/x86/hp-wmi.c | 23 +++++++++++++++--------
- 1 file changed, 15 insertions(+), 8 deletions(-)
+ drivers/block/nbd.c | 28 +++++++++++++++++++---------
+ 1 file changed, 19 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/platform/x86/hp-wmi.c b/drivers/platform/x86/hp-wmi.c
-index 29ae35d15a41..c573bfd9ab0e 100644
---- a/drivers/platform/x86/hp-wmi.c
-+++ b/drivers/platform/x86/hp-wmi.c
-@@ -38,6 +38,7 @@ MODULE_ALIAS("wmi:5FB7F034-2C63-45e9-BE91-3D44E2C707E4");
- #define HPWMI_EVENT_GUID "95F24279-4D7B-4334-9387-ACCDC67EF61C"
- #define HPWMI_BIOS_GUID "5FB7F034-2C63-45e9-BE91-3D44E2C707E4"
- #define HP_OMEN_EC_THERMAL_PROFILE_OFFSET 0x95
-+#define zero_if_sup(tmp) (zero_insize_support?0:sizeof(tmp)) // use when zero insize is required
- 
- /* DMI board names of devices that should use the omen specific path for
-  * thermal profiles.
-@@ -200,6 +201,7 @@ static struct input_dev *hp_wmi_input_dev;
- static struct platform_device *hp_wmi_platform_dev;
- static struct platform_profile_handler platform_profile_handler;
- static bool platform_profile_support;
-+static bool zero_insize_support;
- 
- static struct rfkill *wifi_rfkill;
- static struct rfkill *bluetooth_rfkill;
-@@ -347,7 +349,7 @@ static int hp_wmi_read_int(int query)
- 	int val = 0, ret;
- 
- 	ret = hp_wmi_perform_query(query, HPWMI_READ, &val,
--				   0, sizeof(val));
-+				   zero_if_sup(val), sizeof(val));
- 
- 	if (ret)
- 		return ret < 0 ? ret : -EINVAL;
-@@ -383,7 +385,8 @@ static int hp_wmi_get_tablet_mode(void)
- 		return -ENODEV;
- 
- 	ret = hp_wmi_perform_query(HPWMI_SYSTEM_DEVICE_MODE, HPWMI_READ,
--				   system_device_mode, 0, sizeof(system_device_mode));
-+				   system_device_mode, zero_if_sup(system_device_mode),
-+				   sizeof(system_device_mode));
- 	if (ret < 0)
- 		return ret;
- 
-@@ -449,7 +452,7 @@ static int hp_wmi_fan_speed_max_get(void)
- 	int val = 0, ret;
- 
- 	ret = hp_wmi_perform_query(HPWMI_FAN_SPEED_MAX_GET_QUERY, HPWMI_GM,
--				   &val, 0, sizeof(val));
-+				   &val, zero_if_sup(val), sizeof(val));
- 
- 	if (ret)
- 		return ret < 0 ? ret : -EINVAL;
-@@ -461,7 +464,7 @@ static int __init hp_wmi_bios_2008_later(void)
+diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
+index b4d309af27dd..7af1c9dbe9f5 100644
+--- a/drivers/block/nbd.c
++++ b/drivers/block/nbd.c
+@@ -1533,15 +1533,20 @@ static struct nbd_config *nbd_alloc_config(void)
  {
- 	int state = 0;
- 	int ret = hp_wmi_perform_query(HPWMI_FEATURE_QUERY, HPWMI_READ, &state,
--				       0, sizeof(state));
-+				       zero_if_sup(state), sizeof(state));
- 	if (!ret)
- 		return 1;
+ 	struct nbd_config *config;
  
-@@ -472,7 +475,7 @@ static int __init hp_wmi_bios_2009_later(void)
- {
- 	u8 state[128];
- 	int ret = hp_wmi_perform_query(HPWMI_FEATURE2_QUERY, HPWMI_READ, &state,
--				       0, sizeof(state));
-+				       zero_if_sup(state), sizeof(state));
- 	if (!ret)
- 		return 1;
- 
-@@ -550,7 +553,7 @@ static int hp_wmi_rfkill2_refresh(void)
- 	int err, i;
- 
- 	err = hp_wmi_perform_query(HPWMI_WIRELESS2_QUERY, HPWMI_READ, &state,
--				   0, sizeof(state));
-+				   zero_if_sup(state), sizeof(state));
- 	if (err)
- 		return err;
- 
-@@ -952,7 +955,7 @@ static int __init hp_wmi_rfkill2_setup(struct platform_device *device)
- 	int err, i;
- 
- 	err = hp_wmi_perform_query(HPWMI_WIRELESS2_QUERY, HPWMI_READ, &state,
--				   0, sizeof(state));
-+				   zero_if_sup(state), sizeof(state));
- 	if (err)
- 		return err < 0 ? err : -EINVAL;
- 
-@@ -1410,11 +1413,15 @@ static int __init hp_wmi_init(void)
- {
- 	int event_capable = wmi_has_guid(HPWMI_EVENT_GUID);
- 	int bios_capable = wmi_has_guid(HPWMI_BIOS_GUID);
--	int err;
-+	int err, tmp = 0;
- 
- 	if (!bios_capable && !event_capable)
- 		return -ENODEV;
- 
-+	if (hp_wmi_perform_query(HPWMI_HARDWARE_QUERY, HPWMI_READ, &tmp,
-+				 sizeof(tmp), sizeof(tmp)) == HPWMI_RET_INVALID_PARAMETERS)
-+		zero_insize_support = true;
++	if (!try_module_get(THIS_MODULE))
++		return ERR_PTR(-ENODEV);
 +
- 	if (event_capable) {
- 		err = hp_wmi_input_setup();
- 		if (err)
+ 	config = kzalloc(sizeof(struct nbd_config), GFP_NOFS);
+-	if (!config)
+-		return NULL;
++	if (!config) {
++		module_put(THIS_MODULE);
++		return ERR_PTR(-ENOMEM);
++	}
++
+ 	atomic_set(&config->recv_threads, 0);
+ 	init_waitqueue_head(&config->recv_wq);
+ 	init_waitqueue_head(&config->conn_wait);
+ 	config->blksize_bits = NBD_DEF_BLKSIZE_BITS;
+ 	atomic_set(&config->live_connections, 0);
+-	try_module_get(THIS_MODULE);
+ 	return config;
+ }
+ 
+@@ -1568,12 +1573,13 @@ static int nbd_open(struct block_device *bdev, fmode_t mode)
+ 			mutex_unlock(&nbd->config_lock);
+ 			goto out;
+ 		}
+-		config = nbd->config = nbd_alloc_config();
+-		if (!config) {
+-			ret = -ENOMEM;
++		config = nbd_alloc_config();
++		if (IS_ERR(config)) {
++			ret = PTR_ERR(config);
+ 			mutex_unlock(&nbd->config_lock);
+ 			goto out;
+ 		}
++		nbd->config = config;
+ 		refcount_set(&nbd->config_refs, 1);
+ 		refcount_inc(&nbd->refs);
+ 		mutex_unlock(&nbd->config_lock);
+@@ -1980,13 +1986,14 @@ static int nbd_genl_connect(struct sk_buff *skb, struct genl_info *info)
+ 		nbd_put(nbd);
+ 		return -EINVAL;
+ 	}
+-	config = nbd->config = nbd_alloc_config();
+-	if (!nbd->config) {
++	config = nbd_alloc_config();
++	if (IS_ERR(config)) {
+ 		mutex_unlock(&nbd->config_lock);
+ 		nbd_put(nbd);
+ 		printk(KERN_ERR "nbd: couldn't allocate config\n");
+-		return -ENOMEM;
++		return PTR_ERR(config);
+ 	}
++	nbd->config = config;
+ 	refcount_set(&nbd->config_refs, 1);
+ 	set_bit(NBD_RT_BOUND, &config->runtime_flags);
+ 
+@@ -2559,6 +2566,9 @@ static void __exit nbd_cleanup(void)
+ 	while (!list_empty(&del_list)) {
+ 		nbd = list_first_entry(&del_list, struct nbd_device, list);
+ 		list_del_init(&nbd->list);
++		if (refcount_read(&nbd->config_refs))
++			printk(KERN_ERR "nbd: possibly leaking nbd_config (ref %d)\n",
++					refcount_read(&nbd->config_refs));
+ 		if (refcount_read(&nbd->refs) != 1)
+ 			printk(KERN_ERR "nbd: possibly leaking a device\n");
+ 		nbd_put(nbd);
 -- 
 2.35.1
 
