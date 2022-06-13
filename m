@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F13ADCCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1B5ACCA480
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:35:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355276AbiFMLer (ORCPT
+        id S1355211AbiFMLeo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:34:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46066 "EHLO
+        Mon, 13 Jun 2022 07:34:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354412AbiFML32 (ORCPT
+        with ESMTP id S1354402AbiFML32 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:29:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11E99CE1E;
-        Mon, 13 Jun 2022 03:44:10 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFA85CE03;
+        Mon, 13 Jun 2022 03:44:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C36D2B80D3A;
-        Mon, 13 Jun 2022 10:44:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 356F4C34114;
-        Mon, 13 Jun 2022 10:44:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6095661016;
+        Mon, 13 Jun 2022 10:44:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EFE3C34114;
+        Mon, 13 Jun 2022 10:44:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117047;
-        bh=raNARxJxJ8ZK2MaWnYTMF/mmOU1OqQLSOnfV4nYk1Wc=;
+        s=korg; t=1655117044;
+        bh=T7aZbuh/Zv3GICEPys+WZtiB+rtdzIMAxatixVfNBjc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dISAv4l1PBoQRcO4vMAnO5ifNw/bwmxLpr53zt7D6kFHaSOdsA0IxywWbpfrzWMy8
-         rIbKiEw4XTxJZBgMIyyHgDQ1+cG/5ef0FrNViV11GYabwZBDY1eAy/czm566DWrCjw
-         VRZxnqEysvBUrK73yfwjtBnsLvwypBPTbT9kNXAY=
+        b=uRElThdVaapKmN0b7fCpRrDStKSOe0EPgGDqjks4YUdKcVBP9nCGZo7ts5EgMPzgc
+         hcKuVdnIvGuL4QGQD8LU77hDmyC/vi6oU4eHo8vkfgy7nV2N+uDCYYHwrquA+CscmY
+         7Y7x9mC0G/Jvslmx85P6nuW2RZ6itR7aJjhPfdis=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Akira Yokosawa <akiyks@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>
-Subject: [PATCH 5.4 267/411] docs/conf.py: Cope with removal of language=None in Sphinx 5.0.0
-Date:   Mon, 13 Jun 2022 12:09:00 +0200
-Message-Id: <20220613094936.766667163@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Jarzmik <robert.jarzmik@free.fr>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 5.4 266/411] ARM: pxa: maybe fix gpio lookup tables
+Date:   Mon, 13 Jun 2022 12:08:59 +0200
+Message-Id: <20220613094936.736266224@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -49,48 +50,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Akira Yokosawa <akiyks@gmail.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-commit 627f01eab93d8671d4e4afee9b148f9998d20e7c upstream.
+commit 2672a4bff6c03a20d5ae460a091f67ee782c3eff upstream.
 
-One of the changes in Sphinx 5.0.0 [1] says [sic]:
+>From inspection I found a couple of GPIO lookups that are
+listed with device "gpio-pxa", but actually have a number
+from a different gpio controller.
 
-    5.0.0 final
+Try to rectify that here, with a guess of what the actual
+device name is.
 
-     - #10474: language does not accept None as it value.
-       The default value of language becomes to 'en' now.
-
-[1]: https://www.sphinx-doc.org/en/master/changes.html#release-5-0-0-released-may-30-2022
-
-It results in a new warning from Sphinx 5.0.0 [sic]:
-
-    WARNING: Invalid configuration value found: 'language = None'.
-    Update your configuration to a valid langauge code. Falling
-    back to 'en' (English).
-
-Silence the warning by using 'en'.
-It works with all the Sphinx versions required for building
-kernel documentation (1.7.9 or later).
-
-Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
-Link: https://lore.kernel.org/r/bd0c2ddc-2401-03cb-4526-79ca664e1cbe@gmail.com
+Acked-by: Robert Jarzmik <robert.jarzmik@free.fr>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 Cc: stable@vger.kernel.org
-Signed-off-by: Jonathan Corbet <corbet@lwn.net>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/conf.py |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/mach-pxa/cm-x300.c  |    8 ++++----
+ arch/arm/mach-pxa/magician.c |    2 +-
+ arch/arm/mach-pxa/tosa.c     |    4 ++--
+ 3 files changed, 7 insertions(+), 7 deletions(-)
 
---- a/Documentation/conf.py
-+++ b/Documentation/conf.py
-@@ -98,7 +98,7 @@ finally:
- #
- # This is also used if you do content translation via gettext catalogs.
- # Usually you set "language" from the command line for these cases.
--language = None
-+language = 'en'
- 
- # There are two options for replacing |today|: either, you set today to some
- # non-false value, then it is used:
+--- a/arch/arm/mach-pxa/cm-x300.c
++++ b/arch/arm/mach-pxa/cm-x300.c
+@@ -355,13 +355,13 @@ static struct platform_device cm_x300_sp
+ static struct gpiod_lookup_table cm_x300_spi_gpiod_table = {
+ 	.dev_id         = "spi_gpio",
+ 	.table          = {
+-		GPIO_LOOKUP("gpio-pxa", GPIO_LCD_SCL,
++		GPIO_LOOKUP("pca9555.1", GPIO_LCD_SCL - GPIO_LCD_BASE,
+ 			    "sck", GPIO_ACTIVE_HIGH),
+-		GPIO_LOOKUP("gpio-pxa", GPIO_LCD_DIN,
++		GPIO_LOOKUP("pca9555.1", GPIO_LCD_DIN - GPIO_LCD_BASE,
+ 			    "mosi", GPIO_ACTIVE_HIGH),
+-		GPIO_LOOKUP("gpio-pxa", GPIO_LCD_DOUT,
++		GPIO_LOOKUP("pca9555.1", GPIO_LCD_DOUT - GPIO_LCD_BASE,
+ 			    "miso", GPIO_ACTIVE_HIGH),
+-		GPIO_LOOKUP("gpio-pxa", GPIO_LCD_CS,
++		GPIO_LOOKUP("pca9555.1", GPIO_LCD_CS - GPIO_LCD_BASE,
+ 			    "cs", GPIO_ACTIVE_HIGH),
+ 		{ },
+ 	},
+--- a/arch/arm/mach-pxa/magician.c
++++ b/arch/arm/mach-pxa/magician.c
+@@ -675,7 +675,7 @@ static struct platform_device bq24022 =
+ static struct gpiod_lookup_table bq24022_gpiod_table = {
+ 	.dev_id = "gpio-regulator",
+ 	.table = {
+-		GPIO_LOOKUP("gpio-pxa", EGPIO_MAGICIAN_BQ24022_ISET2,
++		GPIO_LOOKUP("htc-egpio-0", EGPIO_MAGICIAN_BQ24022_ISET2 - MAGICIAN_EGPIO_BASE,
+ 			    NULL, GPIO_ACTIVE_HIGH),
+ 		GPIO_LOOKUP("gpio-pxa", GPIO30_MAGICIAN_BQ24022_nCHARGE_EN,
+ 			    "enable", GPIO_ACTIVE_LOW),
+--- a/arch/arm/mach-pxa/tosa.c
++++ b/arch/arm/mach-pxa/tosa.c
+@@ -295,9 +295,9 @@ static struct gpiod_lookup_table tosa_mc
+ 	.table = {
+ 		GPIO_LOOKUP("gpio-pxa", TOSA_GPIO_nSD_DETECT,
+ 			    "cd", GPIO_ACTIVE_LOW),
+-		GPIO_LOOKUP("gpio-pxa", TOSA_GPIO_SD_WP,
++		GPIO_LOOKUP("sharp-scoop.0", TOSA_GPIO_SD_WP - TOSA_SCOOP_GPIO_BASE,
+ 			    "wp", GPIO_ACTIVE_LOW),
+-		GPIO_LOOKUP("gpio-pxa", TOSA_GPIO_PWR_ON,
++		GPIO_LOOKUP("sharp-scoop.0", TOSA_GPIO_PWR_ON - TOSA_SCOOP_GPIO_BASE,
+ 			    "power", GPIO_ACTIVE_HIGH),
+ 		{ },
+ 	},
 
 
