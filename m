@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AFB2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:37:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2296DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:37:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349497AbiFMMhh (ORCPT
+        id S1350094AbiFMMhj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:37:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49712 "EHLO
+        Mon, 13 Jun 2022 08:37:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353392AbiFMMfb (ORCPT
+        with ESMTP id S1347854AbiFMMgP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:35:31 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02FE31C929;
-        Mon, 13 Jun 2022 04:07:55 -0700 (PDT)
+        Mon, 13 Jun 2022 08:36:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DDF81CB38;
+        Mon, 13 Jun 2022 04:07:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 73612CE1185;
-        Mon, 13 Jun 2022 11:07:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ABBAC34114;
-        Mon, 13 Jun 2022 11:07:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D483608C3;
+        Mon, 13 Jun 2022 11:07:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4050DC34114;
+        Mon, 13 Jun 2022 11:07:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118463;
-        bh=kQ9CY7qfRC61AELRVt8pgLCQlmpK47d5JfDENACx5Io=;
+        s=korg; t=1655118474;
+        bh=M+nrL1voRykk1xNL3fDXNbK7OXaK2QeZLJddAItmT9s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fJFspY9rdS8AnHAQN8Cw/4QH9hZcZKK5PuseZ6ve0cQjB9X3wTqnXqCqkdXyErfAV
-         b5IQfZBQdYSrEAJlsD/Oe7GBnXqTNx/GVR8rC1BexQ13SKvQNdcAE1Atj/g7JOmdpm
-         Xt5jZmLFtgRqxMnmujVIU2jJILYgbh+fdw39wV54=
+        b=daOUsIPkmkZ2XPiMNDdXDygEvseqvt2H3dohdJxsPlWrF3HTxrp3d9y6f1YUH9x7X
+         4+jhrXpxn6sJiCOFgEqTFWJeD1L4Q28hiX4WP9Wn8yIqnfWE0T4fB0KJ5vC56grWVJ
+         RPTgZR3+oe6KYu2oM6QRwQsse6zeTNztFLsQamiM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Ungerer <gerg@linux-m68k.org>,
+        stable@vger.kernel.org, Dongliang Mu <mudongliangabcd@gmail.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 085/172] m68knommu: fix undefined reference to `_init_sp
-Date:   Mon, 13 Jun 2022 12:10:45 +0200
-Message-Id: <20220613094910.827334536@linuxfoundation.org>
+Subject: [PATCH 5.10 071/172] scsi: sd: Fix potential NULL pointer dereference
+Date:   Mon, 13 Jun 2022 12:10:31 +0200
+Message-Id: <20220613094907.496963526@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -51,41 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Greg Ungerer <gerg@linux-m68k.org>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit a71b9e66fee47c59b3ec34e652b5c23bc6550794 ]
+[ Upstream commit 05fbde3a77a4f1d62e4c4428f384288c1f1a0be5 ]
 
-When configuring a nommu classic m68k system enabling the uboot parameter
-passing support (CONFIG_UBOOT) will produce the following compile error:
+If sd_probe() sees an early error before sdkp->device is initialized,
+sd_zbc_release_disk() is called. This causes a NULL pointer dereference
+when sd_is_zoned() is called inside that function. Avoid this by removing
+the call to sd_zbc_release_disk() in sd_probe() error path.
 
-   m68k-linux-ld: arch/m68k/kernel/uboot.o: in function `process_uboot_commandline':
-   uboot.c:(.init.text+0x32): undefined reference to `_init_sp'
+This change is safe and does not result in zone information memory leakage
+because the zone information for a zoned disk is allocated only when
+sd_revalidate_disk() is called, at which point sdkp->disk_dev is fully set,
+resulting in sd_disk_release() being called when needed to cleanup a disk
+zone information using sd_zbc_release_disk().
 
-The logic to support this option is only used on ColdFire based platforms
-(in its head.S startup code). So make the selection of this option
-depend on building for a ColdFire based platform.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
+Link: https://lore.kernel.org/r/20220601062544.905141-2-damien.lemoal@opensource.wdc.com
+Fixes: 89d947561077 ("sd: Implement support for ZBC devices")
+Reported-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Suggested-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/m68k/Kconfig.machine | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/scsi/sd.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/arch/m68k/Kconfig.machine b/arch/m68k/Kconfig.machine
-index 51a878803fb6..16730561d166 100644
---- a/arch/m68k/Kconfig.machine
-+++ b/arch/m68k/Kconfig.machine
-@@ -321,6 +321,7 @@ comment "Machine Options"
- 
- config UBOOT
- 	bool "Support for U-Boot command line parameters"
-+	depends on COLDFIRE
- 	help
- 	  If you say Y here kernel will try to collect command
- 	  line parameters from the initial u-boot stack.
+diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
+index 56e291708587..bd068d3bb455 100644
+--- a/drivers/scsi/sd.c
++++ b/drivers/scsi/sd.c
+@@ -3511,7 +3511,6 @@ static int sd_probe(struct device *dev)
+  out_put:
+ 	put_disk(gd);
+  out_free:
+-	sd_zbc_release_disk(sdkp);
+ 	kfree(sdkp);
+  out:
+ 	scsi_autopm_put_device(sdp);
 -- 
 2.35.1
 
