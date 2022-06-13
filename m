@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9D8ECCA481
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:47:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BFDBCCA481
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:47:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347815AbiFMUqz (ORCPT
+        id S1349592AbiFMUrA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:46:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54832 "EHLO
+        Mon, 13 Jun 2022 16:47:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350880AbiFMUqQ (ORCPT
+        with ESMTP id S1350558AbiFMUqE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:46:16 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11AE264C1
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:57:39 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id i64so6662007pfc.8
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:57:39 -0700 (PDT)
+        Mon, 13 Jun 2022 16:46:04 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2534280
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:57:26 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id h192so6501849pgc.4
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:57:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=nT549qJtxV1BDDwSTKGaAnqRktoPUt/jLCJWLyiPvHw=;
-        b=BInp8cPtPQ4tK/ffMW4nn4lxciVcZ+ZvBkzgyySFAs7iefoJqIbAP4xFkGqyL37X/X
-         QXxWt6GI9d6ccwv4X1BmqqGN+EIjbOPH6WwQ5WlLMlG2QMiBmuXx1Z+Hd/ksSeG2H1Um
-         EqkeLB+Is+HjMnDt1Jq7FjCJwXZ3l/fMEOB3PVymJpLF3U5H9nXzGGlSLX+ES3uq+p64
-         Fu2xBZEMgvKz96+lkBo2JKQYbzaRb/J+0MH+oTebasIzixN9dGFlHzQaNlnvlk0KJZsw
-         IE1cdzkeDvtADYoexzp8jNInIheVq9nsosRQh+4FMBoDw0+EHy21vycjqA22JqJ8VBL2
-         Mdyw==
+        bh=KlpSKj9JOxZWHiDBe4+ujhnALAH7aoziqzJ/soAilmk=;
+        b=qA9A4Fka8Wr2+BYttjs3IXzbkv10TKHVOFBIwcQb402ENC23qLAb96PDlp0HKFtHBH
+         gDn+EHjSB7rG1NrjM3fc+UPI7M4UaryOzbZTzN9dePt5MZX8Zt8qNc/gPUU5fqPBW3ZN
+         VAw6uNCQxKRg6aj/KdwWkJlIzXQI6o4ZpYvzgYIAAWL/+S7hygXB8d4kporCLmEXflT2
+         TaAmtyCZeXZHTZklEHwGuUctzGtnA/kWBeA72Wqku9EPOKs8kLdPJGW3ULmR86feFpI3
+         zxFMLUez4AQcauxfanrHS0k5QqGdbfh8MUPF5vICDRmYX1oxgmLcJ0twh10uuY5tEvzu
+         j3Hw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=nT549qJtxV1BDDwSTKGaAnqRktoPUt/jLCJWLyiPvHw=;
-        b=DSJSACxtRcn2JekjkKTjvFqjroJAVUw+gXAoFTcLcE3JczlJ+xEE/Xqa/Gewf0RXx+
-         QyM47sPFHpBQJy2jQxRMF9fTG6DLLmqcLFOeIHDArjKFhO8RFy+h22pVkz7W+RotHnUy
-         LnNfbbcHNC2TdouQYFsCwJv1He9TSarh4wPrf1Lu/rtak1GoW5ct4kYVOxDPP7Eo91UW
-         8Wf8E1zNv2BTcZ2QkRyB8XA8u8SAU3NwOJpxMrDEluVwHcKuhgrPizVewrk7ks3DhR4U
-         9EuAjEFCat6d7gYfQkTzEp5dtUkQ5BMItsHZjgkeEKvFgUdbIoYjK0NHC22R0KViAJsE
-         4MgA==
-X-Gm-Message-State: AOAM532JnlibXh4YiNKZ+KJcOUZfXPZ7YGhsQLR4x+mFWoSRT5GS21vr
-        6As60SvDsnLZHrrKGun/nuXPgA==
-X-Google-Smtp-Source: AGRyM1sHNrT6EA1vne9zoqSs4Kj6VT7gGBwneqiLiE6fypf57czAytG3WSUZqOvsMu1OwLx726vyPQ==
-X-Received: by 2002:a05:6a00:338e:b0:51b:c452:4210 with SMTP id cm14-20020a056a00338e00b0051bc4524210mr583717pfb.69.1655150259258;
-        Mon, 13 Jun 2022 12:57:39 -0700 (PDT)
+        bh=KlpSKj9JOxZWHiDBe4+ujhnALAH7aoziqzJ/soAilmk=;
+        b=7AFfgzSPZqQWzSIRiWHxw91niK3Z1ZfmVdXZROlHaGOu1ki5cyaz5v1WhlCn0tiNsA
+         SPL4GXHCuQx+9H6Bk94P8YbJ76YaKAhlZbdfPQwCwqHr7p4R5aAkgrwTx80/mNI8MrzK
+         QWqH694xnwNN3jkY+2KUcRcp344/f7QWRpKU0tSTvqZYh5HfvJsFPOqQB18HIFeea/FD
+         bH0RTgSd5+Abeqt6jBB+YGt7sbmPlzO2hebRtEukFtw19Va7z3mV/xrQggzGvYpFNn55
+         mLIQvcA5u7x/wldib15phYcCGgolVF6lmMXpkuQ1uzNhY8zk6J89PwaPi9VaNMxlbUg8
+         erxA==
+X-Gm-Message-State: AOAM533X5xsKqqg+1lrkcbJvZQbgu1a8W1ySfysG/RUE+ddu4zgW9+Pc
+        MrPgJn+8Lsuz2x3mki0AhTyNOg==
+X-Google-Smtp-Source: ABdhPJwbv7pRTFzk4+nbaX7oGqRi9qzhXvoemRqwa0xYJcXUwR3JB4aRyw3D7Z04QgbHW03QXG4fdw==
+X-Received: by 2002:a63:234f:0:b0:405:3981:be7 with SMTP id u15-20020a63234f000000b0040539810be7mr1085120pgm.15.1655150246205;
+        Mon, 13 Jun 2022 12:57:26 -0700 (PDT)
 Received: from platform-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id q21-20020a170902edd500b0016797c33b6csm5509357plk.116.2022.06.13.12.57.37
+        by smtp.gmail.com with ESMTPSA id q21-20020a170902edd500b0016797c33b6csm5509357plk.116.2022.06.13.12.57.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 12:57:38 -0700 (PDT)
+        Mon, 13 Jun 2022 12:57:25 -0700 (PDT)
 From:   Brad Larson <brad@pensando.io>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
@@ -62,9 +62,9 @@ Cc:     linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
         robh+dt@kernel.org, samuel@sholland.org, fancer.lancer@gmail.com,
         suravee.suthikulpanit@amd.com, thomas.lendacky@amd.com,
         ulf.hansson@linaro.org, will@kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH v5 08/15] MAINTAINERS: Add entry for AMD PENSANDO
-Date:   Mon, 13 Jun 2022 12:56:51 -0700
-Message-Id: <20220613195658.5607-9-brad@pensando.io>
+Subject: [PATCH v5 02/15] dt-bindings: mmc: cdns: Add AMD Pensando Elba SoC binding
+Date:   Mon, 13 Jun 2022 12:56:45 -0700
+Message-Id: <20220613195658.5607-3-brad@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220613195658.5607-1-brad@pensando.io>
 References: <20220613195658.5607-1-brad@pensando.io>
@@ -74,34 +74,43 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Brad Larson <blarson@amd.com>
 
-Add entry for AMD PENSANDO maintainer and files
+AMD Pensando Elba ARM 64-bit SoC is integrated with this IP and
+explicitly controls byte-lane enables.
 
 Signed-off-by: Brad Larson <blarson@amd.com>
 ---
- MAINTAINERS | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ .../devicetree/bindings/mmc/cdns,sdhci.yaml        | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 91e9cd30326d..09828169c7c5 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1777,6 +1777,16 @@ N:	allwinner
- N:	sun[x456789]i
- N:	sun50i
+diff --git a/Documentation/devicetree/bindings/mmc/cdns,sdhci.yaml b/Documentation/devicetree/bindings/mmc/cdns,sdhci.yaml
+index 4207fed62dfe..35bc4cf6f214 100644
+--- a/Documentation/devicetree/bindings/mmc/cdns,sdhci.yaml
++++ b/Documentation/devicetree/bindings/mmc/cdns,sdhci.yaml
+@@ -13,10 +13,24 @@ maintainers:
+ allOf:
+   - $ref: mmc-controller.yaml
  
-+ARM/AMD PENSANDO ARM64 ARCHITECTURE
-+M:	Brad Larson <blarson@amd.com>
-+L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
-+S:	Supported
-+F:	Documentation/devicetree/bindings/*/amd,pensando*
-+F:	arch/arm64/boot/dts/amd/elba*
-+F:	drivers/mfd/pensando*
-+F:	drivers/reset/reset-elbasr.c
-+F:	include/dt-bindings/reset/amd,pensando*
++  - if:
++      properties:
++        compatible:
++          enum:
++            - amd,pensando-elba-sd4hc
++    then:
++      properties:
++        reg:
++          items:
++            - description: Cadence host controller registers
++            - description: Byte-lane control register
++          minItems: 2
 +
- ARM/Amlogic Meson SoC CLOCK FRAMEWORK
- M:	Neil Armstrong <narmstrong@baylibre.com>
- M:	Jerome Brunet <jbrunet@baylibre.com>
+ properties:
+   compatible:
+     items:
+       - enum:
++          - amd,pensando-elba-sd4hc
+           - microchip,mpfs-sd4hc
+           - socionext,uniphier-sd4hc
+       - const: cdns,sd4hc
 -- 
 2.17.1
 
