@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0DB1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:40:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48357CCA481
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:40:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348325AbiFMMkp (ORCPT
+        id S1351542AbiFMMkz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:40:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49812 "EHLO
+        Mon, 13 Jun 2022 08:40:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352727AbiFMMik (ORCPT
+        with ESMTP id S1355530AbiFMMjK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:38:40 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9990B5C771;
-        Mon, 13 Jun 2022 04:08:14 -0700 (PDT)
+        Mon, 13 Jun 2022 08:39:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67A6C3388B;
+        Mon, 13 Jun 2022 04:09:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A928DCE1193;
-        Mon, 13 Jun 2022 11:08:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFA0DC34114;
-        Mon, 13 Jun 2022 11:08:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2514DB80EAA;
+        Mon, 13 Jun 2022 11:09:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E0BCC34114;
+        Mon, 13 Jun 2022 11:09:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118491;
-        bh=pVbQQJnC2klcxehKXrT4BratL+k4FXGLii9HIRyxjdQ=;
+        s=korg; t=1655118546;
+        bh=z3JeTc4QV3sbDogezC0WvQrnNPjcN+SUQtDaUubSRX8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LMJwTC5klwa8SOhSDnmOuaPkXrCDhWqLXVh1UFGaFnNl3v+GAvYOoXTWX+G+dA6wj
-         2l6v3J81iVqcKnneYv1hKbUVy8UHBF8lQmnPJRJPGcShBe9gTsaviT5OJZWp2CMMST
-         85LLa2gn2OI50WhXNW5jaLbZqCIasFC+YSTmrrvc=
+        b=gIDxidRaX8cjfqK3+uQx4Ry4vR8vl4QUv4qzgvnF+3q3ppmHTEipk9vhQv1eRRWUO
+         MkmiQW9tX98ECX+Tu26HkFbY/ER3Q++bRJIfSn7vdIqZeklMEgPNy6IdNoa1I6i8jE
+         s+1tRYlXbK7t1t2hH+N9dkddWBGjCkZZZf8eYIgw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guoju Fang <gjfang@linux.alibaba.com>,
+        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Masahiro Yamada <masahiroy@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 067/172] net: sched: add barrier to fix packet stuck problem for lockless qdisc
-Date:   Mon, 13 Jun 2022 12:10:27 +0200
-Message-Id: <20220613094906.477256914@linuxfoundation.org>
+Subject: [PATCH 5.10 107/172] net: ipv6: unexport __init-annotated seg6_hmac_init()
+Date:   Mon, 13 Jun 2022 12:11:07 +0200
+Message-Id: <20220613094915.980170904@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -50,68 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guoju Fang <gjfang@linux.alibaba.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-[ Upstream commit 2e8728c955ce0624b958eee6e030a37aca3a5d86 ]
+[ Upstream commit 5801f064e35181c71857a80ff18af4dbec3c5f5c ]
 
-In qdisc_run_end(), the spin_unlock() only has store-release semantic,
-which guarantees all earlier memory access are visible before it. But
-the subsequent test_bit() has no barrier semantics so may be reordered
-ahead of the spin_unlock(). The store-load reordering may cause a packet
-stuck problem.
+EXPORT_SYMBOL and __init is a bad combination because the .init.text
+section is freed up after the initialization. Hence, modules cannot
+use symbols annotated __init. The access to a freed symbol may end up
+with kernel panic.
 
-The concurrent operations can be described as below,
-         CPU 0                      |          CPU 1
-   qdisc_run_end()                  |     qdisc_run_begin()
-          .                         |           .
- ----> /* may be reorderd here */   |           .
-|         .                         |           .
-|     spin_unlock()                 |         set_bit()
-|         .                         |         smp_mb__after_atomic()
- ---- test_bit()                    |         spin_trylock()
-          .                         |          .
+modpost used to detect it, but it has been broken for a decade.
 
-Consider the following sequence of events:
-    CPU 0 reorder test_bit() ahead and see MISSED = 0
-    CPU 1 calls set_bit()
-    CPU 1 calls spin_trylock() and return fail
-    CPU 0 executes spin_unlock()
+Recently, I fixed modpost so it started to warn it again, then this
+showed up in linux-next builds.
 
-At the end of the sequence, CPU 0 calls spin_unlock() and does nothing
-because it see MISSED = 0. The skb on CPU 1 has beed enqueued but no one
-take it, until the next cpu pushing to the qdisc (if ever ...) will
-notice and dequeue it.
+There are two ways to fix it:
 
-This patch fix this by adding one explicit barrier. As spin_unlock() and
-test_bit() ordering is a store-load ordering, a full memory barrier
-smp_mb() is needed here.
+  - Remove __init
+  - Remove EXPORT_SYMBOL
 
-Fixes: a90c57f2cedd ("net: sched: fix packet stuck problem for lockless qdisc")
-Signed-off-by: Guoju Fang <gjfang@linux.alibaba.com>
-Link: https://lore.kernel.org/r/20220528101628.120193-1-gjfang@linux.alibaba.com
+I chose the latter for this case because the caller (net/ipv6/seg6.c)
+and the callee (net/ipv6/seg6_hmac.c) belong to the same module.
+It seems an internal function call in ipv6.ko.
+
+Fixes: bf355b8d2c30 ("ipv6: sr: add core files for SR HMAC support")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/sch_generic.h | 6 ++++++
- 1 file changed, 6 insertions(+)
+ net/ipv6/seg6_hmac.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index 769764bda7a8..bed2387af456 100644
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -197,6 +197,12 @@ static inline void qdisc_run_end(struct Qdisc *qdisc)
- 	if (qdisc->flags & TCQ_F_NOLOCK) {
- 		spin_unlock(&qdisc->seqlock);
+diff --git a/net/ipv6/seg6_hmac.c b/net/ipv6/seg6_hmac.c
+index 85dddfe3a2c6..b9179708e3c1 100644
+--- a/net/ipv6/seg6_hmac.c
++++ b/net/ipv6/seg6_hmac.c
+@@ -400,7 +400,6 @@ int __init seg6_hmac_init(void)
+ {
+ 	return seg6_hmac_init_algo();
+ }
+-EXPORT_SYMBOL(seg6_hmac_init);
  
-+		/* spin_unlock() only has store-release semantic. The unlock
-+		 * and test_bit() ordering is a store-load ordering, so a full
-+		 * memory barrier is needed here.
-+		 */
-+		smp_mb();
-+
- 		if (unlikely(test_bit(__QDISC_STATE_MISSED,
- 				      &qdisc->state))) {
- 			clear_bit(__QDISC_STATE_MISSED, &qdisc->state);
+ int __net_init seg6_hmac_net_init(struct net *net)
+ {
 -- 
 2.35.1
 
