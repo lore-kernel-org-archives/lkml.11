@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E48C3C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:12:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FED8C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:13:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382102AbiFMOMw (ORCPT
+        id S1382113AbiFMOM7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:12:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51946 "EHLO
+        Mon, 13 Jun 2022 10:12:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382027AbiFMOFE (ORCPT
+        with ESMTP id S1382110AbiFMOFP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:05:04 -0400
+        Mon, 13 Jun 2022 10:05:15 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6D3092D24;
-        Mon, 13 Jun 2022 04:40:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AE2B9398E;
+        Mon, 13 Jun 2022 04:40:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B997F612E9;
-        Mon, 13 Jun 2022 11:40:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDCB8C341C0;
-        Mon, 13 Jun 2022 11:40:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AABFD60EAE;
+        Mon, 13 Jun 2022 11:40:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B17D4C34114;
+        Mon, 13 Jun 2022 11:40:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120410;
-        bh=ZbH9pa4GVZl8chzqpxZ9ElpY38vkVGcomBwO80YJbxU=;
+        s=korg; t=1655120421;
+        bh=0fLRRqfF3K12v1PzU3KVqPJmFNu0jucA711johY6/OU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d/CL7FiNJd39RYhzf5mJHIuHJF0AfjJ2ENSi7kkNQtp3gxhRg/E8iSLT9V66jdAX7
-         SaYuOD6JBp2yRGFk3FxtpRx2BHW4X/RYcTO+lsyQ2hCr5FOoYhO/Xu0bkTAID1+c10
-         3LisdtDf8hkRninsHD8exdtAUM3Pta3R3gJwuuaU=
+        b=b4hnvDYQDaNfwGdgyuIg93ojy+PkdX2Eoly/NR0Ml9viAZVV5DSM0I79wUC7yhPo4
+         FvbfhZOemZNQCxsAVpvLxOm1l0XuOJr/Cn7JbbxE1savdEpHiKfzNLKFyB4pL7n6Pk
+         0CVgoKa0MCQofHoowNjezDRi7D+8IGb/N0j1tsIo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, SeongJae Park <sj@kernel.org>,
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 023/298] scripts/get_abi: Fix wrong script file name in the help message
-Date:   Mon, 13 Jun 2022 12:08:37 +0200
-Message-Id: <20220613094925.632616409@linuxfoundation.org>
+Subject: [PATCH 5.17 027/298] rpmsg: virtio: Fix possible double free in rpmsg_probe()
+Date:   Mon, 13 Jun 2022 12:08:41 +0200
+Message-Id: <20220613094925.754205866@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -49,40 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: SeongJae Park <sj@kernel.org>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit 5b5bfecaa333fb6a0cce1bfc4852a622dacfed1d ]
+[ Upstream commit c2eecefec5df1306eafce28ccdf1ca159a552ecc ]
 
-The help message of 'get_abi.pl' is mistakenly saying it's
-'abi_book.pl'.  This commit fixes the wrong name in the help message.
+vch will be free in virtio_rpmsg_release_device() when
+rpmsg_ns_register_device() fails. There is no need to call kfree() again.
 
-Fixes: bbc249f2b859 ("scripts: add an script to parse the ABI files")
-Signed-off-by: SeongJae Park <sj@kernel.org>
-Link: https://lore.kernel.org/r/20220419121636.290407-1-sj@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix this by changing error path from free_vch to free_ctrldev.
+
+Fixes: c486682ae1e2 ("rpmsg: virtio: Register the rpmsg_char device")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Tested-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+Link: https://lore.kernel.org/r/20220426060536.15594-2-hbh25y@gmail.com
+Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/get_abi.pl | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/rpmsg/virtio_rpmsg_bus.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/scripts/get_abi.pl b/scripts/get_abi.pl
-index 6212f58b69c6..0cf501285204 100755
---- a/scripts/get_abi.pl
-+++ b/scripts/get_abi.pl
-@@ -980,11 +980,11 @@ __END__
+diff --git a/drivers/rpmsg/virtio_rpmsg_bus.c b/drivers/rpmsg/virtio_rpmsg_bus.c
+index ac764e04c898..1c39e9c4fa02 100644
+--- a/drivers/rpmsg/virtio_rpmsg_bus.c
++++ b/drivers/rpmsg/virtio_rpmsg_bus.c
+@@ -973,7 +973,8 @@ static int rpmsg_probe(struct virtio_device *vdev)
  
- =head1 NAME
+ 		err = rpmsg_ns_register_device(rpdev_ns);
+ 		if (err)
+-			goto free_vch;
++			/* vch will be free in virtio_rpmsg_release_device() */
++			goto free_ctrldev;
+ 	}
  
--abi_book.pl - parse the Linux ABI files and produce a ReST book.
-+get_abi.pl - parse the Linux ABI files and produce a ReST book.
+ 	/*
+@@ -997,8 +998,6 @@ static int rpmsg_probe(struct virtio_device *vdev)
  
- =head1 SYNOPSIS
+ 	return 0;
  
--B<abi_book.pl> [--debug <level>] [--enable-lineno] [--man] [--help]
-+B<get_abi.pl> [--debug <level>] [--enable-lineno] [--man] [--help]
- 	       [--(no-)rst-source] [--dir=<dir>] [--show-hints]
- 	       [--search-string <regex>]
- 	       <COMAND> [<ARGUMENT>]
+-free_vch:
+-	kfree(vch);
+ free_ctrldev:
+ 	rpmsg_virtio_del_ctrl_dev(rpdev_ctrl);
+ free_coherent:
 -- 
 2.35.1
 
