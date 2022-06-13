@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D1F7C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:59:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 072D1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:59:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379846AbiFMN7p (ORCPT
+        id S1379962AbiFMN7t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:59:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54164 "EHLO
+        Mon, 13 Jun 2022 09:59:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380249AbiFMNx5 (ORCPT
+        with ESMTP id S1380258AbiFMNx6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:53:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB9D02B248;
-        Mon, 13 Jun 2022 04:34:17 -0700 (PDT)
+        Mon, 13 Jun 2022 09:53:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 904D27DE1D;
+        Mon, 13 Jun 2022 04:34:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A0C0612BC;
-        Mon, 13 Jun 2022 11:34:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF330C34114;
-        Mon, 13 Jun 2022 11:34:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BDE7612D0;
+        Mon, 13 Jun 2022 11:34:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3898AC34114;
+        Mon, 13 Jun 2022 11:34:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120056;
-        bh=/iUON9WW6bsYbfVqaGxLRyqJA2zgabLnd46UiDlgoD8=;
+        s=korg; t=1655120059;
+        bh=FW/I7BVkoeE8In3t2dtd44ke8+0eARmdPhzZXUroxaY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZdYyQ7iOmAPtX6sv1gx9XRPgbF4B/N+WnSZsjj9/DMXuUGFcnXg7JT4p5R1XdjGrA
-         I6UfmpTDYhShMRhFCJy++VvlHP3ihTpXxhjAtPdiLeZPnK0y37sDHAGFoQLXytDg72
-         fouM2fCK7YDlzyZdfIgd57HqDvy2yoxN3KB4fibg=
+        b=Zhy8OVpiJjt5Uy7+J+hqv/f472BEzXwRoztJsoB2e/Zf07xGD051ncBsukVaoBapx
+         BOGECYHsMSmpqUN+lpvXhXQFwJt6rSVCo29KgIgb0VFwp6rD1jAZypxxhvS1Ajn61o
+         ALk6JjiTFJ25FFYfy7FypJHgBKecA79im9ZkdGdk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhen Ni <nizhen@uniontech.com>,
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 235/339] USB: host: isp116x: check return value after calling platform_get_resource()
-Date:   Mon, 13 Jun 2022 12:11:00 +0200
-Message-Id: <20220613094933.785529602@linuxfoundation.org>
+Subject: [PATCH 5.18 236/339] drivers: tty: serial: Fix deadlock in sa1100_set_termios()
+Date:   Mon, 13 Jun 2022 12:11:01 +0200
+Message-Id: <20220613094933.815191697@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -49,40 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhen Ni <nizhen@uniontech.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 134a3408c2d3f7e23eb0e4556e0a2d9f36c2614e ]
+[ Upstream commit 62b2caef400c1738b6d22f636c628d9f85cd4c4c ]
 
-It will cause null-ptr-deref if platform_get_resource() returns NULL,
-we need check the return value.
+There is a deadlock in sa1100_set_termios(), which is shown
+below:
 
-Signed-off-by: Zhen Ni <nizhen@uniontech.com>
-Link: https://lore.kernel.org/r/20220302033716.31272-1-nizhen@uniontech.com
+   (Thread 1)              |      (Thread 2)
+                           | sa1100_enable_ms()
+sa1100_set_termios()       |  mod_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | sa1100_timeout()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
+
+We hold sport->port.lock in position (1) of thread 1 and
+use del_timer_sync() to wait timer to stop, but timer handler
+also need sport->port.lock in position (2) of thread 2. As a result,
+sa1100_set_termios() will block forever.
+
+This patch moves del_timer_sync() before spin_lock_irqsave()
+in order to prevent the deadlock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417111626.7802-1-duoming@zju.edu.cn
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/isp116x-hcd.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/tty/serial/sa1100.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/usb/host/isp116x-hcd.c b/drivers/usb/host/isp116x-hcd.c
-index 8835f6bd528e..8c7f0991c21b 100644
---- a/drivers/usb/host/isp116x-hcd.c
-+++ b/drivers/usb/host/isp116x-hcd.c
-@@ -1541,10 +1541,12 @@ static int isp116x_remove(struct platform_device *pdev)
+diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
+index 5fe6cccfc1ae..e64e42a19d1a 100644
+--- a/drivers/tty/serial/sa1100.c
++++ b/drivers/tty/serial/sa1100.c
+@@ -446,6 +446,8 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16); 
+ 	quot = uart_get_divisor(port, baud);
  
- 	iounmap(isp116x->data_reg);
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
--	release_mem_region(res->start, 2);
-+	if (res)
-+		release_mem_region(res->start, 2);
- 	iounmap(isp116x->addr_reg);
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	release_mem_region(res->start, 2);
-+	if (res)
-+		release_mem_region(res->start, 2);
++	del_timer_sync(&sport->timer);
++
+ 	spin_lock_irqsave(&sport->port.lock, flags);
  
- 	usb_put_hcd(hcd);
- 	return 0;
+ 	sport->port.read_status_mask &= UTSR0_TO_SM(UTSR0_TFS);
+@@ -476,8 +478,6 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
+ 				UTSR1_TO_SM(UTSR1_ROR);
+ 	}
+ 
+-	del_timer_sync(&sport->timer);
+-
+ 	/*
+ 	 * Update the per-port timeout.
+ 	 */
 -- 
 2.35.1
 
