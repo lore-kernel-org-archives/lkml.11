@@ -2,84 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 815C0CCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:00:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05CA6C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:00:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238381AbiFMMAM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:00:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41312 "EHLO
+        id S1356888AbiFMMAR (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 08:00:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357708AbiFMLzC (ORCPT
+        with ESMTP id S1357706AbiFMLzC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:55:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FABB2F3B2;
-        Mon, 13 Jun 2022 03:55:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FD942F39B;
+        Mon, 13 Jun 2022 03:55:52 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EFD8A61347;
-        Mon, 13 Jun 2022 10:55:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0C96C34114;
-        Mon, 13 Jun 2022 10:55:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117752;
-        bh=oor8bN+82wKK5vaxuVyT5VJsELNPUMS8U9YkS5hCLFM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fx+3kVt8/LtPKBRSQSpcAYpkpE3WXq8Aa+0VqctXQptq+I0oihHXYCvRX/mTCBmxM
-         RECL3i5uqzwWwh7W0CcoR6z/iQd9q13KHojYf/52hMBDoVmAZdFWiKGedck6foPQ5D
-         Wk8iCYyDESo55xXHRMga9Rfa1n/CbblpwGe0z1qo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 119/287] pinctrl: mvebu: Fix irq_of_parse_and_map() return value
-Date:   Mon, 13 Jun 2022 12:09:03 +0200
-Message-Id: <20220613094927.487609752@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
-References: <20220613094923.832156175@linuxfoundation.org>
-User-Agent: quilt/0.66
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 956946601674;
+        Mon, 13 Jun 2022 11:55:49 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1655117750;
+        bh=AYCMDXpnrnlhea7/vMZzgZlR6eZJdympQCVtx5OxpTM=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=a9CdHFRNL1cXCAvRh3XboG6jOiwZc4fzSdgrsQOHaYR4U5YU91vlz5msxD2p5T685
+         lrRe0P/w83HJGc/dmA+zxPrEaVOblxEPEL0usxx2u0eC9sul7icX7gHrUJTO3im7AJ
+         9lOGwrKI80poQ9yvcbLTRhmP4tFA5tfCyrQM7DHFPvr/s4Dftv1ZxlgnUcTZ0EKc4F
+         x2b7lXzuSt9Cke9UIztn45OivAJewKp5eRJqWd0GqVINKHCq6zQOteErj3iFsO9fTw
+         ZoMeIxiT4MBZK49qKgdXbIBC4tpTk6P+2KtV9C+l8PSenJ4oIOBMiR1L7XB4fJ1QAK
+         fRb9Z8IS6IG4w==
+Message-ID: <7d2a1d75-e400-71aa-7127-144e257f408d@collabora.com>
+Date:   Mon, 13 Jun 2022 12:55:46 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v11 10/12] drm/mediatek: dpi: Add dpintf support
+Content-Language: en-US
+To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, chunkuang.hu@kernel.org,
+        p.zabel@pengutronix.de, daniel@ffwll.ch, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        airlied@linux.ie
+Cc:     msp@baylibre.com, granquet@baylibre.com, jitao.shi@mediatek.com,
+        wenst@chromium.org, ck.hu@mediatek.com,
+        dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220613064841.10481-1-rex-bc.chen@mediatek.com>
+ <20220613064841.10481-11-rex-bc.chen@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220613064841.10481-11-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Il 13/06/22 08:48, Bo-Chen Chen ha scritto:
+> From: Guillaume Ranquet <granquet@baylibre.com>
+> 
+> dpintf is the displayport interface hardware unit. This unit is similar
+> to dpi and can reuse most of the code.
+> 
+> This patch adds support for mt8195-dpintf to this dpi driver. Main
+> differences are:
+>   - Some features/functional components are not available for dpintf
+>     which are now excluded from code execution once is_dpintf is set
+>   - dpintf can and needs to choose between different clockdividers based
+>     on the clockspeed. This is done by choosing a different clock parent.
+>   - There are two additional clocks that need to be managed. These are
+>     only set for dpintf and will be set to NULL if not supplied. The
+>     clk_* calls handle these as normal clocks then.
+>   - Some register contents differ slightly between the two components. To
+>     work around this I added register bits/masks with a DPINTF_ prefix
+>     and use them where different.
+> 
+> Based on a separate driver for dpintf created by
+> Jitao shi <jitao.shi@mediatek.com>.
+> 
+> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> [Bo-Chen: Modify reviewers' comments.]
+> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+> ---
+>   drivers/gpu/drm/mediatek/mtk_dpi.c          | 115 ++++++++++++++++++--
+>   drivers/gpu/drm/mediatek/mtk_dpi_regs.h     |  13 +++
+>   drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c |   4 +
+>   drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h |   1 +
+>   drivers/gpu/drm/mediatek/mtk_drm_drv.c      |   3 +
+>   5 files changed, 126 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> index 6b8cf648a5b5..08c8f21b4421 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> @@ -71,6 +71,7 @@ struct mtk_dpi {
+>   	void __iomem *regs;
+>   	struct device *dev;
+>   	struct clk *engine_clk;
+> +	struct clk *pll_gate_clk;
 
-[ Upstream commit 71bc7cf3be65bab441e03667cf215c557712976c ]
+You don't need this clock in this driver, at all.
 
-The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
+`pll_gate` would be CLK_VDO0_DP_INTF0_DP_INTF (parent = CLK_TOP_EDP);
 
-Fixes: 2f227605394b ("pinctrl: armada-37xx: Add irqchip support")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220422105339.78810-1-krzysztof.kozlowski@linaro.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/pinctrl/mvebu/pinctrl-armada-37xx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Currently, you're assigning CLK_TOP_EDP to "pixel", but you can, at this point,
+simply assign CLK_VDO0_DP_INTF0_DP_INTF to "pixel" instead... as when you call
+clk_prepare_enable() on it, that'll also take care of enabling its CLK_TOP_EDP
+parent for you.
 
-diff --git a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-index e69b84d9538a..0c0f834eab82 100644
---- a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-+++ b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-@@ -773,7 +773,7 @@ static int armada_37xx_irqchip_register(struct platform_device *pdev,
- 	for (i = 0; i < nr_irq_parent; i++) {
- 		int irq = irq_of_parse_and_map(np, i);
- 
--		if (irq < 0)
-+		if (!irq)
- 			continue;
- 
- 		gpiochip_set_chained_irqchip(gc, irqchip, irq,
--- 
-2.35.1
+You're not doing anything special if not taking care of enabling/disabling it.
 
-
+Regards,
+Angelo
 
