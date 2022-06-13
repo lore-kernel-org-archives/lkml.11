@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE845CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:20:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CEDECCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:20:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351410AbiFMMUc (ORCPT
+        id S1352491AbiFMMUk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:20:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49106 "EHLO
+        Mon, 13 Jun 2022 08:20:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353582AbiFMMRz (ORCPT
+        with ESMTP id S1351116AbiFMMRE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:17:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D7EA5622A;
-        Mon, 13 Jun 2022 04:02:39 -0700 (PDT)
+        Mon, 13 Jun 2022 08:17:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6053755364;
+        Mon, 13 Jun 2022 04:02:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4306561418;
-        Mon, 13 Jun 2022 11:02:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FEE5C3411C;
-        Mon, 13 Jun 2022 11:02:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 938ACB80EA7;
+        Mon, 13 Jun 2022 11:02:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 005F9C34114;
+        Mon, 13 Jun 2022 11:02:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118158;
-        bh=2+sXTKepR/8b3NHPfAW945T66hNq49V6LWnAU9ieP1E=;
+        s=korg; t=1655118150;
+        bh=Z8+PrSga9d0YPtEYqSJwlvySek2QnXEP68D62w7omUo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t6r74Qya5m33Zhxzo2xt3K8kcN1narDf4kyF0JnniR8OLaNPANoyTGNnmOhBhSYPw
-         ZCa0YIUY6mQGK9HHZXaQy/ABVgm3LpQQd7uEki+Ppf47vIv79rIR6c092adKlcSs2w
-         mL+G6gv1W3bXKYyAVGTHwRkCpeTpLM79iAM1A2uQ=
+        b=CEJsbnwvVuqusF1t8r2sAJidrKIt+5ZvTKtUCm95//mzUbgjMo0bWhixDFNUkzMCf
+         3tXyYBvXnLS+eqCiTFnDLef1gFik025SRQXmIt5mqQ3cAJ+fHhipExSS4vrsjAxu8v
+         T7RsHGqjyXgu72/Bs0RuGFcNvKE6UJ7AWz0+cJwM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org, Feras Daoud <ferasda@nvidia.com>,
+        Roy Novich <royno@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 247/287] drm: imx: fix compiler warning with gcc-12
-Date:   Mon, 13 Jun 2022 12:11:11 +0200
-Message-Id: <20220613094931.504930806@linuxfoundation.org>
+Subject: [PATCH 4.19 244/287] net/mlx5: Rearm the FW tracer after each tracer event
+Date:   Mon, 13 Jun 2022 12:11:08 +0200
+Message-Id: <20220613094931.414195334@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -50,46 +52,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Feras Daoud <ferasda@nvidia.com>
 
-[ Upstream commit 7aefd8b53815274f3ef398d370a3c9b27dd9f00c ]
+[ Upstream commit 8bf94e6414c9481bfa28269022688ab445d0081d ]
 
-Gcc-12 correctly warned about this code using a non-NULL pointer as a
-truth value:
+The current design does not arm the tracer if traces are available before
+the tracer string database is fully loaded, leading to an unfunctional tracer.
+This fix will rearm the tracer every time the FW triggers tracer event
+regardless of the tracer strings database status.
 
-  drivers/gpu/drm/imx/ipuv3-crtc.c: In function ‘ipu_crtc_disable_planes’:
-  drivers/gpu/drm/imx/ipuv3-crtc.c:72:21: error: the comparison will always evaluate as ‘true’ for the address of ‘plane’ will never be NULL [-Werror=address]
-     72 |                 if (&ipu_crtc->plane[1] && plane == &ipu_crtc->plane[1]->base)
-        |                     ^
-
-due to the extraneous '&' address-of operator.
-
-Philipp Zabel points out that The mistake had no adverse effect since
-the following condition doesn't actually dereference the NULL pointer,
-but the intent of the code was obviously to check for it, not to take
-the address of the member.
-
-Fixes: eb8c88808c83 ("drm/imx: add deferred plane disabling")
-Acked-by: Philipp Zabel <p.zabel@pengutronix.de>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: c71ad41ccb0c ("net/mlx5: FW tracer, events handling")
+Signed-off-by: Feras Daoud <ferasda@nvidia.com>
+Signed-off-by: Roy Novich <royno@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/imx/ipuv3-crtc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/imx/ipuv3-crtc.c b/drivers/gpu/drm/imx/ipuv3-crtc.c
-index ff34f9bb55a1..824c90dca730 100644
---- a/drivers/gpu/drm/imx/ipuv3-crtc.c
-+++ b/drivers/gpu/drm/imx/ipuv3-crtc.c
-@@ -71,7 +71,7 @@ static void ipu_crtc_disable_planes(struct ipu_crtc *ipu_crtc,
- 	drm_atomic_crtc_state_for_each_plane(plane, old_crtc_state) {
- 		if (plane == &ipu_crtc->plane[0]->base)
- 			disable_full = true;
--		if (&ipu_crtc->plane[1] && plane == &ipu_crtc->plane[1]->base)
-+		if (ipu_crtc->plane[1] && plane == &ipu_crtc->plane[1]->base)
- 			disable_partial = true;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
+index 2266c09b741a..a22e932a00b0 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
+@@ -637,6 +637,9 @@ static void mlx5_fw_tracer_handle_traces(struct work_struct *work)
+ 	if (!tracer->owner)
+ 		return;
+ 
++	if (unlikely(!tracer->str_db.loaded))
++		goto arm;
++
+ 	block_count = tracer->buff.size / TRACER_BLOCK_SIZE_BYTE;
+ 	start_offset = tracer->buff.consumer_index * TRACER_BLOCK_SIZE_BYTE;
+ 
+@@ -694,6 +697,7 @@ static void mlx5_fw_tracer_handle_traces(struct work_struct *work)
+ 						      &tmp_trace_block[TRACES_PER_BLOCK - 1]);
  	}
  
++arm:
+ 	mlx5_fw_tracer_arm(dev);
+ }
+ 
+@@ -935,8 +939,7 @@ void mlx5_fw_tracer_event(struct mlx5_core_dev *dev, struct mlx5_eqe *eqe)
+ 			queue_work(tracer->work_queue, &tracer->ownership_change_work);
+ 		break;
+ 	case MLX5_TRACER_SUBTYPE_TRACES_AVAILABLE:
+-		if (likely(tracer->str_db.loaded))
+-			queue_work(tracer->work_queue, &tracer->handle_traces_work);
++		queue_work(tracer->work_queue, &tracer->handle_traces_work);
+ 		break;
+ 	default:
+ 		mlx5_core_dbg(dev, "FWTracer: Event with unrecognized subtype: sub_type %d\n",
 -- 
 2.35.1
 
