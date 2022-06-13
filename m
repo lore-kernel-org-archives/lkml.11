@@ -2,146 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E839C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 06:51:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C79A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 06:51:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238272AbiFMGvS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 02:51:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59950 "EHLO
+        id S232830AbiFMGv0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 02:51:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238392AbiFMGvD (ORCPT
+        with ESMTP id S238389AbiFMGvG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 02:51:03 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9799F1EAE7
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 23:50:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655103006; x=1686639006;
+        Mon, 13 Jun 2022 02:51:06 -0400
+Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A30A31EAF3
+        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 23:50:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1655103008;
+  x=1686639008;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=RGtR00YXznzblbZw6feUnIn4iE2iFhjqHOStGqIumPY=;
-  b=d9tZu/eWNuxPSenGteO1BzHMy8LhFAsCllGFcW5oNWJ8D2RtgPFa6WTi
-   ItFhINYi0R9rn0SYr/Fpp7gfVlkAVCGuAjtuLKfVDCRCLK3y/E2gehlUv
-   BospXCSK2vsWiPwScmY7dKgRDiB3VvTbJc5gkOZxkmmg5baePoc7GMXX7
-   CNvtXCmTCf11HSVWeZJe2AXhdbEnTVekIcNYXsGcKMNRjMT3sg3kzxNXb
-   nYnkwpYpW3cpaNpiLID6bRlcdSUuZFCTqGFByZhBALLRWbpSjGp1XNGQV
-   yBhqCQQnWAttoFVWRRPAOkyd2wgRdKAaAzHQOA9wo3PNvTC2hDlme2xbj
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10376"; a="339861047"
-X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
-   d="scan'208";a="339861047"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2022 23:49:53 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
-   d="scan'208";a="567782758"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 12 Jun 2022 23:49:47 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o0dtS-000Kaj-UI;
-        Mon, 13 Jun 2022 06:49:46 +0000
-Date:   Mon, 13 Jun 2022 14:49:29 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kalesh Singh <kaleshsingh@google.com>, mark.rutland@arm.com,
-        broonie@kernel.org, maz@kernel.org
-Cc:     kbuild-all@lists.01.org, will@kernel.org, qperret@google.com,
-        tabba@google.com, surenb@google.com, tjmercier@google.com,
-        kernel-team@android.com, Kalesh Singh <kaleshsingh@google.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andrew Jones <drjones@redhat.com>,
-        Keir Fraser <keirf@google.com>,
-        Zenghui Yu <yuzenghui@huawei.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Oliver Upton <oupton@google.com>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 5/5] KVM: arm64: Unwind and dump nVHE hypervisor
- stacktrace
-Message-ID: <202206131423.8tjrMBgk-lkp@intel.com>
-References: <20220607165105.639716-6-kaleshsingh@google.com>
+  bh=lU9y07l9htX2Ezpv/Wvu2OgEPWWB1En/PGmEDFqjdJQ=;
+  b=fRhApd4ArXD3ZG3tGMvwHj3q3mVES9eQQ3RJz+k6CM50CPYApPGSw8Dc
+   5JSe8AF89GVg42zwXcrX5iHvJ9wHwJc+XA4QOYrPJ6ZQMnvK9SB8xF/8W
+   fJKCQfdqwRlzvt18kc4iqupgNk7GSCF3126fjQ2SCNDV8ahjA+7VpqB1/
+   e5Z4e54UXDYmubhDMYghN48w43EVNCHmQkXy5HPNvAE1BxIrz4G/6Q1Sx
+   JFocgTKqAev0Mpc0KP5rB58n6Pdrz+zlpHryZHFZ6cp3IDftFQtnD3P/O
+   eovElCL/+66tupSr8Fp7Ld6QT8/K27ftzhMnAQxReXGrDKxx/50BgfjPb
+   w==;
+Date:   Mon, 13 Jun 2022 08:50:05 +0200
+From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+CC:     Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        kernel <kernel@axis.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "linux-um@lists.infradead.org" <linux-um@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] um: virt-pci: set device ready in probe()
+Message-ID: <20220613065004.GA21804@axis.com>
+References: <20220610151203.3492541-1-vincent.whitchurch@axis.com>
+ <20220610203029-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20220607165105.639716-6-kaleshsingh@google.com>
+In-Reply-To: <20220610203029-mutt-send-email-mst@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kalesh,
+On Sat, Jun 11, 2022 at 02:34:04AM +0200, Michael S. Tsirkin wrote:
+> BTW Johannes I think you need to spec this device and get
+> an ID - what's the plan for that? Current hack of punting
+> this to userspace isn't really any good long term.
 
-Thank you for the patch! Yet something to improve:
-
-[auto build test ERROR on f2906aa863381afb0015a9eb7fefad885d4e5a56]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Kalesh-Singh/KVM-nVHE-Hypervisor-stack-unwinder/20220608-011351
-base:   f2906aa863381afb0015a9eb7fefad885d4e5a56
-config: arm64-randconfig-c024-20220612 (https://download.01.org/0day-ci/archive/20220613/202206131423.8tjrMBgk-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/ac1ce397ffe5b05df06cdb56a30db4099c7428ec
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Kalesh-Singh/KVM-nVHE-Hypervisor-stack-unwinder/20220608-011351
-        git checkout ac1ce397ffe5b05df06cdb56a30db4099c7428ec
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   aarch64-linux-ld: arch/arm64/kernel/stacktrace.o: in function `hyp_dump_backtrace':
->> arch/arm64/kernel/stacktrace.c:254: undefined reference to `kvm_arm_hyp_stacktrace_page'
-   aarch64-linux-ld: arch/arm64/kernel/stacktrace.o: relocation R_AARCH64_ADR_PREL_PG_HI21 against symbol `kvm_arm_hyp_stacktrace_page' which may bind externally can not be used when making a shared object; recompile with -fPIC
-   arch/arm64/kernel/stacktrace.c:254:(.text+0x634): dangerous relocation: unsupported relocation
->> aarch64-linux-ld: arch/arm64/kernel/stacktrace.c:254: undefined reference to `kvm_arm_hyp_stacktrace_page'
-   pahole: .tmp_vmlinux.btf: No such file or directory
-   .btf.vmlinux.bin.o: file not recognized: file format not recognized
-
-
-vim +254 arch/arm64/kernel/stacktrace.c
-
-   246	
-   247	/**
-   248	 * Symbolizes and dumps the hypervisor backtrace from the shared
-   249	 * stacktrace page.
-   250	 */
-   251	noinline notrace void hyp_dump_backtrace(unsigned long hyp_offset)
-   252	{
-   253		unsigned long *stacktrace_pos =
- > 254			(unsigned long *)*this_cpu_ptr(&kvm_arm_hyp_stacktrace_page);
-   255		unsigned long va_mask = GENMASK_ULL(vabits_actual - 1, 0);
-   256		unsigned long pc = *stacktrace_pos++;
-   257	
-   258		kvm_err("nVHE HYP call trace:\n");
-   259	
-   260		while (pc) {
-   261			pc &= va_mask;		/* Mask tags */
-   262			pc += hyp_offset;	/* Convert to kern addr */
-   263			kvm_err("[<%016lx>] %pB\n", pc, (void *)pc);
-   264			pc = *stacktrace_pos++;
-   265		}
-   266	
-   267		kvm_err("---- end of nVHE HYP call trace ----\n");
-   268	}
-   269	#else /* __KVM_NVHE_HYPERVISOR__ */
-   270	DEFINE_PER_CPU(unsigned long [PAGE_SIZE/sizeof(long)], overflow_stack)
-   271		__aligned(16);
-   272	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+There is work ongoing in QEMU to add a new vfio-user protocol to support
+out-of-process PCI device emulation.  Perhaps an option would be to use
+that protocol instead in UML too in the future?
