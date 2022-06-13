@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ED80C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:51:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1651DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:51:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379918AbiFMNvp (ORCPT
+        id S1379935AbiFMNvs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:51:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42694 "EHLO
+        Mon, 13 Jun 2022 09:51:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379762AbiFMNpF (ORCPT
+        with ESMTP id S1379279AbiFMNn5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:45:05 -0400
+        Mon, 13 Jun 2022 09:43:57 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EAABF25;
-        Mon, 13 Jun 2022 04:32:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB3053F334;
+        Mon, 13 Jun 2022 04:31:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9F3C2B80E93;
-        Mon, 13 Jun 2022 11:32:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15BE1C36B0A;
-        Mon, 13 Jun 2022 11:32:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 015F8B80E59;
+        Mon, 13 Jun 2022 11:31:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CDD5C34114;
+        Mon, 13 Jun 2022 11:31:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119953;
-        bh=OFNj5xmXGxE4mdg0R2KYtiLRMIxzRi9bXGMK1v6AV0s=;
+        s=korg; t=1655119914;
+        bh=tGBlJ7JY+s3B2/qOb54Hys5f330KW69tkUwoYC4ttqk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d7a/7oq0jypROSDCsf3AacsqV7z5C0NJPpbUQKprBFYhVRKrG0scvrDQN1utRhjCZ
-         Ui6VrCRfURFgOSZEuTeQCWNb/1b2Y3Wshy1MEOS/ETjHhQVoGlluOdHF3akcHpnHeX
-         wd7G+14QeZH9qFFh8APGKRcho2n/Xffc5iF0umR4=
+        b=0VUuNy2635MEfkFBWjdjPVOARutxL+9tcawq7+iSVdMNNOG6GsxbUl1FtpyQFoeuZ
+         bJf2pMsuWMbJMxDznasNpZ/lOhslw2A8jK024Oha7ibyFc/MCoMnlAVGTjvD1LaFrn
+         1y/VjtOLIPmVU82861v8Lmou4Hp/TtwRBlyAINAg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Steven Price <steven.price@arm.com>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+        stable@vger.kernel.org, Trond Myklebust <trondmy@hammerspace.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 178/339] drm/panfrost: Job should reference MMU not file_priv
-Date:   Mon, 13 Jun 2022 12:10:03 +0200
-Message-Id: <20220613094932.073544035@linuxfoundation.org>
+Subject: [PATCH 5.18 184/339] NFSD: Fix potential use-after-free in nfsd_file_put()
+Date:   Mon, 13 Jun 2022 12:10:09 +0200
+Message-Id: <20220613094932.258210982@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,102 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Price <steven.price@arm.com>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-[ Upstream commit 6e516faf04317db2c46cbec4e3b78b4653a5b109 ]
+[ Upstream commit b6c71c66b0ad8f2b59d9bc08c7a5079b110bec01 ]
 
-For a while now it's been allowed for a MMU context to outlive it's
-corresponding panfrost_priv, however the job structure still references
-panfrost_priv to get hold of the MMU context. If panfrost_priv has been
-freed this is a use-after-free which I've been able to trigger resulting
-in a splat.
+nfsd_file_put_noref() can free @nf, so don't dereference @nf
+immediately upon return from nfsd_file_put_noref().
 
-To fix this, drop the reference to panfrost_priv in the job structure
-and add a direct reference to the MMU structure which is what's actually
-needed.
-
-Fixes: 7fdc48cc63a3 ("drm/panfrost: Make sure MMU context lifetime is not bound to panfrost_priv")
-Signed-off-by: Steven Price <steven.price@arm.com>
-Acked-by: Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220519152003.81081-1-steven.price@arm.com
+Suggested-by: Trond Myklebust <trondmy@hammerspace.com>
+Fixes: 999397926ab3 ("nfsd: Clean up nfsd_file_put()")
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/panfrost/panfrost_drv.c | 5 +++--
- drivers/gpu/drm/panfrost/panfrost_job.c | 6 +++---
- drivers/gpu/drm/panfrost/panfrost_job.h | 2 +-
- 3 files changed, 7 insertions(+), 6 deletions(-)
+ fs/nfsd/filecache.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/panfrost/panfrost_drv.c b/drivers/gpu/drm/panfrost/panfrost_drv.c
-index 94b6f0a19c83..47780fe597f2 100644
---- a/drivers/gpu/drm/panfrost/panfrost_drv.c
-+++ b/drivers/gpu/drm/panfrost/panfrost_drv.c
-@@ -233,6 +233,7 @@ static int panfrost_ioctl_submit(struct drm_device *dev, void *data,
- 		struct drm_file *file)
- {
- 	struct panfrost_device *pfdev = dev->dev_private;
-+	struct panfrost_file_priv *file_priv = file->driver_priv;
- 	struct drm_panfrost_submit *args = data;
- 	struct drm_syncobj *sync_out = NULL;
- 	struct panfrost_job *job;
-@@ -262,12 +263,12 @@ static int panfrost_ioctl_submit(struct drm_device *dev, void *data,
- 	job->jc = args->jc;
- 	job->requirements = args->requirements;
- 	job->flush_id = panfrost_gpu_get_latest_flush_id(pfdev);
--	job->file_priv = file->driver_priv;
-+	job->mmu = file_priv->mmu;
- 
- 	slot = panfrost_job_get_slot(job);
- 
- 	ret = drm_sched_job_init(&job->base,
--				 &job->file_priv->sched_entity[slot],
-+				 &file_priv->sched_entity[slot],
- 				 NULL);
- 	if (ret)
- 		goto out_put_job;
-diff --git a/drivers/gpu/drm/panfrost/panfrost_job.c b/drivers/gpu/drm/panfrost/panfrost_job.c
-index a6925dbb6224..22c2af1a4627 100644
---- a/drivers/gpu/drm/panfrost/panfrost_job.c
-+++ b/drivers/gpu/drm/panfrost/panfrost_job.c
-@@ -201,7 +201,7 @@ static void panfrost_job_hw_submit(struct panfrost_job *job, int js)
- 		return;
- 	}
- 
--	cfg = panfrost_mmu_as_get(pfdev, job->file_priv->mmu);
-+	cfg = panfrost_mmu_as_get(pfdev, job->mmu);
- 
- 	job_write(pfdev, JS_HEAD_NEXT_LO(js), lower_32_bits(jc_head));
- 	job_write(pfdev, JS_HEAD_NEXT_HI(js), upper_32_bits(jc_head));
-@@ -431,7 +431,7 @@ static void panfrost_job_handle_err(struct panfrost_device *pfdev,
- 		job->jc = 0;
- 	}
- 
--	panfrost_mmu_as_put(pfdev, job->file_priv->mmu);
-+	panfrost_mmu_as_put(pfdev, job->mmu);
- 	panfrost_devfreq_record_idle(&pfdev->pfdevfreq);
- 
- 	if (signal_fence)
-@@ -452,7 +452,7 @@ static void panfrost_job_handle_done(struct panfrost_device *pfdev,
- 	 * happen when we receive the DONE interrupt while doing a GPU reset).
- 	 */
- 	job->jc = 0;
--	panfrost_mmu_as_put(pfdev, job->file_priv->mmu);
-+	panfrost_mmu_as_put(pfdev, job->mmu);
- 	panfrost_devfreq_record_idle(&pfdev->pfdevfreq);
- 
- 	dma_fence_signal_locked(job->done_fence);
-diff --git a/drivers/gpu/drm/panfrost/panfrost_job.h b/drivers/gpu/drm/panfrost/panfrost_job.h
-index 77e6d0e6f612..8becc1ba0eb9 100644
---- a/drivers/gpu/drm/panfrost/panfrost_job.h
-+++ b/drivers/gpu/drm/panfrost/panfrost_job.h
-@@ -17,7 +17,7 @@ struct panfrost_job {
- 	struct kref refcount;
- 
- 	struct panfrost_device *pfdev;
--	struct panfrost_file_priv *file_priv;
-+	struct panfrost_mmu *mmu;
- 
- 	/* Fence to be signaled by IRQ handler when the job is complete. */
- 	struct dma_fence *done_fence;
+diff --git a/fs/nfsd/filecache.c b/fs/nfsd/filecache.c
+index 2c1b027774d4..0326bdec5de7 100644
+--- a/fs/nfsd/filecache.c
++++ b/fs/nfsd/filecache.c
+@@ -306,11 +306,12 @@ nfsd_file_put(struct nfsd_file *nf)
+ 	if (test_bit(NFSD_FILE_HASHED, &nf->nf_flags) == 0) {
+ 		nfsd_file_flush(nf);
+ 		nfsd_file_put_noref(nf);
+-	} else {
++	} else if (nf->nf_file) {
+ 		nfsd_file_put_noref(nf);
+-		if (nf->nf_file)
+-			nfsd_file_schedule_laundrette();
+-	}
++		nfsd_file_schedule_laundrette();
++	} else
++		nfsd_file_put_noref(nf);
++
+ 	if (atomic_long_read(&nfsd_filecache_count) >= NFSD_FILE_LRU_LIMIT)
+ 		nfsd_file_gc();
+ }
 -- 
 2.35.1
 
