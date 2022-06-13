@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83141C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:00:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2F5FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:00:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357863AbiFML6Y (ORCPT
+        id S1357896AbiFML6f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:58:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53796 "EHLO
+        Mon, 13 Jun 2022 07:58:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356618AbiFMLur (ORCPT
+        with ESMTP id S1356637AbiFMLuw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:50:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E2942496B;
-        Mon, 13 Jun 2022 03:54:42 -0700 (PDT)
+        Mon, 13 Jun 2022 07:50:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89B8D2EA27;
+        Mon, 13 Jun 2022 03:54:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE30860F00;
-        Mon, 13 Jun 2022 10:54:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE508C34114;
-        Mon, 13 Jun 2022 10:54:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2937C61257;
+        Mon, 13 Jun 2022 10:54:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 391AFC3411C;
+        Mon, 13 Jun 2022 10:54:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117681;
-        bh=1m6/EIMpGD2Yh5Dld9xGWKJ9tHNx3A1+nVUUHQqiN/A=;
+        s=korg; t=1655117686;
+        bh=oOQCd3O8TsT5BkfgwcsQfEAO8Q1uoSf92FYpLqsVLUQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=paasS5reOilLHsxlPwrn4WQh6ZC8HGb9vJlsyCbfClQ/lb+DjsyviAsuHGy6Ek0rt
-         q0cTZesj7HGSKzmQ6MRm9tp1vcut1xU2gH6jDtjOrLZPbWfaizelEZAElXQBhaj+Ag
-         8IhFDCj9B08ULRUMm6kIojzSGXvDkZx6uHyjDe2Q=
+        b=Pb/j//N0FW9GsgbQhKa0DdZwXUmnnCqVdIOAmZMEPLxYBeJVwoYx5+5PTT169mS45
+         MlQbSFvBar6frAJ/gT0QsKWyChFyhIjG+m/wHvMwo/dXM2WSG9cg+p0HkcR78rXhZd
+         F/yI1DxES/roa5CXVXNT9CymGrCy1rJPZUmX83Jc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 093/287] ASoC: mxs-saif: Fix refcount leak in mxs_saif_probe
-Date:   Mon, 13 Jun 2022 12:08:37 +0200
-Message-Id: <20220613094926.699394462@linuxfoundation.org>
+Subject: [PATCH 4.19 083/287] drm/msm/hdmi: check return value after calling platform_get_resource_byname()
+Date:   Mon, 13 Jun 2022 12:08:27 +0200
+Message-Id: <20220613094926.394301928@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -50,34 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 2be84f73785fa9ed6443e3c5b158730266f1c2ee ]
+[ Upstream commit a36e506711548df923ceb7ec9f6001375be799a5 ]
 
-of_parse_phandle() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
+It will cause null-ptr-deref if platform_get_resource_byname() returns NULL,
+we need check the return value.
 
-Fixes: 08641c7c74dd ("ASoC: mxs: add device tree support for mxs-saif")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220511133725.39039-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: c6a57a50ad56 ("drm/msm/hdmi: add hdmi hdcp support (V3)")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/482992/
+Link: https://lore.kernel.org/r/20220422032227.2991553-1-yangyingliang@huawei.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/mxs/mxs-saif.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/msm/hdmi/hdmi.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/sound/soc/mxs/mxs-saif.c b/sound/soc/mxs/mxs-saif.c
-index 93c019670199..6d0ab4e75518 100644
---- a/sound/soc/mxs/mxs-saif.c
-+++ b/sound/soc/mxs/mxs-saif.c
-@@ -780,6 +780,7 @@ static int mxs_saif_probe(struct platform_device *pdev)
- 		saif->master_id = saif->id;
- 	} else {
- 		ret = of_alias_get_id(master, "saif");
-+		of_node_put(master);
- 		if (ret < 0)
- 			return ret;
- 		else
+diff --git a/drivers/gpu/drm/msm/hdmi/hdmi.c b/drivers/gpu/drm/msm/hdmi/hdmi.c
+index 33e083f71a17..0b7cb90d2826 100644
+--- a/drivers/gpu/drm/msm/hdmi/hdmi.c
++++ b/drivers/gpu/drm/msm/hdmi/hdmi.c
+@@ -148,6 +148,10 @@ static struct hdmi *msm_hdmi_init(struct platform_device *pdev)
+ 	/* HDCP needs physical address of hdmi register */
+ 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
+ 		config->mmio_name);
++	if (!res) {
++		ret = -EINVAL;
++		goto fail;
++	}
+ 	hdmi->mmio_phy_addr = res->start;
+ 
+ 	hdmi->qfprom_mmio = msm_ioremap(pdev,
 -- 
 2.35.1
 
