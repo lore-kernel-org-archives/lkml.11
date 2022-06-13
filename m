@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D834C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:48:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94E16C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:48:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379289AbiFMNr4 (ORCPT
+        id S1378913AbiFMNsK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:47:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60298 "EHLO
+        Mon, 13 Jun 2022 09:48:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379271AbiFMNkQ (ORCPT
+        with ESMTP id S1379229AbiFMNkE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:40:16 -0400
+        Mon, 13 Jun 2022 09:40:04 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00502205DB;
-        Mon, 13 Jun 2022 04:31:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF879DE9C;
+        Mon, 13 Jun 2022 04:30:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 824C7B80E59;
-        Mon, 13 Jun 2022 11:31:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0393C36B09;
-        Mon, 13 Jun 2022 11:31:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 734ABB80D3A;
+        Mon, 13 Jun 2022 11:30:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3898C34114;
+        Mon, 13 Jun 2022 11:30:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119865;
-        bh=EmEjY/2oupTS6JKEbxG775P6fh8XyKSAcBZ6LBmEp34=;
+        s=korg; t=1655119851;
+        bh=siH52ZOErEXaKkc+zCZh5cGKWahnj55KtXa/SZyoXvg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZJfiz9xPcJhBUNqtz3TEiqwhtrD47b8m46ErJbOACoAVMreUeJNXxt4qMlK8/AbrB
-         GiCHzqDZn2R7Qtn7xjs9NI2TF0vnadmXVVr5DwQNEDSezdYAIGOOThHxLbHcK4c3k1
-         IOI2JXXXolpHEM4BzFbg4wfoOVP/OPO8o7KSWEkY=
+        b=z3xK5D+UUiGz/vOuh6ZZVMvV881rgOLjcecK9J8zF5C3XPduIvX3xe1mo/gFCwFAd
+         0P9+pxI9TpFZsorojl46njpv+yklyYD2y99/PPnK7kDdtwzZILxSIzXSbHFOTG+HZG
+         2etzzcGHYFT+IHFG2o/F6QLFnYJu/Ceer9QgmsA0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hugh Dickens <hughd@google.com>,
-        Greg Ungerer <gerg@linux-m68k.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 166/339] m68knommu: set ZERO_PAGE() to the allocated zeroed page
-Date:   Mon, 13 Jun 2022 12:09:51 +0200
-Message-Id: <20220613094931.716276473@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 161/339] iommu/arm-smmu: fix possible null-ptr-deref in arm_smmu_device_probe()
+Date:   Mon, 13 Jun 2022 12:09:46 +0200
+Message-Id: <20220613094931.566885226@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,45 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Greg Ungerer <gerg@linux-m68k.org>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit dc068f46217970d9516f16cd37972a01d50dc055 ]
+[ Upstream commit d9ed8af1dee37f181096631fb03729ece98ba816 ]
 
-The non-MMU m68k pagetable ZERO_PAGE() macro is being set to the
-somewhat non-sensical value of "virt_to_page(0)". The zeroth page
-is not in any way guaranteed to be a page full of "0". So the result
-is that ZERO_PAGE() will almost certainly contain random values.
+It will cause null-ptr-deref when using 'res', if platform_get_resource()
+returns NULL, so move using 'res' after devm_ioremap_resource() that
+will check it to avoid null-ptr-deref.
+And use devm_platform_get_and_ioremap_resource() to simplify code.
 
-We already allocate a real "empty_zero_page" in the mm setup code shared
-between MMU m68k and non-MMU m68k. It is just not hooked up to the
-ZERO_PAGE() macro for the non-MMU m68k case.
-
-Fix ZERO_PAGE() to use the allocated "empty_zero_page" pointer.
-
-I am not aware of any specific issues caused by the old code.
-
-Link: https://lore.kernel.org/linux-m68k/2a462b23-5b8e-bbf4-ec7d-778434a3b9d7@google.com/T/#t
-Reported-by: Hugh Dickens <hughd@google.com>
-Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220425114136.2649310-1-yangyingliang@huawei.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/m68k/include/asm/pgtable_no.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iommu/arm/arm-smmu/arm-smmu.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/arch/m68k/include/asm/pgtable_no.h b/arch/m68k/include/asm/pgtable_no.h
-index 87151d67d91e..bce5ca56c388 100644
---- a/arch/m68k/include/asm/pgtable_no.h
-+++ b/arch/m68k/include/asm/pgtable_no.h
-@@ -42,7 +42,8 @@ extern void paging_init(void);
-  * ZERO_PAGE is a global shared page that is always zero: used
-  * for zero-mapped memory areas etc..
-  */
--#define ZERO_PAGE(vaddr)	(virt_to_page(0))
-+extern void *empty_zero_page;
-+#define ZERO_PAGE(vaddr)	(virt_to_page(empty_zero_page))
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+index 568cce590ccc..52b71f6aee3f 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+@@ -2092,11 +2092,10 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 	if (err)
+ 		return err;
  
- /*
-  * All 32bit addresses are effectively valid for vmalloc...
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	ioaddr = res->start;
+-	smmu->base = devm_ioremap_resource(dev, res);
++	smmu->base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+ 	if (IS_ERR(smmu->base))
+ 		return PTR_ERR(smmu->base);
++	ioaddr = res->start;
+ 	/*
+ 	 * The resource size should effectively match the value of SMMU_TOP;
+ 	 * stash that temporarily until we know PAGESIZE to validate it with.
 -- 
 2.35.1
 
