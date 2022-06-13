@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52C52C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:20:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D755AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:20:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353954AbiFMLUT (ORCPT
+        id S1352596AbiFMLSY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:20:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37694 "EHLO
+        Mon, 13 Jun 2022 07:18:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353626AbiFMLQH (ORCPT
+        with ESMTP id S1352799AbiFMLOX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:16:07 -0400
+        Mon, 13 Jun 2022 07:14:23 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2C4813CC6;
-        Mon, 13 Jun 2022 03:38:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8BC6B487;
+        Mon, 13 Jun 2022 03:37:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B05B0B80EAA;
-        Mon, 13 Jun 2022 10:38:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31B74C34114;
-        Mon, 13 Jun 2022 10:38:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 92230B80E5C;
+        Mon, 13 Jun 2022 10:36:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05942C34114;
+        Mon, 13 Jun 2022 10:36:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116713;
-        bh=twkjaCvw+iY8d/TN6MizToXxmaLIv4omzKq4wrD1nqM=;
+        s=korg; t=1655116618;
+        bh=yiNOSIgG1rAI1xTaElFhimm4IQ3iGvnoBLt15HG6IWU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E7Ukn5M39ZeZPDbJSJHOGcqC81e9MMw79z88QmtD2GpD4zPbO1LtjwjG12tnHRYPC
-         EtzpOlLiACWdIjMaHKpbfvZd9TCLBuoWwvaocrMDmbjec89eSwUZaL38gHafV9af5Y
-         pVdlOSnXR8qMId3RX1muQW1FTFqJO9tSFHM+2IdY=
+        b=rA8btv0fJm6wBV2npC2IoiUY9LEeImGhpQetQcMZm8dUFy54HuHQXULS3PfL/zx4y
+         gES25IkcV1zd91p7Q7tNKzriLpQoUfg9yh2cfL323F1Ua9YGLZeBUc/OyyEKcjf3Ja
+         7viX72NhfdfFlWa3Ki9QIRFrtHOw1PK+tjwLQPV8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Rob Clark <robdclark@chromium.org>,
+        stable@vger.kernel.org, Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Jessica Zhang <quic_jesszhan@quicinc.com>,
+        Rob Clark <robdclark@gmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 146/411] drm: msm: fix possible memory leak in mdp5_crtc_cursor_set()
-Date:   Mon, 13 Jun 2022 12:06:59 +0200
-Message-Id: <20220613094933.046765099@linuxfoundation.org>
+Subject: [PATCH 5.4 124/411] drm/msm/mdp5: Return error code in mdp5_pipe_release when deadlock is detected
+Date:   Mon, 13 Jun 2022 12:06:37 +0200
+Message-Id: <20220613094932.391571366@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,37 +52,130 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Jessica Zhang <quic_jesszhan@quicinc.com>
 
-[ Upstream commit 947a844bb3ebff0f4736d244d792ce129f6700d7 ]
+[ Upstream commit d59be579fa932c46b908f37509f319cbd4ca9a68 ]
 
-drm_gem_object_lookup will call drm_gem_object_get inside. So cursor_bo
-needs to be put when msm_gem_get_and_pin_iova fails.
+mdp5_get_global_state runs the risk of hitting a -EDEADLK when acquiring
+the modeset lock, but currently mdp5_pipe_release doesn't check for if
+an error is returned. Because of this, there is a possibility of
+mdp5_pipe_release hitting a NULL dereference error.
 
-Fixes: e172d10a9c4a ("drm/msm/mdp5: Add hardware cursor support")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Link: https://lore.kernel.org/r/20220509061125.18585-1-hbh25y@gmail.com
-Signed-off-by: Rob Clark <robdclark@chromium.org>
+To avoid this, let's have mdp5_pipe_release check if
+mdp5_get_global_state returns an error and propogate that error.
+
+Changes since v1:
+- Separated declaration and initialization of *new_state to avoid
+  compiler warning
+- Fixed some spelling mistakes in commit message
+
+Changes since v2:
+- Return 0 in case where hwpipe is NULL as this is considered normal
+  behavior
+- Added 2nd patch in series to fix a similar NULL dereference issue in
+  mdp5_mixer_release
+
+Reported-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Signed-off-by: Jessica Zhang <quic_jesszhan@quicinc.com>
+Fixes: 7907a0d77cb4 ("drm/msm/mdp5: Use the new private_obj state")
+Reviewed-by: Rob Clark <robdclark@gmail.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/485179/
+Link: https://lore.kernel.org/r/20220505214051.155-1-quic_jesszhan@quicinc.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c  | 15 +++++++++++----
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.h  |  2 +-
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c | 20 ++++++++++++++++----
+ 3 files changed, 28 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
-index 9afbce3cb87b..03d60eb09257 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
-@@ -909,8 +909,10 @@ static int mdp5_crtc_cursor_set(struct drm_crtc *crtc,
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
+index ba6695963aa6..a4f5cb90f3e8 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.c
+@@ -119,18 +119,23 @@ int mdp5_pipe_assign(struct drm_atomic_state *s, struct drm_plane *plane,
+ 	return 0;
+ }
  
- 	ret = msm_gem_get_and_pin_iova(cursor_bo, kms->aspace,
- 			&mdp5_crtc->cursor.iova);
--	if (ret)
-+	if (ret) {
-+		drm_gem_object_put(cursor_bo);
- 		return -EINVAL;
-+	}
+-void mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe)
++int mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe)
+ {
+ 	struct msm_drm_private *priv = s->dev->dev_private;
+ 	struct mdp5_kms *mdp5_kms = to_mdp5_kms(to_mdp_kms(priv->kms));
+ 	struct mdp5_global_state *state = mdp5_get_global_state(s);
+-	struct mdp5_hw_pipe_state *new_state = &state->hwpipe;
++	struct mdp5_hw_pipe_state *new_state;
  
- 	pm_runtime_get_sync(&pdev->dev);
+ 	if (!hwpipe)
+-		return;
++		return 0;
++
++	if (IS_ERR(state))
++		return PTR_ERR(state);
++
++	new_state = &state->hwpipe;
+ 
+ 	if (WARN_ON(!new_state->hwpipe_to_plane[hwpipe->idx]))
+-		return;
++		return -EINVAL;
+ 
+ 	DBG("%s: release from plane %s", hwpipe->name,
+ 		new_state->hwpipe_to_plane[hwpipe->idx]->name);
+@@ -141,6 +146,8 @@ void mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe)
+ 	}
+ 
+ 	new_state->hwpipe_to_plane[hwpipe->idx] = NULL;
++
++	return 0;
+ }
+ 
+ void mdp5_pipe_destroy(struct mdp5_hw_pipe *hwpipe)
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.h b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.h
+index 9b26d0761bd4..cca67938cab2 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.h
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_pipe.h
+@@ -37,7 +37,7 @@ int mdp5_pipe_assign(struct drm_atomic_state *s, struct drm_plane *plane,
+ 		     uint32_t caps, uint32_t blkcfg,
+ 		     struct mdp5_hw_pipe **hwpipe,
+ 		     struct mdp5_hw_pipe **r_hwpipe);
+-void mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe);
++int mdp5_pipe_release(struct drm_atomic_state *s, struct mdp5_hw_pipe *hwpipe);
+ 
+ struct mdp5_hw_pipe *mdp5_pipe_init(enum mdp5_pipe pipe,
+ 		uint32_t reg_offset, uint32_t caps);
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
+index da0799333970..0dc23c86747e 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c
+@@ -393,12 +393,24 @@ static int mdp5_plane_atomic_check_with_state(struct drm_crtc_state *crtc_state,
+ 				mdp5_state->r_hwpipe = NULL;
+ 
+ 
+-			mdp5_pipe_release(state->state, old_hwpipe);
+-			mdp5_pipe_release(state->state, old_right_hwpipe);
++			ret = mdp5_pipe_release(state->state, old_hwpipe);
++			if (ret)
++				return ret;
++
++			ret = mdp5_pipe_release(state->state, old_right_hwpipe);
++			if (ret)
++				return ret;
++
+ 		}
+ 	} else {
+-		mdp5_pipe_release(state->state, mdp5_state->hwpipe);
+-		mdp5_pipe_release(state->state, mdp5_state->r_hwpipe);
++		ret = mdp5_pipe_release(state->state, mdp5_state->hwpipe);
++		if (ret)
++			return ret;
++
++		ret = mdp5_pipe_release(state->state, mdp5_state->r_hwpipe);
++		if (ret)
++			return ret;
++
+ 		mdp5_state->hwpipe = mdp5_state->r_hwpipe = NULL;
+ 	}
  
 -- 
 2.35.1
