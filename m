@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 953C3C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:47:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23E6AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:48:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385660AbiFMOr5 (ORCPT
+        id S1385684AbiFMOsH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:47:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35816 "EHLO
+        Mon, 13 Jun 2022 10:48:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386242AbiFMOoz (ORCPT
+        with ESMTP id S1386315AbiFMOpC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:44:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 588DFB7175;
-        Mon, 13 Jun 2022 04:51:32 -0700 (PDT)
+        Mon, 13 Jun 2022 10:45:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47BB9B82C2;
+        Mon, 13 Jun 2022 04:51:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A98B61425;
-        Mon, 13 Jun 2022 11:51:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C32DC34114;
-        Mon, 13 Jun 2022 11:51:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0F148B80EB2;
+        Mon, 13 Jun 2022 11:51:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AD6AC341C5;
+        Mon, 13 Jun 2022 11:51:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655121091;
-        bh=2H2CyXv2Ye91YOMEfo5u5VeHXj+oImPJDnj3yXu5duQ=;
+        s=korg; t=1655121066;
+        bh=PaL1zTH1wXah+/4mOlA883UyymoOJto0oTy9ru8QEV0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OKFtyq0KFt27FDsT4RwHG/sNrtHAYrDJy4/76i/YRfK4vB2rR6a+UngNnWs18jQ8q
-         NEl2aj68OKZZmtypehbm6PXPSAz/nNNNebhBTk02qPHnVNb3wzMqeS1PKCqeUmH7Ed
-         iqYv2YpYrj17f04Yz55zmDnuz218wXmgR/ZRQfOo=
+        b=Crtnu6Ju+xLCwO5+rs7nAOJKWyq/KAJ3yDQ/sVr6dCL5Bkyo0IUPj2rDJ2gw62JMe
+         eNc4cpMTW7rG+201dpBzgDBgK7L6Kde8wvKJ5XkrDKSySWic5fWihfjqy1aWOpTmMV
+         GS9d1J1lNaX6aQpY7SGo/Wv1bJmQxsJLK7+Hhjxo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Cyril Brulebois <kibi@debian.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 245/298] Revert "PCI: brcmstb: Add control of subdevice voltage regulators"
-Date:   Mon, 13 Jun 2022 12:12:19 +0200
-Message-Id: <20220613094932.516560707@linuxfoundation.org>
+        stable@vger.kernel.org, Cameron Berkenpas <cam@neo-zeon.de>,
+        Takashi Iwai <tiwai@suse.de>,
+        Songine <donglingluoying@gmail.com>
+Subject: [PATCH 5.17 260/298] ALSA: hda/realtek: Fix for quirk to enable speaker output on the Lenovo Yoga DuetITL 2021
+Date:   Mon, 13 Jun 2022 12:12:34 +0200
+Message-Id: <20220613094932.961016048@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,197 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Helgaas <bhelgaas@google.com>
+From: Cameron Berkenpas <cam@neo-zeon.de>
 
-[ Upstream commit 212942609d83b591f5a2f2691df122d13aa3a87d ]
+commit 85743a847caeab696dafc4ce1a7e1e2b7e29a0f6 upstream.
 
-This reverts commit 93e41f3fca3d4a0f927b784012338c37f80a8a80.
+Enables the ALC287_FIXUP_YOGA7_14ITL_SPEAKERS quirk for the Lenovo
+Yoga DuetITL 2021 laptop to fix speaker output.
 
-This is part of a revert of the following commits:
+[ re-sorted in the SSID order by tiwai ]
 
-  11ed8b8624b8 ("PCI: brcmstb: Do not turn off WOL regulators on suspend")
-  93e41f3fca3d ("PCI: brcmstb: Add control of subdevice voltage regulators")
-  67211aadcb4b ("PCI: brcmstb: Add mechanism to turn on subdev regulators")
-  830aa6f29f07 ("PCI: brcmstb: Split brcm_pcie_setup() into two funcs")
-
-Cyril reported that 830aa6f29f07 ("PCI: brcmstb: Split brcm_pcie_setup()
-into two funcs"), which appeared in v5.17-rc1, broke booting on the
-Raspberry Pi Compute Module 4.  Apparently 830aa6f29f07 panics with an
-Asynchronous SError Interrupt, and after further commits here is a black
-screen on HDMI and no output on the serial console.
-
-This does not seem to affect the Raspberry Pi 4 B.
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215925
-Link: https://lore.kernel.org/r/20220511201856.808690-3-helgaas@kernel.org
-Reported-by: Cyril Brulebois <kibi@debian.org>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=208555
+Signed-off-by: Cameron Berkenpas <cam@neo-zeon.de>
+Co-authored-by: Songine <donglingluoying@gmail.com>
+Cc: stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220606002329.215330-1-cam@neo-zeon.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/pcie-brcmstb.c | 83 ++-------------------------
- 1 file changed, 5 insertions(+), 78 deletions(-)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/pci/controller/pcie-brcmstb.c b/drivers/pci/controller/pcie-brcmstb.c
-index 3edd63735948..fd464d38fecb 100644
---- a/drivers/pci/controller/pcie-brcmstb.c
-+++ b/drivers/pci/controller/pcie-brcmstb.c
-@@ -196,8 +196,6 @@ static inline void brcm_pcie_bridge_sw_init_set_generic(struct brcm_pcie *pcie,
- static inline void brcm_pcie_perst_set_4908(struct brcm_pcie *pcie, u32 val);
- static inline void brcm_pcie_perst_set_7278(struct brcm_pcie *pcie, u32 val);
- static inline void brcm_pcie_perst_set_generic(struct brcm_pcie *pcie, u32 val);
--static int brcm_pcie_linkup(struct brcm_pcie *pcie);
--static int brcm_pcie_add_bus(struct pci_bus *bus);
- 
- enum {
- 	RGR1_SW_INIT_1,
-@@ -331,8 +329,6 @@ struct brcm_pcie {
- 	u32			hw_rev;
- 	void			(*perst_set)(struct brcm_pcie *pcie, u32 val);
- 	void			(*bridge_sw_init_set)(struct brcm_pcie *pcie, u32 val);
--	bool			refusal_mode;
--	struct subdev_regulators *sr;
- };
- 
- static inline bool is_bmips(const struct brcm_pcie *pcie)
-@@ -501,34 +497,6 @@ static int pci_subdev_regulators_add_bus(struct pci_bus *bus)
- 	return 0;
- }
- 
--static int brcm_pcie_add_bus(struct pci_bus *bus)
--{
--	struct device *dev = &bus->dev;
--	struct brcm_pcie *pcie = (struct brcm_pcie *) bus->sysdata;
--	int ret;
--
--	if (!dev->of_node || !bus->parent || !pci_is_root_bus(bus->parent))
--		return 0;
--
--	ret = pci_subdev_regulators_add_bus(bus);
--	if (ret)
--		return ret;
--
--	/* Grab the regulators for suspend/resume */
--	pcie->sr = bus->dev.driver_data;
--
--	/*
--	 * If we have failed linkup there is no point to return an error as
--	 * currently it will cause a WARNING() from pci_alloc_child_bus().
--	 * We return 0 and turn on the "refusal_mode" so that any further
--	 * accesses to the pci_dev just get 0xffffffff
--	 */
--	if (brcm_pcie_linkup(pcie) != 0)
--		pcie->refusal_mode = true;
--
--	return 0;
--}
--
- static void pci_subdev_regulators_remove_bus(struct pci_bus *bus)
- {
- 	struct device *dev = &bus->dev;
-@@ -857,18 +825,6 @@ static void __iomem *brcm_pcie_map_conf(struct pci_bus *bus, unsigned int devfn,
- 	/* Accesses to the RC go right to the RC registers if slot==0 */
- 	if (pci_is_root_bus(bus))
- 		return PCI_SLOT(devfn) ? NULL : base + where;
--	if (pcie->refusal_mode) {
--		/*
--		 * At this point we do not have link.  There will be a CPU
--		 * abort -- a quirk with this controller --if Linux tries
--		 * to read any config-space registers besides those
--		 * targeting the host bridge.  To prevent this we hijack
--		 * the address to point to a safe access that will return
--		 * 0xffffffff.
--		 */
--		writel(0xffffffff, base + PCIE_MISC_RC_BAR2_CONFIG_HI);
--		return base + PCIE_MISC_RC_BAR2_CONFIG_HI + (where & 0x3);
--	}
- 
- 	/* For devices, write to the config space index register */
- 	idx = PCIE_ECAM_OFFSET(bus->number, devfn, 0);
-@@ -897,7 +853,7 @@ static struct pci_ops brcm_pcie_ops = {
- 	.map_bus = brcm_pcie_map_conf,
- 	.read = pci_generic_config_read,
- 	.write = pci_generic_config_write,
--	.add_bus = brcm_pcie_add_bus,
-+	.add_bus = pci_subdev_regulators_add_bus,
- 	.remove_bus = pci_subdev_regulators_remove_bus,
- };
- 
-@@ -1370,14 +1326,6 @@ static int brcm_pcie_suspend(struct device *dev)
- 		return ret;
- 	}
- 
--	if (pcie->sr) {
--		ret = regulator_bulk_disable(pcie->sr->num_supplies, pcie->sr->supplies);
--		if (ret) {
--			dev_err(dev, "Could not turn off regulators\n");
--			reset_control_reset(pcie->rescal);
--			return ret;
--		}
--	}
- 	clk_disable_unprepare(pcie->clk);
- 
- 	return 0;
-@@ -1395,17 +1343,9 @@ static int brcm_pcie_resume(struct device *dev)
- 	if (ret)
- 		return ret;
- 
--	if (pcie->sr) {
--		ret = regulator_bulk_enable(pcie->sr->num_supplies, pcie->sr->supplies);
--		if (ret) {
--			dev_err(dev, "Could not turn on regulators\n");
--			goto err_disable_clk;
--		}
--	}
--
- 	ret = reset_control_reset(pcie->rescal);
- 	if (ret)
--		goto err_regulator;
-+		goto err_disable_clk;
- 
- 	ret = brcm_phy_start(pcie);
- 	if (ret)
-@@ -1437,9 +1377,6 @@ static int brcm_pcie_resume(struct device *dev)
- 
- err_reset:
- 	reset_control_rearm(pcie->rescal);
--err_regulator:
--	if (pcie->sr)
--		regulator_bulk_disable(pcie->sr->num_supplies, pcie->sr->supplies);
- err_disable_clk:
- 	clk_disable_unprepare(pcie->clk);
- 	return ret;
-@@ -1571,17 +1508,7 @@ static int brcm_pcie_probe(struct platform_device *pdev)
- 
- 	platform_set_drvdata(pdev, pcie);
- 
--	ret = pci_host_probe(bridge);
--	if (!ret && !brcm_pcie_link_up(pcie))
--		ret = -ENODEV;
--
--	if (ret) {
--		brcm_pcie_remove(pdev);
--		return ret;
--	}
--
--	return 0;
--
-+	return pci_host_probe(bridge);
- fail:
- 	__brcm_pcie_remove(pcie);
- 	return ret;
-@@ -1590,8 +1517,8 @@ static int brcm_pcie_probe(struct platform_device *pdev)
- MODULE_DEVICE_TABLE(of, brcm_pcie_match);
- 
- static const struct dev_pm_ops brcm_pcie_pm_ops = {
--	.suspend_noirq = brcm_pcie_suspend,
--	.resume_noirq = brcm_pcie_resume,
-+	.suspend = brcm_pcie_suspend,
-+	.resume = brcm_pcie_resume,
- };
- 
- static struct platform_driver brcm_pcie_driver = {
--- 
-2.35.1
-
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -9255,6 +9255,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x17aa, 0x3176, "ThinkCentre Station", ALC283_FIXUP_HEADSET_MIC),
+ 	SND_PCI_QUIRK(0x17aa, 0x3178, "ThinkCentre Station", ALC283_FIXUP_HEADSET_MIC),
+ 	SND_PCI_QUIRK(0x17aa, 0x31af, "ThinkCentre Station", ALC623_FIXUP_LENOVO_THINKSTATION_P340),
++	SND_PCI_QUIRK(0x17aa, 0x3802, "Lenovo Yoga DuetITL 2021", ALC287_FIXUP_YOGA7_14ITL_SPEAKERS),
+ 	SND_PCI_QUIRK(0x17aa, 0x3813, "Legion 7i 15IMHG05", ALC287_FIXUP_LEGION_15IMHG05_SPEAKERS),
+ 	SND_PCI_QUIRK(0x17aa, 0x3818, "Lenovo C940", ALC298_FIXUP_LENOVO_SPK_VOLUME),
+ 	SND_PCI_QUIRK(0x17aa, 0x3819, "Lenovo 13s Gen2 ITL", ALC287_FIXUP_13S_GEN2_SPEAKERS),
 
 
