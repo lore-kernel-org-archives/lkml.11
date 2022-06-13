@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F112AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:42:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2567C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:42:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355907AbiFMLma (ORCPT
+        id S1355916AbiFMLml (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:42:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56748 "EHLO
+        Mon, 13 Jun 2022 07:42:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354370AbiFMLey (ORCPT
+        with ESMTP id S1354855AbiFMLgK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:34:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E87A92BB0D;
-        Mon, 13 Jun 2022 03:47:54 -0700 (PDT)
+        Mon, 13 Jun 2022 07:36:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8D944A28;
+        Mon, 13 Jun 2022 03:48:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 210B66128D;
-        Mon, 13 Jun 2022 10:47:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 273CCC34114;
-        Mon, 13 Jun 2022 10:47:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58FA7B80E5E;
+        Mon, 13 Jun 2022 10:48:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF9B3C34114;
+        Mon, 13 Jun 2022 10:48:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117273;
-        bh=xYguE/XfmdoYxmWbETkW9BQmAl4KULJOAlb+dWTpRSc=;
+        s=korg; t=1655117287;
+        bh=y7GlcwRD3danYGc5bP/xB3Bm0BKDs6VAvErmOMRmARM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YOWYOcPvSorNzMxQdxXPz3Pl/NuYYgFCmcvHfV4FDmPGC50ktpWUr/hF+VYyeMqSN
-         wTb2UxIt6PXW+lKzfuYmjTEnqNoTcAh6zVqwR0g2d3PstPOmWpram2RfytCykH6R4e
-         0jselODAdAPNflgEU9OLyRDM0azOGSKiitGGvqOs=
+        b=NYfZmrmXvMnCBQSR2JbgSpUMUOegKvlozvL64wYdr3JegO6tXU1NZ8caEurAE95PG
+         Cb2dl1w2nnqiMlVU1k0DfquG2JFj4N8iFMVrFH78SG6d6QSmevqEJWdmo2ZhcvTbo1
+         J4IEO4tIEQ4RMCEBEzt7v3zVPst7LxkKi06Q9jzY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 346/411] video: fbdev: pxa3xx-gcu: release the resources correctly in pxa3xx_gcu_probe/remove()
-Date:   Mon, 13 Jun 2022 12:10:19 +0200
-Message-Id: <20220613094939.084460517@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 349/411] ata: pata_octeon_cf: Fix refcount leak in octeon_cf_probe
+Date:   Mon, 13 Jun 2022 12:10:22 +0200
+Message-Id: <20220613094939.171474968@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -49,64 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit d87ad457f7e1b8d2492ca5b1531eb35030a1cc8f ]
+[ Upstream commit 10d6bdf532902be1d8aa5900b3c03c5671612aa2 ]
 
-In pxa3xx_gcu_probe(), the sequence of error lable is wrong, it will
-leads some resource leaked, so adjust the sequence to handle the error
-correctly, and if pxa3xx_gcu_add_buffer() fails, pxa3xx_gcu_free_buffers()
-need be called.
-In pxa3xx_gcu_remove(), add missing clk_disable_unpreprare().
+of_find_device_by_node() takes reference, we should use put_device()
+to release it when not need anymore.
+Add missing put_device() to avoid refcount leak.
 
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Fixes: 43f01da0f279 ("MIPS/OCTEON/ata: Convert pata_octeon_cf.c to use device tree.")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/pxa3xx-gcu.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/ata/pata_octeon_cf.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/video/fbdev/pxa3xx-gcu.c b/drivers/video/fbdev/pxa3xx-gcu.c
-index 74ffb446e00c..7c4694d70dac 100644
---- a/drivers/video/fbdev/pxa3xx-gcu.c
-+++ b/drivers/video/fbdev/pxa3xx-gcu.c
-@@ -651,6 +651,7 @@ static int pxa3xx_gcu_probe(struct platform_device *pdev)
- 	for (i = 0; i < 8; i++) {
- 		ret = pxa3xx_gcu_add_buffer(dev, priv);
- 		if (ret) {
-+			pxa3xx_gcu_free_buffers(dev, priv);
- 			dev_err(dev, "failed to allocate DMA memory\n");
- 			goto err_disable_clk;
+diff --git a/drivers/ata/pata_octeon_cf.c b/drivers/ata/pata_octeon_cf.c
+index ac3b1fda820f..c240d8cbfd41 100644
+--- a/drivers/ata/pata_octeon_cf.c
++++ b/drivers/ata/pata_octeon_cf.c
+@@ -888,12 +888,14 @@ static int octeon_cf_probe(struct platform_device *pdev)
+ 				int i;
+ 				res_dma = platform_get_resource(dma_dev, IORESOURCE_MEM, 0);
+ 				if (!res_dma) {
++					put_device(&dma_dev->dev);
+ 					of_node_put(dma_node);
+ 					return -EINVAL;
+ 				}
+ 				cf_port->dma_base = (u64)devm_ioremap_nocache(&pdev->dev, res_dma->start,
+ 									 resource_size(res_dma));
+ 				if (!cf_port->dma_base) {
++					put_device(&dma_dev->dev);
+ 					of_node_put(dma_node);
+ 					return -EINVAL;
+ 				}
+@@ -903,6 +905,7 @@ static int octeon_cf_probe(struct platform_device *pdev)
+ 					irq = i;
+ 					irq_handler = octeon_cf_interrupt;
+ 				}
++				put_device(&dma_dev->dev);
+ 			}
+ 			of_node_put(dma_node);
  		}
-@@ -667,15 +668,15 @@ static int pxa3xx_gcu_probe(struct platform_device *pdev)
- 			SHARED_SIZE, irq);
- 	return 0;
- 
--err_free_dma:
--	dma_free_coherent(dev, SHARED_SIZE,
--			priv->shared, priv->shared_phys);
-+err_disable_clk:
-+	clk_disable_unprepare(priv->clk);
- 
- err_misc_deregister:
- 	misc_deregister(&priv->misc_dev);
- 
--err_disable_clk:
--	clk_disable_unprepare(priv->clk);
-+err_free_dma:
-+	dma_free_coherent(dev, SHARED_SIZE,
-+			  priv->shared, priv->shared_phys);
- 
- 	return ret;
- }
-@@ -688,6 +689,7 @@ static int pxa3xx_gcu_remove(struct platform_device *pdev)
- 	pxa3xx_gcu_wait_idle(priv);
- 	misc_deregister(&priv->misc_dev);
- 	dma_free_coherent(dev, SHARED_SIZE, priv->shared, priv->shared_phys);
-+	clk_disable_unprepare(priv->clk);
- 	pxa3xx_gcu_free_buffers(dev, priv);
- 
- 	return 0;
 -- 
 2.35.1
 
