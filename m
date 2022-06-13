@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 366AECCA482
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:47:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E81ECCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:47:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242097AbiFMOrg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:47:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37072 "EHLO
+        id S1385590AbiFMOrl (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 10:47:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386355AbiFMOpG (ORCPT
+        with ESMTP id S1385692AbiFMOnl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:45:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91814B82FB;
-        Mon, 13 Jun 2022 04:51:43 -0700 (PDT)
+        Mon, 13 Jun 2022 10:43:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22853B2E9E;
+        Mon, 13 Jun 2022 04:50:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C8796124E;
-        Mon, 13 Jun 2022 11:51:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ECB5C3411B;
-        Mon, 13 Jun 2022 11:51:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8C652B80D31;
+        Mon, 13 Jun 2022 11:50:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D935FC34114;
+        Mon, 13 Jun 2022 11:50:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655121083;
-        bh=nQaHxOXP2yncMBs2yPCI+6GHFW5RJnn8Ysvi5hX2qRo=;
+        s=korg; t=1655121053;
+        bh=cik2UWmz0PBmx+Cme4rzLA38B3Rv2FNtIkAKFF7lmls=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mAd0juPS4F5CfnkWzFRrtIJ6g+5qLW2nXbpBMOBI/eUxWWDk2D5iro64ZnYfGWVXI
-         wQljmWMs4GHS40As591KeB2X8JZB3wJdwY4Zkfapqk1xb7XK4uyFyehQTmpUyb8Ian
-         bxxWnnA8tb7zPD0RqXgsw8cNm9kiEOUbxiDLHZw0=
+        b=FXtNXjteSmjDubuuEOaEXgD8OQ6jukV/TPrGZ59/Q9ev4W4zz1KrXPaTZALNRUO4l
+         wM+jwebksioC8rO6E3RSud3QQt2KsBfdWeuY45RyD7TPoFaryq5OG7EBKNETS5XrsP
+         n1T2C/21kPq7CmDzBbvTBRyGkS2RGTDugDewaT+4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Michael English <michael.english@seagate.com>,
-        Muhammad Ahmad <muhammad.ahmad@seagate.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Hannes Reinecke <hare@suse.de>,
-        Tyler Erickson <tyler.erickson@seagate.com>,
-        Christoph Hellwig <hch@lst.de>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.17 265/298] scsi: sd: Fix interpretation of VPD B9h length
-Date:   Mon, 13 Jun 2022 12:12:39 +0200
-Message-Id: <20220613094933.110413856@linuxfoundation.org>
+        stable@vger.kernel.org, Jorge Lopez <jorge.lopez2@hp.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 255/298] platform/x86: hp-wmi: Fix hp_wmi_read_int() reporting error (0x05)
+Date:   Mon, 13 Jun 2022 12:12:29 +0200
+Message-Id: <20220613094932.812347505@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -54,45 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tyler Erickson <tyler.erickson@seagate.com>
+From: Jorge Lopez <jorge.lopez2@hp.com>
 
-commit f92de9d110429e39929a49240d823251c2fe903e upstream.
+[ Upstream commit 12b19f14a21a2ee6348825d95b642ef2cd16794f ]
 
-Fixing the interpretation of the length of the B9h VPD page (Concurrent
-Positioning Ranges). Adding 4 is necessary as the first 4 bytes of the page
-is the header with page number and length information.  Adding 3 was likely
-a misinterpretation of the SBC-5 specification which sets all offsets
-starting at zero.
+The purpose of this patch is to introduce a fix to hp_wmi_read_int()
+and eliminate failure error (0x05). Several WMI queries leverage
+hp_wmi_read_int() to read their data and were failing with error 0x05.
 
-This fixes the error in dmesg:
+HPWMI_DISPLAY_QUERY
+HPWMI_HDDTEMP_QUERY
+HPWMI_ALS_QUERY
+HPWMI_HARDWARE_QUERY
+HPWMI_WIRELESS_QUERY
+HPWMI_POSTCODEERROR_QUERY
 
-[ 9.014456] sd 1:0:0:0: [sda] Invalid Concurrent Positioning Ranges VPD page
+The failure occurs because hp_wmi_read_int() calls
+hp_wmi_perform_query() with input parameter of size greater than zero.
+Invoking those WMI commands with an input buffer size greater than
+zero causes the command to be rejected and error 0x05 be returned.
 
-Link: https://lore.kernel.org/r/20220602225113.10218-4-tyler.erickson@seagate.com
-Fixes: e815d36548f0 ("scsi: sd: add concurrent positioning ranges support")
-Cc: stable@vger.kernel.org
-Tested-by: Michael English <michael.english@seagate.com>
-Reviewed-by: Muhammad Ahmad <muhammad.ahmad@seagate.com>
-Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Reviewed-by: Hannes Reinecke <hare@suse.de>
-Signed-off-by: Tyler Erickson <tyler.erickson@seagate.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+All changes were validated on a HP ZBook Workstation notebook,
+HP EliteBook x360, and HP EliteBook 850 G8.
+
+Signed-off-by: Jorge Lopez <jorge.lopez2@hp.com>
+Link: https://lore.kernel.org/r/20220310210853.28367-2-jorge.lopez2@hp.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/sd.c |    2 +-
+ drivers/platform/x86/hp-wmi.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/scsi/sd.c
-+++ b/drivers/scsi/sd.c
-@@ -3171,7 +3171,7 @@ static void sd_read_cpr(struct scsi_disk
- 		goto out;
+diff --git a/drivers/platform/x86/hp-wmi.c b/drivers/platform/x86/hp-wmi.c
+index 88f0bfd6ecf1..29ae35d15a41 100644
+--- a/drivers/platform/x86/hp-wmi.c
++++ b/drivers/platform/x86/hp-wmi.c
+@@ -347,7 +347,7 @@ static int hp_wmi_read_int(int query)
+ 	int val = 0, ret;
  
- 	/* We must have at least a 64B header and one 32B range descriptor */
--	vpd_len = get_unaligned_be16(&buffer[2]) + 3;
-+	vpd_len = get_unaligned_be16(&buffer[2]) + 4;
- 	if (vpd_len > buf_len || vpd_len < 64 + 32 || (vpd_len & 31)) {
- 		sd_printk(KERN_ERR, sdkp,
- 			  "Invalid Concurrent Positioning Ranges VPD page\n");
+ 	ret = hp_wmi_perform_query(query, HPWMI_READ, &val,
+-				   sizeof(val), sizeof(val));
++				   0, sizeof(val));
+ 
+ 	if (ret)
+ 		return ret < 0 ? ret : -EINVAL;
+-- 
+2.35.1
+
 
 
