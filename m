@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABDAFCCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBC26CCA48C
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:05:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351524AbiFMLEV (ORCPT
+        id S1351544AbiFMLEc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:04:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43338 "EHLO
+        Mon, 13 Jun 2022 07:04:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350487AbiFMKyz (ORCPT
+        with ESMTP id S1350383AbiFMKyv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:54:55 -0400
+        Mon, 13 Jun 2022 06:54:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE89621245;
-        Mon, 13 Jun 2022 03:31:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29AED1EC72;
+        Mon, 13 Jun 2022 03:31:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BD0260B8B;
-        Mon, 13 Jun 2022 10:31:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29549C34114;
-        Mon, 13 Jun 2022 10:31:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B9DD160FB1;
+        Mon, 13 Jun 2022 10:31:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE4D4C34114;
+        Mon, 13 Jun 2022 10:31:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116292;
-        bh=n+aDPt6cam0itTEtEAUp2ZeB4F2tQKVGVhNwlwvBovI=;
+        s=korg; t=1655116273;
+        bh=o7pGxIWwS9XsgJFBoYbgEMRnyrW1PeHRlM/SCQ7s4h8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SMC45NwW7fcMciz161ko/wz4DpDwtG5T8uyZQB534S4ZAPXRp1vTdNTQh9C4usIM7
-         pt1G5JbqVDJaBxgiTVCBkvK03c/NEQXEZ8Sn1W+9M+6GFBwTAp+PJjIn+6k960tzn2
-         SBJJVLpSR8ydI8WV3AwsqH80+s6wBkqzFn302vN4=
+        b=WY7iocI6f6x/DjQ4wSfSwZUWrgwvt/hCzzKTRkiHM6GqcZsES9aLBQcy3iUaSYWHW
+         9A6sY3g5Kp6MPVhe4Ps3JAYcc7Q5TIjdz1K4DoH1qXeph0wfjcUAtGX4Pd5mZThXPO
+         JKYKzsVnSvEuRY+vIqMINX5KkotImlFFowXtG68E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Richard Weinberger <richard@nod.at>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 156/218] firmware: dmi-sysfs: Fix memory leak in dmi_sysfs_register_handle
-Date:   Mon, 13 Jun 2022 12:10:14 +0200
-Message-Id: <20220613094925.325758399@linuxfoundation.org>
+Subject: [PATCH 4.14 162/218] ubi: ubi_create_volume: Fix use-after-free when volume creation failed
+Date:   Mon, 13 Jun 2022 12:10:20 +0200
+Message-Id: <20220613094925.511296129@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -49,40 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-[ Upstream commit 660ba678f9998aca6db74f2dd912fa5124f0fa31 ]
+[ Upstream commit 8c03a1c21d72210f81cb369cc528e3fde4b45411 ]
 
-kobject_init_and_add() takes reference even when it fails.
-According to the doc of kobject_init_and_add()
+There is an use-after-free problem for 'eba_tbl' in ubi_create_volume()'s
+error handling path:
 
-   If this function returns an error, kobject_put() must be called to
-   properly clean up the memory associated with the object.
+  ubi_eba_replace_table(vol, eba_tbl)
+    vol->eba_tbl = tbl
+out_mapping:
+  ubi_eba_destroy_table(eba_tbl)   // Free 'eba_tbl'
+out_unlock:
+  put_device(&vol->dev)
+    vol_release
+      kfree(tbl->entries)	  // UAF
 
-Fix this issue by calling kobject_put().
+Fix it by removing redundant 'eba_tbl' releasing.
+Fetch a reproducer in [Link].
 
-Fixes: 948af1f0bbc8 ("firmware: Basic dmi-sysfs support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220511071421.9769-1-linmq006@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 493cfaeaa0c9b ("mtd: utilize new cdev_device_add helper function")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215965
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/dmi-sysfs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mtd/ubi/vmt.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/firmware/dmi-sysfs.c b/drivers/firmware/dmi-sysfs.c
-index d5de6ee8466d..084948a31d2d 100644
---- a/drivers/firmware/dmi-sysfs.c
-+++ b/drivers/firmware/dmi-sysfs.c
-@@ -602,7 +602,7 @@ static void __init dmi_sysfs_register_handle(const struct dmi_header *dh,
- 				    "%d-%d", dh->type, entry->instance);
- 
- 	if (*ret) {
--		kfree(entry);
-+		kobject_put(&entry->kobj);
- 		return;
- 	}
- 
+diff --git a/drivers/mtd/ubi/vmt.c b/drivers/mtd/ubi/vmt.c
+index 8f641448a97a..d32144c0098a 100644
+--- a/drivers/mtd/ubi/vmt.c
++++ b/drivers/mtd/ubi/vmt.c
+@@ -315,7 +315,6 @@ int ubi_create_volume(struct ubi_device *ubi, struct ubi_mkvol_req *req)
+ 	ubi->volumes[vol_id] = NULL;
+ 	ubi->vol_count -= 1;
+ 	spin_unlock(&ubi->volumes_lock);
+-	ubi_eba_destroy_table(eba_tbl);
+ out_acc:
+ 	spin_lock(&ubi->volumes_lock);
+ 	ubi->rsvd_pebs -= vol->reserved_pebs;
 -- 
 2.35.1
 
