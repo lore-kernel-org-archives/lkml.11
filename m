@@ -2,119 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 580FEC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 171A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382073AbiFMOQg (ORCPT
+        id S1382135AbiFMOQr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:16:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51966 "EHLO
+        Mon, 13 Jun 2022 10:16:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381694AbiFMOJF (ORCPT
+        with ESMTP id S1381788AbiFMOJe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:09:05 -0400
-X-Greylist: delayed 581 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 13 Jun 2022 04:41:41 PDT
-Received: from mxct.zte.com.cn (mxct.zte.com.cn [58.251.27.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B187C98756
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 04:41:36 -0700 (PDT)
-Received: from mxde.zte.com.cn (unknown [10.35.8.64])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mxct.zte.com.cn (FangMail) with ESMTPS id 4LM8YB6YRzzK82
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 19:31:58 +0800 (CST)
-Received: from mxus.zte.com.cn (unknown [10.207.168.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mxde.zte.com.cn (FangMail) with ESMTPS id 4LM8Xw3xyrzCFQtW
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 19:31:44 +0800 (CST)
-Received: from mxhk.zte.com.cn (unknown [192.168.250.138])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mxus.zte.com.cn (FangMail) with ESMTPS id 4LM8Xr2XYTz9tyD7
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 19:31:40 +0800 (CST)
-Received: from mse-fl2.zte.com.cn (unknown [10.30.14.239])
+        Mon, 13 Jun 2022 10:09:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B08969874C;
+        Mon, 13 Jun 2022 04:41:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mxhk.zte.com.cn (FangMail) with ESMTPS id 4LM8Xn00hWz5BNS0;
-        Mon, 13 Jun 2022 19:31:36 +0800 (CST)
-Received: from szxlzmapp01.zte.com.cn ([10.5.231.85])
-        by mse-fl2.zte.com.cn with SMTP id 25DBVWvv001928;
-        Mon, 13 Jun 2022 19:31:32 +0800 (GMT-8)
-        (envelope-from wang.yi59@zte.com.cn)
-Received: from fox-cloudhost8.zte.com.cn (unknown [10.234.72.110])
-        by smtp (Zmail) with SMTP;
-        Mon, 13 Jun 2022 19:31:32 +0800
-X-Zmail-TransId: 3e8162a7201401b-f9e61
-From:   Yi Wang <wang.yi59@zte.com.cn>
-To:     yury.norov@gmail.com, andriy.shevchenko@linux.intel.com,
-        linux@rasmusvillemoes.dk
-Cc:     linux-kernel@vger.kernel.org, xue.zhihong@zte.com.cn,
-        wang.yi59@zte.com.cn, wang.liang82@zte.com.cn
-Subject: [PATCH] bitmap: fix a unproper remap when mpol_rebind_nodemask()
-Date:   Mon, 13 Jun 2022 19:29:37 +0800
-Message-Id: <20220613112937.65428-1-wang.yi59@zte.com.cn>
-X-Mailer: git-send-email 2.33.0.rc0.dirty
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DBC266124E;
+        Mon, 13 Jun 2022 11:41:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBDF0C34114;
+        Mon, 13 Jun 2022 11:41:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655120496;
+        bh=c2aNa0WSTPINaaEVfNO7vaNrky3Fd5u8zr9Pepbdaso=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YQtP73c1VlWG+EREaALQqehDRnKzwT5U1EpAF7RR4Yc3AU6hsuzihnhK/rzsbAtgB
+         3mDKFPdifFSb6y59oxinopNxhH6VykxqwmqgKKcJl3ESnoPWfGiFPV2ENAWLP4BoKC
+         7vANL9F1EyV75PxZAv65TaMIjSGIjAFt97KXpGIY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Evan Green <evgreen@chromium.org>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 036/298] phy: qcom-qmp: fix pipe-clock imbalance on power-on failure
+Date:   Mon, 13 Jun 2022 12:08:50 +0200
+Message-Id: <20220613094926.028502004@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
+References: <20220613094924.913340374@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain;
-        charset="UTF-8"
-X-MAIL: mse-fl2.zte.com.cn 25DBVWvv001928
-X-Fangmail-Gw-Spam-Type: 0
-X-FangMail-Miltered: at cgslv5.04-192.168.251.14.novalocal with ID 62A7202D.000 by FangMail milter!
-X-FangMail-Envelope: 1655119919/4LM8YB6YRzzK82/62A7202D.000/10.35.8.64/[10.35.8.64]/mxde.zte.com.cn/<wang.yi59@zte.com.cn>
-X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 62A7202D.000/4LM8YB6YRzzK82
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Consider one situation:
+From: Johan Hovold <johan+linaro@kernel.org>
 
-The app have two vmas which mbind() to node 1 and node3 respectively,
-and its cpuset.mems is 0-3, now set its cpuset.mems to 1,3, according
-to current bitmap_remap(), we got:
+[ Upstream commit 5e73b2d9867998278479ccc065a8a8227a5513ef ]
 
-    1 => 3
-    3 => 3
+Make sure to disable the pipe clock also if ufs-reset deassertion fails
+during power on.
 
-This maybe confused because node 1,3 have already in the new settiing
-region but both nodes are binded to the same node 3 now.
+Note that the ufs-reset is asserted in qcom_qmp_phy_com_exit().
 
-Actually we found the situation on a very old libvirt and qemu, but
-this can be easily reproduced in the current kernel, so we try to fix
-it.
-
-A possible fix way is to ignore the bits in @src have already existed
-in @new.
-
-Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
+Fixes: c9b589791fc1 ("phy: qcom: Utilize UFS reset controller")
+Cc: Evan Green <evgreen@chromium.org>
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+Link: https://lore.kernel.org/r/20220502133130.4125-2-johan+linaro@kernel.org
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/bitmap.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/phy/qualcomm/phy-qcom-qmp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/lib/bitmap.c b/lib/bitmap.c
-index b18e31ea6e66..b77bf1b3852e 100644
---- a/lib/bitmap.c
-+++ b/lib/bitmap.c
-@@ -1006,8 +1006,8 @@ unsigned int bitmap_ord_to_pos(const unsigned long *buf, unsigned int ord, unsig
-  * @dst point to the same location, then this routine copies @src
-  * to @dst.
-  *
-- * The positions of unset bits in @old are mapped to themselves
-- * (the identify map).
-+ * The positions of unset bits in @old or bits in @src have already
-+ * existed in @new are mapped to themselves (the identify map).
-  *
-  * Apply the above specified mapping to @src, placing the result in
-  * @dst, clearing any bits previously set in @dst.
-@@ -1033,7 +1033,7 @@ void bitmap_remap(unsigned long *dst, const unsigned long *src,
- 	for_each_set_bit(oldbit, src, nbits) {
- 		int n = bitmap_pos_to_ord(old, oldbit, nbits);
+diff --git a/drivers/phy/qualcomm/phy-qcom-qmp.c b/drivers/phy/qualcomm/phy-qcom-qmp.c
+index c2b878128e2c..7493fd634c1d 100644
+--- a/drivers/phy/qualcomm/phy-qcom-qmp.c
++++ b/drivers/phy/qualcomm/phy-qcom-qmp.c
+@@ -5246,7 +5246,7 @@ static int qcom_qmp_phy_power_on(struct phy *phy)
  
--		if (n < 0 || w == 0)
-+		if (n < 0 || w == 0 || test_bit(oldbit, new))
- 			set_bit(oldbit, dst);	/* identity map */
- 		else
- 			set_bit(bitmap_ord_to_pos(new, n % w, nbits), dst);
+ 	ret = reset_control_deassert(qmp->ufs_reset);
+ 	if (ret)
+-		goto err_lane_rst;
++		goto err_pcs_ready;
+ 
+ 	qcom_qmp_phy_configure(pcs_misc, cfg->regs, cfg->pcs_misc_tbl,
+ 			       cfg->pcs_misc_tbl_num);
 -- 
-2.33.0.rc0.dirty
+2.35.1
+
+
+
