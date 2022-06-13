@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2100BC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 318F8CCA47C
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:09:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351822AbiFMLId (ORCPT
+        id S1351849AbiFMLIm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:08:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57766 "EHLO
+        Mon, 13 Jun 2022 07:08:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351041AbiFMLCu (ORCPT
+        with ESMTP id S1350803AbiFMLDN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:02:50 -0400
+        Mon, 13 Jun 2022 07:03:13 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C37C31536;
-        Mon, 13 Jun 2022 03:33:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C15B631932;
+        Mon, 13 Jun 2022 03:33:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EF47FB80E94;
-        Mon, 13 Jun 2022 10:33:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49F98C34114;
-        Mon, 13 Jun 2022 10:33:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8D011B80EA3;
+        Mon, 13 Jun 2022 10:33:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1728C341C5;
+        Mon, 13 Jun 2022 10:33:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116397;
-        bh=OrmCgyrADCQvNNfgQB2Hra1RezhD/GsfwcYi2XWqsis=;
+        s=korg; t=1655116403;
+        bh=c+ctPUQM9DoagDrIqdEoBv221V9tAwf8N+RV88BNbt4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HX8dNDrlyNgsozLIWAbJ7FipWm/Vy9Ub7qZqSx5OOVqXhksGL2/+RUXYyUwI+zbaL
-         Z/iMZNjL50AJlJu+Qx4d7pwGrGz15NhIJbjg6YnsHXGohhARuUeZV9G9xG1wUFBhRl
-         GsEed9URA36K95dgS+6MTeaTd47vgeu3ocrZIj74=
+        b=VuR6ItbqtXFTdjVpInpirUQqHiGSu2l8rQoCIqP4PKSMCC/sQ1KNUdn6YhJcwtW/f
+         9Dj3D3JfroKwVkclR3TkLdhIeYKQ+rU/x5sDUOYoztfVuNWAdRcSkvt4T8yRspTvvE
+         wAqgMcRhorh3boZ45WqJtfjBhmsZSAXDrrIqD1pk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Douglas Miller <doug.miller@cornelisnetworks.com>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Huang Guobin <huangguobin4@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 079/411] RDMA/hfi1: Prevent panic when SDMA is disabled
-Date:   Mon, 13 Jun 2022 12:05:52 +0200
-Message-Id: <20220613094931.049121904@linuxfoundation.org>
+Subject: [PATCH 4.14 184/218] tty: Fix a possible resource leak in icom_probe
+Date:   Mon, 13 Jun 2022 12:10:42 +0200
+Message-Id: <20220613094926.193028771@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,48 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Douglas Miller <doug.miller@cornelisnetworks.com>
+From: Huang Guobin <huangguobin4@huawei.com>
 
-[ Upstream commit 629e052d0c98e46dde9f0824f0aa437f678d9b8f ]
+[ Upstream commit ee157a79e7c82b01ae4c25de0ac75899801f322c ]
 
-If the hfi1 module is loaded with HFI1_CAP_SDMA off, a call to
-hfi1_write_iter() will dereference a NULL pointer and panic. A typical
-stack frame is:
+When pci_read_config_dword failed, call pci_release_regions() and
+pci_disable_device() to recycle the resource previously allocated.
 
-  sdma_select_user_engine [hfi1]
-  hfi1_user_sdma_process_request [hfi1]
-  hfi1_write_iter [hfi1]
-  do_iter_readv_writev
-  do_iter_write
-  vfs_writev
-  do_writev
-  do_syscall_64
-
-The fix is to test for SDMA in hfi1_write_iter() and fail the I/O with
-EINVAL.
-
-Link: https://lore.kernel.org/r/20220520183706.48973.79803.stgit@awfm-01.cornelisnetworks.com
-Signed-off-by: Douglas Miller <doug.miller@cornelisnetworks.com>
-Signed-off-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
+Link: https://lore.kernel.org/r/20220331091005.3290753-1-huangguobin4@huawei.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/hfi1/file_ops.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/serial/icom.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/hw/hfi1/file_ops.c b/drivers/infiniband/hw/hfi1/file_ops.c
-index 89e1dfd07a1b..8c7ba7bad42b 100644
---- a/drivers/infiniband/hw/hfi1/file_ops.c
-+++ b/drivers/infiniband/hw/hfi1/file_ops.c
-@@ -308,6 +308,8 @@ static ssize_t hfi1_write_iter(struct kiocb *kiocb, struct iov_iter *from)
- 	unsigned long dim = from->nr_segs;
- 	int idx;
+diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
+index fe92d74f4ea5..4711b3ec2c56 100644
+--- a/drivers/tty/serial/icom.c
++++ b/drivers/tty/serial/icom.c
+@@ -1515,7 +1515,7 @@ static int icom_probe(struct pci_dev *dev,
+ 	retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg);
+ 	if (retval) {
+ 		dev_err(&dev->dev, "PCI Config read FAILED\n");
+-		return retval;
++		goto probe_exit0;
+ 	}
  
-+	if (!HFI1_CAP_IS_KSET(SDMA))
-+		return -EINVAL;
- 	idx = srcu_read_lock(&fd->pq_srcu);
- 	pq = srcu_dereference(fd->pq, &fd->pq_srcu);
- 	if (!cq || !pq) {
+ 	pci_write_config_dword(dev, PCI_COMMAND,
 -- 
 2.35.1
 
