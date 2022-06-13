@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F3FCC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:52:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16957C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:52:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357044AbiFMLwp (ORCPT
+        id S1357095AbiFMLws (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:52:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41660 "EHLO
+        Mon, 13 Jun 2022 07:52:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357579AbiFMLqY (ORCPT
+        with ESMTP id S1357594AbiFMLq1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:46:24 -0400
+        Mon, 13 Jun 2022 07:46:27 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B97D26103;
-        Mon, 13 Jun 2022 03:52:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB68735A95;
+        Mon, 13 Jun 2022 03:52:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81AEDB80E93;
-        Mon, 13 Jun 2022 10:52:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCC6FC34114;
-        Mon, 13 Jun 2022 10:52:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 498B0B80D3C;
+        Mon, 13 Jun 2022 10:52:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B6BAC34114;
+        Mon, 13 Jun 2022 10:52:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117569;
-        bh=8YH6x0Tqyp6rJkWOfjcRIC8Y6lDqvyPZclzyU51XQPY=;
+        s=korg; t=1655117572;
+        bh=bbS3wuB1ht8HYgjkKW2/j30gkkPXpposdmaDu83bLEc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rysj93qJET1Pb9U3VUuDsCpyODl88gbeKjgKV00zyaFiRn9yKGn+A3R1aulDdPlkI
-         13mG7y1w+q4qdLFzP6Nxl+uzhZbJ1u1OxwcZPR3bZCOJtq+ahtJ1pFZbL6pse1alKm
-         kdmWrpRvtow6leceEAufXWF04w95+ZRgtukh+mgw=
+        b=tvAC2+uFYF2x2+vdtDD2y5zQ6o30aaGW9N5FtIzVTJ2eOCZVkLpvXKL2jXFxNPYAE
+         gzmlSeZyukRDBPq4opw1I4DyyLsGoO0oMEMWzlGWYZ6fyDXjrkqaGsvpPC2RLe55pa
+         bu0WsisrdCsxcUVTg//F6+MmFrkIjyrC3+yg2eFI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 063/287] x86/delay: Fix the wrong asm constraint in delay_loop()
-Date:   Mon, 13 Jun 2022 12:08:07 +0200
-Message-Id: <20220613094925.781139943@linuxfoundation.org>
+        stable@vger.kernel.org, Shyam Prasad N <sprasad@microsoft.com>,
+        Enzo Matsumiya <ematsumiya@suse.de>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.4 401/411] cifs: return errors during session setup during reconnects
+Date:   Mon, 13 Jun 2022 12:11:14 +0200
+Message-Id: <20220613094940.849534536@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
-References: <20220613094923.832156175@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,51 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+From: Shyam Prasad N <sprasad@microsoft.com>
 
-[ Upstream commit b86eb74098a92afd789da02699b4b0dd3f73b889 ]
+commit 8ea21823aa584b55ba4b861307093b78054b0c1b upstream.
 
-The asm constraint does not reflect the fact that the asm statement can
-modify the value of the local variable loops. Which it does.
+During reconnects, we check the return value from
+cifs_negotiate_protocol, and have handlers for both success
+and failures. But if that passes, and cifs_setup_session
+returns any errors other than -EACCES, we do not handle
+that. This fix adds a handler for that, so that we don't
+go ahead and try a tree_connect on a failed session.
 
-Specifying the wrong constraint may lead to undefined behavior, it may
-clobber random stuff (e.g. local variable, important temporary value in
-regs, etc.). This is especially dangerous when the compiler decides to
-inline the function and since it doesn't know that the value gets
-modified, it might decide to use it from a register directly without
-reloading it.
-
-Change the constraint to "+a" to denote that the first argument is an
-input and an output argument.
-
-  [ bp: Fix typo, massage commit message. ]
-
-Fixes: e01b70ef3eb3 ("x86: fix bug in arch/i386/lib/delay.c file, delay_loop function")
-Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220329104705.65256-2-ammarfaizi2@gnuweeb.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Shyam Prasad N <sprasad@microsoft.com>
+Reviewed-by: Enzo Matsumiya <ematsumiya@suse.de>
+Cc: stable@vger.kernel.org
+Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/lib/delay.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/cifs/smb2pdu.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/x86/lib/delay.c b/arch/x86/lib/delay.c
-index 614c2c6b1959..68ca883abfdb 100644
---- a/arch/x86/lib/delay.c
-+++ b/arch/x86/lib/delay.c
-@@ -43,8 +43,8 @@ static void delay_loop(unsigned long loops)
- 		"	jnz 2b		\n"
- 		"3:	dec %0		\n"
- 
--		: /* we don't need output */
--		:"a" (loops)
-+		: "+a" (loops)
-+		:
- 	);
- }
- 
--- 
-2.35.1
-
+--- a/fs/cifs/smb2pdu.c
++++ b/fs/cifs/smb2pdu.c
+@@ -356,6 +356,9 @@ smb2_reconnect(__le16 smb2_command, stru
+ 			rc = -EHOSTDOWN;
+ 			mutex_unlock(&tcon->ses->session_mutex);
+ 			goto failed;
++		} else if (rc) {
++			mutex_unlock(&ses->session_mutex);
++			goto out;
+ 		}
+ 	}
+ 	if (rc || !tcon->need_reconnect) {
 
 
