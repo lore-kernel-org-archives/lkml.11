@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C1CFC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:21:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61C07C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:21:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376399AbiFMNVl (ORCPT
+        id S1376440AbiFMNVs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:21:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51842 "EHLO
+        Mon, 13 Jun 2022 09:21:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359022AbiFMNPb (ORCPT
+        with ESMTP id S1376754AbiFMNT3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:15:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EDD55F59;
-        Mon, 13 Jun 2022 04:22:29 -0700 (PDT)
+        Mon, 13 Jun 2022 09:19:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 778B45A097;
+        Mon, 13 Jun 2022 04:22:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 809FAB80E59;
-        Mon, 13 Jun 2022 11:22:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0327C3411C;
-        Mon, 13 Jun 2022 11:22:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01621B80EAB;
+        Mon, 13 Jun 2022 11:22:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 528F1C34114;
+        Mon, 13 Jun 2022 11:22:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119325;
-        bh=sXhm+oMCrui/y0I0+QBtmpIK+POYQhAS48jgfA/2Ycw=;
+        s=korg; t=1655119333;
+        bh=UuT5pcuIYfI0vQXMOvXgNqqRRJ+ochAjLD8cGR0HfcE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nmllbXWxgLa4kDVeP88BtUZCSYYeoQ1/OqQxtNBnCHhVKGnwccg0UT46kqB/iFgqt
-         G8A5RxPMUQXPwVJzuIKhpuGmPBr0uth+cy3KK3D/nmxDaGDRq+EZcc+Vv0yuuaSqQU
-         gyx/gm2KTrQko7SVx+U0lXS2xWe62m0cjgnZsq1I=
+        b=caHO4I0YsHFrl+cb1FdyeM6ZMVNU2aw+1kmEeuIMZX6mVUlx8860P/LKGSbc6+Eqj
+         psBHIVTgtotJpKHOYfxos9CgKzlgEeZZLRQFWoIQJDNZcXRCvUOlXZPisdgEdPCrXo
+         ou+N6eqVSOGL2HoeBF1/vyjI+LYjWCtsuBDTls6M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Safford <david.safford@gmail.com>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Subject: [PATCH 5.15 221/247] KEYS: trusted: tpm2: Fix migratable logic
-Date:   Mon, 13 Jun 2022 12:12:03 +0200
-Message-Id: <20220613094929.646580519@linuxfoundation.org>
+        stable@vger.kernel.org, Martin Leung <Martin.Leung@amd.com>,
+        Qingqing Zhuo <qingqing.zhuo@amd.com>,
+        David Galiffi <David.Galiffi@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 198/247] drm/amd/display: Check if modulo is 0 before dividing.
+Date:   Mon, 13 Jun 2022 12:11:40 +0200
+Message-Id: <20220613094928.954510878@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,47 +53,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Safford <david.safford@gmail.com>
+From: David Galiffi <David.Galiffi@amd.com>
 
-commit dda5384313a40ecbaafd8a9a80f47483255e4c4d upstream.
+[ Upstream commit 49947b906a6bd9668eaf4f9cf691973c25c26955 ]
 
-When creating (sealing) a new trusted key, migratable
-trusted keys have the FIXED_TPM and FIXED_PARENT attributes
-set, and non-migratable keys don't. This is backwards, and
-also causes creation to fail when creating a migratable key
-under a migratable parent. (The TPM thinks you are trying to
-seal a non-migratable blob under a migratable parent.)
+[How & Why]
+If a value of 0 is read, then this will cause a divide-by-0 panic.
 
-The following simple patch fixes the logic, and has been
-tested for all four combinations of migratable and non-migratable
-trusted keys and parent storage keys. With this logic, you will
-get a proper failure if you try to create a non-migratable
-trusted key under a migratable parent storage key, and all other
-combinations work correctly.
-
-Cc: stable@vger.kernel.org # v5.13+
-Fixes: e5fb5d2c5a03 ("security: keys: trusted: Make sealed key properly interoperable")
-Signed-off-by: David Safford <david.safford@gmail.com>
-Reviewed-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Martin Leung <Martin.Leung@amd.com>
+Acked-by: Qingqing Zhuo <qingqing.zhuo@amd.com>
+Signed-off-by: David Galiffi <David.Galiffi@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/keys/trusted-keys/trusted_tpm2.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/security/keys/trusted-keys/trusted_tpm2.c
-+++ b/security/keys/trusted-keys/trusted_tpm2.c
-@@ -283,8 +283,8 @@ int tpm2_seal_trusted(struct tpm_chip *c
- 	/* key properties */
- 	flags = 0;
- 	flags |= options->policydigest_len ? 0 : TPM2_OA_USER_WITH_AUTH;
--	flags |= payload->migratable ? (TPM2_OA_FIXED_TPM |
--					TPM2_OA_FIXED_PARENT) : 0;
-+	flags |= payload->migratable ? 0 : (TPM2_OA_FIXED_TPM |
-+					    TPM2_OA_FIXED_PARENT);
- 	tpm_buf_append_u32(&buf, flags);
- 
- 	/* policy */
+diff --git a/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c b/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c
+index 2c7eb982eabc..054823d12403 100644
+--- a/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c
++++ b/drivers/gpu/drm/amd/display/dc/dce/dce_clock_source.c
+@@ -1013,9 +1013,12 @@ static bool get_pixel_clk_frequency_100hz(
+ 			 * not be programmed equal to DPREFCLK
+ 			 */
+ 			modulo_hz = REG_READ(MODULO[inst]);
+-			*pixel_clk_khz = div_u64((uint64_t)clock_hz*
+-				clock_source->ctx->dc->clk_mgr->dprefclk_khz*10,
+-				modulo_hz);
++			if (modulo_hz)
++				*pixel_clk_khz = div_u64((uint64_t)clock_hz*
++					clock_source->ctx->dc->clk_mgr->dprefclk_khz*10,
++					modulo_hz);
++			else
++				*pixel_clk_khz = 0;
+ 		} else {
+ 			/* NOTE: There is agreement with VBIOS here that MODULO is
+ 			 * programmed equal to DPREFCLK, in which case PHASE will be
+-- 
+2.35.1
+
 
 
