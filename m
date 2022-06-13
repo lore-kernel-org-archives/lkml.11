@@ -2,117 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D587C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:06:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E66DCCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:06:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351424AbiFMLGD (ORCPT
+        id S1351451AbiFMLGH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:06:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44298 "EHLO
+        Mon, 13 Jun 2022 07:06:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349031AbiFMK4r (ORCPT
+        with ESMTP id S1349243AbiFMK5C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:56:47 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2E7825590
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 03:32:09 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 2D5031F74A;
-        Mon, 13 Jun 2022 10:32:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1655116328; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=WYTWO2pXaYgtlF8kR1d/FAF/9Bij0oQPrsARxS+CWZo=;
-        b=Y7Nn5vmbARa0cdH/zy9KNjuKlHN5vus+rPUVAYZLaZhKsszoqcK3B704Sqh++cA5mkkFLw
-        lJehbqmWyaw8q/s0XkSTmwwkbNz+G8UT4uffZvW263+wxxW/+M+/xSUwFafZrjDILpZU+Z
-        jLeyTibWH4euV1l/78ynaoZKmydH5Qk=
-Received: from suse.cz (unknown [10.100.201.202])
+        Mon, 13 Jun 2022 06:57:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6244255A4;
+        Mon, 13 Jun 2022 03:32:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id BBFD92C141;
-        Mon, 13 Jun 2022 10:32:07 +0000 (UTC)
-Date:   Mon, 13 Jun 2022 12:32:07 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     paulmck@kernel.org, linux-kernel@vger.kernel.org,
-        frederic@kernel.org, Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: [BUG] 8e274732115f ("printk: extend console_lock for per-console
- locking")
-Message-ID: <YqcSJyTnuRVAPmLI@alley>
-References: <20220610205038.GA3050413@paulmck-ThinkPad-P17-Gen-1>
- <87v8t5l39z.fsf@jogness.linutronix.de>
- <20220613042937.GZ1790663@paulmck-ThinkPad-P17-Gen-1>
- <87tu8pgcj0.fsf@jogness.linutronix.de>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0CEA2B80E95;
+        Mon, 13 Jun 2022 10:32:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6696DC385A5;
+        Mon, 13 Jun 2022 10:32:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655116328;
+        bh=/h6cBU8QbiQoc47uzdPgeaoCFoAxZe7i4+1F5I3Diko=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=pXiAP01dUNjBY9z45I4I55b6UwgPd17XO2QryK7VyvTCmOSZtOWuE/9AtwW0C9QF2
+         rI5QCwgfLnK6DVN4oGELirErhx61cf5yLtXsvy2nHcDVFkizLBlv/qBpt8asIpCj/E
+         80YVhL/+EI3JCMD+L+CXdLG8QjImJmR7mbTimxCA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 171/218] video: fbdev: pxa3xx-gcu: release the resources correctly in pxa3xx_gcu_probe/remove()
+Date:   Mon, 13 Jun 2022 12:10:29 +0200
+Message-Id: <20220613094925.791144604@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87tu8pgcj0.fsf@jogness.linutronix.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 2022-06-13 11:10:19, John Ogness wrote:
-> On 2022-06-12, "Paul E. McKenney" <paulmck@kernel.org> wrote:
-> >> As I suspected, the final printk's cannot direct print because the
-> >> kthread was printing. Using the below patch did seem to address your
-> >> problem. But this is probably not the way forward.
-> >
-> > When I apply it, I still lose output, perhaps due to different timing?
-> > Doing the pr_flush(1000, true) just before the call to kernel_power_off()
-> > has been working quite well thus far, though.
-> 
-> Your pr_flush() is appropriate for your RCU tests, but this is a problem
-> in general that needs to be addressed. I suppose we should start a new
-> thread for that. ;-)
-> 
-> During development we experimented with the idea of kthreads pausing
-> themselves whenever direct printing is activated. It was racey because
-> there are situations when direct printing is only temporarily active and
-> it was hard to coordinate who prints when direct printing becomes
-> inactive again. So we dropped that idea. However, in this situation the
-> system will not be disabling direct printing.
-> 
-> @Paul, can you try the below change instead? Until this has been
-> officially solved, you probably want to keep your pr_flush()
-> solution. (After all, that is exactly what pr_flush() is for.) But it
-> would be helpful if you could run this last test for us.
-> 
-> @Petr, I like the idea of the kthreads getting out of the way rather
-> than trying to direct print themselves (for this situation). It still
-> isn't optimal because that final pr_emerg("Power down\n") might come
-> before the kthread has finished its current line. But in that case the
-> kthread may not have much a chance to finish the printing anyway.
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-I wonder if we could somehow combine it with pr_flush(timeout).
+[ Upstream commit d87ad457f7e1b8d2492ca5b1531eb35030a1cc8f ]
 
-The kthread might bail-out when pr_flush() is running. It will
-know that someone would continue printing. The timeout might
-help to avoid a deadlock. We could somehow reuse
-console_trylock_spinning() code here.
+In pxa3xx_gcu_probe(), the sequence of error lable is wrong, it will
+leads some resource leaked, so adjust the sequence to handle the error
+correctly, and if pxa3xx_gcu_add_buffer() fails, pxa3xx_gcu_free_buffers()
+need be called.
+In pxa3xx_gcu_remove(), add missing clk_disable_unpreprare().
+
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/video/fbdev/pxa3xx-gcu.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/video/fbdev/pxa3xx-gcu.c b/drivers/video/fbdev/pxa3xx-gcu.c
+index 933619da1a94..4febbe21b9b5 100644
+--- a/drivers/video/fbdev/pxa3xx-gcu.c
++++ b/drivers/video/fbdev/pxa3xx-gcu.c
+@@ -662,6 +662,7 @@ static int pxa3xx_gcu_probe(struct platform_device *pdev)
+ 	for (i = 0; i < 8; i++) {
+ 		ret = pxa3xx_gcu_add_buffer(dev, priv);
+ 		if (ret) {
++			pxa3xx_gcu_free_buffers(dev, priv);
+ 			dev_err(dev, "failed to allocate DMA memory\n");
+ 			goto err_disable_clk;
+ 		}
+@@ -677,15 +678,15 @@ static int pxa3xx_gcu_probe(struct platform_device *pdev)
+ 			SHARED_SIZE, irq);
+ 	return 0;
+ 
+-err_free_dma:
+-	dma_free_coherent(dev, SHARED_SIZE,
+-			priv->shared, priv->shared_phys);
++err_disable_clk:
++	clk_disable_unprepare(priv->clk);
+ 
+ err_misc_deregister:
+ 	misc_deregister(&priv->misc_dev);
+ 
+-err_disable_clk:
+-	clk_disable_unprepare(priv->clk);
++err_free_dma:
++	dma_free_coherent(dev, SHARED_SIZE,
++			  priv->shared, priv->shared_phys);
+ 
+ 	return ret;
+ }
+@@ -698,6 +699,7 @@ static int pxa3xx_gcu_remove(struct platform_device *pdev)
+ 	pxa3xx_gcu_wait_idle(priv);
+ 	misc_deregister(&priv->misc_dev);
+ 	dma_free_coherent(dev, SHARED_SIZE, priv->shared, priv->shared_phys);
++	clk_disable_unprepare(priv->clk);
+ 	pxa3xx_gcu_free_buffers(dev, priv);
+ 
+ 	return 0;
+-- 
+2.35.1
 
 
-> John Ogness
-> 
-> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-> index ea3dd55709e7..45c6c2b0b104 100644
-> --- a/kernel/printk/printk.c
-> +++ b/kernel/printk/printk.c
-> @@ -3729,7 +3729,9 @@ static bool printer_should_wake(struct console *con, u64 seq)
->  		return true;
->  
->  	if (con->blocked ||
-> -	    console_kthreads_atomically_blocked()) {
-> +	    console_kthreads_atomically_blocked() ||
-> +	    system_state > SYSTEM_RUNNING ||
-> +	    oops_in_progress) {
->  		return false;
->  	}
 
-Also this is an interesting idea. We know that panic() will try
-to flush the messages. Well, panic() is not always called
-after Oops.
-
-Best Regards,
-Petr
