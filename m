@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90319CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:36:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EC4FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:36:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384367AbiFMOgD (ORCPT
+        id S1384398AbiFMOgJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:36:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35220 "EHLO
+        Mon, 13 Jun 2022 10:36:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385525AbiFMObQ (ORCPT
+        with ESMTP id S1385521AbiFMObQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 10:31:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9887FABE76;
-        Mon, 13 Jun 2022 04:49:00 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E320ABE6F;
+        Mon, 13 Jun 2022 04:48:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D80C76149A;
-        Mon, 13 Jun 2022 11:48:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1AD3C36AFE;
-        Mon, 13 Jun 2022 11:48:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 129C8B80ECC;
+        Mon, 13 Jun 2022 11:48:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D33DC3411B;
+        Mon, 13 Jun 2022 11:48:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120897;
-        bh=VXZhxryh72Og4GqGI4MTbJbRPGLEe+3cwrtMAV1XFcY=;
+        s=korg; t=1655120929;
+        bh=fOGyiO/Q/y/xv0Yi8FkPvSRMF+bUyYruvb+2AB7CZhw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2ilUniEpbzdLVpDzgiCwrnA4JofJ3yiu6hCxn3cq6/UeCOymvvLdIiQpuCyx0K0Wy
-         TNaqSoUIbEhCqyHXaUO8muPWJMNIqscCxFC/2ge+WxNCulXdK9NLimmaodnizZqeOu
-         9ovvptTyl9HSjxRkED468CCBJRrs9TlKF89w3bG8=
+        b=QEtIS6AljOlnoaEZ46j/rTc6PxuNFgrURP7SJFnSmF8r7tIGHshBKoYdGBfY+ctfu
+         G9814difbwUdJVzfREUXnJdkjYDhSIGwIYhiym4qRJWJqNEA7TGt1OWMERr06fCTpX
+         y19cJYb0q1VYa0Hr2FACE900DpN78lBgojh6V9ls=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 165/298] netfilter: nf_tables: release new hooks on unsupported flowtable flags
-Date:   Mon, 13 Jun 2022 12:10:59 +0200
-Message-Id: <20220613094929.936874350@linuxfoundation.org>
+Subject: [PATCH 5.17 192/298] tcp: use alloc_large_system_hash() to allocate table_perturb
+Date:   Mon, 13 Jun 2022 12:11:26 +0200
+Message-Id: <20220613094930.929532082@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -49,44 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Muchun Song <songmuchun@bytedance.com>
 
-[ Upstream commit c271cc9febaaa1bcbc0842d1ee30466aa6148ea8 ]
+[ Upstream commit e67b72b90b7e19a4be4d9c29f3feea6f58ab43f8 ]
 
-Release the list of new hooks that are pending to be registered in case
-that unsupported flowtable flags are provided.
+In our server, there may be no high order (>= 6) memory since we reserve
+lots of HugeTLB pages when booting.  Then the system panic.  So use
+alloc_large_system_hash() to allocate table_perturb.
 
-Fixes: 78d9f48f7f44 ("netfilter: nf_tables: add devices to existing flowtable")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: e9261476184b ("tcp: dynamically allocate the perturb table used by source ports")
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/r/20220607070214.94443-1-songmuchun@bytedance.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_tables_api.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ net/ipv4/inet_hashtables.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index ee7adb42a97d..2abad256f0aa 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -7348,11 +7348,15 @@ static int nft_flowtable_update(struct nft_ctx *ctx, const struct nlmsghdr *nlh,
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index a5d57fa679ca..55654e335d43 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -917,10 +917,12 @@ void __init inet_hashinfo2_init(struct inet_hashinfo *h, const char *name,
+ 	init_hashinfo_lhash2(h);
  
- 	if (nla[NFTA_FLOWTABLE_FLAGS]) {
- 		flags = ntohl(nla_get_be32(nla[NFTA_FLOWTABLE_FLAGS]));
--		if (flags & ~NFT_FLOWTABLE_MASK)
--			return -EOPNOTSUPP;
-+		if (flags & ~NFT_FLOWTABLE_MASK) {
-+			err = -EOPNOTSUPP;
-+			goto err_flowtable_update_hook;
-+		}
- 		if ((flowtable->data.flags & NFT_FLOWTABLE_HW_OFFLOAD) ^
--		    (flags & NFT_FLOWTABLE_HW_OFFLOAD))
--			return -EOPNOTSUPP;
-+		    (flags & NFT_FLOWTABLE_HW_OFFLOAD)) {
-+			err = -EOPNOTSUPP;
-+			goto err_flowtable_update_hook;
-+		}
- 	} else {
- 		flags = flowtable->data.flags;
- 	}
+ 	/* this one is used for source ports of outgoing connections */
+-	table_perturb = kmalloc_array(INET_TABLE_PERTURB_SIZE,
+-				      sizeof(*table_perturb), GFP_KERNEL);
+-	if (!table_perturb)
+-		panic("TCP: failed to alloc table_perturb");
++	table_perturb = alloc_large_system_hash("Table-perturb",
++						sizeof(*table_perturb),
++						INET_TABLE_PERTURB_SIZE,
++						0, 0, NULL, NULL,
++						INET_TABLE_PERTURB_SIZE,
++						INET_TABLE_PERTURB_SIZE);
+ }
+ 
+ int inet_hashinfo2_init_mod(struct inet_hashinfo *h)
 -- 
 2.35.1
 
