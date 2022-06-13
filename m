@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3B28CCA48E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C91D5CCA48D
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:47:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385547AbiFMOr2 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:47:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58964 "EHLO
+        id S241856AbiFMOrS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 10:47:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386311AbiFMOpC (ORCPT
+        with ESMTP id S1386220AbiFMOoq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:45:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1DD7B82D1;
-        Mon, 13 Jun 2022 04:51:40 -0700 (PDT)
+        Mon, 13 Jun 2022 10:44:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37565B715B;
+        Mon, 13 Jun 2022 04:51:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5275614A0;
-        Mon, 13 Jun 2022 11:51:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B661CC34114;
-        Mon, 13 Jun 2022 11:51:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E612FB80D31;
+        Mon, 13 Jun 2022 11:51:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F887C34114;
+        Mon, 13 Jun 2022 11:51:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655121075;
-        bh=2Bnq75o17SAeC1aGnsuLEf+b1BM26FPk/fvf4u8So08=;
+        s=korg; t=1655121080;
+        bh=5fgkOH7xDgS6Kb/TqVo4BBb+cplA2IpxfR8lxDeJRPE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DhtjVElskGIhsDchLE5cOWgiB6/6rLzFqSUGahrXMfFw/1+1IUWs9UUAvSZw36IZu
-         Hzz5ULZT0dfAOIpVHCRcuhmC1IsBiwN1Hm0DoF9PNbZFSOPYrEpfGqub0413Im4l3d
-         +LKR+EqYTX/+sfPvi20gLZnjlK45GAVslbHVxXko=
+        b=Zg/OCLdiVYb3nGS1Cj/kmUNBW0p4T512ytdHnTtaXUuJxIjxTzu5zQ3Ux4HOfcagQ
+         ZQ7GpNAh/WTQsHKNV5cSroUflRI9ErHnqRAaZroQuWwJBz6SAxJIjqDMy+N5rmRfCf
+         OxY0y1GCcYGhirDjABa1BLIqCwDeEMdbmDJL8AJM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Shyam Prasad N <sprasad@microsoft.com>,
-        Enzo Matsumiya <ematsumiya@suse.de>,
         Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.17 262/298] cifs: return errors during session setup during reconnects
-Date:   Mon, 13 Jun 2022 12:12:36 +0200
-Message-Id: <20220613094933.020476728@linuxfoundation.org>
+Subject: [PATCH 5.17 264/298] cifs: populate empty hostnames for extra channels
+Date:   Mon, 13 Jun 2022 12:12:38 +0200
+Message-Id: <20220613094933.079890708@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -52,35 +50,52 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Shyam Prasad N <sprasad@microsoft.com>
 
-commit 8ea21823aa584b55ba4b861307093b78054b0c1b upstream.
+commit 4c14d7043fede258957d7b01da0cad2d9fe3a205 upstream.
 
-During reconnects, we check the return value from
-cifs_negotiate_protocol, and have handlers for both success
-and failures. But if that passes, and cifs_setup_session
-returns any errors other than -EACCES, we do not handle
-that. This fix adds a handler for that, so that we don't
-go ahead and try a tree_connect on a failed session.
+Currently, the secondary channels of a multichannel session
+also get hostname populated based on the info in primary channel.
+However, this will end up with a wrong resolution of hostname to
+IP address during reconnect.
 
-Signed-off-by: Shyam Prasad N <sprasad@microsoft.com>
-Reviewed-by: Enzo Matsumiya <ematsumiya@suse.de>
+This change fixes this by not populating hostname info for all
+secondary channels.
+
+Fixes: 5112d80c162f ("cifs: populate server_hostname for extra channels")
 Cc: stable@vger.kernel.org
+Signed-off-by: Shyam Prasad N <sprasad@microsoft.com>
 Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/cifs/smb2pdu.c |    3 +++
- 1 file changed, 3 insertions(+)
+ fs/cifs/connect.c |    4 ++++
+ fs/cifs/sess.c    |    5 ++++-
+ 2 files changed, 8 insertions(+), 1 deletion(-)
 
---- a/fs/cifs/smb2pdu.c
-+++ b/fs/cifs/smb2pdu.c
-@@ -288,6 +288,9 @@ smb2_reconnect(__le16 smb2_command, stru
- 			mutex_unlock(&ses->session_mutex);
- 			rc = -EHOSTDOWN;
- 			goto failed;
-+		} else if (rc) {
-+			mutex_unlock(&ses->session_mutex);
-+			goto out;
- 		}
- 	} else {
- 		mutex_unlock(&ses->session_mutex);
+--- a/fs/cifs/connect.c
++++ b/fs/cifs/connect.c
+@@ -97,6 +97,10 @@ static int reconn_set_ipaddr_from_hostna
+ 	if (!server->hostname)
+ 		return -EINVAL;
+ 
++	/* if server hostname isn't populated, there's nothing to do here */
++	if (server->hostname[0] == '\0')
++		return 0;
++
+ 	len = strlen(server->hostname) + 3;
+ 
+ 	unc = kmalloc(len, GFP_KERNEL);
+--- a/fs/cifs/sess.c
++++ b/fs/cifs/sess.c
+@@ -274,7 +274,10 @@ cifs_ses_add_channel(struct cifs_sb_info
+ 	/* Auth */
+ 	ctx.domainauto = ses->domainAuto;
+ 	ctx.domainname = ses->domainName;
+-	ctx.server_hostname = ses->server->hostname;
++
++	/* no hostname for extra channels */
++	ctx.server_hostname = "";
++
+ 	ctx.username = ses->user_name;
+ 	ctx.password = ses->password;
+ 	ctx.sectype = ses->sectype;
 
 
