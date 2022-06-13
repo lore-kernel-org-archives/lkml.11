@@ -2,132 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E1A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:42:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A702EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:44:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242589AbiFMRm0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 13:42:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49640 "EHLO
+        id S232304AbiFMRob (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 13:44:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347514AbiFMRkq (ORCPT
+        with ESMTP id S241927AbiFMRoO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 13:40:46 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E795039B98
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:10:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        from:to:cc:subject:date:message-id:in-reply-to:references
-        :mime-version:content-transfer-encoding; s=k1; bh=stMRjnyMVz9r4c
-        1ylukkPkM32KBZXfFXWJnNgmRy7Go=; b=wS+6TT/lgo8P/OK6rhMeB+eOn/m+3+
-        5M4TqDxf+JTy7c2dBNC7XluToCloHyvYn0vChnVyB9wVzBgLqfEZk+BL4zPwV5zb
-        ra2i876oJH1CKCgfi/bOe5ymPeZyNOwyBDdYiNOw18caO/O/XZULuzg82tUEKQDb
-        AL3D0fdhZdHw8=
-Received: (qmail 1304762 invoked from network); 13 Jun 2022 15:10:52 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 13 Jun 2022 15:10:52 +0200
-X-UD-Smtp-Session: l3s3148p1@o2Z2BFThogZZD+yY
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     linux-renesas-soc@vger.kernel.org
-Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] arm64: dts: renesas: spider-cpu: Switch from SCIF3 to HSCIF0
-Date:   Mon, 13 Jun 2022 15:10:32 +0200
-Message-Id: <20220613131033.10053-2-wsa+renesas@sang-engineering.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220613131033.10053-1-wsa+renesas@sang-engineering.com>
-References: <20220613131033.10053-1-wsa+renesas@sang-engineering.com>
+        Mon, 13 Jun 2022 13:44:14 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D98D168D15;
+        Mon, 13 Jun 2022 06:18:41 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id a10so5603330pju.3;
+        Mon, 13 Jun 2022 06:18:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=GqcjIBiZHdkiFQqTyaXjMxy6knKrlT2JCmzywSrR6F4=;
+        b=W6Stz7yNDgHrafTk7QMKI2bwWX8VJq3RL1tKe0dtoZAC9IKwoc/ga5MzReVsIFu4Dz
+         QoY+auFOsQVCqFHQcxwPsDgQy5Pwug8khg+wJ2WWNLvM3i+EGKDlsuniQV8NDUjs/ihC
+         dqOE/gWGix6+NgoklW5oEQIujMeaKFeaDq84mzvNsyDvF3CHYRlZbMWAMurZoQMp1cQI
+         QXH3Jxx6UxNCdAy1wHPu4flkEOtDc945/d9jZQG5rQL/nq6L6WNsxHUJVW5POUOADclk
+         1MpfYPYrDuqQmYuZxyVds9SVpa1AVLhhp0wzgctFpTbcaKb9KUU6dyNw8XW464wT9nPj
+         hf9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=GqcjIBiZHdkiFQqTyaXjMxy6knKrlT2JCmzywSrR6F4=;
+        b=I38iXnN8g4bnC4Dm+Rkikg6jK73LhpqcibB/6Usdp0DCmjVXIza0MsZYLryrCJxt4E
+         IssC5+cPnIghh915MPpNdajUQQPypA7Dbl/R56bGkSiCQbHfD+9lcwtgnxh3kQr5unOk
+         ihahJqaFft8pHgbkxSlOdtT/cvSVJQ28GQ6nYo508wxHMK8wHowaWi2hVddyRhWL4zTy
+         LrirjoBfxRFkAFu7lvgaIb5J0E39bY2BRFluXCf+euGbOrGdnjK0mu9qA/cFdNUBak5y
+         O+pIoHX7osRTd7xsuvLj5BPT71D1w0lFtWyBqM+ioAyREm5anCelkad/JRI+DLOzJKJu
+         KALw==
+X-Gm-Message-State: AOAM530DYUXScd3TexBKkUqPTx5YOKZjebzMc8ecdsmG1/C7vGAg0oT2
+        7eTmu7SOaARh9JTS0MELK2k=
+X-Google-Smtp-Source: ABdhPJxSXN3t0e9qsGy4v9kZozVl7y++GOeJiSptH8f6Zw38nYb+LQeHXkHR2poHPSudLwd9DSR4RA==
+X-Received: by 2002:a17:90a:5409:b0:1e8:664e:41dd with SMTP id z9-20020a17090a540900b001e8664e41ddmr15785311pjh.173.1655126320488;
+        Mon, 13 Jun 2022 06:18:40 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id 19-20020a170902e9d300b001639f038250sm5070965plk.220.2022.06.13.06.18.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 06:18:39 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Mon, 13 Jun 2022 06:18:38 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.15 000/247] 5.15.47-rc1 review
+Message-ID: <20220613131838.GA3571788@roeck-us.net>
+References: <20220613094922.843438024@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Every loader before Linux utilizes HSCIF0 with a speed of 1843200bps.
-Make Linux behave the same.
+On Mon, Jun 13, 2022 at 12:08:22PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.47 release.
+> There are 247 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 15 Jun 2022 09:47:08 +0000.
+> Anything received after that time might be too late.
+> 
 
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
----
- .../boot/dts/renesas/r8a779f0-spider-cpu.dtsi | 26 +++++++++----------
- .../boot/dts/renesas/r8a779f0-spider.dts      |  4 +--
- 2 files changed, 15 insertions(+), 15 deletions(-)
+Early feedback:
 
-diff --git a/arch/arm64/boot/dts/renesas/r8a779f0-spider-cpu.dtsi b/arch/arm64/boot/dts/renesas/r8a779f0-spider-cpu.dtsi
-index 41aa8591b3b1..3208d2148768 100644
---- a/arch/arm64/boot/dts/renesas/r8a779f0-spider-cpu.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a779f0-spider-cpu.dtsi
-@@ -31,6 +31,14 @@ &extalr_clk {
- 	clock-frequency = <32768>;
- };
- 
-+&hscif0 {
-+	pinctrl-0 = <&hscif0_pins>;
-+	pinctrl-names = "default";
-+
-+	uart-has-rtscts;
-+	status = "okay";
-+};
-+
- &i2c4 {
- 	pinctrl-0 = <&i2c4_pins>;
- 	pinctrl-names = "default";
-@@ -50,16 +58,16 @@ &pfc {
- 	pinctrl-0 = <&scif_clk_pins>;
- 	pinctrl-names = "default";
- 
-+	hscif0_pins: hscif0 {
-+		groups = "hscif0_data", "hscif0_ctrl";
-+		function = "hscif0";
-+	};
-+
- 	i2c4_pins: i2c4 {
- 		groups = "i2c4";
- 		function = "i2c4";
- 	};
- 
--	scif3_pins: scif3 {
--		groups = "scif3_data", "scif3_ctrl";
--		function = "scif3";
--	};
--
- 	scif_clk_pins: scif_clk {
- 		groups = "scif_clk";
- 		function = "scif_clk";
-@@ -71,14 +79,6 @@ &rwdt {
- 	status = "okay";
- };
- 
--&scif3 {
--	pinctrl-0 = <&scif3_pins>;
--	pinctrl-names = "default";
--
--	uart-has-rtscts;
--	status = "okay";
--};
--
- &scif_clk {
- 	clock-frequency = <24000000>;
- };
-diff --git a/arch/arm64/boot/dts/renesas/r8a779f0-spider.dts b/arch/arm64/boot/dts/renesas/r8a779f0-spider.dts
-index 2e3b719cc749..954ba227bfa7 100644
---- a/arch/arm64/boot/dts/renesas/r8a779f0-spider.dts
-+++ b/arch/arm64/boot/dts/renesas/r8a779f0-spider.dts
-@@ -14,11 +14,11 @@ / {
- 	compatible = "renesas,spider-breakout", "renesas,spider-cpu", "renesas,r8a779f0";
- 
- 	aliases {
--		serial0 = &scif3;
-+		serial0 = &hscif0;
- 	};
- 
- 	chosen {
--		stdout-path = "serial0:115200n8";
-+		stdout-path = "serial0:1843200n8";
- 	};
- };
- 
--- 
-2.35.1
+Building arm:allmodconfig ... failed
+--------------
+Error log:
+In file included from include/linux/kernel.h:16,
+                 from include/linux/crypto.h:16,
+                 from include/crypto/hash.h:11,
+                 from lib/iov_iter.c:2:
+lib/iov_iter.c: In function 'iter_xarray_get_pages':
+include/linux/minmax.h:20:35: error: comparison of distinct pointer types lacks a cast
 
+This will likely affect affects all branches where commit 6c77676645ad
+("iov_iter: Fix iter_xarray_get_pages{,_alloc}()") was backported.
+
+The fix is upstream commit 1c27f1fc1549 ("iov_iter: fix build issue due
+to possible type mis-match").
+
+Guenter
