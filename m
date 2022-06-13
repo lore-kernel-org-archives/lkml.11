@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95A69C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:33:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8120CCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:33:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354314AbiFMLdG (ORCPT
+        id S1354551AbiFMLdM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:33:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45108 "EHLO
+        Mon, 13 Jun 2022 07:33:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354259AbiFML3G (ORCPT
+        with ESMTP id S1354308AbiFML3T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:29:06 -0400
+        Mon, 13 Jun 2022 07:29:19 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2A9A3ED20;
-        Mon, 13 Jun 2022 03:43:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E8A63EF16;
+        Mon, 13 Jun 2022 03:43:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 722886124F;
-        Mon, 13 Jun 2022 10:43:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 821ADC34114;
-        Mon, 13 Jun 2022 10:43:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DEE8D60F9A;
+        Mon, 13 Jun 2022 10:43:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE5CBC34114;
+        Mon, 13 Jun 2022 10:43:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116986;
-        bh=isilzAeni0jy00oxPlLWnaC0R+yeZKqVfUubavwfJDQ=;
+        s=korg; t=1655116995;
+        bh=rxf+5mUCLVk1ZPGMwJN0/U1Zl7xVwG3EKf9U5j4w30s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NrFlSKSbeQcPxq/nkhXzFQRrKGyTktuvK8QcUTFG/HGDG5PayhVeu4jHvMrGJh55S
-         aF1prSmo4WYj9eQ6G6HIKIwhFPho4BFJR8bnGU2GIz4tJTE9DHzjsekFptAbxeRjBm
-         6eRh3xlb/nZODxP2EAkxdniqdnitK8lYIqClPY5E=
+        b=XZrB/CA3LBeRKQfYF0irUlJv4e1L++cKEoknE0j4z3jGwcWnAleNGYrgDs1B/w3zD
+         TUixXk67Zz7Q49KxR+reXUeEx/n4ozQ4mzCrQqj+tKFYgmGpjYYkPgmBtTQV3M2xgv
+         LxlRM8T4NrE0n1X0nZcVHOmRDJGh5kmXH208qj2I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mike Kravetz <mike.kravetz@oracle.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.4 257/411] hugetlb: fix huge_pmd_unshare address update
-Date:   Mon, 13 Jun 2022 12:08:50 +0200
-Message-Id: <20220613094936.471951916@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 5.4 249/411] RDMA/hfi1: Fix potential integer multiplication overflow errors
+Date:   Mon, 13 Jun 2022 12:08:42 +0200
+Message-Id: <20220613094936.238950151@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,47 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Kravetz <mike.kravetz@oracle.com>
+From: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
 
-commit 48381273f8734d28ef56a5bdf1966dd8530111bc upstream.
+commit f93e91a0372c922c20d5bee260b0f43b4b8a1bee upstream.
 
-The routine huge_pmd_unshare() is passed a pointer to an address
-associated with an area which may be unshared.  If unshare is successful
-this address is updated to 'optimize' callers iterating over huge page
-addresses.  For the optimization to work correctly, address should be
-updated to the last huge page in the unmapped/unshared area.  However, in
-the common case where the passed address is PUD_SIZE aligned, the address
-is incorrectly updated to the address of the preceding huge page.  That
-wastes CPU cycles as the unmapped/unshared range is scanned twice.
+When multiplying of different types, an overflow is possible even when
+storing the result in a larger type. This is because the conversion is
+done after the multiplication. So arithmetic overflow and thus in
+incorrect value is possible.
 
-Link: https://lkml.kernel.org/r/20220524205003.126184-1-mike.kravetz@oracle.com
-Fixes: 39dde65c9940 ("shared page table for hugetlb page")
-Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
-Acked-by: Muchun Song <songmuchun@bytedance.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Correct an instance of this in the inter packet delay calculation.  Fix by
+ensuring one of the operands is u64 which will promote the other to u64 as
+well ensuring no overflow.
+
+Cc: stable@vger.kernel.org
+Fixes: 7724105686e7 ("IB/hfi1: add driver files")
+Link: https://lore.kernel.org/r/20220520183712.48973.29855.stgit@awfm-01.cornelisnetworks.com
+Reviewed-by: Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>
+Signed-off-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/hugetlb.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/infiniband/hw/hfi1/init.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -5033,7 +5033,14 @@ int huge_pmd_unshare(struct mm_struct *m
- 	pud_clear(pud);
- 	put_page(virt_to_page(ptep));
- 	mm_dec_nr_pmds(mm);
--	*addr = ALIGN(*addr, HPAGE_SIZE * PTRS_PER_PTE) - HPAGE_SIZE;
-+	/*
-+	 * This update of passed address optimizes loops sequentially
-+	 * processing addresses in increments of huge page size (PMD_SIZE
-+	 * in this case).  By clearing the pud, a PUD_SIZE area is unmapped.
-+	 * Update address to the 'last page' in the cleared area so that
-+	 * calling loop can move to first page past this area.
-+	 */
-+	*addr |= PUD_SIZE - PMD_SIZE;
- 	return 1;
- }
- #define want_pmd_share()	(1)
+--- a/drivers/infiniband/hw/hfi1/init.c
++++ b/drivers/infiniband/hw/hfi1/init.c
+@@ -543,7 +543,7 @@ void set_link_ipg(struct hfi1_pportdata
+ 	u16 shift, mult;
+ 	u64 src;
+ 	u32 current_egress_rate; /* Mbits /sec */
+-	u32 max_pkt_time;
++	u64 max_pkt_time;
+ 	/*
+ 	 * max_pkt_time is the maximum packet egress time in units
+ 	 * of the fabric clock period 1/(805 MHz).
 
 
