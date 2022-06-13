@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1876FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:01:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BBCCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:01:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350150AbiFMLBC (ORCPT
+        id S1350219AbiFMLBI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:01:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39568 "EHLO
+        Mon, 13 Jun 2022 07:01:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350218AbiFMKyp (ORCPT
+        with ESMTP id S1350203AbiFMKyp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 06:54:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73253CE8;
-        Mon, 13 Jun 2022 03:30:23 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A434CDA4;
+        Mon, 13 Jun 2022 03:30:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E9388B80E5E;
-        Mon, 13 Jun 2022 10:30:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CC53C34114;
-        Mon, 13 Jun 2022 10:30:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 59BBDB80E95;
+        Mon, 13 Jun 2022 10:30:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6B04C34114;
+        Mon, 13 Jun 2022 10:30:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116220;
-        bh=PVI05kPBXQYxAUafjp6oKDIM1E+3bVSwSqCRqIipfZA=;
+        s=korg; t=1655116212;
+        bh=NA4E3y1t021we4LSyaOq70PfxfQjsWhyAXt2a1xl6e8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N+ovfpKbC0jxTmfSjmVRSiZ76d+j79eB4ePCiQDce/xNKwBpgQd9/tMCqadbr2p2N
-         xjWF8lEC9NoF0Qg0i2bS7GQ+Wgor1FbQKsqoDZ7qRLZq3WpQFJBAH7R6mN0+C54WLo
-         TQmzKdTBGtXEXJv47KO7BPbaMplCINcop6eUJBRc=
+        b=PaR+w05rOQ+ZAZCxtARPImuTp4TDkIOqaiUmQsTWEUUcjmDZSUxlPMQl62dSeaY+0
+         o0Knfb9L0v5MWNWg3ezkzW+qJa81NuQbEQ33vQQA3qPMSNGj3ZN9E4klry/dsqUK90
+         sGOaImgtDxZSIkyeAZPNLvEMx7tG+lzsPcVrWvdI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        eberhard.stoll@kontron.de, Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 153/218] serial: txx9: Dont allow CS5-6
-Date:   Mon, 13 Jun 2022 12:10:11 +0200
-Message-Id: <20220613094925.233523219@linuxfoundation.org>
+Subject: [PATCH 5.4 044/411] spi: stm32-qspi: Fix wait_cmd timeout in APM mode
+Date:   Mon, 13 Jun 2022 12:05:17 +0200
+Message-Id: <20220613094929.831976150@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,40 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+From: Patrice Chotard <patrice.chotard@foss.st.com>
 
-[ Upstream commit 79ac88655dc0551e3571ad16bdabdbe65d61553e ]
+[ Upstream commit d83d89ea68b4726700fa87b22db075e4217e691c ]
 
-Only CS7 and CS8 are supported but CSIZE is not sanitized with
-CS5 or CS6 to CS8.
+In APM mode, TCF and TEF flags are not set. To avoid timeout in
+stm32_qspi_wait_cmd(), don't check if TCF/TEF are set.
 
-Set CSIZE correctly so that userspace knows the effective value.
-Incorrect CSIZE also results in miscalculation of the frame bits in
-tty_get_char_size() or in its predecessor where the roughly the same
-code is directly within uart_update_timeout().
-
-Fixes: 1da177e4c3f4 (Linux-2.6.12-rc2)
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/20220519081808.3776-5-ilpo.jarvinen@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Patrice Chotard <patrice.chotard@foss.st.com>
+Reported-by: eberhard.stoll@kontron.de
+Link: https://lore.kernel.org/r/20220511074644.558874-2-patrice.chotard@foss.st.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/serial_txx9.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/spi/spi-stm32-qspi.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/serial_txx9.c b/drivers/tty/serial/serial_txx9.c
-index ba77e72057a9..5d41884f5012 100644
---- a/drivers/tty/serial/serial_txx9.c
-+++ b/drivers/tty/serial/serial_txx9.c
-@@ -652,6 +652,8 @@ serial_txx9_set_termios(struct uart_port *port, struct ktermios *termios,
- 	case CS6:	/* not supported */
- 	case CS8:
- 		cval |= TXX9_SILCR_UMODE_8BIT;
-+		termios->c_cflag &= ~CSIZE;
-+		termios->c_cflag |= CS8;
- 		break;
- 	}
+diff --git a/drivers/spi/spi-stm32-qspi.c b/drivers/spi/spi-stm32-qspi.c
+index ea77d915216a..8070b7420217 100644
+--- a/drivers/spi/spi-stm32-qspi.c
++++ b/drivers/spi/spi-stm32-qspi.c
+@@ -293,7 +293,8 @@ static int stm32_qspi_wait_cmd(struct stm32_qspi *qspi,
+ 	if (!op->data.nbytes)
+ 		goto wait_nobusy;
  
+-	if (readl_relaxed(qspi->io_base + QSPI_SR) & SR_TCF)
++	if ((readl_relaxed(qspi->io_base + QSPI_SR) & SR_TCF) ||
++	    qspi->fmode == CCR_FMODE_APM)
+ 		goto out;
+ 
+ 	reinit_completion(&qspi->data_completion);
 -- 
 2.35.1
 
