@@ -2,80 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4E09C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:15:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E83A5C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:15:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239744AbiFMIPR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 04:15:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37956 "EHLO
+        id S239759AbiFMIPW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 04:15:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239723AbiFMINM (ORCPT
+        with ESMTP id S239778AbiFMINX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 04:13:12 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C0506DE8B
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 01:13:10 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id 76F9D1E80D8F;
-        Mon, 13 Jun 2022 16:11:59 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id bfep-sN8dM9B; Mon, 13 Jun 2022 16:11:56 +0800 (CST)
-Received: from localhost.localdomain (unknown [180.167.10.98])
-        (Authenticated sender: renyu@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id 0EA6A1E80D89;
-        Mon, 13 Jun 2022 16:11:56 +0800 (CST)
-From:   Ren Yu <renyu@nfschina.com>
-To:     lgirdwood@gmail.com
-Cc:     broonie@kernel.org, perex@perex.cz, tiwai@suse.com,
-        ckeepax@opensource.cirrus.com, srinivas.kandagatla@linaro.org,
-        rf@opensource.cirrus.com, steve@sk2.org,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        liqiong@nfschina.com, qixu@nfschina.com, yuzhe@nfschina.com,
-        hukun@nfschina.com, Ren Yu <renyu@nfschina.com>
-Subject: [PATCH] soc: fix typos in comment
-Date:   Mon, 13 Jun 2022 16:12:19 +0800
-Message-Id: <20220613081219.25058-1-renyu@nfschina.com>
-X-Mailer: git-send-email 2.11.0
+        Mon, 13 Jun 2022 04:13:23 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0ABEB3;
+        Mon, 13 Jun 2022 01:13:18 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 7B924660163F;
+        Mon, 13 Jun 2022 09:13:16 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1655107997;
+        bh=nngcLlLkWokhulYNje5MIUVohalGmGQRGzNdGDIqhOg=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=oUJLCpDwf6d8vCEwFuLYeiFLaqPJ3EL68/bcBr6sbAbGzc+N/DXSCCdHMIGrwe9ml
+         bN1WxFu0/szl4ZkMs77VDe868k+7i2zq94TTq/sYBpB+AZLVdeyxCfWdHoRSvXvqfw
+         78roJdyviEA8KQtMfXF3SN579GsYRv8qwbkHmrHXAFURrEC44PsMKIdobYnmyq9bLx
+         PgY6B9oTiBQclhsLYbiZM1R55H+F7GMMsgy76kt8n5wNyz91LluFdLVpUH0HnoeQQe
+         6Sb0GPrzbO1qFd5SeZVpBoCwqnt5uJOWy6RFQdX0NkmV2fN4m1diJhIc7Wzroyef2H
+         PcqPencC5Of5g==
+Message-ID: <80c7fa61-e25a-fc45-bdcb-60ac3796b96e@collabora.com>
+Date:   Mon, 13 Jun 2022 10:13:13 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 6/6] iommu: mtk_iommu: Lookup phandle to retrieve
+ syscon to pericfg
+Content-Language: en-US
+To:     Yong Wu <yong.wu@mediatek.com>
+Cc:     joro@8bytes.org, will@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        iommu@lists.linux-foundation.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        krzysztof.kozlowski@linaro.org
+References: <20220609100802.54513-1-angelogioacchino.delregno@collabora.com>
+ <20220609100802.54513-7-angelogioacchino.delregno@collabora.com>
+ <db422fe4d0b5391ee2aacae989d7e48209e1095f.camel@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <db422fe4d0b5391ee2aacae989d7e48209e1095f.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-change 'slection' to 'selection'
+Il 13/06/22 07:32, Yong Wu ha scritto:
+> On Thu, 2022-06-09 at 12:08 +0200, AngeloGioacchino Del Regno wrote:
+>> On some SoCs (of which only MT8195 is supported at the time of
+>> writing),
+>> the "R" and "W" (I/O) enable bits for the IOMMUs are in the
+>> pericfg_ao
+>> register space and not in the IOMMU space: as it happened already
+>> with
+>> infracfg, it is expected that this list will grow.
+> 
+> Currently I don't see the list will grow. As commented before, In the
+> lastest SoC, The IOMMU enable bits for IOMMU will be in ATF, rather
+> than in this pericfg register region. In this case, Is this patch
+> unnecessary? or we could add this patch when there are 2 SoCs use this
+> setting at least?  what's your opinion?
+> 
 
-Signed-off-by: Ren Yu <renyu@nfschina.com>
----
- sound/soc/codecs/lm49453.c | 2 +-
- sound/soc/codecs/rt5631.h  | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+Perhaps I've misunderstood... besides, can you please check if there's any
+other SoC (not just chromebooks, also smartphone SoCs) that need this logic?
 
-diff --git a/sound/soc/codecs/lm49453.c b/sound/soc/codecs/lm49453.c
-index bd0078e4499b..2eb43e93778e 100644
---- a/sound/soc/codecs/lm49453.c
-+++ b/sound/soc/codecs/lm49453.c
-@@ -1201,7 +1201,7 @@ static int lm49453_set_dai_sysclk(struct snd_soc_dai *dai, int clk_id,
- 	case 12288000:
- 	case 26000000:
- 	case 19200000:
--		/* pll clk slection */
-+		/* pll clk selection */
- 		pll_clk = 0;
- 		break;
- 	case 48000:
-diff --git a/sound/soc/codecs/rt5631.h b/sound/soc/codecs/rt5631.h
-index 8a6b99a48c7c..0caca2e1d31b 100644
---- a/sound/soc/codecs/rt5631.h
-+++ b/sound/soc/codecs/rt5631.h
-@@ -373,7 +373,7 @@
-  */
- #define RT5631_SDP_DAC_DATA_L_R_SWAP			(0x1 << 4)
- 
--/* Data Length Slection */
-+/* Data Length Selection */
- #define RT5631_SDP_I2S_DL_MASK				(0x3 << 2)
- #define RT5631_SDP_I2S_DL_16				(0x0 << 2)
- #define RT5631_SDP_I2S_DL_20				(0x1 << 2)
--- 
-2.11.0
+Thanks,
+Angelo
+
 
