@@ -2,90 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09BE9C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:07:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11AC3C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:07:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358553AbiFMMHB (ORCPT
+        id S1358572AbiFMMHI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:07:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49866 "EHLO
+        Mon, 13 Jun 2022 08:07:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358580AbiFMMEU (ORCPT
+        with ESMTP id S1359161AbiFMMFU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:04:20 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 304084A919;
-        Mon, 13 Jun 2022 03:57:34 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id r187-20020a1c44c4000000b0039c76434147so4350889wma.1;
-        Mon, 13 Jun 2022 03:57:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=I+mQAAdlRxYZRH/29vXWOhrYvOZ8KHnvV5uZ0Clui7o=;
-        b=YpyLEN1/a2T0NyREDZwDbs+wwokpx38lbbSATmCX92bFRmpSoXUwuShVVr19qfrMiP
-         7F3ltt35cRIHX3QT4MeuSbOD1WmTgOZGiB65n3BeqKUWihgcFmMxTr+/mtjH8qdOHI6p
-         susamQxk8bGDNiMihDzG+2GSzABq9j9JNZ0ufsis9uU/bJbyG40nZchW3JrfGsdsKAM3
-         9vuKtElkiOlRcIwdBf707wuBUrCAsGuSWfZvcNGurFK+LWmnSD1P0fobCc2q5v6pMSmq
-         FBZEZJ3NpZLRhwZI53sn8TSIkkGrhzsbTyCDrhsaniB0DAiUe9EzGMpqfLOXfvMoWYXK
-         ccXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=I+mQAAdlRxYZRH/29vXWOhrYvOZ8KHnvV5uZ0Clui7o=;
-        b=nOYOc+YXe2/gVjP1zU7YZFQiEdD4ZMH8SEefZrR/2AdQfcZ1SW/jY4K6CKeFaUkP+W
-         UvtP23ycbggBPV4MH/uxLvFr9JrKrQXU0eW5HBZgDMRyT8fCOp660xTxDSMhuF6G0d/t
-         E7fi9Z8PayF2eumZ3Op2b7UtfKVYb8nh/IFELXcn8FLSW90a3PpyMLYDvwMq8uiUAsmr
-         O9K6kj+amBc3RTAyXLLpN5Clflk2m+QgE2XIXkzXotdFWIDoOXMthK0TbNvLV6XqIO1S
-         Kjlhm9mXLS7fkU2XXiuAxb2yLMPOqkAqHWvg4vE4ad8sghw9+gSfTVcONJk+C5/Xp6pK
-         iDjg==
-X-Gm-Message-State: AOAM533MWBgmqYfzzlVyEDBysfF5LvPX2ZoT3/pCIb3D27hhEu4UCBGo
-        PRl9fnMZOeG9xKdj36y67cA=
-X-Google-Smtp-Source: ABdhPJyx101r3sLv5Q1UW6EdzWAxoF2lKwCmcCsohkETQk9BiO9huRU/LN+nbnRLzzeYjq3k6dfGGg==
-X-Received: by 2002:a05:600c:34cf:b0:39c:4dfb:1398 with SMTP id d15-20020a05600c34cf00b0039c4dfb1398mr14043917wmq.133.1655117852610;
-        Mon, 13 Jun 2022 03:57:32 -0700 (PDT)
-Received: from felia.fritz.box (200116b8260df50089ef6db2443adc92.dip.versatel-1u1.de. [2001:16b8:260d:f500:89ef:6db2:443a:dc92])
-        by smtp.gmail.com with ESMTPSA id e5-20020a05600c4e4500b0039c4ff5e0a7sm9008225wmq.38.2022.06.13.03.57.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 03:57:32 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] MAINTAINERS: add include/dt-bindings/display to DRM DRIVERS
-Date:   Mon, 13 Jun 2022 12:57:15 +0200
-Message-Id: <20220613105715.13578-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 13 Jun 2022 08:05:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEA6B18383;
+        Mon, 13 Jun 2022 03:59:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 94735B80E5E;
+        Mon, 13 Jun 2022 10:59:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D81FC34114;
+        Mon, 13 Jun 2022 10:59:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655117950;
+        bh=zahziqDe8j7aiBCoU/QJvA3dqvZ2BaphwVPBmI2yt4I=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=2mH/sKPfAJKz2QABXxeyT2VNN1NpGuDptHhdRWjFL2ZiqZ8IUyCk/6y8PoJib2i3l
+         87UihmArmIhRPxWbxCV38HgHuSFwazx3s9n6LW3rg+DWBDngfkYpDwHV6hgF67DfT7
+         ABEeSD6Jhv96q1QAMIGgQQOMRXS56P/goIQTBris=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 4.19 167/287] RDMA/hfi1: Fix potential integer multiplication overflow errors
+Date:   Mon, 13 Jun 2022 12:09:51 +0200
+Message-Id: <20220613094928.939740425@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
+References: <20220613094923.832156175@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Maintainers of the directory Documentation/devicetree/bindings/display
-are also the maintainers of the corresponding directory
-include/dt-bindings/display.
+From: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
 
-Add the file entry for include/dt-bindings/display to the appropriate
-section in MAINTAINERS.
+commit f93e91a0372c922c20d5bee260b0f43b4b8a1bee upstream.
 
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+When multiplying of different types, an overflow is possible even when
+storing the result in a larger type. This is because the conversion is
+done after the multiplication. So arithmetic overflow and thus in
+incorrect value is possible.
+
+Correct an instance of this in the inter packet delay calculation.  Fix by
+ensuring one of the operands is u64 which will promote the other to u64 as
+well ensuring no overflow.
+
+Cc: stable@vger.kernel.org
+Fixes: 7724105686e7 ("IB/hfi1: add driver files")
+Link: https://lore.kernel.org/r/20220520183712.48973.29855.stgit@awfm-01.cornelisnetworks.com
+Reviewed-by: Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>
+Signed-off-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-David, Daniel, please pick this MAINTAINERS addition to your section.
+ drivers/infiniband/hw/hfi1/init.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+--- a/drivers/infiniband/hw/hfi1/init.c
++++ b/drivers/infiniband/hw/hfi1/init.c
+@@ -535,7 +535,7 @@ void set_link_ipg(struct hfi1_pportdata
+ 	u16 shift, mult;
+ 	u64 src;
+ 	u32 current_egress_rate; /* Mbits /sec */
+-	u32 max_pkt_time;
++	u64 max_pkt_time;
+ 	/*
+ 	 * max_pkt_time is the maximum packet egress time in units
+ 	 * of the fabric clock period 1/(805 MHz).
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 2e7d1e885aed..a8d243668992 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -6597,6 +6597,7 @@ F:	Documentation/devicetree/bindings/gpu/
- F:	Documentation/gpu/
- F:	drivers/gpu/
- F:	include/drm/
-+F:	include/dt-bindings/display/
- F:	include/linux/vga*
- F:	include/uapi/drm/
- 
--- 
-2.17.1
 
