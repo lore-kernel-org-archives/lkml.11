@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0835DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:41:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 242CAC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:41:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355753AbiFMLlL (ORCPT
+        id S1354457AbiFMLjs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:41:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56912 "EHLO
+        Mon, 13 Jun 2022 07:39:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354480AbiFMLcu (ORCPT
+        with ESMTP id S1355156AbiFMLat (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:32:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44A0ABF64;
-        Mon, 13 Jun 2022 03:47:23 -0700 (PDT)
+        Mon, 13 Jun 2022 07:30:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B024132F;
+        Mon, 13 Jun 2022 03:46:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C1FBDB80D3C;
-        Mon, 13 Jun 2022 10:47:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14DEBC34114;
-        Mon, 13 Jun 2022 10:47:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B9635B80D3F;
+        Mon, 13 Jun 2022 10:46:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 228ECC34114;
+        Mon, 13 Jun 2022 10:46:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117240;
-        bh=JLpxzX6Ra9Gwh88TaUwLoR3OG6uxLuu6Y7TrfmKyxU0=;
+        s=korg; t=1655117196;
+        bh=AXM9qMFCBS3L0W0YLvxJnCwpfqPIrY7ZADZ+q5pL5mU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QgVvARS1As51bXtFtz/icsfggc7hslCsj49wI9PaNga/3meXdPCj/y1KAjwULDTAH
-         Kzn42u+LRM4h8jZPKjCiNP5Fu+MXZPdzFXo6Pj4sSzFMpD/4VM+iXbJS8GxgbB5jNg
-         /4Q0ZlOTO/OxavUfNSDfyEl+b/m21XhAP5ow+28E=
+        b=IPv3xj9G8PgT9Yt45zOmCWTCkvFxwKevkiTVnHCKDqu7vOTBNt0CkChNamQ02lYtv
+         7SKifU+ZZvuwVMYAGdgkDTwqmjwNwcwGYHRVHYdLMvUEf/zUagjYND02F0x2V0VA7U
+         KXgPDeH2pjxgnhFDqJyqsecPzzyA6rtsSWX3U7hg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 330/411] net/mlx5: Dont use already freed action pointer
-Date:   Mon, 13 Jun 2022 12:10:03 +0200
-Message-Id: <20220613094938.621794979@linuxfoundation.org>
+Subject: [PATCH 5.4 320/411] ASoC: fsl_sai: Fix FSL_SAI_xDR/xFR definition
+Date:   Mon, 13 Jun 2022 12:09:53 +0200
+Message-Id: <20220613094938.331346538@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -51,48 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+From: Shengjiu Wang <shengjiu.wang@nxp.com>
 
-[ Upstream commit 80b2bd737d0e833e6a2b77e482e5a714a79c86a4 ]
+[ Upstream commit e4dd748dc87cf431af7b3954963be0d9f6150217 ]
 
-The call to mlx5dr_action_destroy() releases "action" memory. That
-pointer is set to miss_action later and generates the following smatch
-error:
+There are multiple xDR and xFR registers, the index is
+from 0 to 7. FSL_SAI_xDR and FSL_SAI_xFR is abandoned,
+replace them with FSL_SAI_xDR0 and FSL_SAI_xFR0.
 
- drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c:53 set_miss_action()
- warn: 'action' was already freed.
-
-Make sure that the pointer is always valid by setting NULL after destroy.
-
-Fixes: 6a48faeeca10 ("net/mlx5: Add direct rule fs_cmd implementation")
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Fixes: 4f7a0728b530 ("ASoC: fsl_sai: Add support for SAI new version")
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Link: https://lore.kernel.org/r/1653284661-18964-1-git-send-email-shengjiu.wang@nxp.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ sound/soc/fsl/fsl_sai.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-index 348f02e336f6..d64368506754 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-@@ -43,11 +43,10 @@ static int set_miss_action(struct mlx5_flow_root_namespace *ns,
- 	err = mlx5dr_table_set_miss_action(ft->fs_dr_table.dr_table, action);
- 	if (err && action) {
- 		err = mlx5dr_action_destroy(action);
--		if (err) {
--			action = NULL;
--			mlx5_core_err(ns->dev, "Failed to destroy action (%d)\n",
--				      err);
--		}
-+		if (err)
-+			mlx5_core_err(ns->dev,
-+				      "Failed to destroy action (%d)\n", err);
-+		action = NULL;
- 	}
- 	ft->fs_dr_table.miss_action = action;
- 	if (old_miss_action) {
+diff --git a/sound/soc/fsl/fsl_sai.h b/sound/soc/fsl/fsl_sai.h
+index 677ecfc1ec68..afaef2027234 100644
+--- a/sound/soc/fsl/fsl_sai.h
++++ b/sound/soc/fsl/fsl_sai.h
+@@ -67,8 +67,8 @@
+ #define FSL_SAI_xCR3(tx, ofs)	(tx ? FSL_SAI_TCR3(ofs) : FSL_SAI_RCR3(ofs))
+ #define FSL_SAI_xCR4(tx, ofs)	(tx ? FSL_SAI_TCR4(ofs) : FSL_SAI_RCR4(ofs))
+ #define FSL_SAI_xCR5(tx, ofs)	(tx ? FSL_SAI_TCR5(ofs) : FSL_SAI_RCR5(ofs))
+-#define FSL_SAI_xDR(tx, ofs)	(tx ? FSL_SAI_TDR(ofs) : FSL_SAI_RDR(ofs))
+-#define FSL_SAI_xFR(tx, ofs)	(tx ? FSL_SAI_TFR(ofs) : FSL_SAI_RFR(ofs))
++#define FSL_SAI_xDR0(tx)	(tx ? FSL_SAI_TDR0 : FSL_SAI_RDR0)
++#define FSL_SAI_xFR0(tx)	(tx ? FSL_SAI_TFR0 : FSL_SAI_RFR0)
+ #define FSL_SAI_xMR(tx)		(tx ? FSL_SAI_TMR : FSL_SAI_RMR)
+ 
+ /* SAI Transmit/Receive Control Register */
 -- 
 2.35.1
 
