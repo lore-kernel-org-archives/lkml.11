@@ -2,105 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4A91C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:34:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52177C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:35:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245272AbiFMSed (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:34:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58602 "EHLO
+        id S241655AbiFMSfA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:35:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245179AbiFMSeG (ORCPT
+        with ESMTP id S245179AbiFMSej (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 14:34:06 -0400
-Received: from sonic304-27.consmr.mail.ne1.yahoo.com (sonic304-27.consmr.mail.ne1.yahoo.com [66.163.191.153])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2E04C9651
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 07:53:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1655132021; bh=0SgoT7OQEOKIkib3oIGruLdZdvQGYAiUQ4MXiAUTnPI=; h=Date:Subject:To:Cc:References:From:In-Reply-To:From:Subject:Reply-To; b=FXke69JqlRRNJrFFWvEOaPCujhPRK221IP9c3YDlGwPEBRdFzJZzFtjHPUmW1k4q+b7iMdili2lrpgJj+l4qie8Wkqyb1eP36fWrIdUAQb51SG+unKpw/p30eIEJoDi3uoSan+LUESE7hNGLwJLoEWNjwKyYq54CMvxYa9nfrX4mBujcERvRSlnPDXDko0Q5vVyUe/p92IDzW4sZ3cMivBx6DWqKFsCG2jILkSBO7N5BPHm2VgZTriYrOPOrK9tLghcWARHBIQkGtOMgRXi7SUm3zHAXKpD/5QUGtjVsnKpcX//uqeQUughn6WMR+OJmNQtwC/dmiCeIomrKh/k+Jw==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1655132021; bh=grY/OEdyoXdDjlfXN0/WNt7lg26XYsq3xUM46loWHYq=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=TXf93jjHQtF0SYfWaqpCmU+mfcET2+RuDUTrRJwdRV9TCx1YMk2pcbcK/y2ZbO0Z6+23EBR5NzHIMTZVqXB7AJQabf1dCGzkRc6EoFxsIjz5J7sfhb1o/4lEkP0Og9UQR5MaljnZHylHgN+qVlpW5ADFIbSDfGeEkbP/vMx1F2W+HQAmzZnQltqmPJXgG57ONDL18qZptZ3UVUkHYEBDO3q+78jnhqrCi2cWlUnEfWNO/JQAAfyP5YEB+yn/MFQAHBxvbimq6r1fr7h+vGss4sA5gIbLfKH6RAPsNKACkaslNMzobmTDV6bhq2CUiwgbKN41K+H3fb/lJoAQJt/4Nw==
-X-YMail-OSG: CBD8m6sVM1mWWJAJktVvFXOdXPIh01AqOykUKU6tjLybFlu0MbXn8siUQnJPdK5
- pJkRlW9z8kTyajt73IQ.H9kO7TFfFYeVEWc2CagvVFNTngALaInQWI_7BRHuHUYAvAJ1M7s1uVah
- lV35hC.5gp95I1TBStohgbUNkUy_NFhTcnAJYXNAVHaKss2REl5Yvj6rlAnJE8pXvjQiU0pZUUIQ
- Mk78gDxnb2GfQy50e86oad1rWJZsAdYrOmXxR3dI8ZFzhDBoZa_gYB_gPPzG0ZPTbXuazxtUDG6Y
- wUgehSGMSm1Ju3QNMQH12EP.SVcFLqACieUK2FVZ3H4oHfvG2NoJRLztiHkKd4c6eUMSWFOahXSL
- .ErMKIAqZh855oc8DIgg3b3inMk2AowuXePypXU42vWt22gzHRP53ntPkCicrafYs_8Uj4wx3H5u
- eWQwtNOewGndsVCwgmAKbH5SEvwo7naOOPjJcNo2M5adkrVC4sGuc2a74.i3kpq9FTm5UflngbNe
- vTcnNTbXglj_iC1h0lyU7cWone4DPYPbvmQYYFGHZHek9jEdRv5CI22YCbkkZDHLodtWowWYt3By
- BHDGmnKow6weKsqErZ9.B7q.P1_rUAB07SExKYF70xhrWR_2d7AuvJM68pdIN3Aihzg8EYpipmJw
- V5hArBMtyzoYiTUJ6Y7otrADachTRw6PEQVlSY8DxRidimBOqPVU1zhQHJDWCerHo7pi4VBhf8I3
- .vyNxj3bKxKOkyk2H.kQILzlWpAhcUeWbx84Iv0jh_XftG01DopPcO2PDVAYd3ZA6uu9oDB_vtUo
- .pVNf1ewC7Jt4THvozxFVTsSuoUKmw3m_zs4XNttcgPu.qUWB5iRSsSirWeCV2OG468GLlwOGpQu
- OdiRffzwLFEcEW6BA7UMhOvsHfhJAS1FpegaRmgvyFNv4SI60odpz7OoKraLjSTPlAv.eapbC9wj
- YTRzA7c2.s3Cn_jexuGsOQX98WeJXRMsy81_b6bycp14iFdQfWVbtxyTktRK59DacI3HVDh50WPq
- d_e113GdPG.CJl6yuZe.YOExvlRj0QtUclZGjXHYaLKMdw_7BRRjkkWqkDUP36f1mzoZMHsAmUjN
- AJR95D1cvkTahP1i16WwqyMwexJ8xtsf2GxDStXkXXWQLm2H5TYBbN8U_kSiXfKKxB7pdGsWUtqQ
- L_93lbD6lKH8HanxeZP2rh0GBThm36V9OlS1EiVNYRMWDBU82wnbSRLclTEsEG_h1ee3.4iDFKb0
- dvbLNStL2mj_U.pBYcv7DmsCmtcXLBr8IimYx2P0cO5Gj.7DYMR6msy1XuvvUTMh4Adt.kBJ7SUN
- 1tXfUMlFIYN.nHGY_AQjo4Jhvcfy9BKV9w3HMwkkko4C_YufHcAFte6AyC4OXwkopn6JZQqN13va
- 0dEe35j9xsJ6nsqHDWgIla34.HThBHx8s8zEguHdtIz7kVYe4vo3_esmvCE3yXFJaBzaRWVyFcIZ
- vVWa_otkQ2abgjV.XqHNVbz5Cpx6WUjRmSD2jppojRdaqIvSvoJtAs19GTeKa6mHcG_pQCcy98pi
- eWBth_xHQyKOSdSWIilg6kPO8lKRO0YYbiDwRvMGThH4zetoMlj4rHKqDOcGIaOLfyLVV1gZ7A4I
- ue_gPyCT7M9wqRwSApoV3T6U3zEDHkyGdrx1bFJGTGxNknnrDx9.4hScHWHbhhxli1xZMCob_ZIb
- vYEzAkFZWwtiXTDeWWtEv3S83I40YeRyvLiHED3x9RsyvV9vtNnGReMTf.woXnQ9qnIALAa25PgL
- cGGNkea1Zuy3O02n7o6EmQNwSS5g4QPdh7Hlw2vRe3BcscZHQ.hcGDru_z3YzMp2AA6HUnIZaYen
- 9Yi9CdpnmO5y.C3uVVAJ2JLGqBo90MRgJjmBzj1nLG1eFnhNJuhcYdJ35tBvBt1ApOCeEY_Op8UV
- DDdhsfeZIaB39pj785P7krEy_pxh5PRkw93.YFtec8j96XtjW1Hg0bWiGt0iW5GvnhIgnpVd8xp.
- VGYyaM7g9pBG4zQW9KlE3NAvn5JPtDzg1_FjtRtx.VSRsLkct2jJ5P8im49_.P80d1NWjcek7ggy
- _3RNuPGuGUmuxKLi3RrYEGuS9x_oyWytgHLmOGuNAF_G5hIZBJjgaLy.D3h72mWVS6qCQLRlJ0yG
- bozTQwZrsaTYPCpgf0gU1Fbh3bcIfDtUe_7ZAY6SExM.4zT.6IjKHnAYhwbXS.77lkpJCK3ucN9c
- fYp1YbIxb7gK8n0v4e3c4wYExBTspHn7OFyJh_c_cU2I1kTu_hJEwmZb.apIj4xJUI3T5mfTjZsX
- 0Ppt.lSaHZ5Q7S.T4KzL.TWzrSWZiRvk-
-X-Sonic-MF: <casey@schaufler-ca.com>
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic304.consmr.mail.ne1.yahoo.com with HTTP; Mon, 13 Jun 2022 14:53:41 +0000
-Received: by hermes--canary-production-bf1-856dbf94db-lkxdg (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 1de6620996886a81d03d658fd9893895;
-          Mon, 13 Jun 2022 14:53:39 +0000 (UTC)
-Message-ID: <88718d10-4435-f5a8-9123-afc73257e0ca@schaufler-ca.com>
-Date:   Mon, 13 Jun 2022 07:53:36 -0700
+        Mon, 13 Jun 2022 14:34:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A5CAD84
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 08:44:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 41229614F9
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 15:44:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9142BC3411C;
+        Mon, 13 Jun 2022 15:44:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655135088;
+        bh=y53efzXikHFm/H91hlXuqUbgkorGqWK8cDWFahm+awA=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=vAG886PEu0K2LJBZOY10ZX6Zry38qoxAEMO2BeOohNJob32HoJtseFMZLZTpBVk/n
+         qjFPHhxFQtV4qRn3A+bW5SkuLsS02zpcBs4fMfqJepdVO9imeuOOUkg5O24vdzh45j
+         H5h2gBGEHmxRdClzEr11CLwvkZZRAdbRAUrnP9o9qQAeogwhy8DnTKCkXsLzarviun
+         7WrCtY/kiW/GiAS1+ZgiHyut4xgo6w3Oz447rIv3IGutO0iHNVUSlDfaMOc1Gs1tUg
+         LYNwsxJ8vFU5zox+ryBzglQA55paI+9wT5NUIJMYnXa5/7IVEGjdNSpVaIYm4/c24F
+         luM3hbPNRmAnw==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 341905C0510; Mon, 13 Jun 2022 08:44:48 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 08:44:48 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org, frederic@kernel.org,
+        pmladek@suse.com, Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [BUG] 8e274732115f ("printk: extend console_lock for per-console
+ locking")
+Message-ID: <20220613154448.GE1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220610205038.GA3050413@paulmck-ThinkPad-P17-Gen-1>
+ <87v8t5l39z.fsf@jogness.linutronix.de>
+ <20220613042937.GZ1790663@paulmck-ThinkPad-P17-Gen-1>
+ <87tu8pgcj0.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] smackfs: check for allocation failure of kmalloc()
-Content-Language: en-US
-To:     Li Qiong <liqiong@nfschina.com>, James Morris <jmorris@namei.org>,
-        "Serge E . Hallyn" <serge@hallyn.com>
-Cc:     linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, yuzhe@nfschina.com,
-        renyu@nfschina.com, Casey Schaufler <casey@schaufler-ca.com>
-References: <20220613062202.29194-1-liqiong@nfschina.com>
-From:   Casey Schaufler <casey@schaufler-ca.com>
-In-Reply-To: <20220613062202.29194-1-liqiong@nfschina.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Mailer: WebService/1.1.20280 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87tu8pgcj0.fsf@jogness.linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/12/2022 11:22 PM, Li Qiong wrote:
-> As the possible failure of the kmalloc(), it should be better
-> to check it and print a warning message.
+On Mon, Jun 13, 2022 at 11:10:19AM +0206, John Ogness wrote:
+> On 2022-06-12, "Paul E. McKenney" <paulmck@kernel.org> wrote:
+> >> As I suspected, the final printk's cannot direct print because the
+> >> kthread was printing. Using the below patch did seem to address your
+> >> problem. But this is probably not the way forward.
+> >
+> > When I apply it, I still lose output, perhaps due to different timing?
+> > Doing the pr_flush(1000, true) just before the call to kernel_power_off()
+> > has been working quite well thus far, though.
+> 
+> Your pr_flush() is appropriate for your RCU tests, but this is a problem
+> in general that needs to be addressed. I suppose we should start a new
+> thread for that. ;-)
+> 
+> During development we experimented with the idea of kthreads pausing
+> themselves whenever direct printing is activated. It was racey because
+> there are situations when direct printing is only temporarily active and
+> it was hard to coordinate who prints when direct printing becomes
+> inactive again. So we dropped that idea. However, in this situation the
+> system will not be disabling direct printing.
+> 
+> @Paul, can you try the below change instead? Until this has been
+> officially solved, you probably want to keep your pr_flush()
+> solution. (After all, that is exactly what pr_flush() is for.) But it
+> would be helpful if you could run this last test for us.
+> 
+> @Petr, I like the idea of the kthreads getting out of the way rather
+> than trying to direct print themselves (for this situation). It still
+> isn't optimal because that final pr_emerg("Power down\n") might come
+> before the kthread has finished its current line. But in that case the
+> kthread may not have much a chance to finish the printing anyway.
+> 
+> John Ogness
+> 
+> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+> index ea3dd55709e7..45c6c2b0b104 100644
+> --- a/kernel/printk/printk.c
+> +++ b/kernel/printk/printk.c
+> @@ -3729,7 +3729,9 @@ static bool printer_should_wake(struct console *con, u64 seq)
+>  		return true;
+>  
+>  	if (con->blocked ||
+> -	    console_kthreads_atomically_blocked()) {
+> +	    console_kthreads_atomically_blocked() ||
+> +	    system_state > SYSTEM_RUNNING ||
+> +	    oops_in_progress) {
+>  		return false;
+>  	}
 
-The allocation is done with __GFP_NOFAIL, which assures
-it will not fail.
+And this one works for me, thank you!!!
 
->
-> Signed-off-by: Li Qiong <liqiong@nfschina.com>
-> ---
->   security/smack/smackfs.c | 5 +++++
->   1 file changed, 5 insertions(+)
->
-> diff --git a/security/smack/smackfs.c b/security/smack/smackfs.c
-> index 4b58526450d4..0d11ba3cb4cd 100644
-> --- a/security/smack/smackfs.c
-> +++ b/security/smack/smackfs.c
-> @@ -695,6 +695,11 @@ static void smk_cipso_doi(void)
->   		       __func__, __LINE__, rc);
->   
->   	doip = kmalloc(sizeof(struct cipso_v4_doi), GFP_KERNEL | __GFP_NOFAIL);
-> +	if (unlikely(!doip)) {
-> +		printk(KERN_WARNING "%s:%d failed to allocate a memory for doip\n",
-> +		       __func__, __LINE__);
-> +		return;
-> +	}
->   	doip->map.std = NULL;
->   	doip->doi = smk_cipso_doi_value;
->   	doip->type = CIPSO_V4_MAP_PASS;
+On to Petr's patch...
+
+							Thanx, Paul
