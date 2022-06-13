@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4343AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:12:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E48C3C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:12:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382089AbiFMOMs (ORCPT
+        id S1382102AbiFMOMw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:12:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51810 "EHLO
+        Mon, 13 Jun 2022 10:12:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382004AbiFMOFC (ORCPT
+        with ESMTP id S1382027AbiFMOFE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:05:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3EAD92D19;
-        Mon, 13 Jun 2022 04:40:10 -0700 (PDT)
+        Mon, 13 Jun 2022 10:05:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6D3092D24;
+        Mon, 13 Jun 2022 04:40:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 177A16136C;
-        Mon, 13 Jun 2022 11:40:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 200CFC34114;
-        Mon, 13 Jun 2022 11:40:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B997F612E9;
+        Mon, 13 Jun 2022 11:40:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDCB8C341C0;
+        Mon, 13 Jun 2022 11:40:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120407;
-        bh=m+6bIiaRSARv1WgAzQBAifc3hhldBDoDI7VROQPJIBg=;
+        s=korg; t=1655120410;
+        bh=ZbH9pa4GVZl8chzqpxZ9ElpY38vkVGcomBwO80YJbxU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KHOJUhpK9pNAPNMcUvLbhyOXVGUKxjQYcQDLPIKcFDzo8i9/Nsq5JtV4/+5MJ5g5w
-         hQTPBt+dzgqebMMkit4jWqf39v1GUbfuIHgecGKZI3fmnC/yP50qzm5hn0YC4DpEpe
-         EH9VvBrKau6nt+b9IUeiMU6PiX6zsrGQovsR7FX0=
+        b=d/CL7FiNJd39RYhzf5mJHIuHJF0AfjJ2ENSi7kkNQtp3gxhRg/E8iSLT9V66jdAX7
+         SaYuOD6JBp2yRGFk3FxtpRx2BHW4X/RYcTO+lsyQ2hCr5FOoYhO/Xu0bkTAID1+c10
+         3LisdtDf8hkRninsHD8exdtAUM3Pta3R3gJwuuaU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheng Yongjun <zhengyongjun3@huawei.com>,
+        stable@vger.kernel.org, SeongJae Park <sj@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 022/298] usb: dwc3: pci: Fix pm_runtime_get_sync() error checking
-Date:   Mon, 13 Jun 2022 12:08:36 +0200
-Message-Id: <20220613094925.603382410@linuxfoundation.org>
+Subject: [PATCH 5.17 023/298] scripts/get_abi: Fix wrong script file name in the help message
+Date:   Mon, 13 Jun 2022 12:08:37 +0200
+Message-Id: <20220613094925.632616409@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -49,36 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheng Yongjun <zhengyongjun3@huawei.com>
+From: SeongJae Park <sj@kernel.org>
 
-[ Upstream commit a03e2ddab8e735e2cc315609b297b300e9cc60d2 ]
+[ Upstream commit 5b5bfecaa333fb6a0cce1bfc4852a622dacfed1d ]
 
-If the device is already in a runtime PM enabled state
-pm_runtime_get_sync() will return 1, so a test for negative
-value should be used to check for errors.
+The help message of 'get_abi.pl' is mistakenly saying it's
+'abi_book.pl'.  This commit fixes the wrong name in the help message.
 
-Fixes: 8eed00b237a28 ("usb: dwc3: pci: Runtime resume child device from wq")
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
-Link: https://lore.kernel.org/r/20220422062652.10575-1-zhengyongjun3@huawei.com
+Fixes: bbc249f2b859 ("scripts: add an script to parse the ABI files")
+Signed-off-by: SeongJae Park <sj@kernel.org>
+Link: https://lore.kernel.org/r/20220419121636.290407-1-sj@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/dwc3/dwc3-pci.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ scripts/get_abi.pl | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/usb/dwc3/dwc3-pci.c b/drivers/usb/dwc3/dwc3-pci.c
-index f08b2178fd32..9c8887615701 100644
---- a/drivers/usb/dwc3/dwc3-pci.c
-+++ b/drivers/usb/dwc3/dwc3-pci.c
-@@ -256,7 +256,7 @@ static void dwc3_pci_resume_work(struct work_struct *work)
- 	int ret;
+diff --git a/scripts/get_abi.pl b/scripts/get_abi.pl
+index 6212f58b69c6..0cf501285204 100755
+--- a/scripts/get_abi.pl
++++ b/scripts/get_abi.pl
+@@ -980,11 +980,11 @@ __END__
  
- 	ret = pm_runtime_get_sync(&dwc3->dev);
--	if (ret) {
-+	if (ret < 0) {
- 		pm_runtime_put_sync_autosuspend(&dwc3->dev);
- 		return;
- 	}
+ =head1 NAME
+ 
+-abi_book.pl - parse the Linux ABI files and produce a ReST book.
++get_abi.pl - parse the Linux ABI files and produce a ReST book.
+ 
+ =head1 SYNOPSIS
+ 
+-B<abi_book.pl> [--debug <level>] [--enable-lineno] [--man] [--help]
++B<get_abi.pl> [--debug <level>] [--enable-lineno] [--man] [--help]
+ 	       [--(no-)rst-source] [--dir=<dir>] [--show-hints]
+ 	       [--search-string <regex>]
+ 	       <COMAND> [<ARGUMENT>]
 -- 
 2.35.1
 
