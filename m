@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D49AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:56:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 107D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:56:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357138AbiFML4C (ORCPT
+        id S1357156AbiFML42 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:56:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44966 "EHLO
+        Mon, 13 Jun 2022 07:56:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356492AbiFMLug (ORCPT
+        with ESMTP id S1356494AbiFMLuh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:50:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1DFA2EA05;
-        Mon, 13 Jun 2022 03:54:10 -0700 (PDT)
+        Mon, 13 Jun 2022 07:50:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C946248DC;
+        Mon, 13 Jun 2022 03:54:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4572B80D3F;
-        Mon, 13 Jun 2022 10:54:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1905AC34114;
-        Mon, 13 Jun 2022 10:54:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BE003612C5;
+        Mon, 13 Jun 2022 10:54:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE8E8C34114;
+        Mon, 13 Jun 2022 10:54:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117648;
-        bh=rzpCF9NGA5bwgOxj0c20j7PjcvxHifuuAdoYtyCVaoI=;
+        s=korg; t=1655117651;
+        bh=pbz9DlEqA5TwTXAkZWWpEn6u8/MCy1hJFPIoVEmfs4U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1lDU104Rqwz1GXAFtA0xErM1fRHLHdqpVcUyeUDsFq8GV5SccdNVt5GbeStVUJOyg
-         Jz09HFNEaouwK/uIlbDMf4NQd+YYd/fndmKxaXKs8wXnvS3/jDjpdVvaDOdu7eh0ug
-         yJHoeR5KnABFpGWtHVVSOrTRQugi+33Sj8Q+ECjA=
+        b=dD9ukSlsAn2p0aZGm+UaGvjPFs/X8S0MEiqheAEtwJwMtVvGRozfR3Z9qZHCoGk4m
+         dbhF0ocajE6bWoY54kOrQFPuNfl5yqAHjkrNXzmZiWTVuAcQXkglivRGo9MNUL/t37
+         8e5AiyOhG4rDjaN8v8+bbIVyJwYbADXBCXFJgtBE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Kiszka <jan.kiszka@siemens.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 070/287] efi: Add missing prototype for efi_capsule_setup_info
-Date:   Mon, 13 Jun 2022 12:08:14 +0200
-Message-Id: <20220613094925.993249933@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mathias Nyman <mathias.nyman@linux.intel.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: [PATCH 5.4 408/411] Input: bcm5974 - set missing URB_NO_TRANSFER_DMA_MAP urb flag
+Date:   Mon, 13 Jun 2022 12:11:21 +0200
+Message-Id: <20220613094941.054285545@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
-References: <20220613094923.832156175@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,37 +50,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: Mathias Nyman <mathias.nyman@linux.intel.com>
 
-[ Upstream commit aa480379d8bdb33920d68acfd90f823c8af32578 ]
+commit c42e65664390be7c1ef3838cd84956d3a2739d60 upstream.
 
-Fixes "no previous declaration for 'efi_capsule_setup_info'" warnings
-under W=1.
+The bcm5974 driver does the allocation and dma mapping of the usb urb
+data buffer, but driver does not set the URB_NO_TRANSFER_DMA_MAP flag
+to let usb core know the buffer is already mapped.
 
-Fixes: 2959c95d510c ("efi/capsule: Add support for Quark security header")
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-Link: https://lore.kernel.org/r/c28d3f86-dd72-27d1-e2c2-40971b8da6bd@siemens.com
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+usb core tries to map the already mapped buffer, causing a warning:
+"xhci_hcd 0000:00:14.0: rejecting DMA map of vmalloc memory"
+
+Fix this by setting the URB_NO_TRANSFER_DMA_MAP, letting usb core
+know buffer is already mapped by bcm5974 driver
+
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Cc: stable@vger.kernel.org
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215890
+Link: https://lore.kernel.org/r/20220606113636.588955-1-mathias.nyman@linux.intel.com
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/efi.h | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/input/mouse/bcm5974.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 9a5d4b499271..ec89e8bcc92f 100644
---- a/include/linux/efi.h
-+++ b/include/linux/efi.h
-@@ -150,6 +150,8 @@ struct capsule_info {
- 	size_t			page_bytes_remain;
- };
+--- a/drivers/input/mouse/bcm5974.c
++++ b/drivers/input/mouse/bcm5974.c
+@@ -942,17 +942,22 @@ static int bcm5974_probe(struct usb_inte
+ 	if (!dev->tp_data)
+ 		goto err_free_bt_buffer;
  
-+int efi_capsule_setup_info(struct capsule_info *cap_info, void *kbuff,
-+                           size_t hdr_bytes);
- int __efi_capsule_setup_info(struct capsule_info *cap_info);
+-	if (dev->bt_urb)
++	if (dev->bt_urb) {
+ 		usb_fill_int_urb(dev->bt_urb, udev,
+ 				 usb_rcvintpipe(udev, cfg->bt_ep),
+ 				 dev->bt_data, dev->cfg.bt_datalen,
+ 				 bcm5974_irq_button, dev, 1);
  
- /*
--- 
-2.35.1
-
++		dev->bt_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
++	}
++
+ 	usb_fill_int_urb(dev->tp_urb, udev,
+ 			 usb_rcvintpipe(udev, cfg->tp_ep),
+ 			 dev->tp_data, dev->cfg.tp_datalen,
+ 			 bcm5974_irq_trackpad, dev, 1);
+ 
++	dev->tp_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
++
+ 	/* create bcm5974 device */
+ 	usb_make_path(udev, dev->phys, sizeof(dev->phys));
+ 	strlcat(dev->phys, "/input0", sizeof(dev->phys));
 
 
