@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 504A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:06:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82C6DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:06:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241064AbiFMNGW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:06:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50312 "EHLO
+        id S1357644AbiFMNG1 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 09:06:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354868AbiFMMzL (ORCPT
+        with ESMTP id S1354745AbiFMMzq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:55:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F114F95B5;
-        Mon, 13 Jun 2022 04:15:21 -0700 (PDT)
+        Mon, 13 Jun 2022 08:55:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2AC111807;
+        Mon, 13 Jun 2022 04:16:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EA4960B6B;
-        Mon, 13 Jun 2022 11:15:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1856C34114;
-        Mon, 13 Jun 2022 11:15:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 858D5B80EA8;
+        Mon, 13 Jun 2022 11:16:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6491C34114;
+        Mon, 13 Jun 2022 11:16:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118921;
-        bh=bxtKf2OnoL+jFcjVx1pwcCDhAA6o9jCOcEZG0BBkEQQ=;
+        s=korg; t=1655118995;
+        bh=6ZdnYJ8rf0Ij1VeTv832SGgZbKN5b0dfE5OP1OorB9I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YxAJLwAiQ15mCwRSZrqBVVXx9pGzDVKfnW1yAX2/hdbg0TkaswVwl1V1GpbzRpiEN
-         HxiOthWv95/3JD8WfDgtWAJGrM6BZEtIiRQ5Hj0jb6v+6j6YCQwAu536FyzIEZGbmR
-         5iQCIxiezvw+Wvm0yYFagbT5JzrGv5ntSyF94GpA=
+        b=OsmL0VzDMra+asSGoSJtcMoJXskk7dMmnVTmGdC2wTnd1tU0+yXb45jHRmTBqlc5m
+         uGXSfJGGuCF7mpXkXJPQUp0/tDA9cVptxK+upmcwYvoxJs/93nG64jGfRMfhpfSQus
+         vO0tuXmJoysnxp6hra8haQI+TvWCQFiuKX7qSqt4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Sven Schnelle <svens@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 075/247] net: dsa: mv88e6xxx: Fix refcount leak in mv88e6xxx_mdios_register
-Date:   Mon, 13 Jun 2022 12:09:37 +0200
-Message-Id: <20220613094925.233094232@linuxfoundation.org>
+Subject: [PATCH 5.15 102/247] s390/mcck: isolate SIE instruction when setting CIF_MCCK_GUEST flag
+Date:   Mon, 13 Jun 2022 12:10:04 +0200
+Message-Id: <20220613094926.049928025@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,39 +52,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Alexander Gordeev <agordeev@linux.ibm.com>
 
-[ Upstream commit 02ded5a173619b11728b8bf75a3fd995a2c1ff28 ]
+[ Upstream commit 29ccaa4b35ea874ddd50518e5c2c746b9238a792 ]
 
-of_get_child_by_name() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
+Commit d768bd892fc8 ("s390: add options to change branch prediction
+behaviour for the kernel") introduced .Lsie_exit label - supposedly
+to fence off SIE instruction. However, the corresponding address
+range length .Lsie_crit_mcck_length was not updated, which led to
+BPON code potentionally marked with CIF_MCCK_GUEST flag.
 
-mv88e6xxx_mdio_register() pass the device node to of_mdiobus_register().
-We don't need the device node after it.
+Both .Lsie_exit and .Lsie_crit_mcck_length were removed with commit
+0b0ed657fe00 ("s390: remove critical section cleanup from entry.S"),
+but the issue persisted - currently BPOFF and BPENTER macros might
+get wrongly considered by the machine check handler as a guest.
 
-Add missing of_node_put() to avoid refcount leak.
-
-Fixes: a3c53be55c95 ("net: dsa: mv88e6xxx: Support multiple MDIO busses")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Marek Behún <kabel@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: d768bd892fc8 ("s390: add options to change branch prediction behaviour for the kernel")
+Reviewed-by: Sven Schnelle <svens@linux.ibm.com>
+Reviewed-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/s390/kernel/entry.S | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 0830d7bb7a00..f9efd0c8bab8 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -3492,6 +3492,7 @@ static int mv88e6xxx_mdios_register(struct mv88e6xxx_chip *chip,
- 	 */
- 	child = of_get_child_by_name(np, "mdio");
- 	err = mv88e6xxx_mdio_register(chip, child, false);
-+	of_node_put(child);
- 	if (err)
- 		return err;
- 
+diff --git a/arch/s390/kernel/entry.S b/arch/s390/kernel/entry.S
+index 4c9b967290ae..d530eb4dc413 100644
+--- a/arch/s390/kernel/entry.S
++++ b/arch/s390/kernel/entry.S
+@@ -248,6 +248,10 @@ ENTRY(sie64a)
+ 	BPEXIT	__SF_SIE_FLAGS(%r15),(_TIF_ISOLATE_BP|_TIF_ISOLATE_BP_GUEST)
+ .Lsie_entry:
+ 	sie	0(%r14)
++# Let the next instruction be NOP to avoid triggering a machine check
++# and handling it in a guest as result of the instruction execution.
++	nopr	7
++.Lsie_leave:
+ 	BPOFF
+ 	BPENTER	__SF_SIE_FLAGS(%r15),(_TIF_ISOLATE_BP|_TIF_ISOLATE_BP_GUEST)
+ .Lsie_skip:
+@@ -536,7 +540,7 @@ ENTRY(mcck_int_handler)
+ 	jno	.Lmcck_panic
+ #if IS_ENABLED(CONFIG_KVM)
+ 	OUTSIDE	%r9,.Lsie_gmap,.Lsie_done,6f
+-	OUTSIDE	%r9,.Lsie_entry,.Lsie_skip,4f
++	OUTSIDE	%r9,.Lsie_entry,.Lsie_leave,4f
+ 	oi	__LC_CPU_FLAGS+7, _CIF_MCCK_GUEST
+ 	j	5f
+ 4:	CHKSTG	.Lmcck_panic
 -- 
 2.35.1
 
