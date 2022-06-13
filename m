@@ -2,133 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDB01C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:35:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2978FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:35:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238607AbiFMUfG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:35:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34742 "EHLO
+        id S239541AbiFMUdf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 16:33:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235650AbiFMUdc (ORCPT
+        with ESMTP id S232570AbiFMUdA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:33:32 -0400
-Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C6A11C1C
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:23:51 -0700 (PDT)
-Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-fe15832ce5so9678815fac.8
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:23:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=YZDl+BeJBBUNeWrG7VoTjaSxaL0rjbKuIsna+kCnVcs=;
-        b=C4a0u44356yrDzoiMXiH0yh1rCpFmnwV16f8JH9dgz0S7w1HwWuD1BLLwo2Vhx3ep6
-         uHlXsNIo7Z79+xivE9s0T25Pik2MDVpcYx9KQ7pGfsg8DH9yauG5yHw6UZOGPhM8IMH8
-         Tgh9ZKY0izl9GIBlPJpPtNOhc5Htc0GD0utqZA8kWGjaHXOrskn0RvCyJ2LlYWYS9RSQ
-         OF/TViH3ts/9sg2i55v2tFtACPjALjxjZaGNmPeW7V/woz+bhoAgPvgzrF1qjjiIB4uu
-         qsSZZTV/Acf3GfTkxzmENAD3BprAJGKhkaoZmKeNKJk5On4LF4SEIFLlTI62r+IeeHAU
-         yQ1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=YZDl+BeJBBUNeWrG7VoTjaSxaL0rjbKuIsna+kCnVcs=;
-        b=qUpINImobqxUKNCHhsCzrKuoR4MW54um8Bj2svVeUkalSY0BWqksPzN2juxyxeLtgV
-         dQVQDJRBVOI0GpARHCjZz3hxvlLvtAkzva02S1fa7J06+4owo0ohetwx5UmTWV7mJnYs
-         IhK4x6HgQLUzXMUWYMraWvU+fcMyCOomUZ0KH7JOCvqZBGITi9r5XQPp8mhI/Ai6GNTc
-         tEfGhUnnjPyxhLRBhSW3FxyYMuC9jFLpSWtWbA4blQjYbihK4c6IoYVoVk4jsbh9WIxk
-         hPv5is/MmhBNH4fM3/flCwQWFRY/+pIOUMzfK3Bz8osqC826xcHFA5PYxhiecnxXUuKf
-         YB/A==
-X-Gm-Message-State: AJIora+ASjOYPjtEyCa4F5yFDvgPgVbEHvq4C+fQAcZsixt5bShlAroD
-        23w7ptmrMCAlKruEKgXungGEdJI6U4dsaXpvZsFscw==
-X-Google-Smtp-Source: AGRyM1vqV3PQsIBk7abRGQ7bZp/MfN8B1K4jzpADb8cNiNLxbClWmSDAJ7JvffXirhfrpiJbld0bxmv1Lq5zRvEX5uI=
-X-Received: by 2002:a05:6870:d60d:b0:f3:2e4f:4907 with SMTP id
- a13-20020a056870d60d00b000f32e4f4907mr186903oaq.13.1655148230894; Mon, 13 Jun
- 2022 12:23:50 -0700 (PDT)
+        Mon, 13 Jun 2022 16:33:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E1B528726
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:23:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E2B67B8128D
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 19:23:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 454CBC3411F;
+        Mon, 13 Jun 2022 19:23:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655148188;
+        bh=XOWacsSFy4qQVUe4yC1Lr3xCRJ6lmmqOdxcVjKLkxx8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YCizNenf2u5d4ieuePcVEjzZ2J39Sj48RNI7hGwMQwP/Abq9boO2PmAU5PmHVHtos
+         K5zCk0uhTbHp67T5LrOHdPQirivVTyL+mIvseF7cg/vJOrabOuc9GBmWbd90836pWq
+         80AdC/J8slOkYQUhjnYmijIIcNH46See1cJo/ApvzWcC+dlTcwICTFJjEgsTLgpumq
+         zhRoiHq0nEHIAs+a8Tg5cXkc04tSfs/P9Czxgry3qfzQnD0ELzWBhGFQl6u5FvIPxB
+         /L61PzRRY849tV0+hguoIHWX/5IzklIs3N5PskB/9YNMI13TArwYX9VDHYDvdNiENf
+         OjDhaCgR8CI+w==
+From:   SeongJae Park <sj@kernel.org>
+To:     SeongJae Park <sj@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     damon@lists.linux.dev, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/8] mm/damon/dbgfs: add and use mappings between 'schemes' action inputs and 'damos_action' values
+Date:   Mon, 13 Jun 2022 19:22:53 +0000
+Message-Id: <20220613192301.8817-2-sj@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220613192301.8817-1-sj@kernel.org>
+References: <20220613192301.8817-1-sj@kernel.org>
 MIME-Version: 1.0
-References: <161188083424.28787.9510741752032213167.stgit@bmoger-ubuntu>
- <161188100955.28787.11816849358413330720.stgit@bmoger-ubuntu>
- <CALMp9eTU5h4juDyGePnuDN39FudYUqyAnnQdALZM8KfiMo93YA@mail.gmail.com> <5d380b11-079f-e941-25cf-747f66310695@amd.com>
-In-Reply-To: <5d380b11-079f-e941-25cf-747f66310695@amd.com>
-From:   Jim Mattson <jmattson@google.com>
-Date:   Mon, 13 Jun 2022 12:23:40 -0700
-Message-ID: <CALMp9eRnC1RgRwj64TJcXdhhL6g835N_-E8FbeHVre6aX=18-A@mail.gmail.com>
-Subject: Re: [PATCH v4 2/2] KVM: SVM: Add support for Virtual SPEC_CTRL
-To:     Tom Lendacky <thomas.lendacky@amd.com>
-Cc:     Babu Moger <babu.moger@amd.com>, pbonzini@redhat.com,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        fenghua.yu@intel.com, tony.luck@intel.com, wanpengli@tencent.com,
-        kvm@vger.kernel.org, peterz@infradead.org, seanjc@google.com,
-        joro@8bytes.org, x86@kernel.org, kyung.min.park@intel.com,
-        linux-kernel@vger.kernel.org, krish.sadhukhan@oracle.com,
-        hpa@zytor.com, mgross@linux.intel.com, vkuznets@redhat.com,
-        kim.phillips@amd.com, wei.huang2@amd.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 8:10 AM Tom Lendacky <thomas.lendacky@amd.com> wrot=
-e:
->
-> On 6/3/22 22:11, Jim Mattson wrote:
-> > On Thu, Jan 28, 2021 at 4:43 PM Babu Moger <babu.moger@amd.com> wrote:
-> >
-> >> This support also fixes an issue where a guest may sometimes see an
-> >> inconsistent value for the SPEC_CTRL MSR on processors that support
-> >> this feature. With the current SPEC_CTRL support, the first write to
-> >> SPEC_CTRL is intercepted and the virtualized version of the SPEC_CTRL
-> >> MSR is not updated. When the guest reads back the SPEC_CTRL MSR, it
-> >> will be 0x0, instead of the actual expected value. There isn=E2=80=99t=
- a
-> >> security concern here, because the host SPEC_CTRL value is or=E2=80=99=
-ed with
-> >> the Guest SPEC_CTRL value to generate the effective SPEC_CTRL value.
-> >> KVM writes with the guest's virtualized SPEC_CTRL value to SPEC_CTRL
-> >> MSR just before the VMRUN, so it will always have the actual value
-> >> even though it doesn=E2=80=99t appear that way in the guest. The guest=
- will
-> >> only see the proper value for the SPEC_CTRL register if the guest was
-> >> to write to the SPEC_CTRL register again. With Virtual SPEC_CTRL
-> >> support, the save area spec_ctrl is properly saved and restored.
-> >> So, the guest will always see the proper value when it is read back.
-> >
-> > Note that there are actually two significant problems with the way the
-> > new feature interacts with the KVM code before this patch:
-> > 1) All bits set by the first non-zero write become sticky until the
-> > vCPU is reset (because svm->spec_ctrl is never modified after the
-> > first non-zero write).
->
-> When X86_FEATURE_V_SPEC_CTRL is set, then svm->spec_ctrl isn't used.
+DAMON debugfs interface assumes users will write 'damos_action' value
+directly to the 'schemes' file.  This makes adding new 'damos_action' in
+the middle of its definition breaks the backward compatibility of DAMON
+debugfs interface, as values of some 'damos_action' could be changed.
+To mitigate the situation, this commit adds mappings between the user
+inputs and 'damos_action' value and makes DAMON debugfs code uses those.
 
-Post-patch, yes. I'm talking about how this new hardware feature broke
-versions of KVM *before* this patch was submitted.
+Signed-off-by: SeongJae Park <sj@kernel.org>
+---
+ mm/damon/dbgfs.c | 64 +++++++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 50 insertions(+), 14 deletions(-)
 
-> > 2) The current guest IA32_SPEC_CTRL value isn't actually known to the
-> > hypervisor.
->
-> The hypervisor can read the value as long as it is not an SEV-ES or
-> SEV-SNP guest.
+diff --git a/mm/damon/dbgfs.c b/mm/damon/dbgfs.c
+index 5ae810927309..cb8a7e9926a4 100644
+--- a/mm/damon/dbgfs.c
++++ b/mm/damon/dbgfs.c
+@@ -97,6 +97,31 @@ static ssize_t dbgfs_attrs_write(struct file *file,
+ 	return ret;
+ }
+ 
++/*
++ * Return corresponding dbgfs' scheme action value (int) for the given
++ * damos_action if the given damos_action value is valid and supported by
++ * dbgfs, negative error code otherwise.
++ */
++static int damos_action_to_dbgfs_scheme_action(enum damos_action action)
++{
++	switch (action) {
++	case DAMOS_WILLNEED:
++		return 0;
++	case DAMOS_COLD:
++		return 1;
++	case DAMOS_PAGEOUT:
++		return 2;
++	case DAMOS_HUGEPAGE:
++		return 3;
++	case DAMOS_NOHUGEPAGE:
++		return 4;
++	case DAMOS_STAT:
++		return 5;
++	default:
++		return -EINVAL;
++	}
++}
++
+ static ssize_t sprint_schemes(struct damon_ctx *c, char *buf, ssize_t len)
+ {
+ 	struct damos *s;
+@@ -109,7 +134,7 @@ static ssize_t sprint_schemes(struct damon_ctx *c, char *buf, ssize_t len)
+ 				s->min_sz_region, s->max_sz_region,
+ 				s->min_nr_accesses, s->max_nr_accesses,
+ 				s->min_age_region, s->max_age_region,
+-				s->action,
++				damos_action_to_dbgfs_scheme_action(s->action),
+ 				s->quota.ms, s->quota.sz,
+ 				s->quota.reset_interval,
+ 				s->quota.weight_sz,
+@@ -160,18 +185,27 @@ static void free_schemes_arr(struct damos **schemes, ssize_t nr_schemes)
+ 	kfree(schemes);
+ }
+ 
+-static bool damos_action_valid(int action)
++/*
++ * Return corresponding damos_action for the given dbgfs input for a scheme
++ * action if the input is valid, negative error code otherwise.
++ */
++static enum damos_action dbgfs_scheme_action_to_damos_action(int dbgfs_action)
+ {
+-	switch (action) {
+-	case DAMOS_WILLNEED:
+-	case DAMOS_COLD:
+-	case DAMOS_PAGEOUT:
+-	case DAMOS_HUGEPAGE:
+-	case DAMOS_NOHUGEPAGE:
+-	case DAMOS_STAT:
+-		return true;
++	switch (dbgfs_action) {
++	case 0:
++		return DAMOS_WILLNEED;
++	case 1:
++		return DAMOS_COLD;
++	case 2:
++		return DAMOS_PAGEOUT;
++	case 3:
++		return DAMOS_HUGEPAGE;
++	case 4:
++		return DAMOS_NOHUGEPAGE;
++	case 5:
++		return DAMOS_STAT;
+ 	default:
+-		return false;
++		return -EINVAL;
+ 	}
+ }
+ 
+@@ -189,7 +223,8 @@ static struct damos **str_to_schemes(const char *str, ssize_t len,
+ 	int pos = 0, parsed, ret;
+ 	unsigned long min_sz, max_sz;
+ 	unsigned int min_nr_a, max_nr_a, min_age, max_age;
+-	unsigned int action;
++	unsigned int action_input;
++	enum damos_action action;
+ 
+ 	schemes = kmalloc_array(max_nr_schemes, sizeof(scheme),
+ 			GFP_KERNEL);
+@@ -204,7 +239,7 @@ static struct damos **str_to_schemes(const char *str, ssize_t len,
+ 		ret = sscanf(&str[pos],
+ 				"%lu %lu %u %u %u %u %u %lu %lu %lu %u %u %u %u %lu %lu %lu %lu%n",
+ 				&min_sz, &max_sz, &min_nr_a, &max_nr_a,
+-				&min_age, &max_age, &action, &quota.ms,
++				&min_age, &max_age, &action_input, &quota.ms,
+ 				&quota.sz, &quota.reset_interval,
+ 				&quota.weight_sz, &quota.weight_nr_accesses,
+ 				&quota.weight_age, &wmarks.metric,
+@@ -212,7 +247,8 @@ static struct damos **str_to_schemes(const char *str, ssize_t len,
+ 				&wmarks.low, &parsed);
+ 		if (ret != 18)
+ 			break;
+-		if (!damos_action_valid(action))
++		action = dbgfs_scheme_action_to_damos_action(action_input);
++		if ((int)action < 0)
+ 			goto fail;
+ 
+ 		if (min_sz > max_sz || min_nr_a > max_nr_a || min_age > max_age)
+-- 
+2.25.1
 
-Yes, it can, but KVM prior to this patch did not. Again, I'm talking
-about how this new hardware feature broke *existing* versions of KVM.
-
-> > It thinks that there are no writes to the MSR after the
-> > first non-zero write, so that sticky value will be returned to
-> > KVM_GET_MSRS. This breaks live migration.
->
-> KVM_GET_MSRS should go through the normal read MSR path, which will read
-> the guest MSR value from either svm->vmcb->save.spec_ctrl if
-> X86_FEATURE_V_SPEC_CTRL is set or from svm->spec_ctrl, otherwise. And the
-> write MSR path will do similar.
-
-You really are gaslighting me, aren't you?
-
-> I'm probably missing something here, because I'm not good with the whole
-> live migration thing as it relates to host and guest features.
-
-AMD added a new VMCB field that existing hypervisors knew nothing
-about. This VMCB field contains the current value of the guest's
-IA32_SPEC_CTRL. Since the hypervisor doesn't know that this field even
-exists, it cannot migrate it.
