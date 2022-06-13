@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03E5BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:46:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2E11C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:46:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244575AbiFMKqk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:46:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47428 "EHLO
+        id S1343829AbiFMKqq (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:46:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345424AbiFMKn2 (ORCPT
+        with ESMTP id S1346270AbiFMKnf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:43:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1E55BF7F;
-        Mon, 13 Jun 2022 03:24:34 -0700 (PDT)
+        Mon, 13 Jun 2022 06:43:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 367DEDEF8;
+        Mon, 13 Jun 2022 03:24:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B740DB80E2D;
-        Mon, 13 Jun 2022 10:24:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28BB2C34114;
-        Mon, 13 Jun 2022 10:24:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C78BF60EF5;
+        Mon, 13 Jun 2022 10:24:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D940FC34114;
+        Mon, 13 Jun 2022 10:24:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115872;
-        bh=Cut0+u9MP6b/Kmq7XAq3+08UFXZ4+zwHC1ec9kPwMOo=;
+        s=korg; t=1655115886;
+        bh=abunFcpH2MzXC7tgks7vVcK0ssYo5h1JmuJgNWDU2O0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1IkYUjisaeCJvdMcVZCia1IeSOyF5G6Hi0gRjGSjAH7IvPXv5GPIOmYUlL3pFaj0g
-         Hgfi73AfTkJhiZ2NAkr85UiRR1kSJ0Ng33pQ+5a3xer23yr4qj1zUkKZoC/cXJAtvF
-         CMziDjPVoPRx2f5yqp+pUMLTEf+wrFu9FTq8ohqk=
+        b=mFzRp6wHf2TUrQnNnFZRut4lT3+Yp4+c6lG2waWvUoQNHs5ajV23bjCtVxcQTlSut
+         bu8GHBUUPfht0NP8xDUkfjDQWH8bY1WSYv/ikDKtLCTS0LoSn0NP8M68jd2a8WEJR1
+         Ro5jsoQB6T4czED9vnyFpSM7l3lpZY8AwNY094ew=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 064/218] drm/rockchip: vop: fix possible null-ptr-deref in vop_bind()
-Date:   Mon, 13 Jun 2022 12:08:42 +0200
-Message-Id: <20220613094921.765166142@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 066/218] irqchip/aspeed-i2c-ic: Fix irq_of_parse_and_map() return value
+Date:   Mon, 13 Jun 2022 12:08:44 +0200
+Message-Id: <20220613094921.944231825@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -49,39 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit f8c242908ad15bbd604d3bcb54961b7d454c43f8 ]
+[ Upstream commit 50f0f26e7c8665763d0d7d3372dbcf191f94d077 ]
 
-It will cause null-ptr-deref in resource_size(), if platform_get_resource()
-returns NULL, move calling resource_size() after devm_ioremap_resource() that
-will check 'res' to avoid null-ptr-deref.
+The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
 
-Fixes: 2048e3286f34 ("drm: rockchip: Add basic drm driver")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220422032854.2995175-1-yangyingliang@huawei.com
+Fixes: f48e699ddf70 ("irqchip/aspeed-i2c-ic: Add I2C IRQ controller for Aspeed")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220423094227.33148-1-krzysztof.kozlowski@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/rockchip/rockchip_drm_vop.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/irqchip/irq-aspeed-i2c-ic.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-index 7010424b2f89..80a65eaed0be 100644
---- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-+++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
-@@ -1551,10 +1551,10 @@ static int vop_bind(struct device *dev, struct device *master, void *data)
- 	vop_win_init(vop);
+diff --git a/drivers/irqchip/irq-aspeed-i2c-ic.c b/drivers/irqchip/irq-aspeed-i2c-ic.c
+index 815b88dd18f2..45de46066d06 100644
+--- a/drivers/irqchip/irq-aspeed-i2c-ic.c
++++ b/drivers/irqchip/irq-aspeed-i2c-ic.c
+@@ -82,8 +82,8 @@ static int __init aspeed_i2c_ic_of_init(struct device_node *node,
+ 	}
  
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	vop->len = resource_size(res);
- 	vop->regs = devm_ioremap_resource(dev, res);
- 	if (IS_ERR(vop->regs))
- 		return PTR_ERR(vop->regs);
-+	vop->len = resource_size(res);
+ 	i2c_ic->parent_irq = irq_of_parse_and_map(node, 0);
+-	if (i2c_ic->parent_irq < 0) {
+-		ret = i2c_ic->parent_irq;
++	if (!i2c_ic->parent_irq) {
++		ret = -EINVAL;
+ 		goto err_iounmap;
+ 	}
  
- 	vop->regsbak = devm_kzalloc(dev, vop->len, GFP_KERNEL);
- 	if (!vop->regsbak)
 -- 
 2.35.1
 
