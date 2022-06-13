@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05268C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:18:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E13FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:20:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376346AbiFMNSK (ORCPT
+        id S1376357AbiFMNSR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:18:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38602 "EHLO
+        Mon, 13 Jun 2022 09:18:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359455AbiFMNJ4 (ORCPT
+        with ESMTP id S1359443AbiFMNJy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:09:56 -0400
+        Mon, 13 Jun 2022 09:09:54 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE6B03983B;
-        Mon, 13 Jun 2022 04:20:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E893139699;
+        Mon, 13 Jun 2022 04:20:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3B804B80EAB;
-        Mon, 13 Jun 2022 11:20:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89310C34114;
-        Mon, 13 Jun 2022 11:20:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5C8DEB80D31;
+        Mon, 13 Jun 2022 11:20:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4CAEC34114;
+        Mon, 13 Jun 2022 11:20:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119239;
-        bh=i29J13wvF2mQ3XdIzvlfmTFJ+j3j+hpaGB3EjGM9yns=;
+        s=korg; t=1655119237;
+        bh=ZGTc8NAbbTjfxFouD80Ckbaghw1HwQote5WRz/Lbuus=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z690WoJKDZIv6r2QZ0tgeui/KvGgQxTTDtFt/Izq9bXosekfhg5IEDkGqf7Rv8QLA
-         JqU9mjAag3v9icJtIf9BtD9QDXArfNZL1GL9UTGJ49R9V8ucgyyN5SwSvr6R8fohnv
-         OVGE76embBximzklvRQRW3e1KKrTu6okdO4UfAdY=
+        b=sGf2GORvA9U7bHqvf0rNidX7hrUhIdwKST9KRedbTukGVeJWUyG9n4aI9Qn5dqwXi
+         OT2aY8dbfem7DzskCgtJQA4jVIN2N1Q01NZzRygrFS3WQ3DqndfilXyDMLG4Z5D/TE
+         VmGslA5TwKzjxF76xFyPnuz9VoZPv/oRn3lqYtUo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Petr Mladek <pmladek@suse.com>,
-        John Ogness <john.ogness@linutronix.de>,
+        syzbot+6f5ecd144854c0d8580b@syzkaller.appspotmail.com,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Wang Cheng <wanngchenng@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 190/247] serial: msm_serial: disable interrupts in __msm_console_write()
-Date:   Mon, 13 Jun 2022 12:11:32 +0200
-Message-Id: <20220613094928.714360109@linuxfoundation.org>
+Subject: [PATCH 5.15 189/247] staging: rtl8712: fix uninit-value in r871xu_drv_init()
+Date:   Mon, 13 Jun 2022 12:11:31 +0200
+Message-Id: <20220613094928.684630224@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -52,57 +52,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Ogness <john.ogness@linutronix.de>
+From: Wang Cheng <wanngchenng@gmail.com>
 
-[ Upstream commit aabdbb1b7a5819e18c403334a31fb0cc2c06ad41 ]
+[ Upstream commit 0458e5428e5e959d201a40ffe71d762a79ecedc4 ]
 
-__msm_console_write() assumes that interrupts are disabled, but
-with threaded console printers it is possible that the write()
-callback of the console is called with interrupts enabled.
+When 'tmpU1b' returns from r8712_read8(padapter, EE_9346CR) is 0,
+'mac[6]' will not be initialized.
 
-Explicitly disable interrupts using local_irq_save() to preserve
-the assumed context.
+BUG: KMSAN: uninit-value in r871xu_drv_init+0x2d54/0x3070 drivers/staging/rtl8712/usb_intf.c:541
+ r871xu_drv_init+0x2d54/0x3070 drivers/staging/rtl8712/usb_intf.c:541
+ usb_probe_interface+0xf19/0x1600 drivers/usb/core/driver.c:396
+ really_probe+0x653/0x14b0 drivers/base/dd.c:596
+ __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:752
+ driver_probe_device drivers/base/dd.c:782 [inline]
+ __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:899
+ bus_for_each_drv+0x2d6/0x3f0 drivers/base/bus.c:427
+ __device_attach+0x593/0x8e0 drivers/base/dd.c:970
+ device_initial_probe+0x4a/0x60 drivers/base/dd.c:1017
+ bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487
+ device_add+0x1fff/0x26e0 drivers/base/core.c:3405
+ usb_set_configuration+0x37e9/0x3ed0 drivers/usb/core/message.c:2170
+ usb_generic_driver_probe+0x13c/0x300 drivers/usb/core/generic.c:238
+ usb_probe_device+0x309/0x570 drivers/usb/core/driver.c:293
+ really_probe+0x653/0x14b0 drivers/base/dd.c:596
+ __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:752
+ driver_probe_device drivers/base/dd.c:782 [inline]
+ __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:899
+ bus_for_each_drv+0x2d6/0x3f0 drivers/base/bus.c:427
+ __device_attach+0x593/0x8e0 drivers/base/dd.c:970
+ device_initial_probe+0x4a/0x60 drivers/base/dd.c:1017
+ bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487
+ device_add+0x1fff/0x26e0 drivers/base/core.c:3405
+ usb_new_device+0x1b8e/0x2950 drivers/usb/core/hub.c:2566
+ hub_port_connect drivers/usb/core/hub.c:5358 [inline]
+ hub_port_connect_change drivers/usb/core/hub.c:5502 [inline]
+ port_event drivers/usb/core/hub.c:5660 [inline]
+ hub_event+0x58e3/0x89e0 drivers/usb/core/hub.c:5742
+ process_one_work+0xdb6/0x1820 kernel/workqueue.c:2307
+ worker_thread+0x10b3/0x21e0 kernel/workqueue.c:2454
+ kthread+0x3c7/0x500 kernel/kthread.c:377
+ ret_from_fork+0x1f/0x30
 
-Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
-Link: https://lore.kernel.org/r/20220506213324.470461-1-john.ogness@linutronix.de
+Local variable mac created at:
+ r871xu_drv_init+0x1771/0x3070 drivers/staging/rtl8712/usb_intf.c:394
+ usb_probe_interface+0xf19/0x1600 drivers/usb/core/driver.c:396
+
+KMSAN: uninit-value in r871xu_drv_init
+https://syzkaller.appspot.com/bug?id=3cd92b1d85428b128503bfa7a250294c9ae00bd8
+
+Reported-by: <syzbot+6f5ecd144854c0d8580b@syzkaller.appspotmail.com>
+Tested-by: <syzbot+6f5ecd144854c0d8580b@syzkaller.appspotmail.com>
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Wang Cheng <wanngchenng@gmail.com>
+Link: https://lore.kernel.org/r/14c3886173dfa4597f0704547c414cfdbcd11d16.1652618244.git.wanngchenng@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/msm_serial.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/staging/rtl8712/usb_intf.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-index 489d19274f9a..03ff63438e77 100644
---- a/drivers/tty/serial/msm_serial.c
-+++ b/drivers/tty/serial/msm_serial.c
-@@ -1588,6 +1588,7 @@ static inline struct uart_port *msm_get_port_from_line(unsigned int line)
- static void __msm_console_write(struct uart_port *port, const char *s,
- 				unsigned int count, bool is_uartdm)
- {
-+	unsigned long flags;
- 	int i;
- 	int num_newlines = 0;
- 	bool replaced = false;
-@@ -1605,6 +1606,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
- 			num_newlines++;
- 	count += num_newlines;
- 
-+	local_irq_save(flags);
-+
- 	if (port->sysrq)
- 		locked = 0;
- 	else if (oops_in_progress)
-@@ -1650,6 +1653,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
- 
- 	if (locked)
- 		spin_unlock(&port->lock);
-+
-+	local_irq_restore(flags);
- }
- 
- static void msm_console_write(struct console *co, const char *s,
+diff --git a/drivers/staging/rtl8712/usb_intf.c b/drivers/staging/rtl8712/usb_intf.c
+index a61dd96ab2a4..6db2493e6d3a 100644
+--- a/drivers/staging/rtl8712/usb_intf.c
++++ b/drivers/staging/rtl8712/usb_intf.c
+@@ -536,13 +536,13 @@ static int r871xu_drv_init(struct usb_interface *pusb_intf,
+ 		} else {
+ 			AutoloadFail = false;
+ 		}
+-		if (((mac[0] == 0xff) && (mac[1] == 0xff) &&
++		if ((!AutoloadFail) ||
++		    ((mac[0] == 0xff) && (mac[1] == 0xff) &&
+ 		     (mac[2] == 0xff) && (mac[3] == 0xff) &&
+ 		     (mac[4] == 0xff) && (mac[5] == 0xff)) ||
+ 		    ((mac[0] == 0x00) && (mac[1] == 0x00) &&
+ 		     (mac[2] == 0x00) && (mac[3] == 0x00) &&
+-		     (mac[4] == 0x00) && (mac[5] == 0x00)) ||
+-		     (!AutoloadFail)) {
++		     (mac[4] == 0x00) && (mac[5] == 0x00))) {
+ 			mac[0] = 0x00;
+ 			mac[1] = 0xe0;
+ 			mac[2] = 0x4c;
 -- 
 2.35.1
 
