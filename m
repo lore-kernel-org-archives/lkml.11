@@ -2,112 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBFF2CCA490
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:20:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B97D3CCA494
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:20:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377270AbiFMNUM (ORCPT
+        id S1377411AbiFMNUV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:20:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38490 "EHLO
+        Mon, 13 Jun 2022 09:20:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359298AbiFMNJq (ORCPT
+        with ESMTP id S1359179AbiFMNJl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:09:46 -0400
-Received: from smtpbguseast1.qq.com (smtpbguseast1.qq.com [54.204.34.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 716522018A
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 04:20:02 -0700 (PDT)
-X-QQ-mid: bizesmtp79t1655119171tncpq0nk
-Received: from localhost.localdomain ( [58.240.82.166])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Mon, 13 Jun 2022 19:19:19 +0800 (CST)
-X-QQ-SSF: 01400000002000G0Q000B00A0000000
-X-QQ-FEAT: TskX/GkkryCDcmJVO5h9ev8uYG7SCnaHXyx1CcOQULQILG72duCIYEoi0yiGU
-        eOgLxLcnS35Mho1tqsNnD0GEpf0qd1gDhv/txymjOX5m0t+NlZqIXlul/FwDwVLq7/2/nqx
-        qqnZM5tbvjuTlke1A6X0R1jGpW8zb/yUDwloN22q5f2CdSrKeeDSnjFZZoRuqpdGto4Bqp3
-        HXD4NEWngy5ZHFAyb2VMNdJjmt+l2YmHK+hG/z+ClAGxJW2rhLZcwjkZwZQb8QcJrkCLxzj
-        TISphwzcNHy1W0RLLVJK24ytwYMkX/UxcWAbUvoWz1rgkloNOSwMt/ypyXd7H2Ptsi/ZlXe
-        Glyev0WqjCBCXDRbJhd9a9mmjtAxH2jchdzZ3MeOB9wWZxJr88=
-X-QQ-GoodBg: 2
-From:   Meng Tang <tangmeng@uniontech.com>
-To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org, bhelgaas@google.com
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        Meng Tang <tangmeng@uniontech.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
-Subject: [PATCH 5.10 2/2] commit 1b5d73fb8624 ("igc: Enable PCIe PTM")
-Date:   Mon, 13 Jun 2022 19:19:07 +0800
-Message-Id: <20220613111907.25490-2-tangmeng@uniontech.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220613111907.25490-1-tangmeng@uniontech.com>
-References: <20220613111907.25490-1-tangmeng@uniontech.com>
+        Mon, 13 Jun 2022 09:09:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7BE038BF0;
+        Mon, 13 Jun 2022 04:19:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 63EAEB80D31;
+        Mon, 13 Jun 2022 11:19:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9812FC34114;
+        Mon, 13 Jun 2022 11:19:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655119161;
+        bh=Rv2aAz7IGiMWJhkLpbWc7rlXzioTsKnTqNMEJ2Jd4O8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=kyn4UW5gE4fUabfPgtABi0R9/Io/3K1zmMfkmt0lffq2Jukyr/GQVJ9rjye7X7FEu
+         3y1u65GW4GznFP3Dnuk6Y/G0RFy3txNC9uywIoxwQQoNzku7o17OrwwDOt6dTIyp/o
+         BGKI4jDWNrYgzRz7pr/8NSMdMBl5Cgxw/styKMXQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 162/247] drm: imx: fix compiler warning with gcc-12
+Date:   Mon, 13 Jun 2022 12:11:04 +0200
+Message-Id: <20220613094927.869245520@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
+References: <20220613094922.843438024@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign9
-X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the 5.10 kernel version, even to the latest confirmed version,
-the following error will still be reported when I225-V network card
-is used.
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-kernel: [    1.031581] igc: probe of 0000:01:00.0 failed with error -2
-kernel: [    1.066574] igc: probe of 0000:02:00.0 failed with error -2
-kernel: [    1.096152] igc: probe of 0000:03:00.0 failed with error -2
-kernel: [    1.127251] igc: probe of 0000:04:00.0 failed with error -2
+[ Upstream commit 7aefd8b53815274f3ef398d370a3c9b27dd9f00c ]
 
-Even though I confirmed that 7c496de538eebd8212dc2a3c9a468386b2640d4
-and 47bca7de6a4fb8dcb564c7ca4d885c91ed19e03 have been merged into the
-kernel 5.10, but bug still occurred, and this patch can fixes it.
+Gcc-12 correctly warned about this code using a non-NULL pointer as a
+truth value:
 
-Enables PCIe PTM (Precision Time Measurement) support in the igc
-driver. Notifies the PCI devices that PCIe PTM should be enabled.
+  drivers/gpu/drm/imx/ipuv3-crtc.c: In function ‘ipu_crtc_disable_planes’:
+  drivers/gpu/drm/imx/ipuv3-crtc.c:72:21: error: the comparison will always evaluate as ‘true’ for the address of ‘plane’ will never be NULL [-Werror=address]
+     72 |                 if (&ipu_crtc->plane[1] && plane == &ipu_crtc->plane[1]->base)
+        |                     ^
 
-PCIe PTM is similar protocol to PTP (Precision Time Protocol) running
-in the PCIe fabric, it allows devices to report time measurements from
-their internal clocks and the correlation with the PCIe root clock.
+due to the extraneous '&' address-of operator.
 
-The i225 NIC exposes some registers that expose those time
-measurements, those registers will be used, in later patches, to
-implement the PTP_SYS_OFFSET_PRECISE ioctl().
+Philipp Zabel points out that The mistake had no adverse effect since
+the following condition doesn't actually dereference the NULL pointer,
+but the intent of the code was obviously to check for it, not to take
+the address of the member.
 
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Tested-by: Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Meng Tang <tangmeng@uniontech.com>
+Fixes: eb8c88808c83 ("drm/imx: add deferred plane disabling")
+Acked-by: Philipp Zabel <p.zabel@pengutronix.de>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/igc/igc_main.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/gpu/drm/imx/ipuv3-crtc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index fd9257c7059a..298e968629db 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -10,6 +10,7 @@
- #include <linux/ip.h>
- #include <linux/pm_runtime.h>
- #include <net/pkt_sched.h>
-+#include <linux/pci.h>
+diff --git a/drivers/gpu/drm/imx/ipuv3-crtc.c b/drivers/gpu/drm/imx/ipuv3-crtc.c
+index 9c8829f945b2..f7863d6dea80 100644
+--- a/drivers/gpu/drm/imx/ipuv3-crtc.c
++++ b/drivers/gpu/drm/imx/ipuv3-crtc.c
+@@ -69,7 +69,7 @@ static void ipu_crtc_disable_planes(struct ipu_crtc *ipu_crtc,
+ 	drm_atomic_crtc_state_for_each_plane(plane, old_crtc_state) {
+ 		if (plane == &ipu_crtc->plane[0]->base)
+ 			disable_full = true;
+-		if (&ipu_crtc->plane[1] && plane == &ipu_crtc->plane[1]->base)
++		if (ipu_crtc->plane[1] && plane == &ipu_crtc->plane[1]->base)
+ 			disable_partial = true;
+ 	}
  
- #include <net/ipv6.h>
- 
-@@ -5041,6 +5042,10 @@ static int igc_probe(struct pci_dev *pdev,
- 
- 	pci_enable_pcie_error_reporting(pdev);
- 
-+	err = pci_enable_ptm(pdev, NULL);
-+	if (err < 0)
-+		dev_info(&pdev->dev, "PCIe PTM not supported by PCIe bus/controller\n");
-+
- 	pci_set_master(pdev);
- 
- 	err = -ENOMEM;
 -- 
-2.20.1
+2.35.1
 
 
 
