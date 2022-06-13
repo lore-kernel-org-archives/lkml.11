@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40DBECCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12703CCA480
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:00:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358031AbiFML7L (ORCPT
+        id S1357999AbiFML7D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:59:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55944 "EHLO
+        Mon, 13 Jun 2022 07:59:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356828AbiFMLvg (ORCPT
+        with ESMTP id S1356658AbiFMLuy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:51:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B79621FA4B;
-        Mon, 13 Jun 2022 03:55:19 -0700 (PDT)
+        Mon, 13 Jun 2022 07:50:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59197DFF1;
+        Mon, 13 Jun 2022 03:55:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4BD8EB80E93;
-        Mon, 13 Jun 2022 10:55:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3E80C3411F;
-        Mon, 13 Jun 2022 10:55:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 75D96B80D3F;
+        Mon, 13 Jun 2022 10:55:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBB30C3411C;
+        Mon, 13 Jun 2022 10:55:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117717;
-        bh=aXte8M8+iYvi07up9RCIu1tMb50yWvKB6aiELdMdwpc=;
+        s=korg; t=1655117703;
+        bh=oQPAN4chqWIIPG6atT+E2ldnFSAde1cFsl4zzRUvJZg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KFwEbYizj7XCqy+U+1Q5vmkypdJHCBLdgrPonVkurUs+DL5Snj8Rt1DHJJhSdamen
-         uNVLlsQX/hXHC4owKKVeGqEDcGl6BKFFZhBAOVMVG1FBdRREKX7TOdYaeYm5AA6XQy
-         PxSwtaSWOa7SkKMxGL3RtjIBGZFbFoR1YnpZ6GgU=
+        b=FyRG0dPV2Sr4C9Rj6w8zOTRpMHjjqNBhVeyI0vBXUst8y9OAQpmFS/r1Y/0Evbp4s
+         cVLbrJPlJHezmIKHBa5u2lxlEQw6ciMkbmHLKk79TH247nQJf97eb2rj/PdQbjaFC4
+         21gCjOzlaAxu9Eh73YhkCTqBpIC/z1dBnz4wJFtA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+        Jessica Zhang <quic_jesszhan@quicinc.com>,
+        Rob Clark <robdclark@gmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 106/287] NFC: hci: fix sleep in atomic context bugs in nfc_hci_hcp_message_tx
-Date:   Mon, 13 Jun 2022 12:08:50 +0200
-Message-Id: <20220613094927.092178832@linuxfoundation.org>
+Subject: [PATCH 4.19 089/287] drm/msm/mdp5: Return error code in mdp5_mixer_release when deadlock is detected
+Date:   Mon, 13 Jun 2022 12:08:33 +0200
+Message-Id: <20220613094926.576495995@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -51,115 +52,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Jessica Zhang <quic_jesszhan@quicinc.com>
 
-[ Upstream commit b413b0cb008646e9f24ce5253cb3cf7ee217aff6 ]
+[ Upstream commit ca75f6f7c6f89365e40f10f641b15981b1f07c31 ]
 
-There are sleep in atomic context bugs when the request to secure
-element of st21nfca is timeout. The root cause is that kzalloc and
-alloc_skb with GFP_KERNEL parameter and mutex_lock are called in
-st21nfca_se_wt_timeout which is a timer handler. The call tree shows
-the execution paths that could lead to bugs:
+There is a possibility for mdp5_get_global_state to return
+-EDEADLK when acquiring the modeset lock, but currently global_state in
+mdp5_mixer_release doesn't check for if an error is returned.
 
-   (Interrupt context)
-st21nfca_se_wt_timeout
-  nfc_hci_send_event
-    nfc_hci_hcp_message_tx
-      kzalloc(..., GFP_KERNEL) //may sleep
-      alloc_skb(..., GFP_KERNEL) //may sleep
-      mutex_lock() //may sleep
+To avoid a NULL dereference error, let's have mdp5_mixer_release
+check if an error is returned and propagate that error.
 
-This patch moves the operations that may sleep into a work item.
-The work item will run in another kernel thread which is in
-process context to execute the bottom half of the interrupt.
-So it could prevent atomic context from sleeping.
-
-Fixes: 2130fb97fecf ("NFC: st21nfca: Adding support for secure element")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Link: https://lore.kernel.org/r/20220518115733.62111-1-duoming@zju.edu.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Signed-off-by: Jessica Zhang <quic_jesszhan@quicinc.com>
+Fixes: 7907a0d77cb4 ("drm/msm/mdp5: Use the new private_obj state")
+Reviewed-by: Rob Clark <robdclark@gmail.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/485181/
+Link: https://lore.kernel.org/r/20220505214051.155-2-quic_jesszhan@quicinc.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nfc/st21nfca/se.c       | 17 ++++++++++++++---
- drivers/nfc/st21nfca/st21nfca.h |  1 +
- 2 files changed, 15 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c  | 10 ++++++++--
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c | 15 +++++++++++----
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h |  4 ++--
+ 3 files changed, 21 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/nfc/st21nfca/se.c b/drivers/nfc/st21nfca/se.c
-index ced3c20d6453..f69d2ed5a3e2 100644
---- a/drivers/nfc/st21nfca/se.c
-+++ b/drivers/nfc/st21nfca/se.c
-@@ -252,7 +252,7 @@ int st21nfca_hci_se_io(struct nfc_hci_dev *hdev, u32 se_idx,
- }
- EXPORT_SYMBOL(st21nfca_hci_se_io);
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
+index aa28a43ff842..76639a108ff5 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
+@@ -537,9 +537,15 @@ int mdp5_crtc_setup_pipeline(struct drm_crtc *crtc,
+ 		if (ret)
+ 			return ret;
  
--static void st21nfca_se_wt_timeout(struct timer_list *t)
-+static void st21nfca_se_wt_work(struct work_struct *work)
- {
- 	/*
- 	 * No answer from the secure element
-@@ -265,8 +265,9 @@ static void st21nfca_se_wt_timeout(struct timer_list *t)
- 	 */
- 	/* hardware reset managed through VCC_UICC_OUT power supply */
- 	u8 param = 0x01;
--	struct st21nfca_hci_info *info = from_timer(info, t,
--						    se_info.bwi_timer);
-+	struct st21nfca_hci_info *info = container_of(work,
-+						struct st21nfca_hci_info,
-+						se_info.timeout_work);
- 
- 	pr_debug("\n");
- 
-@@ -284,6 +285,13 @@ static void st21nfca_se_wt_timeout(struct timer_list *t)
- 	info->se_info.cb(info->se_info.cb_context, NULL, 0, -ETIME);
- }
- 
-+static void st21nfca_se_wt_timeout(struct timer_list *t)
-+{
-+	struct st21nfca_hci_info *info = from_timer(info, t, se_info.bwi_timer);
+-		mdp5_mixer_release(new_crtc_state->state, old_mixer);
++		ret = mdp5_mixer_release(new_crtc_state->state, old_mixer);
++		if (ret)
++			return ret;
 +
-+	schedule_work(&info->se_info.timeout_work);
-+}
+ 		if (old_r_mixer) {
+-			mdp5_mixer_release(new_crtc_state->state, old_r_mixer);
++			ret = mdp5_mixer_release(new_crtc_state->state, old_r_mixer);
++			if (ret)
++				return ret;
 +
- static void st21nfca_se_activation_timeout(struct timer_list *t)
- {
- 	struct st21nfca_hci_info *info = from_timer(info, t,
-@@ -376,6 +384,7 @@ int st21nfca_apdu_reader_event_received(struct nfc_hci_dev *hdev,
- 	switch (event) {
- 	case ST21NFCA_EVT_TRANSMIT_DATA:
- 		del_timer_sync(&info->se_info.bwi_timer);
-+		cancel_work_sync(&info->se_info.timeout_work);
- 		info->se_info.bwi_active = false;
- 		r = nfc_hci_send_event(hdev, ST21NFCA_DEVICE_MGNT_GATE,
- 				ST21NFCA_EVT_SE_END_OF_APDU_TRANSFER, NULL, 0);
-@@ -405,6 +414,7 @@ void st21nfca_se_init(struct nfc_hci_dev *hdev)
- 	struct st21nfca_hci_info *info = nfc_hci_get_clientdata(hdev);
- 
- 	init_completion(&info->se_info.req_completion);
-+	INIT_WORK(&info->se_info.timeout_work, st21nfca_se_wt_work);
- 	/* initialize timers */
- 	timer_setup(&info->se_info.bwi_timer, st21nfca_se_wt_timeout, 0);
- 	info->se_info.bwi_active = false;
-@@ -432,6 +442,7 @@ void st21nfca_se_deinit(struct nfc_hci_dev *hdev)
- 	if (info->se_info.se_active)
- 		del_timer_sync(&info->se_info.se_active_timer);
- 
-+	cancel_work_sync(&info->se_info.timeout_work);
- 	info->se_info.bwi_active = false;
- 	info->se_info.se_active = false;
+ 			if (!need_right_mixer)
+ 				pipeline->r_mixer = NULL;
+ 		}
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c
+index 113e6b569562..9c8275300b55 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.c
+@@ -127,21 +127,28 @@ int mdp5_mixer_assign(struct drm_atomic_state *s, struct drm_crtc *crtc,
+ 	return 0;
  }
-diff --git a/drivers/nfc/st21nfca/st21nfca.h b/drivers/nfc/st21nfca/st21nfca.h
-index 94ffb0501e87..7e2923ac9263 100644
---- a/drivers/nfc/st21nfca/st21nfca.h
-+++ b/drivers/nfc/st21nfca/st21nfca.h
-@@ -152,6 +152,7 @@ struct st21nfca_se_info {
  
- 	se_io_cb_t cb;
- 	void *cb_context;
-+	struct work_struct timeout_work;
- };
+-void mdp5_mixer_release(struct drm_atomic_state *s, struct mdp5_hw_mixer *mixer)
++int mdp5_mixer_release(struct drm_atomic_state *s, struct mdp5_hw_mixer *mixer)
+ {
+ 	struct mdp5_global_state *global_state = mdp5_get_global_state(s);
+-	struct mdp5_hw_mixer_state *new_state = &global_state->hwmixer;
++	struct mdp5_hw_mixer_state *new_state;
  
- struct st21nfca_hci_info {
+ 	if (!mixer)
+-		return;
++		return 0;
++
++	if (IS_ERR(global_state))
++		return PTR_ERR(global_state);
++
++	new_state = &global_state->hwmixer;
+ 
+ 	if (WARN_ON(!new_state->hwmixer_to_crtc[mixer->idx]))
+-		return;
++		return -EINVAL;
+ 
+ 	DBG("%s: release from crtc %s", mixer->name,
+ 	    new_state->hwmixer_to_crtc[mixer->idx]->name);
+ 
+ 	new_state->hwmixer_to_crtc[mixer->idx] = NULL;
++
++	return 0;
+ }
+ 
+ void mdp5_mixer_destroy(struct mdp5_hw_mixer *mixer)
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h
+index 9be94f567fbd..6bcb0b544665 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_mixer.h
+@@ -41,7 +41,7 @@ void mdp5_mixer_destroy(struct mdp5_hw_mixer *lm);
+ int mdp5_mixer_assign(struct drm_atomic_state *s, struct drm_crtc *crtc,
+ 		      uint32_t caps, struct mdp5_hw_mixer **mixer,
+ 		      struct mdp5_hw_mixer **r_mixer);
+-void mdp5_mixer_release(struct drm_atomic_state *s,
+-			struct mdp5_hw_mixer *mixer);
++int mdp5_mixer_release(struct drm_atomic_state *s,
++		       struct mdp5_hw_mixer *mixer);
+ 
+ #endif /* __MDP5_LM_H__ */
 -- 
 2.35.1
 
