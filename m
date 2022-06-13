@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C6C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:02:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62B34C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:02:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349545AbiFMLCC (ORCPT
+        id S1350917AbiFMLCG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:02:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44274 "EHLO
+        Mon, 13 Jun 2022 07:02:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350323AbiFMKyt (ORCPT
+        with ESMTP id S1350325AbiFMKyt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 06:54:49 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95CE61CFFF;
-        Mon, 13 Jun 2022 03:30:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3437192A2;
+        Mon, 13 Jun 2022 03:30:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4FB51B80E94;
-        Mon, 13 Jun 2022 10:30:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97893C3411C;
-        Mon, 13 Jun 2022 10:30:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 78453B80E5E;
+        Mon, 13 Jun 2022 10:30:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFF9BC34114;
+        Mon, 13 Jun 2022 10:30:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116251;
-        bh=Gr+Vw9+XXHKPKIAm54nUK/J4qufutb1HXkatbHy3PKE=;
+        s=korg; t=1655116248;
+        bh=vkcV/lipG5FOBetpkGUnhWz9CuHaO+9HxBByw51zqIs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OKG1NHok2StZVNq53FXMatzh636xHAFF1IF8nVb0SdiUXk2H5roTxLtW5NHQ+N7ei
-         MDBdFIzyZpE5JKyrr3cmIc4dLDnhd6xKo+AbeMWczabSIN4bulq05DQCYUkTyv1TT2
-         +Nxn+aP15uHwpBLQiP+B/h/h4+T6TKIQWtKAEQ1o=
+        b=v7aoCeo3kU3nZeM6OlNFdadSilXZphKd9Yg6oGQ86mE1RxPLahgqzEEYYdpGMfCbJ
+         4yPx7+mvsQyx5CFr/3vSZyfcFwzyzHc+TW0zwZeWwUmK4aqMUC/KEPVubEosVBJLQQ
+         TLL8xbAPX1oHyaVQaRAHhZKcT/+X1mA2JFYL2vc0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Bloch <mbloch@nvidia.com>,
-        Maor Gottlieb <maorg@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Heiko Stuebner <heiko@sntech.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 037/411] net/mlx5: fs, delete the FTE when there are no rules attached to it
-Date:   Mon, 13 Jun 2022 12:05:10 +0200
-Message-Id: <20220613094929.619218694@linuxfoundation.org>
+Subject: [PATCH 4.14 149/218] soc: rockchip: Fix refcount leak in rockchip_grf_init
+Date:   Mon, 13 Jun 2022 12:10:07 +0200
+Message-Id: <20220613094925.109490681@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,50 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Bloch <mbloch@nvidia.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 7b0c6338597613f465d131bd939a51844a00455a ]
+[ Upstream commit 9b59588d8be91c96bfb0371e912ceb4f16315dbf ]
 
-When an FTE has no children is means all the rules where removed
-and the FTE can be deleted regardless of the dests_size value.
-While dests_size should be 0 when there are no children
-be extra careful not to leak memory or get firmware syndrome
-if the proper bookkeeping of dests_size wasn't done.
+of_find_matching_node_and_match returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
+Add missing of_node_put() to avoid refcount leak.
 
-Signed-off-by: Mark Bloch <mbloch@nvidia.com>
-Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Fixes: 4c58063d4258 ("soc: rockchip: add driver handling grf setup")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220516072013.19731-1-linmq006@gmail.com
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/soc/rockchip/grf.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-index 5baf2c666d29..8c8b68e7abb4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -1937,16 +1937,16 @@ void mlx5_del_flow_rules(struct mlx5_flow_handle *handle)
- 	down_write_ref_node(&fte->node, false);
- 	for (i = handle->num_rules - 1; i >= 0; i--)
- 		tree_remove_node(&handle->rule[i]->node, true);
--	if (fte->dests_size) {
--		if (fte->modify_mask)
--			modify_fte(fte);
--		up_write_ref_node(&fte->node, false);
--	} else if (list_empty(&fte->node.children)) {
-+	if (list_empty(&fte->node.children)) {
- 		del_hw_fte(&fte->node);
- 		/* Avoid double call to del_hw_fte */
- 		fte->node.del_hw_func = NULL;
- 		up_write_ref_node(&fte->node, false);
- 		tree_put_node(&fte->node, false);
-+	} else if (fte->dests_size) {
-+		if (fte->modify_mask)
-+			modify_fte(fte);
-+		up_write_ref_node(&fte->node, false);
- 	} else {
- 		up_write_ref_node(&fte->node, false);
+diff --git a/drivers/soc/rockchip/grf.c b/drivers/soc/rockchip/grf.c
+index 0931ddb0b384..39f9a7c1d7e0 100644
+--- a/drivers/soc/rockchip/grf.c
++++ b/drivers/soc/rockchip/grf.c
+@@ -123,12 +123,14 @@ static int __init rockchip_grf_init(void)
+ 		return -ENODEV;
+ 	if (!match || !match->data) {
+ 		pr_err("%s: missing grf data\n", __func__);
++		of_node_put(np);
+ 		return -EINVAL;
  	}
+ 
+ 	grf_info = match->data;
+ 
+ 	grf = syscon_node_to_regmap(np);
++	of_node_put(np);
+ 	if (IS_ERR(grf)) {
+ 		pr_err("%s: could not get grf syscon\n", __func__);
+ 		return PTR_ERR(grf);
 -- 
 2.35.1
 
