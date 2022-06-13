@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEC0EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:50:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 935C7C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:50:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355296AbiFMMuZ (ORCPT
+        id S1355403AbiFMMub (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:50:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34236 "EHLO
+        Mon, 13 Jun 2022 08:50:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357666AbiFMMtJ (ORCPT
+        with ESMTP id S1357733AbiFMMtL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:49:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEA5A62BE1;
+        Mon, 13 Jun 2022 08:49:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B43462BD6;
         Mon, 13 Jun 2022 04:11:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C707BB80EA7;
-        Mon, 13 Jun 2022 11:11:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40C64C34114;
-        Mon, 13 Jun 2022 11:11:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DDCBE60EAB;
+        Mon, 13 Jun 2022 11:11:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED3F3C34114;
+        Mon, 13 Jun 2022 11:11:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118697;
-        bh=r5UkIx9IQWDvAj1alAKl7AX+3z3IEBhN+N1fO7ohM8Q=;
+        s=korg; t=1655118700;
+        bh=WFGQ7ZAPxUpvCEKv1vpG6rEPqrzyXIIXezFbT/tLKgw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=swM4sFVaB/f1OIerdq1sMhbotMSq0A2UpTMXhSqXkLL7iIc8dfRffAb8/VMOxucHs
-         LhrGGgg8LReXEU4tz3uZiTGz7HlI2YKRHSr0lbcKAEgBr30hXx6QQk1a7QBO4aHrCG
-         cKg+5p6iaPqg6R6hLbSma+Pi7T2FOOHGR6MBeXgE=
+        b=zw4weku2nsKIXem6YmvUmLvDRfzb77iri9z/S93NZiy3YxNW9QGm3N7EOW/xvjh4v
+         QuvuGTaXhc4HPGTzmmCpl+pPt1SEKNI26PmViw27EJ0crRV3BMnsWDSSsKwZKTl2h/
+         DNcaTZeCJexS0J6X/kHeXMcweitD9SCR4Az0Ve58=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, NeilBrown <neilb@suse.de>,
-        Pascal Hambourg <pascal@plouf.fr.eu.org>,
-        Song Liu <song@kernel.org>
-Subject: [PATCH 5.10 170/172] md/raid0: Ignore RAID0 layout if the second zone has only one device
-Date:   Mon, 13 Jun 2022 12:12:10 +0200
-Message-Id: <20220613094923.431692526@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: [PATCH 5.10 171/172] PCI: qcom: Fix pipe clock imbalance
+Date:   Mon, 13 Jun 2022 12:12:11 +0200
+Message-Id: <20220613094923.461428580@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -50,72 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pascal Hambourg <pascal@plouf.fr.eu.org>
+From: Johan Hovold <johan+linaro@kernel.org>
 
-commit ea23994edc4169bd90d7a9b5908c6ccefd82fa40 upstream.
+commit fdf6a2f533115ec5d4d9629178f8196331f1ac50 upstream.
 
-The RAID0 layout is irrelevant if all members have the same size so the
-array has only one zone. It is *also* irrelevant if the array has two
-zones and the second zone has only one device, for example if the array
-has two members of different sizes.
+Fix a clock imbalance introduced by ed8cc3b1fc84 ("PCI: qcom: Add support
+for SDM845 PCIe controller"), which enables the pipe clock both in init()
+and in post_init() but only disables in post_deinit().
 
-So in that case it makes sense to allow assembly even when the layout is
-undefined, like what is done when the array has only one zone.
+Note that the pipe clock was also never disabled in the init() error
+paths and that enabling the clock before powering up the PHY looks
+questionable.
 
-Reviewed-by: NeilBrown <neilb@suse.de>
-Signed-off-by: Pascal Hambourg <pascal@plouf.fr.eu.org>
-Signed-off-by: Song Liu <song@kernel.org>
+Link: https://lore.kernel.org/r/20220401133351.10113-1-johan+linaro@kernel.org
+Fixes: ed8cc3b1fc84 ("PCI: qcom: Add support for SDM845 PCIe controller")
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: stable@vger.kernel.org      # 5.6
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/raid0.c |   31 ++++++++++++++++---------------
- 1 file changed, 16 insertions(+), 15 deletions(-)
+ drivers/pci/controller/dwc/pcie-qcom.c |    6 ------
+ 1 file changed, 6 deletions(-)
 
---- a/drivers/md/raid0.c
-+++ b/drivers/md/raid0.c
-@@ -128,21 +128,6 @@ static int create_strip_zones(struct mdd
- 	pr_debug("md/raid0:%s: FINAL %d zones\n",
- 		 mdname(mddev), conf->nr_strip_zones);
- 
--	if (conf->nr_strip_zones == 1) {
--		conf->layout = RAID0_ORIG_LAYOUT;
--	} else if (mddev->layout == RAID0_ORIG_LAYOUT ||
--		   mddev->layout == RAID0_ALT_MULTIZONE_LAYOUT) {
--		conf->layout = mddev->layout;
--	} else if (default_layout == RAID0_ORIG_LAYOUT ||
--		   default_layout == RAID0_ALT_MULTIZONE_LAYOUT) {
--		conf->layout = default_layout;
--	} else {
--		pr_err("md/raid0:%s: cannot assemble multi-zone RAID0 with default_layout setting\n",
--		       mdname(mddev));
--		pr_err("md/raid0: please set raid0.default_layout to 1 or 2\n");
--		err = -ENOTSUPP;
--		goto abort;
--	}
- 	/*
- 	 * now since we have the hard sector sizes, we can make sure
- 	 * chunk size is a multiple of that sector size
-@@ -273,6 +258,22 @@ static int create_strip_zones(struct mdd
- 			 (unsigned long long)smallest->sectors);
+--- a/drivers/pci/controller/dwc/pcie-qcom.c
++++ b/drivers/pci/controller/dwc/pcie-qcom.c
+@@ -1192,12 +1192,6 @@ static int qcom_pcie_init_2_7_0(struct q
+ 		goto err_disable_clocks;
  	}
  
-+	if (conf->nr_strip_zones == 1 || conf->strip_zone[1].nb_dev == 1) {
-+		conf->layout = RAID0_ORIG_LAYOUT;
-+	} else if (mddev->layout == RAID0_ORIG_LAYOUT ||
-+		   mddev->layout == RAID0_ALT_MULTIZONE_LAYOUT) {
-+		conf->layout = mddev->layout;
-+	} else if (default_layout == RAID0_ORIG_LAYOUT ||
-+		   default_layout == RAID0_ALT_MULTIZONE_LAYOUT) {
-+		conf->layout = default_layout;
-+	} else {
-+		pr_err("md/raid0:%s: cannot assemble multi-zone RAID0 with default_layout setting\n",
-+		       mdname(mddev));
-+		pr_err("md/raid0: please set raid0.default_layout to 1 or 2\n");
-+		err = -EOPNOTSUPP;
-+		goto abort;
-+	}
-+
- 	pr_debug("md/raid0:%s: done.\n", mdname(mddev));
- 	*private_conf = conf;
+-	ret = clk_prepare_enable(res->pipe_clk);
+-	if (ret) {
+-		dev_err(dev, "cannot prepare/enable pipe clock\n");
+-		goto err_disable_clocks;
+-	}
+-
+ 	/* configure PCIe to RC mode */
+ 	writel(DEVICE_TYPE_RC, pcie->parf + PCIE20_PARF_DEVICE_TYPE);
  
 
 
