@@ -2,182 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2282CCA47D
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:42:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B34A3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:42:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240865AbiFMSmc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:42:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49712 "EHLO
+        id S245024AbiFMSml (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:42:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344348AbiFMSl4 (ORCPT
+        with ESMTP id S245724AbiFMSmQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 14:41:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA3A6213B
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 08:23:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 38424B8107B
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 15:23:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E959DC34114;
-        Mon, 13 Jun 2022 15:23:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655133818;
-        bh=39ORVcKGkww5j3cWfJ59utZuZfgeFZ6xrvdw9pRCMcE=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=cBMJnTuVe/bmjbmsCXZA0+huX5Txb6VRI1fgk7BNdzm9ZkevvY77Y23RQJl/UVigz
-         WK1hNZP5FiUOAd6vk0m1sKQzJxLwlBDCkh7m1i7CNaQIjsr1mtLIpp7z5jbVIbiQIJ
-         friK4tLQoJJZKYF+G7hfdlNl2zPsdEnL7I3Wk3zoHvXq2WkM67Zmb9I7UjxqbpAbJJ
-         qoUD2LMIU8DfSSd0ZkxjRPqjeOf3he5nzpAigRGQWjKM9RUqbppchJ7C1vI4y9airB
-         7k19KlSqb00T80xU3GCHbTC2jw4AgB0oRTvhaXj7dstJGhAtNHxZfon0KE//cz/LUT
-         IlgzSSw2a7UVA==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 8BD685C0510; Mon, 13 Jun 2022 08:23:37 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 08:23:37 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     "Zhang, Qiang1" <qiang1.zhang@intel.com>
-Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        syzbot <syzbot+9bb26e7c5e8e4fa7e641@syzkaller.appspotmail.com>,
-        "brauner@kernel.org" <brauner@kernel.org>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>
-Subject: Re: [syzbot] WARNING in exit_tasks_rcu_finish
-Message-ID: <20220613152337.GD1790663@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <000000000000e2fc3f05e141f930@google.com>
- <87bkux1yn4.fsf@email.froward.int.ebiederm.org>
- <20220612202204.GX1790663@paulmck-ThinkPad-P17-Gen-1>
- <PH0PR11MB588027C1A486FCED7885C500DAAB9@PH0PR11MB5880.namprd11.prod.outlook.com>
+        Mon, 13 Jun 2022 14:42:16 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D7E6B4F1DB;
+        Mon, 13 Jun 2022 08:01:33 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7E89723A;
+        Mon, 13 Jun 2022 08:01:33 -0700 (PDT)
+Received: from [10.57.82.209] (unknown [10.57.82.209])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8E5CA3F792;
+        Mon, 13 Jun 2022 08:01:31 -0700 (PDT)
+Message-ID: <fe0b1e13-ecea-deb4-d9d2-df2ff1452fb7@arm.com>
+Date:   Mon, 13 Jun 2022 16:01:26 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PH0PR11MB588027C1A486FCED7885C500DAAB9@PH0PR11MB5880.namprd11.prod.outlook.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] dt-bindings: perf: Convert Arm CCN to DT schema
+Content-Language: en-GB
+To:     Rob Herring <robh@kernel.org>, Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220613145554.3727354-1-robh@kernel.org>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220613145554.3727354-1-robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 01:55:31PM +0000, Zhang, Qiang1 wrote:
-> > syzbot <syzbot+9bb26e7c5e8e4fa7e641@syzkaller.appspotmail.com> writes:
-> > 
-> > > Hello,
-> > >
-> > > syzbot found the following issue on:
-> > >
-> > > HEAD commit:    6d0c80680317 Add linux-next specific files for 20220610
-> > > git tree:       linux-next
-> > > console output: 
-> > > https://syzkaller.appspot.com/x/log.txt?x=13b52c2ff00000
-> > > kernel config:  
-> > > https://syzkaller.appspot.com/x/.config?x=a30d6e3e814e5931
-> > > dashboard link: https://syzkaller.appspot.com/bug?extid=9bb26e7c5e8e4fa7e641
-> > > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> > >
-> > > Unfortunately, I don't have any reproducer for this issue yet.
-> > 
-> > I don't understand what is going on in linux-next kernel/rcu/tasks.h 
-> > looks different than in Linus's tree.  Paul does that mean you have 
-> > some staged rcu changes?
+On 2022-06-13 15:55, Rob Herring wrote:
+> Convert the Arm CCN performance monitors binding to DT schema format.
 > 
-> >Less than 100 RCU-related patches in -rcu, so not all that bad.  ;-)
-> >
-> >But yes, this could possibly be an issue in one of those patches.
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>   .../devicetree/bindings/perf/arm,ccn.yaml     | 40 +++++++++++++++++++
+>   .../devicetree/bindings/perf/arm-ccn.txt      | 23 -----------
+>   2 files changed, 40 insertions(+), 23 deletions(-)
+>   create mode 100644 Documentation/devicetree/bindings/perf/arm,ccn.yaml
+>   delete mode 100644 Documentation/devicetree/bindings/perf/arm-ccn.txt
 > 
-> > Eric
-> > 
-> > 
-> > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > > Reported-by: syzbot+9bb26e7c5e8e4fa7e641@syzkaller.appspotmail.com
-> > >
-> > > ------------[ cut here ]------------
-> > > WARNING: CPU: 1 PID: 28639 at kernel/rcu/tasks.h:1664 
-> > > exit_tasks_rcu_finish_trace kernel/rcu/tasks.h:1664 [inline]
-> > > WARNING: CPU: 1 PID: 28639 at kernel/rcu/tasks.h:1664 
-> > > exit_tasks_rcu_finish+0x122/0x1b0 kernel/rcu/tasks.h:1006
-> 
-> >The usual way for this warning to trigger is for these a task to exit while in an RCU Tasks Trace read-side critical section:
-> >
-> >	rcu_read_lock_trace();
-> >	do_something_that_causes_task_exit();
-> >
-> 
-> Hi Paul, wether the following scenarios be considered
-> 
-> rcu_read_unlock_trace_special
->    ->if (trs.b.blocked)
->        ->raw_spin_lock_irqsave_rcu_node
->        ->list_del_init(&t->trc_blkd_node)
->        ->WRITE_ONCE(t->trc_reader_special.b.blocked, false)
->        ->raw_spin_unlock_irqrestore_rcu_node
->                      ->Inerrrupt
->                             ->schedule
->                                 ->rcu_note_context_switch
->                                     ->rcu_tasks_trace_qs
->                                          If (___rttq_nesting && !READ_ONCE((t)->trc_reader_special.b.blocked) 
->                                                         /*___rttq_nesting  ==1    &&  (t)->trc_reader_special.b.blocked =false*/
-> 				rcu_tasks_trace_qs_blkd(t)     
->    ->WRITE_ONCE(t->trc_reader_nesting, 0)
->     .......
->    -> exit_tasks_rcu_finish
-> 
-> Whether the following patch can fix it, or what am I missing?
-> Any thoughts?
-> 
-> diff --git a/kernel/rcu/tasks.h b/kernel/rcu/tasks.h
-> index f1209ce621c5..c607e4c914d3 100644
-> --- a/kernel/rcu/tasks.h
-> +++ b/kernel/rcu/tasks.h
-> @@ -1247,6 +1247,7 @@ void rcu_read_unlock_trace_special(struct task_struct *t)
->         struct rcu_tasks_percpu *rtpcp;
->         union rcu_special trs;
-> 
-> +       WRITE_ONCE(t->trc_reader_nesting, 0);
->         // Open-coded full-word version of rcu_ld_need_qs().
->         smp_mb(); // Enforce full grace-period ordering.
->         trs = smp_load_acquire(&t->trc_reader_special);
-> @@ -1267,7 +1268,6 @@ void rcu_read_unlock_trace_special(struct task_struct *t)
->                 WRITE_ONCE(t->trc_reader_special.b.blocked, false);
->                 raw_spin_unlock_irqrestore_rcu_node(rtpcp, flags);
->         }
-> -       WRITE_ONCE(t->trc_reader_nesting, 0);
->  }
->  EXPORT_SYMBOL_GPL(rcu_read_unlock_trace_special);
+> diff --git a/Documentation/devicetree/bindings/perf/arm,ccn.yaml b/Documentation/devicetree/bindings/perf/arm,ccn.yaml
+> new file mode 100644
+> index 000000000000..0b0bb2091016
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/perf/arm,ccn.yaml
+> @@ -0,0 +1,40 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/perf/arm,ccn.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: ARM CCN (Cache Coherent Network) Performance Monitors
+> +
+> +maintainers:
+> +  - Robin Murphy <robin.murphy@arm.com>
 
-Thank you for looking into this!
+Oh go on then, why not...
 
-You do have what I believe to be the correct failure scenario, but the
-above fix would break nested RCU Tasks Trace read-side critical sections.
+Acked-by: Robin Murphy <robin.murphy@arm.com>
 
-But would you be willing to try out the patch shown below?
-
-							Thanx, Paul
-
-------------------------------------------------------------------------
-
-diff --git a/include/linux/rcupdate.h b/include/linux/rcupdate.h
-index 08059d8d4f5a7..937a58b3266bf 100644
---- a/include/linux/rcupdate.h
-+++ b/include/linux/rcupdate.h
-@@ -184,7 +184,7 @@ void rcu_tasks_trace_qs_blkd(struct task_struct *t);
- 		if (likely(!READ_ONCE((t)->trc_reader_special.b.need_qs)) &&	\
- 		    likely(!___rttq_nesting)) {					\
- 			rcu_trc_cmpxchg_need_qs((t), 0,	TRC_NEED_QS_CHECKED);	\
--		} else if (___rttq_nesting &&					\
-+		} else if (___rttq_nesting && ___rttq_nesting != INT_MIN &&	\
- 			   !READ_ONCE((t)->trc_reader_special.b.blocked)) {	\
- 			rcu_tasks_trace_qs_blkd(t);				\
- 		}								\
-diff --git a/include/linux/rcupdate_trace.h b/include/linux/rcupdate_trace.h
-index 6f9c358173989..9bc8cbb33340b 100644
---- a/include/linux/rcupdate_trace.h
-+++ b/include/linux/rcupdate_trace.h
-@@ -75,7 +75,7 @@ static inline void rcu_read_unlock_trace(void)
- 	nesting = READ_ONCE(t->trc_reader_nesting) - 1;
- 	barrier(); // Critical section before disabling.
- 	// Disable IPI-based setting of .need_qs.
--	WRITE_ONCE(t->trc_reader_nesting, INT_MIN);
-+	WRITE_ONCE(t->trc_reader_nesting, INT_MIN + nesting);
- 	if (likely(!READ_ONCE(t->trc_reader_special.s)) || nesting) {
- 		WRITE_ONCE(t->trc_reader_nesting, nesting);
- 		return;  // We assume shallow reader nesting.
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - arm,ccn-502
+> +      - arm,ccn-504
+> +      - arm,ccn-508
+> +      - arm,ccn-512
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    ccn@20000000 {
+> +        compatible = "arm,ccn-504";
+> +        reg = <0x20000000 0x1000000>;
+> +        interrupts = <0 181 4>;
+> +    };
+> +...
+> diff --git a/Documentation/devicetree/bindings/perf/arm-ccn.txt b/Documentation/devicetree/bindings/perf/arm-ccn.txt
+> deleted file mode 100644
+> index 1c53b5aa3317..000000000000
+> --- a/Documentation/devicetree/bindings/perf/arm-ccn.txt
+> +++ /dev/null
+> @@ -1,23 +0,0 @@
+> -* ARM CCN (Cache Coherent Network)
+> -
+> -Required properties:
+> -
+> -- compatible: (standard compatible string) should be one of:
+> -	"arm,ccn-502"
+> -	"arm,ccn-504"
+> -	"arm,ccn-508"
+> -	"arm,ccn-512"
+> -
+> -- reg: (standard registers property) physical address and size
+> -	(16MB) of the configuration registers block
+> -
+> -- interrupts: (standard interrupt property) single interrupt
+> -	generated by the control block
+> -
+> -Example:
+> -
+> -	ccn@2000000000 {
+> -		compatible = "arm,ccn-504";
+> -		reg = <0x20 0x00000000 0 0x1000000>;
+> -		interrupts = <0 181 4>;
+> -	};
