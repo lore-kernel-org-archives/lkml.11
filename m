@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E0CCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:36:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33E9AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:36:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378024AbiFMNgn (ORCPT
+        id S1378035AbiFMNgt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:36:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52014 "EHLO
+        Mon, 13 Jun 2022 09:36:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378728AbiFMNcD (ORCPT
+        with ESMTP id S1378799AbiFMNcH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:32:03 -0400
+        Mon, 13 Jun 2022 09:32:07 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D19A71A09;
-        Mon, 13 Jun 2022 04:26:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08B7F71D8D;
+        Mon, 13 Jun 2022 04:26:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1977E60B6E;
-        Mon, 13 Jun 2022 11:26:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B3C1C341C5;
-        Mon, 13 Jun 2022 11:26:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5ED5A60B6E;
+        Mon, 13 Jun 2022 11:26:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6744AC34114;
+        Mon, 13 Jun 2022 11:26:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119592;
-        bh=ZGGFBQ/7BqbYRuy9xYNskjJI5yvJ09M/XZftnlvYtvY=;
+        s=korg; t=1655119600;
+        bh=u2FxgfkoGnjzoKKN8QBayAg+rk7Gc72KjK/quKszqoA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bo/Ez5GGBmUgAauiuSTQ9SPlCe4hjIuGCAZfA/6uhFX89f9DFs1tPIXWI+YIjf8Ko
-         cE/R3C8UOJxCz+HnsHC2M0gjiQnqFZE7DyXiBzierZkNoPiTaMR6cbc6vQEwf+LbCG
-         FOJfQrf/jJS3IqQINl+gcZirKKafrVYhgnCkuxQk=
+        b=L5ZxAnXSiHEXzT7ViLitmzCNYeDHGRMqkRCEWp3MinSj2Ub1J1iafCTIM0vV3pMBV
+         HLofigD1yhAW7XQg85om9ttzJ6LUuOOBZ5Wf+ScplFfh4CyrayyMocrJR6Hp57W7Ea
+         kbI4yNdOXzZUbm9ewyog//eR+/G7OKzSxSs3Dp9o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 049/339] watchdog: rzg2l_wdt: Fix BUG: Invalid wait context
-Date:   Mon, 13 Jun 2022 12:07:54 +0200
-Message-Id: <20220613094928.010943658@linuxfoundation.org>
+Subject: [PATCH 5.18 042/339] power: supply: axp288_fuel_gauge: Fix battery reporting on the One Mix 1
+Date:   Mon, 13 Jun 2022 12:07:47 +0200
+Message-Id: <20220613094927.796398867@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -52,132 +50,160 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Biju Das <biju.das.jz@bp.renesas.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit e4cf89596c1f1e33309556699f910ced4abbaf44 ]
+[ Upstream commit 34f243e9fb5ace1ca760c72e366247eaeff430c0 ]
 
-This patch fixes the issue 'BUG: Invalid wait context' during restart()
-callback by using clk_prepare_enable() instead of pm_runtime_get_sync()
-for turning on the clocks during restart.
+Commit 3a06b912a5ce ("power: supply: axp288_fuel_gauge: Make "T3 MRD"
+no_battery_list DMI entry more generic") added a generic no-battery DMI
+match for many mini-PCs / HDMI-sticks which use "T3 MRD" as their DMI
+board-name.
 
-This issue is noticed when testing with renesas_defconfig.
+It turns out that the One Mix 1 mini laptop also uses "T3 MRD" for its
+DMI boardname and it also has its chassis-type wrongly set to a value
+of "3" (desktop). This was causing the axp288_fuel_gauge driver to
+disable battery reporting because this matches the no-battery DMI
+list entry for generic "T3 MRD" mini-PCs.
 
-[   42.213802] reboot: Restarting system
-[   42.217860]
-[   42.219364] =============================
-[   42.223368] [ BUG: Invalid wait context ]
-[   42.227372] 5.17.0-rc5-arm64-renesas-00002-g10393723e35e #522 Not tainted
-[   42.234153] -----------------------------
-[   42.238155] systemd-shutdow/1 is trying to lock:
-[   42.242766] ffff00000a650828 (&genpd->mlock){+.+.}-{3:3}, at: genpd_lock_mtx+0x14/0x20
-[   42.250709] other info that might help us debug this:
-[   42.255753] context-{4:4}
-[   42.258368] 2 locks held by systemd-shutdow/1:
-[   42.262806]  #0: ffff80000944e1c8 (system_transition_mutex#2){+.+.}-{3:3}, at: __do_sys_reboot+0xd0/0x250
-[   42.272388]  #1: ffff8000094c4e40 (rcu_read_lock){....}-{1:2}, at: atomic_notifier_call_chain+0x0/0x150
-[   42.281795] stack backtrace:
-[   42.284672] CPU: 0 PID: 1 Comm: systemd-shutdow Not tainted 5.17.0-rc5-arm64-renesas-00002-g10393723e35e #522
-[   42.294577] Hardware name: Renesas SMARC EVK based on r9a07g044c2 (DT)
-[   42.301096] Call trace:
-[   42.303538]  dump_backtrace+0xcc/0xd8
-[   42.307203]  show_stack+0x14/0x30
-[   42.310517]  dump_stack_lvl+0x88/0xb0
-[   42.314180]  dump_stack+0x14/0x2c
-[   42.317492]  __lock_acquire+0x1b24/0x1b50
-[   42.321502]  lock_acquire+0x120/0x3a8
-[   42.325162]  __mutex_lock+0x84/0x8f8
-[   42.328737]  mutex_lock_nested+0x30/0x58
-[   42.332658]  genpd_lock_mtx+0x14/0x20
-[   42.336319]  genpd_runtime_resume+0xc4/0x228
-[   42.340587]  __rpm_callback+0x44/0x170
-[   42.344337]  rpm_callback+0x64/0x70
-[   42.347824]  rpm_resume+0x4e0/0x6b8
-[   42.351310]  __pm_runtime_resume+0x50/0x78
-[   42.355404]  rzg2l_wdt_restart+0x28/0x68
-[   42.359329]  watchdog_restart_notifier+0x1c/0x30
-[   42.363943]  atomic_notifier_call_chain+0x94/0x150
-[   42.368732]  do_kernel_restart+0x24/0x30
-[   42.372652]  machine_restart+0x44/0x70
-[   42.376399]  kernel_restart+0x3c/0x60
-[   42.380058]  __do_sys_reboot+0x228/0x250
-[   42.383977]  __arm64_sys_reboot+0x20/0x28
-[   42.387983]  invoke_syscall+0x40/0xf8
+Change the no-battery DMI list into a quirks DMI list and add a
+specific match for the One Mix 1 mini laptop before the generic
+"T3 MRD" no-battery quirk entry to fix this.
 
-Fixes: 2cbc5cd0b55fa2 ("watchdog: Add Watchdog Timer driver for RZ/G2L")
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Link: https://lore.kernel.org/r/20220225175320.11041-4-biju.das.jz@bp.renesas.com
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
+Fixes: 3a06b912a5ce ("power: supply: axp288_fuel_gauge: Make "T3 MRD" no_battery_list DMI entry more generic")
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/watchdog/rzg2l_wdt.c | 25 +++++++++++++------------
- 1 file changed, 13 insertions(+), 12 deletions(-)
+ drivers/power/supply/axp288_fuel_gauge.c | 40 +++++++++++++++++++++---
+ 1 file changed, 36 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/watchdog/rzg2l_wdt.c b/drivers/watchdog/rzg2l_wdt.c
-index 0fc73b8a9567..48dfe6e5e64f 100644
---- a/drivers/watchdog/rzg2l_wdt.c
-+++ b/drivers/watchdog/rzg2l_wdt.c
-@@ -43,6 +43,8 @@ struct rzg2l_wdt_priv {
- 	struct reset_control *rstc;
- 	unsigned long osc_clk_rate;
- 	unsigned long delay;
-+	struct clk *pclk;
-+	struct clk *osc_clk;
- };
+diff --git a/drivers/power/supply/axp288_fuel_gauge.c b/drivers/power/supply/axp288_fuel_gauge.c
+index e9f285dae489..5b8aa4a980cd 100644
+--- a/drivers/power/supply/axp288_fuel_gauge.c
++++ b/drivers/power/supply/axp288_fuel_gauge.c
+@@ -90,6 +90,8 @@
+ #define AXP288_REG_UPDATE_INTERVAL		(60 * HZ)
+ #define AXP288_FG_INTR_NUM			6
  
- static void rzg2l_wdt_wait_delay(struct rzg2l_wdt_priv *priv)
-@@ -118,7 +120,9 @@ static int rzg2l_wdt_restart(struct watchdog_device *wdev,
- 
- 	/* Reset the module before we modify any register */
- 	reset_control_reset(priv->rstc);
--	pm_runtime_get_sync(wdev->parent);
++#define AXP288_QUIRK_NO_BATTERY			BIT(0)
 +
-+	clk_prepare_enable(priv->pclk);
-+	clk_prepare_enable(priv->osc_clk);
- 
- 	/* smallest counter value to reboot soon */
- 	rzg2l_wdt_write(priv, WDTSET_COUNTER_VAL(1), WDTSET);
-@@ -165,7 +169,6 @@ static int rzg2l_wdt_probe(struct platform_device *pdev)
+ static bool no_current_sense_res;
+ module_param(no_current_sense_res, bool, 0444);
+ MODULE_PARM_DESC(no_current_sense_res, "No (or broken) current sense resistor");
+@@ -524,7 +526,7 @@ static struct power_supply_desc fuel_gauge_desc = {
+  * detection reports one despite it not being there.
+  * Please keep this listed sorted alphabetically.
+  */
+-static const struct dmi_system_id axp288_no_battery_list[] = {
++static const struct dmi_system_id axp288_quirks[] = {
+ 	{
+ 		/* ACEPC T8 Cherry Trail Z8350 mini PC */
+ 		.matches = {
+@@ -534,6 +536,7 @@ static const struct dmi_system_id axp288_no_battery_list[] = {
+ 			/* also match on somewhat unique bios-version */
+ 			DMI_EXACT_MATCH(DMI_BIOS_VERSION, "1.000"),
+ 		},
++		.driver_data = (void *)AXP288_QUIRK_NO_BATTERY,
+ 	},
+ 	{
+ 		/* ACEPC T11 Cherry Trail Z8350 mini PC */
+@@ -544,6 +547,7 @@ static const struct dmi_system_id axp288_no_battery_list[] = {
+ 			/* also match on somewhat unique bios-version */
+ 			DMI_EXACT_MATCH(DMI_BIOS_VERSION, "1.000"),
+ 		},
++		.driver_data = (void *)AXP288_QUIRK_NO_BATTERY,
+ 	},
+ 	{
+ 		/* Intel Cherry Trail Compute Stick, Windows version */
+@@ -551,6 +555,7 @@ static const struct dmi_system_id axp288_no_battery_list[] = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "Intel"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "STK1AW32SC"),
+ 		},
++		.driver_data = (void *)AXP288_QUIRK_NO_BATTERY,
+ 	},
+ 	{
+ 		/* Intel Cherry Trail Compute Stick, version without an OS */
+@@ -558,34 +563,55 @@ static const struct dmi_system_id axp288_no_battery_list[] = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "Intel"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "STK1A32SC"),
+ 		},
++		.driver_data = (void *)AXP288_QUIRK_NO_BATTERY,
+ 	},
+ 	{
+ 		/* Meegopad T02 */
+ 		.matches = {
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "MEEGOPAD T02"),
+ 		},
++		.driver_data = (void *)AXP288_QUIRK_NO_BATTERY,
+ 	},
+ 	{	/* Mele PCG03 Mini PC */
+ 		.matches = {
+ 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "Mini PC"),
+ 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "Mini PC"),
+ 		},
++		.driver_data = (void *)AXP288_QUIRK_NO_BATTERY,
+ 	},
+ 	{
+ 		/* Minix Neo Z83-4 mini PC */
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "MINIX"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "Z83-4"),
+-		}
++		},
++		.driver_data = (void *)AXP288_QUIRK_NO_BATTERY,
+ 	},
+ 	{
+-		/* Various Ace PC/Meegopad/MinisForum/Wintel Mini-PCs/HDMI-sticks */
++		/*
++		 * One Mix 1, this uses the "T3 MRD" boardname used by
++		 * generic mini PCs, but it is a mini laptop so it does
++		 * actually have a battery!
++		 */
++		.matches = {
++			DMI_MATCH(DMI_BOARD_NAME, "T3 MRD"),
++			DMI_MATCH(DMI_BIOS_DATE, "06/14/2018"),
++		},
++		.driver_data = NULL,
++	},
++	{
++		/*
++		 * Various Ace PC/Meegopad/MinisForum/Wintel Mini-PCs/HDMI-sticks
++		 * This entry must be last because it is generic, this allows
++		 * adding more specifuc quirks overriding this generic entry.
++		 */
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_NAME, "T3 MRD"),
+ 			DMI_MATCH(DMI_CHASSIS_TYPE, "3"),
+ 			DMI_MATCH(DMI_BIOS_VENDOR, "American Megatrends Inc."),
+ 			DMI_MATCH(DMI_BIOS_VERSION, "5.11"),
+ 		},
++		.driver_data = (void *)AXP288_QUIRK_NO_BATTERY,
+ 	},
+ 	{}
+ };
+@@ -665,7 +691,9 @@ static int axp288_fuel_gauge_probe(struct platform_device *pdev)
+ 		[BAT_D_CURR] = "axp288-chrg-d-curr",
+ 		[BAT_VOLT] = "axp288-batt-volt",
+ 	};
++	const struct dmi_system_id *dmi_id;
  	struct device *dev = &pdev->dev;
- 	struct rzg2l_wdt_priv *priv;
- 	unsigned long pclk_rate;
--	struct clk *wdt_clk;
- 	int ret;
++	unsigned long quirks = 0;
+ 	int i, pirq, ret;
  
- 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-@@ -177,22 +180,20 @@ static int rzg2l_wdt_probe(struct platform_device *pdev)
- 		return PTR_ERR(priv->base);
+ 	/*
+@@ -675,7 +703,11 @@ static int axp288_fuel_gauge_probe(struct platform_device *pdev)
+ 	if (!acpi_quirk_skip_acpi_ac_and_battery())
+ 		return -ENODEV;
  
- 	/* Get watchdog main clock */
--	wdt_clk = clk_get(&pdev->dev, "oscclk");
--	if (IS_ERR(wdt_clk))
--		return dev_err_probe(&pdev->dev, PTR_ERR(wdt_clk), "no oscclk");
-+	priv->osc_clk = devm_clk_get(&pdev->dev, "oscclk");
-+	if (IS_ERR(priv->osc_clk))
-+		return dev_err_probe(&pdev->dev, PTR_ERR(priv->osc_clk), "no oscclk");
+-	if (dmi_check_system(axp288_no_battery_list))
++	dmi_id = dmi_first_match(axp288_quirks);
++	if (dmi_id)
++		quirks = (unsigned long)dmi_id->driver_data;
++
++	if (quirks & AXP288_QUIRK_NO_BATTERY)
+ 		return -ENODEV;
  
--	priv->osc_clk_rate = clk_get_rate(wdt_clk);
--	clk_put(wdt_clk);
-+	priv->osc_clk_rate = clk_get_rate(priv->osc_clk);
- 	if (!priv->osc_clk_rate)
- 		return dev_err_probe(&pdev->dev, -EINVAL, "oscclk rate is 0");
- 
- 	/* Get Peripheral clock */
--	wdt_clk = clk_get(&pdev->dev, "pclk");
--	if (IS_ERR(wdt_clk))
--		return dev_err_probe(&pdev->dev, PTR_ERR(wdt_clk), "no pclk");
-+	priv->pclk = devm_clk_get(&pdev->dev, "pclk");
-+	if (IS_ERR(priv->pclk))
-+		return dev_err_probe(&pdev->dev, PTR_ERR(priv->pclk), "no pclk");
- 
--	pclk_rate = clk_get_rate(wdt_clk);
--	clk_put(wdt_clk);
-+	pclk_rate = clk_get_rate(priv->pclk);
- 	if (!pclk_rate)
- 		return dev_err_probe(&pdev->dev, -EINVAL, "pclk rate is 0");
- 
+ 	info = devm_kzalloc(dev, sizeof(*info), GFP_KERNEL);
 -- 
 2.35.1
 
