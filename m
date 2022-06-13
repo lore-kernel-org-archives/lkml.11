@@ -2,93 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 861B8C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D252C43334
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:45:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356382AbiFMMom (ORCPT
+        id S1356109AbiFMMof (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:44:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56696 "EHLO
+        Mon, 13 Jun 2022 08:44:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357789AbiFMMkD (ORCPT
+        with ESMTP id S1354640AbiFMMi5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:40:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E4515E74E;
-        Mon, 13 Jun 2022 04:10:19 -0700 (PDT)
+        Mon, 13 Jun 2022 08:38:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A6515C87D;
+        Mon, 13 Jun 2022 04:08:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BC3C60BA6;
-        Mon, 13 Jun 2022 11:10:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8C992C36B0A;
-        Mon, 13 Jun 2022 11:10:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655118613;
-        bh=M6143A5QQ5xSxiPanMUPhFz1w2V7Tzx7QqRnqCYcJwA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=YSItdfyO7g24OsR7+bu6WYaKP3iu6GS5Blr6pVpHkkJdLhbNS2jUGrPrhJyADbsxp
-         5BjdqOxor3+4eyz2xe6tyN/aW1s1pXAhtaC6xqICAa1Ggp40GHkQ6goIRtOdkpxsFQ
-         qaMR9GYnBRjhamOHHbndoQhh9KgvMx21lbFO2FrXElLBB1SFSFzTjsed+T9bhSK82i
-         JSXaSlW5WmxaGacfrWaXz2sCwXEn1byV/XQoBL68xhZpcAu1PU5CIkoh+l0QEHINAt
-         EmmS8Ae7mNsB2L18zQfw+3Figws3LhMgwCyQU3vD3mu3xESUqVKkKhk01RCpYWRLH5
-         OhYoLSuAygtdA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 750F1E57538;
-        Mon, 13 Jun 2022 11:10:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4FE07B80EA8;
+        Mon, 13 Jun 2022 11:08:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 884C7C34114;
+        Mon, 13 Jun 2022 11:08:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655118508;
+        bh=IvR3eCCtOZ3XtPUngNCBjuA5lrHcVgGvsgXLK6fYnZY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=EvkS9xOOTryeXOT9XMTmcTEEVyMIKtwXY0caXo5ZIvYm9+PuZl7OA9sNl6xBeNgQF
+         a/R8lgqGsgkFd+3GAshyzgwjlfAg7vOLiObNis/Kgf1jbpSrUr8M9gw/CeFK7EsaPC
+         aPpbMYnpJ/kODKqHtwtM2L7mw8GioMrkoiwsGwJU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 101/172] bpf, arm64: Clear prog->jited_len along prog->jited
+Date:   Mon, 13 Jun 2022 12:11:01 +0200
+Message-Id: <20220613094914.647323821@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
+References: <20220613094850.166931805@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/6] net: ipa: simple refactoring
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165511861347.31385.12401818961589133505.git-patchwork-notify@kernel.org>
-Date:   Mon, 13 Jun 2022 11:10:13 +0000
-References: <20220610154616.249304-1-elder@linaro.org>
-In-Reply-To: <20220610154616.249304-1-elder@linaro.org>
-To:     Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, mka@chromium.org, evgreen@chromium.org,
-        bjorn.andersson@linaro.org, quic_cpratapa@quicinc.com,
-        quic_avuyyuru@quicinc.com, quic_jponduru@quicinc.com,
-        quic_subashab@quicinc.com, elder@kernel.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+From: Eric Dumazet <edumazet@google.com>
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+[ Upstream commit 10f3b29c65bb2fe0d47c2945cd0b4087be1c5218 ]
 
-On Fri, 10 Jun 2022 10:46:09 -0500 you wrote:
-> This series contains some minor code improvements.
-> 
-> The first patch verifies that the configuration is compatible with a
-> recently-defined limit.  The second and third rename two fields so
-> they better reflect their use in the code.  The next gets rid of an
-> empty function by reworking its only caller.
-> 
-> [...]
+syzbot reported an illegal copy_to_user() attempt
+from bpf_prog_get_info_by_fd() [1]
 
-Here is the summary with links:
-  - [net-next,1/6] net: ipa: verify command channel TLV count
-    https://git.kernel.org/netdev/net-next/c/92f78f81ac4d
-  - [net-next,2/6] net: ipa: rename channel->tlv_count
-    https://git.kernel.org/netdev/net-next/c/88e03057e4df
-  - [net-next,3/6] net: ipa: rename endpoint->trans_tre_max
-    https://git.kernel.org/netdev/net-next/c/317595d2ce77
-  - [net-next,4/6] net: ipa: simplify endpoint transaction completion
-    https://git.kernel.org/netdev/net-next/c/983a1a3081bb
-  - [net-next,5/6] net: ipa: determine channel from event
-    https://git.kernel.org/netdev/net-next/c/7dd9558feddf
-  - [net-next,6/6] net: ipa: derive channel from transaction
-    https://git.kernel.org/netdev/net-next/c/bcec9ecbaf60
+There was no repro yet on this bug, but I think
+that commit 0aef499f3172 ("mm/usercopy: Detect vmalloc overruns")
+is exposing a prior bug in bpf arm64.
 
-You are awesome, thank you!
+bpf_prog_get_info_by_fd() looks at prog->jited_len
+to determine if the JIT image can be copied out to user space.
+
+My theory is that syzbot managed to get a prog where prog->jited_len
+has been set to 43, while prog->bpf_func has ben cleared.
+
+It is not clear why copy_to_user(uinsns, NULL, ulen) is triggering
+this particular warning.
+
+I thought find_vma_area(NULL) would not find a vm_struct.
+As we do not hold vmap_area_lock spinlock, it might be possible
+that the found vm_struct was garbage.
+
+[1]
+usercopy: Kernel memory exposure attempt detected from vmalloc (offset 792633534417210172, size 43)!
+kernel BUG at mm/usercopy.c:101!
+Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
+Modules linked in:
+CPU: 0 PID: 25002 Comm: syz-executor.1 Not tainted 5.18.0-syzkaller-10139-g8291eaafed36 #0
+Hardware name: linux,dummy-virt (DT)
+pstate: 60400009 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+pc : usercopy_abort+0x90/0x94 mm/usercopy.c:101
+lr : usercopy_abort+0x90/0x94 mm/usercopy.c:89
+sp : ffff80000b773a20
+x29: ffff80000b773a30 x28: faff80000b745000 x27: ffff80000b773b48
+x26: 0000000000000000 x25: 000000000000002b x24: 0000000000000000
+x23: 00000000000000e0 x22: ffff80000b75db67 x21: 0000000000000001
+x20: 000000000000002b x19: ffff80000b75db3c x18: 00000000fffffffd
+x17: 2820636f6c6c616d x16: 76206d6f72662064 x15: 6574636574656420
+x14: 74706d6574746120 x13: 2129333420657a69 x12: 73202c3237313031
+x11: 3237313434333533 x10: 3336323937207465 x9 : 657275736f707865
+x8 : ffff80000a30c550 x7 : ffff80000b773830 x6 : ffff80000b773830
+x5 : 0000000000000000 x4 : ffff00007fbbaa10 x3 : 0000000000000000
+x2 : 0000000000000000 x1 : f7ff000028fc0000 x0 : 0000000000000064
+Call trace:
+ usercopy_abort+0x90/0x94 mm/usercopy.c:89
+ check_heap_object mm/usercopy.c:186 [inline]
+ __check_object_size mm/usercopy.c:252 [inline]
+ __check_object_size+0x198/0x36c mm/usercopy.c:214
+ check_object_size include/linux/thread_info.h:199 [inline]
+ check_copy_size include/linux/thread_info.h:235 [inline]
+ copy_to_user include/linux/uaccess.h:159 [inline]
+ bpf_prog_get_info_by_fd.isra.0+0xf14/0xfdc kernel/bpf/syscall.c:3993
+ bpf_obj_get_info_by_fd+0x12c/0x510 kernel/bpf/syscall.c:4253
+ __sys_bpf+0x900/0x2150 kernel/bpf/syscall.c:4956
+ __do_sys_bpf kernel/bpf/syscall.c:5021 [inline]
+ __se_sys_bpf kernel/bpf/syscall.c:5019 [inline]
+ __arm64_sys_bpf+0x28/0x40 kernel/bpf/syscall.c:5019
+ __invoke_syscall arch/arm64/kernel/syscall.c:38 [inline]
+ invoke_syscall+0x48/0x114 arch/arm64/kernel/syscall.c:52
+ el0_svc_common.constprop.0+0x44/0xec arch/arm64/kernel/syscall.c:142
+ do_el0_svc+0xa0/0xc0 arch/arm64/kernel/syscall.c:206
+ el0_svc+0x44/0xb0 arch/arm64/kernel/entry-common.c:624
+ el0t_64_sync_handler+0x1ac/0x1b0 arch/arm64/kernel/entry-common.c:642
+ el0t_64_sync+0x198/0x19c arch/arm64/kernel/entry.S:581
+Code: aa0003e3 d00038c0 91248000 97fff65f (d4210000)
+
+Fixes: db496944fdaa ("bpf: arm64: add JIT support for multi-function programs")
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Song Liu <songliubraving@fb.com>
+Link: https://lore.kernel.org/bpf/20220531215113.1100754-1-eric.dumazet@gmail.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/arm64/net/bpf_jit_comp.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
+index 9c6cab71ba98..18627cbd6da4 100644
+--- a/arch/arm64/net/bpf_jit_comp.c
++++ b/arch/arm64/net/bpf_jit_comp.c
+@@ -1111,6 +1111,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ 			bpf_jit_binary_free(header);
+ 			prog->bpf_func = NULL;
+ 			prog->jited = 0;
++			prog->jited_len = 0;
+ 			goto out_off;
+ 		}
+ 		bpf_jit_binary_lock_ro(header);
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+2.35.1
+
 
 
