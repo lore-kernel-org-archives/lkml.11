@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55105CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:37:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C65AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:37:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384882AbiFMOh2 (ORCPT
+        id S1384647AbiFMOhe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:37:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46958 "EHLO
+        Mon, 13 Jun 2022 10:37:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384411AbiFMOeC (ORCPT
+        with ESMTP id S1384571AbiFMOeN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:34:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26317ADBEA;
-        Mon, 13 Jun 2022 04:49:15 -0700 (PDT)
+        Mon, 13 Jun 2022 10:34:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3A1AAE240;
+        Mon, 13 Jun 2022 04:49:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 57A33612AC;
-        Mon, 13 Jun 2022 11:49:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68418C34114;
-        Mon, 13 Jun 2022 11:49:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CE2BFB80EC6;
+        Mon, 13 Jun 2022 11:49:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D887EC34114;
+        Mon, 13 Jun 2022 11:49:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120948;
-        bh=vpAiBeDXWQczzpom4u48tQbqC1+qGpXGcbN52ULIeBI=;
+        s=korg; t=1655120951;
+        bh=ZjDVsKHFBSnws36ePAnZg275uQcp5H4PcRvFzlD2OCY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VoBewmL8Sboh4zTlgh6K3+3zYbmpfRSOJzFMgT/zwGrtx+t9QcE0tY+9EmRl4/wBZ
-         1eyI/olRudpwCLy+gdbyzVC03XusCN1Ud8GbGux6I5Q9pXhQwVXY17l0vtIiSu4wWh
-         +8avyBsJiV7MduxrQMpuz2eu2l7KZNUpfDUZmdoE=
+        b=C2VNNnSDuzssjT4v8h5W44Kbe+IzWJJ1+4cOzM4wbbZ39q5RujfIuCLloKczU12KN
+         vEzp3thvxFLwmn0rtXp9X6gG9FT6hfQ1P1zL2PHMcZHin51ex2EQ3Imaz2lXPrqqwe
+         fc+fTLuvUdvqx/eGxCVomjVhybqiUWBpD1J8y74k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Etienne van der Linde <etienne.vanderlinde@corigine.com>,
-        Louis Peens <louis.peens@corigine.com>,
-        Yinjun Zhang <yinjun.zhang@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 194/298] nfp: flower: restructure flow-key for gre+vlan combination
-Date:   Mon, 13 Jun 2022 12:11:28 +0200
-Message-Id: <20220613094930.990366680@linuxfoundation.org>
+        stable@vger.kernel.org, Jeff Layton <jlayton@kernel.org>,
+        David Howells <dhowells@redhat.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Mike Marshall <hubcap@omnibond.com>,
+        Gao Xiang <xiang@kernel.org>, linux-afs@lists.infradead.org,
+        v9fs-developer@lists.sourceforge.net, devel@lists.orangefs.org,
+        linux-erofs@lists.ozlabs.org, linux-cachefs@redhat.com,
+        linux-fsdevel@vger.kernel.org, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 195/298] iov_iter: Fix iter_xarray_get_pages{,_alloc}()
+Date:   Mon, 13 Jun 2022 12:11:29 +0200
+Message-Id: <20220613094931.021071516@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -54,127 +56,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Etienne van der Linde <etienne.vanderlinde@corigine.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit a0b843340dae704e17c1ddfad0f85c583c36757f ]
+[ Upstream commit 6c77676645ad42993e0a8bdb8dafa517851a352a ]
 
-Swap around the GRE and VLAN parts in the flow-key offloaded by
-the driver to fit in with other tunnel types and the firmware.
-Without this change used cases with GRE+VLAN on the outer header
-does not get offloaded as the flow-key mismatches what the
-firmware expect.
+The maths at the end of iter_xarray_get_pages() to calculate the actual
+size doesn't work under some circumstances, such as when it's been asked to
+extract a partial single page.  Various terms of the equation cancel out
+and you end up with actual == offset.  The same issue exists in
+iter_xarray_get_pages_alloc().
 
-Fixes: 0d630f58989a ("nfp: flower: add support to offload QinQ match")
-Fixes: 5a2b93041646 ("nfp: flower-ct: compile match sections of flow_payload")
-Signed-off-by: Etienne van der Linde <etienne.vanderlinde@corigine.com>
-Signed-off-by: Louis Peens <louis.peens@corigine.com>
-Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fix these to just use min() to select the lesser amount from between the
+amount of page content transcribed into the buffer, minus the offset, and
+the size limit specified.
+
+This doesn't appear to have caused a problem yet upstream because network
+filesystems aren't getting the pages from an xarray iterator, but rather
+passing it directly to the socket, which just iterates over it.  Cachefiles
+*does* do DIO from one to/from ext4/xfs/btrfs/etc. but it always asks for
+whole pages to be written or read.
+
+Fixes: 7ff5062079ef ("iov_iter: Add ITER_XARRAY")
+Reported-by: Jeff Layton <jlayton@kernel.org>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Alexander Viro <viro@zeniv.linux.org.uk>
+cc: Dominique Martinet <asmadeus@codewreck.org>
+cc: Mike Marshall <hubcap@omnibond.com>
+cc: Gao Xiang <xiang@kernel.org>
+cc: linux-afs@lists.infradead.org
+cc: v9fs-developer@lists.sourceforge.net
+cc: devel@lists.orangefs.org
+cc: linux-erofs@lists.ozlabs.org
+cc: linux-cachefs@redhat.com
+cc: linux-fsdevel@vger.kernel.org
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../ethernet/netronome/nfp/flower/conntrack.c | 32 +++++++++----------
- .../net/ethernet/netronome/nfp/flower/match.c | 16 +++++-----
- 2 files changed, 24 insertions(+), 24 deletions(-)
+ lib/iov_iter.c | 20 ++++----------------
+ 1 file changed, 4 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/conntrack.c b/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-index bfd7d1c35076..7e9fcc16286e 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-@@ -442,6 +442,11 @@ nfp_fl_calc_key_layers_sz(struct nfp_fl_key_ls in_key_ls, uint16_t *map)
- 		key_size += sizeof(struct nfp_flower_ipv6);
- 	}
+diff --git a/lib/iov_iter.c b/lib/iov_iter.c
+index 6dd5330f7a99..dda6d5f481c1 100644
+--- a/lib/iov_iter.c
++++ b/lib/iov_iter.c
+@@ -1434,7 +1434,7 @@ static ssize_t iter_xarray_get_pages(struct iov_iter *i,
+ {
+ 	unsigned nr, offset;
+ 	pgoff_t index, count;
+-	size_t size = maxsize, actual;
++	size_t size = maxsize;
+ 	loff_t pos;
  
-+	if (in_key_ls.key_layer_two & NFP_FLOWER_LAYER2_QINQ) {
-+		map[FLOW_PAY_QINQ] = key_size;
-+		key_size += sizeof(struct nfp_flower_vlan);
-+	}
-+
- 	if (in_key_ls.key_layer_two & NFP_FLOWER_LAYER2_GRE) {
- 		map[FLOW_PAY_GRE] = key_size;
- 		if (in_key_ls.key_layer_two & NFP_FLOWER_LAYER2_TUN_IPV6)
-@@ -450,11 +455,6 @@ nfp_fl_calc_key_layers_sz(struct nfp_fl_key_ls in_key_ls, uint16_t *map)
- 			key_size += sizeof(struct nfp_flower_ipv4_gre_tun);
- 	}
+ 	if (!size || !maxpages)
+@@ -1461,13 +1461,7 @@ static ssize_t iter_xarray_get_pages(struct iov_iter *i,
+ 	if (nr == 0)
+ 		return 0;
  
--	if (in_key_ls.key_layer_two & NFP_FLOWER_LAYER2_QINQ) {
--		map[FLOW_PAY_QINQ] = key_size;
--		key_size += sizeof(struct nfp_flower_vlan);
+-	actual = PAGE_SIZE * nr;
+-	actual -= offset;
+-	if (nr == count && size > 0) {
+-		unsigned last_offset = (nr > 1) ? 0 : offset;
+-		actual -= PAGE_SIZE - (last_offset + size);
 -	}
--
- 	if ((in_key_ls.key_layer & NFP_FLOWER_LAYER_VXLAN) ||
- 	    (in_key_ls.key_layer_two & NFP_FLOWER_LAYER2_GENEVE)) {
- 		map[FLOW_PAY_UDP_TUN] = key_size;
-@@ -693,6 +693,17 @@ static int nfp_fl_ct_add_offload(struct nfp_fl_nft_tc_merge *m_entry)
- 		}
- 	}
+-	return actual;
++	return min(nr * PAGE_SIZE - offset, maxsize);
+ }
  
-+	if (NFP_FLOWER_LAYER2_QINQ & key_layer.key_layer_two) {
-+		offset = key_map[FLOW_PAY_QINQ];
-+		key = kdata + offset;
-+		msk = mdata + offset;
-+		for (i = 0; i < _CT_TYPE_MAX; i++) {
-+			nfp_flower_compile_vlan((struct nfp_flower_vlan *)key,
-+						(struct nfp_flower_vlan *)msk,
-+						rules[i]);
-+		}
-+	}
-+
- 	if (key_layer.key_layer_two & NFP_FLOWER_LAYER2_GRE) {
- 		offset = key_map[FLOW_PAY_GRE];
- 		key = kdata + offset;
-@@ -733,17 +744,6 @@ static int nfp_fl_ct_add_offload(struct nfp_fl_nft_tc_merge *m_entry)
- 		}
- 	}
+ /* must be done on non-empty ITER_IOVEC one */
+@@ -1602,7 +1596,7 @@ static ssize_t iter_xarray_get_pages_alloc(struct iov_iter *i,
+ 	struct page **p;
+ 	unsigned nr, offset;
+ 	pgoff_t index, count;
+-	size_t size = maxsize, actual;
++	size_t size = maxsize;
+ 	loff_t pos;
  
--	if (NFP_FLOWER_LAYER2_QINQ & key_layer.key_layer_two) {
--		offset = key_map[FLOW_PAY_QINQ];
--		key = kdata + offset;
--		msk = mdata + offset;
--		for (i = 0; i < _CT_TYPE_MAX; i++) {
--			nfp_flower_compile_vlan((struct nfp_flower_vlan *)key,
--						(struct nfp_flower_vlan *)msk,
--						rules[i]);
--		}
+ 	if (!size)
+@@ -1631,13 +1625,7 @@ static ssize_t iter_xarray_get_pages_alloc(struct iov_iter *i,
+ 	if (nr == 0)
+ 		return 0;
+ 
+-	actual = PAGE_SIZE * nr;
+-	actual -= offset;
+-	if (nr == count && size > 0) {
+-		unsigned last_offset = (nr > 1) ? 0 : offset;
+-		actual -= PAGE_SIZE - (last_offset + size);
 -	}
--
- 	if (key_layer.key_layer & NFP_FLOWER_LAYER_VXLAN ||
- 	    key_layer.key_layer_two & NFP_FLOWER_LAYER2_GENEVE) {
- 		offset = key_map[FLOW_PAY_UDP_TUN];
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/match.c b/drivers/net/ethernet/netronome/nfp/flower/match.c
-index 9d86eea4dc16..fb8bd2135c63 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/match.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/match.c
-@@ -602,6 +602,14 @@ int nfp_flower_compile_flow_match(struct nfp_app *app,
- 		msk += sizeof(struct nfp_flower_ipv6);
- 	}
+-	return actual;
++	return min(nr * PAGE_SIZE - offset, maxsize);
+ }
  
-+	if (NFP_FLOWER_LAYER2_QINQ & key_ls->key_layer_two) {
-+		nfp_flower_compile_vlan((struct nfp_flower_vlan *)ext,
-+					(struct nfp_flower_vlan *)msk,
-+					rule);
-+		ext += sizeof(struct nfp_flower_vlan);
-+		msk += sizeof(struct nfp_flower_vlan);
-+	}
-+
- 	if (key_ls->key_layer_two & NFP_FLOWER_LAYER2_GRE) {
- 		if (key_ls->key_layer_two & NFP_FLOWER_LAYER2_TUN_IPV6) {
- 			struct nfp_flower_ipv6_gre_tun *gre_match;
-@@ -637,14 +645,6 @@ int nfp_flower_compile_flow_match(struct nfp_app *app,
- 		}
- 	}
- 
--	if (NFP_FLOWER_LAYER2_QINQ & key_ls->key_layer_two) {
--		nfp_flower_compile_vlan((struct nfp_flower_vlan *)ext,
--					(struct nfp_flower_vlan *)msk,
--					rule);
--		ext += sizeof(struct nfp_flower_vlan);
--		msk += sizeof(struct nfp_flower_vlan);
--	}
--
- 	if (key_ls->key_layer & NFP_FLOWER_LAYER_VXLAN ||
- 	    key_ls->key_layer_two & NFP_FLOWER_LAYER2_GENEVE) {
- 		if (key_ls->key_layer_two & NFP_FLOWER_LAYER2_TUN_IPV6) {
+ ssize_t iov_iter_get_pages_alloc(struct iov_iter *i,
 -- 
 2.35.1
 
