@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 248E2C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4641ACCA47B
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:34:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354609AbiFMMdj (ORCPT
+        id S1354734AbiFMMdo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:33:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41980 "EHLO
+        Mon, 13 Jun 2022 08:33:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358748AbiFMM3q (ORCPT
+        with ESMTP id S1359073AbiFMM3x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:29:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCC2C5A598;
-        Mon, 13 Jun 2022 04:06:49 -0700 (PDT)
+        Mon, 13 Jun 2022 08:29:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8535C5AEDF;
+        Mon, 13 Jun 2022 04:06:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 277E961435;
-        Mon, 13 Jun 2022 11:06:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33BF3C34114;
-        Mon, 13 Jun 2022 11:06:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 61DBCB80EAB;
+        Mon, 13 Jun 2022 11:06:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4CC9C34114;
+        Mon, 13 Jun 2022 11:06:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118407;
-        bh=Us5cevsHlpX53cLnlX7pKUx0cNQOjP1PciUAUcFtUUA=;
+        s=korg; t=1655118416;
+        bh=kXfTgQCiy3wSIZGfo1RBOm7z4BQx1H8V9wjkLt04Qmc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iZ057T+8yPvKjKlpOd6/tjHaSlcI6xSe49JLMMBlA2K18WdBwzb0KlUUM2Resmhch
-         fe0DJ5gWLWUDSa5uPBsUTEWVaWt3T5zKcXbUXYw2ea4DXU/P5/wxhh7jUQYzovr3gu
-         zvMxOQeIw/0CTjVfMNZ0yApF85r6Ypk3+UPK+bd4=
+        b=xnQPxKGnzrElQYrltxxp44Qd+ppDsVpwNsGI4UsmWQcGgzTZptwMs4o4PhGhpTS+c
+         4juM4VZ8Q3FahRsosZoucq6IqvrZkqrFWaM+lEnqarOEQM75aeyPFV+RVXFm/+fpGO
+         LZ4pjG9vntqCjkw2Wf/yjVMGs9SZEnK7dpsSo/Nw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Changcheng Liu <jerrliu@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Harald Freudenberger <freude@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 065/172] net/mlx5: correct ECE offset in query qp output
-Date:   Mon, 13 Jun 2022 12:10:25 +0200
-Message-Id: <20220613094906.041920103@linuxfoundation.org>
+Subject: [PATCH 5.10 049/172] s390/crypto: fix scatterwalk_unmap() callers in AES-GCM
+Date:   Mon, 13 Jun 2022 12:10:09 +0200
+Message-Id: <20220613094902.227249553@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -50,39 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Changcheng Liu <jerrliu@nvidia.com>
+From: Jann Horn <jannh@google.com>
 
-[ Upstream commit 3fc2a9e89b3508a5cc0c324f26d7b4740ba8c456 ]
+[ Upstream commit bd52cd5e23f134019b23f0c389db0f9a436e4576 ]
 
-ECE field should be after opt_param_mask in query qp output.
+The argument of scatterwalk_unmap() is supposed to be the void* that was
+returned by the previous scatterwalk_map() call.
+The s390 AES-GCM implementation was instead passing the pointer to the
+struct scatter_walk.
 
-Fixes: 6b646a7e4af6 ("net/mlx5: Add ability to read and write ECE options")
-Signed-off-by: Changcheng Liu <jerrliu@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+This doesn't actually break anything because scatterwalk_unmap() only uses
+its argument under CONFIG_HIGHMEM and ARCH_HAS_FLUSH_ON_KUNMAP.
+
+Fixes: bf7fa038707c ("s390/crypto: add s390 platform specific aes gcm support.")
+Signed-off-by: Jann Horn <jannh@google.com>
+Acked-by: Harald Freudenberger <freude@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220517143047.3054498-1-jannh@google.com
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/mlx5/mlx5_ifc.h | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ arch/s390/crypto/aes_s390.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index eba1f1cbc9fb..6ca97729b54a 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -4877,12 +4877,11 @@ struct mlx5_ifc_query_qp_out_bits {
+diff --git a/arch/s390/crypto/aes_s390.c b/arch/s390/crypto/aes_s390.c
+index 73044634d342..812730e6bfff 100644
+--- a/arch/s390/crypto/aes_s390.c
++++ b/arch/s390/crypto/aes_s390.c
+@@ -700,7 +700,7 @@ static inline void _gcm_sg_unmap_and_advance(struct gcm_sg_walk *gw,
+ 					     unsigned int nbytes)
+ {
+ 	gw->walk_bytes_remain -= nbytes;
+-	scatterwalk_unmap(&gw->walk);
++	scatterwalk_unmap(gw->walk_ptr);
+ 	scatterwalk_advance(&gw->walk, nbytes);
+ 	scatterwalk_done(&gw->walk, 0, gw->walk_bytes_remain);
+ 	gw->walk_ptr = NULL;
+@@ -775,7 +775,7 @@ static int gcm_out_walk_go(struct gcm_sg_walk *gw, unsigned int minbytesneeded)
+ 		goto out;
+ 	}
  
- 	u8         syndrome[0x20];
+-	scatterwalk_unmap(&gw->walk);
++	scatterwalk_unmap(gw->walk_ptr);
+ 	gw->walk_ptr = NULL;
  
--	u8         reserved_at_40[0x20];
--	u8         ece[0x20];
-+	u8         reserved_at_40[0x40];
- 
- 	u8         opt_param_mask[0x20];
- 
--	u8         reserved_at_a0[0x20];
-+	u8         ece[0x20];
- 
- 	struct mlx5_ifc_qpc_bits qpc;
- 
+ 	gw->ptr = gw->buf;
 -- 
 2.35.1
 
