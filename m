@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88173CCA482
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:17:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28136CCA488
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:17:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352394AbiFMLQm (ORCPT
+        id S1352466AbiFMLQp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:16:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60278 "EHLO
+        Mon, 13 Jun 2022 07:16:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352084AbiFMLMc (ORCPT
+        with ESMTP id S1352385AbiFMLMz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:12:32 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FE5335840;
-        Mon, 13 Jun 2022 03:36:04 -0700 (PDT)
+        Mon, 13 Jun 2022 07:12:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F7B535856;
+        Mon, 13 Jun 2022 03:36:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 8E3B1CE0EEB;
-        Mon, 13 Jun 2022 10:36:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C1B0C3411C;
-        Mon, 13 Jun 2022 10:36:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1686DB80EA3;
+        Mon, 13 Jun 2022 10:36:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68849C34114;
+        Mon, 13 Jun 2022 10:36:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116561;
-        bh=aRZPBIfUmeY/7zsPHU6zZqXyFI7wRPCiXmi7Q4AB3YU=;
+        s=korg; t=1655116563;
+        bh=z730l/hM8SDXiaGceR/3433bWesNUKQQorlQzL8FC/4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZwVPjhlUGUAboN+ua3+T1ZToZDW1CNsI9d8HeLSqRHc9rD5iqB9qWikIJOU7xhdPk
-         eLgoYyuPT05Xb0uPEv/K+++eI98hL7AUy6KgAIIzqJwG9CqL5jJBK/bTomUNx2ORs8
-         eO2MxHZwOfjGqVI1rhjFO0VdPIdyAtcKtquB4f6c=
+        b=srHczS60TBk6w5BDQNPFbS45TMc9hqHsxAdvdDdpjr4TIYOfPQw0lGepEpiVjPyx4
+         iEWXFy4PpV0P6BSqwCXz1AKzWIWlZcSXNNYxrlSEbp0HKo819IqFJBckm2hflFW0FK
+         mmwf/lWTpDxqEkau5+yH6yjFy2UL0W5DDmnvH6Bs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Mathias Nyman <mathias.nyman@linux.intel.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: [PATCH 4.14 213/218] Input: bcm5974 - set missing URB_NO_TRANSFER_DMA_MAP urb flag
-Date:   Mon, 13 Jun 2022 12:11:11 +0200
-Message-Id: <20220613094927.085839622@linuxfoundation.org>
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Borislav Petkov <bp@suse.de>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 109/411] x86/pm: Fix false positive kmemleak report in msr_build_context()
+Date:   Mon, 13 Jun 2022 12:06:22 +0200
+Message-Id: <20220613094931.943525844@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,55 +53,161 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathias Nyman <mathias.nyman@linux.intel.com>
+From: Matthieu Baerts <matthieu.baerts@tessares.net>
 
-commit c42e65664390be7c1ef3838cd84956d3a2739d60 upstream.
+[ Upstream commit b0b592cf08367719e1d1ef07c9f136e8c17f7ec3 ]
 
-The bcm5974 driver does the allocation and dma mapping of the usb urb
-data buffer, but driver does not set the URB_NO_TRANSFER_DMA_MAP flag
-to let usb core know the buffer is already mapped.
+Since
 
-usb core tries to map the already mapped buffer, causing a warning:
-"xhci_hcd 0000:00:14.0: rejecting DMA map of vmalloc memory"
+  e2a1256b17b1 ("x86/speculation: Restore speculation related MSRs during S3 resume")
 
-Fix this by setting the URB_NO_TRANSFER_DMA_MAP, letting usb core
-know buffer is already mapped by bcm5974 driver
+kmemleak reports this issue:
 
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Cc: stable@vger.kernel.org
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215890
-Link: https://lore.kernel.org/r/20220606113636.588955-1-mathias.nyman@linux.intel.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  unreferenced object 0xffff888009cedc00 (size 256):
+    comm "swapper/0", pid 1, jiffies 4294693823 (age 73.764s)
+    hex dump (first 32 bytes):
+      00 00 00 00 00 00 00 00 48 00 00 00 00 00 00 00  ........H.......
+      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    backtrace:
+      msr_build_context (include/linux/slab.h:621)
+      pm_check_save_msr (arch/x86/power/cpu.c:520)
+      do_one_initcall (init/main.c:1298)
+      kernel_init_freeable (init/main.c:1370)
+      kernel_init (init/main.c:1504)
+      ret_from_fork (arch/x86/entry/entry_64.S:304)
+
+Reproducer:
+
+  - boot the VM with a debug kernel config (see
+    https://github.com/multipath-tcp/mptcp_net-next/issues/268)
+  - wait ~1 minute
+  - start a kmemleak scan
+
+The root cause here is alignment within the packed struct saved_context
+(from suspend_64.h). Kmemleak only searches for pointers that are
+aligned (see how pointers are scanned in kmemleak.c), but pahole shows
+that the saved_msrs struct member and all members after it in the
+structure are unaligned:
+
+  struct saved_context {
+    struct pt_regs             regs;                 /*     0   168 */
+    /* --- cacheline 2 boundary (128 bytes) was 40 bytes ago --- */
+    u16                        ds;                   /*   168     2 */
+
+    ...
+
+    u64                        misc_enable;          /*   232     8 */
+    bool                       misc_enable_saved;    /*   240     1 */
+
+   /* Note below odd offset values for the remainder of this struct */
+
+    struct saved_msrs          saved_msrs;           /*   241    16 */
+    /* --- cacheline 4 boundary (256 bytes) was 1 bytes ago --- */
+    long unsigned int          efer;                 /*   257     8 */
+    u16                        gdt_pad;              /*   265     2 */
+    struct desc_ptr            gdt_desc;             /*   267    10 */
+    u16                        idt_pad;              /*   277     2 */
+    struct desc_ptr            idt;                  /*   279    10 */
+    u16                        ldt;                  /*   289     2 */
+    u16                        tss;                  /*   291     2 */
+    long unsigned int          tr;                   /*   293     8 */
+    long unsigned int          safety;               /*   301     8 */
+    long unsigned int          return_address;       /*   309     8 */
+
+    /* size: 317, cachelines: 5, members: 25 */
+    /* last cacheline: 61 bytes */
+  } __attribute__((__packed__));
+
+Move misc_enable_saved to the end of the struct declaration so that
+saved_msrs fits in before the cacheline 4 boundary.
+
+The comment above the saved_context declaration says to fix wakeup_64.S
+file and __save/__restore_processor_state() if the struct is modified:
+it looks like all the accesses in wakeup_64.S are done through offsets
+which are computed at build-time. Update that comment accordingly.
+
+At the end, the false positive kmemleak report is due to a limitation
+from kmemleak but it is always good to avoid unaligned members for
+optimisation purposes.
+
+Please note that it looks like this issue is not new, e.g.
+
+  https://lore.kernel.org/all/9f1bb619-c4ee-21c4-a251-870bd4db04fa@lwfinger.net/
+  https://lore.kernel.org/all/94e48fcd-1dbd-ebd2-4c91-f39941735909@molgen.mpg.de/
+
+  [ bp: Massage + cleanup commit message. ]
+
+Fixes: 7a9c2dd08ead ("x86/pm: Introduce quirk framework to save/restore extra MSR registers around suspend/resume")
+Suggested-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Link: https://lore.kernel.org/r/20220426202138.498310-1-matthieu.baerts@tessares.net
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/input/mouse/bcm5974.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ arch/x86/include/asm/suspend_32.h |  2 +-
+ arch/x86/include/asm/suspend_64.h | 12 ++++++++----
+ 2 files changed, 9 insertions(+), 5 deletions(-)
 
---- a/drivers/input/mouse/bcm5974.c
-+++ b/drivers/input/mouse/bcm5974.c
-@@ -956,17 +956,22 @@ static int bcm5974_probe(struct usb_inte
- 	if (!dev->tp_data)
- 		goto err_free_bt_buffer;
+diff --git a/arch/x86/include/asm/suspend_32.h b/arch/x86/include/asm/suspend_32.h
+index fdbd9d7b7bca..3b97aa921543 100644
+--- a/arch/x86/include/asm/suspend_32.h
++++ b/arch/x86/include/asm/suspend_32.h
+@@ -21,7 +21,6 @@ struct saved_context {
+ #endif
+ 	unsigned long cr0, cr2, cr3, cr4;
+ 	u64 misc_enable;
+-	bool misc_enable_saved;
+ 	struct saved_msrs saved_msrs;
+ 	struct desc_ptr gdt_desc;
+ 	struct desc_ptr idt;
+@@ -30,6 +29,7 @@ struct saved_context {
+ 	unsigned long tr;
+ 	unsigned long safety;
+ 	unsigned long return_address;
++	bool misc_enable_saved;
+ } __attribute__((packed));
  
--	if (dev->bt_urb)
-+	if (dev->bt_urb) {
- 		usb_fill_int_urb(dev->bt_urb, udev,
- 				 usb_rcvintpipe(udev, cfg->bt_ep),
- 				 dev->bt_data, dev->cfg.bt_datalen,
- 				 bcm5974_irq_button, dev, 1);
+ /* routines for saving/restoring kernel state */
+diff --git a/arch/x86/include/asm/suspend_64.h b/arch/x86/include/asm/suspend_64.h
+index 35bb35d28733..54df06687d83 100644
+--- a/arch/x86/include/asm/suspend_64.h
++++ b/arch/x86/include/asm/suspend_64.h
+@@ -14,9 +14,13 @@
+  * Image of the saved processor state, used by the low level ACPI suspend to
+  * RAM code and by the low level hibernation code.
+  *
+- * If you modify it, fix arch/x86/kernel/acpi/wakeup_64.S and make sure that
+- * __save/__restore_processor_state(), defined in arch/x86/kernel/suspend_64.c,
+- * still work as required.
++ * If you modify it, check how it is used in arch/x86/kernel/acpi/wakeup_64.S
++ * and make sure that __save/__restore_processor_state(), defined in
++ * arch/x86/power/cpu.c, still work as required.
++ *
++ * Because the structure is packed, make sure to avoid unaligned members. For
++ * optimisation purposes but also because tools like kmemleak only search for
++ * pointers that are aligned.
+  */
+ struct saved_context {
+ 	struct pt_regs regs;
+@@ -36,7 +40,6 @@ struct saved_context {
  
-+		dev->bt_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
-+	}
-+
- 	usb_fill_int_urb(dev->tp_urb, udev,
- 			 usb_rcvintpipe(udev, cfg->tp_ep),
- 			 dev->tp_data, dev->cfg.tp_datalen,
- 			 bcm5974_irq_trackpad, dev, 1);
+ 	unsigned long cr0, cr2, cr3, cr4;
+ 	u64 misc_enable;
+-	bool misc_enable_saved;
+ 	struct saved_msrs saved_msrs;
+ 	unsigned long efer;
+ 	u16 gdt_pad; /* Unused */
+@@ -48,6 +51,7 @@ struct saved_context {
+ 	unsigned long tr;
+ 	unsigned long safety;
+ 	unsigned long return_address;
++	bool misc_enable_saved;
+ } __attribute__((packed));
  
-+	dev->tp_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
-+
- 	/* create bcm5974 device */
- 	usb_make_path(udev, dev->phys, sizeof(dev->phys));
- 	strlcat(dev->phys, "/input0", sizeof(dev->phys));
+ #define loaddebug(thread,register) \
+-- 
+2.35.1
+
 
 
