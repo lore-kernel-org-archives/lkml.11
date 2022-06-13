@@ -2,109 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DC2CCCA483
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:01:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8A14C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:02:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237913AbiFMIBN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 04:01:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46518 "EHLO
+        id S233263AbiFMICP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 04:02:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239490AbiFMIA7 (ORCPT
+        with ESMTP id S238854AbiFMICC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 04:00:59 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F165355B2;
-        Mon, 13 Jun 2022 01:00:58 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LM3sF3Gy1zDqtf;
-        Mon, 13 Jun 2022 16:00:33 +0800 (CST)
-Received: from dggpemm500014.china.huawei.com (7.185.36.153) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 13 Jun 2022 16:00:30 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- dggpemm500014.china.huawei.com (7.185.36.153) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 13 Jun 2022 16:00:28 +0800
-From:   Wupeng Ma <mawupeng1@huawei.com>
-To:     <corbet@lwn.net>, <will@kernel.org>, <ardb@kernel.org>,
-        <catalin.marinas@arm.com>
-CC:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
-        <dave.hansen@linux.intel.com>, <x86@kernel.org>, <hpa@zytor.com>,
-        <dvhart@infradead.org>, <andy@infradead.org>, <rppt@kernel.org>,
-        <akpm@linux-foundation.org>, <paul.walmsley@sifive.com>,
-        <palmer@dabbelt.com>, <aou@eecs.berkeley.edu>,
-        <paulmck@kernel.org>, <keescook@chromium.org>,
-        <songmuchun@bytedance.com>, <rdunlap@infradead.org>,
-        <damien.lemoal@opensource.wdc.com>, <swboyd@chromium.org>,
-        <wei.liu@kernel.org>, <robin.murphy@arm.com>, <david@redhat.com>,
-        <mawupeng1@huawei.com>, <anshuman.khandual@arm.com>,
-        <thunder.leizhen@huawei.com>, <wangkefeng.wang@huawei.com>,
-        <gpiccoli@igalia.com>, <chenhuacai@kernel.org>,
-        <geert@linux-m68k.org>, <vijayb@linux.microsoft.com>,
-        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-efi@vger.kernel.org>, <platform-driver-x86@vger.kernel.org>,
-        <linux-mm@kvack.org>, <linux-riscv@lists.infradead.org>,
-        Mike Rapoport <rppt@linux.ibm.com>
-Subject: [PATCH v4 3/6] mm: Ratelimited mirrored memory related warning messages
-Date:   Mon, 13 Jun 2022 16:21:44 +0800
-Message-ID: <20220613082147.183145-4-mawupeng1@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220613082147.183145-1-mawupeng1@huawei.com>
-References: <20220613082147.183145-1-mawupeng1@huawei.com>
+        Mon, 13 Jun 2022 04:02:02 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EE1610571;
+        Mon, 13 Jun 2022 01:01:57 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id bo5so5083421pfb.4;
+        Mon, 13 Jun 2022 01:01:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=jZWzCgoz5Pw3mHE8/DxjotUDMmE2UXTU9cjooBfPmLk=;
+        b=eYnjniZGIG1VbbkLc4H+4pxr7II/uiE5QUzdgkk8FjDZim7NHyrkQaJACWgS+VT8J/
+         N5Hazh+NsG4Oq6jkk2ceOx9DRm9kGRi0VAETwfc1VwRKLZGgtxzXnryl+FH3Csi1/Vhi
+         MU2rNA0bHK+/2q0S+XuWJfQYCebTP3WfWuKhmbYftBGxTqbOjUG3AoOw9mdzb1r7S1cj
+         kZ344qTwXUNRPCMkVVlAJ8z8Sfv20pIkaQbHpimRpisj1ytbPTubIjjjHhzi66C+u/N/
+         /U7pGptATCd5hcBargfGFbrwwijj5CyEYQPwC9w76XPpKybYxUTlrxUiMPOpWKtzrBT1
+         6SOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jZWzCgoz5Pw3mHE8/DxjotUDMmE2UXTU9cjooBfPmLk=;
+        b=MDcfN/2qO7Jqe5mVhJhnzwQvEbgBl/DK4PnwFBqFqIHab/HfdDL8DDAyxmKnTv64fB
+         cbgcr2T0BzWsfCYd6VBzON7V8Z9myB9yJR8yPMTbBHeR5IHGBH4lu+BSSsltu8MtLI7F
+         KGQq3yiX/+QJ4FER/nuzIngRzWfI5Coswsy9V3IqdyhEWzFL/8gIH6K3HkVfReu/1A7h
+         4E06j1wQ/9Pzm2ctQG8+a5f769GE2Gxqyup78spPSAl0C3JfcYUl1VPBT6Pa0N35dRQK
+         w8r7ARWC7PN9vCkvWOmcgxl66dkg41H2j0XF0LYu72zNfkdhjypdXG0vu45SwQtLK7q/
+         KTew==
+X-Gm-Message-State: AOAM531bQTzotaWYwfhrncm3JGAvn4rCZBGWh47nznO5q8OCBvvxaFZX
+        8To9SF80pKBARdl5rC5y/zA=
+X-Google-Smtp-Source: ABdhPJwip/iwh/bSl3Xq0RGH3xDHwUGJhANIMKdhvlGRKZdAtKJT95PIzG2rrw6Rb18tgoNsZDtDBg==
+X-Received: by 2002:a05:6a00:a06:b0:51e:47f5:79ad with SMTP id p6-20020a056a000a0600b0051e47f579admr22192430pfh.53.1655107317114;
+        Mon, 13 Jun 2022 01:01:57 -0700 (PDT)
+Received: from localhost (subs02-180-214-232-18.three.co.id. [180.214.232.18])
+        by smtp.gmail.com with ESMTPSA id q8-20020a170902a3c800b0015e8d4eb22csm4386153plb.118.2022.06.13.01.01.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 01:01:56 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 15:01:53 +0700
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     Dongliang Mu <dzm91@hust.edu.cn>
+Cc:     Julia Lawall <Julia.Lawall@inria.fr>,
+        Nicolas Palix <nicolas.palix@imag.fr>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Dongliang Mu <mudongliangabcd@gmail.com>, cocci@inria.fr,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dev-tools: fix one invalid url
+Message-ID: <Yqbu8TwmaXdBiIBs@debian.me>
+References: <20220613071243.12961-1-dzm91@hust.edu.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500014.china.huawei.com (7.185.36.153)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220613071243.12961-1-dzm91@hust.edu.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ma Wupeng <mawupeng1@huawei.com>
+On Mon, Jun 13, 2022 at 03:12:42PM +0800, Dongliang Mu wrote:
+> From: Dongliang Mu <mudongliangabcd@gmail.com>
+> 
+> Fix the invalid url about Semantic Patch Language
+> 
 
-If system has mirrored memory, memblock will try to allocate mirrored
-memory firstly and fallback to non-mirrored memory when fails, but if with
-limited mirrored memory or some numa node without mirrored memory, lots of
-warning message about memblock allocation will occur.
+I think what this patch doing is to point SPL reference URL from old
+Coccinelle documentation (doc root) to actual SPL doc entry on new
+Coccinelle page, right? If so, "fix invalid URL" may not be right patch
+description and title.
 
-This patch ratelimit the warning message to avoid a very long print during
-bootup.
-
-Signed-off-by: Ma Wupeng <mawupeng1@huawei.com>
-Reviewed-by: David Hildenbrand <david@redhat.com>
-Acked-by: Mike Rapoport <rppt@linux.ibm.com>
-Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
-Reviewed-by: Kefeng Wang <wangkefeng.wang@huawei.com>
----
- mm/memblock.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/mm/memblock.c b/mm/memblock.c
-index e4f03a6e8e56..b1d2a0009733 100644
---- a/mm/memblock.c
-+++ b/mm/memblock.c
-@@ -327,7 +327,7 @@ static phys_addr_t __init_memblock memblock_find_in_range(phys_addr_t start,
- 					    NUMA_NO_NODE, flags);
- 
- 	if (!ret && (flags & MEMBLOCK_MIRROR)) {
--		pr_warn("Could not allocate %pap bytes of mirrored memory\n",
-+		pr_warn_ratelimited("Could not allocate %pap bytes of mirrored memory\n",
- 			&size);
- 		flags &= ~MEMBLOCK_MIRROR;
- 		goto again;
-@@ -1384,7 +1384,7 @@ phys_addr_t __init memblock_alloc_range_nid(phys_addr_t size,
- 
- 	if (flags & MEMBLOCK_MIRROR) {
- 		flags &= ~MEMBLOCK_MIRROR;
--		pr_warn("Could not allocate %pap bytes of mirrored memory\n",
-+		pr_warn_ratelimited("Could not allocate %pap bytes of mirrored memory\n",
- 			&size);
- 		goto again;
- 	}
 -- 
-2.25.1
-
+An old man doll... just what I always wanted! - Clara
