@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B9BCCA480
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CF66CCA481
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:24:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353415AbiFMLXt (ORCPT
+        id S1353473AbiFMLX4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:23:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46664 "EHLO
+        Mon, 13 Jun 2022 07:23:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353672AbiFMLQL (ORCPT
+        with ESMTP id S1353685AbiFMLQM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:16:11 -0400
+        Mon, 13 Jun 2022 07:16:12 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AB5413DD3;
-        Mon, 13 Jun 2022 03:38:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81828120B1;
+        Mon, 13 Jun 2022 03:39:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D8C3B80EA8;
-        Mon, 13 Jun 2022 10:38:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B77FC3411C;
-        Mon, 13 Jun 2022 10:38:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3A96CB80EA8;
+        Mon, 13 Jun 2022 10:39:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1540C34114;
+        Mon, 13 Jun 2022 10:39:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116733;
-        bh=EFmUdl9NrFEx7bbsKO6ZCv5QzcIZLGeHdaaADbLR9TU=;
+        s=korg; t=1655116741;
+        bh=liNhd+rQWFOn1syJrUOicb3uykE30jaLc4TMIIZdHug=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ftbRUP7lBoROfzmY7mcJVD9tdznWyk/cyKjZkpLPszKD2+h6fs8TfPrldFSlwGt1U
-         9BjykUbSfCvoeD0/j1N0DfeODvLTLY8VpJsVc2WtGVgxThL2j9ZB1fhycFjKbpl+NG
-         KS5xl3VXio6JLwdmwFkisr2wikiHNpXBtpnrMs2Y=
+        b=oUQ+Tg4v6zTSYfMF+VZjpZIUpi8fPljcQor2LpMJrcL92RfOlRBJrrV/WDKtcIlmY
+         V2TAMM5HsXKV15DA2QC5m0ylbniL+7AhvyX5m7sC8P2MxOBjVz5WE3TgEKq+PyskHa
+         DDih0LPnKw7L78ns7x37LCwkF+nLsZZEJHeRnPA0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Phil Elwell <phil@raspberrypi.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        stable@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 165/411] ARM: dts: bcm2837-rpi-cm3-io3: Fix GPIO line names for SMPS I2C
-Date:   Mon, 13 Jun 2022 12:07:18 +0200
-Message-Id: <20220613094933.609820473@linuxfoundation.org>
+Subject: [PATCH 5.4 157/411] ARM: dts: suniv: F1C100: fix watchdog compatible
+Date:   Mon, 13 Jun 2022 12:07:10 +0200
+Message-Id: <20220613094933.370022221@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -51,37 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Phil Elwell <phil@raspberrypi.com>
+From: Andre Przywara <andre.przywara@arm.com>
 
-[ Upstream commit 9fd26fd02749ec964eb0d588a3bab9e09bf77927 ]
+[ Upstream commit 01a850ee61cbf0ab77dcbf26bb133fec2dd640d6 ]
 
-The GPIOs 46 & 47 are already used for a I2C interface to a SMPS.
-So fix the GPIO line names accordingly.
+The F1C100 series of SoCs actually have their watchdog IP being
+compatible with the newer Allwinner generation, not the older one.
 
-Fixes: a54fe8a6cf66 ("ARM: dts: add Raspberry Pi Compute Module 3 and IO board")
-Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+The currently described sun4i-a10-wdt actually does not work, neither
+the watchdog functionality (just never fires), nor the reset part
+(reboot hangs).
+
+Replace the compatible string with the one used by the newer generation.
+Verified to work with both the watchdog and reboot functionality on a
+LicheePi Nano.
+
+Also add the missing interrupt line and clock source, to make it binding
+compliant.
+
+Fixes: 4ba16d17efdd ("ARM: dts: suniv: add initial DTSI file for F1C100s")
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Acked-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Link: https://lore.kernel.org/r/20220317162349.739636-4-andre.przywara@arm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/suniv-f1c100s.dtsi | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts b/arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts
-index 588d9411ceb6..3dfce4312dfc 100644
---- a/arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts
-+++ b/arch/arm/boot/dts/bcm2837-rpi-cm3-io3.dts
-@@ -63,8 +63,8 @@
- 			  "GPIO43",
- 			  "GPIO44",
- 			  "GPIO45",
--			  "GPIO46",
--			  "GPIO47",
-+			  "SMPS_SCL",
-+			  "SMPS_SDA",
- 			  /* Used by eMMC */
- 			  "SD_CLK_R",
- 			  "SD_CMD_R",
+diff --git a/arch/arm/boot/dts/suniv-f1c100s.dtsi b/arch/arm/boot/dts/suniv-f1c100s.dtsi
+index 6100d3b75f61..def830101448 100644
+--- a/arch/arm/boot/dts/suniv-f1c100s.dtsi
++++ b/arch/arm/boot/dts/suniv-f1c100s.dtsi
+@@ -104,8 +104,10 @@
+ 
+ 		wdt: watchdog@1c20ca0 {
+ 			compatible = "allwinner,suniv-f1c100s-wdt",
+-				     "allwinner,sun4i-a10-wdt";
++				     "allwinner,sun6i-a31-wdt";
+ 			reg = <0x01c20ca0 0x20>;
++			interrupts = <16>;
++			clocks = <&osc32k>;
+ 		};
+ 
+ 		uart0: serial@1c25000 {
 -- 
 2.35.1
 
