@@ -2,108 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0917C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 06:40:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F851C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 06:46:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233137AbiFMGkK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 02:40:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46834 "EHLO
+        id S237253AbiFMGqS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 02:46:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236953AbiFMGkF (ORCPT
+        with ESMTP id S230380AbiFMGqO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 02:40:05 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EB4ABCA9
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 23:40:04 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id x62so5732421ede.10
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 23:40:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ionos.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nqL75dGcGHx4ai3/ntg9xJuTeDKQrl0GC/6/v0eyD5Q=;
-        b=Ig3CYdsNTJig+0/zVrxzWpBf8sBprAPZXhob1OpTrijxFTIFHquWunIUbfn31i0vZ7
-         cajf1Y3oZSYWLoTFvch4/gvn/3akM4LDra567ilui006TFXRGTdwsQTaGHC8rnfXBZzf
-         RPv++f+U3YdiraD2N+sqdzuZ4C8uokhzdxeMMQ4sKR571ezh/AqwdNkqFELNKRbpxL8J
-         Z2aGyzIWS8+6o0IYzXUHJz/2osZB0z22SSMhIPcYjUM7PjWmf1IWTka5LbmdgbZISrHd
-         uAfYJ7QbPsXh8Ql0/flyGpkZQNR+BGJYjcziK8HX8rEcdqpOd9cFLn02evXWIni7dR5/
-         T3tQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nqL75dGcGHx4ai3/ntg9xJuTeDKQrl0GC/6/v0eyD5Q=;
-        b=tMj/sgzomnxgoe8RI6BasgChNV0EIkLLTk1j0l7oKood2WpZOYWieWmsqTG4Yg/S+z
-         viPz7dHv+fSDiCyaVAYmrgEbRHllZql5albYZk5aGNM3xkQfEV+hCzJERbtB09Rbs+nZ
-         wlOz2EmoNMlCBK/Tx9E7ZvTuqfvu7uTS/4xL7D7M7LOWp/xziZPPqnb3u7R1mGcYdWUA
-         M4+FAS7KzIas4tEqtHou8yc7SWDlTw4kP4GUTJDzdlcG2+AHYPXK9H2QkiuWOsIkLeOm
-         zTgHSJCA7wdLYJVYncNx1w9qxM4rwlMwkxxkV6qtwJKk+RXMOYGabTbtDiJ7dKb051dZ
-         dLDQ==
-X-Gm-Message-State: AOAM533IHyOgAEN4LYQpBtBDIQXpgdbsc6tOYhRUsAdoJNismvaNoatR
-        /bu1yOujt7/xiAaGxoozuGKSlq96BSZT/SaFJoyQ/A==
-X-Google-Smtp-Source: ABdhPJypefaBtBfhxeny/ueXgKKYe544J9kiB9N5g8ZGYYYq9BbrUwxstG6/rcLHPXYu85TMb++lPGISdaxgL93dUTE=
-X-Received: by 2002:a05:6402:3688:b0:42d:d3ba:4725 with SMTP id
- ej8-20020a056402368800b0042dd3ba4725mr64268655edb.212.1655102402935; Sun, 12
- Jun 2022 23:40:02 -0700 (PDT)
+        Mon, 13 Jun 2022 02:46:14 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49B3110545
+        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 23:46:11 -0700 (PDT)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LM27d1vMhzRj0j;
+        Mon, 13 Jun 2022 14:42:53 +0800 (CST)
+Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 13 Jun 2022 14:46:00 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600013.china.huawei.com
+ (7.193.23.68) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 13 Jun
+ 2022 14:45:59 +0800
+From:   Zhihao Cheng <chengzhihao1@huawei.com>
+To:     <richard@nod.at>, <miquel.raynal@bootlin.com>,
+        <s.hauer@pengutronix.de>, <vigneshr@ti.com>,
+        <Artem.Bityutskiy@nokia.com>
+CC:     <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <chengzhihao1@huawei.com>, <yukuai3@huawei.com>
+Subject: [PATCH v2] ubi: ubi_wl_put_peb: Fix infinite loop when wear-leveling work failed
+Date:   Mon, 13 Jun 2022 14:59:04 +0800
+Message-ID: <20220613065904.326567-1-chengzhihao1@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <1654879602-33497-1-git-send-email-john.garry@huawei.com> <1654879602-33497-2-git-send-email-john.garry@huawei.com>
-In-Reply-To: <1654879602-33497-2-git-send-email-john.garry@huawei.com>
-From:   Jinpu Wang <jinpu.wang@ionos.com>
-Date:   Mon, 13 Jun 2022 08:39:52 +0200
-Message-ID: <CAMGffEme47RQxM0v7bsjbumE3UqLidhRE6Hb48NS5BG0yMzQqg@mail.gmail.com>
-Subject: Re: [PATCH 1/4] scsi: pm8001: Rework shost initial values
-To:     John Garry <john.garry@huawei.com>
-Cc:     jinpu.wang@ionos.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, hare@suse.de,
-        damien.lemoal@opensource.wdc.com, Ajish.Koshy@microchip.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600013.china.huawei.com (7.193.23.68)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 6:52 PM John Garry <john.garry@huawei.com> wrote:
->
-> Some values in pm8001_prep_sas_ha_init() are set the same as they would be
-> set in scsi_host_alloc(), or could be in the sht (which would be better),
-> or later just overwritten, so rework the following:
-> - cmd_per_lun can be set in the sht
-> - max_lun and max_channel are as scsi_host_alloc() (so no need to set)
-> - can_queue is later overwritten (so don't set in
->   pm8001_prep_sas_ha_init())
->
-> Signed-off-by: John Garry <john.garry@huawei.com>
-lgtm!
-Acked-by: Jack Wang <jinpu.wang@ionos.com>
-> ---
->  drivers/scsi/pm8001/pm8001_init.c | 5 +----
->  1 file changed, 1 insertion(+), 4 deletions(-)
->
-> diff --git a/drivers/scsi/pm8001/pm8001_init.c b/drivers/scsi/pm8001/pm8001_init.c
-> index 9b04f1a6a67d..4288c6b8f041 100644
-> --- a/drivers/scsi/pm8001/pm8001_init.c
-> +++ b/drivers/scsi/pm8001/pm8001_init.c
-> @@ -109,6 +109,7 @@ static struct scsi_host_template pm8001_sht = {
->  #endif
->         .shost_groups           = pm8001_host_groups,
->         .track_queue_depth      = 1,
-> +       .cmd_per_lun            = 32,
->  };
->
->  /*
-> @@ -605,12 +606,8 @@ static int pm8001_prep_sas_ha_init(struct Scsi_Host *shost,
->
->         shost->transportt = pm8001_stt;
->         shost->max_id = PM8001_MAX_DEVICES;
-> -       shost->max_lun = 8;
-> -       shost->max_channel = 0;
->         shost->unique_id = pm8001_id;
->         shost->max_cmd_len = 16;
-> -       shost->can_queue = PM8001_CAN_QUEUE;
-> -       shost->cmd_per_lun = 32;
->         return 0;
->  exit_free1:
->         kfree(arr_port);
-> --
-> 2.26.2
->
+Following process will trigger an infinite loop in ubi_wl_put_peb():
+
+	ubifs_bgt		ubi_bgt
+ubifs_leb_unmap
+  ubi_leb_unmap
+    ubi_eba_unmap_leb
+      ubi_wl_put_peb	wear_leveling_worker
+                          e1 = rb_entry(rb_first(&ubi->used)
+			  e2 = get_peb_for_wl(ubi)
+			  ubi_io_read_vid_hdr  // return err (flash fault)
+			  out_error:
+			    ubi->move_from = ubi->move_to = NULL
+			    wl_entry_destroy(ubi, e1)
+			      ubi->lookuptbl[e->pnum] = NULL
+      retry:
+        e = ubi->lookuptbl[pnum];	// return NULL
+	if (e == ubi->move_from) {	// NULL == NULL gets true
+	  goto retry;			// infinite loop !!!
+
+$ top
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     COMMAND
+  7676 root     20   0       0      0      0 R 100.0  0.0  ubifs_bgt0_0
+
+Fix it by:
+ 1) Letting ubi_wl_put_peb() returns directly if wearl leveling entry has
+    been removed from 'ubi->lookuptbl'.
+ 2) Using 'ubi->wl_lock' protecting wl entry deletion to preventing an
+    use-after-free problem for wl entry in ubi_wl_put_peb().
+
+Fetch a reproducer in [Link].
+
+Fixes: 43f9b25a9cdd7b1 ("UBI: bugfix: protect from volume removal")
+Fixes: ee59ba8b064f692 ("UBI: Fix stale pointers in ubi->lookuptbl")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216111
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+---
+ v1->v2: Don't split wl_entry_destroy(), since kmem_cache_free() can be
+         executed wrapped a spinlock, eg dtl_disable().
+ drivers/mtd/ubi/wl.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/mtd/ubi/wl.c b/drivers/mtd/ubi/wl.c
+index 55bae06cf408..ee0100740869 100644
+--- a/drivers/mtd/ubi/wl.c
++++ b/drivers/mtd/ubi/wl.c
+@@ -973,11 +973,11 @@ static int wear_leveling_worker(struct ubi_device *ubi, struct ubi_work *wrk,
+ 	spin_lock(&ubi->wl_lock);
+ 	ubi->move_from = ubi->move_to = NULL;
+ 	ubi->move_to_put = ubi->wl_scheduled = 0;
++	wl_entry_destroy(ubi, e1);
++	wl_entry_destroy(ubi, e2);
+ 	spin_unlock(&ubi->wl_lock);
+ 
+ 	ubi_free_vid_buf(vidb);
+-	wl_entry_destroy(ubi, e1);
+-	wl_entry_destroy(ubi, e2);
+ 
+ out_ro:
+ 	ubi_ro_mode(ubi);
+@@ -1253,6 +1253,18 @@ int ubi_wl_put_peb(struct ubi_device *ubi, int vol_id, int lnum,
+ retry:
+ 	spin_lock(&ubi->wl_lock);
+ 	e = ubi->lookuptbl[pnum];
++	if (!e) {
++		/*
++		 * This wl entry has been removed for some errors by other
++		 * process (eg. wear leveling worker), corresponding process
++		 * (except __erase_worker, which cannot concurrent with
++		 * ubi_wl_put_peb) will set ubi ro_mode at the same time,
++		 * just ignore this wl entry.
++		 */
++		spin_unlock(&ubi->wl_lock);
++		up_read(&ubi->fm_protect);
++		return 0;
++	}
+ 	if (e == ubi->move_from) {
+ 		/*
+ 		 * User is putting the physical eraseblock which was selected to
+-- 
+2.31.1
+
