@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97B8DCCA47B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6179CCA480
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:45:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379236AbiFMNny (ORCPT
+        id S1379888AbiFMNp0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:43:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36372 "EHLO
+        Mon, 13 Jun 2022 09:45:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379150AbiFMNj4 (ORCPT
+        with ESMTP id S1379223AbiFMNkE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:39:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE22D2253A;
-        Mon, 13 Jun 2022 04:29:00 -0700 (PDT)
+        Mon, 13 Jun 2022 09:40:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A598CE25;
+        Mon, 13 Jun 2022 04:30:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 66A18B80D3A;
-        Mon, 13 Jun 2022 11:28:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D28A7C34114;
-        Mon, 13 Jun 2022 11:28:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 375F2B80E59;
+        Mon, 13 Jun 2022 11:30:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91D5DC34114;
+        Mon, 13 Jun 2022 11:30:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119738;
-        bh=XAepP+VO+bU1kBLylU6LOD5IZD0Sfi2Ra4R0TzkzD6I=;
+        s=korg; t=1655119835;
+        bh=l2YBfg34tk5X/O+rDM5zgYJ6lyiB2LpFE7Bnqfy9WVc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BT6D+Qs7DHt2DzYoSCl4V30I03LfNSGVOmACyDZcXPyFCbCSsI9ccZWIgOxLEFLWt
-         BMd9Sl6MQ5F8m3j5QcEgaIp5aJJzyg6SLt5h5Re/4SJxc9+fGJmWJRYG5ID6rFGuxj
-         mP9VY4mk1oQJHabtJrYdzGDN3RcNh1dXJjKhK6Aw=
+        b=PxO1D5QY3JDkCifPSrEPzU0EBf/PiLymllI6iHL2r7gMMQ70zoKVV6Dj8OwY6OTdM
+         BsRLDZL2HusHBKm8igpNRymIB2ixyl6eXrwGjS1A17P1Xd2v+rVrRNADMC/hUjuVsc
+         l+x+Lmx/3ED8LabHfZoGI/5Ut2+dDe1aaIkXwZuI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Si-Wei Liu <si-wei.liu@oracle.com>,
-        Jason Wang <jasowang@redhat.com>, Eli Cohen <elic@nvidia.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
+        stable@vger.kernel.org, Fabien Parent <fparent@baylibre.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 122/339] vdpa: Fix error logic in vdpa_nl_cmd_dev_get_doit
-Date:   Mon, 13 Jun 2022 12:09:07 +0200
-Message-Id: <20220613094930.208721378@linuxfoundation.org>
+Subject: [PATCH 5.18 136/339] regulator: mt6315-regulator: fix invalid allowed mode
+Date:   Mon, 13 Jun 2022 12:09:21 +0200
+Message-Id: <20220613094930.806771463@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,54 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eli Cohen <elic@nvidia.com>
+From: Fabien Parent <fparent@baylibre.com>
 
-[ Upstream commit 7a6691f1f89784f775fa0c54be57533445726068 ]
+[ Upstream commit 28cbc2d4c54c09a427b18a1604740efb6b2cc2d6 ]
 
-In vdpa_nl_cmd_dev_get_doit(), if the call to genlmsg_reply() fails we
-must not call nlmsg_free() since this is done inside genlmsg_reply().
+In the binding example, the regulator mode 4 is shown as a valid mode,
+but the driver actually only support mode 0 to 2:
 
-Fix it.
+This generates an error in dmesg when copy/pasting the binding example:
+[    0.306080] vbuck1: invalid regulator-allowed-modes element 4
+[    0.307290] vbuck2: invalid regulator-allowed-modes element 4
 
-Fixes: bc0d90ee021f ("vdpa: Enable user to query vdpa device info")
-Reviewed-by: Si-Wei Liu <si-wei.liu@oracle.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
-Signed-off-by: Eli Cohen <elic@nvidia.com>
-Message-Id: <20220518133804.1075129-2-elic@nvidia.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+This commit fixes this error by removing the invalid mode from the
+examples.
+
+Fixes: 977fb5b58469 ("regulator: document binding for MT6315 regulator")
+Signed-off-by: Fabien Parent <fparent@baylibre.com>
+Link: https://lore.kernel.org/r/20220529154613.337559-1-fparent@baylibre.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vdpa/vdpa.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ .../devicetree/bindings/regulator/mt6315-regulator.yaml       | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
-index 2b75c00b1005..fac89a0d8178 100644
---- a/drivers/vdpa/vdpa.c
-+++ b/drivers/vdpa/vdpa.c
-@@ -756,14 +756,19 @@ static int vdpa_nl_cmd_dev_get_doit(struct sk_buff *skb, struct genl_info *info)
- 		goto mdev_err;
- 	}
- 	err = vdpa_dev_fill(vdev, msg, info->snd_portid, info->snd_seq, 0, info->extack);
--	if (!err)
--		err = genlmsg_reply(msg, info);
-+	if (err)
-+		goto mdev_err;
-+
-+	err = genlmsg_reply(msg, info);
-+	put_device(dev);
-+	mutex_unlock(&vdpa_dev_mutex);
-+	return err;
-+
- mdev_err:
- 	put_device(dev);
- err:
- 	mutex_unlock(&vdpa_dev_mutex);
--	if (err)
--		nlmsg_free(msg);
-+	nlmsg_free(msg);
- 	return err;
- }
+diff --git a/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml b/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
+index 5d2d989de893..37402c370fbb 100644
+--- a/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
++++ b/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
+@@ -55,7 +55,7 @@ examples:
+           regulator-min-microvolt = <300000>;
+           regulator-max-microvolt = <1193750>;
+           regulator-enable-ramp-delay = <256>;
+-          regulator-allowed-modes = <0 1 2 4>;
++          regulator-allowed-modes = <0 1 2>;
+         };
  
+         vbuck3 {
+@@ -63,7 +63,7 @@ examples:
+           regulator-min-microvolt = <300000>;
+           regulator-max-microvolt = <1193750>;
+           regulator-enable-ramp-delay = <256>;
+-          regulator-allowed-modes = <0 1 2 4>;
++          regulator-allowed-modes = <0 1 2>;
+         };
+       };
+     };
 -- 
 2.35.1
 
