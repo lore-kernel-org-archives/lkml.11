@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 474D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:42:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25C90C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:42:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343790AbiFMKmJ (ORCPT
+        id S1343808AbiFMKmU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:42:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36790 "EHLO
+        Mon, 13 Jun 2022 06:42:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348600AbiFMKjr (ORCPT
+        with ESMTP id S1346204AbiFMKj5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:39:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49B0DD124;
-        Mon, 13 Jun 2022 03:23:30 -0700 (PDT)
+        Mon, 13 Jun 2022 06:39:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E24528E0D;
+        Mon, 13 Jun 2022 03:23:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DB4DD60AEA;
-        Mon, 13 Jun 2022 10:23:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC89FC34114;
-        Mon, 13 Jun 2022 10:23:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 49C94B80E94;
+        Mon, 13 Jun 2022 10:23:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A36B6C34114;
+        Mon, 13 Jun 2022 10:23:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115809;
-        bh=W47R0Y0VdUVQGgDibTon4iAYDCkW4SHGnYM3JEBBGC0=;
+        s=korg; t=1655115812;
+        bh=PyINb2rJZQ7Qe5pjNIZ7+ywP2k++AnplNV1utZalMI4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tGfsKZjgTzkGDyEZCwNgZ90PhRkSQjSK+O7JgkovKh9EUv+qkzxdR+f3mb+4RdfiN
-         STagV1yRW1GPuKYLN5HPDM2hOF0nwsjeD+I4A8qLQnXY7k6KBPi4yYDKeuC3K7c7an
-         rrlNiUkIT3E4VqrmoRtYC7qLNizCSdhlEnExu3RA=
+        b=IVtQdXveThP8TxAx3Oir3BewkCaeUrqEGln1V/VR9khmIQOVKXS2KlV/SADDNQbhK
+         MzKXVu5noQlUCEA0l0s01d6YRTFQ6AYl0emwE6YfP4+VYAU6AzUI9Qnuv7bqnlVG0U
+         6U0FkJKOQp3j/YrKGhkvHDbMneW1275jtBvDXBxM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
         Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 049/218] ASoC: mediatek: Fix error handling in mt8173_max98090_dev_probe
-Date:   Mon, 13 Jun 2022 12:08:27 +0200
-Message-Id: <20220613094920.020575287@linuxfoundation.org>
+Subject: [PATCH 4.14 050/218] ASoC: mediatek: Fix missing of_node_put in mt2701_wm8960_machine_probe
+Date:   Mon, 13 Jun 2022 12:08:28 +0200
+Message-Id: <20220613094920.227053512@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -54,27 +52,26 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 4f4e0454e226de3bf4efd7e7924d1edc571c52d5 ]
+[ Upstream commit 05654431a18fe24e5e46a375d98904134628a102 ]
 
-Call of_node_put(platform_node) to avoid refcount leak in
-the error path.
+This node pointer is returned by of_parse_phandle() with
+refcount incremented in this function.
+Calling of_node_put() to avoid the refcount leak.
 
-Fixes: 94319ba10eca ("ASoC: mediatek: Use platform_of_node for machine drivers")
-Fixes: 493433785df0 ("ASoC: mediatek: mt8173: fix device_node leak")
+Fixes: 8625c1dbd876 ("ASoC: mediatek: Add mt2701-wm8960 machine driver")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20220404092903.26725-1-linmq006@gmail.com
+Link: https://lore.kernel.org/r/20220404093526.30004-1-linmq006@gmail.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/mediatek/mt8173/mt8173-max98090.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ sound/soc/mediatek/mt2701/mt2701-wm8960.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/mediatek/mt8173/mt8173-max98090.c b/sound/soc/mediatek/mt8173/mt8173-max98090.c
-index 0adb7ded61e9..0f460bc77f47 100644
---- a/sound/soc/mediatek/mt8173/mt8173-max98090.c
-+++ b/sound/soc/mediatek/mt8173/mt8173-max98090.c
-@@ -164,7 +164,8 @@ static int mt8173_max98090_dev_probe(struct platform_device *pdev)
+diff --git a/sound/soc/mediatek/mt2701/mt2701-wm8960.c b/sound/soc/mediatek/mt2701/mt2701-wm8960.c
+index a08ce2323bdc..3db92506ccea 100644
+--- a/sound/soc/mediatek/mt2701/mt2701-wm8960.c
++++ b/sound/soc/mediatek/mt2701/mt2701-wm8960.c
+@@ -126,7 +126,8 @@ static int mt2701_wm8960_machine_probe(struct platform_device *pdev)
  	if (!codec_node) {
  		dev_err(&pdev->dev,
  			"Property 'audio-codec' missing or invalid\n");
@@ -83,16 +80,27 @@ index 0adb7ded61e9..0f460bc77f47 100644
 +		goto put_platform_node;
  	}
  	for (i = 0; i < card->num_links; i++) {
- 		if (mt8173_max98090_dais[i].codec_name)
-@@ -179,6 +180,8 @@ static int mt8173_max98090_dev_probe(struct platform_device *pdev)
+ 		if (mt2701_wm8960_dai_links[i].codec_name)
+@@ -137,7 +138,7 @@ static int mt2701_wm8960_machine_probe(struct platform_device *pdev)
+ 	ret = snd_soc_of_parse_audio_routing(card, "audio-routing");
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "failed to parse audio-routing: %d\n", ret);
+-		return ret;
++		goto put_codec_node;
+ 	}
+ 
+ 	ret = devm_snd_soc_register_card(&pdev->dev, card);
+@@ -145,6 +146,10 @@ static int mt2701_wm8960_machine_probe(struct platform_device *pdev)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
  			__func__, ret);
  
- 	of_node_put(codec_node);
-+
++put_codec_node:
++	of_node_put(codec_node);
 +put_platform_node:
- 	of_node_put(platform_node);
++	of_node_put(platform_node);
  	return ret;
  }
+ 
 -- 
 2.35.1
 
