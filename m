@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4A6FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:17:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28605C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:17:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382441AbiFMORj (ORCPT
+        id S1381854AbiFMORo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:17:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59898 "EHLO
+        Mon, 13 Jun 2022 10:17:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381891AbiFMOJt (ORCPT
+        with ESMTP id S1382766AbiFMOG1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:09:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F8DC2D1C4;
-        Mon, 13 Jun 2022 04:41:47 -0700 (PDT)
+        Mon, 13 Jun 2022 10:06:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C32B8980A0;
+        Mon, 13 Jun 2022 04:41:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DAB9612AB;
-        Mon, 13 Jun 2022 11:41:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27709C3411C;
-        Mon, 13 Jun 2022 11:41:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D745B80EDD;
+        Mon, 13 Jun 2022 11:41:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDF58C34114;
+        Mon, 13 Jun 2022 11:41:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120504;
-        bh=gbYKkCfOmuWmni3zKfWkEp5niwsVnKL6NrWskrZ2w1Y=;
+        s=korg; t=1655120480;
+        bh=1okDpxG+2HAeH3YlR9vj5KO6UWz/SMYp93/ULZFDgus=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z5EduDuwZUycwKCgf4mz/cgv+oVdp0lgMpRP8UDg4gFUgSqpuhWkrbKWg9MG3F8p+
-         5RjugWnls9X6gWkQMfK4tQWHar+q/10AFasQ+FC+rZrMTqAjBep8mAQTq2drgBvqD9
-         rri8JdRwxukqBa1hK0MPidnMUyRy7pQEGMvChaVA=
+        b=Tov1jFg/XEyKW4GcRejg7GHSFVE0PJqJxHWT83H85VpNyJcP0yrW4Pwblqz01PcrJ
+         yx5w02BNmSIUuk5Ncp/q71LrC5qEcwUxMfyWjCCaR/uV6TRKqBc5Nf8akETjOcnyM5
+         IP/zdwlOGPN30YvbMqlAGtIkAkKP9ecXQ0PsSvd0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        John Ogness <john.ogness@linutronix.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Li Jun <jun.li@nxp.com>, Chanwoo Choi <cw00.choi@samsung.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 056/298] serial: meson: acquire port->lock in startup()
-Date:   Mon, 13 Jun 2022 12:09:10 +0200
-Message-Id: <20220613094926.649190400@linuxfoundation.org>
+Subject: [PATCH 5.17 048/298] extcon: ptn5150: Add queue work sync before driver release
+Date:   Mon, 13 Jun 2022 12:09:02 +0200
+Message-Id: <20220613094926.402989099@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -54,96 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Ogness <john.ogness@linutronix.de>
+From: Li Jun <jun.li@nxp.com>
 
-[ Upstream commit 589f892ac8ef244e47c5a00ffd8605daa1eaef8e ]
+[ Upstream commit 782cd939cbe0f569197cd1c9b0477ee213167f04 ]
 
-The uart_ops startup() callback is called without interrupts
-disabled and without port->lock locked, relatively late during the
-boot process (from the call path of console_on_rootfs()). If the
-device is a console, it was already previously registered and could
-be actively printing messages.
+Add device managed action to sync pending queue work, otherwise
+the queued work may run after the work is destroyed.
 
-Since the startup() callback is reading/writing registers used by
-the console write() callback (AML_UART_CONTROL), its access must
-be synchronized using the port->lock. Currently it is not.
-
-The startup() callback is the only function that explicitly enables
-interrupts. Without the synchronization, it is possible that
-interrupts become accidentally permanently disabled.
-
-CPU0                           CPU1
-meson_serial_console_write     meson_uart_startup
---------------------------     ------------------
-spin_lock(port->lock)
-val = readl(AML_UART_CONTROL)
-uart_console_write()
-                               writel(INT_EN, AML_UART_CONTROL)
-writel(val, AML_UART_CONTROL)
-spin_unlock(port->lock)
-
-Add port->lock synchronization to meson_uart_startup() to avoid
-racing with meson_serial_console_write().
-
-Also add detailed comments to meson_uart_reset() explaining why it
-is *not* using port->lock synchronization.
-
-Link: https://lore.kernel.org/lkml/2a82eae7-a256-f70c-fd82-4e510750906e@samsung.com
-Fixes: ff7693d079e5 ("ARM: meson: serial: add MesonX SoC on-chip uart driver")
-Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Acked-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
-Link: https://lore.kernel.org/r/20220508103547.626355-1-john.ogness@linutronix.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 4ed754de2d66 ("extcon: Add support for ptn5150 extcon driver")
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Li Jun <jun.li@nxp.com>
+Signed-off-by: Chanwoo Choi <cw00.choi@samsung.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/meson_uart.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/extcon/extcon-ptn5150.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
-index 45e00d928253..54a6b488bc8c 100644
---- a/drivers/tty/serial/meson_uart.c
-+++ b/drivers/tty/serial/meson_uart.c
-@@ -253,6 +253,14 @@ static const char *meson_uart_type(struct uart_port *port)
- 	return (port->type == PORT_MESON) ? "meson_uart" : NULL;
+diff --git a/drivers/extcon/extcon-ptn5150.c b/drivers/extcon/extcon-ptn5150.c
+index 5b9a3cf8df26..2a7874108df8 100644
+--- a/drivers/extcon/extcon-ptn5150.c
++++ b/drivers/extcon/extcon-ptn5150.c
+@@ -194,6 +194,13 @@ static int ptn5150_init_dev_type(struct ptn5150_info *info)
+ 	return 0;
  }
  
-+/*
-+ * This function is called only from probe() using a temporary io mapping
-+ * in order to perform a reset before setting up the device. Since the
-+ * temporarily mapped region was successfully requested, there can be no
-+ * console on this port at this time. Hence it is not necessary for this
-+ * function to acquire the port->lock. (Since there is no console on this
-+ * port at this time, the port->lock is not initialized yet.)
-+ */
- static void meson_uart_reset(struct uart_port *port)
- {
- 	u32 val;
-@@ -267,9 +275,12 @@ static void meson_uart_reset(struct uart_port *port)
- 
- static int meson_uart_startup(struct uart_port *port)
- {
-+	unsigned long flags;
- 	u32 val;
- 	int ret = 0;
- 
-+	spin_lock_irqsave(&port->lock, flags);
++static void ptn5150_work_sync_and_put(void *data)
++{
++	struct ptn5150_info *info = data;
 +
- 	val = readl(port->membase + AML_UART_CONTROL);
- 	val |= AML_UART_CLEAR_ERR;
- 	writel(val, port->membase + AML_UART_CONTROL);
-@@ -285,6 +296,8 @@ static int meson_uart_startup(struct uart_port *port)
- 	val = (AML_UART_RECV_IRQ(1) | AML_UART_XMIT_IRQ(port->fifosize / 2));
- 	writel(val, port->membase + AML_UART_MISC);
- 
-+	spin_unlock_irqrestore(&port->lock, flags);
++	cancel_work_sync(&info->irq_work);
++}
 +
- 	ret = request_irq(port->irq, meson_uart_interrupt, 0,
- 			  port->name, port);
+ static int ptn5150_i2c_probe(struct i2c_client *i2c)
+ {
+ 	struct device *dev = &i2c->dev;
+@@ -284,6 +291,10 @@ static int ptn5150_i2c_probe(struct i2c_client *i2c)
+ 	if (ret)
+ 		return -EINVAL;
  
++	ret = devm_add_action_or_reset(dev, ptn5150_work_sync_and_put, info);
++	if (ret)
++		return ret;
++
+ 	/*
+ 	 * Update current extcon state if for example OTG connection was there
+ 	 * before the probe
 -- 
 2.35.1
 
