@@ -2,148 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8C16C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:15:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C03B4C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:16:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238406AbiFMTPp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:15:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34288 "EHLO
+        id S245016AbiFMTQR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 15:16:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349196AbiFMTNo (ORCPT
+        with ESMTP id S244090AbiFMTPR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 15:13:44 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8154650E25
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:12:02 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id s1so7935346wra.9
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:12:02 -0700 (PDT)
+        Mon, 13 Jun 2022 15:15:17 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C973856769
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:30:35 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id g10-20020a17090a708a00b001ea8aadd42bso6664066pjk.0
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:30:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BwfpdGVZuLzhMRO0qDkUrzUSE4uGJ0s4izOa+gswkLc=;
-        b=iyoFryyCEMOgC7rXLKu4nOmoJ4Ev3bSJmT6ed09FE5xCAAc5dBkkwtXxpcvvGQ+P+z
-         ETT+TDFbc4w3QEtd0CSTtGopVeE/ROGO0WHkEbyE/LYwiv3H3TW3pyxouKMCLv+KqkYZ
-         yNXDxA5s4wHBPNNleteRDWB0OVGKRy46fxusIatVg7fbsU3f8NuQHDDwXuooOAhihX5c
-         apRzdEm4Qcxw1Vp4x8eHSJ0zk6RBYV1Jvu3JCqD8yM8Yczm4FlFHmh8FmzU3HH+SvYZl
-         N0nY66gFj0te0BB1xSoY4rr990nbGbzyauUa8tb8y8DjQzQQuFKjHb8vPu4IK/5VClaZ
-         mw/g==
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wKqpDyJggm7b0f9UQvkgztMJ+TPUivgjBn1axRErEvQ=;
+        b=Qo1PAJdWEUTItUEqm09BhFPEhRGkluSKUjuSCMR8Oh/YdeKgdkNSJFPdNgcZcSYdct
+         YgsNaprlJ0qtSX/OnLKZfU923a8Daly/cmvERPvrQ78MjasSbw3FKBYl7hiFlmp8sdqf
+         qpLeaDQ9V7ZLqWgZPVbSJhxfaVtpebdqLTGNSfXpEcBwcGQAl57IuVX2/57HYlBKzJcW
+         F5jaUrwxHBpehJXWjJWqzqewd9ht+nBf5mJteCtAxWo0vAJzGkggV2K8klQEwt7JvUeT
+         jP+gXghpKDbbePakRiXK1e8V5BUdOjyuDasvHi841XNIFjiNjZY+cTTyrFNQnu/WAIAs
+         hkPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BwfpdGVZuLzhMRO0qDkUrzUSE4uGJ0s4izOa+gswkLc=;
-        b=w4spjPNy8d/o5JeJHgYvcEGSUeMvWcDEXwVbcRuVBClPrLPTzlSxaGwEzzl8+Ehzu0
-         gwJRoz8llqhNj/1ScRRr4/7LNN71CBN7ZO0cf1AkNFGFE3qdESVdyH3SdgFPdf1fY/+K
-         HQhvZd4uP6GURhprnBj7u6TTJc+IFMdyMiTbsIN88bS10e01//Tt8VfFBEm5y7YmpzlX
-         Y9TBsr13i0eq2bAY7dcL00xDibEKc3n0gm7PLg3eeiZ/RDgK8wupDOjraL5jnIETOlpl
-         c9L/sPQVerfG75JiU2ufx8wxTwjCJVVgWNO1ZShkHS4rFuxQ4Vu5OkhhiBJdVjRM6AWs
-         YXgg==
-X-Gm-Message-State: AJIora9TZ4WJE2Esc6zW3egJoQfcRigE4ucmKGbyFei3GDkakbKsPlaN
-        B18AiueEJvxAjqIaXP4NKuzYmK2Lztnvm0LRjlWVIg==
-X-Google-Smtp-Source: AGRyM1s6B0qb0T2WacCoWhhkywiiU+ZvFODg5mDtSwgELuEdOO1P7hQRTSX7NI4gasI6mKDBJY57NrqOabVTnciF7VA=
-X-Received: by 2002:adf:f688:0:b0:215:6e4d:4103 with SMTP id
- v8-20020adff688000000b002156e4d4103mr802713wrp.372.1655140320646; Mon, 13 Jun
- 2022 10:12:00 -0700 (PDT)
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=wKqpDyJggm7b0f9UQvkgztMJ+TPUivgjBn1axRErEvQ=;
+        b=AtShw++JXP+aQvIatHtFnRqmZPQ6j/Ar+DiYG6zQs4WMRGO0rh5dEVp03MTmNbqX9H
+         CfdqybjIQxh2U9z+xPal2jGaH9XCtEIX7qZX0zJAbPuoAx1P/CVgHZ9cZBsNq6j6qeA1
+         zB+xj0XlGZlaM9gTFV+CInA80StTWrgILPymgFgUuHkfga/lf184lC3HLbfvLMzVcq3F
+         85eiwSZzmMw1O7emcVYHtr8IxONbMhTva3r35cGLlU4L3ucqFX5+BXy1wt/wyGXqslEH
+         OJUYqC0D+wAscD37bvQ5EL+0u5iVI3INo35Zl8e4QY3EqXFgMokWrtpqQj+FRqeF/9Yx
+         1hvw==
+X-Gm-Message-State: AJIora+OGCENNS+AMmaz3CSMOu+S86RF/mF650gQwXRP5R8EhqKC5fsO
+        rBKQoCerZGrjmZBls8LfImI=
+X-Google-Smtp-Source: AGRyM1s8yGZUU+XxoyDpuDsvvN3kmuzm3vvwQE4B03t8rzFiPLfQ52FnP2QC3qWu6V/HIhy9UmSjlA==
+X-Received: by 2002:a17:902:7792:b0:168:d1fd:3013 with SMTP id o18-20020a170902779200b00168d1fd3013mr111116pll.29.1655141434698;
+        Mon, 13 Jun 2022 10:30:34 -0700 (PDT)
+Received: from localhost (2603-800c-1a02-1bae-a7fa-157f-969a-4cde.res6.spectrum.com. [2603:800c:1a02:1bae:a7fa:157f:969a:4cde])
+        by smtp.gmail.com with ESMTPSA id e3-20020a17090301c300b0016196bd15f4sm5397253plh.15.2022.06.13.10.30.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 10:30:34 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Mon, 13 Jun 2022 07:30:32 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Imran Khan <imran.f.khan@oracle.com>
+Cc:     viro@zeniv.linux.org.uk, gregkh@linuxfoundation.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RESEND v4 1/4] kernfs: make ->attr.open RCU protected.
+Message-ID: <Yqd0OJupifpplENB@slm.duckdns.org>
+References: <20220602063907.136569-1-imran.f.khan@oracle.com>
+ <20220602063907.136569-2-imran.f.khan@oracle.com>
+ <YqYpTShTDLvAp4vx@slm.duckdns.org>
+ <6d1c5a49-fc16-5fc7-e527-8cb91ec0d25c@oracle.com>
+ <YqalHuEB6OjjUosV@slm.duckdns.org>
+ <c8a8a616-da4c-f2ce-0bb2-e0cba69db24d@oracle.com>
+ <Yqaqbas1JaWz25jB@slm.duckdns.org>
+ <61868aa1-6c88-ecd2-beb2-67b87673b805@oracle.com>
 MIME-Version: 1.0
-References: <20220606222058.86688-1-yosryahmed@google.com> <20220606222058.86688-2-yosryahmed@google.com>
- <bdfea446-623c-d423-673f-496b3725ec2c@intel.com>
-In-Reply-To: <bdfea446-623c-d423-673f-496b3725ec2c@intel.com>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Mon, 13 Jun 2022 10:11:23 -0700
-Message-ID: <CAJD7tkbUXb7qBm1GAMDr29DcsC90_bPzwffkdtAu_Na+inVzVg@mail.gmail.com>
-Subject: Re: [PATCH v5 1/4] mm: add NR_SECONDARY_PAGETABLE to count secondary
- page table uses.
-To:     "Huang, Shaoqin" <shaoqin.huang@intel.com>
-Cc:     Tejun Heo <tj@kernel.org>, Johannes Weiner <hannes@cmpxchg.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Marc Zyngier <maz@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        Oliver Upton <oupton@google.com>,
-        Cgroups <cgroups@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        kvm@vger.kernel.org, Linux-MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <61868aa1-6c88-ecd2-beb2-67b87673b805@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jun 12, 2022 at 8:18 PM Huang, Shaoqin <shaoqin.huang@intel.com> wrote:
->
->
->
-> On 6/7/2022 6:20 AM, Yosry Ahmed wrote:
-> > Add NR_SECONDARY_PAGETABLE stat to count secondary page table uses, e.g.
-> > KVM mmu. This provides more insights on the kernel memory used
-> > by a workload.
-> >
-> > This stat will be used by subsequent patches to count KVM mmu
-> > memory usage.
-> >
-> > Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
-> > ---
-> >   Documentation/admin-guide/cgroup-v2.rst | 5 +++++
-> >   Documentation/filesystems/proc.rst      | 4 ++++
-> >   drivers/base/node.c                     | 2 ++
-> >   fs/proc/meminfo.c                       | 2 ++
-> >   include/linux/mmzone.h                  | 1 +
-> >   mm/memcontrol.c                         | 1 +
-> >   mm/page_alloc.c                         | 6 +++++-
-> >   mm/vmstat.c                             | 1 +
-> >   8 files changed, 21 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/Documentation/admin-guide/cgroup-v2.rst b/Documentation/admin-guide/cgroup-v2.rst
-> > index 69d7a6983f781..307a284b99189 100644
-> > --- a/Documentation/admin-guide/cgroup-v2.rst
-> > +++ b/Documentation/admin-guide/cgroup-v2.rst
-> > @@ -1312,6 +1312,11 @@ PAGE_SIZE multiple when read back.
-> >         pagetables
-> >                   Amount of memory allocated for page tables.
-> >
-> > +       sec_pagetables
-> > +             Amount of memory allocated for secondary page tables,
-> > +             this currently includes KVM mmu allocations on x86
-> > +             and arm64.
-> > +
-> >         percpu (npn)
-> >               Amount of memory used for storing per-cpu kernel
-> >               data structures.
-> > diff --git a/Documentation/filesystems/proc.rst b/Documentation/filesystems/proc.rst
-> > index 061744c436d99..894d6317f3bdc 100644
-> > --- a/Documentation/filesystems/proc.rst
-> > +++ b/Documentation/filesystems/proc.rst
-> > @@ -973,6 +973,7 @@ You may not have all of these fields.
-> >       SReclaimable:   159856 kB
-> >       SUnreclaim:     124508 kB
-> >       PageTables:      24448 kB
-> > +    SecPageTables:    0 kB
-> >       NFS_Unstable:        0 kB
-> >       Bounce:              0 kB
-> >       WritebackTmp:        0 kB
-> > @@ -1067,6 +1068,9 @@ SUnreclaim
-> >   PageTables
-> >                 amount of memory dedicated to the lowest level of page
-> >                 tables.
-> > +SecPageTables
-> > +           amount of memory dedicated to secondary page tables, this
-> > +           currently includes KVM mmu allocations on x86 and arm64.
->
-> Just a notice. This patch in the latest 5.19.0-rc2+ have a conflict in
-> Documentation/filesystems/proc.rst file. But that's not a problem.
+On Mon, Jun 13, 2022 at 01:56:43PM +1000, Imran Khan wrote:
+> Agree. I did over think this and went for the safest interface that I could
+> think of in each of the use cases. I will remove
+> kernfs_check_open_node_protected and use kernfs_deref_open_node_protected in its
+> place as well. This will cover all accesses under kernfs_open_file_mutex.
+> 
+> But we will still need kernfs_deref_open_node for cases where
+> !list_empty(&of->list) ensures safe access of ->attr.open and where we can't
+> ensure holding of kernfs_open_file_mutex. So we will need 2 deref accessors.
+> Right? Just asking this because you mentioned above to come up with one deref
+> accessor that can be used in all three use cases
+> 
+> Please let me if this sounds okay. I can send updated patch-set with these
+> changes in place.
 
-Thanks for pointing this out. Let me know if a rebase and resend is necessary.
+Just merge all three into one accessor. You can list both the !list_empty
+condition and lock held conditions on the same rcu_dereference_check() call.
 
-<snip>
+Thanks.
+
+-- 
+tejun
