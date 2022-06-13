@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2D9BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:06:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0927CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:06:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358500AbiFMMGs (ORCPT
+        id S1358512AbiFMMGz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:06:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54168 "EHLO
+        Mon, 13 Jun 2022 08:06:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358406AbiFMMDh (ORCPT
+        with ESMTP id S1359285AbiFMMFh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:03:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EA70BA2;
-        Mon, 13 Jun 2022 03:57:19 -0700 (PDT)
+        Mon, 13 Jun 2022 08:05:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4FD32613D;
+        Mon, 13 Jun 2022 03:59:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A0F53613E9;
-        Mon, 13 Jun 2022 10:57:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC921C341C7;
-        Mon, 13 Jun 2022 10:57:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AC24CB80EA3;
+        Mon, 13 Jun 2022 10:59:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C730C34114;
+        Mon, 13 Jun 2022 10:59:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117838;
-        bh=bZgoxt8+mkkmp6XpfosU+qkrogRbtpJT5SJTVZ1NZV0=;
+        s=korg; t=1655117989;
+        bh=VYpgOJOZ3uKVM8B3ypZhsdk8jW/PVEnnQsj0lr/cyCA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UrNcYikUSDzgwaop0zkF0fq0neS9VQVVbIkIx1b5kTqa0vBLLgicRrlR9fRfL31je
-         5QdUUrLMfY6bcqix5MRSho0sygGiZ1IoEwtw+c6SaOAzwTXzo4wDwvRzvfOF023WIF
-         uoyrXCWko5OZEuTMcuo/MR4zWb6fb3uLq+XQ5xV4=
+        b=B9pE+4gPMrWmm7In8d+w8LMWGqj81T/dYVKBRGUeUY78+Bayd1liX6sPDH7gI9Irc
+         8YZqePZ7Y5oHU28P+MURQqD5qxDEinqwSPJNpzRqD1dnqBk9xCaPxLGg3gOZ4Eg0RE
+         kw+PrVAAJKYRNLmHvvxPuofgC1xDPuKNZdfEA3ho=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 4.19 150/287] ext4: avoid cycles in directory h-tree
-Date:   Mon, 13 Jun 2022 12:09:34 +0200
-Message-Id: <20220613094928.425440227@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Vaibhav Agarwal <vaibhav.sr@gmail.com>,
+        Mark Greer <mgreer@animalcreek.com>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 190/287] staging: greybus: codecs: fix type confusion of list iterator variable
+Date:   Mon, 13 Jun 2022 12:10:14 +0200
+Message-Id: <20220613094929.628742280@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -49,81 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Jakob Koschel <jakobkoschel@gmail.com>
 
-commit 3ba733f879c2a88910744647e41edeefbc0d92b2 upstream.
+[ Upstream commit 84ef256550196bc06e6849a34224c998b45bd557 ]
 
-A maliciously corrupted filesystem can contain cycles in the h-tree
-stored inside a directory. That can easily lead to the kernel corrupting
-tree nodes that were already verified under its hands while doing a node
-split and consequently accessing unallocated memory. Fix the problem by
-verifying traversed block numbers are unique.
+If the list does not exit early then data == NULL and 'module' does not
+point to a valid list element.
+Using 'module' in such a case is not valid and was therefore removed.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220518093332.13986-2-jack@suse.cz
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Fixes: 6dd67645f22c ("greybus: audio: Use single codec driver registration")
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Vaibhav Agarwal <vaibhav.sr@gmail.com>
+Reviewed-by: Mark Greer <mgreer@animalcreek.com>
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+Link: https://lore.kernel.org/r/20220321123626.3068639-1-jakobkoschel@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/namei.c |   22 +++++++++++++++++++---
- 1 file changed, 19 insertions(+), 3 deletions(-)
+ drivers/staging/greybus/audio_codec.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/fs/ext4/namei.c
-+++ b/fs/ext4/namei.c
-@@ -748,12 +748,14 @@ static struct dx_frame *
- dx_probe(struct ext4_filename *fname, struct inode *dir,
- 	 struct dx_hash_info *hinfo, struct dx_frame *frame_in)
- {
--	unsigned count, indirect;
-+	unsigned count, indirect, level, i;
- 	struct dx_entry *at, *entries, *p, *q, *m;
- 	struct dx_root *root;
- 	struct dx_frame *frame = frame_in;
- 	struct dx_frame *ret_err = ERR_PTR(ERR_BAD_DX_DIR);
- 	u32 hash;
-+	ext4_lblk_t block;
-+	ext4_lblk_t blocks[EXT4_HTREE_LEVEL];
- 
- 	memset(frame_in, 0, EXT4_HTREE_LEVEL * sizeof(frame_in[0]));
- 	frame->bh = ext4_read_dirblock(dir, 0, INDEX);
-@@ -809,6 +811,8 @@ dx_probe(struct ext4_filename *fname, st
+diff --git a/drivers/staging/greybus/audio_codec.c b/drivers/staging/greybus/audio_codec.c
+index 6cbf69a57dfd..806be9d86338 100644
+--- a/drivers/staging/greybus/audio_codec.c
++++ b/drivers/staging/greybus/audio_codec.c
+@@ -620,8 +620,8 @@ static int gbcodec_mute_stream(struct snd_soc_dai *dai, int mute, int stream)
+ 			break;
  	}
- 
- 	dxtrace(printk("Look up %x", hash));
-+	level = 0;
-+	blocks[0] = 0;
- 	while (1) {
- 		count = dx_get_count(entries);
- 		if (!count || count > dx_get_limit(entries)) {
-@@ -850,15 +854,27 @@ dx_probe(struct ext4_filename *fname, st
- 			       dx_get_block(at)));
- 		frame->entries = entries;
- 		frame->at = at;
--		if (!indirect--)
-+
-+		block = dx_get_block(at);
-+		for (i = 0; i <= level; i++) {
-+			if (blocks[i] == block) {
-+				ext4_warning_inode(dir,
-+					"dx entry: tree cycle block %u points back to block %u",
-+					blocks[level], block);
-+				goto fail;
-+			}
-+		}
-+		if (++level > indirect)
- 			return frame;
-+		blocks[level] = block;
- 		frame++;
--		frame->bh = ext4_read_dirblock(dir, dx_get_block(at), INDEX);
-+		frame->bh = ext4_read_dirblock(dir, block, INDEX);
- 		if (IS_ERR(frame->bh)) {
- 			ret_err = (struct dx_frame *) frame->bh;
- 			frame->bh = NULL;
- 			goto fail;
- 		}
-+
- 		entries = ((struct dx_node *) frame->bh->b_data)->entries;
- 
- 		if (dx_get_limit(entries) != dx_node_limit(dir)) {
+ 	if (!data) {
+-		dev_err(dai->dev, "%s:%s DATA connection missing\n",
+-			dai->name, module->name);
++		dev_err(dai->dev, "%s DATA connection missing\n",
++			dai->name);
+ 		mutex_unlock(&codec->lock);
+ 		return -ENODEV;
+ 	}
+-- 
+2.35.1
+
 
 
