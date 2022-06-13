@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79F47C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99BD4CCA47C
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379362AbiFMNsl (ORCPT
+        id S1379389AbiFMNsp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:48:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38612 "EHLO
+        Mon, 13 Jun 2022 09:48:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378351AbiFMNlF (ORCPT
+        with ESMTP id S1378507AbiFMNlp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:41:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58ABC2317C;
-        Mon, 13 Jun 2022 04:31:16 -0700 (PDT)
+        Mon, 13 Jun 2022 09:41:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6C7E237F2;
+        Mon, 13 Jun 2022 04:31:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 755B8B80EAA;
-        Mon, 13 Jun 2022 11:31:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA18FC3411C;
-        Mon, 13 Jun 2022 11:31:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2A2B4B80EA7;
+        Mon, 13 Jun 2022 11:31:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9101FC34114;
+        Mon, 13 Jun 2022 11:31:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119873;
-        bh=b1DJiWExFcr0kAeHgHNyhBwXgzK04ggOYj3POLI0jMg=;
+        s=korg; t=1655119875;
+        bh=yDpd7oAWsynJGccSydOf6o7OH6T+QbeLge5NLgiCdfA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rKuhfCghV79kKYWfaAu29sAU8lEsPR69oPNdvKF0GbeJ2RQfOY6j3zwK3KlQKH3i4
-         VwoImvjX0KUBd+zT9cyf5brQDQo7Ad8ZnX50iwZqTIxDmUPuyrPyqJiKvKQLhO0+II
-         Mcmh1DYzUHs+vImJdndP+3SV1Nsnhzzb+zoNitXw=
+        b=ZGWfkDQo+mykqO8dT+B63hxJ/+u+6tzBHp8K2cF6mSjmR3gjf4ReI8P4HDzI9QmUP
+         Wa2OJxjePEomYwpDyYizGjAFt4GjrgyM9yvBoynl7xNTo1bTlvdhZpHrLQXsOiEYK2
+         r/6tjdU/WjjiKTsb0iSMPwNETh3Uc0eTIs0HaW6c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Saurabh Sengar <ssengar@linux.microsoft.com>,
+        Dexuan Cui <decui@microsoft.com>, Helge Deller <deller@gmx.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 169/339] NFSv4: Dont hold the layoutget locks across multiple RPC calls
-Date:   Mon, 13 Jun 2022 12:09:54 +0200
-Message-Id: <20220613094931.805983543@linuxfoundation.org>
+Subject: [PATCH 5.18 170/339] video: fbdev: hyperv_fb: Allow resolutions with size > 64 MB for Gen1
+Date:   Mon, 13 Jun 2022 12:09:55 +0200
+Message-Id: <20220613094931.835421989@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,37 +51,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Saurabh Sengar <ssengar@linux.microsoft.com>
 
-[ Upstream commit 6949493884fe88500de4af182588e071cf1544ee ]
+[ Upstream commit c4b4d7047f16a8d138ce76da65faefb7165736f2 ]
 
-When doing layoutget as part of the open() compound, we have to be
-careful to release the layout locks before we can call any further RPC
-calls, such as setattr(). The reason is that those calls could trigger
-a recall, which could deadlock.
+This patch fixes a bug where GEN1 VMs doesn't allow resolutions greater
+than 64 MB size (eg 7680x4320). Unnecessary PCI check limits Gen1 VRAM
+to legacy PCI BAR size only (ie 64MB). Thus any, resolution requesting
+greater then 64MB (eg 7680x4320) would fail. MMIO region assigning this
+memory shouldn't be limited by PCI bar size.
 
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
+Reviewed-by: Dexuan Cui <decui@microsoft.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/nfs4proc.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/video/fbdev/hyperv_fb.c | 19 +------------------
+ 1 file changed, 1 insertion(+), 18 deletions(-)
 
-diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
-index 8c5907287c16..d1eaaeb7f713 100644
---- a/fs/nfs/nfs4proc.c
-+++ b/fs/nfs/nfs4proc.c
-@@ -3098,6 +3098,10 @@ static int _nfs4_open_and_get_state(struct nfs4_opendata *opendata,
- 	}
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index c8e0ea27caf1..58c304a3b7c4 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -1009,7 +1009,6 @@ static int hvfb_getmem(struct hv_device *hdev, struct fb_info *info)
+ 	struct pci_dev *pdev  = NULL;
+ 	void __iomem *fb_virt;
+ 	int gen2vm = efi_enabled(EFI_BOOT);
+-	resource_size_t pot_start, pot_end;
+ 	phys_addr_t paddr;
+ 	int ret;
  
- out:
-+	if (opendata->lgp) {
-+		nfs4_lgopen_release(opendata->lgp);
-+		opendata->lgp = NULL;
-+	}
- 	if (!opendata->cancelled)
- 		nfs4_sequence_free_slot(&opendata->o_res.seq_res);
- 	return ret;
+@@ -1060,23 +1059,7 @@ static int hvfb_getmem(struct hv_device *hdev, struct fb_info *info)
+ 	dio_fb_size =
+ 		screen_width * screen_height * screen_depth / 8;
+ 
+-	if (gen2vm) {
+-		pot_start = 0;
+-		pot_end = -1;
+-	} else {
+-		if (!(pci_resource_flags(pdev, 0) & IORESOURCE_MEM) ||
+-		    pci_resource_len(pdev, 0) < screen_fb_size) {
+-			pr_err("Resource not available or (0x%lx < 0x%lx)\n",
+-			       (unsigned long) pci_resource_len(pdev, 0),
+-			       (unsigned long) screen_fb_size);
+-			goto err1;
+-		}
+-
+-		pot_end = pci_resource_end(pdev, 0);
+-		pot_start = pot_end - screen_fb_size + 1;
+-	}
+-
+-	ret = vmbus_allocate_mmio(&par->mem, hdev, pot_start, pot_end,
++	ret = vmbus_allocate_mmio(&par->mem, hdev, 0, -1,
+ 				  screen_fb_size, 0x100000, true);
+ 	if (ret != 0) {
+ 		pr_err("Unable to allocate framebuffer memory\n");
 -- 
 2.35.1
 
