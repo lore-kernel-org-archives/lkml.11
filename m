@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CC78C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:24:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3115C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:24:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353664AbiFMLYS (ORCPT
+        id S1352679AbiFMLY0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:24:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37694 "EHLO
+        Mon, 13 Jun 2022 07:24:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353733AbiFMLQQ (ORCPT
+        with ESMTP id S1353731AbiFMLQQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:16:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E4BC13E23;
-        Mon, 13 Jun 2022 03:39:46 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2739313E24;
+        Mon, 13 Jun 2022 03:39:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B96B611B3;
-        Mon, 13 Jun 2022 10:39:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A748C34114;
-        Mon, 13 Jun 2022 10:39:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D601EB80EA3;
+        Mon, 13 Jun 2022 10:39:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4422EC34114;
+        Mon, 13 Jun 2022 10:39:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116785;
-        bh=0mrpPtTiXtjUagEn5JIToAkwp1lSzmOb/SAbatJjMl4=;
+        s=korg; t=1655116782;
+        bh=uZmfmpKOPmINNAdJdzFzI9d0JP3lttiQJvjBMKWNFP8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mRAYJUmHSfsXANsQk+yXbLgXbFnS3aTD635C1cqradrXR2oPiP1tqxwYLmR+/DAU/
-         DRKMQY89QDIlhKf4vQMr9lttWE5kIsocvBvqM94qqLefYd/2KtGSKEkW9prDnbAJEA
-         ors0fYYRxX/bsAZuj84lN/kbsryw+RsoUFiNUVMs=
+        b=C8RVw98BkVYpJBMoXklPs1hSPf5E+sZO98YV16YerifpHPWU1tJMRqQ0VUjiu+WEs
+         psE33GWwL3bObUfPfSS5Unop9dnF6IRusRmcHnO6VxRotGvjqUyokgAnPDa+I/OHQ3
+         HKE3C2rjgICzp3+TkQYTO4gP/ulrlYdVgu/Gl7Dk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 173/411] scsi: fcoe: Fix Wstringop-overflow warnings in fcoe_wwn_from_mac()
-Date:   Mon, 13 Jun 2022 12:07:26 +0200
-Message-Id: <20220613094933.845286788@linuxfoundation.org>
+Subject: [PATCH 5.4 172/411] mfd: ipaq-micro: Fix error check return value of platform_get_irq()
+Date:   Mon, 13 Jun 2022 12:07:25 +0200
+Message-Id: <20220613094933.815460535@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,125 +52,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gustavo A. R. Silva <gustavoars@kernel.org>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit 54db804d5d7d36709d1ce70bde3b9a6c61b290b6 ]
+[ Upstream commit 3b49ae380ce1a3054e0c505dd9a356b82a5b48e8 ]
 
-Fix the following Wstringop-overflow warnings when building with GCC-11:
+platform_get_irq() return negative value on failure, so null check of
+irq is incorrect. Fix it by comparing whether it is less than zero.
 
-drivers/scsi/fcoe/fcoe.c: In function ‘fcoe_netdev_config’:
-drivers/scsi/fcoe/fcoe.c:744:32: warning: ‘fcoe_wwn_from_mac’ accessing 32 bytes in a region of size 6 [-Wstringop-overflow=]
-  744 |                         wwnn = fcoe_wwn_from_mac(ctlr->ctl_src_addr, 1, 0);
-      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/scsi/fcoe/fcoe.c:744:32: note: referencing argument 1 of type ‘unsigned char *’
-In file included from drivers/scsi/fcoe/fcoe.c:36:
-./include/scsi/libfcoe.h:252:5: note: in a call to function ‘fcoe_wwn_from_mac’
-  252 | u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
-      |     ^~~~~~~~~~~~~~~~~
-drivers/scsi/fcoe/fcoe.c:747:32: warning: ‘fcoe_wwn_from_mac’ accessing 32 bytes in a region of size 6 [-Wstringop-overflow=]
-  747 |                         wwpn = fcoe_wwn_from_mac(ctlr->ctl_src_addr,
-      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  748 |                                                  2, 0);
-      |                                                  ~~~~~
-drivers/scsi/fcoe/fcoe.c:747:32: note: referencing argument 1 of type ‘unsigned char *’
-In file included from drivers/scsi/fcoe/fcoe.c:36:
-./include/scsi/libfcoe.h:252:5: note: in a call to function ‘fcoe_wwn_from_mac’
-  252 | u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
-      |     ^~~~~~~~~~~~~~~~~
-  CC      drivers/scsi/bnx2fc/bnx2fc_io.o
-In function ‘bnx2fc_net_config’,
-    inlined from ‘bnx2fc_if_create’ at drivers/scsi/bnx2fc/bnx2fc_fcoe.c:1543:7:
-drivers/scsi/bnx2fc/bnx2fc_fcoe.c:833:32: warning: ‘fcoe_wwn_from_mac’ accessing 32 bytes in a region of size 6 [-Wstringop-overflow=]
-  833 |                         wwnn = fcoe_wwn_from_mac(ctlr->ctl_src_addr,
-      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  834 |                                                  1, 0);
-      |                                                  ~~~~~
-drivers/scsi/bnx2fc/bnx2fc_fcoe.c: In function ‘bnx2fc_if_create’:
-drivers/scsi/bnx2fc/bnx2fc_fcoe.c:833:32: note: referencing argument 1 of type ‘unsigned char *’
-In file included from drivers/scsi/bnx2fc/bnx2fc.h:53,
-                 from drivers/scsi/bnx2fc/bnx2fc_fcoe.c:17:
-./include/scsi/libfcoe.h:252:5: note: in a call to function ‘fcoe_wwn_from_mac’
-  252 | u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
-      |     ^~~~~~~~~~~~~~~~~
-In function ‘bnx2fc_net_config’,
-    inlined from ‘bnx2fc_if_create’ at drivers/scsi/bnx2fc/bnx2fc_fcoe.c:1543:7:
-drivers/scsi/bnx2fc/bnx2fc_fcoe.c:839:32: warning: ‘fcoe_wwn_from_mac’ accessing 32 bytes in a region of size 6 [-Wstringop-overflow=]
-  839 |                         wwpn = fcoe_wwn_from_mac(ctlr->ctl_src_addr,
-      |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  840 |                                                  2, 0);
-      |                                                  ~~~~~
-drivers/scsi/bnx2fc/bnx2fc_fcoe.c: In function ‘bnx2fc_if_create’:
-drivers/scsi/bnx2fc/bnx2fc_fcoe.c:839:32: note: referencing argument 1 of type ‘unsigned char *’
-In file included from drivers/scsi/bnx2fc/bnx2fc.h:53,
-                 from drivers/scsi/bnx2fc/bnx2fc_fcoe.c:17:
-./include/scsi/libfcoe.h:252:5: note: in a call to function ‘fcoe_wwn_from_mac’
-  252 | u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
-      |     ^~~~~~~~~~~~~~~~~
-drivers/scsi/qedf/qedf_main.c: In function ‘__qedf_probe’:
-drivers/scsi/qedf/qedf_main.c:3520:30: warning: ‘fcoe_wwn_from_mac’ accessing 32 bytes in a region of size 6 [-Wstringop-overflow=]
- 3520 |                 qedf->wwnn = fcoe_wwn_from_mac(qedf->mac, 1, 0);
-      |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/scsi/qedf/qedf_main.c:3520:30: note: referencing argument 1 of type ‘unsigned char *’
-In file included from drivers/scsi/qedf/qedf.h:9,
-                 from drivers/scsi/qedf/qedf_main.c:23:
-./include/scsi/libfcoe.h:252:5: note: in a call to function ‘fcoe_wwn_from_mac’
-  252 | u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
-      |     ^~~~~~~~~~~~~~~~~
-drivers/scsi/qedf/qedf_main.c:3521:30: warning: ‘fcoe_wwn_from_mac’ accessing 32 bytes in a region of size 6 [-Wstringop-overflow=]
- 3521 |                 qedf->wwpn = fcoe_wwn_from_mac(qedf->mac, 2, 0);
-      |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/scsi/qedf/qedf_main.c:3521:30: note: referencing argument 1 of type ‘unsigned char *’
-In file included from drivers/scsi/qedf/qedf.h:9,
-                 from drivers/scsi/qedf/qedf_main.c:23:
-./include/scsi/libfcoe.h:252:5: note: in a call to function ‘fcoe_wwn_from_mac’
-  252 | u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
-      |     ^~~~~~~~~~~~~~~~~
-
-by changing the array size to the correct value of ETH_ALEN in the
-argument declaration.
-
-Also, fix a couple of checkpatch warnings:
-WARNING: function definition argument 'unsigned int' should also have an identifier name
-
-This helps with the ongoing efforts to globally enable
--Wstringop-overflow.
-
-Link: https://github.com/KSPP/linux/issues/181
-Fixes: 85b4aa4926a5 ("[SCSI] fcoe: Fibre Channel over Ethernet")
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Fixes: dcc21cc09e3c ("mfd: Add driver for Atmel Microcontroller on iPaq h3xxx")
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Link: https://lore.kernel.org/r/20220412085305.2533030-1-lv.ruyi@zte.com.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/fcoe/fcoe_ctlr.c | 2 +-
- include/scsi/libfcoe.h        | 3 ++-
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ drivers/mfd/ipaq-micro.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/fcoe/fcoe_ctlr.c b/drivers/scsi/fcoe/fcoe_ctlr.c
-index 07a0dadc75bf..7ce2a0434e1e 100644
---- a/drivers/scsi/fcoe/fcoe_ctlr.c
-+++ b/drivers/scsi/fcoe/fcoe_ctlr.c
-@@ -1966,7 +1966,7 @@ EXPORT_SYMBOL(fcoe_ctlr_recv_flogi);
-  *
-  * Returns: u64 fc world wide name
-  */
--u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN],
-+u64 fcoe_wwn_from_mac(unsigned char mac[ETH_ALEN],
- 		      unsigned int scheme, unsigned int port)
- {
- 	u64 wwn;
-diff --git a/include/scsi/libfcoe.h b/include/scsi/libfcoe.h
-index fac8e89aed81..310e0dbffda9 100644
---- a/include/scsi/libfcoe.h
-+++ b/include/scsi/libfcoe.h
-@@ -249,7 +249,8 @@ int fcoe_ctlr_recv_flogi(struct fcoe_ctlr *, struct fc_lport *,
- 			 struct fc_frame *);
+diff --git a/drivers/mfd/ipaq-micro.c b/drivers/mfd/ipaq-micro.c
+index a1d9be82734d..88387c7e7443 100644
+--- a/drivers/mfd/ipaq-micro.c
++++ b/drivers/mfd/ipaq-micro.c
+@@ -407,7 +407,7 @@ static int __init micro_probe(struct platform_device *pdev)
+ 	micro_reset_comm(micro);
  
- /* libfcoe funcs */
--u64 fcoe_wwn_from_mac(unsigned char mac[MAX_ADDR_LEN], unsigned int, unsigned int);
-+u64 fcoe_wwn_from_mac(unsigned char mac[ETH_ALEN], unsigned int scheme,
-+		      unsigned int port);
- int fcoe_libfc_config(struct fc_lport *, struct fcoe_ctlr *,
- 		      const struct libfc_function_template *, int init_fcp);
- u32 fcoe_fc_crc(struct fc_frame *fp);
+ 	irq = platform_get_irq(pdev, 0);
+-	if (!irq)
++	if (irq < 0)
+ 		return -EINVAL;
+ 	ret = devm_request_irq(&pdev->dev, irq, micro_serial_isr,
+ 			       IRQF_SHARED, "ipaq-micro",
 -- 
 2.35.1
 
