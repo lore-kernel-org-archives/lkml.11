@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA7B9C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:56:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31A70C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:56:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244427AbiFMS4J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:56:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37968 "EHLO
+        id S1344879AbiFMS4N (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:56:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345085AbiFMSz1 (ORCPT
+        with ESMTP id S235969AbiFMSz1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 14:55:27 -0400
-X-Greylist: delayed 345 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 13 Jun 2022 08:59:53 PDT
-Received: from mx4.veeam.com (mx4.veeam.com [104.41.138.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AD41FC82F;
+Received: from mx2.veeam.com (mx2.veeam.com [64.129.123.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D829713CEB;
         Mon, 13 Jun 2022 08:59:53 -0700 (PDT)
 Received: from mail.veeam.com (prgmbx01.amust.local [172.24.128.102])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx4.veeam.com (Postfix) with ESMTPS id 534EECCE09;
-        Mon, 13 Jun 2022 18:54:13 +0300 (MSK)
+        by mx2.veeam.com (Postfix) with ESMTPS id DF704431EB;
+        Mon, 13 Jun 2022 11:54:45 -0400 (EDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=veeam.com;
-        s=mx4-2022; t=1655135653;
-        bh=aRFGym7kwa4RqUADCDRdVFkUJkXbvEQPS4p/ABSZMYo=;
+        s=mx2-2022; t=1655135686;
+        bh=cFkkDlybIJ5f0OhAldQCwzHkD51Q6ycCiV+lYTe5N48=;
         h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=X9m9ZYcme0Y5JmeuPizSlRQCNoDbcVOWg45FpiQHM+q1zySyZO0W6QNO66HKSX59N
-         gM7Fc7AQA9JrnL/cKjap+RKipC9qcS+2lADFgcnY5uFdU4esrr7HjSO7t0cLzUOQw5
-         J16d59gViAUXnLGIDonOGkdMcrN1amyFp9KnAZADwMdsS+3MAFh0tORnGJNJr+3vn3
-         4H9Esh9csGM6MJI2jACjmy7WZ1+ezCbkfxvOv1c99UKPKk2nSvQDgzS74NlpU6FSiZ
-         ZM0FnRCi2iUuvnRWiX1idQpbRvbRybvEzmPZk9L8SYZNfKXWPBSuDYM3Ahif1HAlT7
-         K072HF5W1WQgQ==
+        b=Gi6aKAV2pQMB9dU+kEqDcuwVTajjbiHADFKAE3QezSseZAGQYQLVvOzpBhyU0f35s
+         zx3bItjo/LZUkRTti07wbN02IkZskEpgNowQ4Olc6VG5AC/IxSsLlrK0c8mARpQ3T3
+         FReOdraYBjz3qNUwSDf+zSax+Kr+0t4rLInWtIH5hjEwaQ2hyX6YXr8Plb5XxJ4grh
+         Zyq7XjN7t0CQAIzX9R8HDNAgVOWqZ17NjBF/P52ZnbrWBrGOLpj/ZbVgJx4U4qqt7O
+         Hi58fATcIJTZgpO7S+gKmiauOu3DPAHAWF5CJIcPLxDLu4+KGBIUs117U+V8D7igMc
+         DbF5qE22COtiw==
 Received: from prgdevlinuxpatch01.amust.local (172.24.14.5) by
  prgmbx01.amust.local (172.24.128.102) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.9; Mon, 13 Jun 2022 17:54:10 +0200
+ 15.2.1118.9; Mon, 13 Jun 2022 17:54:31 +0200
 From:   Sergei Shtepa <sergei.shtepa@veeam.com>
 To:     <axboe@kernel.dk>, <linux-block@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
 CC:     Sergei Shtepa <sergei.shtepa@veeam.com>
-Subject: [PATCH 04/20] block, blksnap: init() and exit() functions
-Date:   Mon, 13 Jun 2022 18:52:57 +0300
-Message-ID: <1655135593-1900-5-git-send-email-sergei.shtepa@veeam.com>
+Subject: [PATCH 10/20] block, blksnap: buffer in memory for the minimum data storage unit
+Date:   Mon, 13 Jun 2022 18:53:03 +0300
+Message-ID: <1655135593-1900-11-git-send-email-sergei.shtepa@veeam.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1655135593-1900-1-git-send-email-sergei.shtepa@veeam.com>
 References: <1655135593-1900-1-git-send-email-sergei.shtepa@veeam.com>
@@ -57,165 +57,255 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Contains callback functions for loading and unloading the module. The
-module parameters and other mandatory declarations for the kernel module
-are also defined.
+The struct diff_buffer describes a buffer in memory for the minimum data
+storage block of the original block device (struct chunk).
+Buffer allocation and release functions allow to reduce the number of
+allocations and releases of a large number of memory pages.
 
 Signed-off-by: Sergei Shtepa <sergei.shtepa@veeam.com>
 ---
- drivers/block/blksnap/main.c    | 109 ++++++++++++++++++++++++++++++++
- drivers/block/blksnap/params.h  |  10 +++
- drivers/block/blksnap/version.h |   8 +++
- 3 files changed, 127 insertions(+)
- create mode 100644 drivers/block/blksnap/main.c
- create mode 100644 drivers/block/blksnap/params.h
- create mode 100644 drivers/block/blksnap/version.h
+ drivers/block/blksnap/diff_buffer.c | 146 ++++++++++++++++++++++++++++
+ drivers/block/blksnap/diff_buffer.h |  78 +++++++++++++++
+ 2 files changed, 224 insertions(+)
+ create mode 100644 drivers/block/blksnap/diff_buffer.c
+ create mode 100644 drivers/block/blksnap/diff_buffer.h
 
-diff --git a/drivers/block/blksnap/main.c b/drivers/block/blksnap/main.c
+diff --git a/drivers/block/blksnap/diff_buffer.c b/drivers/block/blksnap/diff_buffer.c
 new file mode 100644
-index 000000000000..9737df4e6461
+index 000000000000..8f9532a4922b
 --- /dev/null
-+++ b/drivers/block/blksnap/main.c
-@@ -0,0 +1,109 @@
++++ b/drivers/block/blksnap/diff_buffer.c
+@@ -0,0 +1,146 @@
 +// SPDX-License-Identifier: GPL-2.0
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-+#include <linux/module.h>
-+#include <linux/blk_snap.h>
++#define pr_fmt(fmt) KBUILD_MODNAME "-diff-buffer: " fmt
 +#ifdef CONFIG_BLK_SNAP_DEBUG_MEMORY_LEAK
 +#include "memory_checker.h"
 +#endif
-+#include "version.h"
 +#include "params.h"
-+#include "ctrl.h"
-+#include "sysfs.h"
-+#include "snapimage.h"
-+#include "snapshot.h"
-+#include "tracker.h"
-+#include "diff_io.h"
++#include "diff_buffer.h"
++#include "diff_area.h"
 +
-+static int __init blk_snap_init(void)
++void diff_buffer_free(struct diff_buffer *diff_buffer)
 +{
-+	int result;
++	size_t inx = 0;
++	struct page *page;
 +
-+	pr_info("Loading\n");
-+	pr_debug("Version: %s\n", VERSION_STR);
-+	pr_debug("tracking_block_minimum_shift: %d\n",
-+		 tracking_block_minimum_shift);
-+	pr_debug("tracking_block_maximum_count: %d\n",
-+		 tracking_block_maximum_count);
-+	pr_debug("chunk_minimum_shift: %d\n", chunk_minimum_shift);
-+	pr_debug("chunk_maximum_count: %d\n", chunk_maximum_count);
-+	pr_debug("chunk_maximum_in_cache: %d\n", chunk_maximum_in_cache);
-+	pr_debug("free_diff_buffer_pool_size: %d\n",
-+		 free_diff_buffer_pool_size);
-+	pr_debug("diff_storage_minimum: %d\n", diff_storage_minimum);
++	if (unlikely(!diff_buffer))
++		return;
 +
-+	result = diff_io_init();
-+	if (result)
-+		return result;
++	for (inx = 0; inx < diff_buffer->page_count; inx++) {
++		page = diff_buffer->pages[inx];
++		if (page) {
++			__free_page(page);
++#ifdef CONFIG_BLK_SNAP_DEBUG_MEMORY_LEAK
++			memory_object_dec(memory_object_page);
++#endif
++		}
++	}
 +
-+	result = snapimage_init();
-+	if (result)
-+		return result;
-+
-+	result = tracker_init();
-+	if (result)
-+		return result;
-+
-+	result = ctrl_init();
-+	if (result)
-+		return result;
-+
-+	result = sysfs_init();
-+	return result;
++	kfree(diff_buffer);
++#ifdef CONFIG_BLK_SNAP_DEBUG_MEMORY_LEAK
++	memory_object_dec(memory_object_diff_buffer);
++#endif
 +}
 +
-+static void __exit blk_snap_exit(void)
++struct diff_buffer *diff_buffer_new(size_t page_count, size_t buffer_size,
++				    gfp_t gfp_mask)
 +{
-+	pr_info("Unloading module\n");
++	struct diff_buffer *diff_buffer;
++	size_t inx = 0;
++	struct page *page;
 +
-+	sysfs_done();
-+	ctrl_done();
++	if (unlikely(page_count <= 0))
++		return NULL;
 +
-+	diff_io_done();
-+	snapshot_done();
-+	snapimage_done();
-+	tracker_done();
++	/*
++	 * In case of overflow, it is better to get a null pointer
++	 * than a pointer to some memory area. Therefore + 1.
++	 */
++	diff_buffer = kzalloc(sizeof(struct diff_buffer) +
++				      (page_count + 1) * sizeof(struct page *),
++			      gfp_mask);
++	if (!diff_buffer)
++		return NULL;
++#ifdef CONFIG_BLK_SNAP_DEBUG_MEMORY_LEAK
++	memory_object_inc(memory_object_diff_buffer);
++#endif
++	INIT_LIST_HEAD(&diff_buffer->link);
++	diff_buffer->size = buffer_size;
++	diff_buffer->page_count = page_count;
 +
-+	pr_info("Module was unloaded\n");
++	for (inx = 0; inx < page_count; inx++) {
++		page = alloc_page(gfp_mask);
++		if (!page)
++			goto fail;
++#ifdef CONFIG_BLK_SNAP_DEBUG_MEMORY_LEAK
++		memory_object_inc(memory_object_page);
++#endif
++		diff_buffer->pages[inx] = page;
++	}
++	return diff_buffer;
++fail:
++	diff_buffer_free(diff_buffer);
++	return NULL;
 +}
 +
-+module_init(blk_snap_init);
-+module_exit(blk_snap_exit);
++struct diff_buffer *diff_buffer_take(struct diff_area *diff_area,
++				     const bool is_nowait)
++{
++	struct diff_buffer *diff_buffer = NULL;
++	sector_t chunk_sectors;
++	size_t page_count;
++	size_t buffer_size;
 +
-+int tracking_block_minimum_shift = CONFIG_BLK_SNAP_TRACKING_BLOCK_MINIMUM_SHIFT;
-+int tracking_block_maximum_count = CONFIG_BLK_SNAP_TRACKING_BLOCK_MAXIMUM_COUNT;
-+int chunk_minimum_shift = CONFIG_BLK_SNAP_CHUNK_MINIMUM_SHIFT;
-+int chunk_maximum_count = CONFIG_BLK_SNAP_CHUNK_MAXIMUM_COUNT;
-+int chunk_maximum_in_cache = CONFIG_BLK_SNAP_CHUNK_MAXIMUM_IN_CACHE;
-+int free_diff_buffer_pool_size = CONFIG_BLK_SNAP_FREE_DIFF_BUFFER_POOL_SIZE;
-+int diff_storage_minimum = CONFIG_BLK_SNAP_DIFF_STORAGE_MINIMUM;
++	spin_lock(&diff_area->free_diff_buffers_lock);
++	diff_buffer = list_first_entry_or_null(&diff_area->free_diff_buffers,
++					       struct diff_buffer, link);
++	if (diff_buffer) {
++		list_del(&diff_buffer->link);
++		atomic_dec(&diff_area->free_diff_buffers_count);
++	}
++	spin_unlock(&diff_area->free_diff_buffers_lock);
 +
-+module_param_named(tracking_block_minimum_shift, tracking_block_minimum_shift,
-+		   int, 0644);
-+MODULE_PARM_DESC(tracking_block_minimum_shift,
-+		 "The power of 2 for minimum trackings block size");
-+module_param_named(tracking_block_maximum_count, tracking_block_maximum_count,
-+		   int, 0644);
-+MODULE_PARM_DESC(tracking_block_maximum_count,
-+		 "The limit of the maximum number of trackings blocks");
-+module_param_named(chunk_minimum_shift, chunk_minimum_shift, int, 0644);
-+MODULE_PARM_DESC(chunk_minimum_shift,
-+		 "The power of 2 for minimum snapshots chunk size");
-+module_param_named(chunk_maximum_count, chunk_maximum_count, int, 0644);
-+MODULE_PARM_DESC(chunk_maximum_count,
-+		 "The limit of the maximum number of snapshots chunks");
-+module_param_named(chunk_maximum_in_cache, chunk_maximum_in_cache, int, 0644);
-+MODULE_PARM_DESC(chunk_maximum_in_cache,
-+		 "The limit of the maximum chunks in memory cache");
-+module_param_named(free_diff_buffer_pool_size, free_diff_buffer_pool_size, int,
-+		   0644);
-+MODULE_PARM_DESC(free_diff_buffer_pool_size,
-+		 "The maximum size of the free buffers pool");
-+module_param_named(diff_storage_minimum, diff_storage_minimum, int, 0644);
-+MODULE_PARM_DESC(
-+	diff_storage_minimum,
-+	"The minimum allowable size of the difference storage in sectors");
++	/* Return free buffer if it was found in a pool */
++	if (diff_buffer)
++		return diff_buffer;
 +
-+MODULE_DESCRIPTION("Block Layer Snapshot Kernel Module");
-+MODULE_VERSION(VERSION_STR);
-+MODULE_AUTHOR("Veeam Software Group GmbH");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/block/blksnap/params.h b/drivers/block/blksnap/params.h
++	/* Allocate new buffer */
++	chunk_sectors = diff_area_chunk_sectors(diff_area);
++	page_count = round_up(chunk_sectors, SECTOR_IN_PAGE) / SECTOR_IN_PAGE;
++	buffer_size = chunk_sectors << SECTOR_SHIFT;
++
++	diff_buffer =
++		diff_buffer_new(page_count, buffer_size,
++				is_nowait ? (GFP_NOIO | GFP_NOWAIT) : GFP_NOIO);
++	if (unlikely(!diff_buffer)) {
++		if (is_nowait)
++			return ERR_PTR(-EAGAIN);
++		else
++			return ERR_PTR(-ENOMEM);
++	}
++
++	return diff_buffer;
++}
++
++void diff_buffer_release(struct diff_area *diff_area,
++			 struct diff_buffer *diff_buffer)
++{
++	if (atomic_read(&diff_area->free_diff_buffers_count) >
++	    free_diff_buffer_pool_size) {
++		diff_buffer_free(diff_buffer);
++		return;
++	}
++	spin_lock(&diff_area->free_diff_buffers_lock);
++	list_add_tail(&diff_buffer->link, &diff_area->free_diff_buffers);
++	atomic_inc(&diff_area->free_diff_buffers_count);
++	spin_unlock(&diff_area->free_diff_buffers_lock);
++}
++
++void diff_buffer_cleanup(struct diff_area *diff_area)
++{
++	struct diff_buffer *diff_buffer = NULL;
++
++	do {
++		spin_lock(&diff_area->free_diff_buffers_lock);
++		diff_buffer =
++			list_first_entry_or_null(&diff_area->free_diff_buffers,
++						 struct diff_buffer, link);
++		if (diff_buffer) {
++			list_del(&diff_buffer->link);
++			atomic_dec(&diff_area->free_diff_buffers_count);
++		}
++		spin_unlock(&diff_area->free_diff_buffers_lock);
++
++		if (diff_buffer)
++			diff_buffer_free(diff_buffer);
++	} while (diff_buffer);
++}
+diff --git a/drivers/block/blksnap/diff_buffer.h b/drivers/block/blksnap/diff_buffer.h
 new file mode 100644
-index 000000000000..1f8f0bd23e9f
+index 000000000000..1d504e445d59
 --- /dev/null
-+++ b/drivers/block/blksnap/params.h
-@@ -0,0 +1,10 @@
++++ b/drivers/block/blksnap/diff_buffer.h
+@@ -0,0 +1,78 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +#pragma once
++#include <linux/types.h>
++#include <linux/slab.h>
++#include <linux/list.h>
++#include <linux/blkdev.h>
 +
-+extern int tracking_block_minimum_shift;
-+extern int tracking_block_maximum_count;
-+extern int chunk_minimum_shift;
-+extern int chunk_maximum_count;
-+extern int chunk_maximum_in_cache;
-+extern int free_diff_buffer_pool_size;
-+extern int diff_storage_minimum;
-diff --git a/drivers/block/blksnap/version.h b/drivers/block/blksnap/version.h
-new file mode 100644
-index 000000000000..0d02a68f44a8
---- /dev/null
-+++ b/drivers/block/blksnap/version.h
-@@ -0,0 +1,8 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#pragma once
++struct diff_area;
 +
-+#define VERSION_MAJOR 1
-+#define VERSION_MINOR 0
-+#define VERSION_REVISION 0
-+#define VERSION_BUILD 0
-+#define VERSION_STR "1.0.0.0"
++/**
++ * struct diff_buffer - Difference buffer.
++ * @link:
++ *	The list header allows to create a pool of the diff_buffer structures.
++ * @size:
++ *	Count of bytes in the buffer.
++ * @page_count:
++ *	The number of pages reserved for the buffer.
++ * @pages:
++ *	An array of pointers to pages.
++ *
++ * Describes the memory buffer for a chunk in the memory.
++ */
++struct diff_buffer {
++	struct list_head link;
++	size_t size;
++	size_t page_count;
++	struct page *pages[0];
++};
++
++/**
++ * struct diff_buffer_iter - Iterator for &struct diff_buffer.
++ * @page:
++ *      A pointer to the current page.
++ * @offset:
++ *      The offset in bytes in the current page.
++ * @bytes:
++ *      The number of bytes that can be read or written from the current page.
++ *
++ * It is convenient to use when copying data from or to &struct bio_vec.
++ */
++struct diff_buffer_iter {
++	struct page *page;
++	size_t offset;
++	size_t bytes;
++};
++
++#define SECTOR_IN_PAGE (1 << (PAGE_SHIFT - SECTOR_SHIFT))
++
++static inline bool diff_buffer_iter_get(struct diff_buffer *diff_buffer,
++					sector_t ofs,
++					struct diff_buffer_iter *iter)
++{
++	size_t page_inx;
++
++	if (diff_buffer->size <= (ofs << SECTOR_SHIFT))
++		return false;
++
++	page_inx = ofs >> (PAGE_SHIFT - SECTOR_SHIFT);
++
++	iter->page = diff_buffer->pages[page_inx];
++	iter->offset = (size_t)(ofs & (SECTOR_IN_PAGE - 1)) << SECTOR_SHIFT;
++	/*
++	 * The size cannot exceed the size of the page, taking into account
++	 * the offset in this page.
++	 * But at the same time it is unacceptable to go beyond the allocated
++	 * buffer.
++	 */
++	iter->bytes = min_t(size_t, (PAGE_SIZE - iter->offset),
++			    (diff_buffer->size - (ofs << SECTOR_SHIFT)));
++
++	return true;
++};
++
++struct diff_buffer *diff_buffer_take(struct diff_area *diff_area,
++				     const bool is_nowait);
++void diff_buffer_release(struct diff_area *diff_area,
++			 struct diff_buffer *diff_buffer);
++void diff_buffer_cleanup(struct diff_area *diff_area);
 -- 
 2.20.1
 
