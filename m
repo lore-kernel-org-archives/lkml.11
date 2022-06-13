@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEE27C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:12:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 970D6CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:12:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351508AbiFMLMx (ORCPT
+        id S1352386AbiFMLM4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:12:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60116 "EHLO
+        Mon, 13 Jun 2022 07:12:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352143AbiFMLKv (ORCPT
+        with ESMTP id S1351046AbiFMLLH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:10:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB3B34B90;
-        Mon, 13 Jun 2022 03:35:52 -0700 (PDT)
+        Mon, 13 Jun 2022 07:11:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5862C34B9F;
+        Mon, 13 Jun 2022 03:35:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DAE1FB80EAD;
-        Mon, 13 Jun 2022 10:35:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BC58C34114;
-        Mon, 13 Jun 2022 10:35:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D525EB80EAA;
+        Mon, 13 Jun 2022 10:35:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 084A5C34114;
+        Mon, 13 Jun 2022 10:35:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116549;
-        bh=Fm5ip5XaZMQiIi50JcrcZSJbITqDXjz2ZLoUeo4+HTc=;
+        s=korg; t=1655116552;
+        bh=0QE5pCRF4GrNIyMEbUIc/PueZgN+qV7BujoYwLqPaKw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fs97dnK7P7WdJuW2rqtfF/m8BdbUgH58fNXt5DkenNZQFjeuEHnZxEz448I6MogbU
-         c4CoEL/qzD3vP3Io2tPl1Jelpn0U4snVmpqRJP8BnKyd3vnr8Wcqko5mRfv1yg69zP
-         BnKaL34gZM2uwRHPKmtRAIeG+QLysFzOEG1f8XgE=
+        b=qMHVqzh4dfU2f5f2QdLQzsVJc03Wu3BQRTZannMys68AGR7O2i5uIG9UdBsHdFo7q
+         SIJ0/e2rfcBM082ajG87OLQeQm9MLzjEoQxC1XOd6AxVHT7I2CmU2i8BhX0p6y1JGB
+         CEWcPXfY07uwq/KMDowKvKm4oQUlOv61V+AdFnBo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shyam Prasad N <sprasad@microsoft.com>,
-        Enzo Matsumiya <ematsumiya@suse.de>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 4.14 207/218] cifs: return errors during session setup during reconnects
-Date:   Mon, 13 Jun 2022 12:11:05 +0200
-Message-Id: <20220613094926.901857239@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 107/411] of: overlay: do not break notify on NOTIFY_{OK|STOP}
+Date:   Mon, 13 Jun 2022 12:06:20 +0200
+Message-Id: <20220613094931.885096816@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,37 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shyam Prasad N <sprasad@microsoft.com>
+From: Nuno Sá <nuno.sa@analog.com>
 
-commit 8ea21823aa584b55ba4b861307093b78054b0c1b upstream.
+[ Upstream commit 5f756a2eaa4436d7d3dc1e040147f5e992ae34b5 ]
 
-During reconnects, we check the return value from
-cifs_negotiate_protocol, and have handlers for both success
-and failures. But if that passes, and cifs_setup_session
-returns any errors other than -EACCES, we do not handle
-that. This fix adds a handler for that, so that we don't
-go ahead and try a tree_connect on a failed session.
+We should not break overlay notifications on NOTIFY_{OK|STOP}
+otherwise we might break on the first fragment. We should only stop
+notifications if a *real* errno is returned by one of the listeners.
 
-Signed-off-by: Shyam Prasad N <sprasad@microsoft.com>
-Reviewed-by: Enzo Matsumiya <ematsumiya@suse.de>
-Cc: stable@vger.kernel.org
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: a1d19bd4cf1fe ("of: overlay: pr_err from return NOTIFY_OK to overlay apply/remove")
+Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+Signed-off-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20220420130205.89435-1-nuno.sa@analog.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/smb2pdu.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/of/overlay.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
---- a/fs/cifs/smb2pdu.c
-+++ b/fs/cifs/smb2pdu.c
-@@ -263,6 +263,9 @@ smb2_reconnect(__le16 smb2_command, stru
- 			rc = -EHOSTDOWN;
- 			mutex_unlock(&tcon->ses->session_mutex);
- 			goto failed;
-+		} else if (rc) {
-+			mutex_unlock(&ses->session_mutex);
-+			goto out;
- 		}
- 	}
- 	if (rc || !tcon->need_reconnect) {
+diff --git a/drivers/of/overlay.c b/drivers/of/overlay.c
+index 1688f576ee8a..8420ef42d89e 100644
+--- a/drivers/of/overlay.c
++++ b/drivers/of/overlay.c
+@@ -170,9 +170,7 @@ static int overlay_notify(struct overlay_changeset *ovcs,
+ 
+ 		ret = blocking_notifier_call_chain(&overlay_notify_chain,
+ 						   action, &nd);
+-		if (ret == NOTIFY_OK || ret == NOTIFY_STOP)
+-			return 0;
+-		if (ret) {
++		if (notifier_to_errno(ret)) {
+ 			ret = notifier_to_errno(ret);
+ 			pr_err("overlay changeset %s notifier error %d, target: %pOF\n",
+ 			       of_overlay_action_name[action], ret, nd.target);
+-- 
+2.35.1
+
 
 
