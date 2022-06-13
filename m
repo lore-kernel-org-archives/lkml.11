@@ -2,43 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82FCCCCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A29F4CCA489
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:06:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381934AbiFMOE6 (ORCPT
+        id S1382010AbiFMOFD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:04:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35696 "EHLO
+        Mon, 13 Jun 2022 10:05:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379559AbiFMN5O (ORCPT
+        with ESMTP id S1380102AbiFMN5r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:57:14 -0400
+        Mon, 13 Jun 2022 09:57:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FE62DEBB;
-        Mon, 13 Jun 2022 04:37:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82A083DDEF;
+        Mon, 13 Jun 2022 04:37:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8CFB3B80EC8;
-        Mon, 13 Jun 2022 11:37:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC539C34114;
-        Mon, 13 Jun 2022 11:37:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11267B80ECE;
+        Mon, 13 Jun 2022 11:37:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45CF7C34114;
+        Mon, 13 Jun 2022 11:37:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120243;
-        bh=HXn4PydRitVczXaCgyEw00olxAGIc9wJK5OdmbScmLo=;
+        s=korg; t=1655120248;
+        bh=LYQzyA3EYOwaI3hpcICIfprp+dWtUSLsCT350YaAutI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XSlf1VHw2ccgz48kM0nv+az11qAtJ7ZrNkAr2ULEpH5fZ5AvW/vx9om1OBGSEBKFY
-         7uR2a6gYScDDQeD5HsmxQFAr4LFIzPc4rjfab/A5JZ5pWVg5C+XUH3axEwYEX50Dp8
-         vWQVF5PXe9964u7bepDlvN9bOIl8E+CfNMaAx9o8=
+        b=vJSZZbfQuVle03O/VKh3yX24Gm72uxjmHHeh8KgvyI3aFAvTmeqKw9n4pX8US3fgJ
+         O5/k5KgegEB4yGCdvN1WAgEWwgwtcqBN2rQgM+JQgzF07XZSjrLNilwWJw1mJD1plE
+         tbojBMiejP69+CIplcb0jv2XZdIZCxm/t23zpBZo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ronnie Sahlberg <lsahlber@redhat.com>,
-        Steve French <stfrench@microsoft.com>,
+        stable@vger.kernel.org, Alexander Gordeev <agordeev@linux.ibm.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Yury Norov <yury.norov@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 284/339] cifs: version operations for smb20 unneeded when legacy support disabled
-Date:   Mon, 13 Jun 2022 12:11:49 +0200
-Message-Id: <20220613094935.247908436@linuxfoundation.org>
+Subject: [PATCH 5.18 285/339] drm/amd/pm: use bitmap_{from,to}_arr32 where appropriate
+Date:   Mon, 13 Jun 2022 12:11:50 +0200
+Message-Id: <20220613094935.277717459@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,94 +59,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steve French <stfrench@microsoft.com>
+From: Yury Norov <yury.norov@gmail.com>
 
-[ Upstream commit 7ef93ffccd55fb0ba000ed16ef6a81cd7dee07b5 ]
+[ Upstream commit 525d6515604eb1373ce5e6372a6b6640953b2d6a ]
 
-We should not be including unused smb20 specific code when legacy
-support is disabled (CONFIG_CIFS_ALLOW_INSECURE_LEGACY turned
-off).  For example smb2_operations and smb2_values aren't used
-in that case.  Over time we can move more and more SMB1/CIFS and SMB2.0
-code into the insecure legacy ifdefs
+The smu_v1X_0_set_allowed_mask() uses bitmap_copy() to convert
+bitmap to 32-bit array. This may be wrong due to endiannes issues.
+Fix it by switching to bitmap_{from,to}_arr32.
 
-Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+CC: Alexander Gordeev <agordeev@linux.ibm.com>
+CC: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+CC: Christian Borntraeger <borntraeger@linux.ibm.com>
+CC: Claudio Imbrenda <imbrenda@linux.ibm.com>
+CC: David Hildenbrand <david@redhat.com>
+CC: Heiko Carstens <hca@linux.ibm.com>
+CC: Janosch Frank <frankja@linux.ibm.com>
+CC: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+CC: Sven Schnelle <svens@linux.ibm.com>
+CC: Vasily Gorbik <gor@linux.ibm.com>
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/cifsglob.h | 4 +++-
- fs/cifs/smb2ops.c  | 7 ++++++-
- 2 files changed, 9 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c | 2 +-
+ drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/cifs/cifsglob.h b/fs/cifs/cifsglob.h
-index e7503c1131a3..a6cade2aebd9 100644
---- a/fs/cifs/cifsglob.h
-+++ b/fs/cifs/cifsglob.h
-@@ -1929,11 +1929,13 @@ extern mempool_t *cifs_mid_poolp;
- 
- /* Operations for different SMB versions */
- #define SMB1_VERSION_STRING	"1.0"
-+#define SMB20_VERSION_STRING    "2.0"
-+#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
- extern struct smb_version_operations smb1_operations;
- extern struct smb_version_values smb1_values;
--#define SMB20_VERSION_STRING	"2.0"
- extern struct smb_version_operations smb20_operations;
- extern struct smb_version_values smb20_values;
-+#endif /* CIFS_ALLOW_INSECURE_LEGACY */
- #define SMB21_VERSION_STRING	"2.1"
- extern struct smb_version_operations smb21_operations;
- extern struct smb_version_values smb21_values;
-diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
-index 861291662c95..6e26edbffc48 100644
---- a/fs/cifs/smb2ops.c
-+++ b/fs/cifs/smb2ops.c
-@@ -4326,11 +4326,13 @@ smb3_set_oplock_level(struct cifsInodeInfo *cinode, __u32 oplock,
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c b/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c
+index b87f550af26b..5f8809f6990d 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c
+@@ -781,7 +781,7 @@ int smu_v11_0_set_allowed_mask(struct smu_context *smu)
+ 		goto failed;
  	}
- }
  
-+#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
- static bool
- smb2_is_read_op(__u32 oplock)
- {
- 	return oplock == SMB2_OPLOCK_LEVEL_II;
- }
-+#endif /* CIFS_ALLOW_INSECURE_LEGACY */
+-	bitmap_copy((unsigned long *)feature_mask, feature->allowed, 64);
++	bitmap_to_arr32(feature_mask, feature->allowed, 64);
  
- static bool
- smb21_is_read_op(__u32 oplock)
-@@ -5429,7 +5431,7 @@ smb2_make_node(unsigned int xid, struct inode *inode,
- 	return rc;
- }
+ 	ret = smu_cmn_send_smc_msg_with_param(smu, SMU_MSG_SetAllowedFeaturesMaskHigh,
+ 					  feature_mask[1], NULL);
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c
+index cf09e30bdfe0..747430ce6394 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c
+@@ -730,7 +730,7 @@ int smu_v13_0_set_allowed_mask(struct smu_context *smu)
+ 	    feature->feature_num < 64)
+ 		return -EINVAL;
  
--
-+#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
- struct smb_version_operations smb20_operations = {
- 	.compare_fids = smb2_compare_fids,
- 	.setup_request = smb2_setup_request,
-@@ -5528,6 +5530,7 @@ struct smb_version_operations smb20_operations = {
- 	.is_status_io_timeout = smb2_is_status_io_timeout,
- 	.is_network_name_deleted = smb2_is_network_name_deleted,
- };
-+#endif /* CIFS_ALLOW_INSECURE_LEGACY */
+-	bitmap_copy((unsigned long *)feature_mask, feature->allowed, 64);
++	bitmap_to_arr32(feature_mask, feature->allowed, 64);
  
- struct smb_version_operations smb21_operations = {
- 	.compare_fids = smb2_compare_fids,
-@@ -5859,6 +5862,7 @@ struct smb_version_operations smb311_operations = {
- 	.is_network_name_deleted = smb2_is_network_name_deleted,
- };
- 
-+#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
- struct smb_version_values smb20_values = {
- 	.version_string = SMB20_VERSION_STRING,
- 	.protocol_id = SMB20_PROT_ID,
-@@ -5879,6 +5883,7 @@ struct smb_version_values smb20_values = {
- 	.signing_required = SMB2_NEGOTIATE_SIGNING_REQUIRED,
- 	.create_lease_size = sizeof(struct create_lease),
- };
-+#endif /* ALLOW_INSECURE_LEGACY */
- 
- struct smb_version_values smb21_values = {
- 	.version_string = SMB21_VERSION_STRING,
+ 	ret = smu_cmn_send_smc_msg_with_param(smu, SMU_MSG_SetAllowedFeaturesMaskHigh,
+ 					      feature_mask[1], NULL);
 -- 
 2.35.1
 
