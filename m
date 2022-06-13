@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C4E9C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1CA1CCA487
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:39:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355453AbiFMLiw (ORCPT
+        id S1355540AbiFMLjK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:38:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51748 "EHLO
+        Mon, 13 Jun 2022 07:39:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354436AbiFML33 (ORCPT
+        with ESMTP id S1354712AbiFML35 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:29:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62822DEB2;
-        Mon, 13 Jun 2022 03:44:40 -0700 (PDT)
+        Mon, 13 Jun 2022 07:29:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D63F3EF28;
+        Mon, 13 Jun 2022 03:45:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 166BAB80D3B;
-        Mon, 13 Jun 2022 10:44:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D946C34114;
-        Mon, 13 Jun 2022 10:44:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 390B060FDB;
+        Mon, 13 Jun 2022 10:45:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B087C34114;
+        Mon, 13 Jun 2022 10:45:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117077;
-        bh=V1GtFLb2EmFO1qdCQwcxQ1MZesxtTbHhI2dcyqeSiJs=;
+        s=korg; t=1655117129;
+        bh=xZMuTpWursdJJdYloy8uMjAmfjbR/M9GPbci0Jb3eq4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q2lOtXcKWcCgCId6zyra8AhksSLbw0mHG1wfgmu1JHL3rmeWXyh7igFweuV4bmJFy
-         OEdVM6kHkyukekqnOvYDYX4HBYJcuiy8P74Wb5c0spRLIGXOwKi/zp0z1KkqOkT43K
-         c3Dwsg6kEjW9CJfSLoy8wFJt3w8tYaoJezLzU8aU=
+        b=wWYipV5lEXr+Jogpj/xkfOCTCOdWVpbMNG2OJwGv2Ctq5gRtoK2+PnkcR9Kn3iLJt
+         zQJLPJXGac++87Tv3lmPQg4VGeuHe+p9dXdCG2K9CvTdB+IoQYWYXWO6jO+nf+tPwG
+         2Qu3zlhrsFCGTyeZciowIY/X9VPhS1tO4pN99Idw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Christoph Hellwig <hch@lst.de>, Jan Kara <jack@suse.cz>,
-        Jens Axboe <axboe@kernel.dk>,
-        Donald Buczek <buczek@molgen.mpg.de>
-Subject: [PATCH 5.4 279/411] block: fix bio_clone_blkg_association() to associate with proper blkcg_gq
-Date:   Mon, 13 Jun 2022 12:09:12 +0200
-Message-Id: <20220613094937.125477222@linuxfoundation.org>
+        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
+        Hangyu Hua <hbh25y@gmail.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 287/411] usb: usbip: fix a refcount leak in stub_probe()
+Date:   Mon, 13 Jun 2022 12:09:20 +0200
+Message-Id: <20220613094937.364806969@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -51,44 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-commit 22b106e5355d6e7a9c3b5cb5ed4ef22ae585ea94 upstream.
+[ Upstream commit 9ec4cbf1cc55d126759051acfe328d489c5d6e60 ]
 
-Commit d92c370a16cb ("block: really clone the block cgroup in
-bio_clone_blkg_association") changed bio_clone_blkg_association() to
-just clone bio->bi_blkg reference from source to destination bio. This
-is however wrong if the source and destination bios are against
-different block devices because struct blkcg_gq is different for each
-bdev-blkcg pair. This will result in IOs being accounted (and throttled
-as a result) multiple times against the same device (src bdev) while
-throttling of the other device (dst bdev) is ignored. In case of BFQ the
-inconsistency can even result in crashes in bfq_bic_update_cgroup().
-Fix the problem by looking up correct blkcg_gq for the cloned bio.
+usb_get_dev() is called in stub_device_alloc(). When stub_probe() fails
+after that, usb_put_dev() needs to be called to release the reference.
 
-Reported-by: Logan Gunthorpe <logang@deltatee.com>
-Reported-and-tested-by: Donald Buczek <buczek@molgen.mpg.de>
-Fixes: d92c370a16cb ("block: really clone the block cgroup in bio_clone_blkg_association")
-CC: stable@vger.kernel.org
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220602081242.7731-1-jack@suse.cz
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fix this by moving usb_put_dev() to sdev_free error path handling.
+
+Find this by code review.
+
+Fixes: 3ff67445750a ("usbip: fix error handling in stub_probe()")
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Link: https://lore.kernel.org/r/20220412020257.9767-1-hbh25y@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/bio.c |    2 +-
+ drivers/usb/usbip/stub_dev.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/block/bio.c
-+++ b/block/bio.c
-@@ -2179,7 +2179,7 @@ void bio_clone_blkg_association(struct b
- 	rcu_read_lock();
+diff --git a/drivers/usb/usbip/stub_dev.c b/drivers/usb/usbip/stub_dev.c
+index d8d3892e5a69..3c6d452e3bf4 100644
+--- a/drivers/usb/usbip/stub_dev.c
++++ b/drivers/usb/usbip/stub_dev.c
+@@ -393,7 +393,6 @@ static int stub_probe(struct usb_device *udev)
  
- 	if (src->bi_blkg)
--		__bio_associate_blkg(dst, src->bi_blkg);
-+		bio_associate_blkg_from_css(dst, &bio_blkcg(src)->css);
+ err_port:
+ 	dev_set_drvdata(&udev->dev, NULL);
+-	usb_put_dev(udev);
  
- 	rcu_read_unlock();
- }
+ 	/* we already have busid_priv, just lock busid_lock */
+ 	spin_lock(&busid_priv->busid_lock);
+@@ -408,6 +407,7 @@ static int stub_probe(struct usb_device *udev)
+ 	put_busid_priv(busid_priv);
+ 
+ sdev_free:
++	usb_put_dev(udev);
+ 	stub_device_free(sdev);
+ 
+ 	return rc;
+-- 
+2.35.1
+
 
 
