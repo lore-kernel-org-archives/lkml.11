@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5021C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:33:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B927C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:33:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245252AbiFMKc7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:32:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33220 "EHLO
+        id S245499AbiFMKdE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:33:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346238AbiFMKaU (ORCPT
+        with ESMTP id S1346339AbiFMKa1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:30:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 562F42613D;
-        Mon, 13 Jun 2022 03:21:10 -0700 (PDT)
+        Mon, 13 Jun 2022 06:30:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 245591FA51;
+        Mon, 13 Jun 2022 03:21:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A2076B80E95;
-        Mon, 13 Jun 2022 10:21:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1168CC3411E;
-        Mon, 13 Jun 2022 10:21:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DCEE60AE8;
+        Mon, 13 Jun 2022 10:21:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D628C34114;
+        Mon, 13 Jun 2022 10:21:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115668;
-        bh=qv2e8v9qxvapwMTs0CSTWcRl0c/ndwnLPccw4mOuQ6Q=;
+        s=korg; t=1655115673;
+        bh=l3M5qn6Xz2e9y3Wi8sYO0gsFwQC5uBAZ1xUE9h4tvp0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C4Z47WSXg98adBhpkNpqLWNEtHNeQhg00bIbnTQ7v4fu/I5Gndnr0IAodWiZ6ZvY5
-         gWytNKoA6kxyWGbD93LpwmO9KxZ72AT+h3GeEyBlhswV/Z5s3Dk+8353nrcf1CoT2H
-         /GVQKUtF5vlpff8DGIwvkARAxpn6Pksm+et0wXPA=
+        b=mOCmNAzn9/0jKl2Lh39GElGKYdNVFM1owI+mMSAReP+FplQnPYCBXmah7NtfizMiI
+         2AUcUaCQflBjfe6Smoi92xoWgzNJDqNTfcWwg26xl0Pnq/tnJ0bmAm+26FjETIltXq
+         PDMCTTSIJ0ose61prdwVULNSBBTeKr+lCliSabIg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
+        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
+        Fam Zheng <fam.zheng@bytedance.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 155/167] modpost: fix undefined behavior of is_arm_mapping_symbol()
-Date:   Mon, 13 Jun 2022 12:10:29 +0200
-Message-Id: <20220613094917.233617508@linuxfoundation.org>
+Subject: [PATCH 4.9 157/167] vringh: Fix loop descriptors check in the indirect cases
+Date:   Mon, 13 Jun 2022 12:10:31 +0200
+Message-Id: <20220613094917.736801133@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -49,61 +51,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Xie Yongji <xieyongji@bytedance.com>
 
-[ Upstream commit d6b732666a1bae0df3c3ae06925043bba34502b1 ]
+[ Upstream commit dbd29e0752286af74243cf891accf472b2f3edd8 ]
 
-The return value of is_arm_mapping_symbol() is unpredictable when "$"
-is passed in.
+We should use size of descriptor chain to test loop condition
+in the indirect case. And another statistical count is also introduced
+for indirect descriptors to avoid conflict with the statistical count
+of direct descriptors.
 
-strchr(3) says:
-  The strchr() and strrchr() functions return a pointer to the matched
-  character or NULL if the character is not found. The terminating null
-  byte is considered part of the string, so that if c is specified as
-  '\0', these functions return a pointer to the terminator.
-
-When str[1] is '\0', strchr("axtd", str[1]) is not NULL, and str[2] is
-referenced (i.e. buffer overrun).
-
-Test code
----------
-
-  char str1[] = "abc";
-  char str2[] = "ab";
-
-  strcpy(str1, "$");
-  strcpy(str2, "$");
-
-  printf("test1: %d\n", is_arm_mapping_symbol(str1));
-  printf("test2: %d\n", is_arm_mapping_symbol(str2));
-
-Result
-------
-
-  test1: 0
-  test2: 1
-
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Fixes: f87d0fbb5798 ("vringh: host-side implementation of virtio rings.")
+Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+Signed-off-by: Fam Zheng <fam.zheng@bytedance.com>
+Message-Id: <20220505100910.137-1-xieyongji@bytedance.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/mod/modpost.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/vhost/vringh.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 29c3e4d6fc06..c5f3267aa08a 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -1212,7 +1212,8 @@ static int secref_whitelist(const struct sectioncheck *mismatch,
- 
- static inline int is_arm_mapping_symbol(const char *str)
+diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+index da47542496cc..63f0ab3e6f63 100644
+--- a/drivers/vhost/vringh.c
++++ b/drivers/vhost/vringh.c
+@@ -262,7 +262,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
+ 	     gfp_t gfp,
+ 	     int (*copy)(void *dst, const void *src, size_t len))
  {
--	return str[0] == '$' && strchr("axtd", str[1])
-+	return str[0] == '$' &&
-+	       (str[1] == 'a' || str[1] == 'd' || str[1] == 't' || str[1] == 'x')
- 	       && (str[2] == '\0' || str[2] == '.');
- }
+-	int err, count = 0, up_next, desc_max;
++	int err, count = 0, indirect_count = 0, up_next, desc_max;
+ 	struct vring_desc desc, *descs;
+ 	struct vringh_range range = { -1ULL, 0 }, slowrange;
+ 	bool slow = false;
+@@ -319,7 +319,12 @@ __vringh_iov(struct vringh *vrh, u16 i,
+ 			continue;
+ 		}
  
+-		if (count++ == vrh->vring.num) {
++		if (up_next == -1)
++			count++;
++		else
++			indirect_count++;
++
++		if (count > vrh->vring.num || indirect_count > desc_max) {
+ 			vringh_bad("Descriptor loop in %p", descs);
+ 			err = -ELOOP;
+ 			goto fail;
+@@ -381,6 +386,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
+ 				i = return_from_indirect(vrh, &up_next,
+ 							 &descs, &desc_max);
+ 				slow = false;
++				indirect_count = 0;
+ 			} else
+ 				break;
+ 		}
 -- 
 2.35.1
 
