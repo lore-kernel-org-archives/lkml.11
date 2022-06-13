@@ -2,84 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ACA3CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:30:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59330C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:30:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350191AbiFMT37 (ORCPT
+        id S1350261AbiFMTaC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:29:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54470 "EHLO
+        Mon, 13 Jun 2022 15:30:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351709AbiFMT3i (ORCPT
+        with ESMTP id S1351281AbiFMT3H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 15:29:38 -0400
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C62AE3DA4A;
-        Mon, 13 Jun 2022 10:54:09 -0700 (PDT)
-Received: by mail-qt1-x82e.google.com with SMTP id w13so3578342qts.6;
-        Mon, 13 Jun 2022 10:54:09 -0700 (PDT)
+        Mon, 13 Jun 2022 15:29:07 -0400
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 921F45D5E6;
+        Mon, 13 Jun 2022 10:52:49 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id c83so4610076qke.3;
+        Mon, 13 Jun 2022 10:52:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=MQ6Gm6rEcKWgPoZvxj3NUFNwBirG2CnGEdL2DutlzIQ=;
-        b=joXD2Wtj8NaDaXR+5hJSdoaWOTNyBxtsLmkoFylc/33cizkqdQKRxkzKf0UlQE15bI
-         PRppazDhC0xj+Fe3DTGn8ewe8fG68LGzK+KBD2WymPPh/j3bnBzaIH+U+GGL66l/mYfl
-         KfVassBVNwh6ezplUxVW5IONWCdB1nF3F3ol0d82gdC/VBSEL2ER7AVQcXgYZOnsvAw7
-         rcsUcDX7vEmTBL/Q9Av1o/ma3mLnwZjiRxuueKeOw1xDCp0gN4VluDjxe4+sr7GazoXo
-         Bkir+7pgIgzWMzLymH5/p1naiiJRcJZQWIjygscbj0eDMlS7WFd5EPbZQzvR1IDiY8Y7
-         GnLw==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Xla91C2UcQ97H+k46Q2ZwzUHnW80EyE/ynT41i2I05w=;
+        b=px+3WPCQZb6nMzINI2nyLOq02p5ky06WhhMrt/FxrDEnCNWJSjl2udhTzvQHkLu8ff
+         MGz1lLT4g6ILJEKT29XpU4Pitbb1MkwxeHIYiSFqVSo6ci0FFvSzHaQbjKKbAlr/pnwA
+         TZ49MHmyCk66O0BxWNR1Su5nSbICxoiQ+OGELKncZJOU1jaQr1zkob2zL/2FYnMiaQ/J
+         auqi5jn058zgKuZ3Qy7LbTrG11cwhCKyo6sEhiZwIQs2v3Ko6QAu3kXkFLIaY2kmASzN
+         SciTe3UWWwtr62119MiwKjRAMyi5XDj0gXFjcYtzBqlSF4sNePMIN8l1PDDetK4aD64E
+         QQZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=MQ6Gm6rEcKWgPoZvxj3NUFNwBirG2CnGEdL2DutlzIQ=;
-        b=sm4Clh/HYABiCRpFO0G3FXIvqyoaWyPKZ0tQiTGEP+7RuMf7jbBrgMXtPdsU9mkGHy
-         1Qf8XKb0Vu84/JSczfG9dhj9795bXSuzjPzRhVDKb/4SSGICXyyKPEdyBdCSKwlibD0b
-         XsRp5lBVgR1BxVJRs/Z8mAmsGttpoaRVhI6CxPczgRfgJlHShJh8VC0Q5AmNqVfd4AxE
-         /cKDGkuIoJ7hIeR3mtJtFqpH21B1H1JkE/fZ5VFeEa9L2bl4lRE1xjUbh6yUr5unqBnZ
-         HLf+h4FlrCKvw0vviFbV8i8csgTx9ahgM2COJq4smhCcdiVF0GXF1HEZ/A1l8S0EaO+U
-         dZlQ==
-X-Gm-Message-State: AOAM5321o9l4xNui3sna5xGLmAhAGhDPwWFAWw8zqJNMBLNys+aHV0A9
-        7JsPK2F89Idn/w7oAIzB8ffvsOJP04I=
-X-Google-Smtp-Source: ABdhPJx0sAHi+4PMHwNszPdJysQo5Oh8DBgyF1D4IUtP45fNmpWG58yU8cVLYzW6xN4NldgDgnPlkw==
-X-Received: by 2002:a05:622a:287:b0:305:150:a73d with SMTP id z7-20020a05622a028700b003050150a73dmr834462qtw.570.1655142848901;
-        Mon, 13 Jun 2022 10:54:08 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id o18-20020a05620a2a1200b006a370031c3esm7400298qkp.106.2022.06.13.10.54.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 10:54:08 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     bcm-kernel-feedback-list@broadcom.com,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        arm@kernel.org, soc@kernel.org, Hauke Mehrtens <hauke@hauke-m.de>,
-        =?iso-8859-2?q?Rafa=B3_Mi=B3ecki?= <zajec5@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 11/48] ARM: dts: broadcom: align gpio-key node names with dtschema
-Date:   Mon, 13 Jun 2022 10:54:05 -0700
-Message-Id: <20220613175405.244712-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220609113938.380466-2-krzysztof.kozlowski@linaro.org>
-References: <20220609113721.379932-1-krzysztof.kozlowski@linaro.org> <20220609113938.380466-2-krzysztof.kozlowski@linaro.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Xla91C2UcQ97H+k46Q2ZwzUHnW80EyE/ynT41i2I05w=;
+        b=FJIdY7TkDalKKSRZbJRLh3naUCTEpGN94+fGl0WCgmwx1TmZ5SpwRJPZQC0uVQAwIq
+         Ppe+nK1o/kp6evo6B1C7y6ZNKMZZcB5pW9vmRAk22HAh2JASJ71PFeIROlSkbOy/7S/j
+         wkVCrVlJM6sHn+PH9/OKH8a5I5FQ7H2P7TaF3s7mhv/SL8L2jTFmwifo+LwLitAEab/t
+         xfra7himIc91wpxzXXpPWOaPggc35cbD1InMLeXEiTU6EcbLaxuANI9bcCfy+amxgXOj
+         IQ8kg8dJd7izYNssMqGZ4Lm2gd9mu0O2jN1LRoqKz23CbRapX5tkrbVD0X3jB/2S5Vwf
+         Sf9A==
+X-Gm-Message-State: AOAM531WpQgNHFKCzkLIDvWQ9RfwT5z46ObvXQl3WrRiLgEpFqmmljf9
+        s1NTN0ACx0a3FJUp2VEoNic=
+X-Google-Smtp-Source: ABdhPJxEbdd+iGY7vGbsWWhKPmtHdc0fRd+fVtzKu4+yL93Z4wC9PZkSqqBu+sB2kuq1L06CBvI5PA==
+X-Received: by 2002:a05:620a:370e:b0:6a7:2471:b3eb with SMTP id de14-20020a05620a370e00b006a72471b3ebmr888325qkb.631.1655142768605;
+        Mon, 13 Jun 2022 10:52:48 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id k15-20020a05620a138f00b006a73654c19bsm6912665qki.23.2022.06.13.10.52.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Jun 2022 10:52:48 -0700 (PDT)
+Message-ID: <5824bdf6-accc-8938-16b0-743d6fe27282@gmail.com>
+Date:   Mon, 13 Jun 2022 10:52:45 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 4.9 000/167] 4.9.318-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220613094840.720778945@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu,  9 Jun 2022 13:39:30 +0200, Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
-> The node names should be generic and DT schema expects certain pattern
-> (e.g. with key/button/switch).
+On 6/13/22 03:07, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.9.318 release.
+> There are 167 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
+> Responses should be made by Wed, 15 Jun 2022 09:47:08 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.318-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-Applied to https://github.com/Broadcom/stblinux/commits/devicetree/next, thanks!
---
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
+
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
 Florian
