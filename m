@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBA13C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:27:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0870C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:27:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382963AbiFMO1N (ORCPT
+        id S1383768AbiFMO1W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:27:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54050 "EHLO
+        Mon, 13 Jun 2022 10:27:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383687AbiFMOXq (ORCPT
+        with ESMTP id S1383681AbiFMOXq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 10:23:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE8D47048;
-        Mon, 13 Jun 2022 04:44:54 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B73DA2E6A0;
+        Mon, 13 Jun 2022 04:44:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A8788B80D31;
-        Mon, 13 Jun 2022 11:44:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AD23C34114;
-        Mon, 13 Jun 2022 11:44:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 540DA612A8;
+        Mon, 13 Jun 2022 11:44:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E27DC34114;
+        Mon, 13 Jun 2022 11:44:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120692;
-        bh=k+nBBCHqK9h4ic60pdj6CWi8bzDqIkaYwyyIRwk/hj4=;
+        s=korg; t=1655120689;
+        bh=E3eQsWqo+oeKPDTgSdbGSmsVmraEOtwmrlowGmSCaqs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JeuQhQQRixYMzxu83wfdQXXHhjZ300cUgFK22W1+azCOjUY6Zd/yDPj07oE9hB8ea
-         GyX4yrfhy7IwKoC/BEF5Hp7sapW42CZY0weeBqoytln/N7tPW2d+a+HH0rOX4Ux/ug
-         jGEbCqG18ao4rgEr0SnooNr80d1ISnRTn9MZhRUc=
+        b=aPol168qGCz8d89CwZQFMXdH7uzpUHshV6w7z/liETWrkNTlV7hg4405szknWkS6u
+         AkU3bkVpM3M2HoA6+E2dukom4VNoj9dsnpO2TBqm8w9UXpL0hjtRIBEabHRwtvpUTK
+         GzdGkwqkaQGJhhGVML8ZDFLW7VO8JwZUBiSadOLc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 123/298] drm/msm/dp: Always clear mask bits to disable interrupts at dp_ctrl_reset_irq_ctrl()
-Date:   Mon, 13 Jun 2022 12:10:17 +0200
-Message-Id: <20220613094928.672935176@linuxfoundation.org>
+Subject: [PATCH 5.17 122/298] afs: Fix infinite loop found by xfstest generic/676
+Date:   Mon, 13 Jun 2022 12:10:16 +0200
+Message-Id: <20220613094928.642942854@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -51,78 +52,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuogee Hsieh <quic_khsieh@quicinc.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit 993a2adc6e2e94a0a7b5bfc054eda90ac95f62c3 ]
+[ Upstream commit 17eabd42560f4636648ad65ba5b20228071e2363 ]
 
-dp_catalog_ctrl_reset() will software reset DP controller. But it will
-not reset programmable registers to default value. DP driver still have
-to clear mask bits to interrupt status registers to disable interrupts
-after software reset of controller.
+In AFS, a directory is handled as a file that the client downloads and
+parses locally for the purposes of performing lookup and getdents
+operations.  The in-kernel afs filesystem has a number of functions that
+do this.
 
-At current implementation, dp_ctrl_reset_irq_ctrl() will software reset dp
-controller but did not call dp_catalog_ctrl_enable_irq(false) to clear hpd
-related interrupt mask bits to disable hpd related interrupts due to it
-mistakenly think hpd related interrupt mask bits will be cleared by software
-reset of dp controller automatically. This mistake may cause system to crash
-during suspending procedure due to unexpected irq fired and trigger event
-thread to access dp controller registers with controller clocks are disabled.
+A directory file is arranged as a series of 2K blocks divided into
+32-byte slots, where a directory entry occupies one or more slots, plus
+each block starts with one or more metadata blocks.
 
-This patch fixes system crash during suspending problem by removing "enable"
-flag condition checking at dp_ctrl_reset_irq_ctrl() so that hpd related
-interrupt mask bits are cleared to prevent unexpected from happening.
+When parsing a block, if the last slots are occupied by a dirent that
+occupies more than a single slot and the file position points at a slot
+that's not the initial one, the logic in afs_dir_iterate_block() that
+skips over it won't advance the file pointer to the end of it.  This
+will cause an infinite loop in getdents() as it will keep retrying that
+block and failing to advance beyond the final entry.
 
-Changes in v2:
--- add more details commit text
+Fix this by advancing the file pointer if the next entry will be beyond
+it when we skip a block.
 
-Changes in v3:
--- add synchrons_irq()
--- add atomic_t suspended
+This was found by the generic/676 xfstest but can also be triggered with
+something like:
 
-Changes in v4:
--- correct Fixes's commit ID
--- remove synchrons_irq()
+	~/xfstests-dev/src/t_readdir_3 /xfstest.test/z 4000 1
 
-Changes in v5:
--- revise commit text
-
-Changes in v6:
--- add event_lock to protect "suspended"
-
-Changes in v7:
--- delete "suspended" flag
-
-Fixes: 989ebe7bc446 ("drm/msm/dp: do not initialize phy until plugin interrupt received")
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Patchwork: https://patchwork.freedesktop.org/patch/486591/
-Link: https://lore.kernel.org/r/1652804494-19650-1-git-send-email-quic_khsieh@quicinc.com
-Signed-off-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: David Howells <dhowells@redhat.com>
+Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
+Tested-by: Marc Dionne <marc.dionne@auristor.com>
+cc: linux-afs@lists.infradead.org
+Link: http://lore.kernel.org/r/165391973497.110268.2939296942213894166.stgit@warthog.procyon.org.uk/
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dp/dp_ctrl.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ fs/afs/dir.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-index 6eb176872a17..7ae74bd05924 100644
---- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
-+++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-@@ -1373,8 +1373,13 @@ void dp_ctrl_reset_irq_ctrl(struct dp_ctrl *dp_ctrl, bool enable)
+diff --git a/fs/afs/dir.c b/fs/afs/dir.c
+index da9b4f8577a1..7f1cb3b73874 100644
+--- a/fs/afs/dir.c
++++ b/fs/afs/dir.c
+@@ -462,8 +462,11 @@ static int afs_dir_iterate_block(struct afs_vnode *dvnode,
+ 		}
  
- 	dp_catalog_ctrl_reset(ctrl->catalog);
+ 		/* skip if starts before the current position */
+-		if (offset < curr)
++		if (offset < curr) {
++			if (next > curr)
++				ctx->pos = blkoff + next * sizeof(union afs_xdr_dirent);
+ 			continue;
++		}
  
--	if (enable)
--		dp_catalog_ctrl_enable_irq(ctrl->catalog, enable);
-+	/*
-+	 * all dp controller programmable registers will not
-+	 * be reset to default value after DP_SW_RESET
-+	 * therefore interrupt mask bits have to be updated
-+	 * to enable/disable interrupts
-+	 */
-+	dp_catalog_ctrl_enable_irq(ctrl->catalog, enable);
- }
- 
- void dp_ctrl_phy_init(struct dp_ctrl *dp_ctrl)
+ 		/* found the next entry */
+ 		if (!dir_emit(ctx, dire->u.name, nlen,
 -- 
 2.35.1
 
