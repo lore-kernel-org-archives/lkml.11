@@ -2,171 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AAEDCCA47B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5238CCA482
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:59:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351624AbiFMU61 (ORCPT
+        id S1351350AbiFMU7L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:58:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36164 "EHLO
+        Mon, 13 Jun 2022 16:59:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350558AbiFMUxS (ORCPT
+        with ESMTP id S1352261AbiFMUyT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:53:18 -0400
-Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35F6CCE06
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:15:25 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1655151323;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=NgWb1VypNdq0w5pu2JKIcUVqOUrKW+cW7ICESNAaLXg=;
-        b=ArpbYjGfMZCWQq5EaDyLZEZeEQ9OgLgcZ6i1UsjL9TlIoy5Ws3X2IjJEKDa05dVoL4Q84C
-        ZLi8Qq3BdwsCPvJ2R5PRZfNUapP8gzSFRsp5H4OyIbUs2SC+lV/llMupf1gpWFGZyuBqP5
-        F19ADWzLTve9DNrmU5hDDaFJK/ZCt6A=
-From:   andrey.konovalov@linux.dev
-To:     Marco Elver <elver@google.com>,
-        Alexander Potapenko <glider@google.com>
-Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev@googlegroups.com, Peter Collingbourne <pcc@google.com>,
-        Evgenii Stepanov <eugenis@google.com>,
-        Florian Mayer <fmayer@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH 00/32] kasan: switch tag-based modes to stack ring from per-object metadata
-Date:   Mon, 13 Jun 2022 22:13:51 +0200
-Message-Id: <cover.1655150842.git.andreyknvl@google.com>
+        Mon, 13 Jun 2022 16:54:19 -0400
+Received: from mail-oo1-f46.google.com (mail-oo1-f46.google.com [209.85.161.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22A5E2A94B;
+        Mon, 13 Jun 2022 13:22:35 -0700 (PDT)
+Received: by mail-oo1-f46.google.com with SMTP id 4-20020a4a1404000000b0041bfe1a4cffso762050ood.0;
+        Mon, 13 Jun 2022 13:22:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0cU1N9A1T1qgBn1lKK9HaI+TY1k8IeUOqJphJj6+O1w=;
+        b=WyAHgPnyMiXSovZ+PgOx9TNJBxl0psJAyTOykoAE69UXoRQEdOhXWzCXHHzUPLrC5O
+         n3/mq+TsUfV/wufIyQpg3IObdiduNo6dBn1Jak6XyVrLvthI2Wk99qdDH+sL/7f6dk1K
+         EFSXQ5BgwFQ3Wx2T6A34RXoaWK9pHiOurGgQMpHoT8WypTlmHK3zL415+Wpk6mXk0Bi8
+         DGBa+KNNhffAJ+EZt+AQjrrFAQFp9UmHoep+hb0DJb99cUl0FSR0MzndDPVUf1Te9TTV
+         kEnlaKIY6PHk6TW2fDexZxZJhF2225dXZ1vuJQpVlENeaiVWYjSWi95I7qyaSp7RYNnk
+         b1+Q==
+X-Gm-Message-State: AOAM5330ixY22sdKfUYfnPBe6pLYQf7jtAVjmIUvbLf5gFOCvtE3TyHo
+        ADS2G6PS/I4jyDufJtqfVQ==
+X-Google-Smtp-Source: ABdhPJwT2XUz5Smcb7K4j/V2wogweq9iNjCOSqWRPw8iUB34ic13DPfDUgWmQ0B2MNr30iIYNLb1mQ==
+X-Received: by 2002:a4a:378e:0:b0:41b:8cb6:b7bb with SMTP id r136-20020a4a378e000000b0041b8cb6b7bbmr614495oor.51.1655151754293;
+        Mon, 13 Jun 2022 13:22:34 -0700 (PDT)
+Received: from robh.at.kernel.org ([2607:fb90:20d2:bb97:4381:7341:60ed:a4a1])
+        by smtp.gmail.com with ESMTPSA id nl7-20020a056871458700b000f5e89a9c60sm4471001oab.3.2022.06.13.13.22.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 13:22:33 -0700 (PDT)
+Received: (nullmailer pid 17434 invoked by uid 1000);
+        Mon, 13 Jun 2022 20:20:47 -0000
+Date:   Mon, 13 Jun 2022 14:20:47 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Frank Li <Frank.Li@nxp.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 09/18] PCI: dwc: Discard IP-core version checking on
+ unrolled iATU detection
+Message-ID: <20220613202047.GE4188875-robh@kernel.org>
+References: <20220610082535.12802-1-Sergey.Semin@baikalelectronics.ru>
+ <20220610082535.12802-10-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220610082535.12802-10-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrey Konovalov <andreyknvl@google.com>
+On Fri, Jun 10, 2022 at 11:25:25AM +0300, Serge Semin wrote:
+> It's pretty much pointless. Even though unrolled version of the internal
+> ATU has been indeed available since DWC PCIe v4.80a IP-core, there is no
+> guarantee it was enabled during the IP-core configuration (Synopsys
+> suggests to contact the Solvnet support for guidance of how to do that for
+> the newer IP-cores). So the only reliable way to find out the unrolled
+> iATU feature availability is indeed to check the iATU viewport register
+> content. In accordance with the reference manual [1] if the register
+> doesn't exist (unrolled iATU is enabled) it's content is fixed with
+> 0xff-s, otherwise it will contain some zeros. So we can freely drop the
+> IP-core version checking in this matter then and use the
+> dw_pcie_iatu_unroll_enabled() method only to detect whether iATU/eDMA
+> space is unrolled.
 
-This series makes the tag-based KASAN modes use a ring buffer for storing
-stack depot handles for alloc/free stack traces for slab objects instead
-of per-object metadata. This ring buffer is referred to as the stack ring.
+Are you sure that pre v4.80a, it is safe to read the register address? 
+Seems unlikely that the all 1s guarantee would be valid before the 
+feature ever existed. 
 
-On each alloc/free of a slab object, the tagged address of the object and
-the current stack trace are recorded in the stack ring.
 
-On each bug report, if the accessed address belongs to a slab object, the
-stack ring is scanned for matching entries. The newest entries are used to
-print the alloc/free stack traces in the report: one entry for alloc and
-one for free.
+> [1] DesignWare Cores, PCI Express Controller, Register Desciptions,
+> v.4.90a, December 2016, p.855
+> 
+> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> ---
+>  drivers/pci/controller/dwc/pcie-designware.c | 11 +++++------
+>  1 file changed, 5 insertions(+), 6 deletions(-)
 
-The ring buffer is lock-free.
+Assuming this works,
 
-The advantages of this approach over storing stack trace handles in
-per-object metadata with the tag-based KASAN modes:
-
-- Allows to find relevant stack traces for use-after-free bugs without
-  using quarantine for freed memory. (Currently, if the object was
-  reallocated multiple times, the report contains the latest alloc/free
-  stack traces, not necessarily the ones relevant to the buggy allocation.)
-- Allows to better identify and mark use-after-free bugs, effectively
-  making the CONFIG_KASAN_TAGS_IDENTIFY functionality always-on.
-- Has fixed memory overhead.
-
-The disadvantage:
-
-- If the affected object was allocated/freed long before the bug happened
-  and the stack trace events were purged from the stack ring, the report
-  will have no stack traces.
-
-Discussion
-==========
-
-The current implementation of the stack ring uses a single ring buffer for
-the whole kernel. This might lead to contention due to atomic accesses to
-the ring buffer index on multicore systems.
-
-It is unclear to me whether the performance impact from this contention
-is significant compared to the slowdown introduced by collecting stack
-traces.
-
-While these patches are being reviewed, I will do some tests on the arm64
-hardware that I have. However, I do not have a large multicore arm64
-system to do proper measurements.
-
-A considered alternative is to keep a separate ring buffer for each CPU
-and then iterate over all of them when printing a bug report. This approach
-requires somehow figuring out which of the stack rings has the freshest
-stack traces for an object if multiple stack rings have them.
-
-Further plans
-=============
-
-This series is a part of an effort to make KASAN stack trace collection
-suitable for production. This requires stack trace collection to be fast
-and memory-bounded.
-
-The planned steps are:
-
-1. Speed up stack trace collection (potentially, by using SCS;
-   patches on-hold until steps #2 and #3 are completed).
-2. Keep stack trace handles in the stack ring (this series).
-3. Add a memory-bounded mode to stack depot or provide an alternative
-   memory-bounded stack storage.
-4. Potentially, implement stack trace collection sampling to minimize
-   the performance impact.
-
-Thanks!
-
-Andrey Konovalov (32):
-  kasan: check KASAN_NO_FREE_META in __kasan_metadata_size
-  kasan: rename kasan_set_*_info to kasan_save_*_info
-  kasan: move is_kmalloc check out of save_alloc_info
-  kasan: split save_alloc_info implementations
-  kasan: drop CONFIG_KASAN_TAGS_IDENTIFY
-  kasan: introduce kasan_print_aux_stacks
-  kasan: introduce kasan_get_alloc_track
-  kasan: introduce kasan_init_object_meta
-  kasan: clear metadata functions for tag-based modes
-  kasan: move kasan_get_*_meta to generic.c
-  kasan: introduce kasan_requires_meta
-  kasan: introduce kasan_init_cache_meta
-  kasan: drop CONFIG_KASAN_GENERIC check from kasan_init_cache_meta
-  kasan: only define kasan_metadata_size for Generic mode
-  kasan: only define kasan_never_merge for Generic mode
-  kasan: only define metadata offsets for Generic mode
-  kasan: only define metadata structs for Generic mode
-  kasan: only define kasan_cache_create for Generic mode
-  kasan: pass tagged pointers to kasan_save_alloc/free_info
-  kasan: move kasan_get_alloc/free_track definitions
-  kasan: simplify invalid-free reporting
-  kasan: cosmetic changes in report.c
-  kasan: use kasan_addr_to_slab in print_address_description
-  kasan: move kasan_addr_to_slab to common.c
-  kasan: make kasan_addr_to_page static
-  kasan: simplify print_report
-  kasan: introduce complete_report_info
-  kasan: fill in cache and object in complete_report_info
-  kasan: rework function arguments in report.c
-  kasan: introduce kasan_complete_mode_report_info
-  kasan: implement stack ring for tag-based modes
-  kasan: better identify bug types for tag-based modes
-
- include/linux/kasan.h     |  55 +++++-------
- include/linux/slab.h      |   2 +-
- lib/Kconfig.kasan         |   8 --
- mm/kasan/common.c         | 173 ++++----------------------------------
- mm/kasan/generic.c        | 154 ++++++++++++++++++++++++++++++---
- mm/kasan/kasan.h          | 138 ++++++++++++++++++++----------
- mm/kasan/report.c         | 130 +++++++++++++---------------
- mm/kasan/report_generic.c |  45 +++++++++-
- mm/kasan/report_tags.c    | 114 ++++++++++++++++++-------
- mm/kasan/tags.c           |  61 +++++++-------
- 10 files changed, 491 insertions(+), 389 deletions(-)
-
--- 
-2.25.1
-
+Reviewed-by: Rob Herring <robh@kernel.org>
