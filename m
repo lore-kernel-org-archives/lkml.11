@@ -2,231 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EA8FCCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:01:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7142CCA47D
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:02:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244399AbiFMSBG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:01:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34080 "EHLO
+        id S233284AbiFMSCa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:02:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243526AbiFMR4l (ORCPT
+        with ESMTP id S244547AbiFMSBu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 13:56:41 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 766E13DA73
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:40:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655127631;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+XbqM7qHi7EitckiOKedUNIRm0xdJ7+RlVUJPO0Gap0=;
-        b=Gb/e6qJ+mJ51J3cWtpdWU38B/ZWGOPNGYRGIG17YVMND63tDS/eaH2LnQedWnxa5/d2sns
-        axZ0Ppn3mdHS0C3AfWDXGzCMN7QmfishlJOVyHi9odN45hlPe2QD25537i8CmrV5/+SVPk
-        3KQbuqryGsASODODw6/CRvr2T8wAAQg=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-191-MwuYQlIkMH-ntovpgC6tLQ-1; Mon, 13 Jun 2022 09:40:27 -0400
-X-MC-Unique: MwuYQlIkMH-ntovpgC6tLQ-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Mon, 13 Jun 2022 14:01:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD373D48;
+        Mon, 13 Jun 2022 06:44:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E04C029AA385;
-        Mon, 13 Jun 2022 13:40:26 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.194.60])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C2601492CA2;
-        Mon, 13 Jun 2022 13:40:24 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        Yuan Yao <yuan.yao@linux.intel.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v7 22/39] KVM: nSVM: hyper-v: Enable L2 TLB flush
-Date:   Mon, 13 Jun 2022 15:39:05 +0200
-Message-Id: <20220613133922.2875594-23-vkuznets@redhat.com>
-In-Reply-To: <20220613133922.2875594-1-vkuznets@redhat.com>
-References: <20220613133922.2875594-1-vkuznets@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 59C486136C;
+        Mon, 13 Jun 2022 13:44:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFEE4C3411C;
+        Mon, 13 Jun 2022 13:44:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655127894;
+        bh=SJRMus/BrkP3vZSiuqVxHOTCxoFSg6FdAcDr36Ttmc8=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=gjj58l5gwcWlK20bbp9cq5UzCb3FzYuo8gSP9m7FOz61y3+/6jw16j5bSlSgphnc8
+         99piEzRHWd+EsGvu5Z4OUB8hMOoaHzV57i9V2INBtqwhbgq/hrGAUjmgEmTkjBxFaz
+         aPwTJfEH11ewftcdF95vLKLZcmyTre9V0/exP9NBK1g/9sHMrr0vCEYCPCOvRh1xYE
+         0w87H4s56a0B0dRbAqmWml9Bx8OOSD32CNxh/rrfFleZWIovdw8CHHRH3oIlnP8itb
+         bD3fhf22w5DNGo0bwN5bM9Lj2zurq5C2+v91DSn1n0PtzCgG0/sAl8P27JG+88h929
+         UeseoLqyYnRVA==
+Received: by mail-ua1-f45.google.com with SMTP id o8so2152924uap.6;
+        Mon, 13 Jun 2022 06:44:54 -0700 (PDT)
+X-Gm-Message-State: AOAM531auZ6shlyMXTJQeowraO5R+GjKMnAD1YN3m0U3n4Cn39x04VL8
+        8hsjMfvMseRkefb5cmgrqDsZRF2F3IhtpfLU/w==
+X-Google-Smtp-Source: ABdhPJwJdSYFPrU1lg9RQoPXl/q9bfbItYSHKMVnQIK267UpiLdgLX0oIGrik27v8fBGf1yD7rtr9VX6VNPHvUarm0M=
+X-Received: by 2002:ab0:2705:0:b0:379:7378:3c75 with SMTP id
+ s5-20020ab02705000000b0037973783c75mr1881607uao.77.1655127893697; Mon, 13 Jun
+ 2022 06:44:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+References: <20220607165840.66931-1-yoan.picchi@arm.com> <20220607165840.66931-3-yoan.picchi@arm.com>
+ <20220609213652.GA115440-robh@kernel.org> <20220610114840.10db23ea@donnerap.cambridge.arm.com>
+ <YqcUXrFGO+QVMKBd@silpixa00400314>
+In-Reply-To: <YqcUXrFGO+QVMKBd@silpixa00400314>
+From:   Rob Herring <robh@kernel.org>
+Date:   Mon, 13 Jun 2022 07:44:42 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqJ_mjR8tbUu0n4AxXSVGtDOMTnRZTBRyvOAwe28tGXamA@mail.gmail.com>
+Message-ID: <CAL_JsqJ_mjR8tbUu0n4AxXSVGtDOMTnRZTBRyvOAwe28tGXamA@mail.gmail.com>
+Subject: Re: [PATCH 2/2] Removes the x86 dependency on the QAT drivers
+To:     Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+Cc:     Andre Przywara <andre.przywara@arm.com>,
+        Yoan Picchi <yoan.picchi@arm.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>, qat-linux@intel.com,
+        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
+        <linux-crypto@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Implement Hyper-V L2 TLB flush for nSVM. The feature needs to be enabled
-both in extended 'nested controls' in VMCB and VP assist page.
-According to Hyper-V TLFS, synthetic vmexit to L1 is performed with
-- HV_SVM_EXITCODE_ENL exit_code.
-- HV_SVM_ENL_EXITCODE_TRAP_AFTER_FLUSH exit_info_1.
+On Mon, Jun 13, 2022 at 4:41 AM Giovanni Cabiddu
+<giovanni.cabiddu@intel.com> wrote:
+>
+> On Fri, Jun 10, 2022 at 11:48:40AM +0100, Andre Przywara wrote:
+> > On Thu, 9 Jun 2022 15:36:52 -0600
+> > Rob Herring <robh@kernel.org> wrote:
+> >
+> > Hi,
+> >
+> > > On Tue, Jun 07, 2022 at 04:58:40PM +0000, Yoan Picchi wrote:
+> > > > This dependency looks outdated. After the previous patch, we have been able
+> > > > to use this driver to encrypt some data and to create working VF on arm64.
+> > > > We have not tested it yet on any big endian machine, hence the new dependency
+> > >
+> > > For the subject, use prefixes matching the subsystem (like you did on
+> > > patch 1).
+> Just to add on this, patches to the qat driver should have the following
+> headline:
+>     crypto: qat -
+> not
+>     crypto: qat:
+>
+> > >
+> > > The only testing obligation you have is compiling for BE.
+> >
+> > So I just compiled for arm64 BE, powerpc BE & LE, and riscv again:
+> > $ file qat_c62xvf.ko
+> > qat_c62xvf.ko: ELF 64-bit MSB relocatable, ARM aarch64, version 1 (SYSV),
+> > BuildID[sha1]=630cc0ee5586c7aeb6e0ab5567ce2f2f7cc46adf, with debug_info,
+> > not stripped
+> > qat_c62xvf.ko: ELF 64-bit MSB relocatable, 64-bit PowerPC or cisco 7500,
+> > version 1 (SYSV), BuildID[sha1]=4090ba181cf95f27108bf3ecde0776f12ef2b636,
+> > not stripped
+> > qat_c62xvf.ko: ELF 64-bit LSB relocatable, 64-bit PowerPC or cisco 7500,
+> > version 1 (SYSV), BuildID[sha1]=2cb0fd09d5bc36c8918fcd061c9f3dac1546cf0d,
+> > not stripped
+> > qat_c62xvf.ko: ELF 64-bit LSB relocatable, UCB RISC-V, version 1 (SYSV),
+> > BuildID[sha1]=bfaa53df7e9aad79d3ab4c05e75ca9169227f6b8, not stripped
+> >
+> > All built without errors or warnings, for every of the enabled drivers.
+> >
+> > > If kconfig was
+> > > supposed to capture what endianness drivers have been tested or not
+> > > tested with, then lots of drivers are missing the dependency. Kconfig
+> > > depends/select entries should generally be either to prevent compile
+> > > failures (you checked PPC, RiscV, etc.?) or to hide drivers *really*
+> > > specific to a platform. IMO, we should only have !CPU_BIG_ENDIAN if it
+> > > is known not to work and not easily fixed.
+> >
+> > Fair enough, I leave that decision to Giovanni. I have plans to test this
+> > with BE, but getting a BE setup on a server is not trivial, both for
+> > userland and actual booting, so this will take some time. We just didn't
+> > want to block this on some BE concerns.
+> Just inspecting the code I can see we are not handling BE in the logic
+> that builds FW descriptors.
+> My preference would be to keep !CPU_BIG_ENDIAN until the driver is fixed
+> and tested.
 
-Note: VP assist page is cached in 'struct kvm_vcpu_hv' so
-recalc_intercepts() doesn't need to read from guest's memory. KVM
-needs to update the case upon each VMRUN and after svm_set_nested_state
-(svm_get_nested_state_pages()) to handle the case when the guest got
-migrated while L2 was running.
+Okay, then at least add '|| COMPILE_TEST' so that allyesconfig builds build it.
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
----
- arch/x86/kvm/svm/hyperv.c |  7 +++++++
- arch/x86/kvm/svm/hyperv.h | 30 ++++++++++++++++++++++++++++++
- arch/x86/kvm/svm/nested.c | 36 ++++++++++++++++++++++++++++++++++--
- 3 files changed, 71 insertions(+), 2 deletions(-)
-
-diff --git a/arch/x86/kvm/svm/hyperv.c b/arch/x86/kvm/svm/hyperv.c
-index 911f51021af1..088f6429b24c 100644
---- a/arch/x86/kvm/svm/hyperv.c
-+++ b/arch/x86/kvm/svm/hyperv.c
-@@ -8,4 +8,11 @@
- 
- void svm_hv_inject_synthetic_vmexit_post_tlb_flush(struct kvm_vcpu *vcpu)
- {
-+	struct vcpu_svm *svm = to_svm(vcpu);
-+
-+	svm->vmcb->control.exit_code = HV_SVM_EXITCODE_ENL;
-+	svm->vmcb->control.exit_code_hi = 0;
-+	svm->vmcb->control.exit_info_1 = HV_SVM_ENL_EXITCODE_TRAP_AFTER_FLUSH;
-+	svm->vmcb->control.exit_info_2 = 0;
-+	nested_svm_vmexit(svm);
- }
-diff --git a/arch/x86/kvm/svm/hyperv.h b/arch/x86/kvm/svm/hyperv.h
-index dd2e393f84a0..7b01722838bf 100644
---- a/arch/x86/kvm/svm/hyperv.h
-+++ b/arch/x86/kvm/svm/hyperv.h
-@@ -33,6 +33,9 @@ struct hv_enlightenments {
-  */
- #define VMCB_HV_NESTED_ENLIGHTENMENTS VMCB_SW
- 
-+#define HV_SVM_EXITCODE_ENL 0xF0000000
-+#define HV_SVM_ENL_EXITCODE_TRAP_AFTER_FLUSH   (1)
-+
- static inline void nested_svm_hv_update_vm_vp_ids(struct kvm_vcpu *vcpu)
- {
- 	struct vcpu_svm *svm = to_svm(vcpu);
-@@ -48,6 +51,33 @@ static inline void nested_svm_hv_update_vm_vp_ids(struct kvm_vcpu *vcpu)
- 	hv_vcpu->nested.vp_id = hve->hv_vp_id;
- }
- 
-+static inline bool nested_svm_hv_update_vp_assist(struct kvm_vcpu *vcpu)
-+{
-+	if (!to_hv_vcpu(vcpu))
-+		return true;
-+
-+	if (!kvm_hv_assist_page_enabled(vcpu))
-+		return true;
-+
-+	return kvm_hv_get_assist_page(vcpu);
-+}
-+
-+static inline bool nested_svm_l2_tlb_flush_enabled(struct kvm_vcpu *vcpu)
-+{
-+	struct vcpu_svm *svm = to_svm(vcpu);
-+	struct hv_enlightenments *hve =
-+		(struct hv_enlightenments *)svm->nested.ctl.reserved_sw;
-+	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
-+
-+	if (!hv_vcpu)
-+		return false;
-+
-+	if (!hve->hv_enlightenments_control.nested_flush_hypercall)
-+		return false;
-+
-+	return hv_vcpu->vp_assist_page.nested_control.features.directhypercall;
-+}
-+
- void svm_hv_inject_synthetic_vmexit_post_tlb_flush(struct kvm_vcpu *vcpu);
- 
- #endif /* __ARCH_X86_KVM_SVM_HYPERV_H__ */
-diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-index c43ba5b39288..dd4fc1081e2e 100644
---- a/arch/x86/kvm/svm/nested.c
-+++ b/arch/x86/kvm/svm/nested.c
-@@ -171,8 +171,12 @@ void recalc_intercepts(struct vcpu_svm *svm)
- 		vmcb_clr_intercept(c, INTERCEPT_VINTR);
- 	}
- 
--	/* We don't want to see VMMCALLs from a nested guest */
--	vmcb_clr_intercept(c, INTERCEPT_VMMCALL);
-+	/*
-+	 * We want to see VMMCALLs from a nested guest only when Hyper-V L2 TLB
-+	 * flush feature is enabled.
-+	 */
-+	if (!nested_svm_l2_tlb_flush_enabled(&svm->vcpu))
-+		vmcb_clr_intercept(c, INTERCEPT_VMMCALL);
- 
- 	for (i = 0; i < MAX_INTERCEPT; i++)
- 		c->intercepts[i] |= g->intercepts[i];
-@@ -489,6 +493,17 @@ static void nested_save_pending_event_to_vmcb12(struct vcpu_svm *svm,
- 
- static void nested_svm_transition_tlb_flush(struct kvm_vcpu *vcpu)
- {
-+	/*
-+	 * KVM_REQ_HV_TLB_FLUSH flushes entries from either L1's VP_ID or
-+	 * L2's VP_ID upon request from the guest. Make sure we check for
-+	 * pending entries for the case when the request got misplaced (e.g.
-+	 * a transition from L2->L1 happened while processing L2 TLB flush
-+	 * request or vice versa). kvm_hv_vcpu_flush_tlb() will not flush
-+	 * anything if there are no requests in the corresponding buffer.
-+	 */
-+	if (to_hv_vcpu(vcpu))
-+		kvm_make_request(KVM_REQ_HV_TLB_FLUSH, vcpu);
-+
- 	/*
- 	 * TODO: optimize unconditional TLB flush/MMU sync.  A partial list of
- 	 * things to fix before this can be conditional:
-@@ -835,6 +850,12 @@ int nested_svm_vmrun(struct kvm_vcpu *vcpu)
- 		return 1;
- 	}
- 
-+	/* This fails when VP assist page is enabled but the supplied GPA is bogus */
-+	if (!nested_svm_hv_update_vp_assist(vcpu)) {
-+		kvm_inject_gp(vcpu, 0);
-+		return 1;
-+	}
-+
- 	vmcb12_gpa = svm->vmcb->save.rax;
- 	ret = kvm_vcpu_map(vcpu, gpa_to_gfn(vmcb12_gpa), &map);
- 	if (ret == -EINVAL) {
-@@ -1412,6 +1433,7 @@ static int svm_check_nested_events(struct kvm_vcpu *vcpu)
- int nested_svm_exit_special(struct vcpu_svm *svm)
- {
- 	u32 exit_code = svm->vmcb->control.exit_code;
-+	struct kvm_vcpu *vcpu = &svm->vcpu;
- 
- 	switch (exit_code) {
- 	case SVM_EXIT_INTR:
-@@ -1430,6 +1452,13 @@ int nested_svm_exit_special(struct vcpu_svm *svm)
- 			return NESTED_EXIT_HOST;
- 		break;
- 	}
-+	case SVM_EXIT_VMMCALL:
-+		/* Hyper-V L2 TLB flush hypercall is handled by L0 */
-+		if (guest_hv_cpuid_has_l2_tlb_flush(vcpu) &&
-+		    nested_svm_l2_tlb_flush_enabled(vcpu) &&
-+		    kvm_hv_is_tlb_flush_hcall(vcpu))
-+			return NESTED_EXIT_HOST;
-+		break;
- 	default:
- 		break;
- 	}
-@@ -1710,6 +1739,9 @@ static bool svm_get_nested_state_pages(struct kvm_vcpu *vcpu)
- 		return false;
- 	}
- 
-+	if (!nested_svm_hv_update_vp_assist(vcpu))
-+		return false;
-+
- 	return true;
- }
- 
--- 
-2.35.3
-
+Rob
