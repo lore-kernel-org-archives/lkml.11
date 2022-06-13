@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C536C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:26:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99233C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:26:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353942AbiFML0K (ORCPT
+        id S1353747AbiFML0Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:26:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56224 "EHLO
+        Mon, 13 Jun 2022 07:26:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353349AbiFMLTk (ORCPT
+        with ESMTP id S1353434AbiFMLTo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:19:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72BF43AA51;
-        Mon, 13 Jun 2022 03:41:12 -0700 (PDT)
+        Mon, 13 Jun 2022 07:19:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E79B3B002;
+        Mon, 13 Jun 2022 03:41:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 759FB60FDB;
-        Mon, 13 Jun 2022 10:41:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80E20C3411C;
-        Mon, 13 Jun 2022 10:41:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CF409B80EA3;
+        Mon, 13 Jun 2022 10:41:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 304EDC3411C;
+        Mon, 13 Jun 2022 10:41:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116870;
-        bh=JBdysYnTCOqo85vNwlQFdf3X2vArao3AMOxh5xGOC+w=;
+        s=korg; t=1655116873;
+        bh=710qDeAQ+M2wd+oQnN+CKC6Zb5QNapd+zSvcMbkNVZ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xPsDoHdaEzoYQV/7hhZfGcKybFS1sI5fryhc6tqDCydlR8DEXQyQOcLzmoZlzY7Rj
-         TkBgGHkVNbrxqoxQT/38tDrX2FPQ0u67Hpw+URuQFbabBoo2CA39msluAKtNyvdNH/
-         gZXGmhR27JjLTnWCkWd1wSdr+f0il1gy9jXvzRX0=
+        b=hQZyt5xby/6XAippub76DF5pOvT6awuJEoI8+bfrgwHTLdDE/e5unTE9bkMCeu6u2
+         OvL18VSjGGTHXyMcSjqmGfpnHiGdlp6LFX/1G0p0tsWfETaP0AqXuaQ0x1W9TDCE9B
+         DOBNr3E0fBhNHsJk+g7YBYpUH0SMmvtgzRCuNTQ8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Olga Kornievskaia <aglo@umich.edu>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
+        Douglas Miller <doug.miller@cornelisnetworks.com>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 203/411] NFSv4/pNFS: Do not fail I/O when we fail to allocate the pNFS layout
-Date:   Mon, 13 Jun 2022 12:07:56 +0200
-Message-Id: <20220613094934.746280586@linuxfoundation.org>
+Subject: [PATCH 5.4 194/411] RDMA/hfi1: Prevent use of lock before it is initialized
+Date:   Mon, 13 Jun 2022 12:07:47 +0200
+Message-Id: <20220613094934.478195288@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -51,45 +52,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Douglas Miller <doug.miller@cornelisnetworks.com>
 
-[ Upstream commit 3764a17e31d579cf9b4bd0a69894b577e8d75702 ]
+[ Upstream commit 05c03dfd09c069c4ffd783b47b2da5dcc9421f2c ]
 
-Commit 587f03deb69b caused pnfs_update_layout() to stop returning ENOMEM
-when the memory allocation fails, and hence causes it to fall back to
-trying to do I/O through the MDS. There is no guarantee that this will
-fare any better. If we're failing the pNFS layout allocation, then we
-should just redirty the page and retry later.
+If there is a failure during probe of hfi1 before the sdma_map_lock is
+initialized, the call to hfi1_free_devdata() will attempt to use a lock
+that has not been initialized. If the locking correctness validator is on
+then an INFO message and stack trace resembling the following may be seen:
 
-Reported-by: Olga Kornievskaia <aglo@umich.edu>
-Fixes: 587f03deb69b ("pnfs: refactor send_layoutget")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+  INFO: trying to register non-static key.
+  The code is fine but needs lockdep annotation, or maybe
+  you didn't initialize this object before use?
+  turning off the locking correctness validator.
+  Call Trace:
+  register_lock_class+0x11b/0x880
+  __lock_acquire+0xf3/0x7930
+  lock_acquire+0xff/0x2d0
+  _raw_spin_lock_irq+0x46/0x60
+  sdma_clean+0x42a/0x660 [hfi1]
+  hfi1_free_devdata+0x3a7/0x420 [hfi1]
+  init_one+0x867/0x11a0 [hfi1]
+  pci_device_probe+0x40e/0x8d0
+
+The use of sdma_map_lock in sdma_clean() is for freeing the sdma_map
+memory, and sdma_map is not allocated/initialized until after
+sdma_map_lock has been initialized. This code only needs to be run if
+sdma_map is not NULL, and so checking for that condition will avoid trying
+to use the lock before it is initialized.
+
+Fixes: 473291b3ea0e ("IB/hfi1: Fix for early release of sdma context")
+Fixes: 7724105686e7 ("IB/hfi1: add driver files")
+Link: https://lore.kernel.org/r/20220520183701.48973.72434.stgit@awfm-01.cornelisnetworks.com
+Reported-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Douglas Miller <doug.miller@cornelisnetworks.com>
+Signed-off-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/pnfs.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/infiniband/hw/hfi1/sdma.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/fs/nfs/pnfs.c b/fs/nfs/pnfs.c
-index 0471b6e0da16..2fe48982fbb4 100644
---- a/fs/nfs/pnfs.c
-+++ b/fs/nfs/pnfs.c
-@@ -1961,6 +1961,7 @@ pnfs_update_layout(struct inode *ino,
- 	lo = pnfs_find_alloc_layout(ino, ctx, gfp_flags);
- 	if (lo == NULL) {
- 		spin_unlock(&ino->i_lock);
-+		lseg = ERR_PTR(-ENOMEM);
- 		trace_pnfs_update_layout(ino, pos, count, iomode, lo, lseg,
- 				 PNFS_UPDATE_LAYOUT_NOMEM);
- 		goto out;
-@@ -2090,6 +2091,7 @@ pnfs_update_layout(struct inode *ino,
+diff --git a/drivers/infiniband/hw/hfi1/sdma.c b/drivers/infiniband/hw/hfi1/sdma.c
+index 248be21acdbe..2a684fc6056e 100644
+--- a/drivers/infiniband/hw/hfi1/sdma.c
++++ b/drivers/infiniband/hw/hfi1/sdma.c
+@@ -1329,11 +1329,13 @@ void sdma_clean(struct hfi1_devdata *dd, size_t num_engines)
+ 		kvfree(sde->tx_ring);
+ 		sde->tx_ring = NULL;
+ 	}
+-	spin_lock_irq(&dd->sde_map_lock);
+-	sdma_map_free(rcu_access_pointer(dd->sdma_map));
+-	RCU_INIT_POINTER(dd->sdma_map, NULL);
+-	spin_unlock_irq(&dd->sde_map_lock);
+-	synchronize_rcu();
++	if (rcu_access_pointer(dd->sdma_map)) {
++		spin_lock_irq(&dd->sde_map_lock);
++		sdma_map_free(rcu_access_pointer(dd->sdma_map));
++		RCU_INIT_POINTER(dd->sdma_map, NULL);
++		spin_unlock_irq(&dd->sde_map_lock);
++		synchronize_rcu();
++	}
+ 	kfree(dd->per_sdma);
+ 	dd->per_sdma = NULL;
  
- 	lgp = pnfs_alloc_init_layoutget_args(ino, ctx, &stateid, &arg, gfp_flags);
- 	if (!lgp) {
-+		lseg = ERR_PTR(-ENOMEM);
- 		trace_pnfs_update_layout(ino, pos, count, iomode, lo, NULL,
- 					 PNFS_UPDATE_LAYOUT_NOMEM);
- 		nfs_layoutget_end(lo);
 -- 
 2.35.1
 
