@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 026A2CCA492
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A86EECCA498
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:46:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356830AbiFMLpG (ORCPT
+        id S1356159AbiFMLnu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:45:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43094 "EHLO
+        Mon, 13 Jun 2022 07:43:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355620AbiFMLjU (ORCPT
+        with ESMTP id S1355583AbiFMLjQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:39:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1CE3DFA1;
-        Mon, 13 Jun 2022 03:49:16 -0700 (PDT)
+        Mon, 13 Jun 2022 07:39:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AFC62408B;
+        Mon, 13 Jun 2022 03:49:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DECC61260;
-        Mon, 13 Jun 2022 10:49:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D0B8C34114;
-        Mon, 13 Jun 2022 10:49:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BABF46112A;
+        Mon, 13 Jun 2022 10:49:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CADEAC34114;
+        Mon, 13 Jun 2022 10:49:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117355;
-        bh=nArZdsnwotAu8g4xr9MWXCPE0GiiH9M5SBA+KyiJvrk=;
+        s=korg; t=1655117342;
+        bh=kFi8FSqGoOk15KA+28maHSnPzFxrYRhoHR+leMFLd8k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mELDoljNL5hMzGO+ylntJg5rwV+/bZMGkhyWa1I7TWmNeOivRxKy5yveNOdfNnTLi
-         hSxZP/+IqOCklLzs7CtUXX37QNR0/a+aTurGnd9Io1a0xWK/X8ZUdmLLCrB9yjYBjy
-         y830FrVMzKP9jNjucDcb6DnAENn21lnh4X6RM/vM=
+        b=xDtu1VyknV/7ACFD4dQxcRsw4ghjV2DojPElh28adrZdOdS9ei58wbq5X1FlZcEpo
+         kG0A2Kcr6LhTj0Mo/7RMxnjb7oZ2bTaF++EgmXhtDodXy67K/F0ajkK63nGAkJD8nF
+         ngRKdSS3EWhTNW2DcVjwpsT1WLTJ3ejgkxFV9ZKA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Bloch <mbloch@nvidia.com>,
-        Maor Gottlieb <maorg@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 361/411] net/mlx5: fs, fail conflicting actions
-Date:   Mon, 13 Jun 2022 12:10:34 +0200
-Message-Id: <20220613094939.517130002@linuxfoundation.org>
+Subject: [PATCH 5.4 359/411] net: ipv6: unexport __init-annotated seg6_hmac_init()
+Date:   Mon, 13 Jun 2022 12:10:32 +0200
+Message-Id: <20220613094939.459486488@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -51,89 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Bloch <mbloch@nvidia.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-[ Upstream commit 8fa5e7b20e01042b14f8cd684d2da9b638460c74 ]
+[ Upstream commit 5801f064e35181c71857a80ff18af4dbec3c5f5c ]
 
-When combining two steering rules into one check
-not only do they share the same actions but those
-actions are also the same. This resolves an issue where
-when creating two different rules with the same match
-the actions are overwritten and one of the rules is deleted
-a FW syndrome can be seen in dmesg.
+EXPORT_SYMBOL and __init is a bad combination because the .init.text
+section is freed up after the initialization. Hence, modules cannot
+use symbols annotated __init. The access to a freed symbol may end up
+with kernel panic.
 
-mlx5_core 0000:03:00.0: mlx5_cmd_check:819:(pid 2105): DEALLOC_MODIFY_HEADER_CONTEXT(0x941) op_mod(0x0) failed, status bad resource state(0x9), syndrome (0x1ab444)
+modpost used to detect it, but it has been broken for a decade.
 
-Fixes: 0d235c3fabb7 ("net/mlx5: Add hash table to search FTEs in a flow-group")
-Signed-off-by: Mark Bloch <mbloch@nvidia.com>
-Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Recently, I fixed modpost so it started to warn it again, then this
+showed up in linux-next builds.
+
+There are two ways to fix it:
+
+  - Remove __init
+  - Remove EXPORT_SYMBOL
+
+I chose the latter for this case because the caller (net/ipv6/seg6.c)
+and the callee (net/ipv6/seg6_hmac.c) belong to the same module.
+It seems an internal function call in ipv6.ko.
+
+Fixes: bf355b8d2c30 ("ipv6: sr: add core files for SR HMAC support")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/mellanox/mlx5/core/fs_core.c | 35 +++++++++++++++++--
- 1 file changed, 32 insertions(+), 3 deletions(-)
+ net/ipv6/seg6_hmac.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-index 8c8b68e7abb4..41087c0618c1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -1450,9 +1450,22 @@ static struct mlx5_flow_rule *find_flow_rule(struct fs_fte *fte,
- 	return NULL;
- }
- 
--static bool check_conflicting_actions(u32 action1, u32 action2)
-+static bool check_conflicting_actions_vlan(const struct mlx5_fs_vlan *vlan0,
-+					   const struct mlx5_fs_vlan *vlan1)
+diff --git a/net/ipv6/seg6_hmac.c b/net/ipv6/seg6_hmac.c
+index ffcfcd2b128f..a4cad71c4204 100644
+--- a/net/ipv6/seg6_hmac.c
++++ b/net/ipv6/seg6_hmac.c
+@@ -401,7 +401,6 @@ int __init seg6_hmac_init(void)
  {
--	u32 xored_actions = action1 ^ action2;
-+	return vlan0->ethtype != vlan1->ethtype ||
-+	       vlan0->vid != vlan1->vid ||
-+	       vlan0->prio != vlan1->prio;
-+}
-+
-+static bool check_conflicting_actions(const struct mlx5_flow_act *act1,
-+				      const struct mlx5_flow_act *act2)
-+{
-+	u32 action1 = act1->action;
-+	u32 action2 = act2->action;
-+	u32 xored_actions;
-+
-+	xored_actions = action1 ^ action2;
- 
- 	/* if one rule only wants to count, it's ok */
- 	if (action1 == MLX5_FLOW_CONTEXT_ACTION_COUNT ||
-@@ -1469,6 +1482,22 @@ static bool check_conflicting_actions(u32 action1, u32 action2)
- 			     MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH_2))
- 		return true;
- 
-+	if (action1 & MLX5_FLOW_CONTEXT_ACTION_PACKET_REFORMAT &&
-+	    act1->pkt_reformat != act2->pkt_reformat)
-+		return true;
-+
-+	if (action1 & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR &&
-+	    act1->modify_hdr != act2->modify_hdr)
-+		return true;
-+
-+	if (action1 & MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH &&
-+	    check_conflicting_actions_vlan(&act1->vlan[0], &act2->vlan[0]))
-+		return true;
-+
-+	if (action1 & MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH_2 &&
-+	    check_conflicting_actions_vlan(&act1->vlan[1], &act2->vlan[1]))
-+		return true;
-+
- 	return false;
+ 	return seg6_hmac_init_algo();
  }
+-EXPORT_SYMBOL(seg6_hmac_init);
  
-@@ -1476,7 +1505,7 @@ static int check_conflicting_ftes(struct fs_fte *fte,
- 				  const struct mlx5_flow_context *flow_context,
- 				  const struct mlx5_flow_act *flow_act)
+ int __net_init seg6_hmac_net_init(struct net *net)
  {
--	if (check_conflicting_actions(flow_act->action, fte->action.action)) {
-+	if (check_conflicting_actions(flow_act, &fte->action)) {
- 		mlx5_core_warn(get_dev(&fte->node),
- 			       "Found two FTEs with conflicting actions\n");
- 		return -EEXIST;
 -- 
 2.35.1
 
