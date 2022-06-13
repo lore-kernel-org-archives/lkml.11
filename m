@@ -2,51 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC441CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:53:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 471FCCCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:53:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357162AbiFMLxF (ORCPT
+        id S1357179AbiFMLxJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:53:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53932 "EHLO
+        Mon, 13 Jun 2022 07:53:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356172AbiFMLsZ (ORCPT
+        with ESMTP id S1356407AbiFMLtC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:48:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75E5C20BC6;
-        Mon, 13 Jun 2022 03:52:55 -0700 (PDT)
+        Mon, 13 Jun 2022 07:49:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 823A727158;
+        Mon, 13 Jun 2022 03:53:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4471B61257;
-        Mon, 13 Jun 2022 10:52:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 589B0C34114;
-        Mon, 13 Jun 2022 10:52:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 176B4B80EAA;
+        Mon, 13 Jun 2022 10:53:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65BEFC3411E;
+        Mon, 13 Jun 2022 10:53:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117574;
-        bh=zfVYQZExyk2+PW74rnQ2CE7NuMP51ZzEX49QRBSfEM8=;
+        s=korg; t=1655117582;
+        bh=413BEscQ9cXo782TPU6XN4FJoBmVDP59JOlzKCmGRjc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ruTQOPRu867ES8fErIdRdDBo8qbLPjqzHiCEWX+kxQovx++z7hPeJ89BwZYn++rRP
-         +1DwpHFfkCA6pFzo5mCJa7Xsr4ISKr81yTMBxX1IqUUuOvFQlrxH0WBV+gyLPu1Ksr
-         dYlweQCfH9yW3LNT2oAcgMRA50xGjUuHTjWix9pk=
+        b=bQkL8PE4XLaleRL0ZWxAQGIrHUNlVVjWE682TnHyv02ntLdFR4XU9W0OynxvFOC/E
+         2vCVb+NCcjhAELDPQnx9ilcUlQG2vixAgJLAtfeX0ibKW2InzzoIAysGS0Cl/HxX7R
+         YaJ01/dslP8gjolj3PJEyb6aMGBjbhEO8tTgPhXs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miles Chen <miles.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Zhiqiang Lin <zhiqiang.lin@mediatek.com>,
-        CK Hu <ck.hu@mediatek.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 064/287] drm/mediatek: Fix mtk_cec_mask()
-Date:   Mon, 13 Jun 2022 12:08:08 +0200
-Message-Id: <20220613094925.811122915@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH 5.4 403/411] mmc: block: Fix CQE recovery reset success
+Date:   Mon, 13 Jun 2022 12:11:16 +0200
+Message-Id: <20220613094940.907662626@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
-References: <20220613094923.832156175@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,45 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miles Chen <miles.chen@mediatek.com>
+From: Adrian Hunter <adrian.hunter@intel.com>
 
-[ Upstream commit 2c5d69b0a141e1e98febe3111e6f4fd8420493a5 ]
+commit a051246b786af7e4a9d9219cc7038a6e8a411531 upstream.
 
-In current implementation, mtk_cec_mask() writes val into target register
-and ignores the mask. After talking to our hdmi experts, mtk_cec_mask()
-should read a register, clean only mask bits, and update (val | mask) bits
-to the register.
+The intention of the use of mmc_blk_reset_success() in
+mmc_blk_cqe_recovery() was to prevent repeated resets when retrying and
+getting the same error. However, that may not be the case - any amount
+of time and I/O may pass before another recovery is needed, in which
+case there would be no reason to deny it the opportunity to recover via
+a reset if necessary. CQE recovery is expected seldom and failure to
+recover (if the clear tasks command fails), even more seldom, so it is
+better to allow the reset always, which can be done by calling
+mmc_blk_reset_success() always.
 
-Link: https://patchwork.kernel.org/project/linux-mediatek/patch/20220315232301.2434-1-miles.chen@mediatek.com/
-Fixes: 8f83f26891e1 ("drm/mediatek: Add HDMI support")
-Signed-off-by: Miles Chen <miles.chen@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Zhiqiang Lin <zhiqiang.lin@mediatek.com>
-Cc: CK Hu <ck.hu@mediatek.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 1e8e55b67030c6 ("mmc: block: Add CQE support")
+Cc: stable@vger.kernel.org
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Link: https://lore.kernel.org/r/20220531171922.76080-1-adrian.hunter@intel.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/mediatek/mtk_cec.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mmc/core/block.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_cec.c b/drivers/gpu/drm/mediatek/mtk_cec.c
-index 5ce84d0dbf81..acbf878083d7 100644
---- a/drivers/gpu/drm/mediatek/mtk_cec.c
-+++ b/drivers/gpu/drm/mediatek/mtk_cec.c
-@@ -92,7 +92,7 @@ static void mtk_cec_mask(struct mtk_cec *cec, unsigned int offset,
- 	u32 tmp = readl(cec->regs + offset) & ~mask;
+--- a/drivers/mmc/core/block.c
++++ b/drivers/mmc/core/block.c
+@@ -1492,8 +1492,7 @@ void mmc_blk_cqe_recovery(struct mmc_que
+ 	err = mmc_cqe_recovery(host);
+ 	if (err)
+ 		mmc_blk_reset(mq->blkdata, host, MMC_BLK_CQE_RECOVERY);
+-	else
+-		mmc_blk_reset_success(mq->blkdata, MMC_BLK_CQE_RECOVERY);
++	mmc_blk_reset_success(mq->blkdata, MMC_BLK_CQE_RECOVERY);
  
- 	tmp |= val & mask;
--	writel(val, cec->regs + offset);
-+	writel(tmp, cec->regs + offset);
+ 	pr_debug("%s: CQE recovery done\n", mmc_hostname(host));
  }
- 
- void mtk_cec_set_hpd_event(struct device *dev,
--- 
-2.35.1
-
 
 
