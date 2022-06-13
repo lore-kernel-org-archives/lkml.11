@@ -2,417 +2,302 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B853C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:41:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6136BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:41:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385049AbiFMOln (ORCPT
+        id S1385091AbiFMOlq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:41:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58936 "EHLO
+        Mon, 13 Jun 2022 10:41:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385454AbiFMOkI (ORCPT
+        with ESMTP id S1385499AbiFMOkL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:40:08 -0400
+        Mon, 13 Jun 2022 10:40:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F1504D270;
-        Mon, 13 Jun 2022 04:50:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1919AF31D;
+        Mon, 13 Jun 2022 04:50:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CEE9B61487;
-        Mon, 13 Jun 2022 11:50:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3249DC3411B;
-        Mon, 13 Jun 2022 11:50:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655121003;
-        bh=byfFgpOE/t15kM3s+ecOwCnbDmH5NQDsE+j0LndFSJg=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=GmG0L8JKSZ8IHfI5tlyVepXjrIDvIpzcICYWCGkEqDI4dZ58Zs1fQDYV0WUis4WLU
-         FV8wGpW+LhU7+T/YwRH3Z0ZtIo2YJy1g3Z63Gf2L3shQBmsXcbzDnJFdZFS7ZxLT86
-         j+g1fqcEufG30CsZ+3q/lp3Vh4t4DH7Xsc1eEqxXdkFgM3kpP5Fkrh3bMLea7iADIN
-         xtzZ0SATbrgvv2T8oUEGRD91nrRUL4jAZHARbt7rXuHxGOxzmaaTsIWgNCw9mJ1Uvv
-         sXVJBbM0W4qU2ynrLo8BsSsJoGsYdHHVEtm4FxytkJBtt3hsnbVtfMQ+tY0rrSRuZ/
-         2jYQoKrisoytg==
-Received: by mail-vk1-f180.google.com with SMTP id e7so2485332vkh.2;
-        Mon, 13 Jun 2022 04:50:03 -0700 (PDT)
-X-Gm-Message-State: AOAM531Lbi5I7Wkh/14TpY1Myyodc8jr7/LZtVMeS5s3IfUkfy6FSibw
-        pEX2UX35QLLWn3yLtpWw8WH4vLUduSlt2BR18zw=
-X-Google-Smtp-Source: ABdhPJxq/0/4q1oeGpprMw4bGAPq+XAL0VxAyaViNgfOWFWXYliK/L1n9hhN1g6AglavHrR/Oze6rV8Mcr6HPjLTGNQ=
-X-Received: by 2002:a05:6122:200f:b0:368:990b:3ffc with SMTP id
- l15-20020a056122200f00b00368990b3ffcmr703460vkd.2.1655121002098; Mon, 13 Jun
- 2022 04:50:02 -0700 (PDT)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 92DB56146E;
+        Mon, 13 Jun 2022 11:50:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 957B2C34114;
+        Mon, 13 Jun 2022 11:50:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655121007;
+        bh=jE3W0hdEMyYHxjf7LaaIstu20hqOtMFfzW4n4q0p/Ss=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hwc1z0MTMk94Dr7Vs+NMklXq9TjDAmVCsUgoZS7Z2BCc6cw6io/sr3iaPqp0chFy8
+         sLp0YCkqJg1O5Rp8ms28ZNQCoRhXYD2pCoITmMf6YEuJlmsEpTMA0mz4ca5o42PuB2
+         BzdTi5iIarWAohvoI8DDHPsSN14CokExh0gV6s80=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jouni Malinen <j@w1.fi>,
+        Johannes Berg <johannes.berg@intel.com>,
+        anton ivanov <anton.ivanov@cambridgegreys.com>,
+        Richard Weinberger <richard@nod.at>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 237/298] um: line: Use separate IRQs per line
+Date:   Mon, 13 Jun 2022 12:12:11 +0200
+Message-Id: <20220613094932.278694700@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
+References: <20220613094924.913340374@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <CAJF2gTQoSQq_S4UvAiXgMviT040Ls8+VkDszQSke1a0zbXZ82A@mail.gmail.com>
- <mhng-7a274375-0d99-41c8-98a3-853d110f62e9@palmer-ri-x1c9>
-In-Reply-To: <mhng-7a274375-0d99-41c8-98a3-853d110f62e9@palmer-ri-x1c9>
-From:   Guo Ren <guoren@kernel.org>
-Date:   Mon, 13 Jun 2022 19:49:50 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTTXO42_TsZudaQuB9Re0teu__EZ11JZ96nktMqsQkMYNA@mail.gmail.com>
-Message-ID: <CAJF2gTTXO42_TsZudaQuB9Re0teu__EZ11JZ96nktMqsQkMYNA@mail.gmail.com>
-Subject: Re: [PATCH V4 5/5] riscv: atomic: Optimize LRSC-pairs atomic ops with
- .aqrl annotation
-To:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Daniel Lustig <dlustig@nvidia.com>
-Cc:     Andrea Parri <parri.andrea@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Guo Ren <guoren@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 2, 2022 at 1:59 PM Palmer Dabbelt <palmer@dabbelt.com> wrote:
->
-> On Sun, 22 May 2022 06:12:56 PDT (-0700), guoren@kernel.org wrote:
-> > On Sun, May 22, 2022 at 4:46 AM Palmer Dabbelt <palmer@dabbelt.com> wrote:
-> >>
-> >> On Wed, 04 May 2022 20:55:26 PDT (-0700), guoren@kernel.org wrote:
-> >> > From: Guo Ren <guoren@linux.alibaba.com>
-> >> >
-> >> > The current implementation is the same with 8e86f0b409a4
-> >> > ("arm64: atomics: fix use of acquire + release for full barrier
-> >> > semantics"). RISC-V could combine acquire and release into the SC
-> >> > instructions and it could reduce a fence instruction to gain better
-> >> > performance. Here is related descriptio from RISC-V ISA 10.2
-> >> > Load-Reserved/Store-Conditional Instructions:
-> >> >
-> >> >  - .aq:   The LR/SC sequence can be given acquire semantics by
-> >> >           setting the aq bit on the LR instruction.
-> >> >  - .rl:   The LR/SC sequence can be given release semantics by
-> >> >           setting the rl bit on the SC instruction.
-> >> >  - .aqrl: Setting the aq bit on the LR instruction, and setting
-> >> >           both the aq and the rl bit on the SC instruction makes
-> >> >           the LR/SC sequence sequentially consistent, meaning that
-> >> >           it cannot be reordered with earlier or later memory
-> >> >           operations from the same hart.
-> >> >
-> >> >  Software should not set the rl bit on an LR instruction unless
-> >> >  the aq bit is also set, nor should software set the aq bit on an
-> >> >  SC instruction unless the rl bit is also set. LR.rl and SC.aq
-> >> >  instructions are not guaranteed to provide any stronger ordering
-> >> >  than those with both bits clear, but may result in lower
-> >> >  performance.
-> >> >
-> >> > The only difference is when sc.w/d.aqrl failed, it would cause .aq
-> >> > effect than before. But it's okay for sematic because overlap
-> >> > address LR couldn't beyond relating SC.
-> >>
-> >> IIUC that's not accurate, or at least wasn't in 2018.  The ISA tends to
-> >> drift around a bit, so it's possible things have changed since then.
-> >> 5ce6c1f3535f ("riscv/atomic: Strengthen implementations with fences")
-> > Thx for explaining, that why I suspected with the sentence in the comment:
-> > "which do not give full-ordering with .aqrl"
->
-> Sorry, I'm not quite sure what you're saying here.  My understanding is
-> that this change results in mappings that violate LKMM, based on the
-> rationale in that previous commit.  IIUC that all still holds, but I'm
-> not really a memory model person so I frequently miss stuff around
-> there.
-5ce6c1f3535f ("riscv/atomic: Strengthen implementations with fences")
-is about fixup wrong spinlock/unlock implementation and not relate to
-this patch.
+From: Johannes Berg <johannes.berg@intel.com>
 
-Actually, sc.w.aqrl is very strong and the same with:
-fence rw, rw
-sc.w
-fence rw,rw
+[ Upstream commit d5a9597d6916a76663085db984cb8fe97f0a5c56 ]
 
-So "which do not give full-ordering with .aqrl" is not writen in
-RISC-V ISA and we could use sc.w/d.aqrl with LKMM.
+Today, all possible serial lines (ssl*=) as well as all
+possible consoles (con*=) each share a single interrupt
+(with a fixed number) with others of the same type.
 
->
-> >> describes the issue more specifically, that's when we added these
-> >> fences.  There have certainly been complains that these fences are too
-> >> heavyweight for the HW to go fast, but IIUC it's the best option we have
-> > Yeah, it would reduce the performance on D1 and our next-generation
-> > processor has optimized fence performance a lot.
->
-> Definately a bummer that the fences make the HW go slow, but I don't
-> really see any other way to go about this.  If you think these mappings
-> are valid for LKMM and RVWMO then we should figure this out, but trying
-> to drop fences to make HW go faster in ways that violate the memory
-> model is going to lead to insanity.
-Actually, this patch is okay with the ISA spec, and Dan also thought
-it was valid.
+Now, if you have two lines, say ssl0 and ssl1, and one
+of them is connected to an fd you cannot read (e.g. a
+file), but the other gets a read interrupt, then both
+of them get the interrupt since it's shared. Then, the
+read() call will return EOF, since it's a file being
+written and there's nothing to read (at least not at
+the current offset, at the end).
 
-ref: https://lore.kernel.org/lkml/41e01514-74ca-84f2-f5cc-2645c444fd8e@nvidia.com/raw
-------
-> 2. Using .aqrl to replace the fence rw, rw is okay to ISA manual,
-> right? And reducing a fence instruction to gain better performance:
->                 "0:     lr.w     %[p],  %[c]\n"
->                  "       sub      %[rc], %[p], %[o]\n"
->                  "       bltz     %[rc], 1f\n".
->  -               "       sc.w.rl  %[rc], %[rc], %[c]\n"
->  +              "       sc.w.aqrl %[rc], %[rc], %[c]\n"
->                  "       bnez     %[rc], 0b\n"
->  -               "       fence    rw, rw\n"
+Unfortunately, this is treated as a read error, and we
+close this line, losing all the possible output.
 
-Yes, using .aqrl is valid.
+It might be possible to work around this and make the
+IRQ sharing work, however, now that we have dynamically
+allocated IRQs that are easy to use, simply use that to
+achieve separating between the events; then there's no
+interrupt for that line and we never attempt the read
+in the first place, thus not closing the line.
 
-Dan
-------
+This manifested itself in the wifi hostap/hwsim tests
+where the parallel script communicates via one serial
+console and the kernel messages go to another (a file)
+and sending data on the communication console caused
+the kernel messages to stop flowing into the file.
 
+Reported-by: Jouni Malinen <j@w1.fi>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Acked-By: anton ivanov <anton.ivanov@cambridgegreys.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/um/drivers/chan_kern.c     | 10 +++++-----
+ arch/um/drivers/line.c          | 22 +++++++++++++---------
+ arch/um/drivers/line.h          |  4 ++--
+ arch/um/drivers/ssl.c           |  2 --
+ arch/um/drivers/stdio_console.c |  2 --
+ arch/um/include/asm/irq.h       | 22 +++++++++-------------
+ 6 files changed, 29 insertions(+), 33 deletions(-)
 
->
-> I can definately buy the argument that we have mappings of various
-> application memory models that are difficult to make fast given the ISA
-> encodings of RVWMO we have, but that's not really an issue we can fix in
-> the atomic mappings.
->
-> >> given the current set of memory model primitives we implement in the
-> >> ISA (ie, there's more in RVWMO but no way to encode that).
-> >>
-> >> The others all look good, though, and as these are really all
-> >> independent cleanups I'm going to go ahead and put those three on
-> >> for-next.
-> >>
-> >> There's also a bunch of checkpatch errors.  The ones about "*" seem
-> >> spurious, but the alignment ones aren't.  Here's my fixups:
-> > Thx for the fixup.
-> >
-> >>
-> >>     diff --git a/arch/riscv/include/asm/atomic.h b/arch/riscv/include/asm/atomic.h
-> >>     index 34f757dfc8f2..0bde499fa8bc 100644
-> >>     --- a/arch/riscv/include/asm/atomic.h
-> >>     +++ b/arch/riscv/include/asm/atomic.h
-> >>     @@ -86,9 +86,9 @@ ATOMIC_OPS(xor, xor,  i)
-> >>       * versions, while the logical ops only have fetch versions.
-> >>       */
-> >>      #define ATOMIC_FETCH_OP(op, asm_op, I, asm_type, c_type, prefix)   \
-> >>     -static __always_inline                                                     \
-> >>     -c_type arch_atomic##prefix##_fetch_##op##_relaxed(c_type i,                \
-> >>     -                                        atomic##prefix##_t *v)     \
-> >>     +static __always_inline c_type                                              \
-> >>     +arch_atomic##prefix##_fetch_##op##_relaxed(c_type i,                       \
-> >>     +                                      atomic##prefix##_t *v)       \
-> >>      {                                                                  \
-> >>         register c_type ret;                                            \
-> >>         __asm__ __volatile__ (                                          \
-> >>     @@ -98,9 +98,9 @@ c_type arch_atomic##prefix##_fetch_##op##_relaxed(c_type i,               \
-> >>                 : "memory");                                            \
-> >>         return ret;                                                     \
-> >>      }                                                                  \
-> >>     -static __always_inline                                                     \
-> >>     -c_type arch_atomic##prefix##_fetch_##op##_acquire(c_type i,                \
-> >>     -                                        atomic##prefix##_t *v)     \
-> >>     +static __always_inline c_type                                              \
-> >>     +arch_atomic##prefix##_fetch_##op##_acquire(c_type i,                       \
-> >>     +                                      atomic##prefix##_t *v)       \
-> >>      {                                                                  \
-> >>         register c_type ret;                                            \
-> >>         __asm__ __volatile__ (                                          \
-> >>     @@ -110,9 +110,9 @@ c_type arch_atomic##prefix##_fetch_##op##_acquire(c_type i,             \
-> >>                 : "memory");                                            \
-> >>         return ret;                                                     \
-> >>      }                                                                  \
-> >>     -static __always_inline                                                     \
-> >>     -c_type arch_atomic##prefix##_fetch_##op##_release(c_type i,                \
-> >>     -                                        atomic##prefix##_t *v)     \
-> >>     +static __always_inline c_type                                              \
-> >>     +arch_atomic##prefix##_fetch_##op##_release(c_type i,                       \
-> >>     +                                      atomic##prefix##_t *v)       \
-> >>      {                                                                  \
-> >>         register c_type ret;                                            \
-> >>         __asm__ __volatile__ (                                          \
-> >>     @@ -122,8 +122,8 @@ c_type arch_atomic##prefix##_fetch_##op##_release(c_type i,             \
-> >>                 : "memory");                                            \
-> >>         return ret;                                                     \
-> >>      }                                                                  \
-> >>     -static __always_inline                                                     \
-> >>     -c_type arch_atomic##prefix##_fetch_##op(c_type i, atomic##prefix##_t *v)   \
-> >>     +static __always_inline c_type                                              \
-> >>     +arch_atomic##prefix##_fetch_##op(c_type i, atomic##prefix##_t *v)  \
-> >>      {                                                                  \
-> >>         register c_type ret;                                            \
-> >>         __asm__ __volatile__ (                                          \
-> >>     @@ -135,28 +135,28 @@ c_type arch_atomic##prefix##_fetch_##op(c_type i, atomic##prefix##_t *v)      \
-> >>      }
-> >>
-> >>      #define ATOMIC_OP_RETURN(op, asm_op, c_op, I, asm_type, c_type, prefix)    \
-> >>     -static __always_inline                                                     \
-> >>     -c_type arch_atomic##prefix##_##op##_return_relaxed(c_type i,               \
-> >>     -                                         atomic##prefix##_t *v)    \
-> >>     +static __always_inline c_type                                              \
-> >>     +arch_atomic##prefix##_##op##_return_relaxed(c_type i,                      \
-> >>     +                                       atomic##prefix##_t *v)      \
-> >>      {                                                                  \
-> >>     -        return arch_atomic##prefix##_fetch_##op##_relaxed(i, v) c_op I;    \
-> >>     +   return arch_atomic##prefix##_fetch_##op##_relaxed(i, v) c_op I; \
-> >>      }                                                                  \
-> >>     -static __always_inline                                                     \
-> >>     -c_type arch_atomic##prefix##_##op##_return_acquire(c_type i,               \
-> >>     -                                         atomic##prefix##_t *v)    \
-> >>     +static __always_inline c_type                                              \
-> >>     +arch_atomic##prefix##_##op##_return_acquire(c_type i,                      \
-> >>     +                                       atomic##prefix##_t *v)      \
-> >>      {                                                                  \
-> >>     -        return arch_atomic##prefix##_fetch_##op##_acquire(i, v) c_op I;    \
-> >>     +   return arch_atomic##prefix##_fetch_##op##_acquire(i, v) c_op I; \
-> >>      }                                                                  \
-> >>     -static __always_inline                                                     \
-> >>     -c_type arch_atomic##prefix##_##op##_return_release(c_type i,               \
-> >>     -                                         atomic##prefix##_t *v)    \
-> >>     +static __always_inline c_type                                              \
-> >>     +arch_atomic##prefix##_##op##_return_release(c_type i,                      \
-> >>     +                                       atomic##prefix##_t *v)      \
-> >>      {                                                                  \
-> >>     -        return arch_atomic##prefix##_fetch_##op##_release(i, v) c_op I;    \
-> >>     +   return arch_atomic##prefix##_fetch_##op##_release(i, v) c_op I; \
-> >>      }                                                                  \
-> >>     -static __always_inline                                                     \
-> >>     -c_type arch_atomic##prefix##_##op##_return(c_type i, atomic##prefix##_t *v)        \
-> >>     +static __always_inline c_type                                              \
-> >>     +arch_atomic##prefix##_##op##_return(c_type i, atomic##prefix##_t *v)       \
-> >>      {                                                                  \
-> >>     -        return arch_atomic##prefix##_fetch_##op(i, v) c_op I;              \
-> >>     +   return arch_atomic##prefix##_fetch_##op(i, v) c_op I;           \
-> >>      }
-> >>
-> >>      #ifdef CONFIG_GENERIC_ATOMIC64
-> >>
-> >>
-> >> >
-> >> > Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-> >> > Signed-off-by: Guo Ren <guoren@kernel.org>
-> >> > Cc: Palmer Dabbelt <palmer@dabbelt.com>
-> >> > Cc: Mark Rutland <mark.rutland@arm.com>
-> >> > Cc: Dan Lustig <dlustig@nvidia.com>
-> >> > Cc: Andrea Parri <parri.andrea@gmail.com>
-> >> > ---
-> >> >  arch/riscv/include/asm/atomic.h  | 24 ++++++++----------------
-> >> >  arch/riscv/include/asm/cmpxchg.h |  6 ++----
-> >> >  2 files changed, 10 insertions(+), 20 deletions(-)
-> >> >
-> >> > diff --git a/arch/riscv/include/asm/atomic.h b/arch/riscv/include/asm/atomic.h
-> >> > index 34f757dfc8f2..aef8aa9ac4f4 100644
-> >> > --- a/arch/riscv/include/asm/atomic.h
-> >> > +++ b/arch/riscv/include/asm/atomic.h
-> >> > @@ -269,9 +269,8 @@ static __always_inline int arch_atomic_fetch_add_unless(atomic_t *v, int a, int
-> >> >               "0:     lr.w     %[p],  %[c]\n"
-> >> >               "       beq      %[p],  %[u], 1f\n"
-> >> >               "       add      %[rc], %[p], %[a]\n"
-> >> > -             "       sc.w.rl  %[rc], %[rc], %[c]\n"
-> >> > +             "       sc.w.aqrl  %[rc], %[rc], %[c]\n"
-> >> >               "       bnez     %[rc], 0b\n"
-> >> > -             "       fence    rw, rw\n"
-> >> >               "1:\n"
-> >> >               : [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
-> >> >               : [a]"r" (a), [u]"r" (u)
-> >> > @@ -290,9 +289,8 @@ static __always_inline s64 arch_atomic64_fetch_add_unless(atomic64_t *v, s64 a,
-> >> >               "0:     lr.d     %[p],  %[c]\n"
-> >> >               "       beq      %[p],  %[u], 1f\n"
-> >> >               "       add      %[rc], %[p], %[a]\n"
-> >> > -             "       sc.d.rl  %[rc], %[rc], %[c]\n"
-> >> > +             "       sc.d.aqrl  %[rc], %[rc], %[c]\n"
-> >> >               "       bnez     %[rc], 0b\n"
-> >> > -             "       fence    rw, rw\n"
-> >> >               "1:\n"
-> >> >               : [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
-> >> >               : [a]"r" (a), [u]"r" (u)
-> >> > @@ -382,9 +380,8 @@ static __always_inline bool arch_atomic_inc_unless_negative(atomic_t *v)
-> >> >               "0:     lr.w      %[p],  %[c]\n"
-> >> >               "       bltz      %[p],  1f\n"
-> >> >               "       addi      %[rc], %[p], 1\n"
-> >> > -             "       sc.w.rl   %[rc], %[rc], %[c]\n"
-> >> > +             "       sc.w.aqrl %[rc], %[rc], %[c]\n"
-> >> >               "       bnez      %[rc], 0b\n"
-> >> > -             "       fence     rw, rw\n"
-> >> >               "1:\n"
-> >> >               : [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
-> >> >               :
-> >> > @@ -402,9 +399,8 @@ static __always_inline bool arch_atomic_dec_unless_positive(atomic_t *v)
-> >> >               "0:     lr.w      %[p],  %[c]\n"
-> >> >               "       bgtz      %[p],  1f\n"
-> >> >               "       addi      %[rc], %[p], -1\n"
-> >> > -             "       sc.w.rl   %[rc], %[rc], %[c]\n"
-> >> > +             "       sc.w.aqrl %[rc], %[rc], %[c]\n"
-> >> >               "       bnez      %[rc], 0b\n"
-> >> > -             "       fence     rw, rw\n"
-> >> >               "1:\n"
-> >> >               : [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
-> >> >               :
-> >> > @@ -422,9 +418,8 @@ static __always_inline int arch_atomic_dec_if_positive(atomic_t *v)
-> >> >               "0:     lr.w     %[p],  %[c]\n"
-> >> >               "       addi     %[rc], %[p], -1\n"
-> >> >               "       bltz     %[rc], 1f\n"
-> >> > -             "       sc.w.rl  %[rc], %[rc], %[c]\n"
-> >> > +             "       sc.w.aqrl %[rc], %[rc], %[c]\n"
-> >> >               "       bnez     %[rc], 0b\n"
-> >> > -             "       fence    rw, rw\n"
-> >> >               "1:\n"
-> >> >               : [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
-> >> >               :
-> >> > @@ -444,9 +439,8 @@ static __always_inline bool arch_atomic64_inc_unless_negative(atomic64_t *v)
-> >> >               "0:     lr.d      %[p],  %[c]\n"
-> >> >               "       bltz      %[p],  1f\n"
-> >> >               "       addi      %[rc], %[p], 1\n"
-> >> > -             "       sc.d.rl   %[rc], %[rc], %[c]\n"
-> >> > +             "       sc.d.aqrl %[rc], %[rc], %[c]\n"
-> >> >               "       bnez      %[rc], 0b\n"
-> >> > -             "       fence     rw, rw\n"
-> >> >               "1:\n"
-> >> >               : [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
-> >> >               :
-> >> > @@ -465,9 +459,8 @@ static __always_inline bool arch_atomic64_dec_unless_positive(atomic64_t *v)
-> >> >               "0:     lr.d      %[p],  %[c]\n"
-> >> >               "       bgtz      %[p],  1f\n"
-> >> >               "       addi      %[rc], %[p], -1\n"
-> >> > -             "       sc.d.rl   %[rc], %[rc], %[c]\n"
-> >> > +             "       sc.d.aqrl %[rc], %[rc], %[c]\n"
-> >> >               "       bnez      %[rc], 0b\n"
-> >> > -             "       fence     rw, rw\n"
-> >> >               "1:\n"
-> >> >               : [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
-> >> >               :
-> >> > @@ -486,9 +479,8 @@ static __always_inline s64 arch_atomic64_dec_if_positive(atomic64_t *v)
-> >> >               "0:     lr.d     %[p],  %[c]\n"
-> >> >               "       addi      %[rc], %[p], -1\n"
-> >> >               "       bltz     %[rc], 1f\n"
-> >> > -             "       sc.d.rl  %[rc], %[rc], %[c]\n"
-> >> > +             "       sc.d.aqrl %[rc], %[rc], %[c]\n"
-> >> >               "       bnez     %[rc], 0b\n"
-> >> > -             "       fence    rw, rw\n"
-> >> >               "1:\n"
-> >> >               : [p]"=&r" (prev), [rc]"=&r" (rc), [c]"+A" (v->counter)
-> >> >               :
-> >> > diff --git a/arch/riscv/include/asm/cmpxchg.h b/arch/riscv/include/asm/cmpxchg.h
-> >> > index 1af8db92250b..9269fceb86e0 100644
-> >> > --- a/arch/riscv/include/asm/cmpxchg.h
-> >> > +++ b/arch/riscv/include/asm/cmpxchg.h
-> >> > @@ -307,9 +307,8 @@
-> >> >               __asm__ __volatile__ (                                  \
-> >> >                       "0:     lr.w %0, %2\n"                          \
-> >> >                       "       bne  %0, %z3, 1f\n"                     \
-> >> > -                     "       sc.w.rl %1, %z4, %2\n"                  \
-> >> > +                     "       sc.w.aqrl %1, %z4, %2\n"                \
-> >> >                       "       bnez %1, 0b\n"                          \
-> >> > -                     "       fence rw, rw\n"                         \
-> >> >                       "1:\n"                                          \
-> >> >                       : "=&r" (__ret), "=&r" (__rc), "+A" (*__ptr)    \
-> >> >                       : "rJ" ((long)__old), "rJ" (__new)              \
-> >> > @@ -319,9 +318,8 @@
-> >> >               __asm__ __volatile__ (                                  \
-> >> >                       "0:     lr.d %0, %2\n"                          \
-> >> >                       "       bne %0, %z3, 1f\n"                      \
-> >> > -                     "       sc.d.rl %1, %z4, %2\n"                  \
-> >> > +                     "       sc.d.aqrl %1, %z4, %2\n"                \
-> >> >                       "       bnez %1, 0b\n"                          \
-> >> > -                     "       fence rw, rw\n"                         \
-> >> >                       "1:\n"                                          \
-> >> >                       : "=&r" (__ret), "=&r" (__rc), "+A" (*__ptr)    \
-> >> >                       : "rJ" (__old), "rJ" (__new)                    \
-
-
-
+diff --git a/arch/um/drivers/chan_kern.c b/arch/um/drivers/chan_kern.c
+index 62997055c454..26a702a06515 100644
+--- a/arch/um/drivers/chan_kern.c
++++ b/arch/um/drivers/chan_kern.c
+@@ -133,7 +133,7 @@ static void line_timer_cb(struct work_struct *work)
+ 	struct line *line = container_of(work, struct line, task.work);
+ 
+ 	if (!line->throttled)
+-		chan_interrupt(line, line->driver->read_irq);
++		chan_interrupt(line, line->read_irq);
+ }
+ 
+ int enable_chan(struct line *line)
+@@ -195,9 +195,9 @@ void free_irqs(void)
+ 		chan = list_entry(ele, struct chan, free_list);
+ 
+ 		if (chan->input && chan->enabled)
+-			um_free_irq(chan->line->driver->read_irq, chan);
++			um_free_irq(chan->line->read_irq, chan);
+ 		if (chan->output && chan->enabled)
+-			um_free_irq(chan->line->driver->write_irq, chan);
++			um_free_irq(chan->line->write_irq, chan);
+ 		chan->enabled = 0;
+ 	}
+ }
+@@ -215,9 +215,9 @@ static void close_one_chan(struct chan *chan, int delay_free_irq)
+ 		spin_unlock_irqrestore(&irqs_to_free_lock, flags);
+ 	} else {
+ 		if (chan->input && chan->enabled)
+-			um_free_irq(chan->line->driver->read_irq, chan);
++			um_free_irq(chan->line->read_irq, chan);
+ 		if (chan->output && chan->enabled)
+-			um_free_irq(chan->line->driver->write_irq, chan);
++			um_free_irq(chan->line->write_irq, chan);
+ 		chan->enabled = 0;
+ 	}
+ 	if (chan->ops->close != NULL)
+diff --git a/arch/um/drivers/line.c b/arch/um/drivers/line.c
+index 8febf95da96e..02b0befd6763 100644
+--- a/arch/um/drivers/line.c
++++ b/arch/um/drivers/line.c
+@@ -139,7 +139,7 @@ static int flush_buffer(struct line *line)
+ 		count = line->buffer + LINE_BUFSIZE - line->head;
+ 
+ 		n = write_chan(line->chan_out, line->head, count,
+-			       line->driver->write_irq);
++			       line->write_irq);
+ 		if (n < 0)
+ 			return n;
+ 		if (n == count) {
+@@ -156,7 +156,7 @@ static int flush_buffer(struct line *line)
+ 
+ 	count = line->tail - line->head;
+ 	n = write_chan(line->chan_out, line->head, count,
+-		       line->driver->write_irq);
++		       line->write_irq);
+ 
+ 	if (n < 0)
+ 		return n;
+@@ -195,7 +195,7 @@ int line_write(struct tty_struct *tty, const unsigned char *buf, int len)
+ 		ret = buffer_data(line, buf, len);
+ 	else {
+ 		n = write_chan(line->chan_out, buf, len,
+-			       line->driver->write_irq);
++			       line->write_irq);
+ 		if (n < 0) {
+ 			ret = n;
+ 			goto out_up;
+@@ -215,7 +215,7 @@ void line_throttle(struct tty_struct *tty)
+ {
+ 	struct line *line = tty->driver_data;
+ 
+-	deactivate_chan(line->chan_in, line->driver->read_irq);
++	deactivate_chan(line->chan_in, line->read_irq);
+ 	line->throttled = 1;
+ }
+ 
+@@ -224,7 +224,7 @@ void line_unthrottle(struct tty_struct *tty)
+ 	struct line *line = tty->driver_data;
+ 
+ 	line->throttled = 0;
+-	chan_interrupt(line, line->driver->read_irq);
++	chan_interrupt(line, line->read_irq);
+ }
+ 
+ static irqreturn_t line_write_interrupt(int irq, void *data)
+@@ -260,19 +260,23 @@ int line_setup_irq(int fd, int input, int output, struct line *line, void *data)
+ 	int err;
+ 
+ 	if (input) {
+-		err = um_request_irq(driver->read_irq, fd, IRQ_READ,
+-				     line_interrupt, IRQF_SHARED,
++		err = um_request_irq(UM_IRQ_ALLOC, fd, IRQ_READ,
++				     line_interrupt, 0,
+ 				     driver->read_irq_name, data);
+ 		if (err < 0)
+ 			return err;
++
++		line->read_irq = err;
+ 	}
+ 
+ 	if (output) {
+-		err = um_request_irq(driver->write_irq, fd, IRQ_WRITE,
+-				     line_write_interrupt, IRQF_SHARED,
++		err = um_request_irq(UM_IRQ_ALLOC, fd, IRQ_WRITE,
++				     line_write_interrupt, 0,
+ 				     driver->write_irq_name, data);
+ 		if (err < 0)
+ 			return err;
++
++		line->write_irq = err;
+ 	}
+ 
+ 	return 0;
+diff --git a/arch/um/drivers/line.h b/arch/um/drivers/line.h
+index bdb16b96e76f..f15be75a3bf3 100644
+--- a/arch/um/drivers/line.h
++++ b/arch/um/drivers/line.h
+@@ -23,9 +23,7 @@ struct line_driver {
+ 	const short minor_start;
+ 	const short type;
+ 	const short subtype;
+-	const int read_irq;
+ 	const char *read_irq_name;
+-	const int write_irq;
+ 	const char *write_irq_name;
+ 	struct mc_device mc;
+ 	struct tty_driver *driver;
+@@ -35,6 +33,8 @@ struct line {
+ 	struct tty_port port;
+ 	int valid;
+ 
++	int read_irq, write_irq;
++
+ 	char *init_str;
+ 	struct list_head chan_list;
+ 	struct chan *chan_in, *chan_out;
+diff --git a/arch/um/drivers/ssl.c b/arch/um/drivers/ssl.c
+index 41eae2e8fb65..8514966778d5 100644
+--- a/arch/um/drivers/ssl.c
++++ b/arch/um/drivers/ssl.c
+@@ -47,9 +47,7 @@ static struct line_driver driver = {
+ 	.minor_start 		= 64,
+ 	.type 		 	= TTY_DRIVER_TYPE_SERIAL,
+ 	.subtype 	 	= 0,
+-	.read_irq 		= SSL_IRQ,
+ 	.read_irq_name 		= "ssl",
+-	.write_irq 		= SSL_WRITE_IRQ,
+ 	.write_irq_name 	= "ssl-write",
+ 	.mc  = {
+ 		.list		= LIST_HEAD_INIT(driver.mc.list),
+diff --git a/arch/um/drivers/stdio_console.c b/arch/um/drivers/stdio_console.c
+index e8b762f4d8c2..489d5a746ed3 100644
+--- a/arch/um/drivers/stdio_console.c
++++ b/arch/um/drivers/stdio_console.c
+@@ -53,9 +53,7 @@ static struct line_driver driver = {
+ 	.minor_start 		= 0,
+ 	.type 		 	= TTY_DRIVER_TYPE_CONSOLE,
+ 	.subtype 	 	= SYSTEM_TYPE_CONSOLE,
+-	.read_irq 		= CONSOLE_IRQ,
+ 	.read_irq_name 		= "console",
+-	.write_irq 		= CONSOLE_WRITE_IRQ,
+ 	.write_irq_name 	= "console-write",
+ 	.mc  = {
+ 		.list		= LIST_HEAD_INIT(driver.mc.list),
+diff --git a/arch/um/include/asm/irq.h b/arch/um/include/asm/irq.h
+index e187c789369d..749dfe8512e8 100644
+--- a/arch/um/include/asm/irq.h
++++ b/arch/um/include/asm/irq.h
+@@ -4,19 +4,15 @@
+ 
+ #define TIMER_IRQ		0
+ #define UMN_IRQ			1
+-#define CONSOLE_IRQ		2
+-#define CONSOLE_WRITE_IRQ	3
+-#define UBD_IRQ			4
+-#define UM_ETH_IRQ		5
+-#define SSL_IRQ			6
+-#define SSL_WRITE_IRQ		7
+-#define ACCEPT_IRQ		8
+-#define MCONSOLE_IRQ		9
+-#define WINCH_IRQ		10
+-#define SIGIO_WRITE_IRQ 	11
+-#define TELNETD_IRQ 		12
+-#define XTERM_IRQ 		13
+-#define RANDOM_IRQ 		14
++#define UBD_IRQ			2
++#define UM_ETH_IRQ		3
++#define ACCEPT_IRQ		4
++#define MCONSOLE_IRQ		5
++#define WINCH_IRQ		6
++#define SIGIO_WRITE_IRQ 	7
++#define TELNETD_IRQ 		8
++#define XTERM_IRQ 		9
++#define RANDOM_IRQ 		10
+ 
+ #ifdef CONFIG_UML_NET_VECTOR
+ 
 -- 
-Best Regards
- Guo Ren
+2.35.1
 
-ML: https://lore.kernel.org/linux-csky/
+
+
