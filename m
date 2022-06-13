@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDE67C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:43:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97755C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:43:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378553AbiFMNnG (ORCPT
+        id S1378860AbiFMNnI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:43:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59048 "EHLO
+        Mon, 13 Jun 2022 09:43:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377982AbiFMNhZ (ORCPT
+        with ESMTP id S1378276AbiFMNij (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:37:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3C0766ACF;
-        Mon, 13 Jun 2022 04:27:25 -0700 (PDT)
+        Mon, 13 Jun 2022 09:38:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6A8C7520C;
+        Mon, 13 Jun 2022 04:27:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5020161127;
-        Mon, 13 Jun 2022 11:27:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67339C34114;
-        Mon, 13 Jun 2022 11:27:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C15C61240;
+        Mon, 13 Jun 2022 11:27:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60460C34114;
+        Mon, 13 Jun 2022 11:27:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119644;
-        bh=CA/sPs05YcX72Y5xiIYQdDb0jrU/vZ9roClReairjqw=;
+        s=korg; t=1655119652;
+        bh=fXrzz1zgoVZZalhc5fBtCufpJU+iM4vU1tJrM+j/NoM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u756ydz+QwzNUkC5SXX0XJjHS3I53w9fGiDqQHdLWeoiaijoqNqUhSi0jkb1ptibL
-         2L4sF1iT9nhnr1f+L9t3MudnXLMJsPigp4cPoJZcZiqNmjFXhDwLP+Mys/gAosUNLI
-         +PtLqjLai1PuuUaP9OV5qYkeKIsJTQtg/XtfOxjo=
+        b=Fao8TvtIIRxoU9gKE5QW5N4mpgyvs8GqDQXl2oQiUv7pYgHlMU/sxzR377GwzCyr2
+         1Jlwcwnqdbutl0qGtOFXiNZzvbW5CYkdXVlDdeaN+2L3rMxAU6IwWljD0FVPU4mP42
+         SKIp5GQUSc+snYKG5uhDXbArEWh16RPekkkbQ5r8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Anderson <sean.anderson@seco.com>,
+        stable@vger.kernel.org,
         =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 067/339] serial: uartlite: Fix BRKINT clearing
-Date:   Mon, 13 Jun 2022 12:08:12 +0200
-Message-Id: <20220613094928.555773654@linuxfoundation.org>
+Subject: [PATCH 5.18 070/339] serial: txx9: Dont allow CS5-6
+Date:   Mon, 13 Jun 2022 12:08:15 +0200
+Message-Id: <20220613094928.645367215@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -52,33 +52,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-[ Upstream commit 3f7fed405c118607d4d42255f2572072db728399 ]
+[ Upstream commit 79ac88655dc0551e3571ad16bdabdbe65d61553e ]
 
-BRKINT is within c_iflag rather than c_cflag.
+Only CS7 and CS8 are supported but CSIZE is not sanitized with
+CS5 or CS6 to CS8.
 
-Fixes: ea017f5853e9 (tty: serial: uartlite: Prevent changing fixed parameters)
-Reviewed-by: Sean Anderson <sean.anderson@seco.com>
+Set CSIZE correctly so that userspace knows the effective value.
+Incorrect CSIZE also results in miscalculation of the frame bits in
+tty_get_char_size() or in its predecessor where the roughly the same
+code is directly within uart_update_timeout().
+
+Fixes: 1da177e4c3f4 (Linux-2.6.12-rc2)
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/20220519081808.3776-2-ilpo.jarvinen@linux.intel.com
+Link: https://lore.kernel.org/r/20220519081808.3776-5-ilpo.jarvinen@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/uartlite.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/tty/serial/serial_txx9.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-index 007db67292a2..880e2afbb97b 100644
---- a/drivers/tty/serial/uartlite.c
-+++ b/drivers/tty/serial/uartlite.c
-@@ -321,7 +321,8 @@ static void ulite_set_termios(struct uart_port *port, struct ktermios *termios,
- 	struct uartlite_data *pdata = port->private_data;
- 
- 	/* Set termios to what the hardware supports */
--	termios->c_cflag &= ~(BRKINT | CSTOPB | PARENB | PARODD | CSIZE);
-+	termios->c_iflag &= ~BRKINT;
-+	termios->c_cflag &= ~(CSTOPB | PARENB | PARODD | CSIZE);
- 	termios->c_cflag |= pdata->cflags & (PARENB | PARODD | CSIZE);
- 	tty_termios_encode_baud_rate(termios, pdata->baud, pdata->baud);
+diff --git a/drivers/tty/serial/serial_txx9.c b/drivers/tty/serial/serial_txx9.c
+index 2213e6b841d3..228e380db080 100644
+--- a/drivers/tty/serial/serial_txx9.c
++++ b/drivers/tty/serial/serial_txx9.c
+@@ -618,6 +618,8 @@ serial_txx9_set_termios(struct uart_port *up, struct ktermios *termios,
+ 	case CS6:	/* not supported */
+ 	case CS8:
+ 		cval |= TXX9_SILCR_UMODE_8BIT;
++		termios->c_cflag &= ~CSIZE;
++		termios->c_cflag |= CS8;
+ 		break;
+ 	}
  
 -- 
 2.35.1
