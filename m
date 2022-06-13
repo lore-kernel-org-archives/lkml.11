@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D5F8CCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58C6ACCA487
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:11:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359252AbiFMNJo (ORCPT
+        id S1359166AbiFMNJh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:09:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50348 "EHLO
+        Mon, 13 Jun 2022 09:09:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356294AbiFMM4L (ORCPT
+        with ESMTP id S1357875AbiFMM71 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:56:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BFF413DD3;
-        Mon, 13 Jun 2022 04:17:14 -0700 (PDT)
+        Mon, 13 Jun 2022 08:59:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C59C140EE;
+        Mon, 13 Jun 2022 04:17:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B554EB80EA8;
-        Mon, 13 Jun 2022 11:17:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24D5FC3411C;
-        Mon, 13 Jun 2022 11:17:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F1C960F0F;
+        Mon, 13 Jun 2022 11:17:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A248EC3411F;
+        Mon, 13 Jun 2022 11:17:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119031;
-        bh=9gm+jjQCDonsH8R3vmn6xBs3fRxgO06gKADSFOrR/4o=;
+        s=korg; t=1655119073;
+        bh=7iYH8eZA6jlwZ2yEjqyVc4ibsuQiRv2sCP6f1vHEVhQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FQ06GGIQIfWXRFi4XrohRsWool2muSXuVfyFDWs0ivmoNXl4qGzUelf2RSa4pfp5F
-         Q8JiYh8agDAh1jJ4XX8rktX1zHEjzgbKbpExd2vjg7EyqkC5LnF+SXd9nhVQJEWBLN
-         7Ns2KxKYgQgkheGZVq/EfRC9svDA9wuKEYIN86y8=
+        b=yV9MjYzCvC+h7mhTfU+HFl5+k+kPx5/PGJUA5R1NemAF4AfH5fJdwa26bY5ZWxnL+
+         Pq9eD9yX4c607ks8TOyPOlyMnbdRDclWrwgaEH5OkH3lyePVNRDWadiZRLSXSjsaiq
+         06KjQ98gUCc86nkBKjmPRn0fCwfQtkT1UaWV4QpM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 116/247] iommu/arm-smmu: fix possible null-ptr-deref in arm_smmu_device_probe()
-Date:   Mon, 13 Jun 2022 12:10:18 +0200
-Message-Id: <20220613094926.481486067@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 130/247] drm/bridge: sn65dsi83: Fix an error handling path in sn65dsi83_probe()
+Date:   Mon, 13 Jun 2022 12:10:32 +0200
+Message-Id: <20220613094926.903009630@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -49,41 +52,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit d9ed8af1dee37f181096631fb03729ece98ba816 ]
+[ Upstream commit 6edf615618b8259f16eeb1df98f0ba0d2312c22e ]
 
-It will cause null-ptr-deref when using 'res', if platform_get_resource()
-returns NULL, so move using 'res' after devm_ioremap_resource() that
-will check it to avoid null-ptr-deref.
-And use devm_platform_get_and_ioremap_resource() to simplify code.
+sn65dsi83_parse_dt() takes a reference on 'ctx->host_node' that must be
+released in the error handling path of this function and of the probe.
+This is only done in the remove function up to now.
 
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220425114136.2649310-1-yangyingliang@huawei.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Fixes: ceb515ba29ba ("drm/bridge: ti-sn65dsi83: Add TI SN65DSI83 and SN65DSI84 driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/4bc21aed4b60d3d5ac4b28d8b07a6fdd8da6a536.1640768126.git.christophe.jaillet@wanadoo.fr
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/arm/arm-smmu/arm-smmu.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/bridge/ti-sn65dsi83.c | 34 ++++++++++++++++++++-------
+ 1 file changed, 25 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 4bc75c4ce402..324e8f32962a 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -2090,11 +2090,10 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	if (err)
- 		return err;
+diff --git a/drivers/gpu/drm/bridge/ti-sn65dsi83.c b/drivers/gpu/drm/bridge/ti-sn65dsi83.c
+index a32f70bc68ea..bf469e8ac563 100644
+--- a/drivers/gpu/drm/bridge/ti-sn65dsi83.c
++++ b/drivers/gpu/drm/bridge/ti-sn65dsi83.c
+@@ -608,10 +608,14 @@ static int sn65dsi83_parse_dt(struct sn65dsi83 *ctx, enum sn65dsi83_model model)
+ 	ctx->host_node = of_graph_get_remote_port_parent(endpoint);
+ 	of_node_put(endpoint);
  
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	ioaddr = res->start;
--	smmu->base = devm_ioremap_resource(dev, res);
-+	smmu->base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
- 	if (IS_ERR(smmu->base))
- 		return PTR_ERR(smmu->base);
-+	ioaddr = res->start;
- 	/*
- 	 * The resource size should effectively match the value of SMMU_TOP;
- 	 * stash that temporarily until we know PAGESIZE to validate it with.
+-	if (ctx->dsi_lanes < 0 || ctx->dsi_lanes > 4)
+-		return -EINVAL;
+-	if (!ctx->host_node)
+-		return -ENODEV;
++	if (ctx->dsi_lanes < 0 || ctx->dsi_lanes > 4) {
++		ret = -EINVAL;
++		goto err_put_node;
++	}
++	if (!ctx->host_node) {
++		ret = -ENODEV;
++		goto err_put_node;
++	}
+ 
+ 	ctx->lvds_dual_link = false;
+ 	ctx->lvds_dual_link_even_odd_swap = false;
+@@ -638,16 +642,22 @@ static int sn65dsi83_parse_dt(struct sn65dsi83 *ctx, enum sn65dsi83_model model)
+ 
+ 	ret = drm_of_find_panel_or_bridge(dev->of_node, 2, 0, &panel, &panel_bridge);
+ 	if (ret < 0)
+-		return ret;
++		goto err_put_node;
+ 	if (panel) {
+ 		panel_bridge = devm_drm_panel_bridge_add(dev, panel);
+-		if (IS_ERR(panel_bridge))
+-			return PTR_ERR(panel_bridge);
++		if (IS_ERR(panel_bridge)) {
++			ret = PTR_ERR(panel_bridge);
++			goto err_put_node;
++		}
+ 	}
+ 
+ 	ctx->panel_bridge = panel_bridge;
+ 
+ 	return 0;
++
++err_put_node:
++	of_node_put(ctx->host_node);
++	return ret;
+ }
+ 
+ static int sn65dsi83_probe(struct i2c_client *client,
+@@ -680,8 +690,10 @@ static int sn65dsi83_probe(struct i2c_client *client,
+ 		return ret;
+ 
+ 	ctx->regmap = devm_regmap_init_i2c(client, &sn65dsi83_regmap_config);
+-	if (IS_ERR(ctx->regmap))
+-		return PTR_ERR(ctx->regmap);
++	if (IS_ERR(ctx->regmap)) {
++		ret = PTR_ERR(ctx->regmap);
++		goto err_put_node;
++	}
+ 
+ 	dev_set_drvdata(dev, ctx);
+ 	i2c_set_clientdata(client, ctx);
+@@ -691,6 +703,10 @@ static int sn65dsi83_probe(struct i2c_client *client,
+ 	drm_bridge_add(&ctx->bridge);
+ 
+ 	return 0;
++
++err_put_node:
++	of_node_put(ctx->host_node);
++	return ret;
+ }
+ 
+ static int sn65dsi83_remove(struct i2c_client *client)
 -- 
 2.35.1
 
