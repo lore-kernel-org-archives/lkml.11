@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC3AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:35:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE023C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:35:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354510AbiFMLfV (ORCPT
+        id S1354586AbiFMLfZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:35:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56186 "EHLO
+        Mon, 13 Jun 2022 07:35:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354427AbiFML33 (ORCPT
+        with ESMTP id S1354424AbiFML33 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:29:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EE22D118;
-        Mon, 13 Jun 2022 03:44:22 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1BFBD101;
+        Mon, 13 Jun 2022 03:44:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1D656112A;
-        Mon, 13 Jun 2022 10:44:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C191AC34114;
-        Mon, 13 Jun 2022 10:44:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DFFE6112A;
+        Mon, 13 Jun 2022 10:44:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B104C3411C;
+        Mon, 13 Jun 2022 10:44:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117061;
-        bh=go+bLNCXMVhWeT4gE5HjpGEJBCskRbxmxK2/0B/cnJY=;
+        s=korg; t=1655117055;
+        bh=fpAJU8/iPB4K4ACuHGmuYZDZKbmw+g26GaUydW1SeHg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iXaz85irC8LawM5pxYG7E9nVWVi5uQifp1bb3QYb44b+k96gQlmEMSnZZ25S4gPYm
-         X7XzOUAB0dbEybVkjdGG6QJCDJnMuRYiP1a/yCCyMeX2d87rZNyiUdE592UqPtWKu7
-         YOlD+sdE3gB28ppIYJb+c8j/XNxeLnUykjIU9cH4=
+        b=1znlzhzAGDHZLGYWBFbMUR7FcqmHao2pQAqbBYF1lwOZ7YajwIJunKFT9asHtVEJZ
+         ItT0gdEVdZ/MsNEBlo8AIXLYtskXpbjZrzR8mQyuf0bC044+XRZDLxcLmeWBIb1SoJ
+         Vr272tzxbhpRNqxJWipVZRefTCSm/Sa0Y5jrUxD8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Wang Weiyang <wangweiyang2@huawei.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 284/411] tty: goldfish: Use tty_port_destroy() to destroy port
-Date:   Mon, 13 Jun 2022 12:09:17 +0200
-Message-Id: <20220613094937.273703259@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Christian Lamparter <chunkeey@gmail.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>
+Subject: [PATCH 5.4 260/411] carl9170: tx: fix an incorrect use of list iterator
+Date:   Mon, 13 Jun 2022 12:08:53 +0200
+Message-Id: <20220613094936.560911342@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,48 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Weiyang <wangweiyang2@huawei.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-[ Upstream commit 507b05063d1b7a1fcb9f7d7c47586fc4f3508f98 ]
+commit 54a6f29522da3c914da30e50721dedf51046449a upstream.
 
-In goldfish_tty_probe(), the port initialized through tty_port_init()
-should be destroyed in error paths.In goldfish_tty_remove(), qtty->port
-also should be destroyed or else might leak resources.
+If the previous list_for_each_entry_continue_rcu() don't exit early
+(no goto hit inside the loop), the iterator 'cvif' after the loop
+will be a bogus pointer to an invalid structure object containing
+the HEAD (&ar->vif_list). As a result, the use of 'cvif' after that
+will lead to a invalid memory access (i.e., 'cvif->id': the invalid
+pointer dereference when return back to/after the callsite in the
+carl9170_update_beacon()).
 
-Fix the above by calling tty_port_destroy().
+The original intention should have been to return the valid 'cvif'
+when found in list, NULL otherwise. So just return NULL when no
+entry found, to fix this bug.
 
-Fixes: 666b7793d4bf ("goldfish: tty driver")
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Wang Weiyang <wangweiyang2@huawei.com>
-Link: https://lore.kernel.org/r/20220328115844.86032-1-wangweiyang2@huawei.com
+Cc: stable@vger.kernel.org
+Fixes: 1f1d9654e183c ("carl9170: refactor carl9170_update_beacon")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Acked-by: Christian Lamparter <chunkeey@gmail.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220328122820.1004-1-xiam0nd.tong@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/goldfish.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/wireless/ath/carl9170/tx.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/tty/goldfish.c b/drivers/tty/goldfish.c
-index c8c5cdfc5e19..abc84d84f638 100644
---- a/drivers/tty/goldfish.c
-+++ b/drivers/tty/goldfish.c
-@@ -407,6 +407,7 @@ static int goldfish_tty_probe(struct platform_device *pdev)
- err_tty_register_device_failed:
- 	free_irq(irq, qtty);
- err_dec_line_count:
-+	tty_port_destroy(&qtty->port);
- 	goldfish_tty_current_line_count--;
- 	if (goldfish_tty_current_line_count == 0)
- 		goldfish_tty_delete_driver();
-@@ -428,6 +429,7 @@ static int goldfish_tty_remove(struct platform_device *pdev)
- 	iounmap(qtty->base);
- 	qtty->base = NULL;
- 	free_irq(qtty->irq, pdev);
-+	tty_port_destroy(&qtty->port);
- 	goldfish_tty_current_line_count--;
- 	if (goldfish_tty_current_line_count == 0)
- 		goldfish_tty_delete_driver();
--- 
-2.35.1
-
+--- a/drivers/net/wireless/ath/carl9170/tx.c
++++ b/drivers/net/wireless/ath/carl9170/tx.c
+@@ -1557,6 +1557,9 @@ static struct carl9170_vif_info *carl917
+ 					goto out;
+ 			}
+ 		} while (ar->beacon_enabled && i--);
++
++		/* no entry found in list */
++		return NULL;
+ 	}
+ 
+ out:
 
 
