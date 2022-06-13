@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E503ACCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:00:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40DBECCA482
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:00:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357985AbiFML65 (ORCPT
+        id S1358031AbiFML7L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:58:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55948 "EHLO
+        Mon, 13 Jun 2022 07:59:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356674AbiFMLuy (ORCPT
+        with ESMTP id S1356828AbiFMLvg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:50:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FBF7F59B;
-        Mon, 13 Jun 2022 03:55:12 -0700 (PDT)
+        Mon, 13 Jun 2022 07:51:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B79621FA4B;
+        Mon, 13 Jun 2022 03:55:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EF80161259;
-        Mon, 13 Jun 2022 10:55:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BFEBC34114;
-        Mon, 13 Jun 2022 10:55:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4BD8EB80E93;
+        Mon, 13 Jun 2022 10:55:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3E80C3411F;
+        Mon, 13 Jun 2022 10:55:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117711;
-        bh=sY9TOZk7GY4Wu29gQGTtg3X8ZM2A/cchPntbY4v5ngA=;
+        s=korg; t=1655117717;
+        bh=aXte8M8+iYvi07up9RCIu1tMb50yWvKB6aiELdMdwpc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y4fHehUIZSY8HQnC1TEa24+oYwBC8izZgeEyhAEpMBEM9NQxIsN4/g2ZQ4tlNDxj/
-         cWNinb3VtA7Z5kGxUJUUd+phoai+XTaCZAAenr5gFPxumj+gYmS7k2UUN6v1VbAg0X
-         uwv/8VAD6yym+dRZxOI4keZ0pcnJtcAOZkIm45Lg=
+        b=KFwEbYizj7XCqy+U+1Q5vmkypdJHCBLdgrPonVkurUs+DL5Snj8Rt1DHJJhSdamen
+         uNVLlsQX/hXHC4owKKVeGqEDcGl6BKFFZhBAOVMVG1FBdRREKX7TOdYaeYm5AA6XQy
+         PxSwtaSWOa7SkKMxGL3RtjIBGZFbFoR1YnpZ6GgU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Rob Clark <robdclark@chromium.org>,
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 104/287] drm: msm: fix possible memory leak in mdp5_crtc_cursor_set()
-Date:   Mon, 13 Jun 2022 12:08:48 +0200
-Message-Id: <20220613094927.032604974@linuxfoundation.org>
+Subject: [PATCH 4.19 106/287] NFC: hci: fix sleep in atomic context bugs in nfc_hci_hcp_message_tx
+Date:   Mon, 13 Jun 2022 12:08:50 +0200
+Message-Id: <20220613094927.092178832@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -50,38 +51,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 947a844bb3ebff0f4736d244d792ce129f6700d7 ]
+[ Upstream commit b413b0cb008646e9f24ce5253cb3cf7ee217aff6 ]
 
-drm_gem_object_lookup will call drm_gem_object_get inside. So cursor_bo
-needs to be put when msm_gem_get_and_pin_iova fails.
+There are sleep in atomic context bugs when the request to secure
+element of st21nfca is timeout. The root cause is that kzalloc and
+alloc_skb with GFP_KERNEL parameter and mutex_lock are called in
+st21nfca_se_wt_timeout which is a timer handler. The call tree shows
+the execution paths that could lead to bugs:
 
-Fixes: e172d10a9c4a ("drm/msm/mdp5: Add hardware cursor support")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Link: https://lore.kernel.org/r/20220509061125.18585-1-hbh25y@gmail.com
-Signed-off-by: Rob Clark <robdclark@chromium.org>
+   (Interrupt context)
+st21nfca_se_wt_timeout
+  nfc_hci_send_event
+    nfc_hci_hcp_message_tx
+      kzalloc(..., GFP_KERNEL) //may sleep
+      alloc_skb(..., GFP_KERNEL) //may sleep
+      mutex_lock() //may sleep
+
+This patch moves the operations that may sleep into a work item.
+The work item will run in another kernel thread which is in
+process context to execute the bottom half of the interrupt.
+So it could prevent atomic context from sleeping.
+
+Fixes: 2130fb97fecf ("NFC: st21nfca: Adding support for secure element")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Link: https://lore.kernel.org/r/20220518115733.62111-1-duoming@zju.edu.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/nfc/st21nfca/se.c       | 17 ++++++++++++++---
+ drivers/nfc/st21nfca/st21nfca.h |  1 +
+ 2 files changed, 15 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
-index 76639a108ff5..b8a01c95b831 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c
-@@ -911,8 +911,10 @@ static int mdp5_crtc_cursor_set(struct drm_crtc *crtc,
+diff --git a/drivers/nfc/st21nfca/se.c b/drivers/nfc/st21nfca/se.c
+index ced3c20d6453..f69d2ed5a3e2 100644
+--- a/drivers/nfc/st21nfca/se.c
++++ b/drivers/nfc/st21nfca/se.c
+@@ -252,7 +252,7 @@ int st21nfca_hci_se_io(struct nfc_hci_dev *hdev, u32 se_idx,
+ }
+ EXPORT_SYMBOL(st21nfca_hci_se_io);
  
- 	ret = msm_gem_get_iova(cursor_bo, kms->aspace,
- 			&mdp5_crtc->cursor.iova);
--	if (ret)
-+	if (ret) {
-+		drm_gem_object_put(cursor_bo);
- 		return -EINVAL;
-+	}
+-static void st21nfca_se_wt_timeout(struct timer_list *t)
++static void st21nfca_se_wt_work(struct work_struct *work)
+ {
+ 	/*
+ 	 * No answer from the secure element
+@@ -265,8 +265,9 @@ static void st21nfca_se_wt_timeout(struct timer_list *t)
+ 	 */
+ 	/* hardware reset managed through VCC_UICC_OUT power supply */
+ 	u8 param = 0x01;
+-	struct st21nfca_hci_info *info = from_timer(info, t,
+-						    se_info.bwi_timer);
++	struct st21nfca_hci_info *info = container_of(work,
++						struct st21nfca_hci_info,
++						se_info.timeout_work);
  
- 	pm_runtime_get_sync(&pdev->dev);
+ 	pr_debug("\n");
  
+@@ -284,6 +285,13 @@ static void st21nfca_se_wt_timeout(struct timer_list *t)
+ 	info->se_info.cb(info->se_info.cb_context, NULL, 0, -ETIME);
+ }
+ 
++static void st21nfca_se_wt_timeout(struct timer_list *t)
++{
++	struct st21nfca_hci_info *info = from_timer(info, t, se_info.bwi_timer);
++
++	schedule_work(&info->se_info.timeout_work);
++}
++
+ static void st21nfca_se_activation_timeout(struct timer_list *t)
+ {
+ 	struct st21nfca_hci_info *info = from_timer(info, t,
+@@ -376,6 +384,7 @@ int st21nfca_apdu_reader_event_received(struct nfc_hci_dev *hdev,
+ 	switch (event) {
+ 	case ST21NFCA_EVT_TRANSMIT_DATA:
+ 		del_timer_sync(&info->se_info.bwi_timer);
++		cancel_work_sync(&info->se_info.timeout_work);
+ 		info->se_info.bwi_active = false;
+ 		r = nfc_hci_send_event(hdev, ST21NFCA_DEVICE_MGNT_GATE,
+ 				ST21NFCA_EVT_SE_END_OF_APDU_TRANSFER, NULL, 0);
+@@ -405,6 +414,7 @@ void st21nfca_se_init(struct nfc_hci_dev *hdev)
+ 	struct st21nfca_hci_info *info = nfc_hci_get_clientdata(hdev);
+ 
+ 	init_completion(&info->se_info.req_completion);
++	INIT_WORK(&info->se_info.timeout_work, st21nfca_se_wt_work);
+ 	/* initialize timers */
+ 	timer_setup(&info->se_info.bwi_timer, st21nfca_se_wt_timeout, 0);
+ 	info->se_info.bwi_active = false;
+@@ -432,6 +442,7 @@ void st21nfca_se_deinit(struct nfc_hci_dev *hdev)
+ 	if (info->se_info.se_active)
+ 		del_timer_sync(&info->se_info.se_active_timer);
+ 
++	cancel_work_sync(&info->se_info.timeout_work);
+ 	info->se_info.bwi_active = false;
+ 	info->se_info.se_active = false;
+ }
+diff --git a/drivers/nfc/st21nfca/st21nfca.h b/drivers/nfc/st21nfca/st21nfca.h
+index 94ffb0501e87..7e2923ac9263 100644
+--- a/drivers/nfc/st21nfca/st21nfca.h
++++ b/drivers/nfc/st21nfca/st21nfca.h
+@@ -152,6 +152,7 @@ struct st21nfca_se_info {
+ 
+ 	se_io_cb_t cb;
+ 	void *cb_context;
++	struct work_struct timeout_work;
+ };
+ 
+ struct st21nfca_hci_info {
 -- 
 2.35.1
 
