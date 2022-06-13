@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89FEDCCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:31:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F649C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:31:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354098AbiFML20 (ORCPT
+        id S1353477AbiFMLbH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:28:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56162 "EHLO
+        Mon, 13 Jun 2022 07:31:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353854AbiFMLUB (ORCPT
+        with ESMTP id S1352285AbiFMLV1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:20:01 -0400
+        Mon, 13 Jun 2022 07:21:27 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ED713BA64;
-        Mon, 13 Jun 2022 03:41:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE44C3C4A5;
+        Mon, 13 Jun 2022 03:42:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BB2B611B3;
-        Mon, 13 Jun 2022 10:41:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5CA8C34114;
-        Mon, 13 Jun 2022 10:41:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7537961217;
+        Mon, 13 Jun 2022 10:42:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F5BCC34114;
+        Mon, 13 Jun 2022 10:42:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116909;
-        bh=SV0IECVPnc9/xR8YY8B9n2LFgv4bXGrudOLScsdWmN0=;
+        s=korg; t=1655116925;
+        bh=nuoO4moBmrAVmTFd9DML1WfHpsxKMChhxHXKm92I5I8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W0Fs/nX4RDshb1HPa3PgJAbRrqDBzQ6fqcvsUYkPVBu59Rzf5yucTzTcq8bdohS3e
-         9fGKsSdrIiHYc3QR/rkd6x7NcOrEWc7NzpJ8rRCQIWWSJBWEkvyz+E2XNe3FikK+PF
-         KhqcwXLQkuc52E8rBCGkU+sdleOdK0RmTMG/FprQ=
+        b=2fzd0Ht1Vt5AeSkn8+kIV8U/2tkuZ82tFXykbsFnACpTelSiNQP3Cwvyt2PlIDDoO
+         I1va1vJJvD4kWxipDw6Ti0+HCt6Y+bp7Ip2JNLFLk3me2kO3GFB2bAyvvjUtYVEwrx
+         8dKxOzlaVI1MEC20F0pFcbehUCiKKoDLVuVfoYD4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
-        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: =?UTF-8?q?=5BPATCH=205=2E4=20217/411=5D=20fs-writeback=3A=20writeback=5Fsb=5Finodes=EF=BC=9ARecalculate=20wrote=20according=20skipped=20pages?=
-Date:   Mon, 13 Jun 2022 12:08:10 +0200
-Message-Id: <20220613094935.157684280@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Ye Bin <yebin10@huawei.com>, Jan Kara <jack@suse.cz>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.4 225/411] ext4: fix bug_on in ext4_writepages
+Date:   Mon, 13 Jun 2022 12:08:18 +0200
+Message-Id: <20220613094935.392585940@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,151 +50,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhihao Cheng <chengzhihao1@huawei.com>
+From: Ye Bin <yebin10@huawei.com>
 
-commit 68f4c6eba70df70a720188bce95c85570ddfcc87 upstream.
+commit ef09ed5d37b84d18562b30cf7253e57062d0db05 upstream.
 
-Commit 505a666ee3fc ("writeback: plug writeback in wb_writeback() and
-writeback_inodes_wb()") has us holding a plug during wb_writeback, which
-may cause a potential ABBA dead lock:
+we got issue as follows:
+EXT4-fs error (device loop0): ext4_mb_generate_buddy:1141: group 0, block bitmap and bg descriptor inconsistent: 25 vs 31513 free cls
+------------[ cut here ]------------
+kernel BUG at fs/ext4/inode.c:2708!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
+CPU: 2 PID: 2147 Comm: rep Not tainted 5.18.0-rc2-next-20220413+ #155
+RIP: 0010:ext4_writepages+0x1977/0x1c10
+RSP: 0018:ffff88811d3e7880 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 0000000000000001 RCX: ffff88811c098000
+RDX: 0000000000000000 RSI: ffff88811c098000 RDI: 0000000000000002
+RBP: ffff888128140f50 R08: ffffffffb1ff6387 R09: 0000000000000000
+R10: 0000000000000007 R11: ffffed10250281ea R12: 0000000000000001
+R13: 00000000000000a4 R14: ffff88811d3e7bb8 R15: ffff888128141028
+FS:  00007f443aed9740(0000) GS:ffff8883aef00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020007200 CR3: 000000011c2a4000 CR4: 00000000000006e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ do_writepages+0x130/0x3a0
+ filemap_fdatawrite_wbc+0x83/0xa0
+ filemap_flush+0xab/0xe0
+ ext4_alloc_da_blocks+0x51/0x120
+ __ext4_ioctl+0x1534/0x3210
+ __x64_sys_ioctl+0x12c/0x170
+ do_syscall_64+0x3b/0x90
 
-    wb_writeback		fat_file_fsync
-blk_start_plug(&plug)
-for (;;) {
-  iter i-1: some reqs have been added into plug->mq_list  // LOCK A
-  iter i:
-    progress = __writeback_inodes_wb(wb, work)
-    . writeback_sb_inodes // fat's bdev
-    .   __writeback_single_inode
-    .   . generic_writepages
-    .   .   __block_write_full_page
-    .   .   . . 	    __generic_file_fsync
-    .   .   . . 	      sync_inode_metadata
-    .   .   . . 	        writeback_single_inode
-    .   .   . . 		  __writeback_single_inode
-    .   .   . . 		    fat_write_inode
-    .   .   . . 		      __fat_write_inode
-    .   .   . . 		        sync_dirty_buffer	// fat's bdev
-    .   .   . . 			  lock_buffer(bh)	// LOCK B
-    .   .   . . 			    submit_bh
-    .   .   . . 			      blk_mq_get_tag	// LOCK A
-    .   .   . trylock_buffer(bh)  // LOCK B
-    .   .   .   redirty_page_for_writepage
-    .   .   .     wbc->pages_skipped++
-    .   .   --wbc->nr_to_write
-    .   wrote += write_chunk - wbc.nr_to_write  // wrote > 0
-    .   requeue_inode
-    .     redirty_tail_locked
-    if (progress)    // progress > 0
-      continue;
-  iter i+1:
-      queue_io
-      // similar process with iter i, infinite for-loop !
-}
-blk_finish_plug(&plug)   // flush plug won't be called
+It may happen as follows:
+1. write inline_data inode
+vfs_write
+  new_sync_write
+    ext4_file_write_iter
+      ext4_buffered_write_iter
+        generic_perform_write
+          ext4_da_write_begin
+            ext4_da_write_inline_data_begin -> If inline data size too
+            small will allocate block to write, then mapping will has
+            dirty page
+                ext4_da_convert_inline_data_to_extent ->clear EXT4_STATE_MAY_INLINE_DATA
+2. fallocate
+do_vfs_ioctl
+  ioctl_preallocate
+    vfs_fallocate
+      ext4_fallocate
+        ext4_convert_inline_data
+          ext4_convert_inline_data_nolock
+            ext4_map_blocks -> fail will goto restore data
+            ext4_restore_inline_data
+              ext4_create_inline_data
+              ext4_write_inline_data
+              ext4_set_inode_state -> set inode EXT4_STATE_MAY_INLINE_DATA
+3. writepages
+__ext4_ioctl
+  ext4_alloc_da_blocks
+    filemap_flush
+      filemap_fdatawrite_wbc
+        do_writepages
+          ext4_writepages
+            if (ext4_has_inline_data(inode))
+              BUG_ON(ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA))
 
-Above process triggers a hungtask like:
-[  399.044861] INFO: task bb:2607 blocked for more than 30 seconds.
-[  399.046824]       Not tainted 5.18.0-rc1-00005-gefae4d9eb6a2-dirty
-[  399.051539] task:bb              state:D stack:    0 pid: 2607 ppid:
-2426 flags:0x00004000
-[  399.051556] Call Trace:
-[  399.051570]  __schedule+0x480/0x1050
-[  399.051592]  schedule+0x92/0x1a0
-[  399.051602]  io_schedule+0x22/0x50
-[  399.051613]  blk_mq_get_tag+0x1d3/0x3c0
-[  399.051640]  __blk_mq_alloc_requests+0x21d/0x3f0
-[  399.051657]  blk_mq_submit_bio+0x68d/0xca0
-[  399.051674]  __submit_bio+0x1b5/0x2d0
-[  399.051708]  submit_bio_noacct+0x34e/0x720
-[  399.051718]  submit_bio+0x3b/0x150
-[  399.051725]  submit_bh_wbc+0x161/0x230
-[  399.051734]  __sync_dirty_buffer+0xd1/0x420
-[  399.051744]  sync_dirty_buffer+0x17/0x20
-[  399.051750]  __fat_write_inode+0x289/0x310
-[  399.051766]  fat_write_inode+0x2a/0xa0
-[  399.051783]  __writeback_single_inode+0x53c/0x6f0
-[  399.051795]  writeback_single_inode+0x145/0x200
-[  399.051803]  sync_inode_metadata+0x45/0x70
-[  399.051856]  __generic_file_fsync+0xa3/0x150
-[  399.051880]  fat_file_fsync+0x1d/0x80
-[  399.051895]  vfs_fsync_range+0x40/0xb0
-[  399.051929]  __x64_sys_fsync+0x18/0x30
+The root cause of this issue is we destory inline data until call
+ext4_writepages under delay allocation mode.  But there maybe already
+convert from inline to extent.  To solve this issue, we call
+filemap_flush first..
 
-In my test, 'need_resched()' (which is imported by 590dca3a71 "fs-writeback:
-unplug before cond_resched in writeback_sb_inodes") in function
-'writeback_sb_inodes()' seldom comes true, unless cond_resched() is deleted
-from write_cache_pages().
-
-Fix it by correcting wrote number according number of skipped pages
-in writeback_sb_inodes().
-
-Goto Link to find a reproducer.
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215837
-Cc: stable@vger.kernel.org # v4.3
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Cc: stable@kernel.org
+Signed-off-by: Ye Bin <yebin10@huawei.com>
 Reviewed-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220510133805.1988292-1-chengzhihao1@huawei.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Link: https://lore.kernel.org/r/20220516122634.1690462-1-yebin10@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/fs-writeback.c |   13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ fs/ext4/inline.c |   12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
---- a/fs/fs-writeback.c
-+++ b/fs/fs-writeback.c
-@@ -1650,11 +1650,12 @@ static long writeback_sb_inodes(struct s
- 	};
- 	unsigned long start_time = jiffies;
- 	long write_chunk;
--	long wrote = 0;  /* count both pages and inodes */
-+	long total_wrote = 0;  /* count both pages and inodes */
- 
- 	while (!list_empty(&wb->b_io)) {
- 		struct inode *inode = wb_inode(wb->b_io.prev);
- 		struct bdi_writeback *tmp_wb;
-+		long wrote;
- 
- 		if (inode->i_sb != sb) {
- 			if (work->sb) {
-@@ -1730,7 +1731,9 @@ static long writeback_sb_inodes(struct s
- 
- 		wbc_detach_inode(&wbc);
- 		work->nr_pages -= write_chunk - wbc.nr_to_write;
--		wrote += write_chunk - wbc.nr_to_write;
-+		wrote = write_chunk - wbc.nr_to_write - wbc.pages_skipped;
-+		wrote = wrote < 0 ? 0 : wrote;
-+		total_wrote += wrote;
- 
- 		if (need_resched()) {
- 			/*
-@@ -1752,7 +1755,7 @@ static long writeback_sb_inodes(struct s
- 		tmp_wb = inode_to_wb_and_lock_list(inode);
- 		spin_lock(&inode->i_lock);
- 		if (!(inode->i_state & I_DIRTY_ALL))
--			wrote++;
-+			total_wrote++;
- 		requeue_inode(inode, tmp_wb, &wbc);
- 		inode_sync_complete(inode);
- 		spin_unlock(&inode->i_lock);
-@@ -1766,14 +1769,14 @@ static long writeback_sb_inodes(struct s
- 		 * bail out to wb_writeback() often enough to check
- 		 * background threshold and other termination conditions.
- 		 */
--		if (wrote) {
-+		if (total_wrote) {
- 			if (time_is_before_jiffies(start_time + HZ / 10UL))
- 				break;
- 			if (work->nr_pages <= 0)
- 				break;
- 		}
+--- a/fs/ext4/inline.c
++++ b/fs/ext4/inline.c
+@@ -2013,6 +2013,18 @@ int ext4_convert_inline_data(struct inod
+ 	if (!ext4_has_inline_data(inode)) {
+ 		ext4_clear_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA);
+ 		return 0;
++	} else if (!ext4_test_inode_state(inode, EXT4_STATE_MAY_INLINE_DATA)) {
++		/*
++		 * Inode has inline data but EXT4_STATE_MAY_INLINE_DATA is
++		 * cleared. This means we are in the middle of moving of
++		 * inline data to delay allocated block. Just force writeout
++		 * here to finish conversion.
++		 */
++		error = filemap_flush(inode->i_mapping);
++		if (error)
++			return error;
++		if (!ext4_has_inline_data(inode))
++			return 0;
  	}
--	return wrote;
-+	return total_wrote;
- }
  
- static long __writeback_inodes_wb(struct bdi_writeback *wb,
+ 	needed_blocks = ext4_writepage_trans_blocks(inode);
 
 
