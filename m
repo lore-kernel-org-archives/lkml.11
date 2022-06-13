@@ -2,149 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B42FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:18:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 252E4C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:19:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235788AbiFMVSK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 17:18:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47686 "EHLO
+        id S1348080AbiFMVS7 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 17:18:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352076AbiFMVRz (ORCPT
+        with ESMTP id S1352090AbiFMVSU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 17:17:55 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BBE246C89
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:00:16 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id m20so13377384ejj.10
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:00:16 -0700 (PDT)
+        Mon, 13 Jun 2022 17:18:20 -0400
+Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C60B12082;
+        Mon, 13 Jun 2022 14:00:58 -0700 (PDT)
+Received: by mail-qt1-x829.google.com with SMTP id hh4so4780893qtb.10;
+        Mon, 13 Jun 2022 14:00:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=m3pP4CUDi16OPdqz61PfqfFdQ3Rj/mvHUE3nwdWy4vY=;
-        b=Xf8LMzKjbk+b55bDO0mBuR+UF0qvlWKx5z6+YUrGHK3R9b2cJHFIXwacUxmYBlCteL
-         ZH/mNca1asTSoeNjBu1JtIV/TllMG97497AB4ZdnnUlwfpwx5RVYAJfRlegBcaYS6H8t
-         O/oreJ10UWSczwuf7xTac2Ci2RLQ8efz0/fXg=
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=gWdErLqInvM1ccInRYlKQ/aTN1Wa+cjq/iTF3o1VN9I=;
+        b=bwIHsfewcGBOdBcc4rM9cpENx12C9rDMD5KZHB4fAEQ0jH9IzRN3Dwvr09S3VKJqvk
+         Es8clTWrPeBKgS6xy/z1URARKdS6mjSErjKmkU+FWHmnd7pO02dQD8/gYhYero6NlcWt
+         4l6GBn0FcjAP/gkAmdbj5oQmu9q3Mk/vbYK/1Qnn1Ip6Zs1EPyCLwbiBusqamrJscW6v
+         PtrI6E0EeSMq7nAckFG9FI5ftWlkP/sah696iveqSZwnP9nzEFC3LkCjMgJcwMvuM49K
+         YsjspgYUNaZ3fCT5rnHdeEjNwCX1oJYeXB13oecOzikt5rmLP29UawZa4c09dN16fRHE
+         Sc9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=m3pP4CUDi16OPdqz61PfqfFdQ3Rj/mvHUE3nwdWy4vY=;
-        b=C3cE3Lqwy/C1nPSM1tmQN8YgsDLHAwuma08J8ZjDvmffdVUSOcSqUo2W2XzvDLSJit
-         sI/4jP2oj9/A3AeepOVQQwZ3CFKi6fD5wAY/nLFNsmKXd856mbDabaW9aNnsu/cUAJjZ
-         iTm4L9XyO3c6E7fI6fgLpw3lxVgpq0muBLyLnv1VufWNpPy1+ZTFurrpWH6PGmKza1bl
-         4dzJQQgZgEjGzCgQzE5xgwVOEwGeevsl3AJv0sCyr2S3m2R3QP4ofAy49XJkqs/6bw5m
-         nBd0EdWxwQrf6jfoVkzWFIHLaR6pkkWSdNDxvrV46ANyzRAhOfTcoxa9QIs9FiPRfesF
-         /OYg==
-X-Gm-Message-State: AOAM5336rd7H/v7f/aOu7gysNm2xSwT8InrODb4NEa8ltJdVbeXeWjBQ
-        v0vgbcEScHo0KGE2aAJRYIZ4WQyO8PZZzm6I/7+LnA==
-X-Google-Smtp-Source: AGRyM1ucT5R14o2oIO4/ePjhpMN27L5o4IEeZvgoyohkGgv/PQU7BQGgAMv2Xw1L0+4aHOZpAR5CsxBtgSenzyxfBGw=
-X-Received: by 2002:a17:906:a0ce:b0:6d1:cb30:3b3b with SMTP id
- bh14-20020a170906a0ce00b006d1cb303b3bmr1411366ejb.582.1655154014725; Mon, 13
- Jun 2022 14:00:14 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=gWdErLqInvM1ccInRYlKQ/aTN1Wa+cjq/iTF3o1VN9I=;
+        b=xyW39CT16w68Fn+dCpYfiQ7Jc1TCwDRSCYmFeLBdS6viDPZ3Pg5OtYIRu7PkYD+lPW
+         6EdyyP8QSNnHqRcHwwczAurEaBCOGInYJRr3LlS1XvA+pziY0x6Zrpfo2G6zCnt/lyFZ
+         fG7ybJ8OWvP/Dtv8iEhDEezHWQNEQE+TrhvITEAMI6E6F1dLNi1XirXjV0YlCV/O+g+d
+         DdNoT7K3hUfIMcdgSqXJVS/gUUHkZyFkXOJZSn6OiTQhpI7x6EMhILELsdGqyAjRsrWh
+         jFA/bz04+bmyYCyG3n1CY+ygOUFtBFoswoxLWYZvOp3c/5Ds76n/6+eIpu9shF0k/PBP
+         qIWw==
+X-Gm-Message-State: AOAM531PazIdoIrmALqhc5ADwQZhzbSgqJEsAnkAvpfBk+Gm5d3CTWhu
+        xRgUV61P3walXuo5Q7gyG1E=
+X-Google-Smtp-Source: ABdhPJw/GpF9MPk9/djp9w3tlTLFzalidGv3+Xfed7VOMHSvwTI2pZM9UEx9e3K1b3XAttVm4dg/8Q==
+X-Received: by 2002:ac8:7fc1:0:b0:304:ed32:4463 with SMTP id b1-20020ac87fc1000000b00304ed324463mr1562341qtk.504.1655154057141;
+        Mon, 13 Jun 2022 14:00:57 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id y11-20020ac87c8b000000b00304eb8e880dsm5532781qtv.23.2022.06.13.14.00.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Jun 2022 14:00:56 -0700 (PDT)
+Message-ID: <4d56c202-ed90-4385-6075-568ab7c8aa5c@gmail.com>
+Date:   Mon, 13 Jun 2022 14:00:53 -0700
 MIME-Version: 1.0
-References: <20220613202852.447738-1-mortonm@chromium.org>
-In-Reply-To: <20220613202852.447738-1-mortonm@chromium.org>
-From:   Micah Morton <mortonm@chromium.org>
-Date:   Mon, 13 Jun 2022 14:00:03 -0700
-Message-ID: <CAJ-EccOhrYG6n6As72R7YzSk+Zzy=oFFJ62hG9476njprpJuvw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] LSM: SafeSetID: Add setgroups() security policy handling
-To:     linux-security-module@vger.kernel.org
-Cc:     keescook@chromium.org, jmorris@namei.org, serge@hallyn.com,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 5.15 000/251] 5.15.47-rc2 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220613181847.216528857@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220613181847.216528857@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 1:28 PM Micah Morton <mortonm@chromium.org> wrote:
->
-> The SafeSetID LSM has functionality for restricting setuid()/setgid()
-> syscalls based on its configured security policies. This patch adds the
-> analogous functionality for the setgroups() syscall. Security policy
-> for the setgroups() syscall follows the same policies that are
-> installed on the system for setgid() syscalls.
->
-> Signed-off-by: Micah Morton <mortonm@chromium.org>
-> ---
-> NOTE: this code does nothing to prevent a SafeSetID-restricted process
-> with CAP_SETGID from dropping supplementary groups. I don't anticipate
-> supplementary groups ever being used to restrict a process' privileges
-> (rather than grant privileges), so I think this is fine for the
-> purposes of SafeSetID.
->
-> Developed on 5.18
->
->  security/safesetid/lsm.c | 39 ++++++++++++++++++++++++++++++---------
->  1 file changed, 30 insertions(+), 9 deletions(-)
->
-> diff --git a/security/safesetid/lsm.c b/security/safesetid/lsm.c
-> index 963f4ad9cb66..01c355e740aa 100644
-> --- a/security/safesetid/lsm.c
-> +++ b/security/safesetid/lsm.c
-> @@ -97,15 +97,9 @@ static int safesetid_security_capable(const struct cred *cred,
->                 return 0;
->
->         /*
-> -        * If CAP_SET{U/G}ID is currently used for a setid() syscall, we want to
-> -        * let it go through here; the real security check happens later, in the
-> -        * task_fix_set{u/g}id hook.
-> -         *
-> -         * NOTE:
-> -         * Until we add support for restricting setgroups() calls, GID security
-> -         * policies offer no meaningful security since we always return 0 here
-> -         * when called from within the setgroups() syscall and there is no
-> -         * additional hook later on to enforce security policies for setgroups().
-> +        * If CAP_SET{U/G}ID is currently used for a setid or setgroups syscall, we
-> +        * want to let it go through here; the real security check happens later, in
-> +        * the task_fix_set{u/g}id or task_fix_setgroups hooks.
->          */
->         if ((opts & CAP_OPT_INSETID) != 0)
->                 return 0;
-> @@ -241,9 +235,36 @@ static int safesetid_task_fix_setgid(struct cred *new,
->         return -EACCES;
->  }
->
-> +static int safesetid_task_fix_setgroups(struct cred *new, const struct cred *old)
-> +{
-> +       int i;
-> +
-> +       /* Do nothing if there are no setgid restrictions for our old RGID. */
-> +       if (setid_policy_lookup((kid_t){.gid = old->gid}, INVALID_ID, GID) == SIDPOL_DEFAULT)
-> +               return 0;
-> +
-> +       get_group_info(new->group_info);
-> +       for (i = 0; i < new->group_info->ngroups; i++) {
-> +               if (!id_permitted_for_cred(old, (kid_t){.gid = group_info->gid[i]}, GID)) {
+On 6/13/22 11:19, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.47 release.
+> There are 251 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 15 Jun 2022 18:18:03 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.47-rc2.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-Oops, should be:
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
 
-!id_permitted_for_cred(old, (kid_t){.gid = new->group_info->gid[i]}, GID)
-
-Guess I won't send a whole new patch just for that one line
-
-> +                       put_group_info(new->group_info);
-> +                       /*
-> +                        * Kill this process to avoid potential security vulnerabilities
-> +                        * that could arise from a missing allowlist entry preventing a
-> +                        * privileged process from dropping to a lesser-privileged one.
-> +                        */
-> +                       force_sig(SIGKILL);
-> +                       return -EACCES;
-> +               }
-> +       }
-> +
-> +       put_group_info(new->group_info);
-> +       return 0;
-> +}
-> +
->  static struct security_hook_list safesetid_security_hooks[] = {
->         LSM_HOOK_INIT(task_fix_setuid, safesetid_task_fix_setuid),
->         LSM_HOOK_INIT(task_fix_setgid, safesetid_task_fix_setgid),
-> +       LSM_HOOK_INIT(task_fix_setgroups, safesetid_task_fix_setgroups),
->         LSM_HOOK_INIT(capable, safesetid_security_capable)
->  };
->
-> --
-> 2.36.1.476.g0c4daa206d-goog
->
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
