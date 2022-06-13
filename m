@@ -2,124 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56EC4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:25:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 399D8C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:25:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348563AbiFMTZ2 (ORCPT
+        id S1349753AbiFMTZg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:25:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54784 "EHLO
+        Mon, 13 Jun 2022 15:25:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350339AbiFMTZH (ORCPT
+        with ESMTP id S1349243AbiFMTZN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 15:25:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6D58337A8F
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:41:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655142090;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=q9imHR0PldrK/4QqffqMQG4YlpeKi0rN5tf1tCAqvxI=;
-        b=OfLxLKMmXh1S0JEAwuW9kESxX/WmvV01sGlNpabaDxngbFrcIEHSG/5Fkm581Wd2AvJodx
-        IQVrUHuwGIKNdBkaL7D8xdVWIAU2Hq3X5lUoWk55A2iwasA5NQz3M4jTNc1hKEoqJopw8A
-        xF1Ia0qB9fKRr0O0qyctqVGEdnh8MNc=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-147-svcekgaQPHeiJsmuhlRCIQ-1; Mon, 13 Jun 2022 13:41:29 -0400
-X-MC-Unique: svcekgaQPHeiJsmuhlRCIQ-1
-Received: by mail-wm1-f69.google.com with SMTP id p22-20020a05600c359600b0039c7b23a1c7so5105094wmq.2
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:41:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=q9imHR0PldrK/4QqffqMQG4YlpeKi0rN5tf1tCAqvxI=;
-        b=G5uWEb/gzV++ixXQs2lv0P/9A+/IoHLGcnKUN//1JDpFQpNKFMX9HN2sNkrU4TXPD3
-         MZdRfiuiNlUCD1jonBbJ4Iva8mRWLkiHVLxXraXG9hbagAWcG9QIUb/tDMy+hCSMwzd/
-         o6B+h6hQ6Yyqub/sN8k3z+vgVLA3SJBUFwTMiJVpaGtuuuOuYD5S+FWrfrvQd6oM/r0/
-         FzCMaGuyu2n9MmPXTsrSTw5it9YzB6C71Xsgybikoa7UwzELXqO/uUM2vBp6P08umtbs
-         QXqbLrZVWHvyhKTkKlmZ1Ee+q+SxeAyjjv0ZuUAcAhH6iVwgZ10cQIMKZNV0cmMKv4CZ
-         pnnw==
-X-Gm-Message-State: AOAM533rO3naUobj2KNqcNzx/McbVF47w9di87eYjY4f9MLVY8L+uZXe
-        L9gIURnYaDgYQZxGI5cppJ6T3zuoN4iXWvgH41mGKJ8d2ka+1egSPSUYvvsUgO5g+VJx3PTyasR
-        9ZgoafuPkTAm25q/o+TFYaQ0U
-X-Received: by 2002:a7b:c389:0:b0:39c:49fe:25df with SMTP id s9-20020a7bc389000000b0039c49fe25dfmr648449wmj.164.1655142087966;
-        Mon, 13 Jun 2022 10:41:27 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzOHYbSdU3QvmmoWgh9ozEuOjCqKEtc/UugRXjsMVcbeHCAdcofLjg4QDbLTxfNrnseTW/13Q==
-X-Received: by 2002:a7b:c389:0:b0:39c:49fe:25df with SMTP id s9-20020a7bc389000000b0039c49fe25dfmr648438wmj.164.1655142087759;
-        Mon, 13 Jun 2022 10:41:27 -0700 (PDT)
-Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id b12-20020a05600010cc00b0020c5253d90asm9201616wrx.86.2022.06.13.10.41.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Jun 2022 10:41:27 -0700 (PDT)
-Message-ID: <8cbfcc29-bc31-9bc8-2eaa-d873f7cf2d5f@redhat.com>
-Date:   Mon, 13 Jun 2022 19:41:25 +0200
+        Mon, 13 Jun 2022 15:25:13 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E990D38790;
+        Mon, 13 Jun 2022 10:41:40 -0700 (PDT)
+Received: from linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net (linux.microsoft.com [13.77.154.182])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 8A73220C28A2;
+        Mon, 13 Jun 2022 10:41:40 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 8A73220C28A2
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1655142100;
+        bh=O+F8BlTbN+pAhHpDZpkKrVVMTdsPZdsLp7LznEJHvpc=;
+        h=From:To:Subject:Date:From;
+        b=CtlP3O8MV4MUNxdtuwngW0OSjmjgc4DBZRZEMgnOD0z/NipOGr5/4zcyNBrO5knav
+         L8EeMRKp3tPjMhdex8lZ7fNsoQcbL2qmohRXWq2LyU7WNLXuidSJEC9iJOpTrjEgRP
+         De/8G7piFjspU9WeFDa0QZbiTq7FrRNUI4ARx1hs=
+From:   Saurabh Sengar <ssengar@linux.microsoft.com>
+To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, linux-hyperv@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ssengar@microsoft.com, mikelley@microsoft.com
+Subject: [PATCH v2] scsi: storvsc: Correct reporting of Hyper-V I/O size limits
+Date:   Mon, 13 Jun 2022 10:41:36 -0700
+Message-Id: <1655142096-3591-1-git-send-email-ssengar@linux.microsoft.com>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v6 3/6] drm: Add driver for Solomon SSD130x OLED displays
-Content-Language: en-US
-To:     "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>,
-        Dominik Kierner <dkierner@dh-electronics.com>
-Cc:     "airlied@linux.ie" <airlied@linux.ie>,
-        "daniel.vetter@ffwll.ch" <daniel.vetter@ffwll.ch>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "geert@linux-m68k.org" <geert@linux-m68k.org>,
-        "lee.jones@linaro.org" <lee.jones@linaro.org>,
-        "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
-        "maxime@cerno.tech" <maxime@cerno.tech>,
-        "noralf@tronnes.org" <noralf@tronnes.org>,
-        "sam@ravnborg.org" <sam@ravnborg.org>,
-        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
-        "tzimmermann@suse.de" <tzimmermann@suse.de>,
-        "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>
-References: <7a78d57342754a5d9bd3ce7c7bf3fa47@dh-electronics.com>
- <YqdZN6mtEDF2CRtS@smile.fi.intel.com>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <YqdZN6mtEDF2CRtS@smile.fi.intel.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/13/22 17:35, andriy.shevchenko@linux.intel.com wrote:
-> On Mon, Jun 13, 2022 at 11:39:30AM +0000, Dominik Kierner wrote:
->> On 5/25/2022 21:46, Javier Martinez Canillas wrote:
-> 
-> ...
-> 
->>> Thanks, I looked at the code briefly and think that there are things there that we
->>> could use. I.e the 3-wire SPI support that's in panel-solomon-ssd130x-spi-3wire.c.
->>
->> When writing my driver code, I wasn't even considering using regmaps,
->> like You did in Your I2C-Code. If that's applicable for 3-wire-SPI,
->> it would likely be the better, more generic option. Your SPI-code
->> reuses these parts to some extent. For that case,
->> ssd130x_spi_regmap_config.reg_bits would need be changed to 1,
->> as the "register address" has a length of 1 bit and we are sending
->> 9 bits over the line and not 16.
->> Since we still have 2 bytes of host memory,
->> it should still be compatible with the 4-wire write, right?
->> Or would 3-wire SPI require a second regmap?
-> 
-> I believe the cleanest solution is to have different regmap configurations.
-> 
+Current code is based on the idea that the max number of SGL entries
+also determines the max size of an I/O request.  While this idea was
+true in older versions of the storvsc driver when SGL entry length
+was limited to 4 Kbytes, commit 3d9c3dcc58e9 ("scsi: storvsc: Enable
+scatterlist entry lengths > 4Kbytes") removed that limitation. It's
+now theoretically possible for the block layer to send requests that
+exceed the maximum size supported by Hyper-V. This problem doesn't
+currently happen in practice because the block layer defaults to a
+512 Kbyte maximum, while Hyper-V in Azure supports 2 Mbyte I/O sizes.
+But some future configuration of Hyper-V could have a smaller max I/O
+size, and the block layer could exceed that max.
 
-I agree with this.
+Fix this by correctly setting max_sectors as well as sg_tablesize to
+reflect the maximum I/O size that Hyper-V reports. While allowing
+I/O sizes larger than the block layer default of 512 Kbytes doesn’t
+provide any noticeable performance benefit in the tests we ran, it's
+still appropriate to report the correct underlying Hyper-V capabilities
+to the Linux block layer.
 
+Also tweak the virt_boundary_mask to reflect that the required
+alignment derives from Hyper-V communication using a 4 Kbyte page size,
+and not on the guest page size, which might be bigger (eg. ARM64).
+
+Fixes: '3d9c3dcc58e9 ("scsi: storvsc: Enable scatter list entry lengths > 4Kbytes")'
+Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
+---
+V2
+ - More descriptive commit subject and message
+ - Better logic by considering max_transfer_bytes aligning to HV_HYP_PAGE_SIZE
+
+ drivers/scsi/storvsc_drv.c | 26 +++++++++++++++++++++-----
+ 1 file changed, 21 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
+index ca3530982e52..99d3be1b6089 100644
+--- a/drivers/scsi/storvsc_drv.c
++++ b/drivers/scsi/storvsc_drv.c
+@@ -1844,7 +1844,7 @@ static struct scsi_host_template scsi_driver = {
+ 	.cmd_per_lun =		2048,
+ 	.this_id =		-1,
+ 	/* Ensure there are no gaps in presented sgls */
+-	.virt_boundary_mask =	PAGE_SIZE-1,
++	.virt_boundary_mask =	HV_HYP_PAGE_SIZE - 1,
+ 	.no_write_same =	1,
+ 	.track_queue_depth =	1,
+ 	.change_queue_depth =	storvsc_change_queue_depth,
+@@ -1895,6 +1895,7 @@ static int storvsc_probe(struct hv_device *device,
+ 	int target = 0;
+ 	struct storvsc_device *stor_device;
+ 	int max_sub_channels = 0;
++	u32 max_tx_bytes;
+ 
+ 	/*
+ 	 * We support sub-channels for storage on SCSI and FC controllers.
+@@ -1968,12 +1969,27 @@ static int storvsc_probe(struct hv_device *device,
+ 	}
+ 	/* max cmd length */
+ 	host->max_cmd_len = STORVSC_MAX_CMD_LEN;
+-
++	/* Any reasonable Hyper-V configuration should provide
++	 * max_transfer_bytes value aligning to HV_HYP_PAGE_SIZE,
++	 * protecting it from any weird value.
++	 */
++	max_tx_bytes = round_down(stor_device->max_transfer_bytes, HV_HYP_PAGE_SIZE);
++	/* max_hw_sectors_kb */
++	host->max_sectors = max_tx_bytes >> 9;
+ 	/*
+-	 * set the table size based on the info we got
+-	 * from the host.
++	 * There are 2 requirements for Hyper-V storvsc sgl segments,
++	 * based on which the below calculation for max segments is
++	 * done:
++	 *
++	 * 1. Except for the first and last sgl segment, all sgl segments
++	 *    should be align to HV_HYP_PAGE_SIZE, that also means the
++	 *    maximum number of segments in a sgl can be calculated by
++	 *    dividing the total max transfer length by HV_HYP_PAGE_SIZE.
++	 *
++	 * 2. Except for the first and last, each entry in the SGL must
++	 *    have an offset that is a multiple of HV_HYP_PAGE_SIZE.
+ 	 */
+-	host->sg_tablesize = (stor_device->max_transfer_bytes >> PAGE_SHIFT);
++	host->sg_tablesize = (max_tx_bytes >> HV_HYP_PAGE_SHIFT) + 1;
+ 	/*
+ 	 * For non-IDE disks, the host supports multiple channels.
+ 	 * Set the number of HW queues we are supporting.
 -- 
-Best regards,
-
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
+2.25.1
 
