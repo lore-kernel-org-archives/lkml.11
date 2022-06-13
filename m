@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AEAAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:49:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECAD4CCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:49:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355662AbiFMLtq (ORCPT
+        id S1356089AbiFMLtv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:49:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40996 "EHLO
+        Mon, 13 Jun 2022 07:49:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357465AbiFMLqL (ORCPT
+        with ESMTP id S1357475AbiFMLqM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:46:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A8BA25DD;
-        Mon, 13 Jun 2022 03:52:21 -0700 (PDT)
+        Mon, 13 Jun 2022 07:46:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B298637B;
+        Mon, 13 Jun 2022 03:52:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E7E36B80E59;
-        Mon, 13 Jun 2022 10:52:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BB4AC34114;
-        Mon, 13 Jun 2022 10:52:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 050566135C;
+        Mon, 13 Jun 2022 10:52:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12C88C34114;
+        Mon, 13 Jun 2022 10:52:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117538;
-        bh=B3CqHOh+r9Ah6UrcI7btJ319nsIqtZeEw+NhcbAMHUo=;
+        s=korg; t=1655117541;
+        bh=8XodZh5sCr/MfT0L5lf3vACVky82khXDRn8yFleVMQg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f6WTcSC9hNHsp+o7FFO9AyYV+s9zMARAUNSq5lfasuEgxHDzRkOAsOVher/TV65J9
-         Jz8Uh5Jp0iBIE2R8XJjg5Uj6JuMWYe/KnhQD5P0jWvFax56z5B7Cim5q2EyPDdKZwR
-         YMMKjSCDun3hMGv1avWeAuCxfR3W6TaIJJZHjWhE=
+        b=PxdRnd1Xk+rdgTUnB0r0m3kTicm1yI4wL80mgjHvnmdrwNwmvU/yRjVz6gTurywKO
+         7Em2TUFgUjX0x5rN2ejSqvF/ffjnU3QnQ8jATHLg5r2Xdbr0thPzZL8s8Lue836Fhg
+         IOhIEBk0XhOAQk9jCaPW4BzusJYkt+TfBQ5zbZiw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michal Kubecek <mkubecek@suse.cz>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
+        stable@vger.kernel.org, Ronnie Sahlberg <lsahlber@redhat.com>,
+        Steve French <stfrench@microsoft.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 387/411] Revert "net: af_key: add check for pfkey_broadcast in function pfkey_process"
-Date:   Mon, 13 Jun 2022 12:11:00 +0200
-Message-Id: <20220613094940.276049065@linuxfoundation.org>
+Subject: [PATCH 5.4 396/411] cifs: version operations for smb20 unneeded when legacy support disabled
+Date:   Mon, 13 Jun 2022 12:11:09 +0200
+Message-Id: <20220613094940.538389739@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,57 +50,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michal Kubecek <mkubecek@suse.cz>
+From: Steve French <stfrench@microsoft.com>
 
-[ Upstream commit 9c90c9b3e50e16d03c7f87d63e9db373974781e0 ]
+[ Upstream commit 7ef93ffccd55fb0ba000ed16ef6a81cd7dee07b5 ]
 
-This reverts commit 4dc2a5a8f6754492180741facf2a8787f2c415d7.
+We should not be including unused smb20 specific code when legacy
+support is disabled (CONFIG_CIFS_ALLOW_INSECURE_LEGACY turned
+off).  For example smb2_operations and smb2_values aren't used
+in that case.  Over time we can move more and more SMB1/CIFS and SMB2.0
+code into the insecure legacy ifdefs
 
-A non-zero return value from pfkey_broadcast() does not necessarily mean
-an error occurred as this function returns -ESRCH when no registered
-listener received the message. In particular, a call with
-BROADCAST_PROMISC_ONLY flag and null one_sk argument can never return
-zero so that this commit in fact prevents processing any PF_KEY message.
-One visible effect is that racoon daemon fails to find encryption
-algorithms like aes and refuses to start.
-
-Excluding -ESRCH return value would fix this but it's not obvious that
-we really want to bail out here and most other callers of
-pfkey_broadcast() also ignore the return value. Also, as pointed out by
-Steffen Klassert, PF_KEY is kind of deprecated and newer userspace code
-should use netlink instead so that we should only disturb the code for
-really important fixes.
-
-v2: add a comment explaining why is the return value ignored
-
-Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/key/af_key.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ fs/cifs/cifsglob.h | 4 +++-
+ fs/cifs/smb2ops.c  | 7 ++++++-
+ 2 files changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index dd064d5eff6e..32fe99cd01fc 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -2830,10 +2830,12 @@ static int pfkey_process(struct sock *sk, struct sk_buff *skb, const struct sadb
- 	void *ext_hdrs[SADB_EXT_MAX];
- 	int err;
+diff --git a/fs/cifs/cifsglob.h b/fs/cifs/cifsglob.h
+index 9c0e348cb00f..414936989255 100644
+--- a/fs/cifs/cifsglob.h
++++ b/fs/cifs/cifsglob.h
+@@ -1930,11 +1930,13 @@ extern mempool_t *cifs_mid_poolp;
  
--	err = pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
--			      BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
--	if (err)
--		return err;
-+	/* Non-zero return value of pfkey_broadcast() does not always signal
-+	 * an error and even on an actual error we may still want to process
-+	 * the message so rather ignore the return value.
-+	 */
-+	pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
-+			BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
+ /* Operations for different SMB versions */
+ #define SMB1_VERSION_STRING	"1.0"
++#define SMB20_VERSION_STRING    "2.0"
++#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
+ extern struct smb_version_operations smb1_operations;
+ extern struct smb_version_values smb1_values;
+-#define SMB20_VERSION_STRING	"2.0"
+ extern struct smb_version_operations smb20_operations;
+ extern struct smb_version_values smb20_values;
++#endif /* CIFS_ALLOW_INSECURE_LEGACY */
+ #define SMB21_VERSION_STRING	"2.1"
+ extern struct smb_version_operations smb21_operations;
+ extern struct smb_version_values smb21_values;
+diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
+index 7985fe25850b..57164563eec6 100644
+--- a/fs/cifs/smb2ops.c
++++ b/fs/cifs/smb2ops.c
+@@ -3487,11 +3487,13 @@ smb3_set_oplock_level(struct cifsInodeInfo *cinode, __u32 oplock,
+ 	}
+ }
  
- 	memset(ext_hdrs, 0, sizeof(ext_hdrs));
- 	err = parse_exthdrs(skb, hdr, ext_hdrs);
++#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
+ static bool
+ smb2_is_read_op(__u32 oplock)
+ {
+ 	return oplock == SMB2_OPLOCK_LEVEL_II;
+ }
++#endif /* CIFS_ALLOW_INSECURE_LEGACY */
+ 
+ static bool
+ smb21_is_read_op(__u32 oplock)
+@@ -4573,7 +4575,7 @@ smb2_make_node(unsigned int xid, struct inode *inode,
+ 	return rc;
+ }
+ 
+-
++#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
+ struct smb_version_operations smb20_operations = {
+ 	.compare_fids = smb2_compare_fids,
+ 	.setup_request = smb2_setup_request,
+@@ -4670,6 +4672,7 @@ struct smb_version_operations smb20_operations = {
+ 	.fiemap = smb3_fiemap,
+ 	.llseek = smb3_llseek,
+ };
++#endif /* CIFS_ALLOW_INSECURE_LEGACY */
+ 
+ struct smb_version_operations smb21_operations = {
+ 	.compare_fids = smb2_compare_fids,
+@@ -4987,6 +4990,7 @@ struct smb_version_operations smb311_operations = {
+ 	.llseek = smb3_llseek,
+ };
+ 
++#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
+ struct smb_version_values smb20_values = {
+ 	.version_string = SMB20_VERSION_STRING,
+ 	.protocol_id = SMB20_PROT_ID,
+@@ -5007,6 +5011,7 @@ struct smb_version_values smb20_values = {
+ 	.signing_required = SMB2_NEGOTIATE_SIGNING_REQUIRED,
+ 	.create_lease_size = sizeof(struct create_lease),
+ };
++#endif /* ALLOW_INSECURE_LEGACY */
+ 
+ struct smb_version_values smb21_values = {
+ 	.version_string = SMB21_VERSION_STRING,
 -- 
 2.35.1
 
