@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E56F7C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:48:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB701C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:48:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237057AbiFMKsD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:48:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47300 "EHLO
+        id S1344833AbiFMKsJ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:48:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348075AbiFMKoI (ORCPT
+        with ESMTP id S1348367AbiFMKoQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:44:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6CC320F49;
-        Mon, 13 Jun 2022 03:25:18 -0700 (PDT)
+        Mon, 13 Jun 2022 06:44:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25FE623BD7;
+        Mon, 13 Jun 2022 03:25:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81E20B80E93;
-        Mon, 13 Jun 2022 10:25:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9044C34114;
-        Mon, 13 Jun 2022 10:25:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 44863B80E90;
+        Mon, 13 Jun 2022 10:25:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BE74C3411C;
+        Mon, 13 Jun 2022 10:25:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115916;
-        bh=QO1vEa+m3jO9JUmuL0HAHMWrZwYOkvWhBQS391t7hzc=;
+        s=korg; t=1655115918;
+        bh=hj2J+v5j3ZFbQEu6MDUIKw3/kjjkro8X6Gww229V7K4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i35W5hbsrD1HJHA8Z2hfQwbDiF5hqv7Jlo5zSDlQXHIIqTAVwsc0tAqDV9oNi100H
-         rIHEzS8KHu6NPYHMW9/WocYu/K2l6lEcJHhm9/ebDaniCNLjEkF1eQ4/g61GCHXdpm
-         PPJcjckV6/vzSF/dErhud3rKqedBUlQEzjJmBhf4=
+        b=s+mFsPDzQyzZ40CNszwg5kmWI+kx0xqRc29uzfY7nzBprrl2MCUuX53+5z4y7btD9
+         TNsXHpm4+hAv5BoJJmxPbc9p5mca76/kh9Q8lG+jl9QNKg4RK8E9P2WvR0W7eAse86
+         Em4pagAcRPnlwp6CQfjQ+KLMoC9Rws7+8UJ36OnA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Mel Gorman <mel@csn.ul.ie>,
-        Minchan Kim <minchan.kim@gmail.com>,
-        KAMEZAWA Hiroyuki <kamezawa.hiroyu@jp.fujitsu.com>,
-        KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 088/218] drivers/base/node.c: fix compaction sysfs file leak
-Date:   Mon, 13 Jun 2022 12:09:06 +0200
-Message-Id: <20220613094923.204982271@linuxfoundation.org>
+Subject: [PATCH 4.14 078/218] ASoC: wm2000: fix missing clk_disable_unprepare() on error in wm2000_anc_transition()
+Date:   Mon, 13 Jun 2022 12:08:56 +0200
+Message-Id: <20220613094922.823991808@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -54,42 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaohe Lin <linmiaohe@huawei.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit da63dc84befaa9e6079a0bc363ff0eaa975f9073 ]
+[ Upstream commit be2af740e2a9c7134f2d8ab4f104006e110b13de ]
 
-Compaction sysfs file is created via compaction_register_node in
-register_node.  But we forgot to remove it in unregister_node.  Thus
-compaction sysfs file is leaked.  Using compaction_unregister_node to fix
-this issue.
+Fix the missing clk_disable_unprepare() before return
+from wm2000_anc_transition() in the error handling case.
 
-Link: https://lkml.kernel.org/r/20220401070905.43679-1-linmiaohe@huawei.com
-Fixes: ed4a6d7f0676 ("mm: compaction: add /sys trigger for per-node memory compaction")
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Rafael J. Wysocki <rafael@kernel.org>
-Cc: Mel Gorman <mel@csn.ul.ie>
-Cc: Minchan Kim <minchan.kim@gmail.com>
-Cc: KAMEZAWA Hiroyuki <kamezawa.hiroyu@jp.fujitsu.com>
-Cc: KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Fixes: 514cfd6dd725 ("ASoC: wm2000: Integrate with clock API")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220514091053.686416-1-yangyingliang@huawei.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/node.c | 1 +
- 1 file changed, 1 insertion(+)
+ sound/soc/codecs/wm2000.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/base/node.c b/drivers/base/node.c
-index 5c39f14d15a5..57eef6b24448 100644
---- a/drivers/base/node.c
-+++ b/drivers/base/node.c
-@@ -337,6 +337,7 @@ static int register_node(struct node *node, int num)
-  */
- void unregister_node(struct node *node)
+diff --git a/sound/soc/codecs/wm2000.c b/sound/soc/codecs/wm2000.c
+index 23cde3a0dc11..73cda3c2a861 100644
+--- a/sound/soc/codecs/wm2000.c
++++ b/sound/soc/codecs/wm2000.c
+@@ -545,7 +545,7 @@ static int wm2000_anc_transition(struct wm2000_priv *wm2000,
  {
-+	compaction_unregister_node(node);
- 	hugetlb_unregister_node(node);		/* no-op, if memoryless node */
+ 	struct i2c_client *i2c = wm2000->i2c;
+ 	int i, j;
+-	int ret;
++	int ret = 0;
  
- 	device_unregister(&node->dev);
+ 	if (wm2000->anc_mode == mode)
+ 		return 0;
+@@ -575,13 +575,13 @@ static int wm2000_anc_transition(struct wm2000_priv *wm2000,
+ 		ret = anc_transitions[i].step[j](i2c,
+ 						 anc_transitions[i].analogue);
+ 		if (ret != 0)
+-			return ret;
++			break;
+ 	}
+ 
+ 	if (anc_transitions[i].dest == ANC_OFF)
+ 		clk_disable_unprepare(wm2000->mclk);
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ static int wm2000_anc_set_mode(struct wm2000_priv *wm2000)
 -- 
 2.35.1
 
