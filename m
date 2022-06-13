@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF951C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:55:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E7D3C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:56:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350166AbiFMUz6 (ORCPT
+        id S1350606AbiFMU4C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:55:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35324 "EHLO
+        Mon, 13 Jun 2022 16:56:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351515AbiFMUxj (ORCPT
+        with ESMTP id S1351519AbiFMUxj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 16:53:39 -0400
-Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC5FF18364
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:17:36 -0700 (PDT)
+Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 694BD186E0
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:17:40 -0700 (PDT)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1655151455;
+        t=1655151457;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=yMpcVjLCf9jqLKxVClgu+qWUo0HLupVHHXi+5F8746E=;
-        b=W7OMMObIdEFuIPfCrKY3YX9PY6I0FySwEipFhkFtUKodGGsq+xWXiJqwS+x9wJegWfNo7z
-        fTUlZFnCQCdtPAfZGVLrrwRHH24cRz4nx72QwSd3+2FCqFet3GsX1TDXf4Vc5xvkFMC7Gu
-        AvI9fkJxdHOC4FfKPyLlHE95kK6ubGs=
+        bh=vo/QgRsJex180B/MZOFV4gS3W10znq++oNOGcslvwl0=;
+        b=Dl9JaXiPgE3KB2W9PytyX2Ydb8CErjoRbyqdS1Z4vTV2EHG4vJto9UgmTzKVC+tzN4k6r4
+        KDwziMj6rUu7nd8whB1jFF7vvWI6sRETVADmv38Uoj7/ZNOexQsxpkRPRqeeSDyuwqGEvH
+        BwEOie7GxwDdyuGfRMy3sQ8YZis7ANg=
 From:   andrey.konovalov@linux.dev
 To:     Marco Elver <elver@google.com>,
         Alexander Potapenko <glider@google.com>
@@ -39,9 +39,9 @@ Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH 15/32] kasan: only define kasan_never_merge for Generic mode
-Date:   Mon, 13 Jun 2022 22:14:06 +0200
-Message-Id: <fe532f89a33b691ab0cef40f4b6506960e75a3d7.1655150842.git.andreyknvl@google.com>
+Subject: [PATCH 17/32] kasan: only define metadata structs for Generic mode
+Date:   Mon, 13 Jun 2022 22:14:08 +0200
+Message-Id: <f3c8fd1efaf7f1e9a486d4acfd4f154cc546333c.1655150842.git.andreyknvl@google.com>
 In-Reply-To: <cover.1655150842.git.andreyknvl@google.com>
 References: <cover.1655150842.git.andreyknvl@google.com>
 MIME-Version: 1.0
@@ -54,107 +54,52 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andrey Konovalov <andreyknvl@google.com>
 
-KASAN prevents merging of slab caches whose objects have per-object
-metadata stored in redzones.
-
-As now only the Generic mode uses per-object metadata, define
-kasan_never_merge() only for this mode.
+Hide the definitions of kasan_alloc_meta and kasan_free_meta under
+an ifdef CONFIG_KASAN_GENERIC check, as these structures are now only
+used when the Generic mode is enabled.
 
 Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
 ---
- include/linux/kasan.h | 18 ++++++------------
- mm/kasan/common.c     |  8 --------
- mm/kasan/generic.c    |  8 ++++++++
- 3 files changed, 14 insertions(+), 20 deletions(-)
+ mm/kasan/kasan.h | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-diff --git a/include/linux/kasan.h b/include/linux/kasan.h
-index 027df7599573..9743d4b3a918 100644
---- a/include/linux/kasan.h
-+++ b/include/linux/kasan.h
-@@ -103,14 +103,6 @@ struct kasan_cache {
- 	bool is_kmalloc;
+diff --git a/mm/kasan/kasan.h b/mm/kasan/kasan.h
+index ab2cd3ff10f3..30ec9ebf52c3 100644
+--- a/mm/kasan/kasan.h
++++ b/mm/kasan/kasan.h
+@@ -192,14 +192,12 @@ struct kasan_track {
+ 	depot_stack_handle_t stack;
  };
  
--slab_flags_t __kasan_never_merge(void);
--static __always_inline slab_flags_t kasan_never_merge(void)
--{
--	if (kasan_enabled())
--		return __kasan_never_merge();
--	return 0;
--}
--
- void __kasan_unpoison_range(const void *addr, size_t size);
- static __always_inline void kasan_unpoison_range(const void *addr, size_t size)
- {
-@@ -261,10 +253,6 @@ static __always_inline bool kasan_check_byte(const void *addr)
- 
- #else /* CONFIG_KASAN */
- 
--static inline slab_flags_t kasan_never_merge(void)
--{
--	return 0;
--}
- static inline void kasan_unpoison_range(const void *address, size_t size) {}
- static inline void kasan_poison_pages(struct page *page, unsigned int order,
- 				      bool init) {}
-@@ -325,6 +313,7 @@ static inline void kasan_unpoison_task_stack(struct task_struct *task) {}
- #ifdef CONFIG_KASAN_GENERIC
- 
- size_t kasan_metadata_size(struct kmem_cache *cache);
-+slab_flags_t kasan_never_merge(void);
- 
- void kasan_cache_shrink(struct kmem_cache *cache);
- void kasan_cache_shutdown(struct kmem_cache *cache);
-@@ -338,6 +327,11 @@ static inline size_t kasan_metadata_size(struct kmem_cache *cache)
- {
- 	return 0;
- }
-+/* And thus nothing prevents cache merging. */
-+static inline slab_flags_t kasan_never_merge(void)
-+{
-+	return 0;
-+}
- 
- static inline void kasan_cache_shrink(struct kmem_cache *cache) {}
- static inline void kasan_cache_shutdown(struct kmem_cache *cache) {}
-diff --git a/mm/kasan/common.c b/mm/kasan/common.c
-index a0ddbf02aa6d..f8ef40fa31e3 100644
---- a/mm/kasan/common.c
-+++ b/mm/kasan/common.c
-@@ -88,14 +88,6 @@ asmlinkage void kasan_unpoison_task_stack_below(const void *watermark)
- }
- #endif /* CONFIG_KASAN_STACK */
- 
--/* Only allow cache merging when no per-object metadata is present. */
--slab_flags_t __kasan_never_merge(void)
--{
--	if (kasan_requires_meta())
--		return SLAB_KASAN;
--	return 0;
--}
--
- void __kasan_unpoison_pages(struct page *page, unsigned int order, bool init)
- {
- 	u8 tag;
-diff --git a/mm/kasan/generic.c b/mm/kasan/generic.c
-index 806ab92032c3..25333bf3c99f 100644
---- a/mm/kasan/generic.c
-+++ b/mm/kasan/generic.c
-@@ -328,6 +328,14 @@ DEFINE_ASAN_SET_SHADOW(f3);
- DEFINE_ASAN_SET_SHADOW(f5);
- DEFINE_ASAN_SET_SHADOW(f8);
- 
-+/* Only allow cache merging when no per-object metadata is present. */
-+slab_flags_t kasan_never_merge(void)
-+{
-+	if (!kasan_requires_meta())
-+		return 0;
-+	return SLAB_KASAN;
-+}
++#ifdef CONFIG_KASAN_GENERIC
 +
- /*
-  * Adaptive redzone policy taken from the userspace AddressSanitizer runtime.
-  * For larger allocations larger redzones are used.
+ struct kasan_alloc_meta {
+ 	struct kasan_track alloc_track;
+-	/* Generic mode stores free track in kasan_free_meta. */
+-#ifdef CONFIG_KASAN_GENERIC
++	/* Free track is stored in kasan_free_meta. */
+ 	depot_stack_handle_t aux_stack[2];
+-#else
+-	struct kasan_track free_track;
+-#endif
+ };
+ 
+ struct qlist_node {
+@@ -218,12 +216,12 @@ struct qlist_node {
+  * After that, slab allocator stores the freelist pointer in the object.
+  */
+ struct kasan_free_meta {
+-#ifdef CONFIG_KASAN_GENERIC
+ 	struct qlist_node quarantine_link;
+ 	struct kasan_track free_track;
+-#endif
+ };
+ 
++#endif /* CONFIG_KASAN_GENERIC */
++
+ #if IS_ENABLED(CONFIG_KASAN_KUNIT_TEST)
+ /* Used in KUnit-compatible KASAN tests. */
+ struct kunit_kasan_status {
 -- 
 2.25.1
 
