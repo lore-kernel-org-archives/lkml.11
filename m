@@ -2,89 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72A4DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:20:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D91A8CCA482
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:21:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241714AbiFMRUH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 13:20:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33852 "EHLO
+        id S241989AbiFMRVQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 13:21:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241079AbiFMRTj (ORCPT
+        with ESMTP id S241022AbiFMRUt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 13:19:39 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECCCA286FE;
-        Mon, 13 Jun 2022 05:30:08 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id g25so10838345ejh.9;
-        Mon, 13 Jun 2022 05:30:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=B8BwMYVvC8BQc7LNFzLo5v93X9Yq8XucGXAjmnMlByk=;
-        b=XQlPd903MYJVrjP4lIVH5ujucf95qpOh4AdpWxpDh4cwOKwMOOAIW4cC118V06hJ9a
-         T3TMQMJmES8fKi/7UThbnCQFj5EKvQcr7HejKhf2wNul6gyvsT3+Ge7twVgdeKP1nWEv
-         uwIbzMKWOKiP47tE0UgB6G5mhSHeYxLwODTM/RexPGqVmE39/30z5Pulr120htYUU8ux
-         sEEy+KmLgmXNwTufYry6X3EUNE71bBAGSz0JdGZSEANDqW6cZQ88epfU4NjllmeEfRMM
-         4jYOB1Hr46qvNWLdIZVKVJ/+NowzsCp3sqLzYk34mTl+HndThd4pmqkPV8v+i82aHkdp
-         Imsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=B8BwMYVvC8BQc7LNFzLo5v93X9Yq8XucGXAjmnMlByk=;
-        b=rkePbMlV0ncON3ykhB3nZhrQ7NH/0OxsAm2i7/jark/m1kCH9DeP3fTcCIczEcs5++
-         v6n/Rkdg/PWncpcb/qubTIeW4xWUCKUbfpkh3IlGz5BjU2clM7WFfri6kvW45Txa0FAN
-         FUt8RMtKtDza+Qgut2UuWeYZRmhdM9lsX2J7z5bIq4M8WqaoR5ofVDdA6E+SjqBaHHeP
-         YnP79TmO3+gDQQoTSvpUHOzota7iB2dPtDtsSZWIEolnTqNt9aZUPSJeH54Bk9JskxmU
-         kWyuHVeAiEi9N6eYkxQYuJ8WbqKTXrY0YPrOWape7E1opQB2S4Qrw8jaiIO4OWdqMO3U
-         2A8g==
-X-Gm-Message-State: AOAM533yn+NhFR8SRRyBPhfMMXnvaCMunaeJ0jlWNagWDp/BD1Eo5B6s
-        8PHUYv4ZIsZHml4b/gv6eCaAsvPDpcrLPA==
-X-Google-Smtp-Source: ABdhPJw0skCSkAMQnGEqFEAS/7uy8MwoJr18K9YU6RpZOacew9XsDqMzZMDbn4MbVTU7h3be90VoWA==
-X-Received: by 2002:a17:906:7254:b0:6fe:5637:cbe6 with SMTP id n20-20020a170906725400b006fe5637cbe6mr51977016ejk.612.1655123407428;
-        Mon, 13 Jun 2022 05:30:07 -0700 (PDT)
-Received: from felia.fritz.box (200116b8260df50011e978c0f780de03.dip.versatel-1u1.de. [2001:16b8:260d:f500:11e9:78c0:f780:de03])
-        by smtp.gmail.com with ESMTPSA id f12-20020a056402068c00b0042a2d9af0f8sm4812513edy.79.2022.06.13.05.30.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 05:30:07 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] MAINTAINERS: add include/dt-bindings/pinctrl to PIN CONTROL SUBSYSTEM
-Date:   Mon, 13 Jun 2022 14:29:55 +0200
-Message-Id: <20220613122955.20714-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 13 Jun 2022 13:20:49 -0400
+Received: from muru.com (muru.com [72.249.23.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0715E5BE48;
+        Mon, 13 Jun 2022 05:35:16 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 5285681CC;
+        Mon, 13 Jun 2022 12:30:34 +0000 (UTC)
+Date:   Mon, 13 Jun 2022 15:35:14 +0300
+From:   Tony Lindgren <tony@atomide.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com,
+        vgupta@kernel.org, linux@armlinux.org.uk,
+        ulli.kroll@googlemail.com, linus.walleij@linaro.org,
+        shawnguo@kernel.org, Sascha Hauer <s.hauer@pengutronix.de>,
+        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        khilman@kernel.org, catalin.marinas@arm.com, will@kernel.org,
+        guoren@kernel.org, bcain@quicinc.com, chenhuacai@kernel.org,
+        kernel@xen0n.name, geert@linux-m68k.org, sammy@sammy.net,
+        monstr@monstr.eu, tsbogend@alpha.franken.de, dinguyen@kernel.org,
+        jonas@southpole.se, stefan.kristiansson@saunalahti.fi,
+        shorne@gmail.com, James.Bottomley@hansenpartnership.com,
+        deller@gmx.de, mpe@ellerman.id.au, benh@kernel.crashing.org,
+        paulus@samba.org, paul.walmsley@sifive.com, palmer@dabbelt.com,
+        aou@eecs.berkeley.edu, hca@linux.ibm.com, gor@linux.ibm.com,
+        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+        svens@linux.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org,
+        davem@davemloft.net, richard@nod.at,
+        anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+        acme@kernel.org, mark.rutland@arm.com,
+        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
+        namhyung@kernel.org, jgross@suse.com, srivatsa@csail.mit.edu,
+        amakhalov@vmware.com, pv-drivers@vmware.com,
+        boris.ostrovsky@oracle.com, chris@zankel.net, jcmvbkbc@gmail.com,
+        rafael@kernel.org, lenb@kernel.org, pavel@ucw.cz,
+        gregkh@linuxfoundation.org, mturquette@baylibre.com,
+        sboyd@kernel.org, daniel.lezcano@linaro.org, lpieralisi@kernel.org,
+        sudeep.holla@arm.com, agross@kernel.org,
+        bjorn.andersson@linaro.org, anup@brainfault.org,
+        thierry.reding@gmail.com, jonathanh@nvidia.com,
+        jacob.jun.pan@linux.intel.com, Arnd Bergmann <arnd@arndb.de>,
+        yury.norov@gmail.com, andriy.shevchenko@linux.intel.com,
+        linux@rasmusvillemoes.dk, rostedt@goodmis.org, pmladek@suse.com,
+        senozhatsky@chromium.org, john.ogness@linutronix.de,
+        paulmck@kernel.org, frederic@kernel.org, quic_neeraju@quicinc.com,
+        josh@joshtriplett.org, mathieu.desnoyers@efficios.com,
+        jiangshanlai@gmail.com, joel@joelfernandes.org,
+        juri.lelli@redhat.com, vincent.guittot@linaro.org,
+        dietmar.eggemann@arm.com, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com, vschneid@redhat.com, jpoimboe@kernel.org,
+        linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-snps-arc@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
+        linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
+        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linux-mips@vger.kernel.org, openrisc@lists.librecores.org,
+        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-perf-users@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        xen-devel@lists.xenproject.org, linux-xtensa@linux-xtensa.org,
+        linux-acpi@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-arch@vger.kernel.org,
+        rcu@vger.kernel.org
+Subject: Re: [PATCH 34/36] cpuidle,omap3: Push RCU-idle into omap_sram_idle()
+Message-ID: <YqcvAmiDSOAOAdA9@atomide.com>
+References: <20220608142723.103523089@infradead.org>
+ <20220608144518.073801916@infradead.org>
+ <YqC6iJx4ygSmry0G@hirez.programming.kicks-ass.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YqC6iJx4ygSmry0G@hirez.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Maintainers of the directory Documentation/devicetree/bindings/pinctrl
-are also the maintainers of the corresponding directory
-include/dt-bindings/pinctrl.
+* Peter Zijlstra <peterz@infradead.org> [220608 15:00]:
+> On Wed, Jun 08, 2022 at 04:27:57PM +0200, Peter Zijlstra wrote:
+> > @@ -254,11 +255,18 @@ void omap_sram_idle(void)
+> >  	 */
+> >  	if (save_state)
+> >  		omap34xx_save_context(omap3_arm_context);
+> > +
+> > +	if (rcuidle)
+> > +		cpuidle_rcu_enter();
+> > +
+> >  	if (save_state == 1 || save_state == 3)
+> >  		cpu_suspend(save_state, omap34xx_do_sram_idle);
+> >  	else
+> >  		omap34xx_do_sram_idle(save_state);
+> >  
+> > +	if (rcuidle)
+> > +		rcuidle_rcu_exit();
+> 
+> *sigh* so much for this having been exposed to the robots for >2 days :/
 
-Add the file entry for include/dt-bindings/pinctrl to the appropriate
-section in MAINTAINERS.
+I tested your git branch of these patches, so:
 
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
----
-Linus, please pick this MAINTAINERS addition to your section.
-
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 7a4c3e811262..9c67cd163cbb 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -15787,6 +15787,7 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-pinctrl.git
- F:	Documentation/devicetree/bindings/pinctrl/
- F:	Documentation/driver-api/pin-control.rst
- F:	drivers/pinctrl/
-+F:	include/dt-bindings/pinctrl/
- F:	include/linux/pinctrl/
- 
- PIN CONTROLLER - AMD
--- 
-2.17.1
-
+Reviewed-by: Tony Lindgren <tony@atomide.com>
+Tested-by: Tony Lindgren <tony@atomide.com>
