@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48757C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:11:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1834AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:11:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358873AbiFMNIR (ORCPT
+        id S1358898AbiFMNI1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:08:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50352 "EHLO
+        Mon, 13 Jun 2022 09:08:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356122AbiFMMzR (ORCPT
+        with ESMTP id S1355093AbiFMM4O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:55:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF2DFB850;
-        Mon, 13 Jun 2022 04:15:40 -0700 (PDT)
+        Mon, 13 Jun 2022 08:56:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5E9A13DFC;
+        Mon, 13 Jun 2022 04:17:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B34860B6B;
-        Mon, 13 Jun 2022 11:15:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73BBCC3411E;
-        Mon, 13 Jun 2022 11:15:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 83DC760F16;
+        Mon, 13 Jun 2022 11:17:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95B17C3411C;
+        Mon, 13 Jun 2022 11:17:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118939;
-        bh=TGB8fvzfl3YhMocGqLbDYunFAdllXXLShxgvHAoCEIk=;
+        s=korg; t=1655119036;
+        bh=S/LOKUcd3huiVgmImvposNmZVMjk3aFMSXDN/g80QKY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2UWtuJOIwEoCDkf3NOw5hQDkL3XMzufJDx4G0U1vVNi3SvIegXE5y+uSZZvWV3nq5
-         rF60nfqyhf//cnfP1STUq4+yx9oWWtDj2h1vunp3G4BfoTQdDmaqUIg5DQm/LSEx8L
-         mWf0a+WFYA9ILHvwDwKyEyyCmKR7dzpGFoBVcQ2k=
+        b=XIsewHl3pHmlsj5YD0+ktVQxPLTTvXegibt/mRaAh111ZZWRsW3PaGbeNpvsdRkZO
+         2aAauBwcTZc036braPMD/zoRaiDAYlbEtgYE5a5f3EFUPl9mMTtnlXmykgibPR/uT4
+         SldV3xV5w9lWBL8sWWwcMScVhifz+wQsO7se9Ye4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        stable@vger.kernel.org,
+        syzbot+763ae12a2ede1d99d4dc@syzkaller.appspotmail.com,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 055/247] serial: digicolor-usart: Dont allow CS5-6
-Date:   Mon, 13 Jun 2022 12:09:17 +0200
-Message-Id: <20220613094924.624580201@linuxfoundation.org>
+Subject: [PATCH 5.15 118/247] f2fs: remove WARN_ON in f2fs_is_valid_blkaddr
+Date:   Mon, 13 Jun 2022 12:10:20 +0200
+Message-Id: <20220613094926.543127769@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,41 +52,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit fd63031b8c0763addcecdefe0e0c59d49646204e ]
+[ Upstream commit dc2f78e2d4cc844a1458653d57ce1b54d4a29f21 ]
 
-Only CS7 and CS8 seem supported but CSIZE is not sanitized to CS8 in
-the default: block.
+Syzbot triggers two WARNs in f2fs_is_valid_blkaddr and
+__is_bitmap_valid. For example, in f2fs_is_valid_blkaddr,
+if type is DATA_GENERIC_ENHANCE or DATA_GENERIC_ENHANCE_READ,
+it invokes WARN_ON if blkaddr is not in the right range.
+The call trace is as follows:
 
-Set CSIZE correctly so that userspace knows the effective value.
-Incorrect CSIZE also results in miscalculation of the frame bits in
-tty_get_char_size() or in its predecessor where the roughly the same
-code is directly within uart_update_timeout().
+ f2fs_get_node_info+0x45f/0x1070
+ read_node_page+0x577/0x1190
+ __get_node_page.part.0+0x9e/0x10e0
+ __get_node_page
+ f2fs_get_node_page+0x109/0x180
+ do_read_inode
+ f2fs_iget+0x2a5/0x58b0
+ f2fs_fill_super+0x3b39/0x7ca0
 
-Fixes: 5930cb3511df (serial: driver for Conexant Digicolor USART)
-Acked-by: Baruch Siach <baruch@tkos.co.il>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/20220519081808.3776-3-ilpo.jarvinen@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix these two WARNs by replacing WARN_ON with dump_stack.
+
+Reported-by: syzbot+763ae12a2ede1d99d4dc@syzkaller.appspotmail.com
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Reviewed-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/digicolor-usart.c | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/f2fs/checkpoint.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/digicolor-usart.c b/drivers/tty/serial/digicolor-usart.c
-index c7f81aa1ce91..5fea9bf86e85 100644
---- a/drivers/tty/serial/digicolor-usart.c
-+++ b/drivers/tty/serial/digicolor-usart.c
-@@ -309,6 +309,8 @@ static void digicolor_uart_set_termios(struct uart_port *port,
- 	case CS8:
- 	default:
- 		config |= UA_CONFIG_CHAR_LEN;
-+		termios->c_cflag &= ~CSIZE;
-+		termios->c_cflag |= CS8;
- 		break;
+diff --git a/fs/f2fs/checkpoint.c b/fs/f2fs/checkpoint.c
+index 70d898ad2d1d..f2fe4940a8cd 100644
+--- a/fs/f2fs/checkpoint.c
++++ b/fs/f2fs/checkpoint.c
+@@ -151,7 +151,7 @@ static bool __is_bitmap_valid(struct f2fs_sb_info *sbi, block_t blkaddr,
+ 		f2fs_err(sbi, "Inconsistent error blkaddr:%u, sit bitmap:%d",
+ 			 blkaddr, exist);
+ 		set_sbi_flag(sbi, SBI_NEED_FSCK);
+-		WARN_ON(1);
++		dump_stack();
  	}
- 
+ 	return exist;
+ }
+@@ -189,7 +189,7 @@ bool f2fs_is_valid_blkaddr(struct f2fs_sb_info *sbi,
+ 			f2fs_warn(sbi, "access invalid blkaddr:%u",
+ 				  blkaddr);
+ 			set_sbi_flag(sbi, SBI_NEED_FSCK);
+-			WARN_ON(1);
++			dump_stack();
+ 			return false;
+ 		} else {
+ 			return __is_bitmap_valid(sbi, blkaddr, type);
 -- 
 2.35.1
 
