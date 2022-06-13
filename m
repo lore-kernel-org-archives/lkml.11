@@ -2,116 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ABF9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:53:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0E40C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:54:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242366AbiFMRxB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 13:53:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57666 "EHLO
+        id S243025AbiFMRyQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 13:54:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242016AbiFMRwu (ORCPT
+        with ESMTP id S242822AbiFMRyA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 13:52:50 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AC3874DC3
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:38:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655127529; x=1686663529;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=bbuir7+M76SzGly2yS37ZmAUAl9BctEhBOZRYhVfaFI=;
-  b=BIf8iJlu5dDBX8GUnA9Dvjq+Y8GatrUAwGEO/1TrAKAEdY2+yYZDcrS8
-   0qrARb+De8ppk71e3UW3byaakFbq8+vruuAAagM4TkY9bcmZ8EkwbavcD
-   hOhuBr4cZQPs+LPRdhU/+gxR3gq6Fr64SWsi9Z+uHSCZpvRv6Q5bbgJv7
-   jUvR6AfH7XqQYC8AggZHZHcQ9PtPU9pCZc35myKj6mURyNLJOreI/zzE3
-   EN31ts4rnxbWa2K0EzEXNchti5CljeoY4WMTQQoTmCcJT3tbcFy/oc3ta
-   CZlNzqtJqiJLAPuO7cgPBVE/maDVsr6t+Ees9Gk7gjWbBxMymckK78KzU
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10376"; a="258118177"
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="258118177"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 06:38:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="726273252"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 13 Jun 2022 06:38:46 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o0kHF-000KqF-B7;
-        Mon, 13 Jun 2022 13:38:45 +0000
-Date:   Mon, 13 Jun 2022 21:37:48 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ren Yu <renyu@nfschina.com>, cl@linux.com
-Cc:     kbuild-all@lists.01.org, penberg@kernel.org, rientjes@google.com,
-        iamjoonsoo.kim@lge.com, akpm@linux-foundation.org, vbabka@suse.cz,
-        roman.gushchin@linux.dev, 42.hyeyoo@gmail.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, liqiong@nfschina.com,
-        qixu@nfschina.com, hukun@nfschina.com, yuzhe@nfschina.com,
-        Ren Yu <renyu@nfschina.com>
-Subject: Re: [PATCH] mm: check the function kmalloc_slab return value
-Message-ID: <202206132134.VtqdhH9v-lkp@intel.com>
-References: <20220613102438.27723-1-renyu@nfschina.com>
+        Mon, 13 Jun 2022 13:54:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 72D5E74DD8
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:39:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655127584;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=24HZ2+kUUQuVcuHCEQZMrbqA0ptJQ9pqY0sl1MAQd1o=;
+        b=CkTkrhW/AQPj3h8EDAMmVhOTXnH4DOf8dQTfMOehjCPZtWZeKjflXhl64l7ubN51iriILV
+        MetqR81vz6Ef1N9XJJJVt5eaoU2Ib2jtr0ppNtMYCFUENCAk0vFMgeVbRgBUpKrt52p+rs
+        JIRp4GqM+CdFB8nKHG4YB/qig4lUxfY=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-576--xeCBIDVOj6JGxg_voZoqw-1; Mon, 13 Jun 2022 09:39:43 -0400
+X-MC-Unique: -xeCBIDVOj6JGxg_voZoqw-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9D60986F132;
+        Mon, 13 Jun 2022 13:39:28 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.194.60])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2A9FC492CA2;
+        Mon, 13 Jun 2022 13:39:25 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        Yuan Yao <yuan.yao@linux.intel.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v7 01/39] KVM: x86: Rename 'enable_direct_tlbflush' to 'enable_l2_tlb_flush'
+Date:   Mon, 13 Jun 2022 15:38:44 +0200
+Message-Id: <20220613133922.2875594-2-vkuznets@redhat.com>
+In-Reply-To: <20220613133922.2875594-1-vkuznets@redhat.com>
+References: <20220613133922.2875594-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220613102438.27723-1-renyu@nfschina.com>
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Ren,
+To make terminology between Hyper-V-on-KVM and KVM-on-Hyper-V consistent,
+rename 'enable_direct_tlbflush' to 'enable_l2_tlb_flush'. The change
+eliminates the use of confusing 'direct' and adds the missing underscore.
 
-Thank you for the patch! Perhaps something to improve:
+No functional change.
 
-[auto build test WARNING on akpm-mm/mm-everything]
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+---
+ arch/x86/include/asm/kvm-x86-ops.h | 2 +-
+ arch/x86/include/asm/kvm_host.h    | 2 +-
+ arch/x86/kvm/svm/svm_onhyperv.c    | 2 +-
+ arch/x86/kvm/svm/svm_onhyperv.h    | 6 +++---
+ arch/x86/kvm/vmx/vmx.c             | 6 +++---
+ arch/x86/kvm/x86.c                 | 6 +++---
+ 6 files changed, 12 insertions(+), 12 deletions(-)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Ren-Yu/mm-check-the-function-kmalloc_slab-return-value/20220613-182849
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-everything
-config: um-i386_defconfig (https://download.01.org/0day-ci/archive/20220613/202206132134.VtqdhH9v-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/5ba2024be9e85177c986e9078e903798cac72f74
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Ren-Yu/mm-check-the-function-kmalloc_slab-return-value/20220613-182849
-        git checkout 5ba2024be9e85177c986e9078e903798cac72f74
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=um SUBARCH=i386 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   mm/slab.c: In function '__kmem_cache_create':
->> mm/slab.c:2068:38: warning: returning 'struct kmem_cache *' from a function with return type 'int' makes integer from pointer without a cast [-Wint-conversion]
-    2068 |                         return cachep->freelist_cache;
-         |                                ~~~~~~^~~~~~~~~~~~~~~~
-
-
-vim +2068 mm/slab.c
-
-  2063	
-  2064		if (OFF_SLAB(cachep)) {
-  2065			cachep->freelist_cache =
-  2066				kmalloc_slab(cachep->freelist_size, 0u);
-  2067			if (unlikely(ZERO_OR_NULL_PTR(cachep->freelist_cache)))
-> 2068				return cachep->freelist_cache;
-  2069		}
-  2070	
-  2071		err = setup_cpu_cache(cachep, gfp);
-  2072		if (err) {
-  2073			__kmem_cache_release(cachep);
-  2074			return err;
-  2075		}
-  2076	
-  2077		return 0;
-  2078	}
-  2079	
-
+diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
+index 6f2f1affbb78..3259259b12ed 100644
+--- a/arch/x86/include/asm/kvm-x86-ops.h
++++ b/arch/x86/include/asm/kvm-x86-ops.h
+@@ -123,7 +123,7 @@ KVM_X86_OP_OPTIONAL(guest_memory_reclaimed)
+ KVM_X86_OP(get_msr_feature)
+ KVM_X86_OP(can_emulate_instruction)
+ KVM_X86_OP(apic_init_signal_blocked)
+-KVM_X86_OP_OPTIONAL(enable_direct_tlbflush)
++KVM_X86_OP_OPTIONAL(enable_l2_tlb_flush)
+ KVM_X86_OP_OPTIONAL(migrate_timers)
+ KVM_X86_OP(msr_filter_changed)
+ KVM_X86_OP(complete_emulated_msr)
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 7e98b2876380..3d394ba44c4b 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1599,7 +1599,7 @@ struct kvm_x86_ops {
+ 					void *insn, int insn_len);
+ 
+ 	bool (*apic_init_signal_blocked)(struct kvm_vcpu *vcpu);
+-	int (*enable_direct_tlbflush)(struct kvm_vcpu *vcpu);
++	int (*enable_l2_tlb_flush)(struct kvm_vcpu *vcpu);
+ 
+ 	void (*migrate_timers)(struct kvm_vcpu *vcpu);
+ 	void (*msr_filter_changed)(struct kvm_vcpu *vcpu);
+diff --git a/arch/x86/kvm/svm/svm_onhyperv.c b/arch/x86/kvm/svm/svm_onhyperv.c
+index 8cdc62c74a96..69a7014d1cef 100644
+--- a/arch/x86/kvm/svm/svm_onhyperv.c
++++ b/arch/x86/kvm/svm/svm_onhyperv.c
+@@ -14,7 +14,7 @@
+ #include "kvm_onhyperv.h"
+ #include "svm_onhyperv.h"
+ 
+-int svm_hv_enable_direct_tlbflush(struct kvm_vcpu *vcpu)
++int svm_hv_enable_l2_tlb_flush(struct kvm_vcpu *vcpu)
+ {
+ 	struct hv_enlightenments *hve;
+ 	struct hv_partition_assist_pg **p_hv_pa_pg =
+diff --git a/arch/x86/kvm/svm/svm_onhyperv.h b/arch/x86/kvm/svm/svm_onhyperv.h
+index e2fc59380465..d6ec4aeebedb 100644
+--- a/arch/x86/kvm/svm/svm_onhyperv.h
++++ b/arch/x86/kvm/svm/svm_onhyperv.h
+@@ -13,7 +13,7 @@
+ 
+ static struct kvm_x86_ops svm_x86_ops;
+ 
+-int svm_hv_enable_direct_tlbflush(struct kvm_vcpu *vcpu);
++int svm_hv_enable_l2_tlb_flush(struct kvm_vcpu *vcpu);
+ 
+ static inline void svm_hv_init_vmcb(struct vmcb *vmcb)
+ {
+@@ -51,8 +51,8 @@ static inline void svm_hv_hardware_setup(void)
+ 
+ 			vp_ap->nested_control.features.directhypercall = 1;
+ 		}
+-		svm_x86_ops.enable_direct_tlbflush =
+-				svm_hv_enable_direct_tlbflush;
++		svm_x86_ops.enable_l2_tlb_flush =
++				svm_hv_enable_l2_tlb_flush;
+ 	}
+ }
+ 
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 5e14e4c40007..7aa9611649bb 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -469,7 +469,7 @@ static unsigned long host_idt_base;
+ static bool __read_mostly enlightened_vmcs = true;
+ module_param(enlightened_vmcs, bool, 0444);
+ 
+-static int hv_enable_direct_tlbflush(struct kvm_vcpu *vcpu)
++static int hv_enable_l2_tlb_flush(struct kvm_vcpu *vcpu)
+ {
+ 	struct hv_enlightened_vmcs *evmcs;
+ 	struct hv_partition_assist_pg **p_hv_pa_pg =
+@@ -8401,8 +8401,8 @@ static int __init vmx_init(void)
+ 		}
+ 
+ 		if (ms_hyperv.nested_features & HV_X64_NESTED_DIRECT_FLUSH)
+-			vmx_x86_ops.enable_direct_tlbflush
+-				= hv_enable_direct_tlbflush;
++			vmx_x86_ops.enable_l2_tlb_flush
++				= hv_enable_l2_tlb_flush;
+ 
+ 	} else {
+ 		enlightened_vmcs = false;
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 2318a99139fa..0a3e2c3fde43 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -4373,7 +4373,7 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
+ 			kvm_x86_ops.nested_ops->get_state(NULL, NULL, 0) : 0;
+ 		break;
+ 	case KVM_CAP_HYPERV_DIRECT_TLBFLUSH:
+-		r = kvm_x86_ops.enable_direct_tlbflush != NULL;
++		r = kvm_x86_ops.enable_l2_tlb_flush != NULL;
+ 		break;
+ 	case KVM_CAP_HYPERV_ENLIGHTENED_VMCS:
+ 		r = kvm_x86_ops.nested_ops->enable_evmcs != NULL;
+@@ -5316,10 +5316,10 @@ static int kvm_vcpu_ioctl_enable_cap(struct kvm_vcpu *vcpu,
+ 		}
+ 		return r;
+ 	case KVM_CAP_HYPERV_DIRECT_TLBFLUSH:
+-		if (!kvm_x86_ops.enable_direct_tlbflush)
++		if (!kvm_x86_ops.enable_l2_tlb_flush)
+ 			return -ENOTTY;
+ 
+-		return static_call(kvm_x86_enable_direct_tlbflush)(vcpu);
++		return static_call(kvm_x86_enable_l2_tlb_flush)(vcpu);
+ 
+ 	case KVM_CAP_HYPERV_ENFORCE_CPUID:
+ 		return kvm_hv_set_enforce_cpuid(vcpu, cap->args[0]);
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.3
+
