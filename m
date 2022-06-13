@@ -2,52 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A29F4CCA489
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:06:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B323BCCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:06:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382010AbiFMOFD (ORCPT
+        id S1382757AbiFMOGX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:05:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36678 "EHLO
+        Mon, 13 Jun 2022 10:06:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380102AbiFMN5r (ORCPT
+        with ESMTP id S1380431AbiFMN65 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:57:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82A083DDEF;
-        Mon, 13 Jun 2022 04:37:31 -0700 (PDT)
+        Mon, 13 Jun 2022 09:58:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14D088BD17;
+        Mon, 13 Jun 2022 04:37:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 11267B80ECE;
-        Mon, 13 Jun 2022 11:37:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45CF7C34114;
-        Mon, 13 Jun 2022 11:37:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C18B16130D;
+        Mon, 13 Jun 2022 11:37:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5F72C34114;
+        Mon, 13 Jun 2022 11:37:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120248;
-        bh=LYQzyA3EYOwaI3hpcICIfprp+dWtUSLsCT350YaAutI=;
+        s=korg; t=1655120254;
+        bh=2Ql0a/vPelV0bL+jBTjKjr1EkxwWCwzwREcV0w+3uFA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vJSZZbfQuVle03O/VKh3yX24Gm72uxjmHHeh8KgvyI3aFAvTmeqKw9n4pX8US3fgJ
-         O5/k5KgegEB4yGCdvN1WAgEWwgwtcqBN2rQgM+JQgzF07XZSjrLNilwWJw1mJD1plE
-         tbojBMiejP69+CIplcb0jv2XZdIZCxm/t23zpBZo=
+        b=q6mirt2lVIMd+uHkHxv2vuVERIdW/mei+YTW91H0Vj6jqKBiMLtZhTNAbE1VNqwUJ
+         ryi0lDRuTF3GAdCwYqrcW02/jtw/DHKMUzpf4M+lIUagWJOhnlnaIwL+syL7QBZgGX
+         BSvuxDE6O5EnxD7tAvly7Nd5mTWy2PHwPTFZaj5o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexander Gordeev <agordeev@linux.ibm.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Yury Norov <yury.norov@gmail.com>,
+        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
+        James Smart <jsmart2021@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 285/339] drm/amd/pm: use bitmap_{from,to}_arr32 where appropriate
-Date:   Mon, 13 Jun 2022 12:11:50 +0200
-Message-Id: <20220613094935.277717459@linuxfoundation.org>
+Subject: [PATCH 5.18 287/339] scsi: lpfc: Correct BDE type for XMIT_SEQ64_WQE in lpfc_ct_reject_event()
+Date:   Mon, 13 Jun 2022 12:11:52 +0200
+Message-Id: <20220613094935.336834991@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -59,57 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yury Norov <yury.norov@gmail.com>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit 525d6515604eb1373ce5e6372a6b6640953b2d6a ]
+[ Upstream commit 44ba9786b67345dc4e5eabe537c9ef2bfd889888 ]
 
-The smu_v1X_0_set_allowed_mask() uses bitmap_copy() to convert
-bitmap to 32-bit array. This may be wrong due to endiannes issues.
-Fix it by switching to bitmap_{from,to}_arr32.
+A previous commit assumed all XMIT_SEQ64_WQEs are prepped with the correct
+BDE type in word 0-2.  However, lpfc_ct_reject_event() routine was missed
+and is still filling out the incorrect BDE type.
 
-CC: Alexander Gordeev <agordeev@linux.ibm.com>
-CC: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-CC: Christian Borntraeger <borntraeger@linux.ibm.com>
-CC: Claudio Imbrenda <imbrenda@linux.ibm.com>
-CC: David Hildenbrand <david@redhat.com>
-CC: Heiko Carstens <hca@linux.ibm.com>
-CC: Janosch Frank <frankja@linux.ibm.com>
-CC: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-CC: Sven Schnelle <svens@linux.ibm.com>
-CC: Vasily Gorbik <gor@linux.ibm.com>
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
+Fix lpfc_ct_reject_event() routine so that type BUFF_TYPE_BDE_64 is set
+instead of BUFF_TYPE_BLP_64.
+
+Link: https://lore.kernel.org/r/20220603174329.63777-2-jsmart2021@gmail.com
+Fixes: 596fc8adb171 ("scsi: lpfc: Fix dmabuf ptr assignment in lpfc_ct_reject_event()")
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c | 2 +-
- drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/scsi/lpfc/lpfc_ct.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c b/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c
-index b87f550af26b..5f8809f6990d 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c
-@@ -781,7 +781,7 @@ int smu_v11_0_set_allowed_mask(struct smu_context *smu)
- 		goto failed;
- 	}
+diff --git a/drivers/scsi/lpfc/lpfc_ct.c b/drivers/scsi/lpfc/lpfc_ct.c
+index 4b024aa03c1b..87124fd65272 100644
+--- a/drivers/scsi/lpfc/lpfc_ct.c
++++ b/drivers/scsi/lpfc/lpfc_ct.c
+@@ -197,7 +197,7 @@ lpfc_ct_reject_event(struct lpfc_nodelist *ndlp,
+ 	memset(bpl, 0, sizeof(struct ulp_bde64));
+ 	bpl->addrHigh = le32_to_cpu(putPaddrHigh(mp->phys));
+ 	bpl->addrLow = le32_to_cpu(putPaddrLow(mp->phys));
+-	bpl->tus.f.bdeFlags = BUFF_TYPE_BLP_64;
++	bpl->tus.f.bdeFlags = BUFF_TYPE_BDE_64;
+ 	bpl->tus.f.bdeSize = (LPFC_CT_PREAMBLE - 4);
+ 	bpl->tus.w = le32_to_cpu(bpl->tus.w);
  
--	bitmap_copy((unsigned long *)feature_mask, feature->allowed, 64);
-+	bitmap_to_arr32(feature_mask, feature->allowed, 64);
- 
- 	ret = smu_cmn_send_smc_msg_with_param(smu, SMU_MSG_SetAllowedFeaturesMaskHigh,
- 					  feature_mask[1], NULL);
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c
-index cf09e30bdfe0..747430ce6394 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c
-@@ -730,7 +730,7 @@ int smu_v13_0_set_allowed_mask(struct smu_context *smu)
- 	    feature->feature_num < 64)
- 		return -EINVAL;
- 
--	bitmap_copy((unsigned long *)feature_mask, feature->allowed, 64);
-+	bitmap_to_arr32(feature_mask, feature->allowed, 64);
- 
- 	ret = smu_cmn_send_smc_msg_with_param(smu, SMU_MSG_SetAllowedFeaturesMaskHigh,
- 					      feature_mask[1], NULL);
 -- 
 2.35.1
 
