@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08A16CCA47D
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:00:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC00CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:01:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242862AbiFMSAp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:00:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34634 "EHLO
+        id S243509AbiFMSAt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:00:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243445AbiFMR6C (ORCPT
+        with ESMTP id S243478AbiFMR4j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 13:58:02 -0400
+        Mon, 13 Jun 2022 13:56:39 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ECD6F78ED8
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:41:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 298872E095
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:40:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655127662;
+        s=mimecast20190719; t=1655127628;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=PcXj7rF+YNeWDy75jVAivm7WbSpMYmPCUqIi3ZpKFPs=;
-        b=ScxJXOola9morMMgqYFum6t+eX08Bi3Lkm+zrVftS/GqFjH0c+y3x/5ILyZWZN0f+4FyLn
-        y7fMjoc3xopM/fjqmOHTvznPGDKKEX6Tm720Mn4CVOoExqxMzOAovJ4f2STqsQWBEgSYv1
-        g4mfArFHJtl4OSsqWYZjIPNcNUyTL3c=
+        bh=w3R/7O6xhex0DZD5GOF5D53qQkSqaCrbDwf2EU0xyjg=;
+        b=d7H+efMXsAng+NFstBKrZPLW/SpMFR8NYB7JqikbWHhGK6Mow5fLO9mYTszboQkC8TnIvj
+        xnGj9/oTD/DUutEDJiBB3oOm+80yU8M5BYPGtumSEpF+E6owRee4qYWRDnhPAzU733txOi
+        suAKh6zUzuv+8Xbn6rLDvfGhJoo+RyA=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-327-yBDhlO5jNXiVP8Vpadaobw-1; Mon, 13 Jun 2022 09:40:59 -0400
-X-MC-Unique: yBDhlO5jNXiVP8Vpadaobw-1
+ us-mta-609-2xlREhmINxmCMCFc60tnwg-1; Mon, 13 Jun 2022 09:40:25 -0400
+X-MC-Unique: 2xlREhmINxmCMCFc60tnwg-1
 Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 751A6801E6B;
-        Mon, 13 Jun 2022 13:40:58 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6F506101E988;
+        Mon, 13 Jun 2022 13:40:24 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.194.60])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1215D492CA2;
-        Mon, 13 Jun 2022 13:40:55 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D699F492CA2;
+        Mon, 13 Jun 2022 13:40:21 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -48,9 +48,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Siddharth Chandrasekaran <sidcha@amazon.de>,
         Yuan Yao <yuan.yao@linux.intel.com>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v7 34/39] KVM: selftests: nSVM: Allocate Hyper-V partition assist and VP assist pages
-Date:   Mon, 13 Jun 2022 15:39:17 +0200
-Message-Id: <20220613133922.2875594-35-vkuznets@redhat.com>
+Subject: [PATCH v7 21/39] KVM: nVMX: hyper-v: Enable L2 TLB flush
+Date:   Mon, 13 Jun 2022 15:39:04 +0200
+Message-Id: <20220613133922.2875594-22-vkuznets@redhat.com>
 In-Reply-To: <20220613133922.2875594-1-vkuznets@redhat.com>
 References: <20220613133922.2875594-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -61,58 +61,136 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In preparation to testing Hyper-V L2 TLB flush hypercalls, allocate VP
-assist and Partition assist pages and link them to 'struct svm_test_data'.
+Enable L2 TLB flush feature on nVMX when:
+- Enlightened VMCS is in use.
+- The feature flag is enabled in eVMCS.
+- The feature flag is enabled in partition assist page.
+
+Perform synthetic vmexit to L1 after processing TLB flush call upon
+request (HV_VMX_SYNTHETIC_EXIT_REASON_TRAP_AFTER_FLUSH).
+
+Note: nested_evmcs_l2_tlb_flush_enabled() uses cached VP assist page copy
+which gets updated from nested_vmx_handle_enlightened_vmptrld(). This is
+also guaranteed to happen post migration with eVMCS backed L2 running.
 
 Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- tools/testing/selftests/kvm/include/x86_64/svm_util.h | 10 ++++++++++
- tools/testing/selftests/kvm/lib/x86_64/svm.c          | 10 ++++++++++
- 2 files changed, 20 insertions(+)
+ arch/x86/kvm/vmx/evmcs.c  | 17 +++++++++++++++++
+ arch/x86/kvm/vmx/evmcs.h  | 10 ++++++++++
+ arch/x86/kvm/vmx/nested.c | 22 ++++++++++++++++++++++
+ 3 files changed, 49 insertions(+)
 
-diff --git a/tools/testing/selftests/kvm/include/x86_64/svm_util.h b/tools/testing/selftests/kvm/include/x86_64/svm_util.h
-index 136ba6a5d027..3922e4842c68 100644
---- a/tools/testing/selftests/kvm/include/x86_64/svm_util.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/svm_util.h
-@@ -36,6 +36,16 @@ struct svm_test_data {
- 	void *msr; /* gva */
- 	void *msr_hva;
- 	uint64_t msr_gpa;
-+
-+	/* Hyper-V VP assist page */
-+	void *vp_assist; /* gva */
-+	void *vp_assist_hva;
-+	uint64_t vp_assist_gpa;
-+
-+	/* Hyper-V Partition assist page */
-+	void *partition_assist; /* gva */
-+	void *partition_assist_hva;
-+	uint64_t partition_assist_gpa;
- };
- 
- #define stgi()			\
-diff --git a/tools/testing/selftests/kvm/lib/x86_64/svm.c b/tools/testing/selftests/kvm/lib/x86_64/svm.c
-index 37e9c0a923e0..98a47bf4cb2f 100644
---- a/tools/testing/selftests/kvm/lib/x86_64/svm.c
-+++ b/tools/testing/selftests/kvm/lib/x86_64/svm.c
-@@ -47,6 +47,16 @@ vcpu_alloc_svm(struct kvm_vm *vm, vm_vaddr_t *p_svm_gva)
- 	svm->msr_gpa = addr_gva2gpa(vm, (uintptr_t)svm->msr);
- 	memset(svm->msr_hva, 0, getpagesize());
- 
-+	svm->vp_assist = (void *)vm_vaddr_alloc_page(vm);
-+	svm->vp_assist_hva = addr_gva2hva(vm, (uintptr_t)svm->vp_assist);
-+	svm->vp_assist_gpa = addr_gva2gpa(vm, (uintptr_t)svm->vp_assist);
-+	memset(svm->vp_assist_hva, 0, getpagesize());
-+
-+	svm->partition_assist = (void *)vm_vaddr_alloc_page(vm);
-+	svm->partition_assist_hva = addr_gva2hva(vm, (uintptr_t)svm->partition_assist);
-+	svm->partition_assist_gpa = addr_gva2gpa(vm, (uintptr_t)svm->partition_assist);
-+	memset(svm->partition_assist_hva, 0, getpagesize());
-+
- 	*p_svm_gva = svm_gva;
- 	return svm;
+diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
+index 7cd7b16942c6..870de69172be 100644
+--- a/arch/x86/kvm/vmx/evmcs.c
++++ b/arch/x86/kvm/vmx/evmcs.c
+@@ -6,6 +6,7 @@
+ #include "../hyperv.h"
+ #include "../cpuid.h"
+ #include "evmcs.h"
++#include "nested.h"
+ #include "vmcs.h"
+ #include "vmx.h"
+ #include "trace.h"
+@@ -433,6 +434,22 @@ int nested_enable_evmcs(struct kvm_vcpu *vcpu,
+ 	return 0;
  }
+ 
++bool nested_evmcs_l2_tlb_flush_enabled(struct kvm_vcpu *vcpu)
++{
++	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
++	struct vcpu_vmx *vmx = to_vmx(vcpu);
++	struct hv_enlightened_vmcs *evmcs = vmx->nested.hv_evmcs;
++
++	if (!hv_vcpu || !evmcs)
++		return false;
++
++	if (!evmcs->hv_enlightenments_control.nested_flush_hypercall)
++		return false;
++
++	return hv_vcpu->vp_assist_page.nested_control.features.directhypercall;
++}
++
+ void vmx_hv_inject_synthetic_vmexit_post_tlb_flush(struct kvm_vcpu *vcpu)
+ {
++	nested_vmx_vmexit(vcpu, HV_VMX_SYNTHETIC_EXIT_REASON_TRAP_AFTER_FLUSH, 0, 0);
+ }
+diff --git a/arch/x86/kvm/vmx/evmcs.h b/arch/x86/kvm/vmx/evmcs.h
+index 22d238b36238..0267b6191e6c 100644
+--- a/arch/x86/kvm/vmx/evmcs.h
++++ b/arch/x86/kvm/vmx/evmcs.h
+@@ -66,6 +66,15 @@ DECLARE_STATIC_KEY_FALSE(enable_evmcs);
+ #define EVMCS1_UNSUPPORTED_VMENTRY_CTRL (VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL)
+ #define EVMCS1_UNSUPPORTED_VMFUNC (VMX_VMFUNC_EPTP_SWITCHING)
+ 
++/*
++ * Note, Hyper-V isn't actually stealing bit 28 from Intel, just abusing it by
++ * pairing it with architecturally impossible exit reasons.  Bit 28 is set only
++ * on SMI exits to a SMI transfer monitor (STM) and if and only if a MTF VM-Exit
++ * is pending.  I.e. it will never be set by hardware for non-SMI exits (there
++ * are only three), nor will it ever be set unless the VMM is an STM.
++ */
++#define HV_VMX_SYNTHETIC_EXIT_REASON_TRAP_AFTER_FLUSH 0x10000031
++
+ struct evmcs_field {
+ 	u16 offset;
+ 	u16 clean_field;
+@@ -245,6 +254,7 @@ int nested_enable_evmcs(struct kvm_vcpu *vcpu,
+ 			uint16_t *vmcs_version);
+ void nested_evmcs_filter_control_msr(u32 msr_index, u64 *pdata);
+ int nested_evmcs_check_controls(struct vmcs12 *vmcs12);
++bool nested_evmcs_l2_tlb_flush_enabled(struct kvm_vcpu *vcpu);
+ void vmx_hv_inject_synthetic_vmexit_post_tlb_flush(struct kvm_vcpu *vcpu);
+ 
+ #endif /* __KVM_X86_VMX_EVMCS_H */
+diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+index 87bff81f7f3e..69d06f77d7b4 100644
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -1170,6 +1170,17 @@ static void nested_vmx_transition_tlb_flush(struct kvm_vcpu *vcpu,
+ {
+ 	struct vcpu_vmx *vmx = to_vmx(vcpu);
+ 
++	/*
++	 * KVM_REQ_HV_TLB_FLUSH flushes entries from either L1's VP_ID or
++	 * L2's VP_ID upon request from the guest. Make sure we check for
++	 * pending entries for the case when the request got misplaced (e.g.
++	 * a transition from L2->L1 happened while processing L2 TLB flush
++	 * request or vice versa). kvm_hv_vcpu_flush_tlb() will not flush
++	 * anything if there are no requests in the corresponding buffer.
++	 */
++	if (to_hv_vcpu(vcpu))
++		kvm_make_request(KVM_REQ_HV_TLB_FLUSH, vcpu);
++
+ 	/*
+ 	 * If vmcs12 doesn't use VPID, L1 expects linear and combined mappings
+ 	 * for *all* contexts to be flushed on VM-Enter/VM-Exit, i.e. it's a
+@@ -3278,6 +3289,12 @@ static bool nested_get_vmcs12_pages(struct kvm_vcpu *vcpu)
+ 
+ static bool vmx_get_nested_state_pages(struct kvm_vcpu *vcpu)
+ {
++	/*
++	 * Note: nested_get_evmcs_page() also updates 'vp_assist_page' copy
++	 * in 'struct kvm_vcpu_hv' in case eVMCS is in use, this is mandatory
++	 * to make nested_evmcs_l2_tlb_flush_enabled() work correctly post
++	 * migration.
++	 */
+ 	if (!nested_get_evmcs_page(vcpu)) {
+ 		pr_debug_ratelimited("%s: enlightened vmptrld failed\n",
+ 				     __func__);
+@@ -6007,6 +6024,11 @@ static bool nested_vmx_l0_wants_exit(struct kvm_vcpu *vcpu,
+ 		 * Handle L2's bus locks in L0 directly.
+ 		 */
+ 		return true;
++	case EXIT_REASON_VMCALL:
++		/* Hyper-V L2 TLB flush hypercall is handled by L0 */
++		return guest_hv_cpuid_has_l2_tlb_flush(vcpu) &&
++			nested_evmcs_l2_tlb_flush_enabled(vcpu) &&
++			kvm_hv_is_tlb_flush_hcall(vcpu);
+ 	default:
+ 		break;
+ 	}
 -- 
 2.35.3
 
