@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3B15CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:55:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 987D9C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:55:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356995AbiFMLzo (ORCPT
+        id S1357000AbiFMLzt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:55:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55322 "EHLO
+        Mon, 13 Jun 2022 07:55:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356400AbiFMLu0 (ORCPT
+        with ESMTP id S1356401AbiFMLu0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:50:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F1B0140F9;
-        Mon, 13 Jun 2022 03:53:58 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DED124596;
+        Mon, 13 Jun 2022 03:54:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1518960F9A;
-        Mon, 13 Jun 2022 10:53:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 264FFC34114;
-        Mon, 13 Jun 2022 10:53:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D4FF3612C5;
+        Mon, 13 Jun 2022 10:54:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1971C3411C;
+        Mon, 13 Jun 2022 10:53:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117637;
-        bh=6aWu4mTOjgDRKgDU5fF44X8Oar1SBo8cFQBv3hFjkB4=;
+        s=korg; t=1655117640;
+        bh=62jqnY4FfPPKFexMXO3Ug/cGzlMx77OVqWAzXIkmRcE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vg7rKNJDqtim3/tRscoUHpVg6R5/iN3V3TIZlWunf4F7/291wbGvQ7hz2NTdAS5jk
-         ugiga5SSQ49pTcpTm/oWgUX1cOW+vCVxzWqDYwKHgq3F9McOrswbzWbi05eT0NSMcy
-         umyE2aNPY2LffBcnT+/1ew8Y8uCvWDFSZBSvNtpw=
+        b=TGKr1pxq7wYF+blSTHflpJdUU4gwC1m3bL5HXJvgT7wM0BVp6RoBM25jO4FjM5N+y
+         CXXSJDZ9F13TCuuGMxHIFuzUDM/29EXJ+ODSfV7rWwwDd6WJo4sQYrW3gtPX29JV7X
+         ZGVDgPgi6nLmeL4aL5TbznWr68fT4CR8q7LJ3rZA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 077/287] of: overlay: do not break notify on NOTIFY_{OK|STOP}
-Date:   Mon, 13 Jun 2022 12:08:21 +0200
-Message-Id: <20220613094926.208912676@linuxfoundation.org>
+        stable@vger.kernel.org, Kiwoong Kim <kwmad.kim@samsung.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 078/287] scsi: ufs: core: Exclude UECxx from SFR dump list
+Date:   Mon, 13 Jun 2022 12:08:22 +0200
+Message-Id: <20220613094926.240034730@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -50,38 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nuno Sá <nuno.sa@analog.com>
+From: Kiwoong Kim <kwmad.kim@samsung.com>
 
-[ Upstream commit 5f756a2eaa4436d7d3dc1e040147f5e992ae34b5 ]
+[ Upstream commit ef60031022eb6d972aac86ca26c98c33e1289436 ]
 
-We should not break overlay notifications on NOTIFY_{OK|STOP}
-otherwise we might break on the first fragment. We should only stop
-notifications if a *real* errno is returned by one of the listeners.
+Some devices may return invalid or zeroed data during an UIC error
+condition. In addition, reading these SFRs will clear them. This means the
+subsequent error handling will not be able to see them and therefore no
+error handling will be scheduled.
 
-Fixes: a1d19bd4cf1fe ("of: overlay: pr_err from return NOTIFY_OK to overlay apply/remove")
-Signed-off-by: Nuno Sá <nuno.sa@analog.com>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20220420130205.89435-1-nuno.sa@analog.com
+Skip reading these SFRs in ufshcd_dump_regs().
+
+Link: https://lore.kernel.org/r/1648689845-33521-1-git-send-email-kwmad.kim@samsung.com
+Fixes: d67247566450 ("scsi: ufs: Use explicit access size in ufshcd_dump_regs")
+Signed-off-by: Kiwoong Kim <kwmad.kim@samsung.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/of/overlay.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/scsi/ufs/ufshcd.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/of/overlay.c b/drivers/of/overlay.c
-index a77bfeac867d..fef5b6c2fae2 100644
---- a/drivers/of/overlay.c
-+++ b/drivers/of/overlay.c
-@@ -170,9 +170,7 @@ static int overlay_notify(struct overlay_changeset *ovcs,
+diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
+index fee1989e23f0..abc156cf05f6 100644
+--- a/drivers/scsi/ufs/ufshcd.c
++++ b/drivers/scsi/ufs/ufshcd.c
+@@ -119,8 +119,13 @@ int ufshcd_dump_regs(struct ufs_hba *hba, size_t offset, size_t len,
+ 	if (!regs)
+ 		return -ENOMEM;
  
- 		ret = blocking_notifier_call_chain(&overlay_notify_chain,
- 						   action, &nd);
--		if (ret == NOTIFY_OK || ret == NOTIFY_STOP)
--			return 0;
--		if (ret) {
-+		if (notifier_to_errno(ret)) {
- 			ret = notifier_to_errno(ret);
- 			pr_err("overlay changeset %s notifier error %d, target: %pOF\n",
- 			       of_overlay_action_name[action], ret, nd.target);
+-	for (pos = 0; pos < len; pos += 4)
++	for (pos = 0; pos < len; pos += 4) {
++		if (offset == 0 &&
++		    pos >= REG_UIC_ERROR_CODE_PHY_ADAPTER_LAYER &&
++		    pos <= REG_UIC_ERROR_CODE_DME)
++			continue;
+ 		regs[pos / 4] = ufshcd_readl(hba, offset + pos);
++	}
+ 
+ 	ufshcd_hex_dump(prefix, regs, len);
+ 	kfree(regs);
 -- 
 2.35.1
 
