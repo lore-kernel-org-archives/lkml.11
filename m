@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A6EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:10:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86499C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:10:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352111AbiFMMKq (ORCPT
+        id S1349167AbiFMMK4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:10:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52262 "EHLO
+        Mon, 13 Jun 2022 08:10:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358604AbiFMMEW (ORCPT
+        with ESMTP id S1358328AbiFMMCy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:04:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03B85252B5;
-        Mon, 13 Jun 2022 03:57:31 -0700 (PDT)
+        Mon, 13 Jun 2022 08:02:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A48C1252A0;
+        Mon, 13 Jun 2022 03:57:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4238CB80EB0;
-        Mon, 13 Jun 2022 10:57:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98A3FC34114;
-        Mon, 13 Jun 2022 10:57:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA40461346;
+        Mon, 13 Jun 2022 10:57:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE29BC34114;
+        Mon, 13 Jun 2022 10:57:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117849;
-        bh=z0OnhAjKxGS38kZTghHBO1DwJFgEjyN50ryVXkR171Q=;
+        s=korg; t=1655117835;
+        bh=NMJ0Q3mzGfxxTNw7cOKiHx7s6OMZBmRl14vQe8MNUQA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FnNUvkHHj1DOKqQeGyf3v9SH7at+pxws9KKntX8eXpt12mYEVN37W97EjJtblHnR0
-         YJ6SYvMWHJlmTZztL8nehNrdqF1a727HYqEBHcTrWaVkMuLOKaq9JQbc+B7H6bi+o/
-         naImmx0RMeZeFOXKZV2pZcc84iL5kEWHCiedXb6U=
+        b=b1+Ypgh4qcnFCugIaCK/1084D8f88LcBZgDZsdy7ZmVlUtP02ZLbJ88Nm/Grc9wiD
+         28B3O2JmjiIS71h5fVmu7CjXDnGv6thATgCZGhgSwzSlEc1m/ou0SogveIxtcLAyeO
+         APEC3y42iOymZYxda6rYy3w5lKNQfy3pxpemA3SQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
-        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 4.19 142/287] f2fs: fix deadloop in foreground GC
-Date:   Mon, 13 Jun 2022 12:09:26 +0200
-Message-Id: <20220613094928.182535059@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 4.19 149/287] ext4: verify dir block before splitting it
+Date:   Mon, 13 Jun 2022 12:09:33 +0200
+Message-Id: <20220613094928.394744339@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -49,92 +49,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Jan Kara <jack@suse.cz>
 
-commit cfd66bb715fd11fde3338d0660cffa1396adc27d upstream.
+commit 46c116b920ebec58031f0a78c5ea9599b0d2a371 upstream.
 
-As Yanming reported in bugzilla:
-
-https://bugzilla.kernel.org/show_bug.cgi?id=215914
-
-The root cause is: in a very small sized image, it's very easy to
-exceed threshold of foreground GC, if we calculate free space and
-dirty data based on section granularity, in corner case,
-has_not_enough_free_secs() will always return true, result in
-deadloop in f2fs_gc().
-
-So this patch refactors has_not_enough_free_secs() as below to fix
-this issue:
-1. calculate needed space based on block granularity, and separate
-all blocks to two parts, section part, and block part, comparing
-section part to free section, and comparing block part to free space
-in openned log.
-2. account F2FS_DIRTY_NODES, F2FS_DIRTY_IMETA and F2FS_DIRTY_DENTS
-as node block consumer;
-3. account F2FS_DIRTY_DENTS as data block consumer;
+Before splitting a directory block verify its directory entries are sane
+so that the splitting code does not access memory it should not.
 
 Cc: stable@vger.kernel.org
-Reported-by: Ming Yan <yanming@tju.edu.cn>
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220518093332.13986-1-jack@suse.cz
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/f2fs/segment.h |   32 ++++++++++++++++++++------------
- 1 file changed, 20 insertions(+), 12 deletions(-)
+ fs/ext4/namei.c |   32 +++++++++++++++++++++-----------
+ 1 file changed, 21 insertions(+), 11 deletions(-)
 
---- a/fs/f2fs/segment.h
-+++ b/fs/f2fs/segment.h
-@@ -534,11 +534,10 @@ static inline int reserved_sections(stru
- 	return GET_SEC_FROM_SEG(sbi, (unsigned int)reserved_segments(sbi));
- }
- 
--static inline bool has_curseg_enough_space(struct f2fs_sb_info *sbi)
-+static inline bool has_curseg_enough_space(struct f2fs_sb_info *sbi,
-+			unsigned int node_blocks, unsigned int dent_blocks)
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -272,9 +272,9 @@ static struct dx_frame *dx_probe(struct
+ 				 struct dx_hash_info *hinfo,
+ 				 struct dx_frame *frame);
+ static void dx_release(struct dx_frame *frames);
+-static int dx_make_map(struct inode *dir, struct ext4_dir_entry_2 *de,
+-		       unsigned blocksize, struct dx_hash_info *hinfo,
+-		       struct dx_map_entry map[]);
++static int dx_make_map(struct inode *dir, struct buffer_head *bh,
++		       struct dx_hash_info *hinfo,
++		       struct dx_map_entry *map_tail);
+ static void dx_sort_map(struct dx_map_entry *map, unsigned count);
+ static struct ext4_dir_entry_2 *dx_move_dirents(char *from, char *to,
+ 		struct dx_map_entry *offsets, int count, unsigned blocksize);
+@@ -1203,15 +1203,23 @@ static inline int search_dirblock(struct
+  * Create map of hash values, offsets, and sizes, stored at end of block.
+  * Returns number of entries mapped.
+  */
+-static int dx_make_map(struct inode *dir, struct ext4_dir_entry_2 *de,
+-		       unsigned blocksize, struct dx_hash_info *hinfo,
++static int dx_make_map(struct inode *dir, struct buffer_head *bh,
++		       struct dx_hash_info *hinfo,
+ 		       struct dx_map_entry *map_tail)
  {
--	unsigned int node_blocks = get_pages(sbi, F2FS_DIRTY_NODES) +
--					get_pages(sbi, F2FS_DIRTY_DENTS);
--	unsigned int dent_blocks = get_pages(sbi, F2FS_DIRTY_DENTS);
+ 	int count = 0;
+-	char *base = (char *) de;
++	struct ext4_dir_entry_2 *de = (struct ext4_dir_entry_2 *)bh->b_data;
++	unsigned int buflen = bh->b_size;
++	char *base = bh->b_data;
+ 	struct dx_hash_info h = *hinfo;
+ 
+-	while ((char *) de < base + blocksize) {
++	if (ext4_has_metadata_csum(dir->i_sb))
++		buflen -= sizeof(struct ext4_dir_entry_tail);
 +
- 	unsigned int segno, left_blocks;
- 	int i;
- 
-@@ -564,19 +563,28 @@ static inline bool has_curseg_enough_spa
- static inline bool has_not_enough_free_secs(struct f2fs_sb_info *sbi,
- 					int freed, int needed)
- {
--	int node_secs = get_blocktype_secs(sbi, F2FS_DIRTY_NODES);
--	int dent_secs = get_blocktype_secs(sbi, F2FS_DIRTY_DENTS);
--	int imeta_secs = get_blocktype_secs(sbi, F2FS_DIRTY_IMETA);
-+	unsigned int total_node_blocks = get_pages(sbi, F2FS_DIRTY_NODES) +
-+					get_pages(sbi, F2FS_DIRTY_DENTS) +
-+					get_pages(sbi, F2FS_DIRTY_IMETA);
-+	unsigned int total_dent_blocks = get_pages(sbi, F2FS_DIRTY_DENTS);
-+	unsigned int node_secs = total_node_blocks / BLKS_PER_SEC(sbi);
-+	unsigned int dent_secs = total_dent_blocks / BLKS_PER_SEC(sbi);
-+	unsigned int node_blocks = total_node_blocks % BLKS_PER_SEC(sbi);
-+	unsigned int dent_blocks = total_dent_blocks % BLKS_PER_SEC(sbi);
-+	unsigned int free, need_lower, need_upper;
- 
- 	if (unlikely(is_sbi_flag_set(sbi, SBI_POR_DOING)))
- 		return false;
- 
--	if (free_sections(sbi) + freed == reserved_sections(sbi) + needed &&
--			has_curseg_enough_space(sbi))
-+	free = free_sections(sbi) + freed;
-+	need_lower = node_secs + dent_secs + reserved_sections(sbi) + needed;
-+	need_upper = need_lower + (node_blocks ? 1 : 0) + (dent_blocks ? 1 : 0);
-+
-+	if (free > need_upper)
- 		return false;
--	return (free_sections(sbi) + freed) <=
--		(node_secs + 2 * dent_secs + imeta_secs +
--		reserved_sections(sbi) + needed);
-+	else if (free <= need_lower)
-+		return true;
-+	return !has_curseg_enough_space(sbi, node_blocks, dent_blocks);
++	while ((char *) de < base + buflen) {
++		if (ext4_check_dir_entry(dir, NULL, de, bh, base, buflen,
++					 ((char *)de) - base))
++			return -EFSCORRUPTED;
+ 		if (de->name_len && de->inode) {
+ 			ext4fs_dirhash(de->name, de->name_len, &h);
+ 			map_tail--;
+@@ -1221,8 +1229,7 @@ static int dx_make_map(struct inode *dir
+ 			count++;
+ 			cond_resched();
+ 		}
+-		/* XXX: do we need to check rec_len == 0 case? -Chris */
+-		de = ext4_next_entry(de, blocksize);
++		de = ext4_next_entry(de, dir->i_sb->s_blocksize);
+ 	}
+ 	return count;
  }
+@@ -1756,8 +1763,11 @@ static struct ext4_dir_entry_2 *do_split
  
- static inline bool excess_prefree_segs(struct f2fs_sb_info *sbi)
+ 	/* create map in the end of data2 block */
+ 	map = (struct dx_map_entry *) (data2 + blocksize);
+-	count = dx_make_map(dir, (struct ext4_dir_entry_2 *) data1,
+-			     blocksize, hinfo, map);
++	count = dx_make_map(dir, *bh, hinfo, map);
++	if (count < 0) {
++		err = count;
++		goto journal_error;
++	}
+ 	map -= count;
+ 	dx_sort_map(map, count);
+ 	/* Ensure that neither split block is over half full */
 
 
