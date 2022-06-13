@@ -2,139 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BC42CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E64DACCA47B
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:30:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356809AbiFMM2y (ORCPT
+        id S1357250AbiFMM3A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:28:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34184 "EHLO
+        Mon, 13 Jun 2022 08:29:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356106AbiFMMYB (ORCPT
+        with ESMTP id S1356698AbiFMMYK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:24:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 861BB1FA76;
-        Mon, 13 Jun 2022 04:05:20 -0700 (PDT)
+        Mon, 13 Jun 2022 08:24:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92FED31905;
+        Mon, 13 Jun 2022 04:05:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4264B80E92;
-        Mon, 13 Jun 2022 11:05:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CA26C34114;
-        Mon, 13 Jun 2022 11:05:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655118317;
-        bh=k9aUUnqcx7zhYyOXA4iphpmzLpkcUokEnBIJoGzV800=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uzP0GwrIIUvxLbEj5B1z2I4q/fkYHdxOBYFqKYQZL8zqRBMOlOnZT43ZKJHsrLuXl
-         cipSxarShAqtSB1sU1Ser/ZNFiFrtEoyHVL+HdztzjouFS1UltSOAA8sBjH6sMKosd
-         TW3yGWDTPLWUkj+q5vWjWBpZ+HP4UAkajg/fjdtCpIAKMC9Rfgh9UOxYexBSe5SYz4
-         2YSzkZux8MxlhXu6DZPUnA1ullgrB9VKbi0+GAlywJ5U4uVJp0vd4cjZM1mtGqrWbO
-         5knf8XGOYAsnLGi0PFadaEKXm3/iYrzaJ3Ngk8A1H3Gb0KPbIChGibpNWN6JHkZJl6
-         tfL55Kv0OB6ew==
-Date:   Mon, 13 Jun 2022 14:05:04 +0300
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Wupeng Ma <mawupeng1@huawei.com>
-Cc:     corbet@lwn.net, will@kernel.org, ardb@kernel.org,
-        catalin.marinas@arm.com, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
-        hpa@zytor.com, dvhart@infradead.org, andy@infradead.org,
-        akpm@linux-foundation.org, paul.walmsley@sifive.com,
-        palmer@dabbelt.com, aou@eecs.berkeley.edu, paulmck@kernel.org,
-        keescook@chromium.org, songmuchun@bytedance.com,
-        rdunlap@infradead.org, damien.lemoal@opensource.wdc.com,
-        swboyd@chromium.org, wei.liu@kernel.org, robin.murphy@arm.com,
-        david@redhat.com, anshuman.khandual@arm.com,
-        thunder.leizhen@huawei.com, wangkefeng.wang@huawei.com,
-        gpiccoli@igalia.com, chenhuacai@kernel.org, geert@linux-m68k.org,
-        vijayb@linux.microsoft.com, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-mm@kvack.org, linux-riscv@lists.infradead.org
-Subject: Re: [PATCH v4 6/6] memblock: Disable mirror feature if kernelcore is
- not specified
-Message-ID: <YqcZ4O3pwceVtKYm@kernel.org>
-References: <20220613082147.183145-1-mawupeng1@huawei.com>
- <20220613082147.183145-7-mawupeng1@huawei.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 52523614DF;
+        Mon, 13 Jun 2022 11:05:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BBF1C3411E;
+        Mon, 13 Jun 2022 11:05:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655118325;
+        bh=dQNws+jJxXI0km39GL9lQb6x9kS+9wy/+s80ews2QI4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=L5dtoDOb+QhpovTwLdfO9FlwrmFE/nNr2IFzc1S0Many47QyvjW6elK37gkGzWmcU
+         y3ymhAynlcftqLrBBXZMfzpt0ejZgttJJMK3Hm90mHh0nTXNGS/bk1LUYXdtLMRu6k
+         4l/sZbTMKqRMl0/6C+OCSQAukUCLYbowbI9CrLTk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Daniel Gibson <daniel@gibson.sh>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 007/172] tty: n_tty: Restore EOF push handling behavior
+Date:   Mon, 13 Jun 2022 12:09:27 +0200
+Message-Id: <20220613094852.116983191@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
+References: <20220613094850.166931805@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220613082147.183145-7-mawupeng1@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 04:21:47PM +0800, Wupeng Ma wrote:
-> From: Ma Wupeng <mawupeng1@huawei.com>
-> 
-> If system have some mirrored memory and mirrored feature is not specified
-> in boot parameter, the basic mirrored feature will be enabled and this will
-> lead to the following situations:
-> 
-> - memblock memory allocation prefers mirrored region. This may have some
->   unexpected influence on numa affinity.
-> 
-> - contiguous memory will be split into several parts if parts of them
->   is mirrored memory via memblock_mark_mirror().
-> 
-> To fix this, variable mirrored_kernelcore will be checked in
-> memblock_mark_mirror(). Mark mirrored memory with flag MEMBLOCK_MIRROR iff
-> kernelcore=mirror is added in the kernel parameters.
-> 
-> Signed-off-by: Ma Wupeng <mawupeng1@huawei.com>
-> ---
->  mm/internal.h   | 2 ++
->  mm/memblock.c   | 3 +++
->  mm/page_alloc.c | 2 +-
->  3 files changed, 6 insertions(+), 1 deletion(-)
-> 
-> diff --git a/mm/internal.h b/mm/internal.h
-> index c0f8fbe0445b..ddd2d6a46f1b 100644
-> --- a/mm/internal.h
-> +++ b/mm/internal.h
-> @@ -861,4 +861,6 @@ struct folio *try_grab_folio(struct page *page, int refs, unsigned int flags);
->  
->  DECLARE_PER_CPU(struct per_cpu_nodestat, boot_nodestats);
->  
-> +extern bool mirrored_kernelcore;
-> +
->  #endif	/* __MM_INTERNAL_H */
-> diff --git a/mm/memblock.c b/mm/memblock.c
-> index b1d2a0009733..a9f18b988b7f 100644
-> --- a/mm/memblock.c
-> +++ b/mm/memblock.c
-> @@ -924,6 +924,9 @@ int __init_memblock memblock_clear_hotplug(phys_addr_t base, phys_addr_t size)
->   */
->  int __init_memblock memblock_mark_mirror(phys_addr_t base, phys_addr_t size)
->  {
-> +	if (!mirrored_kernelcore)
-> +		return 0;
-> +
+From: Daniel Gibson <daniel@gibson.sh>
 
-Hmm, this changes the way x86 uses mirrored memory.
-This change makes sense for x86 as well, but we should get an Ack from x86 folks.
+[ Upstream commit 65a8b287023da68c4550deab5c764e6891cf1caf ]
 
->  	system_has_some_mirror = true;
->  
->  	return memblock_setclr_flag(base, size, 1, MEMBLOCK_MIRROR);
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index e008a3df0485..9b030aeb4983 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -356,7 +356,7 @@ static unsigned long required_kernelcore_percent __initdata;
->  static unsigned long required_movablecore __initdata;
->  static unsigned long required_movablecore_percent __initdata;
->  static unsigned long zone_movable_pfn[MAX_NUMNODES] __initdata;
-> -static bool mirrored_kernelcore __meminitdata;
-> +bool mirrored_kernelcore __initdata;
->  
->  /* movable_zone is the "real" zone pages in ZONE_MOVABLE are taken from */
->  int movable_zone;
-> -- 
-> 2.25.1
-> 
+TTYs in ICANON mode have a special case that allows "pushing" a line
+without a regular EOL character (like newline), by using EOF (the EOT
+character - ASCII 0x4) as a pseudo-EOL. It is silently discarded, so
+the reader of the PTS will receive the line *without* EOF or any other
+terminating character.
 
+This special case has an edge case: What happens if the readers buffer
+is the same size as the line (without EOF)? Will they be able to tell
+if the whole line is received, i.e. if the next read() will return more
+of the same line or the next line?
+
+There are two possibilities,  that both have (dis)advantages:
+
+1. The next read() returns 0. FreeBSD (13.0) and OSX (10.11) do this.
+   Advantage: The reader can interpret this as "the line is over".
+   Disadvantage: read() returning 0 means EOF, the reader could also
+   interpret it as "there's no more data" and stop reading or even
+   close the PT.
+
+2. The next read() returns the next line, the EOF is silently discarded.
+   Solaris (or at least OpenIndiana 2021.10) does this, Linux has done
+   do this since commit 40d5e0905a03 ("n_tty: Fix EOF push handling");
+   this behavior was recently broken by commit 359303076163 ("tty:
+   n_tty: do not look ahead for EOL character past the end of the buffer").
+   Advantage: read() won't return 0 (EOF), reader less likely to be
+   confused (and things like `while(read(..)>0)` don't break)
+   Disadvantage: The reader can't really know if the read() continues
+   the last line (that filled the whole read buffer) or starts a
+   new line.
+
+As both options are defensible (and are used by other Unix-likes), it's
+best to stick to the "old" behavior since "n_tty: Fix EOF push handling"
+of 2013, i.e. silently discard that EOF.
+
+This patch - that I actually got from Linus for testing and only
+modified slightly - restores that behavior by skipping an EOF
+character if it's the next character after reading is done.
+
+Based on a patch from Linus Torvalds.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215611
+Fixes: 359303076163 ("tty: n_tty: do not look ahead for EOL character past the end of the buffer")
+Cc: Peter Hurley <peter@hurleysoftware.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Reviewed-and-tested-by: Daniel Gibson <daniel@gibson.sh>
+Acked-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Daniel Gibson <daniel@gibson.sh>
+Link: https://lore.kernel.org/r/20220329235810.452513-2-daniel@gibson.sh
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/tty/n_tty.c | 38 +++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 37 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index 58190135efb7..12dde01e576b 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -2073,6 +2073,35 @@ static bool canon_copy_from_read_buf(struct tty_struct *tty,
+ 	return ldata->read_tail != canon_head;
+ }
+ 
++/*
++ * If we finished a read at the exact location of an
++ * EOF (special EOL character that's a __DISABLED_CHAR)
++ * in the stream, silently eat the EOF.
++ */
++static void canon_skip_eof(struct tty_struct *tty)
++{
++	struct n_tty_data *ldata = tty->disc_data;
++	size_t tail, canon_head;
++
++	canon_head = smp_load_acquire(&ldata->canon_head);
++	tail = ldata->read_tail;
++
++	// No data?
++	if (tail == canon_head)
++		return;
++
++	// See if the tail position is EOF in the circular buffer
++	tail &= (N_TTY_BUF_SIZE - 1);
++	if (!test_bit(tail, ldata->read_flags))
++		return;
++	if (read_buf(ldata, tail) != __DISABLED_CHAR)
++		return;
++
++	// Clear the EOL bit, skip the EOF char.
++	clear_bit(tail, ldata->read_flags);
++	smp_store_release(&ldata->read_tail, ldata->read_tail + 1);
++}
++
+ /**
+  *	job_control		-	check job control
+  *	@tty: tty
+@@ -2142,7 +2171,14 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
+ 	 */
+ 	if (*cookie) {
+ 		if (ldata->icanon && !L_EXTPROC(tty)) {
+-			if (canon_copy_from_read_buf(tty, &kb, &nr))
++			/*
++			 * If we have filled the user buffer, see
++			 * if we should skip an EOF character before
++			 * releasing the lock and returning done.
++			 */
++			if (!nr)
++				canon_skip_eof(tty);
++			else if (canon_copy_from_read_buf(tty, &kb, &nr))
+ 				return kb - kbuf;
+ 		} else {
+ 			if (copy_from_read_buf(tty, &kb, &nr))
 -- 
-Sincerely yours,
-Mike.
+2.35.1
+
+
+
