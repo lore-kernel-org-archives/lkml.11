@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9490C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:46:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91855C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:46:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354921AbiFMMqn (ORCPT
+        id S1354973AbiFMMqq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:46:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54966 "EHLO
+        Mon, 13 Jun 2022 08:46:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355140AbiFMMjF (ORCPT
+        with ESMTP id S1356099AbiFMMjS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:39:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41FF45DBFF;
-        Mon, 13 Jun 2022 04:08:44 -0700 (PDT)
+        Mon, 13 Jun 2022 08:39:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8945F338AF;
+        Mon, 13 Jun 2022 04:09:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7928B80D31;
-        Mon, 13 Jun 2022 11:08:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43F09C34114;
-        Mon, 13 Jun 2022 11:08:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 34A59B80E93;
+        Mon, 13 Jun 2022 11:09:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 884BCC34114;
+        Mon, 13 Jun 2022 11:09:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118521;
-        bh=h7BD6X4WsdlZ62dptpys6AtBjDppkukzPrTZvNt5/UY=;
+        s=korg; t=1655118582;
+        bh=aT6YvPhoPElGUTTysLZKWXB1UMLXmkhkzGyEYMZj38o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kg+QmHu4NfsrXsaE3gfYb4vFbw+a6wnXbjVlUUHLC13z3FZ3wu3RLAO65fErdOuZ4
-         gkRfs72DARuiaF75wdcnB24Cx7z0Hi2rWFMjK9K0X1qsXj3F9GsqVJAVAaNXVd0+5I
-         iFr2aJ3wcr1csFt2N+mI5w4A+kH/pKmcyc1Nc6ac=
+        b=n5GgPanfCMb72SJsrUf4P4L2CVqqdYKfpIuzByPX7K4MIZ+/A7pODz1junZFqfF1Y
+         uOnSb2caYUiDtk4h9fiRv9/TXggIFpkah6l4MJm5ERlKrYJosCqIzkzRjSUt9+zyt3
+         qzwWy4n/zytaaMvjdS/6Lt7ZYdaeM1XPLmIpZbP4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 089/172] video: fbdev: pxa3xx-gcu: release the resources correctly in pxa3xx_gcu_probe/remove()
-Date:   Mon, 13 Jun 2022 12:10:49 +0200
-Message-Id: <20220613094911.763569901@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 113/172] iio: dummy: iio_simple_dummy: check the return value of kstrdup()
+Date:   Mon, 13 Jun 2022 12:11:13 +0200
+Message-Id: <20220613094917.461131766@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -49,64 +50,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-[ Upstream commit d87ad457f7e1b8d2492ca5b1531eb35030a1cc8f ]
+[ Upstream commit ba93642188a6fed754bf7447f638bc410e05a929 ]
 
-In pxa3xx_gcu_probe(), the sequence of error lable is wrong, it will
-leads some resource leaked, so adjust the sequence to handle the error
-correctly, and if pxa3xx_gcu_add_buffer() fails, pxa3xx_gcu_free_buffers()
-need be called.
-In pxa3xx_gcu_remove(), add missing clk_disable_unpreprare().
+kstrdup() is also a memory allocation-related function, it returns NULL
+when some memory errors happen. So it is better to check the return
+value of it so to catch the memory error in time. Besides, there should
+have a kfree() to clear up the allocation if we get a failure later in
+this function to prevent memory leak.
 
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Link: https://lore.kernel.org/r/tencent_C920CFCC33B9CC1C63141FE1334A39FF8508@qq.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/pxa3xx-gcu.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/iio/dummy/iio_simple_dummy.c | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/video/fbdev/pxa3xx-gcu.c b/drivers/video/fbdev/pxa3xx-gcu.c
-index 4279e13a3b58..9421d14d0eb0 100644
---- a/drivers/video/fbdev/pxa3xx-gcu.c
-+++ b/drivers/video/fbdev/pxa3xx-gcu.c
-@@ -650,6 +650,7 @@ static int pxa3xx_gcu_probe(struct platform_device *pdev)
- 	for (i = 0; i < 8; i++) {
- 		ret = pxa3xx_gcu_add_buffer(dev, priv);
- 		if (ret) {
-+			pxa3xx_gcu_free_buffers(dev, priv);
- 			dev_err(dev, "failed to allocate DMA memory\n");
- 			goto err_disable_clk;
- 		}
-@@ -666,15 +667,15 @@ static int pxa3xx_gcu_probe(struct platform_device *pdev)
- 			SHARED_SIZE, irq);
- 	return 0;
+diff --git a/drivers/iio/dummy/iio_simple_dummy.c b/drivers/iio/dummy/iio_simple_dummy.c
+index c0b7ef900735..c24f609c2ade 100644
+--- a/drivers/iio/dummy/iio_simple_dummy.c
++++ b/drivers/iio/dummy/iio_simple_dummy.c
+@@ -575,10 +575,9 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	 */
  
--err_free_dma:
--	dma_free_coherent(dev, SHARED_SIZE,
--			priv->shared, priv->shared_phys);
-+err_disable_clk:
-+	clk_disable_unprepare(priv->clk);
+ 	swd = kzalloc(sizeof(*swd), GFP_KERNEL);
+-	if (!swd) {
+-		ret = -ENOMEM;
+-		goto error_kzalloc;
+-	}
++	if (!swd)
++		return ERR_PTR(-ENOMEM);
++
+ 	/*
+ 	 * Allocate an IIO device.
+ 	 *
+@@ -590,7 +589,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	indio_dev = iio_device_alloc(parent, sizeof(*st));
+ 	if (!indio_dev) {
+ 		ret = -ENOMEM;
+-		goto error_ret;
++		goto error_free_swd;
+ 	}
  
- err_misc_deregister:
- 	misc_deregister(&priv->misc_dev);
+ 	st = iio_priv(indio_dev);
+@@ -616,6 +615,10 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	 *    indio_dev->name = spi_get_device_id(spi)->name;
+ 	 */
+ 	indio_dev->name = kstrdup(name, GFP_KERNEL);
++	if (!indio_dev->name) {
++		ret = -ENOMEM;
++		goto error_free_device;
++	}
  
--err_disable_clk:
--	clk_disable_unprepare(priv->clk);
-+err_free_dma:
-+	dma_free_coherent(dev, SHARED_SIZE,
-+			  priv->shared, priv->shared_phys);
+ 	/* Provide description of available channels */
+ 	indio_dev->channels = iio_dummy_channels;
+@@ -632,7 +635,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
  
- 	return ret;
+ 	ret = iio_simple_dummy_events_register(indio_dev);
+ 	if (ret < 0)
+-		goto error_free_device;
++		goto error_free_name;
+ 
+ 	ret = iio_simple_dummy_configure_buffer(indio_dev);
+ 	if (ret < 0)
+@@ -649,11 +652,12 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	iio_simple_dummy_unconfigure_buffer(indio_dev);
+ error_unregister_events:
+ 	iio_simple_dummy_events_unregister(indio_dev);
++error_free_name:
++	kfree(indio_dev->name);
+ error_free_device:
+ 	iio_device_free(indio_dev);
+-error_ret:
++error_free_swd:
+ 	kfree(swd);
+-error_kzalloc:
+ 	return ERR_PTR(ret);
  }
-@@ -687,6 +688,7 @@ static int pxa3xx_gcu_remove(struct platform_device *pdev)
- 	pxa3xx_gcu_wait_idle(priv);
- 	misc_deregister(&priv->misc_dev);
- 	dma_free_coherent(dev, SHARED_SIZE, priv->shared, priv->shared_phys);
-+	clk_disable_unprepare(priv->clk);
- 	pxa3xx_gcu_free_buffers(dev, priv);
  
- 	return 0;
 -- 
 2.35.1
 
