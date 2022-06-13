@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9FADC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:47:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22B33C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:47:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355179AbiFMMq7 (ORCPT
+        id S1351677AbiFMMrG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:46:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56692 "EHLO
+        Mon, 13 Jun 2022 08:47:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357466AbiFMMjt (ORCPT
+        with ESMTP id S1357851AbiFMMkE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:39:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7882C5DE6A;
-        Mon, 13 Jun 2022 04:10:06 -0700 (PDT)
+        Mon, 13 Jun 2022 08:40:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC0A45E756;
+        Mon, 13 Jun 2022 04:10:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 95B7560B78;
-        Mon, 13 Jun 2022 11:10:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 799C4C3411E;
-        Mon, 13 Jun 2022 11:10:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BE1CF60B92;
+        Mon, 13 Jun 2022 11:10:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C57F1C3411E;
+        Mon, 13 Jun 2022 11:10:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118605;
-        bh=hN7LPJ4e0xE9JtyyG9UniMZ4fjLVO2/rkl8KphTwKpo=;
+        s=korg; t=1655118613;
+        bh=JzGW/PIlJA/cMyZJ3ANK0AFOuDKSu3Alt53e/wLXUWo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xpVm5NeumZAJESESScweXQwizKLjolUy25DrnIWpS8yxIBPzug8TY3dLvugvofOEF
-         dTK58TDPO8sLnUqrJUh2iIEvowJgZ97RX9G0+5+CPQ5I9WVZ8YtOAaVOIQU9oaPF56
-         DcoUAy65RkmC7QqXL3/SBDRYt9D9qApaVESXd3jw=
+        b=xNRueHF3mU9JbqehN23m4VQ93D38b4sw/0qhcJei5a2EgozElcu0FFmR+ZqnZ6Z3K
+         fkgBp6+AXDnvJHnkmOOR7IJ2R4wpPhmDW6AIlHQg4WUsGDjV252BLqf583td5/E33C
+         EScPxYLwYsXqq1rJE3O3vbrlYUCe5j53MvQSin9U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Hannes Reinecke <hare@suse.de>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Gong Yuanjun <ruc_gongyuanjun@163.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 136/172] scsi: myrb: Fix up null pointer access on myrb_cleanup()
-Date:   Mon, 13 Jun 2022 12:11:36 +0200
-Message-Id: <20220613094921.595935792@linuxfoundation.org>
+Subject: [PATCH 5.10 139/172] drm/radeon: fix a possible null pointer dereference
+Date:   Mon, 13 Jun 2022 12:11:39 +0200
+Message-Id: <20220613094921.850711695@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -51,55 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hannes Reinecke <hare@suse.de>
+From: Gong Yuanjun <ruc_gongyuanjun@163.com>
 
-[ Upstream commit f9f0a46141e2e39bedb4779c88380d1b5f018c14 ]
+[ Upstream commit a2b28708b645c5632dc93669ab06e97874c8244f ]
 
-When myrb_probe() fails the callback might not be set, so we need to
-validate the 'disable_intr' callback in myrb_cleanup() to not cause a null
-pointer exception. And while at it do not call myrb_cleanup() if we cannot
-enable the PCI device at all.
+In radeon_fp_native_mode(), the return value of drm_mode_duplicate()
+is assigned to mode, which will lead to a NULL pointer dereference
+on failure of drm_mode_duplicate(). Add a check to avoid npd.
 
-Link: https://lore.kernel.org/r/20220523120244.99515-1-hare@suse.de
-Reported-by: Zheyu Ma <zheyuma97@gmail.com>
-Tested-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Hannes Reinecke <hare@suse.de>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+The failure status of drm_cvt_mode() on the other path is checked too.
+
+Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/myrb.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/radeon/radeon_connectors.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/scsi/myrb.c b/drivers/scsi/myrb.c
-index 5fa0f4ed6565..ad17c2beaaca 100644
---- a/drivers/scsi/myrb.c
-+++ b/drivers/scsi/myrb.c
-@@ -1241,7 +1241,8 @@ static void myrb_cleanup(struct myrb_hba *cb)
- 	myrb_unmap(cb);
+diff --git a/drivers/gpu/drm/radeon/radeon_connectors.c b/drivers/gpu/drm/radeon/radeon_connectors.c
+index e30834434442..ef111d460be2 100644
+--- a/drivers/gpu/drm/radeon/radeon_connectors.c
++++ b/drivers/gpu/drm/radeon/radeon_connectors.c
+@@ -473,6 +473,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
+ 	    native_mode->vdisplay != 0 &&
+ 	    native_mode->clock != 0) {
+ 		mode = drm_mode_duplicate(dev, native_mode);
++		if (!mode)
++			return NULL;
+ 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
+ 		drm_mode_set_name(mode);
  
- 	if (cb->mmio_base) {
--		cb->disable_intr(cb->io_base);
-+		if (cb->disable_intr)
-+			cb->disable_intr(cb->io_base);
- 		iounmap(cb->mmio_base);
+@@ -487,6 +489,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
+ 		 * simpler.
+ 		 */
+ 		mode = drm_cvt_mode(dev, native_mode->hdisplay, native_mode->vdisplay, 60, true, false, false);
++		if (!mode)
++			return NULL;
+ 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
+ 		DRM_DEBUG_KMS("Adding cvt approximation of native panel mode %s\n", mode->name);
  	}
- 	if (cb->irq)
-@@ -3515,9 +3516,13 @@ static struct myrb_hba *myrb_detect(struct pci_dev *pdev,
- 	mutex_init(&cb->dcmd_mutex);
- 	mutex_init(&cb->dma_mutex);
- 	cb->pdev = pdev;
-+	cb->host = shost;
- 
--	if (pci_enable_device(pdev))
--		goto failure;
-+	if (pci_enable_device(pdev)) {
-+		dev_err(&pdev->dev, "Failed to enable PCI device\n");
-+		scsi_host_put(shost);
-+		return NULL;
-+	}
- 
- 	if (privdata->hw_init == DAC960_PD_hw_init ||
- 	    privdata->hw_init == DAC960_P_hw_init) {
 -- 
 2.35.1
 
