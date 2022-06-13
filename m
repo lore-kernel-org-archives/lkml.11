@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB2B6C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:01:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE5DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:02:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358178AbiFMMBz (ORCPT
+        id S1358189AbiFMMCA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:01:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41574 "EHLO
+        Mon, 13 Jun 2022 08:02:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358126AbiFML7c (ORCPT
+        with ESMTP id S1358185AbiFML7h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:59:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEBAB4E3A8;
-        Mon, 13 Jun 2022 03:56:29 -0700 (PDT)
+        Mon, 13 Jun 2022 07:59:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 197A84EA1D;
+        Mon, 13 Jun 2022 03:56:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F3BA861257;
-        Mon, 13 Jun 2022 10:56:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D0CEC36B00;
-        Mon, 13 Jun 2022 10:56:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 95522B80EA7;
+        Mon, 13 Jun 2022 10:56:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4FA9C3411C;
+        Mon, 13 Jun 2022 10:56:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117788;
-        bh=Ir1rYjo3alo8qSTxL/ehnAekfnmDw3mCZWfS6ECO2Ks=;
+        s=korg; t=1655117791;
+        bh=gFfJF2bRjxyuM9AhQvZuf6nGxSs3UhC8y75I7Cld0M8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0F0CiGK+8l4UWRjRC8TQmeCx8E2Bg/Hlh+TEuu56Aq/IXvC67ab465tF6DFF/eaFI
-         2I+VWDXPWfMPQ0WyPeBWkzNT4Hgbgp5QFJhrBJadISaIrz2ZTiyHOiv8v2W9dTyBZP
-         y4KDXTrgBSPYMX5l7X7P8kTbhx31STRUktESNf+k=
+        b=djID4/Ao54MqXFbra6HYrOQbvH/xABozsqSmXU6meAcftYwSdmLBDgr8AWdzEKEvO
+         CI/r5VzEx7xyvs2p00Q/rHYcOwvXzEihJdGrviC+4l+dUunEOr4hiqP3lcYkO3wUG0
+         3wG+itBBZudXRxm6/1HwGQ0+fOcbox6AFIJadHL8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakob Koschel <jakobkoschel@gmail.com>,
-        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 132/287] f2fs: fix dereference of stale list iterator after loop body
-Date:   Mon, 13 Jun 2022 12:09:16 +0200
-Message-Id: <20220613094927.881449853@linuxfoundation.org>
+        stable@vger.kernel.org, Yong Wu <yong.wu@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 133/287] iommu/mediatek: Add list_del in mtk_iommu_remove
+Date:   Mon, 13 Jun 2022 12:09:17 +0200
+Message-Id: <20220613094927.912666506@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -50,60 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakob Koschel <jakobkoschel@gmail.com>
+From: Yong Wu <yong.wu@mediatek.com>
 
-[ Upstream commit 2aaf51dd39afb6d01d13f1e6fe20b684733b37d5 ]
+[ Upstream commit ee55f75e4bcade81d253163641b63bef3e76cac4 ]
 
-The list iterator variable will be a bogus pointer if no break was hit.
-Dereferencing it (cur->page in this case) could load an out-of-bounds/undefined
-value making it unsafe to use that in the comparision to determine if the
-specific element was found.
+Lack the list_del in the mtk_iommu_remove, and remove
+bus_set_iommu(*, NULL) since there may be several iommu HWs.
+we can not bus_set_iommu null when one iommu driver unbind.
 
-Since 'cur->page' *can* be out-ouf-bounds it cannot be guaranteed that
-by chance (or intention of an attacker) it matches the value of 'page'
-even though the correct element was not found.
+This could be a fix for mt2712 which support 2 M4U HW and list them.
 
-This is fixed by using a separate list iterator variable for the loop
-and only setting the original variable if a suitable element was found.
-Then determing if the element was found is simply checking if the
-variable is set.
-
-Fixes: 8c242db9b8c0 ("f2fs: fix stale ATOMIC_WRITTEN_PAGE private pointer")
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Reviewed-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Fixes: 7c3a2ec02806 ("iommu/mediatek: Merge 2 M4U HWs into one iommu domain")
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+Link: https://lore.kernel.org/r/20220503071427.2285-6-yong.wu@mediatek.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/segment.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/iommu/mtk_iommu.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
-index 0e3e590a250f..6fbf0471323e 100644
---- a/fs/f2fs/segment.c
-+++ b/fs/f2fs/segment.c
-@@ -354,16 +354,19 @@ void f2fs_drop_inmem_page(struct inode *inode, struct page *page)
- 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
- 	struct list_head *head = &fi->inmem_pages;
- 	struct inmem_pages *cur = NULL;
-+	struct inmem_pages *tmp;
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 8e75f34ac886..7304ad88f126 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -702,8 +702,7 @@ static int mtk_iommu_remove(struct platform_device *pdev)
+ 	iommu_device_sysfs_remove(&data->iommu);
+ 	iommu_device_unregister(&data->iommu);
  
- 	f2fs_bug_on(sbi, !IS_ATOMIC_WRITTEN_PAGE(page));
+-	if (iommu_present(&platform_bus_type))
+-		bus_set_iommu(&platform_bus_type, NULL);
++	list_del(&data->list);
  
- 	mutex_lock(&fi->inmem_lock);
--	list_for_each_entry(cur, head, list) {
--		if (cur->page == page)
-+	list_for_each_entry(tmp, head, list) {
-+		if (tmp->page == page) {
-+			cur = tmp;
- 			break;
-+		}
- 	}
- 
--	f2fs_bug_on(sbi, list_empty(head) || cur->page != page);
-+	f2fs_bug_on(sbi, !cur);
- 	list_del(&cur->list);
- 	mutex_unlock(&fi->inmem_lock);
- 
+ 	clk_disable_unprepare(data->bclk);
+ 	devm_free_irq(&pdev->dev, data->irq, data);
 -- 
 2.35.1
 
