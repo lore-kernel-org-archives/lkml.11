@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AB64C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C67DC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:20:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377015AbiFMNTy (ORCPT
+        id S1376836AbiFMNTf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:19:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41612 "EHLO
+        Mon, 13 Jun 2022 09:19:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376365AbiFMNK5 (ORCPT
+        with ESMTP id S1359741AbiFMNKc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:10:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9221466ADA;
-        Mon, 13 Jun 2022 04:21:52 -0700 (PDT)
+        Mon, 13 Jun 2022 09:10:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53C953B559;
+        Mon, 13 Jun 2022 04:21:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C8CA60F16;
-        Mon, 13 Jun 2022 11:21:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94027C34114;
-        Mon, 13 Jun 2022 11:21:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7220A61025;
+        Mon, 13 Jun 2022 11:21:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79819C34114;
+        Mon, 13 Jun 2022 11:21:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119309;
-        bh=itQalIOuso+Bng4nmpzGu0Xrq8sW1YQxicUxo/mVZqA=;
+        s=korg; t=1655119286;
+        bh=WjlPiW19crEYmsn/usMNLrHWV8DmX3Lja2fcB7x66uQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KLWkWlkSak2i2VzuO1k2X/BfWXj1V310FuW3A3hHeKQhvH+hk8YkbYKHMUvIHOhv4
-         fFI0F10/ZJgRI4ObVhOav8pzqTmXNiKyB+Vp1badrCwg3ITXeD+C9Pxpj5+oAvUjDU
-         qDEq5FAKhAX601IwYqXb/iFa3Uwk1TfyEIbnL9to=
+        b=CJXpJNQth+MqMyuI+2SKNaf37q5NDZ2CKtn5mnYKn6yT3mCn4WP4Uevnx1Q1bpxl7
+         PJNkTlZ+PAIgNEGX2H5Lu/ek/3C9wtB3Yck4WdXmwPRQDoftvnkFHYx0M9SFjTV4qw
+         rNdzwPRih5ysUb/acMjGepewiHB8lZVho2bKU6Fk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
-        =?UTF-8?q?Andr=C3=A9=20Kapelrud?= <a.kapelrud@gmail.com>
-Subject: [PATCH 5.15 215/247] ALSA: usb-audio: Set up (implicit) sync for Saffire 6
-Date:   Mon, 13 Jun 2022 12:11:57 +0200
-Message-Id: <20220613094929.460500591@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 208/247] s390/gmap: voluntarily schedule during key setting
+Date:   Mon, 13 Jun 2022 12:11:50 +0200
+Message-Id: <20220613094929.250950150@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -49,68 +53,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Christian Borntraeger <borntraeger@linux.ibm.com>
 
-commit e0469d6581aecb0e34e2ec64f39f88e6985cc52f upstream.
+[ Upstream commit 6d5946274df1fff539a7eece458a43be733d1db8 ]
 
-Focusrite Saffire 6 has fixed audioformat quirks with multiple
-endpoints assigned to a single altsetting.  Unfortunately the generic
-parser couldn't detect the sync endpoint correctly as the implicit
-sync due to the missing EP attribute bits.  In the former kernels, it
-used to work somehow casually, but it's been broken for a while after
-the large code change in 5.11.
+With large and many guest with storage keys it is possible to create
+large latencies or stalls during initial key setting:
 
-This patch cures the regression by the following:
-- Allow the static quirk table to provide the sync EP information;
-  we just need to fill the fields and let the generic parser skipping
-  parsing if sync_ep is already set.
-- Add the sync endpoint information to the entry for Saffire 6.
+rcu: INFO: rcu_sched self-detected stall on CPU
+rcu:   18-....: (2099 ticks this GP) idle=54e/1/0x4000000000000002 softirq=35598716/35598716 fqs=998
+       (t=2100 jiffies g=155867385 q=20879)
+Task dump for CPU 18:
+CPU 1/KVM       R  running task        0 1030947 256019 0x06000004
+Call Trace:
+sched_show_task
+rcu_dump_cpu_stacks
+rcu_sched_clock_irq
+update_process_times
+tick_sched_handle
+tick_sched_timer
+__hrtimer_run_queues
+hrtimer_interrupt
+do_IRQ
+ext_int_handler
+ptep_zap_key
 
-Fixes: 7b0efea4baf0 ("ALSA: usb-audio: Add missing ep_idx in fixed EP quirks")
-Reported-and-tested-by: André Kapelrud <a.kapelrud@gmail.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220606160910.6926-3-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The mmap lock is held during the page walking but since this is a
+semaphore scheduling is still possible. Same for the kvm srcu.
+To minimize overhead do this on every segment table entry or large page.
+
+Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+Reviewed-by: Alexander Gordeev <agordeev@linux.ibm.com>
+Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220530092706.11637-2-borntraeger@linux.ibm.com
+Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/usb/pcm.c          | 3 +++
- sound/usb/quirks-table.h | 7 ++++++-
- 2 files changed, 9 insertions(+), 1 deletion(-)
+ arch/s390/mm/gmap.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/sound/usb/pcm.c b/sound/usb/pcm.c
-index b0369df53910..e692ae04436a 100644
---- a/sound/usb/pcm.c
-+++ b/sound/usb/pcm.c
-@@ -291,6 +291,9 @@ int snd_usb_audioformat_set_sync_ep(struct snd_usb_audio *chip,
- 	bool is_playback;
- 	int err;
+diff --git a/arch/s390/mm/gmap.c b/arch/s390/mm/gmap.c
+index d63c0ccc5ccd..4ce3a2f01c91 100644
+--- a/arch/s390/mm/gmap.c
++++ b/arch/s390/mm/gmap.c
+@@ -2601,6 +2601,18 @@ static int __s390_enable_skey_pte(pte_t *pte, unsigned long addr,
+ 	return 0;
+ }
  
-+	if (fmt->sync_ep)
-+		return 0; /* already set up */
++/*
++ * Give a chance to schedule after setting a key to 256 pages.
++ * We only hold the mm lock, which is a rwsem and the kvm srcu.
++ * Both can sleep.
++ */
++static int __s390_enable_skey_pmd(pmd_t *pmd, unsigned long addr,
++				  unsigned long next, struct mm_walk *walk)
++{
++	cond_resched();
++	return 0;
++}
 +
- 	alts = snd_usb_get_host_interface(chip, fmt->iface, fmt->altsetting);
- 	if (!alts)
- 		return 0;
-diff --git a/sound/usb/quirks-table.h b/sound/usb/quirks-table.h
-index 78eb41b621d6..4f56e1784932 100644
---- a/sound/usb/quirks-table.h
-+++ b/sound/usb/quirks-table.h
-@@ -2658,7 +2658,12 @@ YAMAHA_DEVICE(0x7010, "UB99"),
- 					.nr_rates = 2,
- 					.rate_table = (unsigned int[]) {
- 						44100, 48000
--					}
-+					},
-+					.sync_ep = 0x82,
-+					.sync_iface = 0,
-+					.sync_altsetting = 1,
-+					.sync_ep_idx = 1,
-+					.implicit_fb = 1,
- 				}
- 			},
- 			{
+ static int __s390_enable_skey_hugetlb(pte_t *pte, unsigned long addr,
+ 				      unsigned long hmask, unsigned long next,
+ 				      struct mm_walk *walk)
+@@ -2623,12 +2635,14 @@ static int __s390_enable_skey_hugetlb(pte_t *pte, unsigned long addr,
+ 	end = start + HPAGE_SIZE - 1;
+ 	__storage_key_init_range(start, end);
+ 	set_bit(PG_arch_1, &page->flags);
++	cond_resched();
+ 	return 0;
+ }
+ 
+ static const struct mm_walk_ops enable_skey_walk_ops = {
+ 	.hugetlb_entry		= __s390_enable_skey_hugetlb,
+ 	.pte_entry		= __s390_enable_skey_pte,
++	.pmd_entry		= __s390_enable_skey_pmd,
+ };
+ 
+ int s390_enable_skey(void)
 -- 
-2.36.1
+2.35.1
 
 
 
