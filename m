@@ -2,84 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E83A5C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:15:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF19AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:15:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239759AbiFMIPW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 04:15:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42272 "EHLO
+        id S239835AbiFMIPZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 04:15:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239778AbiFMINX (ORCPT
+        with ESMTP id S239782AbiFMIPM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 04:13:23 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0ABEB3;
-        Mon, 13 Jun 2022 01:13:18 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 7B924660163F;
-        Mon, 13 Jun 2022 09:13:16 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1655107997;
-        bh=nngcLlLkWokhulYNje5MIUVohalGmGQRGzNdGDIqhOg=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=oUJLCpDwf6d8vCEwFuLYeiFLaqPJ3EL68/bcBr6sbAbGzc+N/DXSCCdHMIGrwe9ml
-         bN1WxFu0/szl4ZkMs77VDe868k+7i2zq94TTq/sYBpB+AZLVdeyxCfWdHoRSvXvqfw
-         78roJdyviEA8KQtMfXF3SN579GsYRv8qwbkHmrHXAFURrEC44PsMKIdobYnmyq9bLx
-         PgY6B9oTiBQclhsLYbiZM1R55H+F7GMMsgy76kt8n5wNyz91LluFdLVpUH0HnoeQQe
-         6Sb0GPrzbO1qFd5SeZVpBoCwqnt5uJOWy6RFQdX0NkmV2fN4m1diJhIc7Wzroyef2H
-         PcqPencC5Of5g==
-Message-ID: <80c7fa61-e25a-fc45-bdcb-60ac3796b96e@collabora.com>
-Date:   Mon, 13 Jun 2022 10:13:13 +0200
+        Mon, 13 Jun 2022 04:15:12 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9805B2F0;
+        Mon, 13 Jun 2022 01:15:11 -0700 (PDT)
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25D80q1D026381;
+        Mon, 13 Jun 2022 10:14:57 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=j4qE4CmTOLx19pyEhsVTVJ4dGM7++a3J2NmTTXvsYqk=;
+ b=EPUc7+MiS5BXCGfIiySRsWC6NvcAXPwukwv/vxIgWPnuMQx8XwZszulbaKyPkKPUPvsz
+ rvDPbpPWfTvOJ0Sb+PFava+1lk6RiaENZoOxO92cDQ7t+URjL2gaoYIdVsRMwZ4MUOnk
+ RmnWCy099u4GUQvotA9d9rnm6LNt6wQNju+JWFOpWyIhVflE3BQeCi7lIBPyzFlcglr1
+ gs4LCSwIaxsV2yIVTHUEfOLyXoERNmF3TNbdtvwcvuKoVmY2+A4GUYUMy93SSc7SzSVl
+ qiUBxl5HxNqZ1vbrtt9zRfJxV9D0+dMFm3RPgAGpRu5RvbklHX+olxIT4xr/69VGssDJ rA== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gmg6a2jm2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 13 Jun 2022 10:14:57 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id E391310002A;
+        Mon, 13 Jun 2022 10:14:56 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id DEA23212311;
+        Mon, 13 Jun 2022 10:14:56 +0200 (CEST)
+Received: from [10.201.21.93] (10.75.127.118) by SHFDAG1NODE1.st.com
+ (10.75.129.69) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Mon, 13 Jun
+ 2022 10:14:56 +0200
+Message-ID: <feca044e-deed-6c93-897f-59ab8ed2ba21@foss.st.com>
+Date:   Mon, 13 Jun 2022 10:14:55 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v3 6/6] iommu: mtk_iommu: Lookup phandle to retrieve
- syscon to pericfg
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 1/2] ARM: dts: stm32: fix missing internally connected
+ voltage regulator for OSD32MP1
 Content-Language: en-US
-To:     Yong Wu <yong.wu@mediatek.com>
-Cc:     joro@8bytes.org, will@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        iommu@lists.linux-foundation.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        krzysztof.kozlowski@linaro.org
-References: <20220609100802.54513-1-angelogioacchino.delregno@collabora.com>
- <20220609100802.54513-7-angelogioacchino.delregno@collabora.com>
- <db422fe4d0b5391ee2aacae989d7e48209e1095f.camel@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <db422fe4d0b5391ee2aacae989d7e48209e1095f.camel@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+To:     =?UTF-8?Q?Leonard_G=c3=b6hrs?= <l.goehrs@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+CC:     <kernel@pengutronix.de>, <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220603094422.2112746-1-l.goehrs@pengutronix.de>
+From:   Alexandre TORGUE <alexandre.torgue@foss.st.com>
+In-Reply-To: <20220603094422.2112746-1-l.goehrs@pengutronix.de>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.75.127.118]
+X-ClientProxiedBy: GPXDAG2NODE5.st.com (10.75.127.69) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-13_02,2022-06-09_02,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 13/06/22 07:32, Yong Wu ha scritto:
-> On Thu, 2022-06-09 at 12:08 +0200, AngeloGioacchino Del Regno wrote:
->> On some SoCs (of which only MT8195 is supported at the time of
->> writing),
->> the "R" and "W" (I/O) enable bits for the IOMMUs are in the
->> pericfg_ao
->> register space and not in the IOMMU space: as it happened already
->> with
->> infracfg, it is expected that this list will grow.
+Hi Leonard
+
+On 6/3/22 11:44, Leonard Göhrs wrote:
+> According to the OSD32MP1 Power System overview[1] ldo3's input is always
+> internally connected to vdd_ddr.
 > 
-> Currently I don't see the list will grow. As commented before, In the
-> lastest SoC, The IOMMU enable bits for IOMMU will be in ATF, rather
-> than in this pericfg register region. In this case, Is this patch
-> unnecessary? or we could add this patch when there are 2 SoCs use this
-> setting at least?  what's your opinion?
+> [1]: https://octavosystems.com/app_notes/osd32mp1-power-system-overview/#connections
 > 
+> Signed-off-by: Leonard Göhrs <l.goehrs@pengutronix.de>
+> ---
+>   arch/arm/boot/dts/stm32mp15xx-osd32.dtsi | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/arch/arm/boot/dts/stm32mp15xx-osd32.dtsi b/arch/arm/boot/dts/stm32mp15xx-osd32.dtsi
+> index 6706d8311a66..e997c4953fd1 100644
+> --- a/arch/arm/boot/dts/stm32mp15xx-osd32.dtsi
+> +++ b/arch/arm/boot/dts/stm32mp15xx-osd32.dtsi
+> @@ -78,6 +78,7 @@ regulators {
+>   			compatible = "st,stpmic1-regulators";
+>   
+>   			ldo1-supply = <&v3v3>;
+> +			ldo3-supply = <&vdd_ddr>;
+>   			ldo6-supply = <&v3v3>;
+>   			pwr_sw1-supply = <&bst_out>;
+>   
 
-Perhaps I've misunderstood... besides, can you please check if there's any
-other SoC (not just chromebooks, also smartphone SoCs) that need this logic?
 
-Thanks,
-Angelo
+Applied on stm32-next.
 
-
+Thanks.
+Alex
