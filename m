@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 437A4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:26:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 337D5C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:26:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351514AbiFMM0E (ORCPT
+        id S1351164AbiFMM0J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:26:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33546 "EHLO
+        Mon, 13 Jun 2022 08:26:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355084AbiFMMXx (ORCPT
+        with ESMTP id S1355110AbiFMMXx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 08:23:53 -0400
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70ACD313A1;
-        Mon, 13 Jun 2022 04:04:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC0033151A;
+        Mon, 13 Jun 2022 04:04:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E0A5CCE1176;
-        Mon, 13 Jun 2022 11:04:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDFF4C34114;
-        Mon, 13 Jun 2022 11:04:06 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 62F67CE1161;
+        Mon, 13 Jun 2022 11:04:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51266C3411C;
+        Mon, 13 Jun 2022 11:04:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118247;
-        bh=X2GlBPW4FLORKb18K+0SK7mzNqyfqz6KrvGsXzJTf5w=;
+        s=korg; t=1655118252;
+        bh=n3rgOTOCZ/rJGqGmkXaqvBroutI+QFsBaD4ple4Ma+o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=caoi3ynOsjQ2odTRgIbFleqZDCsA564bA4++6kThmxrn3TbAQU3ypRnWyakxPVW7k
-         0zg5zc+qp+03UyXpDy+O8frpO7MyadRhbSkWCu1uVQI7cOf+7tstBfVLg4t2WLtpmI
-         WR1TfZXKxWOAo+lRv9FNpX2vfKpJQl1DPRDeutqw=
+        b=mBpc2Ua9GqDeVW3ljfZHl1WX4pW+yZx48cq5ra0L9DDEeEV7ClxNa7nqmZE/TonSL
+         Wbczg5sxlK47C0kq+IR1p7CcUuU4jjRntpYr0JOG45gSFzEDSPzej/fXdooL4dRr5i
+         o3Zio8IK9ntQBgCRSV9rUtHymbLPFnhQ0eYPLwdM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 4.19 278/287] mmc: block: Fix CQE recovery reset success
-Date:   Mon, 13 Jun 2022 12:11:42 +0200
-Message-Id: <20220613094932.426223832@linuxfoundation.org>
+        stable@vger.kernel.org, Martin Faltesek <mfaltesek@google.com>,
+        Guenter Roeck <groeck@chromium.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.19 280/287] nfc: st21nfca: fix memory leaks in EVT_TRANSACTION handling
+Date:   Mon, 13 Jun 2022 12:11:44 +0200
+Message-Id: <20220613094932.485978890@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -49,41 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adrian Hunter <adrian.hunter@intel.com>
+From: Martin Faltesek <mfaltesek@google.com>
 
-commit a051246b786af7e4a9d9219cc7038a6e8a411531 upstream.
+commit 996419e0594abb311fb958553809f24f38e7abbe upstream.
 
-The intention of the use of mmc_blk_reset_success() in
-mmc_blk_cqe_recovery() was to prevent repeated resets when retrying and
-getting the same error. However, that may not be the case - any amount
-of time and I/O may pass before another recovery is needed, in which
-case there would be no reason to deny it the opportunity to recover via
-a reset if necessary. CQE recovery is expected seldom and failure to
-recover (if the clear tasks command fails), even more seldom, so it is
-better to allow the reset always, which can be done by calling
-mmc_blk_reset_success() always.
+Error paths do not free previously allocated memory. Add devm_kfree() to
+those failure paths.
 
-Fixes: 1e8e55b67030c6 ("mmc: block: Add CQE support")
+Fixes: 26fc6c7f02cb ("NFC: st21nfca: Add HCI transaction event support")
+Fixes: 4fbcc1a4cb20 ("nfc: st21nfca: Fix potential buffer overflows in EVT_TRANSACTION")
 Cc: stable@vger.kernel.org
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-Link: https://lore.kernel.org/r/20220531171922.76080-1-adrian.hunter@intel.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Martin Faltesek <mfaltesek@google.com>
+Reviewed-by: Guenter Roeck <groeck@chromium.org>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/core/block.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/nfc/st21nfca/se.c |   13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
---- a/drivers/mmc/core/block.c
-+++ b/drivers/mmc/core/block.c
-@@ -1499,8 +1499,7 @@ void mmc_blk_cqe_recovery(struct mmc_que
- 	err = mmc_cqe_recovery(host);
- 	if (err)
- 		mmc_blk_reset(mq->blkdata, host, MMC_BLK_CQE_RECOVERY);
--	else
--		mmc_blk_reset_success(mq->blkdata, MMC_BLK_CQE_RECOVERY);
-+	mmc_blk_reset_success(mq->blkdata, MMC_BLK_CQE_RECOVERY);
+--- a/drivers/nfc/st21nfca/se.c
++++ b/drivers/nfc/st21nfca/se.c
+@@ -342,22 +342,29 @@ int st21nfca_connectivity_event_received
+ 		transaction->aid_len = skb->data[1];
  
- 	pr_debug("%s: CQE recovery done\n", mmc_hostname(host));
- }
+ 		/* Checking if the length of the AID is valid */
+-		if (transaction->aid_len > sizeof(transaction->aid))
++		if (transaction->aid_len > sizeof(transaction->aid)) {
++			devm_kfree(dev, transaction);
+ 			return -EINVAL;
++		}
+ 
+ 		memcpy(transaction->aid, &skb->data[2],
+ 		       transaction->aid_len);
+ 
+ 		/* Check next byte is PARAMETERS tag (82) */
+ 		if (skb->data[transaction->aid_len + 2] !=
+-		    NFC_EVT_TRANSACTION_PARAMS_TAG)
++		    NFC_EVT_TRANSACTION_PARAMS_TAG) {
++			devm_kfree(dev, transaction);
+ 			return -EPROTO;
++		}
+ 
+ 		transaction->params_len = skb->data[transaction->aid_len + 3];
+ 
+ 		/* Total size is allocated (skb->len - 2) minus fixed array members */
+-		if (transaction->params_len > ((skb->len - 2) - sizeof(struct nfc_evt_transaction)))
++		if (transaction->params_len > ((skb->len - 2) -
++		    sizeof(struct nfc_evt_transaction))) {
++			devm_kfree(dev, transaction);
+ 			return -EINVAL;
++		}
+ 
+ 		memcpy(transaction->params, skb->data +
+ 		       transaction->aid_len + 4, transaction->params_len);
 
 
