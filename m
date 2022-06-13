@@ -2,96 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 936C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:36:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADE25C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:36:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383927AbiFMOgl (ORCPT
+        id S1384172AbiFMOgs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:36:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39722 "EHLO
+        Mon, 13 Jun 2022 10:36:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383596AbiFMObo (ORCPT
+        with ESMTP id S1385566AbiFMObh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:31:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0EFEABF70;
-        Mon, 13 Jun 2022 04:49:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B6063612A8;
-        Mon, 13 Jun 2022 11:49:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6A71C34114;
-        Mon, 13 Jun 2022 11:49:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120946;
-        bh=Rv2aAz7IGiMWJhkLpbWc7rlXzioTsKnTqNMEJ2Jd4O8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L49wDHZ2pSwvJMLc5xw6aTXjO44esIAxkGGROcwZmeg+V0HmdfeUCA25Y0zpPBg7t
-         XopS50K5u7JpzsgF9PJDsyvnltOH2j3IdYd2hmC+PfOhMPKnwQTWNPUOlESya5Sns/
-         dAkovVQcVsoCkh4wiIf3AI4kwfMX4okrGvGgyN5s=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 193/298] drm: imx: fix compiler warning with gcc-12
-Date:   Mon, 13 Jun 2022 12:11:27 +0200
-Message-Id: <20220613094930.960272978@linuxfoundation.org>
+        Mon, 13 Jun 2022 10:31:37 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FBBDABF55;
+        Mon, 13 Jun 2022 04:49:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1655120944; x=1686656944;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Pj2tfW8mZzif7jlpRh0HExia+x5zaVcrwbz9+Z9tZBk=;
+  b=qMRDPdF59gqW39xcqHhgQ/WCJ7/Jo5Aecc0qTJ3pu7ABVIp5C/9qMO9e
+   s58r3jIcbWjt1efpZjMSu2f2Ggd5MZEdo4EO/wiRN29IQTPnjPT2cfY7c
+   iCmopRcbzh7t/+tiZ5A/vKyOa6t5amSHaahBsPH2WWEXgDLAJsib+RTzP
+   M5ewXcukkmdYng5HZLFAQ5n70DO8jNureYEZouPrLn5pYYn3W+TO8/SWh
+   UaLdOeKTVoijmyO6LOt6YuJonpaL+JMb2z9dR3qTDSX2zsDN+bLx3l5mi
+   u+IDA9qie4gE5LS6lTlOwIDVOHG2HmfktEgafXck+f/5+fg46tVk9xRA+
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
+   d="scan'208";a="168174938"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Jun 2022 04:48:34 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 13 Jun 2022 04:48:34 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Mon, 13 Jun 2022 04:48:32 -0700
+From:   Conor Dooley <conor.dooley@microchip.com>
+To:     Bin Liu <b-liu@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     Daire McNamara <daire.mcnamara@microchip.com>,
+        Valentina Fernandez <valentina.fernandezalanis@microchip.com>,
+        <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <linux-riscv@lists.infradead.org>,
+        Ben Dooks <ben.dooks@codethink.co.uk>,
+        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
+        Conor Dooley <conor.dooley@microchip.com>
+Subject: [PATCH v2 2/2] MAINTAINERS: add musb to PolarFire SoC entry
+Date:   Mon, 13 Jun 2022 12:46:43 +0100
+Message-ID: <20220613114642.1615292-3-conor.dooley@microchip.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
-References: <20220613094924.913340374@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220613114642.1615292-1-conor.dooley@microchip.com>
+References: <20220613114642.1615292-1-conor.dooley@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+Add the newly introduced musb driver to the existing PolarFire SoC entry.
 
-[ Upstream commit 7aefd8b53815274f3ef398d370a3c9b27dd9f00c ]
-
-Gcc-12 correctly warned about this code using a non-NULL pointer as a
-truth value:
-
-  drivers/gpu/drm/imx/ipuv3-crtc.c: In function ‘ipu_crtc_disable_planes’:
-  drivers/gpu/drm/imx/ipuv3-crtc.c:72:21: error: the comparison will always evaluate as ‘true’ for the address of ‘plane’ will never be NULL [-Werror=address]
-     72 |                 if (&ipu_crtc->plane[1] && plane == &ipu_crtc->plane[1]->base)
-        |                     ^
-
-due to the extraneous '&' address-of operator.
-
-Philipp Zabel points out that The mistake had no adverse effect since
-the following condition doesn't actually dereference the NULL pointer,
-but the intent of the code was obviously to check for it, not to take
-the address of the member.
-
-Fixes: eb8c88808c83 ("drm/imx: add deferred plane disabling")
-Acked-by: Philipp Zabel <p.zabel@pengutronix.de>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 ---
- drivers/gpu/drm/imx/ipuv3-crtc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/imx/ipuv3-crtc.c b/drivers/gpu/drm/imx/ipuv3-crtc.c
-index 9c8829f945b2..f7863d6dea80 100644
---- a/drivers/gpu/drm/imx/ipuv3-crtc.c
-+++ b/drivers/gpu/drm/imx/ipuv3-crtc.c
-@@ -69,7 +69,7 @@ static void ipu_crtc_disable_planes(struct ipu_crtc *ipu_crtc,
- 	drm_atomic_crtc_state_for_each_plane(plane, old_crtc_state) {
- 		if (plane == &ipu_crtc->plane[0]->base)
- 			disable_full = true;
--		if (&ipu_crtc->plane[1] && plane == &ipu_crtc->plane[1]->base)
-+		if (ipu_crtc->plane[1] && plane == &ipu_crtc->plane[1]->base)
- 			disable_partial = true;
- 	}
+diff --git a/MAINTAINERS b/MAINTAINERS
+index a6d3bd9d2a8d..b07b2cfa3567 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -17143,6 +17143,7 @@ S:	Supported
+ F:	arch/riscv/boot/dts/microchip/
+ F:	drivers/mailbox/mailbox-mpfs.c
+ F:	drivers/soc/microchip/
++F:	drivers/usb/musb/mpfs.c
+ F:	include/soc/microchip/mpfs.h
  
+ RNBD BLOCK DRIVERS
 -- 
-2.35.1
-
-
+2.36.1
 
