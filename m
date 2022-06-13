@@ -2,160 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6F7CCCA483
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:24:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C4CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:24:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349251AbiFMTYP (ORCPT
+        id S1349454AbiFMTYR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:24:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44724 "EHLO
+        Mon, 13 Jun 2022 15:24:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349397AbiFMTWJ (ORCPT
+        with ESMTP id S1349535AbiFMTWU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 15:22:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8091A5250D
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:21:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1851060C16
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 17:21:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0D63C3411B;
-        Mon, 13 Jun 2022 17:21:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655140885;
-        bh=awvuHJ3WanfHU+vluSYhtwaUL0847oXiEl8aOFz++RI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jjq7hoiSQsNd3XQw+AacpDwmcusDCkcHUbdP/HtIvNo+T+pJBJ6bN41S5QZDq8Jq+
-         Gi4o10dNT15pR3iMmYUJVaVwoync0UcWwJ8Uy6U+4h7JpawIsuS4Bz55uKY23nOQvX
-         vmYBMZBQMY5r6XBabY/p+qybbgdH2g35q3bQLvJw=
-Date:   Mon, 13 Jun 2022 19:21:22 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Cc:     Bard Liao <yung-chuan.liao@linux.intel.com>,
-        alsa-devel@alsa-project.org, vkoul@kernel.org,
-        vinod.koul@linaro.org, linux-kernel@vger.kernel.org, tiwai@suse.de,
-        broonie@kernel.org, srinivas.kandagatla@linaro.org,
-        sanyog.r.kale@intel.com, bard.liao@intel.com
-Subject: Re: [PATCH 1/2] soundwire: intel: uniquify debug message
-Message-ID: <YqdyErIYYk85NV41@kroah.com>
-References: <20220610023537.27223-1-yung-chuan.liao@linux.intel.com>
- <20220610023537.27223-2-yung-chuan.liao@linux.intel.com>
- <YqLVwqx9/Pos8T06@kroah.com>
- <b86e6cbd-3488-a239-d765-cf01bf0d4f70@linux.intel.com>
- <YqRCKtLGYlRQQ+DU@kroah.com>
- <7328fbb2-06af-99c8-5e7f-9d22f8c4e4f6@linux.intel.com>
+        Mon, 13 Jun 2022 15:22:20 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF90032072
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:18:12 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id g10-20020a17090a708a00b001ea8aadd42bso6631616pjk.0
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:18:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=qCvC/gb8V8fECBsNeP2ccfvKaZ3jzeuxKm8/lAah6es=;
+        b=JeWQv4aSZy+O2cZxsGMbsgJn5bVOigH7tXE9IA96vfg6/XH7Rm8GbjyIelcLUNrrSc
+         hTatJU8NTiUKeILq/kNFHf4VeFZHJNUnBcwmlDMBiQQtq7IkqFTSXQ9mAFz7KH7Bl+2h
+         XwyNU57gxcooV0RfxWHiZ6jaBchMhPmOkUqDpPTmShFDiFy6XobZN2quWxaaAzyEMm00
+         7p5Tbggf16ga4S+n9v9p71pLhN1uRuX+cFw1JZ4yVIa+A64wQHYeJW7Xqvr0IxySdN9b
+         VbH9FL+sk450DH8fJQsmf3Mizt2npnc7sjtOnKuAPiRyoYGIXD2ABP29Vjwk9QZt+mKu
+         t8/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=qCvC/gb8V8fECBsNeP2ccfvKaZ3jzeuxKm8/lAah6es=;
+        b=L29gUr/eDyI9JFAELDiZkKn+UFWAp20Z7KNACMazp1zS7bT5k3lHK1LTaY5OdKsv8I
+         hLw6N8fhrARRKEQWDZLX5+644Y07/kg1GprD0QOi2hOdsz+NixjX8kbTnkJE6dmYrRwA
+         zLAJml+PLx4qttVKMzoCv4fOdGGdP9sqVXRFUVGqziKWiqdk+IkEaaiAZnEyCi9b5Fve
+         Qm30KVWDsUo7/Q9js+l558ejH5gEWGEqVKRNYve69MNkc8hizd1ap5wlkQqhfF/dlW72
+         pYErgdl3jXjS/mQcUcCOBqes/rhOZZ8jBzaDM6AfXFRJeXdeXcKP0SHxfuEiH8vEZdol
+         KH1Q==
+X-Gm-Message-State: AOAM530xg7/EGTgpqw5Z4n6kXy1F37LZMEPEKb4xG/g9XHbPjWWony4C
+        CtuXVmDmAGYcAFIjrCthIR7Jfg==
+X-Google-Smtp-Source: ABdhPJxC7vKhUUaEoHFlVYvxzF/159YMTOwsQ5llqhN5liF2o40yzwFWPyP6C9y5PqyS9XtL4XqiSg==
+X-Received: by 2002:a17:90b:a53:b0:1ea:750e:93db with SMTP id gw19-20020a17090b0a5300b001ea750e93dbmr17143228pjb.66.1655140692442;
+        Mon, 13 Jun 2022 10:18:12 -0700 (PDT)
+Received: from localhost.localdomain ([192.77.111.2])
+        by smtp.gmail.com with ESMTPSA id u17-20020a62d451000000b0050dc762812csm5646641pfl.6.2022.06.13.10.18.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 10:18:12 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
+        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
+        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
+        elder@kernel.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 5/6] net: ipa: stop counting total RX bytes and transactions
+Date:   Mon, 13 Jun 2022 12:17:58 -0500
+Message-Id: <20220613171759.578856-6-elder@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220613171759.578856-1-elder@linaro.org>
+References: <20220613171759.578856-1-elder@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7328fbb2-06af-99c8-5e7f-9d22f8c4e4f6@linux.intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 07:48:32AM -0500, Pierre-Louis Bossart wrote:
-> 
-> 
-> >>>> diff --git a/drivers/soundwire/intel.c b/drivers/soundwire/intel.c
-> >>>> index 505c5ef061e3..808e2f320052 100644
-> >>>> --- a/drivers/soundwire/intel.c
-> >>>> +++ b/drivers/soundwire/intel.c
-> >>>> @@ -1328,8 +1328,8 @@ int intel_link_startup(struct auxiliary_device *auxdev)
-> >>>>  
-> >>>>  	if (bus->prop.hw_disabled) {
-> >>>>  		dev_info(dev,
-> >>>> -			 "SoundWire master %d is disabled, ignoring\n",
-> >>>> -			 sdw->instance);
-> >>>> +			 "%s: SoundWire master %d is disabled, ignoring\n",
-> >>>> +			 __func__, sdw->instance);
-> >>>
-> >>> This is not a debug message, please make it such if you want to have
-> >>> __func__  And even then, it's not needed as you can get that from the
-> >>> kernel automatically.
-> >>
-> >> Sorry, I don't understand the feedback at all.
-> > 
-> > dev_info() is not a way to send debug messages.
-> > 
-> > If you want this to be only for debugging, use dev_dbg().  And when you
-> > use that, you get the __func__ location for free in the output already
-> > if you want that.
-> > 
-> >> This message was added precisely to figure out why the expected
-> >> programming sequence was not followed, only to discover that we have
-> >> devices with spurious PCI wakes handled below. Without this added
-> >> difference with __func__, we wouldn't know if the issue happened during
-> >> the expected/regular programming sequence or not.
-> > 
-> > Perhaps make the text unique then?  Why would an informational message
-> > need a function name.  Drivers should be quiet when all is going well.
-> > If something is not going well, dev_info() is not the kernel log level
-> > to be sending something out at.
-> 
-> This is not a debug message - unlike all the others. The BIOS and/or the
-> user may disable a specific link and it's useful to know.
+In gsi_evt_ring_rx_update(), we update each transaction so its len
+field reflects the actual number of bytes received.  In the process,
+the total number of transactions and bytes processed on the channel
+are summed, and added to a running total for the channel.
 
-Ok, but that's not what your subject and changelog said you were
-modifying here.  Hence my confusion :)
+But we don't actually use those running totals for RX endpoints.
+They're maintained for TX channels to support CoDel when they are
+associated with a "real" network device.
 
-> The intent of __func__ was precisely to make the text unique across all
-> cases where we test for hw_disabled, but you have a point that this
-> specific info message should be clearer. The text was actually already
-> different from the 'disable or not-started' cases, I might have done one
-> too many edits in this file. Will fix.
-> 
-> >>>>  		return 0;
-> >>>>  	}
-> >>>>  
-> >>>> @@ -1489,8 +1489,8 @@ int intel_link_process_wakeen_event(struct auxiliary_device *auxdev)
-> >>>>  	bus = &sdw->cdns.bus;
-> >>>>  
-> >>>>  	if (bus->prop.hw_disabled || !sdw->startup_done) {
-> >>>> -		dev_dbg(dev, "SoundWire master %d is disabled or not-started, ignoring\n",
-> >>>> -			bus->link_id);
-> >>>> +		dev_dbg(dev, "%s: SoundWire master %d is disabled or not-started, ignoring\n",
-> >>>> +			__func__, bus->link_id);
-> >>>>  		return 0;
-> >>>>  	}
-> >>>>  
-> >>>> @@ -1549,8 +1549,8 @@ static int __maybe_unused intel_pm_prepare(struct device *dev)
-> >>>>  	int ret;
-> >>>>  
-> >>>>  	if (bus->prop.hw_disabled || !sdw->startup_done) {
-> >>>> -		dev_dbg(dev, "SoundWire master %d is disabled or not-started, ignoring\n",
-> >>>> -			bus->link_id);
-> >>>> +		dev_dbg(dev, "%s: SoundWire master %d is disabled or not-started, ignoring\n",
-> >>>> +			__func__, bus->link_id);
-> >>>
-> >>> Not needed, it is provided automatically if you ask the kernel for this.
-> >>> Same for all other instances in this patch.
-> >>
-> >> provided how? Your comment is a bit cryptic here.
-> > 
-> > the dynamic debug code in the kernel already adds the function name
-> > where the message was sent from, if you want to know this in userspace.
-> > Please read the documentation for details (I think the key is the 'f'
-> > flag to be enabled in userspace).
-> > 
-> > So adding __func__ to dev_dbg() calls are redundant and never needed.
-> 
-> Oh wow, I had no idea - and I am not the only one :-)
-> 
-> Here's what I get with a grep on the kernel code
-> 
-> git grep __func__ | grep dev_dbg | wc -l
-> 
-> 3122
-> 
-> 
-> Doing this for sound/ gives me 356, and that's for single-line logs only.
-> 
-> There's clearly something that was missed by tons of people.
+So stop maintaining these totals for RX endpoints, and update the
+comment where the fields are defined to make it clear they're only
+valid for TX channels.
 
-Yes, it's not commonly known so cleanups are always welcome.  Perhaps
-some of those usages predate the feature being added as well.
+Signed-off-by: Alex Elder <elder@linaro.org>
+---
+ drivers/net/ipa/gsi.c | 8 --------
+ drivers/net/ipa/gsi.h | 2 +-
+ 2 files changed, 1 insertion(+), 9 deletions(-)
 
-thanks,
+diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
+index 4f8187c543824..c2cafd9247a70 100644
+--- a/drivers/net/ipa/gsi.c
++++ b/drivers/net/ipa/gsi.c
+@@ -1374,8 +1374,6 @@ static void gsi_evt_ring_rx_update(struct gsi_evt_ring *evt_ring, u32 index)
+ 	struct gsi_event *event_done;
+ 	struct gsi_event *event;
+ 	struct gsi_trans *trans;
+-	u32 trans_count = 0;
+-	u32 byte_count = 0;
+ 	u32 event_avail;
+ 	u32 old_index;
+ 
+@@ -1399,8 +1397,6 @@ static void gsi_evt_ring_rx_update(struct gsi_evt_ring *evt_ring, u32 index)
+ 	event_done = gsi_ring_virt(ring, index);
+ 	do {
+ 		trans->len = __le16_to_cpu(event->len);
+-		byte_count += trans->len;
+-		trans_count++;
+ 
+ 		/* Move on to the next event and transaction */
+ 		if (--event_avail)
+@@ -1409,10 +1405,6 @@ static void gsi_evt_ring_rx_update(struct gsi_evt_ring *evt_ring, u32 index)
+ 			event = gsi_ring_virt(ring, 0);
+ 		trans = gsi_trans_pool_next(&trans_info->pool, trans);
+ 	} while (event != event_done);
+-
+-	/* We record RX bytes when they are received */
+-	channel->byte_count += byte_count;
+-	channel->trans_count += trans_count;
+ }
+ 
+ /* Initialize a ring, including allocating DMA memory for its entries */
+diff --git a/drivers/net/ipa/gsi.h b/drivers/net/ipa/gsi.h
+index 89dac7fc8c4cb..bad1a78a96ede 100644
+--- a/drivers/net/ipa/gsi.h
++++ b/drivers/net/ipa/gsi.h
+@@ -117,9 +117,9 @@ struct gsi_channel {
+ 	struct gsi_ring tre_ring;
+ 	u32 evt_ring_id;
+ 
++	/* The following counts are used only for TX endpoints */
+ 	u64 byte_count;			/* total # bytes transferred */
+ 	u64 trans_count;		/* total # transactions */
+-	/* The following counts are used only for TX endpoints */
+ 	u64 queued_byte_count;		/* last reported queued byte count */
+ 	u64 queued_trans_count;		/* ...and queued trans count */
+ 	u64 compl_byte_count;		/* last reported completed byte count */
+-- 
+2.34.1
 
-greg k-h
