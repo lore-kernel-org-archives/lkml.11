@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCCD6CCA48B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:11:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2548ACCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:11:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359352AbiFMNJt (ORCPT
+        id S1358963AbiFMNIq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:09:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50306 "EHLO
+        Mon, 13 Jun 2022 09:08:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354659AbiFMM5m (ORCPT
+        with ESMTP id S1357264AbiFMM6i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:57:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D7D7246;
-        Mon, 13 Jun 2022 04:17:22 -0700 (PDT)
+        Mon, 13 Jun 2022 08:58:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE8AF1018;
+        Mon, 13 Jun 2022 04:17:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1AE55B80D31;
-        Mon, 13 Jun 2022 11:17:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EFAFC3411C;
-        Mon, 13 Jun 2022 11:17:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D2D0060F2C;
+        Mon, 13 Jun 2022 11:17:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC3BAC3411C;
+        Mon, 13 Jun 2022 11:17:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119039;
-        bh=gJVpB7T37wyoUJOyInE1sOTyR+6HawgA6LXykwcBDEg=;
+        s=korg; t=1655119048;
+        bh=L1r8HLUGvXW+Em1MiYhEQLcXihcy1tq/OyHD/VgTJsE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D/atiChOpou+jRD7Caa0+urb4BbP0lq4/0TSoGaU4zvGQ0arFtrr5PM50KPX3nGEb
-         bxqE2RiisYeXCNcQ1y+hNbHMrUCHm0ZlqPjI21Qzcrg9aONhm//rUsOvZoTJQ7HAnU
-         Nu1umWGfFV8GC6fy894ViTToI0IzJTtRIWkNzdsQ=
+        b=aVGX+zjzr8rojWOx58LokE8jU1WfCupqRCUCRQBCzQucTbSu19RflMpClhFVAd5iL
+         m4kOtYxQ7jo6SPyIWcXQJtN52boOhqDVIU76fsO8wVqTPCNcrjMn3QCZELloKAi5XC
+         mJQTjEGTKmKNza2y01P7Xie1i0CFqjimjnWuMGOA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 119/247] i2c: cadence: Increase timeout per message if necessary
-Date:   Mon, 13 Jun 2022 12:10:21 +0200
-Message-Id: <20220613094926.573484420@linuxfoundation.org>
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 122/247] dmaengine: zynqmp_dma: In struct zynqmp_dma_chan fix desc_size data type
+Date:   Mon, 13 Jun 2022 12:10:24 +0200
+Message-Id: <20220613094926.663198868@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -51,62 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucas Tanure <tanureal@opensource.cirrus.com>
+From: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
 
-[ Upstream commit 96789dce043f5bff8b7d62aa28d52a7c59403a84 ]
+[ Upstream commit f9a9f43a62a04ec3183fb0da9226c7706eed0115 ]
 
-Timeout as 1 second sets an upper limit on the length
-of the transfer executed, but there is no maximum length
-of a write or read message set in i2c_adapter_quirks for
-this controller.
+In zynqmp_dma_alloc/free_chan_resources functions there is a
+potential overflow in the below expressions.
 
-This upper limit affects devices that require sending
-large firmware blobs over I2C.
+dma_alloc_coherent(chan->dev, (2 * chan->desc_size *
+		   ZYNQMP_DMA_NUM_DESCS),
+		   &chan->desc_pool_p, GFP_KERNEL);
 
-To remove that limitation, calculate the minimal time
-necessary, plus some wiggle room, for every message and
-use it instead of the default one second, if more than
-one second.
+dma_free_coherent(chan->dev,(2 * ZYNQMP_DMA_DESC_SIZE(chan) *
+                 ZYNQMP_DMA_NUM_DESCS),
+                chan->desc_pool_v, chan->desc_pool_p);
 
-Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
-Acked-by: Michal Simek <michal.simek@xilinx.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+The arguments desc_size and ZYNQMP_DMA_NUM_DESCS were 32 bit. Though
+this overflow condition is not observed but it is a potential problem
+in the case of 32-bit multiplication. Hence fix it by changing the
+desc_size data type to size_t.
+
+In addition to coverity fix it also reuse ZYNQMP_DMA_DESC_SIZE macro in
+dma_alloc_coherent API argument.
+
+Addresses-Coverity: Event overflow_before_widen.
+Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Link: https://lore.kernel.org/r/1652166762-18317-2-git-send-email-radhey.shyam.pandey@xilinx.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-cadence.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/dma/xilinx/zynqmp_dma.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-cadence.c b/drivers/i2c/busses/i2c-cadence.c
-index 805c77143a0f..b4c1ad19cdae 100644
---- a/drivers/i2c/busses/i2c-cadence.c
-+++ b/drivers/i2c/busses/i2c-cadence.c
-@@ -760,7 +760,7 @@ static void cdns_i2c_master_reset(struct i2c_adapter *adap)
- static int cdns_i2c_process_msg(struct cdns_i2c *id, struct i2c_msg *msg,
- 		struct i2c_adapter *adap)
- {
--	unsigned long time_left;
-+	unsigned long time_left, msg_timeout;
- 	u32 reg;
+diff --git a/drivers/dma/xilinx/zynqmp_dma.c b/drivers/dma/xilinx/zynqmp_dma.c
+index 97f02f8eb03a..5257bdbf77fb 100644
+--- a/drivers/dma/xilinx/zynqmp_dma.c
++++ b/drivers/dma/xilinx/zynqmp_dma.c
+@@ -232,7 +232,7 @@ struct zynqmp_dma_chan {
+ 	bool is_dmacoherent;
+ 	struct tasklet_struct tasklet;
+ 	bool idle;
+-	u32 desc_size;
++	size_t desc_size;
+ 	bool err;
+ 	u32 bus_width;
+ 	u32 src_burst_len;
+@@ -489,7 +489,8 @@ static int zynqmp_dma_alloc_chan_resources(struct dma_chan *dchan)
+ 	}
  
- 	id->p_msg = msg;
-@@ -785,8 +785,16 @@ static int cdns_i2c_process_msg(struct cdns_i2c *id, struct i2c_msg *msg,
- 	else
- 		cdns_i2c_msend(id);
- 
-+	/* Minimal time to execute this message */
-+	msg_timeout = msecs_to_jiffies((1000 * msg->len * BITS_PER_BYTE) / id->i2c_clk);
-+	/* Plus some wiggle room */
-+	msg_timeout += msecs_to_jiffies(500);
-+
-+	if (msg_timeout < adap->timeout)
-+		msg_timeout = adap->timeout;
-+
- 	/* Wait for the signal of completion */
--	time_left = wait_for_completion_timeout(&id->xfer_done, adap->timeout);
-+	time_left = wait_for_completion_timeout(&id->xfer_done, msg_timeout);
- 	if (time_left == 0) {
- 		cdns_i2c_master_reset(adap);
- 		dev_err(id->adap.dev.parent,
+ 	chan->desc_pool_v = dma_alloc_coherent(chan->dev,
+-					       (2 * chan->desc_size * ZYNQMP_DMA_NUM_DESCS),
++					       (2 * ZYNQMP_DMA_DESC_SIZE(chan) *
++					       ZYNQMP_DMA_NUM_DESCS),
+ 					       &chan->desc_pool_p, GFP_KERNEL);
+ 	if (!chan->desc_pool_v)
+ 		return -ENOMEM;
 -- 
 2.35.1
 
