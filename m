@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40585C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:36:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B3C8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:36:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354968AbiFMLgm (ORCPT
+        id S1354983AbiFMLgr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:36:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43946 "EHLO
+        Mon, 13 Jun 2022 07:36:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354568AbiFML3n (ORCPT
+        with ESMTP id S1354610AbiFML3q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:29:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE1ED20BD5;
-        Mon, 13 Jun 2022 03:45:08 -0700 (PDT)
+        Mon, 13 Jun 2022 07:29:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53ACB237F8;
+        Mon, 13 Jun 2022 03:45:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BBD960FDB;
-        Mon, 13 Jun 2022 10:45:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77EE7C34114;
-        Mon, 13 Jun 2022 10:45:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D09986119F;
+        Mon, 13 Jun 2022 10:45:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E10F9C34114;
+        Mon, 13 Jun 2022 10:45:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117107;
-        bh=T7zgCZdrnSI9zOst5mi3apWNt045/z6rDMsSMmV8L38=;
+        s=korg; t=1655117113;
+        bh=MEf+U+Deoyla42Ji83VwKQTPSFr85sVcD5337fJuBsU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y3qImokIKhLGLqCAnhp5gc9SV6kRMLH4b2SFae/6N81SAeGo6/SO8n+EnlNq5zRa+
-         uahkj3vC6tmmk2anGtYCY0/2gO2uibziozZf04CrfxQW/PuSbP433TfcEGNUv6X0Bx
-         BGOzbogMcJPWAbJN3cc5joz+sWfRIKZoLGzA8RCk=
+        b=zWaOrV3Udeb4J0EyAnJFIZsdyN+YPLsldQfN+nNTpAR5cZLPOGDRsvePeVkoZAhEx
+         xvB6paPBv76tgx/G6xpYVQkeQ7MH0RAZySHmsOaElIfg9mKQbHeKqaSsRLLRyEPGMd
+         vC58PlWJZ6TPKA895/LvJX3FF+Z+j9N3+XWM6u9A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        Lin Ma <linma@zju.edu.cn>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 289/411] USB: storage: karma: fix rio_karma_init return
-Date:   Mon, 13 Jun 2022 12:09:22 +0200
-Message-Id: <20220613094937.425345309@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 291/411] staging: fieldbus: Fix the error handling path in anybuss_host_common_probe()
+Date:   Mon, 13 Jun 2022 12:09:24 +0200
+Message-Id: <20220613094937.485639172@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -49,62 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lin Ma <linma@zju.edu.cn>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit b92ffb1eddd9a66a90defc556dcbf65a43c196c7 ]
+[ Upstream commit 7079b3483a17be2cfba64cbd4feb1b7ae07f1ea7 ]
 
-The function rio_karam_init() should return -ENOMEM instead of
-value 0 (USB_STOR_TRANSPORT_GOOD) when allocation fails.
+If device_register() fails, device_unregister() should not be called
+because it will free some resources that are not allocated.
+put_device() should be used instead.
 
-Similarly, it should return -EIO when rio_karma_send_command() fails.
-
-Fixes: dfe0d3ba20e8 ("USB Storage: add rio karma eject support")
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Lin Ma <linma@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220412144359.28447-1-linma@zju.edu.cn
+Fixes: 308ee87a2f1e ("staging: fieldbus: anybus-s: support HMS Anybus-S bus")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/5401a519608d6e1a4e7435c20f4f20b0c5c36c23.1650610082.git.christophe.jaillet@wanadoo.fr
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/storage/karma.c | 15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
+ drivers/staging/fieldbus/anybuss/host.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/usb/storage/karma.c b/drivers/usb/storage/karma.c
-index 05cec81dcd3f..38ddfedef629 100644
---- a/drivers/usb/storage/karma.c
-+++ b/drivers/usb/storage/karma.c
-@@ -174,24 +174,25 @@ static void rio_karma_destructor(void *extra)
- 
- static int rio_karma_init(struct us_data *us)
- {
--	int ret = 0;
- 	struct karma_data *data = kzalloc(sizeof(struct karma_data), GFP_NOIO);
- 
- 	if (!data)
--		goto out;
-+		return -ENOMEM;
- 
- 	data->recv = kmalloc(RIO_RECV_LEN, GFP_NOIO);
- 	if (!data->recv) {
- 		kfree(data);
--		goto out;
-+		return -ENOMEM;
- 	}
- 
- 	us->extra = data;
- 	us->extra_destructor = rio_karma_destructor;
--	ret = rio_karma_send_command(RIO_ENTER_STORAGE, us);
--	data->in_storage = (ret == 0);
--out:
--	return ret;
-+	if (rio_karma_send_command(RIO_ENTER_STORAGE, us))
-+		return -EIO;
-+
-+	data->in_storage = 1;
-+
-+	return 0;
- }
- 
- static struct scsi_host_template karma_host_template;
+diff --git a/drivers/staging/fieldbus/anybuss/host.c b/drivers/staging/fieldbus/anybuss/host.c
+index f69dc4930457..b7a91bdef6f4 100644
+--- a/drivers/staging/fieldbus/anybuss/host.c
++++ b/drivers/staging/fieldbus/anybuss/host.c
+@@ -1384,7 +1384,7 @@ anybuss_host_common_probe(struct device *dev,
+ 		goto err_device;
+ 	return cd;
+ err_device:
+-	device_unregister(&cd->client->dev);
++	put_device(&cd->client->dev);
+ err_kthread:
+ 	kthread_stop(cd->qthread);
+ err_reset:
 -- 
 2.35.1
 
