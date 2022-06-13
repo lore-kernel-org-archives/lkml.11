@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04D2CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:09:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7858DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:09:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358805AbiFMMIa (ORCPT
+        id S1358781AbiFMMI1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:08:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59918 "EHLO
+        Mon, 13 Jun 2022 08:08:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359184AbiFMMF0 (ORCPT
+        with ESMTP id S1359169AbiFMMFY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:05:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26FB125C73;
-        Mon, 13 Jun 2022 03:59:41 -0700 (PDT)
+        Mon, 13 Jun 2022 08:05:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD6B9186F4;
+        Mon, 13 Jun 2022 03:59:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C6B29B80E5E;
-        Mon, 13 Jun 2022 10:59:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34537C34114;
-        Mon, 13 Jun 2022 10:59:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 49519611B3;
+        Mon, 13 Jun 2022 10:59:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B813C34114;
+        Mon, 13 Jun 2022 10:59:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117978;
-        bh=zLNYGnhl3HROVhvLdtptN+k7B+4om0XZMN1MPs90rtQ=;
+        s=korg; t=1655117964;
+        bh=a/YkUWLxarjO73nmXr57Q4nifqFIyaO7maslcmeyWEw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W0YIVbWS92fiIeD5m5POcXCJG29R31RCJPfDS5aYhPOZwqc9j/a1XkXJdgg3FUsK/
-         XV/sqRATBMMHzRnN0WUo01EYCLrLqEfPARXzodoYjxqHdm4qEQGRbA+RQWU/Yb2z3A
-         UlPkgoZEuI6pVubUpnOzhHn0A/6hg2nw30jyYvLI=
+        b=YRwZYLOPDli3xzI6gbqWmv8r5Hwaz/9HpQ/5J3vMLerhGcqf0qDaDI6VFkPdDKwUe
+         Rbwzn5ksduC89DRGzw6YK3IajhOXOV84aFn4PILyp5l5VqVPXRqj5LiP0fE6wHkh0e
+         zBM2sfEFIH2UwKQzOZ4KGAZEKrN2NhQ4C78+mRgw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiao Yang <yangx.jy@fujitsu.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 4.19 186/287] RDMA/rxe: Generate a completion for unsupported/invalid opcode
-Date:   Mon, 13 Jun 2022 12:10:10 +0200
-Message-Id: <20220613094929.508336843@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        Lin Ma <linma@zju.edu.cn>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 194/287] USB: storage: karma: fix rio_karma_init return
+Date:   Mon, 13 Jun 2022 12:10:18 +0200
+Message-Id: <20220613094929.748553541@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -49,35 +49,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiao Yang <yangx.jy@fujitsu.com>
+From: Lin Ma <linma@zju.edu.cn>
 
-commit 2f917af777011c88e977b9b9a5d00b280d3a59ce upstream.
+[ Upstream commit b92ffb1eddd9a66a90defc556dcbf65a43c196c7 ]
 
-Current rxe_requester() doesn't generate a completion when processing an
-unsupported/invalid opcode. If rxe driver doesn't support a new opcode
-(e.g. RDMA Atomic Write) and RDMA library supports it, an application
-using the new opcode can reproduce this issue. Fix the issue by calling
-"goto err;".
+The function rio_karam_init() should return -ENOMEM instead of
+value 0 (USB_STOR_TRANSPORT_GOOD) when allocation fails.
 
-Fixes: 8700e3e7c485 ("Soft RoCE driver")
-Link: https://lore.kernel.org/r/20220410113513.27537-1-yangx.jy@fujitsu.com
-Signed-off-by: Xiao Yang <yangx.jy@fujitsu.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Similarly, it should return -EIO when rio_karma_send_command() fails.
+
+Fixes: dfe0d3ba20e8 ("USB Storage: add rio karma eject support")
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220412144359.28447-1-linma@zju.edu.cn
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/sw/rxe/rxe_req.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/storage/karma.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
 
---- a/drivers/infiniband/sw/rxe/rxe_req.c
-+++ b/drivers/infiniband/sw/rxe/rxe_req.c
-@@ -680,7 +680,7 @@ next_wqe:
- 	opcode = next_opcode(qp, wqe, wqe->wr.opcode);
- 	if (unlikely(opcode < 0)) {
- 		wqe->status = IB_WC_LOC_QP_OP_ERR;
--		goto exit;
-+		goto err;
+diff --git a/drivers/usb/storage/karma.c b/drivers/usb/storage/karma.c
+index edcf2be0e0eb..09c8add5108a 100644
+--- a/drivers/usb/storage/karma.c
++++ b/drivers/usb/storage/karma.c
+@@ -172,23 +172,24 @@ static void rio_karma_destructor(void *extra)
+ 
+ static int rio_karma_init(struct us_data *us)
+ {
+-	int ret = 0;
+ 	struct karma_data *data = kzalloc(sizeof(struct karma_data), GFP_NOIO);
+ 	if (!data)
+-		goto out;
++		return -ENOMEM;
+ 
+ 	data->recv = kmalloc(RIO_RECV_LEN, GFP_NOIO);
+ 	if (!data->recv) {
+ 		kfree(data);
+-		goto out;
++		return -ENOMEM;
  	}
  
- 	mask = rxe_opcode[opcode].mask;
+ 	us->extra = data;
+ 	us->extra_destructor = rio_karma_destructor;
+-	ret = rio_karma_send_command(RIO_ENTER_STORAGE, us);
+-	data->in_storage = (ret == 0);
+-out:
+-	return ret;
++	if (rio_karma_send_command(RIO_ENTER_STORAGE, us))
++		return -EIO;
++
++	data->in_storage = 1;
++
++	return 0;
+ }
+ 
+ static struct scsi_host_template karma_host_template;
+-- 
+2.35.1
+
 
 
