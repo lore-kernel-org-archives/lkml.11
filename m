@@ -2,141 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 775D8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:52:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCB32C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:52:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386293AbiFMOwT (ORCPT
+        id S1386314AbiFMOw0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:52:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44140 "EHLO
+        Mon, 13 Jun 2022 10:52:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386301AbiFMOtQ (ORCPT
+        with ESMTP id S1385964AbiFMOuX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:49:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4F0EC2EC4;
-        Mon, 13 Jun 2022 04:53:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D30B0B80EDD;
-        Mon, 13 Jun 2022 11:53:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 356A1C341C0;
-        Mon, 13 Jun 2022 11:53:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655121187;
-        bh=ggenJEKAVXkVp+EDsAyPGRdkEc/hNaddQxwC6i2POkg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PtoqtozIXmNcuKiGqFdI2AXBxrpgTrT7okdXiAUU4ttfIaQ03KFxiXidjRNkQK+de
-         cg7iPm3HaFeqbatsEjcyAcJTrzWSCoFkLQH1bCf+TUeksBHBseSMfl1h95UUuDlyjt
-         6z9m1ZMYBtTlKDFAgxYINLW1kto0cuZqEtYUGyDE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ming Lei <ming.lei@redhat.com>,
-        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.17 296/298] block, loop: support partitions without scanning
-Date:   Mon, 13 Jun 2022 12:13:10 +0200
-Message-Id: <20220613094934.054060026@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
-References: <20220613094924.913340374@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 13 Jun 2022 10:50:23 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A8F124979;
+        Mon, 13 Jun 2022 04:54:58 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LM91S5pwBz1K9RY;
+        Mon, 13 Jun 2022 19:53:00 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 13 Jun 2022 19:54:56 +0800
+Received: from [10.174.177.243] (10.174.177.243) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 13 Jun 2022 19:54:54 +0800
+Message-ID: <fa1416be-f940-4c28-5c67-911e61ac024f@huawei.com>
+Date:   Mon, 13 Jun 2022 19:54:53 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v4 6/6] memblock: Disable mirror feature if kernelcore is
+ not specified
+Content-Language: en-US
+To:     Ard Biesheuvel <ardb@kernel.org>, Mike Rapoport <rppt@kernel.org>
+CC:     Wupeng Ma <mawupeng1@huawei.com>, <corbet@lwn.net>,
+        <will@kernel.org>, <catalin.marinas@arm.com>, <tglx@linutronix.de>,
+        <mingo@redhat.com>, <bp@alien8.de>, <dave.hansen@linux.intel.com>,
+        <x86@kernel.org>, <hpa@zytor.com>, <dvhart@infradead.org>,
+        <andy@infradead.org>, <akpm@linux-foundation.org>,
+        <paul.walmsley@sifive.com>, <palmer@dabbelt.com>,
+        <aou@eecs.berkeley.edu>, <paulmck@kernel.org>,
+        <keescook@chromium.org>, <songmuchun@bytedance.com>,
+        <rdunlap@infradead.org>, <damien.lemoal@opensource.wdc.com>,
+        <swboyd@chromium.org>, <wei.liu@kernel.org>,
+        <robin.murphy@arm.com>, <david@redhat.com>,
+        <anshuman.khandual@arm.com>, <thunder.leizhen@huawei.com>,
+        <gpiccoli@igalia.com>, <chenhuacai@kernel.org>,
+        <geert@linux-m68k.org>, <vijayb@linux.microsoft.com>,
+        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-efi@vger.kernel.org>, <platform-driver-x86@vger.kernel.org>,
+        <linux-mm@kvack.org>, <linux-riscv@lists.infradead.org>
+References: <20220613082147.183145-1-mawupeng1@huawei.com>
+ <20220613082147.183145-7-mawupeng1@huawei.com> <YqcZ4O3pwceVtKYm@kernel.org>
+ <CAMj1kXGwOczo1bgftMX9xTf8fRkrVYq8BjXJ6=XPj_yarbDYrA@mail.gmail.com>
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+In-Reply-To: <CAMj1kXGwOczo1bgftMX9xTf8fRkrVYq8BjXJ6=XPj_yarbDYrA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.243]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
 
-commit b9684a71fca793213378dd410cd11675d973eaa1 upstream.
+On 2022/6/13 19:25, Ard Biesheuvel wrote:
+> On Mon, 13 Jun 2022 at 13:05, Mike Rapoport <rppt@kernel.org> wrote:
+>> On Mon, Jun 13, 2022 at 04:21:47PM +0800, Wupeng Ma wrote:
+>>> From: Ma Wupeng <mawupeng1@huawei.com>
+>>>
+>>> If system have some mirrored memory and mirrored feature is not specified
+>>> in boot parameter, the basic mirrored feature will be enabled and this will
+>>> lead to the following situations:
+>>>
+>>> - memblock memory allocation prefers mirrored region. This may have some
+>>>    unexpected influence on numa affinity.
+>>>
+>>> - contiguous memory will be split into several parts if parts of them
+>>>    is mirrored memory via memblock_mark_mirror().
+...
+> Also, on second thought, I don't think marking as mirror is what
+> should be affected by the policy. Instead, choose_memblock_flags()
+> should take this into account, in a way that we could refine later if
+> needed.
+> .
 
-Historically we did distinguish between a flag that surpressed partition
-scanning, and a combinations of the minors variable and another flag if
-any partitions were supported.  This was generally confusing and doesn't
-make much sense, but some corner case uses of the loop driver actually
-do want to support manually added partitions on a device that does not
-actively scan for partitions.  To make things worsee the loop driver
-also wants to dynamically toggle the scanning for partitions on a live
-gendisk, which makes the disk->flags updates non-atomic.
+The choose_memblock_flags() only solve the issue of memblock allocation, but
 
-Introduce a new GD_SUPPRESS_PART_SCAN bit in disk->state that disables
-just scanning for partitions, and toggle that instead of GENHD_FL_NO_PART
-in the loop driver.
+the memblock could be splitted and fragmentized, the kernel won't treat the
 
-Fixes: 1ebe2e5f9d68 ("block: remove GENHD_FL_EXT_DEVT")
-Reported-by: Ming Lei <ming.lei@redhat.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Ming Lei <ming.lei@redhat.com>
-Link: https://lore.kernel.org/r/20220527055806.1972352-1-hch@lst.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- block/genhd.c         |    2 ++
- drivers/block/loop.c  |    8 ++++----
- include/linux/genhd.h |    1 +
- 3 files changed, 7 insertions(+), 4 deletions(-)
+mirror memory as special if no mirrored_kernelcore for now, so I think 
+we'd better
 
---- a/block/genhd.c
-+++ b/block/genhd.c
-@@ -380,6 +380,8 @@ int disk_scan_partitions(struct gendisk
- 
- 	if (disk->flags & (GENHD_FL_NO_PART | GENHD_FL_HIDDEN))
- 		return -EINVAL;
-+	if (test_bit(GD_SUPPRESS_PART_SCAN, &disk->state))
-+		return -EINVAL;
- 	if (disk->open_partitions)
- 		return -EBUSY;
- 
---- a/drivers/block/loop.c
-+++ b/drivers/block/loop.c
-@@ -1067,7 +1067,7 @@ static int loop_configure(struct loop_de
- 		lo->lo_flags |= LO_FLAGS_PARTSCAN;
- 	partscan = lo->lo_flags & LO_FLAGS_PARTSCAN;
- 	if (partscan)
--		lo->lo_disk->flags &= ~GENHD_FL_NO_PART;
-+		clear_bit(GD_SUPPRESS_PART_SCAN, &lo->lo_disk->state);
- 
- 	loop_global_unlock(lo, is_loop);
- 	if (partscan)
-@@ -1186,7 +1186,7 @@ static void __loop_clr_fd(struct loop_de
- 	 */
- 	lo->lo_flags = 0;
- 	if (!part_shift)
--		lo->lo_disk->flags |= GENHD_FL_NO_PART;
-+		set_bit(GD_SUPPRESS_PART_SCAN, &lo->lo_disk->state);
- 	mutex_lock(&lo->lo_mutex);
- 	lo->lo_state = Lo_unbound;
- 	mutex_unlock(&lo->lo_mutex);
-@@ -1296,7 +1296,7 @@ out_unfreeze:
- 
- 	if (!err && (lo->lo_flags & LO_FLAGS_PARTSCAN) &&
- 	     !(prev_lo_flags & LO_FLAGS_PARTSCAN)) {
--		lo->lo_disk->flags &= ~GENHD_FL_NO_PART;
-+		clear_bit(GD_SUPPRESS_PART_SCAN, &lo->lo_disk->state);
- 		partscan = true;
- 	}
- out_unlock:
-@@ -2028,7 +2028,7 @@ static int loop_add(int i)
- 	 * userspace tools. Parameters like this in general should be avoided.
- 	 */
- 	if (!part_shift)
--		disk->flags |= GENHD_FL_NO_PART;
-+		set_bit(GD_SUPPRESS_PART_SCAN, &disk->state);
- 	atomic_set(&lo->lo_refcnt, 0);
- 	mutex_init(&lo->lo_mutex);
- 	lo->lo_number		= i;
---- a/include/linux/genhd.h
-+++ b/include/linux/genhd.h
-@@ -110,6 +110,7 @@ struct gendisk {
- #define GD_READ_ONLY			1
- #define GD_DEAD				2
- #define GD_NATIVE_CAPACITY		3
-+#define GD_SUPPRESS_PART_SCAN		5
- 
- 	struct mutex open_mutex;	/* open/close mutex */
- 	unsigned open_partitions;	/* number of open partitions */
-
+to add the check into memblock_mark_mirror().
 
