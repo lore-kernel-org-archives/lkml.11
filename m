@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25674CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:06:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2D9BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:06:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358480AbiFMMGl (ORCPT
+        id S1358500AbiFMMGs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:06:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49570 "EHLO
+        Mon, 13 Jun 2022 08:06:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358656AbiFMMEb (ORCPT
+        with ESMTP id S1358406AbiFMMDh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:04:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45AB64FC7E;
-        Mon, 13 Jun 2022 03:57:43 -0700 (PDT)
+        Mon, 13 Jun 2022 08:03:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EA70BA2;
+        Mon, 13 Jun 2022 03:57:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 514C9B80E5E;
-        Mon, 13 Jun 2022 10:57:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7433C34114;
-        Mon, 13 Jun 2022 10:57:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A0F53613E9;
+        Mon, 13 Jun 2022 10:57:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC921C341C7;
+        Mon, 13 Jun 2022 10:57:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117860;
-        bh=OwXxyTvLpXylbZFQ6nGc0TqyMyCdzgZkcAHPcYlKQdg=;
+        s=korg; t=1655117838;
+        bh=bZgoxt8+mkkmp6XpfosU+qkrogRbtpJT5SJTVZ1NZV0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eVJt5KUKqequJnbB9l9bUoO6jpKQx6u6vkea095vGfp5HCWJH5Skp23iHl73yAoSi
-         uxk7U6GkN3nHTDR+8QZehXbo7NNsbaeOjegGfbXx+7Un9pKBXQZET6fcgEXqJlcNli
-         M5xQgw27pIp8TeIgeNgWsrudQIk/fgv0A2T3b2LQ=
+        b=UrNcYikUSDzgwaop0zkF0fq0neS9VQVVbIkIx1b5kTqa0vBLLgicRrlR9fRfL31je
+         5QdUUrLMfY6bcqix5MRSho0sygGiZ1IoEwtw+c6SaOAzwTXzo4wDwvRzvfOF023WIF
+         uoyrXCWko5OZEuTMcuo/MR4zWb6fb3uLq+XQ5xV4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
-        Ajay Kaher <akaher@vmware.com>,
-        Aaron Adams <edg-e@nccgroup.com>
-Subject: [PATCH 4.19 146/287] netfilter: nf_tables: disallow non-stateful expression in sets earlier
-Date:   Mon, 13 Jun 2022 12:09:30 +0200
-Message-Id: <20220613094928.304080687@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 4.19 150/287] ext4: avoid cycles in directory h-tree
+Date:   Mon, 13 Jun 2022 12:09:34 +0200
+Message-Id: <20220613094928.425440227@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -50,103 +49,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Jan Kara <jack@suse.cz>
 
-commit 520778042ccca019f3ffa136dd0ca565c486cedd upstream.
+commit 3ba733f879c2a88910744647e41edeefbc0d92b2 upstream.
 
-Since 3e135cd499bf ("netfilter: nft_dynset: dynamic stateful expression
-instantiation"), it is possible to attach stateful expressions to set
-elements.
+A maliciously corrupted filesystem can contain cycles in the h-tree
+stored inside a directory. That can easily lead to the kernel corrupting
+tree nodes that were already verified under its hands while doing a node
+split and consequently accessing unallocated memory. Fix the problem by
+verifying traversed block numbers are unique.
 
-cd5125d8f518 ("netfilter: nf_tables: split set destruction in deactivate
-and destroy phase") introduces conditional destruction on the object to
-accomodate transaction semantics.
-
-nft_expr_init() calls expr->ops->init() first, then check for
-NFT_STATEFUL_EXPR, this stills allows to initialize a non-stateful
-lookup expressions which points to a set, which might lead to UAF since
-the set is not properly detached from the set->binding for this case.
-Anyway, this combination is non-sense from nf_tables perspective.
-
-This patch fixes this problem by checking for NFT_STATEFUL_EXPR before
-expr->ops->init() is called.
-
-The reporter provides a KASAN splat and a poc reproducer (similar to
-those autogenerated by syzbot to report use-after-free errors). It is
-unknown to me if they are using syzbot or if they use similar automated
-tool to locate the bug that they are reporting.
-
-For the record, this is the KASAN splat.
-
-[   85.431824] ==================================================================
-[   85.432901] BUG: KASAN: use-after-free in nf_tables_bind_set+0x81b/0xa20
-[   85.433825] Write of size 8 at addr ffff8880286f0e98 by task poc/776
-[   85.434756]
-[   85.434999] CPU: 1 PID: 776 Comm: poc Tainted: G        W         5.18.0+ #2
-[   85.436023] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
-
-Fixes: 0b2d8a7b638b ("netfilter: nf_tables: add helper functions for expression handling")
-Reported-and-tested-by: Aaron Adams <edg-e@nccgroup.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-[Ajay: Regenerated the patch for v4.19.y]
-Signed-off-by: Ajay Kaher <akaher@vmware.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220518093332.13986-2-jack@suse.cz
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c |   16 ++++++++++------
- net/netfilter/nft_dynset.c    |    3 ---
- 2 files changed, 10 insertions(+), 9 deletions(-)
+ fs/ext4/namei.c |   22 +++++++++++++++++++---
+ 1 file changed, 19 insertions(+), 3 deletions(-)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -2167,27 +2167,31 @@ struct nft_expr *nft_expr_init(const str
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -748,12 +748,14 @@ static struct dx_frame *
+ dx_probe(struct ext4_filename *fname, struct inode *dir,
+ 	 struct dx_hash_info *hinfo, struct dx_frame *frame_in)
+ {
+-	unsigned count, indirect;
++	unsigned count, indirect, level, i;
+ 	struct dx_entry *at, *entries, *p, *q, *m;
+ 	struct dx_root *root;
+ 	struct dx_frame *frame = frame_in;
+ 	struct dx_frame *ret_err = ERR_PTR(ERR_BAD_DX_DIR);
+ 	u32 hash;
++	ext4_lblk_t block;
++	ext4_lblk_t blocks[EXT4_HTREE_LEVEL];
  
- 	err = nf_tables_expr_parse(ctx, nla, &info);
- 	if (err < 0)
--		goto err1;
-+		goto err_expr_parse;
+ 	memset(frame_in, 0, EXT4_HTREE_LEVEL * sizeof(frame_in[0]));
+ 	frame->bh = ext4_read_dirblock(dir, 0, INDEX);
+@@ -809,6 +811,8 @@ dx_probe(struct ext4_filename *fname, st
+ 	}
+ 
+ 	dxtrace(printk("Look up %x", hash));
++	level = 0;
++	blocks[0] = 0;
+ 	while (1) {
+ 		count = dx_get_count(entries);
+ 		if (!count || count > dx_get_limit(entries)) {
+@@ -850,15 +854,27 @@ dx_probe(struct ext4_filename *fname, st
+ 			       dx_get_block(at)));
+ 		frame->entries = entries;
+ 		frame->at = at;
+-		if (!indirect--)
 +
-+	err = -EOPNOTSUPP;
-+	if (!(info.ops->type->flags & NFT_EXPR_STATEFUL))
-+		goto err_expr_stateful;
++		block = dx_get_block(at);
++		for (i = 0; i <= level; i++) {
++			if (blocks[i] == block) {
++				ext4_warning_inode(dir,
++					"dx entry: tree cycle block %u points back to block %u",
++					blocks[level], block);
++				goto fail;
++			}
++		}
++		if (++level > indirect)
+ 			return frame;
++		blocks[level] = block;
+ 		frame++;
+-		frame->bh = ext4_read_dirblock(dir, dx_get_block(at), INDEX);
++		frame->bh = ext4_read_dirblock(dir, block, INDEX);
+ 		if (IS_ERR(frame->bh)) {
+ 			ret_err = (struct dx_frame *) frame->bh;
+ 			frame->bh = NULL;
+ 			goto fail;
+ 		}
++
+ 		entries = ((struct dx_node *) frame->bh->b_data)->entries;
  
- 	err = -ENOMEM;
- 	expr = kzalloc(info.ops->size, GFP_KERNEL);
- 	if (expr == NULL)
--		goto err2;
-+		goto err_expr_stateful;
- 
- 	err = nf_tables_newexpr(ctx, &info, expr);
- 	if (err < 0)
--		goto err3;
-+		goto err_expr_new;
- 
- 	return expr;
--err3:
-+err_expr_new:
- 	kfree(expr);
--err2:
-+err_expr_stateful:
- 	owner = info.ops->type->owner;
- 	if (info.ops->type->release_ops)
- 		info.ops->type->release_ops(info.ops);
- 
- 	module_put(owner);
--err1:
-+err_expr_parse:
- 	return ERR_PTR(err);
- }
- 
---- a/net/netfilter/nft_dynset.c
-+++ b/net/netfilter/nft_dynset.c
-@@ -193,9 +193,6 @@ static int nft_dynset_init(const struct
- 			return PTR_ERR(priv->expr);
- 
- 		err = -EOPNOTSUPP;
--		if (!(priv->expr->ops->type->flags & NFT_EXPR_STATEFUL))
--			goto err1;
--
- 		if (priv->expr->ops->type->flags & NFT_EXPR_GC) {
- 			if (set->flags & NFT_SET_TIMEOUT)
- 				goto err1;
+ 		if (dx_get_limit(entries) != dx_node_limit(dir)) {
 
 
