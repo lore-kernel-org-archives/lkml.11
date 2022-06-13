@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A533BCCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:11:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3040C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:11:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240053AbiFMNLZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:11:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60168 "EHLO
+        id S1358091AbiFMNLh (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 09:11:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357368AbiFMNCH (ORCPT
+        with ESMTP id S1357390AbiFMNCK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:02:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2AC136690;
-        Mon, 13 Jun 2022 04:18:17 -0700 (PDT)
+        Mon, 13 Jun 2022 09:02:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B20D336319;
+        Mon, 13 Jun 2022 04:18:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 61FAFB80EAA;
-        Mon, 13 Jun 2022 11:18:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B715DC34114;
-        Mon, 13 Jun 2022 11:18:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E6E0360F18;
+        Mon, 13 Jun 2022 11:18:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0052FC34114;
+        Mon, 13 Jun 2022 11:18:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119092;
-        bh=hU62tz+upeQQ0ixMl73jGcb/66oi/GX988epYqit+zU=;
+        s=korg; t=1655119089;
+        bh=JdKuadNYV+VnCwXNzbSBk0ppbTOnRcWNt35bX2epw6A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XslLkiWo2LAifHXVuKDKWUpKGBWIw1Xdcc89n/qwu8LZwsPWX4Aq9eGeheC5SCcWc
-         J5/KlLBegQkNn19ZlUteYfXlSlyTjclTxIlOvbulIdiHYGqG4JjPxVJZpMH1HZL7zB
-         ojnWR7BG6FYkjwBlskgrPVMGa97NM49GsFcjQO5g=
+        b=LQHOtvRSZd8CI3jEnq5+90qWXz6Caoy1YhK3YC4NJ0Tgqq1DfhVliE3M5y0wVgwrN
+         S2yoPF4VnmIvVZqGt4GW8iHFJA3YRtCS1d7YJc43mtml2H346uqvyogK63upItymxS
+         gri1TRygsZBxjZWuS4ky3zO/ZkL3anPpGJlYtM58=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gong Yuanjun <ruc_gongyuanjun@163.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 111/247] mips: cpc: Fix refcount leak in mips_cpc_default_phys_base
-Date:   Mon, 13 Jun 2022 12:10:13 +0200
-Message-Id: <20220613094926.328552938@linuxfoundation.org>
+        stable@vger.kernel.org, Ben Walker <benjamin.walker@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 110/247] dmaengine: idxd: set DMA_INTERRUPT cap bit
+Date:   Mon, 13 Jun 2022 12:10:12 +0200
+Message-Id: <20220613094926.298507986@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,33 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gong Yuanjun <ruc_gongyuanjun@163.com>
+From: Dave Jiang <dave.jiang@intel.com>
 
-[ Upstream commit 4107fa700f314592850e2c64608f6ede4c077476 ]
+[ Upstream commit 4e5a4eb20393b851590b4465f1197a8041c2076b ]
 
-Add the missing of_node_put() to release the refcount incremented
-by of_find_compatible_node().
+Even though idxd driver has always supported interrupt, it never actually
+set the DMA_INTERRUPT cap bit. Rectify this mistake so the interrupt
+capability is advertised.
 
-Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
-Reviewed-by: Serge Semin <fancer.lancer@gmail.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Reported-by: Ben Walker <benjamin.walker@intel.com>
+Signed-off-by: Dave Jiang <dave.jiang@intel.com>
+Link: https://lore.kernel.org/r/164971497859.2201379.17925303210723708961.stgit@djiang5-desk3.ch.intel.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/kernel/mips-cpc.c | 1 +
+ drivers/dma/idxd/dma.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/arch/mips/kernel/mips-cpc.c b/arch/mips/kernel/mips-cpc.c
-index 8d2535123f11..d005be84c482 100644
---- a/arch/mips/kernel/mips-cpc.c
-+++ b/arch/mips/kernel/mips-cpc.c
-@@ -27,6 +27,7 @@ phys_addr_t __weak mips_cpc_default_phys_base(void)
- 	cpc_node = of_find_compatible_node(of_root, NULL, "mti,mips-cpc");
- 	if (cpc_node) {
- 		err = of_address_to_resource(cpc_node, 0, &res);
-+		of_node_put(cpc_node);
- 		if (!err)
- 			return res.start;
- 	}
+diff --git a/drivers/dma/idxd/dma.c b/drivers/dma/idxd/dma.c
+index c39e9483206a..acb5681e25ed 100644
+--- a/drivers/dma/idxd/dma.c
++++ b/drivers/dma/idxd/dma.c
+@@ -181,6 +181,7 @@ int idxd_register_dma_device(struct idxd_device *idxd)
+ 	INIT_LIST_HEAD(&dma->channels);
+ 	dma->dev = dev;
+ 
++	dma_cap_set(DMA_INTERRUPT, dma->cap_mask);
+ 	dma_cap_set(DMA_PRIVATE, dma->cap_mask);
+ 	dma_cap_set(DMA_COMPLETION_NO_ORDER, dma->cap_mask);
+ 	dma->device_release = idxd_dma_release;
 -- 
 2.35.1
 
