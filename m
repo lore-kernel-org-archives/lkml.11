@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C103CCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:49:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2287CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:49:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356961AbiFMMs5 (ORCPT
+        id S1356529AbiFMMsu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:48:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34176 "EHLO
+        Mon, 13 Jun 2022 08:48:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357389AbiFMMoz (ORCPT
+        with ESMTP id S1356667AbiFMMor (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:44:55 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71CB1612BA;
-        Mon, 13 Jun 2022 04:11:23 -0700 (PDT)
+        Mon, 13 Jun 2022 08:44:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ABAD60B95;
+        Mon, 13 Jun 2022 04:11:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2357DCE1171;
-        Mon, 13 Jun 2022 11:11:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 192F6C34114;
-        Mon, 13 Jun 2022 11:11:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A43D960B6E;
+        Mon, 13 Jun 2022 11:11:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0E57C34114;
+        Mon, 13 Jun 2022 11:11:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118678;
-        bh=f3njAHxycOP+Tg5PZtQu3STCEq0/Vzp/9auvE2RBrmQ=;
+        s=korg; t=1655118673;
+        bh=aX95WkuaO/C9WlZXsMvwNbeJSyMAft0v88Siu1y2aLk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R1AutG4zXHHC6CYNNPNNnP2VBU8t+TDLO5h031MSqxA6K95WYaivC2Lc7tOERZgP6
-         G+zi1HBBp3S1EU+BA60xGZ3zxk4C+LxKqlkZSHOtXQZvVHYSFxEvA9i4n9Kf+tRuQQ
-         BErwb8AZqZ/gM4BfaNpUygJ1YBOcZT0hNrh0Gjxs=
+        b=sSCN7Z2dEean7BHhg0S96L0vwWQaYNclRFMaf0iXtSoOB+ENtMUkxUqFnCuOym7jS
+         gibmwHFu1WXfsvYsg/Ryp50Ii62jiK64umkccNrn0yk4K7ulG83fc4mhY9NAZ6Envb
+         zyQgga97yHaKu7Io6+mrpf1c6FYvzr/Zddlnlb7k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
-        Fam Zheng <fam.zheng@bytedance.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
+        stable@vger.kernel.org, Ronnie Sahlberg <lsahlber@redhat.com>,
+        Steve French <stfrench@microsoft.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 149/172] vringh: Fix loop descriptors check in the indirect cases
-Date:   Mon, 13 Jun 2022 12:11:49 +0200
-Message-Id: <20220613094922.630998236@linuxfoundation.org>
+Subject: [PATCH 5.10 147/172] cifs: version operations for smb20 unneeded when legacy support disabled
+Date:   Mon, 13 Jun 2022 12:11:47 +0200
+Message-Id: <20220613094922.514925745@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -52,61 +50,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xie Yongji <xieyongji@bytedance.com>
+From: Steve French <stfrench@microsoft.com>
 
-[ Upstream commit dbd29e0752286af74243cf891accf472b2f3edd8 ]
+[ Upstream commit 7ef93ffccd55fb0ba000ed16ef6a81cd7dee07b5 ]
 
-We should use size of descriptor chain to test loop condition
-in the indirect case. And another statistical count is also introduced
-for indirect descriptors to avoid conflict with the statistical count
-of direct descriptors.
+We should not be including unused smb20 specific code when legacy
+support is disabled (CONFIG_CIFS_ALLOW_INSECURE_LEGACY turned
+off).  For example smb2_operations and smb2_values aren't used
+in that case.  Over time we can move more and more SMB1/CIFS and SMB2.0
+code into the insecure legacy ifdefs
 
-Fixes: f87d0fbb5798 ("vringh: host-side implementation of virtio rings.")
-Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-Signed-off-by: Fam Zheng <fam.zheng@bytedance.com>
-Message-Id: <20220505100910.137-1-xieyongji@bytedance.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
+Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vhost/vringh.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ fs/cifs/cifsglob.h | 4 +++-
+ fs/cifs/smb2ops.c  | 7 ++++++-
+ 2 files changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
-index 0bd7e64331f0..5a0340c85dc6 100644
---- a/drivers/vhost/vringh.c
-+++ b/drivers/vhost/vringh.c
-@@ -274,7 +274,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
- 	     int (*copy)(const struct vringh *vrh,
- 			 void *dst, const void *src, size_t len))
- {
--	int err, count = 0, up_next, desc_max;
-+	int err, count = 0, indirect_count = 0, up_next, desc_max;
- 	struct vring_desc desc, *descs;
- 	struct vringh_range range = { -1ULL, 0 }, slowrange;
- 	bool slow = false;
-@@ -331,7 +331,12 @@ __vringh_iov(struct vringh *vrh, u16 i,
- 			continue;
- 		}
+diff --git a/fs/cifs/cifsglob.h b/fs/cifs/cifsglob.h
+index 6599069be690..196285b0fe46 100644
+--- a/fs/cifs/cifsglob.h
++++ b/fs/cifs/cifsglob.h
+@@ -1982,11 +1982,13 @@ extern mempool_t *cifs_mid_poolp;
  
--		if (count++ == vrh->vring.num) {
-+		if (up_next == -1)
-+			count++;
-+		else
-+			indirect_count++;
-+
-+		if (count > vrh->vring.num || indirect_count > desc_max) {
- 			vringh_bad("Descriptor loop in %p", descs);
- 			err = -ELOOP;
- 			goto fail;
-@@ -393,6 +398,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
- 				i = return_from_indirect(vrh, &up_next,
- 							 &descs, &desc_max);
- 				slow = false;
-+				indirect_count = 0;
- 			} else
- 				break;
- 		}
+ /* Operations for different SMB versions */
+ #define SMB1_VERSION_STRING	"1.0"
++#define SMB20_VERSION_STRING    "2.0"
++#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
+ extern struct smb_version_operations smb1_operations;
+ extern struct smb_version_values smb1_values;
+-#define SMB20_VERSION_STRING	"2.0"
+ extern struct smb_version_operations smb20_operations;
+ extern struct smb_version_values smb20_values;
++#endif /* CIFS_ALLOW_INSECURE_LEGACY */
+ #define SMB21_VERSION_STRING	"2.1"
+ extern struct smb_version_operations smb21_operations;
+ extern struct smb_version_values smb21_values;
+diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
+index 7fea94ebda57..b855abfaaf87 100644
+--- a/fs/cifs/smb2ops.c
++++ b/fs/cifs/smb2ops.c
+@@ -4032,11 +4032,13 @@ smb3_set_oplock_level(struct cifsInodeInfo *cinode, __u32 oplock,
+ 	}
+ }
+ 
++#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
+ static bool
+ smb2_is_read_op(__u32 oplock)
+ {
+ 	return oplock == SMB2_OPLOCK_LEVEL_II;
+ }
++#endif /* CIFS_ALLOW_INSECURE_LEGACY */
+ 
+ static bool
+ smb21_is_read_op(__u32 oplock)
+@@ -5122,7 +5124,7 @@ smb2_make_node(unsigned int xid, struct inode *inode,
+ 	return rc;
+ }
+ 
+-
++#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
+ struct smb_version_operations smb20_operations = {
+ 	.compare_fids = smb2_compare_fids,
+ 	.setup_request = smb2_setup_request,
+@@ -5220,6 +5222,7 @@ struct smb_version_operations smb20_operations = {
+ 	.llseek = smb3_llseek,
+ 	.is_status_io_timeout = smb2_is_status_io_timeout,
+ };
++#endif /* CIFS_ALLOW_INSECURE_LEGACY */
+ 
+ struct smb_version_operations smb21_operations = {
+ 	.compare_fids = smb2_compare_fids,
+@@ -5548,6 +5551,7 @@ struct smb_version_operations smb311_operations = {
+ 	.is_status_io_timeout = smb2_is_status_io_timeout,
+ };
+ 
++#ifdef CONFIG_CIFS_ALLOW_INSECURE_LEGACY
+ struct smb_version_values smb20_values = {
+ 	.version_string = SMB20_VERSION_STRING,
+ 	.protocol_id = SMB20_PROT_ID,
+@@ -5568,6 +5572,7 @@ struct smb_version_values smb20_values = {
+ 	.signing_required = SMB2_NEGOTIATE_SIGNING_REQUIRED,
+ 	.create_lease_size = sizeof(struct create_lease),
+ };
++#endif /* ALLOW_INSECURE_LEGACY */
+ 
+ struct smb_version_values smb21_values = {
+ 	.version_string = SMB21_VERSION_STRING,
 -- 
 2.35.1
 
