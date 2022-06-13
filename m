@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB263C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:46:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B12ACCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:46:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386027AbiFMOqi (ORCPT
+        id S1386116AbiFMOqp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:46:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58752 "EHLO
+        Mon, 13 Jun 2022 10:46:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386068AbiFMOo2 (ORCPT
+        with ESMTP id S1386208AbiFMOop (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:44:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B0C7B5797;
-        Mon, 13 Jun 2022 04:51:15 -0700 (PDT)
+        Mon, 13 Jun 2022 10:44:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37C02B715E;
+        Mon, 13 Jun 2022 04:51:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C0E57B80EDD;
-        Mon, 13 Jun 2022 11:50:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22905C34114;
-        Mon, 13 Jun 2022 11:50:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 760866133B;
+        Mon, 13 Jun 2022 11:51:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F3ACC34114;
+        Mon, 13 Jun 2022 11:51:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655121050;
-        bh=k+/pVrIT8QfqIWbATLK3wlWEq5hh0GwRx7H7a3D01Zw=;
+        s=korg; t=1655121088;
+        bh=NdoOI/mdof+A4Uy4fR9Q85uef2kWgrggo63N4r2XOrk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2qJKPbi2sd55ww31qqX5xUI8c5guD7y4dKXQzxEOxe+lWwSD1/oQrY7alrMTqBSEf
-         nX4FEoTA7Dm9D9zC0Cv1Pmi9pxPocfUEGucSEn7VvIXIU5/3pSVZJJ990ADzeKcUFz
-         XFPpXyoQ53ZimJZKojJF24Ck3i5O2QIoVlgvE7qA=
+        b=yH/0UdbY/xUpzUPG8aYtqdk0OdKThzyKghMVuVNxDeueOEeTcDEwyXTid8in3Fqa0
+         7VDDtcMFq5TrgAh2dsNCTJesrcyXRw68/bddA1VEzsHhCazyDmvbORWBbRVCm58oOv
+         Ewn1hPg43b9xsAM8e902IJWoXYt9G9hi+QTbLNME=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
+        stable@vger.kernel.org, Cyril Brulebois <kibi@debian.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 254/298] scripts/gdb: change kernel config dumping method
-Date:   Mon, 13 Jun 2022 12:12:28 +0200
-Message-Id: <20220613094932.783737782@linuxfoundation.org>
+Subject: [PATCH 5.17 244/298] Revert "PCI: brcmstb: Do not turn off WOL regulators on suspend"
+Date:   Mon, 13 Jun 2022 12:12:18 +0200
+Message-Id: <20220613094932.486775523@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,40 +50,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
+From: Bjorn Helgaas <bhelgaas@google.com>
 
-[ Upstream commit 1f7a6cf6b07c74a17343c2559cd5f5018a245961 ]
+[ Upstream commit 7894025c783ca36394d3afe49c8cfb4c830b82fe ]
 
-MAGIC_START("IKCFG_ST") and MAGIC_END("IKCFG_ED") are moved out
-from the kernel_config_data variable.
+This reverts commit 11ed8b8624b8085f706864b4addcd304b1e4fc38.
 
-Thus, we parse kernel_config_data directly instead of considering
-offset of MAGIC_START and MAGIC_END.
+This is part of a revert of the following commits:
 
-Fixes: 13610aa908dc ("kernel/configs: use .incbin directive to embed config_data.gz")
-Signed-off-by: Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+  11ed8b8624b8 ("PCI: brcmstb: Do not turn off WOL regulators on suspend")
+  93e41f3fca3d ("PCI: brcmstb: Add control of subdevice voltage regulators")
+  67211aadcb4b ("PCI: brcmstb: Add mechanism to turn on subdev regulators")
+  830aa6f29f07 ("PCI: brcmstb: Split brcm_pcie_setup() into two funcs")
+
+Cyril reported that 830aa6f29f07 ("PCI: brcmstb: Split brcm_pcie_setup()
+into two funcs"), which appeared in v5.17-rc1, broke booting on the
+Raspberry Pi Compute Module 4.  Apparently 830aa6f29f07 panics with an
+Asynchronous SError Interrupt, and after further commits here is a black
+screen on HDMI and no output on the serial console.
+
+This does not seem to affect the Raspberry Pi 4 B.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215925
+Link: https://lore.kernel.org/r/20220511201856.808690-2-helgaas@kernel.org
+Reported-by: Cyril Brulebois <kibi@debian.org>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/gdb/linux/config.py | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/pci/controller/pcie-brcmstb.c | 53 +++++----------------------
+ 1 file changed, 9 insertions(+), 44 deletions(-)
 
-diff --git a/scripts/gdb/linux/config.py b/scripts/gdb/linux/config.py
-index 90e1565b1967..8843ab3cbadd 100644
---- a/scripts/gdb/linux/config.py
-+++ b/scripts/gdb/linux/config.py
-@@ -24,9 +24,9 @@ class LxConfigDump(gdb.Command):
-             filename = arg
+diff --git a/drivers/pci/controller/pcie-brcmstb.c b/drivers/pci/controller/pcie-brcmstb.c
+index 375c0c40bbf8..3edd63735948 100644
+--- a/drivers/pci/controller/pcie-brcmstb.c
++++ b/drivers/pci/controller/pcie-brcmstb.c
+@@ -333,7 +333,6 @@ struct brcm_pcie {
+ 	void			(*bridge_sw_init_set)(struct brcm_pcie *pcie, u32 val);
+ 	bool			refusal_mode;
+ 	struct subdev_regulators *sr;
+-	bool			ep_wakeup_capable;
+ };
  
-         try:
--            py_config_ptr = gdb.parse_and_eval("kernel_config_data + 8")
--            py_config_size = gdb.parse_and_eval(
--                    "sizeof(kernel_config_data) - 1 - 8 * 2")
-+            py_config_ptr = gdb.parse_and_eval("&kernel_config_data")
-+            py_config_ptr_end = gdb.parse_and_eval("&kernel_config_data_end")
-+            py_config_size = py_config_ptr_end - py_config_ptr
-         except gdb.error as e:
-             raise gdb.GdbError("Can't find config, enable CONFIG_IKCONFIG?")
+ static inline bool is_bmips(const struct brcm_pcie *pcie)
+@@ -1351,21 +1350,9 @@ static void brcm_pcie_turn_off(struct brcm_pcie *pcie)
+ 	pcie->bridge_sw_init_set(pcie, 1);
+ }
+ 
+-static int pci_dev_may_wakeup(struct pci_dev *dev, void *data)
+-{
+-	bool *ret = data;
+-
+-	if (device_may_wakeup(&dev->dev)) {
+-		*ret = true;
+-		dev_info(&dev->dev, "disable cancelled for wake-up device\n");
+-	}
+-	return (int) *ret;
+-}
+-
+ static int brcm_pcie_suspend(struct device *dev)
+ {
+ 	struct brcm_pcie *pcie = dev_get_drvdata(dev);
+-	struct pci_host_bridge *bridge = pci_host_bridge_from_priv(pcie);
+ 	int ret;
+ 
+ 	brcm_pcie_turn_off(pcie);
+@@ -1384,22 +1371,11 @@ static int brcm_pcie_suspend(struct device *dev)
+ 	}
+ 
+ 	if (pcie->sr) {
+-		/*
+-		 * Now turn off the regulators, but if at least one
+-		 * downstream device is enabled as a wake-up source, do not
+-		 * turn off regulators.
+-		 */
+-		pcie->ep_wakeup_capable = false;
+-		pci_walk_bus(bridge->bus, pci_dev_may_wakeup,
+-			     &pcie->ep_wakeup_capable);
+-		if (!pcie->ep_wakeup_capable) {
+-			ret = regulator_bulk_disable(pcie->sr->num_supplies,
+-						     pcie->sr->supplies);
+-			if (ret) {
+-				dev_err(dev, "Could not turn off regulators\n");
+-				reset_control_reset(pcie->rescal);
+-				return ret;
+-			}
++		ret = regulator_bulk_disable(pcie->sr->num_supplies, pcie->sr->supplies);
++		if (ret) {
++			dev_err(dev, "Could not turn off regulators\n");
++			reset_control_reset(pcie->rescal);
++			return ret;
+ 		}
+ 	}
+ 	clk_disable_unprepare(pcie->clk);
+@@ -1420,21 +1396,10 @@ static int brcm_pcie_resume(struct device *dev)
+ 		return ret;
+ 
+ 	if (pcie->sr) {
+-		if (pcie->ep_wakeup_capable) {
+-			/*
+-			 * We are resuming from a suspend.  In the suspend we
+-			 * did not disable the power supplies, so there is
+-			 * no need to enable them (and falsely increase their
+-			 * usage count).
+-			 */
+-			pcie->ep_wakeup_capable = false;
+-		} else {
+-			ret = regulator_bulk_enable(pcie->sr->num_supplies,
+-						    pcie->sr->supplies);
+-			if (ret) {
+-				dev_err(dev, "Could not turn on regulators\n");
+-				goto err_disable_clk;
+-			}
++		ret = regulator_bulk_enable(pcie->sr->num_supplies, pcie->sr->supplies);
++		if (ret) {
++			dev_err(dev, "Could not turn on regulators\n");
++			goto err_disable_clk;
+ 		}
+ 	}
  
 -- 
 2.35.1
