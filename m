@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0DAAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:01:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70B73C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:01:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356263AbiFMNBA (ORCPT
+        id S1356344AbiFMNBH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:01:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50432 "EHLO
+        Mon, 13 Jun 2022 09:01:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358157AbiFMMzF (ORCPT
+        with ESMTP id S1358096AbiFMMzD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:55:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C04265CD;
-        Mon, 13 Jun 2022 04:14:29 -0700 (PDT)
+        Mon, 13 Jun 2022 08:55:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C60F9FC4;
+        Mon, 13 Jun 2022 04:14:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 573F260EAE;
-        Mon, 13 Jun 2022 11:14:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68345C34114;
-        Mon, 13 Jun 2022 11:14:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DF54660B60;
+        Mon, 13 Jun 2022 11:14:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDF3FC34114;
+        Mon, 13 Jun 2022 11:14:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118867;
-        bh=mw/Kae021Zd0ilpCkoH0xuovLwi9c677QHtw690TGHg=;
+        s=korg; t=1655118862;
+        bh=RaJK8EuVXWjhs/e6RU2pwHtAj1dWsMkMnPVlcYkRZIw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HDYGOOTlJ5dZJGI6b02VwKk2tfMzJO1OrB285XePYYq5M+YEK/567z58SMqmHZB7k
-         Zxz8kpqlLqdOSveUxNXbwExhIj5jxWZkbiEA1t1sRPy/oEXdrzM6UH9ABCazTKThTJ
-         pgHV0V82QWbNZqMCF9Irjq8lZAyzNFHzNAg2uiTE=
+        b=nHdE50Ylvlo+ywkpRPZTYpn5F+egreTRTEVjsZCSwb6yP05dAjGte3bUxKlAz02D5
+         6wMUE6+LQzi5yKnlIr0dMkwhVe7A5GeyvZZNqcK8uwbdzi/Ey2AKDbKseloSlw/EtQ
+         mjpzRKkLmhBiyjNwa4iVO5RuiN9tHos4RHh8gCXE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 057/247] serial: txx9: Dont allow CS5-6
-Date:   Mon, 13 Jun 2022 12:09:19 +0200
-Message-Id: <20220613094924.685791046@linuxfoundation.org>
+Subject: [PATCH 5.15 047/247] rtc: ftrtc010: Use platform_get_irq() to get the interrupt
+Date:   Mon, 13 Jun 2022 12:09:09 +0200
+Message-Id: <20220613094924.376924781@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,40 +52,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-[ Upstream commit 79ac88655dc0551e3571ad16bdabdbe65d61553e ]
+[ Upstream commit 05020a733b02cf7a474305e620fb306cd3abfe84 ]
 
-Only CS7 and CS8 are supported but CSIZE is not sanitized with
-CS5 or CS6 to CS8.
+platform_get_resource(pdev, IORESOURCE_IRQ, ..) relies on static
+allocation of IRQ resources in DT core code, this causes an issue
+when using hierarchical interrupt domains using "interrupts" property
+in the node as this bypasses the hierarchical setup and messes up the
+irq chaining.
 
-Set CSIZE correctly so that userspace knows the effective value.
-Incorrect CSIZE also results in miscalculation of the frame bits in
-tty_get_char_size() or in its predecessor where the roughly the same
-code is directly within uart_update_timeout().
+In preparation for removal of static setup of IRQ resource from DT core
+code use platform_get_irq().
 
-Fixes: 1da177e4c3f4 (Linux-2.6.12-rc2)
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/20220519081808.3776-5-ilpo.jarvinen@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20211220011524.17206-1-prabhakar.mahadev-lad.rj@bp.renesas.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/serial_txx9.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/rtc/rtc-ftrtc010.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_txx9.c b/drivers/tty/serial/serial_txx9.c
-index aaca4fe38486..1f8362d5e3b9 100644
---- a/drivers/tty/serial/serial_txx9.c
-+++ b/drivers/tty/serial/serial_txx9.c
-@@ -644,6 +644,8 @@ serial_txx9_set_termios(struct uart_port *port, struct ktermios *termios,
- 	case CS6:	/* not supported */
- 	case CS8:
- 		cval |= TXX9_SILCR_UMODE_8BIT;
-+		termios->c_cflag &= ~CSIZE;
-+		termios->c_cflag |= CS8;
- 		break;
+diff --git a/drivers/rtc/rtc-ftrtc010.c b/drivers/rtc/rtc-ftrtc010.c
+index ad3add5db4c8..53bb08fe1cd4 100644
+--- a/drivers/rtc/rtc-ftrtc010.c
++++ b/drivers/rtc/rtc-ftrtc010.c
+@@ -141,11 +141,9 @@ static int ftrtc010_rtc_probe(struct platform_device *pdev)
+ 		}
  	}
  
+-	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+-	if (!res)
+-		return -ENODEV;
+-
+-	rtc->rtc_irq = res->start;
++	rtc->rtc_irq = platform_get_irq(pdev, 0);
++	if (rtc->rtc_irq < 0)
++		return rtc->rtc_irq;
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	if (!res)
 -- 
 2.35.1
 
