@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFC31C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:35:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51109C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:35:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351986AbiFMMfZ (ORCPT
+        id S1351152AbiFMMfc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:35:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49644 "EHLO
+        Mon, 13 Jun 2022 08:35:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354944AbiFMMdv (ORCPT
+        with ESMTP id S1355745AbiFMMd7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:33:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46001192A6;
+        Mon, 13 Jun 2022 08:33:59 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83558AE68;
         Mon, 13 Jun 2022 04:07:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BD0D9B80D31;
-        Mon, 13 Jun 2022 11:07:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AB3CC34114;
-        Mon, 13 Jun 2022 11:07:34 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BC24BCE1185;
+        Mon, 13 Jun 2022 11:07:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F688C34114;
+        Mon, 13 Jun 2022 11:07:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118455;
-        bh=k/D5J55DGOPHu+CtgfOk8/cAeltQ3W05ljaoIyGNbpo=;
+        s=korg; t=1655118449;
+        bh=fxDFLdWs+q0mc8JN6tg+agJWCbc3hTnLQ0RnJsz8/Tc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gdGZOECtukcVWeo1t0lL+A89hv6scjza6A1oQ/v80uAsONL+biLbcJ8RmQnBHJRp6
-         B97uWQSDjc0Ep1wXC91ifqUFZO8OuNA6CD2tUPopt4tFxItodRrGMeT6ES3X3wIhMF
-         4eyuXiAxS7bVthUOU+ej0n9yPtsmiTx/z/ejjVmk=
+        b=uNW2gWBaJqW4XK0SMb9TOPAnavvKzq3Pyo6KbUf0+dsXfxc/49gjhyFsbBwA4TBAx
+         6vq7fqAV8+QwblhATPyMhkXDCk818YRMsQOlYjVXBvXZ8i44rgnQfcus5CkBoIJbYQ
+         c4y7KYm+k35VrrTurOZrFyr7rfKtEptZz1y2HWqo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+763ae12a2ede1d99d4dc@syzkaller.appspotmail.com,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 082/172] f2fs: remove WARN_ON in f2fs_is_valid_blkaddr
-Date:   Mon, 13 Jun 2022 12:10:42 +0200
-Message-Id: <20220613094910.086919920@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 080/172] iommu/arm-smmu: fix possible null-ptr-deref in arm_smmu_device_probe()
+Date:   Mon, 13 Jun 2022 12:10:40 +0200
+Message-Id: <20220613094909.630360897@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -52,58 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit dc2f78e2d4cc844a1458653d57ce1b54d4a29f21 ]
+[ Upstream commit d9ed8af1dee37f181096631fb03729ece98ba816 ]
 
-Syzbot triggers two WARNs in f2fs_is_valid_blkaddr and
-__is_bitmap_valid. For example, in f2fs_is_valid_blkaddr,
-if type is DATA_GENERIC_ENHANCE or DATA_GENERIC_ENHANCE_READ,
-it invokes WARN_ON if blkaddr is not in the right range.
-The call trace is as follows:
+It will cause null-ptr-deref when using 'res', if platform_get_resource()
+returns NULL, so move using 'res' after devm_ioremap_resource() that
+will check it to avoid null-ptr-deref.
+And use devm_platform_get_and_ioremap_resource() to simplify code.
 
- f2fs_get_node_info+0x45f/0x1070
- read_node_page+0x577/0x1190
- __get_node_page.part.0+0x9e/0x10e0
- __get_node_page
- f2fs_get_node_page+0x109/0x180
- do_read_inode
- f2fs_iget+0x2a5/0x58b0
- f2fs_fill_super+0x3b39/0x7ca0
-
-Fix these two WARNs by replacing WARN_ON with dump_stack.
-
-Reported-by: syzbot+763ae12a2ede1d99d4dc@syzkaller.appspotmail.com
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Reviewed-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20220425114136.2649310-1-yangyingliang@huawei.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/checkpoint.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iommu/arm/arm-smmu/arm-smmu.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/fs/f2fs/checkpoint.c b/fs/f2fs/checkpoint.c
-index 77f30320f862..1c49b9959b32 100644
---- a/fs/f2fs/checkpoint.c
-+++ b/fs/f2fs/checkpoint.c
-@@ -148,7 +148,7 @@ static bool __is_bitmap_valid(struct f2fs_sb_info *sbi, block_t blkaddr,
- 		f2fs_err(sbi, "Inconsistent error blkaddr:%u, sit bitmap:%d",
- 			 blkaddr, exist);
- 		set_sbi_flag(sbi, SBI_NEED_FSCK);
--		WARN_ON(1);
-+		dump_stack();
- 	}
- 	return exist;
- }
-@@ -186,7 +186,7 @@ bool f2fs_is_valid_blkaddr(struct f2fs_sb_info *sbi,
- 			f2fs_warn(sbi, "access invalid blkaddr:%u",
- 				  blkaddr);
- 			set_sbi_flag(sbi, SBI_NEED_FSCK);
--			WARN_ON(1);
-+			dump_stack();
- 			return false;
- 		} else {
- 			return __is_bitmap_valid(sbi, blkaddr, type);
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+index df24bbe3ea4f..6b41fe229a05 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+@@ -2123,11 +2123,10 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 	if (err)
+ 		return err;
+ 
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	ioaddr = res->start;
+-	smmu->base = devm_ioremap_resource(dev, res);
++	smmu->base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+ 	if (IS_ERR(smmu->base))
+ 		return PTR_ERR(smmu->base);
++	ioaddr = res->start;
+ 	/*
+ 	 * The resource size should effectively match the value of SMMU_TOP;
+ 	 * stash that temporarily until we know PAGESIZE to validate it with.
 -- 
 2.35.1
 
