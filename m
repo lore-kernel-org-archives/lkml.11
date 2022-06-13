@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BB39CCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3C8FCCA480
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:55:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235219AbiFMRzL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 13:55:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57026 "EHLO
+        id S242748AbiFMRzQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 13:55:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242721AbiFMRyN (ORCPT
+        with ESMTP id S242788AbiFMRyN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 13:54:13 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2578279378
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:41:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E0F8678EDF
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:41:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655127677;
+        s=mimecast20190719; t=1655127663;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=eKACbGUbv4aXo64CZow7fz+SSCxVkiu29gSoKAYPpPo=;
-        b=Lsi5+mrcTVaM/mcDMUa4rsg0Pmk+GgAa39zp22K5Fp7wFpsyKAcmKo4rzqd24doHBStuav
-        1+eWAMtkJuWg+uZkAS5JOJyFyhW0BNouJCmjl2CW0er2GffDF5yVdAQk4j5CdYbp7qnmCO
-        Pfx7akzLZ6UbYF0ItJLlZYle4DCtkN0=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=ZrLLxTItRf1Oo1WC5yZKeev7MmpLreUJVxMh/idkMow=;
+        b=XBzs/wcx9zRmV/Nj41wIaOgcphHi7p2yWJMO8NWrCyn2c0tBT8J+Pr4YxjqEAQYNq4+irw
+        FAQJ3xnLLltlClxtJclnQL63ReGYE0JwmdWhvJKXA8XSvrxMghNQW4vB30u04TXio0c9ER
+        fIf/xBtZG+Q/B0ydGKDzMU7pCsC10rM=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-119-r9T_plOYMF-XWbtNZG5wfQ-1; Mon, 13 Jun 2022 09:41:13 -0400
-X-MC-Unique: r9T_plOYMF-XWbtNZG5wfQ-1
+ us-mta-385-pJT4nZDtOO-ilx4EsnsRdw-1; Mon, 13 Jun 2022 09:40:57 -0400
+X-MC-Unique: pJT4nZDtOO-ilx4EsnsRdw-1
 Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 43372803B22;
-        Mon, 13 Jun 2022 13:41:12 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CAB391C0897C;
+        Mon, 13 Jun 2022 13:40:55 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.194.60])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C3981492CA4;
-        Mon, 13 Jun 2022 13:41:09 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7EDC7492CA2;
+        Mon, 13 Jun 2022 13:40:53 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -48,9 +48,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Siddharth Chandrasekaran <sidcha@amazon.de>,
         Yuan Yao <yuan.yao@linux.intel.com>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v7 39/39] KVM: selftests: Rename 'evmcs_test' to 'hyperv_evmcs'
-Date:   Mon, 13 Jun 2022 15:39:22 +0200
-Message-Id: <20220613133922.2875594-40-vkuznets@redhat.com>
+Subject: [PATCH v7 33/39] KVM: selftests: nVMX: Allocate Hyper-V partition assist page
+Date:   Mon, 13 Jun 2022 15:39:16 +0200
+Message-Id: <20220613133922.2875594-34-vkuznets@redhat.com>
 In-Reply-To: <20220613133922.2875594-1-vkuznets@redhat.com>
 References: <20220613133922.2875594-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -61,59 +61,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Conform to the rest of Hyper-V emulation selftests which have 'hyperv'
-prefix. Get rid of '_test' suffix as well as the purpose of this code
-is fairly obvious.
+In preparation to testing Hyper-V L2 TLB flush hypercalls, allocate
+so-called Partition assist page and link it to 'struct vmx_pages'.
 
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- tools/testing/selftests/kvm/.gitignore                          | 2 +-
- tools/testing/selftests/kvm/Makefile                            | 2 +-
- .../selftests/kvm/x86_64/{evmcs_test.c => hyperv_evmcs.c}       | 0
- 3 files changed, 2 insertions(+), 2 deletions(-)
- rename tools/testing/selftests/kvm/x86_64/{evmcs_test.c => hyperv_evmcs.c} (100%)
+ tools/testing/selftests/kvm/include/x86_64/vmx.h | 4 ++++
+ tools/testing/selftests/kvm/lib/x86_64/vmx.c     | 7 +++++++
+ 2 files changed, 11 insertions(+)
 
-diff --git a/tools/testing/selftests/kvm/.gitignore b/tools/testing/selftests/kvm/.gitignore
-index 7f086656f3e0..6be2be664f7b 100644
---- a/tools/testing/selftests/kvm/.gitignore
-+++ b/tools/testing/selftests/kvm/.gitignore
-@@ -15,7 +15,6 @@
- /x86_64/cpuid_test
- /x86_64/cr4_cpuid_sync_test
- /x86_64/debug_regs
--/x86_64/evmcs_test
- /x86_64/emulator_error_test
- /x86_64/fix_hypercall_test
- /x86_64/get_msr_index_features
-@@ -23,6 +22,7 @@
- /x86_64/kvm_pv_test
- /x86_64/hyperv_clock
- /x86_64/hyperv_cpuid
-+/x86_64/hyperv_evmcs
- /x86_64/hyperv_features
- /x86_64/hyperv_ipi
- /x86_64/hyperv_svm_test
-diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
-index 2b6a4ad3a718..2e2bc4d4d6b1 100644
---- a/tools/testing/selftests/kvm/Makefile
-+++ b/tools/testing/selftests/kvm/Makefile
-@@ -74,11 +74,11 @@ LIBKVM_riscv += lib/riscv/ucall.c
- TEST_GEN_PROGS_x86_64 = x86_64/cpuid_test
- TEST_GEN_PROGS_x86_64 += x86_64/cr4_cpuid_sync_test
- TEST_GEN_PROGS_x86_64 += x86_64/get_msr_index_features
--TEST_GEN_PROGS_x86_64 += x86_64/evmcs_test
- TEST_GEN_PROGS_x86_64 += x86_64/emulator_error_test
- TEST_GEN_PROGS_x86_64 += x86_64/fix_hypercall_test
- TEST_GEN_PROGS_x86_64 += x86_64/hyperv_clock
- TEST_GEN_PROGS_x86_64 += x86_64/hyperv_cpuid
-+TEST_GEN_PROGS_x86_64 += x86_64/hyperv_evmcs
- TEST_GEN_PROGS_x86_64 += x86_64/hyperv_features
- TEST_GEN_PROGS_x86_64 += x86_64/hyperv_ipi
- TEST_GEN_PROGS_x86_64 += x86_64/hyperv_svm_test
-diff --git a/tools/testing/selftests/kvm/x86_64/evmcs_test.c b/tools/testing/selftests/kvm/x86_64/hyperv_evmcs.c
-similarity index 100%
-rename from tools/testing/selftests/kvm/x86_64/evmcs_test.c
-rename to tools/testing/selftests/kvm/x86_64/hyperv_evmcs.c
+diff --git a/tools/testing/selftests/kvm/include/x86_64/vmx.h b/tools/testing/selftests/kvm/include/x86_64/vmx.h
+index cc3604f8f1d3..f7c8184c1de8 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/vmx.h
++++ b/tools/testing/selftests/kvm/include/x86_64/vmx.h
+@@ -570,6 +570,10 @@ struct vmx_pages {
+ 	uint64_t enlightened_vmcs_gpa;
+ 	void *enlightened_vmcs;
+ 
++	void *partition_assist_hva;
++	uint64_t partition_assist_gpa;
++	void *partition_assist;
++
+ 	void *eptp_hva;
+ 	uint64_t eptp_gpa;
+ 	void *eptp;
+diff --git a/tools/testing/selftests/kvm/lib/x86_64/vmx.c b/tools/testing/selftests/kvm/lib/x86_64/vmx.c
+index 381432741df4..2655450dd4dd 100644
+--- a/tools/testing/selftests/kvm/lib/x86_64/vmx.c
++++ b/tools/testing/selftests/kvm/lib/x86_64/vmx.c
+@@ -119,6 +119,13 @@ vcpu_alloc_vmx(struct kvm_vm *vm, vm_vaddr_t *p_vmx_gva)
+ 	vmx->enlightened_vmcs_gpa =
+ 		addr_gva2gpa(vm, (uintptr_t)vmx->enlightened_vmcs);
+ 
++	/* Setup of a region of guest memory for the partition assist page. */
++	vmx->partition_assist = (void *)vm_vaddr_alloc_page(vm);
++	vmx->partition_assist_hva =
++		addr_gva2hva(vm, (uintptr_t)vmx->partition_assist);
++	vmx->partition_assist_gpa =
++		addr_gva2gpa(vm, (uintptr_t)vmx->partition_assist);
++
+ 	*p_vmx_gva = vmx_gva;
+ 	return vmx;
+ }
 -- 
 2.35.3
 
