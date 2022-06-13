@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B323BCCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:06:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47F48CCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:06:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382757AbiFMOGX (ORCPT
+        id S1381282AbiFMOEQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:06:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41668 "EHLO
+        Mon, 13 Jun 2022 10:04:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380431AbiFMN65 (ORCPT
+        with ESMTP id S1381486AbiFMN4o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:58:57 -0400
+        Mon, 13 Jun 2022 09:56:44 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14D088BD17;
-        Mon, 13 Jun 2022 04:37:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEA9844777;
+        Mon, 13 Jun 2022 04:37:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C18B16130D;
-        Mon, 13 Jun 2022 11:37:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5F72C34114;
-        Mon, 13 Jun 2022 11:37:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 674DF612D0;
+        Mon, 13 Jun 2022 11:37:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C01BC34114;
+        Mon, 13 Jun 2022 11:37:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120254;
-        bh=2Ql0a/vPelV0bL+jBTjKjr1EkxwWCwzwREcV0w+3uFA=;
+        s=korg; t=1655120223;
+        bh=rxbr1Y6tY5vCrqN0GZ6O31nAcp1+t7/ChYjrzFVsJF0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q6mirt2lVIMd+uHkHxv2vuVERIdW/mei+YTW91H0Vj6jqKBiMLtZhTNAbE1VNqwUJ
-         ryi0lDRuTF3GAdCwYqrcW02/jtw/DHKMUzpf4M+lIUagWJOhnlnaIwL+syL7QBZgGX
-         BSvuxDE6O5EnxD7tAvly7Nd5mTWy2PHwPTFZaj5o=
+        b=VzgIMCdlSjRyaFx6d/lSNRLuiirafdOTCzhEY4lVHLhYtQj8oH9Knwxvb1qYOpJvB
+         70zXMcgP52uJjPVQhviaZ01Bclc+HnWQ/QT9GKAIetxlL9u8A8CcurprGxTVvg85M2
+         /nJ2EKJSntENAcy7vkwvGPVYn9z+R+ejhHi4q/Zs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
-        James Smart <jsmart2021@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 287/339] scsi: lpfc: Correct BDE type for XMIT_SEQ64_WQE in lpfc_ct_reject_event()
-Date:   Mon, 13 Jun 2022 12:11:52 +0200
-Message-Id: <20220613094935.336834991@linuxfoundation.org>
+        stable@vger.kernel.org, huangwenhui <huangwenhuia@uniontech.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.18 295/339] ALSA: hda/conexant - Fix loopback issue with CX20632
+Date:   Mon, 13 Jun 2022 12:12:00 +0200
+Message-Id: <20220613094935.579112254@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,43 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: huangwenhui <huangwenhuia@uniontech.com>
 
-[ Upstream commit 44ba9786b67345dc4e5eabe537c9ef2bfd889888 ]
+commit d5ea7544c32ba27c2c5826248e4ff58bd50a2518 upstream.
 
-A previous commit assumed all XMIT_SEQ64_WQEs are prepped with the correct
-BDE type in word 0-2.  However, lpfc_ct_reject_event() routine was missed
-and is still filling out the incorrect BDE type.
+On a machine with CX20632, Alsamixer doesn't have 'Loopback
+Mixing' and 'Line'.
 
-Fix lpfc_ct_reject_event() routine so that type BUFF_TYPE_BDE_64 is set
-instead of BUFF_TYPE_BLP_64.
-
-Link: https://lore.kernel.org/r/20220603174329.63777-2-jsmart2021@gmail.com
-Fixes: 596fc8adb171 ("scsi: lpfc: Fix dmabuf ptr assignment in lpfc_ct_reject_event()")
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: huangwenhui <huangwenhuia@uniontech.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220607065631.10708-1-huangwenhuia@uniontech.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/lpfc/lpfc_ct.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/pci/hda/patch_conexant.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/scsi/lpfc/lpfc_ct.c b/drivers/scsi/lpfc/lpfc_ct.c
-index 4b024aa03c1b..87124fd65272 100644
---- a/drivers/scsi/lpfc/lpfc_ct.c
-+++ b/drivers/scsi/lpfc/lpfc_ct.c
-@@ -197,7 +197,7 @@ lpfc_ct_reject_event(struct lpfc_nodelist *ndlp,
- 	memset(bpl, 0, sizeof(struct ulp_bde64));
- 	bpl->addrHigh = le32_to_cpu(putPaddrHigh(mp->phys));
- 	bpl->addrLow = le32_to_cpu(putPaddrLow(mp->phys));
--	bpl->tus.f.bdeFlags = BUFF_TYPE_BLP_64;
-+	bpl->tus.f.bdeFlags = BUFF_TYPE_BDE_64;
- 	bpl->tus.f.bdeSize = (LPFC_CT_PREAMBLE - 4);
- 	bpl->tus.w = le32_to_cpu(bpl->tus.w);
- 
--- 
-2.35.1
-
+--- a/sound/pci/hda/patch_conexant.c
++++ b/sound/pci/hda/patch_conexant.c
+@@ -1052,6 +1052,13 @@ static int patch_conexant_auto(struct hd
+ 		snd_hda_pick_fixup(codec, cxt5051_fixup_models,
+ 				   cxt5051_fixups, cxt_fixups);
+ 		break;
++	case 0x14f15098:
++		codec->pin_amp_workaround = 1;
++		spec->gen.mixer_nid = 0x22;
++		spec->gen.add_stereo_mix_input = HDA_HINT_STEREO_MIX_AUTO;
++		snd_hda_pick_fixup(codec, cxt5066_fixup_models,
++				   cxt5066_fixups, cxt_fixups);
++		break;
+ 	case 0x14f150f2:
+ 		codec->power_save_node = 1;
+ 		fallthrough;
 
 
