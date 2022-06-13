@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84381C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:41:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF51EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:42:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355034AbiFMLlv (ORCPT
+        id S1355203AbiFMLl6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:41:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56876 "EHLO
+        Mon, 13 Jun 2022 07:41:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354915AbiFMLeO (ORCPT
+        with ESMTP id S1355134AbiFMLel (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:34:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 214BE42EC5;
-        Mon, 13 Jun 2022 03:47:40 -0700 (PDT)
+        Mon, 13 Jun 2022 07:34:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24BC5434A3;
+        Mon, 13 Jun 2022 03:47:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 145F461248;
-        Mon, 13 Jun 2022 10:47:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 260E7C34114;
-        Mon, 13 Jun 2022 10:47:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3875DB80E8D;
+        Mon, 13 Jun 2022 10:47:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F200C34114;
+        Mon, 13 Jun 2022 10:47:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117259;
-        bh=rsQc2zKqXf8WtKtn+1YiwY05OhnHiZyEWBRvfO60Qqc=;
+        s=korg; t=1655117265;
+        bh=gEvp05trtCahzfWE7DwLeU08NiFJsEmHDyAXVpflLBk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qBwwfOJHe1fXLGGmCzZ/4JssaWfoPs0ht93AdXirJwHLS0lu5GAKjUEs0QVALF6yj
-         n6yHq/Femdl/EQXY9KFl0DbfFtiQCfa/WQDcHMnyLuo2Aq6F1v3MlOImpNN03zM/ld
-         2Ngh+WYyfJ0pGmWYzqvDY3jSW3m/4W6CcMJzMOGQ=
+        b=N+c5qrlU/3QJZlzwhQezD+CIuL+MBXdF3DQM1HHfMNFT3p0x3TG8dIIhpy8c+BEkY
+         DlpEvf+EbKJQM1w0KSAQ+88rczYSupLEQlF0UtbTGuv8nAbECiwmrv7YUjnOpma5QE
+         nY1AdcBKyFnEFSy3jnP5tvJKMb5G10vySp6q8b0w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baokun Li <libaokun1@huawei.com>,
-        Richard Weinberger <richard@nod.at>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 327/411] jffs2: fix memory leak in jffs2_do_fill_super
-Date:   Mon, 13 Jun 2022 12:10:00 +0200
-Message-Id: <20220613094938.534084623@linuxfoundation.org>
+        stable@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 011/287] b43legacy: Fix assigning negative value to unsigned variable
+Date:   Mon, 13 Jun 2022 12:07:15 +0200
+Message-Id: <20220613094924.194039359@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
+References: <20220613094923.832156175@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,66 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baokun Li <libaokun1@huawei.com>
+From: Haowen Bai <baihaowen@meizu.com>
 
-[ Upstream commit c14adb1cf70a984ed081c67e9d27bc3caad9537c ]
+[ Upstream commit 3f6b867559b3d43a7ce1b4799b755e812fc0d503 ]
 
-If jffs2_iget() or d_make_root() in jffs2_do_fill_super() returns
-an error, we can observe the following kmemleak report:
+fix warning reported by smatch:
+drivers/net/wireless/broadcom/b43legacy/phy.c:1181 b43legacy_phy_lo_b_measure()
+warn: assigning (-772) to unsigned variable 'fval'
 
---------------------------------------------
-unreferenced object 0xffff888105a65340 (size 64):
-  comm "mount", pid 710, jiffies 4302851558 (age 58.239s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<ffffffff859c45e5>] kmem_cache_alloc_trace+0x475/0x8a0
-    [<ffffffff86160146>] jffs2_sum_init+0x96/0x1a0
-    [<ffffffff86140e25>] jffs2_do_mount_fs+0x745/0x2120
-    [<ffffffff86149fec>] jffs2_do_fill_super+0x35c/0x810
-    [<ffffffff8614aae9>] jffs2_fill_super+0x2b9/0x3b0
-    [...]
-unreferenced object 0xffff8881bd7f0000 (size 65536):
-  comm "mount", pid 710, jiffies 4302851558 (age 58.239s)
-  hex dump (first 32 bytes):
-    bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
-    bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
-  backtrace:
-    [<ffffffff858579ba>] kmalloc_order+0xda/0x110
-    [<ffffffff85857a11>] kmalloc_order_trace+0x21/0x130
-    [<ffffffff859c2ed1>] __kmalloc+0x711/0x8a0
-    [<ffffffff86160189>] jffs2_sum_init+0xd9/0x1a0
-    [<ffffffff86140e25>] jffs2_do_mount_fs+0x745/0x2120
-    [<ffffffff86149fec>] jffs2_do_fill_super+0x35c/0x810
-    [<ffffffff8614aae9>] jffs2_fill_super+0x2b9/0x3b0
-    [...]
---------------------------------------------
-
-This is because the resources allocated in jffs2_sum_init() are not
-released. Call jffs2_sum_exit() to release these resources to solve
-the problem.
-
-Fixes: e631ddba5887 ("[JFFS2] Add erase block summary support (mount time improvement)")
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/1648203433-8736-1-git-send-email-baihaowen@meizu.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/jffs2/fs.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/broadcom/b43legacy/phy.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/jffs2/fs.c b/fs/jffs2/fs.c
-index ad1eba809e7e..ee2282b8c7a7 100644
---- a/fs/jffs2/fs.c
-+++ b/fs/jffs2/fs.c
-@@ -603,6 +603,7 @@ int jffs2_do_fill_super(struct super_block *sb, struct fs_context *fc)
- 	jffs2_free_raw_node_refs(c);
- 	kvfree(c->blocks);
- 	jffs2_clear_xattr_subsystem(c);
-+	jffs2_sum_exit(c);
-  out_inohash:
- 	kfree(c->inocache_list);
-  out_wbuf:
+diff --git a/drivers/net/wireless/broadcom/b43legacy/phy.c b/drivers/net/wireless/broadcom/b43legacy/phy.c
+index 995c7d0c212a..11ee5ee48976 100644
+--- a/drivers/net/wireless/broadcom/b43legacy/phy.c
++++ b/drivers/net/wireless/broadcom/b43legacy/phy.c
+@@ -1148,7 +1148,7 @@ void b43legacy_phy_lo_b_measure(struct b43legacy_wldev *dev)
+ 	struct b43legacy_phy *phy = &dev->phy;
+ 	u16 regstack[12] = { 0 };
+ 	u16 mls;
+-	u16 fval;
++	s16 fval;
+ 	int i;
+ 	int j;
+ 
 -- 
 2.35.1
 
