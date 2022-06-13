@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 101EDCCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:24:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDF5BCCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:24:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353339AbiFMLXb (ORCPT
+        id S1353307AbiFMLX0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:23:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46640 "EHLO
+        Mon, 13 Jun 2022 07:23:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353663AbiFMLQK (ORCPT
+        with ESMTP id S1353658AbiFMLQK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:16:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F84838BDA;
-        Mon, 13 Jun 2022 03:38:50 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 495A312D2F;
+        Mon, 13 Jun 2022 03:38:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C035BB80EAC;
-        Mon, 13 Jun 2022 10:38:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F280C34114;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B72FB80EAB;
         Mon, 13 Jun 2022 10:38:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70A85C34114;
+        Mon, 13 Jun 2022 10:38:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116727;
-        bh=nKTfZeuLrKxdwEf0gmHdzEbNZIZRCIXzPoBOQmXgezQ=;
+        s=korg; t=1655116724;
+        bh=nGXdZSFzDkEWuQCg5DmXXNsQ4HwouMFmglUtOGRhmhc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oM/4zx8QCZMSmjpnsChN2JxW+JSb6AKW5jhzwZLAuL4hbJgfMTo/usiQ7i/efkiHi
-         hC5gnbFDiN5VBECGWvf2DXnSRJoShFLKobrg+hNm0AeJdIwo7etfNKyGqsg1DUiXjD
-         wJOX3jTjPdGruODPcYH2m3hTfDz5RlBkLsWrb1xg=
+        b=zLZaoBtUYqmVxJk6mTVOP/XOEtLzrjp3RESc4gq8KCs7NyLTfEDq3w27Xod+Dge94
+         Xh+oxWvVLGztPtvnufXSVdlBw/D6Bj16YQV9xe0qeq/9QCrKaCIxsVvYfrSirJealg
+         Enenl5c/KIKMvjRf17gqNpl8fwovgdHju+IdZb5k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, liuyacan <liuyacan@corp.netease.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        syzbot+2bef95d3ab4daa10155b@syzkaller.appspotmail.com,
+        Ying Hsu <yinghsu@chromium.org>,
+        Joseph Hwang <josephsih@chromium.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 155/411] net/smc: postpone sk_refcnt increment in connect()
-Date:   Mon, 13 Jun 2022 12:07:08 +0200
-Message-Id: <20220613094933.311476944@linuxfoundation.org>
+Subject: [PATCH 5.4 140/411] Bluetooth: fix dangling sco_conn and use-after-free in sco_sock_timeout
+Date:   Mon, 13 Jun 2022 12:06:53 +0200
+Message-Id: <20220613094932.867978425@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,40 +53,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: liuyacan <liuyacan@corp.netease.com>
+From: Ying Hsu <yinghsu@chromium.org>
 
-[ Upstream commit 75c1edf23b95a9c66923d9269d8e86e4dbde151f ]
+[ Upstream commit 7aa1e7d15f8a5b65f67bacb100d8fc033b21efa2 ]
 
-Same trigger condition as commit 86434744. When setsockopt runs
-in parallel to a connect(), and switch the socket into fallback
-mode. Then the sk_refcnt is incremented in smc_connect(), but
-its state stay in SMC_INIT (NOT SMC_ACTIVE). This cause the
-corresponding sk_refcnt decrement in __smc_release() will not be
-performed.
+Connecting the same socket twice consecutively in sco_sock_connect()
+could lead to a race condition where two sco_conn objects are created
+but only one is associated with the socket. If the socket is closed
+before the SCO connection is established, the timer associated with the
+dangling sco_conn object won't be canceled. As the sock object is being
+freed, the use-after-free problem happens when the timer callback
+function sco_sock_timeout() accesses the socket. Here's the call trace:
 
-Fixes: 86434744fedf ("net/smc: add fallback check to connect()")
-Signed-off-by: liuyacan <liuyacan@corp.netease.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+dump_stack+0x107/0x163
+? refcount_inc+0x1c/
+print_address_description.constprop.0+0x1c/0x47e
+? refcount_inc+0x1c/0x7b
+kasan_report+0x13a/0x173
+? refcount_inc+0x1c/0x7b
+check_memory_region+0x132/0x139
+refcount_inc+0x1c/0x7b
+sco_sock_timeout+0xb2/0x1ba
+process_one_work+0x739/0xbd1
+? cancel_delayed_work+0x13f/0x13f
+? __raw_spin_lock_init+0xf0/0xf0
+? to_kthread+0x59/0x85
+worker_thread+0x593/0x70e
+kthread+0x346/0x35a
+? drain_workqueue+0x31a/0x31a
+? kthread_bind+0x4b/0x4b
+ret_from_fork+0x1f/0x30
+
+Link: https://syzkaller.appspot.com/bug?extid=2bef95d3ab4daa10155b
+Reported-by: syzbot+2bef95d3ab4daa10155b@syzkaller.appspotmail.com
+Fixes: e1dee2c1de2b ("Bluetooth: fix repeated calls to sco_sock_kill")
+Signed-off-by: Ying Hsu <yinghsu@chromium.org>
+Reviewed-by: Joseph Hwang <josephsih@chromium.org>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/smc/af_smc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/bluetooth/sco.c | 21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index a5a8cca46bd5..394491692a07 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -877,9 +877,9 @@ static int smc_connect(struct socket *sock, struct sockaddr *addr,
- 	if (rc && rc != -EINPROGRESS)
- 		goto out;
+diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+index 2c616c1c6295..fbfb12e43010 100644
+--- a/net/bluetooth/sco.c
++++ b/net/bluetooth/sco.c
+@@ -563,19 +563,24 @@ static int sco_sock_connect(struct socket *sock, struct sockaddr *addr, int alen
+ 	    addr->sa_family != AF_BLUETOOTH)
+ 		return -EINVAL;
  
--	sock_hold(&smc->sk); /* sock put in passive closing */
- 	if (smc->use_fallback)
- 		goto out;
-+	sock_hold(&smc->sk); /* sock put in passive closing */
- 	if (flags & O_NONBLOCK) {
- 		if (schedule_work(&smc->connect_work))
- 			smc->connect_nonblock = 1;
+-	if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND)
+-		return -EBADFD;
++	lock_sock(sk);
++	if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND) {
++		err = -EBADFD;
++		goto done;
++	}
+ 
+-	if (sk->sk_type != SOCK_SEQPACKET)
+-		return -EINVAL;
++	if (sk->sk_type != SOCK_SEQPACKET) {
++		err = -EINVAL;
++		goto done;
++	}
+ 
+ 	hdev = hci_get_route(&sa->sco_bdaddr, &sco_pi(sk)->src, BDADDR_BREDR);
+-	if (!hdev)
+-		return -EHOSTUNREACH;
++	if (!hdev) {
++		err = -EHOSTUNREACH;
++		goto done;
++	}
+ 	hci_dev_lock(hdev);
+ 
+-	lock_sock(sk);
+-
+ 	/* Set destination address and psm */
+ 	bacpy(&sco_pi(sk)->dst, &sa->sco_bdaddr);
+ 
 -- 
 2.35.1
 
