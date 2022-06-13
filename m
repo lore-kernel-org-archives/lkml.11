@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3C44CCA483
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:10:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2AD9CCA48D
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:10:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381577AbiFMOIm (ORCPT
+        id S1381622AbiFMOIq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:08:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50548 "EHLO
+        Mon, 13 Jun 2022 10:08:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381030AbiFMOD0 (ORCPT
+        with ESMTP id S1381082AbiFMODr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:03:26 -0400
+        Mon, 13 Jun 2022 10:03:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 803E08FD69;
-        Mon, 13 Jun 2022 04:38:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD83490CEB;
+        Mon, 13 Jun 2022 04:38:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0563B612A8;
-        Mon, 13 Jun 2022 11:38:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19AB3C34114;
-        Mon, 13 Jun 2022 11:38:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 568F2612AC;
+        Mon, 13 Jun 2022 11:38:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67957C34114;
+        Mon, 13 Jun 2022 11:38:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120311;
-        bh=BId6GrVmV6WPWkagZd52rMJRrt2fGu7QWzudzEjdX44=;
+        s=korg; t=1655120316;
+        bh=B7tnLXZ9zOFwqW4lhSdUyligTwXyJWYFGo6O+Ex6O7U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GXly2ePWDgxD2Kp/lp3oshxFj0WvpeYHMS1Vr1txBmIGakPxHp95eeAYUHhZyvWE3
-         VZGn4Yd26+1GzFDt1NI71KKOjd/3efKOnWQFVkgSaBjmz3MBszQK007fC/9nPzIqRk
-         oxSP5ZmUqrPrFYrftrUUMjM3MQsSeM2lAXVCUudA=
+        b=HClw81wntL9SkZ79h/qcnnfKvERNZ+bm74O5QC94Reb5E7nmjxYNT700gLoblsLtF
+         aI/qX6ziHXOwZvQt4U6HYEBmIoOPgBYQZyhtf7Ug/HvqjEroZxAmTLgaKyQyEIgHAH
+         ypYz8+TxhDDLAKX8yFFpZ99vgZbOSyTJnAhOcFco=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        syzbot+5b96d55e5b54924c77ad@syzkaller.appspotmail.com,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH 5.18 307/339] filemap: Cache the value of vm_flags
-Date:   Mon, 13 Jun 2022 12:12:12 +0200
-Message-Id: <20220613094936.069042805@linuxfoundation.org>
+        Tyler Erickson <tyler.erickson@seagate.com>,
+        Muhammad Ahmad <muhammad.ahmad@seagate.com>,
+        Michael English <michael.english@seagate.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Subject: [PATCH 5.18 309/339] libata: fix reading concurrent positioning ranges log
+Date:   Mon, 13 Jun 2022 12:12:14 +0200
+Message-Id: <20220613094936.128065828@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,65 +52,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthew Wilcox (Oracle) <willy@infradead.org>
+From: Tyler Erickson <tyler.erickson@seagate.com>
 
-commit dcfa24ba68991ab69a48254a18377b45180ae664 upstream.
+commit c745dfc541e78428ba3986f1d17fe1dfdaca8184 upstream.
 
-After we have unlocked the mmap_lock for I/O, the file is pinned, but
-the VMA is not.  Checking this flag after that can be a use-after-free.
-It's not a terribly interesting use-after-free as it can only read one
-bit, and it's used to decide whether to read 2MB or 4MB.  But it
-upsets the automated tools and it's generally bad practice anyway,
-so let's fix it.
+The concurrent positioning ranges log is not a fixed size and may depend
+on how many ranges are supported by the device. This patch uses the size
+reported in the GPL directory to determine the number of pages supported
+by the device before attempting to read this log page.
 
-Reported-by: syzbot+5b96d55e5b54924c77ad@syzkaller.appspotmail.com
-Fixes: 4687fdbb805a ("mm/filemap: Support VM_HUGEPAGE for file mappings")
+This resolves this error from the dmesg output:
+    ata6.00: Read log 0x47 page 0x00 failed, Emask 0x1
+
 Cc: stable@vger.kernel.org
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Fixes: fe22e1c2f705 ("libata: support concurrent positioning ranges log")
+Signed-off-by: Tyler Erickson <tyler.erickson@seagate.com>
+Reviewed-by: Muhammad Ahmad <muhammad.ahmad@seagate.com>
+Tested-by: Michael English <michael.english@seagate.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/filemap.c |    9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/ata/libata-core.c |   21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
 
---- a/mm/filemap.c
-+++ b/mm/filemap.c
-@@ -2991,11 +2991,12 @@ static struct file *do_sync_mmap_readahe
- 	struct address_space *mapping = file->f_mapping;
- 	DEFINE_READAHEAD(ractl, file, ra, mapping, vmf->pgoff);
- 	struct file *fpin = NULL;
-+	unsigned long vm_flags = vmf->vma->vm_flags;
- 	unsigned int mmap_miss;
+--- a/drivers/ata/libata-core.c
++++ b/drivers/ata/libata-core.c
+@@ -2003,16 +2003,16 @@ retry:
+ 	return err_mask;
+ }
  
- #ifdef CONFIG_TRANSPARENT_HUGEPAGE
- 	/* Use the readahead code, even if readahead is disabled */
--	if (vmf->vma->vm_flags & VM_HUGEPAGE) {
-+	if (vm_flags & VM_HUGEPAGE) {
- 		fpin = maybe_unlock_mmap_for_io(vmf, fpin);
- 		ractl._index &= ~((unsigned long)HPAGE_PMD_NR - 1);
- 		ra->size = HPAGE_PMD_NR;
-@@ -3003,7 +3004,7 @@ static struct file *do_sync_mmap_readahe
- 		 * Fetch two PMD folios, so we get the chance to actually
- 		 * readahead, unless we've been told not to.
- 		 */
--		if (!(vmf->vma->vm_flags & VM_RAND_READ))
-+		if (!(vm_flags & VM_RAND_READ))
- 			ra->size *= 2;
- 		ra->async_size = HPAGE_PMD_NR;
- 		page_cache_ra_order(&ractl, ra, HPAGE_PMD_ORDER);
-@@ -3012,12 +3013,12 @@ static struct file *do_sync_mmap_readahe
- #endif
+-static bool ata_log_supported(struct ata_device *dev, u8 log)
++static int ata_log_supported(struct ata_device *dev, u8 log)
+ {
+ 	struct ata_port *ap = dev->link->ap;
  
- 	/* If we don't want any read-ahead, don't bother */
--	if (vmf->vma->vm_flags & VM_RAND_READ)
-+	if (vm_flags & VM_RAND_READ)
- 		return fpin;
- 	if (!ra->ra_pages)
- 		return fpin;
+ 	if (dev->horkage & ATA_HORKAGE_NO_LOG_DIR)
+-		return false;
++		return 0;
  
--	if (vmf->vma->vm_flags & VM_SEQ_READ) {
-+	if (vm_flags & VM_SEQ_READ) {
- 		fpin = maybe_unlock_mmap_for_io(vmf, fpin);
- 		page_cache_sync_ra(&ractl, ra->ra_pages);
- 		return fpin;
+ 	if (ata_read_log_page(dev, ATA_LOG_DIRECTORY, 0, ap->sector_buf, 1))
+-		return false;
+-	return get_unaligned_le16(&ap->sector_buf[log * 2]) ? true : false;
++		return 0;
++	return get_unaligned_le16(&ap->sector_buf[log * 2]);
+ }
+ 
+ static bool ata_identify_page_supported(struct ata_device *dev, u8 page)
+@@ -2448,15 +2448,20 @@ static void ata_dev_config_cpr(struct at
+ 	struct ata_cpr_log *cpr_log = NULL;
+ 	u8 *desc, *buf = NULL;
+ 
+-	if (ata_id_major_version(dev->id) < 11 ||
+-	    !ata_log_supported(dev, ATA_LOG_CONCURRENT_POSITIONING_RANGES))
++	if (ata_id_major_version(dev->id) < 11)
++		goto out;
++
++	buf_len = ata_log_supported(dev, ATA_LOG_CONCURRENT_POSITIONING_RANGES);
++	if (buf_len == 0)
+ 		goto out;
+ 
+ 	/*
+ 	 * Read the concurrent positioning ranges log (0x47). We can have at
+-	 * most 255 32B range descriptors plus a 64B header.
++	 * most 255 32B range descriptors plus a 64B header. This log varies in
++	 * size, so use the size reported in the GPL directory. Reading beyond
++	 * the supported length will result in an error.
+ 	 */
+-	buf_len = (64 + 255 * 32 + 511) & ~511;
++	buf_len <<= 9;
+ 	buf = kzalloc(buf_len, GFP_KERNEL);
+ 	if (!buf)
+ 		goto out;
 
 
