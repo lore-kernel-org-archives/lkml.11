@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C60DCCA489
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:39:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75F28C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:39:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355554AbiFMLjO (ORCPT
+        id S1355744AbiFMLjg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:39:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56038 "EHLO
+        Mon, 13 Jun 2022 07:39:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354710AbiFML35 (ORCPT
+        with ESMTP id S1355122AbiFMLar (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:29:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 916B42B18B;
-        Mon, 13 Jun 2022 03:45:29 -0700 (PDT)
+        Mon, 13 Jun 2022 07:30:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1F3241310;
+        Mon, 13 Jun 2022 03:46:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E622B80D3B;
-        Mon, 13 Jun 2022 10:45:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D115C34114;
-        Mon, 13 Jun 2022 10:45:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CF13261248;
+        Mon, 13 Jun 2022 10:46:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFD86C34114;
+        Mon, 13 Jun 2022 10:46:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117126;
-        bh=f619H1Y0UIbByrVUtvQiNjnfNNFzRcSFuh6z6FdYzYM=;
+        s=korg; t=1655117188;
+        bh=UxEwJ9Vf0nfXIgKZW6JZYJJ2nK1Zls3Fp5k0TbD0Ehk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=twH5aX5Y1iugKRzsvu1hA9vSySzcqLehHYbDsNNWuhbFAgzJ5aeMVIFJ6sNB59unI
-         JqwTH6WiApGnVIqZ5ogWmnvQtaYL4/Nesfhe6/Tsz2Ab2hhdL6e3aimeSA4IexbJKN
-         TYa3qUvsyMLHwqNp27CBktc400PEy7kD0R+fTxjQ=
+        b=pOjRu/6lmt10tYzuIbgVH083fu8Sj6kpRSC7aEEs71BnmjzS7y/Mx4bYQIOhgm+xs
+         wGyaow0h7d+eGS/f1riS1jXptPztZ+2AJ95NIL8HGJDvge2QiNidKl+T9lYnc4OIKv
+         oqZwweXwr+Q84Sksphj0CkPsl4vrZEcGIZ2+wRLw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        stable@vger.kernel.org, Schspa Shi <schspa@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 296/411] iio: adc: stmpe-adc: Fix wait_for_completion_timeout return value check
-Date:   Mon, 13 Jun 2022 12:09:29 +0200
-Message-Id: <20220613094937.634194336@linuxfoundation.org>
+Subject: [PATCH 5.4 317/411] driver: base: fix UAF when driver_attach failed
+Date:   Mon, 13 Jun 2022 12:09:50 +0200
+Message-Id: <20220613094938.244953882@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -51,65 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Schspa Shi <schspa@gmail.com>
 
-[ Upstream commit d345b23200bcdbd2bd3582213d738c258b77718f ]
+[ Upstream commit 310862e574001a97ad02272bac0fd13f75f42a27 ]
 
-wait_for_completion_timeout() returns unsigned long not long.
-it returns 0 if timed out, and positive if completed.
-The check for <= 0 is ambiguous and should be == 0 here
-indicating timeout which is the only error case
+When driver_attach(drv); failed, the driver_private will be freed.
+But it has been added to the bus, which caused a UAF.
 
-Fixes: e813dde6f833 ("iio: stmpe-adc: Use wait_for_completion_timeout")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Philippe Schenker <philippe.schenker@toradex.com>
-Link: https://lore.kernel.org/r/20220412065150.14486-1-linmq006@gmail.com
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To fix it, we need to delete it from the bus when failed.
+
+Fixes: 190888ac01d0 ("driver core: fix possible missing of device probe")
+Signed-off-by: Schspa Shi <schspa@gmail.com>
+Link: https://lore.kernel.org/r/20220513112444.45112-1-schspa@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/stmpe-adc.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/base/bus.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/stmpe-adc.c b/drivers/iio/adc/stmpe-adc.c
-index bd72727fc417..35ae801c4d35 100644
---- a/drivers/iio/adc/stmpe-adc.c
-+++ b/drivers/iio/adc/stmpe-adc.c
-@@ -61,7 +61,7 @@ struct stmpe_adc {
- static int stmpe_read_voltage(struct stmpe_adc *info,
- 		struct iio_chan_spec const *chan, int *val)
- {
--	long ret;
-+	unsigned long ret;
- 
- 	mutex_lock(&info->lock);
- 
-@@ -79,7 +79,7 @@ static int stmpe_read_voltage(struct stmpe_adc *info,
- 
- 	ret = wait_for_completion_timeout(&info->completion, STMPE_ADC_TIMEOUT);
- 
--	if (ret <= 0) {
-+	if (ret == 0) {
- 		stmpe_reg_write(info->stmpe, STMPE_REG_ADC_INT_STA,
- 				STMPE_ADC_CH(info->channel));
- 		mutex_unlock(&info->lock);
-@@ -96,7 +96,7 @@ static int stmpe_read_voltage(struct stmpe_adc *info,
- static int stmpe_read_temp(struct stmpe_adc *info,
- 		struct iio_chan_spec const *chan, int *val)
- {
--	long ret;
-+	unsigned long ret;
- 
- 	mutex_lock(&info->lock);
- 
-@@ -114,7 +114,7 @@ static int stmpe_read_temp(struct stmpe_adc *info,
- 
- 	ret = wait_for_completion_timeout(&info->completion, STMPE_ADC_TIMEOUT);
- 
--	if (ret <= 0) {
-+	if (ret == 0) {
- 		mutex_unlock(&info->lock);
- 		return -ETIMEDOUT;
+diff --git a/drivers/base/bus.c b/drivers/base/bus.c
+index a1d1e8256324..7d7d28f498ed 100644
+--- a/drivers/base/bus.c
++++ b/drivers/base/bus.c
+@@ -620,7 +620,7 @@ int bus_add_driver(struct device_driver *drv)
+ 	if (drv->bus->p->drivers_autoprobe) {
+ 		error = driver_attach(drv);
+ 		if (error)
+-			goto out_unregister;
++			goto out_del_list;
  	}
+ 	module_add_driver(drv->owner, drv);
+ 
+@@ -647,6 +647,8 @@ int bus_add_driver(struct device_driver *drv)
+ 
+ 	return 0;
+ 
++out_del_list:
++	klist_del(&priv->knode_bus);
+ out_unregister:
+ 	kobject_put(&priv->kobj);
+ 	/* drv->p is freed in driver_release()  */
 -- 
 2.35.1
 
