@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94A55CCA48F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA263CCA48E
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:31:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384637AbiFMO3y (ORCPT
+        id S1384772AbiFMOaE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:29:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56506 "EHLO
+        Mon, 13 Jun 2022 10:30:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383977AbiFMOYY (ORCPT
+        with ESMTP id S1383990AbiFMOY0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:24:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E19C87649;
-        Mon, 13 Jun 2022 04:46:16 -0700 (PDT)
+        Mon, 13 Jun 2022 10:24:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D51031028;
+        Mon, 13 Jun 2022 04:46:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A3DBCB80D3A;
-        Mon, 13 Jun 2022 11:46:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 225E4C34114;
-        Mon, 13 Jun 2022 11:46:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 685D6612A8;
+        Mon, 13 Jun 2022 11:46:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A156C34114;
+        Mon, 13 Jun 2022 11:46:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120774;
-        bh=sjq+uvEskXImUSCiB9r9NxsnISKPzeXwVxIV991CFtI=;
+        s=korg; t=1655120782;
+        bh=Y3/M2WaMtfOmqge54fZIHj1LphieSs1fROw0+XMZOYs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZeoEuDVl+5jSjkV5jVcz7s409MjWFiVrmT7WS0x6epYZEwXIV/1Y4ZTL0I0g31OmH
-         Otq7Ss3HXS7TkD3KeIl11hNstGC0kiyv6muwhogfQ+Vm8re54496+gFuyxKigt3rZw
-         FDVfPsyGWn+VsiIq8VulP5QN939ljRNNn5Rtw9G4=
+        b=NuwYp5YVNZAYzII879y/6NN5vu7w1Nt5PFgCH64vZ8SqD8Etds59tDjmnhRLzu6Ft
+         4PZrCF5KWi/vpuKOO/ISG4sZO/Xbcs7fSpA7bZ2EnDfAJpg1EFTPJs5ILgUA2w2S+x
+         VpkJw9adkVL+x/1EmqW69hVr6u0Hn+53LbfukGzU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 153/298] rtla/Makefile: Properly handle dependencies
-Date:   Mon, 13 Jun 2022 12:10:47 +0200
-Message-Id: <20220613094929.576845300@linuxfoundation.org>
+Subject: [PATCH 5.17 156/298] drm/bridge: ti-sn65dsi83: Handle dsi_lanes == 0 as invalid
+Date:   Mon, 13 Jun 2022 12:10:50 +0200
+Message-Id: <20220613094929.669350079@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -53,134 +57,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Bristot de Oliveira <bristot@kernel.org>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit fe4d0d5dde457bb5832b866418b5036f4f0c8d13 ]
+[ Upstream commit edbc7960bef7fd71ef1e44d0df15b864784b14c8 ]
 
-Linus had a problem compiling RTLA, saying:
+Handle empty data-lanes = < >; property, which translates to
+dsi_lanes = 0 as invalid.
 
-"[...] I wish the tracing tools would do a bit more package
-checking and helpful error messages too, rather than just
-fail with:
-
-    fatal error: tracefs.h: No such file or directory"
-
-Which is indeed not a helpful message. Update the Makefile, adding
-proper checks for the dependencies, with useful information about
-how to resolve possible problems.
-
-For example, the previous error is now reported as:
-
-    $ make
-    ********************************************
-    ** NOTICE: libtracefs version 1.3 or higher not found
-    **
-    ** Consider installing the latest libtracefs from your
-    ** distribution, e.g., 'dnf install libtracefs' on Fedora,
-    ** or from source:
-    **
-    **  https://git.kernel.org/pub/scm/libs/libtrace/libtracefs.git/
-    **
-    ********************************************
-
-These messages are inspired by the ones used on trace-cmd, as suggested
-by Stevel Rostedt.
-
-Link: https://lore.kernel.org/r/CAHk-=whxmA86E=csNv76DuxX_wYsg8mW15oUs3XTabu2Yc80yw@mail.gmail.com/
-
-Changes from V1:
- - Moved the rst2man check to the install phase (when it is used).
- - Removed the procps-ng lib check [1] as it is being removed.
-
-[1] a0f9f8c1030c66305c9b921057c3d483064d5529.1651220820.git.bristot@kernel.org
-
-Link: https://lkml.kernel.org/r/3f1fac776c37e4b67c876a94e5a0e45ed022ff3d.1651238057.git.bristot@kernel.org
-
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
-Suggested-by: Steven Rostedt <rostedt@goodmis.org>
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Fixes: ceb515ba29ba6 ("drm/bridge: ti-sn65dsi83: Add TI SN65DSI83 and SN65DSI84 driver")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Jonas Karlman <jonas@kwiboo.se>
+Cc: Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
+Cc: Lucas Stach <l.stach@pengutronix.de>
+Cc: Marek Vasut <marex@denx.de>
+Cc: Maxime Ripard <maxime@cerno.tech>
+Cc: Neil Armstrong <narmstrong@baylibre.com>
+Cc: Robert Foss <robert.foss@linaro.org>
+Cc: Sam Ravnborg <sam@ravnborg.org>
+Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com>
+Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220518233844.248504-1-marex@denx.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/tools/rtla/Makefile | 14 ++++++++++++-
- tools/tracing/rtla/Makefile       | 35 +++++++++++++++++++++++++++++++
- 2 files changed, 48 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/bridge/ti-sn65dsi83.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/tools/rtla/Makefile b/Documentation/tools/rtla/Makefile
-index 9f2b84af1a6c..093af6d7a0e9 100644
---- a/Documentation/tools/rtla/Makefile
-+++ b/Documentation/tools/rtla/Makefile
-@@ -17,9 +17,21 @@ DOC_MAN1	= $(addprefix $(OUTPUT),$(_DOC_MAN1))
- RST2MAN_DEP	:= $(shell command -v rst2man 2>/dev/null)
- RST2MAN_OPTS	+= --verbose
+diff --git a/drivers/gpu/drm/bridge/ti-sn65dsi83.c b/drivers/gpu/drm/bridge/ti-sn65dsi83.c
+index 314a84ffcea3..1b7eeefe6784 100644
+--- a/drivers/gpu/drm/bridge/ti-sn65dsi83.c
++++ b/drivers/gpu/drm/bridge/ti-sn65dsi83.c
+@@ -560,7 +560,7 @@ static int sn65dsi83_parse_dt(struct sn65dsi83 *ctx, enum sn65dsi83_model model)
+ 	ctx->host_node = of_graph_get_remote_port_parent(endpoint);
+ 	of_node_put(endpoint);
  
-+TEST_RST2MAN = $(shell sh -c "rst2man --version > /dev/null 2>&1 || echo n")
-+
- $(OUTPUT)%.1: %.rst
- ifndef RST2MAN_DEP
--	$(error "rst2man not found, but required to generate man pages")
-+	$(info ********************************************)
-+	$(info ** NOTICE: rst2man not found)
-+	$(info **)
-+	$(info ** Consider installing the latest rst2man from your)
-+	$(info ** distribution, e.g., 'dnf install python3-docutils' on Fedora,)
-+	$(info ** or from source:)
-+	$(info **)
-+	$(info **  https://docutils.sourceforge.io/docs/dev/repository.html )
-+	$(info **)
-+	$(info ********************************************)
-+	$(error NOTICE: rst2man required to generate man pages)
- endif
- 	rst2man $(RST2MAN_OPTS) $< > $@
- 
-diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
-index 4b635d4de018..32ed2e7535c5 100644
---- a/tools/tracing/rtla/Makefile
-+++ b/tools/tracing/rtla/Makefile
-@@ -58,6 +58,41 @@ else
- DOCSRC	=	$(SRCTREE)/../../../Documentation/tools/rtla/
- endif
- 
-+LIBTRACEEVENT_MIN_VERSION = 1.5
-+LIBTRACEFS_MIN_VERSION = 1.3
-+
-+TEST_LIBTRACEEVENT = $(shell sh -c "$(PKG_CONFIG) --atleast-version $(LIBTRACEEVENT_MIN_VERSION) libtraceevent > /dev/null 2>&1 || echo n")
-+ifeq ("$(TEST_LIBTRACEEVENT)", "n")
-+.PHONY: warning_traceevent
-+warning_traceevent:
-+	@echo "********************************************"
-+	@echo "** NOTICE: libtraceevent version $(LIBTRACEEVENT_MIN_VERSION) or higher not found"
-+	@echo "**"
-+	@echo "** Consider installing the latest libtraceevent from your"
-+	@echo "** distribution, e.g., 'dnf install libtraceevent' on Fedora,"
-+	@echo "** or from source:"
-+	@echo "**"
-+	@echo "**  https://git.kernel.org/pub/scm/libs/libtrace/libtraceevent.git/ "
-+	@echo "**"
-+	@echo "********************************************"
-+endif
-+
-+TEST_LIBTRACEFS = $(shell sh -c "$(PKG_CONFIG) --atleast-version $(LIBTRACEFS_MIN_VERSION) libtracefs > /dev/null 2>&1 || echo n")
-+ifeq ("$(TEST_LIBTRACEFS)", "n")
-+.PHONY: warning_tracefs
-+warning_tracefs:
-+	@echo "********************************************"
-+	@echo "** NOTICE: libtracefs version $(LIBTRACEFS_MIN_VERSION) or higher not found"
-+	@echo "**"
-+	@echo "** Consider installing the latest libtracefs from your"
-+	@echo "** distribution, e.g., 'dnf install libtracefs' on Fedora,"
-+	@echo "** or from source:"
-+	@echo "**"
-+	@echo "**  https://git.kernel.org/pub/scm/libs/libtrace/libtracefs.git/ "
-+	@echo "**"
-+	@echo "********************************************"
-+endif
-+
- .PHONY:	all
- all:	rtla
- 
+-	if (ctx->dsi_lanes < 0 || ctx->dsi_lanes > 4) {
++	if (ctx->dsi_lanes <= 0 || ctx->dsi_lanes > 4) {
+ 		ret = -EINVAL;
+ 		goto err_put_node;
+ 	}
 -- 
 2.35.1
 
