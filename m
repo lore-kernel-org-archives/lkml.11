@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45677C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:53:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDA0CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:53:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244542AbiFMKw7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:52:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59012 "EHLO
+        id S1346915AbiFMKxE (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:53:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348762AbiFMKtf (ORCPT
+        with ESMTP id S1348794AbiFMKtg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:49:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98AAC2E692;
-        Mon, 13 Jun 2022 03:27:11 -0700 (PDT)
+        Mon, 13 Jun 2022 06:49:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B4212E6A2;
+        Mon, 13 Jun 2022 03:27:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2F10FB80E94;
-        Mon, 13 Jun 2022 10:27:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88246C34114;
-        Mon, 13 Jun 2022 10:27:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D91E60AEB;
+        Mon, 13 Jun 2022 10:27:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C4CBC34114;
+        Mon, 13 Jun 2022 10:27:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116028;
-        bh=+wk2EABwxlb5J2SZ0+gM5lgp+xcxklX2wYWqEH/OWII=;
+        s=korg; t=1655116031;
+        bh=2p8gEQy7N4nmmIhZpnKGXvMKWI0J2oK3wHed5skNLhI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0YWipDs7Skjz/5u8JV1y3Xhto6FwlTfqrFvjCeBnKgibmAqn3dZ/qWUBlwP6zPTzX
-         mqP3m8H+X9alvhqo4pCmWp9eAZ/2OfxwI4SfkUuyJ0ZFdDn2qB93ap4cB3Ya3UqS9P
-         jINeTU8QGJbN9UbWsKREq5dYIY0g7Am1iVLkXV9k=
+        b=d20CYm/PL/Vjl/XXrxI3ghYQYxQg4yOvgpz6dQLM3D5CfGEzt7KlTvju3BUjdY5xS
+         sHSBcaWl4G4A9eRM7UBUlDmG7YzISRMkqt6fU5svwHdoIzWe0zSgBw+7A3+6ZHSTJA
+         EDkZ+i22hD3wt90b8cXQJkCuI/OVEPQ3vDgGCwKY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
-        Kees Cook <keescook@chromium.org>,
-        Oleg Nesterov <oleg@redhat.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.4 009/411] ptrace: Reimplement PTRACE_KILL by always sending SIGKILL
-Date:   Mon, 13 Jun 2022 12:04:42 +0200
-Message-Id: <20220613094928.775306086@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>, Marc Zyngier <maz@kernel.org>
+Subject: [PATCH 4.14 120/218] irqchip/armada-370-xp: Do not touch Performance Counter Overflow on A375, A38x, A39x
+Date:   Mon, 13 Jun 2022 12:09:38 +0200
+Message-Id: <20220613094924.210937845@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,71 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric W. Biederman <ebiederm@xmission.com>
+From: Pali Rohár <pali@kernel.org>
 
-commit 6a2d90ba027adba528509ffa27097cffd3879257 upstream.
+commit a3d66a76348daf559873f19afc912a2a7c2ccdaf upstream.
 
-The current implementation of PTRACE_KILL is buggy and has been for
-many years as it assumes it's target has stopped in ptrace_stop.  At a
-quick skim it looks like this assumption has existed since ptrace
-support was added in linux v1.0.
+Register ARMADA_370_XP_INT_FABRIC_MASK_OFFS is Armada 370 and XP specific
+and on new Armada platforms it has different meaning. It does not configure
+Performance Counter Overflow interrupt masking. So do not touch this
+register on non-A370/XP platforms (A375, A38x and A39x).
 
-While PTRACE_KILL has been deprecated we can not remove it as
-a quick search with google code search reveals many existing
-programs calling it.
-
-When the ptracee is not stopped at ptrace_stop some fields would be
-set that are ignored except in ptrace_stop.  Making the userspace
-visible behavior of PTRACE_KILL a noop in those case.
-
-As the usual rules are not obeyed it is not clear what the
-consequences are of calling PTRACE_KILL on a running process.
-Presumably userspace does not do this as it achieves nothing.
-
-Replace the implementation of PTRACE_KILL with a simple
-send_sig_info(SIGKILL) followed by a return 0.  This changes the
-observable user space behavior only in that PTRACE_KILL on a process
-not stopped in ptrace_stop will also kill it.  As that has always
-been the intent of the code this seems like a reasonable change.
-
+Signed-off-by: Pali Rohár <pali@kernel.org>
 Cc: stable@vger.kernel.org
-Reported-by: Al Viro <viro@zeniv.linux.org.uk>
-Suggested-by: Al Viro <viro@zeniv.linux.org.uk>
-Tested-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: Oleg Nesterov <oleg@redhat.com>
-Link: https://lkml.kernel.org/r/20220505182645.497868-7-ebiederm@xmission.com
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Fixes: 28da06dfd9e4 ("irqchip: armada-370-xp: Enable the PMU interrupts")
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220425113706.29310-1-pali@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/step.c |    3 +--
- kernel/ptrace.c        |    5 ++---
- 2 files changed, 3 insertions(+), 5 deletions(-)
+ drivers/irqchip/irq-armada-370-xp.c |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
---- a/arch/x86/kernel/step.c
-+++ b/arch/x86/kernel/step.c
-@@ -175,8 +175,7 @@ void set_task_blockstep(struct task_stru
- 	 *
- 	 * NOTE: this means that set/clear TIF_BLOCKSTEP is only safe if
- 	 * task is current or it can't be running, otherwise we can race
--	 * with __switch_to_xtra(). We rely on ptrace_freeze_traced() but
--	 * PTRACE_KILL is not safe.
-+	 * with __switch_to_xtra(). We rely on ptrace_freeze_traced().
- 	 */
- 	local_irq_disable();
- 	debugctl = get_debugctlmsr();
---- a/kernel/ptrace.c
-+++ b/kernel/ptrace.c
-@@ -1219,9 +1219,8 @@ int ptrace_request(struct task_struct *c
- 		return ptrace_resume(child, request, data);
+--- a/drivers/irqchip/irq-armada-370-xp.c
++++ b/drivers/irqchip/irq-armada-370-xp.c
+@@ -392,7 +392,16 @@ static void armada_xp_mpic_smp_cpu_init(
  
- 	case PTRACE_KILL:
--		if (child->exit_state)	/* already dead */
--			return 0;
--		return ptrace_resume(child, request, SIGKILL);
-+		send_sig_info(SIGKILL, SEND_SIG_NOINFO, child);
-+		return 0;
+ static void armada_xp_mpic_perf_init(void)
+ {
+-	unsigned long cpuid = cpu_logical_map(smp_processor_id());
++	unsigned long cpuid;
++
++	/*
++	 * This Performance Counter Overflow interrupt is specific for
++	 * Armada 370 and XP. It is not available on Armada 375, 38x and 39x.
++	 */
++	if (!of_machine_is_compatible("marvell,armada-370-xp"))
++		return;
++
++	cpuid = cpu_logical_map(smp_processor_id());
  
- #ifdef CONFIG_HAVE_ARCH_TRACEHOOK
- 	case PTRACE_GETREGSET:
+ 	/* Enable Performance Counter Overflow interrupts */
+ 	writel(ARMADA_370_XP_INT_CAUSE_PERF(cpuid),
 
 
