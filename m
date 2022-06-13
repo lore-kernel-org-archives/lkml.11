@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF1C7C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:05:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A0F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:05:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351108AbiFMLDV (ORCPT
+        id S1351132AbiFMLDZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:03:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44072 "EHLO
+        Mon, 13 Jun 2022 07:03:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350542AbiFMKy5 (ORCPT
+        with ESMTP id S1350539AbiFMKy5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 06:54:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13F3D21255;
-        Mon, 13 Jun 2022 03:31:38 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2537E21257;
+        Mon, 13 Jun 2022 03:31:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BD181B80EA7;
-        Mon, 13 Jun 2022 10:31:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D113C34114;
-        Mon, 13 Jun 2022 10:31:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B49FE60EF5;
+        Mon, 13 Jun 2022 10:31:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C303BC34114;
+        Mon, 13 Jun 2022 10:31:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116295;
-        bh=NYXfqZ1HeJVoDcZHWihxR8rS6ByUyPeh1j4e3NSlOOU=;
+        s=korg; t=1655116298;
+        bh=oMk0Ft44FqbK0peOx4FqfoOomQEWe7BHGqVBQiA0TKU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xtuV+81SmgE1W+0TCWAfp0ZguC0S5XUcbk9C+V9VKSHByaVllpmDuQQIZ0OJcTTzr
-         ru2XS3JNLPo4XqVW+VHcHItSWiyI39Wxxqqqoqdu3JCBiqH/wtzV0oXXXnSaM2Iyb2
-         5wRUaWgbieHVnDXTwtbbKof5W6rVR7xqPNkh76ls=
+        b=LnsZiuq5oxHYHlTVDntDSfnceH62CS037cqeQe1Q4Tk1iKM/NHpcIUa0CCDmFC/qH
+         r3L9jZmaV1CErzmmOjigcD08y/IIYxFOSiYIZDhfxEtYS7IQ2t+tLKoaZmWZihZeVf
+         KkxwijvtoiVqC6eDoAxQ941WnZOz9siV9oiUOwWY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 050/411] media: coda: limit frame interval enumeration to supported encoder frame sizes
-Date:   Mon, 13 Jun 2022 12:05:23 +0200
-Message-Id: <20220613094930.011374650@linuxfoundation.org>
+Subject: [PATCH 4.14 157/218] clocksource/drivers/oxnas-rps: Fix irq_of_parse_and_map() return value
+Date:   Mon, 13 Jun 2022 12:10:15 +0200
+Message-Id: <20220613094925.356234208@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,67 +52,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Philipp Zabel <p.zabel@pengutronix.de>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit 67e33dd957880879e785cfea83a3aa24bd5c5577 ]
+[ Upstream commit 9c04a8ff03def4df3f81219ffbe1ec9b44ff5348 ]
 
-Let VIDIOC_ENUM_FRAMEINTERVALS return -EINVAL if userspace queries
-frame intervals for frame sizes unsupported by the encoder. Fixes the
-following v4l2-compliance failure:
+The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
 
-		fail: v4l2-test-formats.cpp(123): found frame intervals for invalid size 47x16
-		fail: v4l2-test-formats.cpp(282): node->codec_mask & STATEFUL_ENCODER
-	test VIDIOC_ENUM_FMT/FRAMESIZES/FRAMEINTERVALS: FAIL
-
-[hverkuil: drop incorrect 'For decoder devices, return -ENOTTY.' in the commit log]
-
-Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: 89355274e1f7 ("clocksource/drivers/oxnas-rps: Add Oxford Semiconductor RPS Dual Timer")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220422104101.55754-1-krzysztof.kozlowski@linaro.org
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/coda/coda-common.c | 20 ++++++++++++++------
- 1 file changed, 14 insertions(+), 6 deletions(-)
+ drivers/clocksource/timer-oxnas-rps.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/coda/coda-common.c b/drivers/media/platform/coda/coda-common.c
-index 0adc54832657..fb469340634b 100644
---- a/drivers/media/platform/coda/coda-common.c
-+++ b/drivers/media/platform/coda/coda-common.c
-@@ -1192,7 +1192,8 @@ static int coda_enum_frameintervals(struct file *file, void *fh,
- 				    struct v4l2_frmivalenum *f)
- {
- 	struct coda_ctx *ctx = fh_to_ctx(fh);
--	int i;
-+	struct coda_q_data *q_data;
-+	const struct coda_codec *codec;
- 
- 	if (f->index)
- 		return -EINVAL;
-@@ -1201,12 +1202,19 @@ static int coda_enum_frameintervals(struct file *file, void *fh,
- 	if (!ctx->vdoa && f->pixel_format == V4L2_PIX_FMT_YUYV)
- 		return -EINVAL;
- 
--	for (i = 0; i < CODA_MAX_FORMATS; i++) {
--		if (f->pixel_format == ctx->cvd->src_formats[i] ||
--		    f->pixel_format == ctx->cvd->dst_formats[i])
--			break;
-+	if (coda_format_normalize_yuv(f->pixel_format) == V4L2_PIX_FMT_YUV420) {
-+		q_data = get_q_data(ctx, V4L2_BUF_TYPE_VIDEO_CAPTURE);
-+		codec = coda_find_codec(ctx->dev, f->pixel_format,
-+					q_data->fourcc);
-+	} else {
-+		codec = coda_find_codec(ctx->dev, V4L2_PIX_FMT_YUV420,
-+					f->pixel_format);
+diff --git a/drivers/clocksource/timer-oxnas-rps.c b/drivers/clocksource/timer-oxnas-rps.c
+index 30c6f4ce672b..cfcd54e66c57 100644
+--- a/drivers/clocksource/timer-oxnas-rps.c
++++ b/drivers/clocksource/timer-oxnas-rps.c
+@@ -247,7 +247,7 @@ static int __init oxnas_rps_timer_init(struct device_node *np)
  	}
--	if (i == CODA_MAX_FORMATS)
-+	if (!codec)
-+		return -EINVAL;
-+
-+	if (f->width < MIN_W || f->width > codec->max_w ||
-+	    f->height < MIN_H || f->height > codec->max_h)
- 		return -EINVAL;
  
- 	f->type = V4L2_FRMIVAL_TYPE_CONTINUOUS;
+ 	rps->irq = irq_of_parse_and_map(np, 0);
+-	if (rps->irq < 0) {
++	if (!rps->irq) {
+ 		ret = -EINVAL;
+ 		goto err_iomap;
+ 	}
 -- 
 2.35.1
 
