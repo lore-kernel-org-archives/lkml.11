@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 018DAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:47:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A48C6C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:47:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344190AbiFMKrH (ORCPT
+        id S1344254AbiFMKrQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:47:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36796 "EHLO
+        Mon, 13 Jun 2022 06:47:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346569AbiFMKno (ORCPT
+        with ESMTP id S1346797AbiFMKns (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:43:44 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30BE2FFF;
-        Mon, 13 Jun 2022 03:24:52 -0700 (PDT)
+        Mon, 13 Jun 2022 06:43:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95FB7DEC1;
+        Mon, 13 Jun 2022 03:24:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 959C2CE1109;
-        Mon, 13 Jun 2022 10:24:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84FFCC34114;
-        Mon, 13 Jun 2022 10:24:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 55935B80E93;
+        Mon, 13 Jun 2022 10:24:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF96CC34114;
+        Mon, 13 Jun 2022 10:24:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115888;
-        bh=yrnvNt3mBGcTyTnYbe9fuKCX7u3g6VgmVXCkSxqM1I4=;
+        s=korg; t=1655115897;
+        bh=1m6/EIMpGD2Yh5Dld9xGWKJ9tHNx3A1+nVUUHQqiN/A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m61JzMvW0tOhr+CJWymNhkt3jmzf2pg9bC+389A/C+AI+bPoIN5hM13JAI6MfXBm4
-         7IxHo+B4j60V+6BXotOcgvBBFl8/TdqKOSPTf+iltnhelB0BG2ufhWdvatGD8RgU+N
-         BGXZ0KCldi/Lnd7O3uFq6xbvDTIcXe0Sf9vKSnhU=
+        b=zGmGClYmWVkFpQo5v0vcgysCkqFT7AirI1VtPM6Y7Ro5xhqhzO6+orwXSgx7xAl8t
+         moVYlN1HMW2bLQPsnSlrcyMusPDcHAmdltvNZlxG89KTyRBs9ruyy9gKvvGfGRVgBX
+         1Kq+pohHZn1yn40IcT7mDkd/lgGsiKRjIkEs18zM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 067/218] x86/mm: Cleanup the control_va_addr_alignment() __setup handler
-Date:   Mon, 13 Jun 2022 12:08:45 +0200
-Message-Id: <20220613094922.030609560@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 070/218] ASoC: mxs-saif: Fix refcount leak in mxs_saif_probe
+Date:   Mon, 13 Jun 2022 12:08:48 +0200
+Message-Id: <20220613094922.260176242@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -50,57 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 1ef64b1e89e6d4018da46e08ffc32779a31160c7 ]
+[ Upstream commit 2be84f73785fa9ed6443e3c5b158730266f1c2ee ]
 
-Clean up control_va_addr_alignment():
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
 
-a. Make '=' required instead of optional (as documented).
-b. Print a warning if an invalid option value is used.
-c. Return 1 from the __setup handler when an invalid option value is
-   used. This prevents the kernel from polluting init's (limited)
-   environment space with the entire string.
-
-Fixes: dfb09f9b7ab0 ("x86, amd: Avoid cache aliasing penalties on AMD family 15h")
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Link: https://lore.kernel.org/r/20220315001045.7680-1-rdunlap@infradead.org
+Fixes: 08641c7c74dd ("ASoC: mxs: add device tree support for mxs-saif")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220511133725.39039-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/sys_x86_64.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ sound/soc/mxs/mxs-saif.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/x86/kernel/sys_x86_64.c b/arch/x86/kernel/sys_x86_64.c
-index a63fe77b3217..7a08c42770f1 100644
---- a/arch/x86/kernel/sys_x86_64.c
-+++ b/arch/x86/kernel/sys_x86_64.c
-@@ -70,9 +70,6 @@ static int __init control_va_addr_alignment(char *str)
- 	if (*str == 0)
- 		return 1;
- 
--	if (*str == '=')
--		str++;
--
- 	if (!strcmp(str, "32"))
- 		va_align.flags = ALIGN_VA_32;
- 	else if (!strcmp(str, "64"))
-@@ -82,11 +79,11 @@ static int __init control_va_addr_alignment(char *str)
- 	else if (!strcmp(str, "on"))
- 		va_align.flags = ALIGN_VA_32 | ALIGN_VA_64;
- 	else
--		return 0;
-+		pr_warn("invalid option value: 'align_va_addr=%s'\n", str);
- 
- 	return 1;
- }
--__setup("align_va_addr", control_va_addr_alignment);
-+__setup("align_va_addr=", control_va_addr_alignment);
- 
- SYSCALL_DEFINE6(mmap, unsigned long, addr, unsigned long, len,
- 		unsigned long, prot, unsigned long, flags,
+diff --git a/sound/soc/mxs/mxs-saif.c b/sound/soc/mxs/mxs-saif.c
+index 93c019670199..6d0ab4e75518 100644
+--- a/sound/soc/mxs/mxs-saif.c
++++ b/sound/soc/mxs/mxs-saif.c
+@@ -780,6 +780,7 @@ static int mxs_saif_probe(struct platform_device *pdev)
+ 		saif->master_id = saif->id;
+ 	} else {
+ 		ret = of_alias_get_id(master, "saif");
++		of_node_put(master);
+ 		if (ret < 0)
+ 			return ret;
+ 		else
 -- 
 2.35.1
 
