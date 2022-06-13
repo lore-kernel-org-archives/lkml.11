@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47F6AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:02:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 313ABC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:02:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358255AbiFMMCH (ORCPT
+        id S1357705AbiFMMCL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:02:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41646 "EHLO
+        Mon, 13 Jun 2022 08:02:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358261AbiFML7u (ORCPT
+        with ESMTP id S1358333AbiFML7y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:59:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 767C24ECDC;
-        Mon, 13 Jun 2022 03:56:42 -0700 (PDT)
+        Mon, 13 Jun 2022 07:59:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87B4A4EDDC;
+        Mon, 13 Jun 2022 03:56:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B65DFB80EA7;
-        Mon, 13 Jun 2022 10:56:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 228CAC34114;
-        Mon, 13 Jun 2022 10:56:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF149B80E59;
+        Mon, 13 Jun 2022 10:56:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AB1FC34114;
+        Mon, 13 Jun 2022 10:56:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117799;
-        bh=xdUVS0UXo5viC8etmCAS4nxoVeNtE4l25Cffe82lp9Q=;
+        s=korg; t=1655117807;
+        bh=3zDC/wusC0S4dkQIytJhqdvNtHRfRSp+Vt7pGn2a0Fc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DAgDHrW/awoANs7bz6xNlFnh7NarecB5pMoEVigpWbqrsrXFfOJndc4whEGWGK+nw
-         du9TewF5ahVnOe7Fp/jwi4t8uAn3HDftEhcV5i2cufLoNxS4mC5Hhmh0gD0zPge2my
-         mvZz/bLkMX9gv1EUn1yznpDRc0VFeQzbP26eoopg=
+        b=rr04EeLPJfZ4AeiyknbrSyElADJIsqrrhYLzTvQmzvKCsRTo3Fz5ekKEU96szkKJQ
+         W1LNNeSwRHuC5xwrkJwB8Sp0nkZKYA71QS+6P4U4G9tEG8SsXsujdWtpxNBMF9eICZ
+         669il1FPSVgjrpfNGKznedWu1bxQvo9d2fzC2ouE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Olga Kornievskaia <aglo@umich.edu>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        stable@vger.kernel.org, Qi Zheng <zhengqi.arch@bytedance.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Akinobu Mita <akinobu.mita@gmail.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 136/287] NFSv4/pNFS: Do not fail I/O when we fail to allocate the pNFS layout
-Date:   Mon, 13 Jun 2022 12:09:20 +0200
-Message-Id: <20220613094928.002821233@linuxfoundation.org>
+Subject: [PATCH 4.19 126/287] tty: fix deadlock caused by calling printk() under tty_port->lock
+Date:   Mon, 13 Jun 2022 12:09:10 +0200
+Message-Id: <20220613094927.700994602@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -51,45 +54,141 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Qi Zheng <zhengqi.arch@bytedance.com>
 
-[ Upstream commit 3764a17e31d579cf9b4bd0a69894b577e8d75702 ]
+[ Upstream commit 6b9dbedbe3499fef862c4dff5217cf91f34e43b3 ]
 
-Commit 587f03deb69b caused pnfs_update_layout() to stop returning ENOMEM
-when the memory allocation fails, and hence causes it to fall back to
-trying to do I/O through the MDS. There is no guarantee that this will
-fare any better. If we're failing the pNFS layout allocation, then we
-should just redirty the page and retry later.
+pty_write() invokes kmalloc() which may invoke a normal printk() to print
+failure message.  This can cause a deadlock in the scenario reported by
+syz-bot below:
 
-Reported-by: Olga Kornievskaia <aglo@umich.edu>
-Fixes: 587f03deb69b ("pnfs: refactor send_layoutget")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+       CPU0              CPU1                    CPU2
+       ----              ----                    ----
+                         lock(console_owner);
+                                                 lock(&port_lock_key);
+  lock(&port->lock);
+                         lock(&port_lock_key);
+                                                 lock(&port->lock);
+  lock(console_owner);
+
+As commit dbdda842fe96 ("printk: Add console owner and waiter logic to
+load balance console writes") said, such deadlock can be prevented by
+using printk_deferred() in kmalloc() (which is invoked in the section
+guarded by the port->lock).  But there are too many printk() on the
+kmalloc() path, and kmalloc() can be called from anywhere, so changing
+printk() to printk_deferred() is too complicated and inelegant.
+
+Therefore, this patch chooses to specify __GFP_NOWARN to kmalloc(), so
+that printk() will not be called, and this deadlock problem can be
+avoided.
+
+Syzbot reported the following lockdep error:
+
+======================================================
+WARNING: possible circular locking dependency detected
+5.4.143-00237-g08ccc19a-dirty #10 Not tainted
+------------------------------------------------------
+syz-executor.4/29420 is trying to acquire lock:
+ffffffff8aedb2a0 (console_owner){....}-{0:0}, at: console_trylock_spinning kernel/printk/printk.c:1752 [inline]
+ffffffff8aedb2a0 (console_owner){....}-{0:0}, at: vprintk_emit+0x2ca/0x470 kernel/printk/printk.c:2023
+
+but task is already holding lock:
+ffff8880119c9158 (&port->lock){-.-.}-{2:2}, at: pty_write+0xf4/0x1f0 drivers/tty/pty.c:120
+
+which lock already depends on the new lock.
+
+the existing dependency chain (in reverse order) is:
+
+-> #2 (&port->lock){-.-.}-{2:2}:
+       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+       _raw_spin_lock_irqsave+0x35/0x50 kernel/locking/spinlock.c:159
+       tty_port_tty_get drivers/tty/tty_port.c:288 [inline]          		<-- lock(&port->lock);
+       tty_port_default_wakeup+0x1d/0xb0 drivers/tty/tty_port.c:47
+       serial8250_tx_chars+0x530/0xa80 drivers/tty/serial/8250/8250_port.c:1767
+       serial8250_handle_irq.part.0+0x31f/0x3d0 drivers/tty/serial/8250/8250_port.c:1854
+       serial8250_handle_irq drivers/tty/serial/8250/8250_port.c:1827 [inline] 	<-- lock(&port_lock_key);
+       serial8250_default_handle_irq+0xb2/0x220 drivers/tty/serial/8250/8250_port.c:1870
+       serial8250_interrupt+0xfd/0x200 drivers/tty/serial/8250/8250_core.c:126
+       __handle_irq_event_percpu+0x109/0xa50 kernel/irq/handle.c:156
+       [...]
+
+-> #1 (&port_lock_key){-.-.}-{2:2}:
+       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+       _raw_spin_lock_irqsave+0x35/0x50 kernel/locking/spinlock.c:159
+       serial8250_console_write+0x184/0xa40 drivers/tty/serial/8250/8250_port.c:3198
+										<-- lock(&port_lock_key);
+       call_console_drivers kernel/printk/printk.c:1819 [inline]
+       console_unlock+0x8cb/0xd00 kernel/printk/printk.c:2504
+       vprintk_emit+0x1b5/0x470 kernel/printk/printk.c:2024			<-- lock(console_owner);
+       vprintk_func+0x8d/0x250 kernel/printk/printk_safe.c:394
+       printk+0xba/0xed kernel/printk/printk.c:2084
+       register_console+0x8b3/0xc10 kernel/printk/printk.c:2829
+       univ8250_console_init+0x3a/0x46 drivers/tty/serial/8250/8250_core.c:681
+       console_init+0x49d/0x6d3 kernel/printk/printk.c:2915
+       start_kernel+0x5e9/0x879 init/main.c:713
+       secondary_startup_64+0xa4/0xb0 arch/x86/kernel/head_64.S:241
+
+-> #0 (console_owner){....}-{0:0}:
+       [...]
+       lock_acquire+0x127/0x340 kernel/locking/lockdep.c:4734
+       console_trylock_spinning kernel/printk/printk.c:1773 [inline]		<-- lock(console_owner);
+       vprintk_emit+0x307/0x470 kernel/printk/printk.c:2023
+       vprintk_func+0x8d/0x250 kernel/printk/printk_safe.c:394
+       printk+0xba/0xed kernel/printk/printk.c:2084
+       fail_dump lib/fault-inject.c:45 [inline]
+       should_fail+0x67b/0x7c0 lib/fault-inject.c:144
+       __should_failslab+0x152/0x1c0 mm/failslab.c:33
+       should_failslab+0x5/0x10 mm/slab_common.c:1224
+       slab_pre_alloc_hook mm/slab.h:468 [inline]
+       slab_alloc_node mm/slub.c:2723 [inline]
+       slab_alloc mm/slub.c:2807 [inline]
+       __kmalloc+0x72/0x300 mm/slub.c:3871
+       kmalloc include/linux/slab.h:582 [inline]
+       tty_buffer_alloc+0x23f/0x2a0 drivers/tty/tty_buffer.c:175
+       __tty_buffer_request_room+0x156/0x2a0 drivers/tty/tty_buffer.c:273
+       tty_insert_flip_string_fixed_flag+0x93/0x250 drivers/tty/tty_buffer.c:318
+       tty_insert_flip_string include/linux/tty_flip.h:37 [inline]
+       pty_write+0x126/0x1f0 drivers/tty/pty.c:122				<-- lock(&port->lock);
+       n_tty_write+0xa7a/0xfc0 drivers/tty/n_tty.c:2356
+       do_tty_write drivers/tty/tty_io.c:961 [inline]
+       tty_write+0x512/0x930 drivers/tty/tty_io.c:1045
+       __vfs_write+0x76/0x100 fs/read_write.c:494
+       [...]
+
+other info that might help us debug this:
+
+Chain exists of:
+  console_owner --> &port_lock_key --> &port->lock
+
+Link: https://lkml.kernel.org/r/20220511061951.1114-2-zhengqi.arch@bytedance.com
+Link: https://lkml.kernel.org/r/20220510113809.80626-2-zhengqi.arch@bytedance.com
+Fixes: b6da31b2c07c ("tty: Fix data race in tty_insert_flip_string_fixed_flag")
+Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
+Acked-by: Jiri Slaby <jirislaby@kernel.org>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Akinobu Mita <akinobu.mita@gmail.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/pnfs.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/tty_buffer.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/fs/nfs/pnfs.c b/fs/nfs/pnfs.c
-index 0f1c15859418..a7d638bfb46b 100644
---- a/fs/nfs/pnfs.c
-+++ b/fs/nfs/pnfs.c
-@@ -1897,6 +1897,7 @@ pnfs_update_layout(struct inode *ino,
- 	lo = pnfs_find_alloc_layout(ino, ctx, gfp_flags);
- 	if (lo == NULL) {
- 		spin_unlock(&ino->i_lock);
-+		lseg = ERR_PTR(-ENOMEM);
- 		trace_pnfs_update_layout(ino, pos, count, iomode, lo, lseg,
- 				 PNFS_UPDATE_LAYOUT_NOMEM);
- 		goto out;
-@@ -2024,6 +2025,7 @@ pnfs_update_layout(struct inode *ino,
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index 6b0cb633679d..dfe0c8c22cd3 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -167,7 +167,8 @@ static struct tty_buffer *tty_buffer_alloc(struct tty_port *port, size_t size)
+ 	   have queued and recycle that ? */
+ 	if (atomic_read(&port->buf.mem_used) > port->buf.mem_limit)
+ 		return NULL;
+-	p = kmalloc(sizeof(struct tty_buffer) + 2 * size, GFP_ATOMIC);
++	p = kmalloc(sizeof(struct tty_buffer) + 2 * size,
++		    GFP_ATOMIC | __GFP_NOWARN);
+ 	if (p == NULL)
+ 		return NULL;
  
- 	lgp = pnfs_alloc_init_layoutget_args(ino, ctx, &stateid, &arg, gfp_flags);
- 	if (!lgp) {
-+		lseg = ERR_PTR(-ENOMEM);
- 		trace_pnfs_update_layout(ino, pos, count, iomode, lo, NULL,
- 					 PNFS_UPDATE_LAYOUT_NOMEM);
- 		nfs_layoutget_end(lo);
 -- 
 2.35.1
 
