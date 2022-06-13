@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32F57C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:16:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86BCFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:16:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359493AbiFMNQH (ORCPT
+        id S1359576AbiFMNQM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:16:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37404 "EHLO
+        Mon, 13 Jun 2022 09:16:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359272AbiFMNJp (ORCPT
+        with ESMTP id S1359274AbiFMNJp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 09:09:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7AF2222AF;
-        Mon, 13 Jun 2022 04:19:51 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF149765E;
+        Mon, 13 Jun 2022 04:19:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8DCF2B80E59;
-        Mon, 13 Jun 2022 11:19:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F38E1C3411C;
-        Mon, 13 Jun 2022 11:19:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7651FB80D31;
+        Mon, 13 Jun 2022 11:19:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3F9EC3411E;
+        Mon, 13 Jun 2022 11:19:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119189;
-        bh=1hJPOJGNIcXFSa9CLjtVS0gJeJaw4SwglJArfgbQavk=;
+        s=korg; t=1655119192;
+        bh=CEpjbcmExVzwCDja6tm1KJGkaef2pBcfEFZdREugcso=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eIZ5jgEQcRVnBbReHZVDZcZ8ZtUdZt9tlsoQEwBfIOA2kNg7f4h4cxMrJPUD1ZtNd
-         fT/X4vAtwViOEiSOwsY3c99eLeHvE7ocndNpCubHjDxWCRYBei2sgqZ6ZOfF4NEzOy
-         eGvkxHVDSHCvVDoWYV9/pPxh6cUQ6keJ03xFKEAk=
+        b=oaaWyeBdZJRAo82kUKg36CTbCSdEmDuN4JvYcrRnfRe8iAz77s8rZdpHKyMzw3STM
+         yXielEBaCjLvL0C5ctogaFHBv8DIigPj/VC9Y9ozCi4XR/vSPLNmrhddru4so31cCa
+         wIi45p5M/eZhZ164rrgPFhzFXvH0LdBlrM2ahOG0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brad Campbell <lists2009@fnarfbargle.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 173/247] thunderbolt: Use different lane for second DisplayPort tunnel
-Date:   Mon, 13 Jun 2022 12:11:15 +0200
-Message-Id: <20220613094928.204365827@linuxfoundation.org>
+Subject: [PATCH 5.15 174/247] drivers: staging: rtl8192u: Fix deadlock in ieee80211_beacons_stop()
+Date:   Mon, 13 Jun 2022 12:11:16 +0200
+Message-Id: <20220613094928.234956324@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,216 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 9d2d0a5cf0ca063f417681cc33e767ce52615286 ]
+[ Upstream commit 806c7b53414934ba2a39449b31fd1a038e500273 ]
 
-Brad reported that on Apple hardware with Light Ridge or Falcon Ridge
-controller, plugging in a chain of Thunderbolt displays (Light Ridge
-based controllers) causes all kinds of tearing and flickering. The
-reason for this is that on Thunderbolt 1 hardware there is no lane
-bonding so we have two independent 10 Gb/s lanes, and currently Linux
-tunnels both displays through the lane 1. This makes the displays to
-share the 10 Gb/s bandwidth which may not be enough for higher
-resolutions.
+There is a deadlock in ieee80211_beacons_stop(), which is shown below:
 
-For this reason make the second tunnel go through the lane 0 instead.
-This seems to match what the macOS connection manager is also doing.
+   (Thread 1)              |      (Thread 2)
+                           | ieee80211_send_beacon()
+ieee80211_beacons_stop()   |  mod_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | ieee80211_send_beacon_cb()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
 
-Reported-by: Brad Campbell <lists2009@fnarfbargle.com>
-Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Tested-by: Brad Campbell <lists2009@fnarfbargle.com>
+We hold ieee->beacon_lock in position (1) of thread 1 and use
+del_timer_sync() to wait timer to stop, but timer handler
+also need ieee->beacon_lock in position (2) of thread 2.
+As a result, ieee80211_beacons_stop() will block forever.
+
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irqsave(), which could let timer handler to obtain
+the needed lock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417135407.109536-1-duoming@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/thunderbolt/tb.c     | 19 +++++++++++++++++--
- drivers/thunderbolt/test.c   | 16 ++++++++--------
- drivers/thunderbolt/tunnel.c | 11 ++++++-----
- drivers/thunderbolt/tunnel.h |  4 ++--
- 4 files changed, 33 insertions(+), 17 deletions(-)
+ drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/thunderbolt/tb.c b/drivers/thunderbolt/tb.c
-index 2897a77d44c3..b805b6939794 100644
---- a/drivers/thunderbolt/tb.c
-+++ b/drivers/thunderbolt/tb.c
-@@ -851,7 +851,7 @@ static struct tb_port *tb_find_dp_out(struct tb *tb, struct tb_port *in)
+diff --git a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
+index 1a193f900779..2b06706a7071 100644
+--- a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
++++ b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
+@@ -528,9 +528,9 @@ static void ieee80211_beacons_stop(struct ieee80211_device *ieee)
+ 	spin_lock_irqsave(&ieee->beacon_lock, flags);
  
- static void tb_tunnel_dp(struct tb *tb)
- {
--	int available_up, available_down, ret;
-+	int available_up, available_down, ret, link_nr;
- 	struct tb_cm *tcm = tb_priv(tb);
- 	struct tb_port *port, *in, *out;
- 	struct tb_tunnel *tunnel;
-@@ -896,6 +896,20 @@ static void tb_tunnel_dp(struct tb *tb)
- 		return;
- 	}
+ 	ieee->beacon_txing = 0;
+-	del_timer_sync(&ieee->beacon_timer);
  
-+	/*
-+	 * This is only applicable to links that are not bonded (so
-+	 * when Thunderbolt 1 hardware is involved somewhere in the
-+	 * topology). For these try to share the DP bandwidth between
-+	 * the two lanes.
-+	 */
-+	link_nr = 1;
-+	list_for_each_entry(tunnel, &tcm->tunnel_list, list) {
-+		if (tb_tunnel_is_dp(tunnel)) {
-+			link_nr = 0;
-+			break;
-+		}
-+	}
-+
- 	/*
- 	 * DP stream needs the domain to be active so runtime resume
- 	 * both ends of the tunnel.
-@@ -927,7 +941,8 @@ static void tb_tunnel_dp(struct tb *tb)
- 	tb_dbg(tb, "available bandwidth for new DP tunnel %u/%u Mb/s\n",
- 	       available_up, available_down);
+ 	spin_unlock_irqrestore(&ieee->beacon_lock, flags);
++	del_timer_sync(&ieee->beacon_timer);
+ }
  
--	tunnel = tb_tunnel_alloc_dp(tb, in, out, available_up, available_down);
-+	tunnel = tb_tunnel_alloc_dp(tb, in, out, link_nr, available_up,
-+				    available_down);
- 	if (!tunnel) {
- 		tb_port_dbg(out, "could not allocate DP tunnel\n");
- 		goto err_reclaim;
-diff --git a/drivers/thunderbolt/test.c b/drivers/thunderbolt/test.c
-index 1f69bab236ee..66b6e665e96f 100644
---- a/drivers/thunderbolt/test.c
-+++ b/drivers/thunderbolt/test.c
-@@ -1348,7 +1348,7 @@ static void tb_test_tunnel_dp(struct kunit *test)
- 	in = &host->ports[5];
- 	out = &dev->ports[13];
- 
--	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
-+	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
- 	KUNIT_ASSERT_TRUE(test, tunnel != NULL);
- 	KUNIT_EXPECT_EQ(test, tunnel->type, TB_TUNNEL_DP);
- 	KUNIT_EXPECT_PTR_EQ(test, tunnel->src_port, in);
-@@ -1394,7 +1394,7 @@ static void tb_test_tunnel_dp_chain(struct kunit *test)
- 	in = &host->ports[5];
- 	out = &dev4->ports[14];
- 
--	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
-+	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
- 	KUNIT_ASSERT_TRUE(test, tunnel != NULL);
- 	KUNIT_EXPECT_EQ(test, tunnel->type, TB_TUNNEL_DP);
- 	KUNIT_EXPECT_PTR_EQ(test, tunnel->src_port, in);
-@@ -1444,7 +1444,7 @@ static void tb_test_tunnel_dp_tree(struct kunit *test)
- 	in = &dev2->ports[13];
- 	out = &dev5->ports[13];
- 
--	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
-+	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
- 	KUNIT_ASSERT_TRUE(test, tunnel != NULL);
- 	KUNIT_EXPECT_EQ(test, tunnel->type, TB_TUNNEL_DP);
- 	KUNIT_EXPECT_PTR_EQ(test, tunnel->src_port, in);
-@@ -1509,7 +1509,7 @@ static void tb_test_tunnel_dp_max_length(struct kunit *test)
- 	in = &dev6->ports[13];
- 	out = &dev12->ports[13];
- 
--	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
-+	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
- 	KUNIT_ASSERT_TRUE(test, tunnel != NULL);
- 	KUNIT_EXPECT_EQ(test, tunnel->type, TB_TUNNEL_DP);
- 	KUNIT_EXPECT_PTR_EQ(test, tunnel->src_port, in);
-@@ -1627,7 +1627,7 @@ static void tb_test_tunnel_port_on_path(struct kunit *test)
- 	in = &dev2->ports[13];
- 	out = &dev5->ports[13];
- 
--	dp_tunnel = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
-+	dp_tunnel = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
- 	KUNIT_ASSERT_TRUE(test, dp_tunnel != NULL);
- 
- 	KUNIT_EXPECT_TRUE(test, tb_tunnel_port_on_path(dp_tunnel, in));
-@@ -2009,7 +2009,7 @@ static void tb_test_credit_alloc_dp(struct kunit *test)
- 	in = &host->ports[5];
- 	out = &dev->ports[14];
- 
--	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
-+	tunnel = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
- 	KUNIT_ASSERT_TRUE(test, tunnel != NULL);
- 	KUNIT_ASSERT_EQ(test, tunnel->npaths, (size_t)3);
- 
-@@ -2245,7 +2245,7 @@ static struct tb_tunnel *TB_TEST_DP_TUNNEL1(struct kunit *test,
- 
- 	in = &host->ports[5];
- 	out = &dev->ports[13];
--	dp_tunnel1 = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
-+	dp_tunnel1 = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
- 	KUNIT_ASSERT_TRUE(test, dp_tunnel1 != NULL);
- 	KUNIT_ASSERT_EQ(test, dp_tunnel1->npaths, (size_t)3);
- 
-@@ -2282,7 +2282,7 @@ static struct tb_tunnel *TB_TEST_DP_TUNNEL2(struct kunit *test,
- 
- 	in = &host->ports[6];
- 	out = &dev->ports[14];
--	dp_tunnel2 = tb_tunnel_alloc_dp(NULL, in, out, 0, 0);
-+	dp_tunnel2 = tb_tunnel_alloc_dp(NULL, in, out, 1, 0, 0);
- 	KUNIT_ASSERT_TRUE(test, dp_tunnel2 != NULL);
- 	KUNIT_ASSERT_EQ(test, dp_tunnel2->npaths, (size_t)3);
- 
-diff --git a/drivers/thunderbolt/tunnel.c b/drivers/thunderbolt/tunnel.c
-index bb5cc480fc9a..bd98c719bf55 100644
---- a/drivers/thunderbolt/tunnel.c
-+++ b/drivers/thunderbolt/tunnel.c
-@@ -843,6 +843,7 @@ struct tb_tunnel *tb_tunnel_discover_dp(struct tb *tb, struct tb_port *in)
-  * @tb: Pointer to the domain structure
-  * @in: DP in adapter port
-  * @out: DP out adapter port
-+ * @link_nr: Preferred lane adapter when the link is not bonded
-  * @max_up: Maximum available upstream bandwidth for the DP tunnel (%0
-  *	    if not limited)
-  * @max_down: Maximum available downstream bandwidth for the DP tunnel
-@@ -854,8 +855,8 @@ struct tb_tunnel *tb_tunnel_discover_dp(struct tb *tb, struct tb_port *in)
-  * Return: Returns a tb_tunnel on success or NULL on failure.
-  */
- struct tb_tunnel *tb_tunnel_alloc_dp(struct tb *tb, struct tb_port *in,
--				     struct tb_port *out, int max_up,
--				     int max_down)
-+				     struct tb_port *out, int link_nr,
-+				     int max_up, int max_down)
- {
- 	struct tb_tunnel *tunnel;
- 	struct tb_path **paths;
-@@ -879,21 +880,21 @@ struct tb_tunnel *tb_tunnel_alloc_dp(struct tb *tb, struct tb_port *in,
- 	paths = tunnel->paths;
- 
- 	path = tb_path_alloc(tb, in, TB_DP_VIDEO_HOPID, out, TB_DP_VIDEO_HOPID,
--			     1, "Video");
-+			     link_nr, "Video");
- 	if (!path)
- 		goto err_free;
- 	tb_dp_init_video_path(path);
- 	paths[TB_DP_VIDEO_PATH_OUT] = path;
- 
- 	path = tb_path_alloc(tb, in, TB_DP_AUX_TX_HOPID, out,
--			     TB_DP_AUX_TX_HOPID, 1, "AUX TX");
-+			     TB_DP_AUX_TX_HOPID, link_nr, "AUX TX");
- 	if (!path)
- 		goto err_free;
- 	tb_dp_init_aux_path(path);
- 	paths[TB_DP_AUX_PATH_OUT] = path;
- 
- 	path = tb_path_alloc(tb, out, TB_DP_AUX_RX_HOPID, in,
--			     TB_DP_AUX_RX_HOPID, 1, "AUX RX");
-+			     TB_DP_AUX_RX_HOPID, link_nr, "AUX RX");
- 	if (!path)
- 		goto err_free;
- 	tb_dp_init_aux_path(path);
-diff --git a/drivers/thunderbolt/tunnel.h b/drivers/thunderbolt/tunnel.h
-index eea14e24f7e0..a92027431697 100644
---- a/drivers/thunderbolt/tunnel.h
-+++ b/drivers/thunderbolt/tunnel.h
-@@ -69,8 +69,8 @@ struct tb_tunnel *tb_tunnel_alloc_pci(struct tb *tb, struct tb_port *up,
- 				      struct tb_port *down);
- struct tb_tunnel *tb_tunnel_discover_dp(struct tb *tb, struct tb_port *in);
- struct tb_tunnel *tb_tunnel_alloc_dp(struct tb *tb, struct tb_port *in,
--				     struct tb_port *out, int max_up,
--				     int max_down);
-+				     struct tb_port *out, int link_nr,
-+				     int max_up, int max_down);
- struct tb_tunnel *tb_tunnel_alloc_dma(struct tb *tb, struct tb_port *nhi,
- 				      struct tb_port *dst, int transmit_path,
- 				      int transmit_ring, int receive_path,
+ void ieee80211_stop_send_beacons(struct ieee80211_device *ieee)
 -- 
 2.35.1
 
