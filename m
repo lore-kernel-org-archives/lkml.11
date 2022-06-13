@@ -2,149 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C110CCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56CB3CCA486
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:05:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242483AbiFMSDG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:03:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43188 "EHLO
+        id S243554AbiFMSDK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:03:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242686AbiFMSB5 (ORCPT
+        with ESMTP id S240342AbiFMSCX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 14:01:57 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93BFA3FBF4
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:46:01 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id me5so11327244ejb.2
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:46:01 -0700 (PDT)
+        Mon, 13 Jun 2022 14:02:23 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82143CF2;
+        Mon, 13 Jun 2022 06:45:13 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id a15so7218762wrh.2;
+        Mon, 13 Jun 2022 06:45:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oz0TSHV6YibOu6tc/5orXXjHQ8MbMxUcncoqA4aXgsw=;
-        b=n7JdFwECnhhUL1dLeSQ//ZJYsNONYjH51NPj+wkg/wrQ7bvBJRdyt8UrWsFim/C61O
-         96YUEqosV7TbGGXls0LrpNdpOaQskhlQoQYSw57/cTyQQorCQ/k9zYzof7BpsCqKfBU3
-         g5ZXP/ZXGEK+WCUOTl7e3G7UtklbBZIWme6Z0=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=2TiwGsa9nhGWe7+rjdwUgqJf1443Z5iWoonROnv/enI=;
+        b=mEL3wQ8T2LeY5SU36naJDyiASdHtl4q0VUV82LiKzKEaMXr9uNpCPzSC/fzlemCX3c
+         1BhPAQnyxeymprUMBKsoN7gRdOYKZFJ6VjNLujxM53rCFeMjyxz1uBm9Opqn4DOFBZn6
+         fhzSbIUtooKP/U4vKPywT3sjiTCu1XPID8weEOXY5aWUr/7kZTTQ05eTIXm/vr50j6Bs
+         gKShYU7L+VMlBzlI4DcyhwdrhuoQp3EH7sl5C+6M7g1PA3IySMC+E5LMCdtoyQfnllR2
+         9dHYKRXU2OJKrx77GJAGZuqIxZ9MvBfN6RurXx0wCNrt+4iY6Hp/X4CY0WENWoYw8ezx
+         B5tw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oz0TSHV6YibOu6tc/5orXXjHQ8MbMxUcncoqA4aXgsw=;
-        b=GKhiUyNK4hhQCAKrIjrkkZebmUSAs1javBNYgFTD5V+CJEM/cLQf0lymFhSTqNCadH
-         7jOXypn1baV/jM3qomkfLr9jmoc7Gx7TkD7G7UPjdw5BV7fc8k0eaAG6oOJNMMRlqqeJ
-         grKhmJ0+mbYh8eozJTJ0zgjpGgugWFjGDPv4mGQFU27LrIMTycvW3h5uP6OmSYxx5ob1
-         QdqHPk+wTrhqzbfCoqI5GZJXNQUgmCDppLsCu4FW0oOScTl0Iwfj2oQXOlVO0EA7D9zW
-         20NqU2BFRQQDFP243qd3LCMp0zb5rg1LRa11Gq89uxNA1kAZ/FAIi6sZ6OmUNz8Yqaus
-         fXIg==
-X-Gm-Message-State: AOAM531Ake/M2/d/uRquYzE8sltgJ1JucbynSX/d4wCZubwxlveqf6S/
-        kIYmVcJNoOb+ylGZxERnqYJRqRYNKPdQfRNuv5ba9g==
-X-Google-Smtp-Source: ABdhPJyvmkSgw072UHRnxND0KgUWRAzqc9nZk+izs23tKS/t6KazemOaZFtDajiE/juzKvXO8q+b2oLKjsmpxv6p55s=
-X-Received: by 2002:a17:906:c347:b0:718:ca61:e7b7 with SMTP id
- ci7-20020a170906c34700b00718ca61e7b7mr3050168ejb.746.1655127959979; Mon, 13
- Jun 2022 06:45:59 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=2TiwGsa9nhGWe7+rjdwUgqJf1443Z5iWoonROnv/enI=;
+        b=KVJMxatHVXN7RdCBHGGJILAh7pSa8QxsmFxZE47NQUsdoMtd1GqE2VmPTdgKeSe0ED
+         1xaxc8tlYZlrMuVslGNy3eMPxhMjCjld+QL1JAs51T9mjGp5E9IGH2OCmmcM2+Qnbc0Q
+         GoSccGKYqypl5I5cssbSbg3AlTeL9BInSP0va30nowxUzQmOhjJetNO2rs7Sa9EbX0WS
+         qNj7XZtvv7OWAu8qg6H8rILJKEV21heiYOoULs6KStGxJH5yvlF9bd/DZHjqQPouzXiD
+         pgpAboH0RfNvC31B+NgTdmQx7CnMqgKlronOwfcTrVfiM1e2oRNUUeBjSkZfpjVgKbiJ
+         2rzQ==
+X-Gm-Message-State: AOAM531r+EmPi7z3LsMG5DfKYRwozSBcXvTgFjNQmQ4fXvI0zXr6XCsX
+        RXbkRi0vXKXC5rRXEdXjxBk=
+X-Google-Smtp-Source: ABdhPJy7LALH5l6Qt0uy4Ii18rMrF1XbBDKA5/jx7q4sxmDC1uHryoMXSm6dQnFK3gUJymmE1qUlSw==
+X-Received: by 2002:adf:d084:0:b0:213:b515:6a06 with SMTP id y4-20020adfd084000000b00213b5156a06mr55211863wrh.702.1655127911783;
+        Mon, 13 Jun 2022 06:45:11 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id i1-20020a5d5221000000b002103aebe8absm8647510wra.93.2022.06.13.06.45.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 06:45:11 -0700 (PDT)
+From:   Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
+To:     MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Sibi Sankar <sibis@codeaurora.org>,
+        Saravana Kannan <skannan@codeaurora.org>,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
+Subject: [PATCH v2 1/5] PM / devfreq: Fix cpufreq passive unregister erroring on PROBE_DEFER
+Date:   Mon, 13 Jun 2022 15:42:09 +0200
+Message-Id: <20220613134213.8904-2-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613134213.8904-1-ansuelsmth@gmail.com>
+References: <20220613134213.8904-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-References: <20220601103922.1338320-1-hsinyi@chromium.org> <20220601103922.1338320-4-hsinyi@chromium.org>
- <CGME20220603125421eucas1p17da286a3e7f2d4759aa4c7639dd62f75@eucas1p1.samsung.com>
- <c017d992-2746-045b-47c8-c5b9c3025f1a@samsung.com> <31ed17e7-29d1-55e8-cb09-a750ab80da15@squashfs.org.uk>
- <701bee9a-a06d-8b1a-bf23-d893249c7764@samsung.com>
-In-Reply-To: <701bee9a-a06d-8b1a-bf23-d893249c7764@samsung.com>
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-Date:   Mon, 13 Jun 2022 21:45:34 +0800
-Message-ID: <CAJMQK-hVT=TcVfsbhUiqxcTBz3ZrX=B7yBPbuc2=MD6i7iGkAw@mail.gmail.com>
-Subject: Re: [PATCH v4 3/3] squashfs: implement readahead
-To:     Marek Szyprowski <m.szyprowski@samsung.com>
-Cc:     Phillip Lougher <phillip@squashfs.org.uk>,
-        Matthew Wilcox <willy@infradead.org>,
-        Xiongwei Song <Xiongwei.Song@windriver.com>,
-        Zheng Liang <zhengliang6@huawei.com>,
-        Zhang Yi <yi.zhang@huawei.com>, Hou Tao <houtao1@huawei.com>,
-        Miao Xie <miaoxie@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "linux-mm @ kvack . org" <linux-mm@kvack.org>,
-        "squashfs-devel @ lists . sourceforge . net" 
-        <squashfs-devel@lists.sourceforge.net>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 8:08 PM Marek Szyprowski
-<m.szyprowski@samsung.com> wrote:
->
-> Hi Phillip,
->
-> On 07.06.2022 09:35, Phillip Lougher wrote:
-> > On 03/06/2022 13:54, Marek Szyprowski wrote:
-> >> Hi,
-> >>
-> >> On 01.06.2022 12:39, Hsin-Yi Wang wrote:
-> >>> Implement readahead callback for squashfs. It will read datablocks
-> >>> which cover pages in readahead request. For a few cases it will
-> >>> not mark page as uptodate, including:
-> >>> - file end is 0.
-> >>> - zero filled blocks.
-> >>> - current batch of pages isn't in the same datablock or not enough in a
-> >>>     datablock.
-> >>> - decompressor error.
-> >>> Otherwise pages will be marked as uptodate. The unhandled pages will be
-> >>> updated by readpage later.
-> >>>
-> >>> Suggested-by: Matthew Wilcox <willy@infradead.org>
-> >>> Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-> >>> Reported-by: Matthew Wilcox <willy@infradead.org>
-> >>> Reported-by: Phillip Lougher <phillip@squashfs.org.uk>
-> >>> Reported-by: Xiongwei Song <Xiongwei.Song@windriver.com>
-> >>> ---
-> >>
-> >> This patch landed recently in linux-next as commit 95f7a26191de
-> >> ("squashfs: implement readahead"). I've noticed that it causes serious
-> >> issues on my test systems (various ARM 32bit and 64bit based boards).
-> >> The easiest way to observe is udev timeout 'waiting for /dev to be fully
-> >> populated' and prolonged booting time. I'm using squashfs for deploying
-> >> kernel modules via initrd. Reverting aeefca9dfae7 & 95f7a26191deon on
-> >> top of the next-20220603 fixes the issue.
-> >>
-> >> Let me know how I can help debugging this issue. There is no hurry
-> >> though, because the next week I will be on holidays.
-> >
-> > Hi Marek,
-> >
-> > Can you supply an example Squashfs filesystem and script that
-> > reproduces the slow-down?  Failing that, can you supply a copy
-> > of your initrd/root-filesystem that can be run under emulation
-> > to reproduce the issue? (I don't have any modern ARM embedded
-> > systems).
-> >
-> > Again failing that, are you happy to test some debug code?
-> >
-> > Thanks
-> >
-> > Phillip (Squashfs maintainer and author).
->
-> I've just got back from my holidays.
->
-> Is this still relevant? I've noticed that v6 has been posted, but I
-> failed to apply it on top of next-20220610 as mentioned in the
-> cover-letter to test. I've also tried also to apply the mentioned
-> 'Squashfs: handle missing pages decompressing into page cache' patchset.
-> On the other hand, next-20220610 seems to be working fine on my setup now.
->
+With the passive governor, the cpu based scaling can PROBE_DEFER due to
+the fact that CPU policy are not ready.
+The cpufreq passive unregister notifier is called both from the
+GOV_START errors and for the GOV_STOP and assume the notifier is
+successfully registred every time. With GOV_START failing it's wrong to
+loop over each possible CPU since the register path has failed for
+some CPU policy not ready. Change the logic and unregister the notifer
+based on the current allocated parent_cpu_data list to correctly handle
+errors and the governor unregister path.
 
-hi Marek,
+Fixes: a03dacb0316f ("PM / devfreq: Add cpu based scaling support to passive governor")
+Signed-off-by: Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
+---
+ drivers/devfreq/governor_passive.c | 21 +++++----------------
+ 1 file changed, 5 insertions(+), 16 deletions(-)
 
-next-20220610 contains v5 of the series. To apply v6, you need to
-revert ca1505bf4805 ("squashfs: implement readahead") and 9d58b94aa73a
-("squashfs: always build "file direct" version of page actor") first,
-then apply  'Squashfs: handle missing pages decompressing into page
-cache' patchset, then finally apply v6, since v6 is dependent on the
-patchset.
+diff --git a/drivers/devfreq/governor_passive.c b/drivers/devfreq/governor_passive.c
+index 72c67979ebe1..6252f109f8d1 100644
+--- a/drivers/devfreq/governor_passive.c
++++ b/drivers/devfreq/governor_passive.c
+@@ -223,7 +223,7 @@ static int cpufreq_passive_unregister_notifier(struct devfreq *devfreq)
+ 	struct devfreq_passive_data *p_data
+ 			= (struct devfreq_passive_data *)devfreq->data;
+ 	struct devfreq_cpu_data *parent_cpu_data;
+-	int cpu, ret = 0;
++	int ret;
+ 
+ 	if (p_data->nb.notifier_call) {
+ 		ret = cpufreq_unregister_notifier(&p_data->nb,
+@@ -232,27 +232,16 @@ static int cpufreq_passive_unregister_notifier(struct devfreq *devfreq)
+ 			return ret;
+ 	}
+ 
+-	for_each_possible_cpu(cpu) {
+-		struct cpufreq_policy *policy = cpufreq_cpu_get(cpu);
+-		if (!policy) {
+-			ret = -EINVAL;
+-			continue;
+-		}
+-
+-		parent_cpu_data = get_parent_cpu_data(p_data, policy);
+-		if (!parent_cpu_data) {
+-			cpufreq_cpu_put(policy);
+-			continue;
+-		}
+-
++	list_for_each_entry_safe(parent_cpu_data, &p_data->cpu_data_list, node) {
+ 		list_del(&parent_cpu_data->node);
++
+ 		if (parent_cpu_data->opp_table)
+ 			dev_pm_opp_put_opp_table(parent_cpu_data->opp_table);
++
+ 		kfree(parent_cpu_data);
+-		cpufreq_cpu_put(policy);
+ 	}
+ 
+-	return ret;
++	return 0;
+ }
+ 
+ static int cpufreq_passive_register_notifier(struct devfreq *devfreq)
+-- 
+2.36.1
 
-Thanks.
-
->
-> Best regards
-> --
-> Marek Szyprowski, PhD
-> Samsung R&D Institute Poland
->
