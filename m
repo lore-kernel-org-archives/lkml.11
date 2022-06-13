@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87418C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:57:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36ECBCCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:59:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380115AbiFMN5r (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:57:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35490 "EHLO
+        id S241066AbiFMN6Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 09:58:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380072AbiFMNx0 (ORCPT
+        with ESMTP id S1380150AbiFMNxm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:53:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E45056D4CD;
-        Mon, 13 Jun 2022 04:33:46 -0700 (PDT)
+        Mon, 13 Jun 2022 09:53:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9B1B71A0B;
+        Mon, 13 Jun 2022 04:33:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 829416124E;
-        Mon, 13 Jun 2022 11:33:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 816D1C34114;
-        Mon, 13 Jun 2022 11:33:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9AAF7B80E93;
+        Mon, 13 Jun 2022 11:33:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF7E3C34114;
+        Mon, 13 Jun 2022 11:33:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120025;
-        bh=jz1omFfR0vkzoDNm3LvoZFHbTcDVrzFygyqXxieAVTo=;
+        s=korg; t=1655120031;
+        bh=fOGyiO/Q/y/xv0Yi8FkPvSRMF+bUyYruvb+2AB7CZhw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ajPHtkfQerFY+CnaCuW+Hz+UNvh/cj7EJWD2ZrjFqgV97y1tqcKGdeEVywDK+EO3g
-         IyV62VWN1LqkofwYNTyzj+bvRwUxeqsYSvv7tqoJJMfVzB8sS6AMoXmM2S/TzqYQMg
-         WV1sv50v1geu30N3eRCVzvhTlNWXqOMkGQ1zsa0Y=
+        b=PkoLljmDJnhdnsO3kyscN417GtRbSbNuLbk+IEwIJphy9HdPz6KlIRxdM/Zs2Rf8Q
+         9FS0CaeK7TWaXqacNvmT7LDfkG+49Q34AyNnMNkaBh9xi5rTDNHWG4I2x/I4B3hkHx
+         Zv7gSsxQ5UzBCmlWCPcBlrgzgYmNY5r22NB3HjJg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alex Deucher <alexander.deucher@amd.com>,
-        Pierre-Eric Pelloux-Prayer <pierre-eric.pelloux-prayer@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        stable@vger.kernel.org, Muchun Song <songmuchun@bytedance.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 204/339] drm/amdgpu: fix limiting AV1 to the first instance on VCN3
-Date:   Mon, 13 Jun 2022 12:10:29 +0200
-Message-Id: <20220613094932.851562765@linuxfoundation.org>
+Subject: [PATCH 5.18 218/339] tcp: use alloc_large_system_hash() to allocate table_perturb
+Date:   Mon, 13 Jun 2022 12:10:43 +0200
+Message-Id: <20220613094933.272162896@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,83 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian König <christian.koenig@amd.com>
+From: Muchun Song <songmuchun@bytedance.com>
 
-[ Upstream commit 1d2afeb7983081ecf656c2338c7db6fd405c653c ]
+[ Upstream commit e67b72b90b7e19a4be4d9c29f3feea6f58ab43f8 ]
 
-The job is not yet initialized here.
+In our server, there may be no high order (>= 6) memory since we reserve
+lots of HugeTLB pages when booting.  Then the system panic.  So use
+alloc_large_system_hash() to allocate table_perturb.
 
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/2037
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Tested-by: Pierre-Eric Pelloux-Prayer <pierre-eric.pelloux-prayer@amd.com>
-Signed-off-by: Christian König <christian.koenig@amd.com>
-Fixes: cdc7893fc93f ("drm/amdgpu: use job and ib structures directly in CS parsers")
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fixes: e9261476184b ("tcp: dynamically allocate the perturb table used by source ports")
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/r/20220607070214.94443-1-songmuchun@bytedance.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c | 17 +++++++----------
- 1 file changed, 7 insertions(+), 10 deletions(-)
+ net/ipv4/inet_hashtables.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c b/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
-index cb5f0a12333f..57a34e775da3 100644
---- a/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c
-@@ -1821,23 +1821,21 @@ static const struct amdgpu_ring_funcs vcn_v3_0_dec_sw_ring_vm_funcs = {
- 	.emit_reg_write_reg_wait = amdgpu_ring_emit_reg_write_reg_wait_helper,
- };
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index a5d57fa679ca..55654e335d43 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -917,10 +917,12 @@ void __init inet_hashinfo2_init(struct inet_hashinfo *h, const char *name,
+ 	init_hashinfo_lhash2(h);
  
--static int vcn_v3_0_limit_sched(struct amdgpu_cs_parser *p,
--				struct amdgpu_job *job)
-+static int vcn_v3_0_limit_sched(struct amdgpu_cs_parser *p)
- {
- 	struct drm_gpu_scheduler **scheds;
- 
- 	/* The create msg must be in the first IB submitted */
--	if (atomic_read(&job->base.entity->fence_seq))
-+	if (atomic_read(&p->entity->fence_seq))
- 		return -EINVAL;
- 
- 	scheds = p->adev->gpu_sched[AMDGPU_HW_IP_VCN_DEC]
- 		[AMDGPU_RING_PRIO_DEFAULT].sched;
--	drm_sched_entity_modify_sched(job->base.entity, scheds, 1);
-+	drm_sched_entity_modify_sched(p->entity, scheds, 1);
- 	return 0;
+ 	/* this one is used for source ports of outgoing connections */
+-	table_perturb = kmalloc_array(INET_TABLE_PERTURB_SIZE,
+-				      sizeof(*table_perturb), GFP_KERNEL);
+-	if (!table_perturb)
+-		panic("TCP: failed to alloc table_perturb");
++	table_perturb = alloc_large_system_hash("Table-perturb",
++						sizeof(*table_perturb),
++						INET_TABLE_PERTURB_SIZE,
++						0, 0, NULL, NULL,
++						INET_TABLE_PERTURB_SIZE,
++						INET_TABLE_PERTURB_SIZE);
  }
  
--static int vcn_v3_0_dec_msg(struct amdgpu_cs_parser *p, struct amdgpu_job *job,
--			    uint64_t addr)
-+static int vcn_v3_0_dec_msg(struct amdgpu_cs_parser *p, uint64_t addr)
- {
- 	struct ttm_operation_ctx ctx = { false, false };
- 	struct amdgpu_bo_va_mapping *map;
-@@ -1908,7 +1906,7 @@ static int vcn_v3_0_dec_msg(struct amdgpu_cs_parser *p, struct amdgpu_job *job,
- 		if (create[0] == 0x7 || create[0] == 0x10 || create[0] == 0x11)
- 			continue;
- 
--		r = vcn_v3_0_limit_sched(p, job);
-+		r = vcn_v3_0_limit_sched(p);
- 		if (r)
- 			goto out;
- 	}
-@@ -1922,7 +1920,7 @@ static int vcn_v3_0_ring_patch_cs_in_place(struct amdgpu_cs_parser *p,
- 					   struct amdgpu_job *job,
- 					   struct amdgpu_ib *ib)
- {
--	struct amdgpu_ring *ring = to_amdgpu_ring(job->base.sched);
-+	struct amdgpu_ring *ring = to_amdgpu_ring(p->entity->rq->sched);
- 	uint32_t msg_lo = 0, msg_hi = 0;
- 	unsigned i;
- 	int r;
-@@ -1941,8 +1939,7 @@ static int vcn_v3_0_ring_patch_cs_in_place(struct amdgpu_cs_parser *p,
- 			msg_hi = val;
- 		} else if (reg == PACKET0(p->adev->vcn.internal.cmd, 0) &&
- 			   val == 0) {
--			r = vcn_v3_0_dec_msg(p, job,
--					     ((u64)msg_hi) << 32 | msg_lo);
-+			r = vcn_v3_0_dec_msg(p, ((u64)msg_hi) << 32 | msg_lo);
- 			if (r)
- 				return r;
- 		}
+ int inet_hashinfo2_init_mod(struct inet_hashinfo *h)
 -- 
 2.35.1
 
