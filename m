@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED086CCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:20:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64389CCA481
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:20:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353484AbiFMLTq (ORCPT
+        id S1353679AbiFMLTy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:19:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43242 "EHLO
+        Mon, 13 Jun 2022 07:19:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353386AbiFMLPg (ORCPT
+        with ESMTP id S1353445AbiFMLPm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:15:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAE7A37A9B;
-        Mon, 13 Jun 2022 03:37:58 -0700 (PDT)
+        Mon, 13 Jun 2022 07:15:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B3A37BFA;
+        Mon, 13 Jun 2022 03:38:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F010A610A0;
-        Mon, 13 Jun 2022 10:37:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A03DC34114;
-        Mon, 13 Jun 2022 10:37:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3CF92B80E94;
+        Mon, 13 Jun 2022 10:38:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B6FDC34114;
+        Mon, 13 Jun 2022 10:38:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116677;
-        bh=bD3WJRYvtGNG7uTosFr26V1dTdZAK0QT563DMFOOOXg=;
+        s=korg; t=1655116683;
+        bh=+9IgQ/HHoYPDWZs3cMzOuO1R5OJJnADp6vjFwEWk9A4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OAjBXu/56R//QbtNcqNbccrk6RULL8XMLwnaCziCT5QRRnaKv7o00JhV/4BUFo6rB
-         G/YKE0dtagmDSG6nvb43sFVT8ahf1jXLQo89vMmJVhNPzbz9aXbrEW8yjQeYgC7DLr
-         7L2tDqk+7YG8AwyUjMFNI7/vIGItIfPVAFSoI1Ng=
+        b=VfgG1nIAUKGdzfZ3auxyBYvMUAPY1SiHiSbue5q/3lYXoW1Pi346zTPzbbIVI48KB
+         V/++UfGH8iAEEmZ/ftRmBFYp/g87y6/uRfnGKS1pXxo55SLog6FhCzc5ee9SpuZUWC
+         7gcu9LsiFjfBGnZ1OAN0MdAnhyEEFU5Yg8Fq8tS0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 133/411] regulator: pfuze100: Fix refcount leak in pfuze_parse_regulators_dt
-Date:   Mon, 13 Jun 2022 12:06:46 +0200
-Message-Id: <20220613094932.660492818@linuxfoundation.org>
+Subject: [PATCH 5.4 135/411] media: aspeed: Fix an error handling path in aspeed_video_probe()
+Date:   Mon, 13 Jun 2022 12:06:48 +0200
+Message-Id: <20220613094932.719606920@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,42 +52,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit afaa7b933ef00a2d3262f4d1252087613fb5c06d ]
+[ Upstream commit 310fda622bbd38be17fb444f7f049b137af3bc0d ]
 
-of_node_get() returns a node with refcount incremented.
-Calling of_node_put() to drop the reference when not needed anymore.
+A dma_free_coherent() call is missing in the error handling path of the
+probe, as already done in the remove function.
 
-Fixes: 3784b6d64dc5 ("regulator: pfuze100: add pfuze100 regulator driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220511113506.45185-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+In fact, this call is included in aspeed_video_free_buf(). So use the
+latter both in the error handling path of the probe and in the remove
+function.
+It is easier to see the relation with aspeed_video_alloc_buf() this way.
+
+Fixes: d2b4387f3bdf ("media: platform: Add Aspeed Video Engine driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/regulator/pfuze100-regulator.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/media/platform/aspeed-video.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/regulator/pfuze100-regulator.c b/drivers/regulator/pfuze100-regulator.c
-index 44b1da7cc374..f873d97100e2 100644
---- a/drivers/regulator/pfuze100-regulator.c
-+++ b/drivers/regulator/pfuze100-regulator.c
-@@ -528,6 +528,7 @@ static int pfuze_parse_regulators_dt(struct pfuze_chip *chip)
- 	parent = of_get_child_by_name(np, "regulators");
- 	if (!parent) {
- 		dev_err(dev, "regulators node not found\n");
-+		of_node_put(np);
- 		return -EINVAL;
- 	}
+diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
+index c87eddb1c93f..c3f0b143330a 100644
+--- a/drivers/media/platform/aspeed-video.c
++++ b/drivers/media/platform/aspeed-video.c
+@@ -1688,6 +1688,7 @@ static int aspeed_video_probe(struct platform_device *pdev)
  
-@@ -557,6 +558,7 @@ static int pfuze_parse_regulators_dt(struct pfuze_chip *chip)
- 	}
+ 	rc = aspeed_video_setup_video(video);
+ 	if (rc) {
++		aspeed_video_free_buf(video, &video->jpeg);
+ 		clk_unprepare(video->vclk);
+ 		clk_unprepare(video->eclk);
+ 		return rc;
+@@ -1715,8 +1716,7 @@ static int aspeed_video_remove(struct platform_device *pdev)
  
- 	of_node_put(parent);
-+	of_node_put(np);
- 	if (ret < 0) {
- 		dev_err(dev, "Error parsing regulator init data: %d\n",
- 			ret);
+ 	v4l2_device_unregister(v4l2_dev);
+ 
+-	dma_free_coherent(video->dev, VE_JPEG_HEADER_SIZE, video->jpeg.virt,
+-			  video->jpeg.dma);
++	aspeed_video_free_buf(video, &video->jpeg);
+ 
+ 	of_reserved_mem_device_release(dev);
+ 
 -- 
 2.35.1
 
