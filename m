@@ -2,78 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81539C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:55:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 934ADC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:55:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386211AbiFMOzG (ORCPT
+        id S1386263AbiFMOzN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:55:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51686 "EHLO
+        Mon, 13 Jun 2022 10:55:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386710AbiFMOyK (ORCPT
+        with ESMTP id S1386816AbiFMOyY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:54:10 -0400
-Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A48E7CBD7D;
-        Mon, 13 Jun 2022 04:56:42 -0700 (PDT)
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 696011C0BB6; Mon, 13 Jun 2022 13:56:29 +0200 (CEST)
-Date:   Mon, 13 Jun 2022 13:56:29 +0200
-From:   Pavel Machek <pavel@denx.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 4.19 000/287] 4.19.247-rc1 review
-Message-ID: <20220613115629.GB4176@duo.ucw.cz>
-References: <20220613094923.832156175@linuxfoundation.org>
+        Mon, 13 Jun 2022 10:54:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F495CEB98;
+        Mon, 13 Jun 2022 04:57:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A8FDDB80EB2;
+        Mon, 13 Jun 2022 11:52:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2707DC3411B;
+        Mon, 13 Jun 2022 11:52:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655121121;
+        bh=eSd1ELFsAoy1oMuc2JFhD/6t5LSqKBh+HAHIcUu/rcE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=BjpsHzsD8bXgZIDJIZPhFbL58M0GLeu5tSgegD+sbUznBlYSlZCqcfTxPffdnPf3X
+         AHCPHB+Grj0RtwRFQem3d9hXvtcAgnDl0YVrxb07BbA28OsGgKK2QLTyy9lRKGntCS
+         F1IsqgIqV2UBP+A0vjGr/HHQ62bQyr5GhAiGHsA0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH 5.17 280/298] vduse: Fix NULL pointer dereference on sysfs access
+Date:   Mon, 13 Jun 2022 12:12:54 +0200
+Message-Id: <20220613094933.574939149@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
+References: <20220613094924.913340374@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="KFztAG8eRSV9hGtP"
-Content-Disposition: inline
-In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Xie Yongji <xieyongji@bytedance.com>
 
---KFztAG8eRSV9hGtP
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+commit b27ee76c74dc831d6e092eaebc2dfc9c0beed1c9 upstream.
 
-Hi!
+The control device has no drvdata. So we will get a
+NULL pointer dereference when accessing control
+device's msg_timeout attribute via sysfs:
 
-> This is the start of the stable review cycle for the 4.19.247 release.
-> There are 287 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+[ 132.841881][ T3644] BUG: kernel NULL pointer dereference, address: 00000000000000f8
+[ 132.850619][ T3644] RIP: 0010:msg_timeout_show (drivers/vdpa/vdpa_user/vduse_dev.c:1271)
+[ 132.869447][ T3644] dev_attr_show (drivers/base/core.c:2094)
+[ 132.870215][ T3644] sysfs_kf_seq_show (fs/sysfs/file.c:59)
+[ 132.871164][ T3644] ? device_remove_bin_file (drivers/base/core.c:2088)
+[ 132.872082][ T3644] kernfs_seq_show (fs/kernfs/file.c:164)
+[ 132.872838][ T3644] seq_read_iter (fs/seq_file.c:230)
+[ 132.873578][ T3644] ? __vmalloc_area_node (mm/vmalloc.c:3041)
+[ 132.874532][ T3644] kernfs_fop_read_iter (fs/kernfs/file.c:238)
+[ 132.875513][ T3644] __kernel_read (fs/read_write.c:440 (discriminator 1))
+[ 132.876319][ T3644] kernel_read (fs/read_write.c:459)
+[ 132.877129][ T3644] kernel_read_file (fs/kernel_read_file.c:94)
+[ 132.877978][ T3644] kernel_read_file_from_fd (include/linux/file.h:45 fs/kernel_read_file.c:186)
+[ 132.879019][ T3644] __do_sys_finit_module (kernel/module.c:4207)
+[ 132.879930][ T3644] __ia32_sys_finit_module (kernel/module.c:4189)
+[ 132.880930][ T3644] do_int80_syscall_32 (arch/x86/entry/common.c:112 arch/x86/entry/common.c:132)
+[ 132.881847][ T3644] entry_INT80_compat (arch/x86/entry/entry_64_compat.S:419)
 
-CIP testing did not find any problems here:
+To fix it, don't create the unneeded attribute for
+control device anymore.
 
-https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/tree/linux-=
-4.19.y
+Fixes: c8a6153b6c59 ("vduse: Introduce VDUSE - vDPA Device in Userspace")
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+Message-Id: <20220426073656.229-1-xieyongji@bytedance.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/vdpa/vdpa_user/vduse_dev.c |    7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-Tested-by: Pavel Machek (CIP) <pavel@denx.de>
+--- a/drivers/vdpa/vdpa_user/vduse_dev.c
++++ b/drivers/vdpa/vdpa_user/vduse_dev.c
+@@ -1344,9 +1344,9 @@ static int vduse_create_dev(struct vduse
+ 
+ 	dev->minor = ret;
+ 	dev->msg_timeout = VDUSE_MSG_DEFAULT_TIMEOUT;
+-	dev->dev = device_create(vduse_class, NULL,
+-				 MKDEV(MAJOR(vduse_major), dev->minor),
+-				 dev, "%s", config->name);
++	dev->dev = device_create_with_groups(vduse_class, NULL,
++				MKDEV(MAJOR(vduse_major), dev->minor),
++				dev, vduse_dev_groups, "%s", config->name);
+ 	if (IS_ERR(dev->dev)) {
+ 		ret = PTR_ERR(dev->dev);
+ 		goto err_dev;
+@@ -1595,7 +1595,6 @@ static int vduse_init(void)
+ 		return PTR_ERR(vduse_class);
+ 
+ 	vduse_class->devnode = vduse_devnode;
+-	vduse_class->dev_groups = vduse_dev_groups;
+ 
+ 	ret = alloc_chrdev_region(&vduse_major, 0, VDUSE_DEV_MAX, "vduse");
+ 	if (ret)
 
-Best regards,
-                                                                Pavel
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
 
---KFztAG8eRSV9hGtP
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYqcl7QAKCRAw5/Bqldv6
-8haSAJ9HIhKbpsCgh83moFA4K+3biz0V9wCgxFtsN65U+axuO/kVCMZWVyLxn0E=
-=Q9lo
------END PGP SIGNATURE-----
-
---KFztAG8eRSV9hGtP--
