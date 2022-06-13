@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B37EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:10:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA61BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:10:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352114AbiFMLKn (ORCPT
+        id S1352131AbiFMLKs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:10:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45256 "EHLO
+        Mon, 13 Jun 2022 07:10:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351892AbiFMLFM (ORCPT
+        with ESMTP id S1351881AbiFMLFL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:05:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64CA22A2;
-        Mon, 13 Jun 2022 03:34:47 -0700 (PDT)
+        Mon, 13 Jun 2022 07:05:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CFF127FED;
+        Mon, 13 Jun 2022 03:34:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 000B261127;
-        Mon, 13 Jun 2022 10:34:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DF67C341CC;
-        Mon, 13 Jun 2022 10:34:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D21B60FFD;
+        Mon, 13 Jun 2022 10:34:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3AAAC34114;
+        Mon, 13 Jun 2022 10:34:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116486;
-        bh=AQJUPapWjuLINSh4e/xYgsJ69ZfH1rTid70rZGLesfg=;
+        s=korg; t=1655116467;
+        bh=Ce7/FlVG2OBXdAX/jjQ4D4Z17J2tl1rW4UQz8EGNfcM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rNO64tvBphTONCPUS+RzgJ/S7mPKJlYJpgEhGVJI6tjm/G4ljKd+UX/T0dmc+yNGm
-         N9LX7bO7sumqhEIhVRXeuAsRBr+IE16y3YM8vIeYH/YLu5l8Ix6C8g2TM06xPZOcuF
-         4iwRN+vGDV7eKsvbveZ5VSx+ptrh4FmDUtsS8kdQ=
+        b=ZyZKVBj/fj1WMp9LZwIaXM8XLv+ovYKXoA4ack1Yx3UyYwD7wzEc03FPlPCucBMe/
+         kbhE6fkoBqlpDa0ez5U8wt4RttXEStrDw8FjkbJ7K0EFlmwHfnWhTtm4YPuTdWuz0B
+         /OiLbTMMImPBMGsrkvGv++nUdzzIWsyYo8Dbpc98=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 190/218] usb: dwc2: gadget: dont reset gadgets driver->bus
-Date:   Mon, 13 Jun 2022 12:10:48 +0200
-Message-Id: <20220613094926.379946681@linuxfoundation.org>
+Subject: [PATCH 5.4 091/411] nl80211: show SSID for P2P_GO interfaces
+Date:   Mon, 13 Jun 2022 12:06:04 +0200
+Message-Id: <20220613094931.411219178@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,64 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Szyprowski <m.szyprowski@samsung.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 3120aac6d0ecd9accf56894aeac0e265f74d3d5a ]
+[ Upstream commit a75971bc2b8453630e9f85e0beaa4da8db8277a3 ]
 
-UDC driver should not touch gadget's driver internals, especially it
-should not reset driver->bus. This wasn't harmful so far, but since
-commit fc274c1e9973 ("USB: gadget: Add a new bus for gadgets") gadget
-subsystem got it's own bus and messing with ->bus triggers the
-following NULL pointer dereference:
+There's no real reason not to send the SSID to userspace
+when it requests information about P2P_GO, it is, in that
+respect, exactly the same as AP interfaces. Fix that.
 
-dwc2 12480000.hsotg: bound driver g_ether
-8<--- cut here ---
-Unable to handle kernel NULL pointer dereference at virtual address 00000000
-[00000000] *pgd=00000000
-Internal error: Oops: 5 [#1] SMP ARM
-Modules linked in: ...
-CPU: 0 PID: 620 Comm: modprobe Not tainted 5.18.0-rc5-next-20220504 #11862
-Hardware name: Samsung Exynos (Flattened Device Tree)
-PC is at module_add_driver+0x44/0xe8
-LR is at sysfs_do_create_link_sd+0x84/0xe0
-...
-Process modprobe (pid: 620, stack limit = 0x(ptrval))
-...
- module_add_driver from bus_add_driver+0xf4/0x1e4
- bus_add_driver from driver_register+0x78/0x10c
- driver_register from usb_gadget_register_driver_owner+0x40/0xb4
- usb_gadget_register_driver_owner from do_one_initcall+0x44/0x1e0
- do_one_initcall from do_init_module+0x44/0x1c8
- do_init_module from load_module+0x19b8/0x1b9c
- load_module from sys_finit_module+0xdc/0xfc
- sys_finit_module from ret_fast_syscall+0x0/0x54
-Exception stack(0xf1771fa8 to 0xf1771ff0)
-...
-dwc2 12480000.hsotg: new device is high-speed
----[ end trace 0000000000000000 ]---
-
-Fix this by removing driver->bus entry reset.
-
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Link: https://lore.kernel.org/r/20220505104618.22729-1-m.szyprowski@samsung.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 44905265bc15 ("nl80211: don't expose wdev->ssid for most interfaces")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Link: https://lore.kernel.org/r/20220318134656.14354ae223f0.Ia25e85a512281b92e1645d4160766a4b1a471597@changeid
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/dwc2/gadget.c | 1 -
- 1 file changed, 1 deletion(-)
+ net/wireless/nl80211.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
-index dddc5d02b552..14f907cf71a3 100644
---- a/drivers/usb/dwc2/gadget.c
-+++ b/drivers/usb/dwc2/gadget.c
-@@ -4302,7 +4302,6 @@ static int dwc2_hsotg_udc_start(struct usb_gadget *gadget,
- 
- 	WARN_ON(hsotg->driver);
- 
--	driver->driver.bus = NULL;
- 	hsotg->driver = driver;
- 	hsotg->gadget.dev.of_node = hsotg->dev->of_node;
- 	hsotg->gadget.speed = USB_SPEED_UNKNOWN;
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index d3e2b97d5d05..8459f5b6002e 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -3240,6 +3240,7 @@ static int nl80211_send_iface(struct sk_buff *msg, u32 portid, u32 seq, int flag
+ 	wdev_lock(wdev);
+ 	switch (wdev->iftype) {
+ 	case NL80211_IFTYPE_AP:
++	case NL80211_IFTYPE_P2P_GO:
+ 		if (wdev->ssid_len &&
+ 		    nla_put(msg, NL80211_ATTR_SSID, wdev->ssid_len, wdev->ssid))
+ 			goto nla_put_failure_locked;
 -- 
 2.35.1
 
