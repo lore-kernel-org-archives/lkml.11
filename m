@@ -2,108 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BE68CCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:40:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F000CCA482
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:40:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346345AbiFMKj5 (ORCPT
+        id S1346539AbiFMKkD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:39:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58542 "EHLO
+        Mon, 13 Jun 2022 06:40:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344741AbiFMKhs (ORCPT
+        with ESMTP id S1346301AbiFMKhv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:37:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C358F12D35;
-        Mon, 13 Jun 2022 03:22:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D928660AE9;
-        Mon, 13 Jun 2022 10:22:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2E26C3411E;
-        Mon, 13 Jun 2022 10:22:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115773;
-        bh=LZSVzGm+eApsXK45dI2BFu9jzJnYL96WdCNobNzk1qI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H631xtKvoT23BZAT9jH4NgqxSHDpSVVSyIs5dyIsaMZzzXaUj5XcANsxWjFTYhA9G
-         tIqkOxvt+dOcOlJloRii0XTfMxSNWNoBpg4gk8NPHLszTSX/Yu78MdzY2Z2ILRy+GL
-         v2TbcWQhwukKYKQNWXf3xPyYPs3aDSU6YfR5MHYc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Zixuan Fu <r33s3n6@gmail.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 036/218] fs: jfs: fix possible NULL pointer dereference in dbFree()
-Date:   Mon, 13 Jun 2022 12:08:14 +0200
-Message-Id: <20220613094916.886990683@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 13 Jun 2022 06:37:51 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDD8813CD2;
+        Mon, 13 Jun 2022 03:22:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1655115775; x=1686651775;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=rx2DvSLkLdzI3r6yAuUJ2LGZvHt6B8djgeXH8BkRTS0=;
+  b=Ri6RJFjLP0U3fTUH0n/u9uIQZz8khEfdn+j8OLy95apJNdNikdhBtRv5
+   RN0LCuPSu+s62Ua8Z2j2HsienOGHbOp54M+Q8aWVmIwcGdiJClhLF3PoD
+   1rgNSiZzxiU91MtOvtoZ+xmVRtkWpYGTBZ8iFG2PEse2gICZggCbW10VY
+   s=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 13 Jun 2022 03:22:55 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 03:22:54 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 13 Jun 2022 03:22:54 -0700
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 13 Jun 2022 03:22:50 -0700
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <quic_rohkumar@quicinc.com>, <srinivas.kandagatla@linaro.org>,
+        <dianders@chromium.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
+Subject: [PATCH v13 05/12] arm64: dts: qcom: sc7280: Add wcd9385 codec node for CRD 3.0/3.1
+Date:   Mon, 13 Jun 2022 15:52:06 +0530
+Message-ID: <1655115733-16309-6-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1655115733-16309-1-git-send-email-quic_srivasam@quicinc.com>
+References: <1655115733-16309-1-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zixuan Fu <r33s3n6@gmail.com>
+Add wcd9385 codec node for audio use case on CRD rev5+ (aka CRD 3.0/3.1)
+boards. Add tlmm gpio property for switching CTIA/OMTP Headset.
 
-[ Upstream commit 0d4837fdb796f99369cf7691d33de1b856bcaf1f ]
-
-In our fault-injection testing, the variable "nblocks" in dbFree() can be
-zero when kmalloc_array() fails in dtSearch(). In this case, the variable
- "mp" in dbFree() would be NULL and then it is dereferenced in
-"write_metapage(mp)".
-
-The failure log is listed as follows:
-
-[   13.824137] BUG: kernel NULL pointer dereference, address: 0000000000000020
-...
-[   13.827416] RIP: 0010:dbFree+0x5f7/0x910 [jfs]
-[   13.834341] Call Trace:
-[   13.834540]  <TASK>
-[   13.834713]  txFreeMap+0x7b4/0xb10 [jfs]
-[   13.835038]  txUpdateMap+0x311/0x650 [jfs]
-[   13.835375]  jfs_lazycommit+0x5f2/0xc70 [jfs]
-[   13.835726]  ? sched_dynamic_update+0x1b0/0x1b0
-[   13.836092]  kthread+0x3c2/0x4a0
-[   13.836355]  ? txLockFree+0x160/0x160 [jfs]
-[   13.836763]  ? kthread_unuse_mm+0x160/0x160
-[   13.837106]  ret_from_fork+0x1f/0x30
-[   13.837402]  </TASK>
-...
-
-This patch adds a NULL check of "mp" before "write_metapage(mp)" is called.
-
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
-Signed-off-by: Dave Kleikamp <dave.kleikamp@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
 ---
- fs/jfs/jfs_dmap.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts |  4 ++
+ arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi        | 52 +++++++++++++++++++++++
+ 2 files changed, 56 insertions(+)
 
-diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
-index 6dac48e29d28..a07fbb60ac3c 100644
---- a/fs/jfs/jfs_dmap.c
-+++ b/fs/jfs/jfs_dmap.c
-@@ -398,7 +398,8 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
- 	}
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
+index 32927db..c7537fb 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
++++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
+@@ -155,6 +155,10 @@ ap_ts_pen_1v8: &i2c13 {
+ 	status = "okay";
+ };
  
- 	/* write the last buffer. */
--	write_metapage(mp);
-+	if (mp)
-+		write_metapage(mp);
++&wcd9385 {
++	status = "okay";
++};
++
+ /* PINCTRL - BOARD-SPECIFIC */
  
- 	IREAD_UNLOCK(ipbmap);
+ /*
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi b/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
+index e933ebf..efa6787 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
+@@ -30,6 +30,37 @@
+ 		serial1 = &uart7;
+ 	};
  
++	wcd9385: audio-codec-1 {
++		compatible = "qcom,wcd9385-codec";
++		pinctrl-names = "default", "sleep";
++		pinctrl-0 = <&wcd_reset_n>, <&us_euro_hs_sel>;
++		pinctrl-1 = <&wcd_reset_n_sleep>, <&us_euro_hs_sel>;
++
++		reset-gpios = <&tlmm 83 GPIO_ACTIVE_HIGH>;
++		us-euro-gpios = <&tlmm 81 GPIO_ACTIVE_HIGH>;
++
++		qcom,rx-device = <&wcd_rx>;
++		qcom,tx-device = <&wcd_tx>;
++
++		vdd-rxtx-supply = <&vreg_l18b_1p8>;
++		vdd-io-supply = <&vreg_l18b_1p8>;
++		vdd-buck-supply = <&vreg_l17b_1p8>;
++		vdd-mic-bias-supply = <&vreg_bob>;
++
++		qcom,micbias1-microvolt = <1800000>;
++		qcom,micbias2-microvolt = <1800000>;
++		qcom,micbias3-microvolt = <1800000>;
++		qcom,micbias4-microvolt = <1800000>;
++
++		qcom,mbhc-buttons-vthreshold-microvolt = <75000 150000 237000 500000 500000
++							  500000 500000 500000>;
++		qcom,mbhc-headset-vthreshold-microvolt = <1700000>;
++		qcom,mbhc-headphone-vthreshold-microvolt = <50000>;
++		#sound-dai-cells = <1>;
++
++		status = "disabled";
++	};
++
+ 	pm8350c_pwm_backlight: backlight {
+ 		compatible = "pwm-backlight";
+ 		status = "disabled";
+@@ -629,4 +660,25 @@ mos_bt_uart: &uart7 {
+ 		bias-pull-up;
+ 		drive-strength = <2>;
+ 	};
++
++	us_euro_hs_sel: us-euro-hs-sel {
++		pins = "gpio81";
++		function = "gpio";
++		bias-pull-down;
++		drive-strength = <2>;
++	};
++
++	wcd_reset_n: wcd-reset-n {
++		pins = "gpio83";
++		function = "gpio";
++		drive-strength = <8>;
++		output-high;
++	};
++
++	wcd_reset_n_sleep: wcd-reset-n-sleep {
++		pins = "gpio83";
++		function = "gpio";
++		drive-strength = <8>;
++		bias-disable;
++	};
+ };
 -- 
-2.35.1
-
-
+2.7.4
 
