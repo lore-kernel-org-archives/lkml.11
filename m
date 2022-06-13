@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2321CCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 936D3CCA486
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:06:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382050AbiFMOFL (ORCPT
+        id S1381969AbiFMOFA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:05:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36788 "EHLO
+        Mon, 13 Jun 2022 10:05:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380335AbiFMN6r (ORCPT
+        with ESMTP id S1379894AbiFMN5Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:58:47 -0400
+        Mon, 13 Jun 2022 09:57:16 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1444A8BD07;
-        Mon, 13 Jun 2022 04:37:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A78232495C;
+        Mon, 13 Jun 2022 04:37:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 930CB612E9;
-        Mon, 13 Jun 2022 11:37:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A459C34114;
-        Mon, 13 Jun 2022 11:37:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BE07C61046;
+        Mon, 13 Jun 2022 11:37:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBCFAC34114;
+        Mon, 13 Jun 2022 11:37:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120257;
-        bh=O1BECb1BwhYEIW1CUebpdzDbEJQLtGkgaLnnWW6lRNQ=;
+        s=korg; t=1655120246;
+        bh=Ex+e9/qLX4kzTYZbR3+QhEHr3b8O+kj9evKNUAxbhyo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mlhGjksQFcmRBvBKs8eCKRPTyRE5wyCfTpOVv3CxpSrpCqQqjNy7eSPwozMgg8+yB
-         B82iP1sLSFlUfynW04viqNzvY2r6a3fuIWmykSMiqARm3bo17Lfxdq+9Aq9sFj7/WN
-         xc2zWpgmpgI8KRZ2cwIWJyjdMiwEtGPKb1jXrdF8=
+        b=v5SDbcLkD9ZCQtfnflJkXj9vLoR3tGGgv9VCuc85jMb60Imk9TqaJcux4ydFeU91z
+         C2Wz5iRVVr8OYLIR/VJgheWDAItPF72a2TdxNyIQpDScx7Ohq24G9FZcfhmEB5t8CQ
+         +H3yry22Lue8IfEXMmn8ZspVHFbQSCmq6NPOL+nk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
-        Fam Zheng <fam.zheng@bytedance.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 288/339] vringh: Fix loop descriptors check in the indirect cases
-Date:   Mon, 13 Jun 2022 12:11:53 +0200
-Message-Id: <20220613094935.371556496@linuxfoundation.org>
+        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
+        James Smart <jsmart2021@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.18 302/339] scsi: lpfc: Resolve some cleanup issues following abort path refactoring
+Date:   Mon, 13 Jun 2022 12:12:07 +0200
+Message-Id: <20220613094935.919738177@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -52,63 +50,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xie Yongji <xieyongji@bytedance.com>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit dbd29e0752286af74243cf891accf472b2f3edd8 ]
+commit 24e1f056677eefe834d5dcf61905cce857ca4b19 upstream.
 
-We should use size of descriptor chain to test loop condition
-in the indirect case. And another statistical count is also introduced
-for indirect descriptors to avoid conflict with the statistical count
-of direct descriptors.
+Refactoring and consolidation of abort paths:
 
-Fixes: f87d0fbb5798 ("vringh: host-side implementation of virtio rings.")
-Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-Signed-off-by: Fam Zheng <fam.zheng@bytedance.com>
-Message-Id: <20220505100910.137-1-xieyongji@bytedance.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+ - lpfc_sli4_abort_fcp_cmpl() and lpfc_sli_abort_fcp_cmpl() are combined
+  into a single generic lpfc_sli_abort_fcp_cmpl() routine.  Thus, remove
+  extraneous lpfc_sli4_abort_fcp_cmpl() prototype declaration.
+
+ - lpfc_nvme_abort_fcreq_cmpl() abort completion routine is called with a
+  mismatched argument type.  This may result in misleading log message
+  content.  Update to the correct argument type of lpfc_iocbq instead of
+  lpfc_wcqe_complete.  The lpfc_wcqe_complete should be derived from the
+  lpfc_iocbq structure.
+
+Link: https://lore.kernel.org/r/20220603174329.63777-3-jsmart2021@gmail.com
+Fixes: 31a59f75702f ("scsi: lpfc: SLI path split: Refactor Abort paths")
+Cc: <stable@vger.kernel.org> # v5.18
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/vhost/vringh.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/scsi/lpfc/lpfc_crtn.h |    4 +---
+ drivers/scsi/lpfc/lpfc_nvme.c |    6 ++++--
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
-index 14e2043d7685..eab55accf381 100644
---- a/drivers/vhost/vringh.c
-+++ b/drivers/vhost/vringh.c
-@@ -292,7 +292,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
- 	     int (*copy)(const struct vringh *vrh,
- 			 void *dst, const void *src, size_t len))
- {
--	int err, count = 0, up_next, desc_max;
-+	int err, count = 0, indirect_count = 0, up_next, desc_max;
- 	struct vring_desc desc, *descs;
- 	struct vringh_range range = { -1ULL, 0 }, slowrange;
- 	bool slow = false;
-@@ -349,7 +349,12 @@ __vringh_iov(struct vringh *vrh, u16 i,
- 			continue;
- 		}
+--- a/drivers/scsi/lpfc/lpfc_crtn.h
++++ b/drivers/scsi/lpfc/lpfc_crtn.h
+@@ -418,8 +418,6 @@ int lpfc_sli_issue_iocb_wait(struct lpfc
+ 			     uint32_t);
+ void lpfc_sli_abort_fcp_cmpl(struct lpfc_hba *, struct lpfc_iocbq *,
+ 			     struct lpfc_iocbq *);
+-void lpfc_sli4_abort_fcp_cmpl(struct lpfc_hba *h, struct lpfc_iocbq *i,
+-			      struct lpfc_wcqe_complete *w);
  
--		if (count++ == vrh->vring.num) {
-+		if (up_next == -1)
-+			count++;
-+		else
-+			indirect_count++;
+ void lpfc_sli_free_hbq(struct lpfc_hba *, struct hbq_dmabuf *);
+ 
+@@ -627,7 +625,7 @@ void lpfc_nvmet_invalidate_host(struct l
+ 			struct lpfc_nodelist *ndlp);
+ void lpfc_nvme_abort_fcreq_cmpl(struct lpfc_hba *phba,
+ 				struct lpfc_iocbq *cmdiocb,
+-				struct lpfc_wcqe_complete *abts_cmpl);
++				struct lpfc_iocbq *rspiocb);
+ void lpfc_create_multixri_pools(struct lpfc_hba *phba);
+ void lpfc_create_destroy_pools(struct lpfc_hba *phba);
+ void lpfc_move_xri_pvt_to_pbl(struct lpfc_hba *phba, u32 hwqid);
+--- a/drivers/scsi/lpfc/lpfc_nvme.c
++++ b/drivers/scsi/lpfc/lpfc_nvme.c
+@@ -1741,7 +1741,7 @@ lpfc_nvme_fcp_io_submit(struct nvme_fc_l
+  * lpfc_nvme_abort_fcreq_cmpl - Complete an NVME FCP abort request.
+  * @phba: Pointer to HBA context object
+  * @cmdiocb: Pointer to command iocb object.
+- * @abts_cmpl: Pointer to wcqe complete object.
++ * @rspiocb: Pointer to response iocb object.
+  *
+  * This is the callback function for any NVME FCP IO that was aborted.
+  *
+@@ -1750,8 +1750,10 @@ lpfc_nvme_fcp_io_submit(struct nvme_fc_l
+  **/
+ void
+ lpfc_nvme_abort_fcreq_cmpl(struct lpfc_hba *phba, struct lpfc_iocbq *cmdiocb,
+-			   struct lpfc_wcqe_complete *abts_cmpl)
++			   struct lpfc_iocbq *rspiocb)
+ {
++	struct lpfc_wcqe_complete *abts_cmpl = &rspiocb->wcqe_cmpl;
 +
-+		if (count > vrh->vring.num || indirect_count > desc_max) {
- 			vringh_bad("Descriptor loop in %p", descs);
- 			err = -ELOOP;
- 			goto fail;
-@@ -411,6 +416,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
- 				i = return_from_indirect(vrh, &up_next,
- 							 &descs, &desc_max);
- 				slow = false;
-+				indirect_count = 0;
- 			} else
- 				break;
- 		}
--- 
-2.35.1
-
+ 	lpfc_printf_log(phba, KERN_INFO, LOG_NVME,
+ 			"6145 ABORT_XRI_CN completing on rpi x%x "
+ 			"original iotag x%x, abort cmd iotag x%x "
 
 
