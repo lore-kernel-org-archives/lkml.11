@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CCECC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:52:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54544C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:52:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386230AbiFMOwO (ORCPT
+        id S1386271AbiFMOwQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:52:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43384 "EHLO
+        Mon, 13 Jun 2022 10:52:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386193AbiFMOtJ (ORCPT
+        with ESMTP id S1385899AbiFMOss (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:49:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE82521266;
-        Mon, 13 Jun 2022 04:53:21 -0700 (PDT)
+        Mon, 13 Jun 2022 10:48:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDB5BC047E;
+        Mon, 13 Jun 2022 04:53:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 74093614F5;
-        Mon, 13 Jun 2022 11:53:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AFC1C3411B;
-        Mon, 13 Jun 2022 11:53:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A57C61425;
+        Mon, 13 Jun 2022 11:53:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 350A9C34114;
+        Mon, 13 Jun 2022 11:52:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655121184;
-        bh=gsknnm1TEWssjyLcGyQFf5l/MRxpU5FvJ25DZvX++9s=;
+        s=korg; t=1655121179;
+        bh=B7tnLXZ9zOFwqW4lhSdUyligTwXyJWYFGo6O+Ex6O7U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vgmEjjSse80ecQiQvI5G3E+8xP5N0luFmWQUDGRZQuzT+YPTUSmLWwOqIKfYcWr3s
-         7/1v2ACROfzliJP6OtgNReJF55zVvS0HUXFdtNPKI3b+Rr6jYLxu4g9zh/bVAqdrKg
-         mD6SD26hnGwKkkDLBR3u5Fnp4a3Vahyzzc8qfWIk=
+        b=ekT9F0orK09gyrOiv+HF26iJ+yKR21hsv1JdK5FGrnAGZifekzdjj8c5oEdvo/vGX
+         LGfCcTADGHMH6Crghq0UYTXwHxzVVIT2L2kNr6op99sqbmECWeF02wsqs7Z79pxAsq
+         unEj2+qVY25lhGWUS0xHFvxDMmE0QMHk+3doLU+o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Davide Caratti <dcaratti@redhat.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.17 295/298] net/sched: act_police: more accurate MTU policing
-Date:   Mon, 13 Jun 2022 12:13:09 +0200
-Message-Id: <20220613094934.024491410@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Tyler Erickson <tyler.erickson@seagate.com>,
+        Muhammad Ahmad <muhammad.ahmad@seagate.com>,
+        Michael English <michael.english@seagate.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Subject: [PATCH 5.17 267/298] libata: fix reading concurrent positioning ranges log
+Date:   Mon, 13 Jun 2022 12:12:41 +0200
+Message-Id: <20220613094933.170957037@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,130 +52,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Davide Caratti <dcaratti@redhat.com>
+From: Tyler Erickson <tyler.erickson@seagate.com>
 
-commit 4ddc844eb81da59bfb816d8d52089aba4e59e269 upstream.
+commit c745dfc541e78428ba3986f1d17fe1dfdaca8184 upstream.
 
-in current Linux, MTU policing does not take into account that packets at
-the TC ingress have the L2 header pulled. Thus, the same TC police action
-(with the same value of tcfp_mtu) behaves differently for ingress/egress.
-In addition, the full GSO size is compared to tcfp_mtu: as a consequence,
-the policer drops GSO packets even when individual segments have the L2 +
-L3 + L4 + payload length below the configured valued of tcfp_mtu.
+The concurrent positioning ranges log is not a fixed size and may depend
+on how many ranges are supported by the device. This patch uses the size
+reported in the GPL directory to determine the number of pages supported
+by the device before attempting to read this log page.
 
-Improve the accuracy of MTU policing as follows:
- - account for mac_len for non-GSO packets at TC ingress.
- - compare MTU threshold with the segmented size for GSO packets.
-Also, add a kselftest that verifies the correct behavior.
+This resolves this error from the dmesg output:
+    ata6.00: Read log 0x47 page 0x00 failed, Emask 0x1
 
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
-Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: stable@vger.kernel.org
+Fixes: fe22e1c2f705 ("libata: support concurrent positioning ranges log")
+Signed-off-by: Tyler Erickson <tyler.erickson@seagate.com>
+Reviewed-by: Muhammad Ahmad <muhammad.ahmad@seagate.com>
+Tested-by: Michael English <michael.english@seagate.com>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sched/act_police.c                              |   16 +++++-
- tools/testing/selftests/net/forwarding/tc_police.sh |   52 ++++++++++++++++++++
- 2 files changed, 67 insertions(+), 1 deletion(-)
+ drivers/ata/libata-core.c |   21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
 
---- a/net/sched/act_police.c
-+++ b/net/sched/act_police.c
-@@ -239,6 +239,20 @@ release_idr:
- 	return err;
+--- a/drivers/ata/libata-core.c
++++ b/drivers/ata/libata-core.c
+@@ -2003,16 +2003,16 @@ retry:
+ 	return err_mask;
  }
  
-+static bool tcf_police_mtu_check(struct sk_buff *skb, u32 limit)
-+{
-+	u32 len;
-+
-+	if (skb_is_gso(skb))
-+		return skb_gso_validate_mac_len(skb, limit);
-+
-+	len = qdisc_pkt_len(skb);
-+	if (skb_at_tc_ingress(skb))
-+		len += skb->mac_len;
-+
-+	return len <= limit;
-+}
-+
- static int tcf_police_act(struct sk_buff *skb, const struct tc_action *a,
- 			  struct tcf_result *res)
+-static bool ata_log_supported(struct ata_device *dev, u8 log)
++static int ata_log_supported(struct ata_device *dev, u8 log)
  {
-@@ -261,7 +275,7 @@ static int tcf_police_act(struct sk_buff
- 			goto inc_overlimits;
- 	}
+ 	struct ata_port *ap = dev->link->ap;
  
--	if (qdisc_pkt_len(skb) <= p->tcfp_mtu) {
-+	if (tcf_police_mtu_check(skb, p->tcfp_mtu)) {
- 		if (!p->rate_present && !p->pps_present) {
- 			ret = p->tcfp_result;
- 			goto end;
---- a/tools/testing/selftests/net/forwarding/tc_police.sh
-+++ b/tools/testing/selftests/net/forwarding/tc_police.sh
-@@ -37,6 +37,8 @@ ALL_TESTS="
- 	police_tx_mirror_test
- 	police_pps_rx_test
- 	police_pps_tx_test
-+	police_mtu_rx_test
-+	police_mtu_tx_test
- "
- NUM_NETIFS=6
- source tc_common.sh
-@@ -346,6 +348,56 @@ police_pps_tx_test()
- 	tc filter del dev $rp2 egress protocol ip pref 1 handle 101 flower
+ 	if (dev->horkage & ATA_HORKAGE_NO_LOG_DIR)
+-		return false;
++		return 0;
+ 
+ 	if (ata_read_log_page(dev, ATA_LOG_DIRECTORY, 0, ap->sector_buf, 1))
+-		return false;
+-	return get_unaligned_le16(&ap->sector_buf[log * 2]) ? true : false;
++		return 0;
++	return get_unaligned_le16(&ap->sector_buf[log * 2]);
  }
  
-+police_mtu_common_test() {
-+	RET=0
+ static bool ata_identify_page_supported(struct ata_device *dev, u8 page)
+@@ -2448,15 +2448,20 @@ static void ata_dev_config_cpr(struct at
+ 	struct ata_cpr_log *cpr_log = NULL;
+ 	u8 *desc, *buf = NULL;
+ 
+-	if (ata_id_major_version(dev->id) < 11 ||
+-	    !ata_log_supported(dev, ATA_LOG_CONCURRENT_POSITIONING_RANGES))
++	if (ata_id_major_version(dev->id) < 11)
++		goto out;
 +
-+	local test_name=$1; shift
-+	local dev=$1; shift
-+	local direction=$1; shift
-+
-+	tc filter add dev $dev $direction protocol ip pref 1 handle 101 flower \
-+		dst_ip 198.51.100.1 ip_proto udp dst_port 54321 \
-+		action police mtu 1042 conform-exceed drop/ok
-+
-+	# to count "conform" packets
-+	tc filter add dev $h2 ingress protocol ip pref 1 handle 101 flower \
-+		dst_ip 198.51.100.1 ip_proto udp dst_port 54321 \
-+		action drop
-+
-+	mausezahn $h1 -a own -b $(mac_get $rp1) -A 192.0.2.1 -B 198.51.100.1 \
-+		-t udp sp=12345,dp=54321 -p 1001 -c 10 -q
-+
-+	mausezahn $h1 -a own -b $(mac_get $rp1) -A 192.0.2.1 -B 198.51.100.1 \
-+		-t udp sp=12345,dp=54321 -p 1000 -c 3 -q
-+
-+	tc_check_packets "dev $dev $direction" 101 13
-+	check_err $? "wrong packet counter"
-+
-+	# "exceed" packets
-+	local overlimits_t0=$(tc_rule_stats_get ${dev} 1 ${direction} .overlimits)
-+	test ${overlimits_t0} = 10
-+	check_err $? "wrong overlimits, expected 10 got ${overlimits_t0}"
-+
-+	# "conform" packets
-+	tc_check_packets "dev $h2 ingress" 101 3
-+	check_err $? "forwarding error"
-+
-+	tc filter del dev $h2 ingress protocol ip pref 1 handle 101 flower
-+	tc filter del dev $dev $direction protocol ip pref 1 handle 101 flower
-+
-+	log_test "$test_name"
-+}
-+
-+police_mtu_rx_test()
-+{
-+	police_mtu_common_test "police mtu (rx)" $rp1 ingress
-+}
-+
-+police_mtu_tx_test()
-+{
-+	police_mtu_common_test "police mtu (tx)" $rp2 egress
-+}
-+
- setup_prepare()
- {
- 	h1=${NETIFS[p1]}
++	buf_len = ata_log_supported(dev, ATA_LOG_CONCURRENT_POSITIONING_RANGES);
++	if (buf_len == 0)
+ 		goto out;
+ 
+ 	/*
+ 	 * Read the concurrent positioning ranges log (0x47). We can have at
+-	 * most 255 32B range descriptors plus a 64B header.
++	 * most 255 32B range descriptors plus a 64B header. This log varies in
++	 * size, so use the size reported in the GPL directory. Reading beyond
++	 * the supported length will result in an error.
+ 	 */
+-	buf_len = (64 + 255 * 32 + 511) & ~511;
++	buf_len <<= 9;
+ 	buf = kzalloc(buf_len, GFP_KERNEL);
+ 	if (!buf)
+ 		goto out;
 
 
