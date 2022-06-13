@@ -2,171 +2,386 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8660C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:24:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B08FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:25:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244797AbiFMSYp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:24:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46388 "EHLO
+        id S244619AbiFMSZl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:25:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344447AbiFMSYF (ORCPT
+        with ESMTP id S242509AbiFMSZZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 14:24:05 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B803613DE0
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 07:30:45 -0700 (PDT)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25DDZ2Zf010708;
-        Mon, 13 Jun 2022 14:30:40 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=qVQ/ahnyNpxUBy+k1wMLC47ygFG61eOdvJKVUMHCJsg=;
- b=oL1mXY3XSA99TmjVsP80VIlI+Ekczhe5UPquXOIrYT/iuJiNMn6dNoAo/cFrHplkPazo
- tGWsFvrSZR7P0hMmy+1m+24Ieg/hDHSm5pqydcC/Ptpcd5BA5lGf0xikIe+r1nTtvR0J
- fAth0nH0lUChOFszHyk71nSdnTKMKAH4lPzzdCWkVbQoq4yP/3mnpqocs17oApeQc0lE
- avA0B2jgeWCcTTQUZmDOsXsaRgWoitt/B4NpbaZs6+kgWpgoGrtgiTepFArr9BCk/BFs
- alCGiQ63X2YtptcWDLmAQmvJz9QH9BuCVIVhHA/9HlhWeaHp3/tFeVo/XjbgmuTPyvAT UQ== 
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gmkktb8cx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 13 Jun 2022 14:30:40 +0000
-Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 25DEM4hn034769;
-        Mon, 13 Jun 2022 14:30:39 GMT
-Received: from nam04-bn8-obe.outbound.protection.outlook.com (mail-bn8nam04lp2049.outbound.protection.outlook.com [104.47.74.49])
-        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3gp6xf06b8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 13 Jun 2022 14:30:38 +0000
+        Mon, 13 Jun 2022 14:25:25 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2064.outbound.protection.outlook.com [40.107.94.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AEF4A76DE;
+        Mon, 13 Jun 2022 07:31:43 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Qh/apT+fFdkMQpO4Hg9UwEHww4GLbVKe576NZXz4W6FYyYsU1Bf80Gpg9QBMZ/jul0tHK1xOIj5dUeH9DQUUhQF1QTECRGBpr2ClDhAAE9NrTkSldBwPfo3ea5h19p+TxIvQiS4cS9avZ1wfSuxoM9LPsD5+QjT6xEj70Di6BD/xVEPH556Th/1P/E7Gi5kccnoCMU6IVNeF3vm0t3gsMMd8R2c4ioyW5S01pG/KWSX1zTiWgDItEAJZR2MlZDp1rv13lEUC7vfbnssBo5jXf5yZiZV7n48jGXOgW4Gk3rj5eLskaTT3zu0YZBlXgY92Jj3jozWUYoxlFylQW79bkQ==
+ b=S4fr2C2aG8DXZlUtOPVXFQg3abOvynQUo1V8nxfhx0cBdceGlJ9yGlrKEOusOvMEDFPWlwzkUX0+Y62SZphjmctQF8Lv5XE2Bf/REjurYKUDNvpkuN+USJaqz1/Lmn5rMofh6OiUQuzuyaxkN3KBAFuxv0OAWvapBS9TOZo1GAVeJG9clhbteuNHh7W6V+buXdhFnnAsrOsCruECkbOINDypPWyJ4uF4bOHs+iTzYbESop2PUU+O+voFtp2HP7/HGwNIGEhJufQvTHHtuCJLIEObtH5Whc0HDmj885mef/mBYWa5X8GGPFsFewpiGJzHPkgipBivDHxDS9mfYDFL4g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qVQ/ahnyNpxUBy+k1wMLC47ygFG61eOdvJKVUMHCJsg=;
- b=Ji9niEHD+FZWAz3CA0SUr/uNut/c6MLSb/xpy8/R/tsFOJdxJvkq0h4F9YZMmDtiA/PyGcvT/tr79ZErrMax18QUuwMf1lTUeXZLd2SMdiNuo2gzPk9p7zpvJrbTC+DKRLPG48Ru04Ep2d0W735ckqBNXZFzfUiFPXoop/frZvlR/REapAaZVNa92aDGshpwDTWQwTeYvPmaPamSHe3InLDsfFed2Nfw4moe4tICCwMPTYS/RV85jiIo0mJkNpk06M6jEhqZXv/5kPHsA8bCjEatUwgquL1QmBIQ0KRb1v9oyNII3U1U3YEPvLTGzzkLjBGcLNBAYlZczjptqUduJQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+ bh=pFehFNcus93WEme+cHXr1XPKQlnJKnpItDN0snfAh5s=;
+ b=Xbvndu+GAV+5ccNyHCCQle7+49guJvpvG7fgx6AAxrbZujxpg0ajq9zPU/XRB+ZjsxL6WmYUyHwti32dxj1K+LmfQKnE4qmoW4bFIS1RZDx6Pw4GQkKFet2qNTYYDxeLIu/duGQiVB1aB7gCTr4suShgE/QhPo8klbmo3C1THnvaZZulJafgE7q3AsSMYNWxhtEExa9uoBmMZeI5w6YKlPnDdOg3IMKIKMIXcFu3HoEiDfG8WgwdNXkYxdHtia4CHNxCMLDHHd0M0cmCSbLABA+d9ACACSPgkOqHhtnwyWnX1exH9PSBcbJpl/1Y14jmGHMwAS765sBAwRuQ+1Gedg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=opensource.wdc.com
+ smtp.mailfrom=xilinx.com; dmarc=pass (p=none sp=none pct=100) action=none
+ header.from=xilinx.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qVQ/ahnyNpxUBy+k1wMLC47ygFG61eOdvJKVUMHCJsg=;
- b=Fx06MOUlvTONMeR2YiQdK6wnn16oav0sallW4z18nGJ57iqtCQS9vBFxAfUeAAmkakzZXGw3klpKTw0wSOW/BbqcOucvYI5ygGBj6tZpzYV8Vf6+V4Iu3pMk5nyiE4c2NeaJj9FcnG9rmFsi6C94RYbfi0FGCp0MeI6xCjY8VYw=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by PH0PR10MB5794.namprd10.prod.outlook.com
- (2603:10b6:510:f4::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.15; Mon, 13 Jun
- 2022 14:30:37 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5020:9b82:5917:40b]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5020:9b82:5917:40b%6]) with mapi id 15.20.5332.020; Mon, 13 Jun 2022
- 14:30:37 +0000
-Date:   Mon, 13 Jun 2022 17:30:24 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Nam Cao <namcaov@gmail.com>
-Cc:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        linux-staging@lists.linux.dev, phil@philpotter.co.uk
-Subject: Re: [PATCH v2 1/2] staging: r8188eu: replace LE_BITS_TO_1BYTE with
- clearer codes
-Message-ID: <20220613143024.GE2146@kadam>
-References: <cover.1655019752.git.namcaov@gmail.com>
- <4cdacd703158029c0b0f706e3cf1eb8daf4121c0.1655019752.git.namcaov@gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4cdacd703158029c0b0f706e3cf1eb8daf4121c0.1655019752.git.namcaov@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: MR2P264CA0118.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:500:33::34) To MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28)
+ bh=pFehFNcus93WEme+cHXr1XPKQlnJKnpItDN0snfAh5s=;
+ b=it9KQcK+3cjRoBnQDxSnRaJ5AyNAaaIeNHrA7sUQjOEcbXcEF2EwLocNaAdPU24kistG5+pdWHRYuqBRPM4pOIOqs3wToe8dekd8f1SZ7JXCnqF4+hN3zXR3AfajUEF+GBB1lNFxP2Hc6ff29+NiOQWVHEIp6MlZ7kDviapOlH4=
+Received: from DM3PR11CA0016.namprd11.prod.outlook.com (2603:10b6:0:54::26) by
+ BL0PR02MB4772.namprd02.prod.outlook.com (2603:10b6:208:52::12) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5332.15; Mon, 13 Jun 2022 14:31:37 +0000
+Received: from DM3NAM02FT040.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:0:54:cafe::c4) by DM3PR11CA0016.outlook.office365.com
+ (2603:10b6:0:54::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.13 via Frontend
+ Transport; Mon, 13 Jun 2022 14:31:37 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com; pr=C
+Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
+ DM3NAM02FT040.mail.protection.outlook.com (10.13.5.132) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5332.12 via Frontend Transport; Mon, 13 Jun 2022 14:31:36 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Mon, 13 Jun 2022 07:31:35 -0700
+Received: from smtp.xilinx.com (172.19.127.96) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Mon, 13 Jun 2022 07:31:35 -0700
+Envelope-to: git@xilinx.com,
+ damien.lemoal@opensource.wdc.com,
+ robh+dt@kernel.org,
+ krzysztof.kozlowski+dt@linaro.org,
+ linux-ide@vger.kernel.org,
+ devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Received: from [10.140.6.18] (port=39540 helo=xhdlakshmis40.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <piyush.mehta@xilinx.com>)
+        id 1o0l6M-00098T-DV; Mon, 13 Jun 2022 07:31:34 -0700
+From:   Piyush Mehta <piyush.mehta@xilinx.com>
+To:     <damien.lemoal@opensource.wdc.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <linux-ide@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <michal.simek@xilinx.com>
+CC:     <git@xilinx.com>, <sivadur@xilinx.com>,
+        Piyush Mehta <piyush.mehta@xilinx.com>
+Subject: [PATCH V3] dt-bindings: ata: ahci-ceva: convert to yaml
+Date:   Mon, 13 Jun 2022 20:01:20 +0530
+Message-ID: <20220613143120.6936-1-piyush.mehta@xilinx.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 46ada9cd-6dc0-4030-7c48-08da4d49486e
-X-MS-TrafficTypeDiagnostic: PH0PR10MB5794:EE_
-X-Microsoft-Antispam-PRVS: <PH0PR10MB5794465C8C98EB40B43AE21F8EAB9@PH0PR10MB5794.namprd10.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: f8785ae1-6c2b-4615-eb65-08da4d496c29
+X-MS-TrafficTypeDiagnostic: BL0PR02MB4772:EE_
+X-Microsoft-Antispam-PRVS: <BL0PR02MB477240AC74D95D4C70345E4DD4AB9@BL0PR02MB4772.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tqGEppUm450+l1uHKYntBaZUrBWY2WQ4Ys2QZ0c/hqTK4Xjx1EXi3XtJkyiUH0ca38Og3c2E5l72qB+mfrC1xnYiEetJHq/nQ3ClfHEkBzHZPxZyEmqZpoLL9YjKz9OYsDe5pibVFa9aArkLrJYtPF56XYx6OQpvQ4VU5HZFOxGeksUckKOsLvDrYjZxism3uGcAuXQ/xp0V75i6l2yvMe/g7u5r++0gY2NpHuNfvdM9Efqgcjg/IrVNb+nnF9lewF/Dr/jOnGQRwQZC29uzmP4xXF0JzyKfwDAbpQAok06RdZ3SxIKeaEUpufjz71bLaN0cLd2jY00e7roFx9l7AfFJb6lOwL1mAN0Tbs/0wnN1elr0mo2cH1UgWg8qI0bFp2KJfxXFSsYfThl5rXvvyPusB/swAOIIrA4QO9CIFIb0Nulc95eYoSMamF7OmdZF2L0PcWWFykxnZNcd8I3yi94XU2Xcr4kIjHE/gJImNLgVCHeiS645ZrWJtP+U03lVmrTsF+RKWh07ZxjVf1mONmo09SNERL3D+hH63uhOPc0WRSWRKQRZOz9dJeEkYIzePYaLS5KnT8f6cnH/0lTY5KInlzeq99xzZdL3HE3/siLqB+8HBrd/ea3fgYX61Q3Ea/BYSPkyHQpMfFjN4+uLT0CD5WkA5eAfsU+7GUfWucjP5EUPgjDGLPEVT6AMpvYMA9fqdT9k5SSlcEwIzF9x3Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(366004)(6486002)(508600001)(8676002)(66946007)(2906002)(86362001)(8936002)(4326008)(9686003)(6916009)(316002)(1076003)(186003)(6512007)(26005)(66556008)(66476007)(6506007)(52116002)(38100700002)(6666004)(83380400001)(44832011)(5660300002)(33656002)(38350700002)(33716001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?IDYxz5cfHMG04gR5i23OyNe4iPOqxr5JUAbk6l2U9WphMdiR3woJo+9gKUZn?=
- =?us-ascii?Q?GEohN8i0JaIHMhfYwnrF1QpT12RNnAsO9SxQqcwy7q1otaAhALQcXCgGiHsF?=
- =?us-ascii?Q?shrLtn3v3aY6Z9Vt18YfjegG5p4F4AKE76MyNpalG6hb7Aen1EPJHZ2eIy81?=
- =?us-ascii?Q?HM3TevySwCRPJAxYi5HmNqxHVDVNyaZiGYNhClBu+4J04yKSMEnYKMcgg6Rr?=
- =?us-ascii?Q?IUyuLOdCYnnJWih4eKKyPwHdm7FoIzX36+6gXbc6UYkXgz2KiLd9KpPgJVmQ?=
- =?us-ascii?Q?fGL48dqmQhjfoBjUmgKpEsPFtsxXWbmIMm6hqzSHgeJCN+pMt99VZjPimFv/?=
- =?us-ascii?Q?ZJ+chxdqKaEkZtuaeD0o8bwI2AABUMdPgFyYvODCQL+gpKH5yI+ileMLDGFS?=
- =?us-ascii?Q?dQ+xsq42exuS4gSfpJSZl+um05x47yQMVM1cy+2AXJbd1qe2aVtesDDnUz7s?=
- =?us-ascii?Q?l3U24eMgI4a9xs+VVyfRK78abpVFxIbr/z2JyilK8zmFQdrnV429JnTTrsar?=
- =?us-ascii?Q?ruc8WTEROc0DXjZjYg+IhhfiOhGdFRZXIjIVzxhE6vRMF+wLiewthEcfZ09t?=
- =?us-ascii?Q?RCTyoH8X6GzrciKbAF1OolqNsXDvC0gD13LdGfpuxItLeU791HT/3C7rXCLZ?=
- =?us-ascii?Q?ulJZKTjWnp9/95BeeIZCB4ba/Fd2tC1BxBRHE/VngE+B0u10LQ2XZryhnowh?=
- =?us-ascii?Q?fm1slS8sBwwWe7wqpAHMH44fXVWQIyOkFY7LXgi9cxmMeC0uTJom8JDdbx7B?=
- =?us-ascii?Q?122osTiDLZHFfBBVzPAHKyKT82y8JiIcENyl7/kKbOV5l8KWdP1YmDQZM8JF?=
- =?us-ascii?Q?Q0r0efQE52c+Uv13Q/1Y2Qd+5SJbSn79QGbwp7aCeC6D5C6mOzGFqq847BFN?=
- =?us-ascii?Q?VLXj6pTiB9Fu+Kh+PWqtVALCWHFAaLBEQSuAzx49M9ObWis6VMFqc5bfrpeJ?=
- =?us-ascii?Q?wEHtPMEX6FRr3WYzbmveNK494Fsom0el3r1+GaOuJR6mtrkG6S+8m/qcSlhv?=
- =?us-ascii?Q?sWxrBae4vVm62aFpVNey0IORCm7Ke+p8grdAgFm/5l+Fw26/un4bHHEbzdka?=
- =?us-ascii?Q?QJxoubYuVJoXDV3DbuJhw8Yr4eUA00j/RmWZJv/Vt/XLuPCxqICornL9uyvy?=
- =?us-ascii?Q?01Gl8BGhaY7dEloAapzgSOYIQE5g17Jy4akhSFaPiBP5CaikvFGVrMqTzv/U?=
- =?us-ascii?Q?jOweV06O802gLw/s72d922TVSyzyGszkSXtJZ+iNpnf9bY8iReaDjA+n8jvn?=
- =?us-ascii?Q?kYFK8RVRHRv+hOYz+IBPwFk8tyFzNbf4vBRWhMR1Y6gi3KgAsmGNxlQSyCX0?=
- =?us-ascii?Q?47DeZClNEmrgHSqc392wk5CSp4FpM5uQRUdQDL/H081Gup7RcrI3XgiwAfdA?=
- =?us-ascii?Q?wXArxh3PdhJVJyp8ghvCcI0Z4ysHjn1JdrXgehDPO3vT8be19nOy3SOm9+gw?=
- =?us-ascii?Q?mg4+3y9PG5Sy1K8xh0oKxWmYiyGVM3Q9iPPSFlDpno016KzJ0sjx67GbSIcE?=
- =?us-ascii?Q?OYG/hRNVNHYKzg8y1ucYePofbP+t+IFVVrJ8B5xtNhYo+SyMx+K0eNCQaQqQ?=
- =?us-ascii?Q?vNEsGSl0UZb/oek+XOxGbc4ARM8J6houOoN4IqtVOqQgmr2x6CaTTttmN62K?=
- =?us-ascii?Q?U5MNBVH5UZ5JiIB5jmQgk/qGwHjgKfeXd+POv1/21b62r1KkZQfW15mLSf7y?=
- =?us-ascii?Q?ZHLsqTc0IgiBqwPnI1oRfiSm4vNa7YRGfkpnZh91wWFVO2nhJkNH6uCK/SLE?=
- =?us-ascii?Q?wb/BhyhHsjQy2icPoWHywxlpDOUJP/Y=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 46ada9cd-6dc0-4030-7c48-08da4d49486e
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jun 2022 14:30:37.4029
+X-Microsoft-Antispam-Message-Info: onD914akgMOZjMFtMDr6/eQtXl3qAyhn4TFZcsHcQfC9w/X1LSUvqNuUpRaHd8iyKvUzkq0YxP9EB9EsUklYbsthhUQMRUQXt2gDE8ZnmRzNwVZsWU737+8b6XLcJqMyhTZeLgfka1pAh7MM4RRlf/vkiO1bwf7t9ICJ2Rst8UeWS+/duA61c9YxcK3f4YYII8fG6GDuKyFu+p4ITp+z9YyoFKFtaY9+FlqNSXdYME7B20GGo19epNJp/yLHiSl15gagwKpaT7MVVlhIn0zXQG3hzlNiFWryZ/uJm9nWigsj52BPGo0esGA3uCjpV09Qt6oV24q5cOYHjQN5H32IZncQXQybnKtf/bZ1EekbGwBwoQzFoI7SdEixZnxVqUlRncN5318/Sfxp976a/sQ2p4pr0H51dxo1aMCUaQ9efDvJI7j5h2txGBZp78kFFcTdJuivGD/09rSrYdx9LOhexDrCZMPDtOUH/hLrV/WXRR6WQ6JIeelYF9uQgcF9OZEVpfiP0eqDnIJMjrCjwzDNLYqFOEL3WsAd8Y9M3xw/QnmN/kvuKm5LtgN2N3bIwE8/EdJhEA3rCuYoq/mqGSVDt3QadcTmx5FPY3J+/2oV3PwQdGt2pR0yoGlG+GLTj8n6vAFBK1aXAzU1lmzzqWFdMQiBVE866tI7bDaSsr5+vzaNkzqmpS5jJCFsoKpVw7j/4ARxcKmZw4HLIAV9g9wUDcW2sWaxNOjJ1NRJ2praf2RXL2IoKBawSJovvqtWwVT+UJftDxzHVpYliEzoA30bTfuquGkTjWiwNNF7ma8N5QF7OuVeVupsA9XIeGFphHV2ZRUrsR9v7M0VRErI+1jr9w==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230016)(4636009)(46966006)(36840700001)(40470700004)(2906002)(508600001)(966005)(8676002)(82310400005)(36860700001)(6636002)(40460700003)(316002)(70586007)(7696005)(26005)(70206006)(6666004)(110136005)(4326008)(54906003)(36756003)(2616005)(83380400001)(186003)(1076003)(426003)(47076005)(107886003)(336012)(9786002)(8936002)(356005)(5660300002)(44832011)(7636003)(102446001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jun 2022 14:31:36.8046
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: GpdP5g7+GFB3hib7hmHYDFW0pX7VUirawKhtJJl5IKG1wOOkTh2An9EXZbgCP37eoKQRQq5T6lxJxvU5WP+XomGcGvy7xPMhyjsaPS4wM4s=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR10MB5794
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.874
- definitions=2022-06-13_06:2022-06-13,2022-06-13 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 phishscore=0
- mlxlogscore=999 mlxscore=0 adultscore=0 suspectscore=0 spamscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206130065
-X-Proofpoint-GUID: bSudBfHd1Hz2yZ7Jgdwwoaq6R7QJrcPd
-X-Proofpoint-ORIG-GUID: bSudBfHd1Hz2yZ7Jgdwwoaq6R7QJrcPd
+X-MS-Exchange-CrossTenant-Network-Message-Id: f8785ae1-6c2b-4615-eb65-08da4d496c29
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT040.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR02MB4772
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jun 12, 2022 at 10:11:43AM +0200, Nam Cao wrote:
-> The statement LE_BITS_TO_1BYTE(__paddr + n, 0, 8) is not obvious on
-> what it is doing, while in truth it is simply reading one byte.
-> Replace these with clearer codes.
-> 
-> Signed-off-by: Nam Cao <namcaov@gmail.com>
-> ---
->  drivers/staging/r8188eu/include/Hal8188ERateAdaptive.h | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/staging/r8188eu/include/Hal8188ERateAdaptive.h b/drivers/staging/r8188eu/include/Hal8188ERateAdaptive.h
-> index 20d73ca781e8..79e4210c6b65 100644
-> --- a/drivers/staging/r8188eu/include/Hal8188ERateAdaptive.h
-> +++ b/drivers/staging/r8188eu/include/Hal8188ERateAdaptive.h
-> @@ -26,15 +26,15 @@
->  #define GET_TX_REPORT_TYPE1_RERTY_0(__paddr)			\
->  	le16_get_bits(*(__le16 *)__paddr, GENMASK(15, 0))
->  #define GET_TX_REPORT_TYPE1_RERTY_1(__paddr)			\
-> -	LE_BITS_TO_1BYTE(__paddr + 2, 0, 8)
-> +	((u8 *)__paddr)[2]
+Convert the ahci-ceva doc to yaml.
 
-Instead of doing this, I would prefer to just get rid of
-GET_TX_REPORT_TYPE1_RERTY_[1234].
+Signed-off-by: Piyush Mehta <piyush.mehta@xilinx.com>
+---
+ .../devicetree/bindings/ata/ahci-ceva.txt     |  63 ------
+ .../devicetree/bindings/ata/ahci-ceva.yaml    | 191 ++++++++++++++++++
+ 2 files changed, 191 insertions(+), 63 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/ata/ahci-ceva.txt
+ create mode 100644 Documentation/devicetree/bindings/ata/ahci-ceva.yaml
 
-regards,
-dan carpenter
+diff --git a/Documentation/devicetree/bindings/ata/ahci-ceva.txt b/Documentation/devicetree/bindings/ata/ahci-ceva.txt
+deleted file mode 100644
+index bfb6da0281ec..000000000000
+--- a/Documentation/devicetree/bindings/ata/ahci-ceva.txt
++++ /dev/null
+@@ -1,63 +0,0 @@
+-Binding for CEVA AHCI SATA Controller
+-
+-Required properties:
+-  - reg: Physical base address and size of the controller's register area.
+-  - compatible: Compatibility string. Must be 'ceva,ahci-1v84'.
+-  - clocks: Input clock specifier. Refer to common clock bindings.
+-  - interrupts: Interrupt specifier. Refer to interrupt binding.
+-  - ceva,p0-cominit-params: OOB timing value for COMINIT parameter for port 0.
+-  - ceva,p1-cominit-params: OOB timing value for COMINIT parameter for port 1.
+-			The fields for the above parameter must be as shown below:
+-			ceva,pN-cominit-params = /bits/ 8 <CIBGMN CIBGMX CIBGN CINMP>;
+-			CINMP : COMINIT Negate Minimum Period.
+-			CIBGN : COMINIT Burst Gap Nominal.
+-			CIBGMX: COMINIT Burst Gap Maximum.
+-			CIBGMN: COMINIT Burst Gap Minimum.
+-  - ceva,p0-comwake-params: OOB timing value for COMWAKE parameter for port 0.
+-  - ceva,p1-comwake-params: OOB timing value for COMWAKE parameter for port 1.
+-			The fields for the above parameter must be as shown below:
+-			ceva,pN-comwake-params = /bits/ 8 <CWBGMN CWBGMX CWBGN CWNMP>;
+-			CWBGMN: COMWAKE Burst Gap Minimum.
+-			CWBGMX: COMWAKE Burst Gap Maximum.
+-			CWBGN: COMWAKE Burst Gap Nominal.
+-			CWNMP: COMWAKE Negate Minimum Period.
+-  - ceva,p0-burst-params: Burst timing value for COM parameter for port 0.
+-  - ceva,p1-burst-params: Burst timing value for COM parameter for port 1.
+-			The fields for the above parameter must be as shown below:
+-			ceva,pN-burst-params = /bits/ 8 <BMX BNM SFD PTST>;
+-			BMX: COM Burst Maximum.
+-			BNM: COM Burst Nominal.
+-			SFD: Signal Failure Detection value.
+-			PTST: Partial to Slumber timer value.
+-  - ceva,p0-retry-params: Retry interval timing value for port 0.
+-  - ceva,p1-retry-params: Retry interval timing value for port 1.
+-			The fields for the above parameter must be as shown below:
+-			ceva,pN-retry-params = /bits/ 16 <RIT RCT>;
+-			RIT:  Retry Interval Timer.
+-			RCT:  Rate Change Timer.
+-
+-Optional properties:
+-  - ceva,broken-gen2: limit to gen1 speed instead of gen2.
+-  - phys: phandle for the PHY device
+-  - resets: phandle to the reset controller for the SATA IP
+-
+-Examples:
+-	ahci@fd0c0000 {
+-		compatible = "ceva,ahci-1v84";
+-		reg = <0xfd0c0000 0x200>;
+-		interrupt-parent = <&gic>;
+-		interrupts = <0 133 4>;
+-		clocks = <&clkc SATA_CLK_ID>;
+-		ceva,p0-cominit-params = /bits/ 8 <0x0F 0x25 0x18 0x29>;
+-		ceva,p0-comwake-params = /bits/ 8 <0x04 0x0B 0x08 0x0F>;
+-		ceva,p0-burst-params = /bits/ 8 <0x0A 0x08 0x4A 0x06>;
+-		ceva,p0-retry-params = /bits/ 16 <0x0216 0x7F06>;
+-
+-		ceva,p1-cominit-params = /bits/ 8 <0x0F 0x25 0x18 0x29>;
+-		ceva,p1-comwake-params = /bits/ 8 <0x04 0x0B 0x08 0x0F>;
+-		ceva,p1-burst-params = /bits/ 8 <0x0A 0x08 0x4A 0x06>;
+-		ceva,p1-retry-params = /bits/ 16 <0x0216 0x7F06>;
+-		ceva,broken-gen2;
+-		phys = <&psgtr 1 PHY_TYPE_SATA 1 1>;
+-		resets = <&zynqmp_reset ZYNQMP_RESET_SATA>;
+-	};
+diff --git a/Documentation/devicetree/bindings/ata/ahci-ceva.yaml b/Documentation/devicetree/bindings/ata/ahci-ceva.yaml
+new file mode 100644
+index 000000000000..f13b3286a079
+--- /dev/null
++++ b/Documentation/devicetree/bindings/ata/ahci-ceva.yaml
+@@ -0,0 +1,191 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/ata/ahci-ceva.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Ceva AHCI SATA Controller
++
++description: |
++  The Ceva SATA controller mostly conforms to the AHCI interface with some
++  special extensions to add functionality, is a high-performance dual-port
++  SATA host controller with an AHCI compliant command layer which supports
++  advanced features such as native command queuing and frame information
++  structure (FIS) based switching for systems employing port multipliers.
++
++maintainers:
++  - Piyush Mehta <piyush.mehta@xilinx.com>
++
++properties:
++  compatible:
++    const: ceva,ahci-1v84
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  dma-coherent: true
++
++  power-domains:
++    description: |
++      Specifies a phandle to PM domain provider node.
++    maxItems: 1
++
++  ceva,p0-cominit-params:
++    $ref: /schemas/types.yaml#/definitions/uint8-array
++    minItems: 4
++    maxItems: 4
++    description: |
++      OOB timing value for COMINIT parameter for port 0.
++      The fields for the above parameter must be as shown below:-
++      ceva,p0-cominit-params = /bits/ 8 <CIBGMN CIBGMX CIBGN CINMP>;
++      CINMP  - COMINIT Negate Minimum Period.
++      CIBGN  - COMINIT Burst Gap Nominal.
++      CIBGMX - COMINIT Burst Gap Maximum.
++      CIBGMN - COMINIT Burst Gap Minimum.
++
++  ceva,p0-comwake-params:
++    $ref: /schemas/types.yaml#/definitions/uint8-array
++    minItems: 4
++    maxItems: 4
++    description: |
++      OOB timing value for COMWAKE parameter for port 0.
++      The fields for the above parameter must be as shown below:-
++      ceva,p0-comwake-params = /bits/ 8 <CWBGMN CWBGMX CWBGN CWNMP>;
++      CWBGMN - COMWAKE Burst Gap Minimum.
++      CWBGMX - COMWAKE Burst Gap Maximum.
++      CWBGN  - COMWAKE Burst Gap Nominal.
++      CWNMP  - COMWAKE Negate Minimum Period.
++
++  ceva,p0-burst-params:
++    $ref: /schemas/types.yaml#/definitions/uint8-array
++    minItems: 4
++    maxItems: 4
++    description: |
++      Burst timing value for COM parameter for port 0.
++      The fields for the above parameter must be as shown below:-
++      ceva,p0-burst-params = /bits/ 8 <BMX BNM SFD PTST>;
++      BMX  - COM Burst Maximum.
++      BNM  - COM Burst Nominal.
++      SFD  - Signal Failure Detection value.
++      PTST - Partial to Slumber timer value.
++
++  ceva,p0-retry-params:
++    $ref: /schemas/types.yaml#/definitions/uint16-array
++    minItems: 2
++    maxItems: 2
++    description: |
++      Retry interval timing value for port 0.
++      The fields for the above parameter must be as shown below:-
++      ceva,p0-retry-params = /bits/ 16 <RIT RCT>;
++      RIT - Retry Interval Timer.
++      RCT - Rate Change Timer.
++
++  ceva,p1-cominit-params:
++    $ref: /schemas/types.yaml#/definitions/uint8-array
++    minItems: 4
++    maxItems: 4
++    description: |
++      OOB timing value for COMINIT parameter for port 1.
++      The fields for the above parameter must be as shown below:-
++      ceva,p1-cominit-params = /bits/ 8 <CIBGMN CIBGMX CIBGN CINMP>;
++      CINMP  - COMINIT Negate Minimum Period.
++      CIBGN  - COMINIT Burst Gap Nominal.
++      CIBGMX - COMINIT Burst Gap Maximum.
++      CIBGMN - COMINIT Burst Gap Minimum.
++
++  ceva,p1-comwake-params:
++    $ref: /schemas/types.yaml#/definitions/uint8-array
++    minItems: 4
++    maxItems: 4
++    description: |
++      OOB timing value for COMWAKE parameter for port 1.
++      The fields for the above parameter must be as shown below:-
++      ceva,p1-comwake-params = /bits/ 8 <CWBGMN CWBGMX CWBGN CWNMP>;
++      CWBGMN - COMWAKE Burst Gap Minimum.
++      CWBGMX - COMWAKE Burst Gap Maximum.
++      CWBGN  - COMWAKE Burst Gap Nominal.
++      CWNMP  - COMWAKE Negate Minimum Period.
++
++  ceva,p1-burst-params:
++    $ref: /schemas/types.yaml#/definitions/uint8-array
++    minItems: 4
++    maxItems: 4
++    description: |
++      Burst timing value for COM parameter for port 1.
++      The fields for the above parameter must be as shown below:-
++      ceva,p1-burst-params = /bits/ 8 <BMX BNM SFD PTST>;
++      BMX  - COM Burst Maximum.
++      BNM  - COM Burst Nominal.
++      SFD  - Signal Failure Detection value.
++      PTST - Partial to Slumber timer value.
++
++  ceva,p1-retry-params:
++    $ref: /schemas/types.yaml#/definitions/uint16-array
++    minItems: 2
++    maxItems: 2
++    description: |
++      Retry interval timing value for port 1.
++      The fields for the above parameter must be as shown below:-
++      ceva,pN-retry-params = /bits/ 16 <RIT RCT>;
++      RIT - Retry Interval Timer.
++      RCT - Rate Change Timer.
++
++  ceva,broken-gen2:
++    $ref: /schemas/types.yaml#/definitions/flag
++    description: |
++      limit to gen1 speed instead of gen2.
++
++  phys:
++    description: |
++      Phandle for the PHY device.
++    maxItems: 1
++
++  resets:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  '#stream-id-cells':
++    const: 4
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/xlnx-zynqmp-clk.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/power/xlnx-zynqmp-power.h>
++    #include <dt-bindings/reset/xlnx-zynqmp-resets.h>
++    #include <dt-bindings/reset/xlnx-zynqmp-resets.h>
++    #include <dt-bindings/phy/phy.h>
++
++    sata: ahci@fd0c0000 {
++        compatible = "ceva,ahci-1v84";
++        reg = <0xfd0c0000 0x200>;
++        interrupt-parent = <&gic>;
++        interrupts = <0 133 IRQ_TYPE_LEVEL_HIGH>;
++        clocks = <&zynqmp_clk SATA_REF>;
++        ceva,p0-cominit-params = /bits/ 8 <0x0F 0x25 0x18 0x29>;
++        ceva,p0-comwake-params = /bits/ 8 <0x04 0x0B 0x08 0x0F>;
++        ceva,p0-burst-params = /bits/ 8 <0x0A 0x08 0x4A 0x06>;
++        ceva,p0-retry-params = /bits/ 16 <0x0216 0x7F06>;
++        ceva,p1-cominit-params = /bits/ 8 <0x0F 0x25 0x18 0x29>;
++        ceva,p1-comwake-params = /bits/ 8 <0x04 0x0B 0x08 0x0F>;
++        ceva,p1-burst-params = /bits/ 8 <0x0A 0x08 0x4A 0x06>;
++        ceva,p1-retry-params = /bits/ 16 <0x0216 0x7F06>;
++        ceva,broken-gen2;
++        phys = <&psgtr 1 PHY_TYPE_SATA 1 1>;
++        resets = <&zynqmp_reset ZYNQMP_RESET_SATA>;
++    };
++
++...
+-- 
+2.17.1
 
