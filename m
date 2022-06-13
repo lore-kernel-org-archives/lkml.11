@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C636BCCA48D
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B293CCA48F
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382920AbiFMOO5 (ORCPT
+        id S1383049AbiFMOPJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:14:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52018 "EHLO
+        Mon, 13 Jun 2022 10:15:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381463AbiFMOEW (ORCPT
+        with ESMTP id S1381990AbiFMOFC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:04:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41B0524093;
-        Mon, 13 Jun 2022 04:39:45 -0700 (PDT)
+        Mon, 13 Jun 2022 10:05:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C2193468;
+        Mon, 13 Jun 2022 04:40:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F3D6AB80E2C;
-        Mon, 13 Jun 2022 11:39:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57EFBC34114;
-        Mon, 13 Jun 2022 11:39:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F380561342;
+        Mon, 13 Jun 2022 11:40:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B5ADC34114;
+        Mon, 13 Jun 2022 11:40:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120382;
-        bh=BdLngRgHCbIHp4DhE0hw41qU3rCB9q/n6eugofvh6Gc=;
+        s=korg; t=1655120418;
+        bh=mEwbqgWojyxtkqgxEaRPGMELVaiZS+FLu/4v3N6gpOg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iEi9MtZm7m83qzJj+uxULmH1nfw7ySjYyg1O+iI0yzw14jMSpmSVvcVmbzAwII3iF
-         pVEuRIm273djZX5UaAmCitFjlK+mYZVjOMG39L3dQeLW1GLV0bHpd6ZteMND9ITMHX
-         jrRDkZ9WlOogY9ufdH2RAxIDoW+BRFjUfajWhppQ=
+        b=TClz/8E0JvHVOVsFKf2WeFjHCXsxiNfR22o0zZ7QDKlFhPaRYzbY21borrAAjEfVO
+         IV6/OEMiw4tWERSc/tfhUQQIsStlnuT5WdM1xefPd8Yx6QuFdhI+vhmMSGqs8UIFhR
+         ckpF25rXGZ5rX/DZsEjmGZB7yqBcAl2/1/ExKPNE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Kees Cook <keescook@chromium.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 005/298] lkdtm/bugs: Dont expect thread termination without CONFIG_UBSAN_TRAP
-Date:   Mon, 13 Jun 2022 12:08:19 +0200
-Message-Id: <20220613094925.084119132@linuxfoundation.org>
+Subject: [PATCH 5.17 026/298] usb: typec: mux: Check dev_set_name() return value
+Date:   Mon, 13 Jun 2022 12:08:40 +0200
+Message-Id: <20220613094925.724029025@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -51,98 +53,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-[ Upstream commit 8bfdbddd68249e0d8598777cca8249619ee51df0 ]
+[ Upstream commit b9fa0292490db39d6542f514117333d366ec0011 ]
 
-When you don't select CONFIG_UBSAN_TRAP, you get:
+It's possible that dev_set_name() returns -ENOMEM, catch and handle this.
 
-  # echo ARRAY_BOUNDS > /sys/kernel/debug/provoke-crash/DIRECT
-[  102.265827] ================================================================================
-[  102.278433] UBSAN: array-index-out-of-bounds in drivers/misc/lkdtm/bugs.c:342:16
-[  102.287207] index 8 is out of range for type 'char [8]'
-[  102.298722] ================================================================================
-[  102.313712] lkdtm: FAIL: survived array bounds overflow!
-[  102.318770] lkdtm: Unexpected! This kernel (5.16.0-rc1-s3k-dev-01884-g720dcf79314a ppc) was built with CONFIG_UBSAN_BOUNDS=y
-
-It is not correct because when CONFIG_UBSAN_TRAP is not selected
-you can't expect array bounds overflow to kill the thread.
-
-Modify the logic so that when the kernel is built with
-CONFIG_UBSAN_BOUNDS but without CONFIG_UBSAN_TRAP, you get a warning
-about CONFIG_UBSAN_TRAP not been selected instead.
-
-This also require a fix of pr_expected_config(), otherwise the
-following error is encountered.
-
-  CC      drivers/misc/lkdtm/bugs.o
-drivers/misc/lkdtm/bugs.c: In function 'lkdtm_ARRAY_BOUNDS':
-drivers/misc/lkdtm/bugs.c:351:2: error: 'else' without a previous 'if'
-  351 |  else
-      |  ^~~~
-
-Fixes: c75be56e35b2 ("lkdtm/bugs: Add ARRAY_BOUNDS to selftests")
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/363b58690e907c677252467a94fe49444c80ea76.1649704381.git.christophe.leroy@csgroup.eu
+Fixes: 3370db35193b ("usb: typec: Registering real device entries for the muxes")
+Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220422222351.1297276-4-bjorn.andersson@linaro.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/lkdtm/bugs.c  | 5 ++++-
- drivers/misc/lkdtm/lkdtm.h | 8 ++++----
- 2 files changed, 8 insertions(+), 5 deletions(-)
+ drivers/usb/typec/mux.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/misc/lkdtm/bugs.c b/drivers/misc/lkdtm/bugs.c
-index 4f2808b2ca3c..8cb342c562af 100644
---- a/drivers/misc/lkdtm/bugs.c
-+++ b/drivers/misc/lkdtm/bugs.c
-@@ -351,7 +351,10 @@ void lkdtm_ARRAY_BOUNDS(void)
- 	kfree(not_checked);
- 	kfree(checked);
- 	pr_err("FAIL: survived array bounds overflow!\n");
--	pr_expected_config(CONFIG_UBSAN_BOUNDS);
-+	if (IS_ENABLED(CONFIG_UBSAN_BOUNDS))
-+		pr_expected_config(CONFIG_UBSAN_TRAP);
-+	else
-+		pr_expected_config(CONFIG_UBSAN_BOUNDS);
- }
+diff --git a/drivers/usb/typec/mux.c b/drivers/usb/typec/mux.c
+index c8340de0ed49..d2aaf294b649 100644
+--- a/drivers/usb/typec/mux.c
++++ b/drivers/usb/typec/mux.c
+@@ -131,8 +131,11 @@ typec_switch_register(struct device *parent,
+ 	sw->dev.class = &typec_mux_class;
+ 	sw->dev.type = &typec_switch_dev_type;
+ 	sw->dev.driver_data = desc->drvdata;
+-	dev_set_name(&sw->dev, "%s-switch",
+-		     desc->name ? desc->name : dev_name(parent));
++	ret = dev_set_name(&sw->dev, "%s-switch", desc->name ? desc->name : dev_name(parent));
++	if (ret) {
++		put_device(&sw->dev);
++		return ERR_PTR(ret);
++	}
  
- void lkdtm_CORRUPT_LIST_ADD(void)
-diff --git a/drivers/misc/lkdtm/lkdtm.h b/drivers/misc/lkdtm/lkdtm.h
-index d6137c70ebbe..cc76ebcca4c7 100644
---- a/drivers/misc/lkdtm/lkdtm.h
-+++ b/drivers/misc/lkdtm/lkdtm.h
-@@ -9,19 +9,19 @@
- extern char *lkdtm_kernel_info;
+ 	ret = device_add(&sw->dev);
+ 	if (ret) {
+@@ -338,8 +341,11 @@ typec_mux_register(struct device *parent, const struct typec_mux_desc *desc)
+ 	mux->dev.class = &typec_mux_class;
+ 	mux->dev.type = &typec_mux_dev_type;
+ 	mux->dev.driver_data = desc->drvdata;
+-	dev_set_name(&mux->dev, "%s-mux",
+-		     desc->name ? desc->name : dev_name(parent));
++	ret = dev_set_name(&mux->dev, "%s-mux", desc->name ? desc->name : dev_name(parent));
++	if (ret) {
++		put_device(&mux->dev);
++		return ERR_PTR(ret);
++	}
  
- #define pr_expected_config(kconfig)				\
--{								\
-+do {								\
- 	if (IS_ENABLED(kconfig)) 				\
- 		pr_err("Unexpected! This %s was built with " #kconfig "=y\n", \
- 			lkdtm_kernel_info);			\
- 	else							\
- 		pr_warn("This is probably expected, since this %s was built *without* " #kconfig "=y\n", \
- 			lkdtm_kernel_info);			\
--}
-+} while (0)
- 
- #ifndef MODULE
- int lkdtm_check_bool_cmdline(const char *param);
- #define pr_expected_config_param(kconfig, param)		\
--{								\
-+do {								\
- 	if (IS_ENABLED(kconfig)) {				\
- 		switch (lkdtm_check_bool_cmdline(param)) {	\
- 		case 0:						\
-@@ -52,7 +52,7 @@ int lkdtm_check_bool_cmdline(const char *param);
- 			break;					\
- 		}						\
- 	}							\
--}
-+} while (0)
- #else
- #define pr_expected_config_param(kconfig, param) pr_expected_config(kconfig)
- #endif
+ 	ret = device_add(&mux->dev);
+ 	if (ret) {
 -- 
 2.35.1
 
