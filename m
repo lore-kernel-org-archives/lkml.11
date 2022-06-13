@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75937CCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7700CCA48C
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:34:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355097AbiFMLed (ORCPT
+        id S1355362AbiFMLew (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:34:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56080 "EHLO
+        Mon, 13 Jun 2022 07:34:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354393AbiFML31 (ORCPT
+        with ESMTP id S1354435AbiFML33 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:29:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBC21B1DE;
-        Mon, 13 Jun 2022 03:44:01 -0700 (PDT)
+        Mon, 13 Jun 2022 07:29:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACCAFDE9D;
+        Mon, 13 Jun 2022 03:44:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 95478B80D3C;
-        Mon, 13 Jun 2022 10:44:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5F56C34114;
-        Mon, 13 Jun 2022 10:43:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B57560FDB;
+        Mon, 13 Jun 2022 10:44:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 540BCC34114;
+        Mon, 13 Jun 2022 10:44:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117039;
-        bh=rvUmyBmDKVZDetmF797t1nO2r9n9jDok30+qzlEMTw8=;
+        s=korg; t=1655117069;
+        bh=7l6I+Zm5okScKV6T1RaxcInLWaYXcTcFqc4Ut2x5R8M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=szC1vOLR/goFAGuwK/VHTP1AQH5i2lu2Q9hLCrqdoMdUaf17mR8c2z8loTzzw6Rt2
-         4LEe6YOzEnBJvGQ2CF/3yQqIb4XdrzF2oCt0sZwm9kQkR0B/Ejyt/O9NtKfshVFGdb
-         42Ti+l1Etph4z96Vopg3MYX+XH+4G2+X0XQ5dyAQ=
+        b=sKPMXeybcd8rl3gJlS+jliXr2Ida/I1YU9OKc8aMIiM5+0jOrh45OzBUANEhUBr04
+         Y5zMq6opAZ4zG7dqDevcqxqp5BnwrHYU2c55G22T8YLlOffR5Ttw6qeI2NJOe/maD9
+         g2A8vuNQhp91qMA+cJV9V5Y37WsdUFvvJ4j8UQCo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kathiravan T <quic_kathirav@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: [PATCH 5.4 264/411] arm64: dts: qcom: ipq8074: fix the sleep clock frequency
-Date:   Mon, 13 Jun 2022 12:08:57 +0200
-Message-Id: <20220613094936.678159984@linuxfoundation.org>
+        "yukuai (C)" <yukuai3@huawei.com>, Jan Kara <jack@suse.cz>,
+        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.4 276/411] bfq: Remove pointless bfq_init_rq() calls
+Date:   Mon, 13 Jun 2022 12:09:09 +0200
+Message-Id: <20220613094937.034071926@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -49,33 +49,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kathiravan T <quic_kathirav@quicinc.com>
+From: Jan Kara <jack@suse.cz>
 
-commit f607dd767f5d6800ffbdce5b99ba81763b023781 upstream.
+commit 5f550ede5edf846ecc0067be1ba80514e6fe7f8e upstream.
 
-Sleep clock frequency should be 32768Hz. Lets fix it.
+We call bfq_init_rq() from request merging functions where requests we
+get should have already gone through bfq_init_rq() during insert and
+anyway we want to do anything only if the request is already tracked by
+BFQ. So replace calls to bfq_init_rq() with RQ_BFQQ() instead to simply
+skip requests untracked by BFQ. We move bfq_init_rq() call in
+bfq_insert_request() a bit earlier to cover request merging and thus
+can transfer FIFO position in case of a merge.
 
-Cc: stable@vger.kernel.org
-Fixes: 41dac73e243d ("arm64: dts: Add ipq8074 SoC and HK01 board support")
-Link: https://lore.kernel.org/all/e2a447f8-6024-0369-f698-2027b6edcf9e@codeaurora.org/
-Signed-off-by: Kathiravan T <quic_kathirav@quicinc.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/1644581655-11568-1-git-send-email-quic_kathirav@quicinc.com
+CC: stable@vger.kernel.org
+Tested-by: "yukuai (C)" <yukuai3@huawei.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220401102752.8599-6-jack@suse.cz
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/qcom/ipq8074.dtsi |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ block/bfq-iosched.c |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
---- a/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-+++ b/arch/arm64/boot/dts/qcom/ipq8074.dtsi
-@@ -482,7 +482,7 @@
- 	clocks {
- 		sleep_clk: sleep_clk {
- 			compatible = "fixed-clock";
--			clock-frequency = <32000>;
-+			clock-frequency = <32768>;
- 			#clock-cells = <0>;
- 		};
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -2267,8 +2267,6 @@ static int bfq_request_merge(struct requ
+ 	return ELEVATOR_NO_MERGE;
+ }
  
+-static struct bfq_queue *bfq_init_rq(struct request *rq);
+-
+ static void bfq_request_merged(struct request_queue *q, struct request *req,
+ 			       enum elv_merge type)
+ {
+@@ -2277,7 +2275,7 @@ static void bfq_request_merged(struct re
+ 	    blk_rq_pos(req) <
+ 	    blk_rq_pos(container_of(rb_prev(&req->rb_node),
+ 				    struct request, rb_node))) {
+-		struct bfq_queue *bfqq = bfq_init_rq(req);
++		struct bfq_queue *bfqq = RQ_BFQQ(req);
+ 		struct bfq_data *bfqd;
+ 		struct request *prev, *next_rq;
+ 
+@@ -2329,8 +2327,8 @@ static void bfq_request_merged(struct re
+ static void bfq_requests_merged(struct request_queue *q, struct request *rq,
+ 				struct request *next)
+ {
+-	struct bfq_queue *bfqq = bfq_init_rq(rq),
+-		*next_bfqq = bfq_init_rq(next);
++	struct bfq_queue *bfqq = RQ_BFQQ(rq),
++		*next_bfqq = RQ_BFQQ(next);
+ 
+ 	if (!bfqq)
+ 		return;
+@@ -5514,6 +5512,8 @@ static inline void bfq_update_insert_sta
+ 					   unsigned int cmd_flags) {}
+ #endif /* CONFIG_BFQ_CGROUP_DEBUG */
+ 
++static struct bfq_queue *bfq_init_rq(struct request *rq);
++
+ static void bfq_insert_request(struct blk_mq_hw_ctx *hctx, struct request *rq,
+ 			       bool at_head)
+ {
+@@ -5524,6 +5524,7 @@ static void bfq_insert_request(struct bl
+ 	unsigned int cmd_flags;
+ 
+ 	spin_lock_irq(&bfqd->lock);
++	bfqq = bfq_init_rq(rq);
+ 	if (blk_mq_sched_try_insert_merge(q, rq)) {
+ 		spin_unlock_irq(&bfqd->lock);
+ 		return;
+@@ -5531,7 +5532,6 @@ static void bfq_insert_request(struct bl
+ 
+ 	blk_mq_sched_request_inserted(rq);
+ 
+-	bfqq = bfq_init_rq(rq);
+ 	if (!bfqq || at_head || blk_rq_is_passthrough(rq)) {
+ 		if (at_head)
+ 			list_add(&rq->queuelist, &bfqd->dispatch);
 
 
