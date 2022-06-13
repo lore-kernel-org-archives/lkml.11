@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29890C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:15:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97544C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:15:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355262AbiFMNPJ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:15:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42920 "EHLO
+        id S239907AbiFMNPQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 09:15:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359022AbiFMNJB (ORCPT
+        with ESMTP id S1359096AbiFMNJR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:09:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E563438BDC;
-        Mon, 13 Jun 2022 04:19:07 -0700 (PDT)
+        Mon, 13 Jun 2022 09:09:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07F5138BE1;
+        Mon, 13 Jun 2022 04:19:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8236260EAD;
-        Mon, 13 Jun 2022 11:19:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 904F5C34114;
-        Mon, 13 Jun 2022 11:19:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B012BB80D3A;
+        Mon, 13 Jun 2022 11:19:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEBEDC3411E;
+        Mon, 13 Jun 2022 11:19:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119146;
-        bh=bjCov4Y9DLbFjB8BXxX7IMPqUiV4CxC0V0beRBBTnsg=;
+        s=korg; t=1655119155;
+        bh=0kTaFpef1BwMfsjh+msVDWsWfwPI65+qIGZ47BekVm4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l4iAOpKejL2b1NRb/IA0nhqv8Zv8ra6IidleGwG3NdlWTQDjt8FoeP8s7YN/x2OO+
-         V51+Ccczz3NiOhYT8aBUBYiyyjA8BqLMHTdr5z5r9qCQNyVb5U+ZwHH7vRZSQuHBFu
-         ACg+Yf4Rj01t12BHM9d7EO6B6frqIMpKZ1HOl4B4=
+        b=D2n0rDRr5p5qX/G3eD9WbutetdRc1O2IR9jrkyV2fkqbGsd7++oKKo4o09rswY7tP
+         0kpjkCZ0NyQrmRUP567ytmtVzB7Yhnx455naEE9PJVkW3EQwEbxTZjApqKDyHrUwwP
+         CFSK/XG9Nv+b1Q4tnOjOr02T9FjraTas9Z6bbC48=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Bloch <mbloch@nvidia.com>,
-        Maor Gottlieb <maorg@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 157/247] net/mlx5: fs, fail conflicting actions
-Date:   Mon, 13 Jun 2022 12:10:59 +0200
-Message-Id: <20220613094927.718179456@linuxfoundation.org>
+Subject: [PATCH 5.15 160/247] net: dsa: mv88e6xxx: use BMSR_ANEGCOMPLETE bit for filling an_complete
+Date:   Mon, 13 Jun 2022 12:11:02 +0200
+Message-Id: <20220613094927.808373111@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -51,89 +51,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Bloch <mbloch@nvidia.com>
+From: Marek Behún <kabel@kernel.org>
 
-[ Upstream commit 8fa5e7b20e01042b14f8cd684d2da9b638460c74 ]
+[ Upstream commit 47e96930d6e6106d5252e85b868d3c7e29296de0 ]
 
-When combining two steering rules into one check
-not only do they share the same actions but those
-actions are also the same. This resolves an issue where
-when creating two different rules with the same match
-the actions are overwritten and one of the rules is deleted
-a FW syndrome can be seen in dmesg.
+Commit ede359d8843a ("net: dsa: mv88e6xxx: Link in pcs_get_state() if AN
+is bypassed") added the ability to link if AN was bypassed, and added
+filling of state->an_complete field, but set it to true if AN was
+enabled in BMCR, not when AN was reported complete in BMSR.
 
-mlx5_core 0000:03:00.0: mlx5_cmd_check:819:(pid 2105): DEALLOC_MODIFY_HEADER_CONTEXT(0x941) op_mod(0x0) failed, status bad resource state(0x9), syndrome (0x1ab444)
+This was done because for some reason, when I wanted to use BMSR value
+to infer an_complete, I was looking at BMSR_ANEGCAPABLE bit (which was
+always 1), instead of BMSR_ANEGCOMPLETE bit.
 
-Fixes: 0d235c3fabb7 ("net/mlx5: Add hash table to search FTEs in a flow-group")
-Signed-off-by: Mark Bloch <mbloch@nvidia.com>
-Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Use BMSR_ANEGCOMPLETE for filling state->an_complete.
+
+Fixes: ede359d8843a ("net: dsa: mv88e6xxx: Link in pcs_get_state() if AN is bypassed")
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/mellanox/mlx5/core/fs_core.c | 35 +++++++++++++++++--
- 1 file changed, 32 insertions(+), 3 deletions(-)
+ drivers/net/dsa/mv88e6xxx/serdes.c | 27 +++++++++++----------------
+ 1 file changed, 11 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-index 379130ed300c..cb3f9de3d00b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -1527,9 +1527,22 @@ static struct mlx5_flow_rule *find_flow_rule(struct fs_fte *fte,
- 	return NULL;
+diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6xxx/serdes.c
+index 2b05ead515cd..6ae7a0ed9e0b 100644
+--- a/drivers/net/dsa/mv88e6xxx/serdes.c
++++ b/drivers/net/dsa/mv88e6xxx/serdes.c
+@@ -50,22 +50,17 @@ static int mv88e6390_serdes_write(struct mv88e6xxx_chip *chip,
  }
  
--static bool check_conflicting_actions(u32 action1, u32 action2)
-+static bool check_conflicting_actions_vlan(const struct mlx5_fs_vlan *vlan0,
-+					   const struct mlx5_fs_vlan *vlan1)
+ static int mv88e6xxx_serdes_pcs_get_state(struct mv88e6xxx_chip *chip,
+-					  u16 ctrl, u16 status, u16 lpa,
++					  u16 bmsr, u16 lpa, u16 status,
+ 					  struct phylink_link_state *state)
  {
--	u32 xored_actions = action1 ^ action2;
-+	return vlan0->ethtype != vlan1->ethtype ||
-+	       vlan0->vid != vlan1->vid ||
-+	       vlan0->prio != vlan1->prio;
-+}
-+
-+static bool check_conflicting_actions(const struct mlx5_flow_act *act1,
-+				      const struct mlx5_flow_act *act2)
-+{
-+	u32 action1 = act1->action;
-+	u32 action2 = act2->action;
-+	u32 xored_actions;
-+
-+	xored_actions = action1 ^ action2;
+ 	state->link = !!(status & MV88E6390_SGMII_PHY_STATUS_LINK);
++	state->an_complete = !!(bmsr & BMSR_ANEGCOMPLETE);
  
- 	/* if one rule only wants to count, it's ok */
- 	if (action1 == MLX5_FLOW_CONTEXT_ACTION_COUNT ||
-@@ -1546,6 +1559,22 @@ static bool check_conflicting_actions(u32 action1, u32 action2)
- 			     MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH_2))
- 		return true;
+ 	if (status & MV88E6390_SGMII_PHY_STATUS_SPD_DPL_VALID) {
+ 		/* The Spped and Duplex Resolved register is 1 if AN is enabled
+ 		 * and complete, or if AN is disabled. So with disabled AN we
+-		 * still get here on link up. But we want to set an_complete
+-		 * only if AN was enabled, thus we look at BMCR_ANENABLE.
+-		 * (According to 802.3-2008 section 22.2.4.2.10, we should be
+-		 *  able to get this same value from BMSR_ANEGCAPABLE, but tests
+-		 *  show that these Marvell PHYs don't conform to this part of
+-		 *  the specificaion - BMSR_ANEGCAPABLE is simply always 1.)
++		 * still get here on link up.
+ 		 */
+-		state->an_complete = !!(ctrl & BMCR_ANENABLE);
+ 		state->duplex = status &
+ 				MV88E6390_SGMII_PHY_STATUS_DUPLEX_FULL ?
+ 			                         DUPLEX_FULL : DUPLEX_HALF;
+@@ -191,12 +186,12 @@ int mv88e6352_serdes_pcs_config(struct mv88e6xxx_chip *chip, int port,
+ int mv88e6352_serdes_pcs_get_state(struct mv88e6xxx_chip *chip, int port,
+ 				   int lane, struct phylink_link_state *state)
+ {
+-	u16 lpa, status, ctrl;
++	u16 bmsr, lpa, status;
+ 	int err;
  
-+	if (action1 & MLX5_FLOW_CONTEXT_ACTION_PACKET_REFORMAT &&
-+	    act1->pkt_reformat != act2->pkt_reformat)
-+		return true;
-+
-+	if (action1 & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR &&
-+	    act1->modify_hdr != act2->modify_hdr)
-+		return true;
-+
-+	if (action1 & MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH &&
-+	    check_conflicting_actions_vlan(&act1->vlan[0], &act2->vlan[0]))
-+		return true;
-+
-+	if (action1 & MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH_2 &&
-+	    check_conflicting_actions_vlan(&act1->vlan[1], &act2->vlan[1]))
-+		return true;
-+
- 	return false;
+-	err = mv88e6352_serdes_read(chip, MII_BMCR, &ctrl);
++	err = mv88e6352_serdes_read(chip, MII_BMSR, &bmsr);
+ 	if (err) {
+-		dev_err(chip->dev, "can't read Serdes PHY control: %d\n", err);
++		dev_err(chip->dev, "can't read Serdes BMSR: %d\n", err);
+ 		return err;
+ 	}
+ 
+@@ -212,7 +207,7 @@ int mv88e6352_serdes_pcs_get_state(struct mv88e6xxx_chip *chip, int port,
+ 		return err;
+ 	}
+ 
+-	return mv88e6xxx_serdes_pcs_get_state(chip, ctrl, status, lpa, state);
++	return mv88e6xxx_serdes_pcs_get_state(chip, bmsr, lpa, status, state);
  }
  
-@@ -1553,7 +1582,7 @@ static int check_conflicting_ftes(struct fs_fte *fte,
- 				  const struct mlx5_flow_context *flow_context,
- 				  const struct mlx5_flow_act *flow_act)
+ int mv88e6352_serdes_pcs_an_restart(struct mv88e6xxx_chip *chip, int port,
+@@ -915,13 +910,13 @@ int mv88e6390_serdes_pcs_config(struct mv88e6xxx_chip *chip, int port,
+ static int mv88e6390_serdes_pcs_get_state_sgmii(struct mv88e6xxx_chip *chip,
+ 	int port, int lane, struct phylink_link_state *state)
  {
--	if (check_conflicting_actions(flow_act->action, fte->action.action)) {
-+	if (check_conflicting_actions(flow_act, &fte->action)) {
- 		mlx5_core_warn(get_dev(&fte->node),
- 			       "Found two FTEs with conflicting actions\n");
- 		return -EEXIST;
+-	u16 lpa, status, ctrl;
++	u16 bmsr, lpa, status;
+ 	int err;
+ 
+ 	err = mv88e6390_serdes_read(chip, lane, MDIO_MMD_PHYXS,
+-				    MV88E6390_SGMII_BMCR, &ctrl);
++				    MV88E6390_SGMII_BMSR, &bmsr);
+ 	if (err) {
+-		dev_err(chip->dev, "can't read Serdes PHY control: %d\n", err);
++		dev_err(chip->dev, "can't read Serdes PHY BMSR: %d\n", err);
+ 		return err;
+ 	}
+ 
+@@ -939,7 +934,7 @@ static int mv88e6390_serdes_pcs_get_state_sgmii(struct mv88e6xxx_chip *chip,
+ 		return err;
+ 	}
+ 
+-	return mv88e6xxx_serdes_pcs_get_state(chip, ctrl, status, lpa, state);
++	return mv88e6xxx_serdes_pcs_get_state(chip, bmsr, lpa, status, state);
+ }
+ 
+ static int mv88e6390_serdes_pcs_get_state_10g(struct mv88e6xxx_chip *chip,
 -- 
 2.35.1
 
