@@ -2,92 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8809CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:14:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ADCDCCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:14:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243736AbiFMTOV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:14:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38996 "EHLO
+        id S235126AbiFMTOq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 15:14:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348906AbiFMTNk (ORCPT
+        with ESMTP id S239018AbiFMTOI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 15:13:40 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 47F3645ACD;
-        Mon, 13 Jun 2022 10:34:37 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2A65923A;
-        Mon, 13 Jun 2022 10:34:37 -0700 (PDT)
-Received: from bogus (unknown [10.57.4.242])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 450673F792;
-        Mon, 13 Jun 2022 10:34:35 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 18:33:48 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Neeraj Upadhyay <quic_neeraju@quicinc.com>
-Cc:     mst@redhat.com, jasowang@redhat.com, cristian.marussi@arm.com,
-        Sudeep Holla <sudeep.holla@arm.com>, quic_sramana@quicinc.com,
-        vincent.guittot@linaro.org, linux-arm-kernel@lists.infradead.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        Mon, 13 Jun 2022 15:14:08 -0400
+Received: from mailrelay2-1.pub.mailoutpod1-cph3.one.com (mailrelay2-1.pub.mailoutpod1-cph3.one.com [46.30.210.183])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DED8CE3D
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:12:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ravnborg.org; s=rsa1;
+        h=in-reply-to:content-type:mime-version:references:message-id:subject:cc:to:
+         from:date:from;
+        bh=lHjgrdlCsJlZNExw2i+5p/H7UmbCDOq2p/NEOrPWfhI=;
+        b=LpfJ3oPYuuqg6i3ho0XikhkAPNOBaQbZr82eZv0bUP4ve0Z4PFc69HjP4A1M56gmZKZ2eeqWeEmaK
+         /bUI2rk7ZHbhQLN3iywV3rXmHhTZmEd1p2FLPwDnC7hvKoXzu9/hs2Zxr+nrvWNjhCw34+f4LZh6pZ
+         RCZs2OIgx//zHcR4YywpNgW/VFVFDy3TU6TxoiGBxMJb2k/wI0CT68I90+bLDAH02G0QrW943PVKpd
+         AsUU63h3+s0KtUXIcN+1Au7F8a79oACmCtcr/1pCrG9iPqlQmT2DjilP0pjq9DvnxVpd8eUlSAiHTT
+         hgQfucYdZ9sfLrjuWUEjgqP/jBu8daA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
+        d=ravnborg.org; s=ed1;
+        h=in-reply-to:content-type:mime-version:references:message-id:subject:cc:to:
+         from:date:from;
+        bh=lHjgrdlCsJlZNExw2i+5p/H7UmbCDOq2p/NEOrPWfhI=;
+        b=ldsO6NEhLw+vp3UB1ZOzR2Yob+FMPpcyEw0+v01Wvw2DdWcTcV26CW6XMjhQ+5z+CJAUaadOaYIWC
+         Icw4EPWAg==
+X-HalOne-Cookie: 392d8748579318f935a12eb6f32b987bbdd36c36
+X-HalOne-ID: 0764a83b-eb3c-11ec-a913-d0431ea8a290
+Received: from mailproxy3.cst.dirpod4-cph3.one.com (80-162-45-141-cable.dk.customer.tdc.net [80.162.45.141])
+        by mailrelay2.pub.mailoutpod1-cph3.one.com (Halon) with ESMTPSA
+        id 0764a83b-eb3c-11ec-a913-d0431ea8a290;
+        Mon, 13 Jun 2022 17:12:40 +0000 (UTC)
+Date:   Mon, 13 Jun 2022 19:12:38 +0200
+From:   Sam Ravnborg <sam@ravnborg.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Liviu Dudau <Liviu.Dudau@arm.com>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [RFC 1/3] dt-bindings: arm: Add document for SCMI Virtio backend
- device
-Message-ID: <20220613173348.t4ibrtzzs5pe6nii@bogus>
-References: <20220609071956.5183-1-quic_neeraju@quicinc.com>
- <20220609071956.5183-2-quic_neeraju@quicinc.com>
+Subject: Re: [PATCH v2] dt-bindings: display: Add Arm virtual platforms
+ display
+Message-ID: <YqdwBoMldyuh+vjg@ravnborg.org>
+References: <20220613145709.3729053-1-robh@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220609071956.5183-2-quic_neeraju@quicinc.com>
+In-Reply-To: <20220613145709.3729053-1-robh@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 09, 2022 at 12:49:54PM +0530, Neeraj Upadhyay wrote:
-> Document the properties for ARM SCMI Virtio backend device
-> node.
+Hi Rob, thanks!
+On Mon, Jun 13, 2022 at 08:57:09AM -0600, Rob Herring wrote:
+> 'arm,rtsm-display' is a panel for Arm, Ltd. virtual platforms (e.g. FVP).
+> The binding has been in use for a long time, but was never documented.
 > 
-> Signed-off-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
-> ---
->  .../firmware/arm,scmi-vio-backend.yaml        | 85 +++++++++++++++++++
->  1 file changed, 85 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/firmware/arm,scmi-vio-backend.yaml
+> Some users and an example have a 'panel-dpi' compatible, but that's not
+> needed without a 'panel-timing' node which none of the users have since
+> commit 928faf5e3e8d ("arm64: dts: fvp: Remove panel timings"). The
+> example does have a 'panel-timing' node, but it should not for the
+> same reasons the node was removed in the dts files. So update the
+> example in arm,pl11x.yaml to match the schema.
 > 
-> diff --git a/Documentation/devicetree/bindings/firmware/arm,scmi-vio-backend.yaml b/Documentation/devicetree/bindings/firmware/arm,scmi-vio-backend.yaml
-> new file mode 100644
-> index 000000000000..c95d4e093a3c
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/firmware/arm,scmi-vio-backend.yaml
-> @@ -0,0 +1,85 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +# Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/firmware/arm,scmi-vio-backend.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: System Control and Management Interface (SCMI) Virtio backend bindings
-> +
-> +maintainers:
-> +  - Neeraj Upadhyay <quic_neeraju@quicinc.com>
-> +
-> +description: |
-> +  This binding defines the interface for configuring the ARM SCMI Virtio
-> +  backend using device tree.
-> +
-> +properties:
-> +  $nodename:
-> +    const: scmi-vio-backend
-> +
-> +  compatible:
-> +    const: arm,scmi-vio-backend
-> +
-
-One only change between this and the existing DT binding is the compatible.
-I don't see any explanation here as why this deserves to be separate binding
-document. What can't you just add the compatible to the existing one if there
-is no other change. If not, please provide details and examples on how it
-differs.
-
--- 
-Regards,
-Sudeep
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Andre Przywara <andre.przywara@arm.com>
+> Signed-off-by: Rob Herring <robh@kernel.org>
+Acked-by: Sam Ravnborg <sam@ravnborg.org>
