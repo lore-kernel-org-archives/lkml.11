@@ -2,42 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86499C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:10:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9928AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:11:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349167AbiFMMK4 (ORCPT
+        id S1349001AbiFMMLI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:10:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49898 "EHLO
+        Mon, 13 Jun 2022 08:11:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358328AbiFMMCy (ORCPT
+        with ESMTP id S1358488AbiFMMEL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:02:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A48C1252A0;
-        Mon, 13 Jun 2022 03:57:16 -0700 (PDT)
+        Mon, 13 Jun 2022 08:04:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D3A13CD5;
+        Mon, 13 Jun 2022 03:57:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DA40461346;
-        Mon, 13 Jun 2022 10:57:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE29BC34114;
-        Mon, 13 Jun 2022 10:57:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B5A89B80E93;
+        Mon, 13 Jun 2022 10:57:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08D8DC34114;
+        Mon, 13 Jun 2022 10:57:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117835;
-        bh=NMJ0Q3mzGfxxTNw7cOKiHx7s6OMZBmRl14vQe8MNUQA=;
+        s=korg; t=1655117843;
+        bh=fdeDwql4CeLBohnijpWQs+X+w/EUad0a/TqKH7oN1Ok=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b1+Ypgh4qcnFCugIaCK/1084D8f88LcBZgDZsdy7ZmVlUtP02ZLbJ88Nm/Grc9wiD
-         28B3O2JmjiIS71h5fVmu7CjXDnGv6thATgCZGhgSwzSlEc1m/ou0SogveIxtcLAyeO
-         APEC3y42iOymZYxda6rYy3w5lKNQfy3pxpemA3SQ=
+        b=KiMpFQy9eLfiSKelUiHicE3Ha3qhG1aA/KvMZ8+anVnJYxfylbV6oU/1Ooefg2FnG
+         6OaNG/wwEmCOD/NWofKhhRK1086npqALz/vSrxImtFV5sQWRXG4z8Zcgbv6YqIye/m
+         jseIhxWXpXKqowRYs5tO94HQl6YGzycEBa7GYpjU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 4.19 149/287] ext4: verify dir block before splitting it
-Date:   Mon, 13 Jun 2022 12:09:33 +0200
-Message-Id: <20220613094928.394744339@linuxfoundation.org>
+        stable@vger.kernel.org, Joe Mario <jmario@redhat.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 140/287] perf c2c: Use stdio interface if slang is not supported
+Date:   Mon, 13 Jun 2022 12:09:24 +0200
+Message-Id: <20220613094928.121687461@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -49,88 +56,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Leo Yan <leo.yan@linaro.org>
 
-commit 46c116b920ebec58031f0a78c5ea9599b0d2a371 upstream.
+[ Upstream commit c4040212bc97d16040712a410335f93bc94d2262 ]
 
-Before splitting a directory block verify its directory entries are sane
-so that the splitting code does not access memory it should not.
+If the slang lib is not installed on the system, perf c2c tool disables TUI
+mode and roll back to use stdio mode;  but the flag 'c2c.use_stdio' is
+missed to set true and thus it wrongly applies UI quirks in the function
+ui_quirks().
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220518093332.13986-1-jack@suse.cz
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This commit forces to use stdio interface if slang is not supported, and
+it can avoid to apply the UI quirks and show the correct metric header.
+
+Before:
+
+=================================================
+      Shared Cache Line Distribution Pareto
+=================================================
+  -------------------------------------------------------------------------------
+      0        0        0       99        0        0        0      0xaaaac17d6000
+  -------------------------------------------------------------------------------
+    0.00%    0.00%    6.06%    0.00%    0.00%    0.00%   0x20   N/A       0      0xaaaac17c25ac         0         0        43       375    18469         2  [.] 0x00000000000025ac  memstress         memstress[25ac]   0
+    0.00%    0.00%   93.94%    0.00%    0.00%    0.00%   0x29   N/A       0      0xaaaac17c3e88         0         0       173       180      135         2  [.] 0x0000000000003e88  memstress         memstress[3e88]   0
+
+After:
+
+=================================================
+      Shared Cache Line Distribution Pareto
+=================================================
+  -------------------------------------------------------------------------------
+      0        0        0       99        0        0        0      0xaaaac17d6000
+  -------------------------------------------------------------------------------
+           0.00%    0.00%    6.06%    0.00%    0.00%    0.00%                0x20   N/A       0      0xaaaac17c25ac         0         0        43       375    18469         2  [.] 0x00000000000025ac  memstress         memstress[25ac]   0
+           0.00%    0.00%   93.94%    0.00%    0.00%    0.00%                0x29   N/A       0      0xaaaac17c3e88         0         0       173       180      135         2  [.] 0x0000000000003e88  memstress         memstress[3e88]   0
+
+Fixes: 5a1a99cd2e4e1557 ("perf c2c report: Add main TUI browser")
+Reported-by: Joe Mario <jmario@redhat.com>
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Link: http://lore.kernel.org/lkml/20220526145400.611249-1-leo.yan@linaro.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/namei.c |   32 +++++++++++++++++++++-----------
- 1 file changed, 21 insertions(+), 11 deletions(-)
+ tools/perf/builtin-c2c.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/fs/ext4/namei.c
-+++ b/fs/ext4/namei.c
-@@ -272,9 +272,9 @@ static struct dx_frame *dx_probe(struct
- 				 struct dx_hash_info *hinfo,
- 				 struct dx_frame *frame);
- static void dx_release(struct dx_frame *frames);
--static int dx_make_map(struct inode *dir, struct ext4_dir_entry_2 *de,
--		       unsigned blocksize, struct dx_hash_info *hinfo,
--		       struct dx_map_entry map[]);
-+static int dx_make_map(struct inode *dir, struct buffer_head *bh,
-+		       struct dx_hash_info *hinfo,
-+		       struct dx_map_entry *map_tail);
- static void dx_sort_map(struct dx_map_entry *map, unsigned count);
- static struct ext4_dir_entry_2 *dx_move_dirents(char *from, char *to,
- 		struct dx_map_entry *offsets, int count, unsigned blocksize);
-@@ -1203,15 +1203,23 @@ static inline int search_dirblock(struct
-  * Create map of hash values, offsets, and sizes, stored at end of block.
-  * Returns number of entries mapped.
-  */
--static int dx_make_map(struct inode *dir, struct ext4_dir_entry_2 *de,
--		       unsigned blocksize, struct dx_hash_info *hinfo,
-+static int dx_make_map(struct inode *dir, struct buffer_head *bh,
-+		       struct dx_hash_info *hinfo,
- 		       struct dx_map_entry *map_tail)
- {
- 	int count = 0;
--	char *base = (char *) de;
-+	struct ext4_dir_entry_2 *de = (struct ext4_dir_entry_2 *)bh->b_data;
-+	unsigned int buflen = bh->b_size;
-+	char *base = bh->b_data;
- 	struct dx_hash_info h = *hinfo;
+diff --git a/tools/perf/builtin-c2c.c b/tools/perf/builtin-c2c.c
+index 2bd39fdc8ab0..fb875e365db1 100644
+--- a/tools/perf/builtin-c2c.c
++++ b/tools/perf/builtin-c2c.c
+@@ -2724,9 +2724,7 @@ static int perf_c2c__report(int argc, const char **argv)
+ 		   "the input file to process"),
+ 	OPT_INCR('N', "node-info", &c2c.node_info,
+ 		 "show extra node info in report (repeat for more info)"),
+-#ifdef HAVE_SLANG_SUPPORT
+ 	OPT_BOOLEAN(0, "stdio", &c2c.use_stdio, "Use the stdio interface"),
+-#endif
+ 	OPT_BOOLEAN(0, "stats", &c2c.stats_only,
+ 		    "Display only statistic tables (implies --stdio)"),
+ 	OPT_BOOLEAN(0, "full-symbols", &c2c.symbol_full,
+@@ -2753,6 +2751,10 @@ static int perf_c2c__report(int argc, const char **argv)
+ 	if (argc)
+ 		usage_with_options(report_c2c_usage, options);
  
--	while ((char *) de < base + blocksize) {
-+	if (ext4_has_metadata_csum(dir->i_sb))
-+		buflen -= sizeof(struct ext4_dir_entry_tail);
++#ifndef HAVE_SLANG_SUPPORT
++	c2c.use_stdio = true;
++#endif
 +
-+	while ((char *) de < base + buflen) {
-+		if (ext4_check_dir_entry(dir, NULL, de, bh, base, buflen,
-+					 ((char *)de) - base))
-+			return -EFSCORRUPTED;
- 		if (de->name_len && de->inode) {
- 			ext4fs_dirhash(de->name, de->name_len, &h);
- 			map_tail--;
-@@ -1221,8 +1229,7 @@ static int dx_make_map(struct inode *dir
- 			count++;
- 			cond_resched();
- 		}
--		/* XXX: do we need to check rec_len == 0 case? -Chris */
--		de = ext4_next_entry(de, blocksize);
-+		de = ext4_next_entry(de, dir->i_sb->s_blocksize);
- 	}
- 	return count;
- }
-@@ -1756,8 +1763,11 @@ static struct ext4_dir_entry_2 *do_split
+ 	if (c2c.stats_only)
+ 		c2c.use_stdio = true;
  
- 	/* create map in the end of data2 block */
- 	map = (struct dx_map_entry *) (data2 + blocksize);
--	count = dx_make_map(dir, (struct ext4_dir_entry_2 *) data1,
--			     blocksize, hinfo, map);
-+	count = dx_make_map(dir, *bh, hinfo, map);
-+	if (count < 0) {
-+		err = count;
-+		goto journal_error;
-+	}
- 	map -= count;
- 	dx_sort_map(map, count);
- 	/* Ensure that neither split block is over half full */
+-- 
+2.35.1
+
 
 
