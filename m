@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB54CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:34:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BC2DCCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:34:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354168AbiFMMd1 (ORCPT
+        id S1354884AbiFMMdt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:33:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41216 "EHLO
+        Mon, 13 Jun 2022 08:33:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358461AbiFMM3m (ORCPT
+        with ESMTP id S1359154AbiFMM36 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:29:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 097215A2E5;
-        Mon, 13 Jun 2022 04:06:42 -0700 (PDT)
+        Mon, 13 Jun 2022 08:29:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86F885AEC2;
+        Mon, 13 Jun 2022 04:06:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B2513614A5;
-        Mon, 13 Jun 2022 11:06:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE4B2C385A9;
-        Mon, 13 Jun 2022 11:06:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46506B80D31;
+        Mon, 13 Jun 2022 11:06:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3009C34114;
+        Mon, 13 Jun 2022 11:06:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118402;
-        bh=ujqa69PlYLhlbA5HRuL7vg58c8MZKjA7sq0ItS05Eg8=;
+        s=korg; t=1655118394;
+        bh=6ctdFOTWDtWmLHAu5eKElqupwIGGX+DBvI+WG+W+HCA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fg2O84OFt7hAinIz0/1oyAVvHnDw7i3FRoh6dsDgT9QZWjRW6UPE6fkBsyzfzWrlh
-         ST6W0L+e8W32B47yb9Qci+TfGflyjWHe/uQHI4FrMNAbi681Ce1aiHCvqiKC/6PMab
-         djGVT7Y0gkCw/6f53j3reBpUXdQrjGCuX84IAW2g=
+        b=QSKfA3ssSiuZyL8tlEH6jFjocTGh1cFIOXgQJTICt8x5UAnw8H0UYCO0ujohf0eF+
+         5EAgTaOnHgvJco4uthDjUQhcbyTjjpTJv7ZaKYncG4l/TAgHp1PX2zyC+F144+sRKb
+         wdzvR39qek5A8cfHdfRXwVpGrqXQ2K/1rewhuPTc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tianhao Zhao <tizhao@redhat.com>,
-        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
+        stable@vger.kernel.org,
+        Guangguan Wang <guangguan.wang@linux.alibaba.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 063/172] sfc: fix wrong tx channel offset with efx_separate_tx_channels
-Date:   Mon, 13 Jun 2022 12:10:23 +0200
-Message-Id: <20220613094905.560176189@linuxfoundation.org>
+Subject: [PATCH 5.10 060/172] net/smc: fixes for converting from "struct smc_cdc_tx_pend **" to "struct smc_wr_tx_pend_priv *"
+Date:   Mon, 13 Jun 2022 12:10:20 +0200
+Message-Id: <20220613094904.794022578@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -51,65 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Íñigo Huguet <ihuguet@redhat.com>
+From: Guangguan Wang <guangguan.wang@linux.alibaba.com>
 
-[ Upstream commit c308dfd1b43ef0d4c3e57b741bb3462eb7a7f4a2 ]
+[ Upstream commit e225c9a5a74b12e9ef8516f30a3db2c7eb866ee1 ]
 
-tx_channel_offset is calculated in efx_allocate_msix_channels, but it is
-also calculated again in efx_set_channels because it was originally done
-there, and when efx_allocate_msix_channels was introduced it was
-forgotten to be removed from efx_set_channels.
+"struct smc_cdc_tx_pend **" can not directly convert
+to "struct smc_wr_tx_pend_priv *".
 
-Moreover, the old calculation is wrong when using
-efx_separate_tx_channels because now we can have XDP channels after the
-TX channels, so n_channels - n_tx_channels doesn't point to the first TX
-channel.
-
-Remove the old calculation from efx_set_channels, and add the
-initialization of this variable if MSI or legacy interrupts are used,
-next to the initialization of the rest of the related variables, where
-it was missing.
-
-Fixes: 3990a8fffbda ("sfc: allocate channels for XDP tx queues")
-Reported-by: Tianhao Zhao <tizhao@redhat.com>
-Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+Fixes: 2bced6aefa3d ("net/smc: put slot when connection is killed")
+Signed-off-by: Guangguan Wang <guangguan.wang@linux.alibaba.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/sfc/efx_channels.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ net/smc/smc_cdc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/sfc/efx_channels.c b/drivers/net/ethernet/sfc/efx_channels.c
-index 2ab8571ef1cc..d0f1b2dc7dff 100644
---- a/drivers/net/ethernet/sfc/efx_channels.c
-+++ b/drivers/net/ethernet/sfc/efx_channels.c
-@@ -287,6 +287,7 @@ int efx_probe_interrupts(struct efx_nic *efx)
- 		efx->n_channels = 1;
- 		efx->n_rx_channels = 1;
- 		efx->n_tx_channels = 1;
-+		efx->tx_channel_offset = 0;
- 		efx->n_xdp_channels = 0;
- 		efx->xdp_channel_offset = efx->n_channels;
- 		rc = pci_enable_msi(efx->pci_dev);
-@@ -307,6 +308,7 @@ int efx_probe_interrupts(struct efx_nic *efx)
- 		efx->n_channels = 1 + (efx_separate_tx_channels ? 1 : 0);
- 		efx->n_rx_channels = 1;
- 		efx->n_tx_channels = 1;
-+		efx->tx_channel_offset = 1;
- 		efx->n_xdp_channels = 0;
- 		efx->xdp_channel_offset = efx->n_channels;
- 		efx->legacy_irq = efx->pci_dev->irq;
-@@ -858,10 +860,6 @@ int efx_set_channels(struct efx_nic *efx)
- 	int xdp_queue_number;
- 	int rc;
- 
--	efx->tx_channel_offset =
--		efx_separate_tx_channels ?
--		efx->n_channels - efx->n_tx_channels : 0;
--
- 	if (efx->xdp_tx_queue_count) {
- 		EFX_WARN_ON_PARANOID(efx->xdp_tx_queues);
- 
+diff --git a/net/smc/smc_cdc.c b/net/smc/smc_cdc.c
+index 0c490cdde6a4..94503f36b9a6 100644
+--- a/net/smc/smc_cdc.c
++++ b/net/smc/smc_cdc.c
+@@ -72,7 +72,7 @@ int smc_cdc_get_free_slot(struct smc_connection *conn,
+ 		/* abnormal termination */
+ 		if (!rc)
+ 			smc_wr_tx_put_slot(link,
+-					   (struct smc_wr_tx_pend_priv *)pend);
++					   (struct smc_wr_tx_pend_priv *)(*pend));
+ 		rc = -EPIPE;
+ 	}
+ 	return rc;
 -- 
 2.35.1
 
