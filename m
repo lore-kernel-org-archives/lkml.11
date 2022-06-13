@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79BFBC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:50:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72841C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:50:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355069AbiFMMuM (ORCPT
+        id S1355160AbiFMMuR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:50:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34394 "EHLO
+        Mon, 13 Jun 2022 08:50:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356301AbiFMMsp (ORCPT
+        with ESMTP id S1356753AbiFMMs4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:48:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E3566223C;
+        Mon, 13 Jun 2022 08:48:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7E2762A03;
         Mon, 13 Jun 2022 04:11:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F751608C3;
-        Mon, 13 Jun 2022 11:11:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5884EC34114;
-        Mon, 13 Jun 2022 11:11:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A94B060B6E;
+        Mon, 13 Jun 2022 11:11:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA1CCC34114;
+        Mon, 13 Jun 2022 11:11:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118686;
-        bh=IhUtz9jVbqvCOmOqsUmTRlRO4beTo/ueWOj5DeHBtek=;
+        s=korg; t=1655118703;
+        bh=GD58cBIdSxPfPincYJeN8P9cK/RPIAzic1vPkX1SmqM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VZxJAJ6gOu3jw4JwQLd1iY9Ll/Fv7d4bVCPdFtxSipkK0wKPqaKfysInZFSeISouQ
-         GitLNHFTEJCtj2Jd+fJYK4aA03TqLo3B0lfKDBb6ZlxKwrMH4JYkHl9UY+IEsCMDCq
-         +Twzvfs1sRqiQhOkaLqhdMsvIxUZKH3rH77r0ffY=
+        b=ZtDdzeoAdcku+Q3rU/fzQmeXL6sdE4UV9hxKT8gkNN5iDaVf6JJnAaScitky6F+h8
+         nQ572F+9YPjQsj3LsD8EvHfn2dClkk6hrx4Rpwaz96x6+DtKsamNWr1Tjnw9fiQXd/
+         yrwFM/whqiyLphsoCKaS2YERaPsRIh7wO9fYCHIY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 142/172] jump_label,noinstr: Avoid instrumentation for JUMP_LABEL=n builds
-Date:   Mon, 13 Jun 2022 12:11:42 +0200
-Message-Id: <20220613094922.100865784@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Subject: [PATCH 5.10 172/172] zonefs: fix handling of explicit_open option on mount
+Date:   Mon, 13 Jun 2022 12:12:12 +0200
+Message-Id: <20220613094923.492554004@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -50,44 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit 656d054e0a15ec327bd82801ccd58201e59f6896 ]
+commit a2a513be7139b279f1b5b2cee59c6c4950c34346 upstream.
 
-When building x86_64 with JUMP_LABEL=n it's possible for
-instrumentation to sneak into noinstr:
+Ignoring the explicit_open mount option on mount for devices that do not
+have a limit on the number of open zones must be done after the mount
+options are parsed and set in s_mount_opts. Move the check to ignore
+the explicit_open option after the call to zonefs_parse_options() in
+zonefs_fill_super().
 
-vmlinux.o: warning: objtool: exit_to_user_mode+0x14: call to static_key_count.constprop.0() leaves .noinstr.text section
-vmlinux.o: warning: objtool: syscall_exit_to_user_mode+0x2d: call to static_key_count.constprop.0() leaves .noinstr.text section
-vmlinux.o: warning: objtool: irqentry_exit_to_user_mode+0x1b: call to static_key_count.constprop.0() leaves .noinstr.text section
-
-Switch to arch_ prefixed atomic to avoid the explicit instrumentation.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: b5c00e975779 ("zonefs: open/close zone on file open/close")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/jump_label.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/zonefs/super.c |   11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/include/linux/jump_label.h b/include/linux/jump_label.h
-index 32809624d422..e67ee4d7318f 100644
---- a/include/linux/jump_label.h
-+++ b/include/linux/jump_label.h
-@@ -249,9 +249,9 @@ extern void static_key_disable_cpuslocked(struct static_key *key);
- #include <linux/atomic.h>
- #include <linux/bug.h>
+--- a/fs/zonefs/super.c
++++ b/fs/zonefs/super.c
+@@ -1706,11 +1706,6 @@ static int zonefs_fill_super(struct supe
+ 	sbi->s_mount_opts = ZONEFS_MNTOPT_ERRORS_RO;
+ 	sbi->s_max_open_zones = bdev_max_open_zones(sb->s_bdev);
+ 	atomic_set(&sbi->s_open_zones, 0);
+-	if (!sbi->s_max_open_zones &&
+-	    sbi->s_mount_opts & ZONEFS_MNTOPT_EXPLICIT_OPEN) {
+-		zonefs_info(sb, "No open zones limit. Ignoring explicit_open mount option\n");
+-		sbi->s_mount_opts &= ~ZONEFS_MNTOPT_EXPLICIT_OPEN;
+-	}
  
--static inline int static_key_count(struct static_key *key)
-+static __always_inline int static_key_count(struct static_key *key)
- {
--	return atomic_read(&key->enabled);
-+	return arch_atomic_read(&key->enabled);
- }
+ 	ret = zonefs_read_super(sb);
+ 	if (ret)
+@@ -1729,6 +1724,12 @@ static int zonefs_fill_super(struct supe
+ 	zonefs_info(sb, "Mounting %u zones",
+ 		    blkdev_nr_zones(sb->s_bdev->bd_disk));
  
- static __always_inline void jump_label_init(void)
--- 
-2.35.1
-
++	if (!sbi->s_max_open_zones &&
++	    sbi->s_mount_opts & ZONEFS_MNTOPT_EXPLICIT_OPEN) {
++		zonefs_info(sb, "No open zones limit. Ignoring explicit_open mount option\n");
++		sbi->s_mount_opts &= ~ZONEFS_MNTOPT_EXPLICIT_OPEN;
++	}
++
+ 	/* Create root directory inode */
+ 	ret = -ENOMEM;
+ 	inode = new_inode(sb);
 
 
