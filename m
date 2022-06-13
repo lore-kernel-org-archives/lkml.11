@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4BB7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:51:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FC9FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:51:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379947AbiFMNvv (ORCPT
+        id S1379957AbiFMNvy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:51:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40330 "EHLO
+        Mon, 13 Jun 2022 09:51:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379258AbiFMNn4 (ORCPT
+        with ESMTP id S1379884AbiFMNp0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:43:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D923EF28;
-        Mon, 13 Jun 2022 04:31:54 -0700 (PDT)
+        Mon, 13 Jun 2022 09:45:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 885E91056E;
+        Mon, 13 Jun 2022 04:32:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0EC91B80EA7;
-        Mon, 13 Jun 2022 11:31:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AB3DC34114;
-        Mon, 13 Jun 2022 11:31:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A12A6124E;
+        Mon, 13 Jun 2022 11:32:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F55AC34114;
+        Mon, 13 Jun 2022 11:32:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119911;
-        bh=mnT08aQ9pGcT/TYriH3ev0VLk1IzDUDUxRReQgPBTWM=;
+        s=korg; t=1655119962;
+        bh=ztj+oUbb6Cd9GnpvGfJ0R4kOLlLI60vw4D0kCAyDj0U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=let610Dsg6iWx6o2ssljQHcvx5e0VDj+pg7FljXX7ubjBFCtgswK2vm3ic8Re1K5t
-         pk5Z5Dys8I6lZ6ScYrlf7msTKbGFo+h5k9eTXsiCgnCY+YJnExAOXG4zEbzslEhKEa
-         siTM+2zzZHkQrSm2BnZ2GXzU8nWOt93Sbrd1qTo4=
+        b=ZGpf0NKdrCgRFktgzWhMYA05EEcgsNVtiyQKgMEgZ1x/AoLQSbufOUl7fvl4DtgSf
+         1VS9nYgc2mxFgl0fkaLO8UtLMyCsa/THpzHat7xlqzYez+JCJvSJmcy4JBCFfGb02E
+         usiOZnp+lpQH+ar3aQWCgSnOTSKTF+sYzzjmftJQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Erhard Furtner <erhard_f@mailbox.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 183/339] powerpc/kasan: Force thread size increase with KASAN
-Date:   Mon, 13 Jun 2022 12:10:08 +0200
-Message-Id: <20220613094932.228579127@linuxfoundation.org>
+Subject: [PATCH 5.18 181/339] netfilter: nf_tables: use kfree_rcu(ptr, rcu) to release hooks in clean_net path
+Date:   Mon, 13 Jun 2022 12:10:06 +0200
+Message-Id: <20220613094932.169162107@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,69 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit 3e8635fb2e072672cbc650989ffedf8300ad67fb ]
+[ Upstream commit ab5e5c062f67c5ae8cd07f0632ffa62dc0e7d169 ]
 
-KASAN causes increased stack usage, which can lead to stack overflows.
+Use kfree_rcu(ptr, rcu) variant instead as described by ae089831ff28
+("netfilter: nf_tables: prefer kfree_rcu(ptr, rcu) variant").
 
-The logic in Kconfig to suggest a larger default doesn't work if a user
-has CONFIG_EXPERT enabled and has an existing .config with a smaller
-value.
-
-Follow the lead of x86 and arm64, and force the thread size to be
-increased when KASAN is enabled.
-
-That also has the effect of enlarging the stack for 64-bit KASAN builds,
-which is also desirable.
-
-Fixes: edbadaf06710 ("powerpc/kasan: Fix stack overflow by increasing THREAD_SHIFT")
-Reported-by: Erhard Furtner <erhard_f@mailbox.org>
-Reported-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-[mpe: Use MIN_THREAD_SHIFT as suggested by Christophe]
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220601143114.133524-1-mpe@ellerman.id.au
+Fixes: f9a43007d3f7 ("netfilter: nf_tables: double hook unregistration in netns path")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/Kconfig                   |  1 -
- arch/powerpc/include/asm/thread_info.h | 10 ++++++++--
- 2 files changed, 8 insertions(+), 3 deletions(-)
+ net/netfilter/nf_tables_api.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-index 174edabb74fa..efb03d8d1f8b 100644
---- a/arch/powerpc/Kconfig
-+++ b/arch/powerpc/Kconfig
-@@ -771,7 +771,6 @@ config THREAD_SHIFT
- 	range 13 15
- 	default "15" if PPC_256K_PAGES
- 	default "14" if PPC64
--	default "14" if KASAN
- 	default "13"
- 	help
- 	  Used to define the stack size. The default is almost always what you
-diff --git a/arch/powerpc/include/asm/thread_info.h b/arch/powerpc/include/asm/thread_info.h
-index 125328d1b980..af58f1ed3952 100644
---- a/arch/powerpc/include/asm/thread_info.h
-+++ b/arch/powerpc/include/asm/thread_info.h
-@@ -14,10 +14,16 @@
- 
- #ifdef __KERNEL__
- 
--#if defined(CONFIG_VMAP_STACK) && CONFIG_THREAD_SHIFT < PAGE_SHIFT
-+#ifdef CONFIG_KASAN
-+#define MIN_THREAD_SHIFT	(CONFIG_THREAD_SHIFT + 1)
-+#else
-+#define MIN_THREAD_SHIFT	CONFIG_THREAD_SHIFT
-+#endif
-+
-+#if defined(CONFIG_VMAP_STACK) && MIN_THREAD_SHIFT < PAGE_SHIFT
- #define THREAD_SHIFT		PAGE_SHIFT
- #else
--#define THREAD_SHIFT		CONFIG_THREAD_SHIFT
-+#define THREAD_SHIFT		MIN_THREAD_SHIFT
- #endif
- 
- #define THREAD_SIZE		(1 << THREAD_SHIFT)
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index b6a920813005..a0981e7cb211 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -7326,7 +7326,7 @@ static void __nft_unregister_flowtable_net_hooks(struct net *net,
+ 		nf_unregister_net_hook(net, &hook->ops);
+ 		if (release_netdev) {
+ 			list_del(&hook->list);
+-			kfree_rcu(hook);
++			kfree_rcu(hook, rcu);
+ 		}
+ 	}
+ }
 -- 
 2.35.1
 
