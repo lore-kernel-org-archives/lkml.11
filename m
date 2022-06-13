@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFA85C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:02:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 884BBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:02:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350579AbiFMLCw (ORCPT
+        id S1351059AbiFMLC4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:02:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44370 "EHLO
+        Mon, 13 Jun 2022 07:02:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350412AbiFMKyw (ORCPT
+        with ESMTP id S1350425AbiFMKyw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 06:54:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCCCE1F62B;
-        Mon, 13 Jun 2022 03:31:23 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 812901FA52;
+        Mon, 13 Jun 2022 03:31:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 72A26B80E59;
-        Mon, 13 Jun 2022 10:31:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB5A3C34114;
-        Mon, 13 Jun 2022 10:31:20 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id EE17ACE1171;
+        Mon, 13 Jun 2022 10:31:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9729C34114;
+        Mon, 13 Jun 2022 10:31:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116281;
-        bh=CTn9HCUjXYHSwA99rQmy+i5tCftAg7PvxJaOxRnYJjo=;
+        s=korg; t=1655116284;
+        bh=h4DIRPIkd+t7iQudHWhOEiQWDM93GOEVD1Vy7LOVC1E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K37Y2nZVOMb2SdVkH7f+mqIGVE736nvwcf6waYXKfe9DPJLzZqvdgWYZb4cNfIlVT
-         01b0zsWuAl51SRwdClUbzsJH2CCwRYSq7PDUM3V//fIHNVgG0aN0F1kGtbv/pEQOqw
-         fiafF0DUD2UCEM47ro4HKk4nYXBlu2EU/em7QedE=
+        b=HrT+aOdKj3jVa8v5Dq//OyQpj/szBcr0LdJqGHyUWzcKOg+ilwdn0Ov7JOjAEiPHR
+         ShjB77/oO0Lhlt7XVfnwM8s7dSbJ61Wnt19rFAKnIjBZnXZrb1BeaZsYxjnJ5HChPp
+         Yg/t4k17/jUXdmYsnGt74BA7XdtHLPcUZF0dhOik=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Kwanghoon Son <k.son@samsung.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org,
+        Srinivas Kandagatla <srinivas.kandagatla@st.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 057/411] media: exynos4-is: Fix compile warning
-Date:   Mon, 13 Jun 2022 12:05:30 +0200
-Message-Id: <20220613094930.224344584@linuxfoundation.org>
+Subject: [PATCH 4.14 155/218] serial: st-asc: Sanitize CSIZE and correct PARENB for CS7
+Date:   Mon, 13 Jun 2022 12:10:13 +0200
+Message-Id: <20220613094925.295221300@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,37 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kwanghoon Son <k.son@samsung.com>
+From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-[ Upstream commit e080f5c1f2b6d02c02ee5d674e0e392ccf63bbaf ]
+[ Upstream commit 52bb1cb7118564166b04d52387bd8403632f5190 ]
 
-Declare static on function 'fimc_isp_video_device_unregister'.
+Only CS7 and CS8 seem supported but CSIZE is not sanitized from CS5 or
+CS6 to CS8. In addition, ASC_CTL_MODE_7BIT_PAR suggests that CS7 has
+to have parity, thus add PARENB.
 
-When VIDEO_EXYNOS4_ISP_DMA_CAPTURE=n, compiler warns about
-warning: no previous prototype for function [-Wmissing-prototypes]
+Incorrect CSIZE results in miscalculation of the frame bits in
+tty_get_char_size() or in its predecessor where the roughly the same
+code is directly within uart_update_timeout().
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Kwanghoon Son <k.son@samsung.com>
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: c4b058560762 (serial:st-asc: Add ST ASC driver.)
+Cc: Srinivas Kandagatla <srinivas.kandagatla@st.com>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Link: https://lore.kernel.org/r/20220519081808.3776-8-ilpo.jarvinen@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/exynos4-is/fimc-isp-video.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/st-asc.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/media/platform/exynos4-is/fimc-isp-video.h b/drivers/media/platform/exynos4-is/fimc-isp-video.h
-index edcb3a5e3cb9..2dd4ddbc748a 100644
---- a/drivers/media/platform/exynos4-is/fimc-isp-video.h
-+++ b/drivers/media/platform/exynos4-is/fimc-isp-video.h
-@@ -32,7 +32,7 @@ static inline int fimc_isp_video_device_register(struct fimc_isp *isp,
- 	return 0;
- }
+diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+index b313a792b149..44d52c087c56 100644
+--- a/drivers/tty/serial/st-asc.c
++++ b/drivers/tty/serial/st-asc.c
+@@ -545,10 +545,14 @@ static void asc_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	/* set character length */
+ 	if ((cflag & CSIZE) == CS7) {
+ 		ctrl_val |= ASC_CTL_MODE_7BIT_PAR;
++		cflag |= PARENB;
+ 	} else {
+ 		ctrl_val |= (cflag & PARENB) ?  ASC_CTL_MODE_8BIT_PAR :
+ 						ASC_CTL_MODE_8BIT;
++		cflag &= ~CSIZE;
++		cflag |= CS8;
+ 	}
++	termios->c_cflag = cflag;
  
--void fimc_isp_video_device_unregister(struct fimc_isp *isp,
-+static inline void fimc_isp_video_device_unregister(struct fimc_isp *isp,
- 				enum v4l2_buf_type type)
- {
- }
+ 	/* set stop bit */
+ 	ctrl_val |= (cflag & CSTOPB) ? ASC_CTL_STOP_2BIT : ASC_CTL_STOP_1BIT;
 -- 
 2.35.1
 
