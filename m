@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86BCFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:16:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5848BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:16:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359576AbiFMNQM (ORCPT
+        id S1359646AbiFMNQP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:16:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38312 "EHLO
+        Mon, 13 Jun 2022 09:16:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359274AbiFMNJp (ORCPT
+        with ESMTP id S1359265AbiFMNJp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 09:09:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF149765E;
-        Mon, 13 Jun 2022 04:19:54 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CEE62228B;
+        Mon, 13 Jun 2022 04:19:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7651FB80D31;
-        Mon, 13 Jun 2022 11:19:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3F9EC3411E;
-        Mon, 13 Jun 2022 11:19:51 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id CCCCDCE1171;
+        Mon, 13 Jun 2022 11:19:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3F0FC3411F;
+        Mon, 13 Jun 2022 11:19:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119192;
-        bh=CEpjbcmExVzwCDja6tm1KJGkaef2pBcfEFZdREugcso=;
+        s=korg; t=1655119184;
+        bh=nhelgjtfwercjsWb3CXAIGQG0vmigIT3Yb/l51/AOec=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oaaWyeBdZJRAo82kUKg36CTbCSdEmDuN4JvYcrRnfRe8iAz77s8rZdpHKyMzw3STM
-         yXielEBaCjLvL0C5ctogaFHBv8DIigPj/VC9Y9ozCi4XR/vSPLNmrhddru4so31cCa
-         wIi45p5M/eZhZ164rrgPFhzFXvH0LdBlrM2ahOG0=
+        b=Hc5kjFjGdOcRyp7qP7VhR4IMK477EKaMVQB2cgYikbIxKxcgai+cJBd5P74F24uco
+         bbJyGXQxunTgYX9eeQqqZNaDb7f72eWK8C4naMi/BWedgzcg5LFtZDE5Eo8eUNOf7H
+         2h8O5uE/+AMV3KSWHHkA4mUPfC246fPQODnBzH70=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 174/247] drivers: staging: rtl8192u: Fix deadlock in ieee80211_beacons_stop()
-Date:   Mon, 13 Jun 2022 12:11:16 +0200
-Message-Id: <20220613094928.234956324@linuxfoundation.org>
+Subject: [PATCH 5.15 134/247] netfilter: nf_tables: delete flowtable hooks via transaction list
+Date:   Mon, 13 Jun 2022 12:10:36 +0200
+Message-Id: <20220613094927.023405347@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -49,52 +49,134 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit 806c7b53414934ba2a39449b31fd1a038e500273 ]
+[ Upstream commit b6d9014a3335194590abdd2a2471ef5147a67645 ]
 
-There is a deadlock in ieee80211_beacons_stop(), which is shown below:
+Remove inactive bool field in nft_hook object that was introduced in
+abadb2f865d7 ("netfilter: nf_tables: delete devices from flowtable").
+Move stale flowtable hooks to transaction list instead.
 
-   (Thread 1)              |      (Thread 2)
-                           | ieee80211_send_beacon()
-ieee80211_beacons_stop()   |  mod_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | ieee80211_send_beacon_cb()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
+Deleting twice the same device does not result in ENOENT.
 
-We hold ieee->beacon_lock in position (1) of thread 1 and use
-del_timer_sync() to wait timer to stop, but timer handler
-also need ieee->beacon_lock in position (2) of thread 2.
-As a result, ieee80211_beacons_stop() will block forever.
-
-This patch extracts del_timer_sync() from the protection of
-spin_lock_irqsave(), which could let timer handler to obtain
-the needed lock.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417135407.109536-1-duoming@zju.edu.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: abadb2f865d7 ("netfilter: nf_tables: delete devices from flowtable")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/net/netfilter/nf_tables.h |  1 -
+ net/netfilter/nf_tables_api.c     | 31 ++++++-------------------------
+ 2 files changed, 6 insertions(+), 26 deletions(-)
 
-diff --git a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
-index 1a193f900779..2b06706a7071 100644
---- a/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
-+++ b/drivers/staging/rtl8192u/ieee80211/ieee80211_softmac.c
-@@ -528,9 +528,9 @@ static void ieee80211_beacons_stop(struct ieee80211_device *ieee)
- 	spin_lock_irqsave(&ieee->beacon_lock, flags);
+diff --git a/include/net/netfilter/nf_tables.h b/include/net/netfilter/nf_tables.h
+index d52a5d776e76..2af1c2c64128 100644
+--- a/include/net/netfilter/nf_tables.h
++++ b/include/net/netfilter/nf_tables.h
+@@ -1053,7 +1053,6 @@ struct nft_stats {
  
- 	ieee->beacon_txing = 0;
--	del_timer_sync(&ieee->beacon_timer);
+ struct nft_hook {
+ 	struct list_head	list;
+-	bool			inactive;
+ 	struct nf_hook_ops	ops;
+ 	struct rcu_head		rcu;
+ };
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 5833fe17be43..b19974073156 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -1835,7 +1835,6 @@ static struct nft_hook *nft_netdev_hook_alloc(struct net *net,
+ 		goto err_hook_dev;
+ 	}
+ 	hook->ops.dev = dev;
+-	hook->inactive = false;
  
- 	spin_unlock_irqrestore(&ieee->beacon_lock, flags);
-+	del_timer_sync(&ieee->beacon_timer);
+ 	return hook;
+ 
+@@ -7517,6 +7516,7 @@ static int nft_delflowtable_hook(struct nft_ctx *ctx,
+ {
+ 	const struct nlattr * const *nla = ctx->nla;
+ 	struct nft_flowtable_hook flowtable_hook;
++	LIST_HEAD(flowtable_del_list);
+ 	struct nft_hook *this, *hook;
+ 	struct nft_trans *trans;
+ 	int err;
+@@ -7532,7 +7532,7 @@ static int nft_delflowtable_hook(struct nft_ctx *ctx,
+ 			err = -ENOENT;
+ 			goto err_flowtable_del_hook;
+ 		}
+-		hook->inactive = true;
++		list_move(&hook->list, &flowtable_del_list);
+ 	}
+ 
+ 	trans = nft_trans_alloc(ctx, NFT_MSG_DELFLOWTABLE,
+@@ -7545,6 +7545,7 @@ static int nft_delflowtable_hook(struct nft_ctx *ctx,
+ 	nft_trans_flowtable(trans) = flowtable;
+ 	nft_trans_flowtable_update(trans) = true;
+ 	INIT_LIST_HEAD(&nft_trans_flowtable_hooks(trans));
++	list_splice(&flowtable_del_list, &nft_trans_flowtable_hooks(trans));
+ 	nft_flowtable_hook_release(&flowtable_hook);
+ 
+ 	nft_trans_commit_list_add_tail(ctx->net, trans);
+@@ -7552,13 +7553,7 @@ static int nft_delflowtable_hook(struct nft_ctx *ctx,
+ 	return 0;
+ 
+ err_flowtable_del_hook:
+-	list_for_each_entry(this, &flowtable_hook.list, list) {
+-		hook = nft_hook_list_find(&flowtable->hook_list, this);
+-		if (!hook)
+-			break;
+-
+-		hook->inactive = false;
+-	}
++	list_splice(&flowtable_del_list, &flowtable->hook_list);
+ 	nft_flowtable_hook_release(&flowtable_hook);
+ 
+ 	return err;
+@@ -8413,17 +8408,6 @@ void nft_chain_del(struct nft_chain *chain)
+ 	list_del_rcu(&chain->list);
  }
  
- void ieee80211_stop_send_beacons(struct ieee80211_device *ieee)
+-static void nft_flowtable_hooks_del(struct nft_flowtable *flowtable,
+-				    struct list_head *hook_list)
+-{
+-	struct nft_hook *hook, *next;
+-
+-	list_for_each_entry_safe(hook, next, &flowtable->hook_list, list) {
+-		if (hook->inactive)
+-			list_move(&hook->list, hook_list);
+-	}
+-}
+-
+ static void nf_tables_module_autoload_cleanup(struct net *net)
+ {
+ 	struct nftables_pernet *nft_net = nft_pernet(net);
+@@ -8768,8 +8752,6 @@ static int nf_tables_commit(struct net *net, struct sk_buff *skb)
+ 			break;
+ 		case NFT_MSG_DELFLOWTABLE:
+ 			if (nft_trans_flowtable_update(trans)) {
+-				nft_flowtable_hooks_del(nft_trans_flowtable(trans),
+-							&nft_trans_flowtable_hooks(trans));
+ 				nf_tables_flowtable_notify(&trans->ctx,
+ 							   nft_trans_flowtable(trans),
+ 							   &nft_trans_flowtable_hooks(trans),
+@@ -8850,7 +8832,6 @@ static int __nf_tables_abort(struct net *net, enum nfnl_abort_action action)
+ 	struct nftables_pernet *nft_net = nft_pernet(net);
+ 	struct nft_trans *trans, *next;
+ 	struct nft_trans_elem *te;
+-	struct nft_hook *hook;
+ 
+ 	if (action == NFNL_ABORT_VALIDATE &&
+ 	    nf_tables_validate(net) < 0)
+@@ -8981,8 +8962,8 @@ static int __nf_tables_abort(struct net *net, enum nfnl_abort_action action)
+ 			break;
+ 		case NFT_MSG_DELFLOWTABLE:
+ 			if (nft_trans_flowtable_update(trans)) {
+-				list_for_each_entry(hook, &nft_trans_flowtable(trans)->hook_list, list)
+-					hook->inactive = false;
++				list_splice(&nft_trans_flowtable_hooks(trans),
++					    &nft_trans_flowtable(trans)->hook_list);
+ 			} else {
+ 				trans->ctx.table->use++;
+ 				nft_clear(trans->ctx.net, nft_trans_flowtable(trans));
 -- 
 2.35.1
 
