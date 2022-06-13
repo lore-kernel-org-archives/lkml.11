@@ -2,99 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A702EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:44:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F459C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:48:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232304AbiFMRob (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 13:44:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53892 "EHLO
+        id S234355AbiFMRsH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 13:48:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241927AbiFMRoO (ORCPT
+        with ESMTP id S238684AbiFMRrn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 13:44:14 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D98D168D15;
-        Mon, 13 Jun 2022 06:18:41 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id a10so5603330pju.3;
-        Mon, 13 Jun 2022 06:18:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=GqcjIBiZHdkiFQqTyaXjMxy6knKrlT2JCmzywSrR6F4=;
-        b=W6Stz7yNDgHrafTk7QMKI2bwWX8VJq3RL1tKe0dtoZAC9IKwoc/ga5MzReVsIFu4Dz
-         QoY+auFOsQVCqFHQcxwPsDgQy5Pwug8khg+wJ2WWNLvM3i+EGKDlsuniQV8NDUjs/ihC
-         dqOE/gWGix6+NgoklW5oEQIujMeaKFeaDq84mzvNsyDvF3CHYRlZbMWAMurZoQMp1cQI
-         QXH3Jxx6UxNCdAy1wHPu4flkEOtDc945/d9jZQG5rQL/nq6L6WNsxHUJVW5POUOADclk
-         1MpfYPYrDuqQmYuZxyVds9SVpa1AVLhhp0wzgctFpTbcaKb9KUU6dyNw8XW464wT9nPj
-         hf9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=GqcjIBiZHdkiFQqTyaXjMxy6knKrlT2JCmzywSrR6F4=;
-        b=I38iXnN8g4bnC4Dm+Rkikg6jK73LhpqcibB/6Usdp0DCmjVXIza0MsZYLryrCJxt4E
-         IssC5+cPnIghh915MPpNdajUQQPypA7Dbl/R56bGkSiCQbHfD+9lcwtgnxh3kQr5unOk
-         ihahJqaFft8pHgbkxSlOdtT/cvSVJQ28GQ6nYo508wxHMK8wHowaWi2hVddyRhWL4zTy
-         LrirjoBfxRFkAFu7lvgaIb5J0E39bY2BRFluXCf+euGbOrGdnjK0mu9qA/cFdNUBak5y
-         O+pIoHX7osRTd7xsuvLj5BPT71D1w0lFtWyBqM+ioAyREm5anCelkad/JRI+DLOzJKJu
-         KALw==
-X-Gm-Message-State: AOAM530DYUXScd3TexBKkUqPTx5YOKZjebzMc8ecdsmG1/C7vGAg0oT2
-        7eTmu7SOaARh9JTS0MELK2k=
-X-Google-Smtp-Source: ABdhPJxSXN3t0e9qsGy4v9kZozVl7y++GOeJiSptH8f6Zw38nYb+LQeHXkHR2poHPSudLwd9DSR4RA==
-X-Received: by 2002:a17:90a:5409:b0:1e8:664e:41dd with SMTP id z9-20020a17090a540900b001e8664e41ddmr15785311pjh.173.1655126320488;
-        Mon, 13 Jun 2022 06:18:40 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id 19-20020a170902e9d300b001639f038250sm5070965plk.220.2022.06.13.06.18.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 06:18:39 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Mon, 13 Jun 2022 06:18:38 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.15 000/247] 5.15.47-rc1 review
-Message-ID: <20220613131838.GA3571788@roeck-us.net>
-References: <20220613094922.843438024@linuxfoundation.org>
+        Mon, 13 Jun 2022 13:47:43 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE6E514E2C8
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:29:22 -0700 (PDT)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25DCPhSP007022;
+        Mon, 13 Jun 2022 13:28:58 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=qYUMEST+bP9k/kJYvw0TZMvwPo1yTFFJ5+kSY3p9rtA=;
+ b=Fm+tL3fznS6TsNGSBlMve+XsoiSjZ7IZJWW5owD8Qk4+gTfwMZCuQUnXQTTP6pdsjXbB
+ YO1AoMkHz+7EEqg0WsHFhtGeUnfLesWhf81chcuSdLYTIJ8qSkc/FJ5vG60YbITCwje1
+ S0VAXtTqL0PNV/BRzZiD07hvf7rF/dr3hELXUvaj+XZx805tlA2m555icMV1BLzMl+6a
+ RdcUfRnJIkCmy1yBfgxvBEe01trbYG4xt46U58FSorWShw0xd8QpINleX8kDtlZuvf8v
+ 9Mt+JnNCd7/WAzhs/TW6v6TtFH89BPSY57Q88r4M7hhZ/L5UoKBdA+k535tC39moLZib nQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gp5819abh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 13 Jun 2022 13:28:58 +0000
+Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 25DDQdqi023792;
+        Mon, 13 Jun 2022 13:28:57 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gp5819aax-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 13 Jun 2022 13:28:57 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25DDMQUA012698;
+        Mon, 13 Jun 2022 13:28:55 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma03ams.nl.ibm.com with ESMTP id 3gmjp9aurh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 13 Jun 2022 13:28:55 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25DDSriV21627204
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 13 Jun 2022 13:28:53 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 10B03A405B;
+        Mon, 13 Jun 2022 13:28:53 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0FB30A4054;
+        Mon, 13 Jun 2022 13:28:46 +0000 (GMT)
+Received: from [9.43.31.74] (unknown [9.43.31.74])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 13 Jun 2022 13:28:45 +0000 (GMT)
+Message-ID: <080d64c3-1289-49c4-f4a0-105e5266a6f0@linux.ibm.com>
+Date:   Mon, 13 Jun 2022 18:58:43 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v6 01/13] mm/demotion: Add support for explicit memory
+ tiers
+Content-Language: en-US
+To:     Johannes Weiner <hannes@cmpxchg.org>,
+        Ying Huang <ying.huang@intel.com>
+Cc:     linux-mm@kvack.org, akpm@linux-foundation.org,
+        Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        David Rientjes <rientjes@google.com>
+References: <20220610135229.182859-1-aneesh.kumar@linux.ibm.com>
+ <20220610135229.182859-2-aneesh.kumar@linux.ibm.com>
+ <7e0b41422dbd0976cb43c2f126e9371d5e311e77.camel@intel.com>
+ <48096ad7-ce6d-79b7-1edd-7e6652ab2a4d@linux.ibm.com>
+ <a88bd25fc77252dee4f895f3a9b2c1f6ebb5169e.camel@intel.com>
+ <Yqc4nSEuso+YmPE7@cmpxchg.org>
+From:   Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>
+In-Reply-To: <Yqc4nSEuso+YmPE7@cmpxchg.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 7vqlVs_ASNebhc5-mePDxHBzn4AZNUI0
+X-Proofpoint-ORIG-GUID: JDNWtd59BKZomjhr8ISgYEAtZb9jgHRO
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-13_05,2022-06-13_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 impostorscore=0
+ malwarescore=0 suspectscore=0 spamscore=0 priorityscore=1501
+ lowpriorityscore=0 phishscore=0 bulkscore=0 mlxlogscore=999 adultscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206130059
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 12:08:22PM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.47 release.
-> There are 247 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On 6/13/22 6:46 PM, Johannes Weiner wrote:
+> On Mon, Jun 13, 2022 at 01:30:08PM +0800, Ying Huang wrote:
+>> On Mon, 2022-06-13 at 09:01 +0530, Aneesh Kumar K V wrote:
+>>> On 6/13/22 8:52 AM, Ying Huang wrote:
+>>>> On Fri, 2022-06-10 at 19:22 +0530, Aneesh Kumar K.V wrote:
+>>>>> +config TIERED_MEMORY
+>>>>> +	def_bool NUMA
+>>>>> +
+>>>>
+>>>> As Yang pointed out, why not just use CONFIG_NUMA?  I suspect the
+>>>> added value of CONIFIG_TIRED_MEMORY.
+>>>
+>>> I decided to use TIERED_MEMORY to bring more clarity. It should be same
+>>> now that we have moved CONFIG_MIGRATION dependencies to runtime. IMHO
+>>> having CONFIG_TIERED_MEMORY is better than using CONFIG_NUMA.
+>>
+>> I don't think CONFIG_TIERED_MEMORY bring no much value.  It's better
+>> to use CONFIG_NUMA directly.  But this is just my opinion.
 > 
-> Responses should be made by Wed, 15 Jun 2022 09:47:08 +0000.
-> Anything received after that time might be too late.
-> 
+> I agree. As long as it's always built with CONFIG_NUMA, it's simply
+> NUMA code. Easy enough to modularize it later if somebody really wants
+> this to be configurable separately.
 
-Early feedback:
+I was comparing,
 
-Building arm:allmodconfig ... failed
---------------
-Error log:
-In file included from include/linux/kernel.h:16,
-                 from include/linux/crypto.h:16,
-                 from include/crypto/hash.h:11,
-                 from lib/iov_iter.c:2:
-lib/iov_iter.c: In function 'iter_xarray_get_pages':
-include/linux/minmax.h:20:35: error: comparison of distinct pointer types lacks a cast
+#ifdef CONFIG_TIERED_MEMORY
+struct memory_tier {
 
-This will likely affect affects all branches where commit 6c77676645ad
-("iov_iter: Fix iter_xarray_get_pages{,_alloc}()") was backported.
+vs
 
-The fix is upstream commit 1c27f1fc1549 ("iov_iter: fix build issue due
-to possible type mis-match").
+#ifdef CONFIG_NUMA
+struct memory_tier {
 
-Guenter
+I will switch to CONFIG_NUMA in the next update since you are not 
+finding it beneficial.
+
+-aneesh
