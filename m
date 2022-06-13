@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 067EECCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B161CCA48A
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:34:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384441AbiFMOeG (ORCPT
+        id S1384619AbiFMOeU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:34:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60732 "EHLO
+        Mon, 13 Jun 2022 10:34:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385029AbiFMOac (ORCPT
+        with ESMTP id S1385105AbiFMOai (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:30:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1319835A95;
-        Mon, 13 Jun 2022 04:48:28 -0700 (PDT)
+        Mon, 13 Jun 2022 10:30:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A8EDA86A5;
+        Mon, 13 Jun 2022 04:48:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A0509B80EB3;
-        Mon, 13 Jun 2022 11:47:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15099C3411C;
-        Mon, 13 Jun 2022 11:47:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 92360612AC;
+        Mon, 13 Jun 2022 11:48:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77806C3411C;
+        Mon, 13 Jun 2022 11:48:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120875;
-        bh=Drvoe06Rum6IT8nSgFkeIgGjDgEx/XCBnWyQoaxinns=;
+        s=korg; t=1655120881;
+        bh=xiYEgWBVMCuIUkmI5EK4524c4rH/1oU6YNVnXbs2OsU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZhcKpVvw7aE289xu72DeMHFTwtRXNUqNHfC3TwTTK807V5I2C5nInp/WZ5LC0UhIm
-         2/ark54sJaKs7aTel1p9Sduy6Zu322a4LDrNMMwhNEtg+Cs1UmbHaKjmUpeGxM9rHv
-         qEyaSTXzVKjFDRDrw2flJGEJPzulde1BzL5PIf6o=
+        b=CewKg/IPdo05yYZhMRum+2tIyjM380BAQY1OwLXVbbdV1I87Ki+oWDuC/L1Ivbj0k
+         1Z/hrjQ5oPP8D+iXQFKCVcWUrLIJzmQmv3xRXsBYFzBaWx0X9hSmS1iegkGpyc0FXN
+         GmUdG5dWc6X/9EFmmSSvQzNMgYfGcfymKX6YqPtA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Taehee Yoo <ap420073@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 189/298] ip_gre: test csum_start instead of transport header
-Date:   Mon, 13 Jun 2022 12:11:23 +0200
-Message-Id: <20220613094930.837250052@linuxfoundation.org>
+Subject: [PATCH 5.17 169/298] amt: fix possible null-ptr-deref in amt_rcv()
+Date:   Mon, 13 Jun 2022 12:11:03 +0200
+Message-Id: <20220613094930.057866332@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -53,85 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
+From: Taehee Yoo <ap420073@gmail.com>
 
-[ Upstream commit 8d21e9963bec1aad2280cdd034c8993033ef2948 ]
+[ Upstream commit d16207f92a4a823c48b4ea953ad51f4483456768 ]
 
-GRE with TUNNEL_CSUM will apply local checksum offload on
-CHECKSUM_PARTIAL packets.
+When amt interface receives amt message, it tries to obtain amt private
+data from sock.
+If there is no amt private data, it frees an skb immediately.
+After kfree_skb(), it increases the rx_dropped stats.
+But in order to use rx_dropped, amt private data is needed.
+So, it makes amt_rcv() to do not increase rx_dropped stats when it can
+not obtain amt private data.
 
-ipgre_xmit must validate csum_start after an optional skb_pull,
-else lco_csum may trigger an overflow. The original check was
-
-	if (csum && skb_checksum_start(skb) < skb->data)
-		return -EINVAL;
-
-This had false positives when skb_checksum_start is undefined:
-when ip_summed is not CHECKSUM_PARTIAL. A discussed refinement
-was straightforward
-
-	if (csum && skb->ip_summed == CHECKSUM_PARTIAL &&
-	    skb_checksum_start(skb) < skb->data)
-		return -EINVAL;
-
-But was eventually revised more thoroughly:
-- restrict the check to the only branch where needed, in an
-  uncommon GRE path that uses header_ops and calls skb_pull.
-- test skb_transport_header, which is set along with csum_start
-  in skb_partial_csum_set in the normal header_ops datapath.
-
-Turns out skbs can arrive in this branch without the transport
-header set, e.g., through BPF redirection.
-
-Revise the check back to check csum_start directly, and only if
-CHECKSUM_PARTIAL. Do leave the check in the updated location.
-Check field regardless of whether TUNNEL_CSUM is configured.
-
-Link: https://lore.kernel.org/netdev/YS+h%2FtqCJJiQei+W@shredder/
-Link: https://lore.kernel.org/all/20210902193447.94039-2-willemdebruijn.kernel@gmail.com/T/#u
-Fixes: 8a0ed250f911 ("ip_gre: validate csum_start only on pull")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Willem de Bruijn <willemb@google.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
-Link: https://lore.kernel.org/r/20220606132107.3582565-1-willemdebruijn.kernel@gmail.com
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Fixes: 1a1a0e80e005 ("amt: fix possible memory leak in amt_rcv()")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/ip_gre.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ drivers/net/amt.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
-index 8cf86e42c1d1..65b6d4c1698e 100644
---- a/net/ipv4/ip_gre.c
-+++ b/net/ipv4/ip_gre.c
-@@ -629,21 +629,20 @@ static netdev_tx_t ipgre_xmit(struct sk_buff *skb,
+diff --git a/drivers/net/amt.c b/drivers/net/amt.c
+index d8c47c4e6559..e239c0262d56 100644
+--- a/drivers/net/amt.c
++++ b/drivers/net/amt.c
+@@ -2698,7 +2698,8 @@ static int amt_rcv(struct sock *sk, struct sk_buff *skb)
+ 	amt = rcu_dereference_sk_user_data(sk);
+ 	if (!amt) {
+ 		err = true;
+-		goto drop;
++		kfree_skb(skb);
++		goto out;
  	}
  
- 	if (dev->header_ops) {
--		const int pull_len = tunnel->hlen + sizeof(struct iphdr);
--
- 		if (skb_cow_head(skb, 0))
- 			goto free_skb;
- 
- 		tnl_params = (const struct iphdr *)skb->data;
- 
--		if (pull_len > skb_transport_offset(skb))
--			goto free_skb;
--
- 		/* Pull skb since ip_tunnel_xmit() needs skb->data pointing
- 		 * to gre header.
- 		 */
--		skb_pull(skb, pull_len);
-+		skb_pull(skb, tunnel->hlen + sizeof(struct iphdr));
- 		skb_reset_mac_header(skb);
-+
-+		if (skb->ip_summed == CHECKSUM_PARTIAL &&
-+		    skb_checksum_start(skb) < skb->data)
-+			goto free_skb;
- 	} else {
- 		if (skb_cow_head(skb, dev->needed_headroom))
- 			goto free_skb;
+ 	skb->dev = amt->dev;
 -- 
 2.35.1
 
