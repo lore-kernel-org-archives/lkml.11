@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7AAACCA48E
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:31:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FDAECCA485
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:31:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346551AbiFMKa6 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:30:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34994 "EHLO
+        id S245132AbiFMKbE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:31:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344563AbiFMK3C (ORCPT
+        with ESMTP id S1344692AbiFMK3G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:29:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA708255B7;
-        Mon, 13 Jun 2022 03:20:25 -0700 (PDT)
+        Mon, 13 Jun 2022 06:29:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 171E82559A;
+        Mon, 13 Jun 2022 03:20:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 33D6360B91;
-        Mon, 13 Jun 2022 10:20:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FDA1C34114;
-        Mon, 13 Jun 2022 10:20:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6379CB80E5E;
+        Mon, 13 Jun 2022 10:20:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0E6AC34114;
+        Mon, 13 Jun 2022 10:20:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115624;
-        bh=g7SB3apUoO7P6BCpj7sZDzJFWpEJqgCZHd9WtGuebqQ=;
+        s=korg; t=1655115619;
+        bh=YfQvhTNtRCQoxAKmCzCkkxrzlP3GHt4D3FPbvmkZ/vM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sLKdtxfa/+kzBF9eggOVSZzkRs+GU3O2XCALuXYm7OgrMWdszruOZ+yDhs3B4IeHK
-         i5mXmnah57kLmF5ZKKrYZmamX6UkLiSz4iYv+ib0RL2QIy0fgRbIbSmsfApComBQeo
-         Eoy6UPIcJRy/eUtieUQxz0YyfbTwhEQmh+SKxaV4=
+        b=uzqvWyG8HMhMCceuJkJp6kjyHYqZMiFoTPgF9iF5JxitxkXjcAMuuABafa209+Zx9
+         ubLFx3vzfhGYR+y+MldqR0jWZF08pXZs09UGaegcvBvg2QHpi9wcC6KlqbhA/FIedy
+         91/EqN5E951aKMTahrpKcxQ3AQ5e72jMatdQzRHs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Donald Buczek <buczek@molgen.mpg.de>,
-        Guoqing Jiang <guoqing.jiang@linux.dev>,
-        Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 152/167] md: protect md_unregister_thread from reentrancy
-Date:   Mon, 13 Jun 2022 12:10:26 +0200
-Message-Id: <20220613094916.572509483@linuxfoundation.org>
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 142/167] drivers: staging: rtl8192e: Fix deadlock in rtllib_beacons_stop()
+Date:   Mon, 13 Jun 2022 12:10:16 +0200
+Message-Id: <20220613094914.154052567@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -50,61 +48,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guoqing Jiang <guoqing.jiang@cloud.ionos.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 1e267742283a4b5a8ca65755c44166be27e9aa0f ]
+[ Upstream commit 9b6bdbd9337de3917945847bde262a34a87a6303 ]
 
-Generally, the md_unregister_thread is called with reconfig_mutex, but
-raid_message in dm-raid doesn't hold reconfig_mutex to unregister thread,
-so md_unregister_thread can be called simulitaneously from two call sites
-in theory.
+There is a deadlock in rtllib_beacons_stop(), which is shown
+below:
 
-Then after previous commit which remove the protection of reconfig_mutex
-for md_unregister_thread completely, the potential issue could be worse
-than before.
+   (Thread 1)              |      (Thread 2)
+                           | rtllib_send_beacon()
+rtllib_beacons_stop()      |  mod_timer()
+ spin_lock_irqsave() //(1) |  (wait a time)
+ ...                       | rtllib_send_beacon_cb()
+ del_timer_sync()          |  spin_lock_irqsave() //(2)
+ (wait timer to stop)      |  ...
 
-Let's take pers_lock at the beginning of function to ensure reentrancy.
+We hold ieee->beacon_lock in position (1) of thread 1 and
+use del_timer_sync() to wait timer to stop, but timer handler
+also need ieee->beacon_lock in position (2) of thread 2.
+As a result, rtllib_beacons_stop() will block forever.
 
-Reported-by: Donald Buczek <buczek@molgen.mpg.de>
-Signed-off-by: Guoqing Jiang <guoqing.jiang@linux.dev>
-Signed-off-by: Song Liu <song@kernel.org>
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irqsave(), which could let timer handler to obtain
+the needed lock.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417141641.124388-1-duoming@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/md.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ drivers/staging/rtl8192e/rtllib_softmac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/md/md.c b/drivers/md/md.c
-index 0197d18b5407..9e8373e7e287 100644
---- a/drivers/md/md.c
-+++ b/drivers/md/md.c
-@@ -7254,17 +7254,22 @@ EXPORT_SYMBOL(md_register_thread);
+diff --git a/drivers/staging/rtl8192e/rtllib_softmac.c b/drivers/staging/rtl8192e/rtllib_softmac.c
+index da74dc49b95e..f46def63967b 100644
+--- a/drivers/staging/rtl8192e/rtllib_softmac.c
++++ b/drivers/staging/rtl8192e/rtllib_softmac.c
+@@ -655,9 +655,9 @@ static void rtllib_beacons_stop(struct rtllib_device *ieee)
+ 	spin_lock_irqsave(&ieee->beacon_lock, flags);
  
- void md_unregister_thread(struct md_thread **threadp)
- {
--	struct md_thread *thread = *threadp;
--	if (!thread)
--		return;
--	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
--	/* Locking ensures that mddev_unlock does not wake_up a
-+	struct md_thread *thread;
-+
-+	/*
-+	 * Locking ensures that mddev_unlock does not wake_up a
- 	 * non-existent thread
- 	 */
- 	spin_lock(&pers_lock);
-+	thread = *threadp;
-+	if (!thread) {
-+		spin_unlock(&pers_lock);
-+		return;
-+	}
- 	*threadp = NULL;
- 	spin_unlock(&pers_lock);
+ 	ieee->beacon_txing = 0;
+-	del_timer_sync(&ieee->beacon_timer);
  
-+	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
- 	kthread_stop(thread->tsk);
- 	kfree(thread);
+ 	spin_unlock_irqrestore(&ieee->beacon_lock, flags);
++	del_timer_sync(&ieee->beacon_timer);
+ 
  }
+ 
 -- 
 2.35.1
 
