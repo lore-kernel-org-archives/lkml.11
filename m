@@ -2,194 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B5DDCCA48B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:01:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E518CCA481
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:01:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239385AbiFMIAs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 04:00:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46022 "EHLO
+        id S232017AbiFMIBD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 04:01:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230260AbiFMIAg (ORCPT
+        with ESMTP id S232064AbiFMIAh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 04:00:36 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B545F266B;
-        Mon, 13 Jun 2022 01:00:32 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LM3rl0Nk2zDqqJ;
-        Mon, 13 Jun 2022 16:00:07 +0800 (CST)
-Received: from dggpemm500014.china.huawei.com (7.185.36.153) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 13 Jun 2022 16:00:27 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- dggpemm500014.china.huawei.com (7.185.36.153) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 13 Jun 2022 16:00:25 +0800
-From:   Wupeng Ma <mawupeng1@huawei.com>
-To:     <corbet@lwn.net>, <will@kernel.org>, <ardb@kernel.org>,
-        <catalin.marinas@arm.com>
-CC:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
-        <dave.hansen@linux.intel.com>, <x86@kernel.org>, <hpa@zytor.com>,
-        <dvhart@infradead.org>, <andy@infradead.org>, <rppt@kernel.org>,
-        <akpm@linux-foundation.org>, <paul.walmsley@sifive.com>,
-        <palmer@dabbelt.com>, <aou@eecs.berkeley.edu>,
-        <paulmck@kernel.org>, <keescook@chromium.org>,
-        <songmuchun@bytedance.com>, <rdunlap@infradead.org>,
-        <damien.lemoal@opensource.wdc.com>, <swboyd@chromium.org>,
-        <wei.liu@kernel.org>, <robin.murphy@arm.com>, <david@redhat.com>,
-        <mawupeng1@huawei.com>, <anshuman.khandual@arm.com>,
-        <thunder.leizhen@huawei.com>, <wangkefeng.wang@huawei.com>,
-        <gpiccoli@igalia.com>, <chenhuacai@kernel.org>,
-        <geert@linux-m68k.org>, <vijayb@linux.microsoft.com>,
-        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-efi@vger.kernel.org>, <platform-driver-x86@vger.kernel.org>,
-        <linux-mm@kvack.org>, <linux-riscv@lists.infradead.org>
-Subject: [PATCH v4 1/6] efi: Make efi_find_mirror() public
-Date:   Mon, 13 Jun 2022 16:21:42 +0800
-Message-ID: <20220613082147.183145-2-mawupeng1@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220613082147.183145-1-mawupeng1@huawei.com>
-References: <20220613082147.183145-1-mawupeng1@huawei.com>
+        Mon, 13 Jun 2022 04:00:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC21E55B2;
+        Mon, 13 Jun 2022 01:00:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B87DB80D88;
+        Mon, 13 Jun 2022 08:00:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E89EEC3411C;
+        Mon, 13 Jun 2022 08:00:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655107233;
+        bh=elvnnOZZ+5pJ88iCZ8TUUMHnnNbH59nzjeBrpwy9VpA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=chyH8RQHqqSfLNpzUnKbg0vjCkNFRzV2w6hJD0AeyilyaPhk3YsTcI0a/lnoSzER0
+         Iw9lkOOaBd9jP/4INyFRODPVoF3WSwFGFiB144mLo+h8puFnkfLES3E8ZIpQ0Q9FI/
+         QCaAMAtSUxVUAvcYBEr5Ta4Zi1Kdncgrv/re/Xjw=
+Date:   Mon, 13 Jun 2022 10:00:30 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Yuntao Wang <ytcoode@gmail.com>
+Cc:     daniel@iogearbox.net, linux-kernel@vger.kernel.org, pavel@denx.de,
+        sashal@kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] bpf: Fix excessive memory allocation in stack_map_alloc()
+Message-ID: <YqbunqapIFiIVqOb@kroah.com>
+References: <YqC+WquFukW84W12@kroah.com>
+ <20220608160728.272118-1-ytcoode@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500014.china.huawei.com (7.185.36.153)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220608160728.272118-1-ytcoode@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ma Wupeng <mawupeng1@huawei.com>
+On Thu, Jun 09, 2022 at 12:07:28AM +0800, Yuntao Wang wrote:
+> On Wed, 8 Jun 2022 17:20:58 +0200, Greg KH wrote:
+> > On Wed, Jun 08, 2022 at 10:25:38PM +0800, Yuntao Wang wrote:
+> > > The 'n_buckets * (value_size + sizeof(struct stack_map_bucket))' part of
+> > > the allocated memory for 'smap' is never used, get rid of it.
+> > > 
+> > > Fixes: b936ca643ade ("bpf: rework memlock-based memory accounting for maps")
+> > > Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+> > > Link: https://lore.kernel.org/bpf/20220407130423.798386-1-ytcoode@gmail.com
+> > > ---
+> > > This is the modified version for 5.10, the original patch is:
+> > > 
+> > > [ Upstream commit b45043192b3e481304062938a6561da2ceea46a6 ]
+> > > 
+> > > It would be better if the new patch can be reviewed by someone else.
+> > 
+> > What is wrong with the version that we have queued up in the 5.10-stable
+> > review queue right now?
+> 
+> Since the 5.10 branch doesn't have commit 370868107bf6, the upstream version
+> is not correct for it, I modified the original patch and wanted to backport
+> it to the 5.10 branch.
 
-Commit b05b9f5f9dcf ("x86, mirror: x86 enabling - find mirrored memory
-ranges") introduce the efi_find_mirror function on x86. In order to reuse
-the API we make it public in preparation for arm64 to support mirrord
-memory.
+This does not apply to the 5.10 branch now, can you provide a working
+version?
 
-Signed-off-by: Ma Wupeng <mawupeng1@huawei.com>
-Reviewed-by: Kefeng Wang <wangkefeng.wang@huawei.com>
----
- arch/x86/include/asm/efi.h  |  4 ----
- arch/x86/platform/efi/efi.c | 23 -----------------------
- drivers/firmware/efi/efi.c  | 23 +++++++++++++++++++++++
- include/linux/efi.h         |  3 +++
- 4 files changed, 26 insertions(+), 27 deletions(-)
+thanks,
 
-diff --git a/arch/x86/include/asm/efi.h b/arch/x86/include/asm/efi.h
-index 71943dce691e..eb90206eae80 100644
---- a/arch/x86/include/asm/efi.h
-+++ b/arch/x86/include/asm/efi.h
-@@ -383,7 +383,6 @@ static inline bool efi_is_64bit(void)
- extern bool efi_reboot_required(void);
- extern bool efi_is_table_address(unsigned long phys_addr);
- 
--extern void efi_find_mirror(void);
- extern void efi_reserve_boot_services(void);
- #else
- static inline void parse_efi_setup(u64 phys_addr, u32 data_len) {}
-@@ -395,9 +394,6 @@ static inline  bool efi_is_table_address(unsigned long phys_addr)
- {
- 	return false;
- }
--static inline void efi_find_mirror(void)
--{
--}
- static inline void efi_reserve_boot_services(void)
- {
- }
-diff --git a/arch/x86/platform/efi/efi.c b/arch/x86/platform/efi/efi.c
-index 1591d67e0bcd..6e598bd78eef 100644
---- a/arch/x86/platform/efi/efi.c
-+++ b/arch/x86/platform/efi/efi.c
-@@ -108,29 +108,6 @@ static int __init setup_add_efi_memmap(char *arg)
- }
- early_param("add_efi_memmap", setup_add_efi_memmap);
- 
--void __init efi_find_mirror(void)
--{
--	efi_memory_desc_t *md;
--	u64 mirror_size = 0, total_size = 0;
--
--	if (!efi_enabled(EFI_MEMMAP))
--		return;
--
--	for_each_efi_memory_desc(md) {
--		unsigned long long start = md->phys_addr;
--		unsigned long long size = md->num_pages << EFI_PAGE_SHIFT;
--
--		total_size += size;
--		if (md->attribute & EFI_MEMORY_MORE_RELIABLE) {
--			memblock_mark_mirror(start, size);
--			mirror_size += size;
--		}
--	}
--	if (mirror_size)
--		pr_info("Memory: %lldM/%lldM mirrored memory\n",
--			mirror_size>>20, total_size>>20);
--}
--
- /*
-  * Tell the kernel about the EFI memory map.  This might include
-  * more than the max 128 entries that can fit in the passed in e820
-diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 860534bcfdac..79c232e07de7 100644
---- a/drivers/firmware/efi/efi.c
-+++ b/drivers/firmware/efi/efi.c
-@@ -446,6 +446,29 @@ static int __init efisubsys_init(void)
- 
- subsys_initcall(efisubsys_init);
- 
-+void __init efi_find_mirror(void)
-+{
-+	efi_memory_desc_t *md;
-+	u64 mirror_size = 0, total_size = 0;
-+
-+	if (!efi_enabled(EFI_MEMMAP))
-+		return;
-+
-+	for_each_efi_memory_desc(md) {
-+		unsigned long long start = md->phys_addr;
-+		unsigned long long size = md->num_pages << EFI_PAGE_SHIFT;
-+
-+		total_size += size;
-+		if (md->attribute & EFI_MEMORY_MORE_RELIABLE) {
-+			memblock_mark_mirror(start, size);
-+			mirror_size += size;
-+		}
-+	}
-+	if (mirror_size)
-+		pr_info("Memory: %lldM/%lldM mirrored memory\n",
-+			mirror_size>>20, total_size>>20);
-+}
-+
- /*
-  * Find the efi memory descriptor for a given physical address.  Given a
-  * physical address, determine if it exists within an EFI Memory Map entry,
-diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 7d9b0bb47eb3..53f64c14a525 100644
---- a/include/linux/efi.h
-+++ b/include/linux/efi.h
-@@ -872,6 +872,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
- {
- 	return (efi.runtime_supported_mask & mask) == mask;
- }
-+extern void efi_find_mirror(void);
- #else
- static inline bool efi_enabled(int feature)
- {
-@@ -889,6 +890,8 @@ static inline bool efi_rt_services_supported(unsigned int mask)
- {
- 	return false;
- }
-+
-+static inline void efi_find_mirror(void) {}
- #endif
- 
- extern int efi_status_to_err(efi_status_t status);
--- 
-2.25.1
-
+greg k-h
