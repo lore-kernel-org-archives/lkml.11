@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB3D3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:07:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD0C4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:07:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351339AbiFMLHN (ORCPT
+        id S1351458AbiFMLHR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:07:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44378 "EHLO
+        Mon, 13 Jun 2022 07:07:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349439AbiFMK5M (ORCPT
+        with ESMTP id S1350867AbiFMK7A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:57:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D144E255B9;
-        Mon, 13 Jun 2022 03:32:12 -0700 (PDT)
+        Mon, 13 Jun 2022 06:59:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73A2F25E8C;
+        Mon, 13 Jun 2022 03:32:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1037E60FED;
-        Mon, 13 Jun 2022 10:32:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C713C341C6;
-        Mon, 13 Jun 2022 10:32:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B66EEB80EA8;
+        Mon, 13 Jun 2022 10:32:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0985EC34114;
+        Mon, 13 Jun 2022 10:32:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116331;
-        bh=0vLOqckxqz6FAn6Yj85sK+G/Bi0voXu2VUuWxkW7Bm4=;
+        s=korg; t=1655116356;
+        bh=KC745XvqyuuZYSvsSRRk9yKT/qjIcafkwRqQ36ofcRg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y3wmDUj5mf5ArAmMqrwKLwTU0uFLndtj4ioKHdBtrpzruUBWng6bTmEsV9OtbIOGs
-         +eJV2j2r9zyD+ZCTEgueBjKUIY4Ysf6WOOTIJTKggk36k1VLqOtt4NFgcJoPv8ggAd
-         UXQ4itqnTzYVia+6jgMM3B86lohCyYyAd6u/itdw=
+        b=wj/qry0dX2DDv5Uib3Lbqiaa0EtCvS9gmF1R/tU0lmObREW48IgdttxGhzG7cr7Uw
+         quZYwKDbbvu+hNEoxomZSEbPOVDpVmDZ8BOLjhmNNHA/ydfesJir1QFkysV8aTHWSD
+         5Kks4yavjrYjB5FaZEtWCjNtJ5qRUQ/yr9N5GANE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Janusz Krzysztofik <jmkrzyszt@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 067/411] ARM: OMAP1: clock: Fix UART rate reporting algorithm
-Date:   Mon, 13 Jun 2022 12:05:40 +0200
-Message-Id: <20220613094930.526107885@linuxfoundation.org>
+        stable@vger.kernel.org, Mykola Lysenko <mykolal@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 062/411] selftests/bpf: fix btf_dump/btf_dump due to recent clang change
+Date:   Mon, 13 Jun 2022 12:05:35 +0200
+Message-Id: <20220613094930.376627489@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,35 +51,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+From: Yonghong Song <yhs@fb.com>
 
-[ Upstream commit 338d5d476cde853dfd97378d20496baabc2ce3c0 ]
+[ Upstream commit 4050764cbaa25760aab40857f723393c07898474 ]
 
-Since its introduction to the mainline kernel, omap1_uart_recalc() helper
-makes incorrect use of clk->enable_bit as a ready to use bitmap mask while
-it only provides the bit number.  Fix it.
+Latest llvm-project upstream had a change of behavior
+related to qualifiers on function return type ([1]).
+This caused selftests btf_dump/btf_dump failure.
+The following example shows what changed.
 
-Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
-Acked-by: Tony Lindgren <tony@atomide.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+  $ cat t.c
+  typedef const char * const (* const (* const fn_ptr_arr2_t[5])())(char * (*)(int));
+  struct t {
+    int a;
+    fn_ptr_arr2_t l;
+  };
+  int foo(struct t *arg) {
+    return arg->a;
+  }
+
+Compiled with latest upstream llvm15,
+  $ clang -O2 -g -target bpf -S -emit-llvm t.c
+The related generated debuginfo IR looks like:
+  !16 = !DIDerivedType(tag: DW_TAG_typedef, name: "fn_ptr_arr2_t", file: !1, line: 1, baseType: !17)
+  !17 = !DICompositeType(tag: DW_TAG_array_type, baseType: !18, size: 320, elements: !32)
+  !18 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !19)
+  !19 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !20, size: 64)
+  !20 = !DISubroutineType(types: !21)
+  !21 = !{!22, null}
+  !22 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !23, size: 64)
+  !23 = !DISubroutineType(types: !24)
+  !24 = !{!25, !28}
+  !25 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !26, size: 64)
+  !26 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !27)
+  !27 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+You can see two intermediate const qualifier to pointer are dropped in debuginfo IR.
+
+With llvm14, we have following debuginfo IR:
+  !16 = !DIDerivedType(tag: DW_TAG_typedef, name: "fn_ptr_arr2_t", file: !1, line: 1, baseType: !17)
+  !17 = !DICompositeType(tag: DW_TAG_array_type, baseType: !18, size: 320, elements: !34)
+  !18 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !19)
+  !19 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !20, size: 64)
+  !20 = !DISubroutineType(types: !21)
+  !21 = !{!22, null}
+  !22 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !23)
+  !23 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !24, size: 64)
+  !24 = !DISubroutineType(types: !25)
+  !25 = !{!26, !30}
+  !26 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !27)
+  !27 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !28, size: 64)
+  !28 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !29)
+  !29 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+All const qualifiers are preserved.
+
+To adapt the selftest to both old and new llvm, this patch removed
+the intermediate const qualifier in const-to-ptr types, to make the
+test succeed again.
+
+  [1] https://reviews.llvm.org/D125919
+
+Reported-by: Mykola Lysenko <mykolal@fb.com>
+Signed-off-by: Yonghong Song <yhs@fb.com>
+Link: https://lore.kernel.org/r/20220523152044.3905809-1-yhs@fb.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-omap1/clock.c | 2 +-
+ tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/mach-omap1/clock.c b/arch/arm/mach-omap1/clock.c
-index bd5be82101f3..d89bda12bf3c 100644
---- a/arch/arm/mach-omap1/clock.c
-+++ b/arch/arm/mach-omap1/clock.c
-@@ -41,7 +41,7 @@ static DEFINE_SPINLOCK(clockfw_lock);
- unsigned long omap1_uart_recalc(struct clk *clk)
- {
- 	unsigned int val = __raw_readl(clk->enable_reg);
--	return val & clk->enable_bit ? 48000000 : 12000000;
-+	return val & 1 << clk->enable_bit ? 48000000 : 12000000;
- }
+diff --git a/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c b/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
+index d4a02fe44a12..0620580a5c16 100644
+--- a/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
++++ b/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
+@@ -94,7 +94,7 @@ typedef void (* (*signal_t)(int, void (*)(int)))(int);
  
- unsigned long omap1_sossi_recalc(struct clk *clk)
+ typedef char * (*fn_ptr_arr1_t[10])(int **);
+ 
+-typedef char * (* const (* const fn_ptr_arr2_t[5])())(char * (*)(int));
++typedef char * (* (* const fn_ptr_arr2_t[5])())(char * (*)(int));
+ 
+ struct struct_w_typedefs {
+ 	int_t a;
 -- 
 2.35.1
 
