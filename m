@@ -2,63 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E0D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:38:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47EE5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:38:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352005AbiFMMiF (ORCPT
+        id S1350718AbiFMMiL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:38:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54816 "EHLO
+        Mon, 13 Jun 2022 08:38:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351815AbiFMMhT (ORCPT
+        with ESMTP id S1352470AbiFMMh0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:37:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60CE328718;
-        Mon, 13 Jun 2022 04:08:02 -0700 (PDT)
+        Mon, 13 Jun 2022 08:37:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD7E433356;
+        Mon, 13 Jun 2022 04:08:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AC69D60A56;
-        Mon, 13 Jun 2022 11:08:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88E6AC34114;
-        Mon, 13 Jun 2022 11:07:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 751FD60906;
+        Mon, 13 Jun 2022 11:08:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5703FC34114;
+        Mon, 13 Jun 2022 11:08:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118480;
-        bh=gf9Yqi/C9uh2Bzvtgr/DICpMgnGQrrhsQEQ5c54oFwU=;
+        s=korg; t=1655118482;
+        bh=oaoRDeZAJvw6SVwkzPRaLqOvQxFyNaCbNl5Zhtj3dE4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XR5S4ObtY05l1IJdMOdtUbHqGEUE3WrGg0l/BaIkH7uVWdpDNRvElMwFYdxzjRWJa
-         1/KbHKR3vVUYOArkMjLFkuql5ObbGPY6HT/76S8PfCAkWmWyb1WdN/1au/O+7ARxjj
-         FmlN2Y/LRCz2YTFHs+FWlq8q3RqyPzFr9wRCfNiI=
+        b=YGjAMHSnnGvmbdTi4UI4pqRS56o7PE1adV1ARA+cA3LxWT9CPb9uf0A2oKRVjkpSf
+         RbgR9nBfSC2QUn+fqUxa03MkmS+b56tl/lhhahlpGaFxH9SJhw2pOYG+/59kHfB08h
+         g+jevA2On5xxysDkcgna7oY/AsJt5XmKWJVQruwY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Stultz <jstultz@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Basil Eljuse <Basil.Eljuse@arm.com>,
-        Ferry Toth <fntoth@gmail.com>, Arnd Bergmann <arnd@arndb.de>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        linux-pm@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Saravana Kannan <saravanak@google.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org, Leo Yan <leo.yan@linaro.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        Joe Mario <jmario@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 073/172] driver core: Fix wait_for_device_probe() & deferred_probe_timeout interaction
-Date:   Mon, 13 Jun 2022 12:10:33 +0200
-Message-Id: <20220613094907.960256636@linuxfoundation.org>
+Subject: [PATCH 5.10 074/172] perf c2c: Fix sorting in percent_rmt_hitm_cmp()
+Date:   Mon, 13 Jun 2022 12:10:34 +0200
+Message-Id: <20220613094908.174089352@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -70,104 +56,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Saravana Kannan <saravanak@google.com>
+From: Leo Yan <leo.yan@linaro.org>
 
-[ Upstream commit 5ee76c256e928455212ab759c51d198fedbe7523 ]
+[ Upstream commit b24192a17337abbf3f44aaa75e15df14a2d0016e ]
 
-Mounting NFS rootfs was timing out when deferred_probe_timeout was
-non-zero [1].  This was because ip_auto_config() initcall times out
-waiting for the network interfaces to show up when
-deferred_probe_timeout was non-zero. While ip_auto_config() calls
-wait_for_device_probe() to make sure any currently running deferred
-probe work or asynchronous probe finishes, that wasn't sufficient to
-account for devices being deferred until deferred_probe_timeout.
+The function percent_rmt_hitm_cmp() wrongly uses local HITMs for
+sorting remote HITMs.
 
-Commit 35a672363ab3 ("driver core: Ensure wait_for_device_probe() waits
-until the deferred_probe_timeout fires") tried to fix that by making
-sure wait_for_device_probe() waits for deferred_probe_timeout to expire
-before returning.
+Since this function is to sort cache lines for remote HITMs, this patch
+changes to use 'rmt_hitm' field for correct sorting.
 
-However, if wait_for_device_probe() is called from the kernel_init()
-context:
-
-- Before deferred_probe_initcall() [2], it causes the boot process to
-  hang due to a deadlock.
-
-- After deferred_probe_initcall() [3], it blocks kernel_init() from
-  continuing till deferred_probe_timeout expires and beats the point of
-  deferred_probe_timeout that's trying to wait for userspace to load
-  modules.
-
-Neither of this is good. So revert the changes to
-wait_for_device_probe().
-
-[1] - https://lore.kernel.org/lkml/TYAPR01MB45443DF63B9EF29054F7C41FD8C60@TYAPR01MB4544.jpnprd01.prod.outlook.com/
-[2] - https://lore.kernel.org/lkml/YowHNo4sBjr9ijZr@dev-arch.thelio-3990X/
-[3] - https://lore.kernel.org/lkml/Yo3WvGnNk3LvLb7R@linutronix.de/
-
-Fixes: 35a672363ab3 ("driver core: Ensure wait_for_device_probe() waits until the deferred_probe_timeout fires")
-Cc: John Stultz <jstultz@google.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
-Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Rob Herring <robh@kernel.org>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Sudeep Holla <sudeep.holla@arm.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc: Basil Eljuse <Basil.Eljuse@arm.com>
-Cc: Ferry Toth <fntoth@gmail.com>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Anders Roxell <anders.roxell@linaro.org>
-Cc: linux-pm@vger.kernel.org
-Reported-by: Nathan Chancellor <nathan@kernel.org>
-Reported-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Acked-by: John Stultz <jstultz@google.com>
-Signed-off-by: Saravana Kannan <saravanak@google.com>
-Link: https://lore.kernel.org/r/20220526034609.480766-2-saravanak@google.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: Rafael J. Wysocki <rafael@kernel.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 9cb3500afc0980c5 ("perf c2c report: Add hitm/store percent related sort keys")
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
+Acked-by: Namhyung Kim <namhyung@kernel.org>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Joe Mario <jmario@redhat.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220530084253.750190-1-leo.yan@linaro.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/dd.c | 5 -----
- 1 file changed, 5 deletions(-)
+ tools/perf/builtin-c2c.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-index 4f4e8aedbd2c..f9d9f1ad9215 100644
---- a/drivers/base/dd.c
-+++ b/drivers/base/dd.c
-@@ -250,7 +250,6 @@ DEFINE_SHOW_ATTRIBUTE(deferred_devs);
+diff --git a/tools/perf/builtin-c2c.c b/tools/perf/builtin-c2c.c
+index 7f7111d4b3ad..fb7d01f3961b 100644
+--- a/tools/perf/builtin-c2c.c
++++ b/tools/perf/builtin-c2c.c
+@@ -918,8 +918,8 @@ percent_rmt_hitm_cmp(struct perf_hpp_fmt *fmt __maybe_unused,
+ 	double per_left;
+ 	double per_right;
  
- int driver_deferred_probe_timeout;
- EXPORT_SYMBOL_GPL(driver_deferred_probe_timeout);
--static DECLARE_WAIT_QUEUE_HEAD(probe_timeout_waitqueue);
+-	per_left  = PERCENT(left, lcl_hitm);
+-	per_right = PERCENT(right, lcl_hitm);
++	per_left  = PERCENT(left, rmt_hitm);
++	per_right = PERCENT(right, rmt_hitm);
  
- static int __init deferred_probe_timeout_setup(char *str)
- {
-@@ -302,7 +301,6 @@ static void deferred_probe_timeout_work_func(struct work_struct *work)
- 	list_for_each_entry(p, &deferred_probe_pending_list, deferred_probe)
- 		dev_info(p->device, "deferred probe pending\n");
- 	mutex_unlock(&deferred_probe_mutex);
--	wake_up_all(&probe_timeout_waitqueue);
+ 	return per_left - per_right;
  }
- static DECLARE_DELAYED_WORK(deferred_probe_timeout_work, deferred_probe_timeout_work_func);
- 
-@@ -706,9 +704,6 @@ int driver_probe_done(void)
-  */
- void wait_for_device_probe(void)
- {
--	/* wait for probe timeout */
--	wait_event(probe_timeout_waitqueue, !driver_deferred_probe_timeout);
--
- 	/* wait for the deferred probe workqueue to finish */
- 	flush_work(&deferred_probe_work);
- 
 -- 
 2.35.1
 
