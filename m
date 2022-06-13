@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C34B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:08:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00053C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:08:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358824AbiFMNH6 (ORCPT
+        id S1358841AbiFMNIA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:07:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49532 "EHLO
+        Mon, 13 Jun 2022 09:08:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234906AbiFMMzV (ORCPT
+        with ESMTP id S1358393AbiFMMzU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:55:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18ED6D12E;
-        Mon, 13 Jun 2022 04:16:00 -0700 (PDT)
+        Mon, 13 Jun 2022 08:55:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F8B6D120;
+        Mon, 13 Jun 2022 04:15:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A8CE960EAE;
-        Mon, 13 Jun 2022 11:15:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7834C3411E;
-        Mon, 13 Jun 2022 11:15:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0928560EAE;
+        Mon, 13 Jun 2022 11:15:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FF80C3411E;
+        Mon, 13 Jun 2022 11:15:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118959;
-        bh=cokuF+EmG7THmip/f1ZMHWS/tW/vYaqu9L+68+z/nek=;
+        s=korg; t=1655118956;
+        bh=ZYb0T6V6xCY+lMt63atn7qnzmPbVWr5AkRYkK3butuA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WD3lZFi39bOtJpnYnf9Eyf8+1L1R8gqSvnJw19EU5sDWjaySyMh7zpWCVKneOvYPl
-         g2PhYTVnuDTqhJ20CWwjp0wvE/lGKYGr10HGJuK5qPLjxsDMDuTVAtawnY1bt3yfy6
-         VOTo3t9ddoHfOoRU0S6ZC8L1ShtWWeFWAkE7YuyM=
+        b=wmz8H73Ir57yhLo1Gix3RDPL/eSmwB20JE9pkW/wEJDhitB2c0P1LOVCIHHUuQViG
+         DgccOpnivQHt5KffmL74j5RKCxzd4Ks6AGGAWinHEastJpAxRILsAtJZ1m9o3ULxJm
+         sJAs1uYPLNOTxxNm3r6jY+qvB3i2p7fdKAh2tThA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 090/247] block: make bioset_exit() fully resilient against being called twice
-Date:   Mon, 13 Jun 2022 12:09:52 +0200
-Message-Id: <20220613094925.686356643@linuxfoundation.org>
+        stable@vger.kernel.org, Tianhao Zhao <tizhao@redhat.com>,
+        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 089/247] sfc: fix wrong tx channel offset with efx_separate_tx_channels
+Date:   Mon, 13 Jun 2022 12:09:51 +0200
+Message-Id: <20220613094925.656044534@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -49,40 +51,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: Íñigo Huguet <ihuguet@redhat.com>
 
-[ Upstream commit 605f7415ecfb426610195dd6c7577b30592b3369 ]
+[ Upstream commit c308dfd1b43ef0d4c3e57b741bb3462eb7a7f4a2 ]
 
-Most of bioset_exit() is fine being called twice, as it clears the
-various allocations etc when they are freed. The exception is
-bio_alloc_cache_destroy(), which does not clear ->cache when it has
-freed it.
+tx_channel_offset is calculated in efx_allocate_msix_channels, but it is
+also calculated again in efx_set_channels because it was originally done
+there, and when efx_allocate_msix_channels was introduced it was
+forgotten to be removed from efx_set_channels.
 
-This isn't necessarily a bug, but can be if buggy users does call the
-exit path more then once, or with just a memset() bioset which has
-never been initialized. dm appears to be one such user.
+Moreover, the old calculation is wrong when using
+efx_separate_tx_channels because now we can have XDP channels after the
+TX channels, so n_channels - n_tx_channels doesn't point to the first TX
+channel.
 
-Fixes: be4d234d7aeb ("bio: add allocation cache abstraction")
-Link: https://lore.kernel.org/linux-block/YpK7m+14A+pZKs5k@casper.infradead.org/
-Reported-by: Matthew Wilcox <willy@infradead.org>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Remove the old calculation from efx_set_channels, and add the
+initialization of this variable if MSI or legacy interrupts are used,
+next to the initialization of the rest of the related variables, where
+it was missing.
+
+Fixes: 3990a8fffbda ("sfc: allocate channels for XDP tx queues")
+Reported-by: Tianhao Zhao <tizhao@redhat.com>
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/bio.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/sfc/efx_channels.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/block/bio.c b/block/bio.c
-index 9b28381412d2..8381c6690dd6 100644
---- a/block/bio.c
-+++ b/block/bio.c
-@@ -665,6 +665,7 @@ static void bio_alloc_cache_destroy(struct bio_set *bs)
- 		bio_alloc_cache_prune(cache, -1U);
- 	}
- 	free_percpu(bs->cache);
-+	bs->cache = NULL;
- }
+diff --git a/drivers/net/ethernet/sfc/efx_channels.c b/drivers/net/ethernet/sfc/efx_channels.c
+index d5f2ccd3bca4..b1657e03a74f 100644
+--- a/drivers/net/ethernet/sfc/efx_channels.c
++++ b/drivers/net/ethernet/sfc/efx_channels.c
+@@ -308,6 +308,7 @@ int efx_probe_interrupts(struct efx_nic *efx)
+ 		efx->n_channels = 1;
+ 		efx->n_rx_channels = 1;
+ 		efx->n_tx_channels = 1;
++		efx->tx_channel_offset = 0;
+ 		efx->n_xdp_channels = 0;
+ 		efx->xdp_channel_offset = efx->n_channels;
+ 		rc = pci_enable_msi(efx->pci_dev);
+@@ -328,6 +329,7 @@ int efx_probe_interrupts(struct efx_nic *efx)
+ 		efx->n_channels = 1 + (efx_separate_tx_channels ? 1 : 0);
+ 		efx->n_rx_channels = 1;
+ 		efx->n_tx_channels = 1;
++		efx->tx_channel_offset = 1;
+ 		efx->n_xdp_channels = 0;
+ 		efx->xdp_channel_offset = efx->n_channels;
+ 		efx->legacy_irq = efx->pci_dev->irq;
+@@ -956,10 +958,6 @@ int efx_set_channels(struct efx_nic *efx)
+ 	struct efx_channel *channel;
+ 	int rc;
  
- /**
+-	efx->tx_channel_offset =
+-		efx_separate_tx_channels ?
+-		efx->n_channels - efx->n_tx_channels : 0;
+-
+ 	if (efx->xdp_tx_queue_count) {
+ 		EFX_WARN_ON_PARANOID(efx->xdp_tx_queues);
+ 
 -- 
 2.35.1
 
