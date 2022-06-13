@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4961C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:15:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23D8CCCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:15:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359442AbiFMNN1 (ORCPT
+        id S1359802AbiFMNO4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:13:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35734 "EHLO
+        Mon, 13 Jun 2022 09:14:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357254AbiFMNHR (ORCPT
+        with ESMTP id S1358884AbiFMNIX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:07:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCE9B381B2;
-        Mon, 13 Jun 2022 04:18:47 -0700 (PDT)
+        Mon, 13 Jun 2022 09:08:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8000E2228E;
+        Mon, 13 Jun 2022 04:18:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 32D73B80EAB;
-        Mon, 13 Jun 2022 11:18:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B58AC34114;
-        Mon, 13 Jun 2022 11:18:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A393F60EAD;
+        Mon, 13 Jun 2022 11:18:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4D08C34114;
+        Mon, 13 Jun 2022 11:18:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119114;
-        bh=dwTBRByocbJ8UGwNR2U6VMjbYtsFF+Xh/didYYZH2vY=;
+        s=korg; t=1655119133;
+        bh=B6BWwsDd+moXQyLuhfJ0Ej3IU+RDaIH9ARr/oKTP++A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a5oauioiUeuvR6wojwPaBI6JCKUywCnduvNX/Va1ovOxodP6uuCcI/oo/MU0VaUdA
-         oaxu/PNERWil/65WAp1LAo8uyIVaF13rbg77NO36XTX6XVj6jrgJ3AIPObHJXCb4eh
-         y59wHWqtstgFpVieFDpDiX9ZlXBYseGJrTOREfbU=
+        b=Yva3azL42+sO0U0Nh2rmV+arUMiNC6ySu8MCev1EmvPLJ4BFKeWoMZ6gA8DIvftqV
+         5OGJMOnmsRuYmAtbMhGhESN2bzDD4eto6ZLn5WVhmySitiwd6or0QRJXpK2HqpPiD7
+         pSl5y22B1kSni3l7dB6FRGEtcP4x8iAReob/7wqA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Masahiro Yamada <masahiroy@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 146/247] net: dsa: lantiq_gswip: Fix refcount leak in gswip_gphy_fw_list
-Date:   Mon, 13 Jun 2022 12:10:48 +0200
-Message-Id: <20220613094927.384042771@linuxfoundation.org>
+Subject: [PATCH 5.15 153/247] net: ipv6: unexport __init-annotated seg6_hmac_init()
+Date:   Mon, 13 Jun 2022 12:10:55 +0200
+Message-Id: <20220613094927.595755276@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,41 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-[ Upstream commit 0737e018a05e2aa352828c52bdeed3b02cff2930 ]
+[ Upstream commit 5801f064e35181c71857a80ff18af4dbec3c5f5c ]
 
-Every iteration of for_each_available_child_of_node() decrements
-the reference count of the previous node.
-when breaking early from a for_each_available_child_of_node() loop,
-we need to explicitly call of_node_put() on the gphy_fw_np.
-Add missing of_node_put() to avoid refcount leak.
+EXPORT_SYMBOL and __init is a bad combination because the .init.text
+section is freed up after the initialization. Hence, modules cannot
+use symbols annotated __init. The access to a freed symbol may end up
+with kernel panic.
 
-Fixes: 14fceff4771e ("net: dsa: Add Lantiq / Intel DSA driver for vrx200")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220605072335.11257-1-linmq006@gmail.com
+modpost used to detect it, but it has been broken for a decade.
+
+Recently, I fixed modpost so it started to warn it again, then this
+showed up in linux-next builds.
+
+There are two ways to fix it:
+
+  - Remove __init
+  - Remove EXPORT_SYMBOL
+
+I chose the latter for this case because the caller (net/ipv6/seg6.c)
+and the callee (net/ipv6/seg6_hmac.c) belong to the same module.
+It seems an internal function call in ipv6.ko.
+
+Fixes: bf355b8d2c30 ("ipv6: sr: add core files for SR HMAC support")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/lantiq_gswip.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/ipv6/seg6_hmac.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
-index 8a8f392813d8..2240a3d35122 100644
---- a/drivers/net/dsa/lantiq_gswip.c
-+++ b/drivers/net/dsa/lantiq_gswip.c
-@@ -2047,8 +2047,10 @@ static int gswip_gphy_fw_list(struct gswip_priv *priv,
- 	for_each_available_child_of_node(gphy_fw_list_np, gphy_fw_np) {
- 		err = gswip_gphy_fw_probe(priv, &priv->gphy_fw[i],
- 					  gphy_fw_np, i);
--		if (err)
-+		if (err) {
-+			of_node_put(gphy_fw_np);
- 			goto remove_gphy;
-+		}
- 		i++;
- 	}
+diff --git a/net/ipv6/seg6_hmac.c b/net/ipv6/seg6_hmac.c
+index 687d95dce085..5b2c9ce53395 100644
+--- a/net/ipv6/seg6_hmac.c
++++ b/net/ipv6/seg6_hmac.c
+@@ -399,7 +399,6 @@ int __init seg6_hmac_init(void)
+ {
+ 	return seg6_hmac_init_algo();
+ }
+-EXPORT_SYMBOL(seg6_hmac_init);
  
+ int __net_init seg6_hmac_net_init(struct net *net)
+ {
 -- 
 2.35.1
 
