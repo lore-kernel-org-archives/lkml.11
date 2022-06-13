@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 809ACCCA490
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90613CCA491
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:31:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384807AbiFMOaG (ORCPT
+        id S1384867AbiFMOaL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:30:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51824 "EHLO
+        Mon, 13 Jun 2022 10:30:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383997AbiFMOY0 (ORCPT
+        with ESMTP id S1384019AbiFMOY2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:24:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE5702625;
-        Mon, 13 Jun 2022 04:46:26 -0700 (PDT)
+        Mon, 13 Jun 2022 10:24:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96C29BC0A;
+        Mon, 13 Jun 2022 04:46:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1226E613EF;
-        Mon, 13 Jun 2022 11:46:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F6A9C34114;
-        Mon, 13 Jun 2022 11:46:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA74D612A8;
+        Mon, 13 Jun 2022 11:46:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8F31C34114;
+        Mon, 13 Jun 2022 11:46:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120785;
-        bh=yfZ7WBBpm7u5gPfub4ZrISybkBll8pBdaWDZQlZ77yo=;
+        s=korg; t=1655120788;
+        bh=O0/tWyjSGTu6G0J37ooYuiNFAnqvqQ2I6bdZCgaSRK4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z2Hmg/9RYYEsjie27Upq/yndB4UvrPJl1jaB/bE11BZcBM0debSj4HorrrKJnQeKP
-         OP9vIq+qqtjDh8nu3vfZUbMUWuIJlEO/uMmLmrCCiK5k1G+rhTP4ps8WnPLB6wuzCT
-         rpbWkw3uHX+1wcztBbmYgzB94zYCzwG73ce9l0xY=
+        b=jGoQd6pgfdNKIPUE9kDHFTTM19P0YxsPJNbpLthA4efb/rw6cJYqXrnmkV6dKfeh2
+         8tCcx7Zu4yib24KEG2tcCJevSYcxt8mXf8cqv3YzTx/whhQg0JZGNB/j5oKQ7XlT8g
+         sHN4h+TcxxHtK0x0iDrwD4I92pYBIt+vJMplqWSY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Steven Price <steven.price@arm.com>,
-        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
+        Mark-PK Tsai <mark-pk.tsai@mediatek.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 157/298] drm/panfrost: Job should reference MMU not file_priv
-Date:   Mon, 13 Jun 2022 12:10:51 +0200
-Message-Id: <20220613094929.698871834@linuxfoundation.org>
+Subject: [PATCH 5.17 140/298] tracing: Avoid adding tracer option before update_tracer_options
+Date:   Mon, 13 Jun 2022 12:10:34 +0200
+Message-Id: <20220613094929.190055753@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,102 +51,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Price <steven.price@arm.com>
+From: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
 
-[ Upstream commit 6e516faf04317db2c46cbec4e3b78b4653a5b109 ]
+[ Upstream commit ef9188bcc6ca1d8a2ad83e826b548e6820721061 ]
 
-For a while now it's been allowed for a MMU context to outlive it's
-corresponding panfrost_priv, however the job structure still references
-panfrost_priv to get hold of the MMU context. If panfrost_priv has been
-freed this is a use-after-free which I've been able to trigger resulting
-in a splat.
+To prepare for support asynchronous tracer_init_tracefs initcall,
+avoid calling create_trace_option_files before __update_tracer_options.
+Otherwise, create_trace_option_files will show warning because
+some tracers in trace_types list are already in tr->topts.
 
-To fix this, drop the reference to panfrost_priv in the job structure
-and add a direct reference to the MMU structure which is what's actually
-needed.
+For example, hwlat_tracer call register_tracer in late_initcall,
+and global_trace.dir is already created in tracing_init_dentry,
+hwlat_tracer will be put into tr->topts.
+Then if the __update_tracer_options is executed after hwlat_tracer
+registered, create_trace_option_files find that hwlat_tracer is
+already in tr->topts.
 
-Fixes: 7fdc48cc63a3 ("drm/panfrost: Make sure MMU context lifetime is not bound to panfrost_priv")
-Signed-off-by: Steven Price <steven.price@arm.com>
-Acked-by: Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220519152003.81081-1-steven.price@arm.com
+Link: https://lkml.kernel.org/r/20220426122407.17042-2-mark-pk.tsai@mediatek.com
+
+Link: https://lore.kernel.org/lkml/20220322133339.GA32582@xsang-OptiPlex-9020/
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/panfrost/panfrost_drv.c | 5 +++--
- drivers/gpu/drm/panfrost/panfrost_job.c | 6 +++---
- drivers/gpu/drm/panfrost/panfrost_job.h | 2 +-
- 3 files changed, 7 insertions(+), 6 deletions(-)
+ kernel/trace/trace.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/gpu/drm/panfrost/panfrost_drv.c b/drivers/gpu/drm/panfrost/panfrost_drv.c
-index 96bb5a465627..012af6eaaf62 100644
---- a/drivers/gpu/drm/panfrost/panfrost_drv.c
-+++ b/drivers/gpu/drm/panfrost/panfrost_drv.c
-@@ -233,6 +233,7 @@ static int panfrost_ioctl_submit(struct drm_device *dev, void *data,
- 		struct drm_file *file)
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index b741704dcd46..7ebf42607505 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -6324,12 +6324,18 @@ static void tracing_set_nop(struct trace_array *tr)
+ 	tr->current_trace = &nop_trace;
+ }
+ 
++static bool tracer_options_updated;
++
+ static void add_tracer_options(struct trace_array *tr, struct tracer *t)
  {
- 	struct panfrost_device *pfdev = dev->dev_private;
-+	struct panfrost_file_priv *file_priv = file->driver_priv;
- 	struct drm_panfrost_submit *args = data;
- 	struct drm_syncobj *sync_out = NULL;
- 	struct panfrost_job *job;
-@@ -262,12 +263,12 @@ static int panfrost_ioctl_submit(struct drm_device *dev, void *data,
- 	job->jc = args->jc;
- 	job->requirements = args->requirements;
- 	job->flush_id = panfrost_gpu_get_latest_flush_id(pfdev);
--	job->file_priv = file->driver_priv;
-+	job->mmu = file_priv->mmu;
- 
- 	slot = panfrost_job_get_slot(job);
- 
- 	ret = drm_sched_job_init(&job->base,
--				 &job->file_priv->sched_entity[slot],
-+				 &file_priv->sched_entity[slot],
- 				 NULL);
- 	if (ret)
- 		goto out_put_job;
-diff --git a/drivers/gpu/drm/panfrost/panfrost_job.c b/drivers/gpu/drm/panfrost/panfrost_job.c
-index 908d79520853..016bec72b7ce 100644
---- a/drivers/gpu/drm/panfrost/panfrost_job.c
-+++ b/drivers/gpu/drm/panfrost/panfrost_job.c
-@@ -201,7 +201,7 @@ static void panfrost_job_hw_submit(struct panfrost_job *job, int js)
+ 	/* Only enable if the directory has been created already. */
+ 	if (!tr->dir)
  		return;
- 	}
  
--	cfg = panfrost_mmu_as_get(pfdev, job->file_priv->mmu);
-+	cfg = panfrost_mmu_as_get(pfdev, job->mmu);
++	/* Only create trace option files after update_tracer_options finish */
++	if (!tracer_options_updated)
++		return;
++
+ 	create_trace_option_files(tr, t);
+ }
  
- 	job_write(pfdev, JS_HEAD_NEXT_LO(js), lower_32_bits(jc_head));
- 	job_write(pfdev, JS_HEAD_NEXT_HI(js), upper_32_bits(jc_head));
-@@ -431,7 +431,7 @@ static void panfrost_job_handle_err(struct panfrost_device *pfdev,
- 		job->jc = 0;
- 	}
- 
--	panfrost_mmu_as_put(pfdev, job->file_priv->mmu);
-+	panfrost_mmu_as_put(pfdev, job->mmu);
- 	panfrost_devfreq_record_idle(&pfdev->pfdevfreq);
- 
- 	if (signal_fence)
-@@ -452,7 +452,7 @@ static void panfrost_job_handle_done(struct panfrost_device *pfdev,
- 	 * happen when we receive the DONE interrupt while doing a GPU reset).
- 	 */
- 	job->jc = 0;
--	panfrost_mmu_as_put(pfdev, job->file_priv->mmu);
-+	panfrost_mmu_as_put(pfdev, job->mmu);
- 	panfrost_devfreq_record_idle(&pfdev->pfdevfreq);
- 
- 	dma_fence_signal_locked(job->done_fence);
-diff --git a/drivers/gpu/drm/panfrost/panfrost_job.h b/drivers/gpu/drm/panfrost/panfrost_job.h
-index 77e6d0e6f612..8becc1ba0eb9 100644
---- a/drivers/gpu/drm/panfrost/panfrost_job.h
-+++ b/drivers/gpu/drm/panfrost/panfrost_job.h
-@@ -17,7 +17,7 @@ struct panfrost_job {
- 	struct kref refcount;
- 
- 	struct panfrost_device *pfdev;
--	struct panfrost_file_priv *file_priv;
-+	struct panfrost_mmu *mmu;
- 
- 	/* Fence to be signaled by IRQ handler when the job is complete. */
- 	struct dma_fence *done_fence;
+@@ -9139,6 +9145,7 @@ static void __update_tracer_options(struct trace_array *tr)
+ static void update_tracer_options(struct trace_array *tr)
+ {
+ 	mutex_lock(&trace_types_lock);
++	tracer_options_updated = true;
+ 	__update_tracer_options(tr);
+ 	mutex_unlock(&trace_types_lock);
+ }
 -- 
 2.35.1
 
