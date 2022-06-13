@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EA94C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:20:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A652BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:20:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382240AbiFMOUh (ORCPT
+        id S1382289AbiFMOUk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:20:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60012 "EHLO
+        Mon, 13 Jun 2022 10:20:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382755AbiFMOOr (ORCPT
+        with ESMTP id S1382928AbiFMOO5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:14:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DC2243EF7;
-        Mon, 13 Jun 2022 04:42:31 -0700 (PDT)
+        Mon, 13 Jun 2022 10:14:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7696D9AE72;
+        Mon, 13 Jun 2022 04:42:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 974CE61367;
-        Mon, 13 Jun 2022 11:42:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2DBCC34114;
-        Mon, 13 Jun 2022 11:42:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B160BB80EB3;
+        Mon, 13 Jun 2022 11:42:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 272A9C34114;
+        Mon, 13 Jun 2022 11:42:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120549;
-        bh=b1lknIl+kFp+TIevhQfI3vvWhmS8MpjztMwtA0fOh50=;
+        s=korg; t=1655120554;
+        bh=HV73AQN1kNcjmqMkArhjy0PLs8x/DcI7HaSRZwf/Jeg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bzQdXipovZuH0TDaUnZcefdG377kePoOC67NlQAbaKFf6yv+3PnDuZRb1O6vrksNC
-         gm8Khgwp2BYUHurnoCUOdAhbok6onQ0CkgW1uNU7aVVej9zmxFdH5Zn31PuaGWFKnn
-         4x9dXZuDM3dY3Pjqvn2BkE7Zm8q93ewF2IXIbJAM=
+        b=s9oUruVGCGrM5BjJ/haZV4+JZ249KnOQGQ5efWWZ7awmLY6eWP29UniW9ogVET6ue
+         Fk6s0AV7JsnvomInBIpS9ebqvzRtYjBg37yrdXvbuWJf4C0CKAoqMb2o5S8t/5aspK
+         aD2J5aM5cDas2jLk4JtZ0CqbuacwEJBDz8fbKDtk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>,
-        Jan Kara <jack@suse.cz>, Ming Lei <ming.lei@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 073/298] blk-mq: dont touch ->tagset in blk_mq_get_sq_hctx
-Date:   Mon, 13 Jun 2022 12:09:27 +0200
-Message-Id: <20220613094927.162000910@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 075/298] clocksource/drivers/oxnas-rps: Fix irq_of_parse_and_map() return value
+Date:   Mon, 13 Jun 2022 12:09:29 +0200
+Message-Id: <20220613094927.221328000@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,56 +52,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Lei <ming.lei@redhat.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit 5d05426e2d5fd7df8afc866b78c36b37b00188b7 ]
+[ Upstream commit 9c04a8ff03def4df3f81219ffbe1ec9b44ff5348 ]
 
-blk_mq_run_hw_queues() could be run when there isn't queued request and
-after queue is cleaned up, at that time tagset is freed, because tagset
-lifetime is covered by driver, and often freed after blk_cleanup_queue()
-returns.
+The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
 
-So don't touch ->tagset for figuring out current default hctx by the mapping
-built in request queue, so use-after-free on tagset can be avoided. Meantime
-this way should be fast than retrieving mapping from tagset.
-
-Cc: "yukuai (C)" <yukuai3@huawei.com>
-Cc: Jan Kara <jack@suse.cz>
-Fixes: b6e68ee82585 ("blk-mq: Improve performance of non-mq IO schedulers with multiple HW queues")
-Signed-off-by: Ming Lei <ming.lei@redhat.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20220522122350.743103-1-ming.lei@redhat.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 89355274e1f7 ("clocksource/drivers/oxnas-rps: Add Oxford Semiconductor RPS Dual Timer")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220422104101.55754-1-krzysztof.kozlowski@linaro.org
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-mq.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/clocksource/timer-oxnas-rps.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/block/blk-mq.c b/block/blk-mq.c
-index 0aa20df31e36..6afe0cd128ac 100644
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -2114,8 +2114,7 @@ static bool blk_mq_has_sqsched(struct request_queue *q)
-  */
- static struct blk_mq_hw_ctx *blk_mq_get_sq_hctx(struct request_queue *q)
- {
--	struct blk_mq_hw_ctx *hctx;
--
-+	struct blk_mq_ctx *ctx = blk_mq_get_ctx(q);
- 	/*
- 	 * If the IO scheduler does not respect hardware queues when
- 	 * dispatching, we just don't bother with multiple HW queues and
-@@ -2123,8 +2122,8 @@ static struct blk_mq_hw_ctx *blk_mq_get_sq_hctx(struct request_queue *q)
- 	 * just causes lock contention inside the scheduler and pointless cache
- 	 * bouncing.
- 	 */
--	hctx = blk_mq_map_queue_type(q, HCTX_TYPE_DEFAULT,
--				     raw_smp_processor_id());
-+	struct blk_mq_hw_ctx *hctx = blk_mq_map_queue(q, 0, ctx);
-+
- 	if (!blk_mq_hctx_stopped(hctx))
- 		return hctx;
- 	return NULL;
+diff --git a/drivers/clocksource/timer-oxnas-rps.c b/drivers/clocksource/timer-oxnas-rps.c
+index 56c0cc32d0ac..d514b44e67dd 100644
+--- a/drivers/clocksource/timer-oxnas-rps.c
++++ b/drivers/clocksource/timer-oxnas-rps.c
+@@ -236,7 +236,7 @@ static int __init oxnas_rps_timer_init(struct device_node *np)
+ 	}
+ 
+ 	rps->irq = irq_of_parse_and_map(np, 0);
+-	if (rps->irq < 0) {
++	if (!rps->irq) {
+ 		ret = -EINVAL;
+ 		goto err_iomap;
+ 	}
 -- 
 2.35.1
 
