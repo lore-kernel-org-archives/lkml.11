@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36B56CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54C83CCA481
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:39:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355386AbiFMLie (ORCPT
+        id S1355399AbiFMLij (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:38:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45164 "EHLO
+        Mon, 13 Jun 2022 07:38:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354376AbiFML3Z (ORCPT
+        with ESMTP id S1354375AbiFML3Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:29:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F7223159;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D6B023155;
         Mon, 13 Jun 2022 03:43:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E96860F9A;
-        Mon, 13 Jun 2022 10:43:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A543DC34114;
-        Mon, 13 Jun 2022 10:43:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A5190B80E56;
+        Mon, 13 Jun 2022 10:43:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08466C34114;
+        Mon, 13 Jun 2022 10:43:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117023;
-        bh=OpqL0ntLTcZ9fhuT4HdoHr/HvbsByJpZdVcFHVWrTsI=;
+        s=korg; t=1655117020;
+        bh=EBGxTKU9AyDLDNJOj98BE0cUlnREUKE+uAzVyapV7TY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l6Y4US1AXpU6eh3xtaxkNvG+JZhok9XAFU4aOtf2FESX46hl2eRHSMNGeQy4ouEyu
-         BPfeFF7M21tA+R2+r3M5Yf8RvpXK0YgpVFiiEdpvpqdWPg4k1aGui4ikl9F5pUNTzw
-         rRHUCvEZ/dXBmMNyUgh9fMBCgyg2gumv+xv/OYms=
+        b=DIIybyd4fd+wZC3thPcu0X1+YNGontymI/20gmF5rcpuTSODx4/9rYQj/KFJ6gf9V
+         XIhSD/WDWWR6QwSRRJifMGmBq5DOWitLi758JT3CunjuDf2mmFDbXgcgrMiKK/Wm5U
+         U7edbWrpv4FEIKu81FMTnajB6Yods5x7pKa+FFKk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vivek Gautam <vivek.gautam@codeaurora.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Johan Hovold <johan+linaro@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5.4 270/411] phy: qcom-qmp: fix reset-controller leak on probe errors
-Date:   Mon, 13 Jun 2022 12:09:03 +0200
-Message-Id: <20220613094936.856541482@linuxfoundation.org>
+        stable@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 5.4 261/411] serial: pch: dont overwrite xmit->buf[0] by x_char
+Date:   Mon, 13 Jun 2022 12:08:54 +0200
+Message-Id: <20220613094936.590651186@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -52,54 +48,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan+linaro@kernel.org>
+From: Jiri Slaby <jslaby@suse.cz>
 
-commit 4d2900f20edfe541f75756a00deeb2ffe7c66bc1 upstream.
+commit d9f3af4fbb1d955bbaf872d9e76502f6e3e803cb upstream.
 
-Make sure to release the lane reset controller in case of a late probe
-error (e.g. probe deferral).
+When x_char is to be sent, the TX path overwrites whatever is in the
+circular buffer at offset 0 with x_char and sends it using
+pch_uart_hal_write(). I don't understand how this was supposed to work
+if xmit->buf[0] already contained some character. It must have been
+lost.
 
-Note that due to the reset controller being defined in devicetree in
-"lane" child nodes, devm_reset_control_get_exclusive() cannot be used
-directly.
+Remove this whole pop_tx_x() concept and do the work directly in the
+callers. (Without printing anything using dev_dbg().)
 
-Fixes: e78f3d15e115 ("phy: qcom-qmp: new qmp phy driver for qcom-chipsets")
-Cc: stable@vger.kernel.org      # 4.12
-Cc: Vivek Gautam <vivek.gautam@codeaurora.org>
-Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220427063243.32576-3-johan+linaro@kernel.org
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Cc: <stable@vger.kernel.org>
+Fixes: 3c6a483275f4 (Serial: EG20T: add PCH_UART driver)
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Link: https://lore.kernel.org/r/20220503080808.28332-1-jslaby@suse.cz
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/phy/qualcomm/phy-qcom-qmp.c |    9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/tty/serial/pch_uart.c |   27 +++++++--------------------
+ 1 file changed, 7 insertions(+), 20 deletions(-)
 
---- a/drivers/phy/qualcomm/phy-qcom-qmp.c
-+++ b/drivers/phy/qualcomm/phy-qcom-qmp.c
-@@ -1860,6 +1860,11 @@ static const struct phy_ops qcom_qmp_ufs
- 	.owner		= THIS_MODULE,
- };
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -635,22 +635,6 @@ static int push_rx(struct eg20t_port *pr
+ 	return 0;
+ }
  
-+static void qcom_qmp_reset_control_put(void *data)
-+{
-+	reset_control_put(data);
-+}
-+
- static
- int qcom_qmp_phy_create(struct device *dev, struct device_node *np, int id)
+-static int pop_tx_x(struct eg20t_port *priv, unsigned char *buf)
+-{
+-	int ret = 0;
+-	struct uart_port *port = &priv->port;
+-
+-	if (port->x_char) {
+-		dev_dbg(priv->port.dev, "%s:X character send %02x (%lu)\n",
+-			__func__, port->x_char, jiffies);
+-		buf[0] = port->x_char;
+-		port->x_char = 0;
+-		ret = 1;
+-	}
+-
+-	return ret;
+-}
+-
+ static int dma_push_rx(struct eg20t_port *priv, int size)
  {
-@@ -1951,6 +1956,10 @@ int qcom_qmp_phy_create(struct device *d
- 			dev_err(dev, "failed to get lane%d reset\n", id);
- 			return PTR_ERR(qphy->lane_rst);
- 		}
-+		ret = devm_add_action_or_reset(dev, qcom_qmp_reset_control_put,
-+					       qphy->lane_rst);
-+		if (ret)
-+			return ret;
+ 	int room;
+@@ -900,9 +884,10 @@ static unsigned int handle_tx(struct eg2
+ 
+ 	fifo_size = max(priv->fifo_size, 1);
+ 	tx_empty = 1;
+-	if (pop_tx_x(priv, xmit->buf)) {
+-		pch_uart_hal_write(priv, xmit->buf, 1);
++	if (port->x_char) {
++		pch_uart_hal_write(priv, &port->x_char, 1);
+ 		port->icount.tx++;
++		port->x_char = 0;
+ 		tx_empty = 0;
+ 		fifo_size--;
+ 	}
+@@ -957,9 +942,11 @@ static unsigned int dma_handle_tx(struct
  	}
  
- 	if (qmp->cfg->type == PHY_TYPE_UFS)
+ 	fifo_size = max(priv->fifo_size, 1);
+-	if (pop_tx_x(priv, xmit->buf)) {
+-		pch_uart_hal_write(priv, xmit->buf, 1);
++
++	if (port->x_char) {
++		pch_uart_hal_write(priv, &port->x_char, 1);
+ 		port->icount.tx++;
++		port->x_char = 0;
+ 		fifo_size--;
+ 	}
+ 
 
 
