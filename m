@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E61CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:11:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30A81C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:11:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352303AbiFMLLl (ORCPT
+        id S1352314AbiFMLLo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:11:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45506 "EHLO
+        Mon, 13 Jun 2022 07:11:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351734AbiFMLIB (ORCPT
+        with ESMTP id S1352126AbiFMLJX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:08:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29A64338A8;
-        Mon, 13 Jun 2022 03:35:13 -0700 (PDT)
+        Mon, 13 Jun 2022 07:09:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE38033E95;
+        Mon, 13 Jun 2022 03:35:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36A24B80EA7;
-        Mon, 13 Jun 2022 10:35:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D74DC36AFF;
-        Mon, 13 Jun 2022 10:35:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D8E4560FFD;
+        Mon, 13 Jun 2022 10:35:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8E24C34114;
+        Mon, 13 Jun 2022 10:35:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116506;
-        bh=JsZE5AxHTbW00VZnJgu/U+JfgGO6KlUPjLQsTZoemWU=;
+        s=korg; t=1655116522;
+        bh=c7Bux8gORtIUyKX+nEOcBp7LJR8TG4CjpwtkMuws2Hw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DRAzjsfuakEGwXNF8g26bCy7cRS52tt4OO71l3bz9i8sCXtMyvOvBABX1pWcjCvgH
-         /fvACpHzlu5nxZCIcbw4LDPVjlcQS1DXTsEGjHQ6y8UuBiDW0RXw8pbzhfzQAxU1z2
-         TBGszImSeY0OmYCOeW8LhTnj6jhECPhMlCrwGBzw=
+        b=T03hT7vrhiomwPXK/4Z0JEZHOAS+pESDPF2lk8CNexO2c9LdZnc/iJXbDh56/GuT8
+         FjgqNpg038EzXetNIJU5zXMLrx1s/24St1Nu0lJb3RFbvgFTrF1Yot0nMPqn3syIoi
+         ZHoUKttTFc6khp5h6ayHvryvzWblt2DPELaVf9p4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan Teh <jonathan.teh@outlook.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 098/411] HID: hid-led: fix maximum brightness for Dream Cheeky
-Date:   Mon, 13 Jun 2022 12:06:11 +0200
-Message-Id: <20220613094931.619142292@linuxfoundation.org>
+        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 092/411] drm/komeda: Fix an undefined behavior bug in komeda_plane_add()
+Date:   Mon, 13 Jun 2022 12:06:05 +0200
+Message-Id: <20220613094931.440825663@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -49,36 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Teh <jonathan.teh@outlook.com>
+From: Zhou Qingyang <zhou1615@umn.edu>
 
-[ Upstream commit 116c3f4a78ebe478d5ad5a038baf931e93e7d748 ]
+[ Upstream commit f5e284bb74ab296f98122673c7ecd22028b2c200 ]
 
-Increase maximum brightness for Dream Cheeky to 63. Emperically
-determined based on testing in kernel 4.4 on this device:
+In komeda_plane_add(), komeda_get_layer_fourcc_list() is assigned to
+formats and used in drm_universal_plane_init().
+drm_universal_plane_init() passes formats to
+__drm_universal_plane_init(). __drm_universal_plane_init() further
+passes formats to memcpy() as src parameter, which could lead to an
+undefined behavior bug on failure of komeda_get_layer_fourcc_list().
 
-Bus 003 Device 002: ID 1d34:0004 Dream Cheeky Webmail Notifier
+Fix this bug by adding a check of formats.
 
-Fixes: 6c7ad07e9e05 ("HID: migrate USB LED driver from usb misc to hid")
-Signed-off-by: Jonathan Teh <jonathan.teh@outlook.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+This bug was found by a static analyzer. The analysis employs
+differential checking to identify inconsistent security operations
+(e.g., checks or kfrees) between two code paths and confirms that the
+inconsistent operations are not recovered in the current function or
+the callers, so they constitute bugs.
+
+Note that, as a bug found by static analysis, it can be a false
+positive or hard to trigger. Multiple researchers have cross-reviewed
+the bug.
+
+Builds with CONFIG_DRM_KOMEDA=m show no new warnings,
+and our static analyzer no longer warns about this code.
+
+Fixes: 61f1c4a8ab75 ("drm/komeda: Attach komeda_dev to DRM-KMS")
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+Signed-off-by: Liviu Dudau <liviu.dudau@arm.com>
+Link: https://lore.kernel.org/dri-devel/20211201033704.32054-1-zhou1615@umn.edu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-led.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/arm/display/komeda/komeda_plane.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/hid/hid-led.c b/drivers/hid/hid-led.c
-index c2c66ceca132..7d82f8d426bb 100644
---- a/drivers/hid/hid-led.c
-+++ b/drivers/hid/hid-led.c
-@@ -366,7 +366,7 @@ static const struct hidled_config hidled_configs[] = {
- 		.type = DREAM_CHEEKY,
- 		.name = "Dream Cheeky Webmail Notifier",
- 		.short_name = "dream_cheeky",
--		.max_brightness = 31,
-+		.max_brightness = 63,
- 		.num_leds = 1,
- 		.report_size = 9,
- 		.report_type = RAW_REQUEST,
+diff --git a/drivers/gpu/drm/arm/display/komeda/komeda_plane.c b/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
+index a5f57b38d193..bc3f42e915e9 100644
+--- a/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
++++ b/drivers/gpu/drm/arm/display/komeda/komeda_plane.c
+@@ -264,6 +264,10 @@ static int komeda_plane_add(struct komeda_kms_dev *kms,
+ 
+ 	formats = komeda_get_layer_fourcc_list(&mdev->fmt_tbl,
+ 					       layer->layer_type, &n_formats);
++	if (!formats) {
++		kfree(kplane);
++		return -ENOMEM;
++	}
+ 
+ 	err = drm_universal_plane_init(&kms->base, plane,
+ 			get_possible_crtcs(kms, c->pipeline),
 -- 
 2.35.1
 
