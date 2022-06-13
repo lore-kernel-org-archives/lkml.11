@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB1D4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:22:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2624C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:22:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376661AbiFMNWq (ORCPT
+        id S1376670AbiFMNWv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:22:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60520 "EHLO
+        Mon, 13 Jun 2022 09:22:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377232AbiFMNUJ (ORCPT
+        with ESMTP id S1377266AbiFMNUM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:20:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD7596A039;
-        Mon, 13 Jun 2022 04:23:19 -0700 (PDT)
+        Mon, 13 Jun 2022 09:20:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDF5E6A03F;
+        Mon, 13 Jun 2022 04:23:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E1FDB61121;
-        Mon, 13 Jun 2022 11:22:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFED2C341C5;
-        Mon, 13 Jun 2022 11:22:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DE6C3B80EB7;
+        Mon, 13 Jun 2022 11:23:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5769FC34114;
+        Mon, 13 Jun 2022 11:23:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119363;
-        bh=XR4pBaO0NMis/STcgabovWoFuXApSW2ZcL7eX6Yn8E4=;
+        s=korg; t=1655119380;
+        bh=HAxRoji8uG/RdFQsI1RZvPTs7xTUfZBGIXUkTYvNiBU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DVZ78e4oL1/5SNLi4xc4HjCyTKp4W14FtzDQrL+pEsLOvbSHHMr/JmL6TSLFuQWc4
-         VlrWxhkR0O7smgBLBAQPZjiZDxbHpsh+CtOmeNwdnnsulqgNtVTLXThkwT72vVxGdi
-         aRjiUM2LAGx684F/lEsmARRoQATMHqwYIer2N+PQ=
+        b=np+gDYpBf+o1pa4GmoNUq7YfG2fOCMWlBQLGch3BL4dQwAC2+ggfBY1dtg1sA5ltE
+         XAqie5yTdpRQl0QeihoMrpAPErIwtAx8CCHUKgvKaHOm3XP7J0MPpJO4LO2SC7mmTh
+         MPdXwVotwV/WdGUI3Spc7D4gfNaxxVy7JJpRFOsg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liu Ying <victor.liu@oss.nxp.com>,
-        Brian Norris <briannorris@chromium.org>,
-        Sean Paul <seanpaul@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>
-Subject: [PATCH 5.15 236/247] drm/atomic: Force bridge self-refresh-exit on CRTC switch
-Date:   Mon, 13 Jun 2022 12:12:18 +0200
-Message-Id: <20220613094930.102199941@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Sit, Michael Wei Hong" <michael.wei.hong.sit@intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Tan Tee Min <tee.min.tan@linux.intel.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        Sit@vger.kernel.org
+Subject: [PATCH 5.15 224/247] net: phy: dp83867: retrigger SGMII AN when link change
+Date:   Mon, 13 Jun 2022 12:12:06 +0200
+Message-Id: <20220613094929.739601502@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -51,74 +53,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Norris <briannorris@chromium.org>
+From: Tan Tee Min <tee.min.tan@linux.intel.com>
 
-commit e54a4424925a27ed94dff046db3ce5caf4b1e748 upstream.
+commit c76acfb7e19dcc3a0964e0563770b1d11b8d4540 upstream.
 
-It's possible to change which CRTC is in use for a given
-connector/encoder/bridge while we're in self-refresh without fully
-disabling the connector/encoder/bridge along the way. This can confuse
-the bridge encoder/bridge, because
-(a) it needs to track the SR state (trying to perform "active"
-    operations while the panel is still in SR can be Bad(TM)); and
-(b) it tracks the SR state via the CRTC state (and after the switch, the
-    previous SR state is lost).
+There is a limitation in TI DP83867 PHY device where SGMII AN is only
+triggered once after the device is booted up. Even after the PHY TPI is
+down and up again, SGMII AN is not triggered and hence no new in-band
+message from PHY to MAC side SGMII.
 
-Thus, we need to either somehow carry the self-refresh state over to the
-new CRTC, or else force an encoder/bridge self-refresh transition during
-such a switch.
+This could cause an issue during power up, when PHY is up prior to MAC.
+At this condition, once MAC side SGMII is up, MAC side SGMII wouldn`t
+receive new in-band message from TI PHY with correct link status, speed
+and duplex info.
 
-I choose the latter, so we disable the encoder (and exit PSR) before
-attaching it to the new CRTC (where we can continue to assume a clean
-(non-self-refresh) state).
+As suggested by TI, implemented a SW solution here to retrigger SGMII
+Auto-Neg whenever there is a link change.
 
-This fixes PSR issues seen on Rockchip RK3399 systems with
-drivers/gpu/drm/bridge/analogix/analogix_dp_core.c.
+v2: Add Fixes tag in commit message.
 
-Change in v2:
-
-- Drop "->enable" condition; this could possibly be "->active" to
-  reflect the intended hardware state, but it also is a little
-  over-specific. We want to make a transition through "disabled" any
-  time we're exiting PSR at the same time as a CRTC switch.
-  (Thanks Liu Ying)
-
-Cc: Liu Ying <victor.liu@oss.nxp.com>
-Cc: <stable@vger.kernel.org>
-Fixes: 1452c25b0e60 ("drm: Add helpers to kick off self refresh mode in drivers")
-Signed-off-by: Brian Norris <briannorris@chromium.org>
-Reviewed-by: Sean Paul <seanpaul@chromium.org>
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220228122522.v2.2.Ic15a2ef69c540aee8732703103e2cff51fb9c399@changeid
+Fixes: 2a10154abcb7 ("net: phy: dp83867: Add TI dp83867 phy")
+Cc: <stable@vger.kernel.org> # 5.4.x
+Signed-off-by: Sit, Michael Wei Hong <michael.wei.hong.sit@intel.com>
+Reviewed-by: Voon Weifeng <weifeng.voon@intel.com>
+Signed-off-by: Tan Tee Min <tee.min.tan@linux.intel.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220526090347.128742-1-tee.min.tan@linux.intel.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/drm_atomic_helper.c |   16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+ drivers/net/phy/dp83867.c |   29 +++++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
 
---- a/drivers/gpu/drm/drm_atomic_helper.c
-+++ b/drivers/gpu/drm/drm_atomic_helper.c
-@@ -996,9 +996,19 @@ crtc_needs_disable(struct drm_crtc_state
- 		return drm_atomic_crtc_effectively_active(old_state);
+--- a/drivers/net/phy/dp83867.c
++++ b/drivers/net/phy/dp83867.c
+@@ -137,6 +137,7 @@
+ #define DP83867_DOWNSHIFT_2_COUNT	2
+ #define DP83867_DOWNSHIFT_4_COUNT	4
+ #define DP83867_DOWNSHIFT_8_COUNT	8
++#define DP83867_SGMII_AUTONEG_EN	BIT(7)
  
- 	/*
--	 * We need to run through the crtc_funcs->disable() function if the CRTC
--	 * is currently on, if it's transitioning to self refresh mode, or if
--	 * it's in self refresh mode and needs to be fully disabled.
-+	 * We need to disable bridge(s) and CRTC if we're transitioning out of
-+	 * self-refresh and changing CRTCs at the same time, because the
-+	 * bridge tracks self-refresh status via CRTC state.
+ /* CFG3 bits */
+ #define DP83867_CFG3_INT_OE			BIT(7)
+@@ -836,6 +837,32 @@ static int dp83867_phy_reset(struct phy_
+ 			 DP83867_PHYCR_FORCE_LINK_GOOD, 0);
+ }
+ 
++static void dp83867_link_change_notify(struct phy_device *phydev)
++{
++	/* There is a limitation in DP83867 PHY device where SGMII AN is
++	 * only triggered once after the device is booted up. Even after the
++	 * PHY TPI is down and up again, SGMII AN is not triggered and
++	 * hence no new in-band message from PHY to MAC side SGMII.
++	 * This could cause an issue during power up, when PHY is up prior
++	 * to MAC. At this condition, once MAC side SGMII is up, MAC side
++	 * SGMII wouldn`t receive new in-band message from TI PHY with
++	 * correct link status, speed and duplex info.
++	 * Thus, implemented a SW solution here to retrigger SGMII Auto-Neg
++	 * whenever there is a link change.
 +	 */
-+	if (old_state->self_refresh_active &&
-+	    old_state->crtc != new_state->crtc)
-+		return true;
++	if (phydev->interface == PHY_INTERFACE_MODE_SGMII) {
++		int val = 0;
 +
-+	/*
-+	 * We also need to run through the crtc_funcs->disable() function if
-+	 * the CRTC is currently on, if it's transitioning to self refresh
-+	 * mode, or if it's in self refresh mode and needs to be fully
-+	 * disabled.
- 	 */
- 	return old_state->active ||
- 	       (old_state->self_refresh_active && !new_state->active) ||
++		val = phy_clear_bits(phydev, DP83867_CFG2,
++				     DP83867_SGMII_AUTONEG_EN);
++		if (val < 0)
++			return;
++
++		phy_set_bits(phydev, DP83867_CFG2,
++			     DP83867_SGMII_AUTONEG_EN);
++	}
++}
++
+ static struct phy_driver dp83867_driver[] = {
+ 	{
+ 		.phy_id		= DP83867_PHY_ID,
+@@ -860,6 +887,8 @@ static struct phy_driver dp83867_driver[
+ 
+ 		.suspend	= genphy_suspend,
+ 		.resume		= genphy_resume,
++
++		.link_change_notify = dp83867_link_change_notify,
+ 	},
+ };
+ module_phy_driver(dp83867_driver);
 
 
