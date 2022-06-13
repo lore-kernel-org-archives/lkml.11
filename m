@@ -2,75 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50C37C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:14:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6FFEC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:17:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237910AbiFMROY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 13:14:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55032 "EHLO
+        id S239663AbiFMRR2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 13:17:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239071AbiFMRNJ (ORCPT
+        with ESMTP id S244461AbiFMROD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 13:13:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D68F10657E
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 05:21:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E7A061132
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:21:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4E6CC34114;
-        Mon, 13 Jun 2022 12:21:06 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="OudDLBOf"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1655122865;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=eCguPfhBjRDX4UmTJq9ti6SGKm9MJcaBx3aO1wE0zJI=;
-        b=OudDLBOf2DDzDoHX8qr0r/1jVrOBp7yu9hoOynhMQTo2tkxBCXZBNgDqkwj4i0X3sh+9P3
-        8/0BdxEpddr3D+A5nFlzj2vLe9aPL3Et+qUsFC2JeXJOLx8HV/ByqrZfP72zi8296ynVhj
-        36OeAc2QA26zTXoW8E30cs/6HEdJMN0=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 748efec9 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Mon, 13 Jun 2022 12:21:04 +0000 (UTC)
-Date:   Mon, 13 Jun 2022 14:20:59 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     "R, Monish Kumar" <monish.kumar.r@intel.com>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        "open list:NVM EXPRESS DRIVER" <linux-nvme@lists.infradead.org>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        "alan.adamson@oracle.com" <alan.adamson@oracle.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Yi Zhang <yi.zhang@redhat.com>,
-        Keith Busch <kbusch@kernel.org>, "axboe@fb.com" <axboe@fb.com>,
-        "Rao, Abhijeet" <abhijeet.rao@intel.com>
-Subject: Re: 2 second nvme initialization delay regression in 5.18 [Was: Re:
- [bug report]nvme0: Admin Cmd(0x6), I/O Error (sct 0x0 / sc 0x2) MORE DNR
- observed during blktests]
-Message-ID: <Yqcrq2ewmqhflAYw@zx2c4.com>
-References: <CAHj4cs_iC+FE8ZAXXZPeia1V3ZX7zRbeASdOP_8c7DLiFozNfA@mail.gmail.com>
- <Ykyf5Zuz1W8yHhNY@zx2c4.com>
- <CAHmME9pwz4q0m-pSUy7ReWu4nNzxySNcYZrqyDZiTuGxHN=1NQ@mail.gmail.com>
- <CAHmME9o-orF52HzkT80054e3Op5fLOcTHb-KHpvvU7H3FpAJ7A@mail.gmail.com>
- <SA2PR11MB5115DCE45778910C96813CA1C3A79@SA2PR11MB5115.namprd11.prod.outlook.com>
- <YqG/pybFg0P5yQ9a@zx2c4.com>
- <20220610061449.GD24331@lst.de>
- <YqMMo2Dv9SZRtR7B@zx2c4.com>
- <SA2PR11MB5115C9D7AE1DF332B29625B0C3AB9@SA2PR11MB5115.namprd11.prod.outlook.com>
+        Mon, 13 Jun 2022 13:14:03 -0400
+Received: from smtp-42ac.mail.infomaniak.ch (smtp-42ac.mail.infomaniak.ch [84.16.66.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46D4B5549E
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 05:20:08 -0700 (PDT)
+Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4LM9cj5FsVzMpwtX;
+        Mon, 13 Jun 2022 14:20:05 +0200 (CEST)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4LM9cd4MYKzlpb2d;
+        Mon, 13 Jun 2022 14:20:01 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1655122805;
+        bh=P8NVyXj34ZvJVQWESPk01PC8KYswBLc2J5cBfxA5wlI=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=aOumEP/IoqVDxckhdOnow8XBOtzF6rPUHSpjAaEiKv4s4qTv9+QazdFI/MV0sY9Oj
+         WNcCDGC2NsIWSWr8htmOXQonlVhjqK6/U6g/yYRD9VTzd/JdIjpyOFwXcDvdlX4LMS
+         ZPoJ0aNzkEJ9Yh+5Wu0QvJ3PdsdwNy2lAdCZDTxY=
+Message-ID: <ff05d732-3202-7c9c-0d4c-d95101ed6ba3@digikod.net>
+Date:   Mon, 13 Jun 2022 14:20:00 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <SA2PR11MB5115C9D7AE1DF332B29625B0C3AB9@SA2PR11MB5115.namprd11.prod.outlook.com>
+User-Agent: 
+Subject: Re: [PATCH 1/4] certs/blacklist_hashes.c: fix const confusion in
+ certs blacklist
+Content-Language: en-US
+To:     Masahiro Yamada <masahiroy@kernel.org>,
+        linux-kbuild@vger.kernel.org
+Cc:     David Howells <dhowells@redhat.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        David Woodhouse <dwmw2@infradead.org>,
+        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Eric Snowberg <eric.snowberg@oracle.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Tyler Hicks <tyhicks@linux.microsoft.com>
+References: <20220611172233.1494073-1-masahiroy@kernel.org>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+In-Reply-To: <20220611172233.1494073-1-masahiroy@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 06:36:44AM +0000, R, Monish Kumar wrote:
-> mn        : Samsung Portable SSD X5
-> fr        : 1P3QEXE7
 
-Isn't the latest firmware for the QEXE7 line 2B2QEXE7?
+On 11/06/2022 19:22, Masahiro Yamada wrote:
+> This file fails to compile as follows:
+> 
+>    CC      certs/blacklist_hashes.o
+> certs/blacklist_hashes.c:4:1: error: ignoring attribute ‘section (".init.data")’ because it conflicts with previous ‘section (".init.rodata")’ [-Werror=attributes]
+>      4 | const char __initdata *const blacklist_hashes[] = {
+>        | ^~~~~
+> In file included from certs/blacklist_hashes.c:2:
+> certs/blacklist.h:5:38: note: previous declaration here
+>      5 | extern const char __initconst *const blacklist_hashes[];
+>        |                                      ^~~~~~~~~~~~~~~~
+> 
+> Apply the same fix as commit 2be04df5668d ("certs/blacklist_nohashes.c:
+> fix const confusion in certs blacklist").
+> 
+> Fixes: 734114f8782f ("KEYS: Add a system blacklist keyring")
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 
-Jason
+Reviewed-by: Mickaël Salaün <mic@linux.microsoft.com>
+
+> ---
+> 
+>   certs/blacklist_hashes.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/certs/blacklist_hashes.c b/certs/blacklist_hashes.c
+> index 344892337be0..d5961aa3d338 100644
+> --- a/certs/blacklist_hashes.c
+> +++ b/certs/blacklist_hashes.c
+> @@ -1,7 +1,7 @@
+>   // SPDX-License-Identifier: GPL-2.0
+>   #include "blacklist.h"
+>   
+> -const char __initdata *const blacklist_hashes[] = {
+> +const char __initconst *const blacklist_hashes[] = {
+>   #include CONFIG_SYSTEM_BLACKLIST_HASH_LIST
+>   	, NULL
+>   };
