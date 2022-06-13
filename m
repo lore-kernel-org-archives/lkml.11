@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C2CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:16:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C46DCC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:16:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353690AbiFMMQH (ORCPT
+        id S1351937AbiFMMQR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:16:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44828 "EHLO
+        Mon, 13 Jun 2022 08:16:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353072AbiFMMNP (ORCPT
+        with ESMTP id S1354738AbiFMMNk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:13:15 -0400
+        Mon, 13 Jun 2022 08:13:40 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D6CE53B6B;
-        Mon, 13 Jun 2022 04:01:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CDD053B7A;
+        Mon, 13 Jun 2022 04:01:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D51BB80EA3;
-        Mon, 13 Jun 2022 11:01:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66D79C34114;
-        Mon, 13 Jun 2022 11:01:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D36A9B80D31;
+        Mon, 13 Jun 2022 11:01:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3363EC34114;
+        Mon, 13 Jun 2022 11:01:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118071;
-        bh=S4jPgUg8MqGX+wr9yf803r/TYRg+Ex4aiLdDTooZV9k=;
+        s=korg; t=1655118074;
+        bh=pK6nWD6aFzFWrH5XSpuKBWcHo5Sf9+sZWgGxITGzp0g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qXdfhXaiyIQN1BR402qEiLZdQm6zqtLqbk9pc6xoSmUxb5sqyKFUv3eled2B/mAY6
-         eI1KpeRGROf6mT5oDT7Dn75OS0ntCORn7+T+bIDiluVXHc3HhNY5baW5cCMKviCGDT
-         kfzux1L323sjaBXCVWMQvpM7J3o7c29ZaLXsK2f8=
+        b=R8C0nCOma9M2AlBZT4CMwBFZrdJ+IywK7I/TDbSGS4MR9xJb/vzI4mT9ZlVlfZIR3
+         0V1nZ+13/teU+Xa9HKU5dXCIwVcl/Hxe6exMpRZkfrKJLMlgO0sU+ttmRcRc8vTF1J
+         phiXWK02IVDQ4WsmwZZYMoaQpYrcafJjUmg5mEU4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yu Xiao <yu.xiao@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 221/287] nfp: only report pause frame configuration for physical device
-Date:   Mon, 13 Jun 2022 12:10:45 +0200
-Message-Id: <20220613094930.560156935@linuxfoundation.org>
+Subject: [PATCH 4.19 212/287] firmware: dmi-sysfs: Fix memory leak in dmi_sysfs_register_handle
+Date:   Mon, 13 Jun 2022 12:10:36 +0200
+Message-Id: <20220613094930.291356814@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -51,44 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Xiao <yu.xiao@corigine.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 0649e4d63420ebc8cbebef3e9d39e12ffc5eb9fa ]
+[ Upstream commit 660ba678f9998aca6db74f2dd912fa5124f0fa31 ]
 
-Only report pause frame configuration for physical device. Logical
-port of both PCI PF and PCI VF do not support it.
+kobject_init_and_add() takes reference even when it fails.
+According to the doc of kobject_init_and_add()
 
-Fixes: 9fdc5d85a8fe ("nfp: update ethtool reporting of pauseframe control")
-Signed-off-by: Yu Xiao <yu.xiao@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+   If this function returns an error, kobject_put() must be called to
+   properly clean up the memory associated with the object.
+
+Fix this issue by calling kobject_put().
+
+Fixes: 948af1f0bbc8 ("firmware: Basic dmi-sysfs support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220511071421.9769-1-linmq006@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/firmware/dmi-sysfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-index 2e75d0af4a58..a51661cfd27f 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-@@ -292,8 +292,6 @@ nfp_net_get_link_ksettings(struct net_device *netdev,
+diff --git a/drivers/firmware/dmi-sysfs.c b/drivers/firmware/dmi-sysfs.c
+index ecf2eeb5f6f9..5d6b497d54d0 100644
+--- a/drivers/firmware/dmi-sysfs.c
++++ b/drivers/firmware/dmi-sysfs.c
+@@ -602,7 +602,7 @@ static void __init dmi_sysfs_register_handle(const struct dmi_header *dh,
+ 				    "%d-%d", dh->type, entry->instance);
  
- 	/* Init to unknowns */
- 	ethtool_link_ksettings_add_link_mode(cmd, supported, FIBRE);
--	ethtool_link_ksettings_add_link_mode(cmd, supported, Pause);
--	ethtool_link_ksettings_add_link_mode(cmd, advertising, Pause);
- 	cmd->base.port = PORT_OTHER;
- 	cmd->base.speed = SPEED_UNKNOWN;
- 	cmd->base.duplex = DUPLEX_UNKNOWN;
-@@ -301,6 +299,8 @@ nfp_net_get_link_ksettings(struct net_device *netdev,
- 	port = nfp_port_from_netdev(netdev);
- 	eth_port = nfp_port_get_eth_port(port);
- 	if (eth_port) {
-+		ethtool_link_ksettings_add_link_mode(cmd, supported, Pause);
-+		ethtool_link_ksettings_add_link_mode(cmd, advertising, Pause);
- 		cmd->base.autoneg = eth_port->aneg != NFP_ANEG_DISABLED ?
- 			AUTONEG_ENABLE : AUTONEG_DISABLE;
- 		nfp_net_set_fec_link_mode(eth_port, cmd);
+ 	if (*ret) {
+-		kfree(entry);
++		kobject_put(&entry->kobj);
+ 		return;
+ 	}
+ 
 -- 
 2.35.1
 
