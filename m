@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4761FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:22:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACA50C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:22:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382535AbiFMOWe (ORCPT
+        id S1382662AbiFMOWj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:22:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41754 "EHLO
+        Mon, 13 Jun 2022 10:22:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383548AbiFMOQF (ORCPT
+        with ESMTP id S1383555AbiFMOQF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 10:16:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6418B9EB69;
-        Mon, 13 Jun 2022 04:43:25 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A61009EB60;
+        Mon, 13 Jun 2022 04:43:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E71A1612AB;
-        Mon, 13 Jun 2022 11:42:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03BE9C34114;
-        Mon, 13 Jun 2022 11:42:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A7670B80D31;
+        Mon, 13 Jun 2022 11:43:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E472C3411B;
+        Mon, 13 Jun 2022 11:43:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120574;
-        bh=DusVsUi2RwJtIXTBxvquXw84b+uqbhGWMuwPzhtsFuw=;
+        s=korg; t=1655120601;
+        bh=BLK0FkCC59iYGwOJeMojtafFTczPpvl2QeNDU3bI/vQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V2FSXIstfj4TlHO+qVWl8VFB7Y9eOw1EgFN2jt+eZ6t+ko2X/RA+R/KD+vfOXcWcl
-         rcQchtly6E89eSrMAbU9Sk8C5DRq4Mo8h5qfXNcKL8g9xGv6IeL9hD9OtsyseIAKMG
-         9gCgzl0OBffp5hpUEww+XaYjV2cz1bo2tqEVDPrg=
+        b=y9ZjJmoDOdJmWRz36Y2agfl74NWbWJucidEAolTLKDJcRh7tuZVG6jutPhGImeif4
+         +TJqieVGdJUGK+9apBhtYSFWvuGUSiAFOsitZdmilzQkbHIGxjb8knxJ2FX9PC9CMa
+         4/elQgTi4pMOtH3unKy43T30TPC8rtlwQM2Hrckc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Romain Naour <romain.naour@smile.fr>,
+        Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 081/298] drm/amdgpu: Off by one in dm_dmub_outbox1_low_irq()
-Date:   Mon, 13 Jun 2022 12:09:35 +0200
-Message-Id: <20220613094927.403634386@linuxfoundation.org>
+Subject: [PATCH 5.17 068/298] bus: ti-sysc: Fix warnings for unbind for serial
+Date:   Mon, 13 Jun 2022 12:09:22 +0200
+Message-Id: <20220613094927.009154999@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -51,35 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Tony Lindgren <tony@atomide.com>
 
-[ Upstream commit a35faec3db0e13aac8ea720bc1a3503081dd5a3d ]
+[ Upstream commit c337125b8834f9719dfda0e40b25eaa266f1b8cf ]
 
-The > ARRAY_SIZE() should be >= ARRAY_SIZE() to prevent an out of bounds
-access.
+We can get "failed to disable" clock_unprepare warnings on unbind at least
+for the serial console device if the unbind is done before the device has
+been idled.
 
-Fixes: e27c41d5b068 ("drm/amd/display: Support for DMUB HPD interrupt handling")
-Reviewed-by: Harry Wentland <harry.wentland@amd.com>
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+As some devices are using deferred idle, we must check the status for
+pending idle work to idle the device.
+
+Fixes: 76f0f772e469 ("bus: ti-sysc: Improve handling for no-reset-on-init and no-idle-on-init")
+Cc: Romain Naour <romain.naour@smile.fr>
+Reviewed-by: Romain Naour <romain.naour@smile.fr>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+Link: https://lore.kernel.org/r/20220512053021.61650-1-tony@atomide.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/bus/ti-sysc.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index 24db2297857b..edb5e72aeb66 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -767,7 +767,7 @@ static void dm_dmub_outbox1_low_irq(void *interrupt_params)
+diff --git a/drivers/bus/ti-sysc.c b/drivers/bus/ti-sysc.c
+index 7a1b1f9e4933..70d00cea9d22 100644
+--- a/drivers/bus/ti-sysc.c
++++ b/drivers/bus/ti-sysc.c
+@@ -3395,7 +3395,9 @@ static int sysc_remove(struct platform_device *pdev)
+ 	struct sysc *ddata = platform_get_drvdata(pdev);
+ 	int error;
  
- 		do {
- 			dc_stat_get_dmub_notification(adev->dm.dc, &notify);
--			if (notify.type > ARRAY_SIZE(dm->dmub_thread_offload)) {
-+			if (notify.type >= ARRAY_SIZE(dm->dmub_thread_offload)) {
- 				DRM_ERROR("DM: notify type %d invalid!", notify.type);
- 				continue;
- 			}
+-	cancel_delayed_work_sync(&ddata->idle_work);
++	/* Device can still be enabled, see deferred idle quirk in probe */
++	if (cancel_delayed_work_sync(&ddata->idle_work))
++		ti_sysc_idle(&ddata->idle_work.work);
+ 
+ 	error = pm_runtime_resume_and_get(ddata->dev);
+ 	if (error < 0) {
 -- 
 2.35.1
 
