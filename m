@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2533DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:02:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10AFAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:03:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358344AbiFMMCy (ORCPT
+        id S1358164AbiFMMC7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:02:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41402 "EHLO
+        Mon, 13 Jun 2022 08:02:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358191AbiFML7h (ORCPT
+        with ESMTP id S1358390AbiFML75 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:59:37 -0400
+        Mon, 13 Jun 2022 07:59:57 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A2934DF7E;
-        Mon, 13 Jun 2022 03:56:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05FFC4EF4C;
+        Mon, 13 Jun 2022 03:56:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A1EBC6139D;
-        Mon, 13 Jun 2022 10:56:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AECCCC34114;
-        Mon, 13 Jun 2022 10:56:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B1DC61346;
+        Mon, 13 Jun 2022 10:56:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96DE3C3411E;
+        Mon, 13 Jun 2022 10:56:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117794;
-        bh=HTFSOGHBWdRDwUFiV3IKhBF8OEM33YNKdbdeRaZD1kI=;
+        s=korg; t=1655117816;
+        bh=yezBWBIj2lDVCShdvT7sJfdI2ltpm1U6UJxUTLHm4jA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uZ0wmuBRgNZ4chIBX6Be7U1G76rUmkbpOPLaDmtL5WCIw5Z82+BTSpMZeQ4/ZXlAV
-         VSnMUHRloKAOzEbd/zHolyKBUfeWsvyJzJk0lM2Mr1vl9O0Dd5jv6hL+bG0a9WC5Z6
-         oROUBibufwL/w6tsAEG3PnI3ytvUleroM1KonJ6Q=
+        b=ewijdeDFviF/w6h8U3pX5w0pLq8xwtaBKESEKdMhh+YVN7vjc33qLy4BJ1YkNWUzh
+         slpeFqxF4mhPHW94GESp2JsIXDkDdVcku32cuz38nzrgpX2qirmzCUsay9WFXvLrLn
+         0g5TeGtJHugBNtuSiW5GGXnXiKTtNSeg/Yt0/SAA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 134/287] i2c: at91: use dma safe buffers
-Date:   Mon, 13 Jun 2022 12:09:18 +0200
-Message-Id: <20220613094927.943345073@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 129/287] powerpc/fsl_rio: Fix refcount leak in fsl_rio_setup
+Date:   Mon, 13 Jun 2022 12:09:13 +0200
+Message-Id: <20220613094927.791098528@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -50,56 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 03fbb903c8bf7e53e101e8d9a7b261264317c411 ]
+[ Upstream commit fcee96924ba1596ca80a6770b2567ca546f9a482 ]
 
-The supplied buffer might be on the stack and we get the following error
-message:
-[    3.312058] at91_i2c e0070600.i2c: rejecting DMA map of vmalloc memory
+of_parse_phandle() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-Use i2c_{get,put}_dma_safe_msg_buf() to get a DMA-able memory region if
-necessary.
-
-Fixes: 60937b2cdbf9 ("i2c: at91: add dma support")
-Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Fixes: abc3aeae3aaa ("fsl-rio: Add two ports and rapidio message units support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220512123724.62931-1-linmq006@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-at91.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ arch/powerpc/sysdev/fsl_rio.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/i2c/busses/i2c-at91.c b/drivers/i2c/busses/i2c-at91.c
-index d51bf536bdf7..d5119a2adf5d 100644
---- a/drivers/i2c/busses/i2c-at91.c
-+++ b/drivers/i2c/busses/i2c-at91.c
-@@ -757,6 +757,7 @@ static int at91_twi_xfer(struct i2c_adapter *adap, struct i2c_msg *msg, int num)
- 	unsigned int_addr_flag = 0;
- 	struct i2c_msg *m_start = msg;
- 	bool is_read;
-+	u8 *dma_buf;
- 
- 	dev_dbg(&adap->dev, "at91_xfer: processing %d messages:\n", num);
- 
-@@ -804,7 +805,17 @@ static int at91_twi_xfer(struct i2c_adapter *adap, struct i2c_msg *msg, int num)
- 	dev->msg = m_start;
- 	dev->recv_len_abort = false;
- 
-+	if (dev->use_dma) {
-+		dma_buf = i2c_get_dma_safe_msg_buf(m_start, 1);
-+		if (!dma_buf) {
-+			ret = -ENOMEM;
-+			goto out;
-+		}
-+		dev->buf = dma_buf;
-+	}
-+
- 	ret = at91_do_twi_transfer(dev);
-+	i2c_put_dma_safe_msg_buf(dma_buf, m_start, !ret);
- 
- 	ret = (ret < 0) ? ret : num;
- out:
+diff --git a/arch/powerpc/sysdev/fsl_rio.c b/arch/powerpc/sysdev/fsl_rio.c
+index 5011ffea4e4b..c48ebe677962 100644
+--- a/arch/powerpc/sysdev/fsl_rio.c
++++ b/arch/powerpc/sysdev/fsl_rio.c
+@@ -509,8 +509,10 @@ int fsl_rio_setup(struct platform_device *dev)
+ 	if (rc) {
+ 		dev_err(&dev->dev, "Can't get %pOF property 'reg'\n",
+ 				rmu_node);
++		of_node_put(rmu_node);
+ 		goto err_rmu;
+ 	}
++	of_node_put(rmu_node);
+ 	rmu_regs_win = ioremap(rmu_regs.start, resource_size(&rmu_regs));
+ 	if (!rmu_regs_win) {
+ 		dev_err(&dev->dev, "Unable to map rmu register window\n");
 -- 
 2.35.1
 
