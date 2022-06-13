@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68C81CCA480
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A2CBCCA482
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:34:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383621AbiFMObq (ORCPT
+        id S1383701AbiFMOb5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:31:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59014 "EHLO
+        Mon, 13 Jun 2022 10:31:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383639AbiFMO0z (ORCPT
+        with ESMTP id S1383933AbiFMO2c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:26:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 610446164;
-        Mon, 13 Jun 2022 04:47:21 -0700 (PDT)
+        Mon, 13 Jun 2022 10:28:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E56915839;
+        Mon, 13 Jun 2022 04:47:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 40C90612A8;
-        Mon, 13 Jun 2022 11:47:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49611C34114;
-        Mon, 13 Jun 2022 11:47:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82607B80EA7;
+        Mon, 13 Jun 2022 11:47:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD840C341C5;
+        Mon, 13 Jun 2022 11:47:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120834;
-        bh=DP0GBlWS01HNg1sxk93PKkBpvry1tx4tPZCsHh7VcgQ=;
+        s=korg; t=1655120840;
+        bh=2RdyjOpU/bVFs6TeY0Oges0DITMvHapRKBYEgmiqFB8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0n2+bJWQIRBNfzofJyWDOAGSKNtLr07p10S2PKNRPl+MJJlmw5V0xhplEblzAKhoj
-         gL84wpfGkMTAZ9xoX1wifhsJhMGYwmywxRzwyDooaJKmktDw9ySEta85dEIBaYdjK6
-         RZvlqSxND384SlTvbD5e7I1qU1GLDFnVPI3+fSvo=
+        b=EGlI3DzkvStIcZN4WlzVZleTdbyXeFbUvdhOKCEgo0dHOK4YFMFzAZC8YoZL0mrlN
+         3dLBcM3dPLQbqVulFe9ubnM01we+nXFcZC3RFQnqeKHyLkzaL0XqU9P4nZ/UI42wLx
+         VLP+Y1rew8K285tSz6ozyHzuAUUHgmzGz6erfrWM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Beulich <jbeulich@suse.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 175/298] x86: drop bogus "cc" clobber from __try_cmpxchg_user_asm()
-Date:   Mon, 13 Jun 2022 12:11:09 +0200
-Message-Id: <20220613094930.241839176@linuxfoundation.org>
+Subject: [PATCH 5.17 177/298] net: dsa: lantiq_gswip: Fix refcount leak in gswip_gphy_fw_list
+Date:   Mon, 13 Jun 2022 12:11:11 +0200
+Message-Id: <20220613094930.303287409@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,39 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Beulich <jbeulich@suse.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 1df931d95f4dc1c11db1123e85d4e08156e46ef9 ]
+[ Upstream commit 0737e018a05e2aa352828c52bdeed3b02cff2930 ]
 
-As noted (and fixed) a couple of times in the past, "=@cc<cond>" outputs
-and clobbering of "cc" don't work well together. The compiler appears to
-mean to reject such, but doesn't - in its upstream form - quite manage
-to yet for "cc". Furthermore two similar macros don't clobber "cc", and
-clobbering "cc" is pointless in asm()-s for x86 anyway - the compiler
-always assumes status flags to be clobbered there.
+Every iteration of for_each_available_child_of_node() decrements
+the reference count of the previous node.
+when breaking early from a for_each_available_child_of_node() loop,
+we need to explicitly call of_node_put() on the gphy_fw_np.
+Add missing of_node_put() to avoid refcount leak.
 
-Fixes: 989b5db215a2 ("x86/uaccess: Implement macros for CMPXCHG on user addresses")
-Signed-off-by: Jan Beulich <jbeulich@suse.com>
-Message-Id: <485c0c0b-a3a7-0b7c-5264-7d00c01de032@suse.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: 14fceff4771e ("net: dsa: Add Lantiq / Intel DSA driver for vrx200")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220605072335.11257-1-linmq006@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/uaccess.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/lantiq_gswip.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
-index 1c14bcce88f2..729ecf1e546c 100644
---- a/arch/x86/include/asm/uaccess.h
-+++ b/arch/x86/include/asm/uaccess.h
-@@ -466,7 +466,7 @@ do {									\
- 		       [ptr] "+m" (*_ptr),				\
- 		       [old] "+a" (__old)				\
- 		     : [new] ltype (__new)				\
--		     : "memory", "cc");					\
-+		     : "memory");					\
- 	if (unlikely(__err))						\
- 		goto label;						\
- 	if (unlikely(!success))						\
+diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
+index 8acec33a4702..9d8db457599c 100644
+--- a/drivers/net/dsa/lantiq_gswip.c
++++ b/drivers/net/dsa/lantiq_gswip.c
+@@ -2021,8 +2021,10 @@ static int gswip_gphy_fw_list(struct gswip_priv *priv,
+ 	for_each_available_child_of_node(gphy_fw_list_np, gphy_fw_np) {
+ 		err = gswip_gphy_fw_probe(priv, &priv->gphy_fw[i],
+ 					  gphy_fw_np, i);
+-		if (err)
++		if (err) {
++			of_node_put(gphy_fw_np);
+ 			goto remove_gphy;
++		}
+ 		i++;
+ 	}
+ 
 -- 
 2.35.1
 
