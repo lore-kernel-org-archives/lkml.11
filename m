@@ -2,107 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4C65CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:45:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 861B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:45:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355426AbiFMMo3 (ORCPT
+        id S1356382AbiFMMom (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:44:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56208 "EHLO
+        Mon, 13 Jun 2022 08:44:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357586AbiFMMj4 (ORCPT
+        with ESMTP id S1357789AbiFMMkD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:39:56 -0400
+        Mon, 13 Jun 2022 08:40:03 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EA3E5E146;
-        Mon, 13 Jun 2022 04:10:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E4515E74E;
+        Mon, 13 Jun 2022 04:10:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6771360B77;
-        Mon, 13 Jun 2022 11:10:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70DB6C34114;
-        Mon, 13 Jun 2022 11:10:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118607;
-        bh=l5ObCqWV5DtUWe/84mfk11TbqDN6Yq+o0TqAqpuILE8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UdjzRD3XJXnv1sEWja1VJs1UnVSZ/nG2F8hoD+hZUMaEDJ8VqIsDT/jZwAYccwdNM
-         gPzsNCFziNZl+qgHph3mLJMnQ69yGDEJkS7xI3qfrgAk3nFLt9OKG9qDXjaI9Pv/Nn
-         R3cp5x78rjYTlG3MmL1EJyv4o5uj7V9XOoh6TyB4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michal Kubecek <mkubecek@suse.cz>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 137/172] Revert "net: af_key: add check for pfkey_broadcast in function pfkey_process"
-Date:   Mon, 13 Jun 2022 12:11:37 +0200
-Message-Id: <20220613094921.659363970@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
-References: <20220613094850.166931805@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BC3C60BA6;
+        Mon, 13 Jun 2022 11:10:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8C992C36B0A;
+        Mon, 13 Jun 2022 11:10:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655118613;
+        bh=M6143A5QQ5xSxiPanMUPhFz1w2V7Tzx7QqRnqCYcJwA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=YSItdfyO7g24OsR7+bu6WYaKP3iu6GS5Blr6pVpHkkJdLhbNS2jUGrPrhJyADbsxp
+         5BjdqOxor3+4eyz2xe6tyN/aW1s1pXAhtaC6xqICAa1Ggp40GHkQ6goIRtOdkpxsFQ
+         qaMR9GYnBRjhamOHHbndoQhh9KgvMx21lbFO2FrXElLBB1SFSFzTjsed+T9bhSK82i
+         JSXaSlW5WmxaGacfrWaXz2sCwXEn1byV/XQoBL68xhZpcAu1PU5CIkoh+l0QEHINAt
+         EmmS8Ae7mNsB2L18zQfw+3Figws3LhMgwCyQU3vD3mu3xESUqVKkKhk01RCpYWRLH5
+         OhYoLSuAygtdA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 750F1E57538;
+        Mon, 13 Jun 2022 11:10:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/6] net: ipa: simple refactoring
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165511861347.31385.12401818961589133505.git-patchwork-notify@kernel.org>
+Date:   Mon, 13 Jun 2022 11:10:13 +0000
+References: <20220610154616.249304-1-elder@linaro.org>
+In-Reply-To: <20220610154616.249304-1-elder@linaro.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, mka@chromium.org, evgreen@chromium.org,
+        bjorn.andersson@linaro.org, quic_cpratapa@quicinc.com,
+        quic_avuyyuru@quicinc.com, quic_jponduru@quicinc.com,
+        quic_subashab@quicinc.com, elder@kernel.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michal Kubecek <mkubecek@suse.cz>
+Hello:
 
-[ Upstream commit 9c90c9b3e50e16d03c7f87d63e9db373974781e0 ]
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-This reverts commit 4dc2a5a8f6754492180741facf2a8787f2c415d7.
+On Fri, 10 Jun 2022 10:46:09 -0500 you wrote:
+> This series contains some minor code improvements.
+> 
+> The first patch verifies that the configuration is compatible with a
+> recently-defined limit.  The second and third rename two fields so
+> they better reflect their use in the code.  The next gets rid of an
+> empty function by reworking its only caller.
+> 
+> [...]
 
-A non-zero return value from pfkey_broadcast() does not necessarily mean
-an error occurred as this function returns -ESRCH when no registered
-listener received the message. In particular, a call with
-BROADCAST_PROMISC_ONLY flag and null one_sk argument can never return
-zero so that this commit in fact prevents processing any PF_KEY message.
-One visible effect is that racoon daemon fails to find encryption
-algorithms like aes and refuses to start.
+Here is the summary with links:
+  - [net-next,1/6] net: ipa: verify command channel TLV count
+    https://git.kernel.org/netdev/net-next/c/92f78f81ac4d
+  - [net-next,2/6] net: ipa: rename channel->tlv_count
+    https://git.kernel.org/netdev/net-next/c/88e03057e4df
+  - [net-next,3/6] net: ipa: rename endpoint->trans_tre_max
+    https://git.kernel.org/netdev/net-next/c/317595d2ce77
+  - [net-next,4/6] net: ipa: simplify endpoint transaction completion
+    https://git.kernel.org/netdev/net-next/c/983a1a3081bb
+  - [net-next,5/6] net: ipa: determine channel from event
+    https://git.kernel.org/netdev/net-next/c/7dd9558feddf
+  - [net-next,6/6] net: ipa: derive channel from transaction
+    https://git.kernel.org/netdev/net-next/c/bcec9ecbaf60
 
-Excluding -ESRCH return value would fix this but it's not obvious that
-we really want to bail out here and most other callers of
-pfkey_broadcast() also ignore the return value. Also, as pointed out by
-Steffen Klassert, PF_KEY is kind of deprecated and newer userspace code
-should use netlink instead so that we should only disturb the code for
-really important fixes.
-
-v2: add a comment explaining why is the return value ignored
-
-Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/key/af_key.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
-
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index 6b7ed5568c09..2aa16a171285 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -2830,10 +2830,12 @@ static int pfkey_process(struct sock *sk, struct sk_buff *skb, const struct sadb
- 	void *ext_hdrs[SADB_EXT_MAX];
- 	int err;
- 
--	err = pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
--			      BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
--	if (err)
--		return err;
-+	/* Non-zero return value of pfkey_broadcast() does not always signal
-+	 * an error and even on an actual error we may still want to process
-+	 * the message so rather ignore the return value.
-+	 */
-+	pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
-+			BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
- 
- 	memset(ext_hdrs, 0, sizeof(ext_hdrs));
- 	err = parse_exthdrs(skb, hdr, ext_hdrs);
+You are awesome, thank you!
 -- 
-2.35.1
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
