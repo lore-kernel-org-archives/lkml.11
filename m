@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44AC8CCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:18:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7070FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:18:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352481AbiFMLSC (ORCPT
+        id S1352518AbiFMLSF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:18:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60380 "EHLO
+        Mon, 13 Jun 2022 07:18:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352720AbiFMLOQ (ORCPT
+        with ESMTP id S1352757AbiFMLOT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:14:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B7C236699;
-        Mon, 13 Jun 2022 03:36:48 -0700 (PDT)
+        Mon, 13 Jun 2022 07:14:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 304A236B64;
+        Mon, 13 Jun 2022 03:36:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1698F61021;
-        Mon, 13 Jun 2022 10:36:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24E34C34114;
-        Mon, 13 Jun 2022 10:36:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 652E9B80E5C;
+        Mon, 13 Jun 2022 10:36:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC45CC34114;
+        Mon, 13 Jun 2022 10:36:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116607;
-        bh=DxeSgsG0n29y1C6XnFDIkf3oFU4zeOZvFDxNwTuhuyc=;
+        s=korg; t=1655116610;
+        bh=USi81fvM4YhQ1mfqgC52ym2gtqwLW4f/NSqZIE2xZlg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XOieilXB4V2tMRRD4TMPVyDY3w6om4UR5M0XTCRp+4jDYhAJhW3/Oqzbg5NaATQIN
-         xlnM1/Jm6NS3Kmv6wvJ1mhALa7aANESf/ivGxID1RaljXOOFjJ/uNFJYDh2a/GR8Rk
-         5qx/ZNwlvIVVl0tkJSXXcj8frcLOOw6WZK0EQFLc=
+        b=ixgWYyNhhKPpSLcJuqQ7/oC4ZG4o6gDO7/T9rqpjfB6oirc09yRQQqw6BJ0l0fZxn
+         3aXouumjn7c0ePsH+1N1E7D1xqTpGJGGPPKpOCEJeZg5dU41gKBEhTaPCu39qxkfBw
+         5ktmCZKICpfxvgl5N6w6whCnN+E/WSIrycjj2jTY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheng Yongjun <zhengyongjun3@huawei.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 102/411] spi: img-spfi: Fix pm_runtime_get_sync() error checking
-Date:   Mon, 13 Jun 2022 12:06:15 +0200
-Message-Id: <20220613094931.737300746@linuxfoundation.org>
+Subject: [PATCH 5.4 114/411] drm/msm/dsi: fix error checks and return values for DSI xmit functions
+Date:   Mon, 13 Jun 2022 12:06:27 +0200
+Message-Id: <20220613094932.090423221@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,36 +52,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheng Yongjun <zhengyongjun3@huawei.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-[ Upstream commit cc470d55343056d6b2a5c32e10e0aad06f324078 ]
+[ Upstream commit f0e7e9ed379c012c4d6b09a09b868accc426223c ]
 
-If the device is already in a runtime PM enabled state
-pm_runtime_get_sync() will return 1, so a test for negative
-value should be used to check for errors.
+As noticed by Dan ([1] an the followup thread) there are multiple issues
+with the return values for MSM DSI command transmission callback. In
+the error case it can easily return a positive value when it should
+have returned a proper error code.
 
-Fixes: deba25800a12b ("spi: Add driver for IMG SPFI controller")
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
-Link: https://lore.kernel.org/r/20220422062641.10486-1-zhengyongjun3@huawei.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+This commits attempts to fix these issues both in TX and in RX paths.
+
+[1]: https://lore.kernel.org/linux-arm-msm/20211001123617.GH2283@kili/
+
+Fixes: a689554ba6ed ("drm/msm: Initial add DSI connector support")
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Tested-by: Marijn Suijten <marijn.suijten@somainline.org>
+Patchwork: https://patchwork.freedesktop.org/patch/480501/
+Link: https://lore.kernel.org/r/20220401231104.967193-1-dmitry.baryshkov@linaro.org
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-img-spfi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/msm/dsi/dsi_host.c | 21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/spi/spi-img-spfi.c b/drivers/spi/spi-img-spfi.c
-index e9ef80983b79..5a6b02843f2b 100644
---- a/drivers/spi/spi-img-spfi.c
-+++ b/drivers/spi/spi-img-spfi.c
-@@ -771,7 +771,7 @@ static int img_spfi_resume(struct device *dev)
- 	int ret;
+diff --git a/drivers/gpu/drm/msm/dsi/dsi_host.c b/drivers/gpu/drm/msm/dsi/dsi_host.c
+index 423c4ae2be10..743142e15b4c 100644
+--- a/drivers/gpu/drm/msm/dsi/dsi_host.c
++++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
+@@ -1348,10 +1348,10 @@ static int dsi_cmds2buf_tx(struct msm_dsi_host *msm_host,
+ 			dsi_get_bpp(msm_host->format) / 8;
  
- 	ret = pm_runtime_get_sync(dev);
--	if (ret) {
-+	if (ret < 0) {
- 		pm_runtime_put_noidle(dev);
- 		return ret;
+ 	len = dsi_cmd_dma_add(msm_host, msg);
+-	if (!len) {
++	if (len < 0) {
+ 		pr_err("%s: failed to add cmd type = 0x%x\n",
+ 			__func__,  msg->type);
+-		return -EINVAL;
++		return len;
  	}
+ 
+ 	/* for video mode, do not send cmds more than
+@@ -1370,10 +1370,14 @@ static int dsi_cmds2buf_tx(struct msm_dsi_host *msm_host,
+ 	}
+ 
+ 	ret = dsi_cmd_dma_tx(msm_host, len);
+-	if (ret < len) {
+-		pr_err("%s: cmd dma tx failed, type=0x%x, data0=0x%x, len=%d\n",
+-			__func__, msg->type, (*(u8 *)(msg->tx_buf)), len);
+-		return -ECOMM;
++	if (ret < 0) {
++		pr_err("%s: cmd dma tx failed, type=0x%x, data0=0x%x, len=%d, ret=%d\n",
++			__func__, msg->type, (*(u8 *)(msg->tx_buf)), len, ret);
++		return ret;
++	} else if (ret < len) {
++		pr_err("%s: cmd dma tx failed, type=0x%x, data0=0x%x, ret=%d len=%d\n",
++			__func__, msg->type, (*(u8 *)(msg->tx_buf)), ret, len);
++		return -EIO;
+ 	}
+ 
+ 	return len;
+@@ -2099,9 +2103,12 @@ int msm_dsi_host_cmd_rx(struct mipi_dsi_host *host,
+ 		}
+ 
+ 		ret = dsi_cmds2buf_tx(msm_host, msg);
+-		if (ret < msg->tx_len) {
++		if (ret < 0) {
+ 			pr_err("%s: Read cmd Tx failed, %d\n", __func__, ret);
+ 			return ret;
++		} else if (ret < msg->tx_len) {
++			pr_err("%s: Read cmd Tx failed, too short: %d\n", __func__, ret);
++			return -ECOMM;
+ 		}
+ 
+ 		/*
 -- 
 2.35.1
 
