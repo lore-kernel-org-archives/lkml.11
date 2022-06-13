@@ -2,107 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F4F6C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:27:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 054D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:28:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235298AbiFMI1N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 04:27:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59274 "EHLO
+        id S229722AbiFMI2u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 04:28:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239994AbiFMI04 (ORCPT
+        with ESMTP id S240161AbiFMI23 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 04:26:56 -0400
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ECCE1EEE8;
-        Mon, 13 Jun 2022 01:26:53 -0700 (PDT)
-Received: by mail-wm1-f42.google.com with SMTP id n185so2498949wmn.4;
-        Mon, 13 Jun 2022 01:26:52 -0700 (PDT)
+        Mon, 13 Jun 2022 04:28:29 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F26612757
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 01:28:26 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id d5so1895915plo.12
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 01:28:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ykDR2Uk4CbOQ3wM0PXuQC4oxDGLqvfs6LYo+jnOevDY=;
+        b=iBEsynkrqKiDNFcZ/2PPp1KD827bEZaQ/fOYwNHs93fW8/auD7Uf41sOsHATyyeNgu
+         v4qiBS0sWa2faVOaBotB267Qu1DkblzSW3vCivrWnXT0Lg4RmDx1p1XW/fyBzBH98cz/
+         k0ud7NQUACMOVgBADm0y8FMttNspzpifAnudU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=lk9moY61kZ9XuLOtqgImU78u273AwbpZh7RoCd2QahI=;
-        b=a2qR2O5qMfNSxyj2tvVYGQ3wJQLPdIUWdoWHN+9l5ZSqwqUwNVc77e+1yjft1ed9QS
-         tdGAb7ozYmiI9kFFJUTwzJxJEKeSpCj3S9dq73xnBs/wP8IfSxKhiYSQJ90urT3pqIsF
-         R++wr7yo9yoXL3PG8UtAbiI1VlJQ8i3T+JEpJweyg0Q7jkt59UF4/lNF0ACQlnEcQPG9
-         iWSAsh84kRn+BnR1nLLNeLHwfaf7VQUags9BU69dd4mLyubzoVpNbrJ/xNu3j2QVPiT7
-         St0qj56oq4RxyXOi06c34JgTDw7xCxGBt1oie2B7XK1ZtJlEYa0EfqMG/Ajk5oKJlY9P
-         XcDw==
-X-Gm-Message-State: AOAM531whNow57ZdpvD5DRLcbMMPepxVaL+k7+rQtzvZwofIWt5bz/1q
-        ktnJm9r/ij8scewyGajrplo=
-X-Google-Smtp-Source: ABdhPJysyulOMFIght1NBUcVM17BPiD0U7rWRdhNqg3HjTR6tgv0+TuOhPc8khXtzmCcRyHjFEnNpg==
-X-Received: by 2002:a05:600c:4f95:b0:39c:7bd0:d47d with SMTP id n21-20020a05600c4f9500b0039c7bd0d47dmr13254453wmq.17.1655108811530;
-        Mon, 13 Jun 2022 01:26:51 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id z2-20020a5d4c82000000b0020c5253d8fcsm9296108wrs.72.2022.06.13.01.26.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Jun 2022 01:26:50 -0700 (PDT)
-Message-ID: <670010a1-7727-f2d9-87ad-18ddbeb0cbef@kernel.org>
-Date:   Mon, 13 Jun 2022 10:26:49 +0200
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ykDR2Uk4CbOQ3wM0PXuQC4oxDGLqvfs6LYo+jnOevDY=;
+        b=3P1m9YfX4RIxuLt/BbnpRmB/a8JMSauUg1oZNd6QTdF7p9kTkuVuzaM2SP0Mm7SU6s
+         E/x47VNcQJh0uHlLfOazPCvDZx+da/QgkJ08QFpSf90ghifRdbTsFxz0V1Mqdj3Q04DK
+         1WfDGyCHUckwkon9UuKUck22iHHc3He3rrwrGPuPuq9qT/R4cSFkhQAZLCCOgxFo9CKb
+         IV5D62nfc82ddeXXAGDtwl7o9cWU+o+7AkMCkNGMFwjlli6p3/FYHAQy2GrcTLoil5lt
+         KVq4SzBv4JIwI71p3IFUzIGvwpuAKa83/SsnnsxBw5mmPeTo6oRWTaq63fE6XYzlvvzu
+         EiGw==
+X-Gm-Message-State: AOAM530/VFyya9vyNizRoMnnNXkiRWoLfksOGYJ6JTEExFcgZ81YUAOu
+        yfacD/B8NH+1lkeBqE0z+Sf/VSMuDjxpWg==
+X-Google-Smtp-Source: ABdhPJygjTGKX6O7iWUY8qOD+wjhd0VACZB/J2Z7QNA2jWpF+iXgT4YvK1K2bcNxt+9/tu+2hettsA==
+X-Received: by 2002:a05:6a00:2341:b0:51b:dd96:c7c1 with SMTP id j1-20020a056a00234100b0051bdd96c7c1mr53913886pfj.14.1655108895352;
+        Mon, 13 Jun 2022 01:28:15 -0700 (PDT)
+Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:79ca:e1d9:ad5:dc9e])
+        by smtp.gmail.com with ESMTPSA id br8-20020a056a00440800b00518a473265csm4624906pfb.217.2022.06.13.01.28.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 01:28:14 -0700 (PDT)
+From:   Hsin-Yi Wang <hsinyi@chromium.org>
+To:     Phillip Lougher <phillip@squashfs.org.uk>,
+        Matthew Wilcox <willy@infradead.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Xiongwei Song <Xiongwei.Song@windriver.com>,
+        Zheng Liang <zhengliang6@huawei.com>,
+        Zhang Yi <yi.zhang@huawei.com>, Hou Tao <houtao1@huawei.com>,
+        Miao Xie <miaoxie@huawei.com>,
+        "linux-mm @ kvack . org" <linux-mm@kvack.org>,
+        "squashfs-devel @ lists . sourceforge . net" 
+        <squashfs-devel@lists.sourceforge.net>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v6 3/3] squashfs: implement readahead
+Date:   Mon, 13 Jun 2022 16:28:02 +0800
+Message-Id: <20220613082802.1301238-4-hsinyi@chromium.org>
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+In-Reply-To: <20220613082802.1301238-1-hsinyi@chromium.org>
+References: <20220613082802.1301238-1-hsinyi@chromium.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v6 1/6] serial: 8250: make saved LSR larger
-Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        linux-serial@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Paul Cercueil <paul@crapouillou.net>,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Lukas Wunner <lukas.wunner@intel.com>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-References: <20220613075227.10394-1-ilpo.jarvinen@linux.intel.com>
- <20220613075227.10394-2-ilpo.jarvinen@linux.intel.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220613075227.10394-2-ilpo.jarvinen@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13. 06. 22, 9:52, Ilpo Järvinen wrote:
-> DW flags address received as BIT(8) in LSR. In order to not lose that
-> on read, enlarge lsr_saved_flags to u16.
-> 
-> Adjust lsr/status variables and related call chains which used unsigned
-> char type previously to unsigned int. Technically, some of these type
-> conversion would not be needed but it doesn't hurt to be consistent.
-> 
-> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-...
-> --- a/include/linux/serial_8250.h
-> +++ b/include/linux/serial_8250.h
-> @@ -119,7 +119,7 @@ struct uart_8250_port {
->   	 * be immediately processed.
->   	 */
->   #define LSR_SAVE_FLAGS UART_LSR_BRK_ERROR_BITS
-> -	unsigned char		lsr_saved_flags;
-> +	u16			lsr_saved_flags;
->   #define MSR_SAVE_FLAGS UART_MSR_ANY_DELTA
->   	unsigned char		msr_saved_flags;
->   
-> @@ -170,8 +170,8 @@ extern void serial8250_do_set_divisor(struct uart_port *port, unsigned int baud,
->   				      unsigned int quot_frac);
->   extern int fsl8250_handle_irq(struct uart_port *port);
->   int serial8250_handle_irq(struct uart_port *port, unsigned int iir);
-> -unsigned char serial8250_rx_chars(struct uart_8250_port *up, unsigned char lsr);
-> -void serial8250_read_char(struct uart_8250_port *up, unsigned char lsr);
-> +unsigned int serial8250_rx_chars(struct uart_8250_port *up, unsigned int lsr);
-> +void serial8250_read_char(struct uart_8250_port *up, unsigned int lsr);
+Implement readahead callback for squashfs. It will read datablocks
+which cover pages in readahead request. For a few cases it will
+not mark page as uptodate, including:
+- file end is 0.
+- zero filled blocks.
+- current batch of pages isn't in the same datablock.
+- decompressor error.
+Otherwise pages will be marked as uptodate. The unhandled pages will be
+updated by readpage later.
 
-It looks odd to have
-   u16 lsr_saved_flags
-in the struct and
-   unsigned int lsr
-here and there. You wrote:
-   Technically, some of these type conversion would not be needed
-   but it doesn't hurt to be consistent
-But it looks like you actually made them a bit inconsistent. So why not 
-use u16 for everyone?
+Suggested-by: Matthew Wilcox <willy@infradead.org>
+Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
+Reported-by: Matthew Wilcox <willy@infradead.org>
+Reported-by: Phillip Lougher <phillip@squashfs.org.uk>
+Reported-by: Xiongwei Song <Xiongwei.Song@windriver.com>
+Reported-by: Andrew Morton <akpm@linux-foundation.org>
+---
+v5->v6:
+- use the new squashfs_page_actor_init_special() to handle short file
+  cases as well.
+- use memzero_page().
 
-thanks,
+v5:
+https://lore.kernel.org/lkml/20220606150305.1883410-4-hsinyi@chromium.org/
+v4:
+https://lore.kernel.org/lkml/20220601103922.1338320-4-hsinyi@chromium.org/
+v3:
+https://lore.kernel.org/lkml/20220523065909.883444-4-hsinyi@chromium.org/
+v2:
+https://lore.kernel.org/lkml/20220517082650.2005840-4-hsinyi@chromium.org/
+v1:
+https://lore.kernel.org/lkml/20220516105100.1412740-3-hsinyi@chromium.org/
+---
+ fs/squashfs/file.c | 92 +++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 91 insertions(+), 1 deletion(-)
+
+diff --git a/fs/squashfs/file.c b/fs/squashfs/file.c
+index 7f0904b203294..f0c64ee272d5d 100644
+--- a/fs/squashfs/file.c
++++ b/fs/squashfs/file.c
+@@ -39,6 +39,7 @@
+ #include "squashfs_fs_sb.h"
+ #include "squashfs_fs_i.h"
+ #include "squashfs.h"
++#include "page_actor.h"
+ 
+ /*
+  * Locate cache slot in range [offset, index] for specified inode.  If
+@@ -496,7 +497,96 @@ static int squashfs_read_folio(struct file *file, struct folio *folio)
+ 	return res;
+ }
+ 
++static void squashfs_readahead(struct readahead_control *ractl)
++{
++	struct inode *inode = ractl->mapping->host;
++	struct squashfs_sb_info *msblk = inode->i_sb->s_fs_info;
++	size_t mask = (1UL << msblk->block_log) - 1;
++	unsigned short shift = msblk->block_log - PAGE_SHIFT;
++	loff_t start = readahead_pos(ractl) & ~mask;
++	size_t len = readahead_length(ractl) + readahead_pos(ractl) - start;
++	struct squashfs_page_actor *actor;
++	unsigned int nr_pages = 0;
++	struct page **pages;
++	int i, file_end = i_size_read(inode) >> msblk->block_log;
++	unsigned int max_pages = 1UL << shift;
++
++	readahead_expand(ractl, start, (len | mask) + 1);
++
++	if (file_end == 0)
++		return;
++
++	pages = kmalloc_array(max_pages, sizeof(void *), GFP_KERNEL);
++	if (!pages)
++		return;
++
++	for (;;) {
++		pgoff_t index;
++		int res, bsize;
++		u64 block = 0;
++		unsigned int expected;
++
++		nr_pages = __readahead_batch(ractl, pages, max_pages);
++		if (!nr_pages)
++			break;
++
++		if (readahead_pos(ractl) >= i_size_read(inode))
++			goto skip_pages;
++
++		index = pages[0]->index >> shift;
++		if ((pages[nr_pages - 1]->index >> shift) != index)
++			goto skip_pages;
++
++		expected = index == file_end ?
++			   (i_size_read(inode) & (msblk->block_size - 1)) :
++			    msblk->block_size;
++
++		bsize = read_blocklist(inode, index, &block);
++		if (bsize == 0)
++			goto skip_pages;
++
++		actor = squashfs_page_actor_init_special(msblk, pages, nr_pages,
++							 expected);
++		if (!actor)
++			goto skip_pages;
++
++		res = squashfs_read_data(inode->i_sb, block, bsize, NULL, actor);
++
++		kfree(actor);
++
++		if (res == expected) {
++			int bytes;
++
++			/* Last page (if present) may have trailing bytes not filled */
++			bytes = res % PAGE_SIZE;
++			if (pages[nr_pages - 1]->index == file_end && bytes)
++				memzero_page(pages[nr_pages - 1], bytes,
++					     PAGE_SIZE - bytes);
++
++			for (i = 0; i < nr_pages; i++) {
++				flush_dcache_page(pages[i]);
++				SetPageUptodate(pages[i]);
++			}
++		}
++
++		for (i = 0; i < nr_pages; i++) {
++			unlock_page(pages[i]);
++			put_page(pages[i]);
++		}
++	}
++
++	kfree(pages);
++	return;
++
++skip_pages:
++	for (i = 0; i < nr_pages; i++) {
++		unlock_page(pages[i]);
++		put_page(pages[i]);
++	}
++	kfree(pages);
++}
+ 
+ const struct address_space_operations squashfs_aops = {
+-	.read_folio = squashfs_read_folio
++	.read_folio = squashfs_read_folio,
++	.readahead = squashfs_readahead
+ };
 -- 
-js
-suse labs
+2.36.1.476.g0c4daa206d-goog
+
