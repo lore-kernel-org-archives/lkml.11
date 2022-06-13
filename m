@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC142CCA495
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:31:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BA1BCCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:32:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385562AbiFMObg (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:31:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52794 "EHLO
+        id S241383AbiFMOcJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 10:32:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384437AbiFMOZ1 (ORCPT
+        with ESMTP id S1384150AbiFMO24 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:25:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0526149C9D;
-        Mon, 13 Jun 2022 04:47:05 -0700 (PDT)
+        Mon, 13 Jun 2022 10:28:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A68C4551D;
+        Mon, 13 Jun 2022 04:47:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5685F613F9;
-        Mon, 13 Jun 2022 11:47:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63DDAC34114;
-        Mon, 13 Jun 2022 11:47:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8D7E5B80D3A;
+        Mon, 13 Jun 2022 11:47:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E31C2C34114;
+        Mon, 13 Jun 2022 11:47:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120823;
-        bh=tbsBjKqvCokBZRsF7bu0vr3QAcJFbcOcF4t0Z/UWIyw=;
+        s=korg; t=1655120851;
+        bh=voYXGHQ0EmEGqrT//5SsbK1zE1x2gYhf/na/v6VV+DU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jqWs7AtXC++y8pqrrkT3g9hZ8ZOcNdcdqmfhKfb1Z7MzujUArf9qR33J/mMuH4FI1
-         kI/TsxddmiF0cFLgSFn/JTWNZFNvcdCZzA5fpu1AOhGwwMmpcVdtC7CWYDpEiOqsbs
-         ykiYmwafSY9OoiwY0OPVmJJ4cG5lx3o1zj6+yfb0=
+        b=pbGKByjn+P4iAA9FBEfxoO7dzhAXd6Ffw1COcvBtOUATA68blsXsE16JiWolR2Gh2
+         wNmv7MIsmyqlCVKSF3Blh4LoLqXLpTXrLpUnvsZRCkqj92Y5jRAgFpnpm+abQBrNml
+         GqQE5g+IzdLIfVikVmP1Wl9Lrt0zw7Vwo8UnAcHs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Ungerer <gerg@linux-m68k.org>,
+        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
+        NeilBrown <neilb@suse.de>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 146/298] m68knommu: fix undefined reference to `_init_sp
-Date:   Mon, 13 Jun 2022 12:10:40 +0200
-Message-Id: <20220613094929.367481398@linuxfoundation.org>
+Subject: [PATCH 5.17 181/298] SUNRPC: Fix the calculation of xdr->end in xdr_get_next_encode_buffer()
+Date:   Mon, 13 Jun 2022 12:11:15 +0200
+Message-Id: <20220613094930.422317056@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -51,41 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Greg Ungerer <gerg@linux-m68k.org>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-[ Upstream commit a71b9e66fee47c59b3ec34e652b5c23bc6550794 ]
+[ Upstream commit 6c254bf3b637dd4ef4f78eb78c7447419c0161d7 ]
 
-When configuring a nommu classic m68k system enabling the uboot parameter
-passing support (CONFIG_UBOOT) will produce the following compile error:
+I found that NFSD's new NFSv3 READDIRPLUS XDR encoder was screwing up
+right at the end of the page array. xdr_get_next_encode_buffer() does
+not compute the value of xdr->end correctly:
 
-   m68k-linux-ld: arch/m68k/kernel/uboot.o: in function `process_uboot_commandline':
-   uboot.c:(.init.text+0x32): undefined reference to `_init_sp'
+ * The check to see if we're on the final available page in xdr->buf
+   needs to account for the space consumed by @nbytes.
 
-The logic to support this option is only used on ColdFire based platforms
-(in its head.S startup code). So make the selection of this option
-depend on building for a ColdFire based platform.
+ * The new xdr->end value needs to account for the portion of @nbytes
+   that is to be encoded into the previous buffer.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
+Fixes: 2825a7f90753 ("nfsd4: allow encoding across page boundaries")
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Reviewed-by: NeilBrown <neilb@suse.de>
+Reviewed-by: J. Bruce Fields <bfields@fieldses.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/m68k/Kconfig.machine | 1 +
- 1 file changed, 1 insertion(+)
+ net/sunrpc/xdr.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/arch/m68k/Kconfig.machine b/arch/m68k/Kconfig.machine
-index eeab4f3e6c19..946853a08502 100644
---- a/arch/m68k/Kconfig.machine
-+++ b/arch/m68k/Kconfig.machine
-@@ -335,6 +335,7 @@ comment "Machine Options"
- 
- config UBOOT
- 	bool "Support for U-Boot command line parameters"
-+	depends on COLDFIRE
- 	help
- 	  If you say Y here kernel will try to collect command
- 	  line parameters from the initial u-boot stack.
+diff --git a/net/sunrpc/xdr.c b/net/sunrpc/xdr.c
+index df194cc07035..b57cf9df4de8 100644
+--- a/net/sunrpc/xdr.c
++++ b/net/sunrpc/xdr.c
+@@ -979,7 +979,11 @@ static __be32 *xdr_get_next_encode_buffer(struct xdr_stream *xdr,
+ 	 */
+ 	xdr->p = (void *)p + frag2bytes;
+ 	space_left = xdr->buf->buflen - xdr->buf->len;
+-	xdr->end = (void *)p + min_t(int, space_left, PAGE_SIZE);
++	if (space_left - nbytes >= PAGE_SIZE)
++		xdr->end = (void *)p + PAGE_SIZE;
++	else
++		xdr->end = (void *)p + space_left - frag1bytes;
++
+ 	xdr->buf->page_len += frag2bytes;
+ 	xdr->buf->len += nbytes;
+ 	return p;
 -- 
 2.35.1
 
