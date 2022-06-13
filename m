@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C22D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:24:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91F28C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:24:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349795AbiFMMYd (ORCPT
+        id S1351603AbiFMMYg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:24:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55382 "EHLO
+        Mon, 13 Jun 2022 08:24:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354125AbiFMMVW (ORCPT
+        with ESMTP id S1351517AbiFMMW0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:21:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 599A857998;
-        Mon, 13 Jun 2022 04:03:27 -0700 (PDT)
+        Mon, 13 Jun 2022 08:22:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF500579BD;
+        Mon, 13 Jun 2022 04:03:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 49A6F61347;
-        Mon, 13 Jun 2022 11:03:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C78DC34114;
-        Mon, 13 Jun 2022 11:03:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DF7F614A8;
+        Mon, 13 Jun 2022 11:03:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 260ADC34114;
+        Mon, 13 Jun 2022 11:03:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118205;
-        bh=MoPOMp3HkRc27P0VlZQzSm3a57AYXjopJQxk/auGAOo=;
+        s=korg; t=1655118208;
+        bh=ZjjU0/dkLm5kXM0wvK8rlULMZPZvcNcrfRe3LCRpX7M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MlxIukFBDqitWfiX0bekp5itenfY+vzUq67n3wWkNnNOs46mRdE2/nhZuf2DirwgU
-         HoBwqH3Qxt3VzJmBIfu84YVMYMOJodV0aBKwCVyI6OdDRnz4XlVmxutuuU1+QlUq2G
-         QauDwKIuUQRAOdnZpzViXSw5x4gF473059aDe5xw=
+        b=tkWsrtNaPi/yQSnEB1662H17Ty8RBT87qLZ92jjJ8dD1j8KJJ8QwfQKDqt0pdEYKu
+         J+0NVmLjLYdyZ9zalEFMWOcVbe34pjizfGH2pcfPKoaSyim3gURXm3Jp2hBv2q1xIH
+         /QRIOfBtkN8b9Wr9NDjj+bC9grazLDal+5F6zcaY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michal Kubecek <mkubecek@suse.cz>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
+        stable@vger.kernel.org, Venky Shankar <vshankar@redhat.com>,
+        Xiubo Li <xiubli@redhat.com>,
+        Ilya Dryomov <idryomov@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 266/287] Revert "net: af_key: add check for pfkey_broadcast in function pfkey_process"
-Date:   Mon, 13 Jun 2022 12:11:30 +0200
-Message-Id: <20220613094932.069549506@linuxfoundation.org>
+Subject: [PATCH 4.19 267/287] ceph: allow ceph.dir.rctime xattr to be updatable
+Date:   Mon, 13 Jun 2022 12:11:31 +0200
+Message-Id: <20220613094932.099299261@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -50,57 +51,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michal Kubecek <mkubecek@suse.cz>
+From: Venky Shankar <vshankar@redhat.com>
 
-[ Upstream commit 9c90c9b3e50e16d03c7f87d63e9db373974781e0 ]
+[ Upstream commit d7a2dc523085f8b8c60548ceedc696934aefeb0e ]
 
-This reverts commit 4dc2a5a8f6754492180741facf2a8787f2c415d7.
+`rctime' has been a pain point in cephfs due to its buggy
+nature - inconsistent values reported and those sorts.
+Fixing rctime is non-trivial needing an overall redesign
+of the entire nested statistics infrastructure.
 
-A non-zero return value from pfkey_broadcast() does not necessarily mean
-an error occurred as this function returns -ESRCH when no registered
-listener received the message. In particular, a call with
-BROADCAST_PROMISC_ONLY flag and null one_sk argument can never return
-zero so that this commit in fact prevents processing any PF_KEY message.
-One visible effect is that racoon daemon fails to find encryption
-algorithms like aes and refuses to start.
+As a workaround, PR
 
-Excluding -ESRCH return value would fix this but it's not obvious that
-we really want to bail out here and most other callers of
-pfkey_broadcast() also ignore the return value. Also, as pointed out by
-Steffen Klassert, PF_KEY is kind of deprecated and newer userspace code
-should use netlink instead so that we should only disturb the code for
-really important fixes.
+     http://github.com/ceph/ceph/pull/37938
 
-v2: add a comment explaining why is the return value ignored
+allows this extended attribute to be manually set. This allows
+users to "fixup" inconsistent rctime values. While this sounds
+messy, its probably the wisest approach allowing users/scripts
+to workaround buggy rctime values.
 
-Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+The above PR enables Ceph MDS to allow manually setting
+rctime extended attribute with the corresponding user-land
+changes. We may as well allow the same to be done via kclient
+for parity.
+
+Signed-off-by: Venky Shankar <vshankar@redhat.com>
+Reviewed-by: Xiubo Li <xiubli@redhat.com>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/key/af_key.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ fs/ceph/xattr.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index 1bbb6ec89ff3..af67e0d265c0 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -2836,10 +2836,12 @@ static int pfkey_process(struct sock *sk, struct sk_buff *skb, const struct sadb
- 	void *ext_hdrs[SADB_EXT_MAX];
- 	int err;
- 
--	err = pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
--			      BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
--	if (err)
--		return err;
-+	/* Non-zero return value of pfkey_broadcast() does not always signal
-+	 * an error and even on an actual error we may still want to process
-+	 * the message so rather ignore the return value.
-+	 */
-+	pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
-+			BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
- 
- 	memset(ext_hdrs, 0, sizeof(ext_hdrs));
- 	err = parse_exthdrs(skb, hdr, ext_hdrs);
+diff --git a/fs/ceph/xattr.c b/fs/ceph/xattr.c
+index a09ce27ab220..6fa9a784676b 100644
+--- a/fs/ceph/xattr.c
++++ b/fs/ceph/xattr.c
+@@ -273,6 +273,14 @@ static size_t ceph_vxattrcb_quota_max_files(struct ceph_inode_info *ci,
+ 	}
+ #define XATTR_RSTAT_FIELD(_type, _name)			\
+ 	XATTR_NAME_CEPH(_type, _name, VXATTR_FLAG_RSTAT)
++#define XATTR_RSTAT_FIELD_UPDATABLE(_type, _name)			\
++	{								\
++		.name = CEPH_XATTR_NAME(_type, _name),			\
++		.name_size = sizeof (CEPH_XATTR_NAME(_type, _name)),	\
++		.getxattr_cb = ceph_vxattrcb_ ## _type ## _ ## _name,	\
++		.exists_cb = NULL,					\
++		.flags = VXATTR_FLAG_RSTAT,				\
++	}
+ #define XATTR_LAYOUT_FIELD(_type, _name, _field)			\
+ 	{								\
+ 		.name = CEPH_XATTR_NAME2(_type, _name, _field),	\
+@@ -310,7 +318,7 @@ static struct ceph_vxattr ceph_dir_vxattrs[] = {
+ 	XATTR_RSTAT_FIELD(dir, rfiles),
+ 	XATTR_RSTAT_FIELD(dir, rsubdirs),
+ 	XATTR_RSTAT_FIELD(dir, rbytes),
+-	XATTR_RSTAT_FIELD(dir, rctime),
++	XATTR_RSTAT_FIELD_UPDATABLE(dir, rctime),
+ 	{
+ 		.name = "ceph.quota",
+ 		.name_size = sizeof("ceph.quota"),
 -- 
 2.35.1
 
