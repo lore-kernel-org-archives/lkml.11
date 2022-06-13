@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3874C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:07:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB3D3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:07:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351250AbiFMLHI (ORCPT
+        id S1351339AbiFMLHN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:07:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57664 "EHLO
+        Mon, 13 Jun 2022 07:07:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351066AbiFMK7J (ORCPT
+        with ESMTP id S1349439AbiFMK5M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:59:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C3652612E;
-        Mon, 13 Jun 2022 03:32:45 -0700 (PDT)
+        Mon, 13 Jun 2022 06:57:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D144E255B9;
+        Mon, 13 Jun 2022 03:32:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 67BADB80E94;
-        Mon, 13 Jun 2022 10:32:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96438C34114;
-        Mon, 13 Jun 2022 10:32:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1037E60FED;
+        Mon, 13 Jun 2022 10:32:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C713C341C6;
+        Mon, 13 Jun 2022 10:32:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116362;
-        bh=Rj0CiQQ29Z8w5a5VkjUKJyJKpDxyKeVJ10N2BTko0zY=;
+        s=korg; t=1655116331;
+        bh=0vLOqckxqz6FAn6Yj85sK+G/Bi0voXu2VUuWxkW7Bm4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IXLlMBny/pgj1v7v23F8LEBxr4432m/Ky5wK/igkWpJjoBtE6tmPAsY8xA91fyKLK
-         erDrhRt3x44kTfcU+Po6hvCRUbKQiCdvLPUqMYmmQT4ZG1OzOeVmMJfJ51SmnlnRMC
-         g2rxsCxGS6IkyObKckooF8V7YzXelULejPRMNFx0=
+        b=Y3wmDUj5mf5ArAmMqrwKLwTU0uFLndtj4ioKHdBtrpzruUBWng6bTmEsV9OtbIOGs
+         +eJV2j2r9zyD+ZCTEgueBjKUIY4Ysf6WOOTIJTKggk36k1VLqOtt4NFgcJoPv8ggAd
+         UXQ4itqnTzYVia+6jgMM3B86lohCyYyAd6u/itdw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 063/411] IB/rdmavt: add missing locks in rvt_ruc_loopback
-Date:   Mon, 13 Jun 2022 12:05:36 +0200
-Message-Id: <20220613094930.407473254@linuxfoundation.org>
+        stable@vger.kernel.org, Janusz Krzysztofik <jmkrzyszt@gmail.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 067/411] ARM: OMAP1: clock: Fix UART rate reporting algorithm
+Date:   Mon, 13 Jun 2022 12:05:40 +0200
+Message-Id: <20220613094930.526107885@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,62 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
 
-[ Upstream commit 22cbc6c2681a0a4fe76150270426e763d52353a4 ]
+[ Upstream commit 338d5d476cde853dfd97378d20496baabc2ce3c0 ]
 
-The documentation of the function rvt_error_qp says both r_lock and
-s_lock need to be held when calling that function.
-It also asserts using lockdep that both of those locks are held.
-rvt_error_qp is called form rvt_send_cq, which is called from
-rvt_qp_complete_swqe, which is called from rvt_send_complete, which is
-called from rvt_ruc_loopback in two places. Both of these places do not
-hold r_lock. Fix this by acquiring a spin_lock of r_lock in both of
-these places.
-The r_lock acquiring cannot be added in rvt_qp_complete_swqe because
-some of its other callers already have r_lock acquired.
+Since its introduction to the mainline kernel, omap1_uart_recalc() helper
+makes incorrect use of clk->enable_bit as a ready to use bitmap mask while
+it only provides the bit number.  Fix it.
 
-Link: https://lore.kernel.org/r/20220228195144.71946-1-dossche.niels@gmail.com
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+Acked-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/sw/rdmavt/qp.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ arch/arm/mach-omap1/clock.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/sw/rdmavt/qp.c b/drivers/infiniband/sw/rdmavt/qp.c
-index 48e8612c1bc8..e97c13967174 100644
---- a/drivers/infiniband/sw/rdmavt/qp.c
-+++ b/drivers/infiniband/sw/rdmavt/qp.c
-@@ -2812,7 +2812,7 @@ void rvt_qp_iter(struct rvt_dev_info *rdi,
- EXPORT_SYMBOL(rvt_qp_iter);
+diff --git a/arch/arm/mach-omap1/clock.c b/arch/arm/mach-omap1/clock.c
+index bd5be82101f3..d89bda12bf3c 100644
+--- a/arch/arm/mach-omap1/clock.c
++++ b/arch/arm/mach-omap1/clock.c
+@@ -41,7 +41,7 @@ static DEFINE_SPINLOCK(clockfw_lock);
+ unsigned long omap1_uart_recalc(struct clk *clk)
+ {
+ 	unsigned int val = __raw_readl(clk->enable_reg);
+-	return val & clk->enable_bit ? 48000000 : 12000000;
++	return val & 1 << clk->enable_bit ? 48000000 : 12000000;
+ }
  
- /*
-- * This should be called with s_lock held.
-+ * This should be called with s_lock and r_lock held.
-  */
- void rvt_send_complete(struct rvt_qp *qp, struct rvt_swqe *wqe,
- 		       enum ib_wc_status status)
-@@ -3171,7 +3171,9 @@ void rvt_ruc_loopback(struct rvt_qp *sqp)
- 	rvp->n_loop_pkts++;
- flush_send:
- 	sqp->s_rnr_retry = sqp->s_rnr_retry_cnt;
-+	spin_lock(&sqp->r_lock);
- 	rvt_send_complete(sqp, wqe, send_status);
-+	spin_unlock(&sqp->r_lock);
- 	if (local_ops) {
- 		atomic_dec(&sqp->local_ops_pending);
- 		local_ops = 0;
-@@ -3225,7 +3227,9 @@ void rvt_ruc_loopback(struct rvt_qp *sqp)
- 	spin_unlock_irqrestore(&qp->r_lock, flags);
- serr_no_r_lock:
- 	spin_lock_irqsave(&sqp->s_lock, flags);
-+	spin_lock(&sqp->r_lock);
- 	rvt_send_complete(sqp, wqe, send_status);
-+	spin_unlock(&sqp->r_lock);
- 	if (sqp->ibqp.qp_type == IB_QPT_RC) {
- 		int lastwqe;
- 
+ unsigned long omap1_sossi_recalc(struct clk *clk)
 -- 
 2.35.1
 
