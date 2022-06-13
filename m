@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72005C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:57:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EBB7C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:57:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357775AbiFML5d (ORCPT
+        id S1357808AbiFML5k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:57:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57146 "EHLO
+        Mon, 13 Jun 2022 07:57:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356608AbiFMLuq (ORCPT
+        with ESMTP id S1356606AbiFMLuq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:50:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB5982EA1D;
-        Mon, 13 Jun 2022 03:54:35 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85602248FF;
+        Mon, 13 Jun 2022 03:54:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 49089B80E07;
-        Mon, 13 Jun 2022 10:54:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABF5AC34114;
-        Mon, 13 Jun 2022 10:54:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 22C1760EFE;
+        Mon, 13 Jun 2022 10:54:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3284CC34114;
+        Mon, 13 Jun 2022 10:54:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117673;
-        bh=9AWYvwpbknsiS/4G3LdwateIgFBMMn2KK4bA6s5Ljp4=;
+        s=korg; t=1655117667;
+        bh=HE9pJc3MBTefg0BQ/7370zg4d3v6Fos68pQ6N+Ze2nE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JjRHauKRKgo8Ps79MZsvxT0YQ/h4CTKFTtNNYndNw7en94yeDQDAH47yp6SJMok8u
-         ZmxYF110rbkLCsa/3a2HSDG92nf7y+ncblTF4OljNLPV1jX+fVj5QjuxmskDq5ndOq
-         Q6ZYCvymb6rfbPW4NFVh+0UADQPIOPXybysaG+78=
+        b=sUPpVymLc2gBtRR1tf6U4R3ZhX3pzps4tGaE6TiT/bkexZuDjp2rjxD658Te+q5v/
+         ZuHInQnggfwbqx61BCkfDynz/ImRyC/cdwwK7xNDPC5OO1a36gr1bBDHz9MmPPMkd7
+         OAopJ++n9gjpRZ2tJMvHMEUx9SnMsf1A+pNSwEoc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 090/287] drm/msm: return an error pointer in msm_gem_prime_get_sg_table()
-Date:   Mon, 13 Jun 2022 12:08:34 +0200
-Message-Id: <20220613094926.606886535@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Olivier Matz <olivier.matz@6wind.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 5.4 406/411] ixgbe: fix bcast packets Rx on VF after promisc removal
+Date:   Mon, 13 Jun 2022 12:11:19 +0200
+Message-Id: <20220613094940.996158736@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
-References: <20220613094923.832156175@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,40 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Olivier Matz <olivier.matz@6wind.com>
 
-[ Upstream commit cf575e31611eb6dccf08fad02e57e35b2187704d ]
+commit 803e9895ea2b0fe80bc85980ae2d7a7e44037914 upstream.
 
-The msm_gem_prime_get_sg_table() needs to return error pointers on
-error.  This is called from drm_gem_map_dma_buf() and returning a
-NULL will lead to a crash in that function.
+After a VF requested to remove the promiscuous flag on an interface, the
+broadcast packets are not received anymore. This breaks some protocols
+like ARP.
 
-Fixes: ac45146733b0 ("drm/msm: fix msm_gem_prime_get_sg_table()")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/485023/
-Link: https://lore.kernel.org/r/YnOmtS5tfENywR9m@kili
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+In ixgbe_update_vf_xcast_mode(), we should keep the IXGBE_VMOLR_BAM
+bit (Broadcast Accept) on promiscuous removal.
+
+This flag is already set by default in ixgbe_set_vmolr() on VF reset.
+
+Fixes: 8443c1a4b192 ("ixgbe, ixgbevf: Add new mbox API xcast mode")
+Cc: stable@vger.kernel.org
+Cc: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Signed-off-by: Olivier Matz <olivier.matz@6wind.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/msm/msm_gem_prime.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/msm_gem_prime.c b/drivers/gpu/drm/msm/msm_gem_prime.c
-index 13403c6da6c7..7e4664968106 100644
---- a/drivers/gpu/drm/msm/msm_gem_prime.c
-+++ b/drivers/gpu/drm/msm/msm_gem_prime.c
-@@ -26,7 +26,7 @@ struct sg_table *msm_gem_prime_get_sg_table(struct drm_gem_object *obj)
- 	int npages = obj->size >> PAGE_SHIFT;
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
+@@ -1157,9 +1157,9 @@ static int ixgbe_update_vf_xcast_mode(st
  
- 	if (WARN_ON(!msm_obj->pages))  /* should have already pinned! */
--		return NULL;
-+		return ERR_PTR(-ENOMEM);
- 
- 	return drm_prime_pages_to_sg(msm_obj->pages, npages);
- }
--- 
-2.35.1
-
+ 	switch (xcast_mode) {
+ 	case IXGBEVF_XCAST_MODE_NONE:
+-		disable = IXGBE_VMOLR_BAM | IXGBE_VMOLR_ROMPE |
++		disable = IXGBE_VMOLR_ROMPE |
+ 			  IXGBE_VMOLR_MPE | IXGBE_VMOLR_UPE | IXGBE_VMOLR_VPE;
+-		enable = 0;
++		enable = IXGBE_VMOLR_BAM;
+ 		break;
+ 	case IXGBEVF_XCAST_MODE_MULTI:
+ 		disable = IXGBE_VMOLR_MPE | IXGBE_VMOLR_UPE | IXGBE_VMOLR_VPE;
 
 
