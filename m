@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1733AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:35:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63292C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:35:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377900AbiFMNfj (ORCPT
+        id S1377909AbiFMNfm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:35:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51940 "EHLO
+        Mon, 13 Jun 2022 09:35:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378668AbiFMNb5 (ORCPT
+        with ESMTP id S1378712AbiFMNcC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:31:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59814719CD;
-        Mon, 13 Jun 2022 04:26:28 -0700 (PDT)
+        Mon, 13 Jun 2022 09:32:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 882EB719F5;
+        Mon, 13 Jun 2022 04:26:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C74A60F18;
-        Mon, 13 Jun 2022 11:26:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACFBDC3411C;
-        Mon, 13 Jun 2022 11:26:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1235CB80E59;
+        Mon, 13 Jun 2022 11:26:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67862C34114;
+        Mon, 13 Jun 2022 11:26:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119587;
-        bh=rCSIA7RsX1fxH+QSFK64nbPN6ho0+M4zZF4daOD5wXg=;
+        s=korg; t=1655119589;
+        bh=rc1qJxIc+5g16Bihj4I702HMC+qtROUwShXb0CBt2RA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1FHFyxWCKFEGeAwdDJmuXRqnTTxmghhmEZ3e/H04Je7yYrq7EfAZR7E1DKswPPRRp
-         twl/rw3m9pQG8TNQrIPY03q3WQz+BWeWlXUbDjNVTz6vY00I1U7UpmS5iLFLIG5H8X
-         cE6h6a04KFZVU8KBz8miAR+GDeaeR0nkfnl6phAI=
+        b=i/hsO7d2Q4jW8PYJYqOonSRsCazCvGsZ2Iv/dgmle49TBtsekuA/E2Yk18F9JEf3Z
+         4MxlBtKIXAmDJ+NETVpanAxYnCo7h2FgARny3ivKfW9orFfLBuIryiJH145G0ckGgW
+         SNynkAtk8sGRL43srbf8fdlBUb466phRvzj66Gjs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
-        Guenter Roeck <linux@roeck-us.net>,
         Geert Uytterhoeven <geert+renesas@glider.be>,
+        Guenter Roeck <linux@roeck-us.net>,
         Wim Van Sebroeck <wim@linux-watchdog.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 047/339] watchdog: rzg2l_wdt: Fix 32bit overflow issue
-Date:   Mon, 13 Jun 2022 12:07:52 +0200
-Message-Id: <20220613094927.950446747@linuxfoundation.org>
+Subject: [PATCH 5.18 048/339] watchdog: rzg2l_wdt: Fix Runtime PM usage
+Date:   Mon, 13 Jun 2022 12:07:53 +0200
+Message-Id: <20220613094927.980856236@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -54,43 +54,76 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Biju Das <biju.das.jz@bp.renesas.com>
 
-[ Upstream commit ea2949df22a533cdf75e4583c00b1ce94cd5a83b ]
+[ Upstream commit 95abafe76297fa057de6c3486ef844bd446bdf18 ]
 
-The value of timer_cycle_us can be 0 due to 32bit overflow.
-For eg:- If we assign the counter value "0xfff" for computing
-maxval.
-
-This patch fixes this issue by appending ULL to 1024, so that
-it is promoted to 64bit.
-
-This patch also fixes the warning message, 'watchdog: Invalid min and
-max timeout values, resetting to 0!'.
+Both rzg2l_wdt_probe() and rzg2l_wdt_start() calls pm_runtime_get() which
+results in a usage counter imbalance. This patch fixes this issue by
+removing pm_runtime_get() call from probe.
 
 Fixes: 2cbc5cd0b55fa2 ("watchdog: Add Watchdog Timer driver for RZ/G2L")
 Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
 Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/20220225175320.11041-2-biju.das.jz@bp.renesas.com
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Link: https://lore.kernel.org/r/20220225175320.11041-3-biju.das.jz@bp.renesas.com
 Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/watchdog/rzg2l_wdt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/watchdog/rzg2l_wdt.c | 16 ++--------------
+ 1 file changed, 2 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/watchdog/rzg2l_wdt.c b/drivers/watchdog/rzg2l_wdt.c
-index 6b426df34fd6..96f2a018ab62 100644
+index 96f2a018ab62..0fc73b8a9567 100644
 --- a/drivers/watchdog/rzg2l_wdt.c
 +++ b/drivers/watchdog/rzg2l_wdt.c
-@@ -53,7 +53,7 @@ static void rzg2l_wdt_wait_delay(struct rzg2l_wdt_priv *priv)
+@@ -151,12 +151,11 @@ static const struct watchdog_ops rzg2l_wdt_ops = {
+ 	.restart = rzg2l_wdt_restart,
+ };
  
- static u32 rzg2l_wdt_get_cycle_usec(unsigned long cycle, u32 wdttime)
+-static void rzg2l_wdt_reset_assert_pm_disable_put(void *data)
++static void rzg2l_wdt_reset_assert_pm_disable(void *data)
  {
--	u64 timer_cycle_us = 1024 * 1024 * (wdttime + 1) * MICRO;
-+	u64 timer_cycle_us = 1024 * 1024ULL * (wdttime + 1) * MICRO;
+ 	struct watchdog_device *wdev = data;
+ 	struct rzg2l_wdt_priv *priv = watchdog_get_drvdata(wdev);
  
- 	return div64_ul(timer_cycle_us, cycle);
+-	pm_runtime_put(wdev->parent);
+ 	pm_runtime_disable(wdev->parent);
+ 	reset_control_assert(priv->rstc);
  }
+@@ -206,11 +205,6 @@ static int rzg2l_wdt_probe(struct platform_device *pdev)
+ 
+ 	reset_control_deassert(priv->rstc);
+ 	pm_runtime_enable(&pdev->dev);
+-	ret = pm_runtime_resume_and_get(&pdev->dev);
+-	if (ret < 0) {
+-		dev_err(dev, "pm_runtime_resume_and_get failed ret=%pe", ERR_PTR(ret));
+-		goto out_pm_get;
+-	}
+ 
+ 	priv->wdev.info = &rzg2l_wdt_ident;
+ 	priv->wdev.ops = &rzg2l_wdt_ops;
+@@ -222,7 +216,7 @@ static int rzg2l_wdt_probe(struct platform_device *pdev)
+ 
+ 	watchdog_set_drvdata(&priv->wdev, priv);
+ 	ret = devm_add_action_or_reset(&pdev->dev,
+-				       rzg2l_wdt_reset_assert_pm_disable_put,
++				       rzg2l_wdt_reset_assert_pm_disable,
+ 				       &priv->wdev);
+ 	if (ret < 0)
+ 		return ret;
+@@ -235,12 +229,6 @@ static int rzg2l_wdt_probe(struct platform_device *pdev)
+ 		dev_warn(dev, "Specified timeout invalid, using default");
+ 
+ 	return devm_watchdog_register_device(&pdev->dev, &priv->wdev);
+-
+-out_pm_get:
+-	pm_runtime_disable(dev);
+-	reset_control_assert(priv->rstc);
+-
+-	return ret;
+ }
+ 
+ static const struct of_device_id rzg2l_wdt_ids[] = {
 -- 
 2.35.1
 
