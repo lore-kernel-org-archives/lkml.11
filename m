@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB302CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:13:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A127C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:13:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347696AbiFMMNF (ORCPT
+        id S1353227AbiFMMNI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:13:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59926 "EHLO
+        Mon, 13 Jun 2022 08:13:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358705AbiFMMHt (ORCPT
+        with ESMTP id S1358838AbiFMMIp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:07:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18503517D6;
-        Mon, 13 Jun 2022 04:00:12 -0700 (PDT)
+        Mon, 13 Jun 2022 08:08:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AFED51E6C;
+        Mon, 13 Jun 2022 04:00:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F47760F9A;
-        Mon, 13 Jun 2022 11:00:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AC44C34114;
-        Mon, 13 Jun 2022 11:00:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B4FCEB80E5E;
+        Mon, 13 Jun 2022 11:00:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16575C341C6;
+        Mon, 13 Jun 2022 11:00:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118011;
-        bh=Hw82Q2O+60JqvaowPdDALWlP3URJSO/5mCPrccD58/4=;
+        s=korg; t=1655118014;
+        bh=cpMk8xVrfIcPTt9lik83luCdwR0TAz+5Gcl5pjiojp4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JGMeSvrDAz2oOVKR1608hVABMm3MTcdJlJTy6e0LIbOHBMMMAUseztcp5QF0wkuFU
-         UKvLcSM8EwCvyBOPK4Z9D+bKvCO1ApzHyhk92qcza+y3UJoaB3FOS0VdQaYKCB00PD
-         bYWc2DYYsf5uOO455akbtODhxGOGUkQjx/g7Mr1k=
+        b=j2mYKcoth4nFKlFySVgAAwVsjfCjuJ9KjXClKHy7vGf6fIkNf3jjKxx21JCBqn86i
+         bodRhb6KrTbWAwEldeIjI9oguUyk/CPU+H+8hP3Lxsdyn6mUkY7/ujUlx9uy8HpqR8
+         phD3MYOqJD03GYYrOO7l4OYOvkuqtghd+i9mS08A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Erwan Le Ray <erwan.leray@st.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        stable@vger.kernel.org, Zheng Yongjun <zhengyongjun3@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 211/287] serial: stm32-usart: Correct CSIZE, bits, and parity
-Date:   Mon, 13 Jun 2022 12:10:35 +0200
-Message-Id: <20220613094930.260937525@linuxfoundation.org>
+Subject: [PATCH 4.19 198/287] usb: dwc3: pci: Fix pm_runtime_get_sync() error checking
+Date:   Mon, 13 Jun 2022 12:10:22 +0200
+Message-Id: <20220613094929.867058783@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -50,59 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+From: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-[ Upstream commit 1deeda8d2877c18bc2b9eeee10dd6d2628852848 ]
+[ Upstream commit a03e2ddab8e735e2cc315609b297b300e9cc60d2 ]
 
-Add CSIZE sanitization for unsupported CSIZE configurations. In
-addition, if parity is asked for but CSx was unsupported, the sensible
-result is CS8+parity which requires setting USART_CR1_M0 like with 9
-bits.
+If the device is already in a runtime PM enabled state
+pm_runtime_get_sync() will return 1, so a test for negative
+value should be used to check for errors.
 
-Incorrect CSIZE results in miscalculation of the frame bits in
-tty_get_char_size() or in its predecessor where the roughly the same
-code is directly within uart_update_timeout().
-
-Fixes: c8a9d043947b (serial: stm32: fix word length configuration)
-Cc: Erwan Le Ray <erwan.leray@st.com>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/20220519081808.3776-9-ilpo.jarvinen@linux.intel.com
+Fixes: 8eed00b237a28 ("usb: dwc3: pci: Runtime resume child device from wq")
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+Link: https://lore.kernel.org/r/20220422062652.10575-1-zhengyongjun3@huawei.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/stm32-usart.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ drivers/usb/dwc3/dwc3-pci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index ccaaf804df06..bb2f6f02ce23 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -688,13 +688,22 @@ static void stm32_set_termios(struct uart_port *port, struct ktermios *termios,
- 	 * CS8 or (CS7 + parity), 8 bits word aka [M1:M0] = 0b00
- 	 * M0 and M1 already cleared by cr1 initialization.
- 	 */
--	if (bits == 9)
-+	if (bits == 9) {
- 		cr1 |= USART_CR1_M0;
--	else if ((bits == 7) && cfg->has_7bits_data)
-+	} else if ((bits == 7) && cfg->has_7bits_data) {
- 		cr1 |= USART_CR1_M1;
--	else if (bits != 8)
-+	} else if (bits != 8) {
- 		dev_dbg(port->dev, "Unsupported data bits config: %u bits\n"
- 			, bits);
-+		cflag &= ~CSIZE;
-+		cflag |= CS8;
-+		termios->c_cflag = cflag;
-+		bits = 8;
-+		if (cflag & PARENB) {
-+			bits++;
-+			cr1 |= USART_CR1_M0;
-+		}
-+	}
+diff --git a/drivers/usb/dwc3/dwc3-pci.c b/drivers/usb/dwc3/dwc3-pci.c
+index ad2cb08b440f..527938eee846 100644
+--- a/drivers/usb/dwc3/dwc3-pci.c
++++ b/drivers/usb/dwc3/dwc3-pci.c
+@@ -205,7 +205,7 @@ static void dwc3_pci_resume_work(struct work_struct *work)
+ 	int ret;
  
- 	if (cflag & PARODD)
- 		cr1 |= USART_CR1_PS;
+ 	ret = pm_runtime_get_sync(&dwc3->dev);
+-	if (ret) {
++	if (ret < 0) {
+ 		pm_runtime_put_sync_autosuspend(&dwc3->dev);
+ 		return;
+ 	}
 -- 
 2.35.1
 
