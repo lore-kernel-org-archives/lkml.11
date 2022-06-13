@@ -2,81 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C1C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:11:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90345C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:11:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352671AbiFMMLi (ORCPT
+        id S1350755AbiFMMLr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:11:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59940 "EHLO
+        Mon, 13 Jun 2022 08:11:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359304AbiFMMFi (ORCPT
+        with ESMTP id S1359307AbiFMMFi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 08:05:38 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B407127169;
-        Mon, 13 Jun 2022 03:59:56 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDD89275D6;
+        Mon, 13 Jun 2022 03:59:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id C575A6601668;
-        Mon, 13 Jun 2022 11:59:53 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1655117995;
-        bh=SL7kBZsKi8cfowZu11mX4C6u+yfbALkOkOrY3sg1/m4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=N7lJBxk5oRQl32dnAZL7WlZ349h3f7sVa4Pt0rqM4HPOnbCE1sO2TrxzgpaoCqYP8
-         y1emnx9HTaEcC6nx0gjEotmDvSaW10SpZRjV9MmeSACIeWaHPCl3qVA4UerOQxjIxk
-         G24kUO0wwX57taOva4+sfbb5gJDH0w1M4tnqsmR7hUijxqR0YGlkpc3k7nIyGYREKb
-         v+WlDIY7A0zE39k1+qf8/1OAQipOZblftdsHvpVDkdWtEQ8NMCWOvZHWzAGLlDQ5A8
-         5oNY4HaPvnJ1Dx08bqdIybmpcp80jyX2HWAilXnMWd3tlfNIUkTuaGrLOi0yPDGpFv
-         hznKLqaa4UTXg==
-Message-ID: <4fb6af60-9997-2505-7d75-f09b376f027e@collabora.com>
-Date:   Mon, 13 Jun 2022 12:59:51 +0200
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2B94CB80D31;
+        Mon, 13 Jun 2022 10:59:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 802D4C3411C;
+        Mon, 13 Jun 2022 10:59:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655117994;
+        bh=3asobehzkVspHT8E/j84NOnaKjD3cMkdRZEeRZqxFeY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=s8Utj2Yyu/N2jkmfFKXdAAvW+B+CFquHjkSI4xhgui3HPsUnCRgTVKEEfZbnslb+u
+         EcyGtmRN2VbQuAOj+V+dZvcVc3rAf+8BNcXBwN0Gc85eZ8dygoCeTdmH2N9K9Fy9ep
+         zeNTLxDu0YwoEiijvydiMmDAKx0MhqfxEHNfACvo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 197/287] rpmsg: qcom_smd: Fix irq_of_parse_and_map() return value
+Date:   Mon, 13 Jun 2022 12:10:21 +0200
+Message-Id: <20220613094929.836529855@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
+References: <20220613094923.832156175@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v18 3/4] dts: arm64: mt8183: add Mediatek MDP3 nodes
-Content-Language: en-US
-To:     Moudy Ho <moudy.ho@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Cc:     Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Rob Landley <rob@landley.net>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Alexandre Courbot <acourbot@chromium.org>, tfiga@chromium.org,
-        drinkcat@chromium.org, pihsun@chromium.org, hsinyi@google.com,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        daoyuan huang <daoyuan.huang@mediatek.com>,
-        Ping-Hsun Wu <ping-hsun.wu@mediatek.com>,
-        allen-kh.cheng@mediatek.com, xiandong.wang@mediatek.com,
-        randy.wu@mediatek.com, jason-jh.lin@mediatek.com,
-        roy-cw.yeh@mediatek.com, river.cheng@mediatek.com,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        cellopoint.kai@gmail.com
-References: <20220610064504.8302-1-moudy.ho@mediatek.com>
- <20220610064504.8302-4-moudy.ho@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220610064504.8302-4-moudy.ho@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 10/06/22 08:45, Moudy Ho ha scritto:
-> Add device nodes for Media Data Path 3 (MDP3) modules.
-> 
-> Signed-off-by: Moudy Ho <moudy.ho@mediatek.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+[ Upstream commit 1a358d35066487d228a68303d808bc4721c6b1b9 ]
+
+The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
+
+Fixes: 53e2822e56c7 ("rpmsg: Introduce Qualcomm SMD backend")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220422105326.78713-1-krzysztof.kozlowski@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/rpmsg/qcom_smd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/rpmsg/qcom_smd.c b/drivers/rpmsg/qcom_smd.c
+index aa008fa11002..6e09fccd2e87 100644
+--- a/drivers/rpmsg/qcom_smd.c
++++ b/drivers/rpmsg/qcom_smd.c
+@@ -1388,7 +1388,7 @@ static int qcom_smd_parse_edge(struct device *dev,
+ 		edge->name = node->name;
+ 
+ 	irq = irq_of_parse_and_map(node, 0);
+-	if (irq < 0) {
++	if (!irq) {
+ 		dev_err(dev, "required smd interrupt missing\n");
+ 		ret = irq;
+ 		goto put_node;
+-- 
+2.35.1
+
+
 
