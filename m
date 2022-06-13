@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17441C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:27:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E23CAC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:27:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244707AbiFMK1A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:27:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45906 "EHLO
+        id S244747AbiFMK1F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:27:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245613AbiFMKYo (ORCPT
+        with ESMTP id S245710AbiFMKYr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:24:44 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23834205FD;
-        Mon, 13 Jun 2022 03:19:14 -0700 (PDT)
+        Mon, 13 Jun 2022 06:24:47 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF43120BEF;
+        Mon, 13 Jun 2022 03:19:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 76173CE110D;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4A04ECE1102;
+        Mon, 13 Jun 2022 10:19:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2095DC34114;
         Mon, 13 Jun 2022 10:19:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F953C34114;
-        Mon, 13 Jun 2022 10:19:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115550;
-        bh=C/1wgkfCoPY65kNeAyGytBp4GA2vjRzYayx29RryE+s=;
+        s=korg; t=1655115553;
+        bh=hxNeKlEn0nZ4rWcWNULpY5MIvcnsf/maQImXH9MuIXw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vEJooU6sAU23InhpIhgpU2Yj+QVxDzG3gshBt4rNfvuDvXWkx/NBROeilN2Xc9zIl
-         h2p2gzrbtraqxwWnDqdn3pTu//3cjdgGHSC6mJeqstZemYC0fKxEumUhj+ParL16w4
-         4yapYdSzU2gDZue/ZoixL6UWc5OZEfv3ussM11vM=
+        b=W6v1ml6qTYML3l2GP2WmYmt9qiBQIwIORmIK8cK14jFkDW0tIrszNHZWQyEoZRJYJ
+         J0PNefQKz6dax3YvUgKLgvB/kVYCwVUTG2TtQOU98PmPV9wcqX76OaGphbGe/hWx7X
+         1fnlFnMB9ov1UCEEz8Drdq937aoqdPdRduhk2n+c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baokun Li <libaokun1@huawei.com>,
-        Richard Weinberger <richard@nod.at>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Laurent Fasnacht <laurent.fasnacht@proton.ch>,
+        Neal Cardwell <ncardwell@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 125/167] jffs2: fix memory leak in jffs2_do_fill_super
-Date:   Mon, 13 Jun 2022 12:09:59 +0200
-Message-Id: <20220613094910.147360722@linuxfoundation.org>
+Subject: [PATCH 4.9 126/167] tcp: tcp_rtx_synack() can be called from process context
+Date:   Mon, 13 Jun 2022 12:10:00 +0200
+Message-Id: <20220613094910.396930476@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -49,66 +51,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baokun Li <libaokun1@huawei.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit c14adb1cf70a984ed081c67e9d27bc3caad9537c ]
+[ Upstream commit 0a375c822497ed6ad6b5da0792a12a6f1af10c0b ]
 
-If jffs2_iget() or d_make_root() in jffs2_do_fill_super() returns
-an error, we can observe the following kmemleak report:
+Laurent reported the enclosed report [1]
 
---------------------------------------------
-unreferenced object 0xffff888105a65340 (size 64):
-  comm "mount", pid 710, jiffies 4302851558 (age 58.239s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<ffffffff859c45e5>] kmem_cache_alloc_trace+0x475/0x8a0
-    [<ffffffff86160146>] jffs2_sum_init+0x96/0x1a0
-    [<ffffffff86140e25>] jffs2_do_mount_fs+0x745/0x2120
-    [<ffffffff86149fec>] jffs2_do_fill_super+0x35c/0x810
-    [<ffffffff8614aae9>] jffs2_fill_super+0x2b9/0x3b0
-    [...]
-unreferenced object 0xffff8881bd7f0000 (size 65536):
-  comm "mount", pid 710, jiffies 4302851558 (age 58.239s)
-  hex dump (first 32 bytes):
-    bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
-    bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
-  backtrace:
-    [<ffffffff858579ba>] kmalloc_order+0xda/0x110
-    [<ffffffff85857a11>] kmalloc_order_trace+0x21/0x130
-    [<ffffffff859c2ed1>] __kmalloc+0x711/0x8a0
-    [<ffffffff86160189>] jffs2_sum_init+0xd9/0x1a0
-    [<ffffffff86140e25>] jffs2_do_mount_fs+0x745/0x2120
-    [<ffffffff86149fec>] jffs2_do_fill_super+0x35c/0x810
-    [<ffffffff8614aae9>] jffs2_fill_super+0x2b9/0x3b0
-    [...]
---------------------------------------------
+This bug triggers with following coditions:
 
-This is because the resources allocated in jffs2_sum_init() are not
-released. Call jffs2_sum_exit() to release these resources to solve
-the problem.
+0) Kernel built with CONFIG_DEBUG_PREEMPT=y
 
-Fixes: e631ddba5887 ("[JFFS2] Add erase block summary support (mount time improvement)")
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+1) A new passive FastOpen TCP socket is created.
+   This FO socket waits for an ACK coming from client to be a complete
+   ESTABLISHED one.
+2) A socket operation on this socket goes through lock_sock()
+   release_sock() dance.
+3) While the socket is owned by the user in step 2),
+   a retransmit of the SYN is received and stored in socket backlog.
+4) At release_sock() time, the socket backlog is processed while
+   in process context.
+5) A SYNACK packet is cooked in response of the SYN retransmit.
+6) -> tcp_rtx_synack() is called in process context.
+
+Before blamed commit, tcp_rtx_synack() was always called from BH handler,
+from a timer handler.
+
+Fix this by using TCP_INC_STATS() & NET_INC_STATS()
+which do not assume caller is in non preemptible context.
+
+[1]
+BUG: using __this_cpu_add() in preemptible [00000000] code: epollpep/2180
+caller is tcp_rtx_synack.part.0+0x36/0xc0
+CPU: 10 PID: 2180 Comm: epollpep Tainted: G           OE     5.16.0-0.bpo.4-amd64 #1  Debian 5.16.12-1~bpo11+1
+Hardware name: Supermicro SYS-5039MC-H8TRF/X11SCD-F, BIOS 1.7 11/23/2021
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x48/0x5e
+ check_preemption_disabled+0xde/0xe0
+ tcp_rtx_synack.part.0+0x36/0xc0
+ tcp_rtx_synack+0x8d/0xa0
+ ? kmem_cache_alloc+0x2e0/0x3e0
+ ? apparmor_file_alloc_security+0x3b/0x1f0
+ inet_rtx_syn_ack+0x16/0x30
+ tcp_check_req+0x367/0x610
+ tcp_rcv_state_process+0x91/0xf60
+ ? get_nohz_timer_target+0x18/0x1a0
+ ? lock_timer_base+0x61/0x80
+ ? preempt_count_add+0x68/0xa0
+ tcp_v4_do_rcv+0xbd/0x270
+ __release_sock+0x6d/0xb0
+ release_sock+0x2b/0x90
+ sock_setsockopt+0x138/0x1140
+ ? __sys_getsockname+0x7e/0xc0
+ ? aa_sk_perm+0x3e/0x1a0
+ __sys_setsockopt+0x198/0x1e0
+ __x64_sys_setsockopt+0x21/0x30
+ do_syscall_64+0x38/0xc0
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Fixes: 168a8f58059a ("tcp: TCP Fast Open Server - main code path")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Laurent Fasnacht <laurent.fasnacht@proton.ch>
+Acked-by: Neal Cardwell <ncardwell@google.com>
+Link: https://lore.kernel.org/r/20220530213713.601888-1-eric.dumazet@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/jffs2/fs.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/ipv4/tcp_output.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/jffs2/fs.c b/fs/jffs2/fs.c
-index d3c9e4c82e57..610e11e76f2d 100644
---- a/fs/jffs2/fs.c
-+++ b/fs/jffs2/fs.c
-@@ -597,6 +597,7 @@ int jffs2_do_fill_super(struct super_block *sb, void *data, int silent)
- 	jffs2_free_raw_node_refs(c);
- 	kvfree(c->blocks);
- 	jffs2_clear_xattr_subsystem(c);
-+	jffs2_sum_exit(c);
-  out_inohash:
- 	kfree(c->inocache_list);
-  out_wbuf:
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 95b0f486cb10..e0009cd69da7 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -3709,8 +3709,8 @@ int tcp_rtx_synack(const struct sock *sk, struct request_sock *req)
+ 	tcp_rsk(req)->txhash = net_tx_rndhash();
+ 	res = af_ops->send_synack(sk, NULL, &fl, req, NULL, TCP_SYNACK_NORMAL);
+ 	if (!res) {
+-		__TCP_INC_STATS(sock_net(sk), TCP_MIB_RETRANSSEGS);
+-		__NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPSYNRETRANS);
++		TCP_INC_STATS(sock_net(sk), TCP_MIB_RETRANSSEGS);
++		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPSYNRETRANS);
+ 		if (unlikely(tcp_passive_fastopen(sk)))
+ 			tcp_sk(sk)->total_retrans++;
+ 	}
 -- 
 2.35.1
 
