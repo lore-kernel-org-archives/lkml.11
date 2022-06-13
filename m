@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 246E8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:32:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53A10C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:32:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243788AbiFMKcJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:32:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54126 "EHLO
+        id S243316AbiFMKcS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:32:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237301AbiFMK1r (ORCPT
+        with ESMTP id S1344083AbiFMK2u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:27:47 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C340F2496A;
-        Mon, 13 Jun 2022 03:20:03 -0700 (PDT)
+        Mon, 13 Jun 2022 06:28:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E002E252AC;
+        Mon, 13 Jun 2022 03:20:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 607BECE1102;
-        Mon, 13 Jun 2022 10:20:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23FBBC3411C;
-        Mon, 13 Jun 2022 10:19:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 07DD060B8B;
+        Mon, 13 Jun 2022 10:20:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1242FC34114;
+        Mon, 13 Jun 2022 10:20:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115599;
-        bh=f6lkio02YA4MucitoAR7FMKAAP4DjyL3eEki7YPIxC0=;
+        s=korg; t=1655115616;
+        bh=du0eATYz8AcUzrUh6DHs+n4PUByRCeS13TXKdzW3pbA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HayCzJsy9reGlF0S8qTQFSTg1ZjEYsLXGLstII6HC1HAB8RVCb7G2rGBebc/xf4o6
-         BbV14hpoX7EkAox9iE8avmCXI5aHftZ/eyplRDnt1xWrc0wD5q1DwJ+AeFTyT37j4R
-         O3YlGgg9v/cBJkLe79+RiJXqx4RzmC6dye0J9nBw=
+        b=YqUgSzmJlG4ha6fEe1TFP+rhRO2cXxAyjero6msk5uEquRad35yNS6rHPW4EhJTag
+         tCFE64uqKnecTMO4tXogrZNRfjAQyeV3k4sn2ofi/xC0GaGWxnA1kE2eb+3nbKXd8Q
+         7crpQwGpMFZFNERjvReS55HlLU0C+nkprukXy2Og=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nucca Chen <nuccachen@google.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        David Ahern <dsahern@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@mellanox.com>, Jiri Pirko <jiri@resnulli.us>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 132/167] net: fix nla_strcmp to handle more then one trailing null character
-Date:   Mon, 13 Jun 2022 12:10:06 +0200
-Message-Id: <20220613094911.831273074@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Lucas Tanure <tanureal@opensource.cirrus.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 128/167] i2c: cadence: Increase timeout per message if necessary
+Date:   Mon, 13 Jun 2022 12:10:02 +0200
+Message-Id: <20220613094910.870657093@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -54,47 +50,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej Żenczykowski <maze@google.com>
+From: Lucas Tanure <tanureal@opensource.cirrus.com>
 
-[ Upstream commit 2c16db6c92b0ee4aa61e88366df82169e83c3f7e ]
+[ Upstream commit 96789dce043f5bff8b7d62aa28d52a7c59403a84 ]
 
-Android userspace has been using TCA_KIND with a char[IFNAMESIZ]
-many-null-terminated buffer containing the string 'bpf'.
+Timeout as 1 second sets an upper limit on the length
+of the transfer executed, but there is no maximum length
+of a write or read message set in i2c_adapter_quirks for
+this controller.
 
-This works on 4.19 and ceases to work on 5.10.
+This upper limit affects devices that require sending
+large firmware blobs over I2C.
 
-I'm not entirely sure what fixes tag to use, but I think the issue
-was likely introduced in the below mentioned 5.4 commit.
+To remove that limitation, calculate the minimal time
+necessary, plus some wiggle room, for every message and
+use it instead of the default one second, if more than
+one second.
 
-Reported-by: Nucca Chen <nuccachen@google.com>
-Cc: Cong Wang <xiyou.wangcong@gmail.com>
-Cc: David Ahern <dsahern@gmail.com>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-Cc: Jiri Pirko <jiri@mellanox.com>
-Cc: Jiri Pirko <jiri@resnulli.us>
-Fixes: 62794fc4fbf5 ("net_sched: add max len check for TCA_KIND")
-Change-Id: I66dc281f165a2858fc29a44869a270a2d698a82b
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
+Acked-by: Michal Simek <michal.simek@xilinx.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/nlattr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/i2c/busses/i2c-cadence.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/lib/nlattr.c b/lib/nlattr.c
-index fce1e9afc6d9..ea27e1d069b1 100644
---- a/lib/nlattr.c
-+++ b/lib/nlattr.c
-@@ -316,7 +316,7 @@ int nla_strcmp(const struct nlattr *nla, const char *str)
- 	int attrlen = nla_len(nla);
- 	int d;
+diff --git a/drivers/i2c/busses/i2c-cadence.c b/drivers/i2c/busses/i2c-cadence.c
+index 23ee1a423654..a29ac9bae6d5 100644
+--- a/drivers/i2c/busses/i2c-cadence.c
++++ b/drivers/i2c/busses/i2c-cadence.c
+@@ -511,7 +511,7 @@ static void cdns_i2c_master_reset(struct i2c_adapter *adap)
+ static int cdns_i2c_process_msg(struct cdns_i2c *id, struct i2c_msg *msg,
+ 		struct i2c_adapter *adap)
+ {
+-	unsigned long time_left;
++	unsigned long time_left, msg_timeout;
+ 	u32 reg;
  
--	if (attrlen > 0 && buf[attrlen - 1] == '\0')
-+	while (attrlen > 0 && buf[attrlen - 1] == '\0')
- 		attrlen--;
+ 	id->p_msg = msg;
+@@ -536,8 +536,16 @@ static int cdns_i2c_process_msg(struct cdns_i2c *id, struct i2c_msg *msg,
+ 	else
+ 		cdns_i2c_msend(id);
  
- 	d = attrlen - len;
++	/* Minimal time to execute this message */
++	msg_timeout = msecs_to_jiffies((1000 * msg->len * BITS_PER_BYTE) / id->i2c_clk);
++	/* Plus some wiggle room */
++	msg_timeout += msecs_to_jiffies(500);
++
++	if (msg_timeout < adap->timeout)
++		msg_timeout = adap->timeout;
++
+ 	/* Wait for the signal of completion */
+-	time_left = wait_for_completion_timeout(&id->xfer_done, adap->timeout);
++	time_left = wait_for_completion_timeout(&id->xfer_done, msg_timeout);
+ 	if (time_left == 0) {
+ 		cdns_i2c_master_reset(adap);
+ 		dev_err(id->adap.dev.parent,
 -- 
 2.35.1
 
