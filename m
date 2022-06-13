@@ -2,88 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 471FCCCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:53:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB1D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:55:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357179AbiFMLxJ (ORCPT
+        id S1356945AbiFMLxP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:53:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44966 "EHLO
+        Mon, 13 Jun 2022 07:53:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356407AbiFMLtC (ORCPT
+        with ESMTP id S1356404AbiFMLtC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:49:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 823A727158;
-        Mon, 13 Jun 2022 03:53:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24547240B8;
+        Mon, 13 Jun 2022 03:53:04 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 1C97B1F8AB;
+        Mon, 13 Jun 2022 10:53:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1655117583; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XqTpxE8yxYYRD/ZdpkztnOS2u2fkB5g/9Dmp+zple7w=;
+        b=SUSZ8nM3O4EyRpbT5YkFU0clddDZEOrRDp7kMrJTnNsatDMQYu6Jdf8atSklUx8PMJvjok
+        ZZmOd5Fylbz2Vn7bGUmt1/2cci8ItL0gMon9ieGf8p1zgynEt4q/fFHToDQdxk+aAgUN4P
+        zzOJ/CkyJqeWhUedpVtWXdeiXDyxqBE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1655117583;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XqTpxE8yxYYRD/ZdpkztnOS2u2fkB5g/9Dmp+zple7w=;
+        b=86VBSlEwzD3hC55rA05ME4jXwgF4tz+a4fJiTsnx25nzTsv9kQ8GiUfY1EZyIuzDNwksJK
+        mTvFTSRvEvEBr6CA==
+Received: from quack3.suse.cz (unknown [10.163.28.18])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 176B4B80EAA;
-        Mon, 13 Jun 2022 10:53:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65BEFC3411E;
-        Mon, 13 Jun 2022 10:53:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117582;
-        bh=413BEscQ9cXo782TPU6XN4FJoBmVDP59JOlzKCmGRjc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bQkL8PE4XLaleRL0ZWxAQGIrHUNlVVjWE682TnHyv02ntLdFR4XU9W0OynxvFOC/E
-         2vCVb+NCcjhAELDPQnx9ilcUlQG2vixAgJLAtfeX0ibKW2InzzoIAysGS0Cl/HxX7R
-         YaJ01/dslP8gjolj3PJEyb6aMGBjbhEO8tTgPhXs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.4 403/411] mmc: block: Fix CQE recovery reset success
-Date:   Mon, 13 Jun 2022 12:11:16 +0200
-Message-Id: <20220613094940.907662626@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by relay2.suse.de (Postfix) with ESMTPS id 095632C141;
+        Mon, 13 Jun 2022 10:53:03 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id A3C1CA0634; Mon, 13 Jun 2022 12:53:02 +0200 (CEST)
+Date:   Mon, 13 Jun 2022 12:53:02 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.com>,
+        Dave Kleikamp <shaggy@kernel.org>,
+        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
+        linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jfs-discussion@lists.sourceforge.net,
+        ntfs3@lists.linux.dev
+Subject: Re: [PATCH 5/6] fs: don't call ->writepage from __mpage_writepage
+Message-ID: <20220613105302.pmtqxjbfwmtzkgjh@quack3.lan>
+References: <20220613053715.2394147-1-hch@lst.de>
+ <20220613053715.2394147-6-hch@lst.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220613053715.2394147-6-hch@lst.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adrian Hunter <adrian.hunter@intel.com>
+On Mon 13-06-22 07:37:14, Christoph Hellwig wrote:
+> All callers of mpage_writepage use block_write_full_page as their
+> ->writepage implementation when called from mpage_writepages
+> (although for ntfs3 this is obsfucated a bit).
+> 
+> Just call block_write_full_page directly instead of going through
+> the ->writepage indirection.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-commit a051246b786af7e4a9d9219cc7038a6e8a411531 upstream.
+Yeah, ntfs3 is not completely obvious but I agree we should not get to the
+non-trivial case of ntfs_writepage() from mpage_writepages() now. Feel free
+to add:
 
-The intention of the use of mmc_blk_reset_success() in
-mmc_blk_cqe_recovery() was to prevent repeated resets when retrying and
-getting the same error. However, that may not be the case - any amount
-of time and I/O may pass before another recovery is needed, in which
-case there would be no reason to deny it the opportunity to recover via
-a reset if necessary. CQE recovery is expected seldom and failure to
-recover (if the clear tasks command fails), even more seldom, so it is
-better to allow the reset always, which can be done by calling
-mmc_blk_reset_success() always.
+Reviewed-by: Jan Kara <jack@suse.cz>
 
-Fixes: 1e8e55b67030c6 ("mmc: block: Add CQE support")
-Cc: stable@vger.kernel.org
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-Link: https://lore.kernel.org/r/20220531171922.76080-1-adrian.hunter@intel.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/mmc/core/block.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+								Honza
 
---- a/drivers/mmc/core/block.c
-+++ b/drivers/mmc/core/block.c
-@@ -1492,8 +1492,7 @@ void mmc_blk_cqe_recovery(struct mmc_que
- 	err = mmc_cqe_recovery(host);
- 	if (err)
- 		mmc_blk_reset(mq->blkdata, host, MMC_BLK_CQE_RECOVERY);
--	else
--		mmc_blk_reset_success(mq->blkdata, MMC_BLK_CQE_RECOVERY);
-+	mmc_blk_reset_success(mq->blkdata, MMC_BLK_CQE_RECOVERY);
- 
- 	pr_debug("%s: CQE recovery done\n", mmc_hostname(host));
- }
-
-
+> ---
+>  fs/mpage.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/fs/mpage.c b/fs/mpage.c
+> index 31a97a0acf5f5..a354ef2b4b4eb 100644
+> --- a/fs/mpage.c
+> +++ b/fs/mpage.c
+> @@ -624,7 +624,7 @@ static int __mpage_writepage(struct page *page, struct writeback_control *wbc,
+>  	/*
+>  	 * The caller has a ref on the inode, so *mapping is stable
+>  	 */
+> -	ret = mapping->a_ops->writepage(page, wbc);
+> +	ret = block_write_full_page(page, mpd->get_block, wbc);
+>  	mapping_set_error(mapping, ret);
+>  out:
+>  	mpd->bio = bio;
+> -- 
+> 2.30.2
+> 
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
