@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B78A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:07:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D1ADC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:07:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349900AbiFMLHm (ORCPT
+        id S1351705AbiFMLHs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:07:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52636 "EHLO
+        Mon, 13 Jun 2022 07:07:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351383AbiFMK7x (ORCPT
+        with ESMTP id S1349366AbiFMLAF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:59:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1703731236;
-        Mon, 13 Jun 2022 03:33:05 -0700 (PDT)
+        Mon, 13 Jun 2022 07:00:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA1F3134A;
+        Mon, 13 Jun 2022 03:33:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4154060AE6;
-        Mon, 13 Jun 2022 10:32:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F984C34114;
-        Mon, 13 Jun 2022 10:32:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8269BB80E94;
+        Mon, 13 Jun 2022 10:33:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFAC2C34114;
+        Mon, 13 Jun 2022 10:33:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116378;
-        bh=1HHNl2/qevY9HHkcc+PsSUTlLFN389SZEZAU/LuTha8=;
+        s=korg; t=1655116381;
+        bh=y5FpsC0QGeen2RQowSl2Y0D8H3xk4G0Akqg3acr5AMs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W6WjgKtwgpi4hDtbuztUiK3L8Mjxo+eYWHJPdHlBRkPhapiM/cWr/KvVOzXxSDNXT
-         CEQieUZagIgqj9QhRvYKsnP1+sCnhmn8/3TBCEoNq3Luy2wOKR65x/zbMworUdlyZ7
-         oKdG+aYl8D50NYf8roUhbJLAHA70NVgGdislvDAc=
+        b=p/bP+E6SFLimEfErxK+ppRPUV3/TOxfhWAztB2NRwZE9AI+VH3EMa6m4S/ffLVGY3
+         mB7nWuxfzZHVC0+m+PtxriVG2Srq3CpnI5mc60xMFEkayARDtwFTq6be0AJ1De0moI
+         yPkm/jQyqfekC/7mH35eMBP7DJDkEEcDBn0ovqgY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 180/218] drm: imx: fix compiler warning with gcc-12
-Date:   Mon, 13 Jun 2022 12:10:38 +0200
-Message-Id: <20220613094926.067496625@linuxfoundation.org>
+Subject: [PATCH 5.4 076/411] powerpc/powernv: fix missing of_node_put in uv_init()
+Date:   Mon, 13 Jun 2022 12:05:49 +0200
+Message-Id: <20220613094930.959380244@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,45 +51,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit 7aefd8b53815274f3ef398d370a3c9b27dd9f00c ]
+[ Upstream commit 3ffa9fd471f57f365bc54fc87824c530422f64a5 ]
 
-Gcc-12 correctly warned about this code using a non-NULL pointer as a
-truth value:
+of_find_compatible_node() returns node pointer with refcount incremented,
+use of_node_put() on it when done.
 
-  drivers/gpu/drm/imx/ipuv3-crtc.c: In function ‘ipu_crtc_disable_planes’:
-  drivers/gpu/drm/imx/ipuv3-crtc.c:72:21: error: the comparison will always evaluate as ‘true’ for the address of ‘plane’ will never be NULL [-Werror=address]
-     72 |                 if (&ipu_crtc->plane[1] && plane == &ipu_crtc->plane[1]->base)
-        |                     ^
-
-due to the extraneous '&' address-of operator.
-
-Philipp Zabel points out that The mistake had no adverse effect since
-the following condition doesn't actually dereference the NULL pointer,
-but the intent of the code was obviously to check for it, not to take
-the address of the member.
-
-Fixes: eb8c88808c83 ("drm/imx: add deferred plane disabling")
-Acked-by: Philipp Zabel <p.zabel@pengutronix.de>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220407090043.2491854-1-lv.ruyi@zte.com.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/imx/ipuv3-crtc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/platforms/powernv/ultravisor.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/imx/ipuv3-crtc.c b/drivers/gpu/drm/imx/ipuv3-crtc.c
-index 12dd261fc308..628de21c03d2 100644
---- a/drivers/gpu/drm/imx/ipuv3-crtc.c
-+++ b/drivers/gpu/drm/imx/ipuv3-crtc.c
-@@ -72,7 +72,7 @@ static void ipu_crtc_disable_planes(struct ipu_crtc *ipu_crtc,
- 	drm_atomic_crtc_state_for_each_plane(plane, old_crtc_state) {
- 		if (plane == &ipu_crtc->plane[0]->base)
- 			disable_full = true;
--		if (&ipu_crtc->plane[1] && plane == &ipu_crtc->plane[1]->base)
-+		if (ipu_crtc->plane[1] && plane == &ipu_crtc->plane[1]->base)
- 			disable_partial = true;
- 	}
+diff --git a/arch/powerpc/platforms/powernv/ultravisor.c b/arch/powerpc/platforms/powernv/ultravisor.c
+index e4a00ad06f9d..67c8c4b2d8b1 100644
+--- a/arch/powerpc/platforms/powernv/ultravisor.c
++++ b/arch/powerpc/platforms/powernv/ultravisor.c
+@@ -55,6 +55,7 @@ static int __init uv_init(void)
+ 		return -ENODEV;
+ 
+ 	uv_memcons = memcons_init(node, "memcons");
++	of_node_put(node);
+ 	if (!uv_memcons)
+ 		return -ENOENT;
  
 -- 
 2.35.1
