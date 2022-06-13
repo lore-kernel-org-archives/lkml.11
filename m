@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D6BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:48:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF64ECCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:48:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356037AbiFMLr4 (ORCPT
+        id S1356058AbiFMLsC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:47:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43240 "EHLO
+        Mon, 13 Jun 2022 07:48:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356422AbiFMLoc (ORCPT
+        with ESMTP id S1356697AbiFMLo5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:44:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CF0847390;
-        Mon, 13 Jun 2022 03:50:47 -0700 (PDT)
+        Mon, 13 Jun 2022 07:44:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDC742E6BD;
+        Mon, 13 Jun 2022 03:51:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C98EC612C3;
-        Mon, 13 Jun 2022 10:50:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7252C34114;
-        Mon, 13 Jun 2022 10:50:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 85D2360AEB;
+        Mon, 13 Jun 2022 10:51:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E79CC34114;
+        Mon, 13 Jun 2022 10:51:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117441;
-        bh=LJmzHcixTLkjbrAgFRg2mswhGCvjL00914fgwHRRpSU=;
+        s=korg; t=1655117462;
+        bh=x7/FTlRX9FpTmqVipLfwhg9fDJz92jZYZg1C4fntWiQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1fy0/sCo7ER+hCWcrKtjs1zZvUTkPg+kv389XkRnMdSnzQCpNukC4wjX76rpONbFN
-         Y1JOQdnf7nF2NjhC2AiCsxItmnHwTtKsHKklpLN2HWL8nKNymOvLX1UrLdrA4XPNQ4
-         Zx1f2nA8veXD3wCVCudlsoQka/KTHYtYHYmnypNc=
+        b=h+o1DONnfKWyreFEywav30XPQjxBWjSRl2Okir08dex2lJ0+mGzrc2hJ9LAB/PGRO
+         NkM3G1mGhY86/ITcODHJ/UZ4VKEFqNNhf9dwnod66GX2NeUrl3O6xNOaIWCnHjS1B5
+         GE7reRK+4xKMT9xjmCUh8HYfW7WmJMPsOCetVpQI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 362/411] ip_gre: test csum_start instead of transport header
-Date:   Mon, 13 Jun 2022 12:10:35 +0200
-Message-Id: <20220613094939.546289711@linuxfoundation.org>
+Subject: [PATCH 4.19 044/287] ARM: dts: ox820: align interrupt controller node name with dtschema
+Date:   Mon, 13 Jun 2022 12:07:48 +0200
+Message-Id: <20220613094925.203763914@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
+References: <20220613094923.832156175@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,85 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-[ Upstream commit 8d21e9963bec1aad2280cdd034c8993033ef2948 ]
+[ Upstream commit fbcd5ad7a419ad40644a0bb8b4152bc660172d8a ]
 
-GRE with TUNNEL_CSUM will apply local checksum offload on
-CHECKSUM_PARTIAL packets.
+Fixes dtbs_check warnings like:
 
-ipgre_xmit must validate csum_start after an optional skb_pull,
-else lco_csum may trigger an overflow. The original check was
+  gic@1000: $nodename:0: 'gic@1000' does not match '^interrupt-controller(@[0-9a-f,]+)*$'
 
-	if (csum && skb_checksum_start(skb) < skb->data)
-		return -EINVAL;
-
-This had false positives when skb_checksum_start is undefined:
-when ip_summed is not CHECKSUM_PARTIAL. A discussed refinement
-was straightforward
-
-	if (csum && skb->ip_summed == CHECKSUM_PARTIAL &&
-	    skb_checksum_start(skb) < skb->data)
-		return -EINVAL;
-
-But was eventually revised more thoroughly:
-- restrict the check to the only branch where needed, in an
-  uncommon GRE path that uses header_ops and calls skb_pull.
-- test skb_transport_header, which is set along with csum_start
-  in skb_partial_csum_set in the normal header_ops datapath.
-
-Turns out skbs can arrive in this branch without the transport
-header set, e.g., through BPF redirection.
-
-Revise the check back to check csum_start directly, and only if
-CHECKSUM_PARTIAL. Do leave the check in the updated location.
-Check field regardless of whether TUNNEL_CSUM is configured.
-
-Link: https://lore.kernel.org/netdev/YS+h%2FtqCJJiQei+W@shredder/
-Link: https://lore.kernel.org/all/20210902193447.94039-2-willemdebruijn.kernel@gmail.com/T/#u
-Fixes: 8a0ed250f911 ("ip_gre: validate csum_start only on pull")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Willem de Bruijn <willemb@google.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
-Link: https://lore.kernel.org/r/20220606132107.3582565-1-willemdebruijn.kernel@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220317115705.450427-1-krzysztof.kozlowski@canonical.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/ip_gre.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ arch/arm/boot/dts/ox820.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
-index 5b38d03f6d79..614410a6db44 100644
---- a/net/ipv4/ip_gre.c
-+++ b/net/ipv4/ip_gre.c
-@@ -602,21 +602,20 @@ static netdev_tx_t ipgre_xmit(struct sk_buff *skb,
- 	}
+diff --git a/arch/arm/boot/dts/ox820.dtsi b/arch/arm/boot/dts/ox820.dtsi
+index f7dddfb01f81..d629caf8b98f 100644
+--- a/arch/arm/boot/dts/ox820.dtsi
++++ b/arch/arm/boot/dts/ox820.dtsi
+@@ -286,7 +286,7 @@
+ 				clocks = <&armclk>;
+ 			};
  
- 	if (dev->header_ops) {
--		const int pull_len = tunnel->hlen + sizeof(struct iphdr);
--
- 		if (skb_cow_head(skb, 0))
- 			goto free_skb;
- 
- 		tnl_params = (const struct iphdr *)skb->data;
- 
--		if (pull_len > skb_transport_offset(skb))
--			goto free_skb;
--
- 		/* Pull skb since ip_tunnel_xmit() needs skb->data pointing
- 		 * to gre header.
- 		 */
--		skb_pull(skb, pull_len);
-+		skb_pull(skb, tunnel->hlen + sizeof(struct iphdr));
- 		skb_reset_mac_header(skb);
-+
-+		if (skb->ip_summed == CHECKSUM_PARTIAL &&
-+		    skb_checksum_start(skb) < skb->data)
-+			goto free_skb;
- 	} else {
- 		if (skb_cow_head(skb, dev->needed_headroom))
- 			goto free_skb;
+-			gic: gic@1000 {
++			gic: interrupt-controller@1000 {
+ 				compatible = "arm,arm11mp-gic";
+ 				interrupt-controller;
+ 				#interrupt-cells = <3>;
 -- 
 2.35.1
 
