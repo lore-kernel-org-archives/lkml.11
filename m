@@ -2,182 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D701CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:01:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51855C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:05:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351649AbiFMU7l (ORCPT
+        id S1347654AbiFMVFk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:59:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42136 "EHLO
+        Mon, 13 Jun 2022 17:05:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344939AbiFMUze (ORCPT
+        with ESMTP id S1352125AbiFMVEJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:55:34 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9030012604
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:28:12 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id g16-20020a17090a7d1000b001ea9f820449so5235201pjl.5
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:28:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=osZI55S/5dMcmV9pE2V+C0A43bBMSnu9K9IPGFv9W/Q=;
-        b=mWUznRIloP2KlmQ1d/y4w2DVizn3o5dRam9GxBJuSDKWWJyNFWl8lbPbBDxPFrlLYF
-         bL6KsouwqNO7nn0ZucMLrpAvQeeMlv6Lz+ixXEBs2F9gtF6UMucw2rUHLthFUr17mVkI
-         9R2z0NFBWgYL9bSujjUguW3v3dnYtOlRyA60Q=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=osZI55S/5dMcmV9pE2V+C0A43bBMSnu9K9IPGFv9W/Q=;
-        b=fDtIUklke4jhhljd4yRuWKT1+Z5Tz8bEGLEcC3yPKs5M3di6ekS74weAfScF24xx9J
-         p3ztqxmGyTqqW4tzxBbpRzWXap90LsAl9U2O1YHf0PFt+Z9AYo2rZcAIosEoFisNogZP
-         JI8f8rquaSKoBL4nshI48nYa2u1Hs8etkgt/dmU7Sqa1Xv6Xemyk2suJCtFilfuSXMMa
-         62LLgi5yi1srK9z+Na9aMeyPfmfbsJPz+9CaXJv+CBhYgNT44CDb1c1A45rxCkbrxSZn
-         ntl4LPqQQgznCqhp+XTcrPj4/sY+MdYs3oyAfPNCTKIRSNq21SaFIts8LfmtmEG1ipIv
-         MciQ==
-X-Gm-Message-State: AJIora88lDSGoxGpU9YxnHrs0vnFa8kLZ589pwvLbdQOJ6UQ4WkOtVOH
-        jwRUVTEgqU6NAhE3qNU17hpMNw==
-X-Google-Smtp-Source: ABdhPJwWHXAV5GrU0wvTAGyjLfVkRBvo2yWyHFPTojpJxd+BGIwMV6Tfi1FuKAqpnzhRjLbV0+62Vg==
-X-Received: by 2002:a17:902:eb90:b0:163:e4c1:b2fc with SMTP id q16-20020a170902eb9000b00163e4c1b2fcmr807340plg.159.1655152092015;
-        Mon, 13 Jun 2022 13:28:12 -0700 (PDT)
-Received: from localhost ([2620:15c:202:200:cf79:20b3:87b5:90bc])
-        by smtp.gmail.com with UTF8SMTPSA id f13-20020a170902f38d00b0016413dbbf92sm5531140ple.234.2022.06.13.13.28.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Jun 2022 13:28:10 -0700 (PDT)
-From:   Micah Morton <mortonm@chromium.org>
-To:     linux-security-module@vger.kernel.org
-Cc:     keescook@chromium.org, jmorris@namei.org, serge@hallyn.com,
-        linux-kernel@vger.kernel.org, Micah Morton <mortonm@chromium.org>
-Subject: [PATCH 1/2] security: Add LSM hook to setgroups() syscall
-Date:   Mon, 13 Jun 2022 13:28:07 -0700
-Message-Id: <20220613202807.447694-1-mortonm@chromium.org>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+        Mon, 13 Jun 2022 17:04:09 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59899344E5;
+        Mon, 13 Jun 2022 13:38:13 -0700 (PDT)
+Received: from notapiano (pool-98-113-53-228.nycmny.fios.verizon.net [98.113.53.228])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: nfraprado)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id CA3FD6601687;
+        Mon, 13 Jun 2022 21:38:08 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1655152691;
+        bh=PZkwmDEMPHlMVYu46SGLuTz7ZFvWU8pB2VTaRlvFwiA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cRsmNCUb0UyZdvroSbeDYzV+HZKrogRGU1DzzKl105cp5S3RXSNz5gdrsWVOK+Ael
+         muB45NmzAKVwrDkhN+ihSkz2mWtHReTERwNJlVotC7nr2dcDaBCZJGffST95c+PgBD
+         mRgDNCqpSD2Pcc5XLpONQ1ZTaT6tzGrzlsDcXr3M8oxYxlkLbfkB8x2fELgrCqD/Wj
+         XNGqXavYGRKhddltYnZCJZEJ8iesNuCZVNyg45QcnM5MPgkjsLkvLC79THFcIRa4Ee
+         zaji90f6/DIDchoUWlLt9cGnGQhcR0cN2Gs7lg+UKBu3sxUHRpubF3nJ0mYPuEdS2+
+         59t251l7Xr5cA==
+Date:   Mon, 13 Jun 2022 16:38:04 -0400
+From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
+        <nfraprado@collabora.com>
+To:     Prashant Malani <pmalani@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        bleung@chromium.org, swboyd@chromium.org,
+        heikki.krogerus@linux.intel.com,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        =?utf-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Pin-Yen Lin <treapking@chromium.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Tzung-Bi Shih <tzungbi@google.com>,
+        Xin Ji <xji@analogixsemi.com>
+Subject: Re: [PATCH v2 3/7] dt-bindings: usb: Add Type-C switch binding
+Message-ID: <20220613203804.3d23gxidkw657ggq@notapiano>
+References: <20220609181106.3695103-1-pmalani@chromium.org>
+ <20220609181106.3695103-4-pmalani@chromium.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220609181106.3695103-4-pmalani@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Give the LSM framework the ability to filter setgroups() syscalls. There
-are already analagous hooks for the set*uid() and set*gid() syscalls.
-The SafeSetID LSM will use this new hook to ensure setgroups() calls are
-allowed by the installed security policy.
+Hi Prashant,
 
-Signed-off-by: Micah Morton <mortonm@chromium.org>
----
+thanks for the patch. Please see sugestions below.
 
-Developed on 5.18
+On Thu, Jun 09, 2022 at 06:09:42PM +0000, Prashant Malani wrote:
+> Introduce a binding which represents a component that can control the
+> routing of USB Type-C data lines as well as address data line
+> orientation (based on CC lines' orientation).
+> 
+> Signed-off-by: Prashant Malani <pmalani@chromium.org>
+> ---
+> 
+> Changes since v1:
+> - Removed "items" from compatible.
+> - Fixed indentation in example.
+> 
+>  .../devicetree/bindings/usb/typec-switch.yaml | 74 +++++++++++++++++++
+>  1 file changed, 74 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/usb/typec-switch.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/usb/typec-switch.yaml b/Documentation/devicetree/bindings/usb/typec-switch.yaml
+> new file mode 100644
+> index 000000000000..78b0190c8543
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/usb/typec-switch.yaml
+> @@ -0,0 +1,74 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/usb/typec-switch.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: USB Type-C Switch
+> +
+> +maintainers:
+> +  - Prashant Malani <pmalani@chromium.org>
+> +
+> +description:
+> +  A USB Type-C switch represents a component which routes USB Type-C data
+> +  lines to various protocol host controllers (e.g USB, VESA DisplayPort,
+> +  Thunderbolt etc.) depending on which mode the Type-C port, port partner
+> +  and cable are operating in. It can also modify lane routing based on
+> +  the orientation of a connected Type-C peripheral.
+> +
+> +properties:
+> +  compatible:
+> +    const: typec-switch
+> +
+> +  mode-switch:
+> +    type: boolean
+> +    description: Specify that this switch can handle alternate mode switching.
+> +
+> +  orientation-switch:
+> +    type: boolean
+> +    description: Specify that this switch can handle orientation switching.
+> +
+> +  ports:
+> +    $ref: /schemas/graph.yaml#/properties/ports
+> +    description: OF graph binding modelling data lines to the Type-C switch.
+> +
+> +    properties:
+> +      port@0:
+> +        $ref: /schemas/graph.yaml#/properties/port
+> +        description: Link between the switch and a Type-C connector.
 
- include/linux/lsm_hook_defs.h |  1 +
- include/linux/lsm_hooks.h     |  7 +++++++
- include/linux/security.h      |  7 +++++++
- kernel/groups.c               | 12 ++++++++++++
- security/security.c           |  5 +++++
- 5 files changed, 32 insertions(+)
+Since you have a single port, you can omit the ports node.
 
-diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index db924fe379c9..c01063ec4be7 100644
---- a/include/linux/lsm_hook_defs.h
-+++ b/include/linux/lsm_hook_defs.h
-@@ -201,6 +201,7 @@ LSM_HOOK(int, 0, task_fix_setuid, struct cred *new, const struct cred *old,
- 	 int flags)
- LSM_HOOK(int, 0, task_fix_setgid, struct cred *new, const struct cred * old,
- 	 int flags)
-+LSM_HOOK(int, 0, task_fix_setgroups, struct cred *new, const struct cred * old)
- LSM_HOOK(int, 0, task_setpgid, struct task_struct *p, pid_t pgid)
- LSM_HOOK(int, 0, task_getpgid, struct task_struct *p)
- LSM_HOOK(int, 0, task_getsid, struct task_struct *p)
-diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index 419b5febc3ca..b5143d9a1127 100644
---- a/include/linux/lsm_hooks.h
-+++ b/include/linux/lsm_hooks.h
-@@ -701,6 +701,13 @@
-  *	@old is the set of credentials that are being replaced.
-  *	@flags contains one of the LSM_SETID_* values.
-  *	Return 0 on success.
-+ * @task_fix_setgroups:
-+ *	Update the module's state after setting the supplementary group
-+ *	identity attributes of the current process.
-+ *	@new is the set of credentials that will be installed.  Modifications
-+ *	should be made to this rather than to @current->cred.
-+ *	@old is the set of credentials that are being replaced.
-+ *	Return 0 on success.
-  * @task_setpgid:
-  *	Check permission before setting the process group identifier of the
-  *	process @p to @pgid.
-diff --git a/include/linux/security.h b/include/linux/security.h
-index 25b3ef71f495..d111ff830742 100644
---- a/include/linux/security.h
-+++ b/include/linux/security.h
-@@ -413,6 +413,7 @@ int security_task_fix_setuid(struct cred *new, const struct cred *old,
- 			     int flags);
- int security_task_fix_setgid(struct cred *new, const struct cred *old,
- 			     int flags);
-+int security_task_fix_setgroups(struct cred *new, const struct cred *old);
- int security_task_setpgid(struct task_struct *p, pid_t pgid);
- int security_task_getpgid(struct task_struct *p);
- int security_task_getsid(struct task_struct *p);
-@@ -1096,6 +1097,12 @@ static inline int security_task_fix_setgid(struct cred *new,
- 	return 0;
- }
- 
-+static inline int security_task_fix_setgroups(struct cred *new,
-+					   const struct cred *old)
-+{
-+	return 0;
-+}
-+
- static inline int security_task_setpgid(struct task_struct *p, pid_t pgid)
- {
- 	return 0;
-diff --git a/kernel/groups.c b/kernel/groups.c
-index 787b381c7c00..c085f54d8dbb 100644
---- a/kernel/groups.c
-+++ b/kernel/groups.c
-@@ -134,13 +134,25 @@ EXPORT_SYMBOL(set_groups);
- int set_current_groups(struct group_info *group_info)
- {
- 	struct cred *new;
-+	struct cred *old;
- 
- 	new = prepare_creds();
- 	if (!new)
- 		return -ENOMEM;
- 
-+	old = current_cred();
-+
- 	set_groups(new, group_info);
-+
-+	retval = security_task_fix_setgroups(new, old);
-+	if (retval < 0)
-+		goto error;
-+
- 	return commit_creds(new);
-+
-+error:
-+	abort_creds(new);
-+	return retval;
- }
- 
- EXPORT_SYMBOL(set_current_groups);
-diff --git a/security/security.c b/security/security.c
-index b7cf5cbfdc67..eaed8d16d90a 100644
---- a/security/security.c
-+++ b/security/security.c
-@@ -1809,6 +1809,11 @@ int security_task_fix_setgid(struct cred *new, const struct cred *old,
- 	return call_int_hook(task_fix_setgid, 0, new, old, flags);
- }
- 
-+int security_task_fix_setgroups(struct cred *new, const struct cred *old)
-+{
-+	return call_int_hook(task_fix_setgroups, 0, new, old);
-+}
-+
- int security_task_setpgid(struct task_struct *p, pid_t pgid)
- {
- 	return call_int_hook(task_setpgid, 0, p, pgid);
--- 
-2.36.1.476.g0c4daa206d-goog
+> +
+> +    required:
+> +      - port@0
+> +
+> +required:
+> +  - compatible
+> +  - ports
+> +
+> +anyOf:
+> +  - required:
+> +      - mode-switch
+> +  - required:
+> +      - orientation-switch
+> +
+> +additionalProperties: true
+> +
+> +examples:
+> +  - |
+> +    drm-bridge {
+> +        usb-switch {
+> +            compatible = "typec-switch";
+> +            mode-switch;
+> +            orientation-switch;
+> +            ports {
+> +                #address-cells = <1>;
+> +                #size-cells = <0>;
+> +
+> +                port@0 {
+> +                    reg = <0>;
+> +                    anx_ep: endpoint {
+> +                        remote-endpoint = <&typec_controller>;
+> +                    };
+> +                };
+> +            };
 
+So instead of ports you would have just 
+
+               port {
+                   anx_ep: endpoint {
+                       remote-endpoint = <&typec_controller>;
+                   };
+               };
+
+And the same simplification on patch 4, for the anx7625 dt-binding.
+
+Thanks,
+Nícolas
+
+> +        };
+> +    };
+> -- 
+> 2.36.1.476.g0c4daa206d-goog
+> 
