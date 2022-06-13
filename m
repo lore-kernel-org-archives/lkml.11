@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ACF5CCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 067EECCA488
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:34:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384563AbiFMOeM (ORCPT
+        id S1384441AbiFMOeG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:34:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34070 "EHLO
+        Mon, 13 Jun 2022 10:34:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385051AbiFMOad (ORCPT
+        with ESMTP id S1385029AbiFMOac (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:30:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9412A8684;
-        Mon, 13 Jun 2022 04:48:30 -0700 (PDT)
+        Mon, 13 Jun 2022 10:30:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1319835A95;
+        Mon, 13 Jun 2022 04:48:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1517612D0;
-        Mon, 13 Jun 2022 11:47:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5677C34114;
-        Mon, 13 Jun 2022 11:47:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A0509B80EB3;
+        Mon, 13 Jun 2022 11:47:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15099C3411C;
+        Mon, 13 Jun 2022 11:47:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120878;
-        bh=0Iwo5Gcye3VS9NYYrO2aH3mgsqiNWBDrItlwXSltw2Q=;
+        s=korg; t=1655120875;
+        bh=Drvoe06Rum6IT8nSgFkeIgGjDgEx/XCBnWyQoaxinns=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wIROrH6FYYL5EvXNcPpkHx7Fw60GbHDGqB/fEV2gIyAabdwxBlWLns1Pfj/TTyhrb
-         MkxBVvVMbtopNsY1OgEIehNfwN6vO8IEl/QDI7sRC8FV1Nlq/BDPRnsiNEIMQl17K5
-         2RKaNKHJePabb/McapxB1UuUPMEQ64KhvM4hDui8=
+        b=ZhcKpVvw7aE289xu72DeMHFTwtRXNUqNHfC3TwTTK807V5I2C5nInp/WZ5LC0UhIm
+         2/ark54sJaKs7aTel1p9Sduy6Zu322a4LDrNMMwhNEtg+Cs1UmbHaKjmUpeGxM9rHv
+         qEyaSTXzVKjFDRDrw2flJGEJPzulde1BzL5PIf6o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Taehee Yoo <ap420073@gmail.com>,
+        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 168/298] amt: fix wrong usage of pskb_may_pull()
-Date:   Mon, 13 Jun 2022 12:11:02 +0200
-Message-Id: <20220613094930.027648622@linuxfoundation.org>
+Subject: [PATCH 5.17 189/298] ip_gre: test csum_start instead of transport header
+Date:   Mon, 13 Jun 2022 12:11:23 +0200
+Message-Id: <20220613094930.837250052@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,180 +53,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Taehee Yoo <ap420073@gmail.com>
+From: Willem de Bruijn <willemb@google.com>
 
-[ Upstream commit f55a07074fdd38cab8c097ac5bd397d68eff733c ]
+[ Upstream commit 8d21e9963bec1aad2280cdd034c8993033ef2948 ]
 
-It adds missing pskb_may_pull() in amt_update_handler() and
-amt_multicast_data_handler().
-And it fixes wrong parameter of pskb_may_pull() in
-amt_advertisement_handler() and amt_membership_query_handler().
+GRE with TUNNEL_CSUM will apply local checksum offload on
+CHECKSUM_PARTIAL packets.
 
-Reported-by: Jakub Kicinski <kuba@kernel.org>
-Fixes: cbc21dc1cfe9 ("amt: add data plane of amt interface")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+ipgre_xmit must validate csum_start after an optional skb_pull,
+else lco_csum may trigger an overflow. The original check was
+
+	if (csum && skb_checksum_start(skb) < skb->data)
+		return -EINVAL;
+
+This had false positives when skb_checksum_start is undefined:
+when ip_summed is not CHECKSUM_PARTIAL. A discussed refinement
+was straightforward
+
+	if (csum && skb->ip_summed == CHECKSUM_PARTIAL &&
+	    skb_checksum_start(skb) < skb->data)
+		return -EINVAL;
+
+But was eventually revised more thoroughly:
+- restrict the check to the only branch where needed, in an
+  uncommon GRE path that uses header_ops and calls skb_pull.
+- test skb_transport_header, which is set along with csum_start
+  in skb_partial_csum_set in the normal header_ops datapath.
+
+Turns out skbs can arrive in this branch without the transport
+header set, e.g., through BPF redirection.
+
+Revise the check back to check csum_start directly, and only if
+CHECKSUM_PARTIAL. Do leave the check in the updated location.
+Check field regardless of whether TUNNEL_CSUM is configured.
+
+Link: https://lore.kernel.org/netdev/YS+h%2FtqCJJiQei+W@shredder/
+Link: https://lore.kernel.org/all/20210902193447.94039-2-willemdebruijn.kernel@gmail.com/T/#u
+Fixes: 8a0ed250f911 ("ip_gre: validate csum_start only on pull")
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Willem de Bruijn <willemb@google.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+Link: https://lore.kernel.org/r/20220606132107.3582565-1-willemdebruijn.kernel@gmail.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/amt.c | 55 +++++++++++++++++++++++++++++++----------------
- 1 file changed, 37 insertions(+), 18 deletions(-)
+ net/ipv4/ip_gre.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/amt.c b/drivers/net/amt.c
-index d23eac9ce858..d8c47c4e6559 100644
---- a/drivers/net/amt.c
-+++ b/drivers/net/amt.c
-@@ -2220,8 +2220,7 @@ static bool amt_advertisement_handler(struct amt_dev *amt, struct sk_buff *skb)
- 	struct amt_header_advertisement *amta;
- 	int hdr_size;
+diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
+index 8cf86e42c1d1..65b6d4c1698e 100644
+--- a/net/ipv4/ip_gre.c
++++ b/net/ipv4/ip_gre.c
+@@ -629,21 +629,20 @@ static netdev_tx_t ipgre_xmit(struct sk_buff *skb,
+ 	}
  
--	hdr_size = sizeof(*amta) - sizeof(struct amt_header);
+ 	if (dev->header_ops) {
+-		const int pull_len = tunnel->hlen + sizeof(struct iphdr);
 -
-+	hdr_size = sizeof(*amta) + sizeof(struct udphdr);
- 	if (!pskb_may_pull(skb, hdr_size))
- 		return true;
+ 		if (skb_cow_head(skb, 0))
+ 			goto free_skb;
  
-@@ -2251,19 +2250,27 @@ static bool amt_multicast_data_handler(struct amt_dev *amt, struct sk_buff *skb)
- 	struct ethhdr *eth;
- 	struct iphdr *iph;
+ 		tnl_params = (const struct iphdr *)skb->data;
  
-+	hdr_size = sizeof(*amtmd) + sizeof(struct udphdr);
-+	if (!pskb_may_pull(skb, hdr_size))
-+		return true;
-+
- 	amtmd = (struct amt_header_mcast_data *)(udp_hdr(skb) + 1);
- 	if (amtmd->reserved || amtmd->version)
- 		return true;
- 
--	hdr_size = sizeof(*amtmd) + sizeof(struct udphdr);
- 	if (iptunnel_pull_header(skb, hdr_size, htons(ETH_P_IP), false))
- 		return true;
-+
- 	skb_reset_network_header(skb);
- 	skb_push(skb, sizeof(*eth));
- 	skb_reset_mac_header(skb);
- 	skb_pull(skb, sizeof(*eth));
- 	eth = eth_hdr(skb);
-+
-+	if (!pskb_may_pull(skb, sizeof(*iph)))
-+		return true;
- 	iph = ip_hdr(skb);
-+
- 	if (iph->version == 4) {
- 		if (!ipv4_is_multicast(iph->daddr))
- 			return true;
-@@ -2274,6 +2281,9 @@ static bool amt_multicast_data_handler(struct amt_dev *amt, struct sk_buff *skb)
- 	} else if (iph->version == 6) {
- 		struct ipv6hdr *ip6h;
- 
-+		if (!pskb_may_pull(skb, sizeof(*ip6h)))
-+			return true;
-+
- 		ip6h = ipv6_hdr(skb);
- 		if (!ipv6_addr_is_multicast(&ip6h->daddr))
- 			return true;
-@@ -2306,8 +2316,7 @@ static bool amt_membership_query_handler(struct amt_dev *amt,
- 	struct iphdr *iph;
- 	int hdr_size, len;
- 
--	hdr_size = sizeof(*amtmq) - sizeof(struct amt_header);
+-		if (pull_len > skb_transport_offset(skb))
+-			goto free_skb;
 -
-+	hdr_size = sizeof(*amtmq) + sizeof(struct udphdr);
- 	if (!pskb_may_pull(skb, hdr_size))
- 		return true;
- 
-@@ -2315,22 +2324,27 @@ static bool amt_membership_query_handler(struct amt_dev *amt,
- 	if (amtmq->reserved || amtmq->version)
- 		return true;
- 
--	hdr_size = sizeof(*amtmq) + sizeof(struct udphdr) - sizeof(*eth);
-+	hdr_size -= sizeof(*eth);
- 	if (iptunnel_pull_header(skb, hdr_size, htons(ETH_P_TEB), false))
- 		return true;
+ 		/* Pull skb since ip_tunnel_xmit() needs skb->data pointing
+ 		 * to gre header.
+ 		 */
+-		skb_pull(skb, pull_len);
++		skb_pull(skb, tunnel->hlen + sizeof(struct iphdr));
+ 		skb_reset_mac_header(skb);
 +
- 	oeth = eth_hdr(skb);
- 	skb_reset_mac_header(skb);
- 	skb_pull(skb, sizeof(*eth));
- 	skb_reset_network_header(skb);
- 	eth = eth_hdr(skb);
-+	if (!pskb_may_pull(skb, sizeof(*iph)))
-+		return true;
-+
- 	iph = ip_hdr(skb);
- 	if (iph->version == 4) {
--		if (!ipv4_is_multicast(iph->daddr))
--			return true;
- 		if (!pskb_may_pull(skb, sizeof(*iph) + AMT_IPHDR_OPTS +
- 				   sizeof(*ihv3)))
- 			return true;
- 
-+		if (!ipv4_is_multicast(iph->daddr))
-+			return true;
-+
- 		ihv3 = skb_pull(skb, sizeof(*iph) + AMT_IPHDR_OPTS);
- 		skb_reset_transport_header(skb);
- 		skb_push(skb, sizeof(*iph) + AMT_IPHDR_OPTS);
-@@ -2345,15 +2359,17 @@ static bool amt_membership_query_handler(struct amt_dev *amt,
- 		ip_eth_mc_map(iph->daddr, eth->h_dest);
- #if IS_ENABLED(CONFIG_IPV6)
- 	} else if (iph->version == 6) {
--		struct ipv6hdr *ip6h = ipv6_hdr(skb);
- 		struct mld2_query *mld2q;
-+		struct ipv6hdr *ip6h;
- 
--		if (!ipv6_addr_is_multicast(&ip6h->daddr))
--			return true;
- 		if (!pskb_may_pull(skb, sizeof(*ip6h) + AMT_IP6HDR_OPTS +
- 				   sizeof(*mld2q)))
- 			return true;
- 
-+		ip6h = ipv6_hdr(skb);
-+		if (!ipv6_addr_is_multicast(&ip6h->daddr))
-+			return true;
-+
- 		mld2q = skb_pull(skb, sizeof(*ip6h) + AMT_IP6HDR_OPTS);
- 		skb_reset_transport_header(skb);
- 		skb_push(skb, sizeof(*ip6h) + AMT_IP6HDR_OPTS);
-@@ -2389,23 +2405,23 @@ static bool amt_update_handler(struct amt_dev *amt, struct sk_buff *skb)
- {
- 	struct amt_header_membership_update *amtmu;
- 	struct amt_tunnel_list *tunnel;
--	struct udphdr *udph;
- 	struct ethhdr *eth;
- 	struct iphdr *iph;
--	int len;
-+	int len, hdr_size;
- 
- 	iph = ip_hdr(skb);
--	udph = udp_hdr(skb);
- 
--	if (__iptunnel_pull_header(skb, sizeof(*udph), skb->protocol,
--				   false, false))
-+	hdr_size = sizeof(*amtmu) + sizeof(struct udphdr);
-+	if (!pskb_may_pull(skb, hdr_size))
- 		return true;
- 
--	amtmu = (struct amt_header_membership_update *)skb->data;
-+	amtmu = (struct amt_header_membership_update *)(udp_hdr(skb) + 1);
- 	if (amtmu->reserved || amtmu->version)
- 		return true;
- 
--	skb_pull(skb, sizeof(*amtmu));
-+	if (iptunnel_pull_header(skb, hdr_size, skb->protocol, false))
-+		return true;
-+
- 	skb_reset_network_header(skb);
- 
- 	list_for_each_entry_rcu(tunnel, &amt->tunnel_list, list) {
-@@ -2426,6 +2442,9 @@ static bool amt_update_handler(struct amt_dev *amt, struct sk_buff *skb)
- 	return true;
- 
- report:
-+	if (!pskb_may_pull(skb, sizeof(*iph)))
-+		return true;
-+
- 	iph = ip_hdr(skb);
- 	if (iph->version == 4) {
- 		if (ip_mc_check_igmp(skb)) {
++		if (skb->ip_summed == CHECKSUM_PARTIAL &&
++		    skb_checksum_start(skb) < skb->data)
++			goto free_skb;
+ 	} else {
+ 		if (skb_cow_head(skb, dev->needed_headroom))
+ 			goto free_skb;
 -- 
 2.35.1
 
