@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBFF3CCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD77CCCA481
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:59:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351177AbiFMK7R (ORCPT
+        id S1351378AbiFMK7w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:59:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44392 "EHLO
+        Mon, 13 Jun 2022 06:59:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350160AbiFMKyn (ORCPT
+        with ESMTP id S1350175AbiFMKyo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:54:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6698DFE7;
-        Mon, 13 Jun 2022 03:29:38 -0700 (PDT)
+        Mon, 13 Jun 2022 06:54:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD71EDFC2;
+        Mon, 13 Jun 2022 03:29:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A44A8B80E94;
-        Mon, 13 Jun 2022 10:29:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A7B4C34114;
-        Mon, 13 Jun 2022 10:29:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 55DD5B80E5E;
+        Mon, 13 Jun 2022 10:29:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4BFBC34114;
+        Mon, 13 Jun 2022 10:29:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116176;
-        bh=gn/eCdmqB5fJjArNNAufz7ZEKjtYcJ3DdUYMiiTIDg0=;
+        s=korg; t=1655116193;
+        bh=RNeHE94BSj+4gptWB0XYtF6cAVaNg9bbvHZewnS9el8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z+QAG8VYQJkz+s1AUyXZQQjDOF9pdIOCTz+1VMHf+l+zkMaL1ppKyAuHh+sAyWv3w
-         c9SpGIG1e/g+7M4mbZcgmeWlMnf9aIDnSIOlo0PQovW0pY8cItiAUcDTNPuVx5OzL3
-         LG2D8bpKh+neZal/rT5l0Qfc9RaVMrJ6cJvgiBeY=
+        b=XQYMmWBCetOzAnQ7oLGgKZ0534YGQ1RYHHXCRUsOt0Pf11CEN8TibFcJOom2oMpow
+         +b3GTl2T1cPp/Rcfq9CZWLrr41X//A/gZStc0iDj2QBiAGFbI/DG4MZX//fjJ5hCqN
+         rfYhccFulWlZq8D/9iae2gQHmdA1pj2YlpCjprqI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org,
+        Aidan MacDonald <aidanmacdonald.0x0@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 027/411] media: pci: cx23885: Fix the error handling in cx23885_initdev()
-Date:   Mon, 13 Jun 2022 12:05:00 +0200
-Message-Id: <20220613094929.315929236@linuxfoundation.org>
+Subject: [PATCH 5.4 030/411] mmc: jz4740: Apply DMA engine limits to maximum segment size
+Date:   Mon, 13 Jun 2022 12:05:03 +0200
+Message-Id: <20220613094929.408384514@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -51,64 +51,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
 
-[ Upstream commit e8123311cf06d7dae71e8c5fe78e0510d20cd30b ]
+[ Upstream commit afadb04f1d6e74b18a253403f5274cde5e3fd7bd ]
 
-When the driver fails to call the dma_set_mask(), the driver will get
-the following splat:
+Do what is done in other DMA-enabled MMC host drivers (cf. host/mmci.c) and
+limit the maximum segment size based on the DMA engine's capabilities. This
+is needed to avoid warnings like the following with CONFIG_DMA_API_DEBUG=y.
 
-[   55.853884] BUG: KASAN: use-after-free in __process_removed_driver+0x3c/0x240
-[   55.854486] Read of size 8 at addr ffff88810de60408 by task modprobe/590
-[   55.856822] Call Trace:
-[   55.860327]  __process_removed_driver+0x3c/0x240
-[   55.861347]  bus_for_each_dev+0x102/0x160
-[   55.861681]  i2c_del_driver+0x2f/0x50
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 21 at kernel/dma/debug.c:1162 debug_dma_map_sg+0x2f4/0x39c
+DMA-API: jz4780-dma 13420000.dma-controller: mapping sg segment longer than device claims to support [len=98304] [max=65536]
+CPU: 0 PID: 21 Comm: kworker/0:1H Not tainted 5.18.0-rc1 #19
+Workqueue: kblockd blk_mq_run_work_fn
+Stack : 81575aec 00000004 80620000 80620000 80620000 805e7358 00000009 801537ac
+        814c832c 806276e3 806e34b4 80620000 81575aec 00000001 81575ab8 09291444
+        00000000 00000000 805e7358 81575958 ffffffea 8157596c 00000000 636f6c62
+        6220646b 80387a70 0000000f 6d5f6b6c 80620000 00000000 81575ba4 00000009
+        805e170c 80896640 00000001 00010000 00000000 00000000 00006098 806e0000
+        ...
+Call Trace:
+[<80107670>] show_stack+0x84/0x120
+[<80528cd8>] __warn+0xb8/0xec
+[<80528d78>] warn_slowpath_fmt+0x6c/0xb8
+[<8016f1d4>] debug_dma_map_sg+0x2f4/0x39c
+[<80169d4c>] __dma_map_sg_attrs+0xf0/0x118
+[<8016a27c>] dma_map_sg_attrs+0x14/0x28
+[<804f66b4>] jz4740_mmc_prepare_dma_data+0x74/0xa4
+[<804f6714>] jz4740_mmc_pre_request+0x30/0x54
+[<804f4ff4>] mmc_blk_mq_issue_rq+0x6e0/0x7bc
+[<804f5590>] mmc_mq_queue_rq+0x220/0x2d4
+[<8038b2c0>] blk_mq_dispatch_rq_list+0x480/0x664
+[<80391040>] blk_mq_do_dispatch_sched+0x2dc/0x370
+[<80391468>] __blk_mq_sched_dispatch_requests+0xec/0x164
+[<80391540>] blk_mq_sched_dispatch_requests+0x44/0x94
+[<80387900>] __blk_mq_run_hw_queue+0xb0/0xcc
+[<80134c14>] process_one_work+0x1b8/0x264
+[<80134ff8>] worker_thread+0x2ec/0x3b8
+[<8013b13c>] kthread+0x104/0x10c
+[<80101dcc>] ret_from_kernel_thread+0x14/0x1c
 
-This is because the driver has initialized the i2c related resources
-in cx23885_dev_setup() but not released them in error handling, fix this
-bug by modifying the error path that jumps after failing to call the
-dma_set_mask().
+---[ end trace 0000000000000000 ]---
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Link: https://lore.kernel.org/r/20220411153753.50443-1-aidanmacdonald.0x0@gmail.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/cx23885/cx23885-core.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/mmc/host/jz4740_mmc.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/drivers/media/pci/cx23885/cx23885-core.c b/drivers/media/pci/cx23885/cx23885-core.c
-index ead0acb7807c..6747ecb4911b 100644
---- a/drivers/media/pci/cx23885/cx23885-core.c
-+++ b/drivers/media/pci/cx23885/cx23885-core.c
-@@ -2154,7 +2154,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
- 	err = pci_set_dma_mask(pci_dev, 0xffffffff);
- 	if (err) {
- 		pr_err("%s/0: Oops: no 32bit PCI DMA ???\n", dev->name);
--		goto fail_ctrl;
-+		goto fail_dma_set_mask;
+diff --git a/drivers/mmc/host/jz4740_mmc.c b/drivers/mmc/host/jz4740_mmc.c
+index f816c06ef916..a316c912a118 100644
+--- a/drivers/mmc/host/jz4740_mmc.c
++++ b/drivers/mmc/host/jz4740_mmc.c
+@@ -224,6 +224,26 @@ static int jz4740_mmc_acquire_dma_channels(struct jz4740_mmc_host *host)
+ 		return PTR_ERR(host->dma_rx);
  	}
  
- 	err = request_irq(pci_dev->irq, cx23885_irq,
-@@ -2162,7 +2162,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
- 	if (err < 0) {
- 		pr_err("%s: can't get IRQ %d\n",
- 		       dev->name, pci_dev->irq);
--		goto fail_irq;
-+		goto fail_dma_set_mask;
- 	}
- 
- 	switch (dev->board) {
-@@ -2184,7 +2184,7 @@ static int cx23885_initdev(struct pci_dev *pci_dev,
- 
++	/*
++	 * Limit the maximum segment size in any SG entry according to
++	 * the parameters of the DMA engine device.
++	 */
++	if (host->dma_tx) {
++		struct device *dev = host->dma_tx->device->dev;
++		unsigned int max_seg_size = dma_get_max_seg_size(dev);
++
++		if (max_seg_size < host->mmc->max_seg_size)
++			host->mmc->max_seg_size = max_seg_size;
++	}
++
++	if (host->dma_rx) {
++		struct device *dev = host->dma_rx->device->dev;
++		unsigned int max_seg_size = dma_get_max_seg_size(dev);
++
++		if (max_seg_size < host->mmc->max_seg_size)
++			host->mmc->max_seg_size = max_seg_size;
++	}
++
  	return 0;
+ }
  
--fail_irq:
-+fail_dma_set_mask:
- 	cx23885_dev_unregister(dev);
- fail_ctrl:
- 	v4l2_ctrl_handler_free(hdl);
 -- 
 2.35.1
 
