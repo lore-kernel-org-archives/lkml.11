@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D22CACCA495
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:00:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 001F0C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:00:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358684AbiFMM74 (ORCPT
+        id S1357697AbiFMM7W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:59:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50348 "EHLO
+        Mon, 13 Jun 2022 08:59:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358004AbiFMMyz (ORCPT
+        with ESMTP id S1354615AbiFMMxd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:54:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF7B735859;
-        Mon, 13 Jun 2022 04:13:54 -0700 (PDT)
+        Mon, 13 Jun 2022 08:53:33 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 823711EAEC;
+        Mon, 13 Jun 2022 04:12:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6F373B80E93;
-        Mon, 13 Jun 2022 11:13:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C32E2C3411C;
-        Mon, 13 Jun 2022 11:13:51 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A3E2CCE1174;
+        Mon, 13 Jun 2022 11:12:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B8A9C34114;
+        Mon, 13 Jun 2022 11:12:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118832;
-        bh=/lWHFpte0nQhGTo7XI8GUdlZRuC2Mn0hannG7wMM4LU=;
+        s=korg; t=1655118754;
+        bh=zha2dROxJNfVeY3ac8jBE+pOULrvQBeoRLrNGrfbVns=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BYUk5qYzjtoPek5DLwfLFNqfkTBuBBjjJwm6RDmylSCS9ysbeISUQIQ+hkwNhurBW
-         Gm4xto+hVfo0RORZv9sNkBT4QMz7LpHYqr0EkbzTW64FhoWRe1gWsrMVZvJjRF11iH
-         gWbqClMcjehNiuuOUfYcUVBscB6n97ND/KCM69e4=
+        b=E0KPcldgfJl8FOx9jSgNgNWH95UXmdxw3qY/8iPHuujaGMdPLVj5PQFSs0LZqJdzE
+         a6VPwcjX5B7HDFcDNTCZSGc3uzZ6UxsmZF8qJQMP4D6hbksGIJqATk3/ywmAQ9rL6p
+         b4lZjezLabp7SMcnmy0uHvQrrqV9uhzsBdxVFZFs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Heiko Stuebner <heiko@sntech.de>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 043/247] soc: rockchip: Fix refcount leak in rockchip_grf_init
-Date:   Mon, 13 Jun 2022 12:09:05 +0200
-Message-Id: <20220613094924.254243303@linuxfoundation.org>
+Subject: [PATCH 5.15 016/247] staging: fieldbus: Fix the error handling path in anybuss_host_common_probe()
+Date:   Mon, 13 Jun 2022 12:08:38 +0200
+Message-Id: <20220613094923.420381405@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,42 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 9b59588d8be91c96bfb0371e912ceb4f16315dbf ]
+[ Upstream commit 7079b3483a17be2cfba64cbd4feb1b7ae07f1ea7 ]
 
-of_find_matching_node_and_match returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
-Add missing of_node_put() to avoid refcount leak.
+If device_register() fails, device_unregister() should not be called
+because it will free some resources that are not allocated.
+put_device() should be used instead.
 
-Fixes: 4c58063d4258 ("soc: rockchip: add driver handling grf setup")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220516072013.19731-1-linmq006@gmail.com
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Fixes: 308ee87a2f1e ("staging: fieldbus: anybus-s: support HMS Anybus-S bus")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/5401a519608d6e1a4e7435c20f4f20b0c5c36c23.1650610082.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/rockchip/grf.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/staging/fieldbus/anybuss/host.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/soc/rockchip/grf.c b/drivers/soc/rockchip/grf.c
-index 494cf2b5bf7b..343ff61ccccb 100644
---- a/drivers/soc/rockchip/grf.c
-+++ b/drivers/soc/rockchip/grf.c
-@@ -148,12 +148,14 @@ static int __init rockchip_grf_init(void)
- 		return -ENODEV;
- 	if (!match || !match->data) {
- 		pr_err("%s: missing grf data\n", __func__);
-+		of_node_put(np);
- 		return -EINVAL;
- 	}
- 
- 	grf_info = match->data;
- 
- 	grf = syscon_node_to_regmap(np);
-+	of_node_put(np);
- 	if (IS_ERR(grf)) {
- 		pr_err("%s: could not get grf syscon\n", __func__);
- 		return PTR_ERR(grf);
+diff --git a/drivers/staging/fieldbus/anybuss/host.c b/drivers/staging/fieldbus/anybuss/host.c
+index 8a75f6642c78..0c41d1e0204f 100644
+--- a/drivers/staging/fieldbus/anybuss/host.c
++++ b/drivers/staging/fieldbus/anybuss/host.c
+@@ -1384,7 +1384,7 @@ anybuss_host_common_probe(struct device *dev,
+ 		goto err_device;
+ 	return cd;
+ err_device:
+-	device_unregister(&cd->client->dev);
++	put_device(&cd->client->dev);
+ err_kthread:
+ 	kthread_stop(cd->qthread);
+ err_reset:
 -- 
 2.35.1
 
