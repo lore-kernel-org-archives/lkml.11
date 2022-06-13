@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70A80CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:56:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E384CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:56:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348417AbiFMK4Q (ORCPT
+        id S1348573AbiFMK4W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:56:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59376 "EHLO
+        Mon, 13 Jun 2022 06:56:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348641AbiFMKyA (ORCPT
+        with ESMTP id S1348769AbiFMKyA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 06:54:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 336AD2ED64;
-        Mon, 13 Jun 2022 03:27:49 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB7752ED6C;
+        Mon, 13 Jun 2022 03:27:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77E9EB80E94;
-        Mon, 13 Jun 2022 10:27:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCF7EC34114;
-        Mon, 13 Jun 2022 10:27:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C90F60ED7;
+        Mon, 13 Jun 2022 10:27:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71057C3411E;
+        Mon, 13 Jun 2022 10:27:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116067;
-        bh=EfYci/R3lOfH/XxHNoOcyp99eMNWnl9EYqOVRhL4ndY=;
+        s=korg; t=1655116069;
+        bh=MH+jVAq6gHql77W/E2asVonBTzuDrvB/pKfbqPiaEQ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2d2ycX9veQJh314ml3zkczOD7ETEaHuzu50/zjMPysfSH2ZlpfQTMrYwNtltYov3s
-         EiuxynevvlXd31cW4cmwhqh+p7FmPGyvVXNT2KIjcBwjjLs4jZRaEZGof4KdKzzaRM
-         A1+hJGMAOMyOYaKf5n1w6vCmO1ttzAjIcbNlUqtE=
+        b=eWf9LHGrShST8q1nrLZqczSzi+JILhEOIQ26rDRCTjgGPB1OsXDLGTbShoGsJWJuE
+         tFw4HBotT41FzgBeLnTlow7Rv3IvZGaC9//iRhpdN+ukB8coyeu52nMGQx+livQ757
+         5Ig7EsC+jhbEDWdfNLGvhSjB1f4uVU2osUp4Xm5Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kan Liang <kan.liang@linux.intel.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH 5.4 006/411] perf/x86/intel: Fix event constraints for ICL
-Date:   Mon, 13 Jun 2022 12:04:39 +0200
-Message-Id: <20220613094928.684618515@linuxfoundation.org>
+        stable@vger.kernel.org, Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Goldwyn Rodrigues <rgoldwyn@suse.com>,
+        Song Liu <song@kernel.org>
+Subject: [PATCH 4.14 117/218] md: fix an incorrect NULL check in does_sb_need_changing
+Date:   Mon, 13 Jun 2022 12:09:35 +0200
+Message-Id: <20220613094924.117838903@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,35 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kan Liang <kan.liang@linux.intel.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit 86dca369075b3e310c3c0adb0f81e513c562b5e4 upstream.
+commit fc8738343eefc4ea8afb6122826dea48eacde514 upstream.
 
-According to the latest event list, the event encoding 0x55
-INST_DECODED.DECODERS and 0x56 UOPS_DECODED.DEC0 are only available on
-the first 4 counters. Add them into the event constraints table.
+The bug is here:
+	if (!rdev)
 
-Fixes: 6017608936c1 ("perf/x86/intel: Add Icelake support")
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Acked-by: Peter Zijlstra <peterz@infradead.org>
+The list iterator value 'rdev' will *always* be set and non-NULL
+by rdev_for_each(), so it is incorrect to assume that the iterator
+value will be NULL if the list is empty or no element found.
+Otherwise it will bypass the NULL check and lead to invalid memory
+access passing the check.
+
+To fix the bug, use a new variable 'iter' as the list iterator,
+while using the original variable 'rdev' as a dedicated pointer to
+point to the found element.
+
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220525133952.1660658-1-kan.liang@linux.intel.com
+Fixes: 2aa82191ac36 ("md-cluster: Perform a lazy update")
+Acked-by: Guoqing Jiang <guoqing.jiang@linux.dev>
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Acked-by: Goldwyn Rodrigues <rgoldwyn@suse.com>
+Signed-off-by: Song Liu <song@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/events/intel/core.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/md/md.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---- a/arch/x86/events/intel/core.c
-+++ b/arch/x86/events/intel/core.c
-@@ -250,7 +250,7 @@ static struct event_constraint intel_icl
- 	INTEL_EVENT_CONSTRAINT_RANGE(0x03, 0x0a, 0xf),
- 	INTEL_EVENT_CONSTRAINT_RANGE(0x1f, 0x28, 0xf),
- 	INTEL_EVENT_CONSTRAINT(0x32, 0xf),	/* SW_PREFETCH_ACCESS.* */
--	INTEL_EVENT_CONSTRAINT_RANGE(0x48, 0x54, 0xf),
-+	INTEL_EVENT_CONSTRAINT_RANGE(0x48, 0x56, 0xf),
- 	INTEL_EVENT_CONSTRAINT_RANGE(0x60, 0x8b, 0xf),
- 	INTEL_UEVENT_CONSTRAINT(0x04a3, 0xff),  /* CYCLE_ACTIVITY.STALLS_TOTAL */
- 	INTEL_UEVENT_CONSTRAINT(0x10a3, 0xff),  /* CYCLE_ACTIVITY.CYCLES_MEM_ANY */
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -2427,14 +2427,16 @@ static void sync_sbs(struct mddev *mddev
+ 
+ static bool does_sb_need_changing(struct mddev *mddev)
+ {
+-	struct md_rdev *rdev;
++	struct md_rdev *rdev = NULL, *iter;
+ 	struct mdp_superblock_1 *sb;
+ 	int role;
+ 
+ 	/* Find a good rdev */
+-	rdev_for_each(rdev, mddev)
+-		if ((rdev->raid_disk >= 0) && !test_bit(Faulty, &rdev->flags))
++	rdev_for_each(iter, mddev)
++		if ((iter->raid_disk >= 0) && !test_bit(Faulty, &iter->flags)) {
++			rdev = iter;
+ 			break;
++		}
+ 
+ 	/* No good device found. */
+ 	if (!rdev)
 
 
