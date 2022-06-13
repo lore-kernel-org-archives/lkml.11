@@ -2,100 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C91D5CCA48D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63852CCA47C
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:47:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241856AbiFMOrS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:47:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35780 "EHLO
+        id S1385978AbiFMOqf (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 10:46:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386220AbiFMOoq (ORCPT
+        with ESMTP id S1385910AbiFMOoE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:44:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37565B715B;
-        Mon, 13 Jun 2022 04:51:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E612FB80D31;
-        Mon, 13 Jun 2022 11:51:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F887C34114;
-        Mon, 13 Jun 2022 11:51:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655121080;
-        bh=5fgkOH7xDgS6Kb/TqVo4BBb+cplA2IpxfR8lxDeJRPE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zg/OCLdiVYb3nGS1Cj/kmUNBW0p4T512ytdHnTtaXUuJxIjxTzu5zQ3Ux4HOfcagQ
-         ZQ7GpNAh/WTQsHKNV5cSroUflRI9ErHnqRAaZroQuWwJBz6SAxJIjqDMy+N5rmRfCf
-         OxY0y1GCcYGhirDjABa1BLIqCwDeEMdbmDJL8AJM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shyam Prasad N <sprasad@microsoft.com>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.17 264/298] cifs: populate empty hostnames for extra channels
-Date:   Mon, 13 Jun 2022 12:12:38 +0200
-Message-Id: <20220613094933.079890708@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
-References: <20220613094924.913340374@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Mon, 13 Jun 2022 10:44:04 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D51B3B41DC;
+        Mon, 13 Jun 2022 04:51:03 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id v25so6754374eda.6;
+        Mon, 13 Jun 2022 04:51:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=zgX/PVEPf8nMw9zVAy2wbzfkUCGcHSawa+uHP8BTd9Q=;
+        b=W0U6MAI0+IGC5YwFTD8F834ELZTvP7B5fUkYdbdyuxf0nQu4SdET6AOTpyLBIeqGI4
+         gIS9CHA+sbJFRkAhQC30VY8LVz7DnVV48C508IaDcJXkUp6ai4kCIc8i5K2fZ6sB/nO+
+         hcfYVV54+yUh0QOQs5dFwnoUTelOGVKVrN86EuiOaXj64jRdErGVFRbTPe+icFNxNCsL
+         oyBkAf3dCzi+g/+RiGvtc58+65OH4uIJ2S3OstdxpYJx/PMsxIOEnvF/pl/fA1RmiQ4X
+         TZb2Kf3qdDtosTlCPhRiFkJpb2U4ii4INFWR0pSbFBTqMTW7m+0nLByM3mnZb4lNI94f
+         mDPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=zgX/PVEPf8nMw9zVAy2wbzfkUCGcHSawa+uHP8BTd9Q=;
+        b=0KtzXGea8ir2QQ0c1uh7Ve7bNSTtE3jzV1Z2Z4N4+LAwUMLqg6dqeIeLjEFtslZtZ2
+         pToj0E2Lp57SjXdMBtRouzs28pQz8BQ8QjC8zbn92K08fgGyHFwRbXdAEsO7baJTiizq
+         8c30AcuhN3c7P6IjY1MDPgBR8NpozYxAFpE41DBJAlSg+fi8k057LkfdyyoHNb90oraN
+         NT4axKBfe8eDJQTtKMCiT/MvvG2lY3egir/4VTsnWhiU1TisDd5egzk2Wo3leBVD1bld
+         XO+CGwCfIfgHC9whgg+wKf3rmgIv+VVGn2xlRc+7qli1Oh11M0WeXAVvqG+KBUxhTwi5
+         r4PQ==
+X-Gm-Message-State: AOAM533MRhmHjZqi/7z9wemTPHvwTaMkz6nQQFX4u/vND+U4+5dcxkjt
+        5php7zIgIKi3hIn4vTZlfiB9Hm1AckE=
+X-Google-Smtp-Source: ABdhPJxeyfxnfKceAb/4rg82X1D+qsKnKPtx3yG4v5B5zF0L2yMkiRBXOD5V0dybGThWRkSMqexNCw==
+X-Received: by 2002:aa7:c34d:0:b0:42d:ce57:5df2 with SMTP id j13-20020aa7c34d000000b0042dce575df2mr64383362edr.315.1655121061007;
+        Mon, 13 Jun 2022 04:51:01 -0700 (PDT)
+Received: from felia.fritz.box (200116b8260df50011e978c0f780de03.dip.versatel-1u1.de. [2001:16b8:260d:f500:11e9:78c0:f780:de03])
+        by smtp.gmail.com with ESMTPSA id 12-20020a170906308c00b006ff0b457cdasm3734771ejv.53.2022.06.13.04.51.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 04:51:00 -0700 (PDT)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] MAINTAINERS: add include/dt-bindings/iio to IIO SUBSYSTEM AND DRIVERS
+Date:   Mon, 13 Jun 2022 13:50:45 +0200
+Message-Id: <20220613115045.24326-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shyam Prasad N <sprasad@microsoft.com>
+Maintainers of the directory Documentation/devicetree/bindings/iio
+are also the maintainers of the corresponding directory
+include/dt-bindings/iio.
 
-commit 4c14d7043fede258957d7b01da0cad2d9fe3a205 upstream.
+Add the file entry for include/dt-bindings/iio to the appropriate
+section in MAINTAINERS.
 
-Currently, the secondary channels of a multichannel session
-also get hostname populated based on the info in primary channel.
-However, this will end up with a wrong resolution of hostname to
-IP address during reconnect.
-
-This change fixes this by not populating hostname info for all
-secondary channels.
-
-Fixes: 5112d80c162f ("cifs: populate server_hostname for extra channels")
-Cc: stable@vger.kernel.org
-Signed-off-by: Shyam Prasad N <sprasad@microsoft.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 ---
- fs/cifs/connect.c |    4 ++++
- fs/cifs/sess.c    |    5 ++++-
- 2 files changed, 8 insertions(+), 1 deletion(-)
+Jonathan, Lars-Peter, please pick this MAINTAINERS addition to your section.
 
---- a/fs/cifs/connect.c
-+++ b/fs/cifs/connect.c
-@@ -97,6 +97,10 @@ static int reconn_set_ipaddr_from_hostna
- 	if (!server->hostname)
- 		return -EINVAL;
- 
-+	/* if server hostname isn't populated, there's nothing to do here */
-+	if (server->hostname[0] == '\0')
-+		return 0;
-+
- 	len = strlen(server->hostname) + 3;
- 
- 	unc = kmalloc(len, GFP_KERNEL);
---- a/fs/cifs/sess.c
-+++ b/fs/cifs/sess.c
-@@ -274,7 +274,10 @@ cifs_ses_add_channel(struct cifs_sb_info
- 	/* Auth */
- 	ctx.domainauto = ses->domainAuto;
- 	ctx.domainname = ses->domainName;
--	ctx.server_hostname = ses->server->hostname;
-+
-+	/* no hostname for extra channels */
-+	ctx.server_hostname = "";
-+
- 	ctx.username = ses->user_name;
- 	ctx.password = ses->password;
- 	ctx.sectype = ses->sectype;
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 2b8aec742e6e..503b8042784e 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -9656,6 +9656,7 @@ F:	Documentation/ABI/testing/sysfs-bus-iio*
+ F:	Documentation/devicetree/bindings/iio/
+ F:	drivers/iio/
+ F:	drivers/staging/iio/
++F:	include/dt-bindings/iio/
+ F:	include/linux/iio/
+ F:	tools/iio/
+ 
+-- 
+2.17.1
 
