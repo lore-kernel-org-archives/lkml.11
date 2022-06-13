@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01041CCA489
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:46:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A98B3C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:46:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356387AbiFMLoY (ORCPT
+        id S1356656AbiFMLoy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:44:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55272 "EHLO
+        Mon, 13 Jun 2022 07:44:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355658AbiFMLjW (ORCPT
+        with ESMTP id S1355577AbiFMLjQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:39:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F14932C654;
-        Mon, 13 Jun 2022 03:49:35 -0700 (PDT)
+        Mon, 13 Jun 2022 07:39:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46CD423BEC;
+        Mon, 13 Jun 2022 03:49:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DAD561260;
-        Mon, 13 Jun 2022 10:49:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98AB6C3411C;
-        Mon, 13 Jun 2022 10:49:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D76E261248;
+        Mon, 13 Jun 2022 10:48:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E53D4C34114;
+        Mon, 13 Jun 2022 10:48:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117375;
-        bh=bxcbrjOop6/rQKL0YUOq5KXbnkoO+6fgYRiUhhb5KcA=;
+        s=korg; t=1655117339;
+        bh=JUhpAXL06sgB4JTy+uyMZtOKfZrkSCEtaYLkJICQFXg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z/znVqgVkkdmH7SJha0x5M5MPcC1GTOURuCZk1C21H9YUzicnaOvucPbTrJg+TCpV
-         40bYdCxNea0B3m4bdxBIGlFMzgVKxvIyZGAKoBne1NnsDRXO4nrj8r5RRkeq7uZoTa
-         l25JRgVBwkBcCtONMRXIZ553nxbUzVX9YMYyQELI=
+        b=ba6uFzCOW17VQX8OAvBJQjvWZLctpYsQvrt5qoyxvQaW7cmIMBtP1m6k9EqTNzfN2
+         6vzpDO1jTbw/zBIIzQ6IoRIrzspz/Ov0viNbnSnZVQb5dyqLje849uF8/LKWcHYNES
+         h/Zvbg3uWhYtvP45xITRUPOFIcePzcN57eQ5N+BI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gal Pressman <gal@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 355/411] net/mlx4_en: Fix wrong return value on ioctl EEPROM query failure
-Date:   Mon, 13 Jun 2022 12:10:28 +0200
-Message-Id: <20220613094939.343949863@linuxfoundation.org>
+Subject: [PATCH 4.19 024/287] scsi: megaraid: Fix error check return value of register_chrdev()
+Date:   Mon, 13 Jun 2022 12:07:28 +0200
+Message-Id: <20220613094924.595854627@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
+References: <20220613094923.832156175@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,36 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gal Pressman <gal@nvidia.com>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit f5826c8c9d57210a17031af5527056eefdc2b7eb ]
+[ Upstream commit c5acd61dbb32b6bda0f3a354108f2b8dcb788985 ]
 
-The ioctl EEPROM query wrongly returns success on read failures, fix
-that by returning the appropriate error code.
+If major equals 0, register_chrdev() returns an error code when it fails.
+This function dynamically allocates a major and returns its number on
+success, so we should use "< 0" to check it instead of "!".
 
-Fixes: 7202da8b7f71 ("ethtool, net/mlx4_en: Cable info, get_module_info/eeprom ethtool support")
-Signed-off-by: Gal Pressman <gal@nvidia.com>
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-Link: https://lore.kernel.org/r/20220606115718.14233-1-tariqt@nvidia.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Link: https://lore.kernel.org/r/20220418105755.2558828-1-lv.ruyi@zte.com.cn
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx4/en_ethtool.c | 2 +-
+ drivers/scsi/megaraid.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
-index dd029d91bbc2..b711148a9d50 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
-@@ -2083,7 +2083,7 @@ static int mlx4_en_get_module_eeprom(struct net_device *dev,
- 			en_err(priv,
- 			       "mlx4_get_module_info i(%d) offset(%d) bytes_to_read(%d) - FAILED (0x%x)\n",
- 			       i, offset, ee->len - i, ret);
--			return 0;
-+			return ret;
- 		}
- 
- 		i += ret;
+diff --git a/drivers/scsi/megaraid.c b/drivers/scsi/megaraid.c
+index a84878fbf45d..7352d46ebb09 100644
+--- a/drivers/scsi/megaraid.c
++++ b/drivers/scsi/megaraid.c
+@@ -4641,7 +4641,7 @@ static int __init megaraid_init(void)
+ 	 * major number allocation.
+ 	 */
+ 	major = register_chrdev(0, "megadev_legacy", &megadev_fops);
+-	if (!major) {
++	if (major < 0) {
+ 		printk(KERN_WARNING
+ 				"megaraid: failed to register char device\n");
+ 	}
 -- 
 2.35.1
 
