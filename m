@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B06ECCA48C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA844CCA491
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:20:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377155AbiFMNUE (ORCPT
+        id S1377226AbiFMNUJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:20:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42642 "EHLO
+        Mon, 13 Jun 2022 09:20:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358973AbiFMNIq (ORCPT
+        with ESMTP id S1359300AbiFMNJr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:08:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA9731FCFF;
-        Mon, 13 Jun 2022 04:19:03 -0700 (PDT)
+        Mon, 13 Jun 2022 09:09:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 431FA28E0A;
+        Mon, 13 Jun 2022 04:20:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AA79EB80EA7;
-        Mon, 13 Jun 2022 11:19:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2BA4C34114;
-        Mon, 13 Jun 2022 11:19:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D1BE160EAD;
+        Mon, 13 Jun 2022 11:20:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2289C3411C;
+        Mon, 13 Jun 2022 11:20:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119141;
-        bh=mMjDWJlacooFiZ2ImmHkyR7vekvzqW++iLlyOOmOz5s=;
+        s=korg; t=1655119203;
+        bh=gj5z3X1367W3zXU5Fh98/RQ8THDsI/xx/abArwklA7Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YD1q5cgsw4BWW8hBd/C7CPccO23/f/SUFvi0Ocw4d6GhmSTqz9SlNAa1Wgdn9Q63h
-         1faH1JDACpH9lE5S91wIESwYjMRrMyDeCFfv1rlYJTaSwpZhY7BTAILt/k6+SqeqVC
-         PgpnZ7vCdt3gx5ZHIhe2TCeA0391MjgL2cwwdaqI=
+        b=DCE+/ZWSci5qsiYT5jxl3olCnPHPadF3jp03o5Ew+Tx/tOwnU6ncqS+5MEYGOoNfc
+         uk1VvxkA/3nh4iWC0h4u1axMX8nfoLIiRik5W514IWKsnqA6dwKznAnVkaD0zCPx0G
+         ZhRqsfKzZbViEP/MfhMX+souqN7dcjJsv8sBR5yc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Maher Sanalla <msanalla@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Mark Bloch <mbloch@nvidia.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 155/247] net/mlx5: Fix mlx5_get_next_dev() peer device matching
-Date:   Mon, 13 Jun 2022 12:10:57 +0200
-Message-Id: <20220613094927.656795102@linuxfoundation.org>
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 178/247] drivers: usb: host: Fix deadlock in oxu_bus_suspend()
+Date:   Mon, 13 Jun 2022 12:11:20 +0200
+Message-Id: <20220613094928.353954682@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -53,120 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit 1c5de097bea31760c3f0467ac0c84ba0dc3525d5 ]
+[ Upstream commit 4d378f2ae58138d4c55684e1d274e7dd94aa6524 ]
 
-In some use-cases, mlx5 instances will need to search for their peer
-device (the other port on the same HCA). For that, mlx5 device matching
-mechanism relied on auxiliary_find_device() to search, and used a bad matching
-callback function.
+There is a deadlock in oxu_bus_suspend(), which is shown below:
 
-This approach has two issues:
+   (Thread 1)              |      (Thread 2)
+                           | timer_action()
+oxu_bus_suspend()          |  mod_timer()
+ spin_lock_irq() //(1)     |  (wait a time)
+ ...                       | oxu_watchdog()
+ del_timer_sync()          |  spin_lock_irq() //(2)
+ (wait timer to stop)      |  ...
 
-1) next_phys_dev() the matching function, assumed all devices are
-   of the type mlx5_adev (mlx5 auxiliary device) which is wrong and
-   could lead to crashes, this worked for a while, since only lately
-   other drivers started registering auxiliary devices.
+We hold oxu->lock in position (1) of thread 1, and use
+del_timer_sync() to wait timer to stop, but timer handler
+also need oxu->lock in position (2) of thread 2. As a result,
+oxu_bus_suspend() will block forever.
 
-2) using the auxiliary class bus (auxiliary_find_device) to search for
-   mlx5_core_dev devices, who are actually PCIe device instances, is wrong.
-   This works since mlx5_core always has at least one mlx5_adev instance
-   hanging around in the aux bus.
+This patch extracts del_timer_sync() from the protection of
+spin_lock_irq(), which could let timer handler to obtain
+the needed lock.
 
-As suggested by others we can fix 1. by comparing device names prefixes
-if they have the string "mlx5_core" in them, which is not a best practice !
-but even with that fixed, still 2. needs fixing, we are trying to
-match pcie device peers so we should look in the right bus (pci bus),
-hence this fix.
-
-The fix:
-1) search the pci bus for mlx5 peer devices, instead of the aux bus
-2) to validated devices are the same type "mlx5_core_dev" compare if
-   they have the same driver, which is bulletproof.
-
-   This wouldn't have worked with the aux bus since the various mlx5 aux
-   device types don't share the same driver, even if they share the same device
-   wrapper struct (mlx5_adev) "which helped to find the parent device"
-
-Fixes: a925b5e309c9 ("net/mlx5: Register mlx5 devices to auxiliary virtual bus")
-Reported-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Reported-by: Maher Sanalla <msanalla@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-Reviewed-by: Mark Bloch <mbloch@nvidia.com>
-Reviewed-by: Maher Sanalla <msanalla@nvidia.com>
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220417120305.64577-1-duoming@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/dev.c | 34 +++++++++++++------
- 1 file changed, 23 insertions(+), 11 deletions(-)
+ drivers/usb/host/oxu210hp-hcd.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/dev.c b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-index 94411b34799e..949f12ede3d2 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-@@ -559,18 +559,32 @@ static int _next_phys_dev(struct mlx5_core_dev *mdev,
- 	return 1;
- }
+diff --git a/drivers/usb/host/oxu210hp-hcd.c b/drivers/usb/host/oxu210hp-hcd.c
+index 4300326b3730..6be6c5878d08 100644
+--- a/drivers/usb/host/oxu210hp-hcd.c
++++ b/drivers/usb/host/oxu210hp-hcd.c
+@@ -3909,8 +3909,10 @@ static int oxu_bus_suspend(struct usb_hcd *hcd)
+ 		}
+ 	}
  
-+static void *pci_get_other_drvdata(struct device *this, struct device *other)
-+{
-+	if (this->driver != other->driver)
-+		return NULL;
-+
-+	return pci_get_drvdata(to_pci_dev(other));
-+}
-+
- static int next_phys_dev(struct device *dev, const void *data)
- {
--	struct mlx5_adev *madev = container_of(dev, struct mlx5_adev, adev.dev);
--	struct mlx5_core_dev *mdev = madev->mdev;
-+	struct mlx5_core_dev *mdev, *this = (struct mlx5_core_dev *)data;
-+
-+	mdev = pci_get_other_drvdata(this->device, dev);
-+	if (!mdev)
-+		return 0;
++	spin_unlock_irq(&oxu->lock);
+ 	/* turn off now-idle HC */
+ 	del_timer_sync(&oxu->watchdog);
++	spin_lock_irq(&oxu->lock);
+ 	ehci_halt(oxu);
+ 	hcd->state = HC_STATE_SUSPENDED;
  
- 	return _next_phys_dev(mdev, data);
- }
- 
- static int next_phys_dev_lag(struct device *dev, const void *data)
- {
--	struct mlx5_adev *madev = container_of(dev, struct mlx5_adev, adev.dev);
--	struct mlx5_core_dev *mdev = madev->mdev;
-+	struct mlx5_core_dev *mdev, *this = (struct mlx5_core_dev *)data;
-+
-+	mdev = pci_get_other_drvdata(this->device, dev);
-+	if (!mdev)
-+		return 0;
- 
- 	if (!MLX5_CAP_GEN(mdev, vport_group_manager) ||
- 	    !MLX5_CAP_GEN(mdev, lag_master) ||
-@@ -583,19 +597,17 @@ static int next_phys_dev_lag(struct device *dev, const void *data)
- static struct mlx5_core_dev *mlx5_get_next_dev(struct mlx5_core_dev *dev,
- 					       int (*match)(struct device *dev, const void *data))
- {
--	struct auxiliary_device *adev;
--	struct mlx5_adev *madev;
-+	struct device *next;
- 
- 	if (!mlx5_core_is_pf(dev))
- 		return NULL;
- 
--	adev = auxiliary_find_device(NULL, dev, match);
--	if (!adev)
-+	next = bus_find_device(&pci_bus_type, NULL, dev, match);
-+	if (!next)
- 		return NULL;
- 
--	madev = container_of(adev, struct mlx5_adev, adev);
--	put_device(&adev->dev);
--	return madev->mdev;
-+	put_device(next);
-+	return pci_get_drvdata(to_pci_dev(next));
- }
- 
- /* Must be called with intf_mutex held */
 -- 
 2.35.1
 
