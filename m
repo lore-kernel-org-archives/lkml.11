@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33383CCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C7F7CCA482
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:45:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378956AbiFMNnh (ORCPT
+        id S1379132AbiFMNnq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:43:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58290 "EHLO
+        Mon, 13 Jun 2022 09:43:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379136AbiFMNjx (ORCPT
+        with ESMTP id S1379154AbiFMNj4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:39:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD85A3DA52;
-        Mon, 13 Jun 2022 04:28:53 -0700 (PDT)
+        Mon, 13 Jun 2022 09:39:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173323DDC3;
+        Mon, 13 Jun 2022 04:29:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 58FBD61046;
-        Mon, 13 Jun 2022 11:28:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66DEEC34114;
-        Mon, 13 Jun 2022 11:28:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A0B3661046;
+        Mon, 13 Jun 2022 11:29:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86F8FC3411C;
+        Mon, 13 Jun 2022 11:29:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119732;
-        bh=2hyf1cQmfW94cWq/If7w064AVZti1g8GtemsxPSoOSI=;
+        s=korg; t=1655119741;
+        bh=XYV1h9CdCm68f/OE4ysMTqhDqVh1boCsnpiBvrjKYfM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UCpJvRD56ke+Lvt3g7BYtIn00YIRrtbHZG8CMn0AKl9dQ2WceJaO8P5Z4aMNCEyaB
-         Mes6h6vghuwG81OmikHGzt184vIgr+/bHK9yaA/deWYkUmH8l08uUFT+4DIE2I4n8x
-         ZUU54HBHf81S18YXMlK6YDh9LE55Li/d+PSRSxmY=
+        b=Dt7VUN3IVNDTZ/0VdKezVoL2sk5XHvspWdhpTM6eG06PJiYU0OLkJb73l3iFWUWP8
+         GZy2/QxgDTQx76NEqzOJXH0OgxiIvcqKiufbFeWSkWieY+qE92gFMaFTrxMZndX9aQ
+         L6XqCh4Ve+qSvBsjPmEzWO+KogoD7FInAEcX/5gw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Li Liang <liali@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 120/339] bonding: show NS IPv6 targets in proc master info
-Date:   Mon, 13 Jun 2022 12:09:05 +0200
-Message-Id: <20220613094930.148189277@linuxfoundation.org>
+Subject: [PATCH 5.18 123/339] virtio: pci: Fix an error handling path in vp_modern_probe()
+Date:   Mon, 13 Jun 2022 12:09:08 +0200
+Message-Id: <20220613094930.241357719@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,53 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangbin Liu <liuhangbin@gmail.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 4a1f14df55d1e9ecdfa797a87a80131207cbd66f ]
+[ Upstream commit 7a836a2aba09479c8e71fa43249eecc4af945f61 ]
 
-When adding bond new parameter ns_targets. I forgot to print this
-in bond master proc info. After updating, the bond master info will look
-like:
+If an error occurs after a successful pci_request_selected_regions() call,
+it should be undone by a corresponding pci_release_selected_regions() call,
+as already done in vp_modern_remove().
 
-ARP IP target/s (n.n.n.n form): 192.168.1.254
-NS IPv6 target/s (XX::XX form): 2022::1, 2022::2
-
-Fixes: 4e24be018eb9 ("bonding: add new parameter ns_targets")
-Reported-by: Li Liang <liali@redhat.com>
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-Link: https://lore.kernel.org/r/20220530062639.37179-1-liuhangbin@gmail.com
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: fd502729fbbf ("virtio-pci: introduce modern device module")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Message-Id: <237109725aad2c3c03d14549f777b1927c84b045.1648977064.git.christophe.jaillet@wanadoo.fr>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/bonding/bond_procfs.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ drivers/virtio/virtio_pci_modern_dev.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/bonding/bond_procfs.c b/drivers/net/bonding/bond_procfs.c
-index cfe37be42be4..43be458422b3 100644
---- a/drivers/net/bonding/bond_procfs.c
-+++ b/drivers/net/bonding/bond_procfs.c
-@@ -129,6 +129,21 @@ static void bond_info_show_master(struct seq_file *seq)
- 			printed = 1;
- 		}
- 		seq_printf(seq, "\n");
-+
-+#if IS_ENABLED(CONFIG_IPV6)
-+		printed = 0;
-+		seq_printf(seq, "NS IPv6 target/s (xx::xx form):");
-+
-+		for (i = 0; (i < BOND_MAX_NS_TARGETS); i++) {
-+			if (ipv6_addr_any(&bond->params.ns_targets[i]))
-+				break;
-+			if (printed)
-+				seq_printf(seq, ",");
-+			seq_printf(seq, " %pI6c", &bond->params.ns_targets[i]);
-+			printed = 1;
-+		}
-+		seq_printf(seq, "\n");
-+#endif
- 	}
- 
- 	if (BOND_MODE(bond) == BOND_MODE_8023AD) {
+diff --git a/drivers/virtio/virtio_pci_modern_dev.c b/drivers/virtio/virtio_pci_modern_dev.c
+index 591738ad3d56..4093f9cca7a6 100644
+--- a/drivers/virtio/virtio_pci_modern_dev.c
++++ b/drivers/virtio/virtio_pci_modern_dev.c
+@@ -347,6 +347,7 @@ int vp_modern_probe(struct virtio_pci_modern_device *mdev)
+ err_map_isr:
+ 	pci_iounmap(pci_dev, mdev->common);
+ err_map_common:
++	pci_release_selected_regions(pci_dev, mdev->modern_bars);
+ 	return err;
+ }
+ EXPORT_SYMBOL_GPL(vp_modern_probe);
 -- 
 2.35.1
 
