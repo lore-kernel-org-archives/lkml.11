@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 577EBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:02:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34FA6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:02:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380473AbiFMOCV (ORCPT
+        id S1380540AbiFMOCb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:02:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36608 "EHLO
+        Mon, 13 Jun 2022 10:02:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380806AbiFMNzI (ORCPT
+        with ESMTP id S1380879AbiFMNz1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:55:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5055C8199B;
-        Mon, 13 Jun 2022 04:35:53 -0700 (PDT)
+        Mon, 13 Jun 2022 09:55:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C6EF4477B;
+        Mon, 13 Jun 2022 04:36:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 115FC612D0;
-        Mon, 13 Jun 2022 11:35:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E1C2C34114;
-        Mon, 13 Jun 2022 11:35:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F12BB80ECC;
+        Mon, 13 Jun 2022 11:36:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4D7CC3411C;
+        Mon, 13 Jun 2022 11:36:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120152;
-        bh=IsJ3NMnoAFJ7wjN7A21WKBIHAnKxNuqqCDed6n0bc3Y=;
+        s=korg; t=1655120169;
+        bh=s20Pv0mbCpNv4t4N63x+0KLjF8uIVneLkO6xzMsE/gc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NaSovLv8v47duwjp3V0SffVX4uei+cxErNNmL7QtMVnt6kCK5Nszb4ohc0Z0VDrmh
-         nSJoxpuBHZFKZKYbR0eczYt1sYg6Gx4NqRVlOEx/BSGZF9GmP9asO0gNOEJT1kNRq4
-         dVMc3I+0TWwgavKW6l1nGisVh4+TjJMbJ6/UCPx4=
+        b=OpqfWXGUsYXR+4EvY+WvioLB/d1E3AXJHImcbNn5EwnRDPTZZseOD+O5xkY3dmAdU
+         mtFzIQX0HB3pb9deL6gccqTlIJ7PAjePm/OMGZyaRynpJFR8+bvrXyBySl1R8stHl5
+         cyQ9se8cBuN18U50RtXO5uibSfP3spEiTatSXDz8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiubo Li <xiubli@redhat.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 261/339] ceph: flush the mdlog for filesystem sync
-Date:   Mon, 13 Jun 2022 12:11:26 +0200
-Message-Id: <20220613094934.568016028@linuxfoundation.org>
+        stable@vger.kernel.org, Hou Tao <houtao1@huawei.com>,
+        Yu Kuai <yukuai3@huawei.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 275/339] nbd: call genl_unregister_family() first in nbd_cleanup()
+Date:   Mon, 13 Jun 2022 12:11:40 +0200
+Message-Id: <20220613094934.980577592@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,109 +51,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiubo Li <xiubli@redhat.com>
+From: Yu Kuai <yukuai3@huawei.com>
 
-[ Upstream commit 1b2ba3c5616e17ff951359e25c658a1c3f146f1e ]
+[ Upstream commit 06c4da89c24e7023ea448cadf8e9daf06a0aae6e ]
 
-Before waiting for a request's safe reply, we will send the mdlog flush
-request to the relevant MDS. And this will also flush the mdlog for all
-the other unsafe requests in the same session, so we can record the last
-session and no need to flush mdlog again in the next loop. But there
-still have cases that it may send the mdlog flush requst twice or more,
-but that should be not often.
+Otherwise there may be race between module removal and the handling of
+netlink command, which can lead to the oops as shown below:
 
-Rename wait_unsafe_requests() to
-flush_mdlog_and_wait_mdsc_unsafe_requests() to make it more
-descriptive.
+  BUG: kernel NULL pointer dereference, address: 0000000000000098
+  Oops: 0002 [#1] SMP PTI
+  CPU: 1 PID: 31299 Comm: nbd-client Tainted: G            E     5.14.0-rc4
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)
+  RIP: 0010:down_write+0x1a/0x50
+  Call Trace:
+   start_creating+0x89/0x130
+   debugfs_create_dir+0x1b/0x130
+   nbd_start_device+0x13d/0x390 [nbd]
+   nbd_genl_connect+0x42f/0x748 [nbd]
+   genl_family_rcv_msg_doit.isra.0+0xec/0x150
+   genl_rcv_msg+0xe5/0x1e0
+   netlink_rcv_skb+0x55/0x100
+   genl_rcv+0x29/0x40
+   netlink_unicast+0x1a8/0x250
+   netlink_sendmsg+0x21b/0x430
+   ____sys_sendmsg+0x2a4/0x2d0
+   ___sys_sendmsg+0x81/0xc0
+   __sys_sendmsg+0x62/0xb0
+   __x64_sys_sendmsg+0x1f/0x30
+   do_syscall_64+0x3b/0xc0
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+  Modules linked in: nbd(E-)
 
-[xiubli: fold in MDS request refcount leak fix from Jeff]
-
-URL: https://tracker.ceph.com/issues/55284
-URL: https://tracker.ceph.com/issues/55411
-Signed-off-by: Xiubo Li <xiubli@redhat.com>
-Reviewed-by: Jeff Layton <jlayton@kernel.org>
-Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+Signed-off-by: Hou Tao <houtao1@huawei.com>
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+Reviewed-by: Josef Bacik <josef@toxicpanda.com>
+Link: https://lore.kernel.org/r/20220521073749.3146892-2-yukuai3@huawei.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ceph/mds_client.c | 33 +++++++++++++++++++++++++++------
- 1 file changed, 27 insertions(+), 6 deletions(-)
+ drivers/block/nbd.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/fs/ceph/mds_client.c b/fs/ceph/mds_client.c
-index 1bd3e1bb0fdf..8c249511344d 100644
---- a/fs/ceph/mds_client.c
-+++ b/fs/ceph/mds_client.c
-@@ -4700,15 +4700,17 @@ void ceph_mdsc_pre_umount(struct ceph_mds_client *mdsc)
- }
+diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
+index c860a9930855..b564942be5a3 100644
+--- a/drivers/block/nbd.c
++++ b/drivers/block/nbd.c
+@@ -2545,6 +2545,12 @@ static void __exit nbd_cleanup(void)
+ 	struct nbd_device *nbd;
+ 	LIST_HEAD(del_list);
  
- /*
-- * wait for all write mds requests to flush.
-+ * flush the mdlog and wait for all write mds requests to flush.
-  */
--static void wait_unsafe_requests(struct ceph_mds_client *mdsc, u64 want_tid)
-+static void flush_mdlog_and_wait_mdsc_unsafe_requests(struct ceph_mds_client *mdsc,
-+						 u64 want_tid)
- {
- 	struct ceph_mds_request *req = NULL, *nextreq;
-+	struct ceph_mds_session *last_session = NULL;
- 	struct rb_node *n;
++	/*
++	 * Unregister netlink interface prior to waiting
++	 * for the completion of netlink commands.
++	 */
++	genl_unregister_family(&nbd_genl_family);
++
+ 	nbd_dbg_close();
  
- 	mutex_lock(&mdsc->mutex);
--	dout("wait_unsafe_requests want %lld\n", want_tid);
-+	dout("%s want %lld\n", __func__, want_tid);
- restart:
- 	req = __get_oldest_req(mdsc);
- 	while (req && req->r_tid <= want_tid) {
-@@ -4720,14 +4722,32 @@ static void wait_unsafe_requests(struct ceph_mds_client *mdsc, u64 want_tid)
- 			nextreq = NULL;
- 		if (req->r_op != CEPH_MDS_OP_SETFILELOCK &&
- 		    (req->r_op & CEPH_MDS_OP_WRITE)) {
-+			struct ceph_mds_session *s = req->r_session;
-+
-+			if (!s) {
-+				req = nextreq;
-+				continue;
-+			}
-+
- 			/* write op */
- 			ceph_mdsc_get_request(req);
- 			if (nextreq)
- 				ceph_mdsc_get_request(nextreq);
-+			s = ceph_get_mds_session(s);
- 			mutex_unlock(&mdsc->mutex);
--			dout("wait_unsafe_requests  wait on %llu (want %llu)\n",
-+
-+			/* send flush mdlog request to MDS */
-+			if (last_session != s) {
-+				send_flush_mdlog(s);
-+				ceph_put_mds_session(last_session);
-+				last_session = s;
-+			} else {
-+				ceph_put_mds_session(s);
-+			}
-+			dout("%s wait on %llu (want %llu)\n", __func__,
- 			     req->r_tid, want_tid);
- 			wait_for_completion(&req->r_safe_completion);
-+
- 			mutex_lock(&mdsc->mutex);
- 			ceph_mdsc_put_request(req);
- 			if (!nextreq)
-@@ -4742,7 +4762,8 @@ static void wait_unsafe_requests(struct ceph_mds_client *mdsc, u64 want_tid)
- 		req = nextreq;
- 	}
- 	mutex_unlock(&mdsc->mutex);
--	dout("wait_unsafe_requests done\n");
-+	ceph_put_mds_session(last_session);
-+	dout("%s done\n", __func__);
- }
+ 	mutex_lock(&nbd_index_mutex);
+@@ -2563,7 +2569,6 @@ static void __exit nbd_cleanup(void)
+ 	destroy_workqueue(nbd_del_wq);
  
- void ceph_mdsc_sync(struct ceph_mds_client *mdsc)
-@@ -4771,7 +4792,7 @@ void ceph_mdsc_sync(struct ceph_mds_client *mdsc)
- 	dout("sync want tid %lld flush_seq %lld\n",
- 	     want_tid, want_flush);
- 
--	wait_unsafe_requests(mdsc, want_tid);
-+	flush_mdlog_and_wait_mdsc_unsafe_requests(mdsc, want_tid);
- 	wait_caps_flush(mdsc, want_flush);
+ 	idr_destroy(&nbd_index_idr);
+-	genl_unregister_family(&nbd_genl_family);
+ 	unregister_blkdev(NBD_MAJOR, "nbd");
  }
  
 -- 
