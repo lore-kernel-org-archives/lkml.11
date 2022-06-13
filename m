@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 709A3CCA48E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60BC3CCA48B
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:34:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384768AbiFMOeh (ORCPT
+        id S1384723AbiFMOe2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:34:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35394 "EHLO
+        Mon, 13 Jun 2022 10:34:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385401AbiFMObJ (ORCPT
+        with ESMTP id S1385333AbiFMObE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:31:09 -0400
+        Mon, 13 Jun 2022 10:31:04 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D055AAB0F6;
-        Mon, 13 Jun 2022 04:48:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6315A98BA;
+        Mon, 13 Jun 2022 04:48:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AE736B80ECD;
-        Mon, 13 Jun 2022 11:48:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FB5AC34114;
-        Mon, 13 Jun 2022 11:48:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 53AE4B80D31;
+        Mon, 13 Jun 2022 11:48:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A736EC34114;
+        Mon, 13 Jun 2022 11:48:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120905;
-        bh=BBbKxzBTSgGkElDL5HOf2Rr4T8+XctVQOFZU15enauU=;
+        s=korg; t=1655120900;
+        bh=0kTaFpef1BwMfsjh+msVDWsWfwPI65+qIGZ47BekVm4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cYCtM5MhIakcHE0j2FQkMRko13ATHHUrwJZcddUxvTDjIgClxp8n6rb30yECiCclH
-         //j1VrI6xsQrCvXToZT1gwFa5NQFOY0ZjHq2SKEWvH9M/S/6l2NS+iSrda4tCrtaGV
-         6F9fMlm85Xbsi5cZZChSO/ecQ+89bqLNr9Sh3yiA=
+        b=JjJ6TBQ8K+WoRjRib0dSjCuEfCoHNn8JgfHnpzN49Kk8Ln8WBX5/qq8TEhX+qFclt
+         x6hfFUzFgjlouXwaKlD7HDnCsFgsiTWSCsxl8gWl8N08IZhT4uNRm3iC84jibbKnaq
+         jpxwuZaU/FUDp92Y2vB139QZ7roUzhNOL/3Uv3GA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 201/298] drivers: staging: rtl8192bs: Fix deadlock in rtw_joinbss_event_prehandle()
-Date:   Mon, 13 Jun 2022 12:11:35 +0200
-Message-Id: <20220613094931.201356439@linuxfoundation.org>
+Subject: [PATCH 5.17 191/298] net: dsa: mv88e6xxx: use BMSR_ANEGCOMPLETE bit for filling an_complete
+Date:   Mon, 13 Jun 2022 12:11:25 +0200
+Message-Id: <20220613094930.897998791@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -49,73 +52,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Marek Behún <kabel@kernel.org>
 
-[ Upstream commit 041879b12ddb0c6c83ed9c0bdd10dc82a056f2fc ]
+[ Upstream commit 47e96930d6e6106d5252e85b868d3c7e29296de0 ]
 
-There is a deadlock in rtw_joinbss_event_prehandle(), which is shown
-below:
+Commit ede359d8843a ("net: dsa: mv88e6xxx: Link in pcs_get_state() if AN
+is bypassed") added the ability to link if AN was bypassed, and added
+filling of state->an_complete field, but set it to true if AN was
+enabled in BMCR, not when AN was reported complete in BMSR.
 
-   (Thread 1)                |      (Thread 2)
-                             | _set_timer()
-rtw_joinbss_event_prehandle()|  mod_timer()
- spin_lock_bh() //(1)        |  (wait a time)
- ...                         | _rtw_join_timeout_handler()
- del_timer_sync()            |  spin_lock_bh() //(2)
- (wait timer to stop)        |  ...
+This was done because for some reason, when I wanted to use BMSR value
+to infer an_complete, I was looking at BMSR_ANEGCAPABLE bit (which was
+always 1), instead of BMSR_ANEGCOMPLETE bit.
 
-We hold pmlmepriv->lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need pmlmepriv->lock in position (2) of thread 2.
-As a result, rtw_joinbss_event_prehandle() will block forever.
+Use BMSR_ANEGCOMPLETE for filling state->an_complete.
 
-This patch extracts del_timer_sync() from the protection of
-spin_lock_bh(), which could let timer handler to obtain
-the needed lock. What`s more, we change spin_lock_bh() to
-spin_lock_irq() in _rtw_join_timeout_handler() in order to
-prevent deadlock.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220409064953.67420-1-duoming@zju.edu.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: ede359d8843a ("net: dsa: mv88e6xxx: Link in pcs_get_state() if AN is bypassed")
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8723bs/core/rtw_mlme.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/dsa/mv88e6xxx/serdes.c | 27 +++++++++++----------------
+ 1 file changed, 11 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/staging/rtl8723bs/core/rtw_mlme.c b/drivers/staging/rtl8723bs/core/rtw_mlme.c
-index a6e5f2332e12..c29e3c68e61e 100644
---- a/drivers/staging/rtl8723bs/core/rtw_mlme.c
-+++ b/drivers/staging/rtl8723bs/core/rtw_mlme.c
-@@ -1240,8 +1240,10 @@ void rtw_joinbss_event_prehandle(struct adapter *adapter, u8 *pbuf)
- 
- 			spin_unlock_bh(&pmlmepriv->scanned_queue.lock);
- 
-+			spin_unlock_bh(&pmlmepriv->lock);
- 			/* s5. Cancel assoc_timer */
- 			del_timer_sync(&pmlmepriv->assoc_timer);
-+			spin_lock_bh(&pmlmepriv->lock);
- 		} else {
- 			spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
- 		}
-@@ -1547,7 +1549,7 @@ void _rtw_join_timeout_handler(struct timer_list *t)
- 	if (adapter->bDriverStopped || adapter->bSurpriseRemoved)
- 		return;
- 
--	spin_lock_bh(&pmlmepriv->lock);
-+	spin_lock_irq(&pmlmepriv->lock);
- 
- 	if (rtw_to_roam(adapter) > 0) { /* join timeout caused by roaming */
- 		while (1) {
-@@ -1575,7 +1577,7 @@ void _rtw_join_timeout_handler(struct timer_list *t)
- 
- 	}
- 
--	spin_unlock_bh(&pmlmepriv->lock);
-+	spin_unlock_irq(&pmlmepriv->lock);
+diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6xxx/serdes.c
+index 2b05ead515cd..6ae7a0ed9e0b 100644
+--- a/drivers/net/dsa/mv88e6xxx/serdes.c
++++ b/drivers/net/dsa/mv88e6xxx/serdes.c
+@@ -50,22 +50,17 @@ static int mv88e6390_serdes_write(struct mv88e6xxx_chip *chip,
  }
  
- /*
+ static int mv88e6xxx_serdes_pcs_get_state(struct mv88e6xxx_chip *chip,
+-					  u16 ctrl, u16 status, u16 lpa,
++					  u16 bmsr, u16 lpa, u16 status,
+ 					  struct phylink_link_state *state)
+ {
+ 	state->link = !!(status & MV88E6390_SGMII_PHY_STATUS_LINK);
++	state->an_complete = !!(bmsr & BMSR_ANEGCOMPLETE);
+ 
+ 	if (status & MV88E6390_SGMII_PHY_STATUS_SPD_DPL_VALID) {
+ 		/* The Spped and Duplex Resolved register is 1 if AN is enabled
+ 		 * and complete, or if AN is disabled. So with disabled AN we
+-		 * still get here on link up. But we want to set an_complete
+-		 * only if AN was enabled, thus we look at BMCR_ANENABLE.
+-		 * (According to 802.3-2008 section 22.2.4.2.10, we should be
+-		 *  able to get this same value from BMSR_ANEGCAPABLE, but tests
+-		 *  show that these Marvell PHYs don't conform to this part of
+-		 *  the specificaion - BMSR_ANEGCAPABLE is simply always 1.)
++		 * still get here on link up.
+ 		 */
+-		state->an_complete = !!(ctrl & BMCR_ANENABLE);
+ 		state->duplex = status &
+ 				MV88E6390_SGMII_PHY_STATUS_DUPLEX_FULL ?
+ 			                         DUPLEX_FULL : DUPLEX_HALF;
+@@ -191,12 +186,12 @@ int mv88e6352_serdes_pcs_config(struct mv88e6xxx_chip *chip, int port,
+ int mv88e6352_serdes_pcs_get_state(struct mv88e6xxx_chip *chip, int port,
+ 				   int lane, struct phylink_link_state *state)
+ {
+-	u16 lpa, status, ctrl;
++	u16 bmsr, lpa, status;
+ 	int err;
+ 
+-	err = mv88e6352_serdes_read(chip, MII_BMCR, &ctrl);
++	err = mv88e6352_serdes_read(chip, MII_BMSR, &bmsr);
+ 	if (err) {
+-		dev_err(chip->dev, "can't read Serdes PHY control: %d\n", err);
++		dev_err(chip->dev, "can't read Serdes BMSR: %d\n", err);
+ 		return err;
+ 	}
+ 
+@@ -212,7 +207,7 @@ int mv88e6352_serdes_pcs_get_state(struct mv88e6xxx_chip *chip, int port,
+ 		return err;
+ 	}
+ 
+-	return mv88e6xxx_serdes_pcs_get_state(chip, ctrl, status, lpa, state);
++	return mv88e6xxx_serdes_pcs_get_state(chip, bmsr, lpa, status, state);
+ }
+ 
+ int mv88e6352_serdes_pcs_an_restart(struct mv88e6xxx_chip *chip, int port,
+@@ -915,13 +910,13 @@ int mv88e6390_serdes_pcs_config(struct mv88e6xxx_chip *chip, int port,
+ static int mv88e6390_serdes_pcs_get_state_sgmii(struct mv88e6xxx_chip *chip,
+ 	int port, int lane, struct phylink_link_state *state)
+ {
+-	u16 lpa, status, ctrl;
++	u16 bmsr, lpa, status;
+ 	int err;
+ 
+ 	err = mv88e6390_serdes_read(chip, lane, MDIO_MMD_PHYXS,
+-				    MV88E6390_SGMII_BMCR, &ctrl);
++				    MV88E6390_SGMII_BMSR, &bmsr);
+ 	if (err) {
+-		dev_err(chip->dev, "can't read Serdes PHY control: %d\n", err);
++		dev_err(chip->dev, "can't read Serdes PHY BMSR: %d\n", err);
+ 		return err;
+ 	}
+ 
+@@ -939,7 +934,7 @@ static int mv88e6390_serdes_pcs_get_state_sgmii(struct mv88e6xxx_chip *chip,
+ 		return err;
+ 	}
+ 
+-	return mv88e6xxx_serdes_pcs_get_state(chip, ctrl, status, lpa, state);
++	return mv88e6xxx_serdes_pcs_get_state(chip, bmsr, lpa, status, state);
+ }
+ 
+ static int mv88e6390_serdes_pcs_get_state_10g(struct mv88e6xxx_chip *chip,
 -- 
 2.35.1
 
