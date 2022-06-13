@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8496BCCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94870CCA48A
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:04:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358761AbiFMNEo (ORCPT
+        id S1358791AbiFMNEq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:04:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50226 "EHLO
+        Mon, 13 Jun 2022 09:04:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354814AbiFMMzu (ORCPT
+        with ESMTP id S1354162AbiFMMzx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:55:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B100711A3F;
-        Mon, 13 Jun 2022 04:16:40 -0700 (PDT)
+        Mon, 13 Jun 2022 08:55:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEAFF120B1;
+        Mon, 13 Jun 2022 04:16:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 61C1DB80E93;
-        Mon, 13 Jun 2022 11:16:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B64DCC34114;
-        Mon, 13 Jun 2022 11:16:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6431160B60;
+        Mon, 13 Jun 2022 11:16:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74558C34114;
+        Mon, 13 Jun 2022 11:16:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118998;
-        bh=l2YBfg34tk5X/O+rDM5zgYJ6lyiB2LpFE7Bnqfy9WVc=;
+        s=korg; t=1655119003;
+        bh=4uPzDoDtm+L7EnFXiMH8EH9hH4YgpoC0Sl0c04Rut6E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GxfrQvuSu9q8yR0TCzqd5s86MzeGyzAx07h8zM+LcZyIUbEqTEeGJmTSBkZn7LxUT
-         sfk1NIXC3fm6jj7AyVFHMAjt0TV0h8tV2qAB9xt07eyy7xYMykQySSFZ0eWNMkrMjh
-         WOPXWCgl8ShXILkKweQHJJUwD4twapCETSim0sq4=
+        b=Pzbx9rx5MOG5FGvzrUPgJDwW1v85hZGFkrcCykqfTcIahgNkoLnuQqb0pnWyZWnYs
+         SoBX+5+J2zNnaAOIS0xTe04L5acR9QWWxxKbxDnmn2IXt58dgk1SdP921GTxHKdpZJ
+         lusdGxQJwxKkmx5NIN+vnGN8LjeI9+aXzpKBPB4g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabien Parent <fparent@baylibre.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
+        Richard Weinberger <richard@nod.at>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 103/247] regulator: mt6315-regulator: fix invalid allowed mode
-Date:   Mon, 13 Jun 2022 12:10:05 +0200
-Message-Id: <20220613094926.080039626@linuxfoundation.org>
+Subject: [PATCH 5.15 079/247] ubi: ubi_create_volume: Fix use-after-free when volume creation failed
+Date:   Mon, 13 Jun 2022 12:09:41 +0200
+Message-Id: <20220613094925.353057682@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,51 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabien Parent <fparent@baylibre.com>
+From: Zhihao Cheng <chengzhihao1@huawei.com>
 
-[ Upstream commit 28cbc2d4c54c09a427b18a1604740efb6b2cc2d6 ]
+[ Upstream commit 8c03a1c21d72210f81cb369cc528e3fde4b45411 ]
 
-In the binding example, the regulator mode 4 is shown as a valid mode,
-but the driver actually only support mode 0 to 2:
+There is an use-after-free problem for 'eba_tbl' in ubi_create_volume()'s
+error handling path:
 
-This generates an error in dmesg when copy/pasting the binding example:
-[    0.306080] vbuck1: invalid regulator-allowed-modes element 4
-[    0.307290] vbuck2: invalid regulator-allowed-modes element 4
+  ubi_eba_replace_table(vol, eba_tbl)
+    vol->eba_tbl = tbl
+out_mapping:
+  ubi_eba_destroy_table(eba_tbl)   // Free 'eba_tbl'
+out_unlock:
+  put_device(&vol->dev)
+    vol_release
+      kfree(tbl->entries)	  // UAF
 
-This commit fixes this error by removing the invalid mode from the
-examples.
+Fix it by removing redundant 'eba_tbl' releasing.
+Fetch a reproducer in [Link].
 
-Fixes: 977fb5b58469 ("regulator: document binding for MT6315 regulator")
-Signed-off-by: Fabien Parent <fparent@baylibre.com>
-Link: https://lore.kernel.org/r/20220529154613.337559-1-fparent@baylibre.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 493cfaeaa0c9b ("mtd: utilize new cdev_device_add helper function")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215965
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../devicetree/bindings/regulator/mt6315-regulator.yaml       | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/mtd/ubi/vmt.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml b/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
-index 5d2d989de893..37402c370fbb 100644
---- a/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
-+++ b/Documentation/devicetree/bindings/regulator/mt6315-regulator.yaml
-@@ -55,7 +55,7 @@ examples:
-           regulator-min-microvolt = <300000>;
-           regulator-max-microvolt = <1193750>;
-           regulator-enable-ramp-delay = <256>;
--          regulator-allowed-modes = <0 1 2 4>;
-+          regulator-allowed-modes = <0 1 2>;
-         };
- 
-         vbuck3 {
-@@ -63,7 +63,7 @@ examples:
-           regulator-min-microvolt = <300000>;
-           regulator-max-microvolt = <1193750>;
-           regulator-enable-ramp-delay = <256>;
--          regulator-allowed-modes = <0 1 2 4>;
-+          regulator-allowed-modes = <0 1 2>;
-         };
-       };
-     };
+diff --git a/drivers/mtd/ubi/vmt.c b/drivers/mtd/ubi/vmt.c
+index 1bc7b3a05604..6ea95ade4ca6 100644
+--- a/drivers/mtd/ubi/vmt.c
++++ b/drivers/mtd/ubi/vmt.c
+@@ -309,7 +309,6 @@ int ubi_create_volume(struct ubi_device *ubi, struct ubi_mkvol_req *req)
+ 	ubi->volumes[vol_id] = NULL;
+ 	ubi->vol_count -= 1;
+ 	spin_unlock(&ubi->volumes_lock);
+-	ubi_eba_destroy_table(eba_tbl);
+ out_acc:
+ 	spin_lock(&ubi->volumes_lock);
+ 	ubi->rsvd_pebs -= vol->reserved_pebs;
 -- 
 2.35.1
 
