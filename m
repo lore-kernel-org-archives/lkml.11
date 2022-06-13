@@ -2,86 +2,328 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41766CCA47D
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 03:21:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 065BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 03:22:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237269AbiFMDVn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 23:21:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51888 "EHLO
+        id S238311AbiFMDWm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 23:22:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231716AbiFMDVl (ORCPT
+        with ESMTP id S238293AbiFMDWj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 23:21:41 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E534205F2
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 20:21:41 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id 3-20020a17090a174300b001e426a02ac5so7584264pjm.2
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 20:21:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=qbAkkO2zSW3z0Q8/BVx6T9JB6N1UA+DX5z/rLPoFpPg=;
-        b=1NGXFsXFPUAUMfe9N4JthX1ALkYAWYMsOuYDyQtcQeW8WNFwZlcHItd6XrM+lng3UI
-         Rt8zNF+zxAVQWenqcclBqxhu/Xxcn8j6sBXL0Vs/E0KHyZDDP8ejdsufZhWWAEQx8IUF
-         aPs9uCjcBNIjeaM3oRwnjC7VxRpdjBRyJDmBA3koSCVptEqjkDJAp/clVapRzZK7ivQt
-         vvIiT7jbLJuwAp1rHkKsK8q/MFc8GsBuxLrD/3Rh6x7b8DZ/wsoFLkc7jS2kZdxRtLkQ
-         JbuYUgDS79x7n4D6hVdrAFjYjrBaho7I6QHY9iGc3X+OP24M9FH+2CgJEl9gSFtl/hNL
-         54jw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=qbAkkO2zSW3z0Q8/BVx6T9JB6N1UA+DX5z/rLPoFpPg=;
-        b=VXgzRYlv3x+mX1QEuHrRrEmhYWc7EC1RFjLmJ29IXJ8w3ENY7eLe6/Cq+jn2HJ6ThR
-         VrNlDK17Q0TNAR3A1GRb7SjRqvZCpk8B4XGvCLvHoqoPlVfRxkDfEczvhXLnNuuumpwy
-         p/rzkcMJtxhatLN6h+2Eggxu8UjOPI5W0GFhxkDZhW2VFnVG4nr0lcMi9zsRAE8CI5b1
-         Mn+pJu5D46oaJPsdZe2fYCxDE74T9kjZuy/QziE5QDmdWrWbl06DAAEFWeQSPXtBgYGC
-         aaGuN1DRa7yzNgnvuEuXwRB8Kg0SdmRJGCO4IVYsAfMCgtDfph02pPzEhbDyU0SHK+eA
-         foFw==
-X-Gm-Message-State: AOAM533vIfe7AVQ2ozXlOIIGy5D3yS5X2wziTYxgBCuQ8nxOJXqAsiU0
-        hbWIFrSHUu/Y17NB1oLZ0atHwQ==
-X-Google-Smtp-Source: ABdhPJzqH8tH9ELakOc22/fn6gukK9gQTVOUDUaR4Qen3wkF/IolOLy916cLAPA6O/e/2Leo1Zot5w==
-X-Received: by 2002:a17:902:f612:b0:14c:e978:f99e with SMTP id n18-20020a170902f61200b0014ce978f99emr56667491plg.23.1655090500604;
-        Sun, 12 Jun 2022 20:21:40 -0700 (PDT)
-Received: from localhost ([139.177.225.255])
-        by smtp.gmail.com with ESMTPSA id i3-20020a62c103000000b0051008603b66sm3967995pfg.219.2022.06.12.20.21.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Jun 2022 20:21:40 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 11:21:37 +0800
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
+        Sun, 12 Jun 2022 23:22:39 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78C40BC99
+        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 20:22:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655090558; x=1686626558;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=6T5F9QeI2xI6C74A2dOJyc6wKMSYhB54nR40GAH7svs=;
+  b=Jx7kfpi816czNZuBXs8fSjdYum8c1MGyU+iNnifLBHqSM9eyemOkNwBm
+   fq1QZwzMXmML40ryeQQnbcp4gmp040C6VM2jMD8Iks3SdpAT7apcIBS/v
+   HU76Vr3BLJQaVGuyT4smdOijFPiS4c3KZ8Dfb/mztnAd3/W6cWkzsGIvL
+   /KE6rMEYUtE3aF4pp3XUzAv6Sqh5CNDATUG/8HdqyTlmP1kyStkossDah
+   UmyeWF2rC97Oxzb1J/g/5LRCT47USeQFv5vxQdji/9bZB6D31umgknsW7
+   ZuvlVrbvWxrRqqTJs0k7S7UL8oGgqSlw1QCWcTD6tDS1LO5AhW6o3Ury+
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10376"; a="339823109"
+X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
+   d="scan'208";a="339823109"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2022 20:22:37 -0700
+X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
+   d="scan'208";a="639464646"
+Received: from xinyangc-mobl.ccr.corp.intel.com ([10.254.214.65])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2022 20:22:33 -0700
+Message-ID: <7e0b41422dbd0976cb43c2f126e9371d5e311e77.camel@intel.com>
+Subject: Re: [PATCH v6 01/13] mm/demotion: Add support for explicit memory
+ tiers
+From:   Ying Huang <ying.huang@intel.com>
+To:     "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        linux-mm@kvack.org, akpm@linux-foundation.org
+Cc:     Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Brice Goglin <brice.goglin@gmail.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
         David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Roman Gushchin <roman.gushchin@linux.dev>, linux-mm@kvack.org
-Subject: Re: [PATCH 2/3] mm/slab: delete cache_alloc_debugcheck_before()
-Message-ID: <YqatQWUmB+Z7BxK3@FVFYT0MHHV2J.usts.net>
-References: <20220605152539.3196045-1-daniel.vetter@ffwll.ch>
- <20220605152539.3196045-2-daniel.vetter@ffwll.ch>
+        Johannes Weiner <hannes@cmpxchg.org>
+Date:   Mon, 13 Jun 2022 11:22:30 +0800
+In-Reply-To: <20220610135229.182859-2-aneesh.kumar@linux.ibm.com>
+References: <20220610135229.182859-1-aneesh.kumar@linux.ibm.com>
+         <20220610135229.182859-2-aneesh.kumar@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220605152539.3196045-2-daniel.vetter@ffwll.ch>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jun 05, 2022 at 05:25:38PM +0200, Daniel Vetter wrote:
-> It only does a might_sleep_if(GFP_RECLAIM) check, which is already
-> covered by the might_alloc() in slab_pre_alloc_hook(). And all callers
-> of cache_alloc_debugcheck_before() call that beforehand already.
+Hi, Aneesh,
+
+On Fri, 2022-06-10 at 19:22 +0530, Aneesh Kumar K.V wrote:
+> In the current kernel, memory tiers are defined implicitly via a
+> demotion path relationship between NUMA nodes, which is created
+> during the kernel initialization and updated when a NUMA node is
+> hot-added or hot-removed.  The current implementation puts all
+> nodes with CPU into the top tier, and builds the tier hierarchy
+> tier-by-tier by establishing the per-node demotion targets based
+> on the distances between nodes.
 > 
-> Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+> This current memory tier kernel interface needs to be improved for
+> several important use cases,
+> 
+> The current tier initialization code always initializes
+> each memory-only NUMA node into a lower tier.  But a memory-only
+> NUMA node may have a high performance memory device (e.g. a DRAM
+> device attached via CXL.mem or a DRAM-backed memory-only node on
+> a virtual machine) and should be put into a higher tier.
+> 
+> The current tier hierarchy always puts CPU nodes into the top
+> tier. But on a system with HBM or GPU devices, the
+> memory-only NUMA nodes mapping these devices should be in the
+> top tier, and DRAM nodes with CPUs are better to be placed into the
+> next lower tier.
+> 
+> With current kernel higher tier node can only be demoted to selected nodes on the
+> next lower tier as defined by the demotion path, not any other
+> node from any lower tier.  This strict, hard-coded demotion order
+> does not work in all use cases (e.g. some use cases may want to
+> allow cross-socket demotion to another node in the same demotion
+> tier as a fallback when the preferred demotion node is out of
+> space), This demotion order is also inconsistent with the page
+> allocation fallback order when all the nodes in a higher tier are
+> out of space: The page allocation can fall back to any node from
+> any lower tier, whereas the demotion order doesn't allow that.
+> 
+> The current kernel also don't provide any interfaces for the
+> userspace to learn about the memory tier hierarchy in order to
+> optimize its memory allocations.
+> 
+> This patch series address the above by defining memory tiers explicitly.
+> 
+> This patch introduce explicity memory tiers with ranks. The rank
+> value of a memory tier is used to derive the demotion order between
+> NUMA nodes. The memory tiers present in a system can be found at
+> 
+> "Rank" is an opaque value. Its absolute value doesn't have any
+> special meaning. But the rank values of different memtiers can be
+> compared with each other to determine the memory tier order.
+> 
+> For example, if we have 3 memtiers: memtier0, memtier1, memiter2, and
+> their rank values are 300, 200, 100, then the memory tier order is:
+> memtier0 -> memtier1 -> memtier2, where memtier0 is the highest tier
+> and memtier2 is the lowest tier.
+> 
+> The rank value of each memtier should be unique.
+> 
+> A higher rank memory tier will appear first in the demotion order
+> than a lower rank memory tier. ie. while reclaim we choose a node
+> in higher rank memory tier to demote pages to as compared to a node
+> in a lower rank memory tier.
+> 
+> This patchset introduce 3 memory tiers (memtier0, memtier1 and memtier2)
+> which are created by different kernel subsystems. The default memory
+> tier created by the kernel is memtier1. Once created these memory tiers
+> are not destroyed even if they don't have any NUMA nodes assigned to
+> them.
+> 
+> This patch is based on the proposal sent by Wei Xu <weixugc@google.com> at [1].
+> 
+> [1] https://lore.kernel.org/linux-mm/CAAPL-u9Wv+nH1VOZTj=9p9S70Y3Qz3+63EkqncRDdHfubsrjfw@mail.gmail.com
+> 
+> /sys/devices/system/memtier/memtierN/
+> 
+> The nodes which are part of a specific memory tier can be listed
+> via
+> /sys/devices/system/memtier/memtierN/nodelist
+> 
+> Suggested-by: Wei Xu <weixugc@google.com>
+> Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
+> Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+> ---
+>  include/linux/memory-tiers.h | 20 ++++++++
+>  mm/Kconfig                   |  3 ++
+>  mm/Makefile                  |  1 +
+>  mm/memory-tiers.c            | 89 ++++++++++++++++++++++++++++++++++++
+>  4 files changed, 113 insertions(+)
+>  create mode 100644 include/linux/memory-tiers.h
+>  create mode 100644 mm/memory-tiers.c
+> 
+> diff --git a/include/linux/memory-tiers.h b/include/linux/memory-tiers.h
+> new file mode 100644
+> index 000000000000..e17f6b4ee177
+> --- /dev/null
+> +++ b/include/linux/memory-tiers.h
+> @@ -0,0 +1,20 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef _LINUX_MEMORY_TIERS_H
+> +#define _LINUX_MEMORY_TIERS_H
+> +
+> +#ifdef CONFIG_TIERED_MEMORY
+> +
+> +#define MEMORY_TIER_HBM_GPU	0
+> +#define MEMORY_TIER_DRAM	1
+> +#define MEMORY_TIER_PMEM	2
+> +
+> +#define MEMORY_RANK_HBM_GPU	300
+> +#define MEMORY_RANK_DRAM	200
+> +#define MEMORY_RANK_PMEM	100
+> +
+> +#define DEFAULT_MEMORY_TIER	MEMORY_TIER_DRAM
+> +#define MAX_MEMORY_TIERS  3
+> +
+> +#endif	/* CONFIG_TIERED_MEMORY */
+> +
+> +#endif
+> diff --git a/mm/Kconfig b/mm/Kconfig
+> index 169e64192e48..bb5aa585ab41 100644
+> --- a/mm/Kconfig
+> +++ b/mm/Kconfig
+> @@ -614,6 +614,9 @@ config ARCH_ENABLE_HUGEPAGE_MIGRATION
+>  config ARCH_ENABLE_THP_MIGRATION
+>  	bool
+>  
+> 
+> +config TIERED_MEMORY
+> +	def_bool NUMA
+> +
 
-Nice cleanup.
+As Yang pointed out, why not just use CONFIG_NUMA?  I suspect the
+added value of CONIFIG_TIRED_MEMORY.
 
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+>  config HUGETLB_PAGE_SIZE_VARIABLE
+>  	def_bool n
+>  	help
+> diff --git a/mm/Makefile b/mm/Makefile
+> index 6f9ffa968a1a..482557fbc9d1 100644
+> --- a/mm/Makefile
+> +++ b/mm/Makefile
+> @@ -92,6 +92,7 @@ obj-$(CONFIG_KFENCE) += kfence/
+>  obj-$(CONFIG_FAILSLAB) += failslab.o
+>  obj-$(CONFIG_MEMTEST)		+= memtest.o
+>  obj-$(CONFIG_MIGRATION) += migrate.o
+> +obj-$(CONFIG_TIERED_MEMORY) += memory-tiers.o
+>  obj-$(CONFIG_DEVICE_MIGRATION) += migrate_device.o
+>  obj-$(CONFIG_TRANSPARENT_HUGEPAGE) += huge_memory.o khugepaged.o
+>  obj-$(CONFIG_PAGE_COUNTER) += page_counter.o
+> diff --git a/mm/memory-tiers.c b/mm/memory-tiers.c
+> new file mode 100644
+> index 000000000000..d9fa955f208e
+> --- /dev/null
+> +++ b/mm/memory-tiers.c
+> @@ -0,0 +1,89 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +#include <linux/types.h>
+> +#include <linux/nodemask.h>
+> +#include <linux/slab.h>
+> +#include <linux/memory-tiers.h>
+> +
+> +struct memory_tier {
+> +	struct list_head list;
+> +	nodemask_t nodelist;
+> +	int id;
+> +	int rank;
+> +};
+> +
+> +static DEFINE_MUTEX(memory_tier_lock);
+> +static LIST_HEAD(memory_tiers);
+> +
+> +/*
+> + * Keep it simple by having  direct mapping between
+> + * tier index and rank value.
+> + */
+> +static inline int get_rank_from_tier(unsigned int tier)
+> +{
+> +	switch (tier) {
+> +	case MEMORY_TIER_HBM_GPU:
+> +		return MEMORY_RANK_HBM_GPU;
+> +	case MEMORY_TIER_DRAM:
+> +		return MEMORY_RANK_DRAM;
+> +	case MEMORY_TIER_PMEM:
+> +		return MEMORY_RANK_PMEM;
+> +	}
+> +	return -1;
+> +}
+> +
+> +static void insert_memory_tier(struct memory_tier *memtier)
+> +{
+> +	struct list_head *ent;
+> +	struct memory_tier *tmp_memtier;
+> +
+> +	list_for_each(ent, &memory_tiers) {
+> +		tmp_memtier = list_entry(ent, struct memory_tier, list);
 
-Thanks.
+list_for_each_entry() ?
+
+> +		if (tmp_memtier->rank < memtier->rank) {
+> +			list_add_tail(&memtier->list, ent);
+
+> +			return;
+> +		}
+> +	}
+> +	list_add_tail(&memtier->list, &memory_tiers);
+> +}
+> +
+
+IMHO, the locking requirements are needed here as comments to avoid
+confusing.
+
+> +static struct memory_tier *register_memory_tier(unsigned int tier,
+> +						unsigned int rank)
+> +{
+> +	struct memory_tier *memtier;
+> +
+> +	if (tier >= MAX_MEMORY_TIERS)
+> +		return ERR_PTR(-EINVAL);
+> +
+> +	memtier = kzalloc(sizeof(struct memory_tier), GFP_KERNEL);
+> +	if (!memtier)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	memtier->id   = tier;
+> +	memtier->rank = rank;
+> +
+> +	insert_memory_tier(memtier);
+> +
+> +	return memtier;
+> +}
+> +
+> +static int __init memory_tier_init(void)
+> +{
+> +	struct memory_tier *memtier;
+> +
+> +	/*
+> +	 * Register only default memory tier to hide all empty
+> +	 * memory tier from sysfs.
+> +	 */
+> +	memtier = register_memory_tier(DEFAULT_MEMORY_TIER,
+> +				       get_rank_from_tier(DEFAULT_MEMORY_TIER));
+> +
+> +	if (IS_ERR(memtier))
+> +		panic("%s() failed to register memory tier: %ld\n",
+> +		      __func__, PTR_ERR(memtier));
+> +
+> +	/* CPU only nodes are not part of memory tiers. */
+> +	memtier->nodelist = node_states[N_MEMORY];
+> +
+> +	return 0;
+> +}
+> +subsys_initcall(memory_tier_init);
+
+Best Regards,
+Huang, Ying
+
