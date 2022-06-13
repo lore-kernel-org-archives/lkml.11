@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26F8ECCA48C
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:45:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E66BCCCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:45:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379644AbiFMNot (ORCPT
+        id S1379558AbiFMNof (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:44:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60298 "EHLO
+        Mon, 13 Jun 2022 09:44:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379192AbiFMNkB (ORCPT
+        with ESMTP id S1379206AbiFMNkC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:40:01 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CABA2737;
-        Mon, 13 Jun 2022 04:29:46 -0700 (PDT)
+        Mon, 13 Jun 2022 09:40:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E4D2B1E3;
+        Mon, 13 Jun 2022 04:30:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 910A6CE116E;
-        Mon, 13 Jun 2022 11:29:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EF61C34114;
-        Mon, 13 Jun 2022 11:29:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A65561236;
+        Mon, 13 Jun 2022 11:30:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25641C34114;
+        Mon, 13 Jun 2022 11:29:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119783;
-        bh=Peq5gzmdgmG8DJ+CvcqQLnVGG1RKzHTqlFTjY4iQTVY=;
+        s=korg; t=1655119799;
+        bh=CKRcIDez5WDOdUkkMq0cmBGtJrYGSVOmbu328DuMck0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=secNZcA+u4QapCBnaM3KvohPgvWAHmA+FjQ8Y1w4rBgz96YT1aX1FFQkoXTJUkZlA
-         yl0dZuoWqOc3dZIZD6WVhQNq4HhX+cQboPVCtVSMlBBINv2+UmXEESI37SPBsFkKCp
-         JdApHyWjaTo6JGlzoBpwcvZgpg/O4T+53ymFw0ys=
+        b=nd2qknklA0RAG8gQp/W7KbE/KXsT5HBfwmRbyp7EPvaxeSEK1fZ51ilQva1G0TdRU
+         SABRaYfOfkGo3u86nFu0aeXJtDSvwDUdwVLZHZ66mnKkR4GgsNlrWCmeY3478ygH3J
+         lG5At3NrOJsGMpBLUP+Bp1VI9xauvg1uJR6Sw2Mg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
+        stable@vger.kernel.org, Fei Qin <fei.qin@corigine.com>,
+        Yinjun Zhang <yinjun.zhang@corigine.com>,
+        Louis Peens <louis.peens@corigine.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 108/339] riscv: read-only pages should not be writable
-Date:   Mon, 13 Jun 2022 12:08:53 +0200
-Message-Id: <20220613094929.786589730@linuxfoundation.org>
+Subject: [PATCH 5.18 144/339] nfp: remove padding in nfp_nfdk_tx_desc
+Date:   Mon, 13 Jun 2022 12:09:29 +0200
+Message-Id: <20220613094931.051031539@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,37 +53,138 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+From: Fei Qin <fei.qin@corigine.com>
 
-[ Upstream commit 630f972d76d6460235e84e1aa034ee06f9c8c3a9 ]
+[ Upstream commit c6fbbf1eae8f35e10966826960e154c9596c86dc ]
 
-If EFI pages are marked as read-only,
-we should remove the _PAGE_WRITE flag.
+NFDK firmware supports 48-bit dma addressing and
+parses 16 high bits of dma addresses.
 
-The current code overwrites an unused value.
+In nfp_nfdk_tx_desc, dma related structure and tso
+related structure are union. When "mss" be filled
+with nonzero value due to enable tso, the memory used
+by "padding" may be also filled. Then, firmware may
+parse wrong dma addresses which causes TX watchdog
+timeout problem.
 
-Fixes: b91540d52a08b ("RISC-V: Add EFI runtime services")
-Signed-off-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
-Link: https://lore.kernel.org/r/20220528014132.91052-1-heinrich.schuchardt@canonical.com
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+This patch removes padding and unifies the dma_addr_hi
+bits with the one in firmware. nfp_nfdk_tx_desc_set_dma_addr
+is also added to match this change.
+
+Fixes: c10d12e3dce8 ("nfp: add support for NFDK data path")
+Signed-off-by: Fei Qin <fei.qin@corigine.com>
+Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
+Signed-off-by: Louis Peens <louis.peens@corigine.com>
+Signed-off-by: Simon Horman <simon.horman@corigine.com>
+Link: https://lore.kernel.org/r/20220601083449.50556-1-simon.horman@corigine.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/kernel/efi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/netronome/nfp/nfdk/dp.c   | 12 ++++++------
+ drivers/net/ethernet/netronome/nfp/nfdk/nfdk.h |  3 +--
+ drivers/net/ethernet/netronome/nfp/nfp_net.h   | 11 ++++++++++-
+ 3 files changed, 17 insertions(+), 9 deletions(-)
 
-diff --git a/arch/riscv/kernel/efi.c b/arch/riscv/kernel/efi.c
-index 024159298231..1aa540350abd 100644
---- a/arch/riscv/kernel/efi.c
-+++ b/arch/riscv/kernel/efi.c
-@@ -65,7 +65,7 @@ static int __init set_permissions(pte_t *ptep, unsigned long addr, void *data)
+diff --git a/drivers/net/ethernet/netronome/nfp/nfdk/dp.c b/drivers/net/ethernet/netronome/nfp/nfdk/dp.c
+index e3da9ac20e57..e509d6dcba5c 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfdk/dp.c
++++ b/drivers/net/ethernet/netronome/nfp/nfdk/dp.c
+@@ -314,7 +314,7 @@ netdev_tx_t nfp_nfdk_tx(struct sk_buff *skb, struct net_device *netdev)
+ 		    FIELD_PREP(NFDK_DESC_TX_TYPE_HEAD, type);
  
- 	if (md->attribute & EFI_MEMORY_RO) {
- 		val = pte_val(pte) & ~_PAGE_WRITE;
--		val = pte_val(pte) | _PAGE_READ;
-+		val |= _PAGE_READ;
- 		pte = __pte(val);
- 	}
- 	if (md->attribute & EFI_MEMORY_XP) {
+ 	txd->dma_len_type = cpu_to_le16(dlen_type);
+-	nfp_desc_set_dma_addr(txd, dma_addr);
++	nfp_nfdk_tx_desc_set_dma_addr(txd, dma_addr);
+ 
+ 	/* starts at bit 0 */
+ 	BUILD_BUG_ON(!(NFDK_DESC_TX_DMA_LEN_HEAD & 1));
+@@ -339,7 +339,7 @@ netdev_tx_t nfp_nfdk_tx(struct sk_buff *skb, struct net_device *netdev)
+ 			dlen_type = FIELD_PREP(NFDK_DESC_TX_DMA_LEN, dma_len);
+ 
+ 			txd->dma_len_type = cpu_to_le16(dlen_type);
+-			nfp_desc_set_dma_addr(txd, dma_addr);
++			nfp_nfdk_tx_desc_set_dma_addr(txd, dma_addr);
+ 
+ 			dma_len -= dlen_type;
+ 			dma_addr += dlen_type + 1;
+@@ -929,7 +929,7 @@ nfp_nfdk_tx_xdp_buf(struct nfp_net_dp *dp, struct nfp_net_rx_ring *rx_ring,
+ 		    FIELD_PREP(NFDK_DESC_TX_TYPE_HEAD, type);
+ 
+ 	txd->dma_len_type = cpu_to_le16(dlen_type);
+-	nfp_desc_set_dma_addr(txd, dma_addr);
++	nfp_nfdk_tx_desc_set_dma_addr(txd, dma_addr);
+ 
+ 	tmp_dlen = dlen_type & NFDK_DESC_TX_DMA_LEN_HEAD;
+ 	dma_len -= tmp_dlen;
+@@ -940,7 +940,7 @@ nfp_nfdk_tx_xdp_buf(struct nfp_net_dp *dp, struct nfp_net_rx_ring *rx_ring,
+ 		dma_len -= 1;
+ 		dlen_type = FIELD_PREP(NFDK_DESC_TX_DMA_LEN, dma_len);
+ 		txd->dma_len_type = cpu_to_le16(dlen_type);
+-		nfp_desc_set_dma_addr(txd, dma_addr);
++		nfp_nfdk_tx_desc_set_dma_addr(txd, dma_addr);
+ 
+ 		dlen_type &= NFDK_DESC_TX_DMA_LEN;
+ 		dma_len -= dlen_type;
+@@ -1332,7 +1332,7 @@ nfp_nfdk_ctrl_tx_one(struct nfp_net *nn, struct nfp_net_r_vector *r_vec,
+ 		    FIELD_PREP(NFDK_DESC_TX_TYPE_HEAD, type);
+ 
+ 	txd->dma_len_type = cpu_to_le16(dlen_type);
+-	nfp_desc_set_dma_addr(txd, dma_addr);
++	nfp_nfdk_tx_desc_set_dma_addr(txd, dma_addr);
+ 
+ 	tmp_dlen = dlen_type & NFDK_DESC_TX_DMA_LEN_HEAD;
+ 	dma_len -= tmp_dlen;
+@@ -1343,7 +1343,7 @@ nfp_nfdk_ctrl_tx_one(struct nfp_net *nn, struct nfp_net_r_vector *r_vec,
+ 		dma_len -= 1;
+ 		dlen_type = FIELD_PREP(NFDK_DESC_TX_DMA_LEN, dma_len);
+ 		txd->dma_len_type = cpu_to_le16(dlen_type);
+-		nfp_desc_set_dma_addr(txd, dma_addr);
++		nfp_nfdk_tx_desc_set_dma_addr(txd, dma_addr);
+ 
+ 		dlen_type &= NFDK_DESC_TX_DMA_LEN;
+ 		dma_len -= dlen_type;
+diff --git a/drivers/net/ethernet/netronome/nfp/nfdk/nfdk.h b/drivers/net/ethernet/netronome/nfp/nfdk/nfdk.h
+index c41e0975eb73..0ea51d9f2325 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfdk/nfdk.h
++++ b/drivers/net/ethernet/netronome/nfp/nfdk/nfdk.h
+@@ -46,8 +46,7 @@
+ struct nfp_nfdk_tx_desc {
+ 	union {
+ 		struct {
+-			u8 dma_addr_hi;  /* High bits of host buf address */
+-			u8 padding;  /* Must be zero */
++			__le16 dma_addr_hi;  /* High bits of host buf address */
+ 			__le16 dma_len_type; /* Length to DMA for this desc */
+ 			__le32 dma_addr_lo;  /* Low 32bit of host buf addr */
+ 		};
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net.h b/drivers/net/ethernet/netronome/nfp/nfp_net.h
+index 428783b7018b..3dd3a92d2e7f 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net.h
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net.h
+@@ -117,13 +117,22 @@ struct nfp_nfdk_tx_buf;
+ /* Convenience macro for writing dma address into RX/TX descriptors */
+ #define nfp_desc_set_dma_addr(desc, dma_addr)				\
+ 	do {								\
+-		__typeof(desc) __d = (desc);				\
++		__typeof__(desc) __d = (desc);				\
+ 		dma_addr_t __addr = (dma_addr);				\
+ 									\
+ 		__d->dma_addr_lo = cpu_to_le32(lower_32_bits(__addr));	\
+ 		__d->dma_addr_hi = upper_32_bits(__addr) & 0xff;	\
+ 	} while (0)
+ 
++#define nfp_nfdk_tx_desc_set_dma_addr(desc, dma_addr)			       \
++	do {								       \
++		__typeof__(desc) __d = (desc);				       \
++		dma_addr_t __addr = (dma_addr);				       \
++									       \
++		__d->dma_addr_hi = cpu_to_le16(upper_32_bits(__addr) & 0xff);  \
++		__d->dma_addr_lo = cpu_to_le32(lower_32_bits(__addr));         \
++	} while (0)
++
+ /**
+  * struct nfp_net_tx_ring - TX ring structure
+  * @r_vec:      Back pointer to ring vector structure
 -- 
 2.35.1
 
