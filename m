@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B12ACCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:46:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 833F9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:47:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386116AbiFMOqp (ORCPT
+        id S1385247AbiFMOq5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:46:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35554 "EHLO
+        Mon, 13 Jun 2022 10:46:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386208AbiFMOop (ORCPT
+        with ESMTP id S1386212AbiFMOop (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 10:44:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37C02B715E;
-        Mon, 13 Jun 2022 04:51:29 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A0C1B717D;
+        Mon, 13 Jun 2022 04:51:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 760866133B;
-        Mon, 13 Jun 2022 11:51:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F3ACC34114;
-        Mon, 13 Jun 2022 11:51:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E11861486;
+        Mon, 13 Jun 2022 11:50:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A294C3411B;
+        Mon, 13 Jun 2022 11:50:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655121088;
-        bh=NdoOI/mdof+A4Uy4fR9Q85uef2kWgrggo63N4r2XOrk=;
+        s=korg; t=1655121058;
+        bh=sh2G4X4wFqnK2Zl2sU5zgIcGPX5ExeSw9GC5WbGyQy0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yH/0UdbY/xUpzUPG8aYtqdk0OdKThzyKghMVuVNxDeueOEeTcDEwyXTid8in3Fqa0
-         7VDDtcMFq5TrgAh2dsNCTJesrcyXRw68/bddA1VEzsHhCazyDmvbORWBbRVCm58oOv
-         Ewn1hPg43b9xsAM8e902IJWoXYt9G9hi+QTbLNME=
+        b=MrusuCMNeLBSXYeT0wU0h1hyZyIbtx55sLR/niLd7QsRNcleFMEjQAoKw/HuW65qA
+         FgxUIbBljK34LR+xzzYoV2cPRYJCSXjqxsOoBI3dh8ZaGGM08qCbeo0OySlrmm9Sx9
+         4+3gFVd8Wqpw7XDj+GuDvu5/7+jUJ8Gu9ed16Rcs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Cyril Brulebois <kibi@debian.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 244/298] Revert "PCI: brcmstb: Do not turn off WOL regulators on suspend"
-Date:   Mon, 13 Jun 2022 12:12:18 +0200
-Message-Id: <20220613094932.486775523@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
+        =?UTF-8?q?Andr=C3=A9=20Kapelrud?= <a.kapelrud@gmail.com>
+Subject: [PATCH 5.17 257/298] ALSA: usb-audio: Skip generic sync EP parse for secondary EP
+Date:   Mon, 13 Jun 2022 12:12:31 +0200
+Message-Id: <20220613094932.871986274@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,126 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Helgaas <bhelgaas@google.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 7894025c783ca36394d3afe49c8cfb4c830b82fe ]
+commit efb75df105e82f076a85b9f2d81410428bcb55fc upstream.
 
-This reverts commit 11ed8b8624b8085f706864b4addcd304b1e4fc38.
+When ep_idx is already non-zero, it means usually a capture stream
+that is set up explicity by a fixed-format quirk, and applying the
+check for generic (non-implicit-fb) sync EPs might hit incorrectly,
+resulting in a bogus sync endpoint for the capture stream.
 
-This is part of a revert of the following commits:
+This patch adds a check for the ep_idx and skip if it's a secondary
+endpoint.  It's a part of the fixes for regressions on Saffire 6.
 
-  11ed8b8624b8 ("PCI: brcmstb: Do not turn off WOL regulators on suspend")
-  93e41f3fca3d ("PCI: brcmstb: Add control of subdevice voltage regulators")
-  67211aadcb4b ("PCI: brcmstb: Add mechanism to turn on subdev regulators")
-  830aa6f29f07 ("PCI: brcmstb: Split brcm_pcie_setup() into two funcs")
-
-Cyril reported that 830aa6f29f07 ("PCI: brcmstb: Split brcm_pcie_setup()
-into two funcs"), which appeared in v5.17-rc1, broke booting on the
-Raspberry Pi Compute Module 4.  Apparently 830aa6f29f07 panics with an
-Asynchronous SError Interrupt, and after further commits here is a black
-screen on HDMI and no output on the serial console.
-
-This does not seem to affect the Raspberry Pi 4 B.
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215925
-Link: https://lore.kernel.org/r/20220511201856.808690-2-helgaas@kernel.org
-Reported-by: Cyril Brulebois <kibi@debian.org>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 7b0efea4baf0 ("ALSA: usb-audio: Add missing ep_idx in fixed EP quirks")
+Reported-and-tested-by: André Kapelrud <a.kapelrud@gmail.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220606160910.6926-2-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/pcie-brcmstb.c | 53 +++++----------------------
- 1 file changed, 9 insertions(+), 44 deletions(-)
+ sound/usb/pcm.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pci/controller/pcie-brcmstb.c b/drivers/pci/controller/pcie-brcmstb.c
-index 375c0c40bbf8..3edd63735948 100644
---- a/drivers/pci/controller/pcie-brcmstb.c
-+++ b/drivers/pci/controller/pcie-brcmstb.c
-@@ -333,7 +333,6 @@ struct brcm_pcie {
- 	void			(*bridge_sw_init_set)(struct brcm_pcie *pcie, u32 val);
- 	bool			refusal_mode;
- 	struct subdev_regulators *sr;
--	bool			ep_wakeup_capable;
- };
+--- a/sound/usb/pcm.c
++++ b/sound/usb/pcm.c
+@@ -304,7 +304,7 @@ int snd_usb_audioformat_set_sync_ep(stru
+ 	 * Generic sync EP handling
+ 	 */
  
- static inline bool is_bmips(const struct brcm_pcie *pcie)
-@@ -1351,21 +1350,9 @@ static void brcm_pcie_turn_off(struct brcm_pcie *pcie)
- 	pcie->bridge_sw_init_set(pcie, 1);
- }
+-	if (altsd->bNumEndpoints < 2)
++	if (fmt->ep_idx > 0 || altsd->bNumEndpoints < 2)
+ 		return 0;
  
--static int pci_dev_may_wakeup(struct pci_dev *dev, void *data)
--{
--	bool *ret = data;
--
--	if (device_may_wakeup(&dev->dev)) {
--		*ret = true;
--		dev_info(&dev->dev, "disable cancelled for wake-up device\n");
--	}
--	return (int) *ret;
--}
--
- static int brcm_pcie_suspend(struct device *dev)
- {
- 	struct brcm_pcie *pcie = dev_get_drvdata(dev);
--	struct pci_host_bridge *bridge = pci_host_bridge_from_priv(pcie);
- 	int ret;
- 
- 	brcm_pcie_turn_off(pcie);
-@@ -1384,22 +1371,11 @@ static int brcm_pcie_suspend(struct device *dev)
- 	}
- 
- 	if (pcie->sr) {
--		/*
--		 * Now turn off the regulators, but if at least one
--		 * downstream device is enabled as a wake-up source, do not
--		 * turn off regulators.
--		 */
--		pcie->ep_wakeup_capable = false;
--		pci_walk_bus(bridge->bus, pci_dev_may_wakeup,
--			     &pcie->ep_wakeup_capable);
--		if (!pcie->ep_wakeup_capable) {
--			ret = regulator_bulk_disable(pcie->sr->num_supplies,
--						     pcie->sr->supplies);
--			if (ret) {
--				dev_err(dev, "Could not turn off regulators\n");
--				reset_control_reset(pcie->rescal);
--				return ret;
--			}
-+		ret = regulator_bulk_disable(pcie->sr->num_supplies, pcie->sr->supplies);
-+		if (ret) {
-+			dev_err(dev, "Could not turn off regulators\n");
-+			reset_control_reset(pcie->rescal);
-+			return ret;
- 		}
- 	}
- 	clk_disable_unprepare(pcie->clk);
-@@ -1420,21 +1396,10 @@ static int brcm_pcie_resume(struct device *dev)
- 		return ret;
- 
- 	if (pcie->sr) {
--		if (pcie->ep_wakeup_capable) {
--			/*
--			 * We are resuming from a suspend.  In the suspend we
--			 * did not disable the power supplies, so there is
--			 * no need to enable them (and falsely increase their
--			 * usage count).
--			 */
--			pcie->ep_wakeup_capable = false;
--		} else {
--			ret = regulator_bulk_enable(pcie->sr->num_supplies,
--						    pcie->sr->supplies);
--			if (ret) {
--				dev_err(dev, "Could not turn on regulators\n");
--				goto err_disable_clk;
--			}
-+		ret = regulator_bulk_enable(pcie->sr->num_supplies, pcie->sr->supplies);
-+		if (ret) {
-+			dev_err(dev, "Could not turn on regulators\n");
-+			goto err_disable_clk;
- 		}
- 	}
- 
--- 
-2.35.1
-
+ 	is_playback = !(get_endpoint(alts, 0)->bEndpointAddress & USB_DIR_IN);
 
 
