@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50C5CCCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3258FCCA485
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:05:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351394AbiFMLED (ORCPT
+        id S1351374AbiFMLEA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:04:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36986 "EHLO
+        Mon, 13 Jun 2022 07:04:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350043AbiFMKyj (ORCPT
+        with ESMTP id S1349754AbiFMKy3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:54:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3880DFB8;
-        Mon, 13 Jun 2022 03:28:43 -0700 (PDT)
+        Mon, 13 Jun 2022 06:54:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1674B2FE4A;
+        Mon, 13 Jun 2022 03:28:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65D87B80E90;
-        Mon, 13 Jun 2022 10:28:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B52B9C34114;
-        Mon, 13 Jun 2022 10:28:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 89C0560F73;
+        Mon, 13 Jun 2022 10:28:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A87CC34114;
+        Mon, 13 Jun 2022 10:28:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116121;
-        bh=HBg/U462XO0GEQkKUAxLoJKOElZL0qi7ivJM+jX5lzE=;
+        s=korg; t=1655116102;
+        bh=X0JSBJCMl164uPRpCFAKDoP0BwSaR6OSa+/yCCXETJM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UQ9brzMsOnaqRmAJz+Ill5tIMjVm43MVawQzF6chBt7w6u+ESezzHFtFF+U0TgJBF
-         bVI8C9O/cydGUA1lvKEjLsFtzWx/+Fi0PyqB2RKNyOQtaCwxv5DLafCLe3QhNYkc7d
-         Evi1R2xd1eytvU4sXI501C3COAvvf6q/oYsovSfw=
+        b=HnNZWCYeOVycVwW3BnNIDe6ab5E0vXbIEY3scKIfVWN3l9PcDcr2xi19+vPqOuDzF
+         ucJqd4RblLgoO3MKOs3ctFwej3a3MtJ8t1G0cVv80xdO7lxWqq3tRE5IF2Mx08bR8R
+         F/5NPHCEq0OAz/fMPcrc5i9y8fnlfoUdG2eeSpMk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mike Kravetz <mike.kravetz@oracle.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 4.14 127/218] hugetlb: fix huge_pmd_unshare address update
-Date:   Mon, 13 Jun 2022 12:09:45 +0200
-Message-Id: <20220613094924.427329322@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Len Brown <len.brown@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 023/411] tools/power turbostat: fix ICX DRAM power numbers
+Date:   Mon, 13 Jun 2022 12:04:56 +0200
+Message-Id: <20220613094929.196173564@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,47 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Kravetz <mike.kravetz@oracle.com>
+From: Len Brown <len.brown@intel.com>
 
-commit 48381273f8734d28ef56a5bdf1966dd8530111bc upstream.
+[ Upstream commit 6397b6418935773a34b533b3348b03f4ce3d7050 ]
 
-The routine huge_pmd_unshare() is passed a pointer to an address
-associated with an area which may be unshared.  If unshare is successful
-this address is updated to 'optimize' callers iterating over huge page
-addresses.  For the optimization to work correctly, address should be
-updated to the last huge page in the unmapped/unshared area.  However, in
-the common case where the passed address is PUD_SIZE aligned, the address
-is incorrectly updated to the address of the preceding huge page.  That
-wastes CPU cycles as the unmapped/unshared range is scanned twice.
+ICX (and its duplicates) require special hard-coded DRAM RAPL units,
+rather than using the generic RAPL energy units.
 
-Link: https://lkml.kernel.org/r/20220524205003.126184-1-mike.kravetz@oracle.com
-Fixes: 39dde65c9940 ("shared page table for hugetlb page")
-Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
-Acked-by: Muchun Song <songmuchun@bytedance.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Signed-off-by: Len Brown <len.brown@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/hugetlb.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ tools/power/x86/turbostat/turbostat.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -4798,7 +4798,14 @@ int huge_pmd_unshare(struct mm_struct *m
- 	pud_clear(pud);
- 	put_page(virt_to_page(ptep));
- 	mm_dec_nr_pmds(mm);
--	*addr = ALIGN(*addr, HPAGE_SIZE * PTRS_PER_PTE) - HPAGE_SIZE;
-+	/*
-+	 * This update of passed address optimizes loops sequentially
-+	 * processing addresses in increments of huge page size (PMD_SIZE
-+	 * in this case).  By clearing the pud, a PUD_SIZE area is unmapped.
-+	 * Update address to the 'last page' in the cleared area so that
-+	 * calling loop can move to first page past this area.
-+	 */
-+	*addr |= PUD_SIZE - PMD_SIZE;
- 	return 1;
- }
- #define want_pmd_share()	(1)
+diff --git a/tools/power/x86/turbostat/turbostat.c b/tools/power/x86/turbostat/turbostat.c
+index 988326b67a91..8bf6b01b3560 100644
+--- a/tools/power/x86/turbostat/turbostat.c
++++ b/tools/power/x86/turbostat/turbostat.c
+@@ -3865,6 +3865,7 @@ rapl_dram_energy_units_probe(int  model, double rapl_energy_units)
+ 	case INTEL_FAM6_HASWELL_X:	/* HSX */
+ 	case INTEL_FAM6_BROADWELL_X:	/* BDX */
+ 	case INTEL_FAM6_XEON_PHI_KNL:	/* KNL */
++	case INTEL_FAM6_ICELAKE_X:	/* ICX */
+ 		return (rapl_dram_energy_units = 15.3 / 1000000);
+ 	default:
+ 		return (rapl_energy_units);
+-- 
+2.35.1
+
 
 
