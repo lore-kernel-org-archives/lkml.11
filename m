@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD29ECCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0325CCA47B
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:34:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240147AbiFMNcV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:32:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47742 "EHLO
+        id S1377545AbiFMNdW (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 09:33:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377355AbiFMN2X (ORCPT
+        with ESMTP id S1377948AbiFMNam (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:28:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A806D1A2;
-        Mon, 13 Jun 2022 04:24:42 -0700 (PDT)
+        Mon, 13 Jun 2022 09:30:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72AB36EB19;
+        Mon, 13 Jun 2022 04:25:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7712DB80E59;
-        Mon, 13 Jun 2022 11:24:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1C04C34114;
-        Mon, 13 Jun 2022 11:24:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C2B0B80EAA;
+        Mon, 13 Jun 2022 11:25:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C99ACC34114;
+        Mon, 13 Jun 2022 11:25:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119480;
-        bh=mEwbqgWojyxtkqgxEaRPGMELVaiZS+FLu/4v3N6gpOg=;
+        s=korg; t=1655119515;
+        bh=QouBqbAdLqLCWjcfegrsiC/thijgYKDYPJ4zHlJDVgI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LVhJ8GRPjs5QP+rwzQd4UqrKCK67pZCUvYbfJNiHbM0/ByVzBeYSPO392CB/WmpgL
-         XsK36YAYif7LGlIMq9jvyMWv3+tBwCdpEg9aN0ZunDmMRPEdmrioLpDS5Jdf7Ec7A7
-         BiY4vZfZBZBmZQJqG3mlb2xumSM09N3wM8PildrQ=
+        b=nDh1WVBqd8d59x0mTlWEQbDOx9PID6c06zxOLV9mxIDJwGieGyU2NjFKTw+BvQqD1
+         shQGJHPjpE0hIJorL17ovVuyi+XaWC9ppqF9ZRDBaPoiN6JjZ2DF6pEi/VIJlmSTlI
+         Pi/2KFDJMJRSmvpgdTqYNL6oVA5+RaYS7Ot/Dv8U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 030/339] usb: typec: mux: Check dev_set_name() return value
-Date:   Mon, 13 Jun 2022 12:07:35 +0200
-Message-Id: <20220613094927.427575927@linuxfoundation.org>
+        stable@vger.kernel.org, Evan Green <evgreen@chromium.org>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 040/339] phy: qcom-qmp: fix pipe-clock imbalance on power-on failure
+Date:   Mon, 13 Jun 2022 12:07:45 +0200
+Message-Id: <20220613094927.735653858@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -52,56 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Andersson <bjorn.andersson@linaro.org>
+From: Johan Hovold <johan+linaro@kernel.org>
 
-[ Upstream commit b9fa0292490db39d6542f514117333d366ec0011 ]
+[ Upstream commit 5e73b2d9867998278479ccc065a8a8227a5513ef ]
 
-It's possible that dev_set_name() returns -ENOMEM, catch and handle this.
+Make sure to disable the pipe clock also if ufs-reset deassertion fails
+during power on.
 
-Fixes: 3370db35193b ("usb: typec: Registering real device entries for the muxes")
-Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220422222351.1297276-4-bjorn.andersson@linaro.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Note that the ufs-reset is asserted in qcom_qmp_phy_com_exit().
+
+Fixes: c9b589791fc1 ("phy: qcom: Utilize UFS reset controller")
+Cc: Evan Green <evgreen@chromium.org>
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+Link: https://lore.kernel.org/r/20220502133130.4125-2-johan+linaro@kernel.org
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/typec/mux.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ drivers/phy/qualcomm/phy-qcom-qmp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/usb/typec/mux.c b/drivers/usb/typec/mux.c
-index c8340de0ed49..d2aaf294b649 100644
---- a/drivers/usb/typec/mux.c
-+++ b/drivers/usb/typec/mux.c
-@@ -131,8 +131,11 @@ typec_switch_register(struct device *parent,
- 	sw->dev.class = &typec_mux_class;
- 	sw->dev.type = &typec_switch_dev_type;
- 	sw->dev.driver_data = desc->drvdata;
--	dev_set_name(&sw->dev, "%s-switch",
--		     desc->name ? desc->name : dev_name(parent));
-+	ret = dev_set_name(&sw->dev, "%s-switch", desc->name ? desc->name : dev_name(parent));
-+	if (ret) {
-+		put_device(&sw->dev);
-+		return ERR_PTR(ret);
-+	}
+diff --git a/drivers/phy/qualcomm/phy-qcom-qmp.c b/drivers/phy/qualcomm/phy-qcom-qmp.c
+index 9afac02e0eaa..4d50a6925600 100644
+--- a/drivers/phy/qualcomm/phy-qcom-qmp.c
++++ b/drivers/phy/qualcomm/phy-qcom-qmp.c
+@@ -5246,7 +5246,7 @@ static int qcom_qmp_phy_power_on(struct phy *phy)
  
- 	ret = device_add(&sw->dev);
- 	if (ret) {
-@@ -338,8 +341,11 @@ typec_mux_register(struct device *parent, const struct typec_mux_desc *desc)
- 	mux->dev.class = &typec_mux_class;
- 	mux->dev.type = &typec_mux_dev_type;
- 	mux->dev.driver_data = desc->drvdata;
--	dev_set_name(&mux->dev, "%s-mux",
--		     desc->name ? desc->name : dev_name(parent));
-+	ret = dev_set_name(&mux->dev, "%s-mux", desc->name ? desc->name : dev_name(parent));
-+	if (ret) {
-+		put_device(&mux->dev);
-+		return ERR_PTR(ret);
-+	}
+ 	ret = reset_control_deassert(qmp->ufs_reset);
+ 	if (ret)
+-		goto err_lane_rst;
++		goto err_pcs_ready;
  
- 	ret = device_add(&mux->dev);
- 	if (ret) {
+ 	qcom_qmp_phy_configure(pcs_misc, cfg->regs, cfg->pcs_misc_tbl,
+ 			       cfg->pcs_misc_tbl_num);
 -- 
 2.35.1
 
