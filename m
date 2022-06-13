@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66F6CCCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51179CCA47B
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:57:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381651AbiFMN5F (ORCPT
+        id S1380145AbiFMNxm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:57:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54370 "EHLO
+        Mon, 13 Jun 2022 09:53:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379611AbiFMNun (ORCPT
+        with ESMTP id S1379215AbiFMNuL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:50:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A8292A710;
-        Mon, 13 Jun 2022 04:33:26 -0700 (PDT)
+        Mon, 13 Jun 2022 09:50:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA67C2A435;
+        Mon, 13 Jun 2022 04:33:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AD948B80EAB;
-        Mon, 13 Jun 2022 11:33:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22CCEC3411E;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0550DB80E93;
         Mon, 13 Jun 2022 11:33:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 671A9C3411C;
+        Mon, 13 Jun 2022 11:33:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120003;
-        bh=hXyxhyEqCvPJVvbXeFOnshaIzEDrX6tP9ys6NmuwyV4=;
+        s=korg; t=1655120000;
+        bh=QDH42gKm5gGWv+NIEhenKt9NGcU0y959xwFHE/pD/gM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HZVVmlVYqSd2AEP+sFWu24qf54gSablPc4oOCJLmaNSyezqEucjWAVn8R0kbDbKPw
-         HXuqmnO7PLKmN/NpipaoRlpZiAhi5XDXbxcdVGid/JFCnWcV/ObGamLyyCXdREvWc9
-         RKeEH6bSZSJIwUt+rlQuTs1/Cm3FkQxUqmHid6jA=
+        b=asd2nRPfUGfDNN2GNnpet3qBRD5ZopxXPKlkZZjHFMRuteKSQbktiXjT1z+B2Jpn0
+         lcwAzWsYg4AXwIBFSA+XCmNcFXDottFVCi04mmJbpX7K2HKt83dOTZaw6e+r8ZAMjB
+         QcwNPgBQhkqyjMhZiJxPqyngkM6HWLPOOhDScPEI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 215/339] net: altera: Fix refcount leak in altera_tse_mdio_create
-Date:   Mon, 13 Jun 2022 12:10:40 +0200
-Message-Id: <20220613094933.183831905@linuxfoundation.org>
+Subject: [PATCH 5.18 197/339] af_unix: Fix a data-race in unix_dgram_peer_wake_me().
+Date:   Mon, 13 Jun 2022 12:10:22 +0200
+Message-Id: <20220613094932.642406521@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,57 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 11ec18b1d8d92b9df307d31950dcba0b3dd7283c ]
+[ Upstream commit 662a80946ce13633ae90a55379f1346c10f0c432 ]
 
-Every iteration of for_each_child_of_node() decrements
-the reference count of the previous node.
-When break from a for_each_child_of_node() loop,
-we need to explicitly call of_node_put() on the child node when
-not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+unix_dgram_poll() calls unix_dgram_peer_wake_me() without `other`'s
+lock held and check if its receive queue is full.  Here we need to
+use unix_recvq_full_lockless() instead of unix_recvq_full(), otherwise
+KCSAN will report a data-race.
 
-Fixes: bbd2190ce96d ("Altera TSE: Add main and header file for Altera Ethernet Driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220607041144.7553-1-linmq006@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 7d267278a9ec ("unix: avoid use-after-free in ep_remove_wait_queue")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Link: https://lore.kernel.org/r/20220605232325.11804-1-kuniyu@amazon.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/altera/altera_tse_main.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ net/unix/af_unix.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/altera/altera_tse_main.c b/drivers/net/ethernet/altera/altera_tse_main.c
-index a3816264c35c..8c5828582c21 100644
---- a/drivers/net/ethernet/altera/altera_tse_main.c
-+++ b/drivers/net/ethernet/altera/altera_tse_main.c
-@@ -163,7 +163,8 @@ static int altera_tse_mdio_create(struct net_device *dev, unsigned int id)
- 	mdio = mdiobus_alloc();
- 	if (mdio == NULL) {
- 		netdev_err(dev, "Error allocating MDIO bus\n");
--		return -ENOMEM;
-+		ret = -ENOMEM;
-+		goto put_node;
- 	}
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index e71a312faa1e..4aed12e94221 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -490,7 +490,7 @@ static int unix_dgram_peer_wake_me(struct sock *sk, struct sock *other)
+ 	 * -ECONNREFUSED. Otherwise, if we haven't queued any skbs
+ 	 * to other and its full, we will hang waiting for POLLOUT.
+ 	 */
+-	if (unix_recvq_full(other) && !sock_flag(other, SOCK_DEAD))
++	if (unix_recvq_full_lockless(other) && !sock_flag(other, SOCK_DEAD))
+ 		return 1;
  
- 	mdio->name = ALTERA_TSE_RESOURCE_NAME;
-@@ -180,6 +181,7 @@ static int altera_tse_mdio_create(struct net_device *dev, unsigned int id)
- 			   mdio->id);
- 		goto out_free_mdio;
- 	}
-+	of_node_put(mdio_node);
- 
- 	if (netif_msg_drv(priv))
- 		netdev_info(dev, "MDIO bus %s: created\n", mdio->id);
-@@ -189,6 +191,8 @@ static int altera_tse_mdio_create(struct net_device *dev, unsigned int id)
- out_free_mdio:
- 	mdiobus_free(mdio);
- 	mdio = NULL;
-+put_node:
-+	of_node_put(mdio_node);
- 	return ret;
- }
- 
+ 	if (connected)
 -- 
 2.35.1
 
