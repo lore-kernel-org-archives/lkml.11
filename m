@@ -2,191 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1A19C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:52:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1AA4C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:52:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344742AbiFMSwG (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:52:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37144 "EHLO
+        id S233186AbiFMSw0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:52:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233905AbiFMSvv (ORCPT
+        with ESMTP id S1343541AbiFMSwB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 14:51:51 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61548F073D
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 08:52:46 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id c130-20020a1c3588000000b0039c6fd897b4so1769189wma.4
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 08:52:46 -0700 (PDT)
+        Mon, 13 Jun 2022 14:52:01 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 210D3F33B1
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 08:53:13 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id w21so6152666pfc.0
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 08:53:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to
-         :references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=OCL5aWKRbj0ROQTskl1q1tCaL14mdMWA6juXly3fSBY=;
-        b=Knn6GmPZQULHNfmfoeI4Fpg+udRaQGh5orUc4dJD4WbSTCQCnxwcWiNs993WqlEUWs
-         /6dHHJAhYJXBD7Va9MK0UFIRRSTwEiqPoMPoIzSY+23D8k94rLcFIKpuMi18R1m3IWSh
-         3NiJMMEsxpXeaiWNV7fWwvBZiSynlf72E1S6jqf9Mr+jY75/8l2OJed49AXo/ENVEthc
-         Tkol+fq+LvPAWmT/LxapbDTbjAKe8Ml4vXGcnH1To03kPwyRe/68RiV6UaWxzWYUlfwu
-         AYDngHNUGy6AxTykccByw6LHJvLS3ZwZb+RGAuBop5BjyTNj1VbSlh37MV5pNYlFBxXh
-         AjGw==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ITs/o5hQHbV0Vn0H0fKwSd6ykDSKzlbe/b9VvEaDGY0=;
+        b=l94V0CMAYAhO8qc2+KxFaAQQzGPOQNEJ0Y7xfUBPcDKbtEGgyFrHF7uZaDpp1nIgeb
+         shmIuWVGKwucUoXkuUXPv846GZzIxaPTXfeZhLxs9AHAO1OE9/7uW/uyTtfxzWP752hB
+         Gb/zH87HwjjYX7vD/R8LBuPtud2NA3mhs56EC6ZIa7+MMDLL/o2tFbsQUzsUPivxnyvT
+         VbFc5C6rgL0aBaS2LsDiI+OjsFMPwBjEDYregx0r6916nt2qkibt/DaWklhXnr9T+I2l
+         1IJDhBtZlWobxOdtn6K2GFBF52eFsPPE61Hxq1Y7sPwl9lVFQMwFRgXC+PA9UynI/F/o
+         3P7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=OCL5aWKRbj0ROQTskl1q1tCaL14mdMWA6juXly3fSBY=;
-        b=OGrUqQ7on8ZIgYD+z8EqKxyOos9Gri5m0Ek+3x/ZeTzylaHzjfu/G5YG/MywzJ408x
-         FGcBAzjN5HtNuNNzKDz+85v+j1leyH+BRX9iI6iCWpZlRdTKW7Ni4hpmJqfFzhWRs4ip
-         o1CZAPZTim/N/stWAmKG3kLlof0UMNL5713JHVXbRf5L7KvC2g+l3V87RrhcZC0w3N4q
-         F0GVWp3FvfUALqN6d+tezb6DNFwN4MVCvQyh6jxI5e1Y07pbhBPHwRZxPkjexNTefHNa
-         EfS44jCCxfKZM1TScCrZeXFLnH+ddRZHmji35IAcG4/qOBA4ZXBFq60XtVHFEdbDomin
-         2TFQ==
-X-Gm-Message-State: AOAM530ZKgREGnjUlTzCf/sieN70GHJ6O3VCmfUb+ntGcWDjnVpbMkLK
-        wrVuU8w6QqUf/XGSbojV+tk=
-X-Google-Smtp-Source: ABdhPJxb8jGNR9Uj1sykaV4sMfYHmhnT+dMd4lOi3/Cadt9gYuj/PJgSkxQCaPTx4jhhNoioc0o5Nw==
-X-Received: by 2002:a05:600c:22d9:b0:39c:4b1b:5f99 with SMTP id 25-20020a05600c22d900b0039c4b1b5f99mr118995wmg.151.1655135564826;
-        Mon, 13 Jun 2022 08:52:44 -0700 (PDT)
-Received: from [192.168.0.36] ([37.223.143.134])
-        by smtp.gmail.com with ESMTPSA id t17-20020a05600c129100b0039754d1d327sm9736322wmd.13.2022.06.13.08.52.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Jun 2022 08:52:43 -0700 (PDT)
-Message-ID: <606c3409-0e27-e993-8657-0c8d36a16a97@gmail.com>
-Date:   Mon, 13 Jun 2022 17:52:42 +0200
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ITs/o5hQHbV0Vn0H0fKwSd6ykDSKzlbe/b9VvEaDGY0=;
+        b=d163G1ZznZiFPjUxS2goVWbogl9p5oWiwrbDWsN/8Ru2dJ/Acz1NEXVat7OxXkb7X+
+         b1NcvG4YKHTSIkf/k7rtMn/WXd2plMUg8qC2LSqF5q4gQQrjKoVqjoumWW/8nt+ckIl9
+         bOVpPxktvbFf/ABWo3+EPJ7cBtnPhgcfOxskUeR5MssLAgMTmuo8yT3zrxCFf8T9ct6g
+         +1ml/xn8BoA+fFmtIBKxprnI62qHh9wnzuQPP5wos0rB9DfteRIr1PiZNUsmavPM68HC
+         em3LzzFPybDl/lhAhkg4E9wJTCh3tFfPjGcdtJDgPF8e7iPIqI9oo0O16UNnInM1lFcd
+         uOMQ==
+X-Gm-Message-State: AOAM533j5hl+sYAEdK8jxE6PiodU8f5Wp+CNXq77f31QL/5uzFYh20Zp
+        3KrlkTUNt6fQmQiymfEhI/5fbQ==
+X-Google-Smtp-Source: ABdhPJw0oB3rJMKGU4F6xcOksvW9tlW38gSH1oAQnyLSfsH0+xIUOfstojLpGyMDF7cpatpM8o4lKQ==
+X-Received: by 2002:a65:6e96:0:b0:3fd:c8b7:5fa6 with SMTP id bm22-20020a656e96000000b003fdc8b75fa6mr204484pgb.569.1655135592440;
+        Mon, 13 Jun 2022 08:53:12 -0700 (PDT)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id 6-20020a170902c20600b00163e4410b82sm5293496pll.239.2022.06.13.08.53.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 08:53:11 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 15:53:07 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Peter Gonda <pgonda@google.com>
+Cc:     kernel test robot <lkp@intel.com>, llvm@lists.linux.dev,
+        kbuild-all@lists.01.org, LKML <linux-kernel@vger.kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        David Rientjes <rientjes@google.com>
+Subject: Re: arch/x86/kvm/svm/sev.c:1605:30: warning: parameter 'role' set
+ but not used
+Message-ID: <YqddYy6nO0+G/kVK@google.com>
+References: <202206131853.x4KJwC5Q-lkp@intel.com>
+ <CAMkAt6oxQqRCMt54ZRsx_TGd2banbwAy4Hq+A6GHokpMsoo-AA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Content-Language: en-US
-To:     "moudy.ho" <moudy.ho@mediatek.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-References: <20220608144055.27562-1-chunkuang.hu@kernel.org>
- <55b84b36832b0da24c267d06a43b9db4ee345176.camel@mediatek.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH] mailbox: mtk-cmdq: Remove proprietary cmdq_task_cb
-In-Reply-To: <55b84b36832b0da24c267d06a43b9db4ee345176.camel@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMkAt6oxQqRCMt54ZRsx_TGd2banbwAy4Hq+A6GHokpMsoo-AA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 10/06/2022 04:49, moudy.ho wrote:
-> On Wed, 2022-06-08 at 22:40 +0800, Chun-Kuang Hu wrote:
->> rx_callback is a standard mailbox callback mechanism and could cover
->> the
->> function of proprietary cmdq_task_cb, so use the standard one instead
->> of
->> the proprietary one. Client driver has changed to use standard
->> rx_callback, so remove proprietary cmdq_task_cb.
->>
->> Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+On Mon, Jun 13, 2022, Peter Gonda wrote:
+> On Mon, Jun 13, 2022 at 5:03 AM kernel test robot <lkp@intel.com> wrote:
+> >   1603
+> >   1604  static int sev_lock_vcpus_for_migration(struct kvm *kvm,
+> > > 1605                                          enum sev_migration_role role)
+> >   1606  {
+> >   1607          struct kvm_vcpu *vcpu;
+> >   1608          unsigned long i, j;
+> >   1609          bool first = true;
+> >   1610
+> >   1611          kvm_for_each_vcpu(i, vcpu, kvm) {
+> >   1612                  if (mutex_lock_killable_nested(&vcpu->mutex, role))
+> >   1613                          goto out_unlock;
+> >   1614
+> >
 > 
-> Depends on:
-> 
-> https://patchwork.kernel.org/project/linux-mediatek/patch/1650102868-26219-1-git-send-email-chunkuang.hu@kernel.org/
-> 
-> Tested-by: Moudy Ho <Moudy.Ho@mediatek.com>
-> 
+> I am confused about this warning. |role| is used on this line above.
+> Is this because CONFIG_DEBUG_LOCK_ALLOC the subclass argument is
+> dropped in the macro?
 
-Thanks for helping by testing this, although:
+Yep, at that point the compiler can easily detect that there's no actual usage of
+the parameter.
 
-Your message makes me think that you didn't test against v5.19-rc1 nor against 
-v5.18 (!) based kernel but something older. Giving a Tested-by tag to an older 
-kernel with lots of out-of-tree patches on top can be critical as the kernel 
-evolves and changes pretty much over time.
-Upstream development should always be done against an upstream kernel, as 
-otherwise bugs in the upstream kernel could stay unnoticed and show up as 
-"regressions" later on, when you update your base kernel version.
+There's no need for the "first" variable, it's the same as "i == 0" and "j == 0".
+With that out of the way, the role and mutex_release/mutex_acquire shenanigans can
+be wrapped with ifdeffery.  Not the prettiest thing, but I actually like the #ifdefs
+because they effectively document that KVM is playing games to make lockdep happy.
 
-Best regards,
-Matthias
+I'll send this as a formal patch, I think it'll make clang-15 happy.
 
->> ---
->>   drivers/mailbox/mtk-cmdq-mailbox.c       | 11 -----------
->>   include/linux/mailbox/mtk-cmdq-mailbox.h | 10 ----------
->>   2 files changed, 21 deletions(-)
->>
->> diff --git a/drivers/mailbox/mtk-cmdq-mailbox.c
->> b/drivers/mailbox/mtk-cmdq-mailbox.c
->> index 2578e5aaa935..9465f9081515 100644
->> --- a/drivers/mailbox/mtk-cmdq-mailbox.c
->> +++ b/drivers/mailbox/mtk-cmdq-mailbox.c
->> @@ -192,15 +192,10 @@ static bool cmdq_thread_is_in_wfe(struct
->> cmdq_thread *thread)
->>   
->>   static void cmdq_task_exec_done(struct cmdq_task *task, int sta)
->>   {
->> -	struct cmdq_task_cb *cb = &task->pkt->async_cb;
->>   	struct cmdq_cb_data data;
->>   
->>   	data.sta = sta;
->> -	data.data = cb->data;
->>   	data.pkt = task->pkt;
->> -	if (cb->cb)
->> -		cb->cb(data);
->> -
->>   	mbox_chan_received_data(task->thread->chan, &data);
->>   
->>   	list_del(&task->list_entry);
->> @@ -448,7 +443,6 @@ static void cmdq_mbox_shutdown(struct mbox_chan
->> *chan)
->>   static int cmdq_mbox_flush(struct mbox_chan *chan, unsigned long
->> timeout)
->>   {
->>   	struct cmdq_thread *thread = (struct cmdq_thread *)chan-
->>> con_priv;
->> -	struct cmdq_task_cb *cb;
->>   	struct cmdq_cb_data data;
->>   	struct cmdq *cmdq = dev_get_drvdata(chan->mbox->dev);
->>   	struct cmdq_task *task, *tmp;
->> @@ -465,13 +459,8 @@ static int cmdq_mbox_flush(struct mbox_chan
->> *chan, unsigned long timeout)
->>   
->>   	list_for_each_entry_safe(task, tmp, &thread->task_busy_list,
->>   				 list_entry) {
->> -		cb = &task->pkt->async_cb;
->>   		data.sta = -ECONNABORTED;
->> -		data.data = cb->data;
->>   		data.pkt = task->pkt;
->> -		if (cb->cb)
->> -			cb->cb(data);
->> -
->>   		mbox_chan_received_data(task->thread->chan, &data);
->>   		list_del(&task->list_entry);
->>   		kfree(task);
->> diff --git a/include/linux/mailbox/mtk-cmdq-mailbox.h
->> b/include/linux/mailbox/mtk-cmdq-mailbox.h
->> index 44365aab043c..a8f0070c7aa9 100644
->> --- a/include/linux/mailbox/mtk-cmdq-mailbox.h
->> +++ b/include/linux/mailbox/mtk-cmdq-mailbox.h
->> @@ -67,24 +67,14 @@ enum cmdq_code {
->>   
->>   struct cmdq_cb_data {
->>   	int			sta;
->> -	void			*data;
->>   	struct cmdq_pkt		*pkt;
->>   };
->>   
->> -typedef void (*cmdq_async_flush_cb)(struct cmdq_cb_data data);
->> -
->> -struct cmdq_task_cb {
->> -	cmdq_async_flush_cb	cb;
->> -	void			*data;
->> -};
->> -
->>   struct cmdq_pkt {
->>   	void			*va_base;
->>   	dma_addr_t		pa_base;
->>   	size_t			cmd_buf_size; /* command occupied
->> size */
->>   	size_t			buf_size; /* real buffer size */
->> -	struct cmdq_task_cb	cb;
->> -	struct cmdq_task_cb	async_cb;
->>   	void			*cl;
->>   };
->>   
-> 
+---
+ arch/x86/kvm/svm/sev.c | 17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
+
+diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+index 51fd985cf21d..593c61683484 100644
+--- a/arch/x86/kvm/svm/sev.c
++++ b/arch/x86/kvm/svm/sev.c
+@@ -1606,38 +1606,35 @@ static int sev_lock_vcpus_for_migration(struct kvm *kvm,
+ {
+ 	struct kvm_vcpu *vcpu;
+ 	unsigned long i, j;
+-	bool first = true;
+
+ 	kvm_for_each_vcpu(i, vcpu, kvm) {
+ 		if (mutex_lock_killable_nested(&vcpu->mutex, role))
+ 			goto out_unlock;
+
+-		if (first) {
++#ifdef CONFIG_DEBUG_LOCK_ALLOC
++		if (!i)
+ 			/*
+ 			 * Reset the role to one that avoids colliding with
+ 			 * the role used for the first vcpu mutex.
+ 			 */
+ 			role = SEV_NR_MIGRATION_ROLES;
+-			first = false;
+-		} else {
++		else
+ 			mutex_release(&vcpu->mutex.dep_map, _THIS_IP_);
+-		}
++#endif
+ 	}
+
+ 	return 0;
+
+ out_unlock:
+
+-	first = true;
+ 	kvm_for_each_vcpu(j, vcpu, kvm) {
+ 		if (i == j)
+ 			break;
+
+-		if (first)
+-			first = false;
+-		else
++#ifdef CONFIG_DEBUG_LOCK_ALLOC
++		if (j)
+ 			mutex_acquire(&vcpu->mutex.dep_map, role, 0, _THIS_IP_);
+-
++#endif
+
+ 		mutex_unlock(&vcpu->mutex);
+ 	}
+
+base-commit: 8a6d3a6ec6a821c5ddb3972fdbad9c4149eabf1e
+--
+
+
