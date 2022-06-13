@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08BF6CCA493
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:31:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C19FCCA496
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:31:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385015AbiFMOab (ORCPT
+        id S1383997AbiFMObb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:30:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49934 "EHLO
+        Mon, 13 Jun 2022 10:31:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384065AbiFMOYm (ORCPT
+        with ESMTP id S1384427AbiFMOZ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:24:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE06F48316;
-        Mon, 13 Jun 2022 04:46:40 -0700 (PDT)
+        Mon, 13 Jun 2022 10:25:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0FC34A91D;
+        Mon, 13 Jun 2022 04:47:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E3E51612AC;
-        Mon, 13 Jun 2022 11:46:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBAA8C34114;
-        Mon, 13 Jun 2022 11:46:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 16ABBB80D3A;
+        Mon, 13 Jun 2022 11:47:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85D17C34114;
+        Mon, 13 Jun 2022 11:47:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120799;
-        bh=D30LyP4x5zEhrVjuQDj45JBU4eQu6819dhg1fmv8l+w=;
+        s=korg; t=1655120831;
+        bh=VqhSotlIMbKvahj8P9Pf1uXLsERfK7jEaeqwA8oSxAE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n5cPVGI/JgKPmvRIkrtS+v5E0ftANcfz/xSsQKMLSn83E7L0eIQGK479jN0P4VpF/
-         aLlZKIKTnKzvcO6AtnBQEOII+hJqx2pYGwYAJfl4pmus/qltl0yexKIzt1xpPI/mvv
-         kSa9mirodzh1HKjtsaiopgOTaguoXSwyum45TSY0=
+        b=ZOBqT6qUE5xJdH4vzDlIsqQRu9Labrrh5Ul8IuomT7HlChNXfYWGCZ4N9qtvo5EWP
+         wRccKHlDqWD2L0AgSnUIcapkfNMUjsY3B9MaU1fDFwR/bF7eFlxzXbeyvPPxb3NacL
+         L3wD0/hAaDGonMq1sj5IL+NJqwToGnEymE4RgNWM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Erhard Furtner <erhard_f@mailbox.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 161/298] powerpc/kasan: Force thread size increase with KASAN
-Date:   Mon, 13 Jun 2022 12:10:55 +0200
-Message-Id: <20220613094929.818510517@linuxfoundation.org>
+Subject: [PATCH 5.17 166/298] netfilter: nf_tables: memleak flow rule from commit path
+Date:   Mon, 13 Jun 2022 12:11:00 +0200
+Message-Id: <20220613094929.966504625@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -51,69 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit 3e8635fb2e072672cbc650989ffedf8300ad67fb ]
+[ Upstream commit 9dd732e0bdf538b1b76dc7c157e2b5e560ff30d3 ]
 
-KASAN causes increased stack usage, which can lead to stack overflows.
+Abort path release flow rule object, however, commit path does not.
+Update code to destroy these objects before releasing the transaction.
 
-The logic in Kconfig to suggest a larger default doesn't work if a user
-has CONFIG_EXPERT enabled and has an existing .config with a smaller
-value.
-
-Follow the lead of x86 and arm64, and force the thread size to be
-increased when KASAN is enabled.
-
-That also has the effect of enlarging the stack for 64-bit KASAN builds,
-which is also desirable.
-
-Fixes: edbadaf06710 ("powerpc/kasan: Fix stack overflow by increasing THREAD_SHIFT")
-Reported-by: Erhard Furtner <erhard_f@mailbox.org>
-Reported-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-[mpe: Use MIN_THREAD_SHIFT as suggested by Christophe]
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220601143114.133524-1-mpe@ellerman.id.au
+Fixes: c9626a2cbdb2 ("netfilter: nf_tables: add hardware offload support")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/Kconfig                   |  1 -
- arch/powerpc/include/asm/thread_info.h | 10 ++++++++--
- 2 files changed, 8 insertions(+), 3 deletions(-)
+ net/netfilter/nf_tables_api.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-index b779603978e1..574e4ba13959 100644
---- a/arch/powerpc/Kconfig
-+++ b/arch/powerpc/Kconfig
-@@ -764,7 +764,6 @@ config THREAD_SHIFT
- 	range 13 15
- 	default "15" if PPC_256K_PAGES
- 	default "14" if PPC64
--	default "14" if KASAN
- 	default "13"
- 	help
- 	  Used to define the stack size. The default is almost always what you
-diff --git a/arch/powerpc/include/asm/thread_info.h b/arch/powerpc/include/asm/thread_info.h
-index d6e649b3c70b..bc3e1de9d08b 100644
---- a/arch/powerpc/include/asm/thread_info.h
-+++ b/arch/powerpc/include/asm/thread_info.h
-@@ -14,10 +14,16 @@
- 
- #ifdef __KERNEL__
- 
--#if defined(CONFIG_VMAP_STACK) && CONFIG_THREAD_SHIFT < PAGE_SHIFT
-+#ifdef CONFIG_KASAN
-+#define MIN_THREAD_SHIFT	(CONFIG_THREAD_SHIFT + 1)
-+#else
-+#define MIN_THREAD_SHIFT	CONFIG_THREAD_SHIFT
-+#endif
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 2abad256f0aa..5a2d585e180c 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -8244,6 +8244,9 @@ static void nft_commit_release(struct nft_trans *trans)
+ 		nf_tables_chain_destroy(&trans->ctx);
+ 		break;
+ 	case NFT_MSG_DELRULE:
++		if (trans->ctx.chain->flags & NFT_CHAIN_HW_OFFLOAD)
++			nft_flow_rule_destroy(nft_trans_flow_rule(trans));
 +
-+#if defined(CONFIG_VMAP_STACK) && MIN_THREAD_SHIFT < PAGE_SHIFT
- #define THREAD_SHIFT		PAGE_SHIFT
- #else
--#define THREAD_SHIFT		CONFIG_THREAD_SHIFT
-+#define THREAD_SHIFT		MIN_THREAD_SHIFT
- #endif
- 
- #define THREAD_SIZE		(1 << THREAD_SHIFT)
+ 		nf_tables_rule_destroy(&trans->ctx, nft_trans_rule(trans));
+ 		break;
+ 	case NFT_MSG_DELSET:
+@@ -8734,6 +8737,9 @@ static int nf_tables_commit(struct net *net, struct sk_buff *skb)
+ 			nf_tables_rule_notify(&trans->ctx,
+ 					      nft_trans_rule(trans),
+ 					      NFT_MSG_NEWRULE);
++			if (trans->ctx.chain->flags & NFT_CHAIN_HW_OFFLOAD)
++				nft_flow_rule_destroy(nft_trans_flow_rule(trans));
++
+ 			nft_trans_destroy(trans);
+ 			break;
+ 		case NFT_MSG_DELRULE:
 -- 
 2.35.1
 
