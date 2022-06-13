@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99B82C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:06:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D419C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:06:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357219AbiFMNGJ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:06:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44830 "EHLO
+        id S240133AbiFMNGR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 09:06:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358234AbiFMMzJ (ORCPT
+        with ESMTP id S1355667AbiFMM4E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:55:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC031638B;
-        Mon, 13 Jun 2022 04:14:52 -0700 (PDT)
+        Mon, 13 Jun 2022 08:56:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56BD312D0E;
+        Mon, 13 Jun 2022 04:17:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A2816B80EA7;
-        Mon, 13 Jun 2022 11:14:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17EB0C34114;
-        Mon, 13 Jun 2022 11:14:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 15FA8B80E93;
+        Mon, 13 Jun 2022 11:17:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72623C34114;
+        Mon, 13 Jun 2022 11:17:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118890;
-        bh=L8pNPXENcGl4mTBVoi1vnDoV48D1r2hQ4ShnGOv7jDc=;
+        s=korg; t=1655119025;
+        bh=Jp2oyBPvNl4DGoK37saGae3C6G41R39ozV//4l1WYbA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LXn9y9FKkqcVraBEj6BWF3l+6w0NHvpjk+bSSB5SUda7Cu/ylnMLfaFiX7E4eYKI+
-         ZvOHR1WUPgu8WPAcDErAk6rx+YsEz33SAwrECcr0siueqJql2MhvlS7eZ7J8D6JP+D
-         sTYlRFQqSH0XPRTl0TpXA6HZMAsSxjVGku1Qx9nY=
+        b=rRjlOAgxPPAAc4DeUhTcKS3yILqlQuxnkjHQle1Sbh7sscNvB/HFwB2jPiqQCOIJn
+         EHwNW67oT/T7LJfNh1qlFmBBm86Iu+Z8468hRJv+2mh7o1Z0TP1GYwgkb7F2vVv5KU
+         pGL4bQEc6Pdzy+vGnR3yZxUHRBPPPtSPhn1IGpHw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhang Wensheng <zhangwensheng5@huawei.com>,
+        stable@vger.kernel.org, Dongliang Mu <mudongliangabcd@gmail.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 065/247] driver core: fix deadlock in __device_attach
-Date:   Mon, 13 Jun 2022 12:09:27 +0200
-Message-Id: <20220613094924.930494278@linuxfoundation.org>
+Subject: [PATCH 5.15 106/247] scsi: sd: Fix potential NULL pointer dereference
+Date:   Mon, 13 Jun 2022 12:10:08 +0200
+Message-Id: <20220613094926.172750343@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -49,77 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Wensheng <zhangwensheng5@huawei.com>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-[ Upstream commit b232b02bf3c205b13a26dcec08e53baddd8e59ed ]
+[ Upstream commit 05fbde3a77a4f1d62e4c4428f384288c1f1a0be5 ]
 
-In __device_attach function, The lock holding logic is as follows:
-...
-__device_attach
-device_lock(dev)      // get lock dev
-  async_schedule_dev(__device_attach_async_helper, dev); // func
-    async_schedule_node
-      async_schedule_node_domain(func)
-        entry = kzalloc(sizeof(struct async_entry), GFP_ATOMIC);
-	/* when fail or work limit, sync to execute func, but
-	   __device_attach_async_helper will get lock dev as
-	   well, which will lead to A-A deadlock.  */
-	if (!entry || atomic_read(&entry_count) > MAX_WORK) {
-	  func;
-	else
-	  queue_work_node(node, system_unbound_wq, &entry->work)
-  device_unlock(dev)
+If sd_probe() sees an early error before sdkp->device is initialized,
+sd_zbc_release_disk() is called. This causes a NULL pointer dereference
+when sd_is_zoned() is called inside that function. Avoid this by removing
+the call to sd_zbc_release_disk() in sd_probe() error path.
 
-As shown above, when it is allowed to do async probes, because of
-out of memory or work limit, async work is not allowed, to do
-sync execute instead. it will lead to A-A deadlock because of
-__device_attach_async_helper getting lock dev.
+This change is safe and does not result in zone information memory leakage
+because the zone information for a zoned disk is allocated only when
+sd_revalidate_disk() is called, at which point sdkp->disk_dev is fully set,
+resulting in sd_disk_release() being called when needed to cleanup a disk
+zone information using sd_zbc_release_disk().
 
-To fix the deadlock, move the async_schedule_dev outside device_lock,
-as we can see, in async_schedule_node_domain, the parameter of
-queue_work_node is system_unbound_wq, so it can accept concurrent
-operations. which will also not change the code logic, and will
-not lead to deadlock.
-
-Fixes: 765230b5f084 ("driver-core: add asynchronous probing support for drivers")
-Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
-Link: https://lore.kernel.org/r/20220518074516.1225580-1-zhangwensheng5@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220601062544.905141-2-damien.lemoal@opensource.wdc.com
+Fixes: 89d947561077 ("sd: Implement support for ZBC devices")
+Reported-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Suggested-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/dd.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/scsi/sd.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-index 95ae347df137..a480004b9897 100644
---- a/drivers/base/dd.c
-+++ b/drivers/base/dd.c
-@@ -944,6 +944,7 @@ static void __device_attach_async_helper(void *_dev, async_cookie_t cookie)
- static int __device_attach(struct device *dev, bool allow_async)
- {
- 	int ret = 0;
-+	bool async = false;
- 
- 	device_lock(dev);
- 	if (dev->p->dead) {
-@@ -982,7 +983,7 @@ static int __device_attach(struct device *dev, bool allow_async)
- 			 */
- 			dev_dbg(dev, "scheduling asynchronous probe\n");
- 			get_device(dev);
--			async_schedule_dev(__device_attach_async_helper, dev);
-+			async = true;
- 		} else {
- 			pm_request_idle(dev);
- 		}
-@@ -992,6 +993,8 @@ static int __device_attach(struct device *dev, bool allow_async)
- 	}
- out_unlock:
- 	device_unlock(dev);
-+	if (async)
-+		async_schedule_dev(__device_attach_async_helper, dev);
- 	return ret;
- }
- 
+diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
+index a713babaee0f..de6640ad1943 100644
+--- a/drivers/scsi/sd.c
++++ b/drivers/scsi/sd.c
+@@ -3480,7 +3480,6 @@ static int sd_probe(struct device *dev)
+  out_put:
+ 	put_disk(gd);
+  out_free:
+-	sd_zbc_release_disk(sdkp);
+ 	kfree(sdkp);
+  out:
+ 	scsi_autopm_put_device(sdp);
 -- 
 2.35.1
 
