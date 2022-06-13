@@ -2,44 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C1A1CCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:51:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FEF7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:51:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385945AbiFMOvS (ORCPT
+        id S1385564AbiFMOuC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:51:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37590 "EHLO
+        Mon, 13 Jun 2022 10:50:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242008AbiFMOrk (ORCPT
+        with ESMTP id S1385502AbiFMOpu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:47:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4CFAC0466;
-        Mon, 13 Jun 2022 04:52:54 -0700 (PDT)
+        Mon, 13 Jun 2022 10:45:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A81FBC6C2;
+        Mon, 13 Jun 2022 04:52:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CA36E6124E;
-        Mon, 13 Jun 2022 11:52:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF2F3C34114;
-        Mon, 13 Jun 2022 11:52:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BCFFF61425;
+        Mon, 13 Jun 2022 11:51:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2C57C34114;
+        Mon, 13 Jun 2022 11:51:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655121173;
-        bh=3BWxhKNulzcCbnNSV6FQ23n1YY6LfjnJnjidMBbqzYI=;
+        s=korg; t=1655121105;
+        bh=NXa1J+I2sAkxDWNmDYdzt2EPtQnTfLbT30iET12VL7w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lcbEhLSHn2UunudVrov66Ibv5VZT0vrfB3fPJZIJUbK7lfv83JMd6LkmoPAReNXW6
-         yaWXd6dC9dehgKlOYJ5qkh7PX44x0b8z/szppWBL+J7uTLfk/9LeAXrRRa+PFADao5
-         sz13v4T/jC+HlcmcPxN64ScO0CbYEc0qLEJG3oNo=
+        b=BkMAK0cNcK1tgRK5R9zxzqhOREtZ2atrf6VKPyMwl1eeiB2G0IPfO6FDiqynJVkcS
+         uVJOFri/AFcMaeOWCQd3yAf+F8kFN4nvnl4nHivU/YTqz4rb8C8KpuZCoXc8EQeVC6
+         aujYrK1l98gF0UeFWLectxBtUJ/520c7JvoXR/5A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Martin Faltesek <mfaltesek@google.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.17 275/298] nfc: st21nfca: fix memory leaks in EVT_TRANSACTION handling
-Date:   Mon, 13 Jun 2022 12:12:49 +0200
-Message-Id: <20220613094933.418477217@linuxfoundation.org>
+        stable@vger.kernel.org, Alexander Gordeev <agordeev@linux.ibm.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Yury Norov <yury.norov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 250/298] drm/amd/pm: use bitmap_{from,to}_arr32 where appropriate
+Date:   Mon, 13 Jun 2022 12:12:24 +0200
+Message-Id: <20220613094932.664902223@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -51,59 +59,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Faltesek <mfaltesek@google.com>
+From: Yury Norov <yury.norov@gmail.com>
 
-commit 996419e0594abb311fb958553809f24f38e7abbe upstream.
+[ Upstream commit 525d6515604eb1373ce5e6372a6b6640953b2d6a ]
 
-Error paths do not free previously allocated memory. Add devm_kfree() to
-those failure paths.
+The smu_v1X_0_set_allowed_mask() uses bitmap_copy() to convert
+bitmap to 32-bit array. This may be wrong due to endiannes issues.
+Fix it by switching to bitmap_{from,to}_arr32.
 
-Fixes: 26fc6c7f02cb ("NFC: st21nfca: Add HCI transaction event support")
-Fixes: 4fbcc1a4cb20 ("nfc: st21nfca: Fix potential buffer overflows in EVT_TRANSACTION")
-Cc: stable@vger.kernel.org
-Signed-off-by: Martin Faltesek <mfaltesek@google.com>
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC: Alexander Gordeev <agordeev@linux.ibm.com>
+CC: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+CC: Christian Borntraeger <borntraeger@linux.ibm.com>
+CC: Claudio Imbrenda <imbrenda@linux.ibm.com>
+CC: David Hildenbrand <david@redhat.com>
+CC: Heiko Carstens <hca@linux.ibm.com>
+CC: Janosch Frank <frankja@linux.ibm.com>
+CC: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+CC: Sven Schnelle <svens@linux.ibm.com>
+CC: Vasily Gorbik <gor@linux.ibm.com>
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nfc/st21nfca/se.c |   13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c | 2 +-
+ drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/nfc/st21nfca/se.c
-+++ b/drivers/nfc/st21nfca/se.c
-@@ -326,22 +326,29 @@ int st21nfca_connectivity_event_received
- 		transaction->aid_len = skb->data[1];
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c b/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c
+index 4e9e2cf39859..5fcbec9dd45d 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu11/smu_v11_0.c
+@@ -777,7 +777,7 @@ int smu_v11_0_set_allowed_mask(struct smu_context *smu)
+ 		goto failed;
+ 	}
  
- 		/* Checking if the length of the AID is valid */
--		if (transaction->aid_len > sizeof(transaction->aid))
-+		if (transaction->aid_len > sizeof(transaction->aid)) {
-+			devm_kfree(dev, transaction);
- 			return -EINVAL;
-+		}
+-	bitmap_copy((unsigned long *)feature_mask, feature->allowed, 64);
++	bitmap_to_arr32(feature_mask, feature->allowed, 64);
  
- 		memcpy(transaction->aid, &skb->data[2],
- 		       transaction->aid_len);
+ 	ret = smu_cmn_send_smc_msg_with_param(smu, SMU_MSG_SetAllowedFeaturesMaskHigh,
+ 					  feature_mask[1], NULL);
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c
+index b54790d3483e..4a5e91b59f0c 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0.c
+@@ -726,7 +726,7 @@ int smu_v13_0_set_allowed_mask(struct smu_context *smu)
+ 	if (bitmap_empty(feature->allowed, SMU_FEATURE_MAX) || feature->feature_num < 64)
+ 		goto failed;
  
- 		/* Check next byte is PARAMETERS tag (82) */
- 		if (skb->data[transaction->aid_len + 2] !=
--		    NFC_EVT_TRANSACTION_PARAMS_TAG)
-+		    NFC_EVT_TRANSACTION_PARAMS_TAG) {
-+			devm_kfree(dev, transaction);
- 			return -EPROTO;
-+		}
+-	bitmap_copy((unsigned long *)feature_mask, feature->allowed, 64);
++	bitmap_to_arr32(feature_mask, feature->allowed, 64);
  
- 		transaction->params_len = skb->data[transaction->aid_len + 3];
- 
- 		/* Total size is allocated (skb->len - 2) minus fixed array members */
--		if (transaction->params_len > ((skb->len - 2) - sizeof(struct nfc_evt_transaction)))
-+		if (transaction->params_len > ((skb->len - 2) -
-+		    sizeof(struct nfc_evt_transaction))) {
-+			devm_kfree(dev, transaction);
- 			return -EINVAL;
-+		}
- 
- 		memcpy(transaction->params, skb->data +
- 		       transaction->aid_len + 4, transaction->params_len);
+ 	ret = smu_cmn_send_smc_msg_with_param(smu, SMU_MSG_SetAllowedFeaturesMaskHigh,
+ 					      feature_mask[1], NULL);
+-- 
+2.35.1
+
 
 
