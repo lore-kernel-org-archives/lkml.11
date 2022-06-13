@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB701C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:48:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D1D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:48:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344833AbiFMKsJ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:48:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47430 "EHLO
+        id S245716AbiFMKsM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:48:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348367AbiFMKoQ (ORCPT
+        with ESMTP id S1348525AbiFMKoS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:44:16 -0400
+        Mon, 13 Jun 2022 06:44:18 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25FE623BD7;
-        Mon, 13 Jun 2022 03:25:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF7AC2AC79;
+        Mon, 13 Jun 2022 03:25:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 44863B80E90;
-        Mon, 13 Jun 2022 10:25:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BE74C3411C;
-        Mon, 13 Jun 2022 10:25:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C36DBB80EA3;
+        Mon, 13 Jun 2022 10:25:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BD9FC3411F;
+        Mon, 13 Jun 2022 10:25:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115918;
-        bh=hj2J+v5j3ZFbQEu6MDUIKw3/kjjkro8X6Gww229V7K4=;
+        s=korg; t=1655115921;
+        bh=A0HpK7TglfPM4Gwam1uPnihBLJAcsFvWh4WnQBaKaic=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s+mFsPDzQyzZ40CNszwg5kmWI+kx0xqRc29uzfY7nzBprrl2MCUuX53+5z4y7btD9
-         TNsXHpm4+hAv5BoJJmxPbc9p5mca76/kh9Q8lG+jl9QNKg4RK8E9P2WvR0W7eAse86
-         Em4pagAcRPnlwp6CQfjQ+KLMoC9Rws7+8UJ36OnA=
+        b=m+aDTERaKuP1jqo2DAIzKgxx5gdgMLkc40iDD54HOHXzGJb0oqQ+WIhL1fJu9SwqA
+         xtysfhoCL92m2YlkS3Iq+RgfMthfYYNo7tzIuFIv35OJLWlQT+/bGo4y5dp2cvCA7C
+         GODt75rLvM0/lo0CripZxUh+lnVB1KL4txc75fKo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Marc Dionne <marc.dionne@auristor.com>,
+        David Howells <dhowells@redhat.com>,
+        linux-afs@lists.infradead.org,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 078/218] ASoC: wm2000: fix missing clk_disable_unprepare() on error in wm2000_anc_transition()
-Date:   Mon, 13 Jun 2022 12:08:56 +0200
-Message-Id: <20220613094922.823991808@linuxfoundation.org>
+Subject: [PATCH 4.14 079/218] rxrpc: Fix listen() setting the bar too high for the prealloc rings
+Date:   Mon, 13 Jun 2022 12:08:57 +0200
+Message-Id: <20220613094922.870596948@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -51,52 +51,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit be2af740e2a9c7134f2d8ab4f104006e110b13de ]
+[ Upstream commit 88e22159750b0d55793302eeed8ee603f5c1a95c ]
 
-Fix the missing clk_disable_unprepare() before return
-from wm2000_anc_transition() in the error handling case.
+AF_RXRPC's listen() handler lets you set the backlog up to 32 (if you bump
+up the sysctl), but whilst the preallocation circular buffers have 32 slots
+in them, one of them has to be a dead slot because we're using CIRC_CNT().
 
-Fixes: 514cfd6dd725 ("ASoC: wm2000: Integrate with clock API")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220514091053.686416-1-yangyingliang@huawei.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+This means that listen(rxrpc_sock, 32) will cause an oops when the socket
+is closed because rxrpc_service_prealloc_one() allocated one too many calls
+and rxrpc_discard_prealloc() won't then be able to get rid of them because
+it'll think the ring is empty.  rxrpc_release_calls_on_socket() then tries
+to abort them, but oopses because call->peer isn't yet set.
+
+Fix this by setting the maximum backlog to RXRPC_BACKLOG_MAX - 1 to match
+the ring capacity.
+
+ BUG: kernel NULL pointer dereference, address: 0000000000000086
+ ...
+ RIP: 0010:rxrpc_send_abort_packet+0x73/0x240 [rxrpc]
+ Call Trace:
+  <TASK>
+  ? __wake_up_common_lock+0x7a/0x90
+  ? rxrpc_notify_socket+0x8e/0x140 [rxrpc]
+  ? rxrpc_abort_call+0x4c/0x60 [rxrpc]
+  rxrpc_release_calls_on_socket+0x107/0x1a0 [rxrpc]
+  rxrpc_release+0xc9/0x1c0 [rxrpc]
+  __sock_release+0x37/0xa0
+  sock_close+0x11/0x20
+  __fput+0x89/0x240
+  task_work_run+0x59/0x90
+  do_exit+0x319/0xaa0
+
+Fixes: 00e907127e6f ("rxrpc: Preallocate peers, conns and calls for incoming service requests")
+Reported-by: Marc Dionne <marc.dionne@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: linux-afs@lists.infradead.org
+Link: https://lists.infradead.org/pipermail/linux-afs/2022-March/005079.html
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/wm2000.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/rxrpc/sysctl.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/codecs/wm2000.c b/sound/soc/codecs/wm2000.c
-index 23cde3a0dc11..73cda3c2a861 100644
---- a/sound/soc/codecs/wm2000.c
-+++ b/sound/soc/codecs/wm2000.c
-@@ -545,7 +545,7 @@ static int wm2000_anc_transition(struct wm2000_priv *wm2000,
- {
- 	struct i2c_client *i2c = wm2000->i2c;
- 	int i, j;
--	int ret;
-+	int ret = 0;
+diff --git a/net/rxrpc/sysctl.c b/net/rxrpc/sysctl.c
+index 34c706d2f79c..f9afc21b7e2c 100644
+--- a/net/rxrpc/sysctl.c
++++ b/net/rxrpc/sysctl.c
+@@ -18,7 +18,7 @@ static struct ctl_table_header *rxrpc_sysctl_reg_table;
+ static const unsigned int zero = 0;
+ static const unsigned int one = 1;
+ static const unsigned int four = 4;
+-static const unsigned int thirtytwo = 32;
++static const unsigned int max_backlog = RXRPC_BACKLOG_MAX - 1;
+ static const unsigned int n_65535 = 65535;
+ static const unsigned int n_max_acks = RXRPC_RXTX_BUFF_SIZE - 1;
  
- 	if (wm2000->anc_mode == mode)
- 		return 0;
-@@ -575,13 +575,13 @@ static int wm2000_anc_transition(struct wm2000_priv *wm2000,
- 		ret = anc_transitions[i].step[j](i2c,
- 						 anc_transitions[i].analogue);
- 		if (ret != 0)
--			return ret;
-+			break;
- 	}
- 
- 	if (anc_transitions[i].dest == ANC_OFF)
- 		clk_disable_unprepare(wm2000->mclk);
- 
--	return 0;
-+	return ret;
- }
- 
- static int wm2000_anc_set_mode(struct wm2000_priv *wm2000)
+@@ -114,7 +114,7 @@ static struct ctl_table rxrpc_sysctl_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec_minmax,
+ 		.extra1		= (void *)&four,
+-		.extra2		= (void *)&thirtytwo,
++		.extra2		= (void *)&max_backlog,
+ 	},
+ 	{
+ 		.procname	= "rx_window_size",
 -- 
 2.35.1
 
