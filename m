@@ -2,100 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DF31C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4EF6CCA480
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:21:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353063AbiFMLTI (ORCPT
+        id S1353809AbiFMLT6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:19:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46644 "EHLO
+        Mon, 13 Jun 2022 07:19:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352946AbiFMLOs (ORCPT
+        with ESMTP id S1353469AbiFMLPo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:14:48 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2FDE8F0E;
-        Mon, 13 Jun 2022 03:37:22 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EAFB0D6E;
-        Mon, 13 Jun 2022 03:37:21 -0700 (PDT)
-Received: from [10.57.35.216] (unknown [10.57.35.216])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 67F4A3F73B;
-        Mon, 13 Jun 2022 03:37:20 -0700 (PDT)
-Message-ID: <5bac6f98-e1ba-3584-6eac-21eeaaa0ed26@arm.com>
-Date:   Mon, 13 Jun 2022 11:37:18 +0100
+        Mon, 13 Jun 2022 07:15:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C54D31274D;
+        Mon, 13 Jun 2022 03:38:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 61EA460EF5;
+        Mon, 13 Jun 2022 10:38:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F5A0C34114;
+        Mon, 13 Jun 2022 10:38:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655116688;
+        bh=JE71JHquWA0Og99VoyIbrUMv5RMouu2EwZLmkUnjUxE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ewMc8c4DDzzk9MENyynj8DzTq0kWAghNDeWN2rOGXpmt8ytijSaI26TYdY4RKgrLS
+         8tEtHNLmqVewetpzKpfSlNbKlzY8BFAJ86cTvdHZjKPLW5uJ1SdafH3qbBzKbhBIA8
+         FdLJGhz55FSiSzEllEVvWN3epeJCIjQAHVWoiiNo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 141/411] m68k: math-emu: Fix dependencies of math emulation support
+Date:   Mon, 13 Jun 2022 12:06:54 +0200
+Message-Id: <20220613094932.898039607@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 1/3] thermal: cpufreq_cooling: Use a copy of local ops for
- each cooling device
-Content-Language: en-US
-To:     Viresh Kumar <viresh.kumar@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        daniel.lezcano@linaro.org, amitk@kernel.org, rui.zhang@intel.com,
-        rafael@kernel.org, dietmar.eggemann@arm.com
-References: <20220610100343.32378-1-lukasz.luba@arm.com>
- <20220613091611.ncd2hziu4nbyip4x@vireshk-i7>
-From:   Lukasz Luba <lukasz.luba@arm.com>
-In-Reply-To: <20220613091611.ncd2hziu4nbyip4x@vireshk-i7>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Viresh,
+From: Geert Uytterhoeven <geert@linux-m68k.org>
 
-Thank you for the ACKs in the other patches and suggestion in this one.
+[ Upstream commit ed6bc6bf0a7d75e80eb1df883c09975ebb74e590 ]
 
-On 6/13/22 10:16, Viresh Kumar wrote:
-> On 10-06-22, 11:03, Lukasz Luba wrote:
->> It is very unlikely that one CPU cluster would have the EM and some other
->> won't have it (because EM registration failed or DT lacks needed entry).
->> Although, we should avoid modifying global variable with callbacks anyway.
->> Redesign this and add safety for such situation.
->>
->> Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
->> ---
->>   drivers/thermal/cpufreq_cooling.c | 16 +++++++++++++---
->>   1 file changed, 13 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/thermal/cpufreq_cooling.c b/drivers/thermal/cpufreq_cooling.c
->> index b8151d95a806..e33183785fac 100644
->> --- a/drivers/thermal/cpufreq_cooling.c
->> +++ b/drivers/thermal/cpufreq_cooling.c
->> @@ -554,7 +554,12 @@ __cpufreq_cooling_register(struct device_node *np,
->>   	/* max_level is an index, not a counter */
->>   	cpufreq_cdev->max_level = i - 1;
->>   
->> -	cooling_ops = &cpufreq_cooling_ops;
->> +	cooling_ops = kmemdup(&cpufreq_cooling_ops, sizeof(*cooling_ops),
->> +			      GFP_KERNEL);
-> 
-> I don't like the way we are duplicating the ops here. Instead of this it would
-> be better to add the OPs field in the cooling device structure and fill its
-> fields from here. The ops structure will be allocated with the cooling device
-> itself.
-> 
+If CONFIG_M54xx=y, CONFIG_MMU=y, and CONFIG_M68KFPU_EMU=y:
 
-I think I know what you mean. Make sense. There are quite a few
-different cooling types of devices which are using the API
-thermal_of_cooling_device_register() with the custom 'ops'. We
-probably don't want to disturb that well working drivers and ecosystem.
+    {standard input}:272: Error: invalid instruction for this architecture; needs 68000 or higher (68000 [68ec000, 68hc000, 68hc001, 68008, 68302, 68306, 68307, 68322, 68356], 68010, 68020 [68k, 68ec020], 68030 [68ec030], 68040 [68ec040], 68060 [68ec060], cpu32 [68330, 68331, 68332, 68333, 68334, 68336, 68340, 68341, 68349, 68360], fidoa [fido]) -- statement `sub.b %d1,%d3' ignored
+    {standard input}:609: Error: invalid instruction for this architecture; needs 68020 or higher (68020 [68k, 68ec020], 68030 [68ec030], 68040 [68ec040], 68060 [68ec060]) -- statement `bfextu 4(%a1){%d0,#8},%d0' ignored
+    {standard input}:752: Error: operands mismatch -- statement `mulu.l 4(%a0),%d3:%d0' ignored
+    {standard input}:1155: Error: operands mismatch -- statement `divu.l %d0,%d3:%d7' ignored
 
-Here, I've tried to align this code with the devfreq_cooling, but I
-might actually apply your suggestion into the devfreq cooling (so they
-will be still aligned). In that case both struct devfreq_cooling_device
-and struct cpufreq_cooling_device would get a new field:
-struct thermal_cooling_device_ops cooling_ops;
-We could then remove the 'global' variables:
-devfreq_cooling_ops and cpufreq_cooling_ops from where we copy.
-Then we would do the needed assignment to the priv 'cooling_ops' in the
-setup code and just use the old API
-thermal_of_cooling_device_register() to set the needed 'ops' pointer in
-the struct thermal_cooling_device.
+The math emulation support code is intended for 68020 and higher, and
+uses several instructions or instruction modes not available on coldfire
+or 68000.
 
-Does this sound OK?
+Originally, the dependency of M68KFPU_EMU on MMU was fine, as MMU
+support was only available on 68020 or higher.  But this assumption
+was broken by the introduction of MMU support for M547x and M548x.
 
-Regards,
-Lukasz
+Drop the dependency on MMU, as the code should work fine on 68020 and up
+without MMU (which are not yet supported by Linux, though).
+Add dependencies on M68KCLASSIC (to rule out Coldfire) and FPU (kernel
+has some type of floating-point support --- be it hardware or software
+emulated, to rule out anything below 68020).
+
+Fixes: 1f7034b9616e6f14 ("m68k: allow ColdFire 547x and 548x CPUs to be built with MMU enabled")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Reviewed-by: Greg Ungerer <gerg@linux-m68k.org>
+Link: https://lore.kernel.org/r/18c34695b7c95107f60ccca82a4ff252f3edf477.1652446117.git.geert@linux-m68k.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/m68k/Kconfig.cpu | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/m68k/Kconfig.cpu b/arch/m68k/Kconfig.cpu
+index 60ac1cd8b96f..6bc7fc14163f 100644
+--- a/arch/m68k/Kconfig.cpu
++++ b/arch/m68k/Kconfig.cpu
+@@ -309,7 +309,7 @@ comment "Processor Specific Options"
+ 
+ config M68KFPU_EMU
+ 	bool "Math emulation support"
+-	depends on MMU
++	depends on M68KCLASSIC && FPU
+ 	help
+ 	  At some point in the future, this will cause floating-point math
+ 	  instructions to be emulated by the kernel on machines that lack a
+-- 
+2.35.1
+
+
+
