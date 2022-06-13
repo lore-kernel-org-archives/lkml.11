@@ -2,89 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CEC7CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:30:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09DFFCCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:30:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354339AbiFMMaS (ORCPT
+        id S1355485AbiFMMaY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:30:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54732 "EHLO
+        Mon, 13 Jun 2022 08:30:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352058AbiFMMXR (ORCPT
+        with ESMTP id S1354285AbiFMMXg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:23:17 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82B9857B2C;
-        Mon, 13 Jun 2022 04:03:35 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id v1so10361577ejg.13;
-        Mon, 13 Jun 2022 04:03:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=nv9GoUVVH7uRngOuTp8r8JipwSDkMSqF8EwMKb+wLjQ=;
-        b=lweX4JOSNaCRO5akyTwcDXVA1trQpJ8i34ZEq//MqQludDHkLoAcUsFfNktCjrL36n
-         DlMlsw71gE6bD4QA98ucWCDTp7TpJBjCRr2odbvNUJNXsBWMV+mJ3Mk6JRMtVYS8Nesb
-         VDhl9nH0jH5lWd8uaCfJTzwOkKWUtbHL2DH7BbbGGuY5pYqvByfwsP9q8ypUMMCUQNVM
-         d5eEFH3oXFx0Z9HtF7SSBdvBhi/oGL4wvyt137LHiQyViFivBy6rsBxDS9164VrNNl+f
-         DiUire1aWv9MtGN+SM6xufyO0HNOzLXdEUOOe6ABJtwqgtO7uqFbligoHR7RbLLgtcLE
-         FdDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=nv9GoUVVH7uRngOuTp8r8JipwSDkMSqF8EwMKb+wLjQ=;
-        b=K5HhGJ1xnr8fg8D3aKFh8TwZdzNcA5VwhDhXhpo+lSxCpZ44rPBc6MchQaRcoCGMOy
-         y7o9bo8oyaylr75WqAohyKLh23MXusXoHVW1iiwF38EgIb8/W12OOW0rzQCyV5+iSrKJ
-         H3s7371/lcRFQ/mrvCmzbvK6q6PpODGF6kg14OLOsIyuZyLN11TRoApQDdhoEPqSxyqE
-         aj+872pkLRyKrqumWXFslvH2um4TkOezuJZ6X7a8nZ3sOwTFpOSjVG1GQLjnfuq2FgzA
-         Wtu9so+glPuBVsMf/UYe2sBxNJh4guC4b/34fVIrdNSyd69ndyBhTCgd9QUPD0qucsZ8
-         tsYw==
-X-Gm-Message-State: AOAM532QoV1VdJ57Ku5+osrJuEsDRGV8gQKXpE1GCQfxhtnKLU43+gsk
-        pMLJCaq7S9PxXREiUyQ4VUPb1YdbvxI=
-X-Google-Smtp-Source: ABdhPJyXoqR/cTKe5JJi789/bBIvh5hbOg5YgsB7TVy/RWs76LGLvkgiAs1muSzKlmw1BJjamCkPrA==
-X-Received: by 2002:a17:906:ca91:b0:70d:52ca:7e7d with SMTP id js17-20020a170906ca9100b0070d52ca7e7dmr46766653ejb.552.1655118214288;
-        Mon, 13 Jun 2022 04:03:34 -0700 (PDT)
-Received: from felia.fritz.box (200116b8260df50089ef6db2443adc92.dip.versatel-1u1.de. [2001:16b8:260d:f500:89ef:6db2:443a:dc92])
-        by smtp.gmail.com with ESMTPSA id o1-20020a1709064f8100b006f3ef214de7sm3721575eju.77.2022.06.13.04.03.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 04:03:33 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Vinod Koul <vkoul@kernel.org>, dmaengine@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] MAINTAINERS: add include/dt-bindings/dma to DMA GENERIC OFFLOAD ENGINE SUBSYSTEM
-Date:   Mon, 13 Jun 2022 13:03:26 +0200
-Message-Id: <20220613110326.18126-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 13 Jun 2022 08:23:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 776AF580C1;
+        Mon, 13 Jun 2022 04:03:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 164C961347;
+        Mon, 13 Jun 2022 11:03:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22CF7C34114;
+        Mon, 13 Jun 2022 11:03:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655118219;
+        bh=7ZJdOB8NWztNFmJga+HULPqObVqV573O24/WNfw5IOk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=bs5P8EuWTZrNNXBYkbdEIHdCjWsH9FOsbzt7AB7EUdQSPQU3VfRJzPd4c6fPehXIe
+         sAFPGnWRUSFhhTvmMHzlXZd26KMoh7CL+Jj+448abflepfjbe5ijtFA+xcE6xM0VlI
+         5o9RMvH9l6f4xI5whZ7vx07tyXkAJI0mdC76YUvg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Subject: [PATCH 4.19 277/287] ata: libata-transport: fix {dma|pio|xfer}_mode sysfs files
+Date:   Mon, 13 Jun 2022 12:11:41 +0200
+Message-Id: <20220613094932.396481278@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
+References: <20220613094923.832156175@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Maintainers of the directory Documentation/devicetree/bindings/dma
-are also the maintainers of the corresponding directory
-include/dt-bindings/dma.
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-Add the file entry for include/dt-bindings/dma to the appropriate
-section in MAINTAINERS.
+commit 72aad489f992871e908ff6d9055b26c6366fb864 upstream.
 
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+The {dma|pio}_mode sysfs files are incorrectly documented as having a
+list of the supported DMA/PIO transfer modes, while the corresponding
+fields of the *struct* ata_device hold the transfer mode IDs, not masks.
+
+To match these docs, the {dma|pio}_mode (and even xfer_mode!) sysfs
+files are handled by the ata_bitfield_name_match() macro which leads to
+reading such kind of nonsense from them:
+
+$ cat /sys/class/ata_device/dev3.0/pio_mode
+XFER_UDMA_7, XFER_UDMA_6, XFER_UDMA_5, XFER_UDMA_4, XFER_MW_DMA_4,
+XFER_PIO_6, XFER_PIO_5, XFER_PIO_4, XFER_PIO_3, XFER_PIO_2, XFER_PIO_1,
+XFER_PIO_0
+
+Using the correct ata_bitfield_name_search() macro fixes that:
+
+$ cat /sys/class/ata_device/dev3.0/pio_mode
+XFER_PIO_4
+
+While fixing the file documentation, somewhat reword the {dma|pio}_mode
+file doc and add a note about being mostly useful for PATA devices to
+the xfer_mode file doc...
+
+Fixes: d9027470b886 ("[libata] Add ATA transport class")
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Cc: stable@vger.kernel.org
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-Vinod, please pick this MAINTAINERS addition to your section.
+ Documentation/ABI/testing/sysfs-ata |   11 ++++++-----
+ drivers/ata/libata-transport.c      |    2 +-
+ 2 files changed, 7 insertions(+), 6 deletions(-)
 
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+--- a/Documentation/ABI/testing/sysfs-ata
++++ b/Documentation/ABI/testing/sysfs-ata
+@@ -107,13 +107,14 @@ Description:
+ 				described in ATA8 7.16 and 7.17. Only valid if
+ 				the device is not a PM.
+ 
+-		pio_mode:	(RO) Transfer modes supported by the device when
+-				in PIO mode. Mostly used by PATA device.
++		pio_mode:	(RO) PIO transfer mode used by the device.
++				Mostly used by PATA devices.
+ 
+-		xfer_mode:	(RO) Current transfer mode
++		xfer_mode:	(RO) Current transfer mode. Mostly used by
++				PATA devices.
+ 
+-		dma_mode:	(RO) Transfer modes supported by the device when
+-				in DMA mode. Mostly used by PATA device.
++		dma_mode:	(RO) DMA transfer mode used by the device.
++				Mostly used by PATA devices.
+ 
+ 		class:		(RO) Device class. Can be "ata" for disk,
+ 				"atapi" for packet device, "pmp" for PM, or
+--- a/drivers/ata/libata-transport.c
++++ b/drivers/ata/libata-transport.c
+@@ -196,7 +196,7 @@ static struct {
+ 	{ XFER_PIO_0,			"XFER_PIO_0" },
+ 	{ XFER_PIO_SLOW,		"XFER_PIO_SLOW" }
+ };
+-ata_bitfield_name_match(xfer,ata_xfer_names)
++ata_bitfield_name_search(xfer, ata_xfer_names)
+ 
+ /*
+  * ATA Port attributes
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index a8d243668992..1adf8767422b 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -5966,6 +5966,7 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/vkoul/dmaengine.git
- F:	Documentation/devicetree/bindings/dma/
- F:	Documentation/driver-api/dmaengine/
- F:	drivers/dma/
-+F:	include/dt-bindings/dma/
- F:	include/linux/dma/
- F:	include/linux/dmaengine.h
- F:	include/linux/of_dma.h
--- 
-2.17.1
 
