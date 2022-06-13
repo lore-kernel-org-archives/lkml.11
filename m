@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97143C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:26:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72A8DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:26:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377376AbiFMN0V (ORCPT
+        id S1376763AbiFMN03 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:26:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39970 "EHLO
+        Mon, 13 Jun 2022 09:26:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377153AbiFMNYb (ORCPT
+        with ESMTP id S1377119AbiFMNYY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:24:31 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C1BE6BFDB;
-        Mon, 13 Jun 2022 04:24:01 -0700 (PDT)
+        Mon, 13 Jun 2022 09:24:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 488206BFDC;
+        Mon, 13 Jun 2022 04:24:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EF274CE110D;
-        Mon, 13 Jun 2022 11:23:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7E4CC34114;
-        Mon, 13 Jun 2022 11:23:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B1B860FA3;
+        Mon, 13 Jun 2022 11:24:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A265C34114;
+        Mon, 13 Jun 2022 11:24:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119438;
-        bh=AsXd4pQ9cFEd10STZjFmrqlZ/EuZiXMpQlQ1ZA6OWnM=;
+        s=korg; t=1655119440;
+        bh=s398Cp7zEvqbBmtiyhUOl25lcGQe79LIm4J2yWQtLYA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1ZUXP+vu7IkgYro+t2WsbSVAa9VB5zxKH9qaeieaNPCiJJ2a26e0jQ8lqR6iwWDwT
-         J3DcrmBa87FoFRFzCUraX6Kvk4NnS+zrJatGVOGxYQtGsMPdnaknwWV/qSCG0jKzjm
-         iS1yOL4FZWYmdQlM+PzSXE0z5znmApqS2hvbCVdA=
+        b=NoiOgMN2kjIlyB3I0I0ZiSNuupIMYZ5K6VXukLFcftkG7ILCEdKwTVtdjfHWX/Jv8
+         MgIRrQAItbRnTgTPuTMisBNpvqzADx9uAmI+fDEPKS7re8LXtFpTmLPR6DXcoIC3Hi
+         jvkwHqjw5Q9k9cEKBLuDnZAUfzaSOxEe0+QIJv0E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Samuel Holland <samuel@sholland.org>,
-        Michael Riesch <michael.riesch@wolfvision.net>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 015/339] phy: rockchip-inno-usb2: Fix muxed interrupt support
-Date:   Mon, 13 Jun 2022 12:07:20 +0200
-Message-Id: <20220613094926.971386619@linuxfoundation.org>
+        stable@vger.kernel.org, Larry Finger <Larry.Finger@lwfinger.net>,
+        Michael Straube <straube.linux@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 016/339] staging: r8188eu: fix struct rt_firmware_hdr
+Date:   Mon, 13 Jun 2022 12:07:21 +0200
+Message-Id: <20220613094927.001744128@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,50 +50,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Holland <samuel@sholland.org>
+From: Michael Straube <straube.linux@gmail.com>
 
-[ Upstream commit 6a98df08ccd55e87947d253b19925691763e755c ]
+[ Upstream commit fbfdc1b6f80abc40cb1f7bac68248b899754d8be ]
 
-This commit fixes two issues with the muxed interrupt handler. First,
-the OTG port has the "bvalid" interrupt enabled, not "linestate". Since
-only the linestate interrupt was handled, and not the bvalid interrupt,
-plugging in a cable to the OTG port caused an interrupt storm.
+The size of struct rt_firmware_hdr is 36 bytes.
 
-Second, the return values from the individual port IRQ handlers need to
-be OR-ed together. Otherwise, the lack of an interrupt from the last
-port would cause the handler to erroneously return IRQ_NONE.
+$ pahole -C rt_firmware_hdr drivers/staging/r8188eu/r8188eu.o
+struct rt_firmware_hdr {
+        __le16                     Signature;            /*     0     2 */
+        u8                         Category;             /*     2     1 */
+        u8                         Function;             /*     3     1 */
+        __le16                     Version;              /*     4     2 */
+        u8                         Subversion;           /*     6     1 */
 
-Fixes: ed2b5a8e6b98 ("phy: phy-rockchip-inno-usb2: support muxed interrupts")
-Signed-off-by: Samuel Holland <samuel@sholland.org>
-Tested-by: Michael Riesch <michael.riesch@wolfvision.net>
-Link: https://lore.kernel.org/r/20220414032258.40984-2-samuel@sholland.org
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+        /* XXX 1 byte hole, try to pack */
+
+        u16                        Rsvd1;                /*     8     2 */
+        u8                         Month;                /*    10     1 */
+        u8                         Date;                 /*    11     1 */
+        u8                         Hour;                 /*    12     1 */
+        u8                         Minute;               /*    13     1 */
+        __le16                     RamCodeSize;          /*    14     2 */
+        u8                         Foundry;              /*    16     1 */
+        u8                         Rsvd2;                /*    17     1 */
+
+        /* XXX 2 bytes hole, try to pack */
+
+        __le32                     SvnIdx;               /*    20     4 */
+        u32                        Rsvd3;                /*    24     4 */
+        u32                        Rsvd4;                /*    28     4 */
+        u32                        Rsvd5;                /*    32     4 */
+
+        /* size: 36, cachelines: 1, members: 17 */
+        /* sum members: 33, holes: 2, sum holes: 3 */
+        /* last cacheline: 36 bytes */
+};
+
+But the header in the firmware file is only 32 bytes long.
+
+The hexdump of rtl8188eufw.bin shows that the field Rsvd1 should be u8
+instead of __le16.
+
+OFFSET      rtl8188eufw.bin
+-----------------------------------------------------------
+0x00000000  E1 88 10 00 0B 00 01 00 01 21 11 27 30 36 00 00
+0x00000010  2D 07 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+0x00000000  E1 88 10 00 0B 00 01  00     01     21    11    27 30 36 00 00
+                              ^   ^      ^      ^     ^     ^
+                     Subversion   Rsvd1  Month  Date  Hour  Minute
+
+With the change of field Rsvd1 from __le16 to u8 the structure has the
+correct size 32.
+
+$ pahole -C rt_firmware_hdr drivers/staging/r8188eu/r8188eu.o
+struct rt_firmware_hdr {
+        __le16                     Signature;            /*     0     2 */
+        u8                         Category;             /*     2     1 */
+        u8                         Function;             /*     3     1 */
+        __le16                     Version;              /*     4     2 */
+        u8                         Subversion;           /*     6     1 */
+        u8                         Rsvd1;                /*     7     1 */
+        u8                         Month;                /*     8     1 */
+        u8                         Date;                 /*     9     1 */
+        u8                         Hour;                 /*    10     1 */
+        u8                         Minute;               /*    11     1 */
+        __le16                     RamCodeSize;          /*    12     2 */
+        u8                         Foundry;              /*    14     1 */
+        u8                         Rsvd2;                /*    15     1 */
+        __le32                     SvnIdx;               /*    16     4 */
+        u32                        Rsvd3;                /*    20     4 */
+        u32                        Rsvd4;                /*    24     4 */
+        u32                        Rsvd5;                /*    28     4 */
+
+        /* size: 32, cachelines: 1, members: 17 */
+        /* last cacheline: 32 bytes */
+
+The wrong size had no effect because the header size is hardcoded to
+32 where it is used in the code and the fields after Subversion are
+not used.
+
+Fixes: 7884fc0a1473 ("staging: r8188eu: introduce new include dir for RTL8188eu driver")
+Acked-by: Larry Finger <Larry.Finger@lwfinger.net>
+Signed-off-by: Michael Straube <straube.linux@gmail.com>
+Link: https://lore.kernel.org/r/20220417175441.13830-2-straube.linux@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/rockchip/phy-rockchip-inno-usb2.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/staging/r8188eu/core/rtw_fw.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-index eca77e44a4c1..cba5c32cbaee 100644
---- a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-+++ b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
-@@ -940,8 +940,14 @@ static irqreturn_t rockchip_usb2phy_irq(int irq, void *data)
- 		if (!rport->phy)
- 			continue;
+diff --git a/drivers/staging/r8188eu/core/rtw_fw.c b/drivers/staging/r8188eu/core/rtw_fw.c
+index 625d186c3647..ce431d8ffea0 100644
+--- a/drivers/staging/r8188eu/core/rtw_fw.c
++++ b/drivers/staging/r8188eu/core/rtw_fw.c
+@@ -29,7 +29,7 @@ struct rt_firmware_hdr {
+ 					 *  FW for different conditions */
+ 	__le16		Version;	/*  FW Version */
+ 	u8		Subversion;	/*  FW Subversion, default 0x00 */
+-	u16		Rsvd1;
++	u8		Rsvd1;
  
--		/* Handle linestate irq for both otg port and host port */
--		ret = rockchip_usb2phy_linestate_irq(irq, rport);
-+		switch (rport->port_id) {
-+		case USB2PHY_PORT_OTG:
-+			ret |= rockchip_usb2phy_otg_mux_irq(irq, rport);
-+			break;
-+		case USB2PHY_PORT_HOST:
-+			ret |= rockchip_usb2phy_linestate_irq(irq, rport);
-+			break;
-+		}
- 	}
- 
- 	return ret;
+ 	/*  LONG WORD 1 ---- */
+ 	u8		Month;	/*  Release time Month field */
 -- 
 2.35.1
 
