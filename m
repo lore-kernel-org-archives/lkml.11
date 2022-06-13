@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8AC9CCA47B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7B73CCA47F
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379413AbiFMNsr (ORCPT
+        id S1379470AbiFMNs6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:48:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36156 "EHLO
+        Mon, 13 Jun 2022 09:48:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378611AbiFMNmA (ORCPT
+        with ESMTP id S1378626AbiFMNmD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:42:00 -0400
+        Mon, 13 Jun 2022 09:42:03 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67ECE23BDE;
-        Mon, 13 Jun 2022 04:31:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F245823BF8;
+        Mon, 13 Jun 2022 04:31:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DEF126124B;
-        Mon, 13 Jun 2022 11:31:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAEEBC34114;
-        Mon, 13 Jun 2022 11:31:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E9EF61255;
+        Mon, 13 Jun 2022 11:31:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0A0AC34114;
+        Mon, 13 Jun 2022 11:31:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119881;
-        bh=HTO52MIx8f+xtj5n1cIJO/R2zEK3ZQZy29evrOfFB3k=;
+        s=korg; t=1655119884;
+        bh=orI7NLzyYAo4r79BAJZsq8oCnJd/A00pdqYpG0bPBhw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G+qKVJ/HpoFKbeZtwrQPyd3HDiMZ+DUGE05K3KaFzgHFUVVHw8Xdbrw2rdPu8ty9/
-         8yLEupM/3YXJtWhbm/SqYsWSbj3sG2nDtCEZt5gkTJtXO3mbynYoEHVr6KyGq0nV8B
-         MuR+GOjPPpK1y/1vVrpbkPGv9pgNSWFzm7rYQZAo=
+        b=mTh6q7SNgDA3Ti2fncNXZ3LUmjedHihfeQb58WzMJvNNUgEhuIJeyxrw3DJfOj9iC
+         8iK1xXxBl+9TyVojU9ZrkXZ9LaDe7L8f+nc3Ae64K07h3Ithv/ReGrQ7FIV3N0FInK
+         xsRM+xQdu8lGAj8L2AYPXm1Ca+qjAwIKVi8bm6qk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 171/339] video: fbdev: pxa3xx-gcu: release the resources correctly in pxa3xx_gcu_probe/remove()
-Date:   Mon, 13 Jun 2022 12:09:56 +0200
-Message-Id: <20220613094931.864924186@linuxfoundation.org>
+        stable@vger.kernel.org, Liao Chang <liaochang1@huawei.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 172/339] RISC-V: use memcpy for kexec_file mode
+Date:   Mon, 13 Jun 2022 12:09:57 +0200
+Message-Id: <20220613094931.894759449@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -49,64 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Liao Chang <liaochang1@huawei.com>
 
-[ Upstream commit d87ad457f7e1b8d2492ca5b1531eb35030a1cc8f ]
+[ Upstream commit b7fb4d78a6ade6026d9e5cf438c2a46ab962e032 ]
 
-In pxa3xx_gcu_probe(), the sequence of error lable is wrong, it will
-leads some resource leaked, so adjust the sequence to handle the error
-correctly, and if pxa3xx_gcu_add_buffer() fails, pxa3xx_gcu_free_buffers()
-need be called.
-In pxa3xx_gcu_remove(), add missing clk_disable_unpreprare().
+The pointer to buffer loading kernel binaries is in kernel space for
+kexec_fil mode, When copy_from_user copies data from pointer to a block
+of memory, it checkes that the pointer is in the user space range, on
+RISCV-V that is:
 
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+static inline bool __access_ok(unsigned long addr, unsigned long size)
+{
+	return size <= TASK_SIZE && addr <= TASK_SIZE - size;
+}
+
+and TASK_SIZE is 0x4000000000 for 64-bits, which now causes
+copy_from_user to reject the access of the field 'buf' of struct
+kexec_segment that is in range [CONFIG_PAGE_OFFSET - VMALLOC_SIZE,
+CONFIG_PAGE_OFFSET), is invalid user space pointer.
+
+This patch fixes this issue by skipping access_ok(), use mempcy() instead.
+
+Signed-off-by: Liao Chang <liaochang1@huawei.com>
+Link: https://lore.kernel.org/r/20220408100914.150110-3-lizhengyu3@huawei.com
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/pxa3xx-gcu.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ arch/riscv/kernel/machine_kexec.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/pxa3xx-gcu.c b/drivers/video/fbdev/pxa3xx-gcu.c
-index 350b3139c863..043cc8f9ef1c 100644
---- a/drivers/video/fbdev/pxa3xx-gcu.c
-+++ b/drivers/video/fbdev/pxa3xx-gcu.c
-@@ -646,6 +646,7 @@ static int pxa3xx_gcu_probe(struct platform_device *pdev)
- 	for (i = 0; i < 8; i++) {
- 		ret = pxa3xx_gcu_add_buffer(dev, priv);
- 		if (ret) {
-+			pxa3xx_gcu_free_buffers(dev, priv);
- 			dev_err(dev, "failed to allocate DMA memory\n");
- 			goto err_disable_clk;
- 		}
-@@ -662,15 +663,15 @@ static int pxa3xx_gcu_probe(struct platform_device *pdev)
- 			SHARED_SIZE, irq);
- 	return 0;
+diff --git a/arch/riscv/kernel/machine_kexec.c b/arch/riscv/kernel/machine_kexec.c
+index cbef0fc73afa..df8e24559035 100644
+--- a/arch/riscv/kernel/machine_kexec.c
++++ b/arch/riscv/kernel/machine_kexec.c
+@@ -65,7 +65,9 @@ machine_kexec_prepare(struct kimage *image)
+ 		if (image->segment[i].memsz <= sizeof(fdt))
+ 			continue;
  
--err_free_dma:
--	dma_free_coherent(dev, SHARED_SIZE,
--			priv->shared, priv->shared_phys);
-+err_disable_clk:
-+	clk_disable_unprepare(priv->clk);
+-		if (copy_from_user(&fdt, image->segment[i].buf, sizeof(fdt)))
++		if (image->file_mode)
++			memcpy(&fdt, image->segment[i].buf, sizeof(fdt));
++		else if (copy_from_user(&fdt, image->segment[i].buf, sizeof(fdt)))
+ 			continue;
  
- err_misc_deregister:
- 	misc_deregister(&priv->misc_dev);
- 
--err_disable_clk:
--	clk_disable_unprepare(priv->clk);
-+err_free_dma:
-+	dma_free_coherent(dev, SHARED_SIZE,
-+			  priv->shared, priv->shared_phys);
- 
- 	return ret;
- }
-@@ -683,6 +684,7 @@ static int pxa3xx_gcu_remove(struct platform_device *pdev)
- 	pxa3xx_gcu_wait_idle(priv);
- 	misc_deregister(&priv->misc_dev);
- 	dma_free_coherent(dev, SHARED_SIZE, priv->shared, priv->shared_phys);
-+	clk_disable_unprepare(priv->clk);
- 	pxa3xx_gcu_free_buffers(dev, priv);
- 
- 	return 0;
+ 		if (fdt_check_header(&fdt))
 -- 
 2.35.1
 
