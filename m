@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BA1BCCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:32:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E8ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:32:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241383AbiFMOcJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:32:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58972 "EHLO
+        id S1383987AbiFMOcV (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 10:32:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384150AbiFMO24 (ORCPT
+        with ESMTP id S1384194AbiFMO27 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:28:56 -0400
+        Mon, 13 Jun 2022 10:28:59 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A68C4551D;
-        Mon, 13 Jun 2022 04:47:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00ECE38195;
+        Mon, 13 Jun 2022 04:47:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D7E5B80D3A;
-        Mon, 13 Jun 2022 11:47:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E31C2C34114;
-        Mon, 13 Jun 2022 11:47:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D58A3B80EDF;
+        Mon, 13 Jun 2022 11:47:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34328C34114;
+        Mon, 13 Jun 2022 11:47:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120851;
-        bh=voYXGHQ0EmEGqrT//5SsbK1zE1x2gYhf/na/v6VV+DU=;
+        s=korg; t=1655120848;
+        bh=0vJ7kPV8KVVlmRbZOmIAC4xvOA0aVrOWAaETYxAoOUs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pbGKByjn+P4iAA9FBEfxoO7dzhAXd6Ffw1COcvBtOUATA68blsXsE16JiWolR2Gh2
-         wNmv7MIsmyqlCVKSF3Blh4LoLqXLpTXrLpUnvsZRCkqj92Y5jRAgFpnpm+abQBrNml
-         GqQE5g+IzdLIfVikVmP1Wl9Lrt0zw7Vwo8UnAcHs=
+        b=voC8lrhYUJ0OTDzkkQSJV8d9ayY5DjqlgnDLsZY28HhbAIRLHbFVPxBFogXoMAtbO
+         WuQstP4pAC2XizlRD3VEV/NOFn6buOcM1nu1cubYbcCtrfEtpCk8oP1gsnwk2ikiHd
+         SXM/Cv6G2TsJkn1iaOE8FYa2PNgd4EXseumGCm0k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
-        NeilBrown <neilb@suse.de>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
+        stable@vger.kernel.org,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 181/298] SUNRPC: Fix the calculation of xdr->end in xdr_get_next_encode_buffer()
-Date:   Mon, 13 Jun 2022 12:11:15 +0200
-Message-Id: <20220613094930.422317056@linuxfoundation.org>
+Subject: [PATCH 5.17 180/298] xsk: Fix handling of invalid descriptors in XSK TX batching API
+Date:   Mon, 13 Jun 2022 12:11:14 +0200
+Message-Id: <20220613094930.393155938@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,46 +52,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 
-[ Upstream commit 6c254bf3b637dd4ef4f78eb78c7447419c0161d7 ]
+[ Upstream commit d678cbd2f867a564a3c5b276c454e873f43f02f8 ]
 
-I found that NFSD's new NFSv3 READDIRPLUS XDR encoder was screwing up
-right at the end of the page array. xdr_get_next_encode_buffer() does
-not compute the value of xdr->end correctly:
+xdpxceiver run on a AF_XDP ZC enabled driver revealed a problem with XSK
+Tx batching API. There is a test that checks how invalid Tx descriptors
+are handled by AF_XDP. Each valid descriptor is followed by invalid one
+on Tx side whereas the Rx side expects only to receive a set of valid
+descriptors.
 
- * The check to see if we're on the final available page in xdr->buf
-   needs to account for the space consumed by @nbytes.
+In current xsk_tx_peek_release_desc_batch() function, the amount of
+available descriptors is hidden inside xskq_cons_peek_desc_batch(). This
+can be problematic in cases where invalid descriptors are present due to
+the fact that xskq_cons_peek_desc_batch() returns only a count of valid
+descriptors. This means that it is impossible to properly update XSK
+ring state when calling xskq_cons_release_n().
 
- * The new xdr->end value needs to account for the portion of @nbytes
-   that is to be encoded into the previous buffer.
+To address this issue, pull out the contents of
+xskq_cons_peek_desc_batch() so that callers (currently only
+xsk_tx_peek_release_desc_batch()) will always be able to update the
+state of ring properly, as total count of entries is now available and
+use this value as an argument in xskq_cons_release_n(). By
+doing so, xskq_cons_peek_desc_batch() can be dropped altogether.
 
-Fixes: 2825a7f90753 ("nfsd4: allow encoding across page boundaries")
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
-Reviewed-by: NeilBrown <neilb@suse.de>
-Reviewed-by: J. Bruce Fields <bfields@fieldses.org>
+Fixes: 9349eb3a9d2a ("xsk: Introduce batched Tx descriptor interfaces")
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Link: https://lore.kernel.org/bpf/20220607142200.576735-1-maciej.fijalkowski@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/xdr.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ net/xdp/xsk.c       | 5 +++--
+ net/xdp/xsk_queue.h | 8 --------
+ 2 files changed, 3 insertions(+), 10 deletions(-)
 
-diff --git a/net/sunrpc/xdr.c b/net/sunrpc/xdr.c
-index df194cc07035..b57cf9df4de8 100644
---- a/net/sunrpc/xdr.c
-+++ b/net/sunrpc/xdr.c
-@@ -979,7 +979,11 @@ static __be32 *xdr_get_next_encode_buffer(struct xdr_stream *xdr,
- 	 */
- 	xdr->p = (void *)p + frag2bytes;
- 	space_left = xdr->buf->buflen - xdr->buf->len;
--	xdr->end = (void *)p + min_t(int, space_left, PAGE_SIZE);
-+	if (space_left - nbytes >= PAGE_SIZE)
-+		xdr->end = (void *)p + PAGE_SIZE;
-+	else
-+		xdr->end = (void *)p + space_left - frag1bytes;
-+
- 	xdr->buf->page_len += frag2bytes;
- 	xdr->buf->len += nbytes;
- 	return p;
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index 7d3a00cb24ec..4806fe35c657 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -373,7 +373,8 @@ u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, u32 max_entries)
+ 		goto out;
+ 	}
+ 
+-	nb_pkts = xskq_cons_peek_desc_batch(xs->tx, pool, max_entries);
++	max_entries = xskq_cons_nb_entries(xs->tx, max_entries);
++	nb_pkts = xskq_cons_read_desc_batch(xs->tx, pool, max_entries);
+ 	if (!nb_pkts) {
+ 		xs->tx->queue_empty_descs++;
+ 		goto out;
+@@ -389,7 +390,7 @@ u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, u32 max_entries)
+ 	if (!nb_pkts)
+ 		goto out;
+ 
+-	xskq_cons_release_n(xs->tx, nb_pkts);
++	xskq_cons_release_n(xs->tx, max_entries);
+ 	__xskq_cons_release(xs->tx);
+ 	xs->sk.sk_write_space(&xs->sk);
+ 
+diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
+index 638138fbe475..4d092e7a33d1 100644
+--- a/net/xdp/xsk_queue.h
++++ b/net/xdp/xsk_queue.h
+@@ -282,14 +282,6 @@ static inline bool xskq_cons_peek_desc(struct xsk_queue *q,
+ 	return xskq_cons_read_desc(q, desc, pool);
+ }
+ 
+-static inline u32 xskq_cons_peek_desc_batch(struct xsk_queue *q, struct xsk_buff_pool *pool,
+-					    u32 max)
+-{
+-	u32 entries = xskq_cons_nb_entries(q, max);
+-
+-	return xskq_cons_read_desc_batch(q, pool, entries);
+-}
+-
+ /* To improve performance in the xskq_cons_release functions, only update local state here.
+  * Reflect this to global state when we get new entries from the ring in
+  * xskq_cons_get_entries() and whenever Rx or Tx processing are completed in the NAPI loop.
 -- 
 2.35.1
 
