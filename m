@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4D2BCCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89AA0CCA481
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:06:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382792AbiFMOGq (ORCPT
+        id S1381632AbiFMOEi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:06:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41594 "EHLO
+        Mon, 13 Jun 2022 10:04:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240537AbiFMN72 (ORCPT
+        with ESMTP id S1380843AbiFMNzL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:59:28 -0400
+        Mon, 13 Jun 2022 09:55:11 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D82268CCF5;
-        Mon, 13 Jun 2022 04:37:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 139AE44766;
+        Mon, 13 Jun 2022 04:36:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 27F32B80EA7;
-        Mon, 13 Jun 2022 11:37:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 793E7C34114;
-        Mon, 13 Jun 2022 11:37:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 828B6B80EC7;
+        Mon, 13 Jun 2022 11:36:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5BB6C34114;
+        Mon, 13 Jun 2022 11:36:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120270;
-        bh=ovWdpCpgjdPMTIbsc5BY64f75f6dLt9SBIE24tqDEoA=;
+        s=korg; t=1655120166;
+        bh=4YAS2hxdgSWEjTSJ+tXksYA0mkYVnKdZ8x4YsHB7YBo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aLxxLu7qu5fCcQ34UsRyLRQLpMGbuYm/09On9osp+HoBHJNa8g4b/gGIwD0BTUE+m
-         5X2edPB66PAYZeSgbVgzKdl6XzofNYel/9SLUEWnJ0LrHqbQNqHSC+nHWuxtuX21VS
-         jIxQjMemMiyTao9+3VfAP2aqg9/QmTywUGP7A0MU=
+        b=WiT6PK3H10LUSzbbmVMNWq6+WqF1QFH70mNcJia2DB2oFoLN6eTG4s79q52X0EWVK
+         9FyJ1shyD/ZXgSAVk5LwuxZUC32WgtO7gNmiSFNuUxEGam9OWadOdtM+UQqy7KiSFm
+         /XMkEP57eUciQuuj7uRcxk3rtSWAM5V6L8dm0Ld0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
-        James Smart <jsmart2021@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.18 304/339] scsi: lpfc: Address NULL pointer dereference after starget_to_rport()
-Date:   Mon, 13 Jun 2022 12:12:09 +0200
-Message-Id: <20220613094935.979173117@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 274/339] jump_label,noinstr: Avoid instrumentation for JUMP_LABEL=n builds
+Date:   Mon, 13 Jun 2022 12:11:39 +0200
+Message-Id: <20220613094934.951575871@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,46 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit 6f808bd78e8296b4ded813b7182988d57e1f6176 upstream.
+[ Upstream commit 656d054e0a15ec327bd82801ccd58201e59f6896 ]
 
-Calls to starget_to_rport() may return NULL.  Add check for NULL rport
-before dereference.
+When building x86_64 with JUMP_LABEL=n it's possible for
+instrumentation to sneak into noinstr:
 
-Link: https://lore.kernel.org/r/20220603174329.63777-5-jsmart2021@gmail.com
-Fixes: bb21fc9911ee ("scsi: lpfc: Use fc_block_rport()")
-Cc: <stable@vger.kernel.org> # v5.18
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+vmlinux.o: warning: objtool: exit_to_user_mode+0x14: call to static_key_count.constprop.0() leaves .noinstr.text section
+vmlinux.o: warning: objtool: syscall_exit_to_user_mode+0x2d: call to static_key_count.constprop.0() leaves .noinstr.text section
+vmlinux.o: warning: objtool: irqentry_exit_to_user_mode+0x1b: call to static_key_count.constprop.0() leaves .noinstr.text section
+
+Switch to arch_ prefixed atomic to avoid the explicit instrumentation.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/lpfc/lpfc_scsi.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ include/linux/jump_label.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/scsi/lpfc/lpfc_scsi.c
-+++ b/drivers/scsi/lpfc/lpfc_scsi.c
-@@ -6316,6 +6316,9 @@ lpfc_device_reset_handler(struct scsi_cm
- 	int status;
- 	u32 logit = LOG_FCP;
+diff --git a/include/linux/jump_label.h b/include/linux/jump_label.h
+index 107751cc047b..bf1eef337a07 100644
+--- a/include/linux/jump_label.h
++++ b/include/linux/jump_label.h
+@@ -256,9 +256,9 @@ extern void static_key_disable_cpuslocked(struct static_key *key);
+ #include <linux/atomic.h>
+ #include <linux/bug.h>
  
-+	if (!rport)
-+		return FAILED;
-+
- 	rdata = rport->dd_data;
- 	if (!rdata || !rdata->pnode) {
- 		lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
-@@ -6394,6 +6397,9 @@ lpfc_target_reset_handler(struct scsi_cm
- 	unsigned long flags;
- 	DECLARE_WAIT_QUEUE_HEAD_ONSTACK(waitq);
+-static inline int static_key_count(struct static_key *key)
++static __always_inline int static_key_count(struct static_key *key)
+ {
+-	return atomic_read(&key->enabled);
++	return arch_atomic_read(&key->enabled);
+ }
  
-+	if (!rport)
-+		return FAILED;
-+
- 	rdata = rport->dd_data;
- 	if (!rdata || !rdata->pnode) {
- 		lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
+ static __always_inline void jump_label_init(void)
+-- 
+2.35.1
+
 
 
