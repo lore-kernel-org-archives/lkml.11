@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95D8AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:27:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29B6AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:27:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377474AbiFMN1H (ORCPT
+        id S1377480AbiFMN1M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:27:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43864 "EHLO
+        Mon, 13 Jun 2022 09:27:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376296AbiFMNYx (ORCPT
+        with ESMTP id S1376278AbiFMNYx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 09:24:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FAC06C0EF;
-        Mon, 13 Jun 2022 04:24:20 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E3E63C736;
+        Mon, 13 Jun 2022 04:24:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A3F12B80EA7;
-        Mon, 13 Jun 2022 11:24:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C955C3411C;
-        Mon, 13 Jun 2022 11:24:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE082B80E93;
+        Mon, 13 Jun 2022 11:24:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52F2FC3411C;
+        Mon, 13 Jun 2022 11:24:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119457;
-        bh=fHAlRLI+3/lCqgz04xoSRTbSR4DvNtUqD7RhPAfiWzY=;
+        s=korg; t=1655119454;
+        bh=cgRqJ602WtDp1oRr9ZMXmyJhbDwJiUrgtiitxn7pP48=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M53QXyH8Iq8UPB/qB0KlOeEMZYilbz9LegKIoNWm7Se4Ol/S3vgn7k1OLuESAyESy
-         p9LG09qmG5JmuOAi8Ky+K/cRuU8abCJbcYq3T8N9P+wYfvaPixBNxv3mtLol9q/s9X
-         WucX//sU0PSSNrJNA4vdF5FN0D8PHYePM2e+C+BY=
+        b=OY3XWS2ofPtDMZ/LMH1h4SBLRtYyOJEvzWjfShmBNkY55CQSGnhE1vgIO/+wKbDBZ
+         Gq5NcjNMxhtwb1Go0HTQLIRuBsC8m59y0QhoxLvTKTK+WyDbFNuJ4JHagoGVD4X8pP
+         lHLp7oroX3gvCtRZMGiBGaUaSRd/bF+5IDiRtRro=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 004/339] soundwire: qcom: fix an error message in swrm_wait_for_frame_gen_enabled()
-Date:   Mon, 13 Jun 2022 12:07:09 +0200
-Message-Id: <20220613094926.638046148@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 003/339] iio: adc: ad7124: Remove shift from scan_type
+Date:   Mon, 13 Jun 2022 12:07:08 +0200
+Message-Id: <20220613094926.608261494@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -49,35 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Alexandru Tachici <alexandru.tachici@analog.com>
 
-[ Upstream commit d146de3430d2b21054f6dc8a890f84062515f4d2 ]
+[ Upstream commit fe78ccf79b0e29fd6d8dc2e2c3b0dbeda4ce3ad8 ]
 
-The logical AND && is supposed to be bitwise AND & so it will sometimes
-print "connected" instead of "disconnected".
+The 24 bits data is stored in 32 bits in BE. There
+is no need to shift it. This confuses user-space apps.
 
-Fixes: 74e79da9fd46 ("soundwire: qcom: add runtime pm support")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Link: https://lore.kernel.org/r/20220307125814.GD16710@kili
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: b3af341bbd966 ("iio: adc: Add ad7124 support")
+Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+Link: https://lore.kernel.org/r/20220322105029.86389-2-alexandru.tachici@analog.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soundwire/qcom.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/adc/ad7124.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
-index da1ad7ebb1aa..dd9f67f895b2 100644
---- a/drivers/soundwire/qcom.c
-+++ b/drivers/soundwire/qcom.c
-@@ -1452,7 +1452,7 @@ static bool swrm_wait_for_frame_gen_enabled(struct qcom_swrm_ctrl *swrm)
- 	} while (retry--);
- 
- 	dev_err(swrm->dev, "%s: link status not %s\n", __func__,
--		comp_sts && SWRM_FRM_GEN_ENABLED ? "connected" : "disconnected");
-+		comp_sts & SWRM_FRM_GEN_ENABLED ? "connected" : "disconnected");
- 
- 	return false;
- }
+diff --git a/drivers/iio/adc/ad7124.c b/drivers/iio/adc/ad7124.c
+index c47ead15f6e5..3752b2c88959 100644
+--- a/drivers/iio/adc/ad7124.c
++++ b/drivers/iio/adc/ad7124.c
+@@ -188,7 +188,6 @@ static const struct iio_chan_spec ad7124_channel_template = {
+ 		.sign = 'u',
+ 		.realbits = 24,
+ 		.storagebits = 32,
+-		.shift = 8,
+ 		.endianness = IIO_BE,
+ 	},
+ };
 -- 
 2.35.1
 
