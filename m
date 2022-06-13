@@ -2,45 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C37BCCA480
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73770C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:09:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351909AbiFMLIs (ORCPT
+        id S1351951AbiFMLI7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:08:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57988 "EHLO
+        Mon, 13 Jun 2022 07:08:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351420AbiFMLEH (ORCPT
+        with ESMTP id S1351609AbiFMLEr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:04:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D823531DCC;
-        Mon, 13 Jun 2022 03:33:30 -0700 (PDT)
+        Mon, 13 Jun 2022 07:04:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A8E8326C2;
+        Mon, 13 Jun 2022 03:33:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AA0260AE6;
-        Mon, 13 Jun 2022 10:33:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76841C34114;
-        Mon, 13 Jun 2022 10:33:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B76CA60FC9;
+        Mon, 13 Jun 2022 10:33:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 902A1C34114;
+        Mon, 13 Jun 2022 10:33:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116408;
-        bh=qldU0Sv45lUi0OHgVAjUVTQCnhPsejX2xCEvURu9IC0=;
+        s=korg; t=1655116406;
+        bh=+Sg44/L0M+G9n0ENnHsUVMZlZ9N783aU8Lc2N6fwMW4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JkWYvcO/bJyTVkR/O1KTI3yqoAuhlO9vmDGrav7LyG0IUs9T48LfQ7Y5niCDhLpny
-         J9F61kcN5MzetH+phIF8zWoZdeYxCeWYKEr5UNNqiUYL7DzZDFzdldJBH+WYW9YXTy
-         grNLqVsEKCwvmPJU796TWdNqnIqPcD3DiL0OcgYQ=
+        b=apliKwHCi1LezCHX1/Z32a+Sr6PBpLyUN54QCTaJz05yj25tlQ5/VKRTrlz7Mtbbw
+         glLRhlvRT92B2PF2K7fSdtCRiZQMkSsRmQdwKsD/zoZ10M4jSJG0fNa/DW5eJ9sD71
+         P2d1HM1pOk6xfeiyLEbd6h/vYbtdACkgK6cZW8is=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        stable@vger.kernel.org,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 185/218] drivers: staging: rtl8192e: Fix deadlock in rtllib_beacons_stop()
-Date:   Mon, 13 Jun 2022 12:10:43 +0200
-Message-Id: <20220613094926.223004255@linuxfoundation.org>
+Subject: [PATCH 5.4 080/411] drm: fix EDID struct for old ARM OABI format
+Date:   Mon, 13 Jun 2022 12:05:53 +0200
+Message-Id: <20220613094931.078935689@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,53 +57,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-[ Upstream commit 9b6bdbd9337de3917945847bde262a34a87a6303 ]
+[ Upstream commit 47f15561b69e226bfc034e94ff6dbec51a4662af ]
 
-There is a deadlock in rtllib_beacons_stop(), which is shown
-below:
+When building the kernel for arm with the "-mabi=apcs-gnu" option, gcc
+will force alignment of all structures and unions to a word boundary
+(see also STRUCTURE_SIZE_BOUNDARY and the "-mstructure-size-boundary=XX"
+option if you're a gcc person), even when the members of said structures
+do not want or need said alignment.
 
-   (Thread 1)              |      (Thread 2)
-                           | rtllib_send_beacon()
-rtllib_beacons_stop()      |  mod_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | rtllib_send_beacon_cb()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
+This completely messes up the structure alignment of 'struct edid' on
+those targets, because even though all the embedded structures are
+marked with "__attribute__((packed))", the unions that contain them are
+not.
 
-We hold ieee->beacon_lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need ieee->beacon_lock in position (2) of thread 2.
-As a result, rtllib_beacons_stop() will block forever.
+This was exposed by commit f1e4c916f97f ("drm/edid: add EDID block count
+and size helpers"), but the bug is pre-existing.  That commit just made
+the structure layout problem cause a build failure due to the addition
+of the
 
-This patch extracts del_timer_sync() from the protection of
-spin_lock_irqsave(), which could let timer handler to obtain
-the needed lock.
+        BUILD_BUG_ON(sizeof(*edid) != EDID_LENGTH);
 
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417141641.124388-1-duoming@zju.edu.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+sanity check in drivers/gpu/drm/drm_edid.c:edid_block_data().
+
+This legacy union alignment should probably not be used in the first
+place, but we can fix the layout by adding the packed attribute to the
+union entries even when each member is already packed and it shouldn't
+matter in a sane build environment.
+
+You can see this issue with a trivial test program:
+
+  union {
+	struct {
+		char c[5];
+	};
+	struct {
+		char d;
+		unsigned e;
+	} __attribute__((packed));
+  } a = { "1234" };
+
+where building this with a normal "gcc -S" will result in the expected
+5-byte size of said union:
+
+	.type	a, @object
+	.size	a, 5
+
+but with an ARM compiler and the old ABI:
+
+    arm-linux-gnu-gcc -mabi=apcs-gnu -mfloat-abi=soft -S t.c
+
+you get
+
+	.type	a, %object
+	.size	a, 8
+
+instead, because even though each member of the union is packed, the
+union itself still gets aligned.
+
+This was reported by Sudip for the spear3xx_defconfig target.
+
+Link: https://lore.kernel.org/lkml/YpCUzStDnSgQLNFN@debian/
+Reported-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Cc: Maxime Ripard <mripard@kernel.org>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8192e/rtllib_softmac.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/drm/drm_edid.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/staging/rtl8192e/rtllib_softmac.c b/drivers/staging/rtl8192e/rtllib_softmac.c
-index e4be85af31e7..1edece694fff 100644
---- a/drivers/staging/rtl8192e/rtllib_softmac.c
-+++ b/drivers/staging/rtl8192e/rtllib_softmac.c
-@@ -654,9 +654,9 @@ static void rtllib_beacons_stop(struct rtllib_device *ieee)
- 	spin_lock_irqsave(&ieee->beacon_lock, flags);
+diff --git a/include/drm/drm_edid.h b/include/drm/drm_edid.h
+index b9719418c3d2..f40a97417b68 100644
+--- a/include/drm/drm_edid.h
++++ b/include/drm/drm_edid.h
+@@ -116,7 +116,7 @@ struct detailed_data_monitor_range {
+ 			u8 supported_scalings;
+ 			u8 preferred_refresh;
+ 		} __attribute__((packed)) cvt;
+-	} formula;
++	} __attribute__((packed)) formula;
+ } __attribute__((packed));
  
- 	ieee->beacon_txing = 0;
--	del_timer_sync(&ieee->beacon_timer);
+ struct detailed_data_wpindex {
+@@ -149,7 +149,7 @@ struct detailed_non_pixel {
+ 		struct detailed_data_wpindex color;
+ 		struct std_timing timings[6];
+ 		struct cvt_timing cvt[4];
+-	} data;
++	} __attribute__((packed)) data;
+ } __attribute__((packed));
  
- 	spin_unlock_irqrestore(&ieee->beacon_lock, flags);
-+	del_timer_sync(&ieee->beacon_timer);
+ #define EDID_DETAIL_EST_TIMINGS 0xf7
+@@ -167,7 +167,7 @@ struct detailed_timing {
+ 	union {
+ 		struct detailed_pixel_timing pixel_data;
+ 		struct detailed_non_pixel other_data;
+-	} data;
++	} __attribute__((packed)) data;
+ } __attribute__((packed));
  
- }
- 
+ #define DRM_EDID_INPUT_SERRATION_VSYNC (1 << 0)
 -- 
 2.35.1
 
