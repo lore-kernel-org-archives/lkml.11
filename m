@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C8CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:41:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A98EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:41:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378464AbiFMNli (ORCPT
+        id S1378482AbiFMNlk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:41:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36276 "EHLO
+        Mon, 13 Jun 2022 09:41:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378830AbiFMNjQ (ORCPT
+        with ESMTP id S1378860AbiFMNjX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:39:16 -0400
+        Mon, 13 Jun 2022 09:39:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 152A578EE2;
-        Mon, 13 Jun 2022 04:27:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56FF17937A;
+        Mon, 13 Jun 2022 04:28:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CD3A66101F;
-        Mon, 13 Jun 2022 11:27:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9AC1C34114;
-        Mon, 13 Jun 2022 11:27:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C853E6114A;
+        Mon, 13 Jun 2022 11:28:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7C44C34114;
+        Mon, 13 Jun 2022 11:28:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119672;
-        bh=+8STXQD/1hbDRvQNyc46YGPUPQtV5B/nXQPJFWW7nGQ=;
+        s=korg; t=1655119686;
+        bh=AWG9gvMcYACCQztBZWgs0FhjmGr5NkuGSG93WBuDqX0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XRWTFhVjXGhRYd6PUOH16m3b9dqRWN0lk9522JIzJ8kFBZ2/fxRA6W5tARNgSewDk
-         onoBFlVtoj3FwkzlXzSiqzU5E2ei5jZtCbmOJCFs2OiMPOfrT4VZb4jsXOH8+p7yGc
-         0b5ZlriRDH9BIPAG+5judXv2CbeDff2aHU+ISEmk=
+        b=vSPKZZyETxh8CWR9KMqGeaFYMQAhR0Cyz//y5oacxXDu8g2RgOoodqICl8tnBzqDr
+         UWd/6OHqRldU86Z21jkV1pHsXpOJWjVBuh1DV1mrKBURkNiuaIsENZa82zXBBapIwH
+         oCYJXw/+9vsD2SxpXtz989T2z7ZAG/ze0XOXALWA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ming Lei <ming.lei@redhat.com>,
-        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
+        stable@vger.kernel.org, Mykola Lysenko <mykolal@fb.com>,
+        Song Liu <song@kernel.org>, David Vernet <void@manifault.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 098/339] block, loop: support partitions without scanning
-Date:   Mon, 13 Jun 2022 12:08:43 +0200
-Message-Id: <20220613094929.483722087@linuxfoundation.org>
+Subject: [PATCH 5.18 103/339] selftests/bpf: fix stacktrace_build_id with missing kprobe/urandom_read
+Date:   Mon, 13 Jun 2022 12:08:48 +0200
+Message-Id: <20220613094929.637161973@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,101 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Song Liu <song@kernel.org>
 
-[ Upstream commit b9684a71fca793213378dd410cd11675d973eaa1 ]
+[ Upstream commit 59ed76fe2f981bccde37bdddb465f260a96a2404 ]
 
-Historically we did distinguish between a flag that surpressed partition
-scanning, and a combinations of the minors variable and another flag if
-any partitions were supported.  This was generally confusing and doesn't
-make much sense, but some corner case uses of the loop driver actually
-do want to support manually added partitions on a device that does not
-actively scan for partitions.  To make things worsee the loop driver
-also wants to dynamically toggle the scanning for partitions on a live
-gendisk, which makes the disk->flags updates non-atomic.
+Kernel function urandom_read is replaced with urandom_read_iter.
+Therefore, kprobe on urandom_read is not working any more:
 
-Introduce a new GD_SUPPRESS_PART_SCAN bit in disk->state that disables
-just scanning for partitions, and toggle that instead of GENHD_FL_NO_PART
-in the loop driver.
+[root@eth50-1 bpf]# ./test_progs -n 161
+test_stacktrace_build_id:PASS:skel_open_and_load 0 nsec
+libbpf: kprobe perf_event_open() failed: No such file or directory
+libbpf: prog 'oncpu': failed to create kprobe 'urandom_read+0x0' \
+        perf event: No such file or directory
+libbpf: prog 'oncpu': failed to auto-attach: -2
+test_stacktrace_build_id:FAIL:attach_tp err -2
+161     stacktrace_build_id:FAIL
 
-Fixes: 1ebe2e5f9d68 ("block: remove GENHD_FL_EXT_DEVT")
-Reported-by: Ming Lei <ming.lei@redhat.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Ming Lei <ming.lei@redhat.com>
-Link: https://lore.kernel.org/r/20220527055806.1972352-1-hch@lst.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fix this by replacing urandom_read with urandom_read_iter in the test.
+
+Fixes: 1b388e7765f2 ("random: convert to using fops->read_iter()")
+Reported-by: Mykola Lysenko <mykolal@fb.com>
+Signed-off-by: Song Liu <song@kernel.org>
+Acked-by: David Vernet <void@manifault.com>
+Link: https://lore.kernel.org/r/20220526191608.2364049-1-song@kernel.org
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/genhd.c          | 2 ++
- drivers/block/loop.c   | 8 ++++----
- include/linux/blkdev.h | 1 +
- 3 files changed, 7 insertions(+), 4 deletions(-)
+ tools/testing/selftests/bpf/progs/test_stacktrace_build_id.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/block/genhd.c b/block/genhd.c
-index b8b6759d670f..3008ec213654 100644
---- a/block/genhd.c
-+++ b/block/genhd.c
-@@ -385,6 +385,8 @@ int disk_scan_partitions(struct gendisk *disk, fmode_t mode)
+diff --git a/tools/testing/selftests/bpf/progs/test_stacktrace_build_id.c b/tools/testing/selftests/bpf/progs/test_stacktrace_build_id.c
+index 6c62bfb8bb6f..0c4426592a26 100644
+--- a/tools/testing/selftests/bpf/progs/test_stacktrace_build_id.c
++++ b/tools/testing/selftests/bpf/progs/test_stacktrace_build_id.c
+@@ -39,7 +39,7 @@ struct {
+ 	__type(value, stack_trace_t);
+ } stack_amap SEC(".maps");
  
- 	if (disk->flags & (GENHD_FL_NO_PART | GENHD_FL_HIDDEN))
- 		return -EINVAL;
-+	if (test_bit(GD_SUPPRESS_PART_SCAN, &disk->state))
-+		return -EINVAL;
- 	if (disk->open_partitions)
- 		return -EBUSY;
- 
-diff --git a/drivers/block/loop.c b/drivers/block/loop.c
-index ed7bec11948c..4e1dce3beab0 100644
---- a/drivers/block/loop.c
-+++ b/drivers/block/loop.c
-@@ -1066,7 +1066,7 @@ static int loop_configure(struct loop_device *lo, fmode_t mode,
- 		lo->lo_flags |= LO_FLAGS_PARTSCAN;
- 	partscan = lo->lo_flags & LO_FLAGS_PARTSCAN;
- 	if (partscan)
--		lo->lo_disk->flags &= ~GENHD_FL_NO_PART;
-+		clear_bit(GD_SUPPRESS_PART_SCAN, &lo->lo_disk->state);
- 
- 	loop_global_unlock(lo, is_loop);
- 	if (partscan)
-@@ -1185,7 +1185,7 @@ static void __loop_clr_fd(struct loop_device *lo, bool release)
- 	 */
- 	lo->lo_flags = 0;
- 	if (!part_shift)
--		lo->lo_disk->flags |= GENHD_FL_NO_PART;
-+		set_bit(GD_SUPPRESS_PART_SCAN, &lo->lo_disk->state);
- 	mutex_lock(&lo->lo_mutex);
- 	lo->lo_state = Lo_unbound;
- 	mutex_unlock(&lo->lo_mutex);
-@@ -1295,7 +1295,7 @@ loop_set_status(struct loop_device *lo, const struct loop_info64 *info)
- 
- 	if (!err && (lo->lo_flags & LO_FLAGS_PARTSCAN) &&
- 	     !(prev_lo_flags & LO_FLAGS_PARTSCAN)) {
--		lo->lo_disk->flags &= ~GENHD_FL_NO_PART;
-+		clear_bit(GD_SUPPRESS_PART_SCAN, &lo->lo_disk->state);
- 		partscan = true;
- 	}
- out_unlock:
-@@ -2054,7 +2054,7 @@ static int loop_add(int i)
- 	 * userspace tools. Parameters like this in general should be avoided.
- 	 */
- 	if (!part_shift)
--		disk->flags |= GENHD_FL_NO_PART;
-+		set_bit(GD_SUPPRESS_PART_SCAN, &disk->state);
- 	atomic_set(&lo->lo_refcnt, 0);
- 	mutex_init(&lo->lo_mutex);
- 	lo->lo_number		= i;
-diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-index 60d016138997..108e3d114bfc 100644
---- a/include/linux/blkdev.h
-+++ b/include/linux/blkdev.h
-@@ -147,6 +147,7 @@ struct gendisk {
- #define GD_DEAD				2
- #define GD_NATIVE_CAPACITY		3
- #define GD_ADDED			4
-+#define GD_SUPPRESS_PART_SCAN		5
- 
- 	struct mutex open_mutex;	/* open/close mutex */
- 	unsigned open_partitions;	/* number of open partitions */
+-SEC("kprobe/urandom_read")
++SEC("kprobe/urandom_read_iter")
+ int oncpu(struct pt_regs *args)
+ {
+ 	__u32 max_len = sizeof(struct bpf_stack_build_id)
 -- 
 2.35.1
 
