@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 027A0CCA486
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:55:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BB39CCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:55:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243546AbiFMRzG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 13:55:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56984 "EHLO
+        id S235219AbiFMRzL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 13:55:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242218AbiFMRyH (ORCPT
+        with ESMTP id S242721AbiFMRyN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 13:54:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8D0D040A3B
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:39:55 -0700 (PDT)
+        Mon, 13 Jun 2022 13:54:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2578279378
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:41:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655127594;
+        s=mimecast20190719; t=1655127677;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=yqsFA2H/tTYPPK/MA5Wsd/yni1u5UZAq67JuIqyH9Ck=;
-        b=WBnjbKu8JEsVgxFxBNdZYXhWvwk9bj4pMRQl32DsU+K/kzOG+4pQdYqOMBSqtjq0Gv5zWT
-        2wiHEuDZSXGyPPSW7Lz/LAX9dgT9N00aFCzJfimjmeCU6m8YHXza5+l+y6BqQmDkqFYKU3
-        cJNAXKNLd1JnBvKbjdC5CYVkdIylYpc=
+        bh=eKACbGUbv4aXo64CZow7fz+SSCxVkiu29gSoKAYPpPo=;
+        b=Lsi5+mrcTVaM/mcDMUa4rsg0Pmk+GgAa39zp22K5Fp7wFpsyKAcmKo4rzqd24doHBStuav
+        1+eWAMtkJuWg+uZkAS5JOJyFyhW0BNouJCmjl2CW0er2GffDF5yVdAQk4j5CdYbp7qnmCO
+        Pfx7akzLZ6UbYF0ItJLlZYle4DCtkN0=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-114-bJE_ABcTNOuOPFWY64Pg5g-1; Mon, 13 Jun 2022 09:39:51 -0400
-X-MC-Unique: bJE_ABcTNOuOPFWY64Pg5g-1
+ us-mta-119-r9T_plOYMF-XWbtNZG5wfQ-1; Mon, 13 Jun 2022 09:41:13 -0400
+X-MC-Unique: r9T_plOYMF-XWbtNZG5wfQ-1
 Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9D31D19711D2;
-        Mon, 13 Jun 2022 13:39:50 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 43372803B22;
+        Mon, 13 Jun 2022 13:41:12 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.194.60])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 79563492CA2;
-        Mon, 13 Jun 2022 13:39:48 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C3981492CA4;
+        Mon, 13 Jun 2022 13:41:09 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -48,9 +48,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Siddharth Chandrasekaran <sidcha@amazon.de>,
         Yuan Yao <yuan.yao@linux.intel.com>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v7 09/39] KVM: x86: hyper-v: Use HV_MAX_SPARSE_VCPU_BANKS/HV_VCPUS_PER_SPARSE_BANK instead of raw '64'
-Date:   Mon, 13 Jun 2022 15:38:52 +0200
-Message-Id: <20220613133922.2875594-10-vkuznets@redhat.com>
+Subject: [PATCH v7 39/39] KVM: selftests: Rename 'evmcs_test' to 'hyperv_evmcs'
+Date:   Mon, 13 Jun 2022 15:39:22 +0200
+Message-Id: <20220613133922.2875594-40-vkuznets@redhat.com>
 In-Reply-To: <20220613133922.2875594-1-vkuznets@redhat.com>
 References: <20220613133922.2875594-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -61,59 +61,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It may not be clear from where the '64' limit for the maximum sparse
-bank number comes from, use HV_MAX_SPARSE_VCPU_BANKS define instead.
-Use HV_VCPUS_PER_SPARSE_BANK in KVM_HV_MAX_SPARSE_VCPU_SET_BITS's
-definition. Opportunistically adjust the comment around BUILD_BUG_ON().
+Conform to the rest of Hyper-V emulation selftests which have 'hyperv'
+prefix. Get rid of '_test' suffix as well as the purpose of this code
+is fairly obvious.
 
-No functional change.
-
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-Suggested-by: Sean Christopherson <seanjc@google.com>
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- arch/x86/kvm/hyperv.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ tools/testing/selftests/kvm/.gitignore                          | 2 +-
+ tools/testing/selftests/kvm/Makefile                            | 2 +-
+ .../selftests/kvm/x86_64/{evmcs_test.c => hyperv_evmcs.c}       | 0
+ 3 files changed, 2 insertions(+), 2 deletions(-)
+ rename tools/testing/selftests/kvm/x86_64/{evmcs_test.c => hyperv_evmcs.c} (100%)
 
-diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-index 489a3918a757..f41153c71beb 100644
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -43,7 +43,7 @@
- /* "Hv#1" signature */
- #define HYPERV_CPUID_SIGNATURE_EAX 0x31237648
- 
--#define KVM_HV_MAX_SPARSE_VCPU_SET_BITS DIV_ROUND_UP(KVM_MAX_VCPUS, 64)
-+#define KVM_HV_MAX_SPARSE_VCPU_SET_BITS DIV_ROUND_UP(KVM_MAX_VCPUS, HV_VCPUS_PER_SPARSE_BANK)
- 
- static void stimer_mark_pending(struct kvm_vcpu_hv_stimer *stimer,
- 				bool vcpu_kick);
-@@ -1799,7 +1799,7 @@ static u64 kvm_get_sparse_vp_set(struct kvm *kvm, struct kvm_hv_hcall *hc,
- 				 u64 *sparse_banks, int consumed_xmm_halves,
- 				 gpa_t offset)
- {
--	if (hc->var_cnt > 64)
-+	if (hc->var_cnt > HV_MAX_SPARSE_VCPU_BANKS)
- 		return -EINVAL;
- 
- 	/* Cap var_cnt to ignore banks that cannot contain a legal VP index. */
-@@ -1909,12 +1909,11 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
- 	gpa_t data_offset;
- 
- 	/*
--	 * The Hyper-V TLFS doesn't allow more than 64 sparse banks, e.g. the
--	 * valid mask is a u64.  Fail the build if KVM's max allowed number of
--	 * vCPUs (>4096) would exceed this limit, KVM will additional changes
--	 * for Hyper-V support to avoid setting the guest up to fail.
-+	 * The Hyper-V TLFS doesn't allow more than HV_MAX_SPARSE_VCPU_BANKS
-+	 * sparse banks. Fail the build if KVM's max allowed number of
-+	 * vCPUs (>4096) exceeds this limit.
- 	 */
--	BUILD_BUG_ON(KVM_HV_MAX_SPARSE_VCPU_SET_BITS > 64);
-+	BUILD_BUG_ON(KVM_HV_MAX_SPARSE_VCPU_SET_BITS > HV_MAX_SPARSE_VCPU_BANKS);
- 
- 	if (!hc->fast && is_guest_mode(vcpu)) {
- 		hc->ingpa = translate_nested_gpa(vcpu, hc->ingpa, 0, NULL);
+diff --git a/tools/testing/selftests/kvm/.gitignore b/tools/testing/selftests/kvm/.gitignore
+index 7f086656f3e0..6be2be664f7b 100644
+--- a/tools/testing/selftests/kvm/.gitignore
++++ b/tools/testing/selftests/kvm/.gitignore
+@@ -15,7 +15,6 @@
+ /x86_64/cpuid_test
+ /x86_64/cr4_cpuid_sync_test
+ /x86_64/debug_regs
+-/x86_64/evmcs_test
+ /x86_64/emulator_error_test
+ /x86_64/fix_hypercall_test
+ /x86_64/get_msr_index_features
+@@ -23,6 +22,7 @@
+ /x86_64/kvm_pv_test
+ /x86_64/hyperv_clock
+ /x86_64/hyperv_cpuid
++/x86_64/hyperv_evmcs
+ /x86_64/hyperv_features
+ /x86_64/hyperv_ipi
+ /x86_64/hyperv_svm_test
+diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
+index 2b6a4ad3a718..2e2bc4d4d6b1 100644
+--- a/tools/testing/selftests/kvm/Makefile
++++ b/tools/testing/selftests/kvm/Makefile
+@@ -74,11 +74,11 @@ LIBKVM_riscv += lib/riscv/ucall.c
+ TEST_GEN_PROGS_x86_64 = x86_64/cpuid_test
+ TEST_GEN_PROGS_x86_64 += x86_64/cr4_cpuid_sync_test
+ TEST_GEN_PROGS_x86_64 += x86_64/get_msr_index_features
+-TEST_GEN_PROGS_x86_64 += x86_64/evmcs_test
+ TEST_GEN_PROGS_x86_64 += x86_64/emulator_error_test
+ TEST_GEN_PROGS_x86_64 += x86_64/fix_hypercall_test
+ TEST_GEN_PROGS_x86_64 += x86_64/hyperv_clock
+ TEST_GEN_PROGS_x86_64 += x86_64/hyperv_cpuid
++TEST_GEN_PROGS_x86_64 += x86_64/hyperv_evmcs
+ TEST_GEN_PROGS_x86_64 += x86_64/hyperv_features
+ TEST_GEN_PROGS_x86_64 += x86_64/hyperv_ipi
+ TEST_GEN_PROGS_x86_64 += x86_64/hyperv_svm_test
+diff --git a/tools/testing/selftests/kvm/x86_64/evmcs_test.c b/tools/testing/selftests/kvm/x86_64/hyperv_evmcs.c
+similarity index 100%
+rename from tools/testing/selftests/kvm/x86_64/evmcs_test.c
+rename to tools/testing/selftests/kvm/x86_64/hyperv_evmcs.c
 -- 
 2.35.3
 
