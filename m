@@ -2,344 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56A34CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:44:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4190CCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:44:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234431AbiFMUnE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:43:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49298 "EHLO
+        id S237576AbiFMUoX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 16:44:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345939AbiFMUmS (ORCPT
+        with ESMTP id S245459AbiFMUnD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:42:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5F3AE60B8E
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:43:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655149392;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=HDqlotByJMstfI4LC1bmK8gv4FcVPnKTp9/kVyb1+GI=;
-        b=RJPKmLA8G/GOSU+zZ3FLrOyGuAK3O8vAxCgy8jg3K+ELNtMVm0HuwqtcHtPXUwZZNktW6Y
-        rjd7ugmwUbsLLM6dAd9rgZcvtXc5q0+tgZEILIEOwowVgNXRy3c9+5+ucgbXLRnOCT+jQH
-        aUue2bi/42+7U/zK+VkOdpDqTJc5Q8w=
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com
- [209.85.166.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-655-8JipS8hhOnKK7BiS2Wm4NA-1; Mon, 13 Jun 2022 15:43:10 -0400
-X-MC-Unique: 8JipS8hhOnKK7BiS2Wm4NA-1
-Received: by mail-il1-f198.google.com with SMTP id i16-20020a056e021d1000b002d3bbe39232so5228450ila.20
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:43:10 -0700 (PDT)
+        Mon, 13 Jun 2022 16:43:03 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E6AFE030;
+        Mon, 13 Jun 2022 12:46:14 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id e24so6591483pjt.0;
+        Mon, 13 Jun 2022 12:46:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8PJJNUcJj53ev3AqJRn3xVtb+ZpTb0J1fJRS/I1pZqo=;
+        b=j/Xl5g9NFS0JUQC69FXYr+svQcCT14l0bivAxI2nyR+X8FM6UQZKcoEoVsihPU7lWO
+         i19+z9tQemZeYruJR5ghpoevoYa3r7x8g0nl3neKATakG/axZF+CQjn/qn2PI4lSotee
+         KYczE/L1R/e483aBjj2+BU4xanG3sJNL7fWdDHp5OFltj46W7ATvG74EoiTBroqErfDi
+         W1C0Z95EMYGO94zakXZqcFOTKs/AMONEiRpxMGTKDr2S1YSPOWjBlMgE24ZNe/8TOjZI
+         H5P5vzZJqzaiaRsSaUyFu0QeMK7GW/Gbv1uEjmS858q+Y/E1Nz88iDCZ3IzUta4UvgAX
+         FBRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=HDqlotByJMstfI4LC1bmK8gv4FcVPnKTp9/kVyb1+GI=;
-        b=td5TotIrA9TsAmuLP01vUalGeXkbAyPoDFuTdCixuOUhcHJd9hMGb1C3TmwYWOV8j0
-         NKo+gXiQGOc/l6hwCo80mYmurZLwvuvnwg2Z7H41SSrvdMgBSchdvoj697ZbQPOnC6kK
-         gKOuASvunACrIsGeSJ3Vz29EtKOJD6VNzhOGz89xg0nb1F70qmstZ6DtGAE8rFuHDVzw
-         nwfBxxHdfh63aQuWdqLNVDHHY8xFswUFgFKAyK3/LlBh9jjZaz0W8TguIFm0HIj/T97J
-         ENMgxKUaCWkpgvL4/8zzevZklMIuXQA5lLHoGPJTVXo1eue9hKex2TLbL35mZ1CIW+kA
-         mHug==
-X-Gm-Message-State: AOAM530dIjDxdmjXXgfl1UYX6f5J4oL/wsTIPU8F3Z2fvoZoTXbFPaz5
-        /1yl0NbXOZdTCJ3vLSAXCuHN2dN/S87OIWuek3zk617+g7lG0LJ0lVimNndMSTvNTLt8yGUv6BG
-        J9GAYEhmgNXeW+nmwoJOmWNoX
-X-Received: by 2002:a05:6638:1450:b0:332:6b4:e894 with SMTP id l16-20020a056638145000b0033206b4e894mr798327jad.296.1655149389993;
-        Mon, 13 Jun 2022 12:43:09 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyqrNbBO9laOjlwUPj0YQfGeuFdnhMajhoX4oYxF5hXmMT9Y+KxAFJkpN9H+u/Q6sntfkxeuA==
-X-Received: by 2002:a05:6638:1450:b0:332:6b4:e894 with SMTP id l16-20020a056638145000b0033206b4e894mr798318jad.296.1655149389738;
-        Mon, 13 Jun 2022 12:43:09 -0700 (PDT)
-Received: from xz-m1.local (cpec09435e3e0ee-cmc09435e3e0ec.cpe.net.cable.rogers.com. [99.241.198.116])
-        by smtp.gmail.com with ESMTPSA id s13-20020a6bd30d000000b006656f9eefa3sm4288890iob.18.2022.06.13.12.43.07
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8PJJNUcJj53ev3AqJRn3xVtb+ZpTb0J1fJRS/I1pZqo=;
+        b=WxRgJeEpGw8KClvTq3QKAj1oWPUDXG/OOZEwtj74WHdYVfqZT9/CygCrkZUrK8Z2of
+         dt3hSz29ICC39f4AQiU3du539Tfhc9siIsLmuwabwBh+J37feanKEUnjHR4tpb9sYsaJ
+         vas9ypuLi0JD5fnySOj8kXicVkOQq7zNL/jwiVcUxxuDtCU+077OUC1Ubg95QVNccn09
+         +8NOIV0yVx6+B2IXpNn7uLKHBBR5su7NetDxLyawqjBq365EFNmFFBqVFzxLaLx+7zW+
+         zj6luBAJaPYGlMgCKnAVKx0u6J8Y3BPWRDP0DqOJuMSwFsciWgfmFD7u60lGCfLuXOCZ
+         dVUg==
+X-Gm-Message-State: AOAM531lWui5Oc5Fb1q6tzI2RHBd+FtO+nEpPv8TKHTV7QB79HLzCOWZ
+        YtVsAVEGld9Hy8p/33AIAw8=
+X-Google-Smtp-Source: AGRyM1thfR5WcCUpEKNj9m6vRAIv50Kk1vGSAieTTtgXiETCAqb603bEsvDIQhWxcu3vrC8MEVnyoA==
+X-Received: by 2002:a17:903:2c2:b0:168:e323:d471 with SMTP id s2-20020a17090302c200b00168e323d471mr667931plk.147.1655149573799;
+        Mon, 13 Jun 2022 12:46:13 -0700 (PDT)
+Received: from localhost ([2a00:79e1:abd:4a00:2703:3c72:eb1a:cffd])
+        by smtp.gmail.com with ESMTPSA id jj18-20020a170903049200b0015ee24acf38sm5474487plb.212.2022.06.13.12.46.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 12:43:08 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 15:43:06 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     Nadav Amit <nadav.amit@gmail.com>,
-        David Hildenbrand <david@redhat.com>
-Cc:     David Hildenbrand <david@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Hugh Dickins <hughd@google.com>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Peter Collingbourne <pcc@google.com>
-Subject: Re: [PATCH v2] mm/mprotect: try avoiding write faults for exclusive
- anonymous pages when changing protection
-Message-ID: <YqeTSj98t/KfOAJ9@xz-m1.local>
-References: <20220610181436.84713-1-david@redhat.com>
- <5DFB7262-6E32-4984-A346-B7DE5040B12F@gmail.com>
+        Mon, 13 Jun 2022 12:46:12 -0700 (PDT)
+From:   Rob Clark <robdclark@gmail.com>
+To:     dri-devel@lists.freedesktop.org
+Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        Rob Clark <robdclark@chromium.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] drm/msm: Deprecate MSM_BO_UNCACHED harder
+Date:   Mon, 13 Jun 2022 12:46:23 -0700
+Message-Id: <20220613194623.2588353-1-robdclark@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <5DFB7262-6E32-4984-A346-B7DE5040B12F@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, David,
+From: Rob Clark <robdclark@chromium.org>
 
-On Fri, Jun 10, 2022 at 11:42:06AM -0700, Nadav Amit wrote:
-> On Jun 10, 2022, at 11:14 AM, David Hildenbrand <david@redhat.com> wrote:
-> 
-> > Similar to our MM_CP_DIRTY_ACCT handling for shared, writable mappings, we
-> > can try mapping anonymous pages writable if they are exclusive,
-> > the PTE is already dirty, and no special handling applies. Mapping the
-> > PTE writable is essentially the same thing the write fault handler would do
-> > in this case.
-> > 
-> > Special handling is required for uffd-wp and softdirty tracking, so take
-> > care of that properly. Also, leave PROT_NONE handling alone for now;
-> > in the future, we could similarly extend the logic in do_numa_page() or
-> > use pte_mk_savedwrite() here. Note that we'll now also check for uffd-wp in
-> > case of VM_SHARED -- which is harmless and prepares for uffd-wp support for
-> > shmem.
-> > 
-> > While this improves mprotect(PROT_READ)+mprotect(PROT_READ|PROT_WRITE)
-> > performance, it should also be a valuable optimization for uffd-wp, when
-> > un-protecting.
-> > 
-> > Applying the same logic to PMDs (anonymous THP, anonymous hugetlb) is
-> > probably not worth the trouble, but could similarly be added if there is
-> > demand.
+Handle the demotion to MSM_BO_WC at the userspace ABI level, and fix
+the remaining internal MSM_BO_UNCACHED user.
 
-My memory was that Andrea had a version that used to have thp optimized
-too.  It'll be a slight pity to lose it if still possible, then we treat
-thp and small pages the same logic and be all fair.  Or is there any other
-challenge that we're facing?
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+---
+ drivers/gpu/drm/msm/msm_drv.c | 13 +++++++++++++
+ drivers/gpu/drm/msm/msm_gem.c |  7 +++----
+ drivers/gpu/drm/msm/msm_gpu.c |  2 +-
+ 3 files changed, 17 insertions(+), 5 deletions(-)
 
-> > 
-> > Results of a simple microbenchmark on my Ryzen 9 3900X, comparing the new
-> > optimization (avoiding write faults) during mprotect() with softdirty
-> > tracking, where we require a write fault.
-
-Are we comparing the mprotect() sequence operations against softdirty
-clearing operation?  Would it make more sense if we compare the same
-mprotect() sequence to kernels that are before/after this patch applied?
-
-> > 
-> >  Running 1000 iterations each
-> > 
-> >  ==========================================================
-> >  Measuring memset() of 4096 bytes
-> >   First write access:
-> >    Min: 169 ns, Max: 8997 ns, Avg: 830 ns
-> >   Second write access:
-> >    Min: 80 ns, Max: 251 ns, Avg: 168 ns
-> >   Write access after mprotect(PROT_READ)+mprotect(PROT_READ|PROT_WRITE):
-> >    Min: 180 ns, Max: 290 ns, Avg: 190 ns
-> >   Write access after clearing softdirty:
-> >    Min: 451 ns, Max: 1774 ns, Avg: 470 ns
-> >  -> mprotect = 1.131 * second [avg]
-> >  -> mprotect = 0.404 * softdirty [avg]
-
-(I don't understand these two lines.. but maybe I'm the only one?)
-
-> >  ----------------------------------------------------------
-> >  Measuring single byte access per page of 4096 bytes
-> >   First write access:
-> >    Min: 761 ns, Max: 1152 ns, Avg: 784 ns
-> >   Second write access:
-> >    Min: 130 ns, Max: 181 ns, Avg: 137 ns
-> >   Write access after mprotect(PROT_READ)+mprotect(PROT_READ|PROT_WRITE):
-> >    Min: 150 ns, Max: 1553 ns, Avg: 155 ns
-> >   Write access after clearing softdirty:
-> >    Min: 169 ns, Max: 1783 ns, Avg: 432 ns
-> >  -> mprotect = 1.131 * second [avg]
-> >  -> mprotect = 0.359 * softdirty [avg]
-> >  ==========================================================
-> >  Measuring memset() of 16384 bytes
-> >   First write access:
-> >    Min: 1594 ns, Max: 3497 ns, Avg: 2143 ns
-> >   Second write access:
-> >    Min: 250 ns, Max: 381 ns, Avg: 260 ns
-> >   Write access after mprotect(PROT_READ)+mprotect(PROT_READ|PROT_WRITE):
-> >    Min: 290 ns, Max: 1643 ns, Avg: 300 ns
-> >   Write access after clearing softdirty:
-> >    Min: 1242 ns, Max: 8987 ns, Avg: 1297 ns
-> >  -> mprotect = 1.154 * second [avg]
-> >  -> mprotect = 0.231 * softdirty [avg]
-> >  ----------------------------------------------------------
-> >  Measuring single byte access per page of 16384 bytes
-> >   First write access:
-> >    Min: 1953 ns, Max: 2945 ns, Avg: 2008 ns
-> >   Second write access:
-> >    Min: 130 ns, Max: 912 ns, Avg: 142 ns
-> >   Write access after mprotect(PROT_READ)+mprotect(PROT_READ|PROT_WRITE):
-> >    Min: 160 ns, Max: 240 ns, Avg: 166 ns
-> >   Write access after clearing softdirty:
-> >    Min: 1112 ns, Max: 1513 ns, Avg: 1126 ns
-> >  -> mprotect = 1.169 * second [avg]
-> >  -> mprotect = 0.147 * softdirty [avg]
-> >  ==========================================================
-> >  Measuring memset() of 65536 bytes
-> >   First write access:
-> >    Min: 7524 ns, Max: 15650 ns, Avg: 7680 ns
-> >   Second write access:
-> >    Min: 251 ns, Max: 1323 ns, Avg: 648 ns
-> >   Write access after mprotect(PROT_READ)+mprotect(PROT_READ|PROT_WRITE):
-> >    Min: 270 ns, Max: 1282 ns, Avg: 736 ns
-> >   Write access after clearing softdirty:
-> >    Min: 4558 ns, Max: 12524 ns, Avg: 4623 ns
-> >  -> mprotect = 1.136 * second [avg]
-> >  -> mprotect = 0.159 * softdirty [avg]
-> >  ----------------------------------------------------------
-> >  Measuring single byte access per page of 65536 bytes
-> >   First write access:
-> >    Min: 7083 ns, Max: 9027 ns, Avg: 7241 ns
-> >   Second write access:
-> >    Min: 140 ns, Max: 201 ns, Avg: 156 ns
-> >   Write access after mprotect(PROT_READ)+mprotect(PROT_READ|PROT_WRITE):
-> >    Min: 190 ns, Max: 451 ns, Avg: 197 ns
-> >   Write access after clearing softdirty:
-> >    Min: 3707 ns, Max: 5119 ns, Avg: 3958 ns
-> >  -> mprotect = 1.263 * second [avg]
-> >  -> mprotect = 0.050 * softdirty [avg]
-> >  ==========================================================
-> >  Measuring memset() of 524288 bytes
-> >   First write access:
-> >    Min: 58470 ns, Max: 87754 ns, Avg: 59353 ns
-> >   Second write access:
-> >    Min: 5180 ns, Max: 6863 ns, Avg: 5318 ns
-> >   Write access after mprotect(PROT_READ)+mprotect(PROT_READ|PROT_WRITE):
-> >    Min: 5871 ns, Max: 9358 ns, Avg: 6028 ns
-> >   Write access after clearing softdirty:
-> >    Min: 35797 ns, Max: 41338 ns, Avg: 36710 ns
-> >  -> mprotect = 1.134 * second [avg]
-> >  -> mprotect = 0.164 * softdirty [avg]
-> >  ----------------------------------------------------------
-> >  Measuring single byte access per page of 524288 bytes
-> >   First write access:
-> >    Min: 53751 ns, Max: 59431 ns, Avg: 54506 ns
-> >   Second write access:
-> >    Min: 781 ns, Max: 2194 ns, Avg: 1123 ns
-> >   Write access after mprotect(PROT_READ)+mprotect(PROT_READ|PROT_WRITE):
-> >    Min: 161 ns, Max: 1282 ns, Avg: 622 ns
-> >   Write access after clearing softdirty:
-> >    Min: 30888 ns, Max: 34565 ns, Avg: 31229 ns
-> >  -> mprotect = 0.554 * second [avg]
-> >  -> mprotect = 0.020 * softdirty [avg]
-> > 
-> > Cc: Linus Torvalds <torvalds@linux-foundation.org>
-> > Cc: Andrew Morton <akpm@linux-foundation.org>
-> > Cc: Nadav Amit <nadav.amit@gmail.com>
-> > Cc: Dave Hansen <dave.hansen@intel.com>
-> > Cc: Andrea Arcangeli <aarcange@redhat.com>
-> > Cc: Peter Xu <peterx@redhat.com>
-> > Cc: Yang Shi <shy828301@gmail.com>
-> > Cc: Hugh Dickins <hughd@google.com>
-> > Cc: Mel Gorman <mgorman@techsingularity.net>
-> > Signed-off-by: David Hildenbrand <david@redhat.com>
-> > ---
-> > 
-> > v1 -> v2:
-> > * Rebased on v5.19-rc1
-> > * Rerun benchmark
-> > * Fix minor spelling issues in subject+description
-> > * Drop IS_ENABLED(CONFIG_MEM_SOFT_DIRTY) check
-> > * Move pte_write() check into caller
-> > 
-> > ---
-> > mm/mprotect.c | 67 ++++++++++++++++++++++++++++++++++++++++++---------
-> > 1 file changed, 55 insertions(+), 12 deletions(-)
-> > 
-> > diff --git a/mm/mprotect.c b/mm/mprotect.c
-> > index ba5592655ee3..728772bf41c7 100644
-> > --- a/mm/mprotect.c
-> > +++ b/mm/mprotect.c
-> > @@ -38,6 +38,45 @@
-> > 
-> > #include "internal.h"
-> > 
-> > +static inline bool can_change_pte_writable(struct vm_area_struct *vma,
-> > +					   unsigned long addr, pte_t pte,
-> > +					   unsigned long cp_flags)
-> > +{
-> > +	struct page *page;
-> > +
-> > +	if ((vma->vm_flags & VM_SHARED) && !(cp_flags & MM_CP_DIRTY_ACCT))
-> > +		/*
-> > +		 * MM_CP_DIRTY_ACCT is only expressive for shared mappings;
-> > +		 * without MM_CP_DIRTY_ACCT, there is nothing to do.
-> > +		 */
-> > +		return false;
-> > +
-> > +	if (pte_protnone(pte) || !pte_dirty(pte))
-> > +		return false;
-> > +
-> > +	/* Do we need write faults for softdirty tracking? */
-> > +	if ((vma->vm_flags & VM_SOFTDIRTY) && !pte_soft_dirty(pte))
-> > +		return false;
-> > +
-> > +	/* Do we need write faults for uffd-wp tracking? */
-> > +	if (userfaultfd_pte_wp(vma, pte))
-> > +		return false;
-> > +
-> > +	if (!(vma->vm_flags & VM_SHARED)) {
-> > +		/*
-> > +		 * We can only special-case on exclusive anonymous pages,
-> > +		 * because we know that our write-fault handler similarly would
-> > +		 * map them writable without any additional checks while holding
-> > +		 * the PT lock.
-> > +		 */
-> > +		page = vm_normal_page(vma, addr, pte);
-> > +		if (!page || !PageAnon(page) || !PageAnonExclusive(page))
-> > +			return false;
-> > +	}
-> > +
-> > +	return true;
-> > +}
-> > +
-> 
-> Looks good in general. Just wondering (out loud) whether it makes more sense
-> to do all the vm_flags and cp_flags related checks in one of the callers
-> (mprotect_fixup()?) and propagate whether to try to write-unprotect in
-> cp_flags (e.g., by introducing new MM_CP_TRY_WRITE_UNPROTECT).
-
-I can see why David put it like that, because most of the checks are on
-ptes not vm_flags.
-
-But I also agree on this point, especially if to put it in another way:
-IMHO it'll be confusing if we keey MM_CP_DIRTY_ACCT==false for all private
-pages even if we're going to take them into account and do smart unprotect
-operations.
-
-So I'm wondering whether we could still at least move vm_flags check into
-the mprotect_fixup() as suggested by Nadav, perhaps something like:
-
-diff --git a/mm/mprotect.c b/mm/mprotect.c
-index ba5592655ee3..aefd5fe982af 100644
---- a/mm/mprotect.c
-+++ b/mm/mprotect.c
-@@ -583,7 +583,11 @@ mprotect_fixup(struct mmu_gather *tlb, struct vm_area_struct *vma,
-         * held in write mode.
-         */
-        vma->vm_flags = newflags;
--       dirty_accountable = vma_wants_writenotify(vma, vma->vm_page_prot);
-+       if (vma->vm_flags & VM_SHARED)
-+               dirty_accountable = vma_wants_writenotify(vma, vma->vm_page_prot);
-+       else
-+               /* For private mappings, only if it's writable */
-+               dirty_accountable = vma->vm_flags & VM_WRITE;
-        vma_set_page_prot(vma);
+diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
+index 57a66093e671..acc940d32ab4 100644
+--- a/drivers/gpu/drm/msm/msm_drv.c
++++ b/drivers/gpu/drm/msm/msm_drv.c
+@@ -633,12 +633,25 @@ static int msm_ioctl_gem_new(struct drm_device *dev, void *data,
+ 		struct drm_file *file)
+ {
+ 	struct drm_msm_gem_new *args = data;
++	uint32_t flags = args->flags;
  
-        change_protection(tlb, vma, start, end, vma->vm_page_prot,
-
-Then IIUC we could drop both the VM_WRITE check in change_pte_range(), and
-also the VM_SHARED check above in can_change_pte_writable().  Not sure
-whether that'll look slightly cleaner.
-
-I'm also copying Peter Collingbourne <pcc@google.com> because afaict he
-proposed the initial idea (maybe worth some credit in the commit message?),
-and IIRC he has a good use case of it too.
-
-Thanks,
-
+ 	if (args->flags & ~MSM_BO_FLAGS) {
+ 		DRM_ERROR("invalid flags: %08x\n", args->flags);
+ 		return -EINVAL;
+ 	}
+ 
++	/*
++	 * Uncached CPU mappings are deprecated, as of:
++	 *
++	 * 9ef364432db4 ("drm/msm: deprecate MSM_BO_UNCACHED (map as writecombine instead)")
++	 *
++	 * So promote them to WC.
++	 */
++	if (flags & MSM_BO_UNCACHED) {
++		flags &= ~MSM_BO_CACHED;
++		flags |= MSM_BO_WC;
++	}
++
+ 	return msm_gem_new_handle(dev, file, args->size,
+ 			args->flags, &args->handle, NULL);
+ }
+diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
+index 9a73e48a3049..35845e273d81 100644
+--- a/drivers/gpu/drm/msm/msm_gem.c
++++ b/drivers/gpu/drm/msm/msm_gem.c
+@@ -129,7 +129,7 @@ static struct page **get_pages(struct drm_gem_object *obj)
+ 		/* For non-cached buffers, ensure the new pages are clean
+ 		 * because display controller, GPU, etc. are not coherent:
+ 		 */
+-		if (msm_obj->flags & (MSM_BO_WC|MSM_BO_UNCACHED))
++		if (msm_obj->flags & MSM_BO_WC)
+ 			sync_for_device(msm_obj);
+ 
+ 		update_inactive(msm_obj);
+@@ -160,7 +160,7 @@ static void put_pages(struct drm_gem_object *obj)
+ 			 * pages are clean because display controller,
+ 			 * GPU, etc. are not coherent:
+ 			 */
+-			if (msm_obj->flags & (MSM_BO_WC|MSM_BO_UNCACHED))
++			if (msm_obj->flags & MSM_BO_WC)
+ 				sync_for_cpu(msm_obj);
+ 
+ 			sg_free_table(msm_obj->sgt);
+@@ -213,7 +213,7 @@ void msm_gem_put_pages(struct drm_gem_object *obj)
+ 
+ static pgprot_t msm_gem_pgprot(struct msm_gem_object *msm_obj, pgprot_t prot)
+ {
+-	if (msm_obj->flags & (MSM_BO_WC|MSM_BO_UNCACHED))
++	if (msm_obj->flags & MSM_BO_WC)
+ 		return pgprot_writecombine(prot);
+ 	return prot;
+ }
+@@ -1122,7 +1122,6 @@ static int msm_gem_new_impl(struct drm_device *dev,
+ 	struct msm_gem_object *msm_obj;
+ 
+ 	switch (flags & MSM_BO_CACHE_MASK) {
+-	case MSM_BO_UNCACHED:
+ 	case MSM_BO_CACHED:
+ 	case MSM_BO_WC:
+ 		break;
+diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
+index f99292eaf529..e59a757578df 100644
+--- a/drivers/gpu/drm/msm/msm_gpu.c
++++ b/drivers/gpu/drm/msm/msm_gpu.c
+@@ -952,7 +952,7 @@ int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
+ 
+ 	memptrs = msm_gem_kernel_new(drm,
+ 		sizeof(struct msm_rbmemptrs) * nr_rings,
+-		check_apriv(gpu, MSM_BO_UNCACHED), gpu->aspace, &gpu->memptrs_bo,
++		check_apriv(gpu, MSM_BO_WC), gpu->aspace, &gpu->memptrs_bo,
+ 		&memptrs_iova);
+ 
+ 	if (IS_ERR(memptrs)) {
 -- 
-Peter Xu
+2.36.1
 
