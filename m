@@ -2,46 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF81CCCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:49:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C350C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:49:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357319AbiFMMtD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:49:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34188 "EHLO
+        id S240667AbiFMMt3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 08:49:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357512AbiFMMo7 (ORCPT
+        with ESMTP id S1352614AbiFMMpt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:44:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EB7B60DB5;
-        Mon, 13 Jun 2022 04:11:24 -0700 (PDT)
+        Mon, 13 Jun 2022 08:45:49 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7E4F60DBA;
+        Mon, 13 Jun 2022 04:11:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0537F60B7C;
-        Mon, 13 Jun 2022 11:11:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16CC6C3411E;
-        Mon, 13 Jun 2022 11:11:09 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B2C26CE1174;
+        Mon, 13 Jun 2022 11:11:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EB99C3411C;
+        Mon, 13 Jun 2022 11:11:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118670;
-        bh=pX0nzPf64Gi4N4lq58ZN23VDkANWV2A2CBadwxo9BvY=;
+        s=korg; t=1655118684;
+        bh=aN1dvBoI41oxYWE3V0lRfSDRcz7yPMCcI3IeqVvjdJw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cy2W3Gn9qNt9Z3fQfBkkdDcoEXTVjFYDFD/s0dYRO4ev3KyelwI3D7Pv8UL3F0ZrA
-         QxAArOMcqQNXTJWBmqOKvwq7Tm+lraczYS8D5s4mnutXzBocUv1tIS8aol2MqpYLUg
-         HghLBa7OZIKO0DGb4wJl0iSDm8ZZBO6I0/7nhd3w=
+        b=oxYsriO9nYcgrduFUBlbQvsHcWErBIO9K/O/ZAl89Tztt0N5HIGwd72lklEYL/BBr
+         8PbU2nR2NJ6bhjGYqqGjnn65J4C4csCA1uw1SYbRDdgoA4hcY6ran/sRsueUGdt/Yt
+         MIN+pmkSsClJqP3CQhCmrywuPuOXjUFa05yFL1yw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 146/172] s390/gmap: voluntarily schedule during key setting
-Date:   Mon, 13 Jun 2022 12:11:46 +0200
-Message-Id: <20220613094922.433992166@linuxfoundation.org>
+        stable@vger.kernel.org, huangwenhui <huangwenhuia@uniontech.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.10 151/172] ALSA: hda/conexant - Fix loopback issue with CX20632
+Date:   Mon, 13 Jun 2022 12:11:51 +0200
+Message-Id: <20220613094922.747702322@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -53,86 +48,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Borntraeger <borntraeger@linux.ibm.com>
+From: huangwenhui <huangwenhuia@uniontech.com>
 
-[ Upstream commit 6d5946274df1fff539a7eece458a43be733d1db8 ]
+commit d5ea7544c32ba27c2c5826248e4ff58bd50a2518 upstream.
 
-With large and many guest with storage keys it is possible to create
-large latencies or stalls during initial key setting:
+On a machine with CX20632, Alsamixer doesn't have 'Loopback
+Mixing' and 'Line'.
 
-rcu: INFO: rcu_sched self-detected stall on CPU
-rcu:   18-....: (2099 ticks this GP) idle=54e/1/0x4000000000000002 softirq=35598716/35598716 fqs=998
-       (t=2100 jiffies g=155867385 q=20879)
-Task dump for CPU 18:
-CPU 1/KVM       R  running task        0 1030947 256019 0x06000004
-Call Trace:
-sched_show_task
-rcu_dump_cpu_stacks
-rcu_sched_clock_irq
-update_process_times
-tick_sched_handle
-tick_sched_timer
-__hrtimer_run_queues
-hrtimer_interrupt
-do_IRQ
-ext_int_handler
-ptep_zap_key
-
-The mmap lock is held during the page walking but since this is a
-semaphore scheduling is still possible. Same for the kvm srcu.
-To minimize overhead do this on every segment table entry or large page.
-
-Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-Reviewed-by: Alexander Gordeev <agordeev@linux.ibm.com>
-Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220530092706.11637-2-borntraeger@linux.ibm.com
-Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: huangwenhui <huangwenhuia@uniontech.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220607065631.10708-1-huangwenhuia@uniontech.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/mm/gmap.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ sound/pci/hda/patch_conexant.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/arch/s390/mm/gmap.c b/arch/s390/mm/gmap.c
-index f2d19d40272c..2db097c14cec 100644
---- a/arch/s390/mm/gmap.c
-+++ b/arch/s390/mm/gmap.c
-@@ -2596,6 +2596,18 @@ static int __s390_enable_skey_pte(pte_t *pte, unsigned long addr,
- 	return 0;
- }
- 
-+/*
-+ * Give a chance to schedule after setting a key to 256 pages.
-+ * We only hold the mm lock, which is a rwsem and the kvm srcu.
-+ * Both can sleep.
-+ */
-+static int __s390_enable_skey_pmd(pmd_t *pmd, unsigned long addr,
-+				  unsigned long next, struct mm_walk *walk)
-+{
-+	cond_resched();
-+	return 0;
-+}
-+
- static int __s390_enable_skey_hugetlb(pte_t *pte, unsigned long addr,
- 				      unsigned long hmask, unsigned long next,
- 				      struct mm_walk *walk)
-@@ -2618,12 +2630,14 @@ static int __s390_enable_skey_hugetlb(pte_t *pte, unsigned long addr,
- 	end = start + HPAGE_SIZE - 1;
- 	__storage_key_init_range(start, end);
- 	set_bit(PG_arch_1, &page->flags);
-+	cond_resched();
- 	return 0;
- }
- 
- static const struct mm_walk_ops enable_skey_walk_ops = {
- 	.hugetlb_entry		= __s390_enable_skey_hugetlb,
- 	.pte_entry		= __s390_enable_skey_pte,
-+	.pmd_entry		= __s390_enable_skey_pmd,
- };
- 
- int s390_enable_skey(void)
--- 
-2.35.1
-
+--- a/sound/pci/hda/patch_conexant.c
++++ b/sound/pci/hda/patch_conexant.c
+@@ -1045,6 +1045,13 @@ static int patch_conexant_auto(struct hd
+ 		snd_hda_pick_fixup(codec, cxt5051_fixup_models,
+ 				   cxt5051_fixups, cxt_fixups);
+ 		break;
++	case 0x14f15098:
++		codec->pin_amp_workaround = 1;
++		spec->gen.mixer_nid = 0x22;
++		spec->gen.add_stereo_mix_input = HDA_HINT_STEREO_MIX_AUTO;
++		snd_hda_pick_fixup(codec, cxt5066_fixup_models,
++				   cxt5066_fixups, cxt_fixups);
++		break;
+ 	case 0x14f150f2:
+ 		codec->power_save_node = 1;
+ 		fallthrough;
 
 
