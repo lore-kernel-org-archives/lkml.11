@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE93C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:37:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2BAEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:37:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238040AbiFMLh0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:37:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50858 "EHLO
+        id S1354865AbiFMLhe (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 07:37:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354846AbiFMLaN (ORCPT
+        with ESMTP id S1354852AbiFMLaN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:30:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 078FF3FBE3;
-        Mon, 13 Jun 2022 03:45:54 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F5793FD8A;
+        Mon, 13 Jun 2022 03:45:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AF6E6B80D19;
-        Mon, 13 Jun 2022 10:45:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0987CC34114;
-        Mon, 13 Jun 2022 10:45:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B95FA61252;
+        Mon, 13 Jun 2022 10:45:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C33CEC34114;
+        Mon, 13 Jun 2022 10:45:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117151;
-        bh=BeBqk5VRdbWi7Ojglx8xzis/qKTh3Zs6eNwGThBryHE=;
+        s=korg; t=1655117154;
+        bh=jmE2/USi15nJhTcRW+0edENCA3cLVWARNcmmv6GMHb0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AUojk8F988vEujsT8SCMLQiacJDkhWUi8AVjXBYugG9v7jTUaN/zrK9cff4GxMIVa
-         Yp/QRXLPUdrrt6fYG3ZiF+H8BJogGjMeRPz/uP+EnoYdNU4wwtBtFrcMyhIkyGdS1/
-         zwgFxmDJjWPeI4wmCvE4JTUB+WbAbxf0TGaXeFNs=
+        b=kzkMVCDcFVen9upNA4Z8+20XZNxWDk5jDQH979gRWn0b8F01NTJUTAzoajn7qK3yq
+         1Mk7/qiJuR1Sk1nsbWgwjozBNqnlVV+rCVVXFC+YDbK5xBnVuarIh3+jeCgTLav1+5
+         358hh8Ez2Cd13qlua4zyvbqlti0YhUpzI3wBtJGQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Samuel Holland <samuel@sholland.org>,
-        Anup Patel <anup@brainfault.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 304/411] clocksource/drivers/riscv: Events are stopped during CPU suspend
-Date:   Mon, 13 Jun 2022 12:09:37 +0200
-Message-Id: <20220613094937.868065045@linuxfoundation.org>
+Subject: [PATCH 5.4 305/411] rtc: mt6397: check return value after calling platform_get_resource()
+Date:   Mon, 13 Jun 2022 12:09:38 +0200
+Message-Id: <20220613094937.897143184@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,38 +52,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Holland <samuel@sholland.org>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 232ccac1bd9b5bfe73895f527c08623e7fa0752d ]
+[ Upstream commit d3b43eb505bffb8e4cdf6800c15660c001553fe6 ]
 
-Some implementations of the SBI time extension depend on hart-local
-state (for example, CSRs) that are lost or hardware that is powered
-down when a CPU is suspended. To be safe, the clockevents driver
-cannot assume that timer IRQs will be received during CPU suspend.
+It will cause null-ptr-deref if platform_get_resource() returns NULL,
+we need check the return value.
 
-Fixes: 62b019436814 ("clocksource: new RISC-V SBI timer driver")
-Signed-off-by: Samuel Holland <samuel@sholland.org>
-Reviewed-by: Anup Patel <anup@brainfault.org>
-Link: https://lore.kernel.org/r/20220509012121.40031-1-samuel@sholland.org
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Fixes: fc2979118f3f ("rtc: mediatek: Add MT6397 RTC driver")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20220505125043.1594771-1-yangyingliang@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clocksource/timer-riscv.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/rtc/rtc-mt6397.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/clocksource/timer-riscv.c b/drivers/clocksource/timer-riscv.c
-index 4b04ffbe5e7e..e3be5c2f57b8 100644
---- a/drivers/clocksource/timer-riscv.c
-+++ b/drivers/clocksource/timer-riscv.c
-@@ -26,7 +26,7 @@ static int riscv_clock_next_event(unsigned long delta,
+diff --git a/drivers/rtc/rtc-mt6397.c b/drivers/rtc/rtc-mt6397.c
+index b216bdcba0da..dd3901b0a4ed 100644
+--- a/drivers/rtc/rtc-mt6397.c
++++ b/drivers/rtc/rtc-mt6397.c
+@@ -331,6 +331,8 @@ static int mtk_rtc_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
  
- static DEFINE_PER_CPU(struct clock_event_device, riscv_clock_event) = {
- 	.name			= "riscv_timer_clockevent",
--	.features		= CLOCK_EVT_FEAT_ONESHOT,
-+	.features		= CLOCK_EVT_FEAT_ONESHOT | CLOCK_EVT_FEAT_C3STOP,
- 	.rating			= 100,
- 	.set_next_event		= riscv_clock_next_event,
- };
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res)
++		return -EINVAL;
+ 	rtc->addr_base = res->start;
+ 
+ 	rtc->irq = platform_get_irq(pdev, 0);
 -- 
 2.35.1
 
