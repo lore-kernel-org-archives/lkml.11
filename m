@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 049CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:02:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73045C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:02:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358302AbiFMMCn (ORCPT
+        id S1357966AbiFMMCq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:02:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41170 "EHLO
+        Mon, 13 Jun 2022 08:02:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358287AbiFML7v (ORCPT
+        with ESMTP id S1358376AbiFML74 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:59:51 -0400
+        Mon, 13 Jun 2022 07:59:56 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E83D4ECF5;
-        Mon, 13 Jun 2022 03:56:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EABB24F2E;
+        Mon, 13 Jun 2022 03:56:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 813CB61372;
-        Mon, 13 Jun 2022 10:56:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92E70C34114;
-        Mon, 13 Jun 2022 10:56:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ADDE961346;
+        Mon, 13 Jun 2022 10:56:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA8D6C34114;
+        Mon, 13 Jun 2022 10:56:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117804;
-        bh=BsecvjSZwvGK55sDF6oogUuZm6eTKn5sBosmydNJiYA=;
+        s=korg; t=1655117813;
+        bh=N6Z35cf+BtLsXMSsEPfu6bc8cqh33ameC/V7MCmmTVY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fE02NaBm+c9CjjX3/DMAKqnM9hJcIQyFyGbs9rzwkgZ1FEZbhLCrH5SmUmR4KsdfW
-         F1Q1OE0JgffnQ1+pWLfeeiaoLPgOlE9mLL1B3uW1s0uHeT2D5D08jmXkTZB+1MwZvN
-         Z62TyPM2f0PS/gHkUglFSBzVFIn4Qx3vAQb61RZA=
+        b=yvC7gj+2rsW01T8WGE0dxzfrOuyniTCm6iHtOGqxLy6RR8bVfN5Wi79WyjlHsy4PA
+         QmWMIhl02Bd6EzwAXYNZi4Ggwcsk/3ZRiuau2jd0DzbDy1OGUosrzKxpSz+DuBVxgv
+         RPLoiZvIRwmyQJN1lBzvAYE0v000t/x4fxOvkFWM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexey Dobriyan <adobriyan@gmail.com>,
-        hui li <juanfengpy@gmail.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org, Kajol Jain <kjain@linux.ibm.com>,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 125/287] proc: fix dentry/inode overinstantiating under /proc/${pid}/net
-Date:   Mon, 13 Jun 2022 12:09:09 +0200
-Message-Id: <20220613094927.670547213@linuxfoundation.org>
+Subject: [PATCH 4.19 128/287] powerpc/perf: Fix the threshold compare group constraint for power9
+Date:   Mon, 13 Jun 2022 12:09:12 +0200
+Message-Id: <20220613094927.760662039@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -52,59 +51,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Dobriyan <adobriyan@gmail.com>
+From: Kajol Jain <kjain@linux.ibm.com>
 
-[ Upstream commit 7055197705709c59b8ab77e6a5c7d46d61edd96e ]
+[ Upstream commit ab0cc6bbf0c812731c703ec757fcc3fc3a457a34 ]
 
-When a process exits, /proc/${pid}, and /proc/${pid}/net dentries are
-flushed.  However some leaf dentries like /proc/${pid}/net/arp_cache
-aren't.  That's because respective PDEs have proc_misc_d_revalidate() hook
-which returns 1 and leaves dentries/inodes in the LRU.
+Thresh compare bits for a event is used to program thresh compare
+field in Monitor Mode Control Register A (MMCRA: 9-18 bits for power9).
+When scheduling events as a group, all events in that group should
+match value in threshold bits (like thresh compare, thresh control,
+thresh select). Otherwise event open for the sibling events should fail.
+But in the current code, incase thresh compare bits are not valid,
+we are not failing in group_constraint function which can result
+in invalid group schduling.
 
-Force revalidation/lookup on everything under /proc/${pid}/net by
-inheriting proc_net_dentry_ops.
+Fix the issue by returning -1 incase event is threshold and threshold
+compare value is not valid.
 
-[akpm@linux-foundation.org: coding-style cleanups]
-Link: https://lkml.kernel.org/r/YjdVHgildbWO7diJ@localhost.localdomain
-Fixes: c6c75deda813 ("proc: fix lookup in /proc/net subdirectories after setns(2)")
-Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
-Reported-by: hui li <juanfengpy@gmail.com>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Thresh control bits in the event code is used to program thresh_ctl
+field in Monitor Mode Control Register A (MMCRA: 48-55). In below example,
+the scheduling of group events PM_MRK_INST_CMPL (873534401e0) and
+PM_THRESH_MET (8734340101ec) is expected to fail as both event
+request different thresh control bits and invalid thresh compare value.
+
+Result before the patch changes:
+
+[command]# perf stat -e "{r8735340401e0,r8734340101ec}" sleep 1
+
+ Performance counter stats for 'sleep 1':
+
+            11,048      r8735340401e0
+             1,967      r8734340101ec
+
+       1.001354036 seconds time elapsed
+
+       0.001421000 seconds user
+       0.000000000 seconds sys
+
+Result after the patch changes:
+
+[command]# perf stat -e "{r8735340401e0,r8734340101ec}" sleep 1
+Error:
+The sys_perf_event_open() syscall returned with 22 (Invalid argument)
+for event (r8735340401e0).
+/bin/dmesg | grep -i perf may provide additional information.
+
+Fixes: 78a16d9fc1206 ("powerpc/perf: Avoid FAB_*_MATCH checks for power9")
+Signed-off-by: Kajol Jain <kjain@linux.ibm.com>
+Reviewed-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220506061015.43916-2-kjain@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/proc/generic.c  | 3 +++
- fs/proc/proc_net.c | 3 +++
- 2 files changed, 6 insertions(+)
+ arch/powerpc/perf/isa207-common.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/fs/proc/generic.c b/fs/proc/generic.c
-index bab10368a04d..d8b3c6a7173f 100644
---- a/fs/proc/generic.c
-+++ b/fs/proc/generic.c
-@@ -445,6 +445,9 @@ static struct proc_dir_entry *__proc_create(struct proc_dir_entry **parent,
- 	proc_set_user(ent, (*parent)->uid, (*parent)->gid);
- 
- 	ent->proc_dops = &proc_misc_dentry_ops;
-+	/* Revalidate everything under /proc/${pid}/net */
-+	if ((*parent)->proc_dops == &proc_net_dentry_ops)
-+		pde_force_lookup(ent);
- 
- out:
- 	return ent;
-diff --git a/fs/proc/proc_net.c b/fs/proc/proc_net.c
-index 096bcc1e7a8a..68ce173d5590 100644
---- a/fs/proc/proc_net.c
-+++ b/fs/proc/proc_net.c
-@@ -342,6 +342,9 @@ static __net_init int proc_net_ns_init(struct net *net)
- 
- 	proc_set_user(netd, uid, gid);
- 
-+	/* Seed dentry revalidation for /proc/${pid}/net */
-+	pde_force_lookup(netd);
-+
- 	err = -EEXIST;
- 	net_statd = proc_net_mkdir(net, "stat", netd);
- 	if (!net_statd)
+diff --git a/arch/powerpc/perf/isa207-common.c b/arch/powerpc/perf/isa207-common.c
+index a1ff4142cc6a..08f2227761f6 100644
+--- a/arch/powerpc/perf/isa207-common.c
++++ b/arch/powerpc/perf/isa207-common.c
+@@ -322,7 +322,8 @@ int isa207_get_constraint(u64 event, unsigned long *maskp, unsigned long *valp)
+ 		if (event_is_threshold(event) && is_thresh_cmp_valid(event)) {
+ 			mask  |= CNST_THRESH_MASK;
+ 			value |= CNST_THRESH_VAL(event >> EVENT_THRESH_SHIFT);
+-		}
++		} else if (event_is_threshold(event))
++			return -1;
+ 	} else {
+ 		/*
+ 		 * Special case for PM_MRK_FAB_RSP_MATCH and PM_MRK_FAB_RSP_MATCH_CYC,
 -- 
 2.35.1
 
