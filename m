@@ -2,131 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CEE0CCA48E
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:55:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4CE3CCA486
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:55:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357529AbiFMLy1 (ORCPT
+        id S1357463AbiFMLyQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:54:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55950 "EHLO
+        Mon, 13 Jun 2022 07:54:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238070AbiFMLtm (ORCPT
+        with ESMTP id S1356896AbiFMLtl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:49:42 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2F3F4D6B9;
-        Mon, 13 Jun 2022 03:53:37 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 9359221CB6;
-        Mon, 13 Jun 2022 10:53:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1655117616; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=SFH6QqZIOI9s+Mj8/zkFHLSyGhk8xsqPs0kVQb84l4k=;
-        b=fFHe5pXKIIyFXvVsWeA/5WwBk+JfSkvwsgCSRADe8dDe5Ku4q3TD/oasfVz4ymT/ybJgCj
-        h5xIHw1yUvIV1YfrXPfQRKgs3q+0jQkQGo87/mz4Dewh2tv2Is0uDhmp1+lH3DHk+mGcIQ
-        eHELgFs8EmLVc80PVcIRxowjqs7Wv+U=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1655117616;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=SFH6QqZIOI9s+Mj8/zkFHLSyGhk8xsqPs0kVQb84l4k=;
-        b=zFN63R7DlhvmT+8mWOPnSKzEGh9Hlk6jWAyjUdLUjI2EU9tTrCyM6k2lnTj14xtxLpBF2c
-        0skkcWCRQPx1+TDQ==
-Received: from quack3.suse.cz (unknown [10.163.28.18])
+        Mon, 13 Jun 2022 07:49:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7B124D63D;
+        Mon, 13 Jun 2022 03:53:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 819EE2C141;
-        Mon, 13 Jun 2022 10:53:36 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id 4431BA0634; Mon, 13 Jun 2022 12:53:36 +0200 (CEST)
-Date:   Mon, 13 Jun 2022 12:53:36 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.com>,
-        Dave Kleikamp <shaggy@kernel.org>,
-        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
-        linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jfs-discussion@lists.sourceforge.net,
-        ntfs3@lists.linux.dev
-Subject: Re: [PATCH 6/6] fs: remove the NULL get_block case in
- mpage_writepages
-Message-ID: <20220613105336.dnqraf7tmxhdphyf@quack3.lan>
-References: <20220613053715.2394147-1-hch@lst.de>
- <20220613053715.2394147-7-hch@lst.de>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B0AF66135B;
+        Mon, 13 Jun 2022 10:53:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C46EC34114;
+        Mon, 13 Jun 2022 10:53:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655117602;
+        bh=KizqXqBV+SzCuIw5EL894417bb2lTU9qsNwZVgGoGr4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dzWmGEsf0ag6pncsfsmMV7yj0+xx+dwzG9T4cjM9PtQ/ev1qvOLpiAhWDZdo7/D16
+         mzKn5iNylqNT9z/YJe64ebw2WVofmhCIGTPRCam1tLAQiwKCsfXX58Rm9k3fzLPf2V
+         7GtGy/2umiKqD0At67R666ABX2WhYjUAQaqMjJvg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Christophe de Dinechin <dinechin@redhat.com>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Kees Cook <keescook@chromium.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 397/411] nodemask: Fix return values to be unsigned
+Date:   Mon, 13 Jun 2022 12:11:10 +0200
+Message-Id: <20220613094940.567957464@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220613053715.2394147-7-hch@lst.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 13-06-22 07:37:15, Christoph Hellwig wrote:
-> No one calls mpage_writepages with a NULL get_block paramter, so remove
-> support for that case.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+From: Kees Cook <keescook@chromium.org>
 
-Looks good. Feel free to add:
+[ Upstream commit 0dfe54071d7c828a02917b595456bfde1afdddc9 ]
 
-Reviewed-by: Jan Kara <jack@suse.cz>
+The nodemask routines had mixed return values that provided potentially
+signed return values that could never happen. This was leading to the
+compiler getting confusing about the range of possible return values
+(it was thinking things could be negative where they could not be). Fix
+all the nodemask routines that should be returning unsigned
+(or bool) values. Silences:
 
-								Honza
+ mm/swapfile.c: In function ‘setup_swap_info’:
+ mm/swapfile.c:2291:47: error: array subscript -1 is below array bounds of ‘struct plist_node[]’ [-Werror=array-bounds]
+  2291 |                                 p->avail_lists[i].prio = 1;
+       |                                 ~~~~~~~~~~~~~~^~~
+ In file included from mm/swapfile.c:16:
+ ./include/linux/swap.h:292:27: note: while referencing ‘avail_lists’
+   292 |         struct plist_node avail_lists[]; /*
+       |                           ^~~~~~~~~~~
 
-> ---
->  fs/mpage.c | 22 ++++++----------------
->  1 file changed, 6 insertions(+), 16 deletions(-)
-> 
-> diff --git a/fs/mpage.c b/fs/mpage.c
-> index a354ef2b4b4eb..e4cf881634a6a 100644
-> --- a/fs/mpage.c
-> +++ b/fs/mpage.c
-> @@ -636,8 +636,6 @@ static int __mpage_writepage(struct page *page, struct writeback_control *wbc,
->   * @mapping: address space structure to write
->   * @wbc: subtract the number of written pages from *@wbc->nr_to_write
->   * @get_block: the filesystem's block mapper function.
-> - *             If this is NULL then use a_ops->writepage.  Otherwise, go
-> - *             direct-to-BIO.
->   *
->   * This is a library function, which implements the writepages()
->   * address_space_operation.
-> @@ -654,24 +652,16 @@ int
->  mpage_writepages(struct address_space *mapping,
->  		struct writeback_control *wbc, get_block_t get_block)
->  {
-> +	struct mpage_data mpd = {
-> +		.get_block	= get_block,
-> +	};
->  	struct blk_plug plug;
->  	int ret;
->  
->  	blk_start_plug(&plug);
-> -
-> -	if (!get_block)
-> -		ret = generic_writepages(mapping, wbc);
-> -	else {
-> -		struct mpage_data mpd = {
-> -			.bio = NULL,
-> -			.last_block_in_bio = 0,
-> -			.get_block = get_block,
-> -		};
-> -
-> -		ret = write_cache_pages(mapping, wbc, __mpage_writepage, &mpd);
-> -		if (mpd.bio)
-> -			mpage_bio_submit(mpd.bio);
-> -	}
-> +	ret = write_cache_pages(mapping, wbc, __mpage_writepage, &mpd);
-> +	if (mpd.bio)
-> +		mpage_bio_submit(mpd.bio);
->  	blk_finish_plug(&plug);
->  	return ret;
->  }
-> -- 
-> 2.30.2
-> 
+Reported-by: Christophe de Dinechin <dinechin@redhat.com>
+Link: https://lore.kernel.org/lkml/20220414150855.2407137-3-dinechin@redhat.com/
+Cc: Alexey Dobriyan <adobriyan@gmail.com>
+Cc: Yury Norov <yury.norov@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Zhen Lei <thunder.leizhen@huawei.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ include/linux/nodemask.h | 38 +++++++++++++++++++-------------------
+ lib/nodemask.c           |  4 ++--
+ 2 files changed, 21 insertions(+), 21 deletions(-)
+
+diff --git a/include/linux/nodemask.h b/include/linux/nodemask.h
+index 8a404dfeec42..a8d79f5b9a52 100644
+--- a/include/linux/nodemask.h
++++ b/include/linux/nodemask.h
+@@ -42,11 +42,11 @@
+  * void nodes_shift_right(dst, src, n)	Shift right
+  * void nodes_shift_left(dst, src, n)	Shift left
+  *
+- * int first_node(mask)			Number lowest set bit, or MAX_NUMNODES
+- * int next_node(node, mask)		Next node past 'node', or MAX_NUMNODES
+- * int next_node_in(node, mask)		Next node past 'node', or wrap to first,
++ * unsigned int first_node(mask)	Number lowest set bit, or MAX_NUMNODES
++ * unsigend int next_node(node, mask)	Next node past 'node', or MAX_NUMNODES
++ * unsigned int next_node_in(node, mask) Next node past 'node', or wrap to first,
+  *					or MAX_NUMNODES
+- * int first_unset_node(mask)		First node not set in mask, or 
++ * unsigned int first_unset_node(mask)	First node not set in mask, or
+  *					MAX_NUMNODES
+  *
+  * nodemask_t nodemask_of_node(node)	Return nodemask with bit 'node' set
+@@ -153,7 +153,7 @@ static inline void __nodes_clear(nodemask_t *dstp, unsigned int nbits)
+ 
+ #define node_test_and_set(node, nodemask) \
+ 			__node_test_and_set((node), &(nodemask))
+-static inline int __node_test_and_set(int node, nodemask_t *addr)
++static inline bool __node_test_and_set(int node, nodemask_t *addr)
+ {
+ 	return test_and_set_bit(node, addr->bits);
+ }
+@@ -200,7 +200,7 @@ static inline void __nodes_complement(nodemask_t *dstp,
+ 
+ #define nodes_equal(src1, src2) \
+ 			__nodes_equal(&(src1), &(src2), MAX_NUMNODES)
+-static inline int __nodes_equal(const nodemask_t *src1p,
++static inline bool __nodes_equal(const nodemask_t *src1p,
+ 					const nodemask_t *src2p, unsigned int nbits)
+ {
+ 	return bitmap_equal(src1p->bits, src2p->bits, nbits);
+@@ -208,7 +208,7 @@ static inline int __nodes_equal(const nodemask_t *src1p,
+ 
+ #define nodes_intersects(src1, src2) \
+ 			__nodes_intersects(&(src1), &(src2), MAX_NUMNODES)
+-static inline int __nodes_intersects(const nodemask_t *src1p,
++static inline bool __nodes_intersects(const nodemask_t *src1p,
+ 					const nodemask_t *src2p, unsigned int nbits)
+ {
+ 	return bitmap_intersects(src1p->bits, src2p->bits, nbits);
+@@ -216,20 +216,20 @@ static inline int __nodes_intersects(const nodemask_t *src1p,
+ 
+ #define nodes_subset(src1, src2) \
+ 			__nodes_subset(&(src1), &(src2), MAX_NUMNODES)
+-static inline int __nodes_subset(const nodemask_t *src1p,
++static inline bool __nodes_subset(const nodemask_t *src1p,
+ 					const nodemask_t *src2p, unsigned int nbits)
+ {
+ 	return bitmap_subset(src1p->bits, src2p->bits, nbits);
+ }
+ 
+ #define nodes_empty(src) __nodes_empty(&(src), MAX_NUMNODES)
+-static inline int __nodes_empty(const nodemask_t *srcp, unsigned int nbits)
++static inline bool __nodes_empty(const nodemask_t *srcp, unsigned int nbits)
+ {
+ 	return bitmap_empty(srcp->bits, nbits);
+ }
+ 
+ #define nodes_full(nodemask) __nodes_full(&(nodemask), MAX_NUMNODES)
+-static inline int __nodes_full(const nodemask_t *srcp, unsigned int nbits)
++static inline bool __nodes_full(const nodemask_t *srcp, unsigned int nbits)
+ {
+ 	return bitmap_full(srcp->bits, nbits);
+ }
+@@ -260,15 +260,15 @@ static inline void __nodes_shift_left(nodemask_t *dstp,
+           > MAX_NUMNODES, then the silly min_ts could be dropped. */
+ 
+ #define first_node(src) __first_node(&(src))
+-static inline int __first_node(const nodemask_t *srcp)
++static inline unsigned int __first_node(const nodemask_t *srcp)
+ {
+-	return min_t(int, MAX_NUMNODES, find_first_bit(srcp->bits, MAX_NUMNODES));
++	return min_t(unsigned int, MAX_NUMNODES, find_first_bit(srcp->bits, MAX_NUMNODES));
+ }
+ 
+ #define next_node(n, src) __next_node((n), &(src))
+-static inline int __next_node(int n, const nodemask_t *srcp)
++static inline unsigned int __next_node(int n, const nodemask_t *srcp)
+ {
+-	return min_t(int,MAX_NUMNODES,find_next_bit(srcp->bits, MAX_NUMNODES, n+1));
++	return min_t(unsigned int, MAX_NUMNODES, find_next_bit(srcp->bits, MAX_NUMNODES, n+1));
+ }
+ 
+ /*
+@@ -276,7 +276,7 @@ static inline int __next_node(int n, const nodemask_t *srcp)
+  * the first node in src if needed.  Returns MAX_NUMNODES if src is empty.
+  */
+ #define next_node_in(n, src) __next_node_in((n), &(src))
+-int __next_node_in(int node, const nodemask_t *srcp);
++unsigned int __next_node_in(int node, const nodemask_t *srcp);
+ 
+ static inline void init_nodemask_of_node(nodemask_t *mask, int node)
+ {
+@@ -296,9 +296,9 @@ static inline void init_nodemask_of_node(nodemask_t *mask, int node)
+ })
+ 
+ #define first_unset_node(mask) __first_unset_node(&(mask))
+-static inline int __first_unset_node(const nodemask_t *maskp)
++static inline unsigned int __first_unset_node(const nodemask_t *maskp)
+ {
+-	return min_t(int,MAX_NUMNODES,
++	return min_t(unsigned int, MAX_NUMNODES,
+ 			find_first_zero_bit(maskp->bits, MAX_NUMNODES));
+ }
+ 
+@@ -434,11 +434,11 @@ static inline int num_node_state(enum node_states state)
+ 
+ #define first_online_node	first_node(node_states[N_ONLINE])
+ #define first_memory_node	first_node(node_states[N_MEMORY])
+-static inline int next_online_node(int nid)
++static inline unsigned int next_online_node(int nid)
+ {
+ 	return next_node(nid, node_states[N_ONLINE]);
+ }
+-static inline int next_memory_node(int nid)
++static inline unsigned int next_memory_node(int nid)
+ {
+ 	return next_node(nid, node_states[N_MEMORY]);
+ }
+diff --git a/lib/nodemask.c b/lib/nodemask.c
+index 3aa454c54c0d..e22647f5181b 100644
+--- a/lib/nodemask.c
++++ b/lib/nodemask.c
+@@ -3,9 +3,9 @@
+ #include <linux/module.h>
+ #include <linux/random.h>
+ 
+-int __next_node_in(int node, const nodemask_t *srcp)
++unsigned int __next_node_in(int node, const nodemask_t *srcp)
+ {
+-	int ret = __next_node(node, srcp);
++	unsigned int ret = __next_node(node, srcp);
+ 
+ 	if (ret == MAX_NUMNODES)
+ 		ret = __first_node(srcp);
 -- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+2.35.1
+
+
+
