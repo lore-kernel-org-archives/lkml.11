@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B487DCCA481
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3CD2C43334
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:49:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347750AbiFMKtE (ORCPT
+        id S1348046AbiFMKtJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:49:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47844 "EHLO
+        Mon, 13 Jun 2022 06:49:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245310AbiFMKom (ORCPT
+        with ESMTP id S244542AbiFMKpc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:44:42 -0400
+        Mon, 13 Jun 2022 06:45:32 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FF8023BF8;
-        Mon, 13 Jun 2022 03:25:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAAE423BEB;
+        Mon, 13 Jun 2022 03:25:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 79BC8B80E93;
-        Mon, 13 Jun 2022 10:25:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2487C34114;
-        Mon, 13 Jun 2022 10:25:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D318EB80E95;
+        Mon, 13 Jun 2022 10:25:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34ED1C34114;
+        Mon, 13 Jun 2022 10:25:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115935;
-        bh=FoJXuZ9hAOmVvwzqCYSqV8kQiYXRx4JotWWWMESIcrw=;
+        s=korg; t=1655115940;
+        bh=gDSkScukX2LSRwr4jVmPp/iYJ8xZ1NW+aQPq8tGwEL4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DM7mn4Am4w7v7vNeu6n2dnyP8cZ2My4pR6ZEMeKjio5+ZEB0FOIbbDce4OakO//zv
-         To+wIws5ngkKP2Th6QCOEmUVyM7SWKFqtldyU6GksQABga159qmSQzm3vOt+0GlK1n
-         k6v1TME3FoIfSVwgBNox6McKY2724JdanpkwTTSI=
+        b=qTyHgK3Lfnh4Mby0QlvIlGQNPVjpRili4Pqz0gjk9w6k5OAnzrezMp+AyjV4IZBmc
+         w9nIF4YCQTRWLZKnijHaXd4PyVOGhr9lkMdViye/tkaH3e1TrXBPAxiQUVwiEFWoFQ
+         D0GOvyqg2Ncx92sg8xTi2NYCo5way6HAIHsBBrGk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Phil Elwell <phil@raspberrypi.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 084/218] ARM: dts: bcm2835-rpi-b: Fix GPIO line names
-Date:   Mon, 13 Jun 2022 12:09:02 +0200
-Message-Id: <20220613094923.072857857@linuxfoundation.org>
+Subject: [PATCH 4.14 076/218] m68k: math-emu: Fix dependencies of math emulation support
+Date:   Mon, 13 Jun 2022 12:08:54 +0200
+Message-Id: <20220613094922.723214296@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -51,50 +51,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Wahren <stefan.wahren@i2se.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
 
-[ Upstream commit 97bd8659c1c46c23e4daea7e040befca30939950 ]
+[ Upstream commit ed6bc6bf0a7d75e80eb1df883c09975ebb74e590 ]
 
-Recently this has been fixed in the vendor tree, so upstream this.
+If CONFIG_M54xx=y, CONFIG_MMU=y, and CONFIG_M68KFPU_EMU=y:
 
-Fixes: 731b26a6ac17 ("ARM: bcm2835: Add names for the Raspberry Pi GPIO lines")
-Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+    {standard input}:272: Error: invalid instruction for this architecture; needs 68000 or higher (68000 [68ec000, 68hc000, 68hc001, 68008, 68302, 68306, 68307, 68322, 68356], 68010, 68020 [68k, 68ec020], 68030 [68ec030], 68040 [68ec040], 68060 [68ec060], cpu32 [68330, 68331, 68332, 68333, 68334, 68336, 68340, 68341, 68349, 68360], fidoa [fido]) -- statement `sub.b %d1,%d3' ignored
+    {standard input}:609: Error: invalid instruction for this architecture; needs 68020 or higher (68020 [68k, 68ec020], 68030 [68ec030], 68040 [68ec040], 68060 [68ec060]) -- statement `bfextu 4(%a1){%d0,#8},%d0' ignored
+    {standard input}:752: Error: operands mismatch -- statement `mulu.l 4(%a0),%d3:%d0' ignored
+    {standard input}:1155: Error: operands mismatch -- statement `divu.l %d0,%d3:%d7' ignored
+
+The math emulation support code is intended for 68020 and higher, and
+uses several instructions or instruction modes not available on coldfire
+or 68000.
+
+Originally, the dependency of M68KFPU_EMU on MMU was fine, as MMU
+support was only available on 68020 or higher.  But this assumption
+was broken by the introduction of MMU support for M547x and M548x.
+
+Drop the dependency on MMU, as the code should work fine on 68020 and up
+without MMU (which are not yet supported by Linux, though).
+Add dependencies on M68KCLASSIC (to rule out Coldfire) and FPU (kernel
+has some type of floating-point support --- be it hardware or software
+emulated, to rule out anything below 68020).
+
+Fixes: 1f7034b9616e6f14 ("m68k: allow ColdFire 547x and 548x CPUs to be built with MMU enabled")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Reviewed-by: Greg Ungerer <gerg@linux-m68k.org>
+Link: https://lore.kernel.org/r/18c34695b7c95107f60ccca82a4ff252f3edf477.1652446117.git.geert@linux-m68k.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/bcm2835-rpi-b.dts | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ arch/m68k/Kconfig.cpu | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/bcm2835-rpi-b.dts b/arch/arm/boot/dts/bcm2835-rpi-b.dts
-index cca4a75a5651..6f39d5e54cb8 100644
---- a/arch/arm/boot/dts/bcm2835-rpi-b.dts
-+++ b/arch/arm/boot/dts/bcm2835-rpi-b.dts
-@@ -48,18 +48,17 @@
- 			  "GPIO18",
- 			  "NC", /* GPIO19 */
- 			  "NC", /* GPIO20 */
--			  "GPIO21",
-+			  "CAM_GPIO0",
- 			  "GPIO22",
- 			  "GPIO23",
- 			  "GPIO24",
- 			  "GPIO25",
- 			  "NC", /* GPIO26 */
--			  "CAM_GPIO0",
--			  /* Binary number representing build/revision */
--			  "CONFIG0",
--			  "CONFIG1",
--			  "CONFIG2",
--			  "CONFIG3",
-+			  "GPIO27",
-+			  "GPIO28",
-+			  "GPIO29",
-+			  "GPIO30",
-+			  "GPIO31",
- 			  "NC", /* GPIO32 */
- 			  "NC", /* GPIO33 */
- 			  "NC", /* GPIO34 */
+diff --git a/arch/m68k/Kconfig.cpu b/arch/m68k/Kconfig.cpu
+index ff5f0896318b..6f13c53c8dc7 100644
+--- a/arch/m68k/Kconfig.cpu
++++ b/arch/m68k/Kconfig.cpu
+@@ -308,7 +308,7 @@ comment "Processor Specific Options"
+ 
+ config M68KFPU_EMU
+ 	bool "Math emulation support"
+-	depends on MMU
++	depends on M68KCLASSIC && FPU
+ 	help
+ 	  At some point in the future, this will cause floating-point math
+ 	  instructions to be emulated by the kernel on machines that lack a
 -- 
 2.35.1
 
