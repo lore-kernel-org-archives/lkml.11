@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40235CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:35:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2DA2CCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:35:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354409AbiFMLfG (ORCPT
+        id S1354976AbiFMLeU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:35:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50962 "EHLO
+        Mon, 13 Jun 2022 07:34:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354433AbiFML33 (ORCPT
+        with ESMTP id S1354383AbiFML30 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:29:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75CDCDEC9;
-        Mon, 13 Jun 2022 03:44:41 -0700 (PDT)
+        Mon, 13 Jun 2022 07:29:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8EC12DEC;
+        Mon, 13 Jun 2022 03:43:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 12C6F61016;
-        Mon, 13 Jun 2022 10:44:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E316C34114;
-        Mon, 13 Jun 2022 10:44:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E873B80D3C;
+        Mon, 13 Jun 2022 10:43:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2FF7C34114;
+        Mon, 13 Jun 2022 10:43:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117080;
-        bh=GEkAqDSx45s2LHhDPiB/BSff7zw8Jn2i+SxePh6pqgk=;
+        s=korg; t=1655117031;
+        bh=96ceQgJASxyzZfSQvr0juwSMRmN1lL3Esf2pvX28VOk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FjItmqZf7xKa77xre5UkrA/yOpxTnBkL1GfxBawlKA+BWYelsz9cYmi7s8r7iyD6I
-         wk/hdPkr8dT5BswGzUYFU7U889/60UaIWcKvJcYMeFT4Lp1oiBO1AcUQ869eiLGo9Y
-         eAg3pN+mETiLIEtP6gG8U0LIvga+CCxb4Jn0OEIc=
+        b=AIkkePMVzy9bVTFeg1SaS/hwVUNjujKm+28zB/DPMkMxavg0xbSnv6gHLTy3lkJ8+
+         5BYL2F4xxcSpKdmLnIiv/KS3tqFUKk7es0Q4NT5JHxb0Lm9w2uKZAYDXuwTnHs4DI0
+         XJ+J5k+dvg/P/VNUIKyvM0mdZ9s7whiEUIfUosKk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Jia-Ju Bai <baijiaju1990@gmail.com>, Coly Li <colyli@suse.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.4 280/411] md: bcache: check the return value of kzalloc() in detached_dev_do_request()
-Date:   Mon, 13 Jun 2022 12:09:13 +0200
-Message-Id: <20220613094937.156132240@linuxfoundation.org>
+        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Stephen Zhang <starzhangzsd@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Subject: [PATCH 5.4 273/411] MIPS: IP27: Remove incorrect `cpu_has_fpu override
+Date:   Mon, 13 Jun 2022 12:09:06 +0200
+Message-Id: <20220613094936.943749121@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,38 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+From: Maciej W. Rozycki <macro@orcam.me.uk>
 
-commit 40f567bbb3b0639d2ec7d1c6ad4b1b018f80cf19 upstream.
+commit 424c3781dd1cb401857585331eaaa425a13f2429 upstream.
 
-The function kzalloc() in detached_dev_do_request() can fail, so its
-return value should be checked.
+Remove unsupported forcing of `cpu_has_fpu' to 1, which makes the `nofpu'
+kernel parameter non-functional, and also causes a link error:
 
-Fixes: bc082a55d25c ("bcache: fix inaccurate io state for detached bcache devices")
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Signed-off-by: Coly Li <colyli@suse.de>
-Link: https://lore.kernel.org/r/20220527152818.27545-4-colyli@suse.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+ld: arch/mips/kernel/traps.o: in function `trap_init':
+./arch/mips/include/asm/msa.h:(.init.text+0x348): undefined reference to `handle_fpe'
+ld: ./arch/mips/include/asm/msa.h:(.init.text+0x354): undefined reference to `handle_fpe'
+ld: ./arch/mips/include/asm/msa.h:(.init.text+0x360): undefined reference to `handle_fpe'
+
+where the CONFIG_MIPS_FP_SUPPORT configuration option has been disabled.
+
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Reported-by: Stephen Zhang <starzhangzsd@gmail.com>
+Fixes: 0ebb2f4159af ("MIPS: IP27: Update/restructure CPU overrides")
+Cc: stable@vger.kernel.org # v4.2+
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/bcache/request.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/mips/include/asm/mach-ip27/cpu-feature-overrides.h |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/md/bcache/request.c
-+++ b/drivers/md/bcache/request.c
-@@ -1119,6 +1119,12 @@ static void detached_dev_do_request(stru
- 	 * which would call closure_get(&dc->disk.cl)
- 	 */
- 	ddip = kzalloc(sizeof(struct detached_dev_io_private), GFP_NOIO);
-+	if (!ddip) {
-+		bio->bi_status = BLK_STS_RESOURCE;
-+		bio->bi_end_io(bio);
-+		return;
-+	}
-+
- 	ddip->d = d;
- 	ddip->start_time = jiffies;
- 	ddip->bi_end_io = bio->bi_end_io;
+--- a/arch/mips/include/asm/mach-ip27/cpu-feature-overrides.h
++++ b/arch/mips/include/asm/mach-ip27/cpu-feature-overrides.h
+@@ -28,7 +28,6 @@
+ #define cpu_has_6k_cache		0
+ #define cpu_has_8k_cache		0
+ #define cpu_has_tx39_cache		0
+-#define cpu_has_fpu			1
+ #define cpu_has_nofpuex			0
+ #define cpu_has_32fpr			1
+ #define cpu_has_counter			1
 
 
