@@ -2,50 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 665F1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:51:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ED80C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:51:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379907AbiFMNvo (ORCPT
+        id S1379918AbiFMNvp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:51:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40996 "EHLO
+        Mon, 13 Jun 2022 09:51:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379716AbiFMNo5 (ORCPT
+        with ESMTP id S1379762AbiFMNpF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:44:57 -0400
+        Mon, 13 Jun 2022 09:45:05 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58F8760F9;
-        Mon, 13 Jun 2022 04:32:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EAABF25;
+        Mon, 13 Jun 2022 04:32:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D738FB80EA7;
-        Mon, 13 Jun 2022 11:32:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24349C36B0C;
-        Mon, 13 Jun 2022 11:32:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9F3C2B80E93;
+        Mon, 13 Jun 2022 11:32:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15BE1C36B0A;
+        Mon, 13 Jun 2022 11:32:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119950;
-        bh=bA3XZbwpyv4CQAVMx82J1EfXcxqBdnROVcJ6m/OszZY=;
+        s=korg; t=1655119953;
+        bh=OFNj5xmXGxE4mdg0R2KYtiLRMIxzRi9bXGMK1v6AV0s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j2QwM6Du1kajAeA4oT8iesbe9N+iqnnGiPOM+ogfIBOdfY46xHG4Mh/jouTNakYSQ
-         f7PkU1fIeI6pyMN+lGKo+gQxe4/zUtOz2hWamsHmfmpiMU/3uiihd61eLwk917ANPG
-         iR+Y9YUDKGLENHqlgRpsoM/Dx41SAOeWryrfI5Rs=
+        b=d7a/7oq0jypROSDCsf3AacsqV7z5C0NJPpbUQKprBFYhVRKrG0scvrDQN1utRhjCZ
+         Ui6VrCRfURFgOSZEuTeQCWNb/1b2Y3Wshy1MEOS/ETjHhQVoGlluOdHF3akcHpnHeX
+         wd7G+14QeZH9qFFh8APGKRcho2n/Xffc5iF0umR4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
+        stable@vger.kernel.org, Steven Price <steven.price@arm.com>,
+        Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 177/339] drm/bridge: ti-sn65dsi83: Handle dsi_lanes == 0 as invalid
-Date:   Mon, 13 Jun 2022 12:10:02 +0200
-Message-Id: <20220613094932.043629961@linuxfoundation.org>
+Subject: [PATCH 5.18 178/339] drm/panfrost: Job should reference MMU not file_priv
+Date:   Mon, 13 Jun 2022 12:10:03 +0200
+Message-Id: <20220613094932.073544035@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -57,44 +50,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Steven Price <steven.price@arm.com>
 
-[ Upstream commit edbc7960bef7fd71ef1e44d0df15b864784b14c8 ]
+[ Upstream commit 6e516faf04317db2c46cbec4e3b78b4653a5b109 ]
 
-Handle empty data-lanes = < >; property, which translates to
-dsi_lanes = 0 as invalid.
+For a while now it's been allowed for a MMU context to outlive it's
+corresponding panfrost_priv, however the job structure still references
+panfrost_priv to get hold of the MMU context. If panfrost_priv has been
+freed this is a use-after-free which I've been able to trigger resulting
+in a splat.
 
-Fixes: ceb515ba29ba6 ("drm/bridge: ti-sn65dsi83: Add TI SN65DSI83 and SN65DSI84 driver")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Jonas Karlman <jonas@kwiboo.se>
-Cc: Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
-Cc: Lucas Stach <l.stach@pengutronix.de>
-Cc: Marek Vasut <marex@denx.de>
-Cc: Maxime Ripard <maxime@cerno.tech>
-Cc: Neil Armstrong <narmstrong@baylibre.com>
-Cc: Robert Foss <robert.foss@linaro.org>
-Cc: Sam Ravnborg <sam@ravnborg.org>
-Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com>
-Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220518233844.248504-1-marex@denx.de
+To fix this, drop the reference to panfrost_priv in the job structure
+and add a direct reference to the MMU structure which is what's actually
+needed.
+
+Fixes: 7fdc48cc63a3 ("drm/panfrost: Make sure MMU context lifetime is not bound to panfrost_priv")
+Signed-off-by: Steven Price <steven.price@arm.com>
+Acked-by: Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220519152003.81081-1-steven.price@arm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/ti-sn65dsi83.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/panfrost/panfrost_drv.c | 5 +++--
+ drivers/gpu/drm/panfrost/panfrost_job.c | 6 +++---
+ drivers/gpu/drm/panfrost/panfrost_job.h | 2 +-
+ 3 files changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/ti-sn65dsi83.c b/drivers/gpu/drm/bridge/ti-sn65dsi83.c
-index 19daaddd29a4..3d58110465fe 100644
---- a/drivers/gpu/drm/bridge/ti-sn65dsi83.c
-+++ b/drivers/gpu/drm/bridge/ti-sn65dsi83.c
-@@ -573,7 +573,7 @@ static int sn65dsi83_parse_dt(struct sn65dsi83 *ctx, enum sn65dsi83_model model)
- 	ctx->host_node = of_graph_get_remote_port_parent(endpoint);
- 	of_node_put(endpoint);
+diff --git a/drivers/gpu/drm/panfrost/panfrost_drv.c b/drivers/gpu/drm/panfrost/panfrost_drv.c
+index 94b6f0a19c83..47780fe597f2 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_drv.c
++++ b/drivers/gpu/drm/panfrost/panfrost_drv.c
+@@ -233,6 +233,7 @@ static int panfrost_ioctl_submit(struct drm_device *dev, void *data,
+ 		struct drm_file *file)
+ {
+ 	struct panfrost_device *pfdev = dev->dev_private;
++	struct panfrost_file_priv *file_priv = file->driver_priv;
+ 	struct drm_panfrost_submit *args = data;
+ 	struct drm_syncobj *sync_out = NULL;
+ 	struct panfrost_job *job;
+@@ -262,12 +263,12 @@ static int panfrost_ioctl_submit(struct drm_device *dev, void *data,
+ 	job->jc = args->jc;
+ 	job->requirements = args->requirements;
+ 	job->flush_id = panfrost_gpu_get_latest_flush_id(pfdev);
+-	job->file_priv = file->driver_priv;
++	job->mmu = file_priv->mmu;
  
--	if (ctx->dsi_lanes < 0 || ctx->dsi_lanes > 4) {
-+	if (ctx->dsi_lanes <= 0 || ctx->dsi_lanes > 4) {
- 		ret = -EINVAL;
- 		goto err_put_node;
+ 	slot = panfrost_job_get_slot(job);
+ 
+ 	ret = drm_sched_job_init(&job->base,
+-				 &job->file_priv->sched_entity[slot],
++				 &file_priv->sched_entity[slot],
+ 				 NULL);
+ 	if (ret)
+ 		goto out_put_job;
+diff --git a/drivers/gpu/drm/panfrost/panfrost_job.c b/drivers/gpu/drm/panfrost/panfrost_job.c
+index a6925dbb6224..22c2af1a4627 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_job.c
++++ b/drivers/gpu/drm/panfrost/panfrost_job.c
+@@ -201,7 +201,7 @@ static void panfrost_job_hw_submit(struct panfrost_job *job, int js)
+ 		return;
  	}
+ 
+-	cfg = panfrost_mmu_as_get(pfdev, job->file_priv->mmu);
++	cfg = panfrost_mmu_as_get(pfdev, job->mmu);
+ 
+ 	job_write(pfdev, JS_HEAD_NEXT_LO(js), lower_32_bits(jc_head));
+ 	job_write(pfdev, JS_HEAD_NEXT_HI(js), upper_32_bits(jc_head));
+@@ -431,7 +431,7 @@ static void panfrost_job_handle_err(struct panfrost_device *pfdev,
+ 		job->jc = 0;
+ 	}
+ 
+-	panfrost_mmu_as_put(pfdev, job->file_priv->mmu);
++	panfrost_mmu_as_put(pfdev, job->mmu);
+ 	panfrost_devfreq_record_idle(&pfdev->pfdevfreq);
+ 
+ 	if (signal_fence)
+@@ -452,7 +452,7 @@ static void panfrost_job_handle_done(struct panfrost_device *pfdev,
+ 	 * happen when we receive the DONE interrupt while doing a GPU reset).
+ 	 */
+ 	job->jc = 0;
+-	panfrost_mmu_as_put(pfdev, job->file_priv->mmu);
++	panfrost_mmu_as_put(pfdev, job->mmu);
+ 	panfrost_devfreq_record_idle(&pfdev->pfdevfreq);
+ 
+ 	dma_fence_signal_locked(job->done_fence);
+diff --git a/drivers/gpu/drm/panfrost/panfrost_job.h b/drivers/gpu/drm/panfrost/panfrost_job.h
+index 77e6d0e6f612..8becc1ba0eb9 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_job.h
++++ b/drivers/gpu/drm/panfrost/panfrost_job.h
+@@ -17,7 +17,7 @@ struct panfrost_job {
+ 	struct kref refcount;
+ 
+ 	struct panfrost_device *pfdev;
+-	struct panfrost_file_priv *file_priv;
++	struct panfrost_mmu *mmu;
+ 
+ 	/* Fence to be signaled by IRQ handler when the job is complete. */
+ 	struct dma_fence *done_fence;
 -- 
 2.35.1
 
