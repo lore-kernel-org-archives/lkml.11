@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FF00CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:39:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BE68CCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:40:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344473AbiFMKjy (ORCPT
+        id S1346345AbiFMKj5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:39:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51348 "EHLO
+        Mon, 13 Jun 2022 06:39:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343885AbiFMKhq (ORCPT
+        with ESMTP id S1344741AbiFMKhs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:37:46 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0790512D10;
-        Mon, 13 Jun 2022 03:22:53 -0700 (PDT)
+        Mon, 13 Jun 2022 06:37:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C358F12D35;
+        Mon, 13 Jun 2022 03:22:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 08D9FCE1109;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D928660AE9;
+        Mon, 13 Jun 2022 10:22:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2E26C3411E;
         Mon, 13 Jun 2022 10:22:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 157EDC34114;
-        Mon, 13 Jun 2022 10:22:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115770;
-        bh=TsnccSUjaIJsssqB3PsBicURUVYF0tCQj+AKgET2PTs=;
+        s=korg; t=1655115773;
+        bh=LZSVzGm+eApsXK45dI2BFu9jzJnYL96WdCNobNzk1qI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XGyBJhgzH8Ao5A/fDYOH0nvdjsZxCBGA4vK+fS7pzgAVES5KAj2xxV6L9tBB/B+EI
-         JPLXpYII00EZlS31sT0LX8ki+G7N/NAWsz0+d2EAABl/maxP26yrMiJ3TjiQBU2xon
-         lkc5fxNY6BrLH8WCHSsKpKuRCYp2kSuSSV2D79Ak=
+        b=H631xtKvoT23BZAT9jH4NgqxSHDpSVVSyIs5dyIsaMZzzXaUj5XcANsxWjFTYhA9G
+         tIqkOxvt+dOcOlJloRii0XTfMxSNWNoBpg4gk8NPHLszTSX/Yu78MdzY2Z2ILRy+GL
+         v2TbcWQhwukKYKQNWXf3xPyYPs3aDSU6YfR5MHYc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, syzkaller <syzkaller@googlegroups.com>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 027/218] rtlwifi: Use pr_warn instead of WARN_ONCE
-Date:   Mon, 13 Jun 2022 12:08:05 +0200
-Message-Id: <20220613094914.720054624@linuxfoundation.org>
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Zixuan Fu <r33s3n6@gmail.com>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 036/218] fs: jfs: fix possible NULL pointer dereference in dbFree()
+Date:   Mon, 13 Jun 2022 12:08:14 +0200
+Message-Id: <20220613094916.886990683@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -50,37 +51,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+From: Zixuan Fu <r33s3n6@gmail.com>
 
-[ Upstream commit ad732da434a2936128769216eddaece3b1af4588 ]
+[ Upstream commit 0d4837fdb796f99369cf7691d33de1b856bcaf1f ]
 
-This memory allocation failure can be triggered by fault injection or
-high pressure testing, resulting a WARN.
+In our fault-injection testing, the variable "nblocks" in dbFree() can be
+zero when kmalloc_array() fails in dtSearch(). In this case, the variable
+ "mp" in dbFree() would be NULL and then it is dereferenced in
+"write_metapage(mp)".
 
-Fix this by replacing WARN with pr_warn.
+The failure log is listed as follows:
 
-Reported-by: syzkaller <syzkaller@googlegroups.com>
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220511014453.1621366-1-dzm91@hust.edu.cn
+[   13.824137] BUG: kernel NULL pointer dereference, address: 0000000000000020
+...
+[   13.827416] RIP: 0010:dbFree+0x5f7/0x910 [jfs]
+[   13.834341] Call Trace:
+[   13.834540]  <TASK>
+[   13.834713]  txFreeMap+0x7b4/0xb10 [jfs]
+[   13.835038]  txUpdateMap+0x311/0x650 [jfs]
+[   13.835375]  jfs_lazycommit+0x5f2/0xc70 [jfs]
+[   13.835726]  ? sched_dynamic_update+0x1b0/0x1b0
+[   13.836092]  kthread+0x3c2/0x4a0
+[   13.836355]  ? txLockFree+0x160/0x160 [jfs]
+[   13.836763]  ? kthread_unuse_mm+0x160/0x160
+[   13.837106]  ret_from_fork+0x1f/0x30
+[   13.837402]  </TASK>
+...
+
+This patch adds a NULL check of "mp" before "write_metapage(mp)" is called.
+
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
+Signed-off-by: Dave Kleikamp <dave.kleikamp@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtlwifi/usb.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/jfs/jfs_dmap.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/usb.c b/drivers/net/wireless/realtek/rtlwifi/usb.c
-index 4fa4d877f913..c29beb00203c 100644
---- a/drivers/net/wireless/realtek/rtlwifi/usb.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/usb.c
-@@ -1060,7 +1060,7 @@ int rtl_usb_probe(struct usb_interface *intf,
- 	hw = ieee80211_alloc_hw(sizeof(struct rtl_priv) +
- 				sizeof(struct rtl_usb_priv), &rtl_ops);
- 	if (!hw) {
--		WARN_ONCE(true, "rtl_usb: ieee80211 alloc failed\n");
-+		pr_warn("rtl_usb: ieee80211 alloc failed\n");
- 		return -ENOMEM;
+diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
+index 6dac48e29d28..a07fbb60ac3c 100644
+--- a/fs/jfs/jfs_dmap.c
++++ b/fs/jfs/jfs_dmap.c
+@@ -398,7 +398,8 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
  	}
- 	rtlpriv = hw->priv;
+ 
+ 	/* write the last buffer. */
+-	write_metapage(mp);
++	if (mp)
++		write_metapage(mp);
+ 
+ 	IREAD_UNLOCK(ipbmap);
+ 
 -- 
 2.35.1
 
