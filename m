@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C7F7CCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C7ADC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:45:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379132AbiFMNnq (ORCPT
+        id S1378678AbiFMNne (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:43:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58518 "EHLO
+        Mon, 13 Jun 2022 09:43:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379154AbiFMNj4 (ORCPT
+        with ESMTP id S1379137AbiFMNjx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:39:56 -0400
+        Mon, 13 Jun 2022 09:39:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173323DDC3;
-        Mon, 13 Jun 2022 04:29:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A7E07A45F;
+        Mon, 13 Jun 2022 04:28:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A0B3661046;
-        Mon, 13 Jun 2022 11:29:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86F8FC3411C;
-        Mon, 13 Jun 2022 11:29:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 990C461036;
+        Mon, 13 Jun 2022 11:28:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEDC6C34114;
+        Mon, 13 Jun 2022 11:28:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119741;
-        bh=XYV1h9CdCm68f/OE4ysMTqhDqVh1boCsnpiBvrjKYfM=;
+        s=korg; t=1655119730;
+        bh=wLl1b1j+BhIXPavSmYrCqWAoy3JDpgcE7FuuK5Gym5s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Dt7VUN3IVNDTZ/0VdKezVoL2sk5XHvspWdhpTM6eG06PJiYU0OLkJb73l3iFWUWP8
-         GZy2/QxgDTQx76NEqzOJXH0OgxiIvcqKiufbFeWSkWieY+qE92gFMaFTrxMZndX9aQ
-         L6XqCh4Ve+qSvBsjPmEzWO+KogoD7FInAEcX/5gw=
+        b=zXD/ZxnlRBae/kO/iH7bVtw3CDIY7Rj3d9Mj1jJ9v3/WMrMJzOgKz/m5QGiMCvhOK
+         wACODG9e1eb5HtFphCB9w4bZ/gmKR7eE5+2U9+MnGceguDeHxQGQZwUGWWJYcPX7qo
+         LFyY1WSoAzOKK5OyK3M6/0dPQx8D7rtdUZwNEcVA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
+        stable@vger.kernel.org, Viorel Suman <viorel.suman@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 123/339] virtio: pci: Fix an error handling path in vp_modern_probe()
-Date:   Mon, 13 Jun 2022 12:09:08 +0200
-Message-Id: <20220613094930.241357719@linuxfoundation.org>
+Subject: [PATCH 5.18 119/339] net: phy: at803x: disable WOL at probe
+Date:   Mon, 13 Jun 2022 12:09:04 +0200
+Message-Id: <20220613094930.118185904@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,35 +50,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Viorel Suman <viorel.suman@nxp.com>
 
-[ Upstream commit 7a836a2aba09479c8e71fa43249eecc4af945f61 ]
+[ Upstream commit d7cd5e06c9dd70a82f1461c7b5f676bc03f5cd61 ]
 
-If an error occurs after a successful pci_request_selected_regions() call,
-it should be undone by a corresponding pci_release_selected_regions() call,
-as already done in vp_modern_remove().
+Before 7beecaf7d507b ("net: phy: at803x: improve the WOL feature") patch
+"at803x_get_wol" implementation used AT803X_INTR_ENABLE_WOL value to set
+WAKE_MAGIC flag, and now AT803X_WOL_EN value is used for the same purpose.
+The problem here is that the values of these two bits are different after
+hardware reset: AT803X_INTR_ENABLE_WOL=0 after hardware reset, but
+AT803X_WOL_EN=1. So now, if called right after boot, "at803x_get_wol" will
+set WAKE_MAGIC flag, even if WOL function is not enabled by calling
+"at803x_set_wol" function. The patch disables WOL function on probe thus
+the behavior is consistent.
 
-Fixes: fd502729fbbf ("virtio-pci: introduce modern device module")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Message-Id: <237109725aad2c3c03d14549f777b1927c84b045.1648977064.git.christophe.jaillet@wanadoo.fr>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Fixes: 7beecaf7d507b ("net: phy: at803x: improve the WOL feature")
+Signed-off-by: Viorel Suman <viorel.suman@nxp.com>
+Link: https://lore.kernel.org/r/20220527084935.235274-1-viorel.suman@oss.nxp.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/virtio/virtio_pci_modern_dev.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/phy/at803x.c | 33 ++++++++++++++++++++++-----------
+ 1 file changed, 22 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/virtio/virtio_pci_modern_dev.c b/drivers/virtio/virtio_pci_modern_dev.c
-index 591738ad3d56..4093f9cca7a6 100644
---- a/drivers/virtio/virtio_pci_modern_dev.c
-+++ b/drivers/virtio/virtio_pci_modern_dev.c
-@@ -347,6 +347,7 @@ int vp_modern_probe(struct virtio_pci_modern_device *mdev)
- err_map_isr:
- 	pci_iounmap(pci_dev, mdev->common);
- err_map_common:
-+	pci_release_selected_regions(pci_dev, mdev->modern_bars);
- 	return err;
- }
- EXPORT_SYMBOL_GPL(vp_modern_probe);
+diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+index 73926006d319..6a467e7817a6 100644
+--- a/drivers/net/phy/at803x.c
++++ b/drivers/net/phy/at803x.c
+@@ -433,20 +433,21 @@ static void at803x_context_restore(struct phy_device *phydev,
+ static int at803x_set_wol(struct phy_device *phydev,
+ 			  struct ethtool_wolinfo *wol)
+ {
+-	struct net_device *ndev = phydev->attached_dev;
+-	const u8 *mac;
+ 	int ret, irq_enabled;
+-	unsigned int i;
+-	static const unsigned int offsets[] = {
+-		AT803X_LOC_MAC_ADDR_32_47_OFFSET,
+-		AT803X_LOC_MAC_ADDR_16_31_OFFSET,
+-		AT803X_LOC_MAC_ADDR_0_15_OFFSET,
+-	};
+-
+-	if (!ndev)
+-		return -ENODEV;
+ 
+ 	if (wol->wolopts & WAKE_MAGIC) {
++		struct net_device *ndev = phydev->attached_dev;
++		const u8 *mac;
++		unsigned int i;
++		static const unsigned int offsets[] = {
++			AT803X_LOC_MAC_ADDR_32_47_OFFSET,
++			AT803X_LOC_MAC_ADDR_16_31_OFFSET,
++			AT803X_LOC_MAC_ADDR_0_15_OFFSET,
++		};
++
++		if (!ndev)
++			return -ENODEV;
++
+ 		mac = (const u8 *) ndev->dev_addr;
+ 
+ 		if (!is_valid_ether_addr(mac))
+@@ -857,6 +858,9 @@ static int at803x_probe(struct phy_device *phydev)
+ 	if (phydev->drv->phy_id == ATH8031_PHY_ID) {
+ 		int ccr = phy_read(phydev, AT803X_REG_CHIP_CONFIG);
+ 		int mode_cfg;
++		struct ethtool_wolinfo wol = {
++			.wolopts = 0,
++		};
+ 
+ 		if (ccr < 0)
+ 			goto err;
+@@ -872,6 +876,13 @@ static int at803x_probe(struct phy_device *phydev)
+ 			priv->is_fiber = true;
+ 			break;
+ 		}
++
++		/* Disable WOL by default */
++		ret = at803x_set_wol(phydev, &wol);
++		if (ret < 0) {
++			phydev_err(phydev, "failed to disable WOL on probe: %d\n", ret);
++			goto err;
++		}
+ 	}
+ 
+ 	return 0;
 -- 
 2.35.1
 
