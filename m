@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD805C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:40:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 317DCC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:41:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355698AbiFMLk5 (ORCPT
+        id S1355728AbiFMLlF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:40:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56746 "EHLO
+        Mon, 13 Jun 2022 07:41:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354358AbiFMLcR (ORCPT
+        with ESMTP id S1354380AbiFMLcZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:32:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06813424B7;
-        Mon, 13 Jun 2022 03:47:16 -0700 (PDT)
+        Mon, 13 Jun 2022 07:32:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAE0CB8A;
+        Mon, 13 Jun 2022 03:47:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 965116112A;
-        Mon, 13 Jun 2022 10:47:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3F5AC34114;
-        Mon, 13 Jun 2022 10:47:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 59CD36112A;
+        Mon, 13 Jun 2022 10:47:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63F01C34114;
+        Mon, 13 Jun 2022 10:47:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117235;
-        bh=2YNfuwdMsGXTIWbZJF9jNk6c9Dj6DXMPOKVnNhrjD5M=;
+        s=korg; t=1655117237;
+        bh=ZvBvAv7kjVo49vs4eozwkRMvE0oHu/7YyhCnQ65kPVE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hXyeicdolYqSONcPlzR7lE6m/sAoJu6Kd+bl2DFBTjQuUQB1PInSUKbeK6rIJbD+Y
-         SGJ0iM/Lc8xbXbge9QLVBQYvu/OR0hG1avb6RCXhT4nm0RkzlxIZWWY5t6qbZ1ehPw
-         DKvNK8RbltTPNTWgl45uDHfGlop2UNRXTcWMaHVo=
+        b=A4y45ZKV5Nk4m4/Aemz4/TD1TGV1Je7jghublVcLs6sbatnrInp8Bk9csPhVUEoKN
+         7az8vyAl8GjgpErUScWI4a0dhu2qYrTD6jyXrzMpv4BJ2KfXAckstjI00jCKwwL6jD
+         WLFwdA8GrG3yfHdVAocOs8chT6A1Am9oeR0LnhUI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
-        Mark-PK Tsai <mark-pk.tsai@mediatek.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        stable@vger.kernel.org, Yu Xiao <yu.xiao@corigine.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 339/411] tracing: Avoid adding tracer option before update_tracer_options
-Date:   Mon, 13 Jun 2022 12:10:12 +0200
-Message-Id: <20220613094938.880650020@linuxfoundation.org>
+Subject: [PATCH 5.4 329/411] nfp: only report pause frame configuration for physical device
+Date:   Mon, 13 Jun 2022 12:10:02 +0200
+Message-Id: <20220613094938.592298822@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -51,64 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+From: Yu Xiao <yu.xiao@corigine.com>
 
-[ Upstream commit ef9188bcc6ca1d8a2ad83e826b548e6820721061 ]
+[ Upstream commit 0649e4d63420ebc8cbebef3e9d39e12ffc5eb9fa ]
 
-To prepare for support asynchronous tracer_init_tracefs initcall,
-avoid calling create_trace_option_files before __update_tracer_options.
-Otherwise, create_trace_option_files will show warning because
-some tracers in trace_types list are already in tr->topts.
+Only report pause frame configuration for physical device. Logical
+port of both PCI PF and PCI VF do not support it.
 
-For example, hwlat_tracer call register_tracer in late_initcall,
-and global_trace.dir is already created in tracing_init_dentry,
-hwlat_tracer will be put into tr->topts.
-Then if the __update_tracer_options is executed after hwlat_tracer
-registered, create_trace_option_files find that hwlat_tracer is
-already in tr->topts.
-
-Link: https://lkml.kernel.org/r/20220426122407.17042-2-mark-pk.tsai@mediatek.com
-
-Link: https://lore.kernel.org/lkml/20220322133339.GA32582@xsang-OptiPlex-9020/
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Signed-off-by: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Fixes: 9fdc5d85a8fe ("nfp: update ethtool reporting of pauseframe control")
+Signed-off-by: Yu Xiao <yu.xiao@corigine.com>
+Signed-off-by: Simon Horman <simon.horman@corigine.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/trace.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index ce9165de019c..55da88f18342 100644
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -5638,12 +5638,18 @@ static void tracing_set_nop(struct trace_array *tr)
- 	tr->current_trace = &nop_trace;
- }
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
+index 89e578e25ff8..10857914c552 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
+@@ -266,8 +266,6 @@ nfp_net_get_link_ksettings(struct net_device *netdev,
  
-+static bool tracer_options_updated;
-+
- static void add_tracer_options(struct trace_array *tr, struct tracer *t)
- {
- 	/* Only enable if the directory has been created already. */
- 	if (!tr->dir)
- 		return;
- 
-+	/* Only create trace option files after update_tracer_options finish */
-+	if (!tracer_options_updated)
-+		return;
-+
- 	create_trace_option_files(tr, t);
- }
- 
-@@ -8391,6 +8397,7 @@ static void __update_tracer_options(struct trace_array *tr)
- static void update_tracer_options(struct trace_array *tr)
- {
- 	mutex_lock(&trace_types_lock);
-+	tracer_options_updated = true;
- 	__update_tracer_options(tr);
- 	mutex_unlock(&trace_types_lock);
- }
+ 	/* Init to unknowns */
+ 	ethtool_link_ksettings_add_link_mode(cmd, supported, FIBRE);
+-	ethtool_link_ksettings_add_link_mode(cmd, supported, Pause);
+-	ethtool_link_ksettings_add_link_mode(cmd, advertising, Pause);
+ 	cmd->base.port = PORT_OTHER;
+ 	cmd->base.speed = SPEED_UNKNOWN;
+ 	cmd->base.duplex = DUPLEX_UNKNOWN;
+@@ -275,6 +273,8 @@ nfp_net_get_link_ksettings(struct net_device *netdev,
+ 	port = nfp_port_from_netdev(netdev);
+ 	eth_port = nfp_port_get_eth_port(port);
+ 	if (eth_port) {
++		ethtool_link_ksettings_add_link_mode(cmd, supported, Pause);
++		ethtool_link_ksettings_add_link_mode(cmd, advertising, Pause);
+ 		cmd->base.autoneg = eth_port->aneg != NFP_ANEG_DISABLED ?
+ 			AUTONEG_ENABLE : AUTONEG_DISABLE;
+ 		nfp_net_set_fec_link_mode(eth_port, cmd);
 -- 
 2.35.1
 
