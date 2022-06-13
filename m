@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C314DCCA47B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF86ACCA47F
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:34:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354632AbiFMLdd (ORCPT
+        id S1354689AbiFMLdm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:33:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46124 "EHLO
+        Mon, 13 Jun 2022 07:33:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354321AbiFML3U (ORCPT
+        with ESMTP id S1354348AbiFML3W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:29:20 -0400
+        Mon, 13 Jun 2022 07:29:22 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8866329C88;
-        Mon, 13 Jun 2022 03:43:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DE1122BEB;
+        Mon, 13 Jun 2022 03:43:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B434660FDB;
-        Mon, 13 Jun 2022 10:43:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5F16C34114;
-        Mon, 13 Jun 2022 10:43:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 314E66123B;
+        Mon, 13 Jun 2022 10:43:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AEC4C34114;
+        Mon, 13 Jun 2022 10:43:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116998;
-        bh=2p8gEQy7N4nmmIhZpnKGXvMKWI0J2oK3wHed5skNLhI=;
+        s=korg; t=1655117006;
+        bh=yBMfBMsenoejD3SJApeyaIR+DRPPPmmkDIHXMUaPI6E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y56UK8KBcYNlOaL/jPEgvOhICcvWsOJNR4F11psL5DR5bmijDRPkcEyml3ZztO0rM
-         bLeu6MkKR7v8DlFT+hGq0Jg2ycWR+3e7j4WSlV11+8iAl3isfJf67N9gIK+hZkllI9
-         ys2N77qA/cWetTs9cos60BVOC5QA+n/u8DA3MT6g=
+        b=Yk8dXuGx7jVokWW6tMKd6GACyZFJcwz3ngNghJKwoIenatVyP5LbBbh27h2+2uj9a
+         cv2lAQ+8VTlPxOR8ivMUMgtzCiKsdFgzqkPSorVVXgtu5N0DovKANAGZ5WnhBzxqLL
+         uzMVj9XVjtzEJ/OOX/0ZO+iloNoR4kqpY35C7AOQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>, Marc Zyngier <maz@kernel.org>
-Subject: [PATCH 5.4 250/411] irqchip/armada-370-xp: Do not touch Performance Counter Overflow on A375, A38x, A39x
-Date:   Mon, 13 Jun 2022 12:08:43 +0200
-Message-Id: <20220613094936.267589883@linuxfoundation.org>
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        Richard Weinberger <richard@nod.at>,
+        Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH 5.4 253/411] um: chan_user: Fix winch_tramp() return value
+Date:   Mon, 13 Jun 2022 12:08:46 +0200
+Message-Id: <20220613094936.354532175@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,45 +50,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Johannes Berg <johannes.berg@intel.com>
 
-commit a3d66a76348daf559873f19afc912a2a7c2ccdaf upstream.
+commit 57ae0b67b747031bc41fb44643aa5344ab58607e upstream.
 
-Register ARMADA_370_XP_INT_FABRIC_MASK_OFFS is Armada 370 and XP specific
-and on new Armada platforms it has different meaning. It does not configure
-Performance Counter Overflow interrupt masking. So do not touch this
-register on non-A370/XP platforms (A375, A38x and A39x).
+The previous fix here was only partially correct, it did
+result in returning a proper error value in case of error,
+but it also clobbered the pid that we need to return from
+this function (not just zero for success).
 
-Signed-off-by: Pali Rohár <pali@kernel.org>
+As a result, it returned 0 here, but later this is treated
+as a pid and used to kill the process, but since it's now
+0 we kill(0, SIGKILL), which makes UML kill itself rather
+than just the helper thread.
+
+Fix that and make it more obvious by using a separate
+variable for the pid.
+
+Fixes: ccf1236ecac4 ("um: fix error return code in winch_tramp()")
+Reported-and-tested-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Cc: stable@vger.kernel.org
-Fixes: 28da06dfd9e4 ("irqchip: armada-370-xp: Enable the PMU interrupts")
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220425113706.29310-1-pali@kernel.org
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/irqchip/irq-armada-370-xp.c |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ arch/um/drivers/chan_user.c |    9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
---- a/drivers/irqchip/irq-armada-370-xp.c
-+++ b/drivers/irqchip/irq-armada-370-xp.c
-@@ -392,7 +392,16 @@ static void armada_xp_mpic_smp_cpu_init(
- 
- static void armada_xp_mpic_perf_init(void)
+--- a/arch/um/drivers/chan_user.c
++++ b/arch/um/drivers/chan_user.c
+@@ -220,7 +220,7 @@ static int winch_tramp(int fd, struct tt
+ 		       unsigned long *stack_out)
  {
--	unsigned long cpuid = cpu_logical_map(smp_processor_id());
-+	unsigned long cpuid;
-+
-+	/*
-+	 * This Performance Counter Overflow interrupt is specific for
-+	 * Armada 370 and XP. It is not available on Armada 375, 38x and 39x.
-+	 */
-+	if (!of_machine_is_compatible("marvell,armada-370-xp"))
-+		return;
-+
-+	cpuid = cpu_logical_map(smp_processor_id());
+ 	struct winch_data data;
+-	int fds[2], n, err;
++	int fds[2], n, err, pid;
+ 	char c;
  
- 	/* Enable Performance Counter Overflow interrupts */
- 	writel(ARMADA_370_XP_INT_CAUSE_PERF(cpuid),
+ 	err = os_pipe(fds, 1, 1);
+@@ -238,8 +238,9 @@ static int winch_tramp(int fd, struct tt
+ 	 * problem with /dev/net/tun, which if held open by this
+ 	 * thread, prevents the TUN/TAP device from being reused.
+ 	 */
+-	err = run_helper_thread(winch_thread, &data, CLONE_FILES, stack_out);
+-	if (err < 0) {
++	pid = run_helper_thread(winch_thread, &data, CLONE_FILES, stack_out);
++	if (pid < 0) {
++		err = pid;
+ 		printk(UM_KERN_ERR "fork of winch_thread failed - errno = %d\n",
+ 		       -err);
+ 		goto out_close;
+@@ -263,7 +264,7 @@ static int winch_tramp(int fd, struct tt
+ 		goto out_close;
+ 	}
+ 
+-	return err;
++	return pid;
+ 
+  out_close:
+ 	close(fds[1]);
 
 
