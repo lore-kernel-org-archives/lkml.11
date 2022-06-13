@@ -2,30 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEFE6CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:56:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95C70CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:56:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241972AbiFMU4h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:56:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40096 "EHLO
+        id S1349819AbiFMU4n (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 16:56:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351913AbiFMUyC (ORCPT
+        with ESMTP id S1351910AbiFMUyC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 16:54:02 -0400
 Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AAFF25E82
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:18:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1983725C6D
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:18:41 -0700 (PDT)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1655151521;
+        t=1655151519;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=uV62cC5DfHg/D8q7E9RvYjkrSokJV1eiZxRUfsD9VoU=;
-        b=kvRi5OcEoiHBckUmql9zWUb9FKC6wNd2nIhN5sD38XfgUnd8dK14JY90UXlC8uENnECQaQ
-        3OOnI245K8ZI+Nxmz+gn+P6ox1GkZo2TIpM9SiR9iPnRCP6c/hSq7HcQsVTtoLryjSydIl
-        Zft1R6rRme1veq8TWSAMk6UkoRJMi5M=
+        bh=T+1jiBrKGTOAkQ9I8eaP4PIHMCNWMSHqgu/PvHey6xE=;
+        b=F5EnSyRzoYiX0f3p7v1JZyYXYCdly4dsV81EJcSjrE5AgBjsvqGzsSPNsrhg9xnJINY22B
+        JTqZ7R3jNHwJvMGgFjl3QeawSgC3InukMau/z4kNEB+Yd8GVk9awFkEbF9PJy7T04jE2a2
+        yUW14maYFKV3Zq0LX4bXhSJ6v+M/U7E=
 From:   andrey.konovalov@linux.dev
 To:     Marco Elver <elver@google.com>,
         Alexander Potapenko <glider@google.com>
@@ -38,9 +39,9 @@ Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH 22/32] kasan: cosmetic changes in report.c
-Date:   Mon, 13 Jun 2022 22:14:13 +0200
-Message-Id: <cd0cb4d93e15c5092de8a31ba8c1d6f719aa4c7f.1655150842.git.andreyknvl@google.com>
+Subject: [PATCH 20/32] kasan: move kasan_get_alloc/free_track definitions
+Date:   Mon, 13 Jun 2022 22:14:11 +0200
+Message-Id: <8c647863a2ea158fd2ddc0c79e5e937bb03d86f0.1655150842.git.andreyknvl@google.com>
 In-Reply-To: <cover.1655150842.git.andreyknvl@google.com>
 References: <cover.1655150842.git.andreyknvl@google.com>
 MIME-Version: 1.0
@@ -53,47 +54,118 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andrey Konovalov <andreyknvl@google.com>
 
-Do a few non-functional style fixes for the code in report.c.
+Move the definitions of kasan_get_alloc/free_track() to report_*.c, as
+they belong with other the reporting code.
 
 Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
 ---
- mm/kasan/report.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+ mm/kasan/generic.c        | 21 ---------------------
+ mm/kasan/report_generic.c | 21 +++++++++++++++++++++
+ mm/kasan/report_tags.c    | 12 ++++++++++++
+ mm/kasan/tags.c           | 12 ------------
+ 4 files changed, 33 insertions(+), 33 deletions(-)
 
-diff --git a/mm/kasan/report.c b/mm/kasan/report.c
-index 7269b6249488..879f949dc395 100644
---- a/mm/kasan/report.c
-+++ b/mm/kasan/report.c
-@@ -194,25 +194,22 @@ static void print_error_description(struct kasan_report_info *info)
- static void print_track(struct kasan_track *track, const char *prefix)
- {
- 	pr_err("%s by task %u:\n", prefix, track->pid);
--	if (track->stack) {
-+	if (track->stack)
- 		stack_depot_print(track->stack);
--	} else {
-+	else
- 		pr_err("(stack is not available)\n");
--	}
+diff --git a/mm/kasan/generic.c b/mm/kasan/generic.c
+index aff39af3c532..d8b5590f9484 100644
+--- a/mm/kasan/generic.c
++++ b/mm/kasan/generic.c
+@@ -512,24 +512,3 @@ void kasan_save_free_info(struct kmem_cache *cache, void *object)
+ 	/* The object was freed and has free track set. */
+ 	*(u8 *)kasan_mem_to_shadow(object) = KASAN_SLAB_FREETRACK;
+ }
+-
+-struct kasan_track *kasan_get_alloc_track(struct kmem_cache *cache,
+-						void *object)
+-{
+-	struct kasan_alloc_meta *alloc_meta;
+-
+-	alloc_meta = kasan_get_alloc_meta(cache, object);
+-	if (!alloc_meta)
+-		return NULL;
+-
+-	return &alloc_meta->alloc_track;
+-}
+-
+-struct kasan_track *kasan_get_free_track(struct kmem_cache *cache,
+-						void *object, u8 tag)
+-{
+-	if (*(u8 *)kasan_mem_to_shadow(object) != KASAN_SLAB_FREETRACK)
+-		return NULL;
+-	/* Free meta must be present with KASAN_SLAB_FREETRACK. */
+-	return &kasan_get_free_meta(cache, object)->free_track;
+-}
+diff --git a/mm/kasan/report_generic.c b/mm/kasan/report_generic.c
+index 348dc207d462..74d21786ef09 100644
+--- a/mm/kasan/report_generic.c
++++ b/mm/kasan/report_generic.c
+@@ -127,6 +127,27 @@ const char *kasan_get_bug_type(struct kasan_report_info *info)
+ 	return get_wild_bug_type(info);
  }
  
- struct page *kasan_addr_to_page(const void *addr)
++struct kasan_track *kasan_get_alloc_track(struct kmem_cache *cache,
++						void *object)
++{
++	struct kasan_alloc_meta *alloc_meta;
++
++	alloc_meta = kasan_get_alloc_meta(cache, object);
++	if (!alloc_meta)
++		return NULL;
++
++	return &alloc_meta->alloc_track;
++}
++
++struct kasan_track *kasan_get_free_track(struct kmem_cache *cache,
++						void *object, u8 tag)
++{
++	if (*(u8 *)kasan_mem_to_shadow(object) != KASAN_SLAB_FREETRACK)
++		return NULL;
++	/* Free meta must be present with KASAN_SLAB_FREETRACK. */
++	return &kasan_get_free_meta(cache, object)->free_track;
++}
++
+ void kasan_metadata_fetch_row(char *buffer, void *row)
  {
--	if ((addr >= (void *)PAGE_OFFSET) &&
--			(addr < high_memory))
-+	if ((addr >= (void *)PAGE_OFFSET) && (addr < high_memory))
- 		return virt_to_head_page(addr);
- 	return NULL;
- }
+ 	memcpy(buffer, kasan_mem_to_shadow(row), META_BYTES_PER_ROW);
+diff --git a/mm/kasan/report_tags.c b/mm/kasan/report_tags.c
+index 35cf3cae4aa4..79b6497d8a81 100644
+--- a/mm/kasan/report_tags.c
++++ b/mm/kasan/report_tags.c
+@@ -21,3 +21,15 @@ const char *kasan_get_bug_type(struct kasan_report_info *info)
  
- struct slab *kasan_addr_to_slab(const void *addr)
- {
--	if ((addr >= (void *)PAGE_OFFSET) &&
--			(addr < high_memory))
-+	if ((addr >= (void *)PAGE_OFFSET) && (addr < high_memory))
- 		return virt_to_slab(addr);
- 	return NULL;
+ 	return "invalid-access";
  }
++
++struct kasan_track *kasan_get_alloc_track(struct kmem_cache *cache,
++						void *object)
++{
++	return NULL;
++}
++
++struct kasan_track *kasan_get_free_track(struct kmem_cache *cache,
++						void *object, u8 tag)
++{
++	return NULL;
++}
+diff --git a/mm/kasan/tags.c b/mm/kasan/tags.c
+index fd11d10a4ffc..39a0481e5228 100644
+--- a/mm/kasan/tags.c
++++ b/mm/kasan/tags.c
+@@ -24,15 +24,3 @@ void kasan_save_alloc_info(struct kmem_cache *cache, void *object, gfp_t flags)
+ void kasan_save_free_info(struct kmem_cache *cache, void *object)
+ {
+ }
+-
+-struct kasan_track *kasan_get_alloc_track(struct kmem_cache *cache,
+-						void *object)
+-{
+-	return NULL;
+-}
+-
+-struct kasan_track *kasan_get_free_track(struct kmem_cache *cache,
+-						void *object, u8 tag)
+-{
+-	return NULL;
+-}
 -- 
 2.25.1
 
