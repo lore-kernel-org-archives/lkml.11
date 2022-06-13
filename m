@@ -2,157 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D28EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:25:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAE00C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:25:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377081AbiFMNZb (ORCPT
+        id S1377112AbiFMNZi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:25:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34092 "EHLO
+        Mon, 13 Jun 2022 09:25:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377502AbiFMNUl (ORCPT
+        with ESMTP id S1359479AbiFMNUn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:20:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08AF06AA7F;
-        Mon, 13 Jun 2022 04:23:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3881A61046;
-        Mon, 13 Jun 2022 11:22:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A754C34114;
-        Mon, 13 Jun 2022 11:22:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119360;
-        bh=E4rQH1VFVcVFFMQSB2xDZNS++oZ3MPwR5If0rkwwWrM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L/o882kbVoODy65h4MX7V0agq1DBX3LLh5PqaCE7HRbXJjjplNT2crBQiy2bvzbJr
-         o791JO20qJjIY4DJ4yLARQ4LCskOki35g7bH2MQpt9cuRCCFOdKoDYAftWjxd04sLK
-         O1vYg6v5cQc2wYGss+WZ0H+/xe26I1nhDQcbAmao=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
-        Sean Paul <seanpaul@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>
-Subject: [PATCH 5.15 235/247] drm/bridge: analogix_dp: Support PSR-exit to disable transition
-Date:   Mon, 13 Jun 2022 12:12:17 +0200
-Message-Id: <20220613094930.071901491@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
-References: <20220613094922.843438024@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 13 Jun 2022 09:20:43 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7E5C66B08E;
+        Mon, 13 Jun 2022 04:23:43 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 74E311596;
+        Mon, 13 Jun 2022 04:23:28 -0700 (PDT)
+Received: from [10.57.35.216] (unknown [10.57.35.216])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E24DF3F73B;
+        Mon, 13 Jun 2022 04:23:26 -0700 (PDT)
+Message-ID: <675ccf44-872d-904c-af6c-672c8afd405e@arm.com>
+Date:   Mon, 13 Jun 2022 12:23:25 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 1/3] thermal: cpufreq_cooling: Use a copy of local ops for
+ each cooling device
+Content-Language: en-US
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        daniel.lezcano@linaro.org, amitk@kernel.org, rui.zhang@intel.com,
+        rafael@kernel.org, dietmar.eggemann@arm.com
+References: <20220610100343.32378-1-lukasz.luba@arm.com>
+ <20220613091611.ncd2hziu4nbyip4x@vireshk-i7>
+ <5bac6f98-e1ba-3584-6eac-21eeaaa0ed26@arm.com>
+ <20220613105311.jdyjubid4jrgofwu@vireshk-i7>
+From:   Lukasz Luba <lukasz.luba@arm.com>
+In-Reply-To: <20220613105311.jdyjubid4jrgofwu@vireshk-i7>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Norris <briannorris@chromium.org>
-
-commit ca871659ec1606d33b1e76de8d4cf924cf627e34 upstream.
-
-Most eDP panel functions only work correctly when the panel is not in
-self-refresh. In particular, analogix_dp_bridge_disable() tends to hit
-AUX channel errors if the panel is in self-refresh.
-
-Given the above, it appears that so far, this driver assumes that we are
-never in self-refresh when it comes time to fully disable the bridge.
-Prior to commit 846c7dfc1193 ("drm/atomic: Try to preserve the crtc
-enabled state in drm_atomic_remove_fb, v2."), this tended to be true,
-because we would automatically disable the pipe when framebuffers were
-removed, and so we'd typically disable the bridge shortly after the last
-display activity.
-
-However, that is not guaranteed: an idle (self-refresh) display pipe may
-be disabled, e.g., when switching CRTCs. We need to exit PSR first.
-
-Stable notes: this is definitely a bugfix, and the bug has likely
-existed in some form for quite a while. It may predate the "PSR helpers"
-refactor, but the code looked very different before that, and it's
-probably not worth rewriting the fix.
-
-Cc: <stable@vger.kernel.org>
-Fixes: 6c836d965bad ("drm/rockchip: Use the helpers for PSR")
-Signed-off-by: Brian Norris <briannorris@chromium.org>
-Reviewed-by: Sean Paul <seanpaul@chromium.org>
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220228122522.v2.1.I161904be17ba14526f78536ccd78b85818449b51@changeid
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/gpu/drm/bridge/analogix/analogix_dp_core.c |   42 +++++++++++++++++++--
- 1 file changed, 38 insertions(+), 4 deletions(-)
-
---- a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-+++ b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-@@ -1269,6 +1269,25 @@ static int analogix_dp_bridge_attach(str
- }
- 
- static
-+struct drm_crtc *analogix_dp_get_old_crtc(struct analogix_dp_device *dp,
-+					  struct drm_atomic_state *state)
-+{
-+	struct drm_encoder *encoder = dp->encoder;
-+	struct drm_connector *connector;
-+	struct drm_connector_state *conn_state;
-+
-+	connector = drm_atomic_get_old_connector_for_encoder(state, encoder);
-+	if (!connector)
-+		return NULL;
-+
-+	conn_state = drm_atomic_get_old_connector_state(state, connector);
-+	if (!conn_state)
-+		return NULL;
-+
-+	return conn_state->crtc;
-+}
-+
-+static
- struct drm_crtc *analogix_dp_get_new_crtc(struct analogix_dp_device *dp,
- 					  struct drm_atomic_state *state)
- {
-@@ -1448,14 +1467,16 @@ analogix_dp_bridge_atomic_disable(struct
- {
- 	struct drm_atomic_state *old_state = old_bridge_state->base.state;
- 	struct analogix_dp_device *dp = bridge->driver_private;
--	struct drm_crtc *crtc;
-+	struct drm_crtc *old_crtc, *new_crtc;
-+	struct drm_crtc_state *old_crtc_state = NULL;
- 	struct drm_crtc_state *new_crtc_state = NULL;
-+	int ret;
- 
--	crtc = analogix_dp_get_new_crtc(dp, old_state);
--	if (!crtc)
-+	new_crtc = analogix_dp_get_new_crtc(dp, old_state);
-+	if (!new_crtc)
- 		goto out;
- 
--	new_crtc_state = drm_atomic_get_new_crtc_state(old_state, crtc);
-+	new_crtc_state = drm_atomic_get_new_crtc_state(old_state, new_crtc);
- 	if (!new_crtc_state)
- 		goto out;
- 
-@@ -1464,6 +1485,19 @@ analogix_dp_bridge_atomic_disable(struct
- 		return;
- 
- out:
-+	old_crtc = analogix_dp_get_old_crtc(dp, old_state);
-+	if (old_crtc) {
-+		old_crtc_state = drm_atomic_get_old_crtc_state(old_state,
-+							       old_crtc);
-+
-+		/* When moving from PSR to fully disabled, exit PSR first. */
-+		if (old_crtc_state && old_crtc_state->self_refresh_active) {
-+			ret = analogix_dp_disable_psr(dp);
-+			if (ret)
-+				DRM_ERROR("Failed to disable psr (%d)\n", ret);
-+		}
-+	}
-+
- 	analogix_dp_bridge_disable(bridge);
- }
- 
 
 
+On 6/13/22 11:53, Viresh Kumar wrote:
+> On 13-06-22, 11:37, Lukasz Luba wrote:
+>> Hi Viresh,
+>>
+>> Thank you for the ACKs in the other patches and suggestion in this one.
+>>
+>> On 6/13/22 10:16, Viresh Kumar wrote:
+>>> On 10-06-22, 11:03, Lukasz Luba wrote:
+>>>> It is very unlikely that one CPU cluster would have the EM and some other
+>>>> won't have it (because EM registration failed or DT lacks needed entry).
+>>>> Although, we should avoid modifying global variable with callbacks anyway.
+>>>> Redesign this and add safety for such situation.
+>>>>
+>>>> Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
+>>>> ---
+>>>>    drivers/thermal/cpufreq_cooling.c | 16 +++++++++++++---
+>>>>    1 file changed, 13 insertions(+), 3 deletions(-)
+>>>>
+>>>> diff --git a/drivers/thermal/cpufreq_cooling.c b/drivers/thermal/cpufreq_cooling.c
+>>>> index b8151d95a806..e33183785fac 100644
+>>>> --- a/drivers/thermal/cpufreq_cooling.c
+>>>> +++ b/drivers/thermal/cpufreq_cooling.c
+>>>> @@ -554,7 +554,12 @@ __cpufreq_cooling_register(struct device_node *np,
+>>>>    	/* max_level is an index, not a counter */
+>>>>    	cpufreq_cdev->max_level = i - 1;
+>>>> -	cooling_ops = &cpufreq_cooling_ops;
+>>>> +	cooling_ops = kmemdup(&cpufreq_cooling_ops, sizeof(*cooling_ops),
+>>>> +			      GFP_KERNEL);
+>>>
+>>> I don't like the way we are duplicating the ops here. Instead of this it would
+>>> be better to add the OPs field in the cooling device structure and fill its
+>>> fields from here. The ops structure will be allocated with the cooling device
+>>> itself.
+>>>
+>>
+>> I think I know what you mean. Make sense. There are quite a few
+>> different cooling types of devices which are using the API
+>> thermal_of_cooling_device_register() with the custom 'ops'. We
+>> probably don't want to disturb that well working drivers and ecosystem.
+> 
+> I was just suggesting to update "struct cpufreq_cooling_device" :)
+> 
+> This is what I was, wrongly, referring to as cooling device.
+> 
+> I should have written the exact structure name instead, my bad.
+> 
+
+No worries. Thanks, I'll send a v2 with these changes.
