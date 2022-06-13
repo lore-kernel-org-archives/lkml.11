@@ -2,125 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A383C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:15:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29359C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:15:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241407AbiFMKPK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:15:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58618 "EHLO
+        id S241633AbiFMKN4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:13:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241344AbiFMKOq (ORCPT
+        with ESMTP id S241572AbiFMKNv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:14:46 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69100CE1C
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 03:14:34 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id m20so10160689ejj.10
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 03:14:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=M46PCkjJ2OifC0xaqwZJ7l8A4H9uAcmd8SjFaU1ZI3o=;
-        b=RY32gASyfk41ROBUhtm7wusGacyUTe5+H8ZMqeHzaR2h7UknN9RbikleB7Vzgo5/aN
-         qHO37sPTq+UUwbHnakGMJafJ/JOPPxwhitAGUBF7n3OFEe8P/NIS8p3OKqL8wv5L2GIm
-         6pmPjIwLKMU/A/b+7TQ7do/4KVOWgOcRYxiDNnXKTC7AbDxvfdT7qkwHZZCd9Da5M9tm
-         Pg5VYi16kYv/RuHVaWdSDEDq6EYXAVHufR0D7nSyMF0Bs8vEl4bfLQR3ROEeR8UyOydk
-         edovqXodfaCVZd4CRsKBjgskDrH+K/lf4hbinJJ9aGdKVUvI8n9islLSU7QV7+kJXNWP
-         4c0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=M46PCkjJ2OifC0xaqwZJ7l8A4H9uAcmd8SjFaU1ZI3o=;
-        b=pFOYAEexK8Fqp5dRVxJv+xmNTiGsONStqg3otxoezAbDxaCEeDpJbd2APC97szHJkK
-         oNPK6RUWoUplDBZjBrTbhTgYL8bCh3X1b5RYCAH8kYzzKCgE2wHFbvRa66bp83wNB/Nl
-         G+kZPJ6laPqnqJjXm3SjvGXjKETR+kW5ZX+zIUT/cFUiZEt0OtTv6xRxkCuoL06d++o8
-         q4TBKYCdyaSO7ms4dRdhY/BpNgWL7dB8vHPCwlCJkVSV3g9kWoKRg8O+Knnxqaur8oMc
-         zIC02+J2vI497YIFIEdXkSwyvpjJWdk2bIgni0UvXmyNuE0H1ceiYYwrHHYT4YAIiFYS
-         EvTA==
-X-Gm-Message-State: AOAM532KjwlrOJLgz2xwUKxPrqH4xg9LKwGjoJmWJYIdSgt3mOvHJt6W
-        JMw01r0OGDTwOOWnlx9EbnzjOg==
-X-Google-Smtp-Source: ABdhPJw63RL7dYHdoDbusyEcWLmssYal+r5BY4+7+lRfm3Z0XJfoRLsIaSNcWuOfIbK+EpvPFW1/aQ==
-X-Received: by 2002:a17:907:6e8f:b0:710:865b:9c90 with SMTP id sh15-20020a1709076e8f00b00710865b9c90mr39900307ejc.27.1655115272913;
-        Mon, 13 Jun 2022 03:14:32 -0700 (PDT)
-Received: from krzk-bin.monzoon.net (80-254-69-65.dynamic.monzoon.net. [80.254.69.65])
-        by smtp.gmail.com with ESMTPSA id y9-20020a170906524900b006fec69696a0sm3639863ejm.220.2022.06.13.03.14.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 03:14:32 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-scsi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] scsi: ufs: exynos: constify driver data
-Date:   Mon, 13 Jun 2022 12:14:29 +0200
-Message-Id: <20220613101429.114449-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        Mon, 13 Jun 2022 06:13:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1694A264;
+        Mon, 13 Jun 2022 03:13:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 95CD561481;
+        Mon, 13 Jun 2022 10:13:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A219FC34114;
+        Mon, 13 Jun 2022 10:13:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655115230;
+        bh=f4Sar/WvzR2BqS9FayKm4bduJaQEzWXxAM2xpEH8zkw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=QsZ51D7bt7OQUhqnWwEhkv4u4hFAGnNSHCwWYO2Mf/B6zedtzIeJNPLnQX0fozsad
+         S89dIuTjZLPVLG86/gG5jQLGOWvOAAn/4MAVGAjMCC1rD0wVC/NypcpCO7Dp2tTpDL
+         D72EyZq3kT5irKAoMHjuFlWhCFeoq4savG3a2Mto=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Monish Kumar R <monish.kumar.r@intel.com>
+Subject: [PATCH 4.9 001/167] USB: new quirk for Dell Gen 2 devices
+Date:   Mon, 13 Jun 2022 12:07:55 +0200
+Message-Id: <20220613094841.063571427@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
+References: <20220613094840.720778945@linuxfoundation.org>
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Constify the drv data because it should not be modified (used by
-multiple devices).
+From: Monish Kumar R <monish.kumar.r@intel.com>
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+commit 97fa5887cf283bb75ffff5f6b2c0e71794c02400 upstream.
+
+Add USB_QUIRK_NO_LPM and USB_QUIRK_RESET_RESUME quirks for Dell usb gen
+2 device to not fail during enumeration.
+
+Found this bug on own testing
+
+Signed-off-by: Monish Kumar R <monish.kumar.r@intel.com>
+Cc: stable <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220520130044.17303-1-monish.kumar.r@intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/ufs/host/ufs-exynos.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/usb/core/quirks.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/ufs/host/ufs-exynos.c b/drivers/ufs/host/ufs-exynos.c
-index a81d8cbd542f..9fef706d896e 100644
---- a/drivers/ufs/host/ufs-exynos.c
-+++ b/drivers/ufs/host/ufs-exynos.c
-@@ -157,7 +157,6 @@ enum {
+--- a/drivers/usb/core/quirks.c
++++ b/drivers/usb/core/quirks.c
+@@ -328,6 +328,9 @@ static const struct usb_device_id usb_qu
+ 	/* DJI CineSSD */
+ 	{ USB_DEVICE(0x2ca3, 0x0031), .driver_info = USB_QUIRK_NO_LPM },
  
- #define CNTR_DIV_VAL 40
++	/* DELL USB GEN2 */
++	{ USB_DEVICE(0x413c, 0xb062), .driver_info = USB_QUIRK_NO_LPM | USB_QUIRK_RESET_RESUME },
++
+ 	/* VCOM device */
+ 	{ USB_DEVICE(0x4296, 0x7570), .driver_info = USB_QUIRK_CONFIG_INTF_STRINGS },
  
--static struct exynos_ufs_drv_data exynos_ufs_drvs;
- static void exynos_ufs_auto_ctrl_hcc(struct exynos_ufs *ufs, bool en);
- static void exynos_ufs_ctrl_clkstop(struct exynos_ufs *ufs, bool en);
- 
-@@ -1473,7 +1472,7 @@ static int exynosauto_ufs_vh_init(struct ufs_hba *hba)
- 	return 0;
- }
- 
--static struct ufs_hba_variant_ops ufs_hba_exynos_ops = {
-+static const struct ufs_hba_variant_ops ufs_hba_exynos_ops = {
- 	.name				= "exynos_ufs",
- 	.init				= exynos_ufs_init,
- 	.hce_enable_notify		= exynos_ufs_hce_enable_notify,
-@@ -1545,7 +1544,7 @@ static struct exynos_ufs_uic_attr exynos7_uic_attr = {
- 	.pa_dbg_option_suite		= 0x30103,
- };
- 
--static struct exynos_ufs_drv_data exynosauto_ufs_drvs = {
-+static const struct exynos_ufs_drv_data exynosauto_ufs_drvs = {
- 	.uic_attr		= &exynos7_uic_attr,
- 	.quirks			= UFSHCD_QUIRK_PRDT_BYTE_GRAN |
- 				  UFSHCI_QUIRK_SKIP_RESET_INTR_AGGR |
-@@ -1561,7 +1560,7 @@ static struct exynos_ufs_drv_data exynosauto_ufs_drvs = {
- 	.post_pwr_change	= exynosauto_ufs_post_pwr_change,
- };
- 
--static struct exynos_ufs_drv_data exynosauto_ufs_vh_drvs = {
-+static const struct exynos_ufs_drv_data exynosauto_ufs_vh_drvs = {
- 	.vops			= &ufs_hba_exynosauto_vh_ops,
- 	.quirks			= UFSHCD_QUIRK_PRDT_BYTE_GRAN |
- 				  UFSHCI_QUIRK_SKIP_RESET_INTR_AGGR |
-@@ -1573,7 +1572,7 @@ static struct exynos_ufs_drv_data exynosauto_ufs_vh_drvs = {
- 	.opts			= EXYNOS_UFS_OPT_BROKEN_RX_SEL_IDX,
- };
- 
--static struct exynos_ufs_drv_data exynos_ufs_drvs = {
-+static const struct exynos_ufs_drv_data exynos_ufs_drvs = {
- 	.uic_attr		= &exynos7_uic_attr,
- 	.quirks			= UFSHCD_QUIRK_PRDT_BYTE_GRAN |
- 				  UFSHCI_QUIRK_BROKEN_REQ_LIST_CLR |
--- 
-2.34.1
+
 
