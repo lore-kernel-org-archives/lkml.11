@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2AD9CCA48D
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:10:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCC99CCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:10:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381622AbiFMOIq (ORCPT
+        id S1381045AbiFMOHr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:08:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43286 "EHLO
+        Mon, 13 Jun 2022 10:07:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381082AbiFMODr (ORCPT
+        with ESMTP id S1380851AbiFMOCI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:03:47 -0400
+        Mon, 13 Jun 2022 10:02:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD83490CEB;
-        Mon, 13 Jun 2022 04:38:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C3BC8E18C;
+        Mon, 13 Jun 2022 04:38:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 568F2612AC;
-        Mon, 13 Jun 2022 11:38:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67957C34114;
-        Mon, 13 Jun 2022 11:38:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 10AFA612AC;
+        Mon, 13 Jun 2022 11:38:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 233CBC34114;
+        Mon, 13 Jun 2022 11:38:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120316;
-        bh=B7tnLXZ9zOFwqW4lhSdUyligTwXyJWYFGo6O+Ex6O7U=;
+        s=korg; t=1655120292;
+        bh=ESJOXc+ulgUDWDeGKaExj2KeP38AFg76sXrosl5PjqU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HClw81wntL9SkZ79h/qcnnfKvERNZ+bm74O5QC94Reb5E7nmjxYNT700gLoblsLtF
-         aI/qX6ziHXOwZvQt4U6HYEBmIoOPgBYQZyhtf7Ug/HvqjEroZxAmTLgaKyQyEIgHAH
-         ypYz8+TxhDDLAKX8yFFpZ99vgZbOSyTJnAhOcFco=
+        b=VEP5UoulzWNunN4RrukIYGNzdMyrmAEBM3FdO7olRgEspP3QM2er0Ay4k2by/d7o+
+         CWWMiXaFVZEfZEuvN8E9kj6qpd7kII7mTJc96/c988tTId3DZ732J/dMOEejWyDIpR
+         h6mGXE5pfLbwWE5Axg6c8jdmVCSWudZOI/w6UD6Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Tyler Erickson <tyler.erickson@seagate.com>,
-        Muhammad Ahmad <muhammad.ahmad@seagate.com>,
-        Michael English <michael.english@seagate.com>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Subject: [PATCH 5.18 309/339] libata: fix reading concurrent positioning ranges log
-Date:   Mon, 13 Jun 2022 12:12:14 +0200
-Message-Id: <20220613094936.128065828@linuxfoundation.org>
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Olivier Matz <olivier.matz@6wind.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 5.18 320/339] ixgbe: fix bcast packets Rx on VF after promisc removal
+Date:   Mon, 13 Jun 2022 12:12:25 +0200
+Message-Id: <20220613094936.453729811@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -52,76 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tyler Erickson <tyler.erickson@seagate.com>
+From: Olivier Matz <olivier.matz@6wind.com>
 
-commit c745dfc541e78428ba3986f1d17fe1dfdaca8184 upstream.
+commit 803e9895ea2b0fe80bc85980ae2d7a7e44037914 upstream.
 
-The concurrent positioning ranges log is not a fixed size and may depend
-on how many ranges are supported by the device. This patch uses the size
-reported in the GPL directory to determine the number of pages supported
-by the device before attempting to read this log page.
+After a VF requested to remove the promiscuous flag on an interface, the
+broadcast packets are not received anymore. This breaks some protocols
+like ARP.
 
-This resolves this error from the dmesg output:
-    ata6.00: Read log 0x47 page 0x00 failed, Emask 0x1
+In ixgbe_update_vf_xcast_mode(), we should keep the IXGBE_VMOLR_BAM
+bit (Broadcast Accept) on promiscuous removal.
 
+This flag is already set by default in ixgbe_set_vmolr() on VF reset.
+
+Fixes: 8443c1a4b192 ("ixgbe, ixgbevf: Add new mbox API xcast mode")
 Cc: stable@vger.kernel.org
-Fixes: fe22e1c2f705 ("libata: support concurrent positioning ranges log")
-Signed-off-by: Tyler Erickson <tyler.erickson@seagate.com>
-Reviewed-by: Muhammad Ahmad <muhammad.ahmad@seagate.com>
-Tested-by: Michael English <michael.english@seagate.com>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Cc: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Signed-off-by: Olivier Matz <olivier.matz@6wind.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/ata/libata-core.c |   21 +++++++++++++--------
- 1 file changed, 13 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/ata/libata-core.c
-+++ b/drivers/ata/libata-core.c
-@@ -2003,16 +2003,16 @@ retry:
- 	return err_mask;
- }
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
+@@ -1184,9 +1184,9 @@ static int ixgbe_update_vf_xcast_mode(st
  
--static bool ata_log_supported(struct ata_device *dev, u8 log)
-+static int ata_log_supported(struct ata_device *dev, u8 log)
- {
- 	struct ata_port *ap = dev->link->ap;
- 
- 	if (dev->horkage & ATA_HORKAGE_NO_LOG_DIR)
--		return false;
-+		return 0;
- 
- 	if (ata_read_log_page(dev, ATA_LOG_DIRECTORY, 0, ap->sector_buf, 1))
--		return false;
--	return get_unaligned_le16(&ap->sector_buf[log * 2]) ? true : false;
-+		return 0;
-+	return get_unaligned_le16(&ap->sector_buf[log * 2]);
- }
- 
- static bool ata_identify_page_supported(struct ata_device *dev, u8 page)
-@@ -2448,15 +2448,20 @@ static void ata_dev_config_cpr(struct at
- 	struct ata_cpr_log *cpr_log = NULL;
- 	u8 *desc, *buf = NULL;
- 
--	if (ata_id_major_version(dev->id) < 11 ||
--	    !ata_log_supported(dev, ATA_LOG_CONCURRENT_POSITIONING_RANGES))
-+	if (ata_id_major_version(dev->id) < 11)
-+		goto out;
-+
-+	buf_len = ata_log_supported(dev, ATA_LOG_CONCURRENT_POSITIONING_RANGES);
-+	if (buf_len == 0)
- 		goto out;
- 
- 	/*
- 	 * Read the concurrent positioning ranges log (0x47). We can have at
--	 * most 255 32B range descriptors plus a 64B header.
-+	 * most 255 32B range descriptors plus a 64B header. This log varies in
-+	 * size, so use the size reported in the GPL directory. Reading beyond
-+	 * the supported length will result in an error.
- 	 */
--	buf_len = (64 + 255 * 32 + 511) & ~511;
-+	buf_len <<= 9;
- 	buf = kzalloc(buf_len, GFP_KERNEL);
- 	if (!buf)
- 		goto out;
+ 	switch (xcast_mode) {
+ 	case IXGBEVF_XCAST_MODE_NONE:
+-		disable = IXGBE_VMOLR_BAM | IXGBE_VMOLR_ROMPE |
++		disable = IXGBE_VMOLR_ROMPE |
+ 			  IXGBE_VMOLR_MPE | IXGBE_VMOLR_UPE | IXGBE_VMOLR_VPE;
+-		enable = 0;
++		enable = IXGBE_VMOLR_BAM;
+ 		break;
+ 	case IXGBEVF_XCAST_MODE_MULTI:
+ 		disable = IXGBE_VMOLR_MPE | IXGBE_VMOLR_UPE | IXGBE_VMOLR_VPE;
 
 
