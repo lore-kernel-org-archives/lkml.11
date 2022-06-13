@@ -2,44 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 884BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:02:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85487C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:03:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351059AbiFMLC4 (ORCPT
+        id S1351073AbiFMLDA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:02:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44368 "EHLO
+        Mon, 13 Jun 2022 07:03:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350425AbiFMKyw (ORCPT
+        with ESMTP id S1350446AbiFMKyx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:54:52 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 812901FA52;
-        Mon, 13 Jun 2022 03:31:27 -0700 (PDT)
+        Mon, 13 Jun 2022 06:54:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BDE41FCC5;
+        Mon, 13 Jun 2022 03:31:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EE17ACE1171;
-        Mon, 13 Jun 2022 10:31:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9729C34114;
-        Mon, 13 Jun 2022 10:31:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2E982B80E95;
+        Mon, 13 Jun 2022 10:31:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B3A4C34114;
+        Mon, 13 Jun 2022 10:31:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116284;
-        bh=h4DIRPIkd+t7iQudHWhOEiQWDM93GOEVD1Vy7LOVC1E=;
+        s=korg; t=1655116286;
+        bh=WJKezceScWpwuogH7Ln9ygnL5mdPWPe/wM/EUdXItTk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HrT+aOdKj3jVa8v5Dq//OyQpj/szBcr0LdJqGHyUWzcKOg+ilwdn0Ov7JOjAEiPHR
-         ShjB77/oO0Lhlt7XVfnwM8s7dSbJ61Wnt19rFAKnIjBZnXZrb1BeaZsYxjnJ5HChPp
-         Yg/t4k17/jUXdmYsnGt74BA7XdtHLPcUZF0dhOik=
+        b=eKEGb8l/n6hlZJ0njH3q/hYTmiAz6lXacrGYwIhZWewPG1jq2fs+y6aJUsEgkbjKr
+         YXKLKPxnqCK/qJ2HTfFWd8/qmMyZY3TpVvnGwcvnLm9orgirckpTprkSj7lg995Czz
+         3UYl9e52Qsb0mxpvR869pSEb6Le2SS1l/N/BFsG0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@st.com>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        stable@vger.kernel.org, Leo Yan <leo.yan@linaro.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        Joe Mario <jmario@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 155/218] serial: st-asc: Sanitize CSIZE and correct PARENB for CS7
-Date:   Mon, 13 Jun 2022 12:10:13 +0200
-Message-Id: <20220613094925.295221300@linuxfoundation.org>
+Subject: [PATCH 4.14 164/218] perf c2c: Fix sorting in percent_rmt_hitm_cmp()
+Date:   Mon, 13 Jun 2022 12:10:22 +0200
+Message-Id: <20220613094925.573296379@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -51,47 +56,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+From: Leo Yan <leo.yan@linaro.org>
 
-[ Upstream commit 52bb1cb7118564166b04d52387bd8403632f5190 ]
+[ Upstream commit b24192a17337abbf3f44aaa75e15df14a2d0016e ]
 
-Only CS7 and CS8 seem supported but CSIZE is not sanitized from CS5 or
-CS6 to CS8. In addition, ASC_CTL_MODE_7BIT_PAR suggests that CS7 has
-to have parity, thus add PARENB.
+The function percent_rmt_hitm_cmp() wrongly uses local HITMs for
+sorting remote HITMs.
 
-Incorrect CSIZE results in miscalculation of the frame bits in
-tty_get_char_size() or in its predecessor where the roughly the same
-code is directly within uart_update_timeout().
+Since this function is to sort cache lines for remote HITMs, this patch
+changes to use 'rmt_hitm' field for correct sorting.
 
-Fixes: c4b058560762 (serial:st-asc: Add ST ASC driver.)
-Cc: Srinivas Kandagatla <srinivas.kandagatla@st.com>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/20220519081808.3776-8-ilpo.jarvinen@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 9cb3500afc0980c5 ("perf c2c report: Add hitm/store percent related sort keys")
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
+Acked-by: Namhyung Kim <namhyung@kernel.org>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Joe Mario <jmario@redhat.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220530084253.750190-1-leo.yan@linaro.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/st-asc.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ tools/perf/builtin-c2c.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
-index b313a792b149..44d52c087c56 100644
---- a/drivers/tty/serial/st-asc.c
-+++ b/drivers/tty/serial/st-asc.c
-@@ -545,10 +545,14 @@ static void asc_set_termios(struct uart_port *port, struct ktermios *termios,
- 	/* set character length */
- 	if ((cflag & CSIZE) == CS7) {
- 		ctrl_val |= ASC_CTL_MODE_7BIT_PAR;
-+		cflag |= PARENB;
- 	} else {
- 		ctrl_val |= (cflag & PARENB) ?  ASC_CTL_MODE_8BIT_PAR :
- 						ASC_CTL_MODE_8BIT;
-+		cflag &= ~CSIZE;
-+		cflag |= CS8;
- 	}
-+	termios->c_cflag = cflag;
+diff --git a/tools/perf/builtin-c2c.c b/tools/perf/builtin-c2c.c
+index 9cbd8b0d5b77..729e5f137963 100644
+--- a/tools/perf/builtin-c2c.c
++++ b/tools/perf/builtin-c2c.c
+@@ -886,8 +886,8 @@ percent_rmt_hitm_cmp(struct perf_hpp_fmt *fmt __maybe_unused,
+ 	double per_left;
+ 	double per_right;
  
- 	/* set stop bit */
- 	ctrl_val |= (cflag & CSTOPB) ? ASC_CTL_STOP_2BIT : ASC_CTL_STOP_1BIT;
+-	per_left  = PERCENT(left, lcl_hitm);
+-	per_right = PERCENT(right, lcl_hitm);
++	per_left  = PERCENT(left, rmt_hitm);
++	per_right = PERCENT(right, rmt_hitm);
+ 
+ 	return per_left - per_right;
+ }
 -- 
 2.35.1
 
