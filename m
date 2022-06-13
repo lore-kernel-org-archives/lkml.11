@@ -2,90 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01148C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:01:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D299C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:01:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346123AbiFMTBP (ORCPT
+        id S1346560AbiFMTBk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:01:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45904 "EHLO
+        Mon, 13 Jun 2022 15:01:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346238AbiFMTAT (ORCPT
+        with ESMTP id S1346301AbiFMTAy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 15:00:19 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C314599696
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 09:19:45 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id d125-20020a636883000000b003db5e24db27so3606866pgc.13
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 09:19:45 -0700 (PDT)
+        Mon, 13 Jun 2022 15:00:54 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5744B99813
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 09:26:15 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id g8so311611plt.8
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 09:26:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:message-id:mime-version:subject:from:to:cc;
-        bh=tBGKoaqTyFq4mhd8hJg4IAsXKcwBUi8nZnrjhPy9tbs=;
-        b=cqWhUzx1G8LbAkjjC0yKje1DM9bRasRid++QwMSv6QwcL347OdAirlHlpvcTPbuAci
-         St2hTRZRcFNbx1Bihwo/+78YRZ2bOwQLilIyqDYwGqVD5jdhoV/mRy6vy7C63iUcJO+v
-         Q85S53kbXkqE0mD2EssqrT1WhUU5FyL6cSrlz0nZQ80UJfWYJkX1AwtR+QS5CADhMbBD
-         XLa6rKWcy2GWtNHBdyS8BdOiu4fdN+ivSUEOCqezWmZ7lsfjhZOQtntfV+lo/rbM4UOG
-         qKrq4L0TN76vpgH1YChETmeWeCABLlmJ6035mIYwp70tmKWd0gxtmZPVQTouC48a0lAq
-         WpzQ==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=J1RWi167fIKnMNjaR08zesQVT30i6h2kbyWDzKMWE+4=;
+        b=ehDqdc1siKQKeniiqCQs4IItLbHYD47+/BZiGU/Zb0uftr9ePdeUHFrYDj2XTq9XCP
+         1Kh61Ls/0kMl9beuCjp7fd9H84EOIUDX57h4+F/Y1gegbMXXPY2BFD8BQ9f0gSTFL5U+
+         liiYTQW1PmpItIc8cC2nAgYkakZalTQD/JRgo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:message-id:mime-version:subject
-         :from:to:cc;
-        bh=tBGKoaqTyFq4mhd8hJg4IAsXKcwBUi8nZnrjhPy9tbs=;
-        b=Bn7B6TGDY86SEV+yjWZWjBvv6ErVyyWIudCdpfJWdOvNmMUBVMNDs1+mKpzmTbORRC
-         R7uWyIIV/cdOKUrxr7k9ysnIMhcd0Zk+jUe5AeyL8QkHaV6whGwIBwWRb09kuVVTOXgM
-         n31VhXVegDc8B+CwgMk40dC/1mjEegg4PvEbbEqIKlQ5CMPTxZ+HL4DXf9nOYKo0heUs
-         166SnFeFU9JC4orzyofq8xF2HhTBWrA+ZUZOkCRwSiGZzLQz+2aRld1u8yDzvSFwjTJd
-         qdjmwvwBPadtV7p6sRop/XuRAHKSWEzX+Cqozm6iiDfe6qS9UFS9xkBPkiWbEJfi61xh
-         BjBQ==
-X-Gm-Message-State: AOAM533+/DFzZkXe4mDR/LOZTwM5Il9CzaUaumy5++Zh5+I2rv5MojoM
-        bsWE6sHgL0WH6pdD6eQ7QsKz6p12bZw=
-X-Google-Smtp-Source: ABdhPJyAU+rsKytZ5oc49Rl+a8soAa6X65jdGz1tfrsz0BQM7dBobS9Lu7hc+Rj33QmNdj55e0Vqe66s1vM=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:2353:b0:520:6d4f:4594 with SMTP id
- j19-20020a056a00235300b005206d4f4594mr130246pfj.34.1655137185274; Mon, 13 Jun
- 2022 09:19:45 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Mon, 13 Jun 2022 16:19:38 +0000
-Message-Id: <20220613161942.1586791-1-seanjc@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH 0/4] KVM: selftests: Fixups for overhaul
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Andrew Jones <drjones@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=J1RWi167fIKnMNjaR08zesQVT30i6h2kbyWDzKMWE+4=;
+        b=73zlpjTGtNEU4pqYmcAJ0LBj5ikGrhhy9p6H/QH5gHHjC7xsj16KPuYRFriMrPokvk
+         EQeMugPPGH7AbWz77DzFXc4kg8n+WjHgQTHpdfswi/DK6nlfNj3gzj1/G4eC4cz3xGpI
+         Hvs856ttUpyVos1DYw83fDbnMvu5B3QFYOq5Vrs/I0DNKJBYhK6d0ky7khbWsZMz/ogm
+         eIkU6FA1Hk3XqEwUVNev12Mc5Ppn81eUS6MPaQYlOxodaXwlW5qV3QKmTNA8pd9SNEAV
+         943rcu36OHqupYfUbkc4ZRJrGmb6OfMU2KZ9sMluOeKjS2kKBJM7LO1/QKaQWlffEGma
+         3/dA==
+X-Gm-Message-State: AOAM532dgsO+g/oMKs8dPopsm7QaEYfDwqy5Igb/vHBRArEJxcdOEv5i
+        Tg9kBO0+B6WFgODgnqFYepfNTQ==
+X-Google-Smtp-Source: ABdhPJxSn/zEAGXFFALT3BQJdt0yv827pjR4PNAAROwuNxZWh+wV+7HZ0h+SSHcbzzyihGdIecqB2w==
+X-Received: by 2002:a17:90b:4ac8:b0:1e3:4f6a:2d04 with SMTP id mh8-20020a17090b4ac800b001e34f6a2d04mr16793660pjb.233.1655137574841;
+        Mon, 13 Jun 2022 09:26:14 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id s13-20020aa78d4d000000b0051c70fd5263sm5587153pfe.169.2022.06.13.09.26.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 09:26:14 -0700 (PDT)
+From:   Kees Cook <keescook@chromium.org>
+To:     samitolvanen@google.com
+Cc:     Kees Cook <keescook@chromium.org>, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, ndesaulniers@google.com, nathan@kernel.org,
+        paulmck@kernel.org
+Subject: Re: [PATCH] cfi: Fix __cfi_slowpath_diag RCU usage with cpuidle
+Date:   Mon, 13 Jun 2022 09:26:10 -0700
+Message-Id: <165513756775.2849041.2389986534725002694.b4-ty@chromium.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220531175910.890307-1-samitolvanen@google.com>
+References: <20220531175910.890307-1-samitolvanen@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fixups for the overhaul, all of which come from Drew's code review.  The
-first three should all squash cleanly, but the kvm_check_cap() patch will
-not due to crossing the TEST_REQUIRE() boundary.
+On Tue, 31 May 2022 10:59:10 -0700, Sami Tolvanen wrote:
+> RCU_NONIDLE usage during __cfi_slowpath_diag can result in an invalid
+> RCU state in the cpuidle code path:
+> 
+>   WARNING: CPU: 1 PID: 0 at kernel/rcu/tree.c:613 rcu_eqs_enter+0xe4/0x138
+>   ...
+>   Call trace:
+>     rcu_eqs_enter+0xe4/0x138
+>     rcu_idle_enter+0xa8/0x100
+>     cpuidle_enter_state+0x154/0x3a8
+>     cpuidle_enter+0x3c/0x58
+>     do_idle.llvm.6590768638138871020+0x1f4/0x2ec
+>     cpu_startup_entry+0x28/0x2c
+>     secondary_start_kernel+0x1b8/0x220
+>     __secondary_switched+0x94/0x98
+> 
+> [...]
 
-Sean Christopherson (4):
-  KVM: selftests: Add a missing apostrophe in comment to show ownership
-  KVM: selftests: Call a dummy helper in VM/vCPU ioctls() to enforce
-    type
-  KVM: selftests: Drop a duplicate TEST_ASSERT() in
-    vm_nr_pages_required()
-  KVM: selftests: Use kvm_has_cap(), not kvm_check_cap(), where possible
+Applied to for-next/hardening, thanks!
 
- .../testing/selftests/kvm/aarch64/psci_test.c |  2 +-
- .../selftests/kvm/include/kvm_util_base.h     | 57 ++++++++++---------
- tools/testing/selftests/kvm/lib/kvm_util.c    |  6 +-
- .../selftests/kvm/lib/x86_64/processor.c      |  4 +-
- .../selftests/kvm/s390x/sync_regs_test.c      |  2 +-
- .../kvm/x86_64/pmu_event_filter_test.c        |  2 +-
- .../selftests/kvm/x86_64/sev_migrate_tests.c  |  6 +-
- tools/testing/selftests/kvm/x86_64/smm_test.c |  2 +-
- .../testing/selftests/kvm/x86_64/state_test.c |  2 +-
- 9 files changed, 42 insertions(+), 41 deletions(-)
+[1/1] cfi: Fix __cfi_slowpath_diag RCU usage with cpuidle
+      https://git.kernel.org/kees/c/57cd6d157eb4
 
-
-base-commit: 8baacf67c76c560fed954ac972b63e6e59a6fba0
 -- 
-2.36.1.476.g0c4daa206d-goog
+Kees Cook
 
