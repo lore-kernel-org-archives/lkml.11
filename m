@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 928F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:21:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B60AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:21:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243379AbiFMKVN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:21:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43950 "EHLO
+        id S243136AbiFMKVQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:21:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242961AbiFMKUn (ORCPT
+        with ESMTP id S242994AbiFMKUo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:20:43 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7E1BD5A;
-        Mon, 13 Jun 2022 03:17:26 -0700 (PDT)
+        Mon, 13 Jun 2022 06:20:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6631EF47;
+        Mon, 13 Jun 2022 03:17:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 67726CE1102;
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4BE4B80E94;
+        Mon, 13 Jun 2022 10:17:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 295A2C3411E;
         Mon, 13 Jun 2022 10:17:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E03BC34114;
-        Mon, 13 Jun 2022 10:17:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115442;
-        bh=L+loGqkh9a3KGhATRv0kKG+dx/ozURz4KOnBC5vg7JQ=;
+        s=korg; t=1655115445;
+        bh=+l/Nx/a5XALx/gZy/D7ecejLI4B/gZmd54H3ChmGk+g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a477uGgfAjlgfGuuopiJhsbhXWHxRU+Vy9NolW+kfjhPiSFH9DaDB5JGwJKwgHmnb
-         EOkC4BvDqfAb0owXafxz9WsqJgjulwFHbZdhN6O78ubHTFQOSQCXPYKN5dWmpiH5zi
-         YWGmiLuG41yzENtG8Z/RCx6jR4zwIw6A5ldT0kV4=
+        b=avmgUTfCt6LNvXugK6QUuVOG3Ok7GrZyi4WwELh7jegrLbjQeedC3IOyA1WAJ72fX
+         XFhDOCowiZA81iHn7bgktBZJLw4FraLHKB/Bg/QdliHl3760FxhTtJYPp7J/ixrj4T
+         8TRbCWHD4Jwh3Rp12u9owe0CKbNV5p7zPsaAD/0c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 4.9 075/167] wifi: mac80211: fix use-after-free in chanctx code
-Date:   Mon, 13 Jun 2022 12:09:09 +0200
-Message-Id: <20220613094858.490570668@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Gregory Greenman <gregory.greenman@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH 4.9 076/167] iwlwifi: mvm: fix assert 1F04 upon reconfig
+Date:   Mon, 13 Jun 2022 12:09:10 +0200
+Message-Id: <20220613094858.677567856@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -48,48 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
 
-commit 2965c4cdf7ad9ce0796fac5e57debb9519ea721e upstream.
+commit 9d096e3d3061dbf4ee10e2b59fc2c06e05bdb997 upstream.
 
-In ieee80211_vif_use_reserved_context(), when we have an
-old context and the new context's replace_state is set to
-IEEE80211_CHANCTX_REPLACE_NONE, we free the old context
-in ieee80211_vif_use_reserved_reassign(). Therefore, we
-cannot check the old_ctx anymore, so we should set it to
-NULL after this point.
+When we reconfig we must not send the MAC_POWER command that relates to
+a MAC that was not yet added to the firmware.
 
-However, since the new_ctx replace state is clearly not
-IEEE80211_CHANCTX_REPLACES_OTHER, we're not going to do
-anything else in this function and can just return to
-avoid accessing the freed old_ctx.
+Ignore those in the iterator.
 
 Cc: stable@vger.kernel.org
-Fixes: 5bcae31d9cb1 ("mac80211: implement multi-vif in-place reservations")
+Signed-off-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+Signed-off-by: Gregory Greenman <gregory.greenman@intel.com>
+Link: https://lore.kernel.org/r/20220517120044.ed2ffc8ce732.If786e19512d0da4334a6382ea6148703422c7d7b@changeid
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220601091926.df419d91b165.I17a9b3894ff0b8323ce2afdb153b101124c821e5@changeid
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/mac80211/chan.c |    7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/power.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/net/mac80211/chan.c
-+++ b/net/mac80211/chan.c
-@@ -1640,12 +1640,9 @@ int ieee80211_vif_use_reserved_context(s
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/power.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/power.c
+@@ -612,6 +612,9 @@ static void iwl_mvm_power_get_vifs_itera
+ 	struct iwl_mvm_vif *mvmvif = iwl_mvm_vif_from_mac80211(vif);
+ 	struct iwl_power_vifs *power_iterator = _data;
  
- 	if (new_ctx->replace_state == IEEE80211_CHANCTX_REPLACE_NONE) {
- 		if (old_ctx)
--			err = ieee80211_vif_use_reserved_reassign(sdata);
--		else
--			err = ieee80211_vif_use_reserved_assign(sdata);
-+			return ieee80211_vif_use_reserved_reassign(sdata);
- 
--		if (err)
--			return err;
-+		return ieee80211_vif_use_reserved_assign(sdata);
- 	}
- 
- 	/*
++	if (!mvmvif->uploaded)
++		return;
++
+ 	switch (ieee80211_vif_type_p2p(vif)) {
+ 	case NL80211_IFTYPE_P2P_DEVICE:
+ 		break;
 
 
