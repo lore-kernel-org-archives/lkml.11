@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FB58C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:15:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC8BBC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:15:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238878AbiFMMP2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:15:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59994 "EHLO
+        id S1353190AbiFMMPa (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 08:15:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354377AbiFMMJ4 (ORCPT
+        with ESMTP id S1352007AbiFMMLK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:09:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CD7B532FA;
-        Mon, 13 Jun 2022 04:00:54 -0700 (PDT)
+        Mon, 13 Jun 2022 08:11:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE1745371E;
+        Mon, 13 Jun 2022 04:00:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CDAB61469;
-        Mon, 13 Jun 2022 11:00:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34875C34114;
-        Mon, 13 Jun 2022 11:00:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 885C1B80D31;
+        Mon, 13 Jun 2022 11:00:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E084EC34114;
+        Mon, 13 Jun 2022 11:00:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118052;
-        bh=oMk0Ft44FqbK0peOx4FqfoOomQEWe7BHGqVBQiA0TKU=;
+        s=korg; t=1655118055;
+        bh=65/yejpU7NuGLhnXbSUNFdcZsbzhwZoUOcMDoZzeHIw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eVxwMdZ/BQpib8SkdTsnqWpcioncg0vr3//BKCyASYakddMwKeSL9D2R0WPehAh8M
-         E/cqI5lFp3KJaM/pawY3b30q64HxZ7t72lxp/q173IVoJHi7G2v8TZ+I+I3ZXscOqX
-         ZuqNlHv9dr/gRpJIMcYKac8Pt6p1sZ44+apd9Jg0=
+        b=JOcte/iqvnclSdmUNjbm5zmN7JaGNzE/GQZjKShsT+cCrqdmijCerNyYQPLzWTyJ0
+         LT13EvahAGXMPQh/65dcEYXENWSWA393Iyz1eZ8Eee9QZNWuVC/0kbNLdzZOQqA2UQ
+         emBcJw8r1/m7xltfuKNoFGbgv97NKYR0wNv7UM7k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Harald Freudenberger <freude@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 214/287] clocksource/drivers/oxnas-rps: Fix irq_of_parse_and_map() return value
-Date:   Mon, 13 Jun 2022 12:10:38 +0200
-Message-Id: <20220613094930.351836885@linuxfoundation.org>
+Subject: [PATCH 4.19 215/287] s390/crypto: fix scatterwalk_unmap() callers in AES-GCM
+Date:   Mon, 13 Jun 2022 12:10:39 +0200
+Message-Id: <20220613094930.381845227@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -51,35 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Jann Horn <jannh@google.com>
 
-[ Upstream commit 9c04a8ff03def4df3f81219ffbe1ec9b44ff5348 ]
+[ Upstream commit bd52cd5e23f134019b23f0c389db0f9a436e4576 ]
 
-The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
+The argument of scatterwalk_unmap() is supposed to be the void* that was
+returned by the previous scatterwalk_map() call.
+The s390 AES-GCM implementation was instead passing the pointer to the
+struct scatter_walk.
 
-Fixes: 89355274e1f7 ("clocksource/drivers/oxnas-rps: Add Oxford Semiconductor RPS Dual Timer")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20220422104101.55754-1-krzysztof.kozlowski@linaro.org
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+This doesn't actually break anything because scatterwalk_unmap() only uses
+its argument under CONFIG_HIGHMEM and ARCH_HAS_FLUSH_ON_KUNMAP.
+
+Fixes: bf7fa038707c ("s390/crypto: add s390 platform specific aes gcm support.")
+Signed-off-by: Jann Horn <jannh@google.com>
+Acked-by: Harald Freudenberger <freude@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220517143047.3054498-1-jannh@google.com
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clocksource/timer-oxnas-rps.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/s390/crypto/aes_s390.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/clocksource/timer-oxnas-rps.c b/drivers/clocksource/timer-oxnas-rps.c
-index 30c6f4ce672b..cfcd54e66c57 100644
---- a/drivers/clocksource/timer-oxnas-rps.c
-+++ b/drivers/clocksource/timer-oxnas-rps.c
-@@ -247,7 +247,7 @@ static int __init oxnas_rps_timer_init(struct device_node *np)
+diff --git a/arch/s390/crypto/aes_s390.c b/arch/s390/crypto/aes_s390.c
+index 2bc189187ed4..c663caf37ba4 100644
+--- a/arch/s390/crypto/aes_s390.c
++++ b/arch/s390/crypto/aes_s390.c
+@@ -861,7 +861,7 @@ static inline void _gcm_sg_unmap_and_advance(struct gcm_sg_walk *gw,
+ 					     unsigned int nbytes)
+ {
+ 	gw->walk_bytes_remain -= nbytes;
+-	scatterwalk_unmap(&gw->walk);
++	scatterwalk_unmap(gw->walk_ptr);
+ 	scatterwalk_advance(&gw->walk, nbytes);
+ 	scatterwalk_done(&gw->walk, 0, gw->walk_bytes_remain);
+ 	gw->walk_ptr = NULL;
+@@ -936,7 +936,7 @@ static int gcm_out_walk_go(struct gcm_sg_walk *gw, unsigned int minbytesneeded)
+ 		goto out;
  	}
  
- 	rps->irq = irq_of_parse_and_map(np, 0);
--	if (rps->irq < 0) {
-+	if (!rps->irq) {
- 		ret = -EINVAL;
- 		goto err_iomap;
- 	}
+-	scatterwalk_unmap(&gw->walk);
++	scatterwalk_unmap(gw->walk_ptr);
+ 	gw->walk_ptr = NULL;
+ 
+ 	gw->ptr = gw->buf;
 -- 
 2.35.1
 
