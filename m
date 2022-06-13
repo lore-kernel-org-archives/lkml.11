@@ -2,96 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CE8AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 05:50:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EB5BCCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 05:50:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232495AbiFMFup (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 01:50:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39708 "EHLO
+        id S233223AbiFMFus (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 01:50:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233218AbiFMFud (ORCPT
+        with ESMTP id S233603AbiFMFuf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 01:50:33 -0400
-X-Greylist: delayed 638 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 12 Jun 2022 22:50:32 PDT
-Received: from SpacedOut.fries.net (SpacedOut.fries.net [IPv6:2001:470:3832:200::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 525645FE6
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 22:50:32 -0700 (PDT)
-Received: from SpacedOut.fries.net (ip6-localhost [IPv6:0:0:0:0:0:0:0:1])
-        by SpacedOut.fries.net (8.15.2/8.15.2/Debian-22) with ESMTPS id 25D5dfdW3963830
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Mon, 13 Jun 2022 00:39:41 -0500
-Received: (from david@localhost)
-        by SpacedOut.fries.net (8.15.2/8.15.2/Submit) id 25D5dfhh3963829;
-        Mon, 13 Jun 2022 00:39:41 -0500
-Date:   Mon, 13 Jun 2022 00:39:41 -0500
-From:   David Fries <David@fries.net>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [PATCH] spi: spidev_test: Warn when the mode is not the requested
- mode
-Message-ID: <YqbNnSGtWHe/GG7w@spacedout.fries.net>
+        Mon, 13 Jun 2022 01:50:35 -0400
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D70D62F4;
+        Sun, 12 Jun 2022 22:50:34 -0700 (PDT)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 6161568AA6; Mon, 13 Jun 2022 07:50:29 +0200 (CEST)
+Date:   Mon, 13 Jun 2022 07:50:29 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Samuel Holland <samuel@sholland.org>
+Cc:     Heiko Stuebner <heiko@sntech.de>, palmer@dabbelt.com,
+        paul.walmsley@sifive.com, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, wefu@redhat.com, guoren@kernel.org,
+        cmuellner@linux.com, philipp.tomsich@vrull.eu, hch@lst.de,
+        atishp@atishpatra.org, anup@brainfault.org, mick@ics.forth.gr,
+        robh+dt@kernel.org, krzk+dt@kernel.org, devicetree@vger.kernel.org,
+        drew@beagleboard.org, Atish Patra <atish.patra@wdc.com>
+Subject: Re: [PATCH 2/3] riscv: Implement Zicbom-based cache management
+ operations
+Message-ID: <20220613055029.GA32155@lst.de>
+References: <20220610004308.1903626-1-heiko@sntech.de> <20220610004308.1903626-3-heiko@sntech.de> <342e3c12-ebb0-badf-7d4c-c444a2b842b2@sholland.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-Greylist: Sender passed SPF test, not delayed by milter-greylist-4.6.2 (SpacedOut.fries.net [IPv6:::1]); Mon, 13 Jun 2022 00:39:41 -0500 (CDT)
+In-Reply-To: <342e3c12-ebb0-badf-7d4c-c444a2b842b2@sholland.org>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Print a warning if the device mode doesn't match the requested mode.
-The user doesn't enter the mode in hex so it isn't obvious when
-setting the mode succeeds that the mode isn't the requested mode.  The
-kernel logs a message, it will be more visible if the test also prints
-a warning.  I was testing --quad, which is unsupported, but doesn't
-cause the mode request to fail.
+On Sun, Jun 12, 2022 at 02:15:00PM -0500, Samuel Holland wrote:
+> > +config RISCV_ISA_ZICBOM
+> > +	bool "Zicbom extension support for non-coherent dma operation"
+> > +	select ARCH_HAS_DMA_PREP_COHERENT
+> > +	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
+> > +	select ARCH_HAS_SYNC_DMA_FOR_CPU
+> > +	select ARCH_HAS_SETUP_DMA_OPS
+> 
+> ARCH_HAS_SETUP_DMA_OPS needs to be separate from the non-coherent DMA option,
+> because iommu_setup_dma_ops() will need to be called from arch_setup_dma_ops()
+> even on a fully-coherent system. (But this change is not strictly necessary for
+> this series.)
 
-Signed-off-by: David Fries <David@Fries.net>
----
-This is the kernel log, I just didn't see it at first.
-spidev spi1.0: setup: ignoring unsupported mode bits 200
+It doesn't need to be separate, you can just add another select for
+the symbol.
 
-I was testing --quad on a Raspberry Pi where I didn't expect it to
-work, which the ioctl didn't return an error, it just cleared the bits
-it didn't support.
+> > +	case DMA_FROM_DEVICE:
+> > +		ALT_CMO_OP(INVAL, (unsigned long)phys_to_virt(paddr), size, riscv_cbom_block_size);
+> > +		break;
+> 
+> arch_sync_dma_for_device(DMA_FROM_DEVICE) is a no-op from the CPU's perspective.
+> Invalidating the CPU's cache goes in arch_sync_dma_for_cpu(DMA_FROM_DEVICE).
 
- tools/spi/spidev_test.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+Only if you guarantee that there is never any speculation.  See:
 
-diff --git a/tools/spi/spidev_test.c b/tools/spi/spidev_test.c
-index 83844f8b862a..5629387bfc56 100644
---- a/tools/spi/spidev_test.c
-+++ b/tools/spi/spidev_test.c
-@@ -417,6 +417,7 @@ int main(int argc, char *argv[])
- {
- 	int ret = 0;
- 	int fd;
-+	uint32_t request;
- 
- 	parse_opts(argc, argv);
- 
-@@ -430,13 +431,23 @@ int main(int argc, char *argv[])
- 	/*
- 	 * spi mode
- 	 */
-+	/* WR is make a request to assign 'mode' */
-+	request = mode;
- 	ret = ioctl(fd, SPI_IOC_WR_MODE32, &mode);
- 	if (ret == -1)
- 		pabort("can't set spi mode");
- 
-+	/* RD is read what mode the device actually is in */
- 	ret = ioctl(fd, SPI_IOC_RD_MODE32, &mode);
- 	if (ret == -1)
- 		pabort("can't get spi mode");
-+	/* Drivers can reject some mode bits without returning an error.
-+	 * Read the current value to identify what mode it is in, and if it
-+	 * differs from the requested mode, warn the user.
-+	 */
-+	if(request != mode)
-+		printf("WARNING device does not support requested mode 0x%x\n",
-+			request);
- 
- 	/*
- 	 * bits per word
--- 
-2.30.2
+https://lore.kernel.org/lkml/20180518175004.GF17671@n2100.armlinux.org.uk
