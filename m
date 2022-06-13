@@ -2,85 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3F81CCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7453CCA483
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:00:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357199AbiFMM6f (ORCPT
+        id S1357274AbiFMM6i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:58:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45650 "EHLO
+        Mon, 13 Jun 2022 08:58:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357877AbiFMMyr (ORCPT
+        with ESMTP id S1357865AbiFMMyr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 08:54:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0199E35843;
-        Mon, 13 Jun 2022 04:13:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 934BE60B6B;
-        Mon, 13 Jun 2022 11:13:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F7D5C3411C;
-        Mon, 13 Jun 2022 11:13:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118813;
-        bh=rw4TGkmtlB52MwOSmtIk41gVTrWyxTXQ60luwPATg3o=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ueVTb4a/FDZFbdS+bviyN6tQGaV6lbMpgQbZ00bdAfs/1lFAMEhCXY2oahh+p79pV
-         tFbzqaf8wAKGsS7gn1iYxhprDCEfIeH9AwgN2H87KM0uvi1xQ1ojDZjUom2m8BKJ7g
-         QHjzdfh+F6HbnkYQw2bRBDnYQgdVyyF7Ro7AN6DI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 019/247] rpmsg: qcom_smd: Fix irq_of_parse_and_map() return value
-Date:   Mon, 13 Jun 2022 12:08:41 +0200
-Message-Id: <20220613094923.512229227@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
-References: <20220613094922.843438024@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E28B3527D
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 04:13:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655118811; x=1686654811;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=5tZQf9EAVDpCey4B5lB7oXuEVWHHk1ZjyHK7x16J6ZM=;
+  b=ldU/JW6nK9bED6IkCxmfPElDCxn9qFpC3ExeZZblTEBLiRxk9qGqUW37
+   xwOwkzz2ZzW9dseFFRPSwKWKopjRI2JGFrRH4P4tl+6NDbB8Zpz3pl/Bv
+   gulnelfCQCOuG0Av2mM9XKfudCniVktjWyDhANDunpNcqaEjZnoTRVxkb
+   C+y2pNojwxfI6jatEjhTdZLyLr4HyouwC14u6HGqGjNQHrl63BI4iYFX+
+   2hZEi9e0awBop3La1QicQIF2Cv8FP8WVhI13SxmSFXZN+0+o9SlID0CyI
+   YBW+DdLFVKlvwtuqKTRQTfUCK1y4El1tdtRsbht46VQU5Xq0SaMwTVLKb
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10376"; a="303644746"
+X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
+   d="scan'208";a="303644746"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 04:13:31 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
+   d="scan'208";a="711970654"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 13 Jun 2022 04:13:29 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o0i0e-000Kl1-SQ;
+        Mon, 13 Jun 2022 11:13:28 +0000
+Date:   Mon, 13 Jun 2022 19:13:26 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Anshuman Khandual <anshuman.khandual@arm.com>, linux-mm@kvack.org
+Cc:     kbuild-all@lists.01.org,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V2 2/2] mm/mmap: Drop generic protection_map[] array
+Message-ID: <202206131931.ZJuanaBo-lkp@intel.com>
+References: <20220613053354.553579-3-anshuman.khandual@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220613053354.553579-3-anshuman.khandual@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Hi Anshuman,
 
-[ Upstream commit 1a358d35066487d228a68303d808bc4721c6b1b9 ]
+Thank you for the patch! Yet something to improve:
 
-The irq_of_parse_and_map() returns 0 on failure, not a negative ERRNO.
+[auto build test ERROR on akpm-mm/mm-everything]
 
-Fixes: 53e2822e56c7 ("rpmsg: Introduce Qualcomm SMD backend")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220422105326.78713-1-krzysztof.kozlowski@linaro.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/rpmsg/qcom_smd.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+url:    https://github.com/intel-lab-lkp/linux/commits/Anshuman-Khandual/mm-mmap-Drop-__SXXX-__PXXX-macros-from-across-platforms/20220613-133456
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-everything
+config: powerpc64-randconfig-r016-20220613 (https://download.01.org/0day-ci/archive/20220613/202206131931.ZJuanaBo-lkp@intel.com/config)
+compiler: powerpc64le-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/696f81b49f7b6316f652d795da4c0008efef4487
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Anshuman-Khandual/mm-mmap-Drop-__SXXX-__PXXX-macros-from-across-platforms/20220613-133456
+        git checkout 696f81b49f7b6316f652d795da4c0008efef4487
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash arch/powerpc/mm/book3s64/
 
-diff --git a/drivers/rpmsg/qcom_smd.c b/drivers/rpmsg/qcom_smd.c
-index 8da1b5cb31b3..775a7e44ac68 100644
---- a/drivers/rpmsg/qcom_smd.c
-+++ b/drivers/rpmsg/qcom_smd.c
-@@ -1404,7 +1404,7 @@ static int qcom_smd_parse_edge(struct device *dev,
- 		edge->name = node->name;
- 
- 	irq = irq_of_parse_and_map(node, 0);
--	if (irq < 0) {
-+	if (!irq) {
- 		dev_err(dev, "required smd interrupt missing\n");
- 		ret = irq;
- 		goto put_node;
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from arch/powerpc/include/asm/page.h:306,
+                    from arch/powerpc/include/asm/mmu.h:149,
+                    from arch/powerpc/include/asm/lppaca.h:46,
+                    from arch/powerpc/include/asm/paca.h:18,
+                    from arch/powerpc/include/asm/current.h:13,
+                    from include/linux/sched.h:12,
+                    from arch/powerpc/mm/book3s64/pgtable.c:6:
+   arch/powerpc/mm/book3s64/pgtable.c: In function 'vm_get_page_prot':
+>> arch/powerpc/mm/book3s64/pgtable.c:557:41: error: 'protection_map' undeclared (first use in this function)
+     557 |         unsigned long prot = pgprot_val(protection_map[vm_flags &
+         |                                         ^~~~~~~~~~~~~~
+   arch/powerpc/include/asm/pgtable-be-types.h:68:27: note: in definition of macro 'pgprot_val'
+      68 | #define pgprot_val(x)   ((x).pgprot)
+         |                           ^
+   arch/powerpc/mm/book3s64/pgtable.c:557:41: note: each undeclared identifier is reported only once for each function it appears in
+     557 |         unsigned long prot = pgprot_val(protection_map[vm_flags &
+         |                                         ^~~~~~~~~~~~~~
+   arch/powerpc/include/asm/pgtable-be-types.h:68:27: note: in definition of macro 'pgprot_val'
+      68 | #define pgprot_val(x)   ((x).pgprot)
+         |                           ^
+
+
+vim +/protection_map +557 arch/powerpc/mm/book3s64/pgtable.c
+
+634093c59a12fc Anshuman Khandual 2022-04-28  553  
+847c271152e941 Anshuman Khandual 2022-06-13  554  /* Note due to the way vm flags are laid out, the bits are XWR */
+634093c59a12fc Anshuman Khandual 2022-04-28  555  pgprot_t vm_get_page_prot(unsigned long vm_flags)
+634093c59a12fc Anshuman Khandual 2022-04-28  556  {
+634093c59a12fc Anshuman Khandual 2022-04-28 @557  	unsigned long prot = pgprot_val(protection_map[vm_flags &
+634093c59a12fc Anshuman Khandual 2022-04-28  558  					(VM_READ|VM_WRITE|VM_EXEC|VM_SHARED)]);
+634093c59a12fc Anshuman Khandual 2022-04-28  559  
+634093c59a12fc Anshuman Khandual 2022-04-28  560  	if (vm_flags & VM_SAO)
+634093c59a12fc Anshuman Khandual 2022-04-28  561  		prot |= _PAGE_SAO;
+634093c59a12fc Anshuman Khandual 2022-04-28  562  
+
 -- 
-2.35.1
-
-
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
