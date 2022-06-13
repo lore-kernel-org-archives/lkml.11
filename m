@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D89CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:18:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72140C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:18:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357351AbiFMNSD (ORCPT
+        id S1376280AbiFMNSH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:18:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37456 "EHLO
+        Mon, 13 Jun 2022 09:18:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359409AbiFMNJv (ORCPT
+        with ESMTP id S1359459AbiFMNJ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:09:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02E9A393F3;
-        Mon, 13 Jun 2022 04:20:34 -0700 (PDT)
+        Mon, 13 Jun 2022 09:09:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF66539B8C;
+        Mon, 13 Jun 2022 04:20:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9C02FB80EB2;
-        Mon, 13 Jun 2022 11:20:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 044BCC3411C;
-        Mon, 13 Jun 2022 11:20:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2156460F0D;
+        Mon, 13 Jun 2022 11:20:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36667C3411C;
+        Mon, 13 Jun 2022 11:20:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119231;
-        bh=wH7/90BcNZzwB2bJOgzMEcaResWqJwE5uqhLmPT9ENA=;
+        s=korg; t=1655119242;
+        bh=UynMSYX24G6ad7dbw1EFimR4WCvj7HwCVUmxc3/FhBA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lW7uNYlKySbElYrCFsRat3mZsZZT+RQlLuZdm7cn2LecTxdis8Rk37BHWRduJlM7w
-         GFLDoVHUC9QMk86JuPzhycfnSD/LLigfKy5z+CJNDfttrO2F8wT6k7aCFkLPsv3/rp
-         O3LByZWCD6s4rF73kbOYaXBafu7Xm/b+C8hPz+5A=
+        b=XE0s12ju6Aj1A7cKdICHFtCIam4vCYv2pcEzZixcvI3SWV0clFrwnOM82aMkgDg9V
+         aZOdhPndc48H9evp7S9In5UCta4Xnk28Q9gbDvDrkE4xJhoGyrJHBltVx3o0ovsq7G
+         +hWQwJpf36SZgt1aJTUEMOhNb3hu8Bu8/khc/rLI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 187/247] clocksource/drivers/sp804: Avoid error on multiple instances
-Date:   Mon, 13 Jun 2022 12:11:29 +0200
-Message-Id: <20220613094928.624784138@linuxfoundation.org>
+        stable@vger.kernel.org, Tejun Heo <tj@kernel.org>,
+        Hao Luo <haoluo@google.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 191/247] kernfs: Separate kernfs_pr_cont_buf and rename_lock.
+Date:   Mon, 13 Jun 2022 12:11:33 +0200
+Message-Id: <20220613094928.744560900@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -51,63 +49,140 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andre Przywara <andre.przywara@arm.com>
+From: Hao Luo <haoluo@google.com>
 
-[ Upstream commit a98399cbc1e05f7b977419f03905501d566cf54e ]
+[ Upstream commit 1a702dc88e150487c9c173a249b3d236498b9183 ]
 
-When a machine sports more than one SP804 timer instance, we only bring
-up the first one, since multiple timers of the same kind are not useful
-to Linux. As this is intentional behaviour, we should not return an
-error message, as we do today:
-===============
-[    0.000800] Failed to initialize '/bus@8000000/motherboard-bus@8000000/iofpga-bus@300000000/timer@120000': -22
-===============
+Previously the protection of kernfs_pr_cont_buf was piggy backed by
+rename_lock, which means that pr_cont() needs to be protected under
+rename_lock. This can cause potential circular lock dependencies.
 
-Replace the -EINVAL return with a debug message and return 0 instead.
+If there is an OOM, we have the following call hierarchy:
 
-Also we do not reach the init function anymore if the DT node is
-disabled (as this is now handled by OF_DECLARE), so remove the explicit
-check for that case.
+ -> cpuset_print_current_mems_allowed()
+   -> pr_cont_cgroup_name()
+     -> pr_cont_kernfs_name()
 
-This fixes a long standing bogus error when booting ARM's fastmodels.
+pr_cont_kernfs_name() will grab rename_lock and call printk. So we have
+the following lock dependencies:
 
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Link: https://lore.kernel.org/r/20220506162522.3675399-1-andre.przywara@arm.com
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+ kernfs_rename_lock -> console_sem
+
+Sometimes, printk does a wakeup before releasing console_sem, which has
+the dependence chain:
+
+ console_sem -> p->pi_lock -> rq->lock
+
+Now, imagine one wants to read cgroup_name under rq->lock, for example,
+printing cgroup_name in a tracepoint in the scheduler code. They will
+be holding rq->lock and take rename_lock:
+
+ rq->lock -> kernfs_rename_lock
+
+Now they will deadlock.
+
+A prevention to this circular lock dependency is to separate the
+protection of pr_cont_buf from rename_lock. In principle, rename_lock
+is to protect the integrity of cgroup name when copying to buf. Once
+pr_cont_buf has got its content, rename_lock can be dropped. So it's
+safe to drop rename_lock after kernfs_name_locked (and
+kernfs_path_from_node_locked) and rely on a dedicated pr_cont_lock
+to protect pr_cont_buf.
+
+Acked-by: Tejun Heo <tj@kernel.org>
+Signed-off-by: Hao Luo <haoluo@google.com>
+Link: https://lore.kernel.org/r/20220516190951.3144144-1-haoluo@google.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clocksource/timer-sp804.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ fs/kernfs/dir.c | 31 +++++++++++++++++++------------
+ 1 file changed, 19 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/clocksource/timer-sp804.c b/drivers/clocksource/timer-sp804.c
-index 401d592e85f5..e6a87f4af2b5 100644
---- a/drivers/clocksource/timer-sp804.c
-+++ b/drivers/clocksource/timer-sp804.c
-@@ -259,6 +259,11 @@ static int __init sp804_of_init(struct device_node *np, struct sp804_timer *time
- 	struct clk *clk1, *clk2;
- 	const char *name = of_get_property(np, "compatible", NULL);
+diff --git a/fs/kernfs/dir.c b/fs/kernfs/dir.c
+index 8e0a1378a4b1..7bf1d5fc2e9c 100644
+--- a/fs/kernfs/dir.c
++++ b/fs/kernfs/dir.c
+@@ -19,7 +19,15 @@
  
-+	if (initialized) {
-+		pr_debug("%pOF: skipping further SP804 timer device\n", np);
-+		return 0;
-+	}
-+
- 	base = of_iomap(np, 0);
- 	if (!base)
- 		return -ENXIO;
-@@ -270,11 +275,6 @@ static int __init sp804_of_init(struct device_node *np, struct sp804_timer *time
- 	writel(0, timer1_base + timer->ctrl);
- 	writel(0, timer2_base + timer->ctrl);
+ DECLARE_RWSEM(kernfs_rwsem);
+ static DEFINE_SPINLOCK(kernfs_rename_lock);	/* kn->parent and ->name */
+-static char kernfs_pr_cont_buf[PATH_MAX];	/* protected by rename_lock */
++/*
++ * Don't use rename_lock to piggy back on pr_cont_buf. We don't want to
++ * call pr_cont() while holding rename_lock. Because sometimes pr_cont()
++ * will perform wakeups when releasing console_sem. Holding rename_lock
++ * will introduce deadlock if the scheduler reads the kernfs_name in the
++ * wakeup path.
++ */
++static DEFINE_SPINLOCK(kernfs_pr_cont_lock);
++static char kernfs_pr_cont_buf[PATH_MAX];	/* protected by pr_cont_lock */
+ static DEFINE_SPINLOCK(kernfs_idr_lock);	/* root->ino_idr */
  
--	if (initialized || !of_device_is_available(np)) {
--		ret = -EINVAL;
--		goto err;
--	}
--
- 	clk1 = of_clk_get(np, 0);
- 	if (IS_ERR(clk1))
- 		clk1 = NULL;
+ #define rb_to_kn(X) rb_entry((X), struct kernfs_node, rb)
+@@ -230,12 +238,12 @@ void pr_cont_kernfs_name(struct kernfs_node *kn)
+ {
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&kernfs_rename_lock, flags);
++	spin_lock_irqsave(&kernfs_pr_cont_lock, flags);
+ 
+-	kernfs_name_locked(kn, kernfs_pr_cont_buf, sizeof(kernfs_pr_cont_buf));
++	kernfs_name(kn, kernfs_pr_cont_buf, sizeof(kernfs_pr_cont_buf));
+ 	pr_cont("%s", kernfs_pr_cont_buf);
+ 
+-	spin_unlock_irqrestore(&kernfs_rename_lock, flags);
++	spin_unlock_irqrestore(&kernfs_pr_cont_lock, flags);
+ }
+ 
+ /**
+@@ -249,10 +257,10 @@ void pr_cont_kernfs_path(struct kernfs_node *kn)
+ 	unsigned long flags;
+ 	int sz;
+ 
+-	spin_lock_irqsave(&kernfs_rename_lock, flags);
++	spin_lock_irqsave(&kernfs_pr_cont_lock, flags);
+ 
+-	sz = kernfs_path_from_node_locked(kn, NULL, kernfs_pr_cont_buf,
+-					  sizeof(kernfs_pr_cont_buf));
++	sz = kernfs_path_from_node(kn, NULL, kernfs_pr_cont_buf,
++				   sizeof(kernfs_pr_cont_buf));
+ 	if (sz < 0) {
+ 		pr_cont("(error)");
+ 		goto out;
+@@ -266,7 +274,7 @@ void pr_cont_kernfs_path(struct kernfs_node *kn)
+ 	pr_cont("%s", kernfs_pr_cont_buf);
+ 
+ out:
+-	spin_unlock_irqrestore(&kernfs_rename_lock, flags);
++	spin_unlock_irqrestore(&kernfs_pr_cont_lock, flags);
+ }
+ 
+ /**
+@@ -822,13 +830,12 @@ static struct kernfs_node *kernfs_walk_ns(struct kernfs_node *parent,
+ 
+ 	lockdep_assert_held_read(&kernfs_rwsem);
+ 
+-	/* grab kernfs_rename_lock to piggy back on kernfs_pr_cont_buf */
+-	spin_lock_irq(&kernfs_rename_lock);
++	spin_lock_irq(&kernfs_pr_cont_lock);
+ 
+ 	len = strlcpy(kernfs_pr_cont_buf, path, sizeof(kernfs_pr_cont_buf));
+ 
+ 	if (len >= sizeof(kernfs_pr_cont_buf)) {
+-		spin_unlock_irq(&kernfs_rename_lock);
++		spin_unlock_irq(&kernfs_pr_cont_lock);
+ 		return NULL;
+ 	}
+ 
+@@ -840,7 +847,7 @@ static struct kernfs_node *kernfs_walk_ns(struct kernfs_node *parent,
+ 		parent = kernfs_find_ns(parent, name, ns);
+ 	}
+ 
+-	spin_unlock_irq(&kernfs_rename_lock);
++	spin_unlock_irq(&kernfs_pr_cont_lock);
+ 
+ 	return parent;
+ }
 -- 
 2.35.1
 
