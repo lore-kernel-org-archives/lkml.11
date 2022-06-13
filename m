@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 339D1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:27:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6E93C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:28:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244975AbiFMK1x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:27:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45650 "EHLO
+        id S245540AbiFMK2E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:28:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243196AbiFMKZS (ORCPT
+        with ESMTP id S236753AbiFMK1e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:25:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AF87240B5;
-        Mon, 13 Jun 2022 03:19:36 -0700 (PDT)
+        Mon, 13 Jun 2022 06:27:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88F6A248F7;
+        Mon, 13 Jun 2022 03:19:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC8E260AEA;
-        Mon, 13 Jun 2022 10:19:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C45C6C34114;
-        Mon, 13 Jun 2022 10:19:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F121260AE6;
+        Mon, 13 Jun 2022 10:19:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00BAAC34114;
+        Mon, 13 Jun 2022 10:19:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115575;
-        bh=KiMf2l1Eadyyr0/vyoL2KORswM5wjZgw+1ocCcHMPIc=;
+        s=korg; t=1655115594;
+        bh=3Gqq0IHeoCCTwiXZU/qrGZQ0JxgYAq2T0t46vBklZ4I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eLRXwoYKjPFHTqLXb4gIGIIrA4UWaZEWZ+T566In4MmhcggNaT3RKD0GhcY/HIMx7
-         SimVnoWz7oeka6LNiCzLiU5T8B/t9RjhJirgLCfP6x5qMUZ+zXShKqkolRsr2WoC77
-         SDYuwcA+cxUuniQQecDGlkdtXl5tD51bzBaEjxj0=
+        b=XGyiVnJR3yRFYCMbra/aVbaRsYmr+B2XkGyI7Jwn+veEPpmlm9ZEdXY8pLmyt0uXd
+         aYX9/cSVNLcRbg6oniEVD55llMb4UMeKR+RAOKro4McycfRr0EJzL1BiCs9fvQGfhF
+         Rha1vOLNuE2sOVObp/X/I6iLuLtl/A4tyVujMMOc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 123/167] net: ethernet: mtk_eth_soc: out of bounds read in mtk_hwlro_get_fdir_entry()
-Date:   Mon, 13 Jun 2022 12:09:57 +0200
-Message-Id: <20220613094909.664053220@linuxfoundation.org>
+Subject: [PATCH 4.9 130/167] m68knommu: fix undefined reference to `_init_sp
+Date:   Mon, 13 Jun 2022 12:10:04 +0200
+Message-Id: <20220613094911.393517691@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -49,35 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Greg Ungerer <gerg@linux-m68k.org>
 
-[ Upstream commit e7e7104e2d5ddf3806a28695670f21bef471f1e1 ]
+[ Upstream commit a71b9e66fee47c59b3ec34e652b5c23bc6550794 ]
 
-The "fsp->location" variable comes from user via ethtool_get_rxnfc().
-Check that it is valid to prevent an out of bounds read.
+When configuring a nommu classic m68k system enabling the uboot parameter
+passing support (CONFIG_UBOOT) will produce the following compile error:
 
-Fixes: 7aab747e5563 ("net: ethernet: mediatek: add ethtool functions to configure RX flows of HW LRO")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+   m68k-linux-ld: arch/m68k/kernel/uboot.o: in function `process_uboot_commandline':
+   uboot.c:(.init.text+0x32): undefined reference to `_init_sp'
+
+The logic to support this option is only used on ColdFire based platforms
+(in its head.S startup code). So make the selection of this option
+depend on building for a ColdFire based platform.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/m68k/Kconfig.machine | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 5b072bf80783..84d667957221 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -1496,6 +1496,9 @@ static int mtk_hwlro_get_fdir_entry(struct net_device *dev,
- 	struct ethtool_rx_flow_spec *fsp =
- 		(struct ethtool_rx_flow_spec *)&cmd->fs;
+diff --git a/arch/m68k/Kconfig.machine b/arch/m68k/Kconfig.machine
+index f622c3ccafc3..9f2896493ca0 100644
+--- a/arch/m68k/Kconfig.machine
++++ b/arch/m68k/Kconfig.machine
+@@ -302,6 +302,7 @@ comment "Machine Options"
  
-+	if (fsp->location >= ARRAY_SIZE(mac->hwlro_ip))
-+		return -EINVAL;
-+
- 	/* only tcp dst ipv4 is meaningful, others are meaningless */
- 	fsp->flow_type = TCP_V4_FLOW;
- 	fsp->h_u.tcp_ip4_spec.ip4dst = ntohl(mac->hwlro_ip[fsp->location]);
+ config UBOOT
+ 	bool "Support for U-Boot command line parameters"
++	depends on COLDFIRE
+ 	help
+ 	  If you say Y here kernel will try to collect command
+ 	  line parameters from the initial u-boot stack.
 -- 
 2.35.1
 
