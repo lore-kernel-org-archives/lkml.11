@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC832CCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:42:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3443C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:42:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378608AbiFMNmA (ORCPT
+        id S1378109AbiFMNmE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:42:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36362 "EHLO
+        Mon, 13 Jun 2022 09:42:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378923AbiFMNjZ (ORCPT
+        with ESMTP id S1378942AbiFMNj0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:39:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56E0279377;
-        Mon, 13 Jun 2022 04:27:57 -0700 (PDT)
+        Mon, 13 Jun 2022 09:39:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E39D79390;
+        Mon, 13 Jun 2022 04:28:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 252F3B80D31;
-        Mon, 13 Jun 2022 11:27:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C750C34114;
-        Mon, 13 Jun 2022 11:27:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3171961037;
+        Mon, 13 Jun 2022 11:28:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32F33C34114;
+        Mon, 13 Jun 2022 11:28:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119674;
-        bh=rPpjklgXLnYZI9EvRgysN6vNilQ+D295aHHjxw5TyxE=;
+        s=korg; t=1655119694;
+        bh=jFnYDH/ga59f/Td+EUa/dt0CS7+r9A8tKGC76gbt254=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qnv1geeZxIYJK/WRbHd4/+hkEBIAV/bJt7y4RYlXpRKjJ/6sFGr7ooQUGgrgrnbhq
-         ZWWANL4l0OSXzVc1G+Q4rnquar2LOgqaOx1kr07BGeeYggylNuGN/fw4viQwJnWL6L
-         l2tZQBISB3RDAiF8oEy3QKDK517uawqoNxw8SAw0=
+        b=sXHDPtjQD7BhqHvnhLAETRXIIjwz7Xlf/Lrik8gCc8p7xJtwy9XLc3AiMSOtg6VtP
+         iVT5CuhLMrtmvai31+ouHFbrlponrOQ/qifYf5luNJgLG/P2PRxYP6SA17msGlm6bL
+         MCLoowtFJStT9XUEhmbOF6Ds/D7fTNk0j4xrnLqk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Genjian Zhang <zhanggenjian@kylinos.cn>,
-        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 099/339] ep93xx: clock: Do not return the address of the freed memory
-Date:   Mon, 13 Jun 2022 12:08:44 +0200
-Message-Id: <20220613094929.513656601@linuxfoundation.org>
+        stable@vger.kernel.org, Yu Kuai <yukuai3@huawei.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 106/339] nbd: dont clear NBD_CMD_INFLIGHT flag if request is not completed
+Date:   Mon, 13 Jun 2022 12:08:51 +0200
+Message-Id: <20220613094929.727046931@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,51 +49,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Genjian Zhang <zhanggenjian123@gmail.com>
+From: Yu Kuai <yukuai3@huawei.com>
 
-[ Upstream commit 8a7322a3a05f75e8a4902bdf8129aecd37d54fe9 ]
+[ Upstream commit 2895f1831e911ca87d4efdf43e35eb72a0c7e66e ]
 
-Avoid return freed memory addresses,Modified to the actual error
-return value of clk_register().
+Otherwise io will hung because request will only be completed if the
+cmd has the flag 'NBD_CMD_INFLIGHT'.
 
-Fixes: 9645ccc7bd7a ("ep93xx: clock: convert in-place to COMMON_CLK")
-Signed-off-by: Genjian Zhang <zhanggenjian@kylinos.cn>
-Acked-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Fixes: 07175cb1baf4 ("nbd: make sure request completion won't concurrent")
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+Link: https://lore.kernel.org/r/20220521073749.3146892-4-yukuai3@huawei.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-ep93xx/clock.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/block/nbd.c | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/mach-ep93xx/clock.c b/arch/arm/mach-ep93xx/clock.c
-index 4fa6ea5461b7..85a496ddc619 100644
---- a/arch/arm/mach-ep93xx/clock.c
-+++ b/arch/arm/mach-ep93xx/clock.c
-@@ -345,9 +345,10 @@ static struct clk_hw *clk_hw_register_ddiv(const char *name,
- 	psc->hw.init = &init;
+diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
+index 284557041336..ed678037ba6d 100644
+--- a/drivers/block/nbd.c
++++ b/drivers/block/nbd.c
+@@ -404,13 +404,14 @@ static enum blk_eh_timer_return nbd_xmit_timeout(struct request *req,
+ 	if (!mutex_trylock(&cmd->lock))
+ 		return BLK_EH_RESET_TIMER;
  
- 	clk = clk_register(NULL, &psc->hw);
--	if (IS_ERR(clk))
-+	if (IS_ERR(clk)) {
- 		kfree(psc);
--
-+		return ERR_CAST(clk);
-+	}
- 	return &psc->hw;
- }
+-	if (!__test_and_clear_bit(NBD_CMD_INFLIGHT, &cmd->flags)) {
++	if (!test_bit(NBD_CMD_INFLIGHT, &cmd->flags)) {
+ 		mutex_unlock(&cmd->lock);
+ 		return BLK_EH_DONE;
+ 	}
  
-@@ -452,9 +453,10 @@ static struct clk_hw *clk_hw_register_div(const char *name,
- 	psc->hw.init = &init;
+ 	if (!refcount_inc_not_zero(&nbd->config_refs)) {
+ 		cmd->status = BLK_STS_TIMEOUT;
++		__clear_bit(NBD_CMD_INFLIGHT, &cmd->flags);
+ 		mutex_unlock(&cmd->lock);
+ 		goto done;
+ 	}
+@@ -479,6 +480,7 @@ static enum blk_eh_timer_return nbd_xmit_timeout(struct request *req,
+ 	dev_err_ratelimited(nbd_to_dev(nbd), "Connection timed out\n");
+ 	set_bit(NBD_RT_TIMEDOUT, &config->runtime_flags);
+ 	cmd->status = BLK_STS_IOERR;
++	__clear_bit(NBD_CMD_INFLIGHT, &cmd->flags);
+ 	mutex_unlock(&cmd->lock);
+ 	sock_shutdown(nbd);
+ 	nbd_config_put(nbd);
+@@ -746,7 +748,7 @@ static struct nbd_cmd *nbd_handle_reply(struct nbd_device *nbd, int index,
+ 	cmd = blk_mq_rq_to_pdu(req);
  
- 	clk = clk_register(NULL, &psc->hw);
--	if (IS_ERR(clk))
-+	if (IS_ERR(clk)) {
- 		kfree(psc);
--
-+		return ERR_CAST(clk);
-+	}
- 	return &psc->hw;
- }
+ 	mutex_lock(&cmd->lock);
+-	if (!__test_and_clear_bit(NBD_CMD_INFLIGHT, &cmd->flags)) {
++	if (!test_bit(NBD_CMD_INFLIGHT, &cmd->flags)) {
+ 		dev_err(disk_to_dev(nbd->disk), "Suspicious reply %d (status %u flags %lu)",
+ 			tag, cmd->status, cmd->flags);
+ 		ret = -ENOENT;
+@@ -855,8 +857,16 @@ static void recv_work(struct work_struct *work)
+ 		}
+ 
+ 		rq = blk_mq_rq_from_pdu(cmd);
+-		if (likely(!blk_should_fake_timeout(rq->q)))
+-			blk_mq_complete_request(rq);
++		if (likely(!blk_should_fake_timeout(rq->q))) {
++			bool complete;
++
++			mutex_lock(&cmd->lock);
++			complete = __test_and_clear_bit(NBD_CMD_INFLIGHT,
++							&cmd->flags);
++			mutex_unlock(&cmd->lock);
++			if (complete)
++				blk_mq_complete_request(rq);
++		}
+ 		percpu_ref_put(&q->q_usage_counter);
+ 	}
  
 -- 
 2.35.1
