@@ -2,195 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A287DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 15:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B4F6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 15:25:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242583AbiFMPYw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 11:24:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45342 "EHLO
+        id S243709AbiFMPZB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 11:25:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344931AbiFMPWu (ORCPT
+        with ESMTP id S1357517AbiFMPXt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 11:22:50 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2058.outbound.protection.outlook.com [40.107.94.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D868134E14;
-        Mon, 13 Jun 2022 05:48:33 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bN78CyO3E8gkbrjHR+FZKG7fKuxmwE4yOb0XTXoycoxg7s3Wnc4R7b6jqBVequ4wLoNpcsbkzUY0JJMFNIxp9vZ5sfjCLWMP+tpK4gqC//qNlU8NYeoQfWk4rF4sxgjF0tfOWdEM5qMaAaGuDGfg4zuGOraTYVkw4IGBB3AfOCZffIknTVPygCy/2tmqK/ny9Dr2eWK/khswWHZ99EszMno+ttnC0899qt4PHAmApYq1Rlx4QMiyppas9hr51w1TTvORihglKglutNTY9hCBwi56frPIYcc5OhIG+ZKhwuyldHNu9KfGNu5h4xMsnF/LFQ29W8BMTPLDkNV8lDiqsQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3pKvlrH7EySADPgK8hGccZXgaNUi+eD1UkNtbN2kINc=;
- b=A7xpdMpnsmyVwGUfpJA4KsoH4sZVp0eZgU75zRu5ELZZ1iUm9L/tVsqk6kNSWDG1xmCPDb6nv1a4QL4XlExUHGZcid9TPxcG6xpQiuFcZ8WXSdauHOvpkp1AUwignNIiPgwxhaDE4o3EShnQAma6A4oMp/6CfxBhrxWTIVIbzuNU5n5Fsr2T0mcnb1fiUfYW8nldkRXaY/6Ncf+rUMy6ZiY8f/0jolpt1J+HrSYPnBDC6/MvP/qFqZFRkHrhYFxhaZaWgSprr7gGzYhCVXgEgWZkYYGaBYW/KAvQIdAeaLZ6718TIuzQKkabD4tk3V3Xyk7FKkGJSFZAV9h5dm3wOQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=linuxfoundation.org
- smtp.mailfrom=xilinx.com; dmarc=pass (p=none sp=none pct=100) action=none
- header.from=xilinx.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3pKvlrH7EySADPgK8hGccZXgaNUi+eD1UkNtbN2kINc=;
- b=L8dsLzwYBBL5GL0tUSAx+rOXthts49kHjC06dqiXb0zwIa2oMRT3ChzodL+3eWQA5n06Z8PwehjzJU9I4JyP6r3nxQEntWsgM/+gVACCLjAWoxz1cPuCdDxtWdL6NFB/Gsn4iD/tqMdjC+0QhgDye0L8sVngbWc39ljRmUtK4YM=
-Received: from BN0PR04CA0043.namprd04.prod.outlook.com (2603:10b6:408:e8::18)
- by BN6PR02MB2625.namprd02.prod.outlook.com (2603:10b6:404:57::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.12; Mon, 13 Jun
- 2022 12:48:17 +0000
-Received: from BN1NAM02FT027.eop-nam02.prod.protection.outlook.com
- (2603:10b6:408:e8:cafe::59) by BN0PR04CA0043.outlook.office365.com
- (2603:10b6:408:e8::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.17 via Frontend
- Transport; Mon, 13 Jun 2022 12:48:17 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com; pr=C
-Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
- BN1NAM02FT027.mail.protection.outlook.com (10.13.2.141) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5332.12 via Frontend Transport; Mon, 13 Jun 2022 12:48:17 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Mon, 13 Jun 2022 05:48:08 -0700
-Received: from smtp.xilinx.com (172.19.127.95) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Mon, 13 Jun 2022 05:48:08 -0700
-Envelope-to: git@xilinx.com,
- gregkh@linuxfoundation.org,
- robh+dt@kernel.org,
- krzysztof.kozlowski+dt@linaro.org,
- balbi@kernel.org,
- linux-usb@vger.kernel.org,
- devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Received: from [10.140.6.18] (port=39406 helo=xhdlakshmis40.xilinx.com)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <piyush.mehta@xilinx.com>)
-        id 1o0jUF-000A8B-UT; Mon, 13 Jun 2022 05:48:08 -0700
-From:   Piyush Mehta <piyush.mehta@xilinx.com>
-To:     <gregkh@linuxfoundation.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <balbi@kernel.org>,
-        <linux-usb@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <michal.simek@xilinx.com>
-CC:     <git@xilinx.com>, <sivadur@xilinx.com>,
-        Piyush Mehta <piyush.mehta@xilinx.com>
-Subject: [PATCH 2/2] usb: dwc3: core: Enable GUCTL1 bit 10 for fixing crc error after resume bug
-Date:   Mon, 13 Jun 2022 18:17:03 +0530
-Message-ID: <20220613124703.4493-3-piyush.mehta@xilinx.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220613124703.4493-1-piyush.mehta@xilinx.com>
-References: <20220613124703.4493-1-piyush.mehta@xilinx.com>
+        Mon, 13 Jun 2022 11:23:49 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E099162131
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 05:48:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655124539; x=1686660539;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=F+Z/xKS8IJ6c8oqyWurA8RR/4fHWWhqaKxllGYROtwo=;
+  b=ffeRtebDGvIawMNiIpBE77FlmSkEKfvVx1c06BMgF4/j7V7geS75DB9P
+   q8gjBvrk62Gw6Esta9FKV8ztGHI46iPMZjXc4IL2mJVWLr+b6XVOEEaTV
+   6fM5FYJdAtODK+hMxRY64rnhuRyqOdGpU3hAd+soLldP+nJu8N1G1Tpw6
+   vTWFWNW9yNF14xwPmQZMYci8cxiYP3LZ0Az1bU9qDdw8ImpYYYVdqWY1B
+   nmqB2ZajV3tVacIiCrZLzzGKOjQyP+FfSSX/wgKWMCaR7Jce9T4TJvQOn
+   7+yN8IbpxXplwqjHY6ROVQiiDtF8PtUNeB/d6XNqxANiR9x6UAvb3TpKa
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10376"; a="342242573"
+X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
+   d="scan'208";a="342242573"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 05:48:34 -0700
+X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
+   d="scan'208";a="910369101"
+Received: from tchuynh1-mobl1.amr.corp.intel.com (HELO [10.212.112.176]) ([10.212.112.176])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 05:48:33 -0700
+Message-ID: <7328fbb2-06af-99c8-5e7f-9d22f8c4e4f6@linux.intel.com>
+Date:   Mon, 13 Jun 2022 07:48:32 -0500
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f14ed4ed-9c3a-408f-ceb1-08da4d3afcf0
-X-MS-TrafficTypeDiagnostic: BN6PR02MB2625:EE_
-X-Microsoft-Antispam-PRVS: <BN6PR02MB262554B161E8FFB217190EC2D4AB9@BN6PR02MB2625.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: rGH8V7Wv4m7GNz+n0Odmcshqv/BWpr5shajwSot+7g9hWT9evHg4HZbNaKDTVds6uIW5L6BAonMUvj30QiSm+UnjQRWf0tfTvxBrLZ6jfVJkQMKo0gXuWmtl/EKLn0NZYCtC8uz0WYmJsMHJg0d92ftuEvG473pG0shU7zw+m3qYSWax3gIXUyRDI5Nf6cHpanGyCSmJClGxpQE5AleXhP6+j8as6cmKMr5wzw+MHOXDjwOFprN/KbzpYcnxeYphjVwbW137nSGxvCBiPjtZnC2ncs7N6lFg0jQn8DlrF/muC+wAyTx2k4+rh/qobdoOls80N68zSlQjDiBCYSMx2x7+fYIDZurAqHGqmXSB8sT6HaocqTtQrYcpHPfeWnCC+haSTcqQewwI/5hfjWesL4hgIAJicuUcFHbnvtkKmMBOZQPoc8fb0taDjKakU9qq8Kf1CRUJRDgMIcBY1vbGmWK0lg8m3IjsJy1noUIfo/bknkxCKyViPi9mkZPDeBzEsedx3aayTgbVkpY1ltYGa3jIGY6zVI5UFQu4VxJh7T9Va7nlcBgUtkyjIiFLp1Y1uvwSc+uh2pWWjXt+bQQEetLFOkZAr53yF4PSCXKus9WHk/XpI/RIw1hf+4f7Sc2JnCgWhM+BdpX+oRYU+84BTVwJhjPOhn0GVbVa3KP5P5IwzZhWOVQK5tvsMUeKJsMvxSdDSuUMhqDFDjU0cNRG9A==
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230016)(4636009)(40470700004)(46966006)(36840700001)(508600001)(9786002)(316002)(70586007)(70206006)(8676002)(8936002)(2616005)(36860700001)(5660300002)(6636002)(44832011)(110136005)(36756003)(40460700003)(54906003)(4326008)(2906002)(7696005)(6666004)(7636003)(26005)(356005)(82310400005)(83380400001)(426003)(47076005)(336012)(1076003)(186003)(107886003)(102446001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jun 2022 12:48:17.2022
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f14ed4ed-9c3a-408f-ceb1-08da4d3afcf0
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN1NAM02FT027.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR02MB2625
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.9.1
+Subject: Re: [PATCH 1/2] soundwire: intel: uniquify debug message
+Content-Language: en-US
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Bard Liao <yung-chuan.liao@linux.intel.com>,
+        alsa-devel@alsa-project.org, vkoul@kernel.org,
+        vinod.koul@linaro.org, linux-kernel@vger.kernel.org, tiwai@suse.de,
+        broonie@kernel.org, srinivas.kandagatla@linaro.org,
+        sanyog.r.kale@intel.com, bard.liao@intel.com
+References: <20220610023537.27223-1-yung-chuan.liao@linux.intel.com>
+ <20220610023537.27223-2-yung-chuan.liao@linux.intel.com>
+ <YqLVwqx9/Pos8T06@kroah.com>
+ <b86e6cbd-3488-a239-d765-cf01bf0d4f70@linux.intel.com>
+ <YqRCKtLGYlRQQ+DU@kroah.com>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+In-Reply-To: <YqRCKtLGYlRQQ+DU@kroah.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When configured in HOST mode, after issuing U3/L2 exit controller fails
-to send proper CRC checksum in CRC5 field. Because of this behavior
-Transaction Error is generated, resulting in reset and re-enumeration of
-usb device attached. Enabling chicken bit 10 of GUCTL1 will correct this
-problem.
 
-When this bit is set to '1', the UTMI/ULPI opmode will be changed to
-"normal" along with HS terminations after EOR. This option is to support
-certain legacy UTMI/ULPI PHYs.
 
-Signed-off-by: Piyush Mehta <piyush.mehta@xilinx.com>
----
- drivers/usb/dwc3/core.c | 16 ++++++++++++++++
- drivers/usb/dwc3/core.h |  6 ++++++
- 2 files changed, 22 insertions(+)
+>>>> diff --git a/drivers/soundwire/intel.c b/drivers/soundwire/intel.c
+>>>> index 505c5ef061e3..808e2f320052 100644
+>>>> --- a/drivers/soundwire/intel.c
+>>>> +++ b/drivers/soundwire/intel.c
+>>>> @@ -1328,8 +1328,8 @@ int intel_link_startup(struct auxiliary_device *auxdev)
+>>>>  
+>>>>  	if (bus->prop.hw_disabled) {
+>>>>  		dev_info(dev,
+>>>> -			 "SoundWire master %d is disabled, ignoring\n",
+>>>> -			 sdw->instance);
+>>>> +			 "%s: SoundWire master %d is disabled, ignoring\n",
+>>>> +			 __func__, sdw->instance);
+>>>
+>>> This is not a debug message, please make it such if you want to have
+>>> __func__  And even then, it's not needed as you can get that from the
+>>> kernel automatically.
+>>
+>> Sorry, I don't understand the feedback at all.
+> 
+> dev_info() is not a way to send debug messages.
+> 
+> If you want this to be only for debugging, use dev_dbg().  And when you
+> use that, you get the __func__ location for free in the output already
+> if you want that.
+> 
+>> This message was added precisely to figure out why the expected
+>> programming sequence was not followed, only to discover that we have
+>> devices with spurious PCI wakes handled below. Without this added
+>> difference with __func__, we wouldn't know if the issue happened during
+>> the expected/regular programming sequence or not.
+> 
+> Perhaps make the text unique then?  Why would an informational message
+> need a function name.  Drivers should be quiet when all is going well.
+> If something is not going well, dev_info() is not the kernel log level
+> to be sending something out at.
 
-diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
-index e027c0420dc3..8afc025390d2 100644
---- a/drivers/usb/dwc3/core.c
-+++ b/drivers/usb/dwc3/core.c
-@@ -1140,6 +1140,20 @@ static int dwc3_core_init(struct dwc3 *dwc)
- 		dwc3_writel(dwc->regs, DWC3_GUCTL2, reg);
- 	}
- 
-+	/*
-+	 * When configured in HOST mode, after issuing U3/L2 exit controller
-+	 * fails to send proper CRC checksum in CRC5 feild. Because of this
-+	 * behaviour Transaction Error is generated, resulting in reset and
-+	 * re-enumeration of usb device attached. Enabling bit 10 of GUCTL1
-+	 * will correct this problem. This option is to support certain
-+	 * legacy ULPI PHYs.
-+	 */
-+	if (dwc->enable_guctl1_resume_quirk) {
-+		reg = dwc3_readl(dwc->regs, DWC3_GUCTL1);
-+		reg |= DWC3_GUCTL1_RESUME_QUIRK;
-+		dwc3_writel(dwc->regs, DWC3_GUCTL1, reg);
-+	}
-+
- 	if (!DWC3_VER_IS_PRIOR(DWC3, 250A)) {
- 		reg = dwc3_readl(dwc->regs, DWC3_GUCTL1);
- 
-@@ -1483,6 +1497,8 @@ static void dwc3_get_properties(struct dwc3 *dwc)
- 				"snps,dis-del-phy-power-chg-quirk");
- 	dwc->dis_tx_ipgap_linecheck_quirk = device_property_read_bool(dev,
- 				"snps,dis-tx-ipgap-linecheck-quirk");
-+	dwc->enable_guctl1_resume_quirk = device_property_read_bool(dev,
-+				"snps,enable_guctl1_resume_quirk");
- 	dwc->parkmode_disable_ss_quirk = device_property_read_bool(dev,
- 				"snps,parkmode-disable-ss-quirk");
- 
-diff --git a/drivers/usb/dwc3/core.h b/drivers/usb/dwc3/core.h
-index 81c486b3941c..e386209f0e1b 100644
---- a/drivers/usb/dwc3/core.h
-+++ b/drivers/usb/dwc3/core.h
-@@ -397,6 +397,9 @@
- #define DWC3_GUCTL_REFCLKPER_MASK		0xffc00000
- #define DWC3_GUCTL_REFCLKPER_SEL		22
- 
-+/* Global User Control Register 1 */
-+#define DWC3_GUCTL1_RESUME_QUIRK		BIT(10)
-+
- /* Global User Control Register 2 */
- #define DWC3_GUCTL2_RST_ACTBITLATER		BIT(14)
- 
-@@ -1093,6 +1096,8 @@ struct dwc3_scratchpad_array {
-  *			change quirk.
-  * @dis_tx_ipgap_linecheck_quirk: set if we disable u2mac linestate
-  *			check during HS transmit.
-+ * @enable_guctl1_resume_quirk: Set if we enable quirk for fixing improper crc
-+ *			generation after resume from suspend.
-  * @parkmode_disable_ss_quirk: set if we need to disable all SuperSpeed
-  *			instances in park mode.
-  * @tx_de_emphasis_quirk: set if we enable Tx de-emphasis quirk
-@@ -1308,6 +1313,7 @@ struct dwc3 {
- 	unsigned		dis_u2_freeclk_exists_quirk:1;
- 	unsigned		dis_del_phy_power_chg_quirk:1;
- 	unsigned		dis_tx_ipgap_linecheck_quirk:1;
-+	unsigned		enable_guctl1_resume_quirk:1;
- 	unsigned		parkmode_disable_ss_quirk:1;
- 
- 	unsigned		tx_de_emphasis_quirk:1;
--- 
-2.17.1
+This is not a debug message - unlike all the others. The BIOS and/or the
+user may disable a specific link and it's useful to know.
+
+The intent of __func__ was precisely to make the text unique across all
+cases where we test for hw_disabled, but you have a point that this
+specific info message should be clearer. The text was actually already
+different from the 'disable or not-started' cases, I might have done one
+too many edits in this file. Will fix.
+
+>>>>  		return 0;
+>>>>  	}
+>>>>  
+>>>> @@ -1489,8 +1489,8 @@ int intel_link_process_wakeen_event(struct auxiliary_device *auxdev)
+>>>>  	bus = &sdw->cdns.bus;
+>>>>  
+>>>>  	if (bus->prop.hw_disabled || !sdw->startup_done) {
+>>>> -		dev_dbg(dev, "SoundWire master %d is disabled or not-started, ignoring\n",
+>>>> -			bus->link_id);
+>>>> +		dev_dbg(dev, "%s: SoundWire master %d is disabled or not-started, ignoring\n",
+>>>> +			__func__, bus->link_id);
+>>>>  		return 0;
+>>>>  	}
+>>>>  
+>>>> @@ -1549,8 +1549,8 @@ static int __maybe_unused intel_pm_prepare(struct device *dev)
+>>>>  	int ret;
+>>>>  
+>>>>  	if (bus->prop.hw_disabled || !sdw->startup_done) {
+>>>> -		dev_dbg(dev, "SoundWire master %d is disabled or not-started, ignoring\n",
+>>>> -			bus->link_id);
+>>>> +		dev_dbg(dev, "%s: SoundWire master %d is disabled or not-started, ignoring\n",
+>>>> +			__func__, bus->link_id);
+>>>
+>>> Not needed, it is provided automatically if you ask the kernel for this.
+>>> Same for all other instances in this patch.
+>>
+>> provided how? Your comment is a bit cryptic here.
+> 
+> the dynamic debug code in the kernel already adds the function name
+> where the message was sent from, if you want to know this in userspace.
+> Please read the documentation for details (I think the key is the 'f'
+> flag to be enabled in userspace).
+> 
+> So adding __func__ to dev_dbg() calls are redundant and never needed.
+
+Oh wow, I had no idea - and I am not the only one :-)
+
+Here's what I get with a grep on the kernel code
+
+git grep __func__ | grep dev_dbg | wc -l
+
+3122
+
+
+Doing this for sound/ gives me 356, and that's for single-line logs only.
+
+There's clearly something that was missed by tons of people.
+
+We use an 'sof-dyndbg.conf' file that we provide to users and our CI to
+log what's needed for SOF debug, it's trivial to add a +f option.
+
+options foo dyndbg=+pf
+
+Thanks for the feedback, much appreciated.
+-Pierre
 
