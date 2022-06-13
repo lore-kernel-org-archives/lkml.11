@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 987D9C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:55:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65EF7CCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:55:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357000AbiFMLzt (ORCPT
+        id S1357045AbiFMLzz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:55:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44866 "EHLO
+        Mon, 13 Jun 2022 07:55:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356401AbiFMLu0 (ORCPT
+        with ESMTP id S1356491AbiFMLug (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:50:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DED124596;
-        Mon, 13 Jun 2022 03:54:01 -0700 (PDT)
+        Mon, 13 Jun 2022 07:50:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64F0F248D2;
+        Mon, 13 Jun 2022 03:54:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D4FF3612C5;
-        Mon, 13 Jun 2022 10:54:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1971C3411C;
-        Mon, 13 Jun 2022 10:53:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0EAA0B80D3A;
+        Mon, 13 Jun 2022 10:54:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58E0AC34114;
+        Mon, 13 Jun 2022 10:54:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117640;
-        bh=62jqnY4FfPPKFexMXO3Ug/cGzlMx77OVqWAzXIkmRcE=;
+        s=korg; t=1655117645;
+        bh=2kdVZxq7QhwiMhHg48ux5Jq1HvMBVruEQH6DiUTxjWA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TGKr1pxq7wYF+blSTHflpJdUU4gwC1m3bL5HXJvgT7wM0BVp6RoBM25jO4FjM5N+y
-         CXXSJDZ9F13TCuuGMxHIFuzUDM/29EXJ+ODSfV7rWwwDd6WJo4sQYrW3gtPX29JV7X
-         ZGVDgPgi6nLmeL4aL5TbznWr68fT4CR8q7LJ3rZA=
+        b=VVwTEEO/2afH7s/H8CYbzKfOuQo6kBVjFh5wMeJWVU7LKZ7Qn+2PXAYVoX/PU1Wqx
+         fcH5e714CRDn5dZiKwy6sXsNJUbDMelm2MAF2SWWNu1hfBCs9Loy5jnNqvvORbb5jh
+         V1BX/BWq7F6p60P2FCLQ+dEIbRTVt0VBx9k950SA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kiwoong Kim <kwmad.kim@samsung.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 078/287] scsi: ufs: core: Exclude UECxx from SFR dump list
-Date:   Mon, 13 Jun 2022 12:08:22 +0200
-Message-Id: <20220613094926.240034730@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Olivier Matz <olivier.matz@6wind.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 5.4 407/411] ixgbe: fix unexpected VLAN Rx in promisc mode on VF
+Date:   Mon, 13 Jun 2022 12:11:20 +0200
+Message-Id: <20220613094941.024684370@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
-References: <20220613094923.832156175@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,47 +52,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kiwoong Kim <kwmad.kim@samsung.com>
+From: Olivier Matz <olivier.matz@6wind.com>
 
-[ Upstream commit ef60031022eb6d972aac86ca26c98c33e1289436 ]
+commit 7bb0fb7c63df95d6027dc50d6af3bc3bbbc25483 upstream.
 
-Some devices may return invalid or zeroed data during an UIC error
-condition. In addition, reading these SFRs will clear them. This means the
-subsequent error handling will not be able to see them and therefore no
-error handling will be scheduled.
+When the promiscuous mode is enabled on a VF, the IXGBE_VMOLR_VPE
+bit (VLAN Promiscuous Enable) is set. This means that the VF will
+receive packets whose VLAN is not the same than the VLAN of the VF.
 
-Skip reading these SFRs in ufshcd_dump_regs().
+For instance, in this situation:
 
-Link: https://lore.kernel.org/r/1648689845-33521-1-git-send-email-kwmad.kim@samsung.com
-Fixes: d67247566450 ("scsi: ufs: Use explicit access size in ufshcd_dump_regs")
-Signed-off-by: Kiwoong Kim <kwmad.kim@samsung.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+┌────────┐    ┌────────┐    ┌────────┐
+│        │    │        │    │        │
+│        │    │        │    │        │
+│     VF0├────┤VF1  VF2├────┤VF3     │
+│        │    │        │    │        │
+└────────┘    └────────┘    └────────┘
+   VM1           VM2           VM3
+
+vf 0:  vlan 1000
+vf 1:  vlan 1000
+vf 2:  vlan 1001
+vf 3:  vlan 1001
+
+If we tcpdump on VF3, we see all the packets, even those transmitted
+on vlan 1000.
+
+This behavior prevents to bridge VF1 and VF2 in VM2, because it will
+create a loop: packets transmitted on VF1 will be received by VF2 and
+vice-versa, and bridged again through the software bridge.
+
+This patch remove the activation of VLAN Promiscuous when a VF enables
+the promiscuous mode. However, the IXGBE_VMOLR_UPE bit (Unicast
+Promiscuous) is kept, so that a VF receives all packets that has the
+same VLAN, whatever the destination MAC address.
+
+Fixes: 8443c1a4b192 ("ixgbe, ixgbevf: Add new mbox API xcast mode")
+Cc: stable@vger.kernel.org
+Cc: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Signed-off-by: Olivier Matz <olivier.matz@6wind.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/ufs/ufshcd.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
-index fee1989e23f0..abc156cf05f6 100644
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -119,8 +119,13 @@ int ufshcd_dump_regs(struct ufs_hba *hba, size_t offset, size_t len,
- 	if (!regs)
- 		return -ENOMEM;
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
+@@ -1181,9 +1181,9 @@ static int ixgbe_update_vf_xcast_mode(st
+ 			return -EPERM;
+ 		}
  
--	for (pos = 0; pos < len; pos += 4)
-+	for (pos = 0; pos < len; pos += 4) {
-+		if (offset == 0 &&
-+		    pos >= REG_UIC_ERROR_CODE_PHY_ADAPTER_LAYER &&
-+		    pos <= REG_UIC_ERROR_CODE_DME)
-+			continue;
- 		regs[pos / 4] = ufshcd_readl(hba, offset + pos);
-+	}
- 
- 	ufshcd_hex_dump(prefix, regs, len);
- 	kfree(regs);
--- 
-2.35.1
-
+-		disable = 0;
++		disable = IXGBE_VMOLR_VPE;
+ 		enable = IXGBE_VMOLR_BAM | IXGBE_VMOLR_ROMPE |
+-			 IXGBE_VMOLR_MPE | IXGBE_VMOLR_UPE | IXGBE_VMOLR_VPE;
++			 IXGBE_VMOLR_MPE | IXGBE_VMOLR_UPE;
+ 		break;
+ 	default:
+ 		return -EOPNOTSUPP;
 
 
