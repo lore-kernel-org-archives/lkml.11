@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C880C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:55:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4877CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:56:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347299AbiFMKzs (ORCPT
+        id S1348007AbiFMKz5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:55:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39570 "EHLO
+        Mon, 13 Jun 2022 06:55:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347764AbiFMKwd (ORCPT
+        with ESMTP id S1347724AbiFMKwc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:52:33 -0400
+        Mon, 13 Jun 2022 06:52:32 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 767102EA0A;
-        Mon, 13 Jun 2022 03:27:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5F6624597;
+        Mon, 13 Jun 2022 03:27:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A005960ED7;
-        Mon, 13 Jun 2022 10:27:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1150C34114;
-        Mon, 13 Jun 2022 10:27:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 086D060AEB;
+        Mon, 13 Jun 2022 10:27:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15609C34114;
+        Mon, 13 Jun 2022 10:27:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116056;
-        bh=hnA5EyoeITBvXjoxz8y+FqzUH8+90/suivYDlXICjYM=;
+        s=korg; t=1655116053;
+        bh=lOyJjuFBdn7PwnbUrZC0mbZ8Dy3sqJhe/Zfv7N7zFXI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PLkhwb/ai12OhRXKKtPVOmpKhaGFnr1BkvW7lqSA4jLDvay1cgGHOW2LtNrfs4ygm
-         /ydZ7JxaM0rsVbFTAlnahPCsk2JnXVKvmxnkY3EdCwQ/Ozpsr7r9KnLHS2fGgPZ7Rr
-         +NbWxHpvqp2YF/4kxrDqUd0C1DmB1qSvtErqdrAk=
+        b=sh2pFcTOc4knX13WU5U/XckuntpU6sDOuj85yimI6SLUESQdoQw683I/BZ57kjldF
+         Cj06YG1O/Yy7mqBhBzS5NzzHpTqMnlxklrEMfZneBQfW/2mUny7C+aqKNT+BRNGHad
+         AoBpjw0wP59Sm+rCNiNEY27p/b5K2ojT8Ja1smSA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 014/411] b43legacy: Fix assigning negative value to unsigned variable
-Date:   Mon, 13 Jun 2022 12:04:47 +0200
-Message-Id: <20220613094928.927416702@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Lyude Paul <lyude@redhat.com>
+Subject: [PATCH 4.14 115/218] drm/nouveau/clk: Fix an incorrect NULL check on list iterator
+Date:   Mon, 13 Jun 2022 12:09:33 +0200
+Message-Id: <20220613094924.055684325@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,37 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haowen Bai <baihaowen@meizu.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-[ Upstream commit 3f6b867559b3d43a7ce1b4799b755e812fc0d503 ]
+commit 1c3b2a27def609473ed13b1cd668cb10deab49b4 upstream.
 
-fix warning reported by smatch:
-drivers/net/wireless/broadcom/b43legacy/phy.c:1181 b43legacy_phy_lo_b_measure()
-warn: assigning (-772) to unsigned variable 'fval'
+The bug is here:
+	if (nvkm_cstate_valid(clk, cstate, max_volt, clk->temp))
+		return cstate;
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/1648203433-8736-1-git-send-email-baihaowen@meizu.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The list iterator value 'cstate' will *always* be set and non-NULL
+by list_for_each_entry_from_reverse(), so it is incorrect to assume
+that the iterator value will be unchanged if the list is empty or no
+element is found (In fact, it will be a bogus pointer to an invalid
+structure object containing the HEAD). Also it missed a NULL check
+at callsite and may lead to invalid memory access after that.
+
+To fix this bug, just return 'encoder' when found, otherwise return
+NULL. And add the NULL check.
+
+Cc: stable@vger.kernel.org
+Fixes: 1f7f3d91ad38a ("drm/nouveau/clk: Respect voltage limits in nvkm_cstate_prog")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Reviewed-by: Lyude Paul <lyude@redhat.com>
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220327075824.11806-1-xiam0nd.tong@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/broadcom/b43legacy/phy.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/b43legacy/phy.c b/drivers/net/wireless/broadcom/b43legacy/phy.c
-index a659259bc51a..6e76055e136d 100644
---- a/drivers/net/wireless/broadcom/b43legacy/phy.c
-+++ b/drivers/net/wireless/broadcom/b43legacy/phy.c
-@@ -1123,7 +1123,7 @@ void b43legacy_phy_lo_b_measure(struct b43legacy_wldev *dev)
- 	struct b43legacy_phy *phy = &dev->phy;
- 	u16 regstack[12] = { 0 };
- 	u16 mls;
--	u16 fval;
-+	s16 fval;
- 	int i;
- 	int j;
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/clk/base.c
+@@ -136,10 +136,10 @@ nvkm_cstate_find_best(struct nvkm_clk *c
+ 	for (cstate = start; &cstate->head != &pstate->list;
+ 	     cstate = list_entry(cstate->head.prev, typeof(*cstate), head)) {
+ 		if (nvkm_cstate_valid(clk, cstate, max_volt, clk->temp))
+-			break;
++			return cstate;
+ 	}
  
--- 
-2.35.1
-
+-	return cstate;
++	return NULL;
+ }
+ 
+ static struct nvkm_cstate *
+@@ -170,6 +170,8 @@ nvkm_cstate_prog(struct nvkm_clk *clk, s
+ 	if (!list_empty(&pstate->list)) {
+ 		cstate = nvkm_cstate_get(clk, pstate, cstatei);
+ 		cstate = nvkm_cstate_find_best(clk, pstate, cstate);
++		if (!cstate)
++			return -EINVAL;
+ 	} else {
+ 		cstate = &pstate->base;
+ 	}
 
 
