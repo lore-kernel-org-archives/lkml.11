@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C30FCCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:57:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FC87C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:57:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348600AbiFMK5n (ORCPT
+        id S1349700AbiFMK5q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:57:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44228 "EHLO
+        Mon, 13 Jun 2022 06:57:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349965AbiFMKyi (ORCPT
+        with ESMTP id S1350036AbiFMKyj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:54:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E8E62FFF3;
-        Mon, 13 Jun 2022 03:28:31 -0700 (PDT)
+        Mon, 13 Jun 2022 06:54:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6740E3055C;
+        Mon, 13 Jun 2022 03:28:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB51460F09;
-        Mon, 13 Jun 2022 10:28:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDB99C34114;
-        Mon, 13 Jun 2022 10:28:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2433CB80E5E;
+        Mon, 13 Jun 2022 10:28:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F7AEC34114;
+        Mon, 13 Jun 2022 10:28:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116110;
-        bh=7xf9iBHpNNLxSetGM17NzppiizC8ZCsYKWufW33KuuU=;
+        s=korg; t=1655116112;
+        bh=0jYq7SrEBjoFSLyblsX/VqNdX518v94WFZHXPitwbSk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QfTq9oaHAA6qI4b3o2mjNQRBuuIzawJTIf/6OKrGJoFQ+6LolIJkbQL3O/ZeREbpL
-         eHsXb4pQIyqaWKElNd4wXN1aLgzdQr0ySoujB58miir1HwnkIDx7dtS+eUIGoGKnUh
-         Bw0Gb/Wsre0DTaTx9gDVdoCZdnl8uxs/w0Xa4iOc=
+        b=iWrTJCrCApudX0r975NzaSY3Qina9Q8zS4lOirY/7jnUtMFwbcD2MS3jrgxAAkaL7
+         JH18kntOH1jgv4jVBeCiDQOzgCOnUhkcovKnEFbMWLoM5TRIG72qGAdeWFEDEpqEpy
+         rQPInzmnzyERyb/y9tOUb2LxSzlC+i/qY8FMeBZk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Akira Yokosawa <akiyks@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>
-Subject: [PATCH 4.14 134/218] docs/conf.py: Cope with removal of language=None in Sphinx 5.0.0
-Date:   Mon, 13 Jun 2022 12:09:52 +0200
-Message-Id: <20220613094924.647845896@linuxfoundation.org>
+        stable@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 016/411] ipw2x00: Fix potential NULL dereference in libipw_xmit()
+Date:   Mon, 13 Jun 2022 12:04:49 +0200
+Message-Id: <20220613094928.988723467@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,48 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Akira Yokosawa <akiyks@gmail.com>
+From: Haowen Bai <baihaowen@meizu.com>
 
-commit 627f01eab93d8671d4e4afee9b148f9998d20e7c upstream.
+[ Upstream commit e8366bbabe1d207cf7c5b11ae50e223ae6fc278b ]
 
-One of the changes in Sphinx 5.0.0 [1] says [sic]:
+crypt and crypt->ops could be null, so we need to checking null
+before dereference
 
-    5.0.0 final
-
-     - #10474: language does not accept None as it value.
-       The default value of language becomes to 'en' now.
-
-[1]: https://www.sphinx-doc.org/en/master/changes.html#release-5-0-0-released-may-30-2022
-
-It results in a new warning from Sphinx 5.0.0 [sic]:
-
-    WARNING: Invalid configuration value found: 'language = None'.
-    Update your configuration to a valid langauge code. Falling
-    back to 'en' (English).
-
-Silence the warning by using 'en'.
-It works with all the Sphinx versions required for building
-kernel documentation (1.7.9 or later).
-
-Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
-Link: https://lore.kernel.org/r/bd0c2ddc-2401-03cb-4526-79ca664e1cbe@gmail.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Jonathan Corbet <corbet@lwn.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/1648797055-25730-1-git-send-email-baihaowen@meizu.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/conf.py |    2 +-
+ drivers/net/wireless/intel/ipw2x00/libipw_tx.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/Documentation/conf.py
-+++ b/Documentation/conf.py
-@@ -96,7 +96,7 @@ finally:
- #
- # This is also used if you do content translation via gettext catalogs.
- # Usually you set "language" from the command line for these cases.
--language = None
-+language = 'en'
+diff --git a/drivers/net/wireless/intel/ipw2x00/libipw_tx.c b/drivers/net/wireless/intel/ipw2x00/libipw_tx.c
+index d9baa2fa603b..e4c60caa6543 100644
+--- a/drivers/net/wireless/intel/ipw2x00/libipw_tx.c
++++ b/drivers/net/wireless/intel/ipw2x00/libipw_tx.c
+@@ -383,7 +383,7 @@ netdev_tx_t libipw_xmit(struct sk_buff *skb, struct net_device *dev)
  
- # There are two options for replacing |today|: either, you set today to some
- # non-false value, then it is used:
+ 		/* Each fragment may need to have room for encryption
+ 		 * pre/postfix */
+-		if (host_encrypt)
++		if (host_encrypt && crypt && crypt->ops)
+ 			bytes_per_frag -= crypt->ops->extra_mpdu_prefix_len +
+ 			    crypt->ops->extra_mpdu_postfix_len;
+ 
+-- 
+2.35.1
+
 
 
