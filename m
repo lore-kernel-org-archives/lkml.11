@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92DEBCCA486
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:45:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A30CCA48A
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:45:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379444AbiFMNoR (ORCPT
+        id S1379580AbiFMNom (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:44:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59054 "EHLO
+        Mon, 13 Jun 2022 09:44:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379177AbiFMNj7 (ORCPT
+        with ESMTP id S1379210AbiFMNkC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:39:59 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6762C22500;
-        Mon, 13 Jun 2022 04:29:21 -0700 (PDT)
+        Mon, 13 Jun 2022 09:40:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FF72B4A7;
+        Mon, 13 Jun 2022 04:30:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D11F0CE116E;
-        Mon, 13 Jun 2022 11:29:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA99EC34114;
-        Mon, 13 Jun 2022 11:29:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CFDDF61236;
+        Mon, 13 Jun 2022 11:30:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB2FCC34114;
+        Mon, 13 Jun 2022 11:30:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119758;
-        bh=z/mWIolJZgTMBgzawBWRRAfSw6ZnpezM3yJE1Y/TOYA=;
+        s=korg; t=1655119802;
+        bh=8FwBDfYhettJ1LzaDvTKnMnazp4mrmKa5FRrQbl3aNk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qfIBLxpSbV6Ou+xZUFUwuv28xC2qAm01iReBoZfmU73T+fV2fBodC5gC9mFkKYpPR
-         cDTRYgxYHEkj4K4cYtvvBnolO2hzfMjlMLd0iar//ioHeI+RjKt/iJrP9p1SAc1UrZ
-         qB0YBb9Vg1sKSUdOtm/gqzyWj+xr0ZmGqEcd4ik4=
+        b=k1shSv/EIFlDk9JUgFxgdAzkk998sb7+OvyC5Z51FubRrwSyljl8RFKLexQaWewiF
+         TrlpnPGqxuEA7b7GdnG+1Kr8J3xX1H7Z6odiHn3PO4yG6BxP7N4pzwArVg/cHbS8PW
+         JM6YmJF2wun+8MefZiykBR0k8Z6SM2fY0Zpb4YZk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Changcheng Liu <jerrliu@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org,
+        syzbot+e820fdc8ce362f2dea51@syzkaller.appspotmail.com,
+        Jon Maloy <jmaloy@redhat.com>,
+        Hoang Le <hoang.h.le@dektech.com.au>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 128/339] net/mlx5: correct ECE offset in query qp output
-Date:   Mon, 13 Jun 2022 12:09:13 +0200
-Message-Id: <20220613094930.391560520@linuxfoundation.org>
+Subject: [PATCH 5.18 145/339] tipc: check attribute length for bearer name
+Date:   Mon, 13 Jun 2022 12:09:30 +0200
+Message-Id: <20220613094931.081079291@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,39 +53,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Changcheng Liu <jerrliu@nvidia.com>
+From: Hoang Le <hoang.h.le@dektech.com.au>
 
-[ Upstream commit 3fc2a9e89b3508a5cc0c324f26d7b4740ba8c456 ]
+[ Upstream commit 7f36f798f89bf32c0164049cb0e3fd1af613d0bb ]
 
-ECE field should be after opt_param_mask in query qp output.
+syzbot reported uninit-value:
+=====================================================
+BUG: KMSAN: uninit-value in string_nocheck lib/vsprintf.c:644 [inline]
+BUG: KMSAN: uninit-value in string+0x4f9/0x6f0 lib/vsprintf.c:725
+ string_nocheck lib/vsprintf.c:644 [inline]
+ string+0x4f9/0x6f0 lib/vsprintf.c:725
+ vsnprintf+0x2222/0x3650 lib/vsprintf.c:2806
+ vprintk_store+0x537/0x2150 kernel/printk/printk.c:2158
+ vprintk_emit+0x28b/0xab0 kernel/printk/printk.c:2256
+ vprintk_default+0x86/0xa0 kernel/printk/printk.c:2283
+ vprintk+0x15f/0x180 kernel/printk/printk_safe.c:50
+ _printk+0x18d/0x1cf kernel/printk/printk.c:2293
+ tipc_enable_bearer net/tipc/bearer.c:371 [inline]
+ __tipc_nl_bearer_enable+0x2022/0x22a0 net/tipc/bearer.c:1033
+ tipc_nl_bearer_enable+0x6c/0xb0 net/tipc/bearer.c:1042
+ genl_family_rcv_msg_doit net/netlink/genetlink.c:731 [inline]
 
-Fixes: 6b646a7e4af6 ("net/mlx5: Add ability to read and write ECE options")
-Signed-off-by: Changcheng Liu <jerrliu@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+- Do sanity check the attribute length for TIPC_NLA_BEARER_NAME.
+- Do not use 'illegal name' in printing message.
+
+Reported-by: syzbot+e820fdc8ce362f2dea51@syzkaller.appspotmail.com
+Fixes: cb30a63384bc ("tipc: refactor function tipc_enable_bearer()")
+Acked-by: Jon Maloy <jmaloy@redhat.com>
+Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
+Link: https://lore.kernel.org/r/20220602063053.5892-1-hoang.h.le@dektech.com.au
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/mlx5/mlx5_ifc.h | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ net/tipc/bearer.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 7d2d0ba82144..2e162ec2a3d3 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -5180,12 +5180,11 @@ struct mlx5_ifc_query_qp_out_bits {
+diff --git a/net/tipc/bearer.c b/net/tipc/bearer.c
+index 6d39ca05f249..932c87b98eca 100644
+--- a/net/tipc/bearer.c
++++ b/net/tipc/bearer.c
+@@ -259,9 +259,8 @@ static int tipc_enable_bearer(struct net *net, const char *name,
+ 	u32 i;
  
- 	u8         syndrome[0x20];
+ 	if (!bearer_name_validate(name, &b_names)) {
+-		errstr = "illegal name";
+ 		NL_SET_ERR_MSG(extack, "Illegal name");
+-		goto rejected;
++		return res;
+ 	}
  
--	u8         reserved_at_40[0x20];
--	u8         ece[0x20];
-+	u8         reserved_at_40[0x40];
- 
- 	u8         opt_param_mask[0x20];
- 
--	u8         reserved_at_a0[0x20];
-+	u8         ece[0x20];
- 
- 	struct mlx5_ifc_qpc_bits qpc;
- 
+ 	if (prio > TIPC_MAX_LINK_PRI && prio != TIPC_MEDIA_LINK_PRI) {
 -- 
 2.35.1
 
