@@ -2,328 +2,265 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 065BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 03:22:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D916CCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 03:23:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238311AbiFMDWm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 23:22:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53574 "EHLO
+        id S238475AbiFMDXE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 23:23:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238293AbiFMDWj (ORCPT
+        with ESMTP id S238363AbiFMDWv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 23:22:39 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78C40BC99
-        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 20:22:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655090558; x=1686626558;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=6T5F9QeI2xI6C74A2dOJyc6wKMSYhB54nR40GAH7svs=;
-  b=Jx7kfpi816czNZuBXs8fSjdYum8c1MGyU+iNnifLBHqSM9eyemOkNwBm
-   fq1QZwzMXmML40ryeQQnbcp4gmp040C6VM2jMD8Iks3SdpAT7apcIBS/v
-   HU76Vr3BLJQaVGuyT4smdOijFPiS4c3KZ8Dfb/mztnAd3/W6cWkzsGIvL
-   /KE6rMEYUtE3aF4pp3XUzAv6Sqh5CNDATUG/8HdqyTlmP1kyStkossDah
-   UmyeWF2rC97Oxzb1J/g/5LRCT47USeQFv5vxQdji/9bZB6D31umgknsW7
-   ZuvlVrbvWxrRqqTJs0k7S7UL8oGgqSlw1QCWcTD6tDS1LO5AhW6o3Ury+
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10376"; a="339823109"
-X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
-   d="scan'208";a="339823109"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2022 20:22:37 -0700
-X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
-   d="scan'208";a="639464646"
-Received: from xinyangc-mobl.ccr.corp.intel.com ([10.254.214.65])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2022 20:22:33 -0700
-Message-ID: <7e0b41422dbd0976cb43c2f126e9371d5e311e77.camel@intel.com>
-Subject: Re: [PATCH v6 01/13] mm/demotion: Add support for explicit memory
- tiers
-From:   Ying Huang <ying.huang@intel.com>
-To:     "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        linux-mm@kvack.org, akpm@linux-foundation.org
-Cc:     Wei Xu <weixugc@google.com>, Greg Thelen <gthelen@google.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Brice Goglin <brice.goglin@gmail.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        David Rientjes <rientjes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>
-Date:   Mon, 13 Jun 2022 11:22:30 +0800
-In-Reply-To: <20220610135229.182859-2-aneesh.kumar@linux.ibm.com>
-References: <20220610135229.182859-1-aneesh.kumar@linux.ibm.com>
-         <20220610135229.182859-2-aneesh.kumar@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        Sun, 12 Jun 2022 23:22:51 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 734B812740;
+        Sun, 12 Jun 2022 20:22:44 -0700 (PDT)
+X-UUID: aa13092b62974c98a00350a76770ba81-20220613
+X-CID-P-RULE: Spam_GS6885AD
+X-CID-O-INFO: VERSION:1.1.5,REQID:367dbf97-d6f4-4f7e-ad7b-65467498ace0,OB:0,LO
+        B:0,IP:0,URL:25,TC:0,Content:-5,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS6885A
+        D,ACTION:quarantine,TS:120
+X-CID-INFO: VERSION:1.1.5,REQID:367dbf97-d6f4-4f7e-ad7b-65467498ace0,OB:0,LOB:
+        0,IP:0,URL:25,TC:0,Content:-5,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,
+        ACTION:quarantine,TS:120
+X-CID-META: VersionHash:2a19b09,CLOUDID:285f52c6-12ba-4305-bfdf-9aefbdc32516,C
+        OID:5c7b1f35a894,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:1,File:nil,QS:0,BEC:nil
+X-UUID: aa13092b62974c98a00350a76770ba81-20220613
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+        (envelope-from <irui.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1154491520; Mon, 13 Jun 2022 11:22:39 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 13 Jun 2022 11:22:38 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 13 Jun 2022 11:22:36 +0800
+From:   Irui Wang <irui.wang@mediatek.com>
+To:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tzung-Bi Shih <tzungbi@chromium.org>,
+        <angelogioacchino.delregno@collabora.com>,
+        <nicolas.dufresne@collabora.com>, <wenst@chromium.org>
+CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Tomasz Figa <tfiga@chromium.org>, <xia.jiang@mediatek.com>,
+        <maoguang.meng@mediatek.com>, kyrie wu <kyrie.wu@mediatek.com>,
+        <srv_heupstream@mediatek.com>
+Subject: [V3,1/8] dt-bindings: mediatek: Add mediatek,mt8195-jpgdec compatible
+Date:   Mon, 13 Jun 2022 11:22:25 +0800
+Message-ID: <20220613032232.23187-2-irui.wang@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220613032232.23187-1-irui.wang@mediatek.com>
+References: <20220613032232.23187-1-irui.wang@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Aneesh,
+From: kyrie wu <kyrie.wu@mediatek.com>
 
-On Fri, 2022-06-10 at 19:22 +0530, Aneesh Kumar K.V wrote:
-> In the current kernel, memory tiers are defined implicitly via a
-> demotion path relationship between NUMA nodes, which is created
-> during the kernel initialization and updated when a NUMA node is
-> hot-added or hot-removed.  The current implementation puts all
-> nodes with CPU into the top tier, and builds the tier hierarchy
-> tier-by-tier by establishing the per-node demotion targets based
-> on the distances between nodes.
-> 
-> This current memory tier kernel interface needs to be improved for
-> several important use cases,
-> 
-> The current tier initialization code always initializes
-> each memory-only NUMA node into a lower tier.  But a memory-only
-> NUMA node may have a high performance memory device (e.g. a DRAM
-> device attached via CXL.mem or a DRAM-backed memory-only node on
-> a virtual machine) and should be put into a higher tier.
-> 
-> The current tier hierarchy always puts CPU nodes into the top
-> tier. But on a system with HBM or GPU devices, the
-> memory-only NUMA nodes mapping these devices should be in the
-> top tier, and DRAM nodes with CPUs are better to be placed into the
-> next lower tier.
-> 
-> With current kernel higher tier node can only be demoted to selected nodes on the
-> next lower tier as defined by the demotion path, not any other
-> node from any lower tier.  This strict, hard-coded demotion order
-> does not work in all use cases (e.g. some use cases may want to
-> allow cross-socket demotion to another node in the same demotion
-> tier as a fallback when the preferred demotion node is out of
-> space), This demotion order is also inconsistent with the page
-> allocation fallback order when all the nodes in a higher tier are
-> out of space: The page allocation can fall back to any node from
-> any lower tier, whereas the demotion order doesn't allow that.
-> 
-> The current kernel also don't provide any interfaces for the
-> userspace to learn about the memory tier hierarchy in order to
-> optimize its memory allocations.
-> 
-> This patch series address the above by defining memory tiers explicitly.
-> 
-> This patch introduce explicity memory tiers with ranks. The rank
-> value of a memory tier is used to derive the demotion order between
-> NUMA nodes. The memory tiers present in a system can be found at
-> 
-> "Rank" is an opaque value. Its absolute value doesn't have any
-> special meaning. But the rank values of different memtiers can be
-> compared with each other to determine the memory tier order.
-> 
-> For example, if we have 3 memtiers: memtier0, memtier1, memiter2, and
-> their rank values are 300, 200, 100, then the memory tier order is:
-> memtier0 -> memtier1 -> memtier2, where memtier0 is the highest tier
-> and memtier2 is the lowest tier.
-> 
-> The rank value of each memtier should be unique.
-> 
-> A higher rank memory tier will appear first in the demotion order
-> than a lower rank memory tier. ie. while reclaim we choose a node
-> in higher rank memory tier to demote pages to as compared to a node
-> in a lower rank memory tier.
-> 
-> This patchset introduce 3 memory tiers (memtier0, memtier1 and memtier2)
-> which are created by different kernel subsystems. The default memory
-> tier created by the kernel is memtier1. Once created these memory tiers
-> are not destroyed even if they don't have any NUMA nodes assigned to
-> them.
-> 
-> This patch is based on the proposal sent by Wei Xu <weixugc@google.com> at [1].
-> 
-> [1] https://lore.kernel.org/linux-mm/CAAPL-u9Wv+nH1VOZTj=9p9S70Y3Qz3+63EkqncRDdHfubsrjfw@mail.gmail.com
-> 
-> /sys/devices/system/memtier/memtierN/
-> 
-> The nodes which are part of a specific memory tier can be listed
-> via
-> /sys/devices/system/memtier/memtierN/nodelist
-> 
-> Suggested-by: Wei Xu <weixugc@google.com>
-> Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
-> Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
-> ---
->  include/linux/memory-tiers.h | 20 ++++++++
->  mm/Kconfig                   |  3 ++
->  mm/Makefile                  |  1 +
->  mm/memory-tiers.c            | 89 ++++++++++++++++++++++++++++++++++++
->  4 files changed, 113 insertions(+)
->  create mode 100644 include/linux/memory-tiers.h
->  create mode 100644 mm/memory-tiers.c
-> 
-> diff --git a/include/linux/memory-tiers.h b/include/linux/memory-tiers.h
-> new file mode 100644
-> index 000000000000..e17f6b4ee177
-> --- /dev/null
-> +++ b/include/linux/memory-tiers.h
-> @@ -0,0 +1,20 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef _LINUX_MEMORY_TIERS_H
-> +#define _LINUX_MEMORY_TIERS_H
-> +
-> +#ifdef CONFIG_TIERED_MEMORY
-> +
-> +#define MEMORY_TIER_HBM_GPU	0
-> +#define MEMORY_TIER_DRAM	1
-> +#define MEMORY_TIER_PMEM	2
-> +
-> +#define MEMORY_RANK_HBM_GPU	300
-> +#define MEMORY_RANK_DRAM	200
-> +#define MEMORY_RANK_PMEM	100
-> +
-> +#define DEFAULT_MEMORY_TIER	MEMORY_TIER_DRAM
-> +#define MAX_MEMORY_TIERS  3
-> +
-> +#endif	/* CONFIG_TIERED_MEMORY */
-> +
-> +#endif
-> diff --git a/mm/Kconfig b/mm/Kconfig
-> index 169e64192e48..bb5aa585ab41 100644
-> --- a/mm/Kconfig
-> +++ b/mm/Kconfig
-> @@ -614,6 +614,9 @@ config ARCH_ENABLE_HUGEPAGE_MIGRATION
->  config ARCH_ENABLE_THP_MIGRATION
->  	bool
->  
-> 
-> +config TIERED_MEMORY
-> +	def_bool NUMA
-> +
+Add mediatek,mt8195-jpgdec compatible to binding document.
 
-As Yang pointed out, why not just use CONFIG_NUMA?  I suspect the
-added value of CONIFIG_TIRED_MEMORY.
+Signed-off-by: kyrie wu <kyrie.wu@mediatek.com>
+---
+ .../media/mediatek,mt8195-jpegdec.yaml        | 177 ++++++++++++++++++
+ 1 file changed, 177 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/media/mediatek,mt8195-jpegdec.yaml
 
->  config HUGETLB_PAGE_SIZE_VARIABLE
->  	def_bool n
->  	help
-> diff --git a/mm/Makefile b/mm/Makefile
-> index 6f9ffa968a1a..482557fbc9d1 100644
-> --- a/mm/Makefile
-> +++ b/mm/Makefile
-> @@ -92,6 +92,7 @@ obj-$(CONFIG_KFENCE) += kfence/
->  obj-$(CONFIG_FAILSLAB) += failslab.o
->  obj-$(CONFIG_MEMTEST)		+= memtest.o
->  obj-$(CONFIG_MIGRATION) += migrate.o
-> +obj-$(CONFIG_TIERED_MEMORY) += memory-tiers.o
->  obj-$(CONFIG_DEVICE_MIGRATION) += migrate_device.o
->  obj-$(CONFIG_TRANSPARENT_HUGEPAGE) += huge_memory.o khugepaged.o
->  obj-$(CONFIG_PAGE_COUNTER) += page_counter.o
-> diff --git a/mm/memory-tiers.c b/mm/memory-tiers.c
-> new file mode 100644
-> index 000000000000..d9fa955f208e
-> --- /dev/null
-> +++ b/mm/memory-tiers.c
-> @@ -0,0 +1,89 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +#include <linux/types.h>
-> +#include <linux/nodemask.h>
-> +#include <linux/slab.h>
-> +#include <linux/memory-tiers.h>
-> +
-> +struct memory_tier {
-> +	struct list_head list;
-> +	nodemask_t nodelist;
-> +	int id;
-> +	int rank;
-> +};
-> +
-> +static DEFINE_MUTEX(memory_tier_lock);
-> +static LIST_HEAD(memory_tiers);
-> +
-> +/*
-> + * Keep it simple by having  direct mapping between
-> + * tier index and rank value.
-> + */
-> +static inline int get_rank_from_tier(unsigned int tier)
-> +{
-> +	switch (tier) {
-> +	case MEMORY_TIER_HBM_GPU:
-> +		return MEMORY_RANK_HBM_GPU;
-> +	case MEMORY_TIER_DRAM:
-> +		return MEMORY_RANK_DRAM;
-> +	case MEMORY_TIER_PMEM:
-> +		return MEMORY_RANK_PMEM;
-> +	}
-> +	return -1;
-> +}
-> +
-> +static void insert_memory_tier(struct memory_tier *memtier)
-> +{
-> +	struct list_head *ent;
-> +	struct memory_tier *tmp_memtier;
-> +
-> +	list_for_each(ent, &memory_tiers) {
-> +		tmp_memtier = list_entry(ent, struct memory_tier, list);
-
-list_for_each_entry() ?
-
-> +		if (tmp_memtier->rank < memtier->rank) {
-> +			list_add_tail(&memtier->list, ent);
-
-> +			return;
-> +		}
-> +	}
-> +	list_add_tail(&memtier->list, &memory_tiers);
-> +}
-> +
-
-IMHO, the locking requirements are needed here as comments to avoid
-confusing.
-
-> +static struct memory_tier *register_memory_tier(unsigned int tier,
-> +						unsigned int rank)
-> +{
-> +	struct memory_tier *memtier;
-> +
-> +	if (tier >= MAX_MEMORY_TIERS)
-> +		return ERR_PTR(-EINVAL);
-> +
-> +	memtier = kzalloc(sizeof(struct memory_tier), GFP_KERNEL);
-> +	if (!memtier)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	memtier->id   = tier;
-> +	memtier->rank = rank;
-> +
-> +	insert_memory_tier(memtier);
-> +
-> +	return memtier;
-> +}
-> +
-> +static int __init memory_tier_init(void)
-> +{
-> +	struct memory_tier *memtier;
-> +
-> +	/*
-> +	 * Register only default memory tier to hide all empty
-> +	 * memory tier from sysfs.
-> +	 */
-> +	memtier = register_memory_tier(DEFAULT_MEMORY_TIER,
-> +				       get_rank_from_tier(DEFAULT_MEMORY_TIER));
-> +
-> +	if (IS_ERR(memtier))
-> +		panic("%s() failed to register memory tier: %ld\n",
-> +		      __func__, PTR_ERR(memtier));
-> +
-> +	/* CPU only nodes are not part of memory tiers. */
-> +	memtier->nodelist = node_states[N_MEMORY];
-> +
-> +	return 0;
-> +}
-> +subsys_initcall(memory_tier_init);
-
-Best Regards,
-Huang, Ying
+diff --git a/Documentation/devicetree/bindings/media/mediatek,mt8195-jpegdec.yaml b/Documentation/devicetree/bindings/media/mediatek,mt8195-jpegdec.yaml
+new file mode 100644
+index 000000000000..c967d7eb6a00
+--- /dev/null
++++ b/Documentation/devicetree/bindings/media/mediatek,mt8195-jpegdec.yaml
+@@ -0,0 +1,177 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/media/mediatek,mt8195-jpegdec.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: MediaTek JPEG Encoder Device Tree Bindings
++
++maintainers:
++  - kyrie wu <kyrie.wu@mediatek.corp-partner.google.com>
++
++description: |-
++  MediaTek JPEG Decoder is the JPEG decode hardware present in MediaTek SoCs
++
++properties:
++  compatible:
++    items:
++      - const: mediatek,mt8195-jpgdec
++
++  mediatek,jpegdec-multi-core:
++    type: boolean
++    description: |
++      Indicates whether the jpeg encoder has multiple cores or not.
++
++  power-domains:
++    maxItems: 1
++
++  iommus:
++    maxItems: 6
++    description: |
++      Points to the respective IOMMU block with master port as argument, see
++      Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml for details.
++      Ports are according to the HW.
++
++  "#address-cells":
++    const: 2
++
++  "#size-cells":
++    const: 2
++
++  ranges: true
++
++# Required child node:
++patternProperties:
++  "^jpgdec@[0-9a-f]+$":
++    type: object
++    description: |
++      The jpeg decoder hardware device node which should be added as subnodes to
++      the main jpeg node.
++
++    properties:
++      compatible:
++        const: mediatek,mt8195-jpgdec-hw
++
++      reg:
++        maxItems: 1
++
++      mediatek,hw-id:
++        minItems: 0
++        maxItems: 2
++        description: |
++          Current jpegdec hw id.
++
++      iommus:
++        minItems: 1
++        maxItems: 32
++        description: |
++          List of the hardware port in respective IOMMU block for current Socs.
++          Refer to bindings/iommu/mediatek,iommu.yaml.
++
++      interrupts:
++        maxItems: 1
++
++      clocks:
++        maxItems: 1
++
++      clock-names:
++        items:
++          - const: jpgdec
++
++      power-domains:
++        maxItems: 1
++
++    required:
++      - compatible
++      - reg
++      - mediatek,hw-id
++      - iommus
++      - interrupts
++      - clocks
++      - clock-names
++      - power-domains
++
++    additionalProperties: false
++
++required:
++  - compatible
++  - power-domains
++  - iommus
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/memory/mt8195-memory-port.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/clock/mt8195-clk.h>
++    #include <dt-bindings/power/mt8195-power.h>
++
++    soc {
++        #address-cells = <2>;
++        #size-cells = <2>;
++
++        jpgdec_master {
++                compatible = "mediatek,mt8195-jpgdec";
++                mediatek,jpegdec-multi-core;
++                power-domains = <&spm MT8195_POWER_DOMAIN_VDEC1>;
++                iommus = <&iommu_vpp M4U_PORT_L19_JPGDEC_WDMA0>,
++                     <&iommu_vpp M4U_PORT_L19_JPGDEC_BSDMA0>,
++                     <&iommu_vpp M4U_PORT_L19_JPGDEC_WDMA1>,
++                     <&iommu_vpp M4U_PORT_L19_JPGDEC_BSDMA1>,
++                     <&iommu_vpp M4U_PORT_L19_JPGDEC_BUFF_OFFSET1>,
++                     <&iommu_vpp M4U_PORT_L19_JPGDEC_BUFF_OFFSET0>;
++                #address-cells = <2>;
++                #size-cells = <2>;
++                ranges;
++
++                jpgdec@1a040000 {
++                    compatible = "mediatek,mt8195-jpgdec-hw";
++                    reg = <0 0x1a040000 0 0x10000>;/* JPGDEC_C0 */
++                    mediatek,hw-id = <0>;
++                    iommus = <&iommu_vdo M4U_PORT_L19_JPGDEC_WDMA0>,
++                        <&iommu_vdo M4U_PORT_L19_JPGDEC_BSDMA0>,
++                        <&iommu_vdo M4U_PORT_L19_JPGDEC_WDMA1>,
++                        <&iommu_vdo M4U_PORT_L19_JPGDEC_BSDMA1>,
++                        <&iommu_vdo M4U_PORT_L19_JPGDEC_BUFF_OFFSET1>,
++                        <&iommu_vdo M4U_PORT_L19_JPGDEC_BUFF_OFFSET0>;
++                    interrupts = <GIC_SPI 343 IRQ_TYPE_LEVEL_HIGH 0>;
++                    clocks = <&vencsys CLK_VENC_JPGDEC>;
++                    clock-names = "jpgdec";
++                    power-domains = <&spm MT8195_POWER_DOMAIN_VDEC0>;
++                };
++
++                jpgdec@1a050000 {
++                    compatible = "mediatek,mt8195-jpgdec-hw";
++                    reg = <0 0x1a050000 0 0x10000>;/* JPGDEC_C1 */
++                    mediatek,hw-id = <1>;
++                    iommus = <&iommu_vdo M4U_PORT_L19_JPGDEC_WDMA0>,
++                        <&iommu_vdo M4U_PORT_L19_JPGDEC_BSDMA0>,
++                        <&iommu_vdo M4U_PORT_L19_JPGDEC_WDMA1>,
++                        <&iommu_vdo M4U_PORT_L19_JPGDEC_BSDMA1>,
++                        <&iommu_vdo M4U_PORT_L19_JPGDEC_BUFF_OFFSET1>,
++                        <&iommu_vdo M4U_PORT_L19_JPGDEC_BUFF_OFFSET0>;
++                    interrupts = <GIC_SPI 344 IRQ_TYPE_LEVEL_HIGH 0>;
++                    clocks = <&vencsys CLK_VENC_JPGDEC_C1>;
++                    clock-names = "jpgdec";
++                    power-domains = <&spm MT8195_POWER_DOMAIN_VDEC1>;
++                };
++
++                jpgdec@1b040000 {
++                    compatible = "mediatek,mt8195-jpgdec-hw";
++                    reg = <0 0x1b040000 0 0x10000>;/* JPGDEC_C2 */
++                    mediatek,hw-id = <2>;
++                    iommus = <&iommu_vpp M4U_PORT_L20_JPGDEC_WDMA0>,
++                        <&iommu_vpp M4U_PORT_L20_JPGDEC_BSDMA0>,
++                        <&iommu_vpp M4U_PORT_L20_JPGDEC_WDMA1>,
++                        <&iommu_vpp M4U_PORT_L20_JPGDEC_BSDMA1>,
++                        <&iommu_vpp M4U_PORT_L20_JPGDEC_BUFF_OFFSET1>,
++                        <&iommu_vpp M4U_PORT_L20_JPGDEC_BUFF_OFFSET0>;
++                    interrupts = <GIC_SPI 348 IRQ_TYPE_LEVEL_HIGH 0>;
++                    clocks = <&vencsys_core1 CLK_VENC_CORE1_JPGDEC>;
++                    clock-names = "jpgdec";
++                    power-domains = <&spm MT8195_POWER_DOMAIN_VDEC2>;
++                };
++        };
++    };
+-- 
+2.18.0
 
