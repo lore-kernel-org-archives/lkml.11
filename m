@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 694E6CCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 795FBCCA47C
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:11:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358993AbiFMNIu (ORCPT
+        id S1359009AbiFMNJA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:08:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49766 "EHLO
+        Mon, 13 Jun 2022 09:09:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357313AbiFMM6j (ORCPT
+        with ESMTP id S1357318AbiFMM6j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 08:58:39 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D43562BC3;
-        Mon, 13 Jun 2022 04:17:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D55BA2BEB;
+        Mon, 13 Jun 2022 04:17:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B342360F0D;
-        Mon, 13 Jun 2022 11:17:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1B8AC34114;
-        Mon, 13 Jun 2022 11:17:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 66A3160B60;
+        Mon, 13 Jun 2022 11:17:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B905C3411C;
+        Mon, 13 Jun 2022 11:17:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119062;
-        bh=orI7NLzyYAo4r79BAJZsq8oCnJd/A00pdqYpG0bPBhw=;
+        s=korg; t=1655119064;
+        bh=Lz1feZx4k0vGpdzPrMBkSjZPNGG86nxQQ3odhQoYv9U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tLkrBctfky2R9cv4dnvIPfr8qTqSgi/Dx899ummZqwnn3yzolAw3LCAWLrVJqEkZZ
-         JmpWd8XJnioqA9ryqu6M9fDSyg4F/f1cIeBr3pPgLIixHts5uyNR7bBvtjNvFtB83F
-         NTi6HCe3NDWYkQhScd77R8ezfwquxoMFVezdHK0M=
+        b=Hkw2D7cXAUldvTjQ8SyZgkY61LmujZyAXIjmVGCrhuPthnQIKdYs+yLIOwhYgYS9Y
+         yVYvWXkFdk0/59C8+O8un2sUvfeZVu6/EYcZSfx9kIknwcJthgI7QLSHkkUMp5skP6
+         qxSIdZQ9dtXYcxjR51QeAXkXivLJ0Ln7jxAEU5Ps=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liao Chang <liaochang1@huawei.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Ungerer <gerg@linux-m68k.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 126/247] RISC-V: use memcpy for kexec_file mode
-Date:   Mon, 13 Jun 2022 12:10:28 +0200
-Message-Id: <20220613094926.782568314@linuxfoundation.org>
+Subject: [PATCH 5.15 127/247] m68knommu: fix undefined reference to `mach_get_rtc_pll
+Date:   Mon, 13 Jun 2022 12:10:29 +0200
+Message-Id: <20220613094926.812341729@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,50 +52,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liao Chang <liaochang1@huawei.com>
+From: Greg Ungerer <gerg@linux-m68k.org>
 
-[ Upstream commit b7fb4d78a6ade6026d9e5cf438c2a46ab962e032 ]
+[ Upstream commit 1300eec9e51f23c34c4487d2b06f58ca22e1ad3d ]
 
-The pointer to buffer loading kernel binaries is in kernel space for
-kexec_fil mode, When copy_from_user copies data from pointer to a block
-of memory, it checkes that the pointer is in the user space range, on
-RISCV-V that is:
+Configuring for a nommu classic m68k target and enabling the generic rtc
+driver (CONFIG_RTC_DRV_GENERIC) will result in the following compile
+error:
 
-static inline bool __access_ok(unsigned long addr, unsigned long size)
-{
-	return size <= TASK_SIZE && addr <= TASK_SIZE - size;
-}
+   m68k-linux-ld: arch/m68k/kernel/time.o: in function `rtc_ioctl':
+   time.c:(.text+0x82): undefined reference to `mach_get_rtc_pll'
+   m68k-linux-ld: time.c:(.text+0xbc): undefined reference to `mach_set_rtc_pll'
+   m68k-linux-ld: time.c:(.text+0xf4): undefined reference to `mach_set_rtc_pll'
 
-and TASK_SIZE is 0x4000000000 for 64-bits, which now causes
-copy_from_user to reject the access of the field 'buf' of struct
-kexec_segment that is in range [CONFIG_PAGE_OFFSET - VMALLOC_SIZE,
-CONFIG_PAGE_OFFSET), is invalid user space pointer.
+There are no definitions of "mach_set_rtc_pll" and "mach_get_rtc_pll" in the
+nommu code paths. Move these definitions and the associated "mach_hwclk",
+so that they are around their use case in time.c. This means they will
+always be defined on the builds that require them, and not on those that
+cannot use them - such as ColdFire (both with and without MMU enabled).
 
-This patch fixes this issue by skipping access_ok(), use mempcy() instead.
-
-Signed-off-by: Liao Chang <liaochang1@huawei.com>
-Link: https://lore.kernel.org/r/20220408100914.150110-3-lizhengyu3@huawei.com
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/kernel/machine_kexec.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/m68k/kernel/setup_mm.c | 7 -------
+ arch/m68k/kernel/setup_no.c | 1 -
+ arch/m68k/kernel/time.c     | 9 +++++++++
+ 3 files changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/arch/riscv/kernel/machine_kexec.c b/arch/riscv/kernel/machine_kexec.c
-index cbef0fc73afa..df8e24559035 100644
---- a/arch/riscv/kernel/machine_kexec.c
-+++ b/arch/riscv/kernel/machine_kexec.c
-@@ -65,7 +65,9 @@ machine_kexec_prepare(struct kimage *image)
- 		if (image->segment[i].memsz <= sizeof(fdt))
- 			continue;
+diff --git a/arch/m68k/kernel/setup_mm.c b/arch/m68k/kernel/setup_mm.c
+index 4b51bfd38e5f..f24410a54dcb 100644
+--- a/arch/m68k/kernel/setup_mm.c
++++ b/arch/m68k/kernel/setup_mm.c
+@@ -87,15 +87,8 @@ void (*mach_sched_init) (void) __initdata = NULL;
+ void (*mach_init_IRQ) (void) __initdata = NULL;
+ void (*mach_get_model) (char *model);
+ void (*mach_get_hardware_list) (struct seq_file *m);
+-/* machine dependent timer functions */
+-int (*mach_hwclk) (int, struct rtc_time*);
+-EXPORT_SYMBOL(mach_hwclk);
+ unsigned int (*mach_get_ss)(void);
+-int (*mach_get_rtc_pll)(struct rtc_pll_info *);
+-int (*mach_set_rtc_pll)(struct rtc_pll_info *);
+ EXPORT_SYMBOL(mach_get_ss);
+-EXPORT_SYMBOL(mach_get_rtc_pll);
+-EXPORT_SYMBOL(mach_set_rtc_pll);
+ void (*mach_reset)( void );
+ void (*mach_halt)( void );
+ void (*mach_power_off)( void );
+diff --git a/arch/m68k/kernel/setup_no.c b/arch/m68k/kernel/setup_no.c
+index 5e4104f07a44..19eea73d3c17 100644
+--- a/arch/m68k/kernel/setup_no.c
++++ b/arch/m68k/kernel/setup_no.c
+@@ -50,7 +50,6 @@ char __initdata command_line[COMMAND_LINE_SIZE];
  
--		if (copy_from_user(&fdt, image->segment[i].buf, sizeof(fdt)))
-+		if (image->file_mode)
-+			memcpy(&fdt, image->segment[i].buf, sizeof(fdt));
-+		else if (copy_from_user(&fdt, image->segment[i].buf, sizeof(fdt)))
- 			continue;
+ /* machine dependent timer functions */
+ void (*mach_sched_init)(void) __initdata = NULL;
+-int (*mach_hwclk) (int, struct rtc_time*);
  
- 		if (fdt_check_header(&fdt))
+ /* machine dependent reboot functions */
+ void (*mach_reset)(void);
+diff --git a/arch/m68k/kernel/time.c b/arch/m68k/kernel/time.c
+index 340ffeea0a9d..a97600b2af50 100644
+--- a/arch/m68k/kernel/time.c
++++ b/arch/m68k/kernel/time.c
+@@ -63,6 +63,15 @@ void timer_heartbeat(void)
+ #endif /* CONFIG_HEARTBEAT */
+ 
+ #ifdef CONFIG_M68KCLASSIC
++/* machine dependent timer functions */
++int (*mach_hwclk) (int, struct rtc_time*);
++EXPORT_SYMBOL(mach_hwclk);
++
++int (*mach_get_rtc_pll)(struct rtc_pll_info *);
++int (*mach_set_rtc_pll)(struct rtc_pll_info *);
++EXPORT_SYMBOL(mach_get_rtc_pll);
++EXPORT_SYMBOL(mach_set_rtc_pll);
++
+ #if !IS_BUILTIN(CONFIG_RTC_DRV_GENERIC)
+ void read_persistent_clock64(struct timespec64 *ts)
+ {
 -- 
 2.35.1
 
