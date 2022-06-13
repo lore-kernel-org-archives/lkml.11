@@ -2,116 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3D6EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 02:09:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12636C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 02:13:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236503AbiFMCJu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 12 Jun 2022 22:09:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54896 "EHLO
+        id S236718AbiFMCND (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 12 Jun 2022 22:13:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231376AbiFMCJs (ORCPT
+        with ESMTP id S235855AbiFMCNB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 12 Jun 2022 22:09:48 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DCBC21250;
-        Sun, 12 Jun 2022 19:09:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655086188; x=1686622188;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=+fem5FyudAz01p+w/Af/9mmPzXNj8Wp0IAnkI0tnZHI=;
-  b=UuZBV9GPahHME/ZhZLAoX/3R0Qmgi9pphWTMAe1Jke9hd7wLXC+9Zdgm
-   B76F/osL4vRXkqnBY2ma3dc/WK8qOabL2pSjSPLzEMY0Qu6FjAvFw2Ch2
-   dW+EI/AOiLzEIGrwnOmlK53qk/zO5l9seS4TFND1T8lY5q+z61aqWFMjs
-   /PTAd2yOOWzKi/PRL74SPjVRvZLayD1YAMO/VBdw7QTpwJ0AqeifTQilv
-   1DDyDlkYcG4XOua70QDWH2wLlZRq8kAcOfN4ZI/a+0zMSKtRAbaTD4blX
-   kFx1fN71ZD1pZlObBULmCQC/+G/d9SwYIl202WfBXHMUDPy1CUgIvvGIe
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10376"; a="303526704"
-X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
-   d="scan'208";a="303526704"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2022 19:09:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
-   d="scan'208";a="587525050"
-Received: from shbuild999.sh.intel.com (HELO localhost) ([10.239.146.138])
-  by fmsmga007.fm.intel.com with ESMTP; 12 Jun 2022 19:09:43 -0700
-Date:   Mon, 13 Jun 2022 10:09:43 +0800
-From:   Feng Tang <feng.tang@intel.com>
-To:     Willy Tarreau <w@1wt.eu>, Moshe Kol <moshe.kol@mail.huji.ac.il>,
-        fengwei.yin@intel.com
-Cc:     Moshe Kol <moshe.kol@mail.huji.ac.il>,
-        kernel test robot <oliver.sang@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
-        Amit Klein <aksecurity@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
-        lkp@lists.01.org, lkp@intel.com, ying.huang@intel.com,
-        zhengjun.xing@linux.intel.com, fengwei.yin@intel.com
-Subject: Re: [tcp] e926147618: stress-ng.icmp-flood.ops_per_sec -8.7%
- regression
-Message-ID: <20220613020943.GD75244@shbuild999.sh.intel.com>
-References: <20220608060802.GA22428@xsang-OptiPlex-9020>
- <20220608064822.GC7547@1wt.eu>
- <CACi_AuAr70bDB79zg9aAF1rD7e1qGgFwCGCAPYtS-zCp_zA0iw@mail.gmail.com>
- <20220608073441.GE7547@1wt.eu>
+        Sun, 12 Jun 2022 22:13:01 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9A912AD1
+        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 19:12:59 -0700 (PDT)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1655086377;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9Or2rbY8MjbpIj8wbtfD9FjomH8TXd2sOJsV3nzxdHE=;
+        b=EBvH6LzinBUvol2iP9BgQPuybJCqyYmeGqcIVfjEGC9DrfWosOQWwaiTkeGGUhlDmRLzG4
+        3ItJ7jSbWTyPzqlceGy+Vx+9kPrykEsMDoJkTQD3ZVxDDi6dyyegkJzLjRvSVfXzTYUhPo
+        4pGHTmD4a+X/beB5H75zhMe0fEzZYMll71sJvAsnk1zE1syfc1lc84edGRUXdhoXCYYK7D
+        m17nF2fADJq6sZtiSep69M7b59t0ovhXvCOVJEf/eGor/Izb3Tn6E3Kx7n1tAzV3jF8Kj1
+        PUZF8OE54FKqmR6mPXcwtmfRQ8aWYBPiqmNy43CljDcAiIhIbccf2xi32w636Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1655086377;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9Or2rbY8MjbpIj8wbtfD9FjomH8TXd2sOJsV3nzxdHE=;
+        b=WaG2qSsKx0Tslybo4icUP2xx8YIHPGtfXmoEfKqf6ki0G1uT+Uu7XJV/XzIl1fEWmzJ1oj
+        lCRScQwaJXnLkQCA==
+To:     paulmck@kernel.org
+Cc:     linux-kernel@vger.kernel.org, frederic@kernel.org,
+        pmladek@suse.com, Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [BUG] 8e274732115f ("printk: extend console_lock for
+ per-console locking")
+In-Reply-To: <20220610205038.GA3050413@paulmck-ThinkPad-P17-Gen-1>
+References: <20220610205038.GA3050413@paulmck-ThinkPad-P17-Gen-1>
+Date:   Mon, 13 Jun 2022 04:18:56 +0206
+Message-ID: <87v8t5l39z.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220608073441.GE7547@1wt.eu>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On 2022-06-10, "Paul E. McKenney" <paulmck@kernel.org> wrote:
+> I have started getting rcutorture shutdown-time hangs when running
+> against recent mainline, and bisected back to the 8e274732115f ("printk:
+> extend console_lock for per-console locking") commit.  These hangs go
+> away (or at least their probability drops dramatically) if I build with
+> CONFIG_PREEMPTION=n -and- CONFIG_NO_HZ=y (not n!), at least assuming
+> that I also boot with "nohz_full=0-N".
+>
+> Attempts to debug using rcutorture's "--gdb" argument result in
+> "[Inferior 1 (process 1) exited normally]", but with the same truncated
+> console-log output as when running without "--gdb".  This suggests
+> that the kernel really did run to completion and halt as expected,
+> but that the shutdown-time printk() output was lost.  Furthermore, if I
+> use the gdb "hbreak" command to set a breakpoint at kernel_power_off(),
+> it really does hit that breakpoint.  This would not happen in the case
+> of a kernel hang.
+>
+> So, given that I can hit that breakpoint, what should I ask gdb to
+> show me?
 
-On Wed, Jun 08, 2022 at 09:34:41AM +0200, Willy Tarreau wrote:
-> On Wed, Jun 08, 2022 at 10:26:12AM +0300, Moshe Kol wrote:
-> > Hmm, How is the ICMP flood stress test related to TCP connections?
-> 
-> To me it's not directly related, unless the test pre-establishes many
-> connections, or is affected in a way or another by a larger memory
-> allocation of this part.
+If you also compile with CONFIG_GDB_SCRIPTS=y then you can use the
+defined "lx-dmesg" gdb command to see if the messages are in the
+ringbuffer.
 
-Fengwei and I discussed and thought this could be a data alignment
-related case, that one module's data alignment change affects other
-modules' alignment, and we had a patch for detecting similar cases [1]
+(You may need to add:
 
-After some debugging, this could be related with the bss section
-alignment changes, that if we forced all module's bss section to be
-4KB aligned, then the stress-ng icmp-flood case will have almost no
-performance difference for the 2 commits: 
+add-auto-load-safe-path /path/to/linux/scripts/gdb/vmlinux-gdb.py
 
-10025135            +0.8%   10105711 ±  2%  stress-ng.icmp-flood.ops_per_sec
+to your $HOME/.gdbinit)
 
-The debug patch is:
+But since you are hitting the breakpoint, the messages will be there.
 
-diff --git a/arch/x86/kernel/vmlinux.lds.S b/arch/x86/kernel/vmlinux.lds.S
-index 7fda7f27e7620..7eb626b98620c 100644
---- a/arch/x86/kernel/vmlinux.lds.S
-+++ b/arch/x86/kernel/vmlinux.lds.S
-@@ -378,7 +378,9 @@ SECTIONS
+> Alternatively, this reproduces on a variety of x86 platforms, so you
+> should be able reproduce it as follows [1]:
+>
+> 	git checkout v5.19-rc1
+> 	tools/testing/selftests/rcutorture/bin/kvm.sh --allcpus --duration 2 --configs "TREE01" --gdb --kconfig "CONFIG_DEBUG_INFO_NONE=n CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y" --trust-make
+>
+> This builds a kernel, boots it, and then tells you how to launch gdb
+> (presumably in some other window).  Once you give launch gdb and give
+> it the suggested commands, the kernel runs for two minutes under qemu,
+> then shuts down.  I used the following gdb commands to set the breakpoint
+> and run the kernel:
+>
+> 	target remote :1234  # suggested by the rcutorture script
+> 	hbreak kernel_power_off  # added by me
+> 	continue  # suggested by the rcutorture script
+
+Thanks. Nice helper scripts. With this I could easily reproduce the
+issue.
+
+As I suspected, the final printk's cannot direct print because the
+kthread was printing. Using the below patch did seem to address your
+problem. But this is probably not the way forward.
+
+What I have not figured out is why this problem does not exist when only
+the kthread patch (but not the "extend console_lock" patch) is
+applied. Somehow the console_lock is magically providing some sort of
+synchronization in the end. Or maybe it is just the increased lock
+contention that helps out.
+
+It seems we need some sort of console_flush_on_panic() for non-panic
+situations that is not as violent as console_flush_on_panic().
+
+@Petr, does it make sense to add the below patch to mainline? It is only
+marginally helpful because it performs the direct printing in the wrong
+context. Really we need that final pr_emerg("Power down\n") to be a
+successful direct print so that the buffer is fully flushed before
+hitting machine_power_off(). In fact, the below patch could make things
+worse because the printing kthread could take over printing from that
+final pr_emerg().
+
+John Ogness
+
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index ea3dd55709e7..5950586008fa 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -3841,6 +3841,18 @@ static int printk_kthread_func(void *data)
+ 		console_kthread_printing_exit();
  
- 	/* BSS */
- 	. = ALIGN(PAGE_SIZE);
--	.bss : AT(ADDR(.bss) - LOAD_OFFSET) {
-+	.bss : AT(ADDR(.bss) - LOAD_OFFSET)
-+	SUBALIGN(PAGE_SIZE)
-+	{
- 		__bss_start = .;
- 		*(.bss..page_aligned)
- 		. = ALIGN(PAGE_SIZE);
-
-The 'table_perturb[]' used to be in bss section, and with the commit
-of moving it to runtime allocation, other data structures following it
-in the .bss section will get affected accordingly.
-
-Thanks,
-Feng
-
-
-> Willy
+ 		mutex_unlock(&con->lock);
++
++		/*
++		 * The kernel may have transitioned to a direct printing
++		 * state, but any printk calls may not have direct printed
++		 * because this thread was printing its message. Grab and
++		 * release the console lock to flush out any pending
++		 * messages on all consoles.
++		 */
++		if (allow_direct_printing()) {
++			console_lock();
++			console_unlock();
++		}
+ 	}
+ 
+ 	con_printk(KERN_INFO, con, "printing thread stopped\n");
