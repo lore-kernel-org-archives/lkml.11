@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D06ECCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C330CCA47C
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:04:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358118AbiFMNEJ (ORCPT
+        id S1358039AbiFMNEF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:04:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49532 "EHLO
+        Mon, 13 Jun 2022 09:04:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355421AbiFMM4D (ORCPT
+        with ESMTP id S1355427AbiFMM4D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 08:56:03 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8358412AA3;
-        Mon, 13 Jun 2022 04:16:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DEDA12ACB;
+        Mon, 13 Jun 2022 04:17:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 341FDB80EA7;
-        Mon, 13 Jun 2022 11:16:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 917CEC3411C;
-        Mon, 13 Jun 2022 11:16:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE901B80E93;
+        Mon, 13 Jun 2022 11:16:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D116C34114;
+        Mon, 13 Jun 2022 11:16:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119015;
-        bh=cG+LYyyqTXdLp8xKOZRZfji8RxNcDMGKguzynXlIy/g=;
+        s=korg; t=1655119017;
+        bh=Peq5gzmdgmG8DJ+CvcqQLnVGG1RKzHTqlFTjY4iQTVY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0fz7lVMccvVlDLX1Vg7GOCU2RbEJi4mVVrjwdUowypx5Anz1iYRJzu7p6P1I3bBW7
-         2rD3DRTK7LSVb4gP45LysVuix5t4sjR+AVXtNFhnoO7yPC6ytBq72xklhOscvzvVe9
-         CuPVwu5m4JYCFWvRseUqcFHodAgP+qSdWaezIvFA=
+        b=XZC+L1QglFpbmynsfG+035DCdtRM7Msr3n/Vdt4vHad5RACIhwlkLVWJLb/+9HXAY
+         484KHdMD05B9GZJUFdvNq8QsIxIWLRkFBQ2J7Yo2JOZUBUcfamAtqpY99SFUQ6ad7N
+         iej5zFAGP1XHB8yCH+ysklN9SCy2cck/HrGzcEC4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 083/247] block: take destination bvec offsets into account in bio_copy_data_iter
-Date:   Mon, 13 Jun 2022 12:09:45 +0200
-Message-Id: <20220613094925.473831846@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 084/247] riscv: read-only pages should not be writable
+Date:   Mon, 13 Jun 2022 12:09:46 +0200
+Message-Id: <20220613094925.503755819@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -49,43 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
 
-[ Upstream commit 403d50341cce6b5481a92eb481e6df60b1f49b55 ]
+[ Upstream commit 630f972d76d6460235e84e1aa034ee06f9c8c3a9 ]
 
-Appartly bcache can copy into bios that do not just contain fresh
-pages but can have offsets into the bio_vecs.  Restore support for tht
-in bio_copy_data_iter.
+If EFI pages are marked as read-only,
+we should remove the _PAGE_WRITE flag.
 
-Fixes: f8b679a070c5 ("block: rewrite bio_copy_data_iter to use bvec_kmap_local and memcpy_to_bvec")
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220524143919.1155501-1-hch@lst.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+The current code overwrites an unused value.
+
+Fixes: b91540d52a08b ("RISC-V: Add EFI runtime services")
+Signed-off-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+Link: https://lore.kernel.org/r/20220528014132.91052-1-heinrich.schuchardt@canonical.com
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/bio.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ arch/riscv/kernel/efi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/block/bio.c b/block/bio.c
-index 8906c9856a7d..9b28381412d2 100644
---- a/block/bio.c
-+++ b/block/bio.c
-@@ -1289,10 +1289,12 @@ void bio_copy_data_iter(struct bio *dst, struct bvec_iter *dst_iter,
- 		struct bio_vec src_bv = bio_iter_iovec(src, *src_iter);
- 		struct bio_vec dst_bv = bio_iter_iovec(dst, *dst_iter);
- 		unsigned int bytes = min(src_bv.bv_len, dst_bv.bv_len);
--		void *src_buf;
-+		void *src_buf = bvec_kmap_local(&src_bv);
-+		void *dst_buf = bvec_kmap_local(&dst_bv);
+diff --git a/arch/riscv/kernel/efi.c b/arch/riscv/kernel/efi.c
+index 024159298231..1aa540350abd 100644
+--- a/arch/riscv/kernel/efi.c
++++ b/arch/riscv/kernel/efi.c
+@@ -65,7 +65,7 @@ static int __init set_permissions(pte_t *ptep, unsigned long addr, void *data)
  
--		src_buf = bvec_kmap_local(&src_bv);
--		memcpy_to_bvec(&dst_bv, src_buf);
-+		memcpy(dst_buf, src_buf, bytes);
-+
-+		kunmap_local(dst_buf);
- 		kunmap_local(src_buf);
- 
- 		bio_advance_iter_single(src, src_iter, bytes);
+ 	if (md->attribute & EFI_MEMORY_RO) {
+ 		val = pte_val(pte) & ~_PAGE_WRITE;
+-		val = pte_val(pte) | _PAGE_READ;
++		val |= _PAGE_READ;
+ 		pte = __pte(val);
+ 	}
+ 	if (md->attribute & EFI_MEMORY_XP) {
 -- 
 2.35.1
 
