@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65A50CCA483
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2321CCA488
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:06:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381825AbiFMOEv (ORCPT
+        id S1382050AbiFMOFL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:04:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36606 "EHLO
+        Mon, 13 Jun 2022 10:05:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381585AbiFMN47 (ORCPT
+        with ESMTP id S1380335AbiFMN6r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:56:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A5028B08D;
-        Mon, 13 Jun 2022 04:37:16 -0700 (PDT)
+        Mon, 13 Jun 2022 09:58:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1444A8BD07;
+        Mon, 13 Jun 2022 04:37:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C035E6130F;
-        Mon, 13 Jun 2022 11:37:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C98E2C3411E;
-        Mon, 13 Jun 2022 11:37:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 930CB612E9;
+        Mon, 13 Jun 2022 11:37:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A459C34114;
+        Mon, 13 Jun 2022 11:37:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120235;
-        bh=KkEwSdV0Df7GKOOH0Kp16NI1mitGNhdo6IBAn9lPEgY=;
+        s=korg; t=1655120257;
+        bh=O1BECb1BwhYEIW1CUebpdzDbEJQLtGkgaLnnWW6lRNQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VIzGXk5SOfr3m7X+kyBFb0Np7PO12fEEBlEvnqmWwUl79pV0I5HngrPFByzIXvGTR
-         KOFmvrEE5ewd8ZzmrVc0apTlvNsM/JYUTwrr05547LxJCRVxoI29mYPS7HW8Wc6pIk
-         ZxIDPsR6tNokvu8nfVTomteL5bw0T0BCjm7WvBSA=
+        b=mlhGjksQFcmRBvBKs8eCKRPTyRE5wyCfTpOVv3CxpSrpCqQqjNy7eSPwozMgg8+yB
+         B82iP1sLSFlUfynW04viqNzvY2r6a3fuIWmykSMiqARm3bo17Lfxdq+9Aq9sFj7/WN
+         xc2zWpgmpgI8KRZ2cwIWJyjdMiwEtGPKb1jXrdF8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Satadru Pramanik <satadru@gmail.com>,
-        "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.18 299/339] cifs: fix reconnect on smb3 mount types
-Date:   Mon, 13 Jun 2022 12:12:04 +0200
-Message-Id: <20220613094935.832962614@linuxfoundation.org>
+        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
+        Fam Zheng <fam.zheng@bytedance.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 288/339] vringh: Fix loop descriptors check in the indirect cases
+Date:   Mon, 13 Jun 2022 12:11:53 +0200
+Message-Id: <20220613094935.371556496@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,88 +52,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paulo Alcantara <pc@cjr.nz>
+From: Xie Yongji <xieyongji@bytedance.com>
 
-commit c36ee7dab7749f7be21f7a72392744490b2a9a2b upstream.
+[ Upstream commit dbd29e0752286af74243cf891accf472b2f3edd8 ]
 
-cifs.ko defines two file system types: cifs & smb3, and
-__cifs_get_super() was not including smb3 file system type when
-looking up superblocks, therefore failing to reconnect tcons in
-cifs_tree_connect().
+We should use size of descriptor chain to test loop condition
+in the indirect case. And another statistical count is also introduced
+for indirect descriptors to avoid conflict with the statistical count
+of direct descriptors.
 
-Fix this by calling iterate_supers_type() on both file system types.
-
-Link: https://lore.kernel.org/r/CAFrh3J9soC36+BVuwHB=g9z_KB5Og2+p2_W+BBoBOZveErz14w@mail.gmail.com
-Cc: stable@vger.kernel.org
-Tested-by: Satadru Pramanik <satadru@gmail.com>
-Reported-by: Satadru Pramanik <satadru@gmail.com>
-Signed-off-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: f87d0fbb5798 ("vringh: host-side implementation of virtio rings.")
+Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+Signed-off-by: Fam Zheng <fam.zheng@bytedance.com>
+Message-Id: <20220505100910.137-1-xieyongji@bytedance.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/cifsfs.c |    2 +-
- fs/cifs/cifsfs.h |    2 +-
- fs/cifs/misc.c   |   27 ++++++++++++++++-----------
- 3 files changed, 18 insertions(+), 13 deletions(-)
+ drivers/vhost/vringh.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/fs/cifs/cifsfs.c
-+++ b/fs/cifs/cifsfs.c
-@@ -1084,7 +1084,7 @@ struct file_system_type cifs_fs_type = {
- };
- MODULE_ALIAS_FS("cifs");
+diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+index 14e2043d7685..eab55accf381 100644
+--- a/drivers/vhost/vringh.c
++++ b/drivers/vhost/vringh.c
+@@ -292,7 +292,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
+ 	     int (*copy)(const struct vringh *vrh,
+ 			 void *dst, const void *src, size_t len))
+ {
+-	int err, count = 0, up_next, desc_max;
++	int err, count = 0, indirect_count = 0, up_next, desc_max;
+ 	struct vring_desc desc, *descs;
+ 	struct vringh_range range = { -1ULL, 0 }, slowrange;
+ 	bool slow = false;
+@@ -349,7 +349,12 @@ __vringh_iov(struct vringh *vrh, u16 i,
+ 			continue;
+ 		}
  
--static struct file_system_type smb3_fs_type = {
-+struct file_system_type smb3_fs_type = {
- 	.owner = THIS_MODULE,
- 	.name = "smb3",
- 	.init_fs_context = smb3_init_fs_context,
---- a/fs/cifs/cifsfs.h
-+++ b/fs/cifs/cifsfs.h
-@@ -38,7 +38,7 @@ static inline unsigned long cifs_get_tim
- 	return (unsigned long) dentry->d_fsdata;
- }
- 
--extern struct file_system_type cifs_fs_type;
-+extern struct file_system_type cifs_fs_type, smb3_fs_type;
- extern const struct address_space_operations cifs_addr_ops;
- extern const struct address_space_operations cifs_addr_ops_smallbuf;
- 
---- a/fs/cifs/misc.c
-+++ b/fs/cifs/misc.c
-@@ -1209,18 +1209,23 @@ static struct super_block *__cifs_get_su
- 		.data = data,
- 		.sb = NULL,
- 	};
-+	struct file_system_type **fs_type = (struct file_system_type *[]) {
-+		&cifs_fs_type, &smb3_fs_type, NULL,
-+	};
- 
--	iterate_supers_type(&cifs_fs_type, f, &sd);
--
--	if (!sd.sb)
--		return ERR_PTR(-EINVAL);
--	/*
--	 * Grab an active reference in order to prevent automounts (DFS links)
--	 * of expiring and then freeing up our cifs superblock pointer while
--	 * we're doing failover.
--	 */
--	cifs_sb_active(sd.sb);
--	return sd.sb;
-+	for (; *fs_type; fs_type++) {
-+		iterate_supers_type(*fs_type, f, &sd);
-+		if (sd.sb) {
-+			/*
-+			 * Grab an active reference in order to prevent automounts (DFS links)
-+			 * of expiring and then freeing up our cifs superblock pointer while
-+			 * we're doing failover.
-+			 */
-+			cifs_sb_active(sd.sb);
-+			return sd.sb;
-+		}
-+	}
-+	return ERR_PTR(-EINVAL);
- }
- 
- static void __cifs_put_super(struct super_block *sb)
+-		if (count++ == vrh->vring.num) {
++		if (up_next == -1)
++			count++;
++		else
++			indirect_count++;
++
++		if (count > vrh->vring.num || indirect_count > desc_max) {
+ 			vringh_bad("Descriptor loop in %p", descs);
+ 			err = -ELOOP;
+ 			goto fail;
+@@ -411,6 +416,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
+ 				i = return_from_indirect(vrh, &up_next,
+ 							 &descs, &desc_max);
+ 				slow = false;
++				indirect_count = 0;
+ 			} else
+ 				break;
+ 		}
+-- 
+2.35.1
+
 
 
