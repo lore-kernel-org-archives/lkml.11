@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33E9AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:36:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1623CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:36:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378035AbiFMNgt (ORCPT
+        id S1378047AbiFMNgy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:36:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52562 "EHLO
+        Mon, 13 Jun 2022 09:36:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378799AbiFMNcH (ORCPT
+        with ESMTP id S1378777AbiFMNcG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:32:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08B7F71D8D;
-        Mon, 13 Jun 2022 04:26:41 -0700 (PDT)
+        Mon, 13 Jun 2022 09:32:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71C9E71A37;
+        Mon, 13 Jun 2022 04:26:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5ED5A60B6E;
-        Mon, 13 Jun 2022 11:26:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6744AC34114;
-        Mon, 13 Jun 2022 11:26:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9120761038;
+        Mon, 13 Jun 2022 11:26:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AB8DC34114;
+        Mon, 13 Jun 2022 11:26:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119600;
-        bh=u2FxgfkoGnjzoKKN8QBayAg+rk7Gc72KjK/quKszqoA=;
+        s=korg; t=1655119598;
+        bh=KclK8A9MhOsYG/yo+Vlgioldi22Z3Bpk3Q51BGbrmKE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L5ZxAnXSiHEXzT7ViLitmzCNYeDHGRMqkRCEWp3MinSj2Ub1J1iafCTIM0vV3pMBV
-         HLofigD1yhAW7XQg85om9ttzJ6LUuOOBZ5Wf+ScplFfh4CyrayyMocrJR6Hp57W7Ea
-         kbI4yNdOXzZUbm9ewyog//eR+/G7OKzSxSs3Dp9o=
+        b=o08hNd9L6c3y5NKnlsrnp+YmROYTZYdM93ucyUQ8vltkdoHq/maIf3vJtCclEE9Sp
+         z71fMo2bnz6Uqs6U2sXpye86iqprLOpEOs+MLYsVxzbBuhqqEIWOt3KKQkdOMo51iw
+         L0ZXPS1pGilTKMAzLJm4973/K+s9bOIxCh3pmeq4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 042/339] power: supply: axp288_fuel_gauge: Fix battery reporting on the One Mix 1
-Date:   Mon, 13 Jun 2022 12:07:47 +0200
-Message-Id: <20220613094927.796398867@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Rander Wang <rander.wang@intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 051/339] soundwire: intel: prevent pm_runtime resume prior to system suspend
+Date:   Mon, 13 Jun 2022 12:07:56 +0200
+Message-Id: <20220613094928.071132812@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,160 +53,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-[ Upstream commit 34f243e9fb5ace1ca760c72e366247eaeff430c0 ]
+[ Upstream commit 6d9f2dadba698114fed97b224578c5338a36b0d9 ]
 
-Commit 3a06b912a5ce ("power: supply: axp288_fuel_gauge: Make "T3 MRD"
-no_battery_list DMI entry more generic") added a generic no-battery DMI
-match for many mini-PCs / HDMI-sticks which use "T3 MRD" as their DMI
-board-name.
+commit e38f9ff63e6d ("ACPI: scan: Do not add device IDs from _CID if _HID is not valid")
+exposes a race condition on a TGL RVP device leading to a timeout.
 
-It turns out that the One Mix 1 mini laptop also uses "T3 MRD" for its
-DMI boardname and it also has its chassis-type wrongly set to a value
-of "3" (desktop). This was causing the axp288_fuel_gauge driver to
-disable battery reporting because this matches the no-battery DMI
-list entry for generic "T3 MRD" mini-PCs.
+The detailed analysis shows the RT711 codec driver scheduling a jack
+detection workqueue while attaching during a spurious pm_runtime
+resume, and the work function happens to be scheduled after the
+manager device is suspended.
 
-Change the no-battery DMI list into a quirks DMI list and add a
-specific match for the One Mix 1 mini laptop before the generic
-"T3 MRD" no-battery quirk entry to fix this.
+The direct link between this ACPI patch and a spurious pm_runtime
+resume is not obvious; the most likely explanation is that a change in
+the ACPI device linked list management modifies the order in which the
+pm_runtime device status is checked and exposes a race condition that
+was probably present for a very long time, but was not identified.
 
-Fixes: 3a06b912a5ce ("power: supply: axp288_fuel_gauge: Make "T3 MRD" no_battery_list DMI entry more generic")
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+We already have a check in the .prepare stage, where we will resume to
+full power from specific clock-stop modes. In all other cases, we
+don't need to resume to full power by default. Adding the
+SMART_SUSPEND flag prevents the spurious resume from happening.
+
+BugLink: https://github.com/thesofproject/linux/issues/3459
+Fixes: 029bfd1cd53cd ("soundwire: intel: conditionally exit clock stop mode on system suspend")
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Reviewed-by: Rander Wang <rander.wang@intel.com>
+Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Link: https://lore.kernel.org/r/20220420023241.14335-2-yung-chuan.liao@linux.intel.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/supply/axp288_fuel_gauge.c | 40 +++++++++++++++++++++---
- 1 file changed, 36 insertions(+), 4 deletions(-)
+ drivers/soundwire/intel.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/power/supply/axp288_fuel_gauge.c b/drivers/power/supply/axp288_fuel_gauge.c
-index e9f285dae489..5b8aa4a980cd 100644
---- a/drivers/power/supply/axp288_fuel_gauge.c
-+++ b/drivers/power/supply/axp288_fuel_gauge.c
-@@ -90,6 +90,8 @@
- #define AXP288_REG_UPDATE_INTERVAL		(60 * HZ)
- #define AXP288_FG_INTR_NUM			6
+diff --git a/drivers/soundwire/intel.c b/drivers/soundwire/intel.c
+index 63101f1ba271..32e5fdb823c4 100644
+--- a/drivers/soundwire/intel.c
++++ b/drivers/soundwire/intel.c
+@@ -1293,6 +1293,9 @@ static int intel_link_probe(struct auxiliary_device *auxdev,
+ 	/* use generic bandwidth allocation algorithm */
+ 	sdw->cdns.bus.compute_params = sdw_compute_params;
  
-+#define AXP288_QUIRK_NO_BATTERY			BIT(0)
++	/* avoid resuming from pm_runtime suspend if it's not required */
++	dev_pm_set_driver_flags(dev, DPM_FLAG_SMART_SUSPEND);
 +
- static bool no_current_sense_res;
- module_param(no_current_sense_res, bool, 0444);
- MODULE_PARM_DESC(no_current_sense_res, "No (or broken) current sense resistor");
-@@ -524,7 +526,7 @@ static struct power_supply_desc fuel_gauge_desc = {
-  * detection reports one despite it not being there.
-  * Please keep this listed sorted alphabetically.
-  */
--static const struct dmi_system_id axp288_no_battery_list[] = {
-+static const struct dmi_system_id axp288_quirks[] = {
- 	{
- 		/* ACEPC T8 Cherry Trail Z8350 mini PC */
- 		.matches = {
-@@ -534,6 +536,7 @@ static const struct dmi_system_id axp288_no_battery_list[] = {
- 			/* also match on somewhat unique bios-version */
- 			DMI_EXACT_MATCH(DMI_BIOS_VERSION, "1.000"),
- 		},
-+		.driver_data = (void *)AXP288_QUIRK_NO_BATTERY,
- 	},
- 	{
- 		/* ACEPC T11 Cherry Trail Z8350 mini PC */
-@@ -544,6 +547,7 @@ static const struct dmi_system_id axp288_no_battery_list[] = {
- 			/* also match on somewhat unique bios-version */
- 			DMI_EXACT_MATCH(DMI_BIOS_VERSION, "1.000"),
- 		},
-+		.driver_data = (void *)AXP288_QUIRK_NO_BATTERY,
- 	},
- 	{
- 		/* Intel Cherry Trail Compute Stick, Windows version */
-@@ -551,6 +555,7 @@ static const struct dmi_system_id axp288_no_battery_list[] = {
- 			DMI_MATCH(DMI_SYS_VENDOR, "Intel"),
- 			DMI_MATCH(DMI_PRODUCT_NAME, "STK1AW32SC"),
- 		},
-+		.driver_data = (void *)AXP288_QUIRK_NO_BATTERY,
- 	},
- 	{
- 		/* Intel Cherry Trail Compute Stick, version without an OS */
-@@ -558,34 +563,55 @@ static const struct dmi_system_id axp288_no_battery_list[] = {
- 			DMI_MATCH(DMI_SYS_VENDOR, "Intel"),
- 			DMI_MATCH(DMI_PRODUCT_NAME, "STK1A32SC"),
- 		},
-+		.driver_data = (void *)AXP288_QUIRK_NO_BATTERY,
- 	},
- 	{
- 		/* Meegopad T02 */
- 		.matches = {
- 			DMI_MATCH(DMI_PRODUCT_NAME, "MEEGOPAD T02"),
- 		},
-+		.driver_data = (void *)AXP288_QUIRK_NO_BATTERY,
- 	},
- 	{	/* Mele PCG03 Mini PC */
- 		.matches = {
- 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "Mini PC"),
- 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "Mini PC"),
- 		},
-+		.driver_data = (void *)AXP288_QUIRK_NO_BATTERY,
- 	},
- 	{
- 		/* Minix Neo Z83-4 mini PC */
- 		.matches = {
- 			DMI_MATCH(DMI_SYS_VENDOR, "MINIX"),
- 			DMI_MATCH(DMI_PRODUCT_NAME, "Z83-4"),
--		}
-+		},
-+		.driver_data = (void *)AXP288_QUIRK_NO_BATTERY,
- 	},
- 	{
--		/* Various Ace PC/Meegopad/MinisForum/Wintel Mini-PCs/HDMI-sticks */
-+		/*
-+		 * One Mix 1, this uses the "T3 MRD" boardname used by
-+		 * generic mini PCs, but it is a mini laptop so it does
-+		 * actually have a battery!
-+		 */
-+		.matches = {
-+			DMI_MATCH(DMI_BOARD_NAME, "T3 MRD"),
-+			DMI_MATCH(DMI_BIOS_DATE, "06/14/2018"),
-+		},
-+		.driver_data = NULL,
-+	},
-+	{
-+		/*
-+		 * Various Ace PC/Meegopad/MinisForum/Wintel Mini-PCs/HDMI-sticks
-+		 * This entry must be last because it is generic, this allows
-+		 * adding more specifuc quirks overriding this generic entry.
-+		 */
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_NAME, "T3 MRD"),
- 			DMI_MATCH(DMI_CHASSIS_TYPE, "3"),
- 			DMI_MATCH(DMI_BIOS_VENDOR, "American Megatrends Inc."),
- 			DMI_MATCH(DMI_BIOS_VERSION, "5.11"),
- 		},
-+		.driver_data = (void *)AXP288_QUIRK_NO_BATTERY,
- 	},
- 	{}
- };
-@@ -665,7 +691,9 @@ static int axp288_fuel_gauge_probe(struct platform_device *pdev)
- 		[BAT_D_CURR] = "axp288-chrg-d-curr",
- 		[BAT_VOLT] = "axp288-batt-volt",
- 	};
-+	const struct dmi_system_id *dmi_id;
- 	struct device *dev = &pdev->dev;
-+	unsigned long quirks = 0;
- 	int i, pirq, ret;
- 
- 	/*
-@@ -675,7 +703,11 @@ static int axp288_fuel_gauge_probe(struct platform_device *pdev)
- 	if (!acpi_quirk_skip_acpi_ac_and_battery())
- 		return -ENODEV;
- 
--	if (dmi_check_system(axp288_no_battery_list))
-+	dmi_id = dmi_first_match(axp288_quirks);
-+	if (dmi_id)
-+		quirks = (unsigned long)dmi_id->driver_data;
-+
-+	if (quirks & AXP288_QUIRK_NO_BATTERY)
- 		return -ENODEV;
- 
- 	info = devm_kzalloc(dev, sizeof(*info), GFP_KERNEL);
+ 	ret = sdw_bus_master_add(bus, dev, dev->fwnode);
+ 	if (ret) {
+ 		dev_err(dev, "sdw_bus_master_add fail: %d\n", ret);
 -- 
 2.35.1
 
