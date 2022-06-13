@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A53DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:25:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94EF8C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:25:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353878AbiFMLZq (ORCPT
+        id S1353901AbiFMLZv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:25:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46564 "EHLO
+        Mon, 13 Jun 2022 07:25:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352794AbiFMLS4 (ORCPT
+        with ESMTP id S1353153AbiFMLTM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:18:56 -0400
+        Mon, 13 Jun 2022 07:19:12 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8CA339687;
-        Mon, 13 Jun 2022 03:40:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 256C23A5C3;
+        Mon, 13 Jun 2022 03:41:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC5FEB80EA8;
-        Mon, 13 Jun 2022 10:40:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3510AC3411C;
-        Mon, 13 Jun 2022 10:40:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4D920B80EAA;
+        Mon, 13 Jun 2022 10:41:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF97BC34114;
+        Mon, 13 Jun 2022 10:40:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116835;
-        bh=Deo1DIt7bz9KjxUf4ApT7rSDfk6OEQST8Ph7RWkOi0o=;
+        s=korg; t=1655116860;
+        bh=jGeZxlUIN3xLJC961hH/xnbk8vx7G1hFEgsXY9u7FGE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2Q+MsoZ5iD9TcdVDf8EV/xXA42c4ZgO/la/YXFh/sh+2K0XDSoi10MNE+XOUTzLrc
-         solG66r5mOrD0TdbhedeQZTbtsWQXzgGGIijbHP5MPMuwD0UhqmskLlUo3w7Mag63k
-         SsbHWMI7x2WPUv6OqER5s5JX6EMAYE293QYBgUZk=
+        b=D/ya9+4xOnV7SYw7w47rSnfAcPA8V91KxuxVWYZWZ6AJWSTXOclX6acxMNHmMyIib
+         OxiB9rQ2+aRDJ0I6YWpjqst9e5NAt2DZKEKc9gzBBoSsajpV6cxgk4vHQi4dbaZ7Dt
+         dKIbYJc33yr4A04TIXmtFghUIA3Q+efhPnjzyQDk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Igor Zhbanov <izh1979@gmail.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 180/411] powerpc/idle: Fix return value of __setup() handler
-Date:   Mon, 13 Jun 2022 12:07:33 +0200
-Message-Id: <20220613094934.055900212@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Michael Walle <michael@walle.cc>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 199/411] i2c: at91: Initialize dma_buf in at91_twi_xfer()
+Date:   Mon, 13 Jun 2022 12:07:52 +0200
+Message-Id: <20220613094934.628406459@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -51,42 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Nathan Chancellor <nathan@kernel.org>
 
-[ Upstream commit b793a01000122d2bd133ba451a76cc135b5e162c ]
+[ Upstream commit 6977262c2eee111645668fe9e235ef2f5694abf7 ]
 
-__setup() handlers should return 1 to obsolete_checksetup() in
-init/main.c to indicate that the boot option has been handled.
+Clang warns:
 
-A return of 0 causes the boot option/value to be listed as an Unknown
-kernel parameter and added to init's (limited) argument or environment
-strings.
+  drivers/i2c/busses/i2c-at91-master.c:707:6: warning: variable 'dma_buf' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
+          if (dev->use_dma) {
+              ^~~~~~~~~~~~
+  drivers/i2c/busses/i2c-at91-master.c:717:27: note: uninitialized use occurs here
+          i2c_put_dma_safe_msg_buf(dma_buf, m_start, !ret);
+                                   ^~~~~~~
 
-Also, error return codes don't mean anything to obsolete_checksetup() --
-only non-zero (usually 1) or zero. So return 1 from powersave_off().
+Initialize dma_buf to NULL, as i2c_put_dma_safe_msg_buf() is a no-op
+when the first argument is NULL, which will work for the !dev->use_dma
+case.
 
-Fixes: 302eca184fb8 ("[POWERPC] cell: use ppc_md->power_save instead of cbe_idle_loop")
-Reported-by: Igor Zhbanov <izh1979@gmail.com>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220502192925.19954-1-rdunlap@infradead.org
+Fixes: 03fbb903c8bf ("i2c: at91: use dma safe buffers")
+Link: https://github.com/ClangBuiltLinux/linux/issues/1629
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Michael Walle <michael@walle.cc>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/idle.c | 2 +-
+ drivers/i2c/busses/i2c-at91-master.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/kernel/idle.c b/arch/powerpc/kernel/idle.c
-index a36fd053c3db..0615ba86baef 100644
---- a/arch/powerpc/kernel/idle.c
-+++ b/arch/powerpc/kernel/idle.c
-@@ -37,7 +37,7 @@ static int __init powersave_off(char *arg)
- {
- 	ppc_md.power_save = NULL;
- 	cpuidle_disable = IDLE_POWERSAVE_OFF;
--	return 0;
-+	return 1;
- }
- __setup("powersave=off", powersave_off);
+diff --git a/drivers/i2c/busses/i2c-at91-master.c b/drivers/i2c/busses/i2c-at91-master.c
+index 44502024cc10..f74d5ad2f1fa 100644
+--- a/drivers/i2c/busses/i2c-at91-master.c
++++ b/drivers/i2c/busses/i2c-at91-master.c
+@@ -609,7 +609,7 @@ static int at91_twi_xfer(struct i2c_adapter *adap, struct i2c_msg *msg, int num)
+ 	unsigned int_addr_flag = 0;
+ 	struct i2c_msg *m_start = msg;
+ 	bool is_read;
+-	u8 *dma_buf;
++	u8 *dma_buf = NULL;
+ 
+ 	dev_dbg(&adap->dev, "at91_xfer: processing %d messages:\n", num);
  
 -- 
 2.35.1
