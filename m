@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BD62CCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AEDACCA488
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:20:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358762AbiFMMTf (ORCPT
+        id S1358880AbiFMMTh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:19:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47904 "EHLO
+        Mon, 13 Jun 2022 08:19:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358420AbiFMMOL (ORCPT
+        with ESMTP id S1358531AbiFMMOL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 08:14:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C178541B0;
-        Mon, 13 Jun 2022 04:01:40 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D74544C8;
+        Mon, 13 Jun 2022 04:01:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E2A460F9A;
-        Mon, 13 Jun 2022 11:01:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 907D9C34114;
-        Mon, 13 Jun 2022 11:01:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FB3961435;
+        Mon, 13 Jun 2022 11:01:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B851C34114;
+        Mon, 13 Jun 2022 11:01:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118098;
-        bh=5fQ3hSkL/D/1M0UfCzldkCYemrSRiFzTh3P9t+OAGGo=;
+        s=korg; t=1655118104;
+        bh=biiVoSpGX61XIR/40UCOyNG2ZScSEoYD1nvvGjKna2E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K/E7dYAmoaVeA/CO179ATM61AXMVjMLtywmHA6I5OzO1EXDLOuqlYNHz1p6s/tIC7
-         0sWvZOBSbYwmhiF+rRVaIOVbCy/sL7IDjdHhF6zDrJLtctJjUj7+GP2R1WL4dx7R/0
-         uqaiFO03Sc37DAiFS0KwPqspCUcz4TNL1XSfKUr0=
+        b=rs1HP7qao15IvW1rvy66fhTLyC7Q6yIoXRcn4sZwplO1OC36TLvxyvBDx72EZu20g
+         vayrpDeUXclFxNXE8SNBtSsIG669QqkvDRR/NSS15gbZ2mDfvbxJGAVwXg+pH/IuyC
+         kHcO5b65CsApq3K6OGnGOLHHyhXj51ZriyoNfco4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
-        Mark-PK Tsai <mark-pk.tsai@mediatek.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        stable@vger.kernel.org, Hugh Dickens <hughd@google.com>,
+        Greg Ungerer <gerg@linux-m68k.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 229/287] tracing: Avoid adding tracer option before update_tracer_options
-Date:   Mon, 13 Jun 2022 12:10:53 +0200
-Message-Id: <20220613094930.960251128@linuxfoundation.org>
+Subject: [PATCH 4.19 231/287] m68knommu: set ZERO_PAGE() to the allocated zeroed page
+Date:   Mon, 13 Jun 2022 12:10:55 +0200
+Message-Id: <20220613094931.020997377@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -51,64 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+From: Greg Ungerer <gerg@linux-m68k.org>
 
-[ Upstream commit ef9188bcc6ca1d8a2ad83e826b548e6820721061 ]
+[ Upstream commit dc068f46217970d9516f16cd37972a01d50dc055 ]
 
-To prepare for support asynchronous tracer_init_tracefs initcall,
-avoid calling create_trace_option_files before __update_tracer_options.
-Otherwise, create_trace_option_files will show warning because
-some tracers in trace_types list are already in tr->topts.
+The non-MMU m68k pagetable ZERO_PAGE() macro is being set to the
+somewhat non-sensical value of "virt_to_page(0)". The zeroth page
+is not in any way guaranteed to be a page full of "0". So the result
+is that ZERO_PAGE() will almost certainly contain random values.
 
-For example, hwlat_tracer call register_tracer in late_initcall,
-and global_trace.dir is already created in tracing_init_dentry,
-hwlat_tracer will be put into tr->topts.
-Then if the __update_tracer_options is executed after hwlat_tracer
-registered, create_trace_option_files find that hwlat_tracer is
-already in tr->topts.
+We already allocate a real "empty_zero_page" in the mm setup code shared
+between MMU m68k and non-MMU m68k. It is just not hooked up to the
+ZERO_PAGE() macro for the non-MMU m68k case.
 
-Link: https://lkml.kernel.org/r/20220426122407.17042-2-mark-pk.tsai@mediatek.com
+Fix ZERO_PAGE() to use the allocated "empty_zero_page" pointer.
 
-Link: https://lore.kernel.org/lkml/20220322133339.GA32582@xsang-OptiPlex-9020/
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Signed-off-by: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+I am not aware of any specific issues caused by the old code.
+
+Link: https://lore.kernel.org/linux-m68k/2a462b23-5b8e-bbf4-ec7d-778434a3b9d7@google.com/T/#t
+Reported-by: Hugh Dickens <hughd@google.com>
+Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/trace.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/m68k/include/asm/pgtable_no.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index 017c8dd46b0f..5b7a6e9b0ab6 100644
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -5368,12 +5368,18 @@ static void tracing_set_nop(struct trace_array *tr)
- 	tr->current_trace = &nop_trace;
- }
+diff --git a/arch/m68k/include/asm/pgtable_no.h b/arch/m68k/include/asm/pgtable_no.h
+index fc3a96c77bd8..12f673707d4b 100644
+--- a/arch/m68k/include/asm/pgtable_no.h
++++ b/arch/m68k/include/asm/pgtable_no.h
+@@ -42,7 +42,8 @@ extern void paging_init(void);
+  * ZERO_PAGE is a global shared page that is always zero: used
+  * for zero-mapped memory areas etc..
+  */
+-#define ZERO_PAGE(vaddr)	(virt_to_page(0))
++extern void *empty_zero_page;
++#define ZERO_PAGE(vaddr)	(virt_to_page(empty_zero_page))
  
-+static bool tracer_options_updated;
-+
- static void add_tracer_options(struct trace_array *tr, struct tracer *t)
- {
- 	/* Only enable if the directory has been created already. */
- 	if (!tr->dir)
- 		return;
- 
-+	/* Only create trace option files after update_tracer_options finish */
-+	if (!tracer_options_updated)
-+		return;
-+
- 	create_trace_option_files(tr, t);
- }
- 
-@@ -7820,6 +7826,7 @@ static void __update_tracer_options(struct trace_array *tr)
- static void update_tracer_options(struct trace_array *tr)
- {
- 	mutex_lock(&trace_types_lock);
-+	tracer_options_updated = true;
- 	__update_tracer_options(tr);
- 	mutex_unlock(&trace_types_lock);
- }
+ /*
+  * No page table caches to initialise.
 -- 
 2.35.1
 
