@@ -2,100 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 814F3C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:39:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F64EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:39:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245400AbiFMSjX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:39:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37222 "EHLO
+        id S245492AbiFMSj2 convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:39:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343761AbiFMSiY (ORCPT
+        with ESMTP id S1345144AbiFMSir (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 14:38:24 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C5BD37A1A;
-        Mon, 13 Jun 2022 08:35:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655134529; x=1686670529;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=VaArXUZWlGkR+Rg5TxqlTrvxLQWmF66TsY0IDaHvDJU=;
-  b=i7tyoT18uRl6ySPsqGZst7te157jclRIvZKMGTMh1TS4sZZrECxYpygY
-   +ZXwA7kT+ctDiUX3sPHxLJzo259MFPlaY7UFHQA28Eg2YwkgAi38LeTYw
-   O80v9068dP90hPDwDiv2vCA6HdKM3kMNigzjYk88JuQ84TR3QKoTe3CB3
-   QpLVcOF9VNnGVOCF66TFwcFZEqMspgH8ZVk552FaY8+mogb2/x7JEeq7x
-   3TbF/MlwTzX36pYfC6/t2jhLGMZOYKaVr8KXO2wUVr1VRG5YP8NB7Tsyy
-   zfCnuMmlh/JaHpckjv+PNulW9M6nczdRNyhkevR1bw7WODy0CB2Fr1gq9
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="261357223"
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="261357223"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 08:35:28 -0700
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="582283738"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 08:35:24 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1o0m64-000b8T-6V;
-        Mon, 13 Jun 2022 18:35:20 +0300
-Date:   Mon, 13 Jun 2022 18:35:19 +0300
-From:   "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>
-To:     Dominik Kierner <dkierner@dh-electronics.com>
-Cc:     Javier Martinez Canillas <javierm@redhat.com>,
-        "airlied@linux.ie" <airlied@linux.ie>,
-        "daniel.vetter@ffwll.ch" <daniel.vetter@ffwll.ch>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "geert@linux-m68k.org" <geert@linux-m68k.org>,
-        "lee.jones@linaro.org" <lee.jones@linaro.org>,
-        "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
-        "maxime@cerno.tech" <maxime@cerno.tech>,
-        "noralf@tronnes.org" <noralf@tronnes.org>,
-        "sam@ravnborg.org" <sam@ravnborg.org>,
-        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
-        "tzimmermann@suse.de" <tzimmermann@suse.de>,
-        "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH v6 3/6] drm: Add driver for Solomon SSD130x OLED displays
-Message-ID: <YqdZN6mtEDF2CRtS@smile.fi.intel.com>
-References: <7a78d57342754a5d9bd3ce7c7bf3fa47@dh-electronics.com>
+        Mon, 13 Jun 2022 14:38:47 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 255E835DE8
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 08:31:56 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-156-O7Q4oYRGM8G5ydqL0wX4hQ-1; Mon, 13 Jun 2022 16:31:54 +0100
+X-MC-Unique: O7Q4oYRGM8G5ydqL0wX4hQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.36; Mon, 13 Jun 2022 16:31:52 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.036; Mon, 13 Jun 2022 16:31:52 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Joe Damato' <jdamato@fastly.com>
+CC:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [RFC,iov_iter v2 3/8] iov_iter: add copyin_iovec helper
+Thread-Topic: [RFC,iov_iter v2 3/8] iov_iter: add copyin_iovec helper
+Thread-Index: AQHYfjsvbNyOWJFJ/E+wgYg8ABCKpa1M98IwgABis4CAABxiIA==
+Date:   Mon, 13 Jun 2022 15:31:51 +0000
+Message-ID: <8f65149b1d9a4a7f97f18df05a41f728@AcuMS.aculab.com>
+References: <1655024280-23827-1-git-send-email-jdamato@fastly.com>
+ <1655024280-23827-4-git-send-email-jdamato@fastly.com>
+ <8f6771a01fe74cde86641e780d31a2ce@AcuMS.aculab.com>
+ <20220613144244.GA77534@fastly.com>
+In-Reply-To: <20220613144244.GA77534@fastly.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7a78d57342754a5d9bd3ce7c7bf3fa47@dh-electronics.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 11:39:30AM +0000, Dominik Kierner wrote:
-> On 5/25/2022 21:46, Javier Martinez Canillas wrote:
-
+From: Joe Damato
+> Sent: 13 June 2022 15:43
 ...
-
-> > Thanks, I looked at the code briefly and think that there are things there that we
-> > could use. I.e the 3-wire SPI support that's in panel-solomon-ssd130x-spi-3wire.c.
+> > The additional costs of all the 'iovec' types is bad enough
+> > already.
 > 
-> When writing my driver code, I wasn't even considering using regmaps,
-> like You did in Your I2C-Code. If that's applicable for 3-wire-SPI,
-> it would likely be the better, more generic option. Your SPI-code
-> reuses these parts to some extent. For that case,
-> ssd130x_spi_regmap_config.reg_bits would need be changed to 1,
-> as the "register address" has a length of 1 bit and we are sending
-> 9 bits over the line and not 16.
-> Since we still have 2 bytes of host memory,
-> it should still be compatible with the 4-wire write, right?
-> Or would 3-wire SPI require a second regmap?
+> Do you have data you can share on this?
 
-I believe the cleanest solution is to have different regmap configurations.
+I was thinking of the performance drop noticed when (IIRC)
+reads/writes of /dev/null were pushed through the iovec code.
 
+But there is a lot of overhead code for the usual case
+of a single user buffer being copied.
 
--- 
-With Best Regards,
-Andy Shevchenko
+	David
 
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
