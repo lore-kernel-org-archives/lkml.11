@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FF4DCCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36B56CCA47C
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:39:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355360AbiFMLia (ORCPT
+        id S1355386AbiFMLie (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:38:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49696 "EHLO
+        Mon, 13 Jun 2022 07:38:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354379AbiFML30 (ORCPT
+        with ESMTP id S1354376AbiFML3Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:29:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B89FB1D8;
-        Mon, 13 Jun 2022 03:43:48 -0700 (PDT)
+        Mon, 13 Jun 2022 07:29:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F7223159;
+        Mon, 13 Jun 2022 03:43:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0DF8AB80D3A;
-        Mon, 13 Jun 2022 10:43:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65124C34114;
-        Mon, 13 Jun 2022 10:43:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E96860F9A;
+        Mon, 13 Jun 2022 10:43:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A543DC34114;
+        Mon, 13 Jun 2022 10:43:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117025;
-        bh=3pLThGddqS+pgh7vhgBI/WZp5Itn5226pClHkobufI0=;
+        s=korg; t=1655117023;
+        bh=OpqL0ntLTcZ9fhuT4HdoHr/HvbsByJpZdVcFHVWrTsI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iIp8ZiYSHatKZBg6Z4eRRN6rB4p3/kNBa93VE7NWC+/XyDmm45yeaDT5mJKgGiUwZ
-         DFQQTjTpQMOlWgDtT+Su6Xqex2gIfn+R8gfLypNpO8AxMplikVPh5E586NGI0z4g6K
-         Eo18vQCGb0HYfohii/eIBGf7cKiRZ49lnjlq0rgE=
+        b=l6Y4US1AXpU6eh3xtaxkNvG+JZhok9XAFU4aOtf2FESX46hl2eRHSMNGeQy4ouEyu
+         BPfeFF7M21tA+R2+r3M5Yf8RvpXK0YgpVFiiEdpvpqdWPg4k1aGui4ikl9F5pUNTzw
+         rRHUCvEZ/dXBmMNyUgh9fMBCgyg2gumv+xv/OYms=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nick Desaulniers <ndesaulniers@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.4 271/411] Kconfig: add config option for asm goto w/ outputs
-Date:   Mon, 13 Jun 2022 12:09:04 +0200
-Message-Id: <20220613094936.886224146@linuxfoundation.org>
+        stable@vger.kernel.org, Vivek Gautam <vivek.gautam@codeaurora.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.4 270/411] phy: qcom-qmp: fix reset-controller leak on probe errors
+Date:   Mon, 13 Jun 2022 12:09:03 +0200
+Message-Id: <20220613094936.856541482@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -49,38 +52,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nick Desaulniers <ndesaulniers@google.com>
+From: Johan Hovold <johan+linaro@kernel.org>
 
-commit 587f17018a2c6c414e41a312b002faaef60cf423 upstream.
+commit 4d2900f20edfe541f75756a00deeb2ffe7c66bc1 upstream.
 
-This allows C code to make use of compilers with support for output
-variables along the fallthrough path via preprocessor define:
+Make sure to release the lane reset controller in case of a late probe
+error (e.g. probe deferral).
 
-  CONFIG_CC_HAS_ASM_GOTO_OUTPUT
+Note that due to the reset controller being defined in devicetree in
+"lane" child nodes, devm_reset_control_get_exclusive() cannot be used
+directly.
 
-[ This is not used anywhere yet, and currently released compilers don't
-  support this yet, but it's coming, and I have some local experimental
-  patches to take advantage of it when it does   - Linus ]
-
-Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: e78f3d15e115 ("phy: qcom-qmp: new qmp phy driver for qcom-chipsets")
+Cc: stable@vger.kernel.org      # 4.12
+Cc: Vivek Gautam <vivek.gautam@codeaurora.org>
+Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220427063243.32576-3-johan+linaro@kernel.org
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- init/Kconfig |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/phy/qualcomm/phy-qcom-qmp.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
 
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -38,6 +38,10 @@ config CC_HAS_ASM_GOTO_TIED_OUTPUT
- 	# Detect buggy gcc and clang, fixed in gcc-11 clang-14.
- 	def_bool $(success,echo 'int foo(int *x) { asm goto (".long (%l[bar]) - .\n": "+m"(*x) ::: bar); return *x; bar: return 0; }' | $CC -x c - -c -o /dev/null)
+--- a/drivers/phy/qualcomm/phy-qcom-qmp.c
++++ b/drivers/phy/qualcomm/phy-qcom-qmp.c
+@@ -1860,6 +1860,11 @@ static const struct phy_ops qcom_qmp_ufs
+ 	.owner		= THIS_MODULE,
+ };
  
-+config CC_HAS_ASM_GOTO_OUTPUT
-+	depends on CC_HAS_ASM_GOTO
-+	def_bool $(success,echo 'int foo(int x) { asm goto ("": "=r"(x) ::: bar); return x; bar: return 0; }' | $(CC) -x c - -c -o /dev/null)
++static void qcom_qmp_reset_control_put(void *data)
++{
++	reset_control_put(data);
++}
 +
- config TOOLS_SUPPORT_RELR
- 	def_bool $(success,env "CC=$(CC)" "LD=$(LD)" "NM=$(NM)" "OBJCOPY=$(OBJCOPY)" $(srctree)/scripts/tools-support-relr.sh)
+ static
+ int qcom_qmp_phy_create(struct device *dev, struct device_node *np, int id)
+ {
+@@ -1951,6 +1956,10 @@ int qcom_qmp_phy_create(struct device *d
+ 			dev_err(dev, "failed to get lane%d reset\n", id);
+ 			return PTR_ERR(qphy->lane_rst);
+ 		}
++		ret = devm_add_action_or_reset(dev, qcom_qmp_reset_control_put,
++					       qphy->lane_rst);
++		if (ret)
++			return ret;
+ 	}
  
+ 	if (qmp->cfg->type == PHY_TYPE_UFS)
 
 
