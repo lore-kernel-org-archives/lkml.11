@@ -2,41 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D33FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:26:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59D62CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:26:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244648AbiFMK0w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:26:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45626 "EHLO
+        id S244686AbiFMK06 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:26:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245368AbiFMKYe (ORCPT
+        with ESMTP id S245527AbiFMKYn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:24:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F147B20BC4;
-        Mon, 13 Jun 2022 03:18:57 -0700 (PDT)
+        Mon, 13 Jun 2022 06:24:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A52DF44;
+        Mon, 13 Jun 2022 03:19:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D78160AE8;
-        Mon, 13 Jun 2022 10:18:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A43DC34114;
-        Mon, 13 Jun 2022 10:18:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 660BAB80E94;
+        Mon, 13 Jun 2022 10:19:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B52D1C34114;
+        Mon, 13 Jun 2022 10:19:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115537;
-        bh=PaLoGAooTMTALqX/mcZmdnqTUaZkvRPiu6rryJvw928=;
+        s=korg; t=1655115548;
+        bh=ZXJP/jMoRwlK1is3iTX8+L+Npx2fmZu0/NcLo99r+Nc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PKEV6Uq/32FteLnL+XGqncorR8+nLScldIWYKVyUcbl2G/9Yh2a3tPBtnALCXJ+Qj
-         A0pI2rRoau+s0S/IQLJn6G7YF9jGUK2CceAcxqsCzIs20ij+N0x4SufsIbrbU55nqF
-         kXnwsSQvCIXE9SnUdLyO7k9TxnO7dUxpRUqWMDDI=
+        b=S58N6vnZ/l9x3F8r9dHtqwqoDbmnq2zHkkOHlRrc4aaJpRWfFj+pktADkw95HoYt6
+         cbyLPnM9Z5eCsPKmZWyXKqjQ7o93xvjZInJ6Aj+6T55eY8XDXaTxg2OfQqTG1qD/pS
+         MrG69tlAVH6MxvljkT0o8OgH3wB5W8d7XTna1ly8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        Lin Ma <linma@zju.edu.cn>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 112/167] USB: storage: karma: fix rio_karma_init return
-Date:   Mon, 13 Jun 2022 12:09:46 +0200
-Message-Id: <20220613094907.090462226@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 116/167] serial: meson: acquire port->lock in startup()
+Date:   Mon, 13 Jun 2022 12:09:50 +0200
+Message-Id: <20220613094907.930328613@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -48,61 +53,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lin Ma <linma@zju.edu.cn>
+From: John Ogness <john.ogness@linutronix.de>
 
-[ Upstream commit b92ffb1eddd9a66a90defc556dcbf65a43c196c7 ]
+[ Upstream commit 589f892ac8ef244e47c5a00ffd8605daa1eaef8e ]
 
-The function rio_karam_init() should return -ENOMEM instead of
-value 0 (USB_STOR_TRANSPORT_GOOD) when allocation fails.
+The uart_ops startup() callback is called without interrupts
+disabled and without port->lock locked, relatively late during the
+boot process (from the call path of console_on_rootfs()). If the
+device is a console, it was already previously registered and could
+be actively printing messages.
 
-Similarly, it should return -EIO when rio_karma_send_command() fails.
+Since the startup() callback is reading/writing registers used by
+the console write() callback (AML_UART_CONTROL), its access must
+be synchronized using the port->lock. Currently it is not.
 
-Fixes: dfe0d3ba20e8 ("USB Storage: add rio karma eject support")
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Lin Ma <linma@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220412144359.28447-1-linma@zju.edu.cn
+The startup() callback is the only function that explicitly enables
+interrupts. Without the synchronization, it is possible that
+interrupts become accidentally permanently disabled.
+
+CPU0                           CPU1
+meson_serial_console_write     meson_uart_startup
+--------------------------     ------------------
+spin_lock(port->lock)
+val = readl(AML_UART_CONTROL)
+uart_console_write()
+                               writel(INT_EN, AML_UART_CONTROL)
+writel(val, AML_UART_CONTROL)
+spin_unlock(port->lock)
+
+Add port->lock synchronization to meson_uart_startup() to avoid
+racing with meson_serial_console_write().
+
+Also add detailed comments to meson_uart_reset() explaining why it
+is *not* using port->lock synchronization.
+
+Link: https://lore.kernel.org/lkml/2a82eae7-a256-f70c-fd82-4e510750906e@samsung.com
+Fixes: ff7693d079e5 ("ARM: meson: serial: add MesonX SoC on-chip uart driver")
+Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/r/20220508103547.626355-1-john.ogness@linutronix.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/storage/karma.c | 15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
+ drivers/tty/serial/meson_uart.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/drivers/usb/storage/karma.c b/drivers/usb/storage/karma.c
-index f9d407f0b508..13d77421a915 100644
---- a/drivers/usb/storage/karma.c
-+++ b/drivers/usb/storage/karma.c
-@@ -185,23 +185,24 @@ static void rio_karma_destructor(void *extra)
- 
- static int rio_karma_init(struct us_data *us)
- {
--	int ret = 0;
- 	struct karma_data *data = kzalloc(sizeof(struct karma_data), GFP_NOIO);
- 	if (!data)
--		goto out;
-+		return -ENOMEM;
- 
- 	data->recv = kmalloc(RIO_RECV_LEN, GFP_NOIO);
- 	if (!data->recv) {
- 		kfree(data);
--		goto out;
-+		return -ENOMEM;
- 	}
- 
- 	us->extra = data;
- 	us->extra_destructor = rio_karma_destructor;
--	ret = rio_karma_send_command(RIO_ENTER_STORAGE, us);
--	data->in_storage = (ret == 0);
--out:
--	return ret;
-+	if (rio_karma_send_command(RIO_ENTER_STORAGE, us))
-+		return -EIO;
-+
-+	data->in_storage = 1;
-+
-+	return 0;
+diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+index 6aea0f4a9165..273292f09bf6 100644
+--- a/drivers/tty/serial/meson_uart.c
++++ b/drivers/tty/serial/meson_uart.c
+@@ -253,6 +253,14 @@ static const char *meson_uart_type(struct uart_port *port)
+ 	return (port->type == PORT_MESON) ? "meson_uart" : NULL;
  }
  
- static struct scsi_host_template karma_host_template;
++/*
++ * This function is called only from probe() using a temporary io mapping
++ * in order to perform a reset before setting up the device. Since the
++ * temporarily mapped region was successfully requested, there can be no
++ * console on this port at this time. Hence it is not necessary for this
++ * function to acquire the port->lock. (Since there is no console on this
++ * port at this time, the port->lock is not initialized yet.)
++ */
+ static void meson_uart_reset(struct uart_port *port)
+ {
+ 	u32 val;
+@@ -267,9 +275,12 @@ static void meson_uart_reset(struct uart_port *port)
+ 
+ static int meson_uart_startup(struct uart_port *port)
+ {
++	unsigned long flags;
+ 	u32 val;
+ 	int ret = 0;
+ 
++	spin_lock_irqsave(&port->lock, flags);
++
+ 	val = readl(port->membase + AML_UART_CONTROL);
+ 	val |= AML_UART_CLR_ERR;
+ 	writel(val, port->membase + AML_UART_CONTROL);
+@@ -285,6 +296,8 @@ static int meson_uart_startup(struct uart_port *port)
+ 	val = (AML_UART_RECV_IRQ(1) | AML_UART_XMIT_IRQ(port->fifosize / 2));
+ 	writel(val, port->membase + AML_UART_MISC);
+ 
++	spin_unlock_irqrestore(&port->lock, flags);
++
+ 	ret = request_irq(port->irq, meson_uart_interrupt, 0,
+ 			  meson_uart_type(port), port);
+ 
 -- 
 2.35.1
 
