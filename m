@@ -2,56 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E3FDCCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:09:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20771CCA482
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:09:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352085AbiFMMJw (ORCPT
+        id S1353654AbiFMMJz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:09:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59576 "EHLO
+        Mon, 13 Jun 2022 08:09:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359151AbiFMMFT (ORCPT
+        with ESMTP id S1359256AbiFMMFe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:05:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E1F512AAC;
-        Mon, 13 Jun 2022 03:59:03 -0700 (PDT)
+        Mon, 13 Jun 2022 08:05:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DED626134;
+        Mon, 13 Jun 2022 03:59:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BEBE760F9A;
-        Mon, 13 Jun 2022 10:59:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4412C34114;
-        Mon, 13 Jun 2022 10:59:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0C983B80EA8;
+        Mon, 13 Jun 2022 10:59:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3406AC34114;
+        Mon, 13 Jun 2022 10:59:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117942;
-        bh=1deBv8pWO4EhlblSV+d3qc0OS1zA34siQuYQ1ppkR98=;
+        s=korg; t=1655117986;
+        bh=2xRg+D79i5GNl8UccOe7sFp/4aJop6QuUDfI2goaweQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M2SjwOqiUcxy/EUEZd8gACipjIGZ1h7DeYBvPpaPyh5kewhp6xsPW10kqscjygUP7
-         nWUAlIup+YhRlWnbJXIw51J6LDPsoBO0ghcg/7N0Y6HNB08lr253pLqFYMgUDjqQft
-         xdOb9QYh1hwqEwxWbTAUf9tLDXEkfaygmlIUIvq0=
+        b=agNjp7jMXrA9TqgI6g1CdLPQgX+K2v1Z1PPTTC56CtdmAShdrqsiCl1PDLMaa029f
+         oGg+rEOQX9l3x5nnykd/B7aeCZxN/Zces+Cf9TLRuY9UthB2UfXjGyDftSQwaRbbVt
+         jbZ8ZJPoIPJuWNjFLdjd6d1bx9PwqnH+RijvMHGQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe de Dinechin <christophe@dinechin.org>,
-        Christophe de Dinechin <dinechin@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Ben Segall <bsegall@google.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, Mel Gorman <mgorman@suse.de>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: [PATCH 4.19 174/287] nodemask.h: fix compilation error with GCC12
-Date:   Mon, 13 Jun 2022 12:09:58 +0200
-Message-Id: <20220613094929.147608458@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Kees Cook <keescook@chromium.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-mips@vger.kernel.org, Manuel Lauss <manuel.lauss@gmail.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 189/287] pcmcia: db1xxx_ss: restrict to MIPS_DB1XXX boards
+Date:   Mon, 13 Jun 2022 12:10:13 +0200
+Message-Id: <20220613094929.598096632@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -63,92 +56,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe de Dinechin <dinechin@redhat.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit 37462a920392cb86541650a6f4121155f11f1199 upstream.
+[ Upstream commit 3928cf08334ed895a31458cbebd8d4ec6d84c080 ]
 
-With gcc version 12.0.1 20220401 (Red Hat 12.0.1-0), building with
-defconfig results in the following compilation error:
+When the MIPS_ALCHEMY board selection is MIPS_XXS1500 instead of
+MIPS_DB1XXX, the PCMCIA driver 'db1xxx_ss' has build errors due
+to missing DB1XXX symbols. The PCMCIA driver should be restricted
+to MIPS_DB1XXX instead of MIPS_ALCHEMY to fix this build error.
 
-|   CC      mm/swapfile.o
-| mm/swapfile.c: In function `setup_swap_info':
-| mm/swapfile.c:2291:47: error: array subscript -1 is below array bounds
-|  of `struct plist_node[]' [-Werror=array-bounds]
-|  2291 |                                 p->avail_lists[i].prio = 1;
-|       |                                 ~~~~~~~~~~~~~~^~~
-| In file included from mm/swapfile.c:16:
-| ./include/linux/swap.h:292:27: note: while referencing `avail_lists'
-|   292 |         struct plist_node avail_lists[]; /*
-|       |                           ^~~~~~~~~~~
+ERROR: modpost: "bcsr_read" [drivers/pcmcia/db1xxx_ss.ko] undefined!
+ERROR: modpost: "bcsr_mod" [drivers/pcmcia/db1xxx_ss.ko] undefined!
 
-This is due to the compiler detecting that the mask in
-node_states[__state] could theoretically be zero, which would lead to
-first_node() returning -1 through find_first_bit.
-
-I believe that the warning/error is legitimate.  I first tried adding a
-test to check that the node mask is not emtpy, since a similar test exists
-in the case where MAX_NUMNODES == 1.
-
-However, adding the if statement causes other warnings to appear in
-for_each_cpu_node_but, because it introduces a dangling else ambiguity.
-And unfortunately, GCC is not smart enough to detect that the added test
-makes the case where (node) == -1 impossible, so it still complains with
-the same message.
-
-This is why I settled on replacing that with a harmless, but relatively
-useless (node) >= 0 test.  Based on the warning for the dangling else, I
-also decided to fix the case where MAX_NUMNODES == 1 by moving the
-condition inside the for loop.  It will still only be tested once.  This
-ensures that the meaning of an else following for_each_node_mask or
-derivatives would not silently have a different meaning depending on the
-configuration.
-
-Link: https://lkml.kernel.org/r/20220414150855.2407137-3-dinechin@redhat.com
-Signed-off-by: Christophe de Dinechin <christophe@dinechin.org>
-Signed-off-by: Christophe de Dinechin <dinechin@redhat.com>
-Reviewed-by: Andrew Morton <akpm@linux-foundation.org>
-Cc: Ben Segall <bsegall@google.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Mel Gorman <mgorman@suse.de>
-Cc: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc: Vincent Guittot <vincent.guittot@linaro.org>
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Cc: Daniel Bristot de Oliveira <bristot@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>
-Cc: Zhen Lei <thunder.leizhen@huawei.com>
-Cc: Juri Lelli <juri.lelli@redhat.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 42a4f17dc356 ("MIPS: Alchemy: remove SOC_AU1X00 in favor of MIPS_ALCHEMY")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc: linux-mips@vger.kernel.org
+Acked-by: Manuel Lauss <manuel.lauss@gmail.com>
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/nodemask.h |   13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ drivers/pcmcia/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/include/linux/nodemask.h
-+++ b/include/linux/nodemask.h
-@@ -375,14 +375,13 @@ static inline void __nodes_fold(nodemask
- }
+diff --git a/drivers/pcmcia/Kconfig b/drivers/pcmcia/Kconfig
+index cbbe4a285b48..a8fdd6df6a12 100644
+--- a/drivers/pcmcia/Kconfig
++++ b/drivers/pcmcia/Kconfig
+@@ -146,7 +146,7 @@ config TCIC
  
- #if MAX_NUMNODES > 1
--#define for_each_node_mask(node, mask)			\
--	for ((node) = first_node(mask);			\
--		(node) < MAX_NUMNODES;			\
--		(node) = next_node((node), (mask)))
-+#define for_each_node_mask(node, mask)				    \
-+	for ((node) = first_node(mask);				    \
-+	     (node >= 0) && (node) < MAX_NUMNODES;		    \
-+	     (node) = next_node((node), (mask)))
- #else /* MAX_NUMNODES == 1 */
--#define for_each_node_mask(node, mask)			\
--	if (!nodes_empty(mask))				\
--		for ((node) = 0; (node) < 1; (node)++)
-+#define for_each_node_mask(node, mask)                                  \
-+	for ((node) = 0; (node) < 1 && !nodes_empty(mask); (node)++)
- #endif /* MAX_NUMNODES */
- 
- /*
+ config PCMCIA_ALCHEMY_DEVBOARD
+ 	tristate "Alchemy Db/Pb1xxx PCMCIA socket services"
+-	depends on MIPS_ALCHEMY && PCMCIA
++	depends on MIPS_DB1XXX && PCMCIA
+ 	help
+ 	  Enable this driver of you want PCMCIA support on your Alchemy
+ 	  Db1000, Db/Pb1100, Db/Pb1500, Db/Pb1550, Db/Pb1200, DB1300
+-- 
+2.35.1
+
 
 
