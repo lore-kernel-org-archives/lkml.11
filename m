@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16C00CCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCE90CCA489
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:11:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359114AbiFMNJT (ORCPT
+        id S1359396AbiFMNJv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:09:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55236 "EHLO
+        Mon, 13 Jun 2022 09:09:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357467AbiFMM65 (ORCPT
+        with ESMTP id S1357513AbiFMM66 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:58:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4FDF2BDC;
-        Mon, 13 Jun 2022 04:17:40 -0700 (PDT)
+        Mon, 13 Jun 2022 08:58:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 907296272;
+        Mon, 13 Jun 2022 04:17:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 08E7760F18;
-        Mon, 13 Jun 2022 11:17:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1530EC36AFE;
-        Mon, 13 Jun 2022 11:17:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B2E23B80EAA;
+        Mon, 13 Jun 2022 11:17:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20E38C3411C;
+        Mon, 13 Jun 2022 11:17:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119059;
-        bh=h7BD6X4WsdlZ62dptpys6AtBjDppkukzPrTZvNt5/UY=;
+        s=korg; t=1655119067;
+        bh=8EvTYHAAQjtW/JIG1V4RPkytBda6WRtxdBfG0KfJQ7I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vp4Q5Td19Tz551PgsYwrXHIr04HFD0OeDI9aVYA4GyuY9nwqIidrUNxkkGZpqCLtv
-         rNB8jTNuJ2cww1y7RcehygSvR5d/+g+mAijSqtxShlOaRUWLzjM8Go33CqOxjyTfO9
-         De8uSZxmhUGG+ppVO2637CvXECb+B2Jtzmr1HjO0=
+        b=gdSzIzH+AHwYWJ36kJaeUtm96PUT9tvsTxVyTCuBEVxOl4zZFn/43h/A6niS8D4oe
+         lXNeBImeti/82PqgGpn/Hz8qvK6gJQK6Zn77I4bJdoGtpk+OYyo3VnDhxyf1YgxRpe
+         HbnBLmzrtDFPUQH+HilgeMSGuuLPi2E8O8sZKV4Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 125/247] video: fbdev: pxa3xx-gcu: release the resources correctly in pxa3xx_gcu_probe/remove()
-Date:   Mon, 13 Jun 2022 12:10:27 +0200
-Message-Id: <20220613094926.752878618@linuxfoundation.org>
+        stable@vger.kernel.org, Chao Yu <chao.yu@oppo.com>,
+        Jaegeuk Kim <jaegeuk@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 128/247] f2fs: fix to tag gcing flag on page during file defragment
+Date:   Mon, 13 Jun 2022 12:10:30 +0200
+Message-Id: <20220613094926.843493931@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -49,64 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Chao Yu <chao@kernel.org>
 
-[ Upstream commit d87ad457f7e1b8d2492ca5b1531eb35030a1cc8f ]
+[ Upstream commit 2d1fe8a86bf5e0663866fd0da83c2af1e1b0e362 ]
 
-In pxa3xx_gcu_probe(), the sequence of error lable is wrong, it will
-leads some resource leaked, so adjust the sequence to handle the error
-correctly, and if pxa3xx_gcu_add_buffer() fails, pxa3xx_gcu_free_buffers()
-need be called.
-In pxa3xx_gcu_remove(), add missing clk_disable_unpreprare().
+In order to garantee migrated data be persisted during checkpoint,
+otherwise out-of-order persistency between data and node may cause
+data corruption after SPOR.
 
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/pxa3xx-gcu.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ fs/f2fs/file.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/video/fbdev/pxa3xx-gcu.c b/drivers/video/fbdev/pxa3xx-gcu.c
-index 4279e13a3b58..9421d14d0eb0 100644
---- a/drivers/video/fbdev/pxa3xx-gcu.c
-+++ b/drivers/video/fbdev/pxa3xx-gcu.c
-@@ -650,6 +650,7 @@ static int pxa3xx_gcu_probe(struct platform_device *pdev)
- 	for (i = 0; i < 8; i++) {
- 		ret = pxa3xx_gcu_add_buffer(dev, priv);
- 		if (ret) {
-+			pxa3xx_gcu_free_buffers(dev, priv);
- 			dev_err(dev, "failed to allocate DMA memory\n");
- 			goto err_disable_clk;
- 		}
-@@ -666,15 +667,15 @@ static int pxa3xx_gcu_probe(struct platform_device *pdev)
- 			SHARED_SIZE, irq);
- 	return 0;
+diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
+index c67756a6e32a..bfcafc20eada 100644
+--- a/fs/f2fs/file.c
++++ b/fs/f2fs/file.c
+@@ -2673,6 +2673,7 @@ static int f2fs_defragment_range(struct f2fs_sb_info *sbi,
+ 			}
  
--err_free_dma:
--	dma_free_coherent(dev, SHARED_SIZE,
--			priv->shared, priv->shared_phys);
-+err_disable_clk:
-+	clk_disable_unprepare(priv->clk);
+ 			set_page_dirty(page);
++			set_page_private_gcing(page);
+ 			f2fs_put_page(page, 1);
  
- err_misc_deregister:
- 	misc_deregister(&priv->misc_dev);
- 
--err_disable_clk:
--	clk_disable_unprepare(priv->clk);
-+err_free_dma:
-+	dma_free_coherent(dev, SHARED_SIZE,
-+			  priv->shared, priv->shared_phys);
- 
- 	return ret;
- }
-@@ -687,6 +688,7 @@ static int pxa3xx_gcu_remove(struct platform_device *pdev)
- 	pxa3xx_gcu_wait_idle(priv);
- 	misc_deregister(&priv->misc_dev);
- 	dma_free_coherent(dev, SHARED_SIZE, priv->shared, priv->shared_phys);
-+	clk_disable_unprepare(priv->clk);
- 	pxa3xx_gcu_free_buffers(dev, priv);
- 
- 	return 0;
+ 			idx++;
 -- 
 2.35.1
 
