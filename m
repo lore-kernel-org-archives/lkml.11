@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B15FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:37:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 355CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:37:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355202AbiFMLhw (ORCPT
+        id S1355225AbiFMLh4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:37:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46184 "EHLO
+        Mon, 13 Jun 2022 07:37:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354977AbiFMLaV (ORCPT
+        with ESMTP id S1354998AbiFMLaX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:30:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2110C40929;
-        Mon, 13 Jun 2022 03:46:12 -0700 (PDT)
+        Mon, 13 Jun 2022 07:30:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A329340A14;
+        Mon, 13 Jun 2022 03:46:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 700896125A;
-        Mon, 13 Jun 2022 10:46:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E10FC34114;
-        Mon, 13 Jun 2022 10:46:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F54860FDB;
+        Mon, 13 Jun 2022 10:46:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C0D8C34114;
+        Mon, 13 Jun 2022 10:46:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117170;
-        bh=vQwcFYZTuk8a/owWSlhS1j4ElSisgSKd7FPvtHGCqvc=;
+        s=korg; t=1655117173;
+        bh=Myz9vzViL/HBud6lFQmSkcpC+pwSlSnK5jjzbx/TERQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2QXFQcwghanCcAGDtACrdjUl9LiideAez2RAgKB6AM8Alxhgq92M88LEe/GvzO500
-         flvS2HOFMgWDteLdq5DVxBbmF3o316YSQuOORcJSdwOWJw90t+dg2dw4Jbvu4XaLrR
-         w1FlMXNNe4EO06MPBgsEWvxMse/hW7qDc7nl8DKg=
+        b=Uvo690n8OVTDTvDPx7p0LAJuG9Av0GXQ4v1IQdpSAoPo/qKgLs+wg73g2pSPBgpJG
+         aJAxfjEhhd2fJ/LHQgy25lG2GPUlChVcRULyT8C5TiAhFuDINtmRJ/Y06/9q2dvgGT
+         8BUXCRrw6suD/ysJ8qu1D+1NK0iZAb/Kz4RLQOLk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 301/411] serial: sifive: Report actual baud base rather than fixed 115200
-Date:   Mon, 13 Jun 2022 12:09:34 +0200
-Message-Id: <20220613094937.781690868@linuxfoundation.org>
+Subject: [PATCH 5.4 315/411] firmware: dmi-sysfs: Fix memory leak in dmi_sysfs_register_handle
+Date:   Mon, 13 Jun 2022 12:09:48 +0200
+Message-Id: <20220613094938.187946773@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -49,63 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej W. Rozycki <macro@orcam.me.uk>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 0a7ff843d507ce2cca2c3b7e169ee56e28133530 ]
+[ Upstream commit 660ba678f9998aca6db74f2dd912fa5124f0fa31 ]
 
-The base baud value reported is supposed to be the highest baud rate
-that can be set for a serial port.  The SiFive FU740-C000 SOC's on-chip
-UART supports baud rates of up to 1/16 of the input clock rate, which is
-the bus clock `tlclk'[1], often at 130MHz in the case of the HiFive
-Unmatched board.
+kobject_init_and_add() takes reference even when it fails.
+According to the doc of kobject_init_and_add()
 
-However the sifive UART driver reports a fixed value of 115200 instead:
+   If this function returns an error, kobject_put() must be called to
+   properly clean up the memory associated with the object.
 
-10010000.serial: ttySIF0 at MMIO 0x10010000 (irq = 1, base_baud = 115200) is a SiFive UART v0
-10011000.serial: ttySIF1 at MMIO 0x10011000 (irq = 2, base_baud = 115200) is a SiFive UART v0
+Fix this issue by calling kobject_put().
 
-even though we already support setting higher baud rates, e.g.:
-
-$ tty
-/dev/ttySIF1
-$ stty speed
-230400
-
-The baud base value is computed by the serial core by dividing the UART
-clock recorded in `struct uart_port' by 16, which is also the minimum
-value of the clock divider supported, so correct the baud base value
-reported by setting the UART clock recorded to the input clock rate
-rather than 115200:
-
-10010000.serial: ttySIF0 at MMIO 0x10010000 (irq = 1, base_baud = 8125000) is a SiFive UART v0
-10011000.serial: ttySIF1 at MMIO 0x10011000 (irq = 2, base_baud = 8125000) is a SiFive UART v0
-
-
-[1] "SiFive FU740-C000 Manual", v1p3, SiFive, Inc., August 13, 2021,
-    Section 16.9 "Baud Rate Divisor Register (div)", pp.143-144
-
-Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
-Fixes: 1f1496a923b6 ("riscv: Fix sifive serial driver")
-Link: https://lore.kernel.org/r/alpine.DEB.2.21.2204291656280.9383@angie.orcam.me.uk
+Fixes: 948af1f0bbc8 ("firmware: Basic dmi-sysfs support")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220511071421.9769-1-linmq006@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/sifive.c | 2 +-
+ drivers/firmware/dmi-sysfs.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c
-index 6a2dc823ea82..ec9bd2207271 100644
---- a/drivers/tty/serial/sifive.c
-+++ b/drivers/tty/serial/sifive.c
-@@ -973,7 +973,7 @@ static int sifive_serial_probe(struct platform_device *pdev)
- 	/* Set up clock divider */
- 	ssp->clkin_rate = clk_get_rate(ssp->clk);
- 	ssp->baud_rate = SIFIVE_DEFAULT_BAUD_RATE;
--	ssp->port.uartclk = ssp->baud_rate * 16;
-+	ssp->port.uartclk = ssp->clkin_rate;
- 	__ssp_update_div(ssp);
+diff --git a/drivers/firmware/dmi-sysfs.c b/drivers/firmware/dmi-sysfs.c
+index b6180023eba7..2858e05636e9 100644
+--- a/drivers/firmware/dmi-sysfs.c
++++ b/drivers/firmware/dmi-sysfs.c
+@@ -603,7 +603,7 @@ static void __init dmi_sysfs_register_handle(const struct dmi_header *dh,
+ 				    "%d-%d", dh->type, entry->instance);
  
- 	platform_set_drvdata(pdev, ssp);
+ 	if (*ret) {
+-		kfree(entry);
++		kobject_put(&entry->kobj);
+ 		return;
+ 	}
+ 
 -- 
 2.35.1
 
