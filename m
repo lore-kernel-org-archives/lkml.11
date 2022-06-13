@@ -2,82 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36048C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 07:15:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53733C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 07:15:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239016AbiFMHPI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 03:15:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39898 "EHLO
+        id S239134AbiFMHNh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 03:13:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235615AbiFMHPH (ORCPT
+        with ESMTP id S229510AbiFMHN1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 03:15:07 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 375491A3A6
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 00:15:06 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id bo5so5001345pfb.4
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 00:15:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ryeH9bTEtbNft6a8+l0Ww/QD0tPIB9O2GIzjchd0JQ8=;
-        b=7Z2m+UanT7leluCE0awhNxUgN/zvt+QgLX41xEJAkZ+hZl9VI2EHpDcYFUppZ9BKoY
-         50fge9XUhht5/9Jy98ZmwWcEyX6y0D12e8O+OcFKcGMtINA54VotW1Re/vgDyk53Ukdm
-         IHxc1+r+vMC9HH0wgZhf2TJdBx5q2rbxsUSIztrzJbjkJ804j6UTeS5RqqRNrRkuRW6M
-         zyXgQD365z1Sc+96lW/fEZVdEBCWAefn+rXwdENfblHqcGEtDQrRctODB4Opn2iWL40a
-         99tK75i+ilgO4NFf/w7KwY3VOplAn0WgtizKYpUhR3effzvDCve7a3XIeOS6hX6DqZzx
-         pZMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ryeH9bTEtbNft6a8+l0Ww/QD0tPIB9O2GIzjchd0JQ8=;
-        b=JFwQnpVegLwpleVxFtHu/RZZ4a073GHAr8NTyuGOZN0PEK44RaOgfMPSgNyA4MKpgo
-         CfCxp4Dqkae9SogZe8uB4m85EmUsHUgHgxbzSEbp5dEH0vWx6Z2+PWYKa1y3JmyOOHTo
-         YzLln7ATzMevlroJObQ+ine8dDEfoQ+cmdPzGzpqhqw/J7UdFAntqKsCXn+29ZcMotXf
-         7Cl3fexOgQk0VChP+u5hN2r+lt3feDAAXtfXzkVFIE5ggui+8JhsLNDR5yInOYgu743X
-         HPFbTX6lZsn1pY0qY63grU6ZFCSiJydHCGj3Lkg2COgJd9dE6BK3qJnjdSTHK3yqeBI8
-         8Q2Q==
-X-Gm-Message-State: AOAM531T/UO1KFbpeZC76nuV5mhVHsyUb46karGfqHrCr0zWLfzBeia+
-        5b26qL5gmQ55VihI8DfkV6I/LQ==
-X-Google-Smtp-Source: ABdhPJzHmwvUgcBKOSqyUg5vAuPr66x5IQQXFrWOSIsM17SUv8GbRUJd/cQ3bPRDaT8Mt+cFaz4YcQ==
-X-Received: by 2002:a63:4853:0:b0:3fa:dc6:7ac2 with SMTP id x19-20020a634853000000b003fa0dc67ac2mr50831303pgk.298.1655104505694;
-        Mon, 13 Jun 2022 00:15:05 -0700 (PDT)
-Received: from localhost ([139.177.225.255])
-        by smtp.gmail.com with ESMTPSA id s2-20020a17090302c200b00168d9630b49sm2205628plk.307.2022.06.13.00.15.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 00:15:05 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 15:15:02 +0800
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] mm/kmemleak: Use _irq lock/unlock variants in
- kmemleak_scan/_clear()
-Message-ID: <Yqbj9vxGrpuBlMuc@FVFYT0MHHV2J.usts.net>
-References: <20220612183301.981616-1-longman@redhat.com>
- <20220612183301.981616-2-longman@redhat.com>
+        Mon, 13 Jun 2022 03:13:27 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A87AD1A3B2;
+        Mon, 13 Jun 2022 00:13:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655104403; x=1686640403;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=e6TSSclSEf+SmXWUeydiq8kOl+7wu8+wA2N3sf7EVDI=;
+  b=Kg1lg4darTEwGDr+bGSn808K+JFUdz7Y1jwedyQBFjDitc9r2Vfaxd38
+   Q5vNMORalcWcHeHBjl87a7f/Fjg+vryc/4RIT40Mn44/0ItjLdicWX4C0
+   /zMHVYYcp+f6geHHNv2Y8zsvBvZGGaQ9eKIj6Zcbx01Gue27oxS/MYADT
+   AzuYYt7XUxDvww+32Wxp9ubqQurEkUx1yoi/5X000IGNGrTD/MeLesmik
+   wbhKrsG6kRk3dtqPlud1O9G8qz5AJ5T5CopvIJGk6Mg+y7tJCynXUDmf/
+   7uqOavvRCBlbNv7qqDPmVVPU+U+j6pBikBcrrjTEVC0Lw62SJxm4FF4rt
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10376"; a="339866002"
+X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
+   d="scan'208";a="339866002"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 00:13:20 -0700
+X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
+   d="scan'208";a="639571384"
+Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.58.193])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 00:13:17 -0700
+Message-ID: <c0a313ac-20b9-2d1a-4c10-9ba57c62ae95@intel.com>
+Date:   Mon, 13 Jun 2022 10:13:16 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220612183301.981616-2-longman@redhat.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.9.1
+Subject: Re: [PATCH 4/5] mmc: sdhci-of-arasan: Obviously always return success
+ in remove callback
+Content-Language: en-US
+To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org,
+        linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220610211257.102071-1-u.kleine-koenig@pengutronix.de>
+ <20220610211257.102071-4-u.kleine-koenig@pengutronix.de>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <20220610211257.102071-4-u.kleine-koenig@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jun 12, 2022 at 02:32:59PM -0400, Waiman Long wrote:
-> The kmemleak_scan() function is called only from the kmemleak scan
-> thread or from write to the kmemleak debugfs file. Both are in task
-> context and so we can directly use the simpler _irq() lock/unlock calls
-> instead of the more complex _irqsave/_irqrestore variants.
+On 11/06/22 00:12, Uwe Kleine-König wrote:
+> sdhci_pltfm_unregister() returns 0 unconditionally and returning an
+> error in a platform remove callback isn't very sensible. (The only
+> effect of the latter is that the device core emits a generic warning and
+> then removes the device anyhow.)
 > 
-> Similarly, kmemleak_clear() is called only from write to the kmemleak
-> debugfs file. The same change can be applied.
+> So return 0 unconditionally to make it obvious there is no error
+> forwarded to the upper layers.
 > 
-> Signed-off-by: Waiman Long <longman@redhat.com>
+> This is a preparation for making platform remove callbacks return void.
 
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+This preparation seems a bit unnatural.
 
-Thanks.
+> 
+> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+
+Acked-by: Adrian Hunter <adrian.hunter@intel.com>
+
+> ---
+>  drivers/mmc/host/sdhci-of-arasan.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/mmc/host/sdhci-of-arasan.c b/drivers/mmc/host/sdhci-of-arasan.c
+> index 757801dfc308..3997cad1f793 100644
+> --- a/drivers/mmc/host/sdhci-of-arasan.c
+> +++ b/drivers/mmc/host/sdhci-of-arasan.c
+> @@ -1733,7 +1733,6 @@ static int sdhci_arasan_probe(struct platform_device *pdev)
+>  
+>  static int sdhci_arasan_remove(struct platform_device *pdev)
+>  {
+> -	int ret;
+>  	struct sdhci_host *host = platform_get_drvdata(pdev);
+>  	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
+>  	struct sdhci_arasan_data *sdhci_arasan = sdhci_pltfm_priv(pltfm_host);
+> @@ -1747,11 +1746,11 @@ static int sdhci_arasan_remove(struct platform_device *pdev)
+>  
+>  	sdhci_arasan_unregister_sdclk(&pdev->dev);
+>  
+> -	ret = sdhci_pltfm_unregister(pdev);
+> +	sdhci_pltfm_unregister(pdev);
+>  
+>  	clk_disable_unprepare(clk_ahb);
+>  
+> -	return ret;
+> +	return 0;
+>  }
+>  
+>  static struct platform_driver sdhci_arasan_driver = {
+
