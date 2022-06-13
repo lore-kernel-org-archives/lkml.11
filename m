@@ -2,120 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B41E2C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:32:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 249E6C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:34:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243882AbiFMSct (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:32:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60338 "EHLO
+        id S245653AbiFMSeS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:34:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238656AbiFMScV (ORCPT
+        with ESMTP id S240768AbiFMSeC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 14:32:21 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0514FC3D2E
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 07:50:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=g2RC1m/mkaeRN82kXC5R7jd2AVs1
-        ntoJQysP2akaihU=; b=0XUHyLz+T+uIgAuJR+jbGhJvVViKWqRK2GG7jfxuNNqw
-        JJjNKA5244GJG920B5S9Ldy++QpX7jynsFuER/+e4b9pmUMVKcZyu7vCk+RUDPCk
-        bEFYQo0E6ehpN2VFXvHf2GrQIPgK7uv0KPlcDFhiZBcT1U+GudpfDVIuFdVXvFY=
-Received: (qmail 1337493 invoked from network); 13 Jun 2022 16:50:37 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 13 Jun 2022 16:50:37 +0200
-X-UD-Smtp-Session: l3s3148p1@YGgvaVXhuDRZD+yY
-Date:   Mon, 13 Jun 2022 16:50:36 +0200
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Jan Dabros <jsd@semihalf.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Gareth Williams <gareth.williams.jx@renesas.com>,
-        Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] i2c: designware: Use standard optional ref clock
- implementation
-Message-ID: <YqdOvDmixVlDYzjO@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Jan Dabros <jsd@semihalf.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Gareth Williams <gareth.williams.jx@renesas.com>,
-        Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220610074233.9748-1-Sergey.Semin@baikalelectronics.ru>
+        Mon, 13 Jun 2022 14:34:02 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C802BC9671
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 07:53:51 -0700 (PDT)
+Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LMDyG6wVxzRhyT;
+        Mon, 13 Jun 2022 22:50:30 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by kwepemi500015.china.huawei.com
+ (7.221.188.92) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 13 Jun
+ 2022 22:53:45 +0800
+From:   Zheng Bin <zhengbin13@huawei.com>
+To:     <andrzej.hajda@intel.com>, <narmstrong@baylibre.com>,
+        <robert.foss@linaro.org>, <Laurent.pinchart@ideasonboard.com>,
+        <jonas@kwiboo.se>, <jernej.skrabec@gmail.com>, <airlied@linux.ie>,
+        <daniel@ffwll.ch>, <angelogioacchino.delregno@collabora.com>,
+        <dri-devel@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>
+CC:     <zhengbin13@huawei.com>, <gaochao49@huawei.com>
+Subject: [PATCH -next] drm/bridge: it6505: Add missing CRYPTO_HASH dependency
+Date:   Mon, 13 Jun 2022 23:06:53 +0800
+Message-ID: <20220613150653.1310029-1-zhengbin13@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="LpjOMnM5Qxa/KRrW"
-Content-Disposition: inline
-In-Reply-To: <20220610074233.9748-1-Sergey.Semin@baikalelectronics.ru>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemi500015.china.huawei.com (7.221.188.92)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The driver uses crypto hash functions so it needs to select CRYPTO_HASH.
+This fixes build errors:
 
---LpjOMnM5Qxa/KRrW
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+drivers/gpu/drm/bridge/ite-it6505.o: in function `it6505_hdcp_wait_ksv_list':
+ite-it6505.c:(.text+0x4c26): undefined reference to `crypto_alloc_shash'
+ite-it6505.c:(.text+0x4c6d): undefined reference to `crypto_shash_digest'
+ite-it6505.c:(.text+0x4c7d): undefined reference to `crypto_destroy_tfm'
+ite-it6505.c:(.text+0x4d69): undefined reference to `crypto_destroy_tfm'
 
-On Fri, Jun 10, 2022 at 10:42:33AM +0300, Serge Semin wrote:
-> Even though the DW I2C controller reference clock source is requested by
-> the method devm_clk_get() with non-optional clock requirement the way the
-> clock handler is used afterwards has a pure optional clock semantic
-> (though in some circumstances we can get a warning about the clock missing
-> printed in the system console). There is no point in reimplementing that
-> functionality seeing the kernel clock framework already supports the
-> optional interface from scratch. Thus let's convert the platform driver to
-> using it.
->=20
-> Note by providing this commit we get to fix two problems. The first one
-> was introduced in commit c62ebb3d5f0d ("i2c: designware: Add support for
-> an interface clock"). It causes not having the interface clock (pclk)
-> enabled/disabled in case if the reference clock isn't provided. The second
-> problem was first introduced in commit b33af11de236 ("i2c: designware: Do
-> not require clock when SSCN and FFCN are provided"). Since that
-> modification the deferred probe procedure has been unsupported in case if
-> the interface clock isn't ready.
->=20
-> Fixes: c62ebb3d5f0d ("i2c: designware: Add support for an interface clock=
-")
-> Fixes: b33af11de236 ("i2c: designware: Do not require clock when SSCN and=
- FFCN are provided")
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Fixes: b5c84a9edcd4 ("drm/bridge: add it6505 driver")
+Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
+---
+ drivers/gpu/drm/bridge/Kconfig | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Applied to for-current, thanks!
+diff --git a/drivers/gpu/drm/bridge/Kconfig b/drivers/gpu/drm/bridge/Kconfig
+index 8ffd601e68f9..1afe99dac0ff 100644
+--- a/drivers/gpu/drm/bridge/Kconfig
++++ b/drivers/gpu/drm/bridge/Kconfig
+@@ -94,6 +94,8 @@ config DRM_ITE_IT6505
+         select DRM_KMS_HELPER
+         select DRM_DP_HELPER
+         select EXTCON
++        select CRYPTO
++        select CRYPTO_HASH
+         help
+           ITE IT6505 DisplayPort bridge chip driver.
 
+--
+2.31.1
 
---LpjOMnM5Qxa/KRrW
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmKnTrwACgkQFA3kzBSg
-KbahQg//bJVwpD7dUJbwrkCJR/R4p9wzcrnlm3kpsprd/tRq8WSb87PkDFRIP9oN
-13zkFyCOfsYb0OCY8+QwprKEV8BJN9irSQHOukm2bN5ShkZpY2CBxfiScDe757F8
-Nla7I6ez3EBQeKYV1QF0GW1K1Es5+1nqcU+9DKRA/uYzVQmkJ9bMr4mGTotMJzIS
-ey5b7JkDMzIxp/4BLXxdOz0To00WtTVqb/1vSiK7NwCw5ovTdbXlt4o8cL9+G2s7
-NmwQaqvOSlyvEny7+nRDitZZKB+zXF8BPSPWCRUJBmToU1jfzWJzfUJMWnkkpXGX
-BhDXmAsUrVT/JyfzqGAywxywpphrOqbU9IpXS+8I1LU6qCMN9rizfyjbyGcLnldN
-x9HoVQe7vEOUTcEoEQiDbauO6uxnWrHRNFo8ud7KgDECRwJ0ta04vH2UOKCchw7c
-yXxCSob3hP8ew+fg5hwlFUhHRQvuRTnm30WaxE/iIxzTyOSCKtLCnAOmOZg0f9zk
-ZpA/pRDVaVXRTKuesjwU5SKDOm8JFP3wi8IHX/iMMxlJXek3w89NprAdj2SqWdA6
-cI93dQ7Nn/39KyNU+GNp+n+wTzPIRB+cwKFbQ7r8tgMlxmRCZYOGRv4L0q+VDWWG
-nzT6jbHlb622SOIfdm45ZWSVrDh5ZjRMqjeBzjGzFcIMSKEwe+w=
-=unAQ
------END PGP SIGNATURE-----
-
---LpjOMnM5Qxa/KRrW--
