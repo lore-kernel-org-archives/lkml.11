@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DB06CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:45:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F39B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:45:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353917AbiFMMnu (ORCPT
+        id S1354531AbiFMMoE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:43:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49824 "EHLO
+        Mon, 13 Jun 2022 08:44:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354172AbiFMMix (ORCPT
+        with ESMTP id S1355690AbiFMMjR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:38:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E76F65D651;
-        Mon, 13 Jun 2022 04:08:25 -0700 (PDT)
+        Mon, 13 Jun 2022 08:39:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F62D646F;
+        Mon, 13 Jun 2022 04:09:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9529B80EB3;
-        Mon, 13 Jun 2022 11:08:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BADAEC34114;
-        Mon, 13 Jun 2022 11:08:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE65060907;
+        Mon, 13 Jun 2022 11:09:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0282DC34114;
+        Mon, 13 Jun 2022 11:09:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118502;
-        bh=4oxHm1p9md4OCeao8DceTL8n6o67+unER+HdBMgk2n8=;
+        s=korg; t=1655118563;
+        bh=93RaP5+sjMAjGExeJo5h97vFM+a0K8BZ5IZE4OzmE1U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dI3wDfagjDAdt+kvYQbIEGMN+O2TbRuAz0D6R6+szbb/nb3TsZ9367h+zMQsQC9VN
-         JUjKCPTx7qcet8uydpqI4UxbRvUyvLELZ33qkHxi94IXITMUrCfGWJggpPfh4qGQXm
-         IW46tH2czzlnbSvdbgi2uicsxlwsaFnY6BOElp2A=
+        b=ekXtdH+cmKnvgSZ7b6Xye+U0pPC90ct3uLn65LWBhTOPZ27PpB9/79NaBkZbAKugg
+         Qfzlb6qf4rdC1iVxcMdbmI6Y+RRjLPPCCroCjBqZnCOJfbHRn03NnXVkXhAS62+h0Z
+         WrxQ0Zou+df4Uh1h6QLOvZtbKog4iYOgQKeOlLp8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Juergen Gross <jgross@suse.com>,
+        stable@vger.kernel.org, Zhen Ni <nizhen@uniontech.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 099/172] xen: unexport __init-annotated xen_xlate_map_ballooned_pages()
-Date:   Mon, 13 Jun 2022 12:10:59 +0200
-Message-Id: <20220613094914.186773478@linuxfoundation.org>
+Subject: [PATCH 5.10 121/172] USB: host: isp116x: check return value after calling platform_get_resource()
+Date:   Mon, 13 Jun 2022 12:11:21 +0200
+Message-Id: <20220613094919.547013087@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -53,53 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Zhen Ni <nizhen@uniontech.com>
 
-[ Upstream commit dbac14a5a05ff8e1ce7c0da0e1f520ce39ec62ea ]
+[ Upstream commit 134a3408c2d3f7e23eb0e4556e0a2d9f36c2614e ]
 
-EXPORT_SYMBOL and __init is a bad combination because the .init.text
-section is freed up after the initialization. Hence, modules cannot
-use symbols annotated __init. The access to a freed symbol may end up
-with kernel panic.
+It will cause null-ptr-deref if platform_get_resource() returns NULL,
+we need check the return value.
 
-modpost used to detect it, but it has been broken for a decade.
-
-Recently, I fixed modpost so it started to warn it again, then this
-showed up in linux-next builds.
-
-There are two ways to fix it:
-
-  - Remove __init
-  - Remove EXPORT_SYMBOL
-
-I chose the latter for this case because none of the in-tree call-sites
-(arch/arm/xen/enlighten.c, arch/x86/xen/grant-table.c) is compiled as
-modular.
-
-Fixes: 243848fc018c ("xen/grant-table: Move xlated_setup_gnttab_pages to common place")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Reviewed-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-Acked-by: Stefano Stabellini <sstabellini@kernel.org>
-Link: https://lore.kernel.org/r/20220606045920.4161881-1-masahiroy@kernel.org
-Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Zhen Ni <nizhen@uniontech.com>
+Link: https://lore.kernel.org/r/20220302033716.31272-1-nizhen@uniontech.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/xen/xlate_mmu.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/usb/host/isp116x-hcd.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/xen/xlate_mmu.c b/drivers/xen/xlate_mmu.c
-index 34742c6e189e..f17c4c03db30 100644
---- a/drivers/xen/xlate_mmu.c
-+++ b/drivers/xen/xlate_mmu.c
-@@ -261,7 +261,6 @@ int __init xen_xlate_map_ballooned_pages(xen_pfn_t **gfns, void **virt,
+diff --git a/drivers/usb/host/isp116x-hcd.c b/drivers/usb/host/isp116x-hcd.c
+index 3055d9abfec3..3e5c54742bef 100644
+--- a/drivers/usb/host/isp116x-hcd.c
++++ b/drivers/usb/host/isp116x-hcd.c
+@@ -1541,10 +1541,12 @@ static int isp116x_remove(struct platform_device *pdev)
  
+ 	iounmap(isp116x->data_reg);
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+-	release_mem_region(res->start, 2);
++	if (res)
++		release_mem_region(res->start, 2);
+ 	iounmap(isp116x->addr_reg);
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	release_mem_region(res->start, 2);
++	if (res)
++		release_mem_region(res->start, 2);
+ 
+ 	usb_put_hcd(hcd);
  	return 0;
- }
--EXPORT_SYMBOL_GPL(xen_xlate_map_ballooned_pages);
- 
- struct remap_pfn {
- 	struct mm_struct *mm;
 -- 
 2.35.1
 
