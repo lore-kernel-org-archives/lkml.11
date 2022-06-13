@@ -2,124 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C63C9C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A28DC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:11:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359097AbiFMNJR convert rfc822-to-8bit (ORCPT
+        id S1359080AbiFMNJP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:09:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49830 "EHLO
+        Mon, 13 Jun 2022 09:09:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357404AbiFMM6n (ORCPT
+        with ESMTP id S1357375AbiFMM6m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:58:43 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D4D962BCF;
-        Mon, 13 Jun 2022 04:17:36 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CD648D6E;
-        Mon, 13 Jun 2022 04:17:35 -0700 (PDT)
-Received: from donnerap.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 332CE3F73B;
-        Mon, 13 Jun 2022 04:17:33 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 12:17:29 +0100
-From:   Andre Przywara <andre.przywara@arm.com>
-To:     Samuel Holland <samuel@sholland.org>
-Cc:     Jernej =?UTF-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Bartosz Dudziak <bartosz.dudziak@snejp.pl>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Luca Weiss <luca@z3ntu.xyz>, Maxime Ripard <maxime@cerno.tech>,
-        Rob Herring <robh+dt@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Thierry Reding <treding@nvidia.com>,
-        Vinod Koul <vkoul@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH 0/3] ARM: sunxi: Remove A31 and A23/A33 platform SMP
- code
-Message-ID: <20220613121729.46233a75@donnerap.cambridge.arm.com>
-In-Reply-To: <2833034.e9J7NaK4W3@kista>
-References: <20220531045038.42230-1-samuel@sholland.org>
-        <2833034.e9J7NaK4W3@kista>
-Organization: ARM
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; aarch64-unknown-linux-gnu)
+        Mon, 13 Jun 2022 08:58:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 462452DC6;
+        Mon, 13 Jun 2022 04:17:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 48C6760EAE;
+        Mon, 13 Jun 2022 11:17:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CB9CC34114;
+        Mon, 13 Jun 2022 11:17:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655119056;
+        bh=EqpB5QRqD6dOFaUdYwkgChjtgEvzBniG9DkPH2wSEq4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=oEkazyA1nUiWlFkVBD9YCKYii7ybElOjFItU+YnqaNG2UzT9CHBDLzOLFuBqA1oug
+         Ac706myLX0Yp9wMHcHI3Ckgo014TioijcXpPjpgZN6EVTqiNPzuQcR43vxJB14huUq
+         twxoWPCsbeczeGijG6BjfhIJN91VCwQOLJMxabmk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        syzbot+e820fdc8ce362f2dea51@syzkaller.appspotmail.com,
+        Jon Maloy <jmaloy@redhat.com>,
+        Hoang Le <hoang.h.le@dektech.com.au>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 107/247] tipc: check attribute length for bearer name
+Date:   Mon, 13 Jun 2022 12:10:09 +0200
+Message-Id: <20220613094926.204235963@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
+References: <20220613094922.843438024@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 12 Jun 2022 23:09:07 +0200
-Jernej Škrabec <jernej.skrabec@gmail.com> wrote:
+From: Hoang Le <hoang.h.le@dektech.com.au>
 
-Hi Samuel,
+[ Upstream commit 7f36f798f89bf32c0164049cb0e3fd1af613d0bb ]
 
-> Dne torek, 31. maj 2022 ob 06:50:35 CEST je Samuel Holland napisal(a):
-> > This series is preparation for converting the PRCM MFD and legacy clock
-> > drivers to a CCU clock driver.
+syzbot reported uninit-value:
+=====================================================
+BUG: KMSAN: uninit-value in string_nocheck lib/vsprintf.c:644 [inline]
+BUG: KMSAN: uninit-value in string+0x4f9/0x6f0 lib/vsprintf.c:725
+ string_nocheck lib/vsprintf.c:644 [inline]
+ string+0x4f9/0x6f0 lib/vsprintf.c:725
+ vsnprintf+0x2222/0x3650 lib/vsprintf.c:2806
+ vprintk_store+0x537/0x2150 kernel/printk/printk.c:2158
+ vprintk_emit+0x28b/0xab0 kernel/printk/printk.c:2256
+ vprintk_default+0x86/0xa0 kernel/printk/printk.c:2283
+ vprintk+0x15f/0x180 kernel/printk/printk_safe.c:50
+ _printk+0x18d/0x1cf kernel/printk/printk.c:2293
+ tipc_enable_bearer net/tipc/bearer.c:371 [inline]
+ __tipc_nl_bearer_enable+0x2022/0x22a0 net/tipc/bearer.c:1033
+ tipc_nl_bearer_enable+0x6c/0xb0 net/tipc/bearer.c:1042
+ genl_family_rcv_msg_doit net/netlink/genetlink.c:731 [inline]
 
-May I ask what the purpose of this exercise is? So if I understand
-correctly, then it's about to convert the sun8i-a23-prcm MFD driver and
-its children to a single "modern style" CCU clock driver, with its opaque
-DT node?
-If that changes the compatible strings or the references to the clock
-providers (and I guess it would need to?), then this would mean an
-incompatible change. Which also means we would need to keep the old code
-around, to maintain compatibility with "old" DTs? So what is the win then?
-Now we have *two* clock drivers, for the same device, which need
-maintenance and testing.
+- Do sanity check the attribute length for TIPC_NLA_BEARER_NAME.
+- Do not use 'illegal name' in printing message.
 
-So can you confirm that this will be a breaking change?
+Reported-by: syzbot+e820fdc8ce362f2dea51@syzkaller.appspotmail.com
+Fixes: cb30a63384bc ("tipc: refactor function tipc_enable_bearer()")
+Acked-by: Jon Maloy <jmaloy@redhat.com>
+Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
+Link: https://lore.kernel.org/r/20220602063053.5892-1-hoang.h.le@dektech.com.au
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/tipc/bearer.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-> The platform SMP code references the PRCM
-> > node to map its MMIO space, which will break when the PRCM node is
-> > removed/replaced.  
-> 
-> Why can't we just leave old platform code? If older dtb file is used, it would 
-> still work. Actually, isn't trivial to support new CCU binding too, just by 
-> including new CCU compatible string? IIUC new CCU node will have same address 
-> as current PRCM node.
+diff --git a/net/tipc/bearer.c b/net/tipc/bearer.c
+index 36b466cfd9e1..b0ad61b4b101 100644
+--- a/net/tipc/bearer.c
++++ b/net/tipc/bearer.c
+@@ -259,9 +259,8 @@ static int tipc_enable_bearer(struct net *net, const char *name,
+ 	u32 i;
+ 
+ 	if (!bearer_name_validate(name, &b_names)) {
+-		errstr = "illegal name";
+ 		NL_SET_ERR_MSG(extack, "Illegal name");
+-		goto rejected;
++		return res;
+ 	}
+ 
+ 	if (prio > TIPC_MAX_LINK_PRI && prio != TIPC_MEDIA_LINK_PRI) {
+-- 
+2.35.1
 
-This aims for a similar direction, though in this case the alternative
-(PSCI) predates the sunxi specific method in the kernel support. Can we
-just deprecate this code, maybe issue a warning, with the hint to update
-the bootloader (which might not be possible for some devices)?
 
-Cheers,
-Andre
-
-> Best regards,
-> Jernej
-> 
-> > 
-> > Since PSCI has been available for 7+ years, instead of trying to deal
-> > with the migration, I think it's safe to just delete this code.
-> > 
-> > 
-> > Samuel Holland (3):
-> >   ARM: sunxi: Remove A31 and A23/A33 platform SMP code
-> >   ARM: dts: sunxi: Remove obsolete CPU enable methods
-> >   dt-bindings: arm: Remove obsolete CPU enable methods
-> > 
-> >  .../devicetree/bindings/arm/cpus.yaml         |   2 -
-> >  arch/arm/boot/dts/sun6i-a31.dtsi              |   1 -
-> >  arch/arm/boot/dts/sun8i-a23-a33.dtsi          |   1 -
-> >  arch/arm/mach-sunxi/Makefile                  |   1 -
-> >  arch/arm/mach-sunxi/platsmp.c                 | 194 ------------------
-> >  5 files changed, 199 deletions(-)
-> >  delete mode 100644 arch/arm/mach-sunxi/platsmp.c
-> > 
-> > -- 
-> > 2.35.1
-> > 
-> >   
-> 
-> 
-> 
 
