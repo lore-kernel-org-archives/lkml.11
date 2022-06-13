@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6FFDCCA487
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D784CCCA483
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:55:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242872AbiFMRy6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 13:54:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57002 "EHLO
+        id S242639AbiFMRyx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 13:54:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242187AbiFMRyH (ORCPT
+        with ESMTP id S239735AbiFMRyC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 13:54:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 17FAD75215
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:39:55 -0700 (PDT)
+        Mon, 13 Jun 2022 13:54:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 807C574DEC
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:39:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655127594;
+        s=mimecast20190719; t=1655127589;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=1qI/FHY/T1HazJ0T9yjqCenNeZJbi2H7HBUgnno5W+A=;
-        b=NdbsRm88d7bP5G0Yno247Ag1EZPJPeZPbOcAUqqXQ3bYsZ3JAftOFPHdq1YyvqvjRxPXkS
-        cqt56lNeG7B+fcEMOFWFHaVUB6zL7gChsSZPi4dGJd4opCtjyhm4JVh5w1Hrf0E1+hCcwB
-        wjLCy+sdWl037Nvyze5i0JdEyX7Zkmk=
+        bh=1vOx5soPiX2JRwE2UbY1pJNmp+Zw70LP+KY9S+xppco=;
+        b=Cja/9GTwOBNx/tlpeO0hAtmPnMnNSQUBQxUQo3pXUEm3nw1BXD0sLnr1ynkObIcPYGFiyp
+        8fSEa8TrbNuytmR0Tr0cc3DOvP0K3DVQWoFMdbLRXTBZnYXhAu9F1XC4DkfetMllR/dOlO
+        fTbwPKmyrxo/O1H1ojen1a9gkmlp4wU=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-517-nsjtHlTPNBSIErnWwshZSw-1; Mon, 13 Jun 2022 09:39:50 -0400
-X-MC-Unique: nsjtHlTPNBSIErnWwshZSw-1
+ us-mta-546-fe636c9eM-GKcQjyttgl3g-1; Mon, 13 Jun 2022 09:39:45 -0400
+X-MC-Unique: fe636c9eM-GKcQjyttgl3g-1
 Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3CB4A800DB4;
-        Mon, 13 Jun 2022 13:39:48 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3D3B3858F0C;
+        Mon, 13 Jun 2022 13:39:32 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.194.60])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CD96A492CA7;
-        Mon, 13 Jun 2022 13:39:45 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 09F16492CA4;
+        Mon, 13 Jun 2022 13:39:28 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -48,9 +48,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Siddharth Chandrasekaran <sidcha@amazon.de>,
         Yuan Yao <yuan.yao@linux.intel.com>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v7 08/39] x86/hyperv: Introduce HV_MAX_SPARSE_VCPU_BANKS/HV_VCPUS_PER_SPARSE_BANK constants
-Date:   Mon, 13 Jun 2022 15:38:51 +0200
-Message-Id: <20220613133922.2875594-9-vkuznets@redhat.com>
+Subject: [PATCH v7 02/39] KVM: x86: hyper-v: Resurrect dedicated KVM_REQ_HV_TLB_FLUSH flag
+Date:   Mon, 13 Jun 2022 15:38:45 +0200
+Message-Id: <20220613133922.2875594-3-vkuznets@redhat.com>
 In-Reply-To: <20220613133922.2875594-1-vkuznets@redhat.com>
 References: <20220613133922.2875594-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -61,73 +61,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It may not come clear from where the magical '64' value used in
-__cpumask_to_vpset() come from. Moreover, '64' means both the maximum
-sparse bank number as well as the number of vCPUs per bank. Add defines
-to make things clear. These defines are also going to be used by KVM.
+In preparation to implementing fine-grained Hyper-V TLB flush and
+L2 TLB flush, resurrect dedicated KVM_REQ_HV_TLB_FLUSH request bit. As
+KVM_REQ_TLB_FLUSH_GUEST/KVM_REQ_TLB_FLUSH_CURRENT are stronger operations,
+clear KVM_REQ_HV_TLB_FLUSH request in kvm_service_local_tlb_flush_requests()
+when any of these were also requested.
 
-No functional change.
+No (real) functional change intended.
 
 Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- include/asm-generic/hyperv-tlfs.h |  5 +++++
- include/asm-generic/mshyperv.h    | 11 ++++++-----
- 2 files changed, 11 insertions(+), 5 deletions(-)
+ arch/x86/include/asm/kvm_host.h |  2 ++
+ arch/x86/kvm/hyperv.c           |  4 ++--
+ arch/x86/kvm/x86.c              | 10 ++++++++--
+ 3 files changed, 12 insertions(+), 4 deletions(-)
 
-diff --git a/include/asm-generic/hyperv-tlfs.h b/include/asm-generic/hyperv-tlfs.h
-index fdce7a4cfc6f..020ca9bdbb79 100644
---- a/include/asm-generic/hyperv-tlfs.h
-+++ b/include/asm-generic/hyperv-tlfs.h
-@@ -399,6 +399,11 @@ struct hv_vpset {
- 	u64 bank_contents[];
- } __packed;
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 3d394ba44c4b..352342b9933c 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -108,6 +108,8 @@
+ 	KVM_ARCH_REQ_FLAGS(30, KVM_REQUEST_WAIT | KVM_REQUEST_NO_WAKEUP)
+ #define KVM_REQ_MMU_FREE_OBSOLETE_ROOTS \
+ 	KVM_ARCH_REQ_FLAGS(31, KVM_REQUEST_WAIT | KVM_REQUEST_NO_WAKEUP)
++#define KVM_REQ_HV_TLB_FLUSH \
++	KVM_ARCH_REQ_FLAGS(32, KVM_REQUEST_WAIT | KVM_REQUEST_NO_WAKEUP)
  
-+/* The maximum number of sparse vCPU banks which can be encoded by 'struct hv_vpset' */
-+#define HV_MAX_SPARSE_VCPU_BANKS (64)
-+/* The number of vCPUs in one sparse bank */
-+#define HV_VCPUS_PER_SPARSE_BANK (64)
-+
- /* HvCallSendSyntheticClusterIpi hypercall */
- struct hv_send_ipi {
- 	u32 vector;
-diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
-index c05d2ce9b6cd..89a529093042 100644
---- a/include/asm-generic/mshyperv.h
-+++ b/include/asm-generic/mshyperv.h
-@@ -214,9 +214,10 @@ static inline int __cpumask_to_vpset(struct hv_vpset *vpset,
- {
- 	int cpu, vcpu, vcpu_bank, vcpu_offset, nr_bank = 1;
- 	int this_cpu = smp_processor_id();
-+	int max_vcpu_bank = hv_max_vp_index / HV_VCPUS_PER_SPARSE_BANK;
- 
--	/* valid_bank_mask can represent up to 64 banks */
--	if (hv_max_vp_index / 64 >= 64)
-+	/* vpset.valid_bank_mask can represent up to HV_MAX_SPARSE_VCPU_BANKS banks */
-+	if (max_vcpu_bank >= HV_MAX_SPARSE_VCPU_BANKS)
- 		return 0;
- 
- 	/*
-@@ -224,7 +225,7 @@ static inline int __cpumask_to_vpset(struct hv_vpset *vpset,
- 	 * structs are not cleared between calls, we risk flushing unneeded
- 	 * vCPUs otherwise.
+ #define CR0_RESERVED_BITS                                               \
+ 	(~(unsigned long)(X86_CR0_PE | X86_CR0_MP | X86_CR0_EM | X86_CR0_TS \
+diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
+index e2e95a6fccfd..7aa16fdae01d 100644
+--- a/arch/x86/kvm/hyperv.c
++++ b/arch/x86/kvm/hyperv.c
+@@ -1876,11 +1876,11 @@ static u64 kvm_hv_flush_tlb(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+ 	 * analyze it here, flush TLB regardless of the specified address space.
  	 */
--	for (vcpu_bank = 0; vcpu_bank <= hv_max_vp_index / 64; vcpu_bank++)
-+	for (vcpu_bank = 0; vcpu_bank <= max_vcpu_bank; vcpu_bank++)
- 		vpset->bank_contents[vcpu_bank] = 0;
+ 	if (all_cpus) {
+-		kvm_make_all_cpus_request(kvm, KVM_REQ_TLB_FLUSH_GUEST);
++		kvm_make_all_cpus_request(kvm, KVM_REQ_HV_TLB_FLUSH);
+ 	} else {
+ 		sparse_set_to_vcpu_mask(kvm, sparse_banks, valid_bank_mask, vcpu_mask);
  
- 	/*
-@@ -236,8 +237,8 @@ static inline int __cpumask_to_vpset(struct hv_vpset *vpset,
- 		vcpu = hv_cpu_number_to_vp_number(cpu);
- 		if (vcpu == VP_INVAL)
- 			return -1;
--		vcpu_bank = vcpu / 64;
--		vcpu_offset = vcpu % 64;
-+		vcpu_bank = vcpu / HV_VCPUS_PER_SPARSE_BANK;
-+		vcpu_offset = vcpu % HV_VCPUS_PER_SPARSE_BANK;
- 		__set_bit(vcpu_offset, (unsigned long *)
- 			  &vpset->bank_contents[vcpu_bank]);
- 		if (vcpu_bank >= nr_bank)
+-		kvm_make_vcpus_request_mask(kvm, KVM_REQ_TLB_FLUSH_GUEST, vcpu_mask);
++		kvm_make_vcpus_request_mask(kvm, KVM_REQ_HV_TLB_FLUSH, vcpu_mask);
+ 	}
+ 
+ ret_success:
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 0a3e2c3fde43..7b10c767bf95 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -3355,11 +3355,17 @@ static inline void kvm_vcpu_flush_tlb_current(struct kvm_vcpu *vcpu)
+  */
+ void kvm_service_local_tlb_flush_requests(struct kvm_vcpu *vcpu)
+ {
+-	if (kvm_check_request(KVM_REQ_TLB_FLUSH_CURRENT, vcpu))
++	if (kvm_check_request(KVM_REQ_TLB_FLUSH_CURRENT, vcpu)) {
+ 		kvm_vcpu_flush_tlb_current(vcpu);
++		kvm_clear_request(KVM_REQ_HV_TLB_FLUSH, vcpu);
++	}
+ 
+-	if (kvm_check_request(KVM_REQ_TLB_FLUSH_GUEST, vcpu))
++	if (kvm_check_request(KVM_REQ_TLB_FLUSH_GUEST, vcpu)) {
++		kvm_vcpu_flush_tlb_guest(vcpu);
++		kvm_clear_request(KVM_REQ_HV_TLB_FLUSH, vcpu);
++	} else if (kvm_check_request(KVM_REQ_HV_TLB_FLUSH, vcpu)) {
+ 		kvm_vcpu_flush_tlb_guest(vcpu);
++	}
+ }
+ EXPORT_SYMBOL_GPL(kvm_service_local_tlb_flush_requests);
+ 
 -- 
 2.35.3
 
