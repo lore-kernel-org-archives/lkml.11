@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6581CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:46:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A281C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:46:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352704AbiFMMqB (ORCPT
+        id S1353594AbiFMMqJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:46:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56060 "EHLO
+        Mon, 13 Jun 2022 08:46:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356996AbiFMMji (ORCPT
+        with ESMTP id S1355539AbiFMMjK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:39:38 -0400
+        Mon, 13 Jun 2022 08:39:10 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 139515DD2D;
-        Mon, 13 Jun 2022 04:10:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2EE45DD2B;
+        Mon, 13 Jun 2022 04:09:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D8D5A60B79;
-        Mon, 13 Jun 2022 11:09:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBFD0C34114;
-        Mon, 13 Jun 2022 11:09:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EAA2608D6;
+        Mon, 13 Jun 2022 11:09:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45B44C34114;
+        Mon, 13 Jun 2022 11:09:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118599;
-        bh=BZmku8ynkgmOkGRaWD1uCFlINFlU+hWhNKDr32It42w=;
+        s=korg; t=1655118549;
+        bh=61LE+925SQ9LfGurc+pUTDU2OI/fL2ifgo1SqT+uFN4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=frfmhGW1x/KUNZoAKklgWvBC/4H+XVF7D9JSjtlefRjmCJQYXRp9wYHF6RSkrRdkV
-         MYzsmKYNmlMSuVgdx0rDjzHUeyz3O5FO5NtMsHM0E/6qGYof0AxSCzEGpkM0W9fNXd
-         h6Mb2LFM7yX7ueHhLC8l9Pjcp2uslzoyWbRqRftI=
+        b=O07yWhjOwlqbp2ToN/aNkLdV7RIOa3vY/knOCL/SnpkmC2kYCLc0ldCFOzQdCOwye
+         y/EfwGk28QQqjkulo1GuPT5gnE2OhCYEsU4K/ykErAbbQLhSXGM485cEWQJm1JjcCk
+         S9wTzIu0L1C3B3OTtC2w9TeFx1B481zgbqCnn6d0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liu Xinpeng <liuxp11@chinatelecom.cn>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        stable@vger.kernel.org,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Kees Cook <keescook@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 134/172] watchdog: wdat_wdt: Stop watchdog when rebooting the system
-Date:   Mon, 13 Jun 2022 12:11:34 +0200
-Message-Id: <20220613094921.474024787@linuxfoundation.org>
+Subject: [PATCH 5.10 116/172] lkdtm/usercopy: Expand size of "out of frame" object
+Date:   Mon, 13 Jun 2022 12:11:16 +0200
+Message-Id: <20220613094918.190343601@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -51,46 +52,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liu Xinpeng <liuxp11@chinatelecom.cn>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit 27fdf84510a1374748904db43f6755f912736d92 ]
+[ Upstream commit f387e86d3a74407bdd9c5815820ac9d060962840 ]
 
-Executing reboot command several times on the machine "Dell
-PowerEdge R740", UEFI security detection stopped machine
-with the following prompt:
+To be sufficiently out of range for the usercopy test to see the lifetime
+mismatch, expand the size of the "bad" buffer, which will let it be
+beyond current_stack_pointer regardless of stack growth direction.
+Paired with the recent addition of stack depth checking under
+CONFIG_HARDENED_USERCOPY=y, this will correctly start tripping again.
 
-UEFI0082: The system was reset due to a timeout from the watchdog
-timer. Check the System Event Log (SEL) or crash dumps from
-Operating Sysstem to identify the source that triggered the
-watchdog timer reset. Update the firmware or driver for the
-identified device.
-
-iDRAC has warning event: "The watchdog timer reset the system".
-
-This patch fixes this issue by adding the reboot notifier.
-
-Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Link: https://lore.kernel.org/r/1650984810-6247-3-git-send-email-liuxp11@chinatelecom.cn
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
+Reported-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Link: https://lore.kernel.org/lkml/762faf1b-0443-5ddf-4430-44a20cf2ec4d@collabora.com/
+Signed-off-by: Kees Cook <keescook@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/watchdog/wdat_wdt.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/misc/lkdtm/usercopy.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/watchdog/wdat_wdt.c b/drivers/watchdog/wdat_wdt.c
-index 3065dd670a18..c60723f5ed99 100644
---- a/drivers/watchdog/wdat_wdt.c
-+++ b/drivers/watchdog/wdat_wdt.c
-@@ -462,6 +462,7 @@ static int wdat_wdt_probe(struct platform_device *pdev)
- 		return ret;
- 
- 	watchdog_set_nowayout(&wdat->wdd, nowayout);
-+	watchdog_stop_on_reboot(&wdat->wdd);
- 	return devm_watchdog_register_device(dev, &wdat->wdd);
+diff --git a/drivers/misc/lkdtm/usercopy.c b/drivers/misc/lkdtm/usercopy.c
+index 109e8d4302c1..cde2655487ff 100644
+--- a/drivers/misc/lkdtm/usercopy.c
++++ b/drivers/misc/lkdtm/usercopy.c
+@@ -30,12 +30,12 @@ static const unsigned char test_text[] = "This is a test.\n";
+  */
+ static noinline unsigned char *trick_compiler(unsigned char *stack)
+ {
+-	return stack + 0;
++	return stack + unconst;
  }
  
+ static noinline unsigned char *do_usercopy_stack_callee(int value)
+ {
+-	unsigned char buf[32];
++	unsigned char buf[128];
+ 	int i;
+ 
+ 	/* Exercise stack to avoid everything living in registers. */
+@@ -43,7 +43,12 @@ static noinline unsigned char *do_usercopy_stack_callee(int value)
+ 		buf[i] = value & 0xff;
+ 	}
+ 
+-	return trick_compiler(buf);
++	/*
++	 * Put the target buffer in the middle of stack allocation
++	 * so that we don't step on future stack users regardless
++	 * of stack growth direction.
++	 */
++	return trick_compiler(&buf[(128/2)-32]);
+ }
+ 
+ static noinline void do_usercopy_stack(bool to_user, bool bad_frame)
+@@ -66,6 +71,12 @@ static noinline void do_usercopy_stack(bool to_user, bool bad_frame)
+ 		bad_stack -= sizeof(unsigned long);
+ 	}
+ 
++#ifdef ARCH_HAS_CURRENT_STACK_POINTER
++	pr_info("stack     : %px\n", (void *)current_stack_pointer);
++#endif
++	pr_info("good_stack: %px-%px\n", good_stack, good_stack + sizeof(good_stack));
++	pr_info("bad_stack : %px-%px\n", bad_stack, bad_stack + sizeof(good_stack));
++
+ 	user_addr = vm_mmap(NULL, 0, PAGE_SIZE,
+ 			    PROT_READ | PROT_WRITE | PROT_EXEC,
+ 			    MAP_ANONYMOUS | MAP_PRIVATE, 0);
 -- 
 2.35.1
 
