@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 565F4C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:49:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDD5EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:49:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353382AbiFMMti (ORCPT
+        id S1353682AbiFMMtp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:49:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34196 "EHLO
+        Mon, 13 Jun 2022 08:49:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353616AbiFMMqp (ORCPT
+        with ESMTP id S1355108AbiFMMqz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:46:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B7CD34652;
+        Mon, 13 Jun 2022 08:46:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 744406211E;
         Mon, 13 Jun 2022 04:11:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5DB1FB80D31;
-        Mon, 13 Jun 2022 11:11:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1A66C34114;
-        Mon, 13 Jun 2022 11:11:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 09002B80E93;
+        Mon, 13 Jun 2022 11:11:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E665C34114;
+        Mon, 13 Jun 2022 11:11:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118692;
-        bh=1SAexRK/1IupoJKQA4hp3b/IiscexdS8doHabusdCZE=;
+        s=korg; t=1655118675;
+        bh=uSFO1eX4+OTbdXG/lFJKJ8GScft1DvIRIhGPTYuNINo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SPp/zZ6m8i8zUeikBZ1oN1Bgw7XieZz5yonb1dYn0bKQiA4LGbL9ftkYYsy3QqONm
-         TQQGUxxK1BfYCLEZUh/LclP6wausjNVEOsbrYFpaNz4I2fplElrwZ+RE9pKhOpXgeq
-         tUiNfvutqgBfIrvQXOqStN5cTZLPK05HOHPaxW4Y=
+        b=OAfh9SpGVU/PXHmJJQjk5UQ9yZZlNaQW5GGsJtAJhyujPgavWigIQMChVIVKOQk0/
+         KI4o0nCtFDMoDC5d/XI+KBDFT5nKPxK1/47nnG1cVyh1Wxi6FZyN/aSRDNjO2gK0HG
+         B/QxYNszFVRrVTFc9UYYd9GvPN8xJPiWG+hJUvV0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alex Elder <elder@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Taniya Das <quic_tdas@quicinc.com>,
-        Mike Tipton <quic_mdtipton@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Georgi Djakov <djakov@kernel.org>
-Subject: [PATCH 5.10 168/172] interconnect: qcom: sc7180: Drop IP0 interconnects
-Date:   Mon, 13 Jun 2022 12:12:08 +0200
-Message-Id: <20220613094923.368345547@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe de Dinechin <dinechin@redhat.com>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Kees Cook <keescook@chromium.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 148/172] nodemask: Fix return values to be unsigned
+Date:   Mon, 13 Jun 2022 12:11:48 +0200
+Message-Id: <20220613094922.570283117@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -53,161 +57,186 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephen Boyd <swboyd@chromium.org>
+From: Kees Cook <keescook@chromium.org>
 
-commit 2f3724930eb4bba74f7d10bc3bef5bb22dd323df upstream.
+[ Upstream commit 0dfe54071d7c828a02917b595456bfde1afdddc9 ]
 
-The IPA BCM resource ("IP0") on sc7180 was moved to the clk-rpmh driver
-in commit bcd63d222b60 ("clk: qcom: rpmh: Add IPA clock for SC7180") and
-modeled as a clk, but this interconnect driver still had it modeled as
-an interconnect. This was mostly OK because nobody used the interconnect
-definition, until the interconnect framework started dropping bandwidth
-requests on interconnects that aren't used via the sync_state callback
-in commit 7d3b0b0d8184 ("interconnect: qcom: Use icc_sync_state"). Once
-that patch was applied the IP0 resource was going to be controlled from
-two places, the clk framework and the interconnect framework.
+The nodemask routines had mixed return values that provided potentially
+signed return values that could never happen. This was leading to the
+compiler getting confusing about the range of possible return values
+(it was thinking things could be negative where they could not be). Fix
+all the nodemask routines that should be returning unsigned
+(or bool) values. Silences:
 
-Even then, things were probably going to be OK, because commit
-b95b668eaaa2 ("interconnect: qcom: icc-rpmh: Add BCMs to commit list in
-pre_aggregate") was needed to actually drop bandwidth requests on unused
-interconnects, of which the IPA was one of the interconnect that wasn't
-getting dropped to zero. Combining the three commits together leads to
-bad behavior where the interconnect framework is disabling the IP0
-resource because it has no users while the clk framework thinks the IP0
-resource is on because the only user, the IPA driver, has turned it on
-via clk_prepare_enable(). Depending on when sync_state is called, we can
-get into a situation like below:
+ mm/swapfile.c: In function ‘setup_swap_info’:
+ mm/swapfile.c:2291:47: error: array subscript -1 is below array bounds of ‘struct plist_node[]’ [-Werror=array-bounds]
+  2291 |                                 p->avail_lists[i].prio = 1;
+       |                                 ~~~~~~~~~~~~~~^~~
+ In file included from mm/swapfile.c:16:
+ ./include/linux/swap.h:292:27: note: while referencing ‘avail_lists’
+   292 |         struct plist_node avail_lists[]; /*
+       |                           ^~~~~~~~~~~
 
-  IPA driver probes
-  IPA driver gets notified modem started
-   runtime PM get()
-    IPA clk enabled -> IP0 resource is ON
-  sync_state runs
-   interconnect zeroes out the IP0 resource -> IP0 resource is off
-  IPA driver tries to access a register and blows up
-
-The crash is an unclocked access that manifest as an SError.
-
- SError Interrupt on CPU0, code 0xbe000011 -- SError
- CPU: 0 PID: 3595 Comm: mmdata_mgr Not tainted 5.17.1+ #166
- Hardware name: Google Lazor (rev1 - 2) with LTE (DT)
- pstate: 60400009 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
- pc : mutex_lock+0x4c/0x80
- lr : mutex_lock+0x30/0x80
- sp : ffffffc00da9b9c0
- x29: ffffffc00da9b9c0 x28: 0000000000000000 x27: 0000000000000000
- x26: ffffffc00da9bc90 x25: ffffff80c2024010 x24: ffffff80c2024000
- x23: ffffff8083100000 x22: ffffff80831000d0 x21: ffffff80831000a8
- x20: ffffff80831000a8 x19: ffffff8083100070 x18: 00000000ffff0a00
- x17: 000000002f7254f1 x16: 0000000000000100 x15: 0000000000000000
- x14: 0000000000000000 x13: 0000000000000000 x12: 0000000000000000
- x11: 000000000001f0b8 x10: ffffffc00931f0b8 x9 : 0000000000000000
- x8 : 0000000000000000 x7 : fefefefefeff2f60 x6 : 0000808080808080
- x5 : 0000000000000000 x4 : 8080808080800000 x3 : ffffff80d2d4ee28
- x2 : ffffff808c1d6e40 x1 : 0000000000000000 x0 : ffffff8083100070
- Kernel panic - not syncing: Asynchronous SError Interrupt
- CPU: 0 PID: 3595 Comm: mmdata_mgr Not tainted 5.17.1+ #166
- Hardware name: Google Lazor (rev1 - 2) with LTE (DT)
- Call trace:
-  dump_backtrace+0xf4/0x114
-  show_stack+0x24/0x30
-  dump_stack_lvl+0x64/0x7c
-  dump_stack+0x18/0x38
-  panic+0x150/0x38c
-  nmi_panic+0x88/0xa0
-  arm64_serror_panic+0x74/0x80
-  do_serror+0x0/0x80
-  do_serror+0x58/0x80
-  el1h_64_error_handler+0x34/0x4c
-  el1h_64_error+0x78/0x7c
-  mutex_lock+0x4c/0x80
-  __gsi_channel_start+0x50/0x17c
-  gsi_channel_start+0x54/0x90
-  ipa_endpoint_enable_one+0x34/0xc0
-  ipa_open+0x4c/0x120
-
-Remove all IP0 resource management from the interconnect driver so that
-clk-rpmh is the sole owner. This fixes the issue by preventing the
-interconnect driver from overwriting the IP0 resource data that the
-clk-rpmh driver wrote.
-
-Cc: Alex Elder <elder@linaro.org>
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: Taniya Das <quic_tdas@quicinc.com>
-Cc: Mike Tipton <quic_mdtipton@quicinc.com>
-Cc: <stable@vger.kernel.org>	# 5.10.x
-Fixes: b95b668eaaa2 ("interconnect: qcom: icc-rpmh: Add BCMs to commit list in pre_aggregate")
-Fixes: bcd63d222b60 ("clk: qcom: rpmh: Add IPA clock for SC7180")
-Fixes: 7d3b0b0d8184 ("interconnect: qcom: Use icc_sync_state")
-Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-Tested-by: Alex Elder <elder@linaro.org>
-Reviewed-by: Alex Elder <elder@linaro.org>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220412220033.1273607-2-swboyd@chromium.org
-Signed-off-by: Georgi Djakov <djakov@kernel.org>
-Signed-off-by: Alex Elder <elder@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Christophe de Dinechin <dinechin@redhat.com>
+Link: https://lore.kernel.org/lkml/20220414150855.2407137-3-dinechin@redhat.com/
+Cc: Alexey Dobriyan <adobriyan@gmail.com>
+Cc: Yury Norov <yury.norov@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Zhen Lei <thunder.leizhen@huawei.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/interconnect/qcom/sc7180.c |   21 ---------------------
- 1 file changed, 21 deletions(-)
+ include/linux/nodemask.h | 38 +++++++++++++++++++-------------------
+ lib/nodemask.c           |  4 ++--
+ 2 files changed, 21 insertions(+), 21 deletions(-)
 
---- a/drivers/interconnect/qcom/sc7180.c
-+++ b/drivers/interconnect/qcom/sc7180.c
-@@ -47,7 +47,6 @@ DEFINE_QNODE(qnm_mnoc_sf, SC7180_MASTER_
- DEFINE_QNODE(qnm_snoc_gc, SC7180_MASTER_SNOC_GC_MEM_NOC, 1, 8, SC7180_SLAVE_LLCC);
- DEFINE_QNODE(qnm_snoc_sf, SC7180_MASTER_SNOC_SF_MEM_NOC, 1, 16, SC7180_SLAVE_LLCC);
- DEFINE_QNODE(qxm_gpu, SC7180_MASTER_GFX3D, 2, 32, SC7180_SLAVE_GEM_NOC_SNOC, SC7180_SLAVE_LLCC);
--DEFINE_QNODE(ipa_core_master, SC7180_MASTER_IPA_CORE, 1, 8, SC7180_SLAVE_IPA_CORE);
- DEFINE_QNODE(llcc_mc, SC7180_MASTER_LLCC, 2, 4, SC7180_SLAVE_EBI1);
- DEFINE_QNODE(qhm_mnoc_cfg, SC7180_MASTER_CNOC_MNOC_CFG, 1, 4, SC7180_SLAVE_SERVICE_MNOC);
- DEFINE_QNODE(qxm_camnoc_hf0, SC7180_MASTER_CAMNOC_HF0, 2, 32, SC7180_SLAVE_MNOC_HF_MEM_NOC);
-@@ -129,7 +128,6 @@ DEFINE_QNODE(qhs_mdsp_ms_mpu_cfg, SC7180
- DEFINE_QNODE(qns_gem_noc_snoc, SC7180_SLAVE_GEM_NOC_SNOC, 1, 8, SC7180_MASTER_GEM_NOC_SNOC);
- DEFINE_QNODE(qns_llcc, SC7180_SLAVE_LLCC, 1, 16, SC7180_MASTER_LLCC);
- DEFINE_QNODE(srvc_gemnoc, SC7180_SLAVE_SERVICE_GEM_NOC, 1, 4);
--DEFINE_QNODE(ipa_core_slave, SC7180_SLAVE_IPA_CORE, 1, 8);
- DEFINE_QNODE(ebi, SC7180_SLAVE_EBI1, 2, 4);
- DEFINE_QNODE(qns_mem_noc_hf, SC7180_SLAVE_MNOC_HF_MEM_NOC, 1, 32, SC7180_MASTER_MNOC_HF_MEM_NOC);
- DEFINE_QNODE(qns_mem_noc_sf, SC7180_SLAVE_MNOC_SF_MEM_NOC, 1, 32, SC7180_MASTER_MNOC_SF_MEM_NOC);
-@@ -160,7 +158,6 @@ DEFINE_QBCM(bcm_mc0, "MC0", true, &ebi);
- DEFINE_QBCM(bcm_sh0, "SH0", true, &qns_llcc);
- DEFINE_QBCM(bcm_mm0, "MM0", false, &qns_mem_noc_hf);
- DEFINE_QBCM(bcm_ce0, "CE0", false, &qxm_crypto);
--DEFINE_QBCM(bcm_ip0, "IP0", false, &ipa_core_slave);
- DEFINE_QBCM(bcm_cn0, "CN0", true, &qnm_snoc, &xm_qdss_dap, &qhs_a1_noc_cfg, &qhs_a2_noc_cfg, &qhs_ahb2phy0, &qhs_aop, &qhs_aoss, &qhs_boot_rom, &qhs_camera_cfg, &qhs_camera_nrt_throttle_cfg, &qhs_camera_rt_throttle_cfg, &qhs_clk_ctl, &qhs_cpr_cx, &qhs_cpr_mx, &qhs_crypto0_cfg, &qhs_dcc_cfg, &qhs_ddrss_cfg, &qhs_display_cfg, &qhs_display_rt_throttle_cfg, &qhs_display_throttle_cfg, &qhs_glm, &qhs_gpuss_cfg, &qhs_imem_cfg, &qhs_ipa, &qhs_mnoc_cfg, &qhs_mss_cfg, &qhs_npu_cfg, &qhs_npu_dma_throttle_cfg, &qhs_npu_dsp_throttle_cfg, &qhs_pimem_cfg, &qhs_prng, &qhs_qdss_cfg, &qhs_qm_cfg, &qhs_qm_mpu_cfg, &qhs_qup0, &qhs_qup1, &qhs_security, &qhs_snoc_cfg, &qhs_tcsr, &qhs_tlmm_1, &qhs_tlmm_2, &qhs_tlmm_3, &qhs_ufs_mem_cfg, &qhs_usb3, &qhs_venus_cfg, &qhs_venus_throttle_cfg, &qhs_vsense_ctrl_cfg, &srvc_cnoc);
- DEFINE_QBCM(bcm_mm1, "MM1", false, &qxm_camnoc_hf0_uncomp, &qxm_camnoc_hf1_uncomp, &qxm_camnoc_sf_uncomp, &qhm_mnoc_cfg, &qxm_mdp0, &qxm_rot, &qxm_venus0, &qxm_venus_arm9);
- DEFINE_QBCM(bcm_sh2, "SH2", false, &acm_sys_tcu);
-@@ -372,22 +369,6 @@ static struct qcom_icc_desc sc7180_gem_n
- 	.num_bcms = ARRAY_SIZE(gem_noc_bcms),
- };
+diff --git a/include/linux/nodemask.h b/include/linux/nodemask.h
+index 843678bfc364..2a63ef05a6cc 100644
+--- a/include/linux/nodemask.h
++++ b/include/linux/nodemask.h
+@@ -42,11 +42,11 @@
+  * void nodes_shift_right(dst, src, n)	Shift right
+  * void nodes_shift_left(dst, src, n)	Shift left
+  *
+- * int first_node(mask)			Number lowest set bit, or MAX_NUMNODES
+- * int next_node(node, mask)		Next node past 'node', or MAX_NUMNODES
+- * int next_node_in(node, mask)		Next node past 'node', or wrap to first,
++ * unsigned int first_node(mask)	Number lowest set bit, or MAX_NUMNODES
++ * unsigend int next_node(node, mask)	Next node past 'node', or MAX_NUMNODES
++ * unsigned int next_node_in(node, mask) Next node past 'node', or wrap to first,
+  *					or MAX_NUMNODES
+- * int first_unset_node(mask)		First node not set in mask, or 
++ * unsigned int first_unset_node(mask)	First node not set in mask, or
+  *					MAX_NUMNODES
+  *
+  * nodemask_t nodemask_of_node(node)	Return nodemask with bit 'node' set
+@@ -153,7 +153,7 @@ static inline void __nodes_clear(nodemask_t *dstp, unsigned int nbits)
  
--static struct qcom_icc_bcm *ipa_virt_bcms[] = {
--	&bcm_ip0,
--};
--
--static struct qcom_icc_node *ipa_virt_nodes[] = {
--	[MASTER_IPA_CORE] = &ipa_core_master,
--	[SLAVE_IPA_CORE] = &ipa_core_slave,
--};
--
--static struct qcom_icc_desc sc7180_ipa_virt = {
--	.nodes = ipa_virt_nodes,
--	.num_nodes = ARRAY_SIZE(ipa_virt_nodes),
--	.bcms = ipa_virt_bcms,
--	.num_bcms = ARRAY_SIZE(ipa_virt_bcms),
--};
--
- static struct qcom_icc_bcm *mc_virt_bcms[] = {
- 	&bcm_acv,
- 	&bcm_mc0,
-@@ -611,8 +592,6 @@ static const struct of_device_id qnoc_of
- 	  .data = &sc7180_dc_noc},
- 	{ .compatible = "qcom,sc7180-gem-noc",
- 	  .data = &sc7180_gem_noc},
--	{ .compatible = "qcom,sc7180-ipa-virt",
--	  .data = &sc7180_ipa_virt},
- 	{ .compatible = "qcom,sc7180-mc-virt",
- 	  .data = &sc7180_mc_virt},
- 	{ .compatible = "qcom,sc7180-mmss-noc",
+ #define node_test_and_set(node, nodemask) \
+ 			__node_test_and_set((node), &(nodemask))
+-static inline int __node_test_and_set(int node, nodemask_t *addr)
++static inline bool __node_test_and_set(int node, nodemask_t *addr)
+ {
+ 	return test_and_set_bit(node, addr->bits);
+ }
+@@ -200,7 +200,7 @@ static inline void __nodes_complement(nodemask_t *dstp,
+ 
+ #define nodes_equal(src1, src2) \
+ 			__nodes_equal(&(src1), &(src2), MAX_NUMNODES)
+-static inline int __nodes_equal(const nodemask_t *src1p,
++static inline bool __nodes_equal(const nodemask_t *src1p,
+ 					const nodemask_t *src2p, unsigned int nbits)
+ {
+ 	return bitmap_equal(src1p->bits, src2p->bits, nbits);
+@@ -208,7 +208,7 @@ static inline int __nodes_equal(const nodemask_t *src1p,
+ 
+ #define nodes_intersects(src1, src2) \
+ 			__nodes_intersects(&(src1), &(src2), MAX_NUMNODES)
+-static inline int __nodes_intersects(const nodemask_t *src1p,
++static inline bool __nodes_intersects(const nodemask_t *src1p,
+ 					const nodemask_t *src2p, unsigned int nbits)
+ {
+ 	return bitmap_intersects(src1p->bits, src2p->bits, nbits);
+@@ -216,20 +216,20 @@ static inline int __nodes_intersects(const nodemask_t *src1p,
+ 
+ #define nodes_subset(src1, src2) \
+ 			__nodes_subset(&(src1), &(src2), MAX_NUMNODES)
+-static inline int __nodes_subset(const nodemask_t *src1p,
++static inline bool __nodes_subset(const nodemask_t *src1p,
+ 					const nodemask_t *src2p, unsigned int nbits)
+ {
+ 	return bitmap_subset(src1p->bits, src2p->bits, nbits);
+ }
+ 
+ #define nodes_empty(src) __nodes_empty(&(src), MAX_NUMNODES)
+-static inline int __nodes_empty(const nodemask_t *srcp, unsigned int nbits)
++static inline bool __nodes_empty(const nodemask_t *srcp, unsigned int nbits)
+ {
+ 	return bitmap_empty(srcp->bits, nbits);
+ }
+ 
+ #define nodes_full(nodemask) __nodes_full(&(nodemask), MAX_NUMNODES)
+-static inline int __nodes_full(const nodemask_t *srcp, unsigned int nbits)
++static inline bool __nodes_full(const nodemask_t *srcp, unsigned int nbits)
+ {
+ 	return bitmap_full(srcp->bits, nbits);
+ }
+@@ -260,15 +260,15 @@ static inline void __nodes_shift_left(nodemask_t *dstp,
+           > MAX_NUMNODES, then the silly min_ts could be dropped. */
+ 
+ #define first_node(src) __first_node(&(src))
+-static inline int __first_node(const nodemask_t *srcp)
++static inline unsigned int __first_node(const nodemask_t *srcp)
+ {
+-	return min_t(int, MAX_NUMNODES, find_first_bit(srcp->bits, MAX_NUMNODES));
++	return min_t(unsigned int, MAX_NUMNODES, find_first_bit(srcp->bits, MAX_NUMNODES));
+ }
+ 
+ #define next_node(n, src) __next_node((n), &(src))
+-static inline int __next_node(int n, const nodemask_t *srcp)
++static inline unsigned int __next_node(int n, const nodemask_t *srcp)
+ {
+-	return min_t(int,MAX_NUMNODES,find_next_bit(srcp->bits, MAX_NUMNODES, n+1));
++	return min_t(unsigned int, MAX_NUMNODES, find_next_bit(srcp->bits, MAX_NUMNODES, n+1));
+ }
+ 
+ /*
+@@ -276,7 +276,7 @@ static inline int __next_node(int n, const nodemask_t *srcp)
+  * the first node in src if needed.  Returns MAX_NUMNODES if src is empty.
+  */
+ #define next_node_in(n, src) __next_node_in((n), &(src))
+-int __next_node_in(int node, const nodemask_t *srcp);
++unsigned int __next_node_in(int node, const nodemask_t *srcp);
+ 
+ static inline void init_nodemask_of_node(nodemask_t *mask, int node)
+ {
+@@ -296,9 +296,9 @@ static inline void init_nodemask_of_node(nodemask_t *mask, int node)
+ })
+ 
+ #define first_unset_node(mask) __first_unset_node(&(mask))
+-static inline int __first_unset_node(const nodemask_t *maskp)
++static inline unsigned int __first_unset_node(const nodemask_t *maskp)
+ {
+-	return min_t(int,MAX_NUMNODES,
++	return min_t(unsigned int, MAX_NUMNODES,
+ 			find_first_zero_bit(maskp->bits, MAX_NUMNODES));
+ }
+ 
+@@ -435,11 +435,11 @@ static inline int num_node_state(enum node_states state)
+ 
+ #define first_online_node	first_node(node_states[N_ONLINE])
+ #define first_memory_node	first_node(node_states[N_MEMORY])
+-static inline int next_online_node(int nid)
++static inline unsigned int next_online_node(int nid)
+ {
+ 	return next_node(nid, node_states[N_ONLINE]);
+ }
+-static inline int next_memory_node(int nid)
++static inline unsigned int next_memory_node(int nid)
+ {
+ 	return next_node(nid, node_states[N_MEMORY]);
+ }
+diff --git a/lib/nodemask.c b/lib/nodemask.c
+index 3aa454c54c0d..e22647f5181b 100644
+--- a/lib/nodemask.c
++++ b/lib/nodemask.c
+@@ -3,9 +3,9 @@
+ #include <linux/module.h>
+ #include <linux/random.h>
+ 
+-int __next_node_in(int node, const nodemask_t *srcp)
++unsigned int __next_node_in(int node, const nodemask_t *srcp)
+ {
+-	int ret = __next_node(node, srcp);
++	unsigned int ret = __next_node(node, srcp);
+ 
+ 	if (ret == MAX_NUMNODES)
+ 		ret = __first_node(srcp);
+-- 
+2.35.1
+
 
 
