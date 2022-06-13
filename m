@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 374BECCA486
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:06:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6396CCA483
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:06:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379554AbiFMOGw (ORCPT
+        id S1382774AbiFMOGf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:06:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41668 "EHLO
+        Mon, 13 Jun 2022 10:06:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380006AbiFMN7t (ORCPT
+        with ESMTP id S1380468AbiFMN67 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:59:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3210D8D683;
-        Mon, 13 Jun 2022 04:37:55 -0700 (PDT)
+        Mon, 13 Jun 2022 09:58:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07DE744A39;
+        Mon, 13 Jun 2022 04:37:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D82C61323;
-        Mon, 13 Jun 2022 11:37:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D16DC34114;
-        Mon, 13 Jun 2022 11:37:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 24B3A612E9;
+        Mon, 13 Jun 2022 11:37:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E4F7C3411E;
+        Mon, 13 Jun 2022 11:37:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120273;
-        bh=9uKvnoG4B7uUYhEFbCpI+laNOBVB1oTWCNAqi04Sf4U=;
+        s=korg; t=1655120262;
+        bh=k+/pVrIT8QfqIWbATLK3wlWEq5hh0GwRx7H7a3D01Zw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iEdfJF5k8YxPFU7UMPAa0AMpKwbCKXaJKXvI/KHLd/+oqgB9EBmwMWlFSkxusmoY/
-         tkTw9wq9zUJnVK5HdOrXqaEHGhWO1g5kkgLp4TLtuVoFSRLqgAfthjkO/ChttktHke
-         6206laWORg1MeLM2gI8mR35GgZ5YmD5xGun2N12M=
+        b=pt7/PxBJ8vIghaHcInJoBRCWyUDHy0C4r2dPPVF5WyC5bpMXES32tNN4B4X4Ccbk4
+         Rdo9q/671imw2wwFhMU2P5hnJn/R3BGcRvE385sxvhl2d0L6LKtLrilQb66NvekXWx
+         q9a7a9q9aLNddDRJOdbOeXjqDB1oOhSItFmDHpJU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.18 313/339] mmc: block: Fix CQE recovery reset success
-Date:   Mon, 13 Jun 2022 12:12:18 +0200
-Message-Id: <20220613094936.244498816@linuxfoundation.org>
+        stable@vger.kernel.org, Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 290/339] scripts/gdb: change kernel config dumping method
+Date:   Mon, 13 Jun 2022 12:11:55 +0200
+Message-Id: <20220613094935.433054160@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -49,41 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adrian Hunter <adrian.hunter@intel.com>
+From: Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
 
-commit a051246b786af7e4a9d9219cc7038a6e8a411531 upstream.
+[ Upstream commit 1f7a6cf6b07c74a17343c2559cd5f5018a245961 ]
 
-The intention of the use of mmc_blk_reset_success() in
-mmc_blk_cqe_recovery() was to prevent repeated resets when retrying and
-getting the same error. However, that may not be the case - any amount
-of time and I/O may pass before another recovery is needed, in which
-case there would be no reason to deny it the opportunity to recover via
-a reset if necessary. CQE recovery is expected seldom and failure to
-recover (if the clear tasks command fails), even more seldom, so it is
-better to allow the reset always, which can be done by calling
-mmc_blk_reset_success() always.
+MAGIC_START("IKCFG_ST") and MAGIC_END("IKCFG_ED") are moved out
+from the kernel_config_data variable.
 
-Fixes: 1e8e55b67030c6 ("mmc: block: Add CQE support")
-Cc: stable@vger.kernel.org
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-Link: https://lore.kernel.org/r/20220531171922.76080-1-adrian.hunter@intel.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Thus, we parse kernel_config_data directly instead of considering
+offset of MAGIC_START and MAGIC_END.
+
+Fixes: 13610aa908dc ("kernel/configs: use .incbin directive to embed config_data.gz")
+Signed-off-by: Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/core/block.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ scripts/gdb/linux/config.py | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/mmc/core/block.c
-+++ b/drivers/mmc/core/block.c
-@@ -1482,8 +1482,7 @@ void mmc_blk_cqe_recovery(struct mmc_que
- 	err = mmc_cqe_recovery(host);
- 	if (err)
- 		mmc_blk_reset(mq->blkdata, host, MMC_BLK_CQE_RECOVERY);
--	else
--		mmc_blk_reset_success(mq->blkdata, MMC_BLK_CQE_RECOVERY);
-+	mmc_blk_reset_success(mq->blkdata, MMC_BLK_CQE_RECOVERY);
+diff --git a/scripts/gdb/linux/config.py b/scripts/gdb/linux/config.py
+index 90e1565b1967..8843ab3cbadd 100644
+--- a/scripts/gdb/linux/config.py
++++ b/scripts/gdb/linux/config.py
+@@ -24,9 +24,9 @@ class LxConfigDump(gdb.Command):
+             filename = arg
  
- 	pr_debug("%s: CQE recovery done\n", mmc_hostname(host));
- }
+         try:
+-            py_config_ptr = gdb.parse_and_eval("kernel_config_data + 8")
+-            py_config_size = gdb.parse_and_eval(
+-                    "sizeof(kernel_config_data) - 1 - 8 * 2")
++            py_config_ptr = gdb.parse_and_eval("&kernel_config_data")
++            py_config_ptr_end = gdb.parse_and_eval("&kernel_config_data_end")
++            py_config_size = py_config_ptr_end - py_config_ptr
+         except gdb.error as e:
+             raise gdb.GdbError("Can't find config, enable CONFIG_IKCONFIG?")
+ 
+-- 
+2.35.1
+
 
 
