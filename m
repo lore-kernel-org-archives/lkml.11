@@ -2,140 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11A7DCCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:13:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97505C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 08:14:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239645AbiFMINJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 04:13:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37958 "EHLO
+        id S239748AbiFMIOP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 04:14:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239861AbiFMIMV (ORCPT
+        with ESMTP id S239931AbiFMINz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 04:12:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9233E1EC6A
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 01:12:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655107933;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        Mon, 13 Jun 2022 04:13:55 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B34C1D;
+        Mon, 13 Jun 2022 01:13:51 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 81E661FAC2;
+        Mon, 13 Jun 2022 08:13:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1655108030; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=zylh1uwH3+G7KCcoxsL8sX4hSmvWfJyfd8skUX3SqY0=;
-        b=axQK7uuju7sP5HSR22bEUsIqoPHvFMW4uPxKTyKDaDwLXo8/7kKmqDTxKCuOe8uxvjvi7u
-        ono7Y2nsgEPnGyIdgdDEx4Uo3suCfWYdrNyqv58JTaKhth2HESvjOkQTXMhbDCgAFs0KJa
-        NKNK5ryneGb/PJkum1jxfJBpfKiW+3w=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-96-OJe-sgY3MqalywSEQ2_dwA-1; Mon, 13 Jun 2022 04:12:12 -0400
-X-MC-Unique: OJe-sgY3MqalywSEQ2_dwA-1
-Received: by mail-qv1-f71.google.com with SMTP id kc24-20020a056214411800b0046d93b71e48so3414193qvb.3
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 01:12:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=zylh1uwH3+G7KCcoxsL8sX4hSmvWfJyfd8skUX3SqY0=;
-        b=4Rpt0qSKODWadXReKI3XBgHBEmsYxYHAmXyxijNoRsA2yZhwR9UFhwoUD/uWgq6W50
-         5OhdeyL/bRztvsLN6nzBbf/5/rnSAmj/gtmNhjU8xqtWbE+Ays1vOcR91XHSf4qLDnF+
-         UH3EKyAAwmA4MRqo1aFS+A8nxebmvQDoC7sauGNLXrP547bJSzVZ0ODndXuCV1dBx1fC
-         4/DVdZbuEXhdP/O613sL1mBKvPiQXQItHu8ekrh20ICuTBROvzmRpfkNpFUy0CbpMThG
-         tp45EF2xQYPDi2dWXomW0h3iRFJo/CSmAxLkq3iOzhPDS5zDJpr1202bMCrdRQQmEn8d
-         Vyhg==
-X-Gm-Message-State: AOAM533X+34n/3TWpO6kv9Z9n2GQiC1Q76xA0ACkENqU5L7JyYjwyj0x
-        hxqUYzmq0RoAzrEzlPwGXB5K1ZhYfjl69mJ9ner9H1QC288e7lfa/Sf5VExQqYdnuG7RfisGZ2o
-        OgSsMUF2IE9AWu9u8E4zyKeqa
-X-Received: by 2002:a05:622a:1829:b0:304:ef78:8385 with SMTP id t41-20020a05622a182900b00304ef788385mr29662307qtc.251.1655107931898;
-        Mon, 13 Jun 2022 01:12:11 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxjLbgha+Atbwd2/672pHZ9TBWRG8nE6aGEjsg4713GAJdcGUXYTIFRS5oET6rQnKiNs5SleA==
-X-Received: by 2002:a05:622a:1829:b0:304:ef78:8385 with SMTP id t41-20020a05622a182900b00304ef788385mr29662298qtc.251.1655107931645;
-        Mon, 13 Jun 2022 01:12:11 -0700 (PDT)
-Received: from [192.168.0.3] (ip-109-42-115-130.web.vodafone.de. [109.42.115.130])
-        by smtp.gmail.com with ESMTPSA id j1-20020a05620a410100b006a65c58db99sm6390714qko.64.2022.06.13.01.12.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Jun 2022 01:12:11 -0700 (PDT)
-Message-ID: <2d8bcbb1-ee9d-8e88-b01d-88b80da86f13@redhat.com>
-Date:   Mon, 13 Jun 2022 10:12:06 +0200
+        bh=UnM1FmEvdFfKVD81K9bggDM1Zy2DxTM7scV/JPdKiRo=;
+        b=Pvu7YtW/f+9ruzt4zW+On0gr6h/4Lj7+AM2oazHZlKsc5lNBda/Z7qt1XMhCqmjWww0mem
+        nv/XQEZt3tY2GaHcW1fNjcfAyqgwNJsjxCATUi63CsO+zF+sFDsd8bK3DauijtzF5yXPYQ
+        cZj0tYWSYywjr/MJlVclY93D7zN654s=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1655108030;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UnM1FmEvdFfKVD81K9bggDM1Zy2DxTM7scV/JPdKiRo=;
+        b=GN6ms8ryCo2n3xeivxDAiuujNVpD8BQil8hes9rAeAt4+DUXD1SxWKbcXHLIcAnWrHBtND
+        E4HzGWW0db2e6oCA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0261513443;
+        Mon, 13 Jun 2022 08:13:49 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id fQdwOb3xpmJ0IwAAMHmgww
+        (envelope-from <osalvador@suse.de>); Mon, 13 Jun 2022 08:13:49 +0000
+Date:   Mon, 13 Jun 2022 10:13:48 +0200
+From:   Oscar Salvador <osalvador@suse.de>
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     mike.kravetz@oracle.com, david@redhat.com,
+        akpm@linux-foundation.org, corbet@lwn.net, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: Re: [PATCH 3/6] mm: hugetlb_vmemmap: introduce the name HVO
+Message-ID: <YqbxvDcNnPXr2Z9s@localhost.localdomain>
+References: <20220613063512.17540-1-songmuchun@bytedance.com>
+ <20220613063512.17540-4-songmuchun@bytedance.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 000/144] KVM: selftests: Overhaul APIs, purge VCPU_ID
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>,
-        Anup Patel <anup@brainfault.org>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        KVM General <kvm@vger.kernel.org>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Andrew Jones <drjones@redhat.com>,
-        David Matlack <dmatlack@google.com>,
-        Ben Gardon <bgardon@google.com>,
-        Oliver Upton <oupton@google.com>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
-        Sean Christopherson <sean.j.christopherson@intel.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Cornelia Huck <cohuck@redhat.com>
-References: <20220603004331.1523888-1-seanjc@google.com>
- <21570ac1-e684-7983-be00-ba8b3f43a9ee@redhat.com>
- <CAAhSdy0_50KshS1rAcOjtFBUu=R7a0uXYa76vNibD_n7s=q6XA@mail.gmail.com>
- <CAAhSdy1N9vwX1aXkdVEvO=MLV7TEWKMB2jxpNNfzT2LUQ-Q01A@mail.gmail.com>
- <YqIKYOtQTvrGpmPV@google.com> <YqKRrK7SwO0lz/6e@google.com>
- <YqKXExV4BOVRbOVc@google.com>
-From:   Thomas Huth <thuth@redhat.com>
-In-Reply-To: <YqKXExV4BOVRbOVc@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220613063512.17540-4-songmuchun@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/06/2022 02.57, Sean Christopherson wrote:
-> +s390 folks...
+On Mon, Jun 13, 2022 at 02:35:09PM +0800, Muchun Song wrote:
+> It it inconvenient to mention the feature of optimizing vmemmap pages associated
+> with HugeTLB pages when communicating with others since there is no specific or
+> abbreviated name for it when it is first introduced.  Let us give it a name HVO
+> (HugeTLB Vmemmap Optimization) from now.
 > 
-> On Fri, Jun 10, 2022, Sean Christopherson wrote:
->> On Thu, Jun 09, 2022, Sean Christopherson wrote:
->>> On Thu, Jun 09, 2022, Anup Patel wrote:
->>>> On Wed, Jun 8, 2022 at 9:26 PM Anup Patel <anup@brainfault.org> wrote:
->>>>>
->>>>> On Tue, Jun 7, 2022 at 8:57 PM Paolo Bonzini <pbonzini@redhat.com> wrote:
->>>>>>
->>>>>> Marc, Christian, Anup, can you please give this a go?
->>>>>
->>>>> Sure, I will try this series.
->>>>
->>>> I tried to apply this series on top of kvm/next and kvm/queue but
->>>> I always get conflicts. It seems this series is dependent on other
->>>> in-flight patches.
->>>
->>> Hrm, that's odd, it's based directly on kvm/queue, commit 55371f1d0c01 ("KVM: ...).
->>
->> Duh, Paolo updated kvm/queue.  Where's Captain Obvious when you need him...
->>
->>>> Is there a branch somewhere in a public repo ?
->>>
->>> https://github.com/sean-jc/linux/tree/x86/selftests_overhaul
->>
->> I pushed a new version that's based on the current kvm/queue, commit 5e9402ac128b.
->> arm and x86 look good (though I've yet to test on AMD).
->>
->> Thomas,
->> If you get a chance, could you rerun the s390 tests?  The recent refactorings to
->> use TAP generated some fun conflicts.
+> This commit also updates the document about "hugetlb_free_vmemmap" by the way
+> discussed in thread [1].
+> 
+> Link: https://lore.kernel.org/all/21aae898-d54d-cc4b-a11f-1bb7fddcfffa@redhat.com/ [1]
+> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
 
-Still works fine!
-Tested-by: Thomas Huth <thuth@redhat.com>
+For the Documentation/admin-guide/kernel-parameters.txt, I think it gets much
+more clear.
+About the name, I do not have a strong opinion.
 
->> Speaking of TAP, I added a patch to convert __TEST_REQUIRE to use ksft_exit_skip()
->> instead of KVM's custom print_skip().  The s390 tests are being converted to use
->> TAP output, I couldn't see any advantage of KVM's arbitrary "skipping test" over
->> TAP-friendly output, and converting everything is far easier than special casing s390.
+Reviewed-by: Oscar Salvador <osalvador@suse.de>
 
-Sounds like a good idea to me. I already considered starting to convert some 
-x86 tests, too 
-(https://lore.kernel.org/linux-kselftest/20220429071149.488114-1-thuth@redhat.com 
-), but didn't get much feedback there yet, but anyway, we'll be better 
-prepared with your change for that now.
+> ---
+>  Documentation/admin-guide/kernel-parameters.txt |  7 ++++---
+>  Documentation/admin-guide/mm/hugetlbpage.rst    |  3 +--
+>  Documentation/admin-guide/sysctl/vm.rst         |  3 +--
+>  fs/Kconfig                                      | 13 ++++++-------
+>  mm/hugetlb_vmemmap.c                            |  8 ++++----
+>  mm/hugetlb_vmemmap.h                            |  4 ++--
+>  6 files changed, 18 insertions(+), 20 deletions(-)
+> 
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index 391b43fee93e..7539553b3fb0 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -1725,12 +1725,13 @@
+>  	hugetlb_free_vmemmap=
+>  			[KNL] Reguires CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
+>  			enabled.
+> +			Control if HugeTLB Vmemmap Optimization (HVO) is enabled.
+>  			Allows heavy hugetlb users to free up some more
+>  			memory (7 * PAGE_SIZE for each 2MB hugetlb page).
+> -			Format: { [oO][Nn]/Y/y/1 | [oO][Ff]/N/n/0 (default) }
+> +			Format: { on | off (default) }
+>  
+> -			[oO][Nn]/Y/y/1: enable the feature
+> -			[oO][Ff]/N/n/0: disable the feature
+> +			on: enable HVO
+> +			off: disable HVO
+>  
+>  			Built with CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON=y,
+>  			the default is on.
+> diff --git a/Documentation/admin-guide/mm/hugetlbpage.rst b/Documentation/admin-guide/mm/hugetlbpage.rst
+> index a90330d0a837..64e0d5c512e7 100644
+> --- a/Documentation/admin-guide/mm/hugetlbpage.rst
+> +++ b/Documentation/admin-guide/mm/hugetlbpage.rst
+> @@ -164,8 +164,7 @@ default_hugepagesz
+>  	will all result in 256 2M huge pages being allocated.  Valid default
+>  	huge page size is architecture dependent.
+>  hugetlb_free_vmemmap
+> -	When CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP is set, this enables optimizing
+> -	unused vmemmap pages associated with each HugeTLB page.
+> +	When CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP is set, this enables HVO.
+>  
+>  When multiple huge page sizes are supported, ``/proc/sys/vm/nr_hugepages``
+>  indicates the current number of pre-allocated huge pages of the default size.
+> diff --git a/Documentation/admin-guide/sysctl/vm.rst b/Documentation/admin-guide/sysctl/vm.rst
+> index d7374a1e8ac9..c9f35db973f0 100644
+> --- a/Documentation/admin-guide/sysctl/vm.rst
+> +++ b/Documentation/admin-guide/sysctl/vm.rst
+> @@ -569,8 +569,7 @@ This knob is not available when the size of 'struct page' (a structure defined
+>  in include/linux/mm_types.h) is not power of two (an unusual system config could
+>  result in this).
+>  
+> -Enable (set to 1) or disable (set to 0) the feature of optimizing vmemmap pages
+> -associated with each HugeTLB page.
+> +Enable (set to 1) or disable (set to 0) HugeTLB Vmemmap Optimization (HVO).
+>  
+>  Once enabled, the vmemmap pages of subsequent allocation of HugeTLB pages from
+>  buddy allocator will be optimized (7 pages per 2MB HugeTLB page and 4095 pages
+> diff --git a/fs/Kconfig b/fs/Kconfig
+> index 5976eb33535f..2f9fd840cb66 100644
+> --- a/fs/Kconfig
+> +++ b/fs/Kconfig
+> @@ -247,8 +247,7 @@ config HUGETLB_PAGE
+>  
+>  #
+>  # Select this config option from the architecture Kconfig, if it is preferred
+> -# to enable the feature of minimizing overhead of struct page associated with
+> -# each HugeTLB page.
+> +# to enable the feature of HugeTLB Vmemmap Optimization (HVO).
+>  #
+>  config ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
+>  	bool
+> @@ -259,14 +258,14 @@ config HUGETLB_PAGE_OPTIMIZE_VMEMMAP
+>  	depends on SPARSEMEM_VMEMMAP
+>  
+>  config HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON
+> -	bool "Default optimizing vmemmap pages of HugeTLB to on"
+> +	bool "Default HugeTLB Vmemmap Optimization (HVO) to on"
+>  	default n
+>  	depends on HUGETLB_PAGE_OPTIMIZE_VMEMMAP
+>  	help
+> -	  When using HUGETLB_PAGE_OPTIMIZE_VMEMMAP, the optimizing unused vmemmap
+> -	  pages associated with each HugeTLB page is default off. Say Y here
+> -	  to enable optimizing vmemmap pages of HugeTLB by default. It can then
+> -	  be disabled on the command line via hugetlb_free_vmemmap=off.
+> +	  When using HUGETLB_PAGE_OPTIMIZE_VMEMMAP, the HugeTLB Vmemmap
+> +	  Optimization (HVO) is off by default. Say Y here to enable HVO
+> +	  by default. It can then be disabled on the command line via
+> +	  hugetlb_free_vmemmap=off or sysctl.
+>  
+>  config MEMFD_CREATE
+>  	def_bool TMPFS || HUGETLBFS
+> diff --git a/mm/hugetlb_vmemmap.c b/mm/hugetlb_vmemmap.c
+> index 132dc83f0130..c10540993577 100644
+> --- a/mm/hugetlb_vmemmap.c
+> +++ b/mm/hugetlb_vmemmap.c
+> @@ -1,8 +1,8 @@
+>  // SPDX-License-Identifier: GPL-2.0
+>  /*
+> - * Optimize vmemmap pages associated with HugeTLB
+> + * HugeTLB Vmemmap Optimization (HVO)
+>   *
+> - * Copyright (c) 2020, Bytedance. All rights reserved.
+> + * Copyright (c) 2020, ByteDance. All rights reserved.
+>   *
+>   *     Author: Muchun Song <songmuchun@bytedance.com>
+>   *
+> @@ -120,8 +120,8 @@ void __init hugetlb_vmemmap_init(struct hstate *h)
+>  
+>  	/*
+>  	 * There are only (RESERVE_VMEMMAP_SIZE / sizeof(struct page)) struct
+> -	 * page structs that can be used when CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP,
+> -	 * so add a BUILD_BUG_ON to catch invalid usage of the tail struct page.
+> +	 * page structs that can be used when HVO is enabled, add a BUILD_BUG_ON
+> +	 * to catch invalid usage of the tail page structs.
+>  	 */
+>  	BUILD_BUG_ON(__NR_USED_SUBPAGE >=
+>  		     RESERVE_VMEMMAP_SIZE / sizeof(struct page));
+> diff --git a/mm/hugetlb_vmemmap.h b/mm/hugetlb_vmemmap.h
+> index 109b0a53b6fe..ba66fadad9fc 100644
+> --- a/mm/hugetlb_vmemmap.h
+> +++ b/mm/hugetlb_vmemmap.h
+> @@ -1,8 +1,8 @@
+>  // SPDX-License-Identifier: GPL-2.0
+>  /*
+> - * Optimize vmemmap pages associated with HugeTLB
+> + * HugeTLB Vmemmap Optimization (HVO)
+>   *
+> - * Copyright (c) 2020, Bytedance. All rights reserved.
+> + * Copyright (c) 2020, ByteDance. All rights reserved.
+>   *
+>   *     Author: Muchun Song <songmuchun@bytedance.com>
+>   */
+> -- 
+> 2.11.0
+> 
+> 
 
-  Thomas
-
+-- 
+Oscar Salvador
+SUSE Labs
