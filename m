@@ -2,85 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AC53C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:20:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2A0AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:20:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347771AbiFMTUD (ORCPT
+        id S1348078AbiFMTUG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:20:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44812 "EHLO
+        Mon, 13 Jun 2022 15:20:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351204AbiFMTT3 (ORCPT
+        with ESMTP id S1351257AbiFMTTa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 15:19:29 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9D5B110D;
-        Mon, 13 Jun 2022 10:16:52 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id s135so6090572pgs.10;
-        Mon, 13 Jun 2022 10:16:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=O89rLS/mzd3GPfJDFSo+5GSTwiN9XZJrpeez4+47ZNI=;
-        b=dTicN5xPtrJLyjiW2ipGNV5/G0bUbQRp4VPjegR3FKIX/UnXf6vELBEqOB2StTWq8l
-         yoFKDr4cVxkL2cBMyvY5nCvhCRf3/M1xYwh2a/toQ5p7rx04lKaI7x4IDE219i4TcxRz
-         Wpo2Q4YVxFGOuvq1DkOG9u2spp0DL/ydJ2114ILpjEEXrgUCcEs2IjVbTpp031mZziK4
-         uRvnBZUHO+bTyum3IaiJfJOYhWH8kvfPowx+E0lndAHPYl3Ee6RmK+cSquXqiktqQffV
-         Ib8zHi8xQquR95o82D5SL6vk7hCf/nNK0K6w222uMZ9Ulbcr6Xj7u6JiIMQtzpIPu9Rw
-         ak+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=O89rLS/mzd3GPfJDFSo+5GSTwiN9XZJrpeez4+47ZNI=;
-        b=JuWzw2vATv0y50or/rH1JN9KCIqNAtZNBfDZv6sb6YGmARgHCesu8qSxbkpC5efn4G
-         QFMfeDZwYhTIsJwYJFpi+jAh/dP+fqRnxqzxoAseLKdhUHhEH2E2+M8L1znKih9J3Svx
-         hrXuvMRNFa/KJqefhtDVHmFaD0ToK0gnknqvvDuxRvDYmfRzE7GYdV+I25SRy/zY/PLf
-         2XL2iqy0+By1MsYvOShQU7or9YShoVRR22fZU04uvCLL99NXbe08IfZuxUnkCXIJ53em
-         cTwsi7N7j1UHwSGsIWxf2YK+Fpg8aySF+u18QSA0MbEEz2aR2NA5eV+OVfdUfmPB0knR
-         R4kw==
-X-Gm-Message-State: AOAM531FqrvWNrxvX2g/N3gFGrp3Rp9x67L6+zVeNpxgAHwuB2+g5tG0
-        afb6dnse9DAYqGEj0hSQR3Y=
-X-Google-Smtp-Source: ABdhPJwYjmVQLwa5hFkOguAl4jGmy3T9AiYxPNPENFbusolkPahsaJq76Yf2Xv7ijvOyIC/2uQkagg==
-X-Received: by 2002:a63:2a8d:0:b0:3f9:d9f9:a5c4 with SMTP id q135-20020a632a8d000000b003f9d9f9a5c4mr541520pgq.614.1655140612175;
-        Mon, 13 Jun 2022 10:16:52 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id r7-20020aa79627000000b0051bce5dc754sm5621899pfg.194.2022.06.13.10.16.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 10:16:51 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     bcm-kernel-feedback-list@broadcom.com,
-        William Zhang <william.zhang@broadcom.com>,
-        Linux ARM List <linux-arm-kernel@lists.infradead.org>
-Cc:     tomer.yacoby@broadcom.com, anand.gore@broadcom.com,
-        dan.beygelman@broadcom.com, philippe.reynes@softathome.com,
-        samyon.furman@broadcom.com, kursad.oney@broadcom.com,
-        joel.peshkin@broadcom.com, Arnd Bergmann <arnd@arndb.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Olof Johansson <olof@lixom.net>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, soc@kernel.org
-Subject: Re: [PATCH 2/3] ARM: dts: Add DTS files for bcmbca SoC BCM6756
-Date:   Mon, 13 Jun 2022 10:16:50 -0700
-Message-Id: <20220613171650.241791-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220608175629.31538-3-william.zhang@broadcom.com>
-References: <20220608175629.31538-1-william.zhang@broadcom.com> <20220608175629.31538-3-william.zhang@broadcom.com>
+        Mon, 13 Jun 2022 15:19:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00F8C53711;
+        Mon, 13 Jun 2022 10:24:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 58F3260C7C;
+        Mon, 13 Jun 2022 17:24:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CE14C34114;
+        Mon, 13 Jun 2022 17:24:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655141069;
+        bh=Ytg1O0ZnWN5OTWz6shxsOZCb9jEbZHGc71Fqqpj9HYQ=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=VOZ9whWtDqTEXBLPpw8fAFY9Z/rPqKNVKU0ybnGewq4UL9zWOJLSxkUfE7LmrQ0uI
+         7MpviS+7JyCy7DVqy/pc5UfFJrfp+Y6QEknhDSo+NxofDb2ZyIlmxf1PJehTlUcqP3
+         7loQ9SucdK6itgT+7Q96NhEwONdaArUDSLdCSROwjTd/vMuPl8+mSvW1+DybJ2Jjxv
+         BP4G8R44bEEaBhQPCGHjWUBvo9iYNVZ1AF+C95A44K7Q69QM7CcQloeHg5rA+l+ZcU
+         Lgqw+mt08B+6wXOWpabL5sG+3qL06ms68AMJXUp6vhT55bc97wYJbL33kmCyX7Kwt+
+         2feBQiG5DG0hQ==
+From:   Mark Brown <broonie@kernel.org>
+To:     jonathanh@nvidia.com, linux-tegra@vger.kernel.org,
+        ashishsingha@nvidia.com, robh+dt@kernel.org,
+        linux-spi@vger.kernel.org, thierry.reding@gmail.com,
+        kyarlagadda@nvidia.com
+Cc:     skomatineni@nvidia.com, devicetree@vger.kernel.org,
+        ldewangan@nvidia.com, linux-kernel@vger.kernel.org
+In-Reply-To: <20220513080828.22079-1-kyarlagadda@nvidia.com>
+References: <20220513080828.22079-1-kyarlagadda@nvidia.com>
+Subject: Re: [Patch V2 0/3] spi: tegra quad: Add Tegra Grace features
+Message-Id: <165514106736.671611.17346483728237955492.b4-ty@kernel.org>
+Date:   Mon, 13 Jun 2022 18:24:27 +0100
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed,  8 Jun 2022 10:56:28 -0700, William Zhang <william.zhang@broadcom.com> wrote:
-> Add DTS for ARMv7 based broadband SoC BCM6756. bcm6756.dtsi is the SoC
-> description DTS header and bcm96756.dts is a simple DTS file for
-> Broadcom BCM96756 Reference board that only enable the UART port.
+On Fri, 13 May 2022 13:38:25 +0530, Krishna Yarlagadda wrote:
+> Add multiple chip select lines supported on Tegra 241
 > 
-> Signed-off-by: William Zhang <william.zhang@broadcom.com>
-> ---
+> Changes in v2:
+> Split Wait polling changes to be handled later
+> Change chip name to convention followed (Grace to 241)
+> Add tegra qspi peripherals yaml file
+> 
+> [...]
 
-Applied to https://github.com/Broadcom/stblinux/commits/devicetree/next, thanks!
---
-Florian
+Applied to
+
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
+
+Thanks!
+
+[1/3] spi: tegra210-quad: Multi-cs support
+      commit: b76134178168b5104851b3c72d9b1092b7414ff9
+[2/3] spi: dt-bindings: split peripheral prods
+      commit: e23917822d3cb1f5270ab0d327da713cda72f8f2
+[3/3] spi: dt-bindings: Add compatible for Tegra241 QSPI
+      commit: 4f37809f4cdf0cdb8d4431e779f56d1f0dec3fb5
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
