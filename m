@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32024C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:33:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47FC5C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:34:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343512AbiFMKdR (ORCPT
+        id S1344361AbiFMKbe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:33:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60734 "EHLO
+        Mon, 13 Jun 2022 06:31:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236465AbiFMKad (ORCPT
+        with ESMTP id S1345551AbiFMK3k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:30:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7458621E07;
-        Mon, 13 Jun 2022 03:21:19 -0700 (PDT)
+        Mon, 13 Jun 2022 06:29:40 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0EAA20F77;
+        Mon, 13 Jun 2022 03:20:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D8E70B80E94;
-        Mon, 13 Jun 2022 10:21:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 357F3C34114;
-        Mon, 13 Jun 2022 10:21:16 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BF2ACCE0EEB;
+        Mon, 13 Jun 2022 10:20:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD311C34114;
+        Mon, 13 Jun 2022 10:20:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115676;
-        bh=//b4YhDz4deef/VaPhG43OVx0wkPvH71VetrAukn15o=;
+        s=korg; t=1655115650;
+        bh=8HQm4g74yzZGpbnIQ9UppM7IGC+JDkrxAdIatCQcOfc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fzyiiTKYdQEHOD6Z3teUdq9KUtcCP8EZCyBaN2HYd7wAJyiRb5uxLRfokFx5T4pLX
-         QYWvBAQCZoNiAnXdlM8rglxd28JPv2yOotMEFk2vkPN5u8fUPgGqdERgMUnb9ov/Wa
-         GiQyPDOAkwKv8cCFsQNmNjeaxAmc65bOu7kxb+0M=
+        b=aY2snc2+gFAHB3Amx+3Ufv5/omV3MT0cKvE33fOy2o52JI3O2ITAaFTeMy+jHYOOE
+         btzqc6SOFH3CrjnoeQgL4ivuWuqrza9a1Bn8EdGWJyTymWWKFb1maPVG7YytjU5wUP
+         q79rqi1O5pSX311H4ky+DY09WFLdSbqgOjtglt4Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, huangwenhui <huangwenhuia@uniontech.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.9 158/167] ALSA: hda/conexant - Fix loopback issue with CX20632
-Date:   Mon, 13 Jun 2022 12:10:32 +0200
-Message-Id: <20220613094918.000549194@linuxfoundation.org>
+        stable@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Huang Guobin <huangguobin4@huawei.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 141/167] tty: Fix a possible resource leak in icom_probe
+Date:   Mon, 13 Jun 2022 12:10:15 +0200
+Message-Id: <20220613094913.926872686@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -49,37 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: huangwenhui <huangwenhuia@uniontech.com>
+From: Huang Guobin <huangguobin4@huawei.com>
 
-commit d5ea7544c32ba27c2c5826248e4ff58bd50a2518 upstream.
+[ Upstream commit ee157a79e7c82b01ae4c25de0ac75899801f322c ]
 
-On a machine with CX20632, Alsamixer doesn't have 'Loopback
-Mixing' and 'Line'.
+When pci_read_config_dword failed, call pci_release_regions() and
+pci_disable_device() to recycle the resource previously allocated.
 
-Signed-off-by: huangwenhui <huangwenhuia@uniontech.com>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220607065631.10708-1-huangwenhuia@uniontech.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
+Link: https://lore.kernel.org/r/20220331091005.3290753-1-huangguobin4@huawei.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/patch_conexant.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/tty/serial/icom.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/pci/hda/patch_conexant.c
-+++ b/sound/pci/hda/patch_conexant.c
-@@ -942,6 +942,13 @@ static int patch_conexant_auto(struct hd
- 		snd_hda_pick_fixup(codec, cxt5051_fixup_models,
- 				   cxt5051_fixups, cxt_fixups);
- 		break;
-+	case 0x14f15098:
-+		codec->pin_amp_workaround = 1;
-+		spec->gen.mixer_nid = 0x22;
-+		spec->gen.add_stereo_mix_input = HDA_HINT_STEREO_MIX_AUTO;
-+		snd_hda_pick_fixup(codec, cxt5066_fixup_models,
-+				   cxt5066_fixups, cxt_fixups);
-+		break;
- 	case 0x14f150f2:
- 		codec->power_save_node = 1;
- 		/* Fall through */
+diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
+index c60a8d5e4020..a3e420669674 100644
+--- a/drivers/tty/serial/icom.c
++++ b/drivers/tty/serial/icom.c
+@@ -1515,7 +1515,7 @@ static int icom_probe(struct pci_dev *dev,
+ 	retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg);
+ 	if (retval) {
+ 		dev_err(&dev->dev, "PCI Config read FAILED\n");
+-		return retval;
++		goto probe_exit0;
+ 	}
+ 
+ 	pci_write_config_dword(dev, PCI_COMMAND,
+-- 
+2.35.1
+
 
 
