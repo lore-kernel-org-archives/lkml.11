@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4AEECCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4AF9CCA486
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 22:58:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345169AbiFMW6b (ORCPT
+        id S1345816AbiFMW6c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 18:58:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57546 "EHLO
+        Mon, 13 Jun 2022 18:58:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235607AbiFMW5j (ORCPT
+        with ESMTP id S240975AbiFMW5l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 18:57:39 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E13410E5
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 15:57:37 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id g129-20020a636b87000000b00401b8392ac8so4024982pgc.4
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 15:57:37 -0700 (PDT)
+        Mon, 13 Jun 2022 18:57:41 -0400
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6537125CB
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 15:57:40 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id c11-20020a17090a4d0b00b001e4e081d525so7040508pjg.7
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 15:57:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=XfyrmAuBNG96ESd4ge8XFRdhqAAWlj/bUQmrHUvO0vg=;
-        b=aB+mHJdxCtw86zizW4wBXbT1gFqQGoe0qOMmsjfrKUSWynkwhUxvP0niYP7qIZHIop
-         TEd087yHrArSh02i6aFoQcQezKWHPMlYuE7ifax/CdCzxoL167+1Xbbn2H2J2qPv5bS0
-         57rClqQ3jgTawmKTUNi2mByyvnqGXucQSedyoI8rD1/bRS8q2JgxT5YFvtO8dqjPE3Eh
-         pjDVeYsv7h50iP0tyG+9IIaNc3srWTjyYt3IrjeAmHhSzaJEEi0AAUTE9O/xAPrbsZ19
-         Ghf+uSGLF6CHyxIccu/zMK51xLO43hjPFHTqzTh1iZNdvr78E0L9Rpew4+eNhrGAto9r
-         oc6w==
+        bh=RHYcnFXTT7ac0ob6di8kcCxjr6TYxAsCityKr+RTKLI=;
+        b=Ht+WkXrzNY4aCQJpUyHeoWPWNTBiTlUW3Lagepr4HbSdxEqbjS+ssk0l8Zamu5d1SR
+         jjMxcznKpxbilodFMTbwrpKMcGsDf3SN15/AHVZrOIWYxZNkjMDYM5vYWcYW5iomnR8d
+         ENCPPz0daRuFtW9s37PyTlx1y5/jAYunRaYufcaL3bKBWOyjrRQ6YKofuf8OAdaElQYX
+         6fyug2OPvXy5nnN8B/AfFA82ZAlHIVmrpOqVheuMEB1MgTqPNrSqJqoWpEvMLy5hICph
+         MwWuJkEmgQzcxqCKlGF9srg9wvaxtk8Pa4iWY14QwGls9+deEB7KJO5apyO8sxQyixMG
+         IxtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=XfyrmAuBNG96ESd4ge8XFRdhqAAWlj/bUQmrHUvO0vg=;
-        b=wkbAsEDT2WCEAuS8vn8S8XNoXfcjh1ATs/WSXGptf28zceWUU4kPHz2HxkBqI30eWN
-         Ec1ByFeO9PClMfct0tqIjRt7EnK0NOwwr7rbXIkY2zqRDqKZSlS+oKszBB4TvzpDEZav
-         TYFTB1HgOgV5aqA9EuGL/JGGT/YMCdJgrWh7ygTBbtDxTF7CEJPuW64Y5uEnHUc+9dkz
-         cFsXT2rVaPUGvqrmt4Z1T6RDnoQq4mCsnN1QijrVLAmI0ANbPaKY3TEkwZWt90wqzOoF
-         OgJ81BtkZF9LN5KJiuezO7BfKbbua+iTkQBeAdvUIzGhnrv+TtEmzEOsbppO/5vddJDm
-         RTUg==
-X-Gm-Message-State: AJIora9hLGjCIi/VLtUSKT178hQ/dtRvmsuYNRZi63MDwb25O9caX9eW
-        MwwXanSdmwPGW11QzdtdTBmJdvR9m6I=
-X-Google-Smtp-Source: AGRyM1urB2wXKYaVwBFbTVFrOgFVE+BwUDOaPZYhK78OGINuG4bhotXlqzGx0Puv+VHs0tpYMhvfFoKKHxk=
+        bh=RHYcnFXTT7ac0ob6di8kcCxjr6TYxAsCityKr+RTKLI=;
+        b=d1eTzLE6waFMStwrj2mIRGJ4huxv7MxpDtSVHFlqrU4cm/XGloUe0Xc9E1D96KNgEE
+         S0/i1DbElrl2Tlu2YsZAbyN9xh85bwkdIX4QWzkXqOhM+aN7rARuHfjMaZFw4GlotJAz
+         +XrjBRl0Qruz2poHElA6t20pzWlPfsKm6Yhr0H3gOMPgLXcU8NAYHbcozU00yvEAuXEB
+         TtXKTXV4qQjWuhhOOwO0Mj429ldr5lAUH6TSbA/1R7W/jicjdSPOcqcMf2OKV+cUVDPN
+         Wl4xcaQ1N7aOFCy2AvrAi9ZkaNEN/I/WD0vDr0hiRkN+OapewZ2Sxj4Tlkg0e/gHd2sd
+         yLjw==
+X-Gm-Message-State: AJIora+x1AJ5GZw4zLq7pIq4HGM+A4bwzUyd47s3FU3l78EYE3Ufg306
+        iDmoDVB+Aej/ysGtyBn4MNF242paNag=
+X-Google-Smtp-Source: AGRyM1usL/eeVClnixov12j9knTnRvi5pIAGqLnemUdbfR1Ufy3iDbbtQEYUfhjil6JScKSo4HiKr6s8g5Q=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:902:dac7:b0:166:4ce4:7e32 with SMTP id
- q7-20020a170902dac700b001664ce47e32mr1389307plx.168.1655161056535; Mon, 13
- Jun 2022 15:57:36 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:90a:66c1:b0:1e8:43ae:f7c0 with SMTP id
+ z1-20020a17090a66c100b001e843aef7c0mr1054309pjl.245.1655161059904; Mon, 13
+ Jun 2022 15:57:39 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Mon, 13 Jun 2022 22:57:21 +0000
+Date:   Mon, 13 Jun 2022 22:57:23 +0000
 In-Reply-To: <20220613225723.2734132-1-seanjc@google.com>
-Message-Id: <20220613225723.2734132-7-seanjc@google.com>
+Message-Id: <20220613225723.2734132-9-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220613225723.2734132-1-seanjc@google.com>
 X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH 6/8] KVM: x86/mmu: Use common macros to compute 32/64-bit
- paging masks
+Subject: [PATCH 8/8] KVM: x86/mmu: Use common logic for computing the
+ 32/64-bit base PA mask
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -69,119 +69,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dedup the code for generating (most of) the per-type PT_* masks in
-paging_tmpl.h.  The relevant macros only vary based on the number of bits
-per level, and that smidge of info is already provided in a common form
-as PT_LEVEL_BITS.
+Use common logic for computing PT_BASE_ADDR_MASK for 32-bit, 64-bit, and
+EPT paging.  Both PAGE_MASK and the new-common logic are supsersets of
+what is actually needed for 32-bit paging.  PAGE_MASK sets bits 63:12 and
+the former GUEST_PT64_BASE_ADDR_MASK sets bits 51:12, so regardless of
+which value is used, the result will always be bits 31:12.
 
 No functional change intended.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/mmu/paging.h      | 26 --------------------------
- arch/x86/kvm/mmu/paging_tmpl.h | 25 +++++++++++--------------
- 2 files changed, 11 insertions(+), 40 deletions(-)
+ arch/x86/kvm/mmu/mmu.c         | 2 --
+ arch/x86/kvm/mmu/paging.h      | 9 ---------
+ arch/x86/kvm/mmu/paging_tmpl.h | 4 +---
+ 3 files changed, 1 insertion(+), 14 deletions(-)
+ delete mode 100644 arch/x86/kvm/mmu/paging.h
 
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index aedb8d871030..0f0c3ebfcf51 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -53,8 +53,6 @@
+ #include <asm/kvm_page_track.h>
+ #include "trace.h"
+ 
+-#include "paging.h"
+-
+ extern bool itlb_multihit_kvm_mitigation;
+ 
+ int __read_mostly nx_huge_pages = -1;
 diff --git a/arch/x86/kvm/mmu/paging.h b/arch/x86/kvm/mmu/paging.h
-index 3fed2c101de3..9de4976b2d46 100644
+deleted file mode 100644
+index 9de4976b2d46..000000000000
 --- a/arch/x86/kvm/mmu/paging.h
-+++ b/arch/x86/kvm/mmu/paging.h
-@@ -5,31 +5,5 @@
- 
- #define GUEST_PT64_BASE_ADDR_MASK (((1ULL << 52) - 1) & ~(u64)(PAGE_SIZE-1))
- 
--#define PT64_LEVEL_BITS 9
++++ /dev/null
+@@ -1,9 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0-only */
+-/* Shadow paging constants/helpers that don't need to be #undef'd. */
+-#ifndef __KVM_X86_PAGING_H
+-#define __KVM_X86_PAGING_H
 -
--#define PT64_INDEX(address, level) __PT_INDEX(address, level, PT64_LEVEL_BITS)
+-#define GUEST_PT64_BASE_ADDR_MASK (((1ULL << 52) - 1) & ~(u64)(PAGE_SIZE-1))
 -
--#define PT64_LVL_ADDR_MASK(level) \
--	__PT_LVL_ADDR_MASK(GUEST_PT64_BASE_ADDR_MASK, level, PT64_LEVEL_BITS)
+-#endif /* __KVM_X86_PAGING_H */
 -
--#define PT64_LVL_OFFSET_MASK(level) \
--	__PT_LVL_OFFSET_MASK(GUEST_PT64_BASE_ADDR_MASK, level, PT64_LEVEL_BITS)
--
--
--#define PT32_LEVEL_SHIFT(level) __PT_LEVEL_SHIFT(level, PT32_LEVEL_BITS)
--
--#define PT32_LVL_OFFSET_MASK(level) \
--	__PT_LVL_OFFSET_MASK(PT32_BASE_ADDR_MASK, level, PT32_LEVEL_BITS)
--
--#define PT32_INDEX(address, level) __PT_INDEX(address, level, PT32_LEVEL_BITS)
--
--#define PT32_BASE_ADDR_MASK PAGE_MASK
--
--#define PT32_DIR_BASE_ADDR_MASK \
--	(PAGE_MASK & ~((1ULL << (PAGE_SHIFT + PT32_LEVEL_BITS)) - 1))
--
--#define PT32_LVL_ADDR_MASK(level) \
--	__PT_LVL_ADDR_MASK(PT32_BASE_ADDR_MASK, level, PT32_LEVEL_BITS)
--
- #endif /* __KVM_X86_PAGING_H */
- 
 diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
-index 75f6b01edcf8..0bb2a6c97ebb 100644
+index 4087e58e2232..1f0dbc31e5d4 100644
 --- a/arch/x86/kvm/mmu/paging_tmpl.h
 +++ b/arch/x86/kvm/mmu/paging_tmpl.h
-@@ -16,8 +16,9 @@
-  */
- 
- /*
-- * We need the mmu code to access both 32-bit and 64-bit guest ptes,
-- * so the code in this file is compiled twice, once per pte size.
-+ * The MMU needs to be able to access/walk 32-bit and 64-bit guest page tables,
-+ * as well as guest EPT tables, so the code in this file is compiled thrice,
-+ * once per guest PTE type.  The per-type defines are #undef'd at the end.
-  */
- 
- #if PTTYPE == 64
-@@ -25,10 +26,7 @@
+@@ -25,7 +25,6 @@
+ 	#define pt_element_t u64
  	#define guest_walker guest_walker64
  	#define FNAME(name) paging##64_##name
- 	#define PT_BASE_ADDR_MASK GUEST_PT64_BASE_ADDR_MASK
--	#define PT_LVL_ADDR_MASK(lvl) PT64_LVL_ADDR_MASK(lvl)
--	#define PT_LVL_OFFSET_MASK(lvl) PT64_LVL_OFFSET_MASK(lvl)
--	#define PT_INDEX(addr, level) PT64_INDEX(addr, level)
--	#define PT_LEVEL_BITS PT64_LEVEL_BITS
-+	#define PT_LEVEL_BITS 9
+-	#define PT_BASE_ADDR_MASK GUEST_PT64_BASE_ADDR_MASK
+ 	#define PT_LEVEL_BITS 9
  	#define PT_GUEST_DIRTY_SHIFT PT_DIRTY_SHIFT
  	#define PT_GUEST_ACCESSED_SHIFT PT_ACCESSED_SHIFT
- 	#define PT_HAVE_ACCESSED_DIRTY(mmu) true
-@@ -41,10 +39,7 @@
+@@ -39,7 +38,6 @@
  	#define pt_element_t u32
  	#define guest_walker guest_walker32
  	#define FNAME(name) paging##32_##name
--	#define PT_BASE_ADDR_MASK PT32_BASE_ADDR_MASK
--	#define PT_LVL_ADDR_MASK(lvl) PT32_LVL_ADDR_MASK(lvl)
--	#define PT_LVL_OFFSET_MASK(lvl) PT32_LVL_OFFSET_MASK(lvl)
--	#define PT_INDEX(addr, level) PT32_INDEX(addr, level)
-+	#define PT_BASE_ADDR_MASK PAGE_MASK
+-	#define PT_BASE_ADDR_MASK ((pt_element_t)PAGE_MASK)
  	#define PT_LEVEL_BITS PT32_LEVEL_BITS
  	#define PT_MAX_FULL_LEVELS 2
  	#define PT_GUEST_DIRTY_SHIFT PT_DIRTY_SHIFT
-@@ -61,10 +56,7 @@
+@@ -55,7 +53,6 @@
+ 	#define pt_element_t u64
  	#define guest_walker guest_walkerEPT
  	#define FNAME(name) ept_##name
- 	#define PT_BASE_ADDR_MASK GUEST_PT64_BASE_ADDR_MASK
--	#define PT_LVL_ADDR_MASK(lvl) PT64_LVL_ADDR_MASK(lvl)
--	#define PT_LVL_OFFSET_MASK(lvl) PT64_LVL_OFFSET_MASK(lvl)
--	#define PT_INDEX(addr, level) PT64_INDEX(addr, level)
--	#define PT_LEVEL_BITS PT64_LEVEL_BITS
-+	#define PT_LEVEL_BITS 9
+-	#define PT_BASE_ADDR_MASK GUEST_PT64_BASE_ADDR_MASK
+ 	#define PT_LEVEL_BITS 9
  	#define PT_GUEST_DIRTY_SHIFT 9
  	#define PT_GUEST_ACCESSED_SHIFT 8
- 	#define PT_HAVE_ACCESSED_DIRTY(mmu) (!(mmu)->cpu_role.base.ad_disabled)
-@@ -73,6 +65,11 @@
- 	#error Invalid PTTYPE value
+@@ -66,6 +63,7 @@
  #endif
  
-+/* Common logic, but per-type values.  These also need to be undefined. */
-+#define PT_LVL_ADDR_MASK(lvl)	__PT_LVL_ADDR_MASK(PT_BASE_ADDR_MASK, lvl, PT_LEVEL_BITS)
-+#define PT_LVL_OFFSET_MASK(lvl)	__PT_LVL_OFFSET_MASK(PT_BASE_ADDR_MASK, lvl, PT_LEVEL_BITS)
-+#define PT_INDEX(addr, lvl)	__PT_INDEX(addr, lvl, PT_LEVEL_BITS)
-+
- #define PT_GUEST_DIRTY_MASK    (1 << PT_GUEST_DIRTY_SHIFT)
- #define PT_GUEST_ACCESSED_MASK (1 << PT_GUEST_ACCESSED_SHIFT)
- 
+ /* Common logic, but per-type values.  These also need to be undefined. */
++#define PT_BASE_ADDR_MASK	((pt_element_t)(((1ULL << 52) - 1) & ~(u64)(PAGE_SIZE-1)))
+ #define PT_LVL_ADDR_MASK(lvl)	__PT_LVL_ADDR_MASK(PT_BASE_ADDR_MASK, lvl, PT_LEVEL_BITS)
+ #define PT_LVL_OFFSET_MASK(lvl)	__PT_LVL_OFFSET_MASK(PT_BASE_ADDR_MASK, lvl, PT_LEVEL_BITS)
+ #define PT_INDEX(addr, lvl)	__PT_INDEX(addr, lvl, PT_LEVEL_BITS)
 -- 
 2.36.1.476.g0c4daa206d-goog
 
