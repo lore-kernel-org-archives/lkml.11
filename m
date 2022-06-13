@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E559C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:15:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7859FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:15:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353332AbiFMMNT (ORCPT
+        id S1354298AbiFMMNc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:13:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59960 "EHLO
+        Mon, 13 Jun 2022 08:13:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359382AbiFMMJ3 (ORCPT
+        with ESMTP id S1358685AbiFMMJn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:09:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43A6152B01;
-        Mon, 13 Jun 2022 04:00:35 -0700 (PDT)
+        Mon, 13 Jun 2022 08:09:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29D8452E67;
+        Mon, 13 Jun 2022 04:00:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1BF0AB80EA3;
-        Mon, 13 Jun 2022 11:00:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CBB0C34114;
-        Mon, 13 Jun 2022 11:00:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EBC8F60F9A;
+        Mon, 13 Jun 2022 11:00:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 072A8C34114;
+        Mon, 13 Jun 2022 11:00:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118030;
-        bh=HsZcmkg6963w6+CWvPSwchal4G13F0zd1gvDD7VJV8c=;
+        s=korg; t=1655118036;
+        bh=yWhz9TOyrS1uXK3v/oK9K3AnSwUT7ipuFe3JPeHhx50=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PH7OUMH+32COC+JjmmD1qTVUqgLLDjrCtv/IJF0Qj9JcXUxm4n3MSQM4WM1JNROXx
-         QZ/jH7ii0IAcd3FWmI29YFgofYGf7TtKIPazHEjCLn3DLdlt3vrmlwlky1Ejdd0HBu
-         uQ+/+JI3iebUbHjgKldrrYHrJphmV1oeu3dO52D0=
+        b=BOmw7Z4b6Hj6p0+BfolQvP3lkyGJ/nj4jmpPh985THy5iKkaALuzUym/6PgTKBpD4
+         GC0nzOIgstng8fd54Xi9EKL3RWB3lNX2t3VU6rDoa5HI4iQ1SeFgZEGa9jKf6YRVHo
+         XqIZ+XHdgipP4l5Mdc4ZKSbNNjuK8PM3jRnhKRBo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Thierry Reding <thierry.reding@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 204/287] rtc: mt6397: check return value after calling platform_get_resource()
-Date:   Mon, 13 Jun 2022 12:10:28 +0200
-Message-Id: <20220613094930.048494926@linuxfoundation.org>
+Subject: [PATCH 4.19 196/287] pwm: lp3943: Fix duty calculation in case period was clamped
+Date:   Mon, 13 Jun 2022 12:10:20 +0200
+Message-Id: <20220613094929.807154557@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -52,36 +52,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit d3b43eb505bffb8e4cdf6800c15660c001553fe6 ]
+[ Upstream commit 5e3b07ca5cc78cd4a987e78446849e41288d87cb ]
 
-It will cause null-ptr-deref if platform_get_resource() returns NULL,
-we need check the return value.
+The hardware only supports periods <= 1.6 ms and if a bigger period is
+requested it is clamped to 1.6 ms. In this case duty_cycle might be bigger
+than 1.6 ms and then the duty cycle register is written with a value
+bigger than LP3943_MAX_DUTY. So clamp duty_cycle accordingly.
 
-Fixes: fc2979118f3f ("rtc: mediatek: Add MT6397 RTC driver")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20220505125043.1594771-1-yangyingliang@huawei.com
+Fixes: af66b3c0934e ("pwm: Add LP3943 PWM driver")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rtc/rtc-mt6397.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/pwm/pwm-lp3943.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/rtc/rtc-mt6397.c b/drivers/rtc/rtc-mt6397.c
-index 964ed91416e1..671b6d275da3 100644
---- a/drivers/rtc/rtc-mt6397.c
-+++ b/drivers/rtc/rtc-mt6397.c
-@@ -339,6 +339,8 @@ static int mtk_rtc_probe(struct platform_device *pdev)
- 		return -ENOMEM;
+diff --git a/drivers/pwm/pwm-lp3943.c b/drivers/pwm/pwm-lp3943.c
+index 5055ba2c6c94..a5f4c39eeb21 100644
+--- a/drivers/pwm/pwm-lp3943.c
++++ b/drivers/pwm/pwm-lp3943.c
+@@ -128,6 +128,7 @@ static int lp3943_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
+ 	if (err)
+ 		return err;
  
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res)
-+		return -EINVAL;
- 	rtc->addr_base = res->start;
++	duty_ns = min(duty_ns, period_ns);
+ 	val = (u8)(duty_ns * LP3943_MAX_DUTY / period_ns);
  
- 	rtc->irq = platform_get_irq(pdev, 0);
+ 	return lp3943_write_byte(lp3943, reg_duty, val);
 -- 
 2.35.1
 
