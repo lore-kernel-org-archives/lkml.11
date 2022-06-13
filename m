@@ -2,55 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AF51CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:52:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F541C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:52:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354665AbiFMMwp (ORCPT
+        id S1352850AbiFMMww (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:52:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45264 "EHLO
+        Mon, 13 Jun 2022 08:52:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241337AbiFMMwK (ORCPT
+        with ESMTP id S1351091AbiFMMwK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 08:52:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B00B86416;
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0514641C;
         Mon, 13 Jun 2022 04:12:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C3240B80EAA;
-        Mon, 13 Jun 2022 11:12:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B66BC3411C;
-        Mon, 13 Jun 2022 11:12:10 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A81FECE118D;
+        Mon, 13 Jun 2022 11:12:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95614C3411C;
+        Mon, 13 Jun 2022 11:12:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118730;
-        bh=dt0NDfSA0OeLG6U/SzwHiEhewvTsnGRELX+7q26Ry4U=;
+        s=korg; t=1655118741;
+        bh=MK2DExhRzPuMniHrsCO4Hu8aINQml8/b84nZ7z6XkVg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vze3lQSw5u2NLZ9FAgpdM29KaQo5sSkcN9PLgXh6XWxOpDSTJqG1iXLweHJfEOGcP
-         j//xZgbvzx1V+jAOp2PUXUezTW+19eA/HrqK69EW9qoNXSi4D4FjvLan6PrgyeF3Uh
-         flad/VKbMX48CLU+31ipEl2hOtafSL10/7bfNaiI=
+        b=1R3jqXY68C5574H2ggQZFdOerKqQxUDSx5R1uLgu0pWCVqSgaJjpkvL/L+WnM+sFH
+         fENdGXkZS7hr0F5VGl8S5FfFvx7Ex9LrZ//cK2/xhfY/6P/OkRZAnaSDVX8F/jaOiQ
+         uvOspqP/2M4qBktoXn7Urv967/tBXqmJGg0+b/hI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Kees Cook <keescook@chromium.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-mips@vger.kernel.org, Manuel Lauss <manuel.lauss@gmail.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
+        stable@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 001/247] pcmcia: db1xxx_ss: restrict to MIPS_DB1XXX boards
-Date:   Mon, 13 Jun 2022 12:08:23 +0200
-Message-Id: <20220613094922.911675304@linuxfoundation.org>
+Subject: [PATCH 5.15 011/247] remoteproc: imx_rproc: Ignore create mem entry for resource table
+Date:   Mon, 13 Jun 2022 12:08:33 +0200
+Message-Id: <20220613094923.264637509@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -58,46 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Peng Fan <peng.fan@nxp.com>
 
-[ Upstream commit 3928cf08334ed895a31458cbebd8d4ec6d84c080 ]
+[ Upstream commit 58b7c856519fe946620ee68dd0c37bd3c695484a ]
 
-When the MIPS_ALCHEMY board selection is MIPS_XXS1500 instead of
-MIPS_DB1XXX, the PCMCIA driver 'db1xxx_ss' has build errors due
-to missing DB1XXX symbols. The PCMCIA driver should be restricted
-to MIPS_DB1XXX instead of MIPS_ALCHEMY to fix this build error.
+Resource table is used by Linux to get information published by
+remote processor. It should be not be used for memory allocation, so
+not create rproc mem entry.
 
-ERROR: modpost: "bcsr_read" [drivers/pcmcia/db1xxx_ss.ko] undefined!
-ERROR: modpost: "bcsr_mod" [drivers/pcmcia/db1xxx_ss.ko] undefined!
-
-Fixes: 42a4f17dc356 ("MIPS: Alchemy: remove SOC_AU1X00 in favor of MIPS_ALCHEMY")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: linux-mips@vger.kernel.org
-Acked-by: Manuel Lauss <manuel.lauss@gmail.com>
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Fixes: b29b4249f8f0 ("remoteproc: imx_rproc: add i.MX specific parse fw hook")
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
+Link: https://lore.kernel.org/r/20220415025737.1561976-1-peng.fan@oss.nxp.com
+Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pcmcia/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/remoteproc/imx_rproc.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/pcmcia/Kconfig b/drivers/pcmcia/Kconfig
-index d13b8d1a780a..4868ec03e32f 100644
---- a/drivers/pcmcia/Kconfig
-+++ b/drivers/pcmcia/Kconfig
-@@ -151,7 +151,7 @@ config TCIC
+diff --git a/drivers/remoteproc/imx_rproc.c b/drivers/remoteproc/imx_rproc.c
+index 05c39e1c56b4..59eae605ad59 100644
+--- a/drivers/remoteproc/imx_rproc.c
++++ b/drivers/remoteproc/imx_rproc.c
+@@ -447,6 +447,9 @@ static int imx_rproc_prepare(struct rproc *rproc)
+ 		if (!strcmp(it.node->name, "vdev0buffer"))
+ 			continue;
  
- config PCMCIA_ALCHEMY_DEVBOARD
- 	tristate "Alchemy Db/Pb1xxx PCMCIA socket services"
--	depends on MIPS_ALCHEMY && PCMCIA
-+	depends on MIPS_DB1XXX && PCMCIA
- 	help
- 	  Enable this driver of you want PCMCIA support on your Alchemy
- 	  Db1000, Db/Pb1100, Db/Pb1500, Db/Pb1550, Db/Pb1200, DB1300
++		if (!strcmp(it.node->name, "rsc-table"))
++			continue;
++
+ 		rmem = of_reserved_mem_lookup(it.node);
+ 		if (!rmem) {
+ 			dev_err(priv->dev, "unable to acquire memory-region\n");
 -- 
 2.35.1
 
