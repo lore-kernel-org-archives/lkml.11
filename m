@@ -2,198 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C94D5C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:37:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36606C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:37:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244086AbiFMShK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:37:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36646 "EHLO
+        id S242033AbiFMShQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:37:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243819AbiFMSgt (ORCPT
+        with ESMTP id S240410AbiFMSg4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 14:36:49 -0400
-Received: from conssluserg-05.nifty.com (conssluserg-05.nifty.com [210.131.2.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EB78D0283;
-        Mon, 13 Jun 2022 07:56:26 -0700 (PDT)
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53]) (authenticated)
-        by conssluserg-05.nifty.com with ESMTP id 25DEtxY8031566;
-        Mon, 13 Jun 2022 23:56:00 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 25DEtxY8031566
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1655132161;
-        bh=F7E1ooLwJvZaNNuNVEpt9SOkSdikaNq0G7A5Jym3rdc=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=zeCOZCT/q0yOoPvEZy8qLM7OV0T7nV5M5lYdJLOiX4EML5vhpT0svT0LD802O95t3
-         bc5dHdE5CYW7yhR2NemElaneklJO73cqdJsKMwzInQwB6qu/uWHKgxwzQ4rtk1Dcs3
-         AmVkXWF97r3EHuVULO+CvFXZF4NIKaDQsDjJND9xH6FK/TREz5UBnXXLwPoysvQXu5
-         4M10a3Wx+zjZ9WpH8vG0YVGuRZ56V3UyiKhEISS5PU9fwgdZ8Vhf2X4spYTl8CGq9F
-         7Zxnb6MqlttgnI8MRR4ZDAzvXfQjClAcaJuP/PIHlWaL/l5UkpxTHeBtyGPBQN+a4Y
-         k9wlr1AF7Epsg==
-X-Nifty-SrcIP: [209.85.221.53]
-Received: by mail-wr1-f53.google.com with SMTP id h5so7525875wrb.0;
-        Mon, 13 Jun 2022 07:56:00 -0700 (PDT)
-X-Gm-Message-State: AJIora+8gym9FjzINGMO5O32V0dRlpk1HzsyUSvFtYLPoMaQhl21BJ8a
-        32JRd0nNvOwQ+2T5xv1C/wqLJOfL1DPhN8CJb6U=
-X-Google-Smtp-Source: AGRyM1uKAoKm86msS5f400EfHj3dFPo7TEojMgXqKbyoFmcd8UWeSFj46lIvK+Cgb4yr0bBkZxCSwsIpT9yxvEVeuC8=
-X-Received: by 2002:a05:6000:1f09:b0:21a:5f3:316a with SMTP id
- bv9-20020a0560001f0900b0021a05f3316amr255199wrb.682.1655132158937; Mon, 13
- Jun 2022 07:55:58 -0700 (PDT)
+        Mon, 13 Jun 2022 14:36:56 -0400
+Received: from mail-il1-f175.google.com (mail-il1-f175.google.com [209.85.166.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 837FAD19DB;
+        Mon, 13 Jun 2022 07:56:48 -0700 (PDT)
+Received: by mail-il1-f175.google.com with SMTP id z11so4428822ilq.6;
+        Mon, 13 Jun 2022 07:56:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4w68Oz0WdFsRRgldOeQ5Pjd1X1lKelGqv7XShi7EebQ=;
+        b=tQRQw+ZKC4nLkjqSmYpRe6lrz0kIkHSuUhx6dO0LL6TVAWJ9sp8i3RTs3JDi+3cXKq
+         KdUjvP86041Nw4jQuzDPLlKYWL6prjsOYoXRBvQhPrJXDZkgrCxnVjkTeWimxH6bi2d8
+         MBSrgBApTkEDcph3n6OTukEBXh31t/ZXld9Ip+u2L5rUl1DaA9R+Fb/wQcQD8WCCjx1M
+         1Xp0sESDOnvgfRnWUM0B4d9kJ2c8YqFsBRLbXh/btWbBpV1o7npQQtAGmftJu3/PONU0
+         GPnN1BHy1MNwNI/Zi21db6HFLXShUF7+RFLWeQSPCQx0MaUR3KSZM8Kua9B/sCQh3YdM
+         I5cg==
+X-Gm-Message-State: AJIora+safhQIuaZPIrD36ZaG0VKUL1LFEiSfeBHzAQukbSEOQ19OKkS
+        uiSbxppNGP61cRhSDBl/cQ==
+X-Google-Smtp-Source: AGRyM1tWaOAHYCw0bAjRAC2vQHsWf0/Hg8K6igY8vBjeklRkX102W/LDsyxB1xqMjijSwT+p/hfpyA==
+X-Received: by 2002:a05:6e02:158a:b0:2d3:f1c0:6b68 with SMTP id m10-20020a056e02158a00b002d3f1c06b68mr128574ilu.38.1655132207733;
+        Mon, 13 Jun 2022 07:56:47 -0700 (PDT)
+Received: from xps15.herring.priv ([64.188.179.251])
+        by smtp.googlemail.com with ESMTPSA id r13-20020a056638044d00b003318c717b59sm3610860jap.39.2022.06.13.07.56.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 07:56:47 -0700 (PDT)
+From:   Rob Herring <robh@kernel.org>
+To:     Will Deacon <will@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Robin Murphy <robin.murphy@arm.com>
+Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] dt-bindings: perf: Convert Arm CCN to DT schema
+Date:   Mon, 13 Jun 2022 08:55:54 -0600
+Message-Id: <20220613145554.3727354-1-robh@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220611172233.1494073-1-masahiroy@kernel.org>
- <20220611172233.1494073-2-masahiroy@kernel.org> <58a20890-557e-f31c-ed59-7e256445a26c@digikod.net>
-In-Reply-To: <58a20890-557e-f31c-ed59-7e256445a26c@digikod.net>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Mon, 13 Jun 2022 23:55:21 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQ3p2XiLO7tJSJ9JWnqRomCwjYeQy-Z3j0m904Yn6Av_g@mail.gmail.com>
-Message-ID: <CAK7LNAQ3p2XiLO7tJSJ9JWnqRomCwjYeQy-Z3j0m904Yn6Av_g@mail.gmail.com>
-Subject: Re: [PATCH 2/4] certs: fix and refactor CONFIG_SYSTEM_BLACKLIST_HASH_LIST
- build
-To:     =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mic@digikod.net>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        David Woodhouse <dwmw2@infradead.org>,
-        keyrings@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Eric Snowberg <eric.snowberg@oracle.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 9:34 PM Micka=C3=ABl Sala=C3=BCn <mic@digikod.net> =
-wrote:
->
->
->
-> On 11/06/2022 19:22, Masahiro Yamada wrote:
-> > Commit addf466389d9 ("certs: Check that builtin blacklist hashes are
-> > valid") was applied 8 months after the submission.
-> >
-> > In the meantime, the base code had been removed by commit b8c96a6b466c
-> > ("certs: simplify $(srctree)/ handling and remove config_filename
-> > macro").
-> >
-> > Fix the Makefile.
-> >
-> > Create a local copy of $(CONFIG_SYSTEM_BLACKLIST_HASH_LIST). It is
-> > included from certs/blacklist_hashes.c and also works as a timestamp.
-> >
-> > Send error messages from check-blacklist-hashes.awk to stderr instead
-> > of stdout.
-> >
-> > Fixes: addf466389d9 ("certs: Check that builtin blacklist hashes are va=
-lid")
-> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
->
-> Reviewed-by: Micka=C3=ABl Sala=C3=BCn <mic@linux.microsoft.com>
->
-> As a side note, it may let an orphan certs/blacklist_hashes_checked file
-> but we can't really do something about that and it's OK.
+Convert the Arm CCN performance monitors binding to DT schema format.
 
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+ .../devicetree/bindings/perf/arm,ccn.yaml     | 40 +++++++++++++++++++
+ .../devicetree/bindings/perf/arm-ccn.txt      | 23 -----------
+ 2 files changed, 40 insertions(+), 23 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/perf/arm,ccn.yaml
+ delete mode 100644 Documentation/devicetree/bindings/perf/arm-ccn.txt
 
-GNU Make uses timestamps of files for dependency tracking,
-so Kbuild keeps all intermediate files.
+diff --git a/Documentation/devicetree/bindings/perf/arm,ccn.yaml b/Documentation/devicetree/bindings/perf/arm,ccn.yaml
+new file mode 100644
+index 000000000000..0b0bb2091016
+--- /dev/null
++++ b/Documentation/devicetree/bindings/perf/arm,ccn.yaml
+@@ -0,0 +1,40 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/perf/arm,ccn.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: ARM CCN (Cache Coherent Network) Performance Monitors
++
++maintainers:
++  - Robin Murphy <robin.murphy@arm.com>
++
++properties:
++  compatible:
++    enum:
++      - arm,ccn-502
++      - arm,ccn-504
++      - arm,ccn-508
++      - arm,ccn-512
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - interrupts
++
++additionalProperties: false
++
++examples:
++  - |
++    ccn@20000000 {
++        compatible = "arm,ccn-504";
++        reg = <0x20000000 0x1000000>;
++        interrupts = <0 181 4>;
++    };
++...
+diff --git a/Documentation/devicetree/bindings/perf/arm-ccn.txt b/Documentation/devicetree/bindings/perf/arm-ccn.txt
+deleted file mode 100644
+index 1c53b5aa3317..000000000000
+--- a/Documentation/devicetree/bindings/perf/arm-ccn.txt
++++ /dev/null
+@@ -1,23 +0,0 @@
+-* ARM CCN (Cache Coherent Network)
+-
+-Required properties:
+-
+-- compatible: (standard compatible string) should be one of:
+-	"arm,ccn-502"
+-	"arm,ccn-504"
+-	"arm,ccn-508"
+-	"arm,ccn-512"
+-
+-- reg: (standard registers property) physical address and size
+-	(16MB) of the configuration registers block
+-
+-- interrupts: (standard interrupt property) single interrupt
+-	generated by the control block
+-
+-Example:
+-
+-	ccn@2000000000 {
+-		compatible = "arm,ccn-504";
+-		reg = <0x20 0x00000000 0 0x1000000>;
+-		interrupts = <0 181 4>;
+-	};
+-- 
+2.34.1
 
-Keeping certs/blacklist_hashes_checked
-is the right thing to do.
-
-
-
-> Thanks!
->
-> > ---
-> >
-> >   certs/.gitignore         |  2 +-
-> >   certs/Makefile           | 20 ++++++++++----------
-> >   certs/blacklist_hashes.c |  2 +-
-> >   3 files changed, 12 insertions(+), 12 deletions(-)
-> >
-> > diff --git a/certs/.gitignore b/certs/.gitignore
-> > index 56637aceaf81..cec5465f31c1 100644
-> > --- a/certs/.gitignore
-> > +++ b/certs/.gitignore
-> > @@ -1,5 +1,5 @@
-> >   # SPDX-License-Identifier: GPL-2.0-only
-> > -/blacklist_hashes_checked
-> > +/blacklist_hash_list
-> >   /extract-cert
-> >   /x509_certificate_list
-> >   /x509_revocation_list
-> > diff --git a/certs/Makefile b/certs/Makefile
-> > index cb1a9da3fc58..a8d628fd5f7b 100644
-> > --- a/certs/Makefile
-> > +++ b/certs/Makefile
-> > @@ -7,22 +7,22 @@ obj-$(CONFIG_SYSTEM_TRUSTED_KEYRING) +=3D system_keyr=
-ing.o system_certificates.o c
-> >   obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) +=3D blacklist.o common.o
-> >   obj-$(CONFIG_SYSTEM_REVOCATION_LIST) +=3D revocation_certificates.o
-> >   ifneq ($(CONFIG_SYSTEM_BLACKLIST_HASH_LIST),)
-> > -quiet_cmd_check_blacklist_hashes =3D CHECK   $(patsubst "%",%,$(2))
-> > -      cmd_check_blacklist_hashes =3D $(AWK) -f $(srctree)/scripts/chec=
-k-blacklist-hashes.awk $(2); touch $@
-> >
-> > -$(eval $(call config_filename,SYSTEM_BLACKLIST_HASH_LIST))
-> > +$(obj)/blacklist_hashes.o: $(obj)/blacklist_hash_list
-> > +CFLAGS_blacklist_hashes.o :=3D -I $(obj)
-> >
-> > -$(obj)/blacklist_hashes.o: $(obj)/blacklist_hashes_checked
-> > +quiet_cmd_check_and_copy_blacklist_hash_list =3D GEN     $@
-> > +      cmd_check_and_copy_blacklist_hash_list =3D \
-> > +     $(AWK) -f $(srctree)/scripts/check-blacklist-hashes.awk $(CONFIG_=
-SYSTEM_BLACKLIST_HASH_LIST) >&2; \
-> > +     cat $(CONFIG_SYSTEM_BLACKLIST_HASH_LIST) > $@
-> >
-> > -CFLAGS_blacklist_hashes.o +=3D -I$(srctree)
-> > -
-> > -targets +=3D blacklist_hashes_checked
-> > -$(obj)/blacklist_hashes_checked: $(SYSTEM_BLACKLIST_HASH_LIST_SRCPREFI=
-X)$(SYSTEM_BLACKLIST_HASH_LIST_FILENAME) scripts/check-blacklist-hashes.awk=
- FORCE
-> > -     $(call if_changed,check_blacklist_hashes,$(SYSTEM_BLACKLIST_HASH_=
-LIST_SRCPREFIX)$(CONFIG_SYSTEM_BLACKLIST_HASH_LIST))
-> > +$(obj)/blacklist_hash_list: $(CONFIG_SYSTEM_BLACKLIST_HASH_LIST) FORCE
-> > +     $(call if_changed,check_and_copy_blacklist_hash_list)
-> >   obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) +=3D blacklist_hashes.o
-> >   else
-> >   obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) +=3D blacklist_nohashes.o
-> >   endif
-> > +targets +=3D blacklist_hash_list
-> >
-> >   quiet_cmd_extract_certs  =3D CERT    $@
-> >         cmd_extract_certs  =3D $(obj)/extract-cert $(extract-cert-in) $=
-@
-> > @@ -33,7 +33,7 @@ $(obj)/system_certificates.o: $(obj)/x509_certificate=
-_list
-> >   $(obj)/x509_certificate_list: $(CONFIG_SYSTEM_TRUSTED_KEYS) $(obj)/ex=
-tract-cert FORCE
-> >       $(call if_changed,extract_certs)
-> >
-> > -targets +=3D x509_certificate_list blacklist_hashes_checked
-> > +targets +=3D x509_certificate_list
-> >
-> >   # If module signing is requested, say by allyesconfig, but a key has =
-not been
-> >   # supplied, then one will need to be generated to make sure the build=
- does not
-> > diff --git a/certs/blacklist_hashes.c b/certs/blacklist_hashes.c
-> > index d5961aa3d338..86d66fe11348 100644
-> > --- a/certs/blacklist_hashes.c
-> > +++ b/certs/blacklist_hashes.c
-> > @@ -2,6 +2,6 @@
-> >   #include "blacklist.h"
-> >
-> >   const char __initconst *const blacklist_hashes[] =3D {
-> > -#include CONFIG_SYSTEM_BLACKLIST_HASH_LIST
-> > +#include "blacklist_hash_list"
-> >       , NULL
-> >   };
-
-
-
---
-Best Regards
-Masahiro Yamada
