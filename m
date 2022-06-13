@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F0C1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:22:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 512EFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:22:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376579AbiFMNWE (ORCPT
+        id S1359443AbiFMNWP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:22:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58196 "EHLO
+        Mon, 13 Jun 2022 09:22:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376753AbiFMNT3 (ORCPT
+        with ESMTP id S1376846AbiFMNTg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:19:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FDE164D15;
-        Mon, 13 Jun 2022 04:22:59 -0700 (PDT)
+        Mon, 13 Jun 2022 09:19:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A6C668332;
+        Mon, 13 Jun 2022 04:23:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91F7460EAD;
-        Mon, 13 Jun 2022 11:22:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3746C34114;
-        Mon, 13 Jun 2022 11:22:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B5ADB80EAA;
+        Mon, 13 Jun 2022 11:22:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03E48C3411E;
+        Mon, 13 Jun 2022 11:22:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119339;
-        bh=V+2fr26x6mH1tjdXZJG+wmFJjeJtUEdbGyA7Ms03VpE=;
+        s=korg; t=1655119336;
+        bh=14TsCn54a3xzE/a5cVI/njMjihJEWCBEFwfM8vZP8RI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ipqOgMCGdknEUPqfAg4BoMs6kAjFhEk298rSs0cARcpiTFyCFEXg101GFML8TVW1g
-         VNdkyB1Gct90GLBGBHOSy8KGYPQEnJrihNFG5tdZ2bzJivzvr3H1PbB+Ub30WAU9tw
-         pPssVgx8kRiJbzJi6s4eByXNoTsS3ygNxfkLZ9Cg=
+        b=QAOt6aFI1yAB5w36EGqDXWtYjzpsKx0ZPJB8P7GI6ITM+MumTCmr+bbCKAX79mbXz
+         rKQ+Gq34j0KJJYU1NbnUCecErTGpOMh3Eg1Ur/2w/KtD+ozbKbhX3z+GZJb1+2lHOY
+         dMKpVPKclJLJ9JhNq1mQ245SEl6xZnMqU9Y9/ZzE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lijo Lazar <lijo.lazar@amd.com>,
-        Yang Wang <kevinyang.wang@amd.com>,
+        stable@vger.kernel.org, Gong Yuanjun <ruc_gongyuanjun@163.com>,
         Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 200/247] drm/amd/pm: Fix missing thermal throttler status
-Date:   Mon, 13 Jun 2022 12:11:42 +0200
-Message-Id: <20220613094929.012909765@linuxfoundation.org>
+Subject: [PATCH 5.15 199/247] drm/radeon: fix a possible null pointer dereference
+Date:   Mon, 13 Jun 2022 12:11:41 +0200
+Message-Id: <20220613094928.983331830@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -51,34 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lijo Lazar <lijo.lazar@amd.com>
+From: Gong Yuanjun <ruc_gongyuanjun@163.com>
 
-[ Upstream commit b0f4d663fce6a4232d3c20ce820f919111b1c60b ]
+[ Upstream commit a2b28708b645c5632dc93669ab06e97874c8244f ]
 
-On aldebaran, when thermal throttling happens due to excessive GPU
-temperature, the reason for throttling event is missed in warning
-message. This patch fixes it.
+In radeon_fp_native_mode(), the return value of drm_mode_duplicate()
+is assigned to mode, which will lead to a NULL pointer dereference
+on failure of drm_mode_duplicate(). Add a check to avoid npd.
 
-Signed-off-by: Lijo Lazar <lijo.lazar@amd.com>
-Reviewed-by: Yang Wang <kevinyang.wang@amd.com>
+The failure status of drm_cvt_mode() on the other path is checked too.
+
+Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
 Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/radeon/radeon_connectors.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
-index c9cfeb094750..d0c6b864d00a 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
-@@ -1627,6 +1627,7 @@ static const struct throttling_logging_label {
- 	uint32_t feature_mask;
- 	const char *label;
- } logging_label[] = {
-+	{(1U << THROTTLER_TEMP_GPU_BIT), "GPU"},
- 	{(1U << THROTTLER_TEMP_MEM_BIT), "HBM"},
- 	{(1U << THROTTLER_TEMP_VR_GFX_BIT), "VR of GFX rail"},
- 	{(1U << THROTTLER_TEMP_VR_MEM_BIT), "VR of HBM rail"},
+diff --git a/drivers/gpu/drm/radeon/radeon_connectors.c b/drivers/gpu/drm/radeon/radeon_connectors.c
+index 1546abcadacf..d157bb9072e8 100644
+--- a/drivers/gpu/drm/radeon/radeon_connectors.c
++++ b/drivers/gpu/drm/radeon/radeon_connectors.c
+@@ -473,6 +473,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
+ 	    native_mode->vdisplay != 0 &&
+ 	    native_mode->clock != 0) {
+ 		mode = drm_mode_duplicate(dev, native_mode);
++		if (!mode)
++			return NULL;
+ 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
+ 		drm_mode_set_name(mode);
+ 
+@@ -487,6 +489,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
+ 		 * simpler.
+ 		 */
+ 		mode = drm_cvt_mode(dev, native_mode->hdisplay, native_mode->vdisplay, 60, true, false, false);
++		if (!mode)
++			return NULL;
+ 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
+ 		DRM_DEBUG_KMS("Adding cvt approximation of native panel mode %s\n", mode->name);
+ 	}
 -- 
 2.35.1
 
