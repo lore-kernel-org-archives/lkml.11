@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AB71CCA494
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFC20CCA495
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383190AbiFMOP2 (ORCPT
+        id S1383320AbiFMOPl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:15:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51946 "EHLO
+        Mon, 13 Jun 2022 10:15:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382353AbiFMOFq (ORCPT
+        with ESMTP id S1382502AbiFMOF5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:05:46 -0400
+        Mon, 13 Jun 2022 10:05:57 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80F2995484;
-        Mon, 13 Jun 2022 04:40:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5A1295A31;
+        Mon, 13 Jun 2022 04:40:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4480E612AC;
-        Mon, 13 Jun 2022 11:40:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A158C34114;
-        Mon, 13 Jun 2022 11:40:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5192C6124E;
+        Mon, 13 Jun 2022 11:40:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62948C34114;
+        Mon, 13 Jun 2022 11:40:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120440;
-        bh=u3g6ye2lF1PUMaUH3OK098oauGnVr/Y/SqRnFmjCthM=;
+        s=korg; t=1655120452;
+        bh=T7zgCZdrnSI9zOst5mi3apWNt045/z6rDMsSMmV8L38=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kXdjmLS3aThY26yUmzNVuir6UZghbNbzA6iSki2WUwGsl9tPHiz5nZ7x0xwTTQ1hg
-         1N+jZCoJXJNfNoSxRx0XnQ3o5FggzpZsUyZbrk8+ZMhHbLg+HAWAzKwBEGEIHOUuiy
-         32d67qcO/h4LrBs5FGOVo3/s3oZYLsBSEJpE+7Wc=
+        b=WIFL5RQFCFCnkGdiMCY5jyvJ8uvUqBZZ5RIwirN6bN4i33Ukr3W1+V/3lU/rZxDb7
+         g1xlyTZRis7D4+vfWV1MdCwjLzKgdkQSrwj3yTjUAOmpP8ypZAacDfHYngOvOVeUc2
+         5bnqYzcFpZ46K0JoJOPvL67ZqCkgcDyKG6QC9Y7Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Cixi Geng <cixi.geng1@unisoc.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 033/298] iio: adc: sc27xx: Fine tune the scale calibration values
-Date:   Mon, 13 Jun 2022 12:08:47 +0200
-Message-Id: <20220613094925.935919427@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        Lin Ma <linma@zju.edu.cn>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 015/298] USB: storage: karma: fix rio_karma_init return
+Date:   Mon, 13 Jun 2022 12:08:29 +0200
+Message-Id: <20220613094925.388939519@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,62 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cixi Geng <cixi.geng1@unisoc.com>
+From: Lin Ma <linma@zju.edu.cn>
 
-[ Upstream commit 5a7a184b11c6910f47600ff5cbbee34168f701a8 ]
+[ Upstream commit b92ffb1eddd9a66a90defc556dcbf65a43c196c7 ]
 
-Small adjustment the scale calibration value for the sc2731,
-use new name sc2731_[big|small]_scale_graph_calib, and remove
-the origin [big|small]_scale_graph_calib struct for unused.
+The function rio_karam_init() should return -ENOMEM instead of
+value 0 (USB_STOR_TRANSPORT_GOOD) when allocation fails.
 
-Fixes: 8ba0dbfd07a35 (iio: adc: sc27xx: Add ADC scale calibration)
-Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
-Link: https://lore.kernel.org/r/20220419142458.884933-4-gengcixi@gmail.com
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Similarly, it should return -EIO when rio_karma_send_command() fails.
+
+Fixes: dfe0d3ba20e8 ("USB Storage: add rio karma eject support")
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Link: https://lore.kernel.org/r/20220412144359.28447-1-linma@zju.edu.cn
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/sc27xx_adc.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/usb/storage/karma.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
-index aee076c8e2b1..cfe003cc4f0b 100644
---- a/drivers/iio/adc/sc27xx_adc.c
-+++ b/drivers/iio/adc/sc27xx_adc.c
-@@ -103,14 +103,14 @@ static struct sc27xx_adc_linear_graph small_scale_graph = {
- 	100, 341,
- };
+diff --git a/drivers/usb/storage/karma.c b/drivers/usb/storage/karma.c
+index 05cec81dcd3f..38ddfedef629 100644
+--- a/drivers/usb/storage/karma.c
++++ b/drivers/usb/storage/karma.c
+@@ -174,24 +174,25 @@ static void rio_karma_destructor(void *extra)
  
--static const struct sc27xx_adc_linear_graph big_scale_graph_calib = {
--	4200, 856,
--	3600, 733,
-+static const struct sc27xx_adc_linear_graph sc2731_big_scale_graph_calib = {
-+	4200, 850,
-+	3600, 728,
- };
+ static int rio_karma_init(struct us_data *us)
+ {
+-	int ret = 0;
+ 	struct karma_data *data = kzalloc(sizeof(struct karma_data), GFP_NOIO);
  
--static const struct sc27xx_adc_linear_graph small_scale_graph_calib = {
--	1000, 833,
--	100, 80,
-+static const struct sc27xx_adc_linear_graph sc2731_small_scale_graph_calib = {
-+	1000, 838,
-+	100, 84,
- };
+ 	if (!data)
+-		goto out;
++		return -ENOMEM;
  
- static int sc27xx_adc_get_calib_data(u32 calib_data, int calib_adc)
-@@ -130,11 +130,11 @@ static int sc27xx_adc_scale_calibration(struct sc27xx_adc_data *data,
- 	size_t len;
- 
- 	if (big_scale) {
--		calib_graph = &big_scale_graph_calib;
-+		calib_graph = &sc2731_big_scale_graph_calib;
- 		graph = &big_scale_graph;
- 		cell_name = "big_scale_calib";
- 	} else {
--		calib_graph = &small_scale_graph_calib;
-+		calib_graph = &sc2731_small_scale_graph_calib;
- 		graph = &small_scale_graph;
- 		cell_name = "small_scale_calib";
+ 	data->recv = kmalloc(RIO_RECV_LEN, GFP_NOIO);
+ 	if (!data->recv) {
+ 		kfree(data);
+-		goto out;
++		return -ENOMEM;
  	}
+ 
+ 	us->extra = data;
+ 	us->extra_destructor = rio_karma_destructor;
+-	ret = rio_karma_send_command(RIO_ENTER_STORAGE, us);
+-	data->in_storage = (ret == 0);
+-out:
+-	return ret;
++	if (rio_karma_send_command(RIO_ENTER_STORAGE, us))
++		return -EIO;
++
++	data->in_storage = 1;
++
++	return 0;
+ }
+ 
+ static struct scsi_host_template karma_host_template;
 -- 
 2.35.1
 
