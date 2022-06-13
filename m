@@ -2,173 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5F4DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:55:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7C61CCA483
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:56:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354747AbiFMMzr (ORCPT
+        id S1355049AbiFMMz7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:55:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44556 "EHLO
+        Mon, 13 Jun 2022 08:55:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356770AbiFMMyI (ORCPT
+        with ESMTP id S1357005AbiFMMyK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:54:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 638785A2D1;
-        Mon, 13 Jun 2022 04:12:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 24790B80EA8;
-        Mon, 13 Jun 2022 11:12:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E179C3411C;
-        Mon, 13 Jun 2022 11:12:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118773;
-        bh=D3+pG5k294zUepKwNi+He8f5PZtnBZaqy/pOv3BhUCs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UTrirRf50TJeLex3kYixNtaj1c6W5OGDC/EzoHkFwgr9DdtLlBd1tktj5fZr+sIFK
-         WFi3docyFSn6iDMFZbZC06rnddfUZyydW3ilFMnpb966mEwopEKbWFek4Zj+/HxPLu
-         TxWBT1ONZUvccBptv64hEppzJ8GT5g0d+GmjT4Ic=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Hurley <peter@hurleysoftware.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Daniel Gibson <daniel@gibson.sh>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 008/247] tty: n_tty: Restore EOF push handling behavior
-Date:   Mon, 13 Jun 2022 12:08:30 +0200
-Message-Id: <20220613094923.168707078@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
-References: <20220613094922.843438024@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 13 Jun 2022 08:54:10 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 463056352C;
+        Mon, 13 Jun 2022 04:13:00 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id i64so5443650pfc.8;
+        Mon, 13 Jun 2022 04:13:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=H0uTDh6aYM5COnk2LVf+hv3AKvxMR4j6qZouxZ1ZW08=;
+        b=oMtXDMaL+3K41xX3wOjL+4cJPZPdia8pK0tBsbVNhsHMmgvlY2yDecUqMCbiNaC+Hn
+         8cE8h6SDOvEYWn/WwmLZ7sMRWZcuF9sdzlzyVE8GzzvRuSA1/RBlFOfELSjinK69NNdo
+         0RDq6mLN6SnRWd2YXZ3BS8V15ynLULjLSzLfjj62me3lSsdxEdTxpcK9sLqdtAL18ikn
+         10+cvHGXBMsVmzKBDU7JNlm+oBJ2PwkYMBbXwe4ddFKqZ4oTzjFc8C/lw0j/6fCvtch2
+         /PH0f1TQoGivWlVyZKddDusoDyGdaC3bO0lueeCM1l2VrOtE2glqpbHGcaZb9gaPcN3s
+         3QSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=H0uTDh6aYM5COnk2LVf+hv3AKvxMR4j6qZouxZ1ZW08=;
+        b=n+zqPlV+/loHgiVLzFGLKtjV4Y/JH2j1u2lYfJT1GGZD5vY36piSl24QnpyyL91SPK
+         i5Q81++x41p4YNOLFyn9GVhDsqLMWqpcIZljwITlaGsXFic4zRODqQi6bU+WDn8CBIzd
+         FbbY7YCCIySwPSZnHTdnXNesEMikeLUuSyfjrb2xq4dfJbtQEsVaxiYwjTG5obOWgwvY
+         WvyLSd4AdzWbdVmageYo8/f4p/sWM1GJNVO525JTwbcSgjOvWHNde/U7rysRv+kWXHtN
+         NFKYTahoea0ITMvxRklokcyiCvy6FMQaMbtMbolYF0y2X9uXtbNzwe+Tjk7XLXvMDCNC
+         M5NQ==
+X-Gm-Message-State: AOAM530AFg2T0iz1UoR8ii3eDMJlO6tMywZEcaGcCmQ7kPaVUROzizyD
+        2zRvGFoTNt/SS6z8t7vC9BM=
+X-Google-Smtp-Source: ABdhPJzUET+kWcvRpxcgqFcYe7H7yEtugI2dhw2yXyAzpnbUyW0Jye1NyMKd3NCLfMtc5qXAlEC96g==
+X-Received: by 2002:a63:2f84:0:b0:408:9c77:7a7e with SMTP id v126-20020a632f84000000b004089c777a7emr68350pgv.191.1655118778405;
+        Mon, 13 Jun 2022 04:12:58 -0700 (PDT)
+Received: from RD-3580-24288.rt.l (42-72-115-109.emome-ip.hinet.net. [42.72.115.109])
+        by smtp.gmail.com with ESMTPSA id g17-20020a056a000b9100b0051b4e53c487sm5199989pfj.45.2022.06.13.04.12.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 04:12:58 -0700 (PDT)
+From:   ChiaEn Wu <peterwu.pub@gmail.com>
+To:     jic23@kernel.org, lars@metafoo.de, matthias.bgg@gmail.com,
+        lee.jones@linaro.org, daniel.thompson@linaro.org,
+        jingoohan1@gmail.com, pavel@ucw.cz, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        szunichen@gmail.com, ChiYuan Huang <cy_huang@richtek.com>
+Subject: [PATCH v2 03/15] dt-bindings: leds: mt6370: Add Mediatek mt6370 current sink type LED indicator
+Date:   Mon, 13 Jun 2022 19:11:34 +0800
+Message-Id: <20220613111146.25221-4-peterwu.pub@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220613111146.25221-1-peterwu.pub@gmail.com>
+References: <20220613111146.25221-1-peterwu.pub@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Gibson <daniel@gibson.sh>
+From: ChiYuan Huang <cy_huang@richtek.com>
 
-[ Upstream commit 65a8b287023da68c4550deab5c764e6891cf1caf ]
+Add Mediatek mt6370 current sink type LED indicator binding documentation.
 
-TTYs in ICANON mode have a special case that allows "pushing" a line
-without a regular EOL character (like newline), by using EOF (the EOT
-character - ASCII 0x4) as a pseudo-EOL. It is silently discarded, so
-the reader of the PTS will receive the line *without* EOF or any other
-terminating character.
-
-This special case has an edge case: What happens if the readers buffer
-is the same size as the line (without EOF)? Will they be able to tell
-if the whole line is received, i.e. if the next read() will return more
-of the same line or the next line?
-
-There are two possibilities,  that both have (dis)advantages:
-
-1. The next read() returns 0. FreeBSD (13.0) and OSX (10.11) do this.
-   Advantage: The reader can interpret this as "the line is over".
-   Disadvantage: read() returning 0 means EOF, the reader could also
-   interpret it as "there's no more data" and stop reading or even
-   close the PT.
-
-2. The next read() returns the next line, the EOF is silently discarded.
-   Solaris (or at least OpenIndiana 2021.10) does this, Linux has done
-   do this since commit 40d5e0905a03 ("n_tty: Fix EOF push handling");
-   this behavior was recently broken by commit 359303076163 ("tty:
-   n_tty: do not look ahead for EOL character past the end of the buffer").
-   Advantage: read() won't return 0 (EOF), reader less likely to be
-   confused (and things like `while(read(..)>0)` don't break)
-   Disadvantage: The reader can't really know if the read() continues
-   the last line (that filled the whole read buffer) or starts a
-   new line.
-
-As both options are defensible (and are used by other Unix-likes), it's
-best to stick to the "old" behavior since "n_tty: Fix EOF push handling"
-of 2013, i.e. silently discard that EOF.
-
-This patch - that I actually got from Linus for testing and only
-modified slightly - restores that behavior by skipping an EOF
-character if it's the next character after reading is done.
-
-Based on a patch from Linus Torvalds.
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215611
-Fixes: 359303076163 ("tty: n_tty: do not look ahead for EOL character past the end of the buffer")
-Cc: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Reviewed-and-tested-by: Daniel Gibson <daniel@gibson.sh>
-Acked-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Daniel Gibson <daniel@gibson.sh>
-Link: https://lore.kernel.org/r/20220329235810.452513-2-daniel@gibson.sh
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
 ---
- drivers/tty/n_tty.c | 38 +++++++++++++++++++++++++++++++++++++-
- 1 file changed, 37 insertions(+), 1 deletion(-)
+ .../leds/mediatek,mt6370-indicator.yaml       | 48 +++++++++++++++++++
+ 1 file changed, 48 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/leds/mediatek,mt6370-indicator.yaml
 
-diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index de5b45de5040..891036bd9f89 100644
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -2012,6 +2012,35 @@ static bool canon_copy_from_read_buf(struct tty_struct *tty,
- 	return ldata->read_tail != canon_head;
- }
- 
-+/*
-+ * If we finished a read at the exact location of an
-+ * EOF (special EOL character that's a __DISABLED_CHAR)
-+ * in the stream, silently eat the EOF.
-+ */
-+static void canon_skip_eof(struct tty_struct *tty)
-+{
-+	struct n_tty_data *ldata = tty->disc_data;
-+	size_t tail, canon_head;
+diff --git a/Documentation/devicetree/bindings/leds/mediatek,mt6370-indicator.yaml b/Documentation/devicetree/bindings/leds/mediatek,mt6370-indicator.yaml
+new file mode 100644
+index 000000000000..42b96c8047a3
+--- /dev/null
++++ b/Documentation/devicetree/bindings/leds/mediatek,mt6370-indicator.yaml
+@@ -0,0 +1,48 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/leds/mediatek,mt6370-indicator.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+	canon_head = smp_load_acquire(&ldata->canon_head);
-+	tail = ldata->read_tail;
++title: LED driver for MT6370 PMIC from MediaTek Integrated.
 +
-+	// No data?
-+	if (tail == canon_head)
-+		return;
++maintainers:
++  - Alice Chen <alice_chen@richtek.com>
 +
-+	// See if the tail position is EOF in the circular buffer
-+	tail &= (N_TTY_BUF_SIZE - 1);
-+	if (!test_bit(tail, ldata->read_flags))
-+		return;
-+	if (read_buf(ldata, tail) != __DISABLED_CHAR)
-+		return;
++description: |
++  This module is part of the MT6370 MFD device.
++  Add MT6370 LED driver include 4-channel RGB LED support Register/PWM/Breath Mode
 +
-+	// Clear the EOL bit, skip the EOF char.
-+	clear_bit(tail, ldata->read_flags);
-+	smp_store_release(&ldata->read_tail, ldata->read_tail + 1);
-+}
++properties:
++  compatible:
++    const: mediatek,mt6370-indicator
 +
- /**
-  *	job_control		-	check job control
-  *	@tty: tty
-@@ -2081,7 +2110,14 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file,
- 	 */
- 	if (*cookie) {
- 		if (ldata->icanon && !L_EXTPROC(tty)) {
--			if (canon_copy_from_read_buf(tty, &kb, &nr))
-+			/*
-+			 * If we have filled the user buffer, see
-+			 * if we should skip an EOF character before
-+			 * releasing the lock and returning done.
-+			 */
-+			if (!nr)
-+				canon_skip_eof(tty);
-+			else if (canon_copy_from_read_buf(tty, &kb, &nr))
- 				return kb - kbuf;
- 		} else {
- 			if (copy_from_read_buf(tty, &kb, &nr))
++  "#address-cells":
++    const: 1
++
++  "#size-cells":
++    const: 0
++
++patternProperties:
++  "^(multi-)?led@[0-3]$":
++    $ref: common.yaml#
++    type: object
++
++    properties:
++      reg:
++        description: |
++          Index of the LED.
++        enum:
++          - 0 # LED output ISINK1
++          - 1 # LED output ISINK2
++          - 2 # LED output ISINK3
++          - 3 # LED output ISINK4
++
++    unevaluatedProperties: false
++
++required:
++  - compatible
++  - "#address-cells"
++  - "#size-cells"
++
++additionalProperties: false
 -- 
-2.35.1
-
-
+2.25.1
 
