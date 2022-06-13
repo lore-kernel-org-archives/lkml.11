@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF056C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:51:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55B10C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:52:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386172AbiFMOvu (ORCPT
+        id S1386052AbiFMOv5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:51:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43516 "EHLO
+        Mon, 13 Jun 2022 10:51:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385946AbiFMOsv (ORCPT
+        with ESMTP id S1386135AbiFMOtF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:48:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95705C2ECB;
-        Mon, 13 Jun 2022 04:53:27 -0700 (PDT)
+        Mon, 13 Jun 2022 10:49:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 407EAC1ECA;
+        Mon, 13 Jun 2022 04:53:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 88D856124E;
-        Mon, 13 Jun 2022 11:53:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91817C34114;
-        Mon, 13 Jun 2022 11:53:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 206D561449;
+        Mon, 13 Jun 2022 11:48:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E1BDC34114;
+        Mon, 13 Jun 2022 11:48:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655121193;
-        bh=oQaEf7TcFQLf12PeD593fPUkHJ8E0yg6lQV1dyKGqcI=;
+        s=korg; t=1655120894;
+        bh=PAF/TjJ7I6lN/081b11GH9REtxTMzr1Vb9F9Oe3Mr+M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2kWH0buyY+91nWy7EJoBHyzB47xazwhTaHEVu+wpeI/caED6sHs8EpWWhGht4H2S0
-         Pxi4+DmUS9170y/3PI163XwmtAZGgKXhnKFxbJeiHZVrvtAsVROnLHtE/8iGQcBT3w
-         Ai96+KbckT3P7N4N5eNyp9BDIOWHh7aOA1fm4I2g=
+        b=fFzYhvBp9f5jeNXGDOD+ogsUC3B0PRlTk2jYYn4CZGBKgB8tXQiHPX97UCWjd2Xgv
+         3JtPrcVZPT1zhP+T98KijRLPdbIvlYF0u1mSBYTt33dEPRRPmkRrkclE347fjmcdtr
+         dmX6MxDAlcQpEn3/F41Jv+bDw/Ohk9biUdUSpaCM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Subject: [PATCH 5.17 298/298] zonefs: fix handling of explicit_open option on mount
-Date:   Mon, 13 Jun 2022 12:13:12 +0200
-Message-Id: <20220613094934.114883835@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 174/298] af_unix: Fix a data-race in unix_dgram_peer_wake_me().
+Date:   Mon, 13 Jun 2022 12:11:08 +0200
+Message-Id: <20220613094930.210946100@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -51,52 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit a2a513be7139b279f1b5b2cee59c6c4950c34346 upstream.
+[ Upstream commit 662a80946ce13633ae90a55379f1346c10f0c432 ]
 
-Ignoring the explicit_open mount option on mount for devices that do not
-have a limit on the number of open zones must be done after the mount
-options are parsed and set in s_mount_opts. Move the check to ignore
-the explicit_open option after the call to zonefs_parse_options() in
-zonefs_fill_super().
+unix_dgram_poll() calls unix_dgram_peer_wake_me() without `other`'s
+lock held and check if its receive queue is full.  Here we need to
+use unix_recvq_full_lockless() instead of unix_recvq_full(), otherwise
+KCSAN will report a data-race.
 
-Fixes: b5c00e975779 ("zonefs: open/close zone on file open/close")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 7d267278a9ec ("unix: avoid use-after-free in ep_remove_wait_queue")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Link: https://lore.kernel.org/r/20220605232325.11804-1-kuniyu@amazon.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/zonefs/super.c |   11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ net/unix/af_unix.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/zonefs/super.c
-+++ b/fs/zonefs/super.c
-@@ -1694,11 +1694,6 @@ static int zonefs_fill_super(struct supe
- 	sbi->s_mount_opts = ZONEFS_MNTOPT_ERRORS_RO;
- 	sbi->s_max_open_zones = bdev_max_open_zones(sb->s_bdev);
- 	atomic_set(&sbi->s_open_zones, 0);
--	if (!sbi->s_max_open_zones &&
--	    sbi->s_mount_opts & ZONEFS_MNTOPT_EXPLICIT_OPEN) {
--		zonefs_info(sb, "No open zones limit. Ignoring explicit_open mount option\n");
--		sbi->s_mount_opts &= ~ZONEFS_MNTOPT_EXPLICIT_OPEN;
--	}
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index 1e7ed5829ed5..99c56922abf5 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -490,7 +490,7 @@ static int unix_dgram_peer_wake_me(struct sock *sk, struct sock *other)
+ 	 * -ECONNREFUSED. Otherwise, if we haven't queued any skbs
+ 	 * to other and its full, we will hang waiting for POLLOUT.
+ 	 */
+-	if (unix_recvq_full(other) && !sock_flag(other, SOCK_DEAD))
++	if (unix_recvq_full_lockless(other) && !sock_flag(other, SOCK_DEAD))
+ 		return 1;
  
- 	ret = zonefs_read_super(sb);
- 	if (ret)
-@@ -1717,6 +1712,12 @@ static int zonefs_fill_super(struct supe
- 	zonefs_info(sb, "Mounting %u zones",
- 		    blkdev_nr_zones(sb->s_bdev->bd_disk));
- 
-+	if (!sbi->s_max_open_zones &&
-+	    sbi->s_mount_opts & ZONEFS_MNTOPT_EXPLICIT_OPEN) {
-+		zonefs_info(sb, "No open zones limit. Ignoring explicit_open mount option\n");
-+		sbi->s_mount_opts &= ~ZONEFS_MNTOPT_EXPLICIT_OPEN;
-+	}
-+
- 	/* Create root directory inode */
- 	ret = -ENOMEM;
- 	inode = new_inode(sb);
+ 	if (connected)
+-- 
+2.35.1
+
 
 
