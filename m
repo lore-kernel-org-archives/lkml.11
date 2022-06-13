@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48A45CCA483
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:47:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A24ECCA487
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:48:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244339AbiFMUrh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:47:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52444 "EHLO
+        id S1343728AbiFMUru (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 16:47:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242348AbiFMUqd (ORCPT
+        with ESMTP id S1349785AbiFMUp6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:46:33 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6563411C23
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:57:46 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id 3-20020a17090a174300b001e426a02ac5so9818420pjm.2
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:57:46 -0700 (PDT)
+        Mon, 13 Jun 2022 16:45:58 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D31023525F
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:57:13 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id g8so770012plt.8
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:57:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=1ctYV5CtpweQWwhemRH689WvsToB4VjKXh88G2Mf0xQ=;
-        b=KU4bwCyM432Sc7bUoksU95EBphe6ApddgD25OxO1uN7LgceYRVOSvwXLw2SxXYpDIn
-         TCv9dD+ytgIhPrt1yUCgwwurS5WM5wy14NAeS5J71F83Blm3Y5S+kDuihn2JaYme1jug
-         fSRv+qTWMz3yb6wcvxPz/UBxpUT/kpU4ScKYp1PARfEHAt6khFEBxavh/nXHM/slPzxk
-         a4rYIjwN3vk+y328sZiAfBxb5ILwNpASm7Ssx0lQ9q2MxteA08/8G2ipKk91524cU4IL
-         EI4kfJ6z2ANrjVhx6PKo0hed6/EEZcGkxE88A514wqlU9PRsciL0rY6her3vWu+e/rIK
-         DTng==
+        h=from:to:cc:subject:date:message-id;
+        bh=6Q84YOUaUYvCziNbod1CpGn7SNbOLOf4WmTjcjyAvNg=;
+        b=BLXtU6MAFJq5ssm4lI4sJ0/r9iEVIqEhjHPbmHzRyPqsCvEC2CZbeLRYCtHSHM6aAh
+         L13Puo2cZHHMlpKPRhpKuAzxSXRDHjZUFOCNzttCWSFhYtqPiAG9Q0foMXLWER9oMzzD
+         RHpMpZhvacF7FHq6jVX1T+5E0AnnCNmLJ8MaFCUkpneMVQX6QzXzN4TKl3ry5lsugEUf
+         9b3/hfnFj0kN+5W1g+boYR9kfgl4aYq8Np1JVODyFoJlRtdW4NhQUk/6yCYe+XP2Gf6D
+         ZC1bb1tNWfwoGZb+PKiReA42F87Ge7uLgRpS+ty1F+kIuPrdkUKqEKj7NJ849umOos+z
+         QpKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=1ctYV5CtpweQWwhemRH689WvsToB4VjKXh88G2Mf0xQ=;
-        b=LoMSR3FJMn4qmwTiUs9XTQlIFBM+GieE4Lvu6whZovKpoGP8QVs4WaJ4kEpbQw3ygY
-         SsfJKaIxdYl3hmr63D3Nka0MfWWTBBlbgIEbZusXdzR9yP3aWJ9ybeEj/t4I+XC56/XU
-         8O325hasStYFKMahadtL7vpKVP+IpiizvXeJpryidehbUW3Z5PpS4jon9I9sCtIYrKEb
-         Xk2TuiUxwKibW0SrfTg8vzYSYd4gg7LuK5o9W3FxPeWDZlgp7fSAj0e1tkkcTAHvuVN9
-         HXA/Spi4P7RZbThYilbES7js5Qox/HgwOl3tHO7whZXN6jj5q5lHeOEMS8I4Vcsdorsp
-         g5sg==
-X-Gm-Message-State: AJIora/mcRDSn5ED+ImoywZAfGeAjmwRXxJrL54ZMF3UBqcYDnu2lACy
-        IBvEuwujp5IvaHXeLk7OXr2wLg==
-X-Google-Smtp-Source: AGRyM1srdQbNwx41tXUnvYf3A9njwwFcL6cYLU2K1BmNaGiywHkukGrpzW0Jj2DIkNtoJHT5mf0eaQ==
-X-Received: by 2002:a17:902:eccc:b0:167:5c6e:31e4 with SMTP id a12-20020a170902eccc00b001675c6e31e4mr753614plh.90.1655150265894;
-        Mon, 13 Jun 2022 12:57:45 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=6Q84YOUaUYvCziNbod1CpGn7SNbOLOf4WmTjcjyAvNg=;
+        b=4TUBTNH9hKXycxXY1SetBjr47eYoIv5IB5LuZGqGwikguL16Pcpqu44oPFa+roIxjK
+         B99kxaYglMNcegQeneEGusFJVO5xitC2fNp3wmiddV2t/JcaXH4FLZzXdWiEOYu7oGVc
+         VPcQz4uYQujI35KwfdP7KguD0zN3jq3MFKwUeY2x16ox8FvWGcPJaBz3ADV9mhbCwIxv
+         AE+/CSDa//WSsoU9+liaEp2t9JsniDahEkgzYrnem7C7+lghWrMnHkphmMelkxc7fg+o
+         m38aB03wZPmGMZUOJZmdI3gry8M+5F/SegpWmRaXciqBbH4MKGO+hTdLAZJUCF9UlyMh
+         D5Tg==
+X-Gm-Message-State: AOAM533UCgzjJkDri4/bEN/HIMWXNq725AVhGOSOPBiMhL3FqFitEpfG
+        3kpCEAykdHbUnaZ4RTd2he3W3Q==
+X-Google-Smtp-Source: AGRyM1tHDOCjTnfHqTX8BF/l+bjxaQLXumsogekN2cwVv4Qa8s2rjq7p0HuTq502cayORc1+gR3kLQ==
+X-Received: by 2002:a17:902:c244:b0:168:c4c3:e80e with SMTP id 4-20020a170902c24400b00168c4c3e80emr967363plg.18.1655150233307;
+        Mon, 13 Jun 2022 12:57:13 -0700 (PDT)
 Received: from platform-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id q21-20020a170902edd500b0016797c33b6csm5509357plk.116.2022.06.13.12.57.43
+        by smtp.gmail.com with ESMTPSA id q21-20020a170902edd500b0016797c33b6csm5509357plk.116.2022.06.13.12.57.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 12:57:45 -0700 (PDT)
+        Mon, 13 Jun 2022 12:57:12 -0700 (PDT)
 From:   Brad Larson <brad@pensando.io>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
@@ -61,94 +61,101 @@ Cc:     linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
         robh+dt@kernel.org, samuel@sholland.org, fancer.lancer@gmail.com,
         suravee.suthikulpanit@amd.com, thomas.lendacky@amd.com,
         ulf.hansson@linaro.org, will@kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH v5 11/15] spi: cadence-quadspi: Add compatible for AMD Pensando Elba SoC
-Date:   Mon, 13 Jun 2022 12:56:54 -0700
-Message-Id: <20220613195658.5607-12-brad@pensando.io>
+Subject: [PATCH v5 00/15] Support AMD Pensando Elba SoC
+Date:   Mon, 13 Jun 2022 12:56:43 -0700
+Message-Id: <20220613195658.5607-1-brad@pensando.io>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220613195658.5607-1-brad@pensando.io>
-References: <20220613195658.5607-1-brad@pensando.io>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Brad Larson <blarson@amd.com>
 
-The AMD Pensando Elba SoC has the Cadence QSPI controller integrated.
+This series enables support for AMD Pensando Elba SoC based platforms.
 
-The quirk CQSPI_NEEDS_APB_AHB_HAZARD_WAR is added and if enabled
-a dummy readback from the controller is performed to ensure
-synchronization.
+The Elba SoC has the following features:
+- Sixteen ARM64 A72 cores
+- Dual DDR 4/5 memory controllers
+- 32 lanes of PCIe Gen3/4 to the Host
+- Network interfaces: Dual 200GE, Quad 100GE, 50GE, 25GE, 10GE and
+  also a single 1GE management port.
+- Storage/crypto offloads and 144 programmable P4 cores.
+- QSPI and EMMC for SoC storage
+- Two SPI interfaces for peripheral management
+- I2C bus for platform management
 
-Signed-off-by: Brad Larson <blarson@amd.com>
----
- drivers/spi/spi-cadence-quadspi.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+This is a respin based on review inputs
 
-diff --git a/drivers/spi/spi-cadence-quadspi.c b/drivers/spi/spi-cadence-quadspi.c
-index 72b1a5a2298c..ebb77ea8e6ba 100644
---- a/drivers/spi/spi-cadence-quadspi.c
-+++ b/drivers/spi/spi-cadence-quadspi.c
-@@ -39,6 +39,7 @@
- #define CQSPI_DISABLE_DAC_MODE		BIT(1)
- #define CQSPI_SUPPORT_EXTERNAL_DMA	BIT(2)
- #define CQSPI_NO_SUPPORT_WR_COMPLETION	BIT(3)
-+#define CQSPI_NEEDS_APB_AHB_HAZARD_WAR	BIT(4)
- 
- /* Capabilities */
- #define CQSPI_SUPPORTS_OCTAL		BIT(0)
-@@ -87,6 +88,7 @@ struct cqspi_st {
- 	bool			use_dma_read;
- 	u32			pd_dev_id;
- 	bool			wr_completion;
-+	bool			apb_ahb_hazard;
- };
- 
- struct cqspi_driver_platdata {
-@@ -952,6 +954,13 @@ static int cqspi_indirect_write_execute(struct cqspi_flash_pdata *f_pdata,
- 	if (cqspi->wr_delay)
- 		ndelay(cqspi->wr_delay);
- 
-+	/*
-+	 * If a hazard exists between the APB and AHB interfaces, perform a
-+	 * dummy readback from the controller to ensure synchronization.
-+	 */
-+	if (cqspi->apb_ahb_hazard)
-+		(void)readl(reg_base + CQSPI_REG_INDIRECTWR);
-+
- 	while (remaining > 0) {
- 		size_t write_words, mod_bytes;
- 
-@@ -1667,6 +1676,8 @@ static int cqspi_probe(struct platform_device *pdev)
- 			cqspi->use_dma_read = true;
- 		if (ddata->quirks & CQSPI_NO_SUPPORT_WR_COMPLETION)
- 			cqspi->wr_completion = false;
-+		if (ddata->quirks & CQSPI_NEEDS_APB_AHB_HAZARD_WAR)
-+			cqspi->apb_ahb_hazard = true;
- 
- 		if (of_device_is_compatible(pdev->dev.of_node,
- 					    "xlnx,versal-ospi-1.0"))
-@@ -1789,6 +1800,10 @@ static const struct cqspi_driver_platdata versal_ospi = {
- 	.get_dma_status = cqspi_get_versal_dma_status,
- };
- 
-+static const struct cqspi_driver_platdata pen_cdns_qspi = {
-+	.quirks = CQSPI_NEEDS_APB_AHB_HAZARD_WAR | CQSPI_DISABLE_DAC_MODE,
-+};
-+
- static const struct of_device_id cqspi_dt_ids[] = {
- 	{
- 		.compatible = "cdns,qspi-nor",
-@@ -1814,6 +1829,10 @@ static const struct of_device_id cqspi_dt_ids[] = {
- 		.compatible = "intel,socfpga-qspi",
- 		.data = &socfpga_qspi,
- 	},
-+	{
-+		.compatible = "amd,pensando-elba-qspi",
-+		.data = &pen_cdns_qspi,
-+	},
- 	{ /* end of table */ }
- };
- 
+1. Change to AMD Pensando instead of Pensando.
+
+2. No reference to spidev in the device tree.  Add multi-function driver
+   pensando-elbasr and sub-device reset-elbasr.
+
+3. Rebase to linux-next tag next-20220609 5.19.0-rc1
+
+4. Redo the email list after rebase and using scripts/get_maintainer.pl
+
+Brad Larson (15):
+  dt-bindings: arm: add AMD Pensando boards
+  dt-bindings: mmc: cdns: Add AMD Pensando Elba SoC binding
+  dt-bindings: spi: cdns: Add compatible for AMD Pensando Elba SoC
+  dt-bindings: spi: dw: Add AMD Pensando Elba SoC SPI Controller
+    bindings
+  dt-bindings: mfd: syscon: Add amd,pensando-elba-syscon compatible
+  dt-bindings: mfd: amd,pensando-elbasr: Add AMD Pensando Elba System
+    Resource chip
+  dt-bindings: reset: amd,pensando-elbasr-reset: Add AMD Pensando SR
+    Reset Controller bindings
+  MAINTAINERS: Add entry for AMD PENSANDO
+  arm64: Add config for AMD Pensando SoC platforms
+  arm64: dts: Add AMD Pensando Elba SoC support
+  spi: cadence-quadspi: Add compatible for AMD Pensando Elba SoC
+  spi: dw: Add support for AMD Pensando Elba SoC
+  mmc: sdhci-cadence: Add AMD Pensando Elba SoC support
+  mfd: pensando-elbasr: Add AMD Pensando Elba System Resource chip
+  reset: elbasr: Add AMD Pensando Elba SR Reset Controller
+
+ .../devicetree/bindings/arm/amd,pensando.yaml |  26 +
+ .../bindings/mfd/amd,pensando-elbasr.yaml     |  93 ++
+ .../devicetree/bindings/mfd/syscon.yaml       |   1 +
+ .../devicetree/bindings/mmc/cdns,sdhci.yaml   |  14 +
+ .../reset/amd,pensando-elbasr-reset.yaml      |  62 ++
+ .../bindings/spi/cdns,qspi-nor.yaml           |  12 +
+ .../bindings/spi/snps,dw-apb-ssi.yaml         |   2 +
+ MAINTAINERS                                   |  10 +
+ arch/arm64/Kconfig.platforms                  |  12 +
+ arch/arm64/boot/dts/amd/Makefile              |   1 +
+ arch/arm64/boot/dts/amd/elba-16core.dtsi      | 189 ++++
+ arch/arm64/boot/dts/amd/elba-asic-common.dtsi | 103 +++
+ arch/arm64/boot/dts/amd/elba-asic.dts         |  28 +
+ arch/arm64/boot/dts/amd/elba-flash-parts.dtsi | 106 +++
+ arch/arm64/boot/dts/amd/elba.dtsi             | 191 ++++
+ drivers/mfd/Kconfig                           |  14 +
+ drivers/mfd/Makefile                          |   1 +
+ drivers/mfd/pensando-elbasr.c                 | 862 ++++++++++++++++++
+ drivers/mmc/host/Kconfig                      |   1 +
+ drivers/mmc/host/sdhci-cadence.c              | 179 +++-
+ drivers/reset/Kconfig                         |   9 +
+ drivers/reset/Makefile                        |   1 +
+ drivers/reset/reset-elbasr.c                  |  94 ++
+ drivers/spi/spi-cadence-quadspi.c             |  19 +
+ drivers/spi/spi-dw-mmio.c                     |  66 ++
+ .../reset/amd,pensando-elba-reset.h           |  11 +
+ include/linux/mfd/pensando-elbasr.h           |  78 ++
+ 27 files changed, 2171 insertions(+), 14 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/arm/amd,pensando.yaml
+ create mode 100644 Documentation/devicetree/bindings/mfd/amd,pensando-elbasr.yaml
+ create mode 100644 Documentation/devicetree/bindings/reset/amd,pensando-elbasr-reset.yaml
+ create mode 100644 arch/arm64/boot/dts/amd/elba-16core.dtsi
+ create mode 100644 arch/arm64/boot/dts/amd/elba-asic-common.dtsi
+ create mode 100644 arch/arm64/boot/dts/amd/elba-asic.dts
+ create mode 100644 arch/arm64/boot/dts/amd/elba-flash-parts.dtsi
+ create mode 100644 arch/arm64/boot/dts/amd/elba.dtsi
+ create mode 100644 drivers/mfd/pensando-elbasr.c
+ create mode 100644 drivers/reset/reset-elbasr.c
+ create mode 100644 include/dt-bindings/reset/amd,pensando-elba-reset.h
+ create mode 100644 include/linux/mfd/pensando-elbasr.h
+
 -- 
 2.17.1
 
