@@ -2,81 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68D3BCCA480
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 778DCCCA483
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:39:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355422AbiFMLin (ORCPT
+        id S1355437AbiFMLiq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:38:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56178 "EHLO
+        Mon, 13 Jun 2022 07:38:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354411AbiFML32 (ORCPT
+        with ESMTP id S1354438AbiFML33 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:29:28 -0400
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08DF2CE0E
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 03:44:08 -0700 (PDT)
-Received: by mail-io1-f69.google.com with SMTP id k5-20020a6bba05000000b00668eb755190so2446753iof.13
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 03:44:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=fEZcgfMVZzqJc7ybxib8fa3FVpwuXcVDtcH0dPsG3A0=;
-        b=601y0HVxa4fREISrgpDWzsilKOyzbKFC4Ub9B1irwDhm42WplZYj5ERcyzh3N2jRvp
-         t35l6hIFg4xVKDlobkkesk/J5IQ8+OmxuG9Fj7yOko0jQMZPXUDYodY37DvtKuoHvvMb
-         JeuRDTTcgg0vm7+uZJb4fuwXvjwmpUMWTY6K3QacakLmpgxw3mHBAjL0a3O+lCciDkGE
-         IPWM0b689plNj2TMvf1O84t6ta45IK/yc4+Dr8BHKOyI3+DC/EuL0etcQL+jwiKuhPgD
-         vMGi6ej+ifN6VCZHCAgUfjFEafDgQfWNhwp/+OHdMgvmMijPipufT/wHBZur2Y0EPEFb
-         g/kA==
-X-Gm-Message-State: AOAM533A9JIAX8nsCfQpetyWX0eUIr3csJjCfgc72cwDu1MHP5oB+13j
-        lseXAw6U5FjNzYuL9v/kj3bQ9d9R92RpsR/ViR9TN5SBT5cx
-X-Google-Smtp-Source: ABdhPJzYGM8wyFXxpBqce+DRay56fuykYJTlm3Z97gco3gXVLKQDBQe+LJkoivDQ05RRSo2Ln1SRxrgMrCK2ym0icmTglewkd24E
+        Mon, 13 Jun 2022 07:29:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0197DEA1;
+        Mon, 13 Jun 2022 03:44:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A24B4B80D3B;
+        Mon, 13 Jun 2022 10:44:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E678C34114;
+        Mon, 13 Jun 2022 10:44:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655117072;
+        bh=ryLFh89xQO4aZUSIYALOmlBpW1LOg6eC2qOzpla74Hg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=yvxtpNs6WwQ2rPf6vZhzXf9FU6WfGuk9m2ieF/8xPNEb0u08zKGh+SvClrz2tCdxv
+         OM60I+zS7rn4DMuRWlBTMu1ab+/cueXz6zO1mPFvxlbe8k4SoSkzBOmBIFLP5/VF9z
+         vBSHlTDSSa6CrtzS6zouLMcYtdG+cYW0vjJbfQag=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "yukuai (C)" <yukuai3@huawei.com>, Jan Kara <jack@suse.cz>,
+        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.4 277/411] bfq: Get rid of __bio_blkcg() usage
+Date:   Mon, 13 Jun 2022 12:09:10 +0200
+Message-Id: <20220613094937.065455808@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:438c:b0:331:adac:a274 with SMTP id
- bo12-20020a056638438c00b00331adaca274mr23027146jab.192.1655117047472; Mon, 13
- Jun 2022 03:44:07 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 03:44:07 -0700
-In-Reply-To: <000000000000e2fc3f05e141f930@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ad299205e151f7d3@google.com>
-Subject: Re: [syzbot] WARNING in exit_tasks_rcu_finish
-From:   syzbot <syzbot+9bb26e7c5e8e4fa7e641@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        brauner@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        ebiederm@xmission.com, frederic@kernel.org, hawk@kernel.org,
-        jiangshanlai@gmail.com, joel@joelfernandes.org,
-        john.fastabend@gmail.com, josh@joshtriplett.org, kafai@fb.com,
-        keescook@chromium.org, kpsingh@kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, mathieu.desnoyers@efficios.com,
-        netdev@vger.kernel.org, pabeni@redhat.com, paulmck@kernel.org,
-        quic_neeraju@quicinc.com, rcu@vger.kernel.org, rostedt@goodmis.org,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-syzbot has bisected this issue to:
+From: Jan Kara <jack@suse.cz>
 
-commit 09f110d4a1597185a5ed177da8573eec997b7227
-Author: Paul E. McKenney <paulmck@kernel.org>
-Date:   Tue May 17 18:30:32 2022 +0000
+commit 4e54a2493e582361adc3bfbf06c7d50d19d18837 upstream.
 
-    rcu-tasks: Track blocked RCU Tasks Trace readers
+BFQ usage of __bio_blkcg() is a relict from the past. Furthermore if bio
+would not be associated with any blkcg, the usage of __bio_blkcg() in
+BFQ is prone to races with the task being migrated between cgroups as
+__bio_blkcg() calls at different places could return different blkcgs.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=170f6ee7f00000
-start commit:   6d0c80680317 Add linux-next specific files for 20220610
-git tree:       linux-next
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=148f6ee7f00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=108f6ee7f00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a30d6e3e814e5931
-dashboard link: https://syzkaller.appspot.com/bug?extid=9bb26e7c5e8e4fa7e641
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=177b6230080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=148207bff00000
+Convert BFQ to the new situation where bio->bi_blkg is initialized in
+bio_set_dev() and thus practically always valid. This allows us to save
+blkcg_gq lookup and noticeably simplify the code.
 
-Reported-by: syzbot+9bb26e7c5e8e4fa7e641@syzkaller.appspotmail.com
-Fixes: 09f110d4a159 ("rcu-tasks: Track blocked RCU Tasks Trace readers")
+CC: stable@vger.kernel.org
+Fixes: 0fe061b9f03c ("blkcg: fix ref count issue with bio_blkcg() using task_css")
+Tested-by: "yukuai (C)" <yukuai3@huawei.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220401102752.8599-8-jack@suse.cz
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ block/bfq-cgroup.c  |   63 ++++++++++++++++++----------------------------------
+ block/bfq-iosched.c |   10 --------
+ block/bfq-iosched.h |    3 --
+ 3 files changed, 25 insertions(+), 51 deletions(-)
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+--- a/block/bfq-cgroup.c
++++ b/block/bfq-cgroup.c
+@@ -565,27 +565,11 @@ static void bfq_group_set_parent(struct
+ 	entity->sched_data = &parent->sched_data;
+ }
+ 
+-static struct bfq_group *bfq_lookup_bfqg(struct bfq_data *bfqd,
+-					 struct blkcg *blkcg)
++static void bfq_link_bfqg(struct bfq_data *bfqd, struct bfq_group *bfqg)
+ {
+-	struct blkcg_gq *blkg;
+-
+-	blkg = blkg_lookup(blkcg, bfqd->queue);
+-	if (likely(blkg))
+-		return blkg_to_bfqg(blkg);
+-	return NULL;
+-}
+-
+-struct bfq_group *bfq_find_set_group(struct bfq_data *bfqd,
+-				     struct blkcg *blkcg)
+-{
+-	struct bfq_group *bfqg, *parent;
++	struct bfq_group *parent;
+ 	struct bfq_entity *entity;
+ 
+-	bfqg = bfq_lookup_bfqg(bfqd, blkcg);
+-	if (unlikely(!bfqg))
+-		return NULL;
+-
+ 	/*
+ 	 * Update chain of bfq_groups as we might be handling a leaf group
+ 	 * which, along with some of its relatives, has not been hooked yet
+@@ -602,8 +586,15 @@ struct bfq_group *bfq_find_set_group(str
+ 			bfq_group_set_parent(curr_bfqg, parent);
+ 		}
+ 	}
++}
+ 
+-	return bfqg;
++struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio)
++{
++	struct blkcg_gq *blkg = bio->bi_blkg;
++
++	if (!blkg)
++		return bfqd->root_group;
++	return blkg_to_bfqg(blkg);
+ }
+ 
+ /**
+@@ -679,25 +670,15 @@ void bfq_bfqq_move(struct bfq_data *bfqd
+  * Move bic to blkcg, assuming that bfqd->lock is held; which makes
+  * sure that the reference to cgroup is valid across the call (see
+  * comments in bfq_bic_update_cgroup on this issue)
+- *
+- * NOTE: an alternative approach might have been to store the current
+- * cgroup in bfqq and getting a reference to it, reducing the lookup
+- * time here, at the price of slightly more complex code.
+  */
+-static struct bfq_group *__bfq_bic_change_cgroup(struct bfq_data *bfqd,
+-						struct bfq_io_cq *bic,
+-						struct blkcg *blkcg)
++static void *__bfq_bic_change_cgroup(struct bfq_data *bfqd,
++				     struct bfq_io_cq *bic,
++				     struct bfq_group *bfqg)
+ {
+ 	struct bfq_queue *async_bfqq = bic_to_bfqq(bic, 0);
+ 	struct bfq_queue *sync_bfqq = bic_to_bfqq(bic, 1);
+-	struct bfq_group *bfqg;
+ 	struct bfq_entity *entity;
+ 
+-	bfqg = bfq_find_set_group(bfqd, blkcg);
+-
+-	if (unlikely(!bfqg))
+-		bfqg = bfqd->root_group;
+-
+ 	if (async_bfqq) {
+ 		entity = &async_bfqq->entity;
+ 
+@@ -749,20 +730,24 @@ static struct bfq_group *__bfq_bic_chang
+ void bfq_bic_update_cgroup(struct bfq_io_cq *bic, struct bio *bio)
+ {
+ 	struct bfq_data *bfqd = bic_to_bfqd(bic);
+-	struct bfq_group *bfqg = NULL;
++	struct bfq_group *bfqg = bfq_bio_bfqg(bfqd, bio);
+ 	uint64_t serial_nr;
+ 
+-	rcu_read_lock();
+-	serial_nr = __bio_blkcg(bio)->css.serial_nr;
++	serial_nr = bfqg_to_blkg(bfqg)->blkcg->css.serial_nr;
+ 
+ 	/*
+ 	 * Check whether blkcg has changed.  The condition may trigger
+ 	 * spuriously on a newly created cic but there's no harm.
+ 	 */
+ 	if (unlikely(!bfqd) || likely(bic->blkcg_serial_nr == serial_nr))
+-		goto out;
++		return;
+ 
+-	bfqg = __bfq_bic_change_cgroup(bfqd, bic, __bio_blkcg(bio));
++	/*
++	 * New cgroup for this process. Make sure it is linked to bfq internal
++	 * cgroup hierarchy.
++	 */
++	bfq_link_bfqg(bfqd, bfqg);
++	__bfq_bic_change_cgroup(bfqd, bic, bfqg);
+ 	/*
+ 	 * Update blkg_path for bfq_log_* functions. We cache this
+ 	 * path, and update it here, for the following
+@@ -815,8 +800,6 @@ void bfq_bic_update_cgroup(struct bfq_io
+ 	 */
+ 	blkg_path(bfqg_to_blkg(bfqg), bfqg->blkg_path, sizeof(bfqg->blkg_path));
+ 	bic->blkcg_serial_nr = serial_nr;
+-out:
+-	rcu_read_unlock();
+ }
+ 
+ /**
+@@ -1433,7 +1416,7 @@ void bfq_end_wr_async(struct bfq_data *b
+ 	bfq_end_wr_async_queues(bfqd, bfqd->root_group);
+ }
+ 
+-struct bfq_group *bfq_find_set_group(struct bfq_data *bfqd, struct blkcg *blkcg)
++struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio)
+ {
+ 	return bfqd->root_group;
+ }
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -5158,14 +5158,7 @@ static struct bfq_queue *bfq_get_queue(s
+ 	struct bfq_queue *bfqq;
+ 	struct bfq_group *bfqg;
+ 
+-	rcu_read_lock();
+-
+-	bfqg = bfq_find_set_group(bfqd, __bio_blkcg(bio));
+-	if (!bfqg) {
+-		bfqq = &bfqd->oom_bfqq;
+-		goto out;
+-	}
+-
++	bfqg = bfq_bio_bfqg(bfqd, bio);
+ 	if (!is_sync) {
+ 		async_bfqq = bfq_async_queue_prio(bfqd, bfqg, ioprio_class,
+ 						  ioprio);
+@@ -5209,7 +5202,6 @@ static struct bfq_queue *bfq_get_queue(s
+ out:
+ 	bfqq->ref++; /* get a process reference to this queue */
+ 	bfq_log_bfqq(bfqd, bfqq, "get_queue, at end: %p, %d", bfqq, bfqq->ref);
+-	rcu_read_unlock();
+ 	return bfqq;
+ }
+ 
+--- a/block/bfq-iosched.h
++++ b/block/bfq-iosched.h
+@@ -978,8 +978,7 @@ void bfq_bfqq_move(struct bfq_data *bfqd
+ void bfq_init_entity(struct bfq_entity *entity, struct bfq_group *bfqg);
+ void bfq_bic_update_cgroup(struct bfq_io_cq *bic, struct bio *bio);
+ void bfq_end_wr_async(struct bfq_data *bfqd);
+-struct bfq_group *bfq_find_set_group(struct bfq_data *bfqd,
+-				     struct blkcg *blkcg);
++struct bfq_group *bfq_bio_bfqg(struct bfq_data *bfqd, struct bio *bio);
+ struct blkcg_gq *bfqg_to_blkg(struct bfq_group *bfqg);
+ struct bfq_group *bfqq_group(struct bfq_queue *bfqq);
+ struct bfq_group *bfq_create_group_hierarchy(struct bfq_data *bfqd, int node);
+
+
