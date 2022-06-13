@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 496BCCCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:20:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A479C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:20:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383281AbiFMOUS (ORCPT
+        id S1380294AbiFMOUY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:20:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59724 "EHLO
+        Mon, 13 Jun 2022 10:20:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382289AbiFMON4 (ORCPT
+        with ESMTP id S1381488AbiFMONI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:13:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B31A9AE49;
-        Mon, 13 Jun 2022 04:42:16 -0700 (PDT)
+        Mon, 13 Jun 2022 10:13:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D64129A9BE;
+        Mon, 13 Jun 2022 04:42:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E842B613F9;
-        Mon, 13 Jun 2022 11:42:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01816C34114;
-        Mon, 13 Jun 2022 11:42:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A1353B80D31;
+        Mon, 13 Jun 2022 11:41:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 200C9C34114;
+        Mon, 13 Jun 2022 11:41:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120535;
-        bh=XHXZMpOCvpB+hVo3r4vGG0BGyFr/7psW/iBEtN1fhuo=;
+        s=korg; t=1655120515;
+        bh=YIJK08ugzVS2SgYjCZVRaEaAU4lF8zqy0AK0Q4FTywg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zGgJDeIwq8gOD4StGYMUC6NBIMJ85hHoJErDtBhjezYW+DN9E+xAtjOlx3e6aPZbW
-         /VbJaYEYvJtoJIpoUnrc3JKX9/ezfgHRnYqH9SvZ6EoOQ+D8MdyUZgEMSMUjbynvAq
-         6LV09rjx7Xs6txBr62f0zaiNPFZQNK9Zo2WAjrcY=
+        b=z2J+chQXXpL+4OKLgtxIK5NeVo8tix0/dtqS6ddA3EzhnRlneCCVB41zvU/zUcVey
+         JoOcx1Ng3aIaBecJft4DZaATr1kTv8PkiiCzFKKdjjhIy6CpETyHhxwCyYeElu6F00
+         zXuL1I/+NohmHqd0X+aS8eSw3bWBmLYh9v9JdHMI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 034/298] rpmsg: qcom_smd: Fix returning 0 if irq_of_parse_and_map() fails
-Date:   Mon, 13 Jun 2022 12:08:48 +0200
-Message-Id: <20220613094925.966586535@linuxfoundation.org>
+Subject: [PATCH 5.17 037/298] power: supply: axp288_fuel_gauge: Drop BIOS version check from "T3 MRD" DMI quirk
+Date:   Mon, 13 Jun 2022 12:08:51 +0200
+Message-Id: <20220613094926.059113182@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -51,35 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 59d6f72f6f9c92fec8757d9e29527da828e9281f ]
+[ Upstream commit f61509a6f0b70f5bedea34efaf8065621689bd7a ]
 
-irq_of_parse_and_map() returns 0 on failure, so this should not be
-passed further as error return code.
+Some "T3 MRD" mini-PCs / HDMI-sticks without a battery use a different
+value then "5.11" for their DMI BIOS version field.
 
-Fixes: 1a358d350664 ("rpmsg: qcom_smd: Fix irq_of_parse_and_map() return value")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220423093932.32136-1-krzysztof.kozlowski@linaro.org
+Drop the BIOS version check so that the no-battery "T3 MRD" DMI quirk
+applies to these too.
+
+Fixes: 3a06b912a5ce ("power: supply: axp288_fuel_gauge: Make "T3 MRD" no_battery_list DMI entry more generic")
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rpmsg/qcom_smd.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/power/supply/axp288_fuel_gauge.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/rpmsg/qcom_smd.c b/drivers/rpmsg/qcom_smd.c
-index d4b54eebe15d..4ad90945518f 100644
---- a/drivers/rpmsg/qcom_smd.c
-+++ b/drivers/rpmsg/qcom_smd.c
-@@ -1406,7 +1406,7 @@ static int qcom_smd_parse_edge(struct device *dev,
- 	irq = irq_of_parse_and_map(node, 0);
- 	if (!irq) {
- 		dev_err(dev, "required smd interrupt missing\n");
--		ret = irq;
-+		ret = -EINVAL;
- 		goto put_node;
- 	}
- 
+diff --git a/drivers/power/supply/axp288_fuel_gauge.c b/drivers/power/supply/axp288_fuel_gauge.c
+index ce8ffd0a41b5..68595897e72d 100644
+--- a/drivers/power/supply/axp288_fuel_gauge.c
++++ b/drivers/power/supply/axp288_fuel_gauge.c
+@@ -600,7 +600,6 @@ static const struct dmi_system_id axp288_no_battery_list[] = {
+ 			DMI_MATCH(DMI_BOARD_NAME, "T3 MRD"),
+ 			DMI_MATCH(DMI_CHASSIS_TYPE, "3"),
+ 			DMI_MATCH(DMI_BIOS_VENDOR, "American Megatrends Inc."),
+-			DMI_MATCH(DMI_BIOS_VERSION, "5.11"),
+ 		},
+ 	},
+ 	{}
 -- 
 2.35.1
 
