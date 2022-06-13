@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D06AFCCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45E43CCA491
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241244AbiFMOQJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:16:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52876 "EHLO
+        id S1383147AbiFMOP0 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 10:15:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381291AbiFMOIS (ORCPT
+        with ESMTP id S1382262AbiFMOFi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:08:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EEA4986DC;
-        Mon, 13 Jun 2022 04:41:30 -0700 (PDT)
+        Mon, 13 Jun 2022 10:05:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7866394180;
+        Mon, 13 Jun 2022 04:40:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 73F62B80ECC;
-        Mon, 13 Jun 2022 11:41:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB28AC34114;
-        Mon, 13 Jun 2022 11:41:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B66AC61306;
+        Mon, 13 Jun 2022 11:40:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEE7BC34114;
+        Mon, 13 Jun 2022 11:40:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120488;
-        bh=YbAO6dc61CTVZPXA3H0275LCoBrPznmVp9BrsF0I538=;
+        s=korg; t=1655120432;
+        bh=cJI/Ff5eCY4YKk09fUdLQV5mFqySbVgI0sF7RBQJTzk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vlaIYLEMf591fzGKNh93Q7+vXot0PG37u51/EXCHbhdU1FrRfzdW+kel6fJLNfj5+
-         0/82tz+QyzTEgAfAkB5fQLWu/gG9ye859nKPcFhjsQeZ/CV/zK17riBhLHfRHQO6y6
-         yXdUd3x0+lhdGoCMUS29eQTTUuc2EMR4LyK3xnp8=
+        b=WivYVYtufpViLfzy4i1GAMQfokPqWHrOv2xT+n3V1FCv5f9y5sSw8N+pui7QotER1
+         pp1O9aLEtkHjWyHJci9E+cCS6HIyilD2PirH0nPwm3phUwc5p733bZ+vzRfiJb2udL
+         gKCaLNBI+pFvwvWDlnH6EoWM6BUTuQG7X8cX9jWM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Samuel Holland <samuel@sholland.org>,
-        Anup Patel <anup@brainfault.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Philippe Schenker <philippe.schenker@toradex.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 051/298] clocksource/drivers/riscv: Events are stopped during CPU suspend
-Date:   Mon, 13 Jun 2022 12:09:05 +0200
-Message-Id: <20220613094926.498513613@linuxfoundation.org>
+Subject: [PATCH 5.17 030/298] iio: adc: stmpe-adc: Fix wait_for_completion_timeout return value check
+Date:   Mon, 13 Jun 2022 12:08:44 +0200
+Message-Id: <20220613094925.845754621@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,38 +51,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Holland <samuel@sholland.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 232ccac1bd9b5bfe73895f527c08623e7fa0752d ]
+[ Upstream commit d345b23200bcdbd2bd3582213d738c258b77718f ]
 
-Some implementations of the SBI time extension depend on hart-local
-state (for example, CSRs) that are lost or hardware that is powered
-down when a CPU is suspended. To be safe, the clockevents driver
-cannot assume that timer IRQs will be received during CPU suspend.
+wait_for_completion_timeout() returns unsigned long not long.
+it returns 0 if timed out, and positive if completed.
+The check for <= 0 is ambiguous and should be == 0 here
+indicating timeout which is the only error case
 
-Fixes: 62b019436814 ("clocksource: new RISC-V SBI timer driver")
-Signed-off-by: Samuel Holland <samuel@sholland.org>
-Reviewed-by: Anup Patel <anup@brainfault.org>
-Link: https://lore.kernel.org/r/20220509012121.40031-1-samuel@sholland.org
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Fixes: e813dde6f833 ("iio: stmpe-adc: Use wait_for_completion_timeout")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Philippe Schenker <philippe.schenker@toradex.com>
+Link: https://lore.kernel.org/r/20220412065150.14486-1-linmq006@gmail.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clocksource/timer-riscv.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/adc/stmpe-adc.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/clocksource/timer-riscv.c b/drivers/clocksource/timer-riscv.c
-index 1767f8bf2013..593d5a957b69 100644
---- a/drivers/clocksource/timer-riscv.c
-+++ b/drivers/clocksource/timer-riscv.c
-@@ -34,7 +34,7 @@ static int riscv_clock_next_event(unsigned long delta,
- static unsigned int riscv_clock_event_irq;
- static DEFINE_PER_CPU(struct clock_event_device, riscv_clock_event) = {
- 	.name			= "riscv_timer_clockevent",
--	.features		= CLOCK_EVT_FEAT_ONESHOT,
-+	.features		= CLOCK_EVT_FEAT_ONESHOT | CLOCK_EVT_FEAT_C3STOP,
- 	.rating			= 100,
- 	.set_next_event		= riscv_clock_next_event,
- };
+diff --git a/drivers/iio/adc/stmpe-adc.c b/drivers/iio/adc/stmpe-adc.c
+index d2d405388499..83e0ac4467ca 100644
+--- a/drivers/iio/adc/stmpe-adc.c
++++ b/drivers/iio/adc/stmpe-adc.c
+@@ -61,7 +61,7 @@ struct stmpe_adc {
+ static int stmpe_read_voltage(struct stmpe_adc *info,
+ 		struct iio_chan_spec const *chan, int *val)
+ {
+-	long ret;
++	unsigned long ret;
+ 
+ 	mutex_lock(&info->lock);
+ 
+@@ -79,7 +79,7 @@ static int stmpe_read_voltage(struct stmpe_adc *info,
+ 
+ 	ret = wait_for_completion_timeout(&info->completion, STMPE_ADC_TIMEOUT);
+ 
+-	if (ret <= 0) {
++	if (ret == 0) {
+ 		stmpe_reg_write(info->stmpe, STMPE_REG_ADC_INT_STA,
+ 				STMPE_ADC_CH(info->channel));
+ 		mutex_unlock(&info->lock);
+@@ -96,7 +96,7 @@ static int stmpe_read_voltage(struct stmpe_adc *info,
+ static int stmpe_read_temp(struct stmpe_adc *info,
+ 		struct iio_chan_spec const *chan, int *val)
+ {
+-	long ret;
++	unsigned long ret;
+ 
+ 	mutex_lock(&info->lock);
+ 
+@@ -114,7 +114,7 @@ static int stmpe_read_temp(struct stmpe_adc *info,
+ 
+ 	ret = wait_for_completion_timeout(&info->completion, STMPE_ADC_TIMEOUT);
+ 
+-	if (ret <= 0) {
++	if (ret == 0) {
+ 		mutex_unlock(&info->lock);
+ 		return -ETIMEDOUT;
+ 	}
 -- 
 2.35.1
 
