@@ -2,132 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B0FCCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:35:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD0C3CCA47A
+	for <linux-kernel@archiver.kernel.org>; Tue, 14 Jun 2022 12:35:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244139AbiFNMfX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 14 Jun 2022 08:35:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33096 "EHLO
+        id S244985AbiFNMf0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 14 Jun 2022 08:35:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243825AbiFNMfJ (ORCPT
+        with ESMTP id S244108AbiFNMfN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 14 Jun 2022 08:35:09 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C8264D27B;
-        Tue, 14 Jun 2022 05:32:06 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id e11so8446699pfj.5;
-        Tue, 14 Jun 2022 05:32:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6bWhyj9+Innd6VBvVBk86q4KgboPFIEsoGvupeRdYFM=;
-        b=eFPzFERHaQ3hu76kP/FeGfFvMx+Y+9glglTmjGMriMFNUtCL4MVyyRte8/oPlwTSXV
-         Vm/OXIfmlv4N0Z1qxMO7KsBEeKabN4R/myJwFyfy7uSec2t7LjQ5qskH5kpfQx6DzV6K
-         s1pmDp3DZLm1Y6/gI4XcvuYfUy7z0+KD51B/oYJANJ4wXbmvN4v9bKxOnID8hYKAK7xZ
-         sI61N7VRGcrnpJ44/imB5hFUezPjRMZ1TEJHRxwS20qdTuPWGgxe2Z0+WSFb4YFN12wp
-         OfAna8fs140EQK6qn0ve8ps/Wna5SmhMzUeprtMC8CU4QqhuA18Y4mcly46iviHuBgGp
-         GkGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6bWhyj9+Innd6VBvVBk86q4KgboPFIEsoGvupeRdYFM=;
-        b=IM+piKZDMKp21eLgFUtmolW8/4bBBF1FuVEDWP4LA938lOzGcUxfDnpdCdlYNLsv9z
-         WomRFF9osmaBNlxgp9tFO3iaCVM2EMB6xLzK2n+Xlkhot7ssppRgCrFCENS0Rs2Pftv5
-         ORwgxws5K4kOma7MkZGP0YrMuVNkOKcaj3SRvP44S0FFjZTWa/nH2VkCeB0Sl2Vjob+s
-         8cgkslWUd1Z5ImfO7CVFZfIq+CqPDCv9yOCbT/cHh24eRhHnW9SrLx/WJlaq5rNWqV9G
-         EeA3HV1RYHRdDzBYo2P6/6/c0UGHSD57Aql9KZb93fr+zxDGCnsAk3JEJeLEGaWOdsJw
-         1Dfw==
-X-Gm-Message-State: AOAM532HTkMu//9TcXl2Xos6EPaJoWv5yYevtEJIfI4CkSM/cY9/FMj6
-        wQu4Q8t3sP2BrhA1vIIOw1L6xXzl+Qs=
-X-Google-Smtp-Source: ABdhPJwrYy7YJmSFGc1DKopsg3STNIPBTHxc3xMt6QTBGTSlvr94Yd5EHAOEGrP8+RLUeRp1W4J5Ag==
-X-Received: by 2002:a63:894a:0:b0:3fc:a724:578c with SMTP id v71-20020a63894a000000b003fca724578cmr4402325pgd.499.1655209925358;
-        Tue, 14 Jun 2022 05:32:05 -0700 (PDT)
-Received: from debian.me (subs02-180-214-232-21.three.co.id. [180.214.232.21])
-        by smtp.gmail.com with ESMTPSA id w1-20020a62c701000000b0050dc7628148sm7403979pfg.34.2022.06.14.05.32.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 05:32:04 -0700 (PDT)
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     linux-doc@vger.kernel.org
-Cc:     Bagas Sanjaya <bagasdotme@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Ira Weiny <ira.weiny@intel.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] Documentation: highmem: Use literal block for *kmap_local_folio() example
-Date:   Tue, 14 Jun 2022 19:31:16 +0700
-Message-Id: <20220614123115.522131-1-bagasdotme@gmail.com>
-X-Mailer: git-send-email 2.36.0
+        Tue, 14 Jun 2022 08:35:13 -0400
+Received: from es400ra01.iit.it (mx.iit.it [90.147.26.161])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 002354D61C;
+        Tue, 14 Jun 2022 05:32:08 -0700 (PDT)
+Received: from es400ra01.iit.it (127.0.0.1) id hl1vse0171sj; Mon, 13 Jun 2022 14:05:51 +0200 (envelope-from <prvs=1163b4114e=Andrea.Merello@iit.it>)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iit.it;
+        s=mx; i=@iit.it; h=Received:Received:From:To:CC:Subject:Date:
+        Message-ID:In-Reply-To:References:MIME-Version:
+        Content-Transfer-Encoding:Content-Type; bh=qvlmreXdMjvmpT++ZAQmu
+        LnfZ863oGgC7wmLF5cBoFs=; b=b7QTtkHs1iBQmZMfkYmrDRNsL8O19qyBT4V1Y
+        8fPym/BqNN+BX582lgbaPDPKU2hLEa8KIyLuuxv+3HRNLaW0hS0nE3qqzRdjwydp
+        qSEqewUTjNVa1irHooYl2Qysbwjt9txOql5HE0MZEbYnEc6HTkMBBKuG38he3unw
+        5DHFWI=
+Received: from mail.iit.it ([10.255.8.186])
+        by es400ra01.iit.it ([172.31.0.241]) (SonicWall 10.0.16.7295)
+        with ESMTPS (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256/256)
+        id o202206131205500155818-11; Mon, 13 Jun 2022 14:05:50 +0200
+Received: from poker.lan (90.147.26.235) by iitmxwge020.iit.local
+ (10.255.8.186) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2375.17; Mon, 13 Jun
+ 2022 14:05:50 +0200
+From:   <andrea.merello@iit.it>
+To:     <jic23@kernel.org>, <mchehab+huawei@kernel.org>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+CC:     <lars@metafoo.de>, <robh+dt@kernel.org>,
+        <andy.shevchenko@gmail.com>, <matt.ranostay@konsulko.com>,
+        <ardeleanalex@gmail.com>, <jacopo@jmondi.org>,
+        Andrea Merello <andrea.merello@iit.it>
+Subject: [v6 02/14] iio: document linear acceleration modifiers
+Date:   Mon, 13 Jun 2022 14:05:22 +0200
+Message-ID: <20220613120534.36991-3-andrea.merello@iit.it>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220613120534.36991-1-andrea.merello@iit.it>
+References: <20220613120534.36991-1-andrea.merello@iit.it>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [90.147.26.235]
+X-ClientProxiedBy: IITMXWGE021.iit.local (10.255.8.187) To
+ iitmxwge020.iit.local (10.255.8.186)
+X-Mlf-DSE-Version: 6873
+X-Mlf-Rules-Version: s20220519150137; ds20200715013501;
+        di20220610180234; ri20160318003319; fs20220610211824
+X-Mlf-Smartnet-Version: 20210917223710
+X-Mlf-Envelope-From: Andrea.Merello@iit.it
+X-Mlf-Version: 10.0.16.7295
+X-Mlf-License: BSV_C_AP_T_R
+X-Mlf-UniqueId: o202206131205500155818
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When building htmldocs on Linus' tree, there are inline emphasis warnings
-on include/linux/highmem.h:
+From: Andrea Merello <andrea.merello@iit.it>
 
-Documentation/vm/highmem:166: ./include/linux/highmem.h:154: WARNING: Inline emphasis start-string without end-string.
-Documentation/vm/highmem:166: ./include/linux/highmem.h:157: WARNING: Inline emphasis start-string without end-string.
+Introduce ABI documentation for new IIO modifiers used for reporting
+"linear acceleration" measures.
 
-These warnings above are due to comments in code example of
-*kmap_local_folio() are enclosed by double dash (--) instead of prefixed
-with comment symbol (#).
-
-Fix these warnings by indenting the code example with literal block
-indentation and prefixing comments inside the example with #.
-
-Fixes: 85a85e7601263f ("Documentation/vm: move "Using kmap-atomic" to highmem.h")
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Ira Weiny <ira.weiny@intel.com>
-Cc: "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Cc: "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: linux-mm@kvack.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+Signed-off-by: Andrea Merello <andrea.merello@iit.it>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 ---
- include/linux/highmem.h | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ Documentation/ABI/testing/sysfs-bus-iio | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/include/linux/highmem.h b/include/linux/highmem.h
-index 3af34de54330cb..a244e0345c87ca 100644
---- a/include/linux/highmem.h
-+++ b/include/linux/highmem.h
-@@ -149,19 +149,19 @@ static inline void *kmap_local_folio(struct folio *folio, size_t offset);
-  * It is used in atomic context when code wants to access the contents of a
-  * page that might be allocated from high memory (see __GFP_HIGHMEM), for
-  * example a page in the pagecache.  The API has two functions, and they
-- * can be used in a manner similar to the following:
-+ * can be used in a manner similar to the following::
-  *
-- * -- Find the page of interest. --
-- * struct page *page = find_get_page(mapping, offset);
-+ *   # Find the page of interest.
-+ *   struct page *page = find_get_page(mapping, offset);
-  *
-- * -- Gain access to the contents of that page. --
-- * void *vaddr = kmap_atomic(page);
-+ *   # Gain access to the contents of that page.
-+ *   void *vaddr = kmap_atomic(page);
-  *
-- * -- Do something to the contents of that page. --
-- * memset(vaddr, 0, PAGE_SIZE);
-+ *   # Do something to the contents of that page.
-+ *   memset(vaddr, 0, PAGE_SIZE);
-  *
-- * -- Unmap that page. --
-- * kunmap_atomic(vaddr);
-+ *   # Unmap that page.
-+ *   kunmap_atomic(vaddr);
-  *
-  * Note that the kunmap_atomic() call takes the result of the kmap_atomic()
-  * call, not the argument.
-
-base-commit: b13baccc3850ca8b8cccbf8ed9912dbaa0fdf7f3
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 3e00d7f7ee22..88d012bbfe79 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -238,6 +238,15 @@ Description:
+ 		Has all of the equivalent parameters as per voltageY. Units
+ 		after application of scale and offset are m/s^2.
+ 
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_linear_x_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_linear_y_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_linear_z_raw
++KernelVersion:	5.20
++Contact:	linux-iio@vger.kernel.org
++Description:
++		As per in_accel_X_raw attributes, but minus the
++		acceleration due to gravity.
++
+ What:		/sys/bus/iio/devices/iio:deviceX/in_gravity_x_raw
+ What:		/sys/bus/iio/devices/iio:deviceX/in_gravity_y_raw
+ What:		/sys/bus/iio/devices/iio:deviceX/in_gravity_z_raw
 -- 
-An old man doll... just what I always wanted! - Clara
+2.17.1
 
