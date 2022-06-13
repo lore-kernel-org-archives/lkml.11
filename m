@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09DEAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:22:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1BADC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:22:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349430AbiFMTWJ (ORCPT
+        id S1349480AbiFMTWN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:22:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44862 "EHLO
+        Mon, 13 Jun 2022 15:22:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348621AbiFMTVW (ORCPT
+        with ESMTP id S1348735AbiFMTVY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 15:21:22 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E79B1FA5D
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:17:48 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id r187-20020a1c44c4000000b0039c76434147so4933450wma.1
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:17:48 -0700 (PDT)
+        Mon, 13 Jun 2022 15:21:24 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E49B2870B
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:17:51 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id x17so7975541wrg.6
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:17:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pND07IjUi7Nx4XC5+/AEJ436yBfHgMDn/iUw0DqnEmg=;
-        b=UsJF7TH60A7l1RZn8ij0aH+0Cb9cxMAvucUlaQ7stS5YRrsZem6rXXWIGD1eH/eQOq
-         xSIZ864+UWhpOVq2PXc7etly3451uxTOdQ2VuqRCG2OBDDnknPr1w4bwFG/GEZtMQ5NA
-         8IkL4zi6qxZ5d0mTaBkNbu9rWt+sQZrnHVoofGR9tqPbPe7azOZgwbF33AicgX3OiZRG
-         IuJv3QYQhSBxeDxEk7Qjsgm4HvLucFuMydOI/0ryZ6hiFz4G9bINup2eF1kqlTC8QMB+
-         nG6UCqFdZnienPgdZfEBo99xHwrv0BowjhYq15uGdvznL4PCxwlY/hWn8DTCoc1zeWhD
-         aDsw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=6oCYTzwjrLnxnxwyKEfz2WikcR75QzF1FKToWqyNR9I=;
+        b=F51NTLAyPWUJmIcreJGh+nbImazQe30mXy0M1R9WGuNAFL7yNxovOd0I4dYt9TkOYq
+         /oWo/kycfvrF+HhazbbB+32J5kUXFxWTWp/vY4D+6IQnS9UxELCYAXpL0uCnmEooiYw/
+         RCtD58rL8tsaqMP5UfwZUdlFSlRaB9l24wQpgSQ+Xd+tUM1XqhqgqJeaSqNNshdgc4Ew
+         m+HeNbiKr42hrb2k0Oq0nOUcg8m1PZxxM1h5MHZym3iDUnG+K86b3vq7GltcAY4VNmaN
+         6KonpQUB3bGRBVD64qQb6DeuxfGJiRDnatmTER/KaMJDN699w5hJ13owDQtQ7QpBqLQU
+         Iazg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pND07IjUi7Nx4XC5+/AEJ436yBfHgMDn/iUw0DqnEmg=;
-        b=ASa8EyMDPm7xzgI4T46C+hUtYyiTuP5+zZSLY3xEKe0JRFc6yt5XidHmrMVFNIq8fr
-         WgPLc5W/POG4lHUoX5lXIup3MTtX0LckzdcPVDv1hVtmDZiPyP2HpOPFWg9O4XlwUJwm
-         ED7ImNApRsstk6QvyQ8FsaAH2oQND65mAiyTPcasTU3qrTUK/v4WOb/ctNf9HnyL1ciz
-         14AkFz5OhVfM59maEgcOl4vWXoHLEd93lNswzoVKcna43DzHENSg59yUzZWjRRb0X798
-         25Ag43XoTs7oyik1tSmTKA93ZymkTd0N0XrGB08jzCuf07iTR8vcXKoGn+nLAlddZjWE
-         Puyw==
-X-Gm-Message-State: AOAM5311SVxjXk1Too7gbviFiXnpPnBrBM8gGqJHHIPt0MLz9ueSSYND
-        N6eZlOLagXPjBXye24MGaW8=
-X-Google-Smtp-Source: ABdhPJwaZorMRFk5irMBRXjwuJdiDDebX+XtYnqXQ1rbRV3iYvd5x2d9LtUgLlPVFhDdoC0ehIxIIw==
-X-Received: by 2002:a05:600c:1e2a:b0:39c:51f8:80d4 with SMTP id ay42-20020a05600c1e2a00b0039c51f880d4mr550978wmb.192.1655140666586;
-        Mon, 13 Jun 2022 10:17:46 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=6oCYTzwjrLnxnxwyKEfz2WikcR75QzF1FKToWqyNR9I=;
+        b=EBJGh6U8TEaxP8zOzFPwtS7Nh2Xyjlk+vbzKDjUcyLAHS0r/hob1/Xh0voyxYJEj1n
+         E4K1wIVFrw6acgtDstNuG2klS0FNXvd8Wc0sneWnVHeYGxHJHqtQiwySB3C8yjRBs88w
+         FzIT1G873S5KnXq8euUqWhdeaSvHsGU/2pfP2VyHc2s3H7ikBHCy3uDxowS10E/KRSfb
+         TPnQEpk/jd5qSBD/Y22dG4NVqA6J8mQPcr3Ppqaw6BhOEl3FxBN0Joh9sPkWY0VTJKhk
+         CswcTUR4lOKkeTmiTISK92eHxdHogunl8t6Mi3hUQtLFUW7Gt/gj7qnpOG4NlDF658iz
+         +5uA==
+X-Gm-Message-State: AJIora/BQ3b70itzYmlEhhUlpESr8iqgXVGwxjDziw4PxLIzYHB3okMW
+        FMgND/yMMUrP1stGOl5A+YI=
+X-Google-Smtp-Source: AGRyM1ukqjdWNtJpNtXwbhf0Bf6agIHIexrRYS1P411Ex0OXC4BusGashejJsEd+0rc1FkF98C2bfg==
+X-Received: by 2002:adf:f610:0:b0:213:b4e1:7276 with SMTP id t16-20020adff610000000b00213b4e17276mr808828wrp.712.1655140669679;
+        Mon, 13 Jun 2022 10:17:49 -0700 (PDT)
 Received: from localhost.localdomain ([94.73.36.128])
-        by smtp.gmail.com with ESMTPSA id a10-20020a056000100a00b0020d106c0386sm9016129wrx.89.2022.06.13.10.17.45
+        by smtp.gmail.com with ESMTPSA id a10-20020a056000100a00b0020d106c0386sm9016129wrx.89.2022.06.13.10.17.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 10:17:45 -0700 (PDT)
+        Mon, 13 Jun 2022 10:17:49 -0700 (PDT)
 From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
 To:     javierm@redhat.com
 Cc:     davidgow@google.com, dlatypov@google.com, tzimmermann@suse.de,
@@ -56,11 +56,14 @@ Cc:     davidgow@google.com, dlatypov@google.com, tzimmermann@suse.de,
         airlied@linux.ie, daniel@ffwll.ch, jani.nikula@linux.intel.com,
         dri-devel@lists.freedesktop.org, kunit-dev@googlegroups.com,
         linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-Subject: [PATCH v3 0/3] KUnit tests for drm_format_helper
-Date:   Mon, 13 Jun 2022 19:17:35 +0200
-Message-Id: <20220613171738.111013-1-jose.exposito89@gmail.com>
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Maxime Ripard <maxime@cerno.tech>
+Subject: [PATCH v3 3/3] drm/doc: Add KUnit documentation
+Date:   Mon, 13 Jun 2022 19:17:38 +0200
+Message-Id: <20220613171738.111013-4-jose.exposito89@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220613171738.111013-1-jose.exposito89@gmail.com>
+References: <20220613171738.111013-1-jose.exposito89@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -68,53 +71,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello everyone,
+Explain how to run the KUnit tests present in the DRM subsystem and
+clarify why the UML-only options were not added to the configuration
+file present in drivers/gpu/drm/.kunitconfig [1] [2].
 
-Here is the v3 of the series, including the documentation, previously
-sent as a standalone patch [1], and changes suggested during review.
+[1] https://lore.kernel.org/dri-devel/CABVgOSn8i=LO5p7830h2XU1Jgg0KrN0qTnxkOMhf1oTgxjaKKw@mail.gmail.com/
+[2] https://lore.kernel.org/dri-devel/CAGS_qxqpiCim_sy1LDK7PLwVgWf-LKW+uNFTGM=T7ydk-dYcEw@mail.gmail.com/
 
-Thanks a lot,
-José Expósito
+Reviewed-by: Maxime Ripard <maxime@cerno.tech>
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+---
+ Documentation/gpu/drm-internals.rst | 32 +++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
 
-RFC -> v1: https://lore.kernel.org/dri-devel/20220530102017.471865-1-jose.exposito89@gmail.com/T/
-
- - Add .kunitconfig (Maxime Ripard)
- - Fix memory leak (Daniel Latypov)
- - Make config option generic (Javier Martinez Canillas):
-   DRM_FORMAR_HELPER_TEST -> DRM_KUNIT_TEST
- - Remove DISABLE_STRUCTLEAK_PLUGIN (Daniel Latypov)
-
-v1 -> v2: https://lore.kernel.org/dri-devel/20220606095516.938934-1-jose.exposito89@gmail.com/T/
-
- Thomas Zimmermann:
- - Add DRM_RECT_INIT() macro
- - Move tests to drivers/gpu/drm/kunit
- - Improve test documentation
-
-v2 -> v3: https://lore.kernel.org/dri-devel/20220612161248.271590-1-jose.exposito89@gmail.com/T/
-
- - Use designated initializer in DRM_RECT_INIT (Jani Nikula)
- - Simplify the "conversion_buf_size" helper
-
-[1] https://lore.kernel.org/dri-devel/20220606180940.43371-1-jose.exposito89@gmail.com/T/
-
-José Expósito (3):
-  drm/rect: Add DRM_RECT_INIT() macro
-  drm/format-helper: Add KUnit tests for drm_fb_xrgb8888_to_rgb332()
-  drm/doc: Add KUnit documentation
-
- Documentation/gpu/drm-internals.rst           |  32 ++++
- drivers/gpu/drm/Kconfig                       |  16 ++
- drivers/gpu/drm/Makefile                      |   1 +
- drivers/gpu/drm/kunit/.kunitconfig            |   3 +
- drivers/gpu/drm/kunit/Makefile                |   3 +
- .../gpu/drm/kunit/drm_format_helper_test.c    | 160 ++++++++++++++++++
- include/drm/drm_rect.h                        |  16 ++
- 7 files changed, 231 insertions(+)
- create mode 100644 drivers/gpu/drm/kunit/.kunitconfig
- create mode 100644 drivers/gpu/drm/kunit/Makefile
- create mode 100644 drivers/gpu/drm/kunit/drm_format_helper_test.c
-
+diff --git a/Documentation/gpu/drm-internals.rst b/Documentation/gpu/drm-internals.rst
+index 38afed24a75c..f1d97e80ca29 100644
+--- a/Documentation/gpu/drm-internals.rst
++++ b/Documentation/gpu/drm-internals.rst
+@@ -207,6 +207,38 @@ Utilities
+    :internal:
+ 
+ 
++Unit testing
++============
++
++KUnit
++-----
++
++KUnit (Kernel unit testing framework) provides a common framework for unit tests
++within the Linux kernel.
++
++This section covers the specifics for the DRM subsystem. For general information
++about KUnit, please refer to Documentation/dev-tools/kunit/start.rst.
++
++How to run the tests?
++~~~~~~~~~~~~~~~~~~~~~
++
++In order to facilitate running the test suite, a configuration file is present
++in ``drivers/gpu/drm/kunit/.kunitconfig``. It can be used by ``kunit.py`` as
++follows:
++
++.. code-block:: bash
++
++	$ ./tools/testing/kunit/kunit.py run --kunitconfig=drivers/gpu/drm/kunit \
++		--kconfig_add CONFIG_VIRTIO_UML=y \
++		--kconfig_add CONFIG_UML_PCI_OVER_VIRTIO=y
++
++.. note::
++	The configuration included in ``.kunitconfig`` should be as generic as
++	possible.
++	``CONFIG_VIRTIO_UML`` and ``CONFIG_UML_PCI_OVER_VIRTIO`` are not
++	included in it because they are only required for User Mode Linux.
++
++
+ Legacy Support Code
+ ===================
+ 
 -- 
 2.25.1
 
