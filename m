@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A908ECCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:01:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AF04C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:01:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357011AbiFMNBZ (ORCPT
+        id S1357216AbiFMNB3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:01:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49532 "EHLO
+        Mon, 13 Jun 2022 09:01:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358078AbiFMMzC (ORCPT
+        with ESMTP id S1358036AbiFMMy7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:55:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEEAC639E;
-        Mon, 13 Jun 2022 04:14:17 -0700 (PDT)
+        Mon, 13 Jun 2022 08:54:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0D4C35279;
+        Mon, 13 Jun 2022 04:14:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A27560B6B;
-        Mon, 13 Jun 2022 11:14:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85703C34114;
-        Mon, 13 Jun 2022 11:14:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6C4AFB80EA7;
+        Mon, 13 Jun 2022 11:14:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA8FBC3411E;
+        Mon, 13 Jun 2022 11:14:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118856;
-        bh=GuEZAMVML4UAVYbxjDfUyMZcQpxhrVaDmupRrwOZv/k=;
+        s=korg; t=1655118843;
+        bh=m+6bIiaRSARv1WgAzQBAifc3hhldBDoDI7VROQPJIBg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HZNt3qlqcLbsqK67KzAaNX4AuCbUOOj6G+xWvKjOZDwbpJ1HsSiWwoYPDB/XBF6M0
-         MvwACUIltnqgZK4q687I8SmxVKdOLaU7jBJ3pRznrEe8cIAsDIZ9K1ZbrKYBkdEbPE
-         3XmrYs7k6uNrsMIr51yxpiclfjyixkfgxIe6Qb3M=
+        b=2LoWRyfE49psqcAtBjG5dId+f6nvu9iG8piSCGQQWhrHyM6slmx3bupkDqqo5PJ95
+         ml+kaOcbj4ZKXvu88ZPUkL0iAUg6TK4/NDEWBUuK8PZH32odTeEu6/4f88eoNGO/i4
+         kzdsUDv3rr+rXv4+a6wUAzTYaqyojPmrhaLcJ3SU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        stable@vger.kernel.org, Zheng Yongjun <zhengyongjun3@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 026/247] rpmsg: virtio: Fix possible double free in rpmsg_virtio_add_ctrl_dev()
-Date:   Mon, 13 Jun 2022 12:08:48 +0200
-Message-Id: <20220613094923.728521855@linuxfoundation.org>
+Subject: [PATCH 5.15 021/247] usb: dwc3: pci: Fix pm_runtime_get_sync() error checking
+Date:   Mon, 13 Jun 2022 12:08:43 +0200
+Message-Id: <20220613094923.573732261@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -51,37 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-[ Upstream commit 1680939e9ecf7764fba8689cfb3429c2fe2bb23c ]
+[ Upstream commit a03e2ddab8e735e2cc315609b297b300e9cc60d2 ]
 
-vch will be free in virtio_rpmsg_release_device() when
-rpmsg_ctrldev_register_device() fails. There is no need to call
-kfree() again.
+If the device is already in a runtime PM enabled state
+pm_runtime_get_sync() will return 1, so a test for negative
+value should be used to check for errors.
 
-Fixes: c486682ae1e2 ("rpmsg: virtio: Register the rpmsg_char device")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Tested-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-Link: https://lore.kernel.org/r/20220426060536.15594-3-hbh25y@gmail.com
-Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+Fixes: 8eed00b237a28 ("usb: dwc3: pci: Runtime resume child device from wq")
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+Link: https://lore.kernel.org/r/20220422062652.10575-1-zhengyongjun3@huawei.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rpmsg/virtio_rpmsg_bus.c | 2 +-
+ drivers/usb/dwc3/dwc3-pci.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/rpmsg/virtio_rpmsg_bus.c b/drivers/rpmsg/virtio_rpmsg_bus.c
-index 834a0811e371..3a62e6197151 100644
---- a/drivers/rpmsg/virtio_rpmsg_bus.c
-+++ b/drivers/rpmsg/virtio_rpmsg_bus.c
-@@ -842,7 +842,7 @@ static struct rpmsg_device *rpmsg_virtio_add_ctrl_dev(struct virtio_device *vdev
+diff --git a/drivers/usb/dwc3/dwc3-pci.c b/drivers/usb/dwc3/dwc3-pci.c
+index f08b2178fd32..9c8887615701 100644
+--- a/drivers/usb/dwc3/dwc3-pci.c
++++ b/drivers/usb/dwc3/dwc3-pci.c
+@@ -256,7 +256,7 @@ static void dwc3_pci_resume_work(struct work_struct *work)
+ 	int ret;
  
- 	err = rpmsg_chrdev_register_device(rpdev_ctrl);
- 	if (err) {
--		kfree(vch);
-+		/* vch will be free in virtio_rpmsg_release_device() */
- 		return ERR_PTR(err);
+ 	ret = pm_runtime_get_sync(&dwc3->dev);
+-	if (ret) {
++	if (ret < 0) {
+ 		pm_runtime_put_sync_autosuspend(&dwc3->dev);
+ 		return;
  	}
- 
 -- 
 2.35.1
 
