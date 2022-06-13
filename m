@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BB60C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:45:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3636CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:45:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245284AbiFMKo7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:44:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44422 "EHLO
+        id S245111AbiFMKpO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:45:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344551AbiFMKml (ORCPT
+        with ESMTP id S244152AbiFMKmp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:42:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79575D137;
-        Mon, 13 Jun 2022 03:24:07 -0700 (PDT)
+        Mon, 13 Jun 2022 06:42:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D85CC2A252;
+        Mon, 13 Jun 2022 03:24:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 12F9AB80E2D;
-        Mon, 13 Jun 2022 10:24:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E47BC34114;
-        Mon, 13 Jun 2022 10:24:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E60060B8B;
+        Mon, 13 Jun 2022 10:24:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BA92C34114;
+        Mon, 13 Jun 2022 10:24:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115844;
-        bh=SnyxOO3TTXiksI43VckClFdeIRI3OXADoqiNsPJ6c88=;
+        s=korg; t=1655115847;
+        bh=XCY2vbdhVb6IAOGE6zsmnRjqax0Xt+YnCNXKezmd2B0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fKwt8EhwfsUMo6a9rD/z2fZOf06jZcHpUJ+I4pqZXpGJyiWLcTCX11V5C4zTWZRNi
-         XwPKiJELiEWo/HiA/TENPx4XjzxcEMtatUDV2dRHpiHUektNf1Dlu8ruhLW4uAy2Tq
-         QfYASbWSYlsAa1lcMiq4XFrFWW30+0ZoHb4VWwAE=
+        b=yLHEDUfUUoGGzHhAaBEWhtVVvH2OQNAfPCB0l5nUgf4mjhb5NjpIwq80UudmqdTCn
+         +lvDHV8aS+Aaep8/bTgY4ccbt2iunq9e5xB270cNbakj1REKwQBSUm7rQAI7X9kdmI
+         XfvrkIfSXoMOJgMg09rba/igjnZcoljrGPaLpRJY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
+        stable@vger.kernel.org, Lin Ma <linma@zju.edu.cn>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 062/218] drm/msm/dsi: fix error checks and return values for DSI xmit functions
-Date:   Mon, 13 Jun 2022 12:08:40 +0200
-Message-Id: <20220613094921.606547638@linuxfoundation.org>
+Subject: [PATCH 4.14 054/218] NFC: NULL out the dev->rfkill to prevent UAF
+Date:   Mon, 13 Jun 2022 12:08:32 +0200
+Message-Id: <20220613094920.928363798@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -51,82 +50,148 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Lin Ma <linma@zju.edu.cn>
 
-[ Upstream commit f0e7e9ed379c012c4d6b09a09b868accc426223c ]
+[ Upstream commit 1b0e81416a24d6e9b8c2341e22e8bf48f8b8bfc9 ]
 
-As noticed by Dan ([1] an the followup thread) there are multiple issues
-with the return values for MSM DSI command transmission callback. In
-the error case it can easily return a positive value when it should
-have returned a proper error code.
+Commit 3e3b5dfcd16a ("NFC: reorder the logic in nfc_{un,}register_device")
+assumes the device_is_registered() in function nfc_dev_up() will help
+to check when the rfkill is unregistered. However, this check only
+take effect when device_del(&dev->dev) is done in nfc_unregister_device().
+Hence, the rfkill object is still possible be dereferenced.
 
-This commits attempts to fix these issues both in TX and in RX paths.
+The crash trace in latest kernel (5.18-rc2):
 
-[1]: https://lore.kernel.org/linux-arm-msm/20211001123617.GH2283@kili/
+[   68.760105] ==================================================================
+[   68.760330] BUG: KASAN: use-after-free in __lock_acquire+0x3ec1/0x6750
+[   68.760756] Read of size 8 at addr ffff888009c93018 by task fuzz/313
+[   68.760756]
+[   68.760756] CPU: 0 PID: 313 Comm: fuzz Not tainted 5.18.0-rc2 #4
+[   68.760756] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+[   68.760756] Call Trace:
+[   68.760756]  <TASK>
+[   68.760756]  dump_stack_lvl+0x57/0x7d
+[   68.760756]  print_report.cold+0x5e/0x5db
+[   68.760756]  ? __lock_acquire+0x3ec1/0x6750
+[   68.760756]  kasan_report+0xbe/0x1c0
+[   68.760756]  ? __lock_acquire+0x3ec1/0x6750
+[   68.760756]  __lock_acquire+0x3ec1/0x6750
+[   68.760756]  ? lockdep_hardirqs_on_prepare+0x410/0x410
+[   68.760756]  ? register_lock_class+0x18d0/0x18d0
+[   68.760756]  lock_acquire+0x1ac/0x4f0
+[   68.760756]  ? rfkill_blocked+0xe/0x60
+[   68.760756]  ? lockdep_hardirqs_on_prepare+0x410/0x410
+[   68.760756]  ? mutex_lock_io_nested+0x12c0/0x12c0
+[   68.760756]  ? nla_get_range_signed+0x540/0x540
+[   68.760756]  ? _raw_spin_lock_irqsave+0x4e/0x50
+[   68.760756]  _raw_spin_lock_irqsave+0x39/0x50
+[   68.760756]  ? rfkill_blocked+0xe/0x60
+[   68.760756]  rfkill_blocked+0xe/0x60
+[   68.760756]  nfc_dev_up+0x84/0x260
+[   68.760756]  nfc_genl_dev_up+0x90/0xe0
+[   68.760756]  genl_family_rcv_msg_doit+0x1f4/0x2f0
+[   68.760756]  ? genl_family_rcv_msg_attrs_parse.constprop.0+0x230/0x230
+[   68.760756]  ? security_capable+0x51/0x90
+[   68.760756]  genl_rcv_msg+0x280/0x500
+[   68.760756]  ? genl_get_cmd+0x3c0/0x3c0
+[   68.760756]  ? lock_acquire+0x1ac/0x4f0
+[   68.760756]  ? nfc_genl_dev_down+0xe0/0xe0
+[   68.760756]  ? lockdep_hardirqs_on_prepare+0x410/0x410
+[   68.760756]  netlink_rcv_skb+0x11b/0x340
+[   68.760756]  ? genl_get_cmd+0x3c0/0x3c0
+[   68.760756]  ? netlink_ack+0x9c0/0x9c0
+[   68.760756]  ? netlink_deliver_tap+0x136/0xb00
+[   68.760756]  genl_rcv+0x1f/0x30
+[   68.760756]  netlink_unicast+0x430/0x710
+[   68.760756]  ? memset+0x20/0x40
+[   68.760756]  ? netlink_attachskb+0x740/0x740
+[   68.760756]  ? __build_skb_around+0x1f4/0x2a0
+[   68.760756]  netlink_sendmsg+0x75d/0xc00
+[   68.760756]  ? netlink_unicast+0x710/0x710
+[   68.760756]  ? netlink_unicast+0x710/0x710
+[   68.760756]  sock_sendmsg+0xdf/0x110
+[   68.760756]  __sys_sendto+0x19e/0x270
+[   68.760756]  ? __ia32_sys_getpeername+0xa0/0xa0
+[   68.760756]  ? fd_install+0x178/0x4c0
+[   68.760756]  ? fd_install+0x195/0x4c0
+[   68.760756]  ? kernel_fpu_begin_mask+0x1c0/0x1c0
+[   68.760756]  __x64_sys_sendto+0xd8/0x1b0
+[   68.760756]  ? lockdep_hardirqs_on+0xbf/0x130
+[   68.760756]  ? syscall_enter_from_user_mode+0x1d/0x50
+[   68.760756]  do_syscall_64+0x3b/0x90
+[   68.760756]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   68.760756] RIP: 0033:0x7f67fb50e6b3
+...
+[   68.760756] RSP: 002b:00007f67fa91fe90 EFLAGS: 00000293 ORIG_RAX: 000000000000002c
+[   68.760756] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f67fb50e6b3
+[   68.760756] RDX: 000000000000001c RSI: 0000559354603090 RDI: 0000000000000003
+[   68.760756] RBP: 00007f67fa91ff00 R08: 00007f67fa91fedc R09: 000000000000000c
+[   68.760756] R10: 0000000000000000 R11: 0000000000000293 R12: 00007ffe824d496e
+[   68.760756] R13: 00007ffe824d496f R14: 00007f67fa120000 R15: 0000000000000003
 
-Fixes: a689554ba6ed ("drm/msm: Initial add DSI connector support")
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Tested-by: Marijn Suijten <marijn.suijten@somainline.org>
-Patchwork: https://patchwork.freedesktop.org/patch/480501/
-Link: https://lore.kernel.org/r/20220401231104.967193-1-dmitry.baryshkov@linaro.org
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+[   68.760756]  </TASK>
+[   68.760756]
+[   68.760756] Allocated by task 279:
+[   68.760756]  kasan_save_stack+0x1e/0x40
+[   68.760756]  __kasan_kmalloc+0x81/0xa0
+[   68.760756]  rfkill_alloc+0x7f/0x280
+[   68.760756]  nfc_register_device+0xa3/0x1a0
+[   68.760756]  nci_register_device+0x77a/0xad0
+[   68.760756]  nfcmrvl_nci_register_dev+0x20b/0x2c0
+[   68.760756]  nfcmrvl_nci_uart_open+0xf2/0x1dd
+[   68.760756]  nci_uart_tty_ioctl+0x2c3/0x4a0
+[   68.760756]  tty_ioctl+0x764/0x1310
+[   68.760756]  __x64_sys_ioctl+0x122/0x190
+[   68.760756]  do_syscall_64+0x3b/0x90
+[   68.760756]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   68.760756]
+[   68.760756] Freed by task 314:
+[   68.760756]  kasan_save_stack+0x1e/0x40
+[   68.760756]  kasan_set_track+0x21/0x30
+[   68.760756]  kasan_set_free_info+0x20/0x30
+[   68.760756]  __kasan_slab_free+0x108/0x170
+[   68.760756]  kfree+0xb0/0x330
+[   68.760756]  device_release+0x96/0x200
+[   68.760756]  kobject_put+0xf9/0x1d0
+[   68.760756]  nfc_unregister_device+0x77/0x190
+[   68.760756]  nfcmrvl_nci_unregister_dev+0x88/0xd0
+[   68.760756]  nci_uart_tty_close+0xdf/0x180
+[   68.760756]  tty_ldisc_kill+0x73/0x110
+[   68.760756]  tty_ldisc_hangup+0x281/0x5b0
+[   68.760756]  __tty_hangup.part.0+0x431/0x890
+[   68.760756]  tty_release+0x3a8/0xc80
+[   68.760756]  __fput+0x1f0/0x8c0
+[   68.760756]  task_work_run+0xc9/0x170
+[   68.760756]  exit_to_user_mode_prepare+0x194/0x1a0
+[   68.760756]  syscall_exit_to_user_mode+0x19/0x50
+[   68.760756]  do_syscall_64+0x48/0x90
+[   68.760756]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+This patch just add the null out of dev->rfkill to make sure such
+dereference cannot happen. This is safe since the device_lock() already
+protect the check/write from data race.
+
+Fixes: 3e3b5dfcd16a ("NFC: reorder the logic in nfc_{un,}register_device")
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dsi/dsi_host.c | 21 ++++++++++++++-------
- 1 file changed, 14 insertions(+), 7 deletions(-)
+ net/nfc/core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/msm/dsi/dsi_host.c b/drivers/gpu/drm/msm/dsi/dsi_host.c
-index d49f17748119..c9c8d2190515 100644
---- a/drivers/gpu/drm/msm/dsi/dsi_host.c
-+++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
-@@ -1240,10 +1240,10 @@ static int dsi_cmds2buf_tx(struct msm_dsi_host *msm_host,
- 			dsi_get_bpp(msm_host->format) / 8;
- 
- 	len = dsi_cmd_dma_add(msm_host, msg);
--	if (!len) {
-+	if (len < 0) {
- 		pr_err("%s: failed to add cmd type = 0x%x\n",
- 			__func__,  msg->type);
--		return -EINVAL;
-+		return len;
+diff --git a/net/nfc/core.c b/net/nfc/core.c
+index 8c38a21fb0c6..120259c2b6a7 100644
+--- a/net/nfc/core.c
++++ b/net/nfc/core.c
+@@ -1174,6 +1174,7 @@ void nfc_unregister_device(struct nfc_dev *dev)
+ 	if (dev->rfkill) {
+ 		rfkill_unregister(dev->rfkill);
+ 		rfkill_destroy(dev->rfkill);
++		dev->rfkill = NULL;
  	}
- 
- 	/* for video mode, do not send cmds more than
-@@ -1262,10 +1262,14 @@ static int dsi_cmds2buf_tx(struct msm_dsi_host *msm_host,
- 	}
- 
- 	ret = dsi_cmd_dma_tx(msm_host, len);
--	if (ret < len) {
--		pr_err("%s: cmd dma tx failed, type=0x%x, data0=0x%x, len=%d\n",
--			__func__, msg->type, (*(u8 *)(msg->tx_buf)), len);
--		return -ECOMM;
-+	if (ret < 0) {
-+		pr_err("%s: cmd dma tx failed, type=0x%x, data0=0x%x, len=%d, ret=%d\n",
-+			__func__, msg->type, (*(u8 *)(msg->tx_buf)), len, ret);
-+		return ret;
-+	} else if (ret < len) {
-+		pr_err("%s: cmd dma tx failed, type=0x%x, data0=0x%x, ret=%d len=%d\n",
-+			__func__, msg->type, (*(u8 *)(msg->tx_buf)), ret, len);
-+		return -EIO;
- 	}
- 
- 	return len;
-@@ -1988,9 +1992,12 @@ int msm_dsi_host_cmd_rx(struct mipi_dsi_host *host,
- 		}
- 
- 		ret = dsi_cmds2buf_tx(msm_host, msg);
--		if (ret < msg->tx_len) {
-+		if (ret < 0) {
- 			pr_err("%s: Read cmd Tx failed, %d\n", __func__, ret);
- 			return ret;
-+		} else if (ret < msg->tx_len) {
-+			pr_err("%s: Read cmd Tx failed, too short: %d\n", __func__, ret);
-+			return -ECOMM;
- 		}
- 
- 		/*
+ 	dev->shutting_down = true;
+ 	device_unlock(&dev->dev);
 -- 
 2.35.1
 
