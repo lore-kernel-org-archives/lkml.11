@@ -2,100 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5238CCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4BEBCCA481
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:59:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351350AbiFMU7L (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:59:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36102 "EHLO
+        id S231423AbiFMU7R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 16:59:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352261AbiFMUyT (ORCPT
+        with ESMTP id S1352256AbiFMUyT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 16:54:19 -0400
-Received: from mail-oo1-f46.google.com (mail-oo1-f46.google.com [209.85.161.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22A5E2A94B;
-        Mon, 13 Jun 2022 13:22:35 -0700 (PDT)
-Received: by mail-oo1-f46.google.com with SMTP id 4-20020a4a1404000000b0041bfe1a4cffso762050ood.0;
-        Mon, 13 Jun 2022 13:22:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0cU1N9A1T1qgBn1lKK9HaI+TY1k8IeUOqJphJj6+O1w=;
-        b=WyAHgPnyMiXSovZ+PgOx9TNJBxl0psJAyTOykoAE69UXoRQEdOhXWzCXHHzUPLrC5O
-         n3/mq+TsUfV/wufIyQpg3IObdiduNo6dBn1Jak6XyVrLvthI2Wk99qdDH+sL/7f6dk1K
-         EFSXQ5BgwFQ3Wx2T6A34RXoaWK9pHiOurGgQMpHoT8WypTlmHK3zL415+Wpk6mXk0Bi8
-         DGBa+KNNhffAJ+EZt+AQjrrFAQFp9UmHoep+hb0DJb99cUl0FSR0MzndDPVUf1Te9TTV
-         kEnlaKIY6PHk6TW2fDexZxZJhF2225dXZ1vuJQpVlENeaiVWYjSWi95I7qyaSp7RYNnk
-         b1+Q==
-X-Gm-Message-State: AOAM5330ixY22sdKfUYfnPBe6pLYQf7jtAVjmIUvbLf5gFOCvtE3TyHo
-        ADS2G6PS/I4jyDufJtqfVQ==
-X-Google-Smtp-Source: ABdhPJwT2XUz5Smcb7K4j/V2wogweq9iNjCOSqWRPw8iUB34ic13DPfDUgWmQ0B2MNr30iIYNLb1mQ==
-X-Received: by 2002:a4a:378e:0:b0:41b:8cb6:b7bb with SMTP id r136-20020a4a378e000000b0041b8cb6b7bbmr614495oor.51.1655151754293;
-        Mon, 13 Jun 2022 13:22:34 -0700 (PDT)
-Received: from robh.at.kernel.org ([2607:fb90:20d2:bb97:4381:7341:60ed:a4a1])
-        by smtp.gmail.com with ESMTPSA id nl7-20020a056871458700b000f5e89a9c60sm4471001oab.3.2022.06.13.13.22.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 13:22:33 -0700 (PDT)
-Received: (nullmailer pid 17434 invoked by uid 1000);
-        Mon, 13 Jun 2022 20:20:47 -0000
-Date:   Mon, 13 Jun 2022 14:20:47 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 09/18] PCI: dwc: Discard IP-core version checking on
- unrolled iATU detection
-Message-ID: <20220613202047.GE4188875-robh@kernel.org>
-References: <20220610082535.12802-1-Sergey.Semin@baikalelectronics.ru>
- <20220610082535.12802-10-Sergey.Semin@baikalelectronics.ru>
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B61724088;
+        Mon, 13 Jun 2022 13:22:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=8O3gyMH/DIarLtUQIeptn6LXzo+PYX0mLfSnGbw2a7g=; b=NiCUaEIDQk/r/vKjMnabo0T1aj
+        KK3IXgeBZZBkAGgl4TSxcVArNoBIV/AKyyLi9t5a07UnCfbFSwN2nvXFXzLDYNNMAXXD2fr3a3lXn
+        5qBH/nL9tJX2J7QQ4kM/7UEN+euVSEGc7b6Ex8N+TV4DQW9YU3BeLEFg/YHZyrRBVB4eOurKWVCUV
+        3dbn5FrNEUgwk3XQpLPNxo6eOD7VlDnTDsuYkubKzs3hE1PvMf7ii7WpSMRyCQ1xaKSHGQwOi4VXv
+        BhCrf7pxathZUx6m7wZ/N1DXG7+13m4woNibuhLDnSJXchPFtBME85NedsEqI+ptN5vbrVryuRlDS
+        RIIm5mxw==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o0qZK-007fIG-L3; Mon, 13 Jun 2022 20:21:51 +0000
+Message-ID: <424b4f90-138c-d71f-0f1c-12c60e44c1c2@infradead.org>
+Date:   Mon, 13 Jun 2022 13:21:43 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220610082535.12802-10-Sergey.Semin@baikalelectronics.ru>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2 15/15] video: backlight: mt6370: Add Mediatek MT6370
+ support
+Content-Language: en-US
+To:     ChiaEn Wu <peterwu.pub@gmail.com>, jic23@kernel.org,
+        lars@metafoo.de, matthias.bgg@gmail.com, lee.jones@linaro.org,
+        daniel.thompson@linaro.org, jingoohan1@gmail.com, pavel@ucw.cz,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
+Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        szunichen@gmail.com, ChiaEn Wu <chiaen_wu@richtek.com>
+References: <20220613111146.25221-1-peterwu.pub@gmail.com>
+ <20220613111146.25221-16-peterwu.pub@gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220613111146.25221-16-peterwu.pub@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 11:25:25AM +0300, Serge Semin wrote:
-> It's pretty much pointless. Even though unrolled version of the internal
-> ATU has been indeed available since DWC PCIe v4.80a IP-core, there is no
-> guarantee it was enabled during the IP-core configuration (Synopsys
-> suggests to contact the Solvnet support for guidance of how to do that for
-> the newer IP-cores). So the only reliable way to find out the unrolled
-> iATU feature availability is indeed to check the iATU viewport register
-> content. In accordance with the reference manual [1] if the register
-> doesn't exist (unrolled iATU is enabled) it's content is fixed with
-> 0xff-s, otherwise it will contain some zeros. So we can freely drop the
-> IP-core version checking in this matter then and use the
-> dw_pcie_iatu_unroll_enabled() method only to detect whether iATU/eDMA
-> space is unrolled.
-
-Are you sure that pre v4.80a, it is safe to read the register address? 
-Seems unlikely that the all 1s guarantee would be valid before the 
-feature ever existed. 
 
 
-> [1] DesignWare Cores, PCI Express Controller, Register Desciptions,
-> v.4.90a, December 2016, p.855
-> 
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> ---
->  drivers/pci/controller/dwc/pcie-designware.c | 11 +++++------
->  1 file changed, 5 insertions(+), 6 deletions(-)
+On 6/13/22 04:11, ChiaEn Wu wrote:
+> diff --git a/drivers/video/backlight/Kconfig b/drivers/video/backlight/Kconfig
+> index a003e02e13ce..ec1589ad88bb 100644
+> --- a/drivers/video/backlight/Kconfig
+> +++ b/drivers/video/backlight/Kconfig
+> @@ -268,6 +268,15 @@ config BACKLIGHT_MAX8925
+>  	  If you have a LCD backlight connected to the WLED output of MAX8925
+>  	  WLED output, say Y here to enable this driver.
+>  
+> +config BACKLIGHT_MT6370
+> +	tristate "Mediatek MT6370 Backlight Driver"
+> +	depends on MFD_MT6370
+> +	help
+> +	  This enables support for Mediatek MT6370 Backlight driver.
+> +	  It's commonly used to drive the display WLED. There're 4 channels
 
-Assuming this works,
+	                                                There are 4 channels
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+> +	  inisde, and each channel supports up to 30mA of current capability
+
+	  inside,
+
+> +	  with 2048 current steps in exponential or linear mapping curves.
+
+-- 
+~Randy
