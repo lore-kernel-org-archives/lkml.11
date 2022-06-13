@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F391C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:25:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D28EFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:25:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377040AbiFMNZ0 (ORCPT
+        id S1377081AbiFMNZb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:25:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60658 "EHLO
+        Mon, 13 Jun 2022 09:25:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377500AbiFMNUl (ORCPT
+        with ESMTP id S1377502AbiFMNUl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 09:20:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E83E6B039;
-        Mon, 13 Jun 2022 04:23:42 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08AF06AA7F;
+        Mon, 13 Jun 2022 04:23:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D83E3B80EB9;
-        Mon, 13 Jun 2022 11:23:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3947EC34114;
-        Mon, 13 Jun 2022 11:23:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3881A61046;
+        Mon, 13 Jun 2022 11:22:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A754C34114;
+        Mon, 13 Jun 2022 11:22:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119399;
-        bh=k8N7I45uscrRs3fgcM4PAu2rtmy65eaSx9DYg7wNjog=;
+        s=korg; t=1655119360;
+        bh=E4rQH1VFVcVFFMQSB2xDZNS++oZ3MPwR5If0rkwwWrM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Si9n16ac1c7Xfrz1WHYf9tR6BvI2RZ26nGCiCRm/xbrVLLkOiEt24Hh1AE4Ivg0tN
-         b2XyGuSIFjREQiyWz8ugPye1pdvUmuyNEKfLMcH2nPxCVaDc19Sm2GsbKg4vMb4d9d
-         +1Mx5XnH0gQ1cgTLQ+9FZ6PPQNw9PYK8O4CyUN/I=
+        b=L/o882kbVoODy65h4MX7V0agq1DBX3LLh5PqaCE7HRbXJjjplNT2crBQiy2bvzbJr
+         o791JO20qJjIY4DJ4yLARQ4LCskOki35g7bH2MQpt9cuRCCFOdKoDYAftWjxd04sLK
+         O1vYg6v5cQc2wYGss+WZ0H+/xe26I1nhDQcbAmao=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Frode Nordahl <frode.nordahl@canonical.com>,
-        Ilya Maximets <i.maximets@ovn.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 225/247] net: openvswitch: fix misuse of the cached connection on tuple changes
-Date:   Mon, 13 Jun 2022 12:12:07 +0200
-Message-Id: <20220613094929.770311789@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
+        Sean Paul <seanpaul@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>
+Subject: [PATCH 5.15 235/247] drm/bridge: analogix_dp: Support PSR-exit to disable transition
+Date:   Mon, 13 Jun 2022 12:12:17 +0200
+Message-Id: <20220613094930.071901491@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -51,106 +50,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilya Maximets <i.maximets@ovn.org>
+From: Brian Norris <briannorris@chromium.org>
 
-commit 2061ecfdf2350994e5b61c43e50e98a7a70e95ee upstream.
+commit ca871659ec1606d33b1e76de8d4cf924cf627e34 upstream.
 
-If packet headers changed, the cached nfct is no longer relevant
-for the packet and attempt to re-use it leads to the incorrect packet
-classification.
+Most eDP panel functions only work correctly when the panel is not in
+self-refresh. In particular, analogix_dp_bridge_disable() tends to hit
+AUX channel errors if the panel is in self-refresh.
 
-This issue is causing broken connectivity in OpenStack deployments
-with OVS/OVN due to hairpin traffic being unexpectedly dropped.
+Given the above, it appears that so far, this driver assumes that we are
+never in self-refresh when it comes time to fully disable the bridge.
+Prior to commit 846c7dfc1193 ("drm/atomic: Try to preserve the crtc
+enabled state in drm_atomic_remove_fb, v2."), this tended to be true,
+because we would automatically disable the pipe when framebuffers were
+removed, and so we'd typically disable the bridge shortly after the last
+display activity.
 
-The setup has datapath flows with several conntrack actions and tuple
-changes between them:
+However, that is not guaranteed: an idle (self-refresh) display pipe may
+be disabled, e.g., when switching CRTCs. We need to exit PSR first.
 
-  actions:ct(commit,zone=8,mark=0/0x1,nat(src)),
-          set(eth(src=00:00:00:00:00:01,dst=00:00:00:00:00:06)),
-          set(ipv4(src=172.18.2.10,dst=192.168.100.6,ttl=62)),
-          ct(zone=8),recirc(0x4)
+Stable notes: this is definitely a bugfix, and the bug has likely
+existed in some form for quite a while. It may predate the "PSR helpers"
+refactor, but the code looked very different before that, and it's
+probably not worth rewriting the fix.
 
-After the first ct() action the packet headers are almost fully
-re-written.  The next ct() tries to re-use the existing nfct entry
-and marks the packet as invalid, so it gets dropped later in the
-pipeline.
-
-Clearing the cached conntrack entry whenever packet tuple is changed
-to avoid the issue.
-
-The flow key should not be cleared though, because we should still
-be able to match on the ct_state if the recirculation happens after
-the tuple change but before the next ct() action.
-
-Cc: stable@vger.kernel.org
-Fixes: 7f8a436eaa2c ("openvswitch: Add conntrack action")
-Reported-by: Frode Nordahl <frode.nordahl@canonical.com>
-Link: https://mail.openvswitch.org/pipermail/ovs-discuss/2022-May/051829.html
-Link: https://bugs.launchpad.net/ubuntu/+source/ovn/+bug/1967856
-Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
-Link: https://lore.kernel.org/r/20220606221140.488984-1-i.maximets@ovn.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Cc: <stable@vger.kernel.org>
+Fixes: 6c836d965bad ("drm/rockchip: Use the helpers for PSR")
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Reviewed-by: Sean Paul <seanpaul@chromium.org>
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220228122522.v2.1.I161904be17ba14526f78536ccd78b85818449b51@changeid
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/openvswitch/actions.c   |    6 ++++++
- net/openvswitch/conntrack.c |    4 +++-
- 2 files changed, 9 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/bridge/analogix/analogix_dp_core.c |   42 +++++++++++++++++++--
+ 1 file changed, 38 insertions(+), 4 deletions(-)
 
---- a/net/openvswitch/actions.c
-+++ b/net/openvswitch/actions.c
-@@ -373,6 +373,7 @@ static void set_ip_addr(struct sk_buff *
- 	update_ip_l4_checksum(skb, nh, *addr, new_addr);
- 	csum_replace4(&nh->check, *addr, new_addr);
- 	skb_clear_hash(skb);
-+	ovs_ct_clear(skb, NULL);
- 	*addr = new_addr;
+--- a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
++++ b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
+@@ -1269,6 +1269,25 @@ static int analogix_dp_bridge_attach(str
  }
  
-@@ -420,6 +421,7 @@ static void set_ipv6_addr(struct sk_buff
- 		update_ipv6_checksum(skb, l4_proto, addr, new_addr);
- 
- 	skb_clear_hash(skb);
-+	ovs_ct_clear(skb, NULL);
- 	memcpy(addr, new_addr, sizeof(__be32[4]));
- }
- 
-@@ -660,6 +662,7 @@ static int set_nsh(struct sk_buff *skb,
- static void set_tp_port(struct sk_buff *skb, __be16 *port,
- 			__be16 new_port, __sum16 *check)
+ static
++struct drm_crtc *analogix_dp_get_old_crtc(struct analogix_dp_device *dp,
++					  struct drm_atomic_state *state)
++{
++	struct drm_encoder *encoder = dp->encoder;
++	struct drm_connector *connector;
++	struct drm_connector_state *conn_state;
++
++	connector = drm_atomic_get_old_connector_for_encoder(state, encoder);
++	if (!connector)
++		return NULL;
++
++	conn_state = drm_atomic_get_old_connector_state(state, connector);
++	if (!conn_state)
++		return NULL;
++
++	return conn_state->crtc;
++}
++
++static
+ struct drm_crtc *analogix_dp_get_new_crtc(struct analogix_dp_device *dp,
+ 					  struct drm_atomic_state *state)
  {
-+	ovs_ct_clear(skb, NULL);
- 	inet_proto_csum_replace2(check, skb, *port, new_port, false);
- 	*port = new_port;
- }
-@@ -699,6 +702,7 @@ static int set_udp(struct sk_buff *skb,
- 		uh->dest = dst;
- 		flow_key->tp.src = src;
- 		flow_key->tp.dst = dst;
-+		ovs_ct_clear(skb, NULL);
- 	}
+@@ -1448,14 +1467,16 @@ analogix_dp_bridge_atomic_disable(struct
+ {
+ 	struct drm_atomic_state *old_state = old_bridge_state->base.state;
+ 	struct analogix_dp_device *dp = bridge->driver_private;
+-	struct drm_crtc *crtc;
++	struct drm_crtc *old_crtc, *new_crtc;
++	struct drm_crtc_state *old_crtc_state = NULL;
+ 	struct drm_crtc_state *new_crtc_state = NULL;
++	int ret;
  
- 	skb_clear_hash(skb);
-@@ -761,6 +765,8 @@ static int set_sctp(struct sk_buff *skb,
- 	sh->checksum = old_csum ^ old_correct_csum ^ new_csum;
+-	crtc = analogix_dp_get_new_crtc(dp, old_state);
+-	if (!crtc)
++	new_crtc = analogix_dp_get_new_crtc(dp, old_state);
++	if (!new_crtc)
+ 		goto out;
  
- 	skb_clear_hash(skb);
-+	ovs_ct_clear(skb, NULL);
+-	new_crtc_state = drm_atomic_get_new_crtc_state(old_state, crtc);
++	new_crtc_state = drm_atomic_get_new_crtc_state(old_state, new_crtc);
+ 	if (!new_crtc_state)
+ 		goto out;
+ 
+@@ -1464,6 +1485,19 @@ analogix_dp_bridge_atomic_disable(struct
+ 		return;
+ 
+ out:
++	old_crtc = analogix_dp_get_old_crtc(dp, old_state);
++	if (old_crtc) {
++		old_crtc_state = drm_atomic_get_old_crtc_state(old_state,
++							       old_crtc);
 +
- 	flow_key->tp.src = sh->source;
- 	flow_key->tp.dst = sh->dest;
- 
---- a/net/openvswitch/conntrack.c
-+++ b/net/openvswitch/conntrack.c
-@@ -1336,7 +1336,9 @@ int ovs_ct_clear(struct sk_buff *skb, st
- 
- 	nf_ct_put(ct);
- 	nf_ct_set(skb, NULL, IP_CT_UNTRACKED);
--	ovs_ct_fill_key(skb, key, false);
++		/* When moving from PSR to fully disabled, exit PSR first. */
++		if (old_crtc_state && old_crtc_state->self_refresh_active) {
++			ret = analogix_dp_disable_psr(dp);
++			if (ret)
++				DRM_ERROR("Failed to disable psr (%d)\n", ret);
++		}
++	}
 +
-+	if (key)
-+		ovs_ct_fill_key(skb, key, false);
- 
- 	return 0;
+ 	analogix_dp_bridge_disable(bridge);
  }
+ 
 
 
