@@ -2,132 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DB00C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:16:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B5DDC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:17:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351889AbiFMVQA (ORCPT
+        id S1352222AbiFMVRI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 17:16:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43812 "EHLO
+        Mon, 13 Jun 2022 17:17:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352024AbiFMVPs (ORCPT
+        with ESMTP id S1352217AbiFMVQ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 17:15:48 -0400
-Received: from smtp.smtpout.orange.fr (smtp02.smtpout.orange.fr [80.12.242.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBBF743EE9
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:57:29 -0700 (PDT)
-Received: from [192.168.1.18] ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id 0r7no7OkDEMbD0r7nog3Oj; Mon, 13 Jun 2022 22:57:28 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Mon, 13 Jun 2022 22:57:28 +0200
-X-ME-IP: 90.11.190.129
-Message-ID: <f13c3976-2ba0-e16d-0853-5b5b1be16d11@wanadoo.fr>
-Date:   Mon, 13 Jun 2022 22:57:25 +0200
+        Mon, 13 Jun 2022 17:16:56 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79134D10D;
+        Mon, 13 Jun 2022 13:58:49 -0700 (PDT)
+Received: from notapiano (pool-98-113-53-228.nycmny.fios.verizon.net [98.113.53.228])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: nfraprado)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 1E55D6601671;
+        Mon, 13 Jun 2022 21:58:45 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1655153927;
+        bh=TmikzqWBrB46qOMNrEdA0IqJB77LnzkhuMwjJ/1ZJBw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iKZzCOUbY+UJhBB9Z3ZyUUmdIykmqpdNuQBWJpxbwBC0Wp+rz0VBIMnI6o7bt9BFW
+         MgxULPUIwA82jhxgDNAUxqr8shbAVRhSkT2inQeb3BUQVZRJsZWWktIEw/NqBh24gF
+         eMHrYrHdQ7WBJa4kltnWaNYpYTPRRoG3o9MbN8dnMsEXHM9bVoD6gO2sSVzlIKtoGC
+         WmqmMXdSvwN+OiDvRYLb+xn266m0rnLiF/lfsoHXCalt2QsA4hiUOAW6Aa8Yp5P1D7
+         t2zcgUao/fkmxW8wsrAwbyxmaNoVena1oizM/3KP4Gy2U0SGHkHr+kKpwBQwmu3y0a
+         ThbGcSpSGXbww==
+Date:   Mon, 13 Jun 2022 16:58:40 -0400
+From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
+        <nfraprado@collabora.com>
+To:     Prashant Malani <pmalani@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        bleung@chromium.org, swboyd@chromium.org,
+        heikki.krogerus@linux.intel.com,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        =?utf-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Pin-Yen Lin <treapking@chromium.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Tzung-Bi Shih <tzungbi@google.com>,
+        Xin Ji <xji@analogixsemi.com>
+Subject: Re: [PATCH v2 0/7] usb: typec: Introduce typec-switch binding
+Message-ID: <20220613205840.x7bgrj567prroede@notapiano>
+References: <20220609181106.3695103-1-pmalani@chromium.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2] p54: Fix an error handling path in p54spi_probe()
-Content-Language: en-US
-To:     Christian Lamparter <chunkeey@gmail.com>
-Cc:     Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org,
-        Christian Lamparter <chunkeey@web.de>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-References: <297d2547ff2ee627731662abceeab9dbdaf23231.1655068321.git.christophe.jaillet@wanadoo.fr>
- <CAAd0S9DgctqyRx+ppfT6dNntUR-cpySnsYaL=unboQ+qTK2wGQ@mail.gmail.com>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <CAAd0S9DgctqyRx+ppfT6dNntUR-cpySnsYaL=unboQ+qTK2wGQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220609181106.3695103-1-pmalani@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 13/06/2022 Ã  22:02, Christian Lamparter a Ã©critÂ :
-> On Sun, Jun 12, 2022 at 11:12 PM Christophe JAILLET
-> <christophe.jaillet@wanadoo.fr> wrote:
->>
->> If an error occurs after a successful call to p54spi_request_firmware(), it
->> must be undone by a corresponding release_firmware() as already done in
->> the error handling path of p54spi_request_firmware() and in the .remove()
->> function.
->>
->> Add the missing call in the error handling path and remove it from
->> p54spi_request_firmware() now that it is the responsibility of the caller
->> to release the firmawre
+On Thu, Jun 09, 2022 at 06:09:39PM +0000, Prashant Malani wrote:
+> This series introduces a binding for Type-C data lane switches. These
+> control the routing and operating modes of USB Type-C data lanes based
+> on the PD messaging from the Type-C port driver regarding connected
+> peripherals.
 > 
-> that last word hast a typo:  firmware. (maybe Kalle can fix this in post).
+> The first patch introduces a change to the Type-C mux class mode-switch
+> matching code, while the second adds a config guard to a Type-C header.
+> The next couple of patches introduce the new "typec-switch" binding as
+> well as one user of it (the ANX7625 drm bridge).
+> 
+> The remaining patches add functionality to the anx7625 driver to
+> register the mode-switches, as well as program its crosspoint
+> switch depending on which Type-C port has a DisplayPort (DP) peripheral
+> connected to it.
+> 
+> v1: https://lore.kernel.org/linux-usb/20220607190131.1647511-1-pmalani@chromium.org/
+> 
+> Changes since v1:
+> - Fixed function signature error in "else case" of typec_mux.h
+> - typec-switch.yaml: Fixed indentation, compatible, and node names in examples.
+> - anx7625.yaml:
+>     + Introduced patternProperties for "switch" children (suggested by Krzysztof Kozlowski).
+>     + Added unevaluatedProperties descriptor (suggested by Krzysztof Kozlowski).
+>     + Added "address-cells" and "size-cells" properties to "switches".
+> 
+> Pin-Yen Lin (1):
+>   drm/bridge: anx7625: Add typec_mux_set callback function
+> 
+> Prashant Malani (6):
+>   usb: typec: mux: Allow muxes to specify mode-switch
+>   usb: typec: mux: Add CONFIG guards for functions
+>   dt-bindings: usb: Add Type-C switch binding
+>   dt-bindings: drm/bridge: anx7625: Add mode-switch support
+>   drm/bridge: anx7625: Register number of Type C switches
+>   drm/bridge: anx7625: Register Type-C mode switches
 
-More or less the same typo twice in a row... _Embarrassed_
+For the whole series,
+
+Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+
+Tested that external display works on both ports of mt8192-asurada-spherion.
+
+Thanks,
+Nícolas
 
 > 
->> Fixes: cd8d3d321285 ("p54spi: p54spi driver")
->> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> Acked-by: Christian Lamparter <chunkeey@gmail.com>
-> (Though, v1 was fine too.)
->> ---
->> v2: reduce diffstat and take advantage on the fact that release_firmware()
->> checks for NULL
+>  .../display/bridge/analogix,anx7625.yaml      |  63 ++++++++
+>  .../devicetree/bindings/usb/typec-switch.yaml |  74 +++++++++
+>  drivers/gpu/drm/bridge/analogix/anx7625.c     | 151 ++++++++++++++++++
+>  drivers/gpu/drm/bridge/analogix/anx7625.h     |  20 +++
+>  drivers/usb/typec/mux.c                       |   8 +-
+>  include/linux/usb/typec_mux.h                 |  38 +++++
+>  6 files changed, 352 insertions(+), 2 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/usb/typec-switch.yaml
 > 
-> Heh, ok ;) . Now that I see it,  the "ret = p54_parse_firmware(...); ... "
-> could have been replaced with "return p54_parse_firmware(dev, priv->firmware);"
-> so the p54spi.c could shrink another 5-6 lines.
+> -- 
+> 2.36.1.476.g0c4daa206d-goog
 > 
-> I think leaving p54spi_request_firmware() callee to deal with
-> releasing the firmware
-> in the error case as well is nicer because it gets rid of a "but in
-> this case" complexity.
-
-
-Take the one you consider being the best one.
-
-If it deserves a v3 to axe some lines of code, I can do it but, as said 
-previously, v1 is for me the cleaner and more future proof.
-
-CJ
-
-> 
-> (I still have hope for the devres-firmware to hit some day).
-> 
-> Cheers
-> Christian
-> 
->> ---
->>   drivers/net/wireless/intersil/p54/p54spi.c | 3 ++-
->>   1 file changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/wireless/intersil/p54/p54spi.c b/drivers/net/wireless/intersil/p54/p54spi.c
->> index f99b7ba69fc3..19152fd449ba 100644
->> --- a/drivers/net/wireless/intersil/p54/p54spi.c
->> +++ b/drivers/net/wireless/intersil/p54/p54spi.c
->> @@ -164,7 +164,7 @@ static int p54spi_request_firmware(struct ieee80211_hw *dev)
->>
->>          ret = p54_parse_firmware(dev, priv->firmware);
->>          if (ret) {
->> -               release_firmware(priv->firmware);
->> +               /* the firmware is released by the caller */
->>                  return ret;
->>          }
->>
->> @@ -659,6 +659,7 @@ static int p54spi_probe(struct spi_device *spi)
->>          return 0;
->>
->>   err_free_common:
->> +       release_firmware(priv->firmware);
->>          free_irq(gpio_to_irq(p54spi_gpio_irq), spi);
->>   err_free_gpio_irq:
->>          gpio_free(p54spi_gpio_irq);
->> --
->> 2.34.1
->>
-> 
-
