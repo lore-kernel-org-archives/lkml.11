@@ -2,52 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 648BFCCA489
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEAF9CCA48E
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382715AbiFMOOq (ORCPT
+        id S1382887AbiFMOOx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:14:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51948 "EHLO
+        Mon, 13 Jun 2022 10:14:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381431AbiFMOEU (ORCPT
+        with ESMTP id S1381452AbiFMOEW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:04:20 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98D892BB2D;
-        Mon, 13 Jun 2022 04:39:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655120361; x=1686656361;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=G7QQ+WW3LOvtPCdg1OVAOqL6XRPidEyJLiCpfLWTSgM=;
-  b=kyomMcxqDR2f7EPFb4BtDU7kLOMwDtShk0FJQPRM0nJv+caCXuAy82lc
-   ql6MXXyf+stufw6+y7iKaKMBN9v5+nRn5MgJpkiM16vaORqGKaodqrqpu
-   Tsl80wHfFls7BLZtSGtQTstNiXVGg1fxS/pdm20GGqLYJ9KXLdi12/vB1
-   l9VQRXS0uOKfp7ESQ8Qqr9kGRe6ZeT2/Kj9EJJV3jjtjZDWuuyExvNDyP
-   lMv/2Fv5MwU6hpjbSywZtjrH1IsC5ubTMZjItPfcI8sT1r6DXFNBhWIj9
-   DYYAciYbF0nWcZNT5iFBPx+EvQ9RAweOQlwevgqCvGEMft8fmWTYU+pHJ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10376"; a="342227628"
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="342227628"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 04:39:16 -0700
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="639685879"
-Received: from fnechitx-mobl.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.249.40.115])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 04:39:13 -0700
-From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc:     =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH] serial: Drop timeout from uart_port
-Date:   Mon, 13 Jun 2022 14:39:05 +0300
-Message-Id: <20220613113905.22962-1-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.30.2
+        Mon, 13 Jun 2022 10:04:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 707A39FC7;
+        Mon, 13 Jun 2022 04:39:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2AE7BB80EC6;
+        Mon, 13 Jun 2022 11:39:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 797AFC34114;
+        Mon, 13 Jun 2022 11:39:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655120376;
+        bh=A7yp75K1ZjPXGfXpDlsSFQSDKF3BAbS8e9qL2isonl0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rWa+TZ3JqBhhoL2lhhCSFDLVdyrp7zTcU4XgIt+BdWSPGk8o73RUcQNoveQsGhVFI
+         iJBY4ve2nQeJwktqOOTaZgH6baa5isQ0tyNCwHlJpKo+By6Jms2phlopJTF+CetJ3o
+         djnlpMSrnbxLOwGcF+p4Ts8guIKVwPP/OLNXoXtc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 003/298] iio: adc: ad7124: Remove shift from scan_type
+Date:   Mon, 13 Jun 2022 12:08:17 +0200
+Message-Id: <20220613094925.023847249@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
+References: <20220613094924.913340374@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -55,157 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit 31f6bd7fad3b ("serial: Store character timing information
-to uart_port"), per frame timing information is available on uart_port.
-Uart port's timeout can be derived from frame_time by multiplying with
-fifosize.
+From: Alexandru Tachici <alexandru.tachici@analog.com>
 
-Most callers of uart_poll_timeout are not made under port's lock. To be
-on the safe side, make sure frame_time is only accessed once. As
-fifo_size is effectively a constant, it shouldn't cause any issues.
+[ Upstream commit fe78ccf79b0e29fd6d8dc2e2c3b0dbeda4ce3ad8 ]
 
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+The 24 bits data is stored in 32 bits in BE. There
+is no need to shift it. This confuses user-space apps.
 
+Fixes: b3af341bbd966 ("iio: adc: Add ad7124 support")
+Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+Link: https://lore.kernel.org/r/20220322105029.86389-2-alexandru.tachici@analog.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/driver-api/serial/driver.rst |  5 +++--
- drivers/tty/serial/mux.c                   |  6 ------
- drivers/tty/serial/serial_core.c           | 25 ++++++++++---------------
- include/linux/serial_core.h                | 16 ++++++++++++++--
- 4 files changed, 27 insertions(+), 25 deletions(-)
+ drivers/iio/adc/ad7124.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/Documentation/driver-api/serial/driver.rst b/Documentation/driver-api/serial/driver.rst
-index 7ef83fd3917b..1e7ab4142d49 100644
---- a/Documentation/driver-api/serial/driver.rst
-+++ b/Documentation/driver-api/serial/driver.rst
-@@ -422,8 +422,9 @@ Other functions
- ---------------
- 
- uart_update_timeout(port,cflag,baud)
--	Update the FIFO drain timeout, port->timeout, according to the
--	number of bits, parity, stop bits and baud rate.
-+	Update the frame timing information according to the number of bits,
-+	parity, stop bits and baud rate. The FIFO drain timeout is derived
-+	from the frame timing information.
- 
- 	Locking: caller is expected to take port->lock
- 
-diff --git a/drivers/tty/serial/mux.c b/drivers/tty/serial/mux.c
-index 643dfbcc43f9..0ba0f4d9459d 100644
---- a/drivers/tty/serial/mux.c
-+++ b/drivers/tty/serial/mux.c
-@@ -481,12 +481,6 @@ static int __init mux_probe(struct parisc_device *dev)
- 		port->line	= port_cnt;
- 		port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_MUX_CONSOLE);
- 
--		/* The port->timeout needs to match what is present in
--		 * uart_wait_until_sent in serial_core.c.  Otherwise
--		 * the time spent in msleep_interruptable will be very
--		 * long, causing the appearance of a console hang.
--		 */
--		port->timeout   = HZ / 50;
- 		spin_lock_init(&port->lock);
- 
- 		status = uart_add_one_port(&mux_driver, port);
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 621fc15e2e54..e068b16d770d 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -327,13 +327,14 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
- }
- 
- /**
-- *	uart_update_timeout - update per-port FIFO timeout.
-+ *	uart_update_timeout - update per-port frame timing information.
-  *	@port:  uart_port structure describing the port
-  *	@cflag: termios cflag value
-  *	@baud:  speed of the port
-  *
-- *	Set the port FIFO timeout value.  The @cflag value should
-- *	reflect the actual hardware settings.
-+ *	Set the port frame timing information from which the FIFO timeout
-+ *	value is derived. The @cflag value should reflect the actual hardware
-+ *	settings.
-  */
- void
- uart_update_timeout(struct uart_port *port, unsigned int cflag,
-@@ -343,13 +344,6 @@ uart_update_timeout(struct uart_port *port, unsigned int cflag,
- 	u64 frame_time;
- 
- 	frame_time = (u64)size * NSEC_PER_SEC;
--	size *= port->fifosize;
--
--	/*
--	 * Figure the timeout to send the above number of bits.
--	 * Add .02 seconds of slop
--	 */
--	port->timeout = (HZ * size) / baud + HZ/50;
- 	port->frame_time = DIV64_U64_ROUND_UP(frame_time, baud);
- }
- EXPORT_SYMBOL(uart_update_timeout);
-@@ -1698,7 +1692,7 @@ static void uart_wait_until_sent(struct tty_struct *tty, int timeout)
- {
- 	struct uart_state *state = tty->driver_data;
- 	struct uart_port *port;
--	unsigned long char_time, expire;
-+	unsigned long char_time, expire, fifo_timeout;
- 
- 	port = uart_port_ref(state);
- 	if (!port)
-@@ -1728,12 +1722,13 @@ static void uart_wait_until_sent(struct tty_struct *tty, int timeout)
- 		 * amount of time to send the entire FIFO, it probably won't
- 		 * ever clear.  This assumes the UART isn't doing flow
- 		 * control, which is currently the case.  Hence, if it ever
--		 * takes longer than port->timeout, this is probably due to a
-+		 * takes longer than FIFO timeout, this is probably due to a
- 		 * UART bug of some kind.  So, we clamp the timeout parameter at
--		 * 2*port->timeout.
-+		 * 2 * FIFO timeout.
- 		 */
--		if (timeout == 0 || timeout > 2 * port->timeout)
--			timeout = 2 * port->timeout;
-+		fifo_timeout = uart_fifo_timeout(port);
-+		if (timeout == 0 || timeout > 2 * fifo_timeout)
-+			timeout = 2 * fifo_timeout;
- 	}
- 
- 	expire = jiffies + timeout;
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index 5518b70177b3..373783487b2e 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -231,7 +231,6 @@ struct uart_port {
- 
- 	int			hw_stopped;		/* sw-assisted CTS flow state */
- 	unsigned int		mctrl;			/* current modem ctrl settings */
--	unsigned int		timeout;		/* character-based timeout */
- 	unsigned int		frame_time;		/* frame timing in ns */
- 	unsigned int		type;			/* port type */
- 	const struct uart_ops	*ops;
-@@ -334,10 +333,23 @@ unsigned int uart_get_baud_rate(struct uart_port *port, struct ktermios *termios
- 				unsigned int max);
- unsigned int uart_get_divisor(struct uart_port *port, unsigned int baud);
- 
-+/*
-+ * Calculates FIFO drain time.
-+ */
-+static inline unsigned long uart_fifo_timeout(struct uart_port *port)
-+{
-+	u64 fifo_timeout = (u64)READ_ONCE(port->frame_time) * port->fifosize;
-+
-+	/* Add .02 seconds of slop */
-+	fifo_timeout += 20 * NSEC_PER_MSEC;
-+
-+	return max(nsecs_to_jiffies(fifo_timeout), 1UL);
-+}
-+
- /* Base timer interval for polling */
- static inline int uart_poll_timeout(struct uart_port *port)
- {
--	int timeout = port->timeout;
-+	int timeout = uart_fifo_timeout(port);
- 
- 	return timeout > 6 ? (timeout / 2 - 2) : 1;
- }
-
+diff --git a/drivers/iio/adc/ad7124.c b/drivers/iio/adc/ad7124.c
+index b400bbe291aa..c22d8dcaa100 100644
+--- a/drivers/iio/adc/ad7124.c
++++ b/drivers/iio/adc/ad7124.c
+@@ -188,7 +188,6 @@ static const struct iio_chan_spec ad7124_channel_template = {
+ 		.sign = 'u',
+ 		.realbits = 24,
+ 		.storagebits = 32,
+-		.shift = 8,
+ 		.endianness = IIO_BE,
+ 	},
+ };
 -- 
-tg: (65534736d9a5..) serial/drop-timeout (depends on: tty-next)
+2.35.1
+
+
+
