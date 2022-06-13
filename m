@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A86EECCA498
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C027CCCA49B
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:46:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356159AbiFMLnu (ORCPT
+        id S1356315AbiFMLoT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:43:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46086 "EHLO
+        Mon, 13 Jun 2022 07:44:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355583AbiFMLjQ (ORCPT
+        with ESMTP id S1355654AbiFMLjW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:39:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AFC62408B;
-        Mon, 13 Jun 2022 03:49:03 -0700 (PDT)
+        Mon, 13 Jun 2022 07:39:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D76D32C64F;
+        Mon, 13 Jun 2022 03:49:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BABF46112A;
-        Mon, 13 Jun 2022 10:49:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CADEAC34114;
-        Mon, 13 Jun 2022 10:49:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A2D0B80E07;
+        Mon, 13 Jun 2022 10:49:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD16DC3411E;
+        Mon, 13 Jun 2022 10:49:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117342;
-        bh=kFi8FSqGoOk15KA+28maHSnPzFxrYRhoHR+leMFLd8k=;
+        s=korg; t=1655117372;
+        bh=mfzOGPGDFMwBe8JQHvgneMIcB+OQk61Uas1dXZKCVjs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xDtu1VyknV/7ACFD4dQxcRsw4ghjV2DojPElh28adrZdOdS9ei58wbq5X1FlZcEpo
-         kG0A2Kcr6LhTj0Mo/7RMxnjb7oZ2bTaF++EgmXhtDodXy67K/F0ajkK63nGAkJD8nF
-         ngRKdSS3EWhTNW2DcVjwpsT1WLTJ3ejgkxFV9ZKA=
+        b=X9/ny6bx1kL1rgvkD4H3IQSdgIiWnvefqIc+sZDTpgAXXGsdYPS3dTcSSujJlLtzP
+         blOa4NdYwtuPmM2n6zIZjXfHOq6l1NOPMCOkUaKLb/XSuXNmz8j3C3/RPk9QWsPBWs
+         9x2AeZ9YfhsyZt9PzWmB2qVBhFz40OEjJDxsxrQE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Luca Weiss <luca.weiss@fairphone.com>,
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 359/411] net: ipv6: unexport __init-annotated seg6_hmac_init()
-Date:   Mon, 13 Jun 2022 12:10:32 +0200
-Message-Id: <20220613094939.459486488@linuxfoundation.org>
+Subject: [PATCH 4.19 020/287] media: venus: hfi: avoid null dereference in deinit
+Date:   Mon, 13 Jun 2022 12:07:24 +0200
+Message-Id: <20220613094924.472288107@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
+References: <20220613094923.832156175@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,50 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Luca Weiss <luca.weiss@fairphone.com>
 
-[ Upstream commit 5801f064e35181c71857a80ff18af4dbec3c5f5c ]
+[ Upstream commit 86594f6af867b5165d2ba7b5a71fae3a5961e56c ]
 
-EXPORT_SYMBOL and __init is a bad combination because the .init.text
-section is freed up after the initialization. Hence, modules cannot
-use symbols annotated __init. The access to a freed symbol may end up
-with kernel panic.
+If venus_probe fails at pm_runtime_put_sync the error handling first
+calls hfi_destroy and afterwards hfi_core_deinit. As hfi_destroy sets
+core->ops to NULL, hfi_core_deinit cannot call the core_deinit function
+anymore.
 
-modpost used to detect it, but it has been broken for a decade.
+Avoid this null pointer derefence by skipping the call when necessary.
 
-Recently, I fixed modpost so it started to warn it again, then this
-showed up in linux-next builds.
-
-There are two ways to fix it:
-
-  - Remove __init
-  - Remove EXPORT_SYMBOL
-
-I chose the latter for this case because the caller (net/ipv6/seg6.c)
-and the callee (net/ipv6/seg6_hmac.c) belong to the same module.
-It seems an internal function call in ipv6.ko.
-
-Fixes: bf355b8d2c30 ("ipv6: sr: add core files for SR HMAC support")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
+Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/seg6_hmac.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/media/platform/qcom/venus/hfi.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/ipv6/seg6_hmac.c b/net/ipv6/seg6_hmac.c
-index ffcfcd2b128f..a4cad71c4204 100644
---- a/net/ipv6/seg6_hmac.c
-+++ b/net/ipv6/seg6_hmac.c
-@@ -401,7 +401,6 @@ int __init seg6_hmac_init(void)
- {
- 	return seg6_hmac_init_algo();
- }
--EXPORT_SYMBOL(seg6_hmac_init);
+diff --git a/drivers/media/platform/qcom/venus/hfi.c b/drivers/media/platform/qcom/venus/hfi.c
+index 24207829982f..8a99e2d8274a 100644
+--- a/drivers/media/platform/qcom/venus/hfi.c
++++ b/drivers/media/platform/qcom/venus/hfi.c
+@@ -113,6 +113,9 @@ int hfi_core_deinit(struct venus_core *core, bool blocking)
+ 		mutex_lock(&core->lock);
+ 	}
  
- int __net_init seg6_hmac_net_init(struct net *net)
- {
++	if (!core->ops)
++		goto unlock;
++
+ 	ret = core->ops->core_deinit(core);
+ 
+ 	if (!ret)
 -- 
 2.35.1
 
