@@ -2,170 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33A4DCCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:39:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FF00CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:39:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348707AbiFMKjw (ORCPT
+        id S1344473AbiFMKjy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:39:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51170 "EHLO
+        Mon, 13 Jun 2022 06:39:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346207AbiFMKhk (ORCPT
+        with ESMTP id S1343885AbiFMKhq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:37:40 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3A6911C30;
-        Mon, 13 Jun 2022 03:22:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1655115772; x=1686651772;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=h2v8e40mVfe2WF8dG6GEVa+PxEJn3cNr+yXu+SzwRoU=;
-  b=Aol+wdpy65uFZIwh7ZMxmE8pUix5bTyUOH4bSGLgk7SvmAEO3s8/jIby
-   8RNbVWLcjwBk4bu6742zheKwpaxn9W6Tz5tCsbdyHS8jxYqZZWes/p5L5
-   h0+ASwdOrcW/webVh1kms2ZPG3y18IewuyC7BFHadEjox0LVY9xtqc2KQ
-   M=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 13 Jun 2022 03:22:51 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 03:22:50 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 13 Jun 2022 03:22:50 -0700
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 13 Jun 2022 03:22:45 -0700
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <robh+dt@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_rohkumar@quicinc.com>, <srinivas.kandagatla@linaro.org>,
-        <dianders@chromium.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
-Subject: [PATCH v13 04/12] arm64: dts: qcom: sc7280: Add wcd9385 codec node for CRD 1.0/2.0 and IDP boards
-Date:   Mon, 13 Jun 2022 15:52:05 +0530
-Message-ID: <1655115733-16309-5-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1655115733-16309-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1655115733-16309-1-git-send-email-quic_srivasam@quicinc.com>
+        Mon, 13 Jun 2022 06:37:46 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0790512D10;
+        Mon, 13 Jun 2022 03:22:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 08D9FCE1109;
+        Mon, 13 Jun 2022 10:22:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 157EDC34114;
+        Mon, 13 Jun 2022 10:22:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1655115770;
+        bh=TsnccSUjaIJsssqB3PsBicURUVYF0tCQj+AKgET2PTs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XGyBJhgzH8Ao5A/fDYOH0nvdjsZxCBGA4vK+fS7pzgAVES5KAj2xxV6L9tBB/B+EI
+         JPLXpYII00EZlS31sT0LX8ki+G7N/NAWsz0+d2EAABl/maxP26yrMiJ3TjiQBU2xon
+         lkc5fxNY6BrLH8WCHSsKpKuRCYp2kSuSSV2D79Ak=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, syzkaller <syzkaller@googlegroups.com>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 027/218] rtlwifi: Use pr_warn instead of WARN_ONCE
+Date:   Mon, 13 Jun 2022 12:08:05 +0200
+Message-Id: <20220613094914.720054624@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add wcd9385 codec node for audio use case on sc7280 based platforms
-of revision 3, 4 (aka CRD 1.0 and 2.0) and IDP boards.
-Add tlmm gpio property for switching CTIA/OMTP Headset.
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+[ Upstream commit ad732da434a2936128769216eddaece3b1af4588 ]
+
+This memory allocation failure can be triggered by fault injection or
+high pressure testing, resulting a WARN.
+
+Fix this by replacing WARN with pr_warn.
+
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220511014453.1621366-1-dzm91@hust.edu.cn
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts | 14 ++++++++++
- arch/arm64/boot/dts/qcom/sc7280-idp.dtsi   | 42 ++++++++++++++++++++++++++++++
- 2 files changed, 56 insertions(+)
+ drivers/net/wireless/realtek/rtlwifi/usb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts b/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts
-index 344338a..9c21207 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts
-+++ b/arch/arm64/boot/dts/qcom/sc7280-crd-r3.dts
-@@ -87,6 +87,13 @@ ap_ts_pen_1v8: &i2c13 {
- 	pins = "gpio51";
- };
- 
-+&wcd9385 {
-+	pinctrl-names = "default", "sleep";
-+	pinctrl-0 = <&wcd_reset_n>, <&us_euro_hs_sel>;
-+	pinctrl-1 = <&wcd_reset_n_sleep>, <&us_euro_hs_sel>;
-+	us-euro-gpios = <&tlmm 81 GPIO_ACTIVE_HIGH>;
-+};
-+
- &tlmm {
- 	tp_int_odl: tp-int-odl {
- 		pins = "gpio7";
-@@ -105,4 +112,11 @@ ap_ts_pen_1v8: &i2c13 {
- 		function = "gpio";
- 		bias-disable;
- 	};
-+
-+	us_euro_hs_sel: us-euro-hs-sel {
-+		pins = "gpio81";
-+		function = "gpio";
-+		bias-pull-down;
-+		drive-strength = <2>;
-+	};
- };
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-index eb61135..0025a78 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-@@ -20,6 +20,34 @@
- 		serial1 = &uart7;
- 	};
- 
-+	wcd9385: audio-codec-1 {
-+		compatible = "qcom,wcd9385-codec";
-+		pinctrl-names = "default", "sleep";
-+		pinctrl-0 = <&wcd_reset_n>;
-+		pinctrl-1 = <&wcd_reset_n_sleep>;
-+
-+		reset-gpios = <&tlmm 83 GPIO_ACTIVE_HIGH>;
-+
-+		qcom,rx-device = <&wcd_rx>;
-+		qcom,tx-device = <&wcd_tx>;
-+
-+		vdd-rxtx-supply = <&vreg_l18b_1p8>;
-+		vdd-io-supply = <&vreg_l18b_1p8>;
-+		vdd-buck-supply = <&vreg_l17b_1p8>;
-+		vdd-mic-bias-supply = <&vreg_bob>;
-+
-+		qcom,micbias1-microvolt = <1800000>;
-+		qcom,micbias2-microvolt = <1800000>;
-+		qcom,micbias3-microvolt = <1800000>;
-+		qcom,micbias4-microvolt = <1800000>;
-+
-+		qcom,mbhc-buttons-vthreshold-microvolt = <75000 150000 237000 500000 500000
-+							  500000 500000 500000>;
-+		qcom,mbhc-headset-vthreshold-microvolt = <1700000>;
-+		qcom,mbhc-headphone-vthreshold-microvolt = <50000>;
-+		#sound-dai-cells = <1>;
-+	};
-+
- 	gpio-keys {
- 		compatible = "gpio-keys";
- 		label = "gpio-keys";
-@@ -670,6 +698,20 @@
- 		function = "gpio";
- 		bias-pull-down;
- 	};
-+
-+	wcd_reset_n: wcd-reset-n {
-+		pins = "gpio83";
-+		function = "gpio";
-+		drive-strength = <8>;
-+		output-high;
-+	};
-+
-+	wcd_reset_n_sleep: wcd-reset-n-sleep {
-+		pins = "gpio83";
-+		function = "gpio";
-+		drive-strength = <8>;
-+		bias-disable;
-+	};
- };
- 
- &remoteproc_wpss {
+diff --git a/drivers/net/wireless/realtek/rtlwifi/usb.c b/drivers/net/wireless/realtek/rtlwifi/usb.c
+index 4fa4d877f913..c29beb00203c 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/usb.c
++++ b/drivers/net/wireless/realtek/rtlwifi/usb.c
+@@ -1060,7 +1060,7 @@ int rtl_usb_probe(struct usb_interface *intf,
+ 	hw = ieee80211_alloc_hw(sizeof(struct rtl_priv) +
+ 				sizeof(struct rtl_usb_priv), &rtl_ops);
+ 	if (!hw) {
+-		WARN_ONCE(true, "rtl_usb: ieee80211 alloc failed\n");
++		pr_warn("rtl_usb: ieee80211 alloc failed\n");
+ 		return -ENOMEM;
+ 	}
+ 	rtlpriv = hw->priv;
 -- 
-2.7.4
+2.35.1
+
+
 
