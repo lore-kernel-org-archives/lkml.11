@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2415C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:52:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F836CCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:52:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356990AbiFMLwf (ORCPT
+        id S1357023AbiFMLwj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:52:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43270 "EHLO
+        Mon, 13 Jun 2022 07:52:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357568AbiFMLqW (ORCPT
+        with ESMTP id S1357564AbiFMLqW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 07:46:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56EDA13DF1;
-        Mon, 13 Jun 2022 03:52:43 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 572F713E34;
+        Mon, 13 Jun 2022 03:52:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3A0EAB80E92;
-        Mon, 13 Jun 2022 10:52:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 737E8C3411E;
-        Mon, 13 Jun 2022 10:52:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0D1C9B80E07;
+        Mon, 13 Jun 2022 10:52:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54CD0C34114;
+        Mon, 13 Jun 2022 10:52:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117561;
-        bh=zlr3C4xgJD135dQdTWBXK1U0qwJZQAP7U25NcO+I5cQ=;
+        s=korg; t=1655117563;
+        bh=iOWAUwyyvrzfGJbaBmB51/gkHgcEDeZ5PMPX+ZtyQpA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wix5TWUgTaUgEk9HyqXO7ovGU8bZXqrH+Kxaz8Kqvl99y8laNnYVAfsO5FEcxuWmD
-         mD443wVnFcK6KRfQRkkcP5feTlAf7eI2st/wT7J6tGySUr/1+pI4GDSuXlHOtUkkMy
-         UCt5pfHgOKCtFC9ULSjz2mUZuI9J14w7X9amPOuQ=
+        b=uMOpzlgQ7W7SOb3zEKzph/DossKSOO5JyEl3l+8gfQgc/Nr7GqvtlNHXS/F0eeaNO
+         BUf1wvcPoKuOPiIXpsqmNKkF/JWTLvCu16XZYkYPjQk7p18uYpa2JQkqYvakfZXs8s
+         Lx9FEJXKO1vsPfCaquNEUFMpZprimJLPAA1sSEPM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peng Wu <wupeng58@huawei.com>,
-        Wei Xu <xuwei5@hisilicon.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 051/287] ARM: hisi: Add missing of_node_put after of_find_compatible_node
-Date:   Mon, 13 Jun 2022 12:07:55 +0200
-Message-Id: <20220613094925.415728586@linuxfoundation.org>
+        stable@vger.kernel.org, Donald Buczek <buczek@molgen.mpg.de>,
+        Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 385/411] md: protect md_unregister_thread from reentrancy
+Date:   Mon, 13 Jun 2022 12:10:58 +0200
+Message-Id: <20220613094940.212356869@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
-References: <20220613094923.832156175@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,50 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Wu <wupeng58@huawei.com>
+From: Guoqing Jiang <guoqing.jiang@cloud.ionos.com>
 
-[ Upstream commit 9bc72e47d4630d58a840a66a869c56b29554cfe4 ]
+[ Upstream commit 1e267742283a4b5a8ca65755c44166be27e9aa0f ]
 
-of_find_compatible_node  will increment the refcount of the returned
-device_node. Calling of_node_put() to avoid the refcount leak
+Generally, the md_unregister_thread is called with reconfig_mutex, but
+raid_message in dm-raid doesn't hold reconfig_mutex to unregister thread,
+so md_unregister_thread can be called simulitaneously from two call sites
+in theory.
 
-Signed-off-by: Peng Wu <wupeng58@huawei.com>
-Signed-off-by: Wei Xu <xuwei5@hisilicon.com>
+Then after previous commit which remove the protection of reconfig_mutex
+for md_unregister_thread completely, the potential issue could be worse
+than before.
+
+Let's take pers_lock at the beginning of function to ensure reentrancy.
+
+Reported-by: Donald Buczek <buczek@molgen.mpg.de>
+Signed-off-by: Guoqing Jiang <guoqing.jiang@linux.dev>
+Signed-off-by: Song Liu <song@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-hisi/platsmp.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/md/md.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm/mach-hisi/platsmp.c b/arch/arm/mach-hisi/platsmp.c
-index da5689ababf7..d7fbfb6d293d 100644
---- a/arch/arm/mach-hisi/platsmp.c
-+++ b/arch/arm/mach-hisi/platsmp.c
-@@ -70,14 +70,17 @@ static void __init hi3xxx_smp_prepare_cpus(unsigned int max_cpus)
- 		}
- 		ctrl_base = of_iomap(np, 0);
- 		if (!ctrl_base) {
-+			of_node_put(np);
- 			pr_err("failed to map address\n");
- 			return;
- 		}
- 		if (of_property_read_u32(np, "smp-offset", &offset) < 0) {
-+			of_node_put(np);
- 			pr_err("failed to find smp-offset property\n");
- 			return;
- 		}
- 		ctrl_base += offset;
-+		of_node_put(np);
- 	}
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index 4d1ef470f2fa..11fd3b32b562 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -7777,17 +7777,22 @@ EXPORT_SYMBOL(md_register_thread);
+ 
+ void md_unregister_thread(struct md_thread **threadp)
+ {
+-	struct md_thread *thread = *threadp;
+-	if (!thread)
+-		return;
+-	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
+-	/* Locking ensures that mddev_unlock does not wake_up a
++	struct md_thread *thread;
++
++	/*
++	 * Locking ensures that mddev_unlock does not wake_up a
+ 	 * non-existent thread
+ 	 */
+ 	spin_lock(&pers_lock);
++	thread = *threadp;
++	if (!thread) {
++		spin_unlock(&pers_lock);
++		return;
++	}
+ 	*threadp = NULL;
+ 	spin_unlock(&pers_lock);
+ 
++	pr_debug("interrupting MD-thread pid %d\n", task_pid_nr(thread->tsk));
+ 	kthread_stop(thread->tsk);
+ 	kfree(thread);
  }
- 
-@@ -163,6 +166,7 @@ static int hip01_boot_secondary(unsigned int cpu, struct task_struct *idle)
- 	if (WARN_ON(!node))
- 		return -1;
- 	ctrl_base = of_iomap(node, 0);
-+	of_node_put(node);
- 
- 	/* set the secondary core boot from DDR */
- 	remap_reg_value = readl_relaxed(ctrl_base + REG_SC_CTRL);
 -- 
 2.35.1
 
