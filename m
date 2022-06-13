@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7CCECCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:00:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FE55CCA48E
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:00:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356674AbiFMMAI (ORCPT
+        id S1358372AbiFML74 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:00:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41196 "EHLO
+        Mon, 13 Jun 2022 07:59:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357675AbiFMLy4 (ORCPT
+        with ESMTP id S1356886AbiFMLxJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:54:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8463A2F032;
-        Mon, 13 Jun 2022 03:55:49 -0700 (PDT)
+        Mon, 13 Jun 2022 07:53:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64E562ED57;
+        Mon, 13 Jun 2022 03:55:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 089DDB80E59;
-        Mon, 13 Jun 2022 10:55:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67296C34114;
-        Mon, 13 Jun 2022 10:55:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 90D3E61375;
+        Mon, 13 Jun 2022 10:55:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A22AEC341D3;
+        Mon, 13 Jun 2022 10:55:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117746;
-        bh=ECdQ9I43DPykn1gIG+cN430Lb5IygqEwrtxx66g9LwQ=;
+        s=korg; t=1655117744;
+        bh=0MVcLKtOiJ1en+qFatDzRtpZOqV8V0+YNba66rRBLvA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vSoTz36G7c5NHmDr5bMUdMjf33czSMkMiOQzuloSOKjNGYcRFdQGVfGiJHSyNbiX1
-         NBhz2N259L89NcyomqStecUSlZMnypAYCk6y1LDrVR1QY0U5Dwu/mbt46on6vhjlPO
-         rDeSQfW1z0+zGC64F0nSVp2fMFeGejU3EAc+SFNY=
+        b=GchJcHpowOyslPrAVJB4C21NsiFnnoaxwVLfBE/oNXkUtAVWEyTBNK1+WHABWx4T4
+         jmOCMA3qw8Fb7imfJ9qwzUcOeiinBZjVTpzvcVfEBDdRvh3LDqsMeZfzuLkQNq0v0y
+         lz/p7m2rDdKLcPoNrcQtq4hXvpvUvcQGPTQ1OIrw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 109/287] soc: qcom: smp2p: Fix missing of_node_put() in smp2p_parse_ipc
-Date:   Mon, 13 Jun 2022 12:08:53 +0200
-Message-Id: <20220613094927.183353390@linuxfoundation.org>
+Subject: [PATCH 4.19 094/287] regulator: pfuze100: Fix refcount leak in pfuze_parse_regulators_dt
+Date:   Mon, 13 Jun 2022 12:08:38 +0200
+Message-Id: <20220613094926.729668023@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -52,32 +52,40 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 8fd3f18ea31a398ecce4a6d3804433658678b0a3 ]
+[ Upstream commit afaa7b933ef00a2d3262f4d1252087613fb5c06d ]
 
-The device_node pointer is returned by of_parse_phandle()  with refcount
-incremented. We should use of_node_put() on it when done.
+of_node_get() returns a node with refcount incremented.
+Calling of_node_put() to drop the reference when not needed anymore.
 
-Fixes: 50e99641413e ("soc: qcom: smp2p: Qualcomm Shared Memory Point to Point")
+Fixes: 3784b6d64dc5 ("regulator: pfuze100: add pfuze100 regulator driver")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220308071942.22942-1-linmq006@gmail.com
+Link: https://lore.kernel.org/r/20220511113506.45185-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/qcom/smp2p.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/regulator/pfuze100-regulator.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/soc/qcom/smp2p.c b/drivers/soc/qcom/smp2p.c
-index 7908e7f2850f..5721a353d95f 100644
---- a/drivers/soc/qcom/smp2p.c
-+++ b/drivers/soc/qcom/smp2p.c
-@@ -428,6 +428,7 @@ static int smp2p_parse_ipc(struct qcom_smp2p *smp2p)
+diff --git a/drivers/regulator/pfuze100-regulator.c b/drivers/regulator/pfuze100-regulator.c
+index 4b8306594c3f..8b1940110561 100644
+--- a/drivers/regulator/pfuze100-regulator.c
++++ b/drivers/regulator/pfuze100-regulator.c
+@@ -513,6 +513,7 @@ static int pfuze_parse_regulators_dt(struct pfuze_chip *chip)
+ 	parent = of_get_child_by_name(np, "regulators");
+ 	if (!parent) {
+ 		dev_err(dev, "regulators node not found\n");
++		of_node_put(np);
+ 		return -EINVAL;
  	}
  
- 	smp2p->ipc_regmap = syscon_node_to_regmap(syscon);
-+	of_node_put(syscon);
- 	if (IS_ERR(smp2p->ipc_regmap))
- 		return PTR_ERR(smp2p->ipc_regmap);
+@@ -542,6 +543,7 @@ static int pfuze_parse_regulators_dt(struct pfuze_chip *chip)
+ 	}
  
+ 	of_node_put(parent);
++	of_node_put(np);
+ 	if (ret < 0) {
+ 		dev_err(dev, "Error parsing regulator init data: %d\n",
+ 			ret);
 -- 
 2.35.1
 
