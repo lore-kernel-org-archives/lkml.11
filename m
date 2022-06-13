@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA0D8CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:17:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE39FCCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:17:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352272AbiFMLRS (ORCPT
+        id S1353759AbiFMLQS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:17:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36094 "EHLO
+        Mon, 13 Jun 2022 07:16:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352551AbiFMLN7 (ORCPT
+        with ESMTP id S1352222AbiFMLLQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:13:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21F4D36161;
-        Mon, 13 Jun 2022 03:36:28 -0700 (PDT)
+        Mon, 13 Jun 2022 07:11:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06E5834BBA;
+        Mon, 13 Jun 2022 03:35:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CCF0DB80E93;
-        Mon, 13 Jun 2022 10:36:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EAFFC34114;
-        Mon, 13 Jun 2022 10:36:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1167E60FDB;
+        Mon, 13 Jun 2022 10:35:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F3B9C34114;
+        Mon, 13 Jun 2022 10:35:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116585;
-        bh=gJV/Dd5leOXeTUIaJ5WEAtiBjlOWMbXoC66IahCIXf4=;
+        s=korg; t=1655116555;
+        bh=XdAA8TQwNS8kuy6WS49eaMKAHDDJvzxJNsDL4g4Nx0I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FdQrBXYMMycVrKG7NVHWbc1uvy7lmNCIo1/K6j6OreRalkU0Qfe68C8NjuOv7YPs1
-         /Lta6i/CEJ9fJIMKBG3nC1jH1TWXs7AqATPRj42ljv1C2oQIU25GM7wph1QdnXm9Em
-         FikE+LN8ibP7Ds5P5R9zhCAmH3lDMyS/XFlzIByA=
+        b=SJrps7IliKfCChqg2kqz4eCvmjvD8uW1Si+1XIq1PcJ7OFR5JiAJ9CORQdErgjWLE
+         SES/bnekCx2fo3TTZ8Ytg067DSV90oWDqHydU/1FJGCtrCHcU14QDhbYn29hA7LmF4
+         gBMxFFNpoNIk4xAE2+pbkzbMa0IaTXS6gDIlqHwA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tokunori Ikegami <ikegami.t@gmail.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 4.14 217/218] mtd: cfi_cmdset_0002: Use chip_ready() for write on S29GL064N
-Date:   Mon, 13 Jun 2022 12:11:15 +0200
-Message-Id: <20220613094927.210294807@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Olivier Matz <olivier.matz@6wind.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 4.14 212/218] ixgbe: fix unexpected VLAN Rx in promisc mode on VF
+Date:   Mon, 13 Jun 2022 12:11:10 +0200
+Message-Id: <20220613094927.055031997@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -50,138 +52,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tokunori Ikegami <ikegami.t@gmail.com>
+From: Olivier Matz <olivier.matz@6wind.com>
 
-commit 0a8e98305f63deaf0a799d5cf5532cc83af035d1 upstream.
+commit 7bb0fb7c63df95d6027dc50d6af3bc3bbbc25483 upstream.
 
-Since commit dfeae1073583("mtd: cfi_cmdset_0002: Change write buffer to
-check correct value") buffered writes fail on S29GL064N. This is
-because, on S29GL064N, reads return 0xFF at the end of DQ polling for
-write completion, where as, chip_good() check expects actual data
-written to the last location to be returned post DQ polling completion.
-Fix is to revert to using chip_good() for S29GL064N which only checks
-for DQ lines to settle down to determine write completion.
+When the promiscuous mode is enabled on a VF, the IXGBE_VMOLR_VPE
+bit (VLAN Promiscuous Enable) is set. This means that the VF will
+receive packets whose VLAN is not the same than the VLAN of the VF.
 
-Link: https://lore.kernel.org/r/b687c259-6413-26c9-d4c9-b3afa69ea124@pengutronix.de/
-Fixes: dfeae1073583("mtd: cfi_cmdset_0002: Change write buffer to check correct value")
+For instance, in this situation:
+
+┌────────┐    ┌────────┐    ┌────────┐
+│        │    │        │    │        │
+│        │    │        │    │        │
+│     VF0├────┤VF1  VF2├────┤VF3     │
+│        │    │        │    │        │
+└────────┘    └────────┘    └────────┘
+   VM1           VM2           VM3
+
+vf 0:  vlan 1000
+vf 1:  vlan 1000
+vf 2:  vlan 1001
+vf 3:  vlan 1001
+
+If we tcpdump on VF3, we see all the packets, even those transmitted
+on vlan 1000.
+
+This behavior prevents to bridge VF1 and VF2 in VM2, because it will
+create a loop: packets transmitted on VF1 will be received by VF2 and
+vice-versa, and bridged again through the software bridge.
+
+This patch remove the activation of VLAN Promiscuous when a VF enables
+the promiscuous mode. However, the IXGBE_VMOLR_UPE bit (Unicast
+Promiscuous) is kept, so that a VF receives all packets that has the
+same VLAN, whatever the destination MAC address.
+
+Fixes: 8443c1a4b192 ("ixgbe, ixgbevf: Add new mbox API xcast mode")
 Cc: stable@vger.kernel.org
-Signed-off-by: Tokunori Ikegami <ikegami.t@gmail.com>
-Acked-by: Vignesh Raghavendra <vigneshr@ti.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20220323170458.5608-3-ikegami.t@gmail.com
+Cc: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Signed-off-by: Olivier Matz <olivier.matz@6wind.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mtd/chips/cfi_cmdset_0002.c |   42 +++++++++++++++++++++++++++++-------
- include/linux/mtd/cfi.h             |    1 
- 2 files changed, 35 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/mtd/chips/cfi_cmdset_0002.c
-+++ b/drivers/mtd/chips/cfi_cmdset_0002.c
-@@ -49,6 +49,10 @@
- #define SST49LF008A		0x005a
- #define AT49BV6416		0x00d6
- 
-+enum cfi_quirks {
-+	CFI_QUIRK_DQ_TRUE_DATA = BIT(0),
-+};
-+
- static int cfi_amdstd_read (struct mtd_info *, loff_t, size_t, size_t *, u_char *);
- static int cfi_amdstd_write_words(struct mtd_info *, loff_t, size_t, size_t *, const u_char *);
- static int cfi_amdstd_write_buffers(struct mtd_info *, loff_t, size_t, size_t *, const u_char *);
-@@ -365,6 +369,15 @@ static void fixup_s29ns512p_sectors(stru
- 		mtd->name);
- }
- 
-+static void fixup_quirks(struct mtd_info *mtd)
-+{
-+	struct map_info *map = mtd->priv;
-+	struct cfi_private *cfi = map->fldrv_priv;
-+
-+	if (cfi->mfr == CFI_MFR_AMD && cfi->id == 0x0c01)
-+		cfi->quirks |= CFI_QUIRK_DQ_TRUE_DATA;
-+}
-+
- /* Used to fix CFI-Tables of chips without Extended Query Tables */
- static struct cfi_fixup cfi_nopri_fixup_table[] = {
- 	{ CFI_MFR_SST, 0x234a, fixup_sst39vf }, /* SST39VF1602 */
-@@ -403,6 +416,7 @@ static struct cfi_fixup cfi_fixup_table[
- #if !FORCE_WORD_WRITE
- 	{ CFI_MFR_ANY, CFI_ID_ANY, fixup_use_write_buffers },
- #endif
-+	{ CFI_MFR_ANY, CFI_ID_ANY, fixup_quirks },
- 	{ 0, 0, NULL }
- };
- static struct cfi_fixup jedec_fixup_table[] = {
-@@ -760,6 +774,18 @@ static int __xipram chip_ready(struct ma
- 	return map_word_equal(map, t, *expected);
- }
- 
-+static int __xipram chip_good(struct map_info *map, unsigned long addr,
-+			      map_word *expected)
-+{
-+	struct cfi_private *cfi = map->fldrv_priv;
-+	map_word *datum = expected;
-+
-+	if (cfi->quirks & CFI_QUIRK_DQ_TRUE_DATA)
-+		datum = NULL;
-+
-+	return chip_ready(map, addr, datum);
-+}
-+
- static int get_chip(struct map_info *map, struct flchip *chip, unsigned long adr, int mode)
- {
- 	DECLARE_WAITQUEUE(wait, current);
-@@ -1612,11 +1638,11 @@ static int __xipram do_write_oneword(str
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
+@@ -1180,9 +1180,9 @@ static int ixgbe_update_vf_xcast_mode(st
+ 			return -EPERM;
  		}
  
- 		/*
--		 * We check "time_after" and "!chip_ready" before checking
--		 * "chip_ready" to avoid the failure due to scheduling.
-+		 * We check "time_after" and "!chip_good" before checking
-+		 * "chip_good" to avoid the failure due to scheduling.
- 		 */
- 		if (time_after(jiffies, timeo) &&
--		    !chip_ready(map, adr, &datum)) {
-+		    !chip_good(map, adr, &datum)) {
- 			xip_enable(map, chip, adr);
- 			printk(KERN_WARNING "MTD %s(): software timeout\n", __func__);
- 			xip_disable(map, chip, adr);
-@@ -1624,7 +1650,7 @@ static int __xipram do_write_oneword(str
- 			break;
- 		}
- 
--		if (chip_ready(map, adr, &datum))
-+		if (chip_good(map, adr, &datum))
- 			break;
- 
- 		/* Latency issues. Drop the lock, wait a while and retry */
-@@ -1868,13 +1894,13 @@ static int __xipram do_write_buffer(stru
- 		}
- 
- 		/*
--		 * We check "time_after" and "!chip_ready" before checking
--		 * "chip_ready" to avoid the failure due to scheduling.
-+		 * We check "time_after" and "!chip_good" before checking
-+		 * "chip_good" to avoid the failure due to scheduling.
- 		 */
--		if (time_after(jiffies, timeo) && !chip_ready(map, adr, &datum))
-+		if (time_after(jiffies, timeo) && !chip_good(map, adr, &datum))
- 			break;
- 
--		if (chip_ready(map, adr, &datum)) {
-+		if (chip_good(map, adr, &datum)) {
- 			xip_enable(map, chip, adr);
- 			goto op_done;
- 		}
---- a/include/linux/mtd/cfi.h
-+++ b/include/linux/mtd/cfi.h
-@@ -293,6 +293,7 @@ struct cfi_private {
- 	map_word sector_erase_cmd;
- 	unsigned long chipshift; /* Because they're of the same type */
- 	const char *im_name;	 /* inter_module name for cmdset_setup */
-+	unsigned long quirks;
- 	struct flchip chips[0];  /* per-chip data structure for each chip */
- };
- 
+-		disable = 0;
++		disable = IXGBE_VMOLR_VPE;
+ 		enable = IXGBE_VMOLR_BAM | IXGBE_VMOLR_ROMPE |
+-			 IXGBE_VMOLR_MPE | IXGBE_VMOLR_UPE | IXGBE_VMOLR_VPE;
++			 IXGBE_VMOLR_MPE | IXGBE_VMOLR_UPE;
+ 		break;
+ 	default:
+ 		return -EOPNOTSUPP;
 
 
