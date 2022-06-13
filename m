@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C85F5C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:45:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6581CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:46:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353404AbiFMMpy (ORCPT
+        id S1352704AbiFMMqB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:45:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50038 "EHLO
+        Mon, 13 Jun 2022 08:46:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351545AbiFMMiC (ORCPT
+        with ESMTP id S1356996AbiFMMji (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:38:02 -0400
+        Mon, 13 Jun 2022 08:39:38 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30FEE5C373;
-        Mon, 13 Jun 2022 04:08:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 139515DD2D;
+        Mon, 13 Jun 2022 04:10:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E1A61608D6;
-        Mon, 13 Jun 2022 11:08:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 006F2C3411C;
-        Mon, 13 Jun 2022 11:08:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D8D5A60B79;
+        Mon, 13 Jun 2022 11:09:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBFD0C34114;
+        Mon, 13 Jun 2022 11:09:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118488;
-        bh=hU62tz+upeQQ0ixMl73jGcb/66oi/GX988epYqit+zU=;
+        s=korg; t=1655118599;
+        bh=BZmku8ynkgmOkGRaWD1uCFlINFlU+hWhNKDr32It42w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ct0/7Q8KiikhTJmlHLmh9XJ6ld2MyNoUsUrB8pXaKUiVoCTNR7tdNdSzyqo+GA90k
-         1CQV4NNiUkxVvCV6UWGgk4hoRopX0L1nKqsZAWTvkUYTuVuFrCKFkk66wVSDfaStma
-         8IhplwuZlvPPoSwbEyyyCK3cEz/tVZPNtYq69J+o=
+        b=frfmhGW1x/KUNZoAKklgWvBC/4H+XVF7D9JSjtlefRjmCJQYXRp9wYHF6RSkrRdkV
+         MYzsmKYNmlMSuVgdx0rDjzHUeyz3O5FO5NtMsHM0E/6qGYof0AxSCzEGpkM0W9fNXd
+         h6Mb2LFM7yX7ueHhLC8l9Pjcp2uslzoyWbRqRftI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gong Yuanjun <ruc_gongyuanjun@163.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        stable@vger.kernel.org, Liu Xinpeng <liuxp11@chinatelecom.cn>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 076/172] mips: cpc: Fix refcount leak in mips_cpc_default_phys_base
-Date:   Mon, 13 Jun 2022 12:10:36 +0200
-Message-Id: <20220613094908.660511109@linuxfoundation.org>
+Subject: [PATCH 5.10 134/172] watchdog: wdat_wdt: Stop watchdog when rebooting the system
+Date:   Mon, 13 Jun 2022 12:11:34 +0200
+Message-Id: <20220613094921.474024787@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -51,33 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gong Yuanjun <ruc_gongyuanjun@163.com>
+From: Liu Xinpeng <liuxp11@chinatelecom.cn>
 
-[ Upstream commit 4107fa700f314592850e2c64608f6ede4c077476 ]
+[ Upstream commit 27fdf84510a1374748904db43f6755f912736d92 ]
 
-Add the missing of_node_put() to release the refcount incremented
-by of_find_compatible_node().
+Executing reboot command several times on the machine "Dell
+PowerEdge R740", UEFI security detection stopped machine
+with the following prompt:
 
-Signed-off-by: Gong Yuanjun <ruc_gongyuanjun@163.com>
-Reviewed-by: Serge Semin <fancer.lancer@gmail.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+UEFI0082: The system was reset due to a timeout from the watchdog
+timer. Check the System Event Log (SEL) or crash dumps from
+Operating Sysstem to identify the source that triggered the
+watchdog timer reset. Update the firmware or driver for the
+identified device.
+
+iDRAC has warning event: "The watchdog timer reset the system".
+
+This patch fixes this issue by adding the reboot notifier.
+
+Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Link: https://lore.kernel.org/r/1650984810-6247-3-git-send-email-liuxp11@chinatelecom.cn
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/kernel/mips-cpc.c | 1 +
+ drivers/watchdog/wdat_wdt.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/arch/mips/kernel/mips-cpc.c b/arch/mips/kernel/mips-cpc.c
-index 8d2535123f11..d005be84c482 100644
---- a/arch/mips/kernel/mips-cpc.c
-+++ b/arch/mips/kernel/mips-cpc.c
-@@ -27,6 +27,7 @@ phys_addr_t __weak mips_cpc_default_phys_base(void)
- 	cpc_node = of_find_compatible_node(of_root, NULL, "mti,mips-cpc");
- 	if (cpc_node) {
- 		err = of_address_to_resource(cpc_node, 0, &res);
-+		of_node_put(cpc_node);
- 		if (!err)
- 			return res.start;
- 	}
+diff --git a/drivers/watchdog/wdat_wdt.c b/drivers/watchdog/wdat_wdt.c
+index 3065dd670a18..c60723f5ed99 100644
+--- a/drivers/watchdog/wdat_wdt.c
++++ b/drivers/watchdog/wdat_wdt.c
+@@ -462,6 +462,7 @@ static int wdat_wdt_probe(struct platform_device *pdev)
+ 		return ret;
+ 
+ 	watchdog_set_nowayout(&wdat->wdd, nowayout);
++	watchdog_stop_on_reboot(&wdat->wdd);
+ 	return devm_watchdog_register_device(dev, &wdat->wdd);
+ }
+ 
 -- 
 2.35.1
 
