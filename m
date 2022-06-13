@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EB1BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 16:59:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ECA8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 16:59:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235352AbiFMQ7p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 12:59:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47346 "EHLO
+        id S238173AbiFMQ7u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 12:59:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241628AbiFMQ6Y (ORCPT
+        with ESMTP id S242639AbiFMQ6s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 12:58:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECD1ABA565;
-        Mon, 13 Jun 2022 04:51:53 -0700 (PDT)
+        Mon, 13 Jun 2022 12:58:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB681BE150;
+        Mon, 13 Jun 2022 04:52:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD1A1613F9;
-        Mon, 13 Jun 2022 11:51:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4281C34114;
-        Mon, 13 Jun 2022 11:51:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BCBC2B80ECD;
+        Mon, 13 Jun 2022 11:52:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 216A1C34114;
+        Mon, 13 Jun 2022 11:52:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655121094;
-        bh=VTvq0DoklwJ8cuV8EuXnfHoOTTTgZ4Wt5bHyoeuOH9w=;
+        s=korg; t=1655121143;
+        bh=zLwGP0JHz18RrqK8aoEs9PBVqjjKIkNSSPITEh8DSxo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W/SLKc0Kr4jRd/3Pmc5rmDD0pjHkox4vKz3l2DiBOyHBv2ujOw+7iwVK2LmzPWtGL
-         Bh3D8l3x+LRh2w1cJXsiOCto6joUrScqTVgVOrqgQo2b+goqZQw9XojNXmH5IlLIF7
-         BDU4rqS+ClidnpFgl+gnIgLx3M/ZNQ2MbZZxj3ZE=
+        b=C2+VQNERt8Gx6nXffv3s2gWUBVUKEVtp/R23KNno8ZXML6RZiP9n0yiX4iqJi5fyb
+         TgzwZqALYnwDeo7ctzd8YsWnupNytiPkDAkBHx+SUjidtw4wFmS/PUbslEDgudez6m
+         iYOM7fVr2sbwY3p+Jy2+OtXgnu+T8fdE40pdv2/E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Cyril Brulebois <kibi@debian.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 246/298] Revert "PCI: brcmstb: Add mechanism to turn on subdev regulators"
-Date:   Mon, 13 Jun 2022 12:12:20 +0200
-Message-Id: <20220613094932.546549310@linuxfoundation.org>
+        stable@vger.kernel.org, Leo Liu <leo.liu@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.17 287/298] drm/amdgpu: update VCN codec support for Yellow Carp
+Date:   Mon, 13 Jun 2022 12:13:01 +0200
+Message-Id: <20220613094933.784461500@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -49,146 +48,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bjorn Helgaas <bhelgaas@google.com>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-[ Upstream commit 420be2f7ebe60c9ba3e332f5290017cd168e2bf8 ]
+commit 97e50305542f384741a5b45699aba349fe9fca73 upstream.
 
-This reverts commit 67211aadcb4b968d0fdc57bc27240fa71500c2d4.
+Supports AV1.  Mesa already has support for this and
+doesn't rely on the kernel caps for yellow carp, so
+this was already working from an application perspective.
 
-This is part of a revert of the following commits:
-
-  11ed8b8624b8 ("PCI: brcmstb: Do not turn off WOL regulators on suspend")
-  93e41f3fca3d ("PCI: brcmstb: Add control of subdevice voltage regulators")
-  67211aadcb4b ("PCI: brcmstb: Add mechanism to turn on subdev regulators")
-  830aa6f29f07 ("PCI: brcmstb: Split brcm_pcie_setup() into two funcs")
-
-Cyril reported that 830aa6f29f07 ("PCI: brcmstb: Split brcm_pcie_setup()
-into two funcs"), which appeared in v5.17-rc1, broke booting on the
-Raspberry Pi Compute Module 4.  Apparently 830aa6f29f07 panics with an
-Asynchronous SError Interrupt, and after further commits here is a black
-screen on HDMI and no output on the serial console.
-
-This does not seem to affect the Raspberry Pi 4 B.
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215925
-Link: https://lore.kernel.org/r/20220511201856.808690-4-helgaas@kernel.org
-Reported-by: Cyril Brulebois <kibi@debian.org>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 554398174d98 ("amdgpu/nv.c - Added video codec support for Yellow Carp")
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/2002
+Reviewed-by: Leo Liu <leo.liu@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/pcie-brcmstb.c | 76 ---------------------------
- 1 file changed, 76 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/nv.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/pci/controller/pcie-brcmstb.c b/drivers/pci/controller/pcie-brcmstb.c
-index fd464d38fecb..0e8346114a8d 100644
---- a/drivers/pci/controller/pcie-brcmstb.c
-+++ b/drivers/pci/controller/pcie-brcmstb.c
-@@ -24,7 +24,6 @@
- #include <linux/pci.h>
- #include <linux/pci-ecam.h>
- #include <linux/printk.h>
--#include <linux/regulator/consumer.h>
- #include <linux/reset.h>
- #include <linux/sizes.h>
- #include <linux/slab.h>
-@@ -284,14 +283,6 @@ static const struct pcie_cfg_data bcm2711_cfg = {
- 	.bridge_sw_init_set = brcm_pcie_bridge_sw_init_set_generic,
+--- a/drivers/gpu/drm/amd/amdgpu/nv.c
++++ b/drivers/gpu/drm/amd/amdgpu/nv.c
+@@ -170,6 +170,7 @@ static const struct amdgpu_video_codec_i
+ 	{codec_info_build(AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_HEVC, 8192, 4352, 186)},
+ 	{codec_info_build(AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_VP9, 8192, 4352, 0)},
+ 	{codec_info_build(AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_JPEG, 4096, 4096, 0)},
++	{codec_info_build(AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_AV1, 8192, 4352, 0)},
  };
  
--struct subdev_regulators {
--	unsigned int num_supplies;
--	struct regulator_bulk_data supplies[];
--};
--
--static int pci_subdev_regulators_add_bus(struct pci_bus *bus);
--static void pci_subdev_regulators_remove_bus(struct pci_bus *bus);
--
- struct brcm_msi {
- 	struct device		*dev;
- 	void __iomem		*base;
-@@ -445,71 +436,6 @@ static int brcm_pcie_set_ssc(struct brcm_pcie *pcie)
- 	return ssc && pll ? 0 : -EIO;
- }
- 
--static void *alloc_subdev_regulators(struct device *dev)
--{
--	static const char * const supplies[] = {
--		"vpcie3v3",
--		"vpcie3v3aux",
--		"vpcie12v",
--	};
--	const size_t size = sizeof(struct subdev_regulators)
--		+ sizeof(struct regulator_bulk_data) * ARRAY_SIZE(supplies);
--	struct subdev_regulators *sr;
--	int i;
--
--	sr = devm_kzalloc(dev, size, GFP_KERNEL);
--	if (sr) {
--		sr->num_supplies = ARRAY_SIZE(supplies);
--		for (i = 0; i < ARRAY_SIZE(supplies); i++)
--			sr->supplies[i].supply = supplies[i];
--	}
--
--	return sr;
--}
--
--static int pci_subdev_regulators_add_bus(struct pci_bus *bus)
--{
--	struct device *dev = &bus->dev;
--	struct subdev_regulators *sr;
--	int ret;
--
--	if (!dev->of_node || !bus->parent || !pci_is_root_bus(bus->parent))
--		return 0;
--
--	if (dev->driver_data)
--		dev_err(dev, "dev.driver_data unexpectedly non-NULL\n");
--
--	sr = alloc_subdev_regulators(dev);
--	if (!sr)
--		return -ENOMEM;
--
--	dev->driver_data = sr;
--	ret = regulator_bulk_get(dev, sr->num_supplies, sr->supplies);
--	if (ret)
--		return ret;
--
--	ret = regulator_bulk_enable(sr->num_supplies, sr->supplies);
--	if (ret) {
--		dev_err(dev, "failed to enable regulators for downstream device\n");
--		return ret;
--	}
--
--	return 0;
--}
--
--static void pci_subdev_regulators_remove_bus(struct pci_bus *bus)
--{
--	struct device *dev = &bus->dev;
--	struct subdev_regulators *sr = dev->driver_data;
--
--	if (!sr || !bus->parent || !pci_is_root_bus(bus->parent))
--		return;
--
--	if (regulator_bulk_disable(sr->num_supplies, sr->supplies))
--		dev_err(dev, "failed to disable regulators for downstream device\n");
--	dev->driver_data = NULL;
--}
--
- /* Limits operation to a specific generation (1, 2, or 3) */
- static void brcm_pcie_set_gen(struct brcm_pcie *pcie, int gen)
- {
-@@ -853,8 +779,6 @@ static struct pci_ops brcm_pcie_ops = {
- 	.map_bus = brcm_pcie_map_conf,
- 	.read = pci_generic_config_read,
- 	.write = pci_generic_config_write,
--	.add_bus = pci_subdev_regulators_add_bus,
--	.remove_bus = pci_subdev_regulators_remove_bus,
- };
- 
- static struct pci_ops brcm_pcie_ops32 = {
--- 
-2.35.1
-
+ static const struct amdgpu_video_codecs yc_video_codecs_decode = {
 
 
