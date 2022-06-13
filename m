@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C97B2C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:59:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66D66CCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:59:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350530AbiFMK6n (ORCPT
+        id S1350943AbiFMK7D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:58:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44328 "EHLO
+        Mon, 13 Jun 2022 06:59:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350065AbiFMKyl (ORCPT
+        with ESMTP id S1350144AbiFMKym (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:54:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0516DFBE;
-        Mon, 13 Jun 2022 03:28:58 -0700 (PDT)
+        Mon, 13 Jun 2022 06:54:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E283624975;
+        Mon, 13 Jun 2022 03:29:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E05860B8B;
-        Mon, 13 Jun 2022 10:28:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CFC0C34114;
-        Mon, 13 Jun 2022 10:28:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9F9B3B80E59;
+        Mon, 13 Jun 2022 10:29:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13CABC34114;
+        Mon, 13 Jun 2022 10:29:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116137;
-        bh=w45OzuGuLmtj9sEylkHgxYIfZXvDGqEsrxVIkJCabSU=;
+        s=korg; t=1655116165;
+        bh=ti9jrMRGdyqhhn4ch0mqYiWFn+RKGi9w8d6oSR6mKfM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=THo3M/PLQzGCqGF1tticXNQ+goG+uu+ooIj1+3WNXChtRYIUN7YUkUeJJCmNp+JMm
-         0pAlI/f8nUhLahE0cWLN45UCN2DzW420oh1WFZGcYrEm8yIcNBl5lOFf92S9WSunjz
-         628j1/S9D0QilTjUplGeuYeSgIuncmjWLsRVLvVA=
+        b=lmv+GiUTiGmWMvlqgfGwSFspKybAzbqvOQ3LFcSLY8+FqOPi9TKSfv1JNPzIAOzIM
+         ubO8HGcBJ8Oo4HUPHSZ4jfmndPD6cI0EGKY6Sayz/RROW7it8AN2002d+1HY4B1tRW
+         Y94bbskWZl3qT6SF16PAMt9iM21izprR7mq1JO2w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Luca Weiss <luca.weiss@fairphone.com>,
-        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 026/411] media: venus: hfi: avoid null dereference in deinit
-Date:   Mon, 13 Jun 2022 12:04:59 +0200
-Message-Id: <20220613094929.286618788@linuxfoundation.org>
+        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
+        Hangyu Hua <hbh25y@gmail.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 143/218] usb: usbip: fix a refcount leak in stub_probe()
+Date:   Mon, 13 Jun 2022 12:10:01 +0200
+Message-Id: <20220613094924.926928296@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,39 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luca Weiss <luca.weiss@fairphone.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit 86594f6af867b5165d2ba7b5a71fae3a5961e56c ]
+[ Upstream commit 9ec4cbf1cc55d126759051acfe328d489c5d6e60 ]
 
-If venus_probe fails at pm_runtime_put_sync the error handling first
-calls hfi_destroy and afterwards hfi_core_deinit. As hfi_destroy sets
-core->ops to NULL, hfi_core_deinit cannot call the core_deinit function
-anymore.
+usb_get_dev() is called in stub_device_alloc(). When stub_probe() fails
+after that, usb_put_dev() needs to be called to release the reference.
 
-Avoid this null pointer derefence by skipping the call when necessary.
+Fix this by moving usb_put_dev() to sdev_free error path handling.
 
-Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
-Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Find this by code review.
+
+Fixes: 3ff67445750a ("usbip: fix error handling in stub_probe()")
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Link: https://lore.kernel.org/r/20220412020257.9767-1-hbh25y@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/qcom/venus/hfi.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/usb/usbip/stub_dev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/qcom/venus/hfi.c b/drivers/media/platform/qcom/venus/hfi.c
-index 3d8b1284d1f3..68964a80fe61 100644
---- a/drivers/media/platform/qcom/venus/hfi.c
-+++ b/drivers/media/platform/qcom/venus/hfi.c
-@@ -104,6 +104,9 @@ int hfi_core_deinit(struct venus_core *core, bool blocking)
- 		mutex_lock(&core->lock);
- 	}
+diff --git a/drivers/usb/usbip/stub_dev.c b/drivers/usb/usbip/stub_dev.c
+index 1b3aad59d6c9..16bb3197d658 100644
+--- a/drivers/usb/usbip/stub_dev.c
++++ b/drivers/usb/usbip/stub_dev.c
+@@ -441,7 +441,6 @@ static int stub_probe(struct usb_device *udev)
+ 			     (struct usb_dev_state *) udev);
+ err_port:
+ 	dev_set_drvdata(&udev->dev, NULL);
+-	usb_put_dev(udev);
  
-+	if (!core->ops)
-+		goto unlock;
-+
- 	ret = core->ops->core_deinit(core);
+ 	/* we already have busid_priv, just lock busid_lock */
+ 	spin_lock(&busid_priv->busid_lock);
+@@ -456,6 +455,7 @@ static int stub_probe(struct usb_device *udev)
+ 	put_busid_priv(busid_priv);
  
- 	if (!ret)
+ sdev_free:
++	usb_put_dev(udev);
+ 	stub_device_free(sdev);
+ 
+ 	return rc;
 -- 
 2.35.1
 
