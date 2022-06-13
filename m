@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D9FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:48:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1136C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:48:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353557AbiFMMsC (ORCPT
+        id S1354367AbiFMMsF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:48:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59836 "EHLO
+        Mon, 13 Jun 2022 08:48:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353723AbiFMMnk (ORCPT
+        with ESMTP id S1354533AbiFMMoE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:43:40 -0400
+        Mon, 13 Jun 2022 08:44:04 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA2D860A92;
-        Mon, 13 Jun 2022 04:10:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87B0F60A88;
+        Mon, 13 Jun 2022 04:10:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 215C9B80D31;
-        Mon, 13 Jun 2022 11:10:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A26CC3411C;
-        Mon, 13 Jun 2022 11:10:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6A3D5B80EAB;
+        Mon, 13 Jun 2022 11:10:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBF3CC34114;
+        Mon, 13 Jun 2022 11:10:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118656;
-        bh=7ZJdOB8NWztNFmJga+HULPqObVqV573O24/WNfw5IOk=;
+        s=korg; t=1655118654;
+        bh=z0Rpbi17kI3kP8ywAUFn2VeND4oIavLdCBRpI5XBHPQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lB3sgca/4URaVcOZmE0hMvIvl1l12qW4G2Ki2brctRYoxZqxW0N0Ep3TqEn35f2m5
-         4iPUccd92YiiAXwijkVXNqhnd1V9kpoWJV9xT4gRMgkJwJMqyCmw9lHNDquJBskDVz
-         t9KrykhOASE7a6msiHt8soSFSKuE7SVRvEehnduQ=
+        b=m/TFzsP/cJQnUF+h+dUuCMvFAl/jL9Z7vzeLy1FF9/cIcIpPCJvROB02hVJdxhKNk
+         LR0yBfoNada6F4U6raeYcApcs/8RiXdst9un131RjFkOIvZsHeAV+U7q58SuwxnuEe
+         5ILWv5+DF9XLO+UL1u0Om4lOL1W4ewnW6eiwf820=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Subject: [PATCH 5.10 155/172] ata: libata-transport: fix {dma|pio|xfer}_mode sysfs files
-Date:   Mon, 13 Jun 2022 12:11:55 +0200
-Message-Id: <20220613094922.926435506@linuxfoundation.org>
+        stable@vger.kernel.org, Satadru Pramanik <satadru@gmail.com>,
+        "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.10 154/172] cifs: fix reconnect on smb3 mount types
+Date:   Mon, 13 Jun 2022 12:11:54 +0200
+Message-Id: <20220613094922.888181879@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -49,74 +50,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
+From: Paulo Alcantara <pc@cjr.nz>
 
-commit 72aad489f992871e908ff6d9055b26c6366fb864 upstream.
+commit c36ee7dab7749f7be21f7a72392744490b2a9a2b upstream.
 
-The {dma|pio}_mode sysfs files are incorrectly documented as having a
-list of the supported DMA/PIO transfer modes, while the corresponding
-fields of the *struct* ata_device hold the transfer mode IDs, not masks.
+cifs.ko defines two file system types: cifs & smb3, and
+__cifs_get_super() was not including smb3 file system type when
+looking up superblocks, therefore failing to reconnect tcons in
+cifs_tree_connect().
 
-To match these docs, the {dma|pio}_mode (and even xfer_mode!) sysfs
-files are handled by the ata_bitfield_name_match() macro which leads to
-reading such kind of nonsense from them:
+Fix this by calling iterate_supers_type() on both file system types.
 
-$ cat /sys/class/ata_device/dev3.0/pio_mode
-XFER_UDMA_7, XFER_UDMA_6, XFER_UDMA_5, XFER_UDMA_4, XFER_MW_DMA_4,
-XFER_PIO_6, XFER_PIO_5, XFER_PIO_4, XFER_PIO_3, XFER_PIO_2, XFER_PIO_1,
-XFER_PIO_0
-
-Using the correct ata_bitfield_name_search() macro fixes that:
-
-$ cat /sys/class/ata_device/dev3.0/pio_mode
-XFER_PIO_4
-
-While fixing the file documentation, somewhat reword the {dma|pio}_mode
-file doc and add a note about being mostly useful for PATA devices to
-the xfer_mode file doc...
-
-Fixes: d9027470b886 ("[libata] Add ATA transport class")
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Link: https://lore.kernel.org/r/CAFrh3J9soC36+BVuwHB=g9z_KB5Og2+p2_W+BBoBOZveErz14w@mail.gmail.com
 Cc: stable@vger.kernel.org
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Tested-by: Satadru Pramanik <satadru@gmail.com>
+Reported-by: Satadru Pramanik <satadru@gmail.com>
+Signed-off-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/ABI/testing/sysfs-ata |   11 ++++++-----
- drivers/ata/libata-transport.c      |    2 +-
- 2 files changed, 7 insertions(+), 6 deletions(-)
+ fs/cifs/cifsfs.c |    2 +-
+ fs/cifs/cifsfs.h |    2 +-
+ fs/cifs/misc.c   |   27 ++++++++++++++++-----------
+ 3 files changed, 18 insertions(+), 13 deletions(-)
 
---- a/Documentation/ABI/testing/sysfs-ata
-+++ b/Documentation/ABI/testing/sysfs-ata
-@@ -107,13 +107,14 @@ Description:
- 				described in ATA8 7.16 and 7.17. Only valid if
- 				the device is not a PM.
- 
--		pio_mode:	(RO) Transfer modes supported by the device when
--				in PIO mode. Mostly used by PATA device.
-+		pio_mode:	(RO) PIO transfer mode used by the device.
-+				Mostly used by PATA devices.
- 
--		xfer_mode:	(RO) Current transfer mode
-+		xfer_mode:	(RO) Current transfer mode. Mostly used by
-+				PATA devices.
- 
--		dma_mode:	(RO) Transfer modes supported by the device when
--				in DMA mode. Mostly used by PATA device.
-+		dma_mode:	(RO) DMA transfer mode used by the device.
-+				Mostly used by PATA devices.
- 
- 		class:		(RO) Device class. Can be "ata" for disk,
- 				"atapi" for packet device, "pmp" for PM, or
---- a/drivers/ata/libata-transport.c
-+++ b/drivers/ata/libata-transport.c
-@@ -196,7 +196,7 @@ static struct {
- 	{ XFER_PIO_0,			"XFER_PIO_0" },
- 	{ XFER_PIO_SLOW,		"XFER_PIO_SLOW" }
+--- a/fs/cifs/cifsfs.c
++++ b/fs/cifs/cifsfs.c
+@@ -1033,7 +1033,7 @@ struct file_system_type cifs_fs_type = {
  };
--ata_bitfield_name_match(xfer,ata_xfer_names)
-+ata_bitfield_name_search(xfer, ata_xfer_names)
+ MODULE_ALIAS_FS("cifs");
  
- /*
-  * ATA Port attributes
+-static struct file_system_type smb3_fs_type = {
++struct file_system_type smb3_fs_type = {
+ 	.owner = THIS_MODULE,
+ 	.name = "smb3",
+ 	.mount = smb3_do_mount,
+--- a/fs/cifs/cifsfs.h
++++ b/fs/cifs/cifsfs.h
+@@ -51,7 +51,7 @@ static inline unsigned long cifs_get_tim
+ 	return (unsigned long) dentry->d_fsdata;
+ }
+ 
+-extern struct file_system_type cifs_fs_type;
++extern struct file_system_type cifs_fs_type, smb3_fs_type;
+ extern const struct address_space_operations cifs_addr_ops;
+ extern const struct address_space_operations cifs_addr_ops_smallbuf;
+ 
+--- a/fs/cifs/misc.c
++++ b/fs/cifs/misc.c
+@@ -1053,18 +1053,23 @@ static struct super_block *__cifs_get_su
+ 		.data = data,
+ 		.sb = NULL,
+ 	};
++	struct file_system_type **fs_type = (struct file_system_type *[]) {
++		&cifs_fs_type, &smb3_fs_type, NULL,
++	};
+ 
+-	iterate_supers_type(&cifs_fs_type, f, &sd);
+-
+-	if (!sd.sb)
+-		return ERR_PTR(-EINVAL);
+-	/*
+-	 * Grab an active reference in order to prevent automounts (DFS links)
+-	 * of expiring and then freeing up our cifs superblock pointer while
+-	 * we're doing failover.
+-	 */
+-	cifs_sb_active(sd.sb);
+-	return sd.sb;
++	for (; *fs_type; fs_type++) {
++		iterate_supers_type(*fs_type, f, &sd);
++		if (sd.sb) {
++			/*
++			 * Grab an active reference in order to prevent automounts (DFS links)
++			 * of expiring and then freeing up our cifs superblock pointer while
++			 * we're doing failover.
++			 */
++			cifs_sb_active(sd.sb);
++			return sd.sb;
++		}
++	}
++	return ERR_PTR(-EINVAL);
+ }
+ 
+ static void __cifs_put_super(struct super_block *sb)
 
 
