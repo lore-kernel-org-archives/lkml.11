@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA5CDCCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8AC9CCA47B
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379497AbiFMNtB (ORCPT
+        id S1379413AbiFMNsr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:49:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40966 "EHLO
+        Mon, 13 Jun 2022 09:48:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378217AbiFMNmO (ORCPT
+        with ESMTP id S1378611AbiFMNmA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:42:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9F8B2A72F;
-        Mon, 13 Jun 2022 04:31:27 -0700 (PDT)
+        Mon, 13 Jun 2022 09:42:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67ECE23BDE;
+        Mon, 13 Jun 2022 04:31:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A39361037;
-        Mon, 13 Jun 2022 11:31:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A56BC34114;
-        Mon, 13 Jun 2022 11:31:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DEF126124B;
+        Mon, 13 Jun 2022 11:31:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAEEBC34114;
+        Mon, 13 Jun 2022 11:31:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119886;
-        bh=5UwgwA5uk3m1yjQ3cSjIclyEbz390K7LIh5k5M5FNEI=;
+        s=korg; t=1655119881;
+        bh=HTO52MIx8f+xtj5n1cIJO/R2zEK3ZQZy29evrOfFB3k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lEY+l748/kNDAMEzKGnWYVP/b8eSv+u8WOUKxXZBKOHcV8YfhB73XjmUPA5ytQGUe
-         8cA4thF4FqblVjImiduVW6T/UpAK/8tUEveKb+IOBohkVTaZd2djvWcajIy/BE5aGJ
-         MPIRhhxauAptMS+MP7LKuQCenDAZo1hkWWqFuk/8=
+        b=G+qKVJ/HpoFKbeZtwrQPyd3HDiMZ+DUGE05K3KaFzgHFUVVHw8Xdbrw2rdPu8ty9/
+         8yLEupM/3YXJtWhbm/SqYsWSbj3sG2nDtCEZt5gkTJtXO3mbynYoEHVr6KyGq0nV8B
+         MuR+GOjPPpK1y/1vVrpbkPGv9pgNSWFzm7rYQZAo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Walker <benjamin.walker@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 154/339] dmaengine: idxd: set DMA_INTERRUPT cap bit
-Date:   Mon, 13 Jun 2022 12:09:39 +0200
-Message-Id: <20220613094931.354949193@linuxfoundation.org>
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 171/339] video: fbdev: pxa3xx-gcu: release the resources correctly in pxa3xx_gcu_probe/remove()
+Date:   Mon, 13 Jun 2022 12:09:56 +0200
+Message-Id: <20220613094931.864924186@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,35 +49,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Jiang <dave.jiang@intel.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 4e5a4eb20393b851590b4465f1197a8041c2076b ]
+[ Upstream commit d87ad457f7e1b8d2492ca5b1531eb35030a1cc8f ]
 
-Even though idxd driver has always supported interrupt, it never actually
-set the DMA_INTERRUPT cap bit. Rectify this mistake so the interrupt
-capability is advertised.
+In pxa3xx_gcu_probe(), the sequence of error lable is wrong, it will
+leads some resource leaked, so adjust the sequence to handle the error
+correctly, and if pxa3xx_gcu_add_buffer() fails, pxa3xx_gcu_free_buffers()
+need be called.
+In pxa3xx_gcu_remove(), add missing clk_disable_unpreprare().
 
-Reported-by: Ben Walker <benjamin.walker@intel.com>
-Signed-off-by: Dave Jiang <dave.jiang@intel.com>
-Link: https://lore.kernel.org/r/164971497859.2201379.17925303210723708961.stgit@djiang5-desk3.ch.intel.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/idxd/dma.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/video/fbdev/pxa3xx-gcu.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/dma/idxd/dma.c b/drivers/dma/idxd/dma.c
-index bfff59617d04..13e061944db9 100644
---- a/drivers/dma/idxd/dma.c
-+++ b/drivers/dma/idxd/dma.c
-@@ -193,6 +193,7 @@ int idxd_register_dma_device(struct idxd_device *idxd)
- 	INIT_LIST_HEAD(&dma->channels);
- 	dma->dev = dev;
+diff --git a/drivers/video/fbdev/pxa3xx-gcu.c b/drivers/video/fbdev/pxa3xx-gcu.c
+index 350b3139c863..043cc8f9ef1c 100644
+--- a/drivers/video/fbdev/pxa3xx-gcu.c
++++ b/drivers/video/fbdev/pxa3xx-gcu.c
+@@ -646,6 +646,7 @@ static int pxa3xx_gcu_probe(struct platform_device *pdev)
+ 	for (i = 0; i < 8; i++) {
+ 		ret = pxa3xx_gcu_add_buffer(dev, priv);
+ 		if (ret) {
++			pxa3xx_gcu_free_buffers(dev, priv);
+ 			dev_err(dev, "failed to allocate DMA memory\n");
+ 			goto err_disable_clk;
+ 		}
+@@ -662,15 +663,15 @@ static int pxa3xx_gcu_probe(struct platform_device *pdev)
+ 			SHARED_SIZE, irq);
+ 	return 0;
  
-+	dma_cap_set(DMA_INTERRUPT, dma->cap_mask);
- 	dma_cap_set(DMA_PRIVATE, dma->cap_mask);
- 	dma_cap_set(DMA_COMPLETION_NO_ORDER, dma->cap_mask);
- 	dma->device_release = idxd_dma_release;
+-err_free_dma:
+-	dma_free_coherent(dev, SHARED_SIZE,
+-			priv->shared, priv->shared_phys);
++err_disable_clk:
++	clk_disable_unprepare(priv->clk);
+ 
+ err_misc_deregister:
+ 	misc_deregister(&priv->misc_dev);
+ 
+-err_disable_clk:
+-	clk_disable_unprepare(priv->clk);
++err_free_dma:
++	dma_free_coherent(dev, SHARED_SIZE,
++			  priv->shared, priv->shared_phys);
+ 
+ 	return ret;
+ }
+@@ -683,6 +684,7 @@ static int pxa3xx_gcu_remove(struct platform_device *pdev)
+ 	pxa3xx_gcu_wait_idle(priv);
+ 	misc_deregister(&priv->misc_dev);
+ 	dma_free_coherent(dev, SHARED_SIZE, priv->shared, priv->shared_phys);
++	clk_disable_unprepare(priv->clk);
+ 	pxa3xx_gcu_free_buffers(dev, priv);
+ 
+ 	return 0;
 -- 
 2.35.1
 
