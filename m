@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1623CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:36:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B20C6C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:37:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378047AbiFMNgy (ORCPT
+        id S1377863AbiFMNg6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:36:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50962 "EHLO
+        Mon, 13 Jun 2022 09:36:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378777AbiFMNcG (ORCPT
+        with ESMTP id S1378771AbiFMNcF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:32:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71C9E71A37;
-        Mon, 13 Jun 2022 04:26:39 -0700 (PDT)
+        Mon, 13 Jun 2022 09:32:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06A5D71A2C;
+        Mon, 13 Jun 2022 04:26:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9120761038;
-        Mon, 13 Jun 2022 11:26:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AB8DC34114;
-        Mon, 13 Jun 2022 11:26:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 64109B80E59;
+        Mon, 13 Jun 2022 11:26:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6BFBC34114;
+        Mon, 13 Jun 2022 11:26:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119598;
-        bh=KclK8A9MhOsYG/yo+Vlgioldi22Z3Bpk3Q51BGbrmKE=;
+        s=korg; t=1655119595;
+        bh=DWggWnX2xNbDWS0Nu1a/WLOOSmvEs+6Jfo+l1xZDVc0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o08hNd9L6c3y5NKnlsrnp+YmROYTZYdM93ucyUQ8vltkdoHq/maIf3vJtCclEE9Sp
-         z71fMo2bnz6Uqs6U2sXpye86iqprLOpEOs+MLYsVxzbBuhqqEIWOt3KKQkdOMo51iw
-         L0ZXPS1pGilTKMAzLJm4973/K+s9bOIxCh3pmeq4=
+        b=OoclWpu94Jrbkz27YSDuFT1kpxDuW+rD57YLXUh4JqaZcK9yo/P7EsiVuIwQFlTzb
+         B7xOrpgw/iBKNtiDa9izmr41dtqXD8oIX8EYhZAK/YClHmtk7bmc2tiDMW5kiGFz5p
+         Zhz9cbq1DXVNOgSmvAzmmpW+Dq+JAH51cRpaQhR4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Rander Wang <rander.wang@intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 051/339] soundwire: intel: prevent pm_runtime resume prior to system suspend
-Date:   Mon, 13 Jun 2022 12:07:56 +0200
-Message-Id: <20220613094928.071132812@linuxfoundation.org>
+        stable@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 050/339] watchdog: rzg2l_wdt: Fix reset control imbalance
+Date:   Mon, 13 Jun 2022 12:07:55 +0200
+Message-Id: <20220613094928.040482334@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -53,56 +52,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Biju Das <biju.das.jz@bp.renesas.com>
 
-[ Upstream commit 6d9f2dadba698114fed97b224578c5338a36b0d9 ]
+[ Upstream commit 33d04d0fdba9fae18c7d58364643d2c606a43dba ]
 
-commit e38f9ff63e6d ("ACPI: scan: Do not add device IDs from _CID if _HID is not valid")
-exposes a race condition on a TGL RVP device leading to a timeout.
+Both rzg2l_wdt_probe() and rzg2l_wdt_start() calls reset_control_
+deassert() which results in a reset control imbalance.
 
-The detailed analysis shows the RT711 codec driver scheduling a jack
-detection workqueue while attaching during a spurious pm_runtime
-resume, and the work function happens to be scheduled after the
-manager device is suspended.
+This patch fixes reset control imbalance by removing reset_control_
+deassert() from rzg2l_wdt_start() and replaces reset_control_assert with
+reset_control_reset in rzg2l_wdt_stop() as watchdog module can be stopped
+only by a module reset. This change will allow us to restart WDT after
+stop() by configuring WDT timeout and enable registers.
 
-The direct link between this ACPI patch and a spurious pm_runtime
-resume is not obvious; the most likely explanation is that a change in
-the ACPI device linked list management modifies the order in which the
-pm_runtime device status is checked and exposes a race condition that
-was probably present for a very long time, but was not identified.
-
-We already have a check in the .prepare stage, where we will resume to
-full power from specific clock-stop modes. In all other cases, we
-don't need to resume to full power by default. Adding the
-SMART_SUSPEND flag prevents the spurious resume from happening.
-
-BugLink: https://github.com/thesofproject/linux/issues/3459
-Fixes: 029bfd1cd53cd ("soundwire: intel: conditionally exit clock stop mode on system suspend")
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Reviewed-by: Rander Wang <rander.wang@intel.com>
-Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Link: https://lore.kernel.org/r/20220420023241.14335-2-yung-chuan.liao@linux.intel.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: 2cbc5cd0b55fa2 ("watchdog: Add Watchdog Timer driver for RZ/G2L")
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Link: https://lore.kernel.org/r/20220225175320.11041-5-biju.das.jz@bp.renesas.com
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soundwire/intel.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/watchdog/rzg2l_wdt.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/soundwire/intel.c b/drivers/soundwire/intel.c
-index 63101f1ba271..32e5fdb823c4 100644
---- a/drivers/soundwire/intel.c
-+++ b/drivers/soundwire/intel.c
-@@ -1293,6 +1293,9 @@ static int intel_link_probe(struct auxiliary_device *auxdev,
- 	/* use generic bandwidth allocation algorithm */
- 	sdw->cdns.bus.compute_params = sdw_compute_params;
+diff --git a/drivers/watchdog/rzg2l_wdt.c b/drivers/watchdog/rzg2l_wdt.c
+index 48dfe6e5e64f..88274704b260 100644
+--- a/drivers/watchdog/rzg2l_wdt.c
++++ b/drivers/watchdog/rzg2l_wdt.c
+@@ -88,7 +88,6 @@ static int rzg2l_wdt_start(struct watchdog_device *wdev)
+ {
+ 	struct rzg2l_wdt_priv *priv = watchdog_get_drvdata(wdev);
  
-+	/* avoid resuming from pm_runtime suspend if it's not required */
-+	dev_pm_set_driver_flags(dev, DPM_FLAG_SMART_SUSPEND);
-+
- 	ret = sdw_bus_master_add(bus, dev, dev->fwnode);
- 	if (ret) {
- 		dev_err(dev, "sdw_bus_master_add fail: %d\n", ret);
+-	reset_control_deassert(priv->rstc);
+ 	pm_runtime_get_sync(wdev->parent);
+ 
+ 	/* Initialize time out */
+@@ -108,7 +107,7 @@ static int rzg2l_wdt_stop(struct watchdog_device *wdev)
+ 	struct rzg2l_wdt_priv *priv = watchdog_get_drvdata(wdev);
+ 
+ 	pm_runtime_put(wdev->parent);
+-	reset_control_assert(priv->rstc);
++	reset_control_reset(priv->rstc);
+ 
+ 	return 0;
+ }
 -- 
 2.35.1
 
