@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 926EAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:03:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53584C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:05:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358197AbiFMMDP (ORCPT
+        id S1358239AbiFMMDR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:03:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41568 "EHLO
+        Mon, 13 Jun 2022 08:03:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356672AbiFMMAI (ORCPT
+        with ESMTP id S1358206AbiFMMCE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:00:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C72324F1D5;
-        Mon, 13 Jun 2022 03:57:04 -0700 (PDT)
+        Mon, 13 Jun 2022 08:02:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4607525281;
+        Mon, 13 Jun 2022 03:57:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E49B1B80E59;
-        Mon, 13 Jun 2022 10:57:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CC2EC34114;
-        Mon, 13 Jun 2022 10:57:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7067960F9A;
+        Mon, 13 Jun 2022 10:57:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82416C34114;
+        Mon, 13 Jun 2022 10:57:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117821;
-        bh=YB9LyvTrRyk3XzyZg79/7s7AIqrmTsIjcd5nYkaq1FM=;
+        s=korg; t=1655117829;
+        bh=WyNvYaeIaFn1e3T9TbMqhmV83evlF4BHXtllGDXuot8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nigMMtnzFKDmiltmyJ8X80qS+QjMmafoCZitGY3palSCTYMr996SFQ0iRTsAOBsWN
-         TvR7vU7+alebMme1kpDndbEM7t4CP0Bh6eeqG15hSrImVGFqvaMSySvhlD5l0zuZJz
-         TpJUyFRlFhtJr/3OZ4yVC2UDx0adv2PeLErv6ah8=
+        b=lYi85ezFOQMPEgMrJUdzPfst5Qu+Da2ddHL23rLHhrc9D3SjC4YaXgLxtHikO3FZY
+         Z6F1/iHBtbgWWeLqKm43e92Py0L24mHOZ3o84HFzVbYIByzxpYFYtN84br4KSd4atq
+         I2+O38X3Ylw9FnoNUiJxC/Wqy3tV92nkyFADRSx8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Douglas Miller <doug.miller@cornelisnetworks.com>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 131/287] RDMA/hfi1: Prevent use of lock before it is initialized
-Date:   Mon, 13 Jun 2022 12:09:15 +0200
-Message-Id: <20220613094927.851859358@linuxfoundation.org>
+        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
+        stable@kernel.org
+Subject: [PATCH 4.19 147/287] ext4: fix use-after-free in ext4_rename_dir_prepare
+Date:   Mon, 13 Jun 2022 12:09:31 +0200
+Message-Id: <20220613094928.333857721@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -52,72 +50,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Douglas Miller <doug.miller@cornelisnetworks.com>
+From: Ye Bin <yebin10@huawei.com>
 
-[ Upstream commit 05c03dfd09c069c4ffd783b47b2da5dcc9421f2c ]
+commit 0be698ecbe4471fcad80e81ec6a05001421041b3 upstream.
 
-If there is a failure during probe of hfi1 before the sdma_map_lock is
-initialized, the call to hfi1_free_devdata() will attempt to use a lock
-that has not been initialized. If the locking correctness validator is on
-then an INFO message and stack trace resembling the following may be seen:
+We got issue as follows:
+EXT4-fs (loop0): mounted filesystem without journal. Opts: ,errors=continue
+ext4_get_first_dir_block: bh->b_data=0xffff88810bee6000 len=34478
+ext4_get_first_dir_block: *parent_de=0xffff88810beee6ae bh->b_data=0xffff88810bee6000
+ext4_rename_dir_prepare: [1] parent_de=0xffff88810beee6ae
+==================================================================
+BUG: KASAN: use-after-free in ext4_rename_dir_prepare+0x152/0x220
+Read of size 4 at addr ffff88810beee6ae by task rep/1895
 
-  INFO: trying to register non-static key.
-  The code is fine but needs lockdep annotation, or maybe
-  you didn't initialize this object before use?
-  turning off the locking correctness validator.
-  Call Trace:
-  register_lock_class+0x11b/0x880
-  __lock_acquire+0xf3/0x7930
-  lock_acquire+0xff/0x2d0
-  _raw_spin_lock_irq+0x46/0x60
-  sdma_clean+0x42a/0x660 [hfi1]
-  hfi1_free_devdata+0x3a7/0x420 [hfi1]
-  init_one+0x867/0x11a0 [hfi1]
-  pci_device_probe+0x40e/0x8d0
+CPU: 13 PID: 1895 Comm: rep Not tainted 5.10.0+ #241
+Call Trace:
+ dump_stack+0xbe/0xf9
+ print_address_description.constprop.0+0x1e/0x220
+ kasan_report.cold+0x37/0x7f
+ ext4_rename_dir_prepare+0x152/0x220
+ ext4_rename+0xf44/0x1ad0
+ ext4_rename2+0x11c/0x170
+ vfs_rename+0xa84/0x1440
+ do_renameat2+0x683/0x8f0
+ __x64_sys_renameat+0x53/0x60
+ do_syscall_64+0x33/0x40
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x7f45a6fc41c9
+RSP: 002b:00007ffc5a470218 EFLAGS: 00000246 ORIG_RAX: 0000000000000108
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f45a6fc41c9
+RDX: 0000000000000005 RSI: 0000000020000180 RDI: 0000000000000005
+RBP: 00007ffc5a470240 R08: 00007ffc5a470160 R09: 0000000020000080
+R10: 00000000200001c0 R11: 0000000000000246 R12: 0000000000400bb0
+R13: 00007ffc5a470320 R14: 0000000000000000 R15: 0000000000000000
 
-The use of sdma_map_lock in sdma_clean() is for freeing the sdma_map
-memory, and sdma_map is not allocated/initialized until after
-sdma_map_lock has been initialized. This code only needs to be run if
-sdma_map is not NULL, and so checking for that condition will avoid trying
-to use the lock before it is initialized.
+The buggy address belongs to the page:
+page:00000000440015ce refcount:0 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x10beee
+flags: 0x200000000000000()
+raw: 0200000000000000 ffffea00043ff4c8 ffffea0004325608 0000000000000000
+raw: 0000000000000001 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
 
-Fixes: 473291b3ea0e ("IB/hfi1: Fix for early release of sdma context")
-Fixes: 7724105686e7 ("IB/hfi1: add driver files")
-Link: https://lore.kernel.org/r/20220520183701.48973.72434.stgit@awfm-01.cornelisnetworks.com
-Reported-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Douglas Miller <doug.miller@cornelisnetworks.com>
-Signed-off-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Memory state around the buggy address:
+ ffff88810beee580: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff88810beee600: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+>ffff88810beee680: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                                  ^
+ ffff88810beee700: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff88810beee780: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+==================================================================
+Disabling lock debugging due to kernel taint
+ext4_rename_dir_prepare: [2] parent_de->inode=3537895424
+ext4_rename_dir_prepare: [3] dir=0xffff888124170140
+ext4_rename_dir_prepare: [4] ino=2
+ext4_rename_dir_prepare: ent->dir->i_ino=2 parent=-757071872
+
+Reason is first directory entry which 'rec_len' is 34478, then will get illegal
+parent entry. Now, we do not check directory entry after read directory block
+in 'ext4_get_first_dir_block'.
+To solve this issue, check directory entry in 'ext4_get_first_dir_block'.
+
+[ Trigger an ext4_error() instead of just warning if the directory is
+  missing a '.' or '..' entry.   Also make sure we return an error code
+  if the file system is corrupted.  -TYT ]
+
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220414025223.4113128-1-yebin10@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/hw/hfi1/sdma.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ fs/ext4/namei.c |   30 +++++++++++++++++++++++++++---
+ 1 file changed, 27 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/infiniband/hw/hfi1/sdma.c b/drivers/infiniband/hw/hfi1/sdma.c
-index 38258de75a94..33ff9eca28f6 100644
---- a/drivers/infiniband/hw/hfi1/sdma.c
-+++ b/drivers/infiniband/hw/hfi1/sdma.c
-@@ -1313,11 +1313,13 @@ void sdma_clean(struct hfi1_devdata *dd, size_t num_engines)
- 		kvfree(sde->tx_ring);
- 		sde->tx_ring = NULL;
- 	}
--	spin_lock_irq(&dd->sde_map_lock);
--	sdma_map_free(rcu_access_pointer(dd->sdma_map));
--	RCU_INIT_POINTER(dd->sdma_map, NULL);
--	spin_unlock_irq(&dd->sde_map_lock);
--	synchronize_rcu();
-+	if (rcu_access_pointer(dd->sdma_map)) {
-+		spin_lock_irq(&dd->sde_map_lock);
-+		sdma_map_free(rcu_access_pointer(dd->sdma_map));
-+		RCU_INIT_POINTER(dd->sdma_map, NULL);
-+		spin_unlock_irq(&dd->sde_map_lock);
-+		synchronize_rcu();
-+	}
- 	kfree(dd->per_sdma);
- 	dd->per_sdma = NULL;
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -3333,6 +3333,9 @@ static struct buffer_head *ext4_get_firs
+ 	struct buffer_head *bh;
  
--- 
-2.35.1
-
+ 	if (!ext4_has_inline_data(inode)) {
++		struct ext4_dir_entry_2 *de;
++		unsigned int offset;
++
+ 		/* The first directory block must not be a hole, so
+ 		 * treat it as DIRENT_HTREE
+ 		 */
+@@ -3341,9 +3344,30 @@ static struct buffer_head *ext4_get_firs
+ 			*retval = PTR_ERR(bh);
+ 			return NULL;
+ 		}
+-		*parent_de = ext4_next_entry(
+-					(struct ext4_dir_entry_2 *)bh->b_data,
+-					inode->i_sb->s_blocksize);
++
++		de = (struct ext4_dir_entry_2 *) bh->b_data;
++		if (ext4_check_dir_entry(inode, NULL, de, bh, bh->b_data,
++					 bh->b_size, 0) ||
++		    le32_to_cpu(de->inode) != inode->i_ino ||
++		    strcmp(".", de->name)) {
++			EXT4_ERROR_INODE(inode, "directory missing '.'");
++			brelse(bh);
++			*retval = -EFSCORRUPTED;
++			return NULL;
++		}
++		offset = ext4_rec_len_from_disk(de->rec_len,
++						inode->i_sb->s_blocksize);
++		de = ext4_next_entry(de, inode->i_sb->s_blocksize);
++		if (ext4_check_dir_entry(inode, NULL, de, bh, bh->b_data,
++					 bh->b_size, offset) ||
++		    le32_to_cpu(de->inode) == 0 || strcmp("..", de->name)) {
++			EXT4_ERROR_INODE(inode, "directory missing '..'");
++			brelse(bh);
++			*retval = -EFSCORRUPTED;
++			return NULL;
++		}
++		*parent_de = de;
++
+ 		return bh;
+ 	}
+ 
 
 
