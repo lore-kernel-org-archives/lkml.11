@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D76C4C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:35:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90319CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:36:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384250AbiFMOft (ORCPT
+        id S1384367AbiFMOgD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:35:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35226 "EHLO
+        Mon, 13 Jun 2022 10:36:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385524AbiFMObQ (ORCPT
+        with ESMTP id S1385525AbiFMObQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 10:31:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D0F0ABE79;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9887FABE76;
         Mon, 13 Jun 2022 04:49:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB9B06146E;
-        Mon, 13 Jun 2022 11:48:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C962AC34114;
-        Mon, 13 Jun 2022 11:48:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D80C76149A;
+        Mon, 13 Jun 2022 11:48:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1AD3C36AFE;
+        Mon, 13 Jun 2022 11:48:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120908;
-        bh=EbHpsNQsZRgTMF45CSYfLlirVAaStJQ+cyuj+aVwgLI=;
+        s=korg; t=1655120897;
+        bh=VXZhxryh72Og4GqGI4MTbJbRPGLEe+3cwrtMAV1XFcY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oCfSKxPyxaugF3b5ZrA7sc4IAxGNZonHXce24RJBygyZGCt4b8AOaOQsK47XGaPv4
-         ylnG09uGm5u9n6fKwuCwQhdOv/A66XaTnC5cbsRYcmdLAUZV81/5S22sm+blNLDjBk
-         b/VaLuRpSJh7xroiKuqEsLSb/kh4p7Odq+m+Akvs=
+        b=2ilUniEpbzdLVpDzgiCwrnA4JofJ3yiu6hCxn3cq6/UeCOymvvLdIiQpuCyx0K0Wy
+         TNaqSoUIbEhCqyHXaUO8muPWJMNIqscCxFC/2ge+WxNCulXdK9NLimmaodnizZqeOu
+         9ovvptTyl9HSjxRkED468CCBJRrs9TlKF89w3bG8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Zheyu Ma <zheyuma97@gmail.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 202/298] tty: synclink_gt: Fix null-pointer-dereference in slgt_clean()
-Date:   Mon, 13 Jun 2022 12:11:36 +0200
-Message-Id: <20220613094931.231510430@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 165/298] netfilter: nf_tables: release new hooks on unsupported flowtable flags
+Date:   Mon, 13 Jun 2022 12:10:59 +0200
+Message-Id: <20220613094929.936874350@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -49,45 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit 689ca31c542687709ba21ec2195c1fbce34fd029 ]
+[ Upstream commit c271cc9febaaa1bcbc0842d1ee30466aa6148ea8 ]
 
-When the driver fails at alloc_hdlcdev(), and then we remove the driver
-module, we will get the following splat:
+Release the list of new hooks that are pending to be registered in case
+that unsupported flowtable flags are provided.
 
-[   25.065966] general protection fault, probably for non-canonical address 0xdffffc0000000182: 0000 [#1] PREEMPT SMP KASAN PTI
-[   25.066914] KASAN: null-ptr-deref in range [0x0000000000000c10-0x0000000000000c17]
-[   25.069262] RIP: 0010:detach_hdlc_protocol+0x2a/0x3e0
-[   25.077709] Call Trace:
-[   25.077924]  <TASK>
-[   25.078108]  unregister_hdlc_device+0x16/0x30
-[   25.078481]  slgt_cleanup+0x157/0x9f0 [synclink_gt]
-
-Fix this by checking whether the 'info->netdev' is a null pointer first.
-
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Link: https://lore.kernel.org/r/20220410114814.3920474-1-zheyuma97@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 78d9f48f7f44 ("netfilter: nf_tables: add devices to existing flowtable")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/synclink_gt.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/netfilter/nf_tables_api.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/synclink_gt.c b/drivers/tty/synclink_gt.c
-index 25c558e65ece..9bc2a9265277 100644
---- a/drivers/tty/synclink_gt.c
-+++ b/drivers/tty/synclink_gt.c
-@@ -1746,6 +1746,8 @@ static int hdlcdev_init(struct slgt_info *info)
-  */
- static void hdlcdev_exit(struct slgt_info *info)
- {
-+	if (!info->netdev)
-+		return;
- 	unregister_hdlc_device(info->netdev);
- 	free_netdev(info->netdev);
- 	info->netdev = NULL;
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index ee7adb42a97d..2abad256f0aa 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -7348,11 +7348,15 @@ static int nft_flowtable_update(struct nft_ctx *ctx, const struct nlmsghdr *nlh,
+ 
+ 	if (nla[NFTA_FLOWTABLE_FLAGS]) {
+ 		flags = ntohl(nla_get_be32(nla[NFTA_FLOWTABLE_FLAGS]));
+-		if (flags & ~NFT_FLOWTABLE_MASK)
+-			return -EOPNOTSUPP;
++		if (flags & ~NFT_FLOWTABLE_MASK) {
++			err = -EOPNOTSUPP;
++			goto err_flowtable_update_hook;
++		}
+ 		if ((flowtable->data.flags & NFT_FLOWTABLE_HW_OFFLOAD) ^
+-		    (flags & NFT_FLOWTABLE_HW_OFFLOAD))
+-			return -EOPNOTSUPP;
++		    (flags & NFT_FLOWTABLE_HW_OFFLOAD)) {
++			err = -EOPNOTSUPP;
++			goto err_flowtable_update_hook;
++		}
+ 	} else {
+ 		flags = flowtable->data.flags;
+ 	}
 -- 
 2.35.1
 
