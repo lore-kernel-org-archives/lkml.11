@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A63D8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:09:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04D2CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:09:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358764AbiFMMIU (ORCPT
+        id S1358805AbiFMMIa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:08:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59574 "EHLO
+        Mon, 13 Jun 2022 08:08:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358744AbiFMMEk (ORCPT
+        with ESMTP id S1359184AbiFMMF0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:04:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F4A750032;
-        Mon, 13 Jun 2022 03:57:52 -0700 (PDT)
+        Mon, 13 Jun 2022 08:05:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26FB125C73;
+        Mon, 13 Jun 2022 03:59:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A49A261346;
-        Mon, 13 Jun 2022 10:57:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1E00C341C5;
-        Mon, 13 Jun 2022 10:57:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C6B29B80E5E;
+        Mon, 13 Jun 2022 10:59:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34537C34114;
+        Mon, 13 Jun 2022 10:59:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117871;
-        bh=2MiGSPVt5iRNA+MRCvEt8ZV/VW9I8RfZ6xa1RC7f6sg=;
+        s=korg; t=1655117978;
+        bh=zLNYGnhl3HROVhvLdtptN+k7B+4om0XZMN1MPs90rtQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lqfVkHhdzUDnp33pTMVLRxNbLej5DJ8az3twn3UkEXIy2JZRmxAZ9xQ1xvsRAnEq7
-         KzjDfHlbwvK+63LAWYcoQaczZf42U4AAgzBHqBZdM7sVSimj2Qt3q1SREW0fcZx1M7
-         9wfmHOxh5HGjUB9VLewYFAjA7e3YyeskvQZ7Nopw=
+        b=W0YIVbWS92fiIeD5m5POcXCJG29R31RCJPfDS5aYhPOZwqc9j/a1XkXJdgg3FUsK/
+         XV/sqRATBMMHzRnN0WUo01EYCLrLqEfPARXzodoYjxqHdm4qEQGRbA+RQWU/Yb2z3A
+         UlPkgoZEuI6pVubUpnOzhHn0A/6hg2nw30jyYvLI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Brian Norris <briannorris@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>
-Subject: [PATCH 4.19 162/287] drm/bridge: analogix_dp: Grab runtime PM reference for DP-AUX
-Date:   Mon, 13 Jun 2022 12:09:46 +0200
-Message-Id: <20220613094928.790591935@linuxfoundation.org>
+        stable@vger.kernel.org, Xiao Yang <yangx.jy@fujitsu.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 4.19 186/287] RDMA/rxe: Generate a completion for unsupported/invalid opcode
+Date:   Mon, 13 Jun 2022 12:10:10 +0200
+Message-Id: <20220613094929.508336843@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -50,54 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Norris <briannorris@chromium.org>
+From: Xiao Yang <yangx.jy@fujitsu.com>
 
-commit 8fb6c44fe8468f92ac7b8bbfcca4404a4e88645f upstream.
+commit 2f917af777011c88e977b9b9a5d00b280d3a59ce upstream.
 
-If the display is not enable()d, then we aren't holding a runtime PM
-reference here. Thus, it's easy to accidentally cause a hang, if user
-space is poking around at /dev/drm_dp_aux0 at the "wrong" time.
+Current rxe_requester() doesn't generate a completion when processing an
+unsupported/invalid opcode. If rxe driver doesn't support a new opcode
+(e.g. RDMA Atomic Write) and RDMA library supports it, an application
+using the new opcode can reproduce this issue. Fix the issue by calling
+"goto err;".
 
-Let's get a runtime PM reference, and check that we "see" the panel.
-Don't force any panel power-up, etc., because that can be intrusive, and
-that's not what other drivers do (see
-drivers/gpu/drm/bridge/ti-sn65dsi86.c and
-drivers/gpu/drm/bridge/parade-ps8640.c.)
-
-Fixes: 0d97ad03f422 ("drm/bridge: analogix_dp: Remove duplicated code")
-Cc: <stable@vger.kernel.org>
-Cc: Tomeu Vizoso <tomeu.vizoso@collabora.com>
-Signed-off-by: Brian Norris <briannorris@chromium.org>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220301181107.v4.1.I773a08785666ebb236917b0c8e6c05e3de471e75@changeid
+Fixes: 8700e3e7c485 ("Soft RoCE driver")
+Link: https://lore.kernel.org/r/20220410113513.27537-1-yangx.jy@fujitsu.com
+Signed-off-by: Xiao Yang <yangx.jy@fujitsu.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/bridge/analogix/analogix_dp_core.c |   13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ drivers/infiniband/sw/rxe/rxe_req.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-+++ b/drivers/gpu/drm/bridge/analogix/analogix_dp_core.c
-@@ -1514,8 +1514,19 @@ static ssize_t analogix_dpaux_transfer(s
- 				       struct drm_dp_aux_msg *msg)
- {
- 	struct analogix_dp_device *dp = to_dp(aux);
-+	int ret;
+--- a/drivers/infiniband/sw/rxe/rxe_req.c
++++ b/drivers/infiniband/sw/rxe/rxe_req.c
+@@ -680,7 +680,7 @@ next_wqe:
+ 	opcode = next_opcode(qp, wqe, wqe->wr.opcode);
+ 	if (unlikely(opcode < 0)) {
+ 		wqe->status = IB_WC_LOC_QP_OP_ERR;
+-		goto exit;
++		goto err;
+ 	}
  
--	return analogix_dp_transfer(dp, msg);
-+	pm_runtime_get_sync(dp->dev);
-+
-+	ret = analogix_dp_detect_hpd(dp);
-+	if (ret)
-+		goto out;
-+
-+	ret = analogix_dp_transfer(dp, msg);
-+out:
-+	pm_runtime_put(dp->dev);
-+
-+	return ret;
- }
- 
- struct analogix_dp_device *
+ 	mask = rxe_opcode[opcode].mask;
 
 
