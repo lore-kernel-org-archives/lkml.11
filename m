@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A84C5CCA485
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4D2BCCA487
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:06:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381856AbiFMOEw (ORCPT
+        id S1382792AbiFMOGq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:04:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33018 "EHLO
+        Mon, 13 Jun 2022 10:06:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381638AbiFMN5D (ORCPT
+        with ESMTP id S240537AbiFMN72 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:57:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B89ED219F;
-        Mon, 13 Jun 2022 04:37:19 -0700 (PDT)
+        Mon, 13 Jun 2022 09:59:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D82268CCF5;
+        Mon, 13 Jun 2022 04:37:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 680A561325;
-        Mon, 13 Jun 2022 11:37:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AD1DC3411C;
-        Mon, 13 Jun 2022 11:37:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 27F32B80EA7;
+        Mon, 13 Jun 2022 11:37:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 793E7C34114;
+        Mon, 13 Jun 2022 11:37:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120237;
-        bh=5fgkOH7xDgS6Kb/TqVo4BBb+cplA2IpxfR8lxDeJRPE=;
+        s=korg; t=1655120270;
+        bh=ovWdpCpgjdPMTIbsc5BY64f75f6dLt9SBIE24tqDEoA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WzD1y9UCd9pNyw4XnqcFYeYZV4qlfWZW5z0m35eri8rcJNMgpPwh2iZeQ+vXheK1O
-         Iwl69qBjoQS4XrVpnpRbm7b9fbm4VTPnX9P5n+e09K56EUagF7eqWxfQT0JnKpPwxi
-         23+WjLNzx6zocGUuZ0ntL5fY8osac8rHyJQ1QCKw=
+        b=aLxxLu7qu5fCcQ34UsRyLRQLpMGbuYm/09On9osp+HoBHJNa8g4b/gGIwD0BTUE+m
+         5X2edPB66PAYZeSgbVgzKdl6XzofNYel/9SLUEWnJ0LrHqbQNqHSC+nHWuxtuX21VS
+         jIxQjMemMiyTao9+3VfAP2aqg9/QmTywUGP7A0MU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shyam Prasad N <sprasad@microsoft.com>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.18 300/339] cifs: populate empty hostnames for extra channels
-Date:   Mon, 13 Jun 2022 12:12:05 +0200
-Message-Id: <20220613094935.862451941@linuxfoundation.org>
+        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
+        James Smart <jsmart2021@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.18 304/339] scsi: lpfc: Address NULL pointer dereference after starget_to_rport()
+Date:   Mon, 13 Jun 2022 12:12:09 +0200
+Message-Id: <20220613094935.979173117@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -49,54 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shyam Prasad N <sprasad@microsoft.com>
+From: James Smart <jsmart2021@gmail.com>
 
-commit 4c14d7043fede258957d7b01da0cad2d9fe3a205 upstream.
+commit 6f808bd78e8296b4ded813b7182988d57e1f6176 upstream.
 
-Currently, the secondary channels of a multichannel session
-also get hostname populated based on the info in primary channel.
-However, this will end up with a wrong resolution of hostname to
-IP address during reconnect.
+Calls to starget_to_rport() may return NULL.  Add check for NULL rport
+before dereference.
 
-This change fixes this by not populating hostname info for all
-secondary channels.
-
-Fixes: 5112d80c162f ("cifs: populate server_hostname for extra channels")
-Cc: stable@vger.kernel.org
-Signed-off-by: Shyam Prasad N <sprasad@microsoft.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Link: https://lore.kernel.org/r/20220603174329.63777-5-jsmart2021@gmail.com
+Fixes: bb21fc9911ee ("scsi: lpfc: Use fc_block_rport()")
+Cc: <stable@vger.kernel.org> # v5.18
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/cifs/connect.c |    4 ++++
- fs/cifs/sess.c    |    5 ++++-
- 2 files changed, 8 insertions(+), 1 deletion(-)
+ drivers/scsi/lpfc/lpfc_scsi.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/fs/cifs/connect.c
-+++ b/fs/cifs/connect.c
-@@ -97,6 +97,10 @@ static int reconn_set_ipaddr_from_hostna
- 	if (!server->hostname)
- 		return -EINVAL;
+--- a/drivers/scsi/lpfc/lpfc_scsi.c
++++ b/drivers/scsi/lpfc/lpfc_scsi.c
+@@ -6316,6 +6316,9 @@ lpfc_device_reset_handler(struct scsi_cm
+ 	int status;
+ 	u32 logit = LOG_FCP;
  
-+	/* if server hostname isn't populated, there's nothing to do here */
-+	if (server->hostname[0] == '\0')
-+		return 0;
++	if (!rport)
++		return FAILED;
 +
- 	len = strlen(server->hostname) + 3;
+ 	rdata = rport->dd_data;
+ 	if (!rdata || !rdata->pnode) {
+ 		lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
+@@ -6394,6 +6397,9 @@ lpfc_target_reset_handler(struct scsi_cm
+ 	unsigned long flags;
+ 	DECLARE_WAIT_QUEUE_HEAD_ONSTACK(waitq);
  
- 	unc = kmalloc(len, GFP_KERNEL);
---- a/fs/cifs/sess.c
-+++ b/fs/cifs/sess.c
-@@ -274,7 +274,10 @@ cifs_ses_add_channel(struct cifs_sb_info
- 	/* Auth */
- 	ctx.domainauto = ses->domainAuto;
- 	ctx.domainname = ses->domainName;
--	ctx.server_hostname = ses->server->hostname;
++	if (!rport)
++		return FAILED;
 +
-+	/* no hostname for extra channels */
-+	ctx.server_hostname = "";
-+
- 	ctx.username = ses->user_name;
- 	ctx.password = ses->password;
- 	ctx.sectype = ses->sectype;
+ 	rdata = rport->dd_data;
+ 	if (!rdata || !rdata->pnode) {
+ 		lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
 
 
