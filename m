@@ -2,108 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E0F9C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:42:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2282CCA47D
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:42:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344180AbiFMSmF (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:42:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41222 "EHLO
+        id S240865AbiFMSmc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:42:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236744AbiFMSlg (ORCPT
+        with ESMTP id S1344348AbiFMSl4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 14:41:36 -0400
-Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E802527FC1;
-        Mon, 13 Jun 2022 08:22:43 -0700 (PDT)
-Received: by mail-qv1-f42.google.com with SMTP id a9so4535941qvt.6;
-        Mon, 13 Jun 2022 08:22:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qcugiPICJLPzQVbJaMNvRLiNwKZci/LNeFue+3qV07c=;
-        b=QOxSPO2OkOZkyfuTU+urLlI0TBuGEyVYL31+208ARrWq7zyVEEqhz4L7oUEAITV2VP
-         QruLsgFZLjUYyQJeRz1MdYqqidC+VXO1hv+GNOan0PwdVJ7hl9El05BVtnI3St24FDMI
-         ceLQ/xmTxMDqay/tQf1dJ5u+1ZEuicjO/QJxySq/z8auIRvgZJHp/hCq9lpYlVaUXvnT
-         Ji4GzcM7EsVXDBVyoqGLUgDmhD3Y77bWhEnUmM5cDbKERo5TVbc5k3VgQOx2ZKcMI9kd
-         JtpJN5k/tPAqu6egujEWzM+0UyEn3vIUOmWqVFr6Kekg1C1aDgAA5QdGImwsrQvT83xG
-         C/oA==
-X-Gm-Message-State: AJIora9T9io/VxswjBbeeoUrR0OO7OFyTpN9GIIBx+khJ8bKCuLEaAwf
-        fp3IxZPw7RrZDxt3S9Q0/OYvytzLjBKY1Q==
-X-Google-Smtp-Source: AGRyM1tR23QUPLSYmCAd7BQK6XX/kwgM+nwgjzZ6OZZ6JQ76t/Z0rwIfTCBiFtqIB/RLnwSKOCTAgg==
-X-Received: by 2002:a05:6214:623:b0:46b:9512:b355 with SMTP id a3-20020a056214062300b0046b9512b355mr172620qvx.8.1655133762571;
-        Mon, 13 Jun 2022 08:22:42 -0700 (PDT)
-Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com. [209.85.219.169])
-        by smtp.gmail.com with ESMTPSA id w2-20020a05622a134200b003051ba1f8bcsm5095399qtk.15.2022.06.13.08.22.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Jun 2022 08:22:42 -0700 (PDT)
-Received: by mail-yb1-f169.google.com with SMTP id k2so10427683ybj.3;
-        Mon, 13 Jun 2022 08:22:41 -0700 (PDT)
-X-Received: by 2002:a25:d748:0:b0:65c:6b00:55af with SMTP id
- o69-20020a25d748000000b0065c6b0055afmr55080ybg.365.1655133761358; Mon, 13 Jun
- 2022 08:22:41 -0700 (PDT)
+        Mon, 13 Jun 2022 14:41:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA3A6213B
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 08:23:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 38424B8107B
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 15:23:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E959DC34114;
+        Mon, 13 Jun 2022 15:23:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655133818;
+        bh=39ORVcKGkww5j3cWfJ59utZuZfgeFZ6xrvdw9pRCMcE=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=cBMJnTuVe/bmjbmsCXZA0+huX5Txb6VRI1fgk7BNdzm9ZkevvY77Y23RQJl/UVigz
+         WK1hNZP5FiUOAd6vk0m1sKQzJxLwlBDCkh7m1i7CNaQIjsr1mtLIpp7z5jbVIbiQIJ
+         friK4tLQoJJZKYF+G7hfdlNl2zPsdEnL7I3Wk3zoHvXq2WkM67Zmb9I7UjxqbpAbJJ
+         qoUD2LMIU8DfSSd0ZkxjRPqjeOf3he5nzpAigRGQWjKM9RUqbppchJ7C1vI4y9airB
+         7k19KlSqb00T80xU3GCHbTC2jw4AgB0oRTvhaXj7dstJGhAtNHxZfon0KE//cz/LUT
+         IlgzSSw2a7UVA==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 8BD685C0510; Mon, 13 Jun 2022 08:23:37 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 08:23:37 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     "Zhang, Qiang1" <qiang1.zhang@intel.com>
+Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
+        syzbot <syzbot+9bb26e7c5e8e4fa7e641@syzkaller.appspotmail.com>,
+        "brauner@kernel.org" <brauner@kernel.org>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>
+Subject: Re: [syzbot] WARNING in exit_tasks_rcu_finish
+Message-ID: <20220613152337.GD1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <000000000000e2fc3f05e141f930@google.com>
+ <87bkux1yn4.fsf@email.froward.int.ebiederm.org>
+ <20220612202204.GX1790663@paulmck-ThinkPad-P17-Gen-1>
+ <PH0PR11MB588027C1A486FCED7885C500DAAB9@PH0PR11MB5880.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-References: <20220610113427.908751-1-alexandr.lobakin@intel.com>
- <CAMuHMdUZCaPN2B6bvmja9rDm3qCc4mYYAOSEB2W0R0pws8peqw@mail.gmail.com> <20220613142645.1176423-1-alexandr.lobakin@intel.com>
-In-Reply-To: <20220613142645.1176423-1-alexandr.lobakin@intel.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 13 Jun 2022 17:22:30 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVayS6hV3CWW6FS-1cQKoGTCDxgVhZVPSyBMvJHBxVwJA@mail.gmail.com>
-Message-ID: <CAMuHMdVayS6hV3CWW6FS-1cQKoGTCDxgVhZVPSyBMvJHBxVwJA@mail.gmail.com>
-Subject: Re: [PATCH v2 0/6] bitops: let optimize out non-atomic bitops on
- compile-time constants
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matt Turner <mattst88@gmail.com>,
-        Brian Cain <bcain@quicinc.com>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kees Cook <keescook@chromium.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>,
-        Tony Luck <tony.luck@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        alpha <linux-alpha@vger.kernel.org>,
-        "open list:QUALCOMM HEXAGON..." <linux-hexagon@vger.kernel.org>,
-        "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <PH0PR11MB588027C1A486FCED7885C500DAAB9@PH0PR11MB5880.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Olek,
+On Mon, Jun 13, 2022 at 01:55:31PM +0000, Zhang, Qiang1 wrote:
+> > syzbot <syzbot+9bb26e7c5e8e4fa7e641@syzkaller.appspotmail.com> writes:
+> > 
+> > > Hello,
+> > >
+> > > syzbot found the following issue on:
+> > >
+> > > HEAD commit:    6d0c80680317 Add linux-next specific files for 20220610
+> > > git tree:       linux-next
+> > > console output: 
+> > > https://syzkaller.appspot.com/x/log.txt?x=13b52c2ff00000
+> > > kernel config:  
+> > > https://syzkaller.appspot.com/x/.config?x=a30d6e3e814e5931
+> > > dashboard link: https://syzkaller.appspot.com/bug?extid=9bb26e7c5e8e4fa7e641
+> > > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > >
+> > > Unfortunately, I don't have any reproducer for this issue yet.
+> > 
+> > I don't understand what is going on in linux-next kernel/rcu/tasks.h 
+> > looks different than in Linus's tree.  Paul does that mean you have 
+> > some staged rcu changes?
+> 
+> >Less than 100 RCU-related patches in -rcu, so not all that bad.  ;-)
+> >
+> >But yes, this could possibly be an issue in one of those patches.
+> 
+> > Eric
+> > 
+> > 
+> > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > > Reported-by: syzbot+9bb26e7c5e8e4fa7e641@syzkaller.appspotmail.com
+> > >
+> > > ------------[ cut here ]------------
+> > > WARNING: CPU: 1 PID: 28639 at kernel/rcu/tasks.h:1664 
+> > > exit_tasks_rcu_finish_trace kernel/rcu/tasks.h:1664 [inline]
+> > > WARNING: CPU: 1 PID: 28639 at kernel/rcu/tasks.h:1664 
+> > > exit_tasks_rcu_finish+0x122/0x1b0 kernel/rcu/tasks.h:1006
+> 
+> >The usual way for this warning to trigger is for these a task to exit while in an RCU Tasks Trace read-side critical section:
+> >
+> >	rcu_read_lock_trace();
+> >	do_something_that_causes_task_exit();
+> >
+> 
+> Hi Paul, wether the following scenarios be considered
+> 
+> rcu_read_unlock_trace_special
+>    ->if (trs.b.blocked)
+>        ->raw_spin_lock_irqsave_rcu_node
+>        ->list_del_init(&t->trc_blkd_node)
+>        ->WRITE_ONCE(t->trc_reader_special.b.blocked, false)
+>        ->raw_spin_unlock_irqrestore_rcu_node
+>                      ->Inerrrupt
+>                             ->schedule
+>                                 ->rcu_note_context_switch
+>                                     ->rcu_tasks_trace_qs
+>                                          If (___rttq_nesting && !READ_ONCE((t)->trc_reader_special.b.blocked) 
+>                                                         /*___rttq_nesting  ==1    &&  (t)->trc_reader_special.b.blocked =false*/
+> 				rcu_tasks_trace_qs_blkd(t)     
+>    ->WRITE_ONCE(t->trc_reader_nesting, 0)
+>     .......
+>    -> exit_tasks_rcu_finish
+> 
+> Whether the following patch can fix it, or what am I missing?
+> Any thoughts?
+> 
+> diff --git a/kernel/rcu/tasks.h b/kernel/rcu/tasks.h
+> index f1209ce621c5..c607e4c914d3 100644
+> --- a/kernel/rcu/tasks.h
+> +++ b/kernel/rcu/tasks.h
+> @@ -1247,6 +1247,7 @@ void rcu_read_unlock_trace_special(struct task_struct *t)
+>         struct rcu_tasks_percpu *rtpcp;
+>         union rcu_special trs;
+> 
+> +       WRITE_ONCE(t->trc_reader_nesting, 0);
+>         // Open-coded full-word version of rcu_ld_need_qs().
+>         smp_mb(); // Enforce full grace-period ordering.
+>         trs = smp_load_acquire(&t->trc_reader_special);
+> @@ -1267,7 +1268,6 @@ void rcu_read_unlock_trace_special(struct task_struct *t)
+>                 WRITE_ONCE(t->trc_reader_special.b.blocked, false);
+>                 raw_spin_unlock_irqrestore_rcu_node(rtpcp, flags);
+>         }
+> -       WRITE_ONCE(t->trc_reader_nesting, 0);
+>  }
+>  EXPORT_SYMBOL_GPL(rcu_read_unlock_trace_special);
 
-On Mon, Jun 13, 2022 at 4:28 PM Alexander Lobakin
-<alexandr.lobakin@intel.com> wrote:
-> From: Geert Uytterhoeven <geert@linux-m68k.org>
-> > On Fri, Jun 10, 2022 at 1:35 PM Alexander Lobakin
-> > <alexandr.lobakin@intel.com> wrote:
-> > On m68k, using gcc version 9.4.0 (Ubuntu 9.4.0-1ubuntu1~20.04), this
-> > blows up immediately with:
->
-> Yeah I saw the kernel bot report already, sorry for that >_< Fixed
-> in v3 already, will send in 1-2 days.
+Thank you for looking into this!
 
-Is it simple to fix?
-I might be able to give the fixed v2 a try before that.
-Thanks!
+You do have what I believe to be the correct failure scenario, but the
+above fix would break nested RCU Tasks Trace read-side critical sections.
 
-Gr{oetje,eeting}s,
+But would you be willing to try out the patch shown below?
 
-                        Geert
+							Thanx, Paul
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+------------------------------------------------------------------------
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+diff --git a/include/linux/rcupdate.h b/include/linux/rcupdate.h
+index 08059d8d4f5a7..937a58b3266bf 100644
+--- a/include/linux/rcupdate.h
++++ b/include/linux/rcupdate.h
+@@ -184,7 +184,7 @@ void rcu_tasks_trace_qs_blkd(struct task_struct *t);
+ 		if (likely(!READ_ONCE((t)->trc_reader_special.b.need_qs)) &&	\
+ 		    likely(!___rttq_nesting)) {					\
+ 			rcu_trc_cmpxchg_need_qs((t), 0,	TRC_NEED_QS_CHECKED);	\
+-		} else if (___rttq_nesting &&					\
++		} else if (___rttq_nesting && ___rttq_nesting != INT_MIN &&	\
+ 			   !READ_ONCE((t)->trc_reader_special.b.blocked)) {	\
+ 			rcu_tasks_trace_qs_blkd(t);				\
+ 		}								\
+diff --git a/include/linux/rcupdate_trace.h b/include/linux/rcupdate_trace.h
+index 6f9c358173989..9bc8cbb33340b 100644
+--- a/include/linux/rcupdate_trace.h
++++ b/include/linux/rcupdate_trace.h
+@@ -75,7 +75,7 @@ static inline void rcu_read_unlock_trace(void)
+ 	nesting = READ_ONCE(t->trc_reader_nesting) - 1;
+ 	barrier(); // Critical section before disabling.
+ 	// Disable IPI-based setting of .need_qs.
+-	WRITE_ONCE(t->trc_reader_nesting, INT_MIN);
++	WRITE_ONCE(t->trc_reader_nesting, INT_MIN + nesting);
+ 	if (likely(!READ_ONCE(t->trc_reader_special.s)) || nesting) {
+ 		WRITE_ONCE(t->trc_reader_nesting, nesting);
+ 		return;  // We assume shallow reader nesting.
