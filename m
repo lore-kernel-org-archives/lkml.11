@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9313BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:33:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98B31C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:33:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377479AbiFMNdC (ORCPT
+        id S1377531AbiFMNdN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:33:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52344 "EHLO
+        Mon, 13 Jun 2022 09:33:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377951AbiFMNam (ORCPT
+        with ESMTP id S1377964AbiFMNam (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 09:30:42 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49EEE6EC40;
-        Mon, 13 Jun 2022 04:25:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8EC66EB27;
+        Mon, 13 Jun 2022 04:25:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 369C96114A;
-        Mon, 13 Jun 2022 11:25:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 454DCC3411C;
-        Mon, 13 Jun 2022 11:25:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C63261221;
+        Mon, 13 Jun 2022 11:25:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1C76C34114;
+        Mon, 13 Jun 2022 11:25:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119520;
-        bh=3Q/PmVUxD9TMrty0pQpmIjcdEoWqv0ccX6+5z3kXWEQ=;
+        s=korg; t=1655119518;
+        bh=NnYNH6IYy9RIKjB57M8bXB1He/zInldRkDkUMteEkPI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1bDToHPKQLMDaAibTa79Hcg0Ez4AzR5Zfvgvdj3H2n++L6kNGhZoZLF1YeL5xWgOt
-         6mbtmsSWnyoUFpplOVgvD++pdNaNc9H3qz6yBBPN/IZFVe9seYOQKdLjYZ/XR2aFkY
-         K6vOyBA7f0m1V0ka9Ntnc2ZFV0VxMUDPol3ci7fE=
+        b=V+rjMh7U0fDKNYAP6H3rFmAOhFDqEc99DYNZ+Oz1SaKvhAAf6vB5On1kyz1c2Xd4s
+         wmGFPOmA+T7kF/TR5OkVjCkTgNeE6Ys5D/Unu4E/5PbRziEk8iV8ciwb+l7tw0s5He
+         eE4NwH2rN10pzwdKi1aawKnLh2mCyI4VEb+ln08M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
+        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 023/339] pwm: raspberrypi-poe: Fix endianness in firmware struct
-Date:   Mon, 13 Jun 2022 12:07:28 +0200
-Message-Id: <20220613094927.212477490@linuxfoundation.org>
+Subject: [PATCH 5.18 041/339] power: supply: core: Initialize struct to zero
+Date:   Mon, 13 Jun 2022 12:07:46 +0200
+Message-Id: <20220613094927.765614010@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -52,41 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Linus Walleij <linus.walleij@linaro.org>
 
-[ Upstream commit 09f688f0718f57f9cf68ee1aa94490f641e759ba ]
+[ Upstream commit e56a4be2843c95c08cf8421dc1f8e880cafbaf91 ]
 
-The reg member of struct raspberrypi_pwm_prop is a little endian 32 bit
-quantity. Explicitly convert the (native endian) value to little endian
-on assignment as is already done in raspberrypi_pwm_set_property().
+As we rely on pointers in the battery info to be zero-initialized
+such as in the helper function power_supply_supports_vbat2ri()
+we certainly need to allocate the struct power_supply_battery_info
+with kzalloc() as well. Else this happens:
 
-This fixes the following sparse warning:
+Unable to handle kernel paging request at virtual address 00280000
+(...)
+PC is at power_supply_vbat2ri+0x50/0x12c
+LR is at ab8500_fg_battery_resistance+0x34/0x108
 
-	drivers/pwm/pwm-raspberrypi-poe.c:69:24: warning: incorrect type in initializer (different base types)
-	drivers/pwm/pwm-raspberrypi-poe.c:69:24:    expected restricted __le32 [usertype] reg
-	drivers/pwm/pwm-raspberrypi-poe.c:69:24:    got unsigned int [usertype] reg
-
-Fixes: 79caa362eab6 ("pwm: Add Raspberry Pi Firmware based PWM bus")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
+Fixes: e9e7d165b4b0 ("power: supply: Support VBAT-to-Ri lookup tables")
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pwm/pwm-raspberrypi-poe.c | 2 +-
+ drivers/power/supply/power_supply_core.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pwm/pwm-raspberrypi-poe.c b/drivers/pwm/pwm-raspberrypi-poe.c
-index e52e29fc8231..6ff73029f367 100644
---- a/drivers/pwm/pwm-raspberrypi-poe.c
-+++ b/drivers/pwm/pwm-raspberrypi-poe.c
-@@ -66,7 +66,7 @@ static int raspberrypi_pwm_get_property(struct rpi_firmware *firmware,
- 					u32 reg, u32 *val)
- {
- 	struct raspberrypi_pwm_prop msg = {
--		.reg = reg
-+		.reg = cpu_to_le32(reg),
- 	};
- 	int ret;
+diff --git a/drivers/power/supply/power_supply_core.c b/drivers/power/supply/power_supply_core.c
+index d925cb137e12..fad5890c899e 100644
+--- a/drivers/power/supply/power_supply_core.c
++++ b/drivers/power/supply/power_supply_core.c
+@@ -616,7 +616,7 @@ int power_supply_get_battery_info(struct power_supply *psy,
+ 		goto out_put_node;
+ 	}
  
+-	info = devm_kmalloc(&psy->dev, sizeof(*info), GFP_KERNEL);
++	info = devm_kzalloc(&psy->dev, sizeof(*info), GFP_KERNEL);
+ 	if (!info) {
+ 		err = -ENOMEM;
+ 		goto out_put_node;
 -- 
 2.35.1
 
