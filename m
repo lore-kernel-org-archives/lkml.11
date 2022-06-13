@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D23ECCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1C06CCA47F
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:34:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344734AbiFMKbv (ORCPT
+        id S1343575AbiFMKdX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:31:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33512 "EHLO
+        Mon, 13 Jun 2022 06:33:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244492AbiFMK0k (ORCPT
+        with ESMTP id S1346516AbiFMKaf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:26:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04F26245BC;
-        Mon, 13 Jun 2022 03:19:47 -0700 (PDT)
+        Mon, 13 Jun 2022 06:30:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53A2A21E30;
+        Mon, 13 Jun 2022 03:21:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8631B6066C;
-        Mon, 13 Jun 2022 10:19:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92720C34114;
-        Mon, 13 Jun 2022 10:19:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 84D1EB80E93;
+        Mon, 13 Jun 2022 10:21:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB8A2C34114;
+        Mon, 13 Jun 2022 10:21:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115585;
-        bh=LauyIngqKhHgUdFrZjftbaUlMZvP3vHjbGSVAmxtyFI=;
+        s=korg; t=1655115679;
+        bh=S2nyjzDsl6Qa9SKaZ1k8jiwAYyN6hsEchmkf/gZk/wI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MC2dYi8OE+2G8gAeEsCjUJOt/tCEJNIkjTGFjmTLig7igsD8Er9YtVJriMkE5lGT/
-         BygtkYS5IJZdubakmteLeZUsJeh+Z+rllTVT0czjhW+CAt7ZeH9g+8v6Vw26h8x8TE
-         rkIeeoMrgcMND6XFdo3wilO3z1PYNmJCK1iN3JYc=
+        b=UYRuPrOqFzSHvJNicUREVmj1n3y78i+rzobHmFxepfwGUIsDKg5bA/ySynEuNRPa/
+         7bYvi+udlcwYTMcyXbzbK+3bp8wMIHWZ9Pl/EhU6TCzunmUhwkMzBmc0jh+b0zYBRH
+         W1865mb90dYVt5YhQGf5GEepY4p22XM79nwnt5Gk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 138/167] iio: dummy: iio_simple_dummy: check the return value of kstrdup()
-Date:   Mon, 13 Jun 2022 12:10:12 +0200
-Message-Id: <20220613094913.234307301@linuxfoundation.org>
+        stable@vger.kernel.org, Shyam Prasad N <sprasad@microsoft.com>,
+        Enzo Matsumiya <ematsumiya@suse.de>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 4.9 159/167] cifs: return errors during session setup during reconnects
+Date:   Mon, 13 Jun 2022 12:10:33 +0200
+Message-Id: <20220613094918.253916137@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -50,88 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+From: Shyam Prasad N <sprasad@microsoft.com>
 
-[ Upstream commit ba93642188a6fed754bf7447f638bc410e05a929 ]
+commit 8ea21823aa584b55ba4b861307093b78054b0c1b upstream.
 
-kstrdup() is also a memory allocation-related function, it returns NULL
-when some memory errors happen. So it is better to check the return
-value of it so to catch the memory error in time. Besides, there should
-have a kfree() to clear up the allocation if we get a failure later in
-this function to prevent memory leak.
+During reconnects, we check the return value from
+cifs_negotiate_protocol, and have handlers for both success
+and failures. But if that passes, and cifs_setup_session
+returns any errors other than -EACCES, we do not handle
+that. This fix adds a handler for that, so that we don't
+go ahead and try a tree_connect on a failed session.
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
-Link: https://lore.kernel.org/r/tencent_C920CFCC33B9CC1C63141FE1334A39FF8508@qq.com
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Shyam Prasad N <sprasad@microsoft.com>
+Reviewed-by: Enzo Matsumiya <ematsumiya@suse.de>
+Cc: stable@vger.kernel.org
+Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/dummy/iio_simple_dummy.c | 20 ++++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
+ fs/cifs/smb2pdu.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/iio/dummy/iio_simple_dummy.c b/drivers/iio/dummy/iio_simple_dummy.c
-index ad3410e528b6..7fef76f0b5c7 100644
---- a/drivers/iio/dummy/iio_simple_dummy.c
-+++ b/drivers/iio/dummy/iio_simple_dummy.c
-@@ -572,10 +572,9 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
- 	struct iio_sw_device *swd;
- 
- 	swd = kzalloc(sizeof(*swd), GFP_KERNEL);
--	if (!swd) {
--		ret = -ENOMEM;
--		goto error_kzalloc;
--	}
-+	if (!swd)
-+		return ERR_PTR(-ENOMEM);
-+
- 	/*
- 	 * Allocate an IIO device.
- 	 *
-@@ -587,7 +586,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
- 	indio_dev = iio_device_alloc(sizeof(*st));
- 	if (!indio_dev) {
- 		ret = -ENOMEM;
--		goto error_ret;
-+		goto error_free_swd;
+--- a/fs/cifs/smb2pdu.c
++++ b/fs/cifs/smb2pdu.c
+@@ -265,6 +265,9 @@ smb2_reconnect(__le16 smb2_command, stru
+ 			rc = -EHOSTDOWN;
+ 			mutex_unlock(&tcon->ses->session_mutex);
+ 			goto failed;
++		} else if (rc) {
++			mutex_unlock(&ses->session_mutex);
++			goto out;
+ 		}
  	}
- 
- 	st = iio_priv(indio_dev);
-@@ -618,6 +617,10 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
- 	 *    indio_dev->name = spi_get_device_id(spi)->name;
- 	 */
- 	indio_dev->name = kstrdup(name, GFP_KERNEL);
-+	if (!indio_dev->name) {
-+		ret = -ENOMEM;
-+		goto error_free_device;
-+	}
- 
- 	/* Provide description of available channels */
- 	indio_dev->channels = iio_dummy_channels;
-@@ -634,7 +637,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
- 
- 	ret = iio_simple_dummy_events_register(indio_dev);
- 	if (ret < 0)
--		goto error_free_device;
-+		goto error_free_name;
- 
- 	ret = iio_simple_dummy_configure_buffer(indio_dev);
- 	if (ret < 0)
-@@ -651,11 +654,12 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
- 	iio_simple_dummy_unconfigure_buffer(indio_dev);
- error_unregister_events:
- 	iio_simple_dummy_events_unregister(indio_dev);
-+error_free_name:
-+	kfree(indio_dev->name);
- error_free_device:
- 	iio_device_free(indio_dev);
--error_ret:
-+error_free_swd:
- 	kfree(swd);
--error_kzalloc:
- 	return ERR_PTR(ret);
- }
- 
--- 
-2.35.1
-
+ 	if (rc || !tcon->need_reconnect) {
 
 
