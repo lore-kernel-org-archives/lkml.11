@@ -2,51 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1C19CCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4E65CCA483
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382314AbiFMON7 (ORCPT
+        id S1382415AbiFMOON (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:13:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52916 "EHLO
+        Mon, 13 Jun 2022 10:14:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382666AbiFMOGL (ORCPT
+        with ESMTP id S1381074AbiFMODp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:06:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF61972A1;
-        Mon, 13 Jun 2022 04:41:09 -0700 (PDT)
+        Mon, 13 Jun 2022 10:03:45 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70B2790CE9;
+        Mon, 13 Jun 2022 04:38:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7DC7B80ECD;
-        Mon, 13 Jun 2022 11:41:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14E41C34114;
-        Mon, 13 Jun 2022 11:41:05 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id CECD2CE1174;
+        Mon, 13 Jun 2022 11:38:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7891C34114;
+        Mon, 13 Jun 2022 11:38:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120466;
-        bh=wVkcYHc5vMhIs7MOXoo85jAoir9Esaq47MytOfsNKtA=;
+        s=korg; t=1655120314;
+        bh=sXhm+oMCrui/y0I0+QBtmpIK+POYQhAS48jgfA/2Ycw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UAr9UHEhlnA4/0msg5CZHT/h+rD0bSkhCBnr8+Wg+eVLH47SBF83K9JG4W6eqzw2U
-         aCGMl22E4bsuwsKNGxBab7alb925zZRkqhLsoUrVF9CKiI9lITL5WjL9Ligccu2vOV
-         TSmfI/scOwIP5f5R69mg5eSQL0iX4bSVBVVti/7A=
+        b=nKRK+DqZuP+QUyrxRbz5ACpcf2kEAMtYMXN7Pj03Ql6kIoo370ndhmE3QrfOZ1pW8
+         +emRuoRJIa8PSkapsjiuGvT0c8se38oyRcF3nkoIAwN7ApLC2t0CbxggEd0f/Zp/Es
+         cIbW9LM7erHTRm8Uh4SlhHOkKVfY+cqqMfuORTBw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Mihai Carabas <mihai.carabas@oracle.com>,
-        Shile Zhang <shile.zhang@linux.alibaba.com>,
-        Wang ShaoBo <bobo.shaobowang@huawei.com>,
-        zhenwei pi <pizhenwei@bytedance.com>,
-        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 035/298] misc/pvpanic: Convert regular spinlock into trylock on panic path
-Date:   Mon, 13 Jun 2022 12:08:49 +0200
-Message-Id: <20220613094925.996414608@linuxfoundation.org>
+        stable@vger.kernel.org, David Safford <david.safford@gmail.com>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        Jarkko Sakkinen <jarkko@kernel.org>
+Subject: [PATCH 5.18 308/339] KEYS: trusted: tpm2: Fix migratable logic
+Date:   Mon, 13 Jun 2022 12:12:13 +0200
+Message-Id: <20220613094936.097972286@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
-References: <20220613094924.913340374@linuxfoundation.org>
+In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
+References: <20220613094926.497929857@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,71 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guilherme G. Piccoli <gpiccoli@igalia.com>
+From: David Safford <david.safford@gmail.com>
 
-[ Upstream commit e918c10265ef2bc82ce8a6fed6d8123d09ec1db3 ]
+commit dda5384313a40ecbaafd8a9a80f47483255e4c4d upstream.
 
-The pvpanic driver relies on panic notifiers to execute a callback
-on panic event. Such function is executed in atomic context - the
-panic function disables local IRQs, preemption and all other CPUs
-that aren't running the panic code.
+When creating (sealing) a new trusted key, migratable
+trusted keys have the FIXED_TPM and FIXED_PARENT attributes
+set, and non-migratable keys don't. This is backwards, and
+also causes creation to fail when creating a migratable key
+under a migratable parent. (The TPM thinks you are trying to
+seal a non-migratable blob under a migratable parent.)
 
-With that said, it's dangerous to use regular spinlocks in such path,
-as introduced by commit b3c0f8774668 ("misc/pvpanic: probe multiple instances").
-This patch fixes that by replacing regular spinlocks with the trylock
-safer approach.
+The following simple patch fixes the logic, and has been
+tested for all four combinations of migratable and non-migratable
+trusted keys and parent storage keys. With this logic, you will
+get a proper failure if you try to create a non-migratable
+trusted key under a migratable parent storage key, and all other
+combinations work correctly.
 
-It also fixes an old comment (about a long gone framebuffer code) and
-the notifier priority - we should execute hypervisor notifiers early,
-deferring this way the panic action to the hypervisor, as expected by
-the users that are setting up pvpanic.
-
-Fixes: b3c0f8774668 ("misc/pvpanic: probe multiple instances")
-Cc: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc: Mihai Carabas <mihai.carabas@oracle.com>
-Cc: Shile Zhang <shile.zhang@linux.alibaba.com>
-Cc: Wang ShaoBo <bobo.shaobowang@huawei.com>
-Cc: zhenwei pi <pizhenwei@bytedance.com>
-Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
-Link: https://lore.kernel.org/r/20220427224924.592546-6-gpiccoli@igalia.com
+Cc: stable@vger.kernel.org # v5.13+
+Fixes: e5fb5d2c5a03 ("security: keys: trusted: Make sealed key properly interoperable")
+Signed-off-by: David Safford <david.safford@gmail.com>
+Reviewed-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/pvpanic/pvpanic.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ security/keys/trusted-keys/trusted_tpm2.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/misc/pvpanic/pvpanic.c b/drivers/misc/pvpanic/pvpanic.c
-index 4b8f1c7d726d..049a12006348 100644
---- a/drivers/misc/pvpanic/pvpanic.c
-+++ b/drivers/misc/pvpanic/pvpanic.c
-@@ -34,7 +34,9 @@ pvpanic_send_event(unsigned int event)
- {
- 	struct pvpanic_instance *pi_cur;
+--- a/security/keys/trusted-keys/trusted_tpm2.c
++++ b/security/keys/trusted-keys/trusted_tpm2.c
+@@ -283,8 +283,8 @@ int tpm2_seal_trusted(struct tpm_chip *c
+ 	/* key properties */
+ 	flags = 0;
+ 	flags |= options->policydigest_len ? 0 : TPM2_OA_USER_WITH_AUTH;
+-	flags |= payload->migratable ? (TPM2_OA_FIXED_TPM |
+-					TPM2_OA_FIXED_PARENT) : 0;
++	flags |= payload->migratable ? 0 : (TPM2_OA_FIXED_TPM |
++					    TPM2_OA_FIXED_PARENT);
+ 	tpm_buf_append_u32(&buf, flags);
  
--	spin_lock(&pvpanic_lock);
-+	if (!spin_trylock(&pvpanic_lock))
-+		return;
-+
- 	list_for_each_entry(pi_cur, &pvpanic_list, list) {
- 		if (event & pi_cur->capability & pi_cur->events)
- 			iowrite8(event, pi_cur->base);
-@@ -55,9 +57,13 @@ pvpanic_panic_notify(struct notifier_block *nb, unsigned long code, void *unused
- 	return NOTIFY_DONE;
- }
- 
-+/*
-+ * Call our notifier very early on panic, deferring the
-+ * action taken to the hypervisor.
-+ */
- static struct notifier_block pvpanic_panic_nb = {
- 	.notifier_call = pvpanic_panic_notify,
--	.priority = 1, /* let this called before broken drm_fb_helper() */
-+	.priority = INT_MAX,
- };
- 
- static void pvpanic_remove(void *param)
--- 
-2.35.1
-
+ 	/* policy */
 
 
