@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 959B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:43:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33383CCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:45:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378891AbiFMNnV (ORCPT
+        id S1378956AbiFMNnh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:43:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36144 "EHLO
+        Mon, 13 Jun 2022 09:43:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379126AbiFMNjx (ORCPT
+        with ESMTP id S1379136AbiFMNjx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 09:39:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F40027A45A;
-        Mon, 13 Jun 2022 04:28:49 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD85A3DA52;
+        Mon, 13 Jun 2022 04:28:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ADE8FB80E93;
-        Mon, 13 Jun 2022 11:28:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D35FC34114;
-        Mon, 13 Jun 2022 11:28:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 58FBD61046;
+        Mon, 13 Jun 2022 11:28:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66DEEC34114;
+        Mon, 13 Jun 2022 11:28:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119727;
-        bh=P50pTOx/TQ2prKLJ2l40bdgNimtq4ha46DOvNvsWprM=;
+        s=korg; t=1655119732;
+        bh=2hyf1cQmfW94cWq/If7w064AVZti1g8GtemsxPSoOSI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hsaYXvOBdTDBY7KhHHtLCVJAGnqtQBN8zQ4QY/sX4/GVtnTIBPxmjaB6h9ik8co5v
-         +/C1FbVNlu7ryeLbOaAv7hpqteqnG0J3K9HERau4x2OgW6E1J0GTTjx/Z0JN1Wn3wQ
-         o9xvy6Krt7pN+sJ2j4Ihvu0602m0VbaC750KNIGo=
+        b=UCpJvRD56ke+Lvt3g7BYtIn00YIRrtbHZG8CMn0AKl9dQ2WceJaO8P5Z4aMNCEyaB
+         Mes6h6vghuwG81OmikHGzt184vIgr+/bHK9yaA/deWYkUmH8l08uUFT+4DIE2I4n8x
+         ZUU54HBHf81S18YXMlK6YDh9LE55Li/d+PSRSxmY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haisu Wang <haisuwang@tencent.com>,
-        samuelliao <samuelliao@tencent.com>,
-        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
+        stable@vger.kernel.org, Li Liang <liali@redhat.com>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 118/339] blk-mq: do not update io_ticks with passthrough requests
-Date:   Mon, 13 Jun 2022 12:09:03 +0200
-Message-Id: <20220613094930.087117371@linuxfoundation.org>
+Subject: [PATCH 5.18 120/339] bonding: show NS IPv6 targets in proc master info
+Date:   Mon, 13 Jun 2022 12:09:05 +0200
+Message-Id: <20220613094930.148189277@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,42 +51,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haisu Wang <haisuwang@tencent.com>
+From: Hangbin Liu <liuhangbin@gmail.com>
 
-[ Upstream commit b81c14ca14b631aa1abae32fb5ae75b5e9251012 ]
+[ Upstream commit 4a1f14df55d1e9ecdfa797a87a80131207cbd66f ]
 
-Flush or passthrough requests are not accounted as normal IO in completion.
-To reflect iostat for slow IO, io_ticks is updated when stat show called
-based on inflight numbers.
-It may cause inconsistent io_ticks calculation result.
+When adding bond new parameter ns_targets. I forgot to print this
+in bond master proc info. After updating, the bond master info will look
+like:
 
-So do not account non-passthrough request when check inflight.
+ARP IP target/s (n.n.n.n form): 192.168.1.254
+NS IPv6 target/s (XX::XX form): 2022::1, 2022::2
 
-Fixes: 86d7331299fd ("block: update io_ticks when io hang")
-Signed-off-by: Haisu Wang <haisuwang@tencent.com>
-Reviewed-by: samuelliao <samuelliao@tencent.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220530064059.1120058-1-haisuwang@tencent.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 4e24be018eb9 ("bonding: add new parameter ns_targets")
+Reported-by: Li Liang <liali@redhat.com>
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+Link: https://lore.kernel.org/r/20220530062639.37179-1-liuhangbin@gmail.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-mq.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/bonding/bond_procfs.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/block/blk-mq.c b/block/blk-mq.c
-index 9d33e0032fee..de7fc6957271 100644
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -133,7 +133,8 @@ static bool blk_mq_check_inflight(struct request *rq, void *priv,
- {
- 	struct mq_inflight *mi = priv;
+diff --git a/drivers/net/bonding/bond_procfs.c b/drivers/net/bonding/bond_procfs.c
+index cfe37be42be4..43be458422b3 100644
+--- a/drivers/net/bonding/bond_procfs.c
++++ b/drivers/net/bonding/bond_procfs.c
+@@ -129,6 +129,21 @@ static void bond_info_show_master(struct seq_file *seq)
+ 			printed = 1;
+ 		}
+ 		seq_printf(seq, "\n");
++
++#if IS_ENABLED(CONFIG_IPV6)
++		printed = 0;
++		seq_printf(seq, "NS IPv6 target/s (xx::xx form):");
++
++		for (i = 0; (i < BOND_MAX_NS_TARGETS); i++) {
++			if (ipv6_addr_any(&bond->params.ns_targets[i]))
++				break;
++			if (printed)
++				seq_printf(seq, ",");
++			seq_printf(seq, " %pI6c", &bond->params.ns_targets[i]);
++			printed = 1;
++		}
++		seq_printf(seq, "\n");
++#endif
+ 	}
  
--	if ((!mi->part->bd_partno || rq->part == mi->part) &&
-+	if (rq->part && blk_do_io_stat(rq) &&
-+	    (!mi->part->bd_partno || rq->part == mi->part) &&
- 	    blk_mq_rq_state(rq) == MQ_RQ_IN_FLIGHT)
- 		mi->inflight[rq_data_dir(rq)]++;
- 
+ 	if (BOND_MODE(bond) == BOND_MODE_8023AD) {
 -- 
 2.35.1
 
