@@ -2,90 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 868F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 22:13:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25F67C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 22:14:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235751AbiFMWNS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 18:13:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50574 "EHLO
+        id S236012AbiFMWOT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 18:14:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235260AbiFMWNQ (ORCPT
+        with ESMTP id S231726AbiFMWOR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 18:13:16 -0400
-Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21B3B2C65F
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 15:13:14 -0700 (PDT)
-Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-fe51318ccfso10330619fac.0
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 15:13:14 -0700 (PDT)
+        Mon, 13 Jun 2022 18:14:17 -0400
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF4623BFC
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 15:14:16 -0700 (PDT)
+Received: by mail-qk1-x72a.google.com with SMTP id p63so5100958qkd.10
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 15:14:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxtx.org; s=google;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Lc4K8RsLGk18u69XSrrdslpuv+fN2QSu71JhQ9oZTW4=;
-        b=JmybJk1YgjlaeU2ap54ZIJrl853//femtoqOLhzR46grQe6ZYs60dVf8s/NmdUVelf
-         n3ytIo2DN/BCgVyUUJpSY4ma9b0RYcmm8VGY29U1Ds3e49Ua/RXiAYCjFMqW1+3ZUSg6
-         9rfzZpQtBpyC6VDaJCDk1XVkudKOLUDiaNrR8=
+        d=marek-ca.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DUiAeAfmEZIvnaedz68FdfSLl3Zzr0m6IgnYQsJx0+M=;
+        b=L+MVtYj3pR9bGDgWW1ZLh6MEJL2EQuCpnYM8vbzG/AZc/TBQPbd5vwrc1jSCxsampk
+         bDLP9XlkJpzVtfLiX6GJwl/7eZ+ooP+cOkck5THn2TZOmDlb0ItuoiArFCtKfuX0xWRi
+         2SZD13n1AUaET9GxI3D6Y8qeqM4CIMesN2KBpO7+Rn5w/sUPtySQ90rNHUuUhu7/fYBX
+         YzMXPg2zpJpcTXdpC8ftkbyUEXsv5PFHCcISDkPc23cPcaBJYbzjZ83/0DXASvENCMHc
+         2S7+RfLPulb9pZJurQTv7Zt70tMZmNeVXMQH1nUcxQrfJYL/z9PQz7mUEgmKPnBPmMoj
+         DnTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=Lc4K8RsLGk18u69XSrrdslpuv+fN2QSu71JhQ9oZTW4=;
-        b=Hf6rmZz6ZAJMMUKmmDXcmSMr5XHBp93zaLTN79ip8tzZnKosM1pyjLhvTNTZvqhg5j
-         QH9gcB6JYOnPSS6d+VI+V00RHUbsd8E72OqeBjtQHNR1X4KXSebzhQNimahDwHnKT1+7
-         h4zxAiR9mD8y6lJo1qX3YVXoo4hMAtt6MmpPgmnqMnl8tUngFlUc8ZMIac6fJhwW2Kyf
-         nI559tvFnxiMrHG23IV5csdkWrO2a+5/lGwpzfRd5JTKkBFOox4a6FccZtfkPvPIs2X6
-         fWvLOyiaog0q0zuQsEEGzPV81K4jDScd1/sQvBTRT3boO2AxZTANc7dHJZp05/PrdreR
-         CNKw==
-X-Gm-Message-State: AJIora+gHRbNnzt4nGtWBC/jTHZWI+IjZKJBeRbA45wn82xh+PY32LDH
-        96pIquwei2fd6iwrVdqcTGTX8g==
-X-Google-Smtp-Source: AGRyM1uh3y5oZl+9eZeXsgSG9KmAC+HxwrO4t4/KqDGhylry+qZYX9Vrsi9olNqpwINlAjzfmppkaw==
-X-Received: by 2002:a05:6870:b48a:b0:101:40eb:63a3 with SMTP id y10-20020a056870b48a00b0010140eb63a3mr537578oap.193.1655158393346;
-        Mon, 13 Jun 2022 15:13:13 -0700 (PDT)
-Received: from fedora64.linuxtx.org (99-47-93-78.lightspeed.rcsntx.sbcglobal.net. [99.47.93.78])
-        by smtp.gmail.com with ESMTPSA id n9-20020a056870558900b000f318ad4957sm4626032oao.11.2022.06.13.15.13.12
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DUiAeAfmEZIvnaedz68FdfSLl3Zzr0m6IgnYQsJx0+M=;
+        b=FuSYZQJS6e97hYc7gx/mAyW7QwuGRd/1F59wdqh7WXR40d3vB0usQ0nRmUC0ZHSh7T
+         fe86AXBmJCB2w2qmqEEJSTIqiwr6y+oNNsFij0tX9Zdmieh4jxc39n/pV2GeNTRAgcgD
+         4fjD+MQYT+Iz7f1f5dRXye2EuIuIV2A7pweXY9zcLcXKyq8Zxge1l1C9LLcYTbUdm9cF
+         0yZqwoWzNdKn8SbNhAHzTpsb3/hxa7elXE4VDn2TSC4jR9i/5BrM+TapGKTGhssOIyFE
+         zyvkyqJ4bLEzVtji9WtDKHLT+WgpR8lQecoh59GLBITN2/9aDoNd+m8lcoHQB1fnR3E1
+         er7g==
+X-Gm-Message-State: AOAM5332oMzSuQO0U35RGE7Byx+8IWDmcGXOpiG9CKS+l/jzpvzqSnPh
+        PGsjELg1orr6ECDC3D+QPWgpMw==
+X-Google-Smtp-Source: ABdhPJz8SZxKA/0hDuOp4+Jhg9OT2Vji6pJSqJnR7maEE5yHqeZHat7TCXVM+y1Uv/5GzBpK9Bpq3w==
+X-Received: by 2002:a05:620a:4252:b0:67e:8977:db80 with SMTP id w18-20020a05620a425200b0067e8977db80mr1813022qko.483.1655158455792;
+        Mon, 13 Jun 2022 15:14:15 -0700 (PDT)
+Received: from localhost.localdomain (modemcable134.222-177-173.mc.videotron.ca. [173.177.222.134])
+        by smtp.gmail.com with ESMTPSA id l11-20020ac84ccb000000b002f92b74ba99sm5700569qtv.13.2022.06.13.15.14.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 15:13:12 -0700 (PDT)
-Sender: Justin Forbes <jmforbes@linuxtx.org>
-Date:   Mon, 13 Jun 2022 17:13:11 -0500
-From:   Justin Forbes <jforbes@fedoraproject.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.17 000/303] 5.17.15-rc2 review
-Message-ID: <Yqe2dz80Juzd4+PU@fedora64.linuxtx.org>
-References: <20220613181529.324450680@linuxfoundation.org>
+        Mon, 13 Jun 2022 15:14:15 -0700 (PDT)
+From:   Jonathan Marek <jonathan@marek.ca>
+To:     freedreno@lists.freedesktop.org
+Cc:     Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jordan Crouse <jordan@cosmicpenguin.net>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-arm-msm@vger.kernel.org (open list:DRM DRIVER FOR MSM ADRENO GPU),
+        dri-devel@lists.freedesktop.org (open list:DRM DRIVER FOR MSM ADRENO
+        GPU), linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v2] drm/msm: use for_each_sgtable_sg to iterate over scatterlist
+Date:   Mon, 13 Jun 2022 18:10:19 -0400
+Message-Id: <20220613221019.11399-1-jonathan@marek.ca>
+X-Mailer: git-send-email 2.26.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220613181529.324450680@linuxfoundation.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 08:18:43PM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.17.15 release.
-> There are 303 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 15 Jun 2022 18:14:43 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.17.15-rc2.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.17.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
+The dma_map_sgtable() call (used to invalidate cache) overwrites sgt->nents
+with 1, so msm_iommu_pagetable_map maps only the first physical segment.
 
-Tested rc2 against the Fedora build system (aarch64, armv7, ppc64le,
-s390x, x86_64), and boot tested x86_64. No regressions noted.
+To fix this problem use for_each_sgtable_sg(), which uses orig_nents.
 
-Tested-by: Justin M. Forbes <jforbes@fedoraproject.org>
+Fixes: b145c6e65eb0 ("drm/msm: Add support to create a local pagetable")
+Signed-off-by: Jonathan Marek <jonathan@marek.ca>
+---
+v2: use for_each_sgtable_sg and update commit message
+
+ drivers/gpu/drm/msm/msm_iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
+index bcaddbba564df..a54ed354578b5 100644
+--- a/drivers/gpu/drm/msm/msm_iommu.c
++++ b/drivers/gpu/drm/msm/msm_iommu.c
+@@ -58,7 +58,7 @@ static int msm_iommu_pagetable_map(struct msm_mmu *mmu, u64 iova,
+ 	u64 addr = iova;
+ 	unsigned int i;
+ 
+-	for_each_sg(sgt->sgl, sg, sgt->nents, i) {
++	for_each_sgtable_sg(sgt, sg, i) {
+ 		size_t size = sg->length;
+ 		phys_addr_t phys = sg_phys(sg);
+ 
+-- 
+2.26.1
+
