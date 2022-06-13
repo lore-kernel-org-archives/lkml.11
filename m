@@ -2,149 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD20BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:42:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E1A9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242537AbiFMRmW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 13:42:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49626 "EHLO
+        id S242589AbiFMRm0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 13:42:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244262AbiFMRjW (ORCPT
+        with ESMTP id S1347514AbiFMRkq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 13:39:22 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 09C5437BC7;
-        Mon, 13 Jun 2022 06:08:47 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DB44DD6E;
-        Mon, 13 Jun 2022 06:08:46 -0700 (PDT)
-Received: from [192.168.99.12] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C294E3F792;
-        Mon, 13 Jun 2022 06:08:45 -0700 (PDT)
-Message-ID: <ae8bdc2c-a444-74c1-70d5-c97d27b22ec5@foss.arm.com>
-Date:   Mon, 13 Jun 2022 14:08:30 +0100
+        Mon, 13 Jun 2022 13:40:46 -0400
+Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E795039B98
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:10:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        from:to:cc:subject:date:message-id:in-reply-to:references
+        :mime-version:content-transfer-encoding; s=k1; bh=stMRjnyMVz9r4c
+        1ylukkPkM32KBZXfFXWJnNgmRy7Go=; b=wS+6TT/lgo8P/OK6rhMeB+eOn/m+3+
+        5M4TqDxf+JTy7c2dBNC7XluToCloHyvYn0vChnVyB9wVzBgLqfEZk+BL4zPwV5zb
+        ra2i876oJH1CKCgfi/bOe5ymPeZyNOwyBDdYiNOw18caO/O/XZULuzg82tUEKQDb
+        AL3D0fdhZdHw8=
+Received: (qmail 1304762 invoked from network); 13 Jun 2022 15:10:52 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 13 Jun 2022 15:10:52 +0200
+X-UD-Smtp-Session: l3s3148p1@o2Z2BFThogZZD+yY
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     linux-renesas-soc@vger.kernel.org
+Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 2/2] arm64: dts: renesas: spider-cpu: Switch from SCIF3 to HSCIF0
+Date:   Mon, 13 Jun 2022 15:10:32 +0200
+Message-Id: <20220613131033.10053-2-wsa+renesas@sang-engineering.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220613131033.10053-1-wsa+renesas@sang-engineering.com>
+References: <20220613131033.10053-1-wsa+renesas@sang-engineering.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 2/3] perf test: Shell - only run .sh shell files to skip
- other files
-Content-Language: en-US
-To:     Leo Yan <leo.yan@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, coresight@lists.linaro.org,
-        suzuki.poulose@arm.com, mathieu.poirier@linaro.org,
-        mike.leach@linaro.org, linux-perf-users@vger.kernel.org,
-        acme@kernel.org
-References: <20220309122859.31487-1-carsten.haitzler@foss.arm.com>
- <20220309122859.31487-2-carsten.haitzler@foss.arm.com>
- <20220410022846.GB14326@leoy-ThinkPad-X240s>
- <9ab780aa-7e78-b0f9-21ed-cf30f41f8fab@foss.arm.com>
- <20220526101423.GB795802@leoy-ThinkPad-X240s>
-From:   Carsten Haitzler <carsten.haitzler@foss.arm.com>
-Organization: Arm Ltd.
-In-Reply-To: <20220526101423.GB795802@leoy-ThinkPad-X240s>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Every loader before Linux utilizes HSCIF0 with a speed of 1843200bps.
+Make Linux behave the same.
 
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+---
+ .../boot/dts/renesas/r8a779f0-spider-cpu.dtsi | 26 +++++++++----------
+ .../boot/dts/renesas/r8a779f0-spider.dts      |  4 +--
+ 2 files changed, 15 insertions(+), 15 deletions(-)
 
-On 5/26/22 11:14, Leo Yan wrote:
-> On Thu, Apr 21, 2022 at 05:21:27PM +0100, Carsten Haitzler wrote:
->> On 4/10/22 03:28, Leo Yan wrote:
->>> On Wed, Mar 09, 2022 at 12:28:58PM +0000, carsten.haitzler@foss.arm.com wrote:
->>>> From: Carsten Haitzler <carsten.haitzler@arm.com>
->>>>
->>>> You edit your scripts in the tests and end up with your usual shell
->>>> backup files with ~ or .bak or something else at the end, but then your
->>>> next perf test run wants to run the backups too. You might also have perf
->>>> .data files in the directory or something else undesireable as well. You end
->>>> up chasing which test is the one you edited and the backup and have to keep
->>>> removing all the backup files, so automatically skip any files that are
->>>> not plain *.sh scripts to limit the time wasted in chasing ghosts.
->>>>
->>>> Signed-off-by: Carsten Haitzler <carsten.haitzler@arm.com>
->>>>
->>>> ---
->>>>    tools/perf/tests/builtin-test.c | 17 +++++++++++++++--
->>>>    1 file changed, 15 insertions(+), 2 deletions(-)
->>>>
->>>> diff --git a/tools/perf/tests/builtin-test.c b/tools/perf/tests/builtin-test.c
->>>> index 3c34cb766724..3a02ba7a7a89 100644
->>>> --- a/tools/perf/tests/builtin-test.c
->>>> +++ b/tools/perf/tests/builtin-test.c
->>>> @@ -296,9 +296,22 @@ static const char *shell_test__description(char *description, size_t size,
->>>>    #define for_each_shell_test(entlist, nr, base, ent)	                \
->>>>    	for (int __i = 0; __i < nr && (ent = entlist[__i]); __i++)	\
->>>> -		if (!is_directory(base, ent) && \
->>>> +		if (ent->d_name[0] != '.' && \
->>>> +			!is_directory(base, ent) && \
->>>>    			is_executable_file(base, ent) && \
->>>> -			ent->d_name[0] != '.')
->>>> +			is_shell_script(ent->d_name))
->>>
->>> Just nitpick: since multiple conditions are added, seems to me it's good
->>> to use a single function is_executable_shell_script() to make decision
->>> if a file is an executable shell script.
->>
->> I'd certainly make a function if this was being re-used, but as the "coding
->> pattern" was to do all the tests already inside the if() in only one place,
->> I kept with the style there and didn't change the code that didn't need
->> changing. I can rewrite this code and basically make a function that is just
->> an if ...:
->>
->> bool is_exe_shell_script(const char *base, struct dirent *ent) {
->>     return ent->d_name[0] != '.'         && !is_directory(base, ent) &&
->>            is_executable_file(base, ent) && is_shell_script(ent->d_name);
->> }
->>
->> And macro becomes:
->>
->> #define for_each_shell_test(entlist, nr, base, ent) \
->>    for (int __i = 0; __i < nr && (ent = entlist[__i]); __i++) \
->>      if (is_shell(base, ent))
-> 
-> Sorry for long latency.
+diff --git a/arch/arm64/boot/dts/renesas/r8a779f0-spider-cpu.dtsi b/arch/arm64/boot/dts/renesas/r8a779f0-spider-cpu.dtsi
+index 41aa8591b3b1..3208d2148768 100644
+--- a/arch/arm64/boot/dts/renesas/r8a779f0-spider-cpu.dtsi
++++ b/arch/arm64/boot/dts/renesas/r8a779f0-spider-cpu.dtsi
+@@ -31,6 +31,14 @@ &extalr_clk {
+ 	clock-frequency = <32768>;
+ };
+ 
++&hscif0 {
++	pinctrl-0 = <&hscif0_pins>;
++	pinctrl-names = "default";
++
++	uart-has-rtscts;
++	status = "okay";
++};
++
+ &i2c4 {
+ 	pinctrl-0 = <&i2c4_pins>;
+ 	pinctrl-names = "default";
+@@ -50,16 +58,16 @@ &pfc {
+ 	pinctrl-0 = <&scif_clk_pins>;
+ 	pinctrl-names = "default";
+ 
++	hscif0_pins: hscif0 {
++		groups = "hscif0_data", "hscif0_ctrl";
++		function = "hscif0";
++	};
++
+ 	i2c4_pins: i2c4 {
+ 		groups = "i2c4";
+ 		function = "i2c4";
+ 	};
+ 
+-	scif3_pins: scif3 {
+-		groups = "scif3_data", "scif3_ctrl";
+-		function = "scif3";
+-	};
+-
+ 	scif_clk_pins: scif_clk {
+ 		groups = "scif_clk";
+ 		function = "scif_clk";
+@@ -71,14 +79,6 @@ &rwdt {
+ 	status = "okay";
+ };
+ 
+-&scif3 {
+-	pinctrl-0 = <&scif3_pins>;
+-	pinctrl-names = "default";
+-
+-	uart-has-rtscts;
+-	status = "okay";
+-};
+-
+ &scif_clk {
+ 	clock-frequency = <24000000>;
+ };
+diff --git a/arch/arm64/boot/dts/renesas/r8a779f0-spider.dts b/arch/arm64/boot/dts/renesas/r8a779f0-spider.dts
+index 2e3b719cc749..954ba227bfa7 100644
+--- a/arch/arm64/boot/dts/renesas/r8a779f0-spider.dts
++++ b/arch/arm64/boot/dts/renesas/r8a779f0-spider.dts
+@@ -14,11 +14,11 @@ / {
+ 	compatible = "renesas,spider-breakout", "renesas,spider-cpu", "renesas,r8a779f0";
+ 
+ 	aliases {
+-		serial0 = &scif3;
++		serial0 = &hscif0;
+ 	};
+ 
+ 	chosen {
+-		stdout-path = "serial0:115200n8";
++		stdout-path = "serial0:1843200n8";
+ 	};
+ };
+ 
+-- 
+2.35.1
 
-No problem.
-
-> If the condition checking gets complex, seems to me it is reasonable to
-> use a static function (or a macro?) to encapsulate the logics.
-
-Well normally my rule i s - if it gets re-used then do it, otherwise it 
-just involves more indirection to follow. :) But regardless of that, 
-given some other things you ask for that kind of makes this discussion 
-moot as it requires much bigger wholesale changes to the test infra 
-which will make these patches a lot more work. I'll get to that later in 
-mails.
-
->> But one catch... it really should be is_non_hidden_exe_shell_script() as
->> it's checking that it's not a hidden file AND is a shell script. Or do I
->> keep the hidden file test outside of the function in the if? If we're nit
->> picking then I need to know exactly what you want here as your suggested
->> name is actually incorrect.
-> 
-> I personally prefer to use the condition:
-> 
->    if (is_exe_shell_script() && ent->d_name[0] != '.')
->        do_something...
-> 
-> The reason is the function is_exe_shell_script() is more common and we
-> use it easily in wider scope.
-
-As above - will probably have to redo a lot of the test infra involving 
-the shell tests to handle some of your other requests, but if we don't 
-go that way, I have got where you want to go and I can do this.
-
->>> And the condition checking 'ent->d_name[0] != '.'' would be redundant
->>> after we have checked the file suffix '.sh'.
->>
->> This isn't actually redundant. You can have .something.sh :) If the idea is
->> we skip anything with a . at the start first always... then the if (to me)
->> is obvious.
-> 
-> Yeah, I agree the checking the start char '.' is the right thing
-> to do.
-
-:)
