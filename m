@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81BA3C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:16:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A63FFCCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:17:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352199AbiFMLQj (ORCPT
+        id S1352688AbiFMLQ7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:16:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37228 "EHLO
+        Mon, 13 Jun 2022 07:16:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351701AbiFMLLa (ORCPT
+        with ESMTP id S1352436AbiFMLNf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:11:30 -0400
+        Mon, 13 Jun 2022 07:13:35 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FEED35251;
-        Mon, 13 Jun 2022 03:35:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91E3A35AA4;
+        Mon, 13 Jun 2022 03:36:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C5FB160FFD;
-        Mon, 13 Jun 2022 10:35:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3829C34114;
-        Mon, 13 Jun 2022 10:35:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D5C8610AB;
+        Mon, 13 Jun 2022 10:36:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DDCDC34114;
+        Mon, 13 Jun 2022 10:36:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116558;
-        bh=++rZdpuPMPNw5IBnkXUbiZGM3LwcwRxx4JYMUTW/nSI=;
+        s=korg; t=1655116574;
+        bh=2ShDRgVQ6THU9Qg1k/cJ+lEf8jfLwnbw+QQ64SgSjEQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Alv2aFQC479t82MHTM2gyR321nqJJXPuukVH7045pmEM7onvH1snjG7DZywb9l+HK
-         xeDXKXrnYBeSJQmX80x/gAIX5n6QpLyHZ8sU89jBnFSLqodC8cY8yxhqL1c+HBBOa/
-         tLCwiqxQW1cEohYIsgfPMCB7ruXVF69l/A1fru1k=
+        b=2cpg14E5LR9TULmjkWUtEaVN0WkiMCOHJR73MUsgeRHAfYlxg5eFP0rk1UZBsE/dN
+         4ecsG96j8OBur85LVOdnFKDFJDPhnAeJ26YX75/cJ2w8SR8IOwzeH4LWK0rz8ROaEQ
+         H4G3PpUyFsgyJbY8JFzya9cPeFQqvAofVXE/CsD4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kiwoong Kim <kwmad.kim@samsung.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org,
+        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
+        Katsuhiro Suzuki <katsuhiro@katsuster.net>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 108/411] scsi: ufs: core: Exclude UECxx from SFR dump list
-Date:   Mon, 13 Jun 2022 12:06:21 +0200
-Message-Id: <20220613094931.914430444@linuxfoundation.org>
+Subject: [PATCH 5.4 111/411] ASoC: rk3328: fix disabling mclk on pclk probe failure
+Date:   Mon, 13 Jun 2022 12:06:24 +0200
+Message-Id: <20220613094932.001428315@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,45 +52,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kiwoong Kim <kwmad.kim@samsung.com>
+From: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
 
-[ Upstream commit ef60031022eb6d972aac86ca26c98c33e1289436 ]
+[ Upstream commit dd508e324cdde1c06ace08a8143fa50333a90703 ]
 
-Some devices may return invalid or zeroed data during an UIC error
-condition. In addition, reading these SFRs will clear them. This means the
-subsequent error handling will not be able to see them and therefore no
-error handling will be scheduled.
+If preparing/enabling the pclk fails, the probe function should
+unprepare and disable the previously prepared and enabled mclk,
+which it doesn't do. This commit rectifies this.
 
-Skip reading these SFRs in ufshcd_dump_regs().
-
-Link: https://lore.kernel.org/r/1648689845-33521-1-git-send-email-kwmad.kim@samsung.com
-Fixes: d67247566450 ("scsi: ufs: Use explicit access size in ufshcd_dump_regs")
-Signed-off-by: Kiwoong Kim <kwmad.kim@samsung.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: c32759035ad2 ("ASoC: rockchip: support ACODEC for rk3328")
+Signed-off-by: Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+Reviewed-by: Katsuhiro Suzuki <katsuhiro@katsuster.net>
+Link: https://lore.kernel.org/r/20220427172310.138638-1-frattaroli.nicolas@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ufs/ufshcd.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ sound/soc/codecs/rk3328_codec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
-index ebf7ae1ef70d..670f4c7934f8 100644
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -118,8 +118,13 @@ int ufshcd_dump_regs(struct ufs_hba *hba, size_t offset, size_t len,
- 	if (!regs)
- 		return -ENOMEM;
+diff --git a/sound/soc/codecs/rk3328_codec.c b/sound/soc/codecs/rk3328_codec.c
+index 514ebe16bbfa..4e71ecf54af7 100644
+--- a/sound/soc/codecs/rk3328_codec.c
++++ b/sound/soc/codecs/rk3328_codec.c
+@@ -479,7 +479,7 @@ static int rk3328_platform_probe(struct platform_device *pdev)
+ 	ret = clk_prepare_enable(rk3328->pclk);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev, "failed to enable acodec pclk\n");
+-		return ret;
++		goto err_unprepare_mclk;
+ 	}
  
--	for (pos = 0; pos < len; pos += 4)
-+	for (pos = 0; pos < len; pos += 4) {
-+		if (offset == 0 &&
-+		    pos >= REG_UIC_ERROR_CODE_PHY_ADAPTER_LAYER &&
-+		    pos <= REG_UIC_ERROR_CODE_DME)
-+			continue;
- 		regs[pos / 4] = ufshcd_readl(hba, offset + pos);
-+	}
- 
- 	ufshcd_hex_dump(prefix, regs, len);
- 	kfree(regs);
+ 	base = devm_platform_ioremap_resource(pdev, 0);
 -- 
 2.35.1
 
