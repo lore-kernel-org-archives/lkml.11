@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84FCBC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3DB3CCA483
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:24:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353606AbiFMLYG (ORCPT
+        id S1353689AbiFMLYN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:24:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47378 "EHLO
+        Mon, 13 Jun 2022 07:24:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353697AbiFMLQN (ORCPT
+        with ESMTP id S1353721AbiFMLQP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:16:13 -0400
+        Mon, 13 Jun 2022 07:16:15 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2617413DE9;
-        Mon, 13 Jun 2022 03:39:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F13AB13E1A;
+        Mon, 13 Jun 2022 03:39:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DAB7CB80EA3;
-        Mon, 13 Jun 2022 10:39:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22BB4C34114;
-        Mon, 13 Jun 2022 10:39:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB194B80EA8;
+        Mon, 13 Jun 2022 10:39:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27F00C34114;
+        Mon, 13 Jun 2022 10:39:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116749;
-        bh=V1Dg1QvuN4a+DXj/op+47vPAE/xZkXQqXkt/D4aQOSA=;
+        s=korg; t=1655116774;
+        bh=EumGoZnvVUxZgmkrlrTsB9+SO65+xnXWFbs49uZFuTA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dj2dRBYmjn/td0W3tdVClDgB9R+UFOVwaiNvTqAMBWo0RqZQN2UnWlv3obfJXccBf
-         gmEmOgUWGGAG381EmVSCL2tDYQQAhyKu70cFqtMt2fjjP7sgqMSEfBrrXBBviErbgJ
-         A5iRU54iTYh1DOyVk4/lHS3IKr6PwiRyqOy1SxRI=
+        b=ikrYPmXg0KUAf2Lty+hkMLudRG67XuoWPN2a3NcN83N/bGjuhhMdE/H2ErYazKFEA
+         hUezv3kWWjSwc2fNa9+MqaOEbQ6DimjgT/J0dPiBORO4/JLi/ojf4x1Zx4Qv9S6bEG
+         BcRFA0MGqIhDJK1mvw9DTVPtnCXYz+l8HgtVKJGE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        stable@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 160/411] PCI: cadence: Fix find_first_zero_bit() limit
-Date:   Mon, 13 Jun 2022 12:07:13 +0200
-Message-Id: <20220613094933.459541573@linuxfoundation.org>
+Subject: [PATCH 5.4 169/411] crypto: marvell/cesa - ECB does not IV
+Date:   Mon, 13 Jun 2022 12:07:22 +0200
+Message-Id: <20220613094933.727962967@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,35 +50,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Corentin Labbe <clabbe@baylibre.com>
 
-[ Upstream commit 0aa3a0937feeb91a0e4e438c3c063b749b194192 ]
+[ Upstream commit 4ffa1763622ae5752961499588f3f8874315f974 ]
 
-The ep->ob_region_map bitmap is a long and it has BITS_PER_LONG bits.
+The DES3 ECB has an IV size set but ECB does not need one.
 
-Link: https://lore.kernel.org/r/20220315065829.GA13572@kili
-Fixes: 37dddf14f1ae ("PCI: cadence: Add EndPoint Controller driver for Cadence PCIe controller")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Fixes: 4ada483978237 ("crypto: marvell/cesa - add Triple-DES support")
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pcie-cadence-ep.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/crypto/marvell/cipher.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/pci/controller/pcie-cadence-ep.c b/drivers/pci/controller/pcie-cadence-ep.c
-index def7820cb824..5e23d575e200 100644
---- a/drivers/pci/controller/pcie-cadence-ep.c
-+++ b/drivers/pci/controller/pcie-cadence-ep.c
-@@ -178,8 +178,7 @@ static int cdns_pcie_ep_map_addr(struct pci_epc *epc, u8 fn, phys_addr_t addr,
- 	struct cdns_pcie *pcie = &ep->pcie;
- 	u32 r;
- 
--	r = find_first_zero_bit(&ep->ob_region_map,
--				sizeof(ep->ob_region_map) * BITS_PER_LONG);
-+	r = find_first_zero_bit(&ep->ob_region_map, BITS_PER_LONG);
- 	if (r >= ep->max_regions - 1) {
- 		dev_err(&epc->dev, "no free outbound region\n");
- 		return -EINVAL;
+diff --git a/drivers/crypto/marvell/cipher.c b/drivers/crypto/marvell/cipher.c
+index 84ceddfee76b..708dc63b2f09 100644
+--- a/drivers/crypto/marvell/cipher.c
++++ b/drivers/crypto/marvell/cipher.c
+@@ -610,7 +610,6 @@ struct skcipher_alg mv_cesa_ecb_des3_ede_alg = {
+ 	.decrypt = mv_cesa_ecb_des3_ede_decrypt,
+ 	.min_keysize = DES3_EDE_KEY_SIZE,
+ 	.max_keysize = DES3_EDE_KEY_SIZE,
+-	.ivsize = DES3_EDE_BLOCK_SIZE,
+ 	.base = {
+ 		.cra_name = "ecb(des3_ede)",
+ 		.cra_driver_name = "mv-ecb-des3-ede",
 -- 
 2.35.1
 
