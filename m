@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CBDBC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:37:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE983C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:37:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354887AbiFMLhp (ORCPT
+        id S1354926AbiFMLht (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:37:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56696 "EHLO
+        Mon, 13 Jun 2022 07:37:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354904AbiFMLaR (ORCPT
+        with ESMTP id S1354920AbiFMLaS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:30:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6167403C9;
-        Mon, 13 Jun 2022 03:46:00 -0700 (PDT)
+        Mon, 13 Jun 2022 07:30:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 244ED403D9;
+        Mon, 13 Jun 2022 03:46:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 758396125A;
-        Mon, 13 Jun 2022 10:46:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74E73C36AFE;
-        Mon, 13 Jun 2022 10:45:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DD4EEB80D41;
+        Mon, 13 Jun 2022 10:46:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D377C3411C;
+        Mon, 13 Jun 2022 10:46:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117159;
-        bh=hjl61t7EgsWIOT99ZOn/GGNLbHz51dbwZfiOjuqeF+Q=;
+        s=korg; t=1655117162;
+        bh=feGV6UqE0Uz4bq22NKfBxFKgpShCtuwbopW1MYiZROI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VkqvoPlZWXJkbuD7cjGp3h7tCp/4gmw+NjkD9B6idDCBPJi/JfY8aZ+nR3ctBJi1P
-         5phb8cTpyNXPNDl+693o0g6e/Hh5LfReF8N4q8onbWe+uIv+Glaf/bRNXXN+GY8emu
-         rf2WxbmErgPtwV/Kq+d9DW5MIrN8HWlPBjmuRIKM=
+        b=V78pbB+1k6iAjcQL+CjmjG7fWXcOVigufB8tCi0kXMcZ0x05Fv6j37AwJx9/7HKYA
+         l4qjz2tDYFaxaE0YY9mke+1PtU+olBlIWTlHHyCG5lWZsIvNNzylcjPstt9O4Ng4ai
+         fUr4Qxgn3+v98VmPTZOaExt4x/ReSdJ3SNWEDXf4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>,
+        stable@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>,
         =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 307/411] serial: 8250_fintek: Check SER_RS485_RTS_* only with RS485
-Date:   Mon, 13 Jun 2022 12:09:40 +0200
-Message-Id: <20220613094937.956869232@linuxfoundation.org>
+Subject: [PATCH 5.4 308/411] serial: digicolor-usart: Dont allow CS5-6
+Date:   Mon, 13 Jun 2022 12:09:41 +0200
+Message-Id: <20220613094937.986016491@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -53,54 +52,39 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-[ Upstream commit af0179270977508df6986b51242825d7edd59caf ]
+[ Upstream commit fd63031b8c0763addcecdefe0e0c59d49646204e ]
 
-SER_RS485_RTS_ON_SEND and SER_RS485_RTS_AFTER_SEND relate to behavior
-within RS485 operation. The driver checks if they have the same value
-which is not possible to realize with the hardware. The check is taken
-regardless of SER_RS485_ENABLED flag and -EINVAL is returned when the
-check fails, which creates problems.
+Only CS7 and CS8 seem supported but CSIZE is not sanitized to CS8 in
+the default: block.
 
-This check makes it unnecessarily complicated to turn RS485 mode off as
-simple zeroed serial_rs485 struct will trigger that equal values check.
-In addition, the driver itself memsets its rs485 structure to zero when
-RS485 is disabled but if userspace would try to make an TIOCSRS485
-ioctl() call with the very same struct, it would end up failing with
--EINVAL which doesn't make much sense.
+Set CSIZE correctly so that userspace knows the effective value.
+Incorrect CSIZE also results in miscalculation of the frame bits in
+tty_get_char_size() or in its predecessor where the roughly the same
+code is directly within uart_update_timeout().
 
-Resolve the problem by moving the check inside SER_RS485_ENABLED block.
-
-Fixes: 7ecc77011c6f ("serial: 8250_fintek: Return -EINVAL on invalid configuration")
-Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Fixes: 5930cb3511df (serial: driver for Conexant Digicolor USART)
+Acked-by: Baruch Siach <baruch@tkos.co.il>
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/035c738-8ea5-8b17-b1d7-84a7b3aeaa51@linux.intel.com
+Link: https://lore.kernel.org/r/20220519081808.3776-3-ilpo.jarvinen@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_fintek.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/tty/serial/digicolor-usart.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
-index e24161004ddc..9b1cddbfc75c 100644
---- a/drivers/tty/serial/8250/8250_fintek.c
-+++ b/drivers/tty/serial/8250/8250_fintek.c
-@@ -197,12 +197,12 @@ static int fintek_8250_rs485_config(struct uart_port *port,
- 	if (!pdata)
- 		return -EINVAL;
+diff --git a/drivers/tty/serial/digicolor-usart.c b/drivers/tty/serial/digicolor-usart.c
+index 4446c13629b1..e06967ca62fa 100644
+--- a/drivers/tty/serial/digicolor-usart.c
++++ b/drivers/tty/serial/digicolor-usart.c
+@@ -309,6 +309,8 @@ static void digicolor_uart_set_termios(struct uart_port *port,
+ 	case CS8:
+ 	default:
+ 		config |= UA_CONFIG_CHAR_LEN;
++		termios->c_cflag &= ~CSIZE;
++		termios->c_cflag |= CS8;
+ 		break;
+ 	}
  
--	/* Hardware do not support same RTS level on send and receive */
--	if (!(rs485->flags & SER_RS485_RTS_ON_SEND) ==
--			!(rs485->flags & SER_RS485_RTS_AFTER_SEND))
--		return -EINVAL;
- 
- 	if (rs485->flags & SER_RS485_ENABLED) {
-+		/* Hardware do not support same RTS level on send and receive */
-+		if (!(rs485->flags & SER_RS485_RTS_ON_SEND) ==
-+		    !(rs485->flags & SER_RS485_RTS_AFTER_SEND))
-+			return -EINVAL;
- 		memset(rs485->padding, 0, sizeof(rs485->padding));
- 		config |= RS485_URA;
- 	} else {
 -- 
 2.35.1
 
