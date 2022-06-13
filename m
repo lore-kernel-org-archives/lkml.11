@@ -2,240 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DD0BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:46:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C887C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:46:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241858AbiFMOqM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:46:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59008 "EHLO
+        id S1386588AbiFMOq0 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 10:46:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385787AbiFMOnu (ORCPT
+        with ESMTP id S1385923AbiFMOoN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:43:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9E43B2EB9;
-        Mon, 13 Jun 2022 04:50:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EE5C6149D;
-        Mon, 13 Jun 2022 11:50:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8EBAC34114;
-        Mon, 13 Jun 2022 11:50:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655121042;
-        bh=wZu47sFcC5jdshOGv1kURpbz0zahA5vFVM3Yk9qTv2c=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BmNV/JF7c9zghipra9TmHgwVml99/0xWvwlVFQD2BFMjA2wxdaUPB4oFpm034XDHE
-         LKY3qRfs2Q2aMB6zEMuPwft+Up83cpf3b0qu7hvTbtra8bPF1wgqoMzxIGPCuBigNJ
-         1k78A5EkBTbJfJ6cg3oi25QAaKN7qQIgEG2PdnD4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe de Dinechin <dinechin@redhat.com>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Kees Cook <keescook@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 251/298] nodemask: Fix return values to be unsigned
-Date:   Mon, 13 Jun 2022 12:12:25 +0200
-Message-Id: <20220613094932.695226623@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
-References: <20220613094924.913340374@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        Mon, 13 Jun 2022 10:44:13 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2049.outbound.protection.outlook.com [40.107.223.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D76B2EA1;
+        Mon, 13 Jun 2022 04:50:55 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WNpyXwXhGGrBIaNRpxb0o7f7PJIILiXXDyQyvQkw8G829OorY7DNj+M/VDV/utddoivc5sJLxs/D5zmkuz5x9///KlVhxvot7vqMwAofpKk2AMROXyJHP5hkGanJ8/o1keiZqdm9sDmSC/2i0RP5u88vUy2P8fOxayvIuXdz6EXxpPFSxNrz7Xcvinbxg51IC+P9f08ZbKxc34Wn2oq/zSGnXPcw0HnE7R30CPDJ7WgNbNc+jitY+PYWOw48XWYLMYokgab8MvfZLY6S/51eff47kFmhFYvf3t9siZ1ns0C584XPbaosnOgr7eOeo8QQDVRd3OElrsR6wFD0+DHIwA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zIz7+06G+8Too1uS7gtSGTR2zn2LrH7bHEs7qr5PVOk=;
+ b=CHzfuGuf3zA48rRok3n8tX7ONnxn6C9eoXTL6BGFDpYbH5sWqklsXUuOkKPHXpqK/JgJ4PqrsderBSmXSf2wfuobNLXg4GLDZSXtGLo6nWQ5EZpmLPsGniOhCVPyz9Ie6F+Rm4bZgLbQ760h+TXJjCrImEILUQYC3IsvM0oPB9Gclwq50hxIu//c+dUXY+zqAbNUNbU7YCdQ7d6cthTowTUyi9yjJuXxyFJLp1505+tWRCyRqTWR9ZfciXHWwe6YBgQQcRWEulebVBxD41mhRgjjEMEKmhMp3pZj/zSsyszv4SLe5mDXJ+PxP76t3ZZRMPo/A7K4ForPzDlh0PthFg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zIz7+06G+8Too1uS7gtSGTR2zn2LrH7bHEs7qr5PVOk=;
+ b=Am/mT1NSiYAQwxPnX3vFQbUsZqqObWDUKiitktOWaQfSfXf11IuMlb/Y0shGiG3XSZ7q3gALyHtzir5WD/5ymWXuw6kSdQuI8U4+ZK/7CEY+FjGe1zEblz+spz4VJJGtqEEXyOFB4KBUkfPDPwWdNbVW9z+Hbw+kduQS/0D/qeo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com (2603:10b6:408:43::13)
+ by MW2PR12MB2347.namprd12.prod.outlook.com (2603:10b6:907:7::30) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.16; Mon, 13 Jun
+ 2022 11:50:37 +0000
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::e0fd:45cf:c701:2731]) by BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::e0fd:45cf:c701:2731%6]) with mapi id 15.20.5332.019; Mon, 13 Jun 2022
+ 11:50:37 +0000
+Message-ID: <b8b9aba5-575e-8a34-e627-79bef4ed7f97@amd.com>
+Date:   Mon, 13 Jun 2022 13:50:28 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 03/13] mm: shmem: provide oom badness for shmem files
+Content-Language: en-US
+To:     Michal Hocko <mhocko@suse.com>,
+        =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        intel-gfx@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
+        nouveau@lists.freedesktop.org, linux-tegra@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        alexander.deucher@amd.com, daniel@ffwll.ch,
+        viro@zeniv.linux.org.uk, akpm@linux-foundation.org,
+        hughd@google.com, andrey.grodzovsky@amd.com
+References: <YqHuH5brYFQUfW8l@dhcp22.suse.cz>
+ <26d3e1c7-d73c-cc95-54ef-58b2c9055f0c@gmail.com>
+ <YqIB0bavUeU8Abwl@dhcp22.suse.cz>
+ <d4a19481-7a9f-19bf-c270-d89baa0970fc@amd.com>
+ <YqIMmK18mb/+s5de@dhcp22.suse.cz>
+ <3f7d3d96-0858-fb6d-07a3-4c18964f888e@gmail.com>
+ <YqMuq/ZrV8loC3jE@dhcp22.suse.cz>
+ <2e7e050e-04eb-0c0a-0675-d7f1c3ae7aed@amd.com>
+ <YqNSSFQELx/LeEHR@dhcp22.suse.cz>
+ <288528c3-411e-fb25-2f08-92d4bb9f1f13@gmail.com>
+ <Yqbq/Q5jz2ou87Jx@dhcp22.suse.cz>
+From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+In-Reply-To: <Yqbq/Q5jz2ou87Jx@dhcp22.suse.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: AS8P250CA0016.EURP250.PROD.OUTLOOK.COM
+ (2603:10a6:20b:330::21) To BN8PR12MB3587.namprd12.prod.outlook.com
+ (2603:10b6:408:43::13)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3a6ea1b8-4ba2-40d8-1f86-08da4d32ee86
+X-MS-TrafficTypeDiagnostic: MW2PR12MB2347:EE_
+X-Microsoft-Antispam-PRVS: <MW2PR12MB2347E91FD8857E13DA8E452583AB9@MW2PR12MB2347.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: dMpvz95+kZGCgEvFGwsy19S/+NL7tLzp0SSDHEoGe7OwM7/cJw6CsAluBVjtOBKPQV6mhzYuzWTV9ehO84ij+4yajzpbZ/RoYZyD2wagks/B86X4SP/Q/9d9Pay4NOuuibJVA9AHcvbcTssxXpXytoiwf/x01Pyd8/7XcgmN2iKs8MbaVo0/EtlivQZDUcTlRfG7Eqi5IR1SP/YBJs924E5HC9xAZOs/21mW5u+LPCnR7I6shsxhyWpsBu0P8fti9X9kJ7xMUfTFIQYYY6sIbusQy7XVtl2AEamcsqdXCaJes7Gj6vm21BXKOOcUc93Zg7KJqUo6nifURlwRgNxLubb8Z3SA0nTjJP3rVZqqZJ13g68biia6aAaHUbaVO6jM+zROxRk6cR3oueOMiFPo9zOqcJir2rWxoTJN5xC+xbPrNBq5OyN2/0uAcmqObdO8AKu5RrL95xEoirnWCzsoQ5N/7RnBsqJPvDbvS2QR1R+S0B1DEfHiLQzdZhZJgsz5DEmU12CBIg9wEGMHgHIYnUCNbBYMsllCpolH1moM0is8k56j0klN3zJQXEXvqvog1+JSdCIRSmrVMFDH1AVHHYNU3ww8uNvI/Lgc8DKlIT71C/1/82eTw+A90q/E8dm/VdH6ryiAmAWIZGwQGwGYU+JXct3LoX2ntuMLGoKfgHyeTDPCKqLP38bf+P2FaiHFWSTnGmMPz26tbiyDeaHt9tGxeOaXPZhqqAZC08GOnfPw6rV4YD0WhB4qEIv2oPQH
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3587.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(4326008)(8676002)(31686004)(86362001)(36756003)(5660300002)(7416002)(110136005)(8936002)(66476007)(66556008)(66946007)(6486002)(316002)(2906002)(186003)(26005)(2616005)(508600001)(6666004)(6506007)(31696002)(6512007)(83380400001)(38100700002)(66574015)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?eTFIZEdOcFNxUUQvT0REcjFQaTZjcVdWUldqTisyYzNQYWlYMWsxbTFqMGw4?=
+ =?utf-8?B?Smg2WHRNQzJDQ3NQMjhwVk9NanV3N0FTNVQvejhDS01zZ3MySVZhSkJHUHYx?=
+ =?utf-8?B?K0NqamR2MXZxblM3TzVQMms3WWpNdG9xK055ck1YQkFqY2JlNElQazNBK1hT?=
+ =?utf-8?B?NjlkVzNLY2xQSWhicHZqY21FWmpZdUlkcWhBcHA4OE9NQ043bmR5cU93OHN4?=
+ =?utf-8?B?QlZldW9BcnorNFhlUWdkcGY4WktMMFNtTUxvTDVsWlhMWDljcDg1UHpQMk1M?=
+ =?utf-8?B?d0pIaDc1YndPbVlMalRzaEFzb1BCSnZZZXlnYjVoZ3orMFphcFN1eHlRUjVF?=
+ =?utf-8?B?N3JEUzR0aWYzUGw1KzlLUGhLUFhoNHhVMXNKcEFjc2hIL3BDVGgzQ3lqRlQx?=
+ =?utf-8?B?dnNpbjNwbGk3alJQcUlVUVYzbWFselpqNlZaSVZIMlhhTXEwd0FsdFFOL1Nx?=
+ =?utf-8?B?TWR2ajVnSGRVRUdBb24rN1dVWVRBNDBhN3E4WW1yYXZ6dEM0TjdjejVxUVRD?=
+ =?utf-8?B?MGU1QklCdSszUW9PaE5XWFhlVW5oZUJmZTdzZWRJOHdJQjcxZWZjVUpEd3FZ?=
+ =?utf-8?B?cjlUd3lxeGlTNWNuczRsZjB5N2lOaDdQWlI5RkMvNEM3WnhDQ1hXZ3BoQ2xi?=
+ =?utf-8?B?WDFmRXY3c3RCRkxBaXhOeFpIVkVTYVQvdkdjMzYvZitEVERWUXd4SGRmZ3ZZ?=
+ =?utf-8?B?YmYwc0Z3ZTRHWDBIRnIraEd3d1JqelVadkRsRXRxRlMvT2R2VWU1eVJzd2Vn?=
+ =?utf-8?B?Y2drbTBZT0VFZ0g5VlFQbEFmVjFKbDQ5bUswSG9HVVRtYWxHY1BVTCtPU1RK?=
+ =?utf-8?B?NCtRQlc5YzFwYzVyRzJ4SzYvd0grRW14MGpMc2Y2TTBWVE9RM3NsOVBaeGly?=
+ =?utf-8?B?enFTd2hMVmIwZmJ4NUUzL0prQ3gvdTd3MVdVUGtQTmNHZWlaZkNUcTIyOTA1?=
+ =?utf-8?B?dUQyVE02c2Z4cm1JeW1ZZlFUYkZNQzlKWXJFd1Iyb3l4SVYyd1pvd3plSVIy?=
+ =?utf-8?B?QUNLekRWV293MEpPTnovbG9PZmFPMEhSUG45ZTd2a1NnN2VJYlBrQ0JxOUt3?=
+ =?utf-8?B?b2hmU09IeG9TVURjbzVJQTVOU1k1NXhBbVYzRm5YakdkeVZFYlJoajc1TkVz?=
+ =?utf-8?B?bGxkR1cvYTZJZnpIY3dERGdSR1hJUXZoeGthc2ZaVUlvbnpSUjlMNm45M0Fr?=
+ =?utf-8?B?VUtvM1N4aTdEKzNoaHlaY0xHUGkyUnRFVUV6UGpMdm55TFdDM0NxenRqOWYv?=
+ =?utf-8?B?QWxTNTdtWU90R0NIWDdwazBPRWVIS1QvRGFhZlJlVGN3MnpiY3ljV1U1blZY?=
+ =?utf-8?B?L2dXMmdaS2hreVBhWXhTY3JnRjZ0STNkTms3a1pHWEpISWtEUUljM0VMWkVN?=
+ =?utf-8?B?cnFSU1dVSDhNcG1ZS2JNSHRucGFnWTBrYnovVDJtZ0pHY0g2NjhYVWNrR2hS?=
+ =?utf-8?B?dWc1eDZHY3F0ckNaeFFwMVdHRVcvTmNIblFMaTRIaGgrSTVVNCtpRjRONW1t?=
+ =?utf-8?B?Lyt5YXY3MVRQcHBzUWh3WDhCWTN6NXl5bm8zdFc0Q3NEYXp5amxHYkpwZVlQ?=
+ =?utf-8?B?RTZLN2pDYUd1UDZwTTBHUW0wbkxQUkpwYXVCa0lCelFLWDhEcHRaQ09lejFr?=
+ =?utf-8?B?SkFkaU0wYUNSdkdqNTVjVi9lQlJLL0x0MkQ5SG93VnRqenI5ejBnVWVHODBB?=
+ =?utf-8?B?VWkrZEVpWUZaSCtOSkFBZXdWMDVQSmZWMmR2Uy9TQVBvU3RXY1NMd2hWTS9o?=
+ =?utf-8?B?eThpYWlEejRqQjBVMFllSHB2UDd1b204Tm82RWJLQW42bHh6ejI3dUhMZWxj?=
+ =?utf-8?B?ZGZCV2gvZFFHRlE1dGh2VW12UlpiWGRqUHRrbVhnUXluV3pSbXpOemU2NWxY?=
+ =?utf-8?B?QlRpVFVwcWFxTDgzWlFtMk00akZnL1RaRDVmR3BVTHpwYlhzYWJxY0RrWWc2?=
+ =?utf-8?B?YzdCTUM0UzRWTFVOQlI3aFVYS1VDMkdJR2x2ZVFMcWMwejBrZjhZT0ZkRnFq?=
+ =?utf-8?B?UTRkR3JDK2N4cWNRdFlsUTBpQjNDbUJQZmxqSWlQVCtvdm5tRnphU2VobFQ2?=
+ =?utf-8?B?dTFrL2xBRHRYR3FwcUgwYlV3ZlJZZUpCSEQ5OTZKRzdGQ2pmT0JKZGI1Y1Ay?=
+ =?utf-8?B?d2NlTUwyRVJiYUd2bVJhbEdQenlKdFRZemgwTU9VaWFqMmZGRHNCODFyWmxL?=
+ =?utf-8?B?OXBmUUFtZGFZaHM1ZUZLSnNXdjdYT1krSEZ0bGlNUGVaZElCam56MzdDNWZh?=
+ =?utf-8?B?K1ErdjZaS29sdjZZc1RKOHpZMEZqTERJeDFmTXlmM2RwaWZCNHZQS216Vm5r?=
+ =?utf-8?B?dTVRNTNqbDhjWnBXMHg2d0NlMENVMkovWENvbDZ4NFVUeklNL2s1QT09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3a6ea1b8-4ba2-40d8-1f86-08da4d32ee86
+X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3587.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jun 2022 11:50:37.4473
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: WE/TMEX/aN6YSmK1QXWb93UJZ327wus5/rdTndnfOgqg6Yj8DX4ymzLrKDVocXqa
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR12MB2347
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+Am 13.06.22 um 09:45 schrieb Michal Hocko:
+> On Sat 11-06-22 10:06:18, Christian König wrote:
+>> Am 10.06.22 um 16:16 schrieb Michal Hocko:
+> [...]
+>> I could of course add something to struct page to track which memcg (or
+>> process) it was charged against, but extending struct page is most likely a
+>> no-go.
+> Struct page already maintains is memcg. The one which has charged it and
+> it will stay constatnt throughout of the allocation lifetime (cgroup v1
+> has a concept of the charge migration but this hasn't been adopted in
+> v2).
+>
+> We have a concept of active_memcg which allows to charge against a
+> different memcg than the allocating context. From your example above I
+> do not think this is really usable for the described usecase as the X is
+> not aware where the request comes from?
 
-[ Upstream commit 0dfe54071d7c828a02917b595456bfde1afdddc9 ]
+Well X/Wayland is aware, but not the underlying kernel drivers.
 
-The nodemask routines had mixed return values that provided potentially
-signed return values that could never happen. This was leading to the
-compiler getting confusing about the range of possible return values
-(it was thinking things could be negative where they could not be). Fix
-all the nodemask routines that should be returning unsigned
-(or bool) values. Silences:
+When X/Wayland would want to forward this information to the kernel we 
+would need to extend the existing UAPI quite a bit. And that of course 
+doesn't help us at all with existing desktops.
 
- mm/swapfile.c: In function ‘setup_swap_info’:
- mm/swapfile.c:2291:47: error: array subscript -1 is below array bounds of ‘struct plist_node[]’ [-Werror=array-bounds]
-  2291 |                                 p->avail_lists[i].prio = 1;
-       |                                 ~~~~~~~~~~~~~~^~~
- In file included from mm/swapfile.c:16:
- ./include/linux/swap.h:292:27: note: while referencing ‘avail_lists’
-   292 |         struct plist_node avail_lists[]; /*
-       |                           ^~~~~~~~~~~
+>> Alternative I could try to track the "owner" of a buffer (e.g. a shmem
+>> file), but then it can happen that one processes creates the object and
+>> another one is writing to it and actually allocating the memory.
+> If you can enforce that the owner is really responsible for the
+> allocation then all should be fine. That would require MAP_POPULATE like
+> semantic and I suspect this is not really feasible with the existing
+> userspace. It would be certainly hard to enforce for bad players.
 
-Reported-by: Christophe de Dinechin <dinechin@redhat.com>
-Link: https://lore.kernel.org/lkml/20220414150855.2407137-3-dinechin@redhat.com/
-Cc: Alexey Dobriyan <adobriyan@gmail.com>
-Cc: Yury Norov <yury.norov@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Zhen Lei <thunder.leizhen@huawei.com>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- include/linux/nodemask.h | 38 +++++++++++++++++++-------------------
- lib/nodemask.c           |  4 ++--
- 2 files changed, 21 insertions(+), 21 deletions(-)
+I've tried this today and the result was: "BUG: Bad rss-counter state 
+mm:000000008751d9ff type:MM_FILEPAGES val:-571286".
 
-diff --git a/include/linux/nodemask.h b/include/linux/nodemask.h
-index c6199dbe2591..0f233b76c9ce 100644
---- a/include/linux/nodemask.h
-+++ b/include/linux/nodemask.h
-@@ -42,11 +42,11 @@
-  * void nodes_shift_right(dst, src, n)	Shift right
-  * void nodes_shift_left(dst, src, n)	Shift left
-  *
-- * int first_node(mask)			Number lowest set bit, or MAX_NUMNODES
-- * int next_node(node, mask)		Next node past 'node', or MAX_NUMNODES
-- * int next_node_in(node, mask)		Next node past 'node', or wrap to first,
-+ * unsigned int first_node(mask)	Number lowest set bit, or MAX_NUMNODES
-+ * unsigend int next_node(node, mask)	Next node past 'node', or MAX_NUMNODES
-+ * unsigned int next_node_in(node, mask) Next node past 'node', or wrap to first,
-  *					or MAX_NUMNODES
-- * int first_unset_node(mask)		First node not set in mask, or 
-+ * unsigned int first_unset_node(mask)	First node not set in mask, or
-  *					MAX_NUMNODES
-  *
-  * nodemask_t nodemask_of_node(node)	Return nodemask with bit 'node' set
-@@ -153,7 +153,7 @@ static inline void __nodes_clear(nodemask_t *dstp, unsigned int nbits)
- 
- #define node_test_and_set(node, nodemask) \
- 			__node_test_and_set((node), &(nodemask))
--static inline int __node_test_and_set(int node, nodemask_t *addr)
-+static inline bool __node_test_and_set(int node, nodemask_t *addr)
- {
- 	return test_and_set_bit(node, addr->bits);
- }
-@@ -200,7 +200,7 @@ static inline void __nodes_complement(nodemask_t *dstp,
- 
- #define nodes_equal(src1, src2) \
- 			__nodes_equal(&(src1), &(src2), MAX_NUMNODES)
--static inline int __nodes_equal(const nodemask_t *src1p,
-+static inline bool __nodes_equal(const nodemask_t *src1p,
- 					const nodemask_t *src2p, unsigned int nbits)
- {
- 	return bitmap_equal(src1p->bits, src2p->bits, nbits);
-@@ -208,7 +208,7 @@ static inline int __nodes_equal(const nodemask_t *src1p,
- 
- #define nodes_intersects(src1, src2) \
- 			__nodes_intersects(&(src1), &(src2), MAX_NUMNODES)
--static inline int __nodes_intersects(const nodemask_t *src1p,
-+static inline bool __nodes_intersects(const nodemask_t *src1p,
- 					const nodemask_t *src2p, unsigned int nbits)
- {
- 	return bitmap_intersects(src1p->bits, src2p->bits, nbits);
-@@ -216,20 +216,20 @@ static inline int __nodes_intersects(const nodemask_t *src1p,
- 
- #define nodes_subset(src1, src2) \
- 			__nodes_subset(&(src1), &(src2), MAX_NUMNODES)
--static inline int __nodes_subset(const nodemask_t *src1p,
-+static inline bool __nodes_subset(const nodemask_t *src1p,
- 					const nodemask_t *src2p, unsigned int nbits)
- {
- 	return bitmap_subset(src1p->bits, src2p->bits, nbits);
- }
- 
- #define nodes_empty(src) __nodes_empty(&(src), MAX_NUMNODES)
--static inline int __nodes_empty(const nodemask_t *srcp, unsigned int nbits)
-+static inline bool __nodes_empty(const nodemask_t *srcp, unsigned int nbits)
- {
- 	return bitmap_empty(srcp->bits, nbits);
- }
- 
- #define nodes_full(nodemask) __nodes_full(&(nodemask), MAX_NUMNODES)
--static inline int __nodes_full(const nodemask_t *srcp, unsigned int nbits)
-+static inline bool __nodes_full(const nodemask_t *srcp, unsigned int nbits)
- {
- 	return bitmap_full(srcp->bits, nbits);
- }
-@@ -260,15 +260,15 @@ static inline void __nodes_shift_left(nodemask_t *dstp,
-           > MAX_NUMNODES, then the silly min_ts could be dropped. */
- 
- #define first_node(src) __first_node(&(src))
--static inline int __first_node(const nodemask_t *srcp)
-+static inline unsigned int __first_node(const nodemask_t *srcp)
- {
--	return min_t(int, MAX_NUMNODES, find_first_bit(srcp->bits, MAX_NUMNODES));
-+	return min_t(unsigned int, MAX_NUMNODES, find_first_bit(srcp->bits, MAX_NUMNODES));
- }
- 
- #define next_node(n, src) __next_node((n), &(src))
--static inline int __next_node(int n, const nodemask_t *srcp)
-+static inline unsigned int __next_node(int n, const nodemask_t *srcp)
- {
--	return min_t(int,MAX_NUMNODES,find_next_bit(srcp->bits, MAX_NUMNODES, n+1));
-+	return min_t(unsigned int, MAX_NUMNODES, find_next_bit(srcp->bits, MAX_NUMNODES, n+1));
- }
- 
- /*
-@@ -276,7 +276,7 @@ static inline int __next_node(int n, const nodemask_t *srcp)
-  * the first node in src if needed.  Returns MAX_NUMNODES if src is empty.
-  */
- #define next_node_in(n, src) __next_node_in((n), &(src))
--int __next_node_in(int node, const nodemask_t *srcp);
-+unsigned int __next_node_in(int node, const nodemask_t *srcp);
- 
- static inline void init_nodemask_of_node(nodemask_t *mask, int node)
- {
-@@ -296,9 +296,9 @@ static inline void init_nodemask_of_node(nodemask_t *mask, int node)
- })
- 
- #define first_unset_node(mask) __first_unset_node(&(mask))
--static inline int __first_unset_node(const nodemask_t *maskp)
-+static inline unsigned int __first_unset_node(const nodemask_t *maskp)
- {
--	return min_t(int,MAX_NUMNODES,
-+	return min_t(unsigned int, MAX_NUMNODES,
- 			find_first_zero_bit(maskp->bits, MAX_NUMNODES));
- }
- 
-@@ -435,11 +435,11 @@ static inline int num_node_state(enum node_states state)
- 
- #define first_online_node	first_node(node_states[N_ONLINE])
- #define first_memory_node	first_node(node_states[N_MEMORY])
--static inline int next_online_node(int nid)
-+static inline unsigned int next_online_node(int nid)
- {
- 	return next_node(nid, node_states[N_ONLINE]);
- }
--static inline int next_memory_node(int nid)
-+static inline unsigned int next_memory_node(int nid)
- {
- 	return next_node(nid, node_states[N_MEMORY]);
- }
-diff --git a/lib/nodemask.c b/lib/nodemask.c
-index 3aa454c54c0d..e22647f5181b 100644
---- a/lib/nodemask.c
-+++ b/lib/nodemask.c
-@@ -3,9 +3,9 @@
- #include <linux/module.h>
- #include <linux/random.h>
- 
--int __next_node_in(int node, const nodemask_t *srcp)
-+unsigned int __next_node_in(int node, const nodemask_t *srcp)
- {
--	int ret = __next_node(node, srcp);
-+	unsigned int ret = __next_node(node, srcp);
- 
- 	if (ret == MAX_NUMNODES)
- 		ret = __first_node(srcp);
--- 
-2.35.1
+The problem is once more that files are not informed when the process 
+clones. So what happened is that somebody called fork() with an 
+mm_struct I've accounted my pages to. The result is just that we messed 
+up the rss_stats and  the the "BUG..." above.
 
+The key difference between normal allocated pages and the resources here 
+is just that we are not bound to an mm_struct in any way.
 
+I could just potentially add a dummy VMA to the mm_struct, but to be 
+honest I think that this would just be an absolutely hack.
 
+So I'm running out of ideas how to fix this, except for adding this per 
+file oom badness like I proposed.
+
+Regards,
+Christian.
