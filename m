@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24073CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:20:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A9D5C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:20:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242522AbiFMKUF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:20:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60458 "EHLO
+        id S242553AbiFMKUJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:20:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243024AbiFMKTA (ORCPT
+        with ESMTP id S242006AbiFMKR4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:19:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE9BE20F65;
-        Mon, 13 Jun 2022 03:16:38 -0700 (PDT)
+        Mon, 13 Jun 2022 06:17:56 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C23A201AF;
+        Mon, 13 Jun 2022 03:15:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9B1F9B80E5E;
-        Mon, 13 Jun 2022 10:16:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2478C34114;
-        Mon, 13 Jun 2022 10:16:35 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 24A29CE1163;
+        Mon, 13 Jun 2022 10:15:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B20EC34114;
+        Mon, 13 Jun 2022 10:15:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115396;
-        bh=36Zrg68NAiHkWfHvcxxtjEKPT6SjuU9L+QXdBxVKI2s=;
+        s=korg; t=1655115349;
+        bh=zeX27Fz5CbFREmTH7EisWvyju2EjMVy2UlDeKjYszYg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GWlUjnUq4PIO9w9sQbN/YvJSvYF34wzGAevOWAL1WiPKmOXwLIsW4SCFfdQfjAADM
-         5yYp4DQVcHD4Y1xB2/XKbEwq9qgG4FH/dOgMT2z45TEOsUvlwb8y4DlUeG16+PkgbC
-         vmywfu7FUsO1WdErWBnhmO3sUccK8F9SQ2bwuYSk=
+        b=wnpp7ZcfbntFSHcaiqoZBTu2gW1/M5Ei1yox2RbOJZDSbtwEsQxt+Ic14bIIhz9jD
+         2ubnE8xdMkflUhTsP8Q9x2fB2iH3Shw/yMs+mXJClicBt8Xh+Eh/oqPdvvOS21owVt
+         WCv0BXnyMpal973RwG3lLvwUcLZtn4qAVrDO1Tdw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Igor Zhbanov <izh1979@gmail.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 069/167] powerpc/idle: Fix return value of __setup() handler
-Date:   Mon, 13 Jun 2022 12:09:03 +0200
-Message-Id: <20220613094857.090154454@linuxfoundation.org>
+Subject: [PATCH 4.9 044/167] ath9k_htc: fix potential out of bounds access with invalid rxstatus->rs_keyix
+Date:   Mon, 13 Jun 2022 12:08:38 +0200
+Message-Id: <20220613094851.276924228@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -50,43 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit b793a01000122d2bd133ba451a76cc135b5e162c ]
+[ Upstream commit 2dc509305cf956381532792cb8dceef2b1504765 ]
 
-__setup() handlers should return 1 to obsolete_checksetup() in
-init/main.c to indicate that the boot option has been handled.
+The "rxstatus->rs_keyix" eventually gets passed to test_bit() so we need to
+ensure that it is within the bitmap.
 
-A return of 0 causes the boot option/value to be listed as an Unknown
-kernel parameter and added to init's (limited) argument or environment
-strings.
+drivers/net/wireless/ath/ath9k/common.c:46 ath9k_cmn_rx_accept()
+error: passing untrusted data 'rx_stats->rs_keyix' to 'test_bit()'
 
-Also, error return codes don't mean anything to obsolete_checksetup() --
-only non-zero (usually 1) or zero. So return 1 from powersave_off().
-
-Fixes: 302eca184fb8 ("[POWERPC] cell: use ppc_md->power_save instead of cbe_idle_loop")
-Reported-by: Igor Zhbanov <izh1979@gmail.com>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220502192925.19954-1-rdunlap@infradead.org
+Fixes: 4ed1a8d4a257 ("ath9k_htc: use ath9k_cmn_rx_accept")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220409061225.GA5447@kili
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/idle.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath9k/htc_drv_txrx.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/arch/powerpc/kernel/idle.c b/arch/powerpc/kernel/idle.c
-index d7216c9abda1..ca79aacfeda2 100644
---- a/arch/powerpc/kernel/idle.c
-+++ b/arch/powerpc/kernel/idle.c
-@@ -41,7 +41,7 @@ static int __init powersave_off(char *arg)
- {
- 	ppc_md.power_save = NULL;
- 	cpuidle_disable = IDLE_POWERSAVE_OFF;
--	return 0;
-+	return 1;
- }
- __setup("powersave=off", powersave_off);
+diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
+index 6a9c9b4ef2c9..fe4491eff8ca 100644
+--- a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
++++ b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
+@@ -1004,6 +1004,14 @@ static bool ath9k_rx_prepare(struct ath9k_htc_priv *priv,
+ 		goto rx_next;
+ 	}
  
++	if (rxstatus->rs_keyix >= ATH_KEYMAX &&
++	    rxstatus->rs_keyix != ATH9K_RXKEYIX_INVALID) {
++		ath_dbg(common, ANY,
++			"Invalid keyix, dropping (keyix: %d)\n",
++			rxstatus->rs_keyix);
++		goto rx_next;
++	}
++
+ 	/* Get the RX status information */
+ 
+ 	memset(rx_status, 0, sizeof(struct ieee80211_rx_status));
 -- 
 2.35.1
 
