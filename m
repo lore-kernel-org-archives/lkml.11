@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AEDACCA488
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:20:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F60ACCA489
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:20:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358880AbiFMMTh (ORCPT
+        id S1352714AbiFMMUJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:19:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48006 "EHLO
+        Mon, 13 Jun 2022 08:20:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358531AbiFMMOL (ORCPT
+        with ESMTP id S1353382AbiFMMP7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:14:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D74544C8;
-        Mon, 13 Jun 2022 04:01:45 -0700 (PDT)
+        Mon, 13 Jun 2022 08:15:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93CC455210;
+        Mon, 13 Jun 2022 04:02:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FB3961435;
-        Mon, 13 Jun 2022 11:01:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B851C34114;
-        Mon, 13 Jun 2022 11:01:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D5FD0B80E93;
+        Mon, 13 Jun 2022 11:02:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4293FC3411E;
+        Mon, 13 Jun 2022 11:02:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118104;
-        bh=biiVoSpGX61XIR/40UCOyNG2ZScSEoYD1nvvGjKna2E=;
+        s=korg; t=1655118147;
+        bh=erIyMVOhyoEFSBOTr7ERMzU5x1lpDP/dtyEg2fpINQ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rs1HP7qao15IvW1rvy66fhTLyC7Q6yIoXRcn4sZwplO1OC36TLvxyvBDx72EZu20g
-         vayrpDeUXclFxNXE8SNBtSsIG669QqkvDRR/NSS15gbZ2mDfvbxJGAVwXg+pH/IuyC
-         kHcO5b65CsApq3K6OGnGOLHHyhXj51ZriyoNfco4=
+        b=EVNlFVrCKZPCP6qXpiQVrwBJtaB1GmRe2nB2ulOyRBzZ1PxkMlsru670j7Xl2niWK
+         hsUsaC1lnetiLkrB8BIZ0LxtOW83Lr4+xMl4P+mCrDQ/jIfdF6s8PpIGKQNnOG739I
+         cc9dJBoq1xvn8yRR5VER7GkjbuukgHCApag1//Fw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hugh Dickens <hughd@google.com>,
-        Greg Ungerer <gerg@linux-m68k.org>,
+        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 231/287] m68knommu: set ZERO_PAGE() to the allocated zeroed page
-Date:   Mon, 13 Jun 2022 12:10:55 +0200
-Message-Id: <20220613094931.020997377@linuxfoundation.org>
+Subject: [PATCH 4.19 259/287] misc: rtsx: set NULL intfdata when probe fails
+Date:   Mon, 13 Jun 2022 12:11:23 +0200
+Message-Id: <20220613094931.862633754@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -50,45 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Greg Ungerer <gerg@linux-m68k.org>
+From: Shuah Khan <skhan@linuxfoundation.org>
 
-[ Upstream commit dc068f46217970d9516f16cd37972a01d50dc055 ]
+[ Upstream commit f861d36e021e1ac4a0a2a1f6411d623809975d63 ]
 
-The non-MMU m68k pagetable ZERO_PAGE() macro is being set to the
-somewhat non-sensical value of "virt_to_page(0)". The zeroth page
-is not in any way guaranteed to be a page full of "0". So the result
-is that ZERO_PAGE() will almost certainly contain random values.
+rtsx_usb_probe() doesn't call usb_set_intfdata() to null out the
+interface pointer when probe fails. This leaves a stale pointer.
+Noticed the missing usb_set_intfdata() while debugging an unrelated
+invalid DMA mapping problem.
 
-We already allocate a real "empty_zero_page" in the mm setup code shared
-between MMU m68k and non-MMU m68k. It is just not hooked up to the
-ZERO_PAGE() macro for the non-MMU m68k case.
+Fix it with a call to usb_set_intfdata(..., NULL).
 
-Fix ZERO_PAGE() to use the allocated "empty_zero_page" pointer.
-
-I am not aware of any specific issues caused by the old code.
-
-Link: https://lore.kernel.org/linux-m68k/2a462b23-5b8e-bbf4-ec7d-778434a3b9d7@google.com/T/#t
-Reported-by: Hugh Dickens <hughd@google.com>
-Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220429210913.46804-1-skhan@linuxfoundation.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/m68k/include/asm/pgtable_no.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/misc/cardreader/rtsx_usb.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/m68k/include/asm/pgtable_no.h b/arch/m68k/include/asm/pgtable_no.h
-index fc3a96c77bd8..12f673707d4b 100644
---- a/arch/m68k/include/asm/pgtable_no.h
-+++ b/arch/m68k/include/asm/pgtable_no.h
-@@ -42,7 +42,8 @@ extern void paging_init(void);
-  * ZERO_PAGE is a global shared page that is always zero: used
-  * for zero-mapped memory areas etc..
-  */
--#define ZERO_PAGE(vaddr)	(virt_to_page(0))
-+extern void *empty_zero_page;
-+#define ZERO_PAGE(vaddr)	(virt_to_page(empty_zero_page))
+diff --git a/drivers/misc/cardreader/rtsx_usb.c b/drivers/misc/cardreader/rtsx_usb.c
+index b97903ff1a72..869c176d48cc 100644
+--- a/drivers/misc/cardreader/rtsx_usb.c
++++ b/drivers/misc/cardreader/rtsx_usb.c
+@@ -678,6 +678,7 @@ static int rtsx_usb_probe(struct usb_interface *intf,
+ 	return 0;
  
- /*
-  * No page table caches to initialise.
+ out_init_fail:
++	usb_set_intfdata(ucr->pusb_intf, NULL);
+ 	usb_free_coherent(ucr->pusb_dev, IOBUF_SIZE, ucr->iobuf,
+ 			ucr->iobuf_dma);
+ 	return ret;
 -- 
 2.35.1
 
