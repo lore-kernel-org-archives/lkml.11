@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7AB3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:40:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31682C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:40:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346849AbiFMKkO (ORCPT
+        id S1346916AbiFMKkW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:40:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51148 "EHLO
+        Mon, 13 Jun 2022 06:40:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346444AbiFMKiO (ORCPT
+        with ESMTP id S1346926AbiFMKiW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:38:14 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12F6713E00;
-        Mon, 13 Jun 2022 03:22:59 -0700 (PDT)
+        Mon, 13 Jun 2022 06:38:22 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4791713E2F;
+        Mon, 13 Jun 2022 03:23:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D3F8DCE1161;
-        Mon, 13 Jun 2022 10:22:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9F9BC3411E;
-        Mon, 13 Jun 2022 10:22:55 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8E7D8CE110D;
+        Mon, 13 Jun 2022 10:23:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87677C34114;
+        Mon, 13 Jun 2022 10:22:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115776;
-        bh=262NN7HEnh2igmL4l1gAU+SUwZl24FoHE7oXfKo85Lc=;
+        s=korg; t=1655115778;
+        bh=yFAJjDuee0KkcfhDSAPMvVKX9B6AQABnodhfFK3su7I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OHqsMym+6e6UMVvCCy04eMaV9WYLcvjqn97A1F1NFirzFy1mRf16X3LRi9W8PnmFW
-         0ZPIlWUPEfJq0bOPcOXwLnOSjMZISkcgqnOn4D/t3QC6aXMUlS9SNCm7eMHdbwIdDX
-         Ab8+u1bdpf7KQ6qw60cZYYyS4dlm+AfNQTm/Ae8g=
+        b=fo0y/XcRSGgF4QlX+uFMfWn7Gpkwm4qfkl5gr530ISGGR4p/qO4GH9C7Fx8Cbl7Q8
+         aL9ak6d7fEfMofkeHr4flEBTFUNgXRZzBrCY9gjWSEf7FFckGcZQ5sOXdhbyd38eO5
+         Ntu0sWyzqQaVw+xtZeS0kJLIdQcEVXgmriIr8r4s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Janusz Krzysztofik <jmkrzyszt@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 037/218] ARM: OMAP1: clock: Fix UART rate reporting algorithm
-Date:   Mon, 13 Jun 2022 12:08:15 +0200
-Message-Id: <20220613094917.103514268@linuxfoundation.org>
+        stable@vger.kernel.org,
+        OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
+        qianfan <qianfanguijin@163.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 038/218] fat: add ratelimit to fat*_ent_bread()
+Date:   Mon, 13 Jun 2022 12:08:16 +0200
+Message-Id: <20220613094917.337367415@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -50,35 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Janusz Krzysztofik <jmkrzyszt@gmail.com>
+From: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
 
-[ Upstream commit 338d5d476cde853dfd97378d20496baabc2ce3c0 ]
+[ Upstream commit 183c3237c928109d2008c0456dff508baf692b20 ]
 
-Since its introduction to the mainline kernel, omap1_uart_recalc() helper
-makes incorrect use of clk->enable_bit as a ready to use bitmap mask while
-it only provides the bit number.  Fix it.
+fat*_ent_bread() can be the cause of too many report on I/O error path.
+So use fat_msg_ratelimit() instead.
 
-Signed-off-by: Janusz Krzysztofik <jmkrzyszt@gmail.com>
-Acked-by: Tony Lindgren <tony@atomide.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Link: https://lkml.kernel.org/r/87bkxogfeq.fsf@mail.parknet.co.jp
+Signed-off-by: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+Reported-by: qianfan <qianfanguijin@163.com>
+Tested-by: qianfan <qianfanguijin@163.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-omap1/clock.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/fat/fatent.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm/mach-omap1/clock.c b/arch/arm/mach-omap1/clock.c
-index fa512413a471..b277409f303a 100644
---- a/arch/arm/mach-omap1/clock.c
-+++ b/arch/arm/mach-omap1/clock.c
-@@ -44,7 +44,7 @@ static DEFINE_SPINLOCK(clockfw_lock);
- unsigned long omap1_uart_recalc(struct clk *clk)
- {
- 	unsigned int val = __raw_readl(clk->enable_reg);
--	return val & clk->enable_bit ? 48000000 : 12000000;
-+	return val & 1 << clk->enable_bit ? 48000000 : 12000000;
+diff --git a/fs/fat/fatent.c b/fs/fat/fatent.c
+index 24ed1f4e48ae..3ef3e773da1b 100644
+--- a/fs/fat/fatent.c
++++ b/fs/fat/fatent.c
+@@ -92,7 +92,8 @@ static int fat12_ent_bread(struct super_block *sb, struct fat_entry *fatent,
+ err_brelse:
+ 	brelse(bhs[0]);
+ err:
+-	fat_msg(sb, KERN_ERR, "FAT read failed (blocknr %llu)", (llu)blocknr);
++	fat_msg_ratelimit(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
++			  (llu)blocknr);
+ 	return -EIO;
  }
  
- unsigned long omap1_sossi_recalc(struct clk *clk)
+@@ -105,8 +106,8 @@ static int fat_ent_bread(struct super_block *sb, struct fat_entry *fatent,
+ 	fatent->fat_inode = MSDOS_SB(sb)->fat_inode;
+ 	fatent->bhs[0] = sb_bread(sb, blocknr);
+ 	if (!fatent->bhs[0]) {
+-		fat_msg(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
+-		       (llu)blocknr);
++		fat_msg_ratelimit(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
++				  (llu)blocknr);
+ 		return -EIO;
+ 	}
+ 	fatent->nr_bhs = 1;
 -- 
 2.35.1
 
