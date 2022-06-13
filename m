@@ -2,103 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE560C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:15:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1937C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:15:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240949AbiFMSPJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:15:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54572 "EHLO
+        id S244014AbiFMSAC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:00:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244567AbiFMSOw (ORCPT
+        with ESMTP id S243936AbiFMR4A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 14:14:52 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C915986C4
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 07:09:44 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id e9so5728337pju.5
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 07:09:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=h45d/U/M29ku8Z+G7RjVs2R1LY0TLFzhv/m4QOs4IU0=;
-        b=MNmTIdaBdvI7XatwRTiFZmRQi1v3dLfiisbLNnKjpPMSAJGY/QMAMeQqVvVQedUxa3
-         iXDTIrDxLRViNHfUDOVmJbABJLFuhLghXJAORWnHvvixEwBBHVdXRPHv0wqyJ0FHqQ9y
-         l9NpVnK9/qwh9f1+vRjsaaT+xt+cg7eqnh0bziM8J5MV561IpHpx5CUrqEKX5RGUq6/w
-         6Kc0UVIoDq2ENd2GD/vW0oc2pDO8mmkuH0Bc8n9QhBtkhXSdRX72AX2kZ2bSP8c/rQ+U
-         SMsMfe6F6bUfSXu6um9HNmO1YRbARO2hYdyn4gK9dlmw6bVhCQXe/ekwgvJ//3DA2+/y
-         SrVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=h45d/U/M29ku8Z+G7RjVs2R1LY0TLFzhv/m4QOs4IU0=;
-        b=BvZDBM5ovVHmFFrJLItsci+B9kfYWS0BPg0aMGVy22jmQNIyM+jMgTC3oq5i2OC8uF
-         oSn2ZOzibtfXHvZ2bQIPCzOEK3rR4C/55xnT8UFmYiuZ3bUibwiXDpzpdhRMT1lgdVcf
-         AQ/SsIvDctq/KOdLKvdqV5MIYYQllrn8TitwrrOXZFpW3SHYS+do45G8n09iGqlq9sF5
-         4rApo/IK3AEYf/5joNjb3RTjNia2+cUP+C9PrkbqQ4ysrVyd37Z/+8wD//+8FqegIrIw
-         7UkkMjiYTdRCPHPf/JAZjfQdFHg4YSBDTG9lkDB4EJi2qCQJrUv81K3uEr5XA1ANm3bE
-         ukcg==
-X-Gm-Message-State: AOAM531kch7XUkIkek0z6h946AQMK/s4fpA2A1Qatl/gXn70LF1rgNid
-        74xYhx4IH8UeM8W+Aoj+otuUtg==
-X-Google-Smtp-Source: ABdhPJwRlHQgf29lt8TLiWwmXZoGd4ZR5dDQdZp4UdXuhuQ/NnisD5WWCZmIGtyuBa+B+VxEL/M6Ug==
-X-Received: by 2002:a17:90b:3a90:b0:1e6:a203:c7dd with SMTP id om16-20020a17090b3a9000b001e6a203c7ddmr16319472pjb.144.1655129383224;
-        Mon, 13 Jun 2022 07:09:43 -0700 (PDT)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id v3-20020aa799c3000000b0051bc538baadsm5402039pfi.184.2022.06.13.07.09.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 07:09:42 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 14:09:38 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Mon, 13 Jun 2022 13:56:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D75E7CE1E
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:40:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655127623;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=F94Tm16Pv+6X1Qxpix8Ro059dU0Hc/OW94AtIQA4pXw=;
+        b=aFS8k2cuERWjCTMilk3jbJ8UafaLAFG7e28GRhNg2PqxEhcSByVxzTxmyZTFtUGv//VXYb
+        JjPwROlfN4FJphzgaB/GEgRbBnlC6F0b+AIlShHuj5nEoPz5760mb7qOO732psA78cPbDw
+        KhZayjsXJXl35DRakF2Nw8bima63llA=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-562-95ltdca-PwOSlRlGq4eMKw-1; Mon, 13 Jun 2022 09:40:19 -0400
+X-MC-Unique: 95ltdca-PwOSlRlGq4eMKw-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D7E35380670E;
+        Mon, 13 Jun 2022 13:40:18 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.194.60])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A794B492CA2;
+        Mon, 13 Jun 2022 13:40:16 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
         Wanpeng Li <wanpengli@tencent.com>,
         Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Like Xu <likexu@tencent.com>
-Subject: Re: [PATCH 6/7] KVM: x86: Ignore benign host accesses to
- "unsupported" PEBS and BTS MSRs
-Message-ID: <YqdFIilui+0ji+WZ@google.com>
-References: <20220611005755.753273-1-seanjc@google.com>
- <20220611005755.753273-7-seanjc@google.com>
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        Yuan Yao <yuan.yao@linux.intel.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v7 19/39] x86/hyperv: Fix 'struct hv_enlightened_vmcs' definition
+Date:   Mon, 13 Jun 2022 15:39:02 +0200
+Message-Id: <20220613133922.2875594-20-vkuznets@redhat.com>
+In-Reply-To: <20220613133922.2875594-1-vkuznets@redhat.com>
+References: <20220613133922.2875594-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220611005755.753273-7-seanjc@google.com>
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jun 11, 2022, Sean Christopherson wrote:
-> @@ -4122,6 +4132,16 @@ int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
->  		msr_info->data = vcpu->arch.guest_fpu.xfd_err;
->  		break;
->  #endif
-> +	case MSR_IA32_PEBS_ENABLE:
-> +	case MSR_IA32_DS_AREA:
-> +	case MSR_PEBS_DATA_CFG:
-> +		if (kvm_pmu_is_valid_msr(vcpu, msr_info->index))
-> +			return kvm_pmu_get_msr(vcpu, msr_info);
-> +		/*
-> +		 * Userspace is allowed to read MSRs that KVM reports as
-> +		 * to-be-saved, even if an MSR isn't fully supported.
-> +		 */
-> +		return !msr_info->host_initiated;
+Section 1.9 of TLFS v6.0b says:
 
-Gah, this needs to set msr_info->data.
+"All structures are padded in such a way that fields are aligned
+naturally (that is, an 8-byte field is aligned to an offset of 8 bytes
+and so on)".
 
-		/*
-		 * Userspace is allowed to read MSRs that KVM reports as
-		 * to-be-saved, even if an MSR isn't fully supported.
-		 */
-		if (!msr_info->host_initiated)
-			return 1;
+'struct enlightened_vmcs' has a glitch:
 
-		msr_info->data = 0;
+...
+        struct {
+                u32                nested_flush_hypercall:1; /*   836: 0  4 */
+                u32                msr_bitmap:1;         /*   836: 1  4 */
+                u32                reserved:30;          /*   836: 2  4 */
+        } hv_enlightenments_control;                     /*   836     4 */
+        u32                        hv_vp_id;             /*   840     4 */
+        u64                        hv_vm_id;             /*   844     8 */
+        u64                        partition_assist_page; /*   852     8 */
+...
 
->  	default:
->  		if (kvm_pmu_is_valid_msr(vcpu, msr_info->index))
->  			return kvm_pmu_get_msr(vcpu, msr_info);
-> -- 
-> 2.36.1.476.g0c4daa206d-goog
-> 
+And the observed values in 'partition_assist_page' make no sense at
+all. Fix the layout by padding the structure properly.
+
+Fixes: 68d1eb72ee99 ("x86/hyper-v: define struct hv_enlightened_vmcs and clean field bits")
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+---
+ arch/x86/include/asm/hyperv-tlfs.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/include/asm/hyperv-tlfs.h b/arch/x86/include/asm/hyperv-tlfs.h
+index 5225a85c08c3..e7ddae8e02c6 100644
+--- a/arch/x86/include/asm/hyperv-tlfs.h
++++ b/arch/x86/include/asm/hyperv-tlfs.h
+@@ -548,7 +548,7 @@ struct hv_enlightened_vmcs {
+ 	u64 guest_rip;
+ 
+ 	u32 hv_clean_fields;
+-	u32 hv_padding_32;
++	u32 padding32_1;
+ 	u32 hv_synthetic_controls;
+ 	struct {
+ 		u32 nested_flush_hypercall:1;
+@@ -556,7 +556,7 @@ struct hv_enlightened_vmcs {
+ 		u32 reserved:30;
+ 	}  __packed hv_enlightenments_control;
+ 	u32 hv_vp_id;
+-
++	u32 padding32_2;
+ 	u64 hv_vm_id;
+ 	u64 partition_assist_page;
+ 	u64 padding64_4[4];
+-- 
+2.35.3
+
