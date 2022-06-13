@@ -2,63 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A879C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 07:14:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE0BCC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 07:14:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239257AbiFMHOK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 03:14:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38822 "EHLO
+        id S239144AbiFMHOT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 03:14:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239245AbiFMHN7 (ORCPT
+        with ESMTP id S239305AbiFMHOS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 03:13:59 -0400
-Received: from hust.edu.cn (unknown [202.114.0.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5486D1A39D;
-        Mon, 13 Jun 2022 00:13:57 -0700 (PDT)
-Received: from localhost.localdomain ([172.16.0.254])
-        (user=dzm91@hust.edu.cn mech=LOGIN bits=0)
-        by mx1.hust.edu.cn  with ESMTP id 25D7Cm7g023904-25D7Cm7j023904
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Mon, 13 Jun 2022 15:12:53 +0800
-From:   Dongliang Mu <dzm91@hust.edu.cn>
-To:     Julia Lawall <Julia.Lawall@inria.fr>,
-        Nicolas Palix <nicolas.palix@imag.fr>,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     Dongliang Mu <mudongliangabcd@gmail.com>, cocci@inria.fr,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] dev-tools: fix one invalid url
-Date:   Mon, 13 Jun 2022 15:12:42 +0800
-Message-Id: <20220613071243.12961-1-dzm91@hust.edu.cn>
-X-Mailer: git-send-email 2.35.1
+        Mon, 13 Jun 2022 03:14:18 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CD451A3A6;
+        Mon, 13 Jun 2022 00:14:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655104457; x=1686640457;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=wvl/B4oq3q+IXNEFYXE9Z2uZbSwi0g50OFlczbgIglM=;
+  b=GaXj+bO3X8cjT8yYIyMQcjSzBxupw+qwQ+zBiWfLjfVA5vP8J1FfOeaT
+   WL85qviOcLHGw15H5pzoEz6zrM/ep9dmcRNa8M85l6xzYClNKSt57PI5U
+   O8xGs+1vCNaiafarHsv6GtWFVCpS372zhOxF/b7i+l9rRFqhcvdmsiJ2M
+   h3PWI7ZxIxSIyCk7+VY38pi69Wyfrstqp/yEnicP1Jv0t1Njg0r9t+Q3j
+   Y5hfFiEvm9FzqvFVOwV1/SRids14hdmDJfNxzF5EmTLtGQdCzVwFlVTfA
+   Sdo8yeAb5ikDcv7s43B3swXxl/0Dn8Ak9qqZNCmY+0s98GzV+IHjEdlnh
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10376"; a="303586783"
+X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
+   d="scan'208";a="303586783"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 00:14:16 -0700
+X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
+   d="scan'208";a="639571875"
+Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.58.193])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 00:14:14 -0700
+Message-ID: <f4fd942e-2bc8-b70b-d8ec-56690750efbb@intel.com>
+Date:   Mon, 13 Jun 2022 10:14:12 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.9.1
+Subject: Re: [PATCH 5/5] mmc: sdhci-st: Obviously always return success in
+ remove callback
+Content-Language: en-US
+To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     kernel@pengutronix.de, linux-mmc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220610211257.102071-1-u.kleine-koenig@pengutronix.de>
+ <20220610211257.102071-5-u.kleine-koenig@pengutronix.de>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <20220610211257.102071-5-u.kleine-koenig@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-FEAS-AUTH-USER: dzm91@hust.edu.cn
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+On 11/06/22 00:12, Uwe Kleine-König wrote:
+> sdhci_pltfm_unregister() returns 0 unconditionally and returning an
+> error in a platform remove callback isn't very sensible. (The only
+> effect of the latter is that the device core emits a generic warning and
+> then removes the device anyhow.)
+> 
+> So return 0 unconditionally to make it obvious there is no error
+> forwarded to the upper layers.
+> 
+> This is a preparation for making platform remove callbacks return void.
+> 
+> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-Fix the invalid url about Semantic Patch Language
+Acked-by: Adrian Hunter <adrian.hunter@intel.com>
 
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
----
- Documentation/dev-tools/coccinelle.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/Documentation/dev-tools/coccinelle.rst b/Documentation/dev-tools/coccinelle.rst
-index 9c454de5a7f7..d9976069ed12 100644
---- a/Documentation/dev-tools/coccinelle.rst
-+++ b/Documentation/dev-tools/coccinelle.rst
-@@ -66,7 +66,7 @@ The wiki documentation always refers to the linux-next version of the script.
- 
- For Semantic Patch Language(SmPL) grammar documentation refer to:
- 
--http://coccinelle.lip6.fr/documentation.php
-+https://coccinelle.gitlabpages.inria.fr/website/docs/main_grammar.html
- 
- Using Coccinelle on the Linux kernel
- ------------------------------------
--- 
-2.25.1
+> ---
+>  drivers/mmc/host/sdhci-st.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/mmc/host/sdhci-st.c b/drivers/mmc/host/sdhci-st.c
+> index d41582c21aa3..6415916fbd91 100644
+> --- a/drivers/mmc/host/sdhci-st.c
+> +++ b/drivers/mmc/host/sdhci-st.c
+> @@ -440,15 +440,14 @@ static int sdhci_st_remove(struct platform_device *pdev)
+>  	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
+>  	struct st_mmc_platform_data *pdata = sdhci_pltfm_priv(pltfm_host);
+>  	struct reset_control *rstc = pdata->rstc;
+> -	int ret;
+>  
+> -	ret = sdhci_pltfm_unregister(pdev);
+> +	sdhci_pltfm_unregister(pdev);
+>  
+>  	clk_disable_unprepare(pdata->icnclk);
+>  
+>  	reset_control_assert(rstc);
+>  
+> -	return ret;
+> +	return 0;
+>  }
+>  
+>  #ifdef CONFIG_PM_SLEEP
 
