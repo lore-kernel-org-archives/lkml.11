@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F07BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:58:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE1DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:58:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357828AbiFML5w (ORCPT
+        id S1357839AbiFML6M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:57:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53896 "EHLO
+        Mon, 13 Jun 2022 07:58:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356607AbiFMLuq (ORCPT
+        with ESMTP id S1356622AbiFMLur (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:50:46 -0400
+        Mon, 13 Jun 2022 07:50:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B42724948;
-        Mon, 13 Jun 2022 03:54:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5B942EA23;
+        Mon, 13 Jun 2022 03:54:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC19160F00;
-        Mon, 13 Jun 2022 10:54:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFC67C34114;
-        Mon, 13 Jun 2022 10:54:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EB6D61259;
+        Mon, 13 Jun 2022 10:54:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89A7FC34114;
+        Mon, 13 Jun 2022 10:54:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117670;
-        bh=O6f4v5DL3a7XZuIhzBxvp+lAUcU8L0IHePMm7ymMWDs=;
+        s=korg; t=1655117683;
+        bh=T4X4CGi/PKic3jmJn+xe4/n8tjwhtnDobrqP1cKMuac=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UI29rBG/f5TuNO9B7z4w6UcgEfKv+Ow+43u5BugvJjMPDz+Z8oG8xsDgTeI1v2p/S
-         S+2P+8sUfgY2eF6nxU6DipUIFYmwbDd4reCLn5MvIMXPoB+7C95e3Z3Q7R4Hhhs9FY
-         PlQnU877ZhRBl0tFVRBiP6BpQP7BOKAzPqIxYLQE=
+        b=nmdSrK5f0jpko5ki3xBzNtWu0PndvisXdokNffk2oSCjmOLuQFQ+d3TMYUKzQWmZN
+         iptjVnVsoUxdU4JzZSoSKwFHVkBauODd+BMA2y+jzGOMeOAM9RTDEAJPETvE70GB2F
+         yZgb5BNt6N+Q/l/lcHRykhSBFuwQ2zGuovTGxS2Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vinod Polimera <quic_vpolimer@quicinc.com>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
         Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 081/287] drm/msm/disp/dpu1: set vbif hw config to NULL to avoid use after memory free during pm runtime resume
-Date:   Mon, 13 Jun 2022 12:08:25 +0200
-Message-Id: <20220613094926.334107634@linuxfoundation.org>
+Subject: [PATCH 4.19 082/287] drm/msm/dsi: fix error checks and return values for DSI xmit functions
+Date:   Mon, 13 Jun 2022 12:08:26 +0200
+Message-Id: <20220613094926.363713500@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -50,54 +52,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vinod Polimera <quic_vpolimer@quicinc.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-[ Upstream commit fa5186b279ecf44b14fb435540d2065be91cb1ed ]
+[ Upstream commit f0e7e9ed379c012c4d6b09a09b868accc426223c ]
 
-BUG: Unable to handle kernel paging request at virtual address 006b6b6b6b6b6be3
+As noticed by Dan ([1] an the followup thread) there are multiple issues
+with the return values for MSM DSI command transmission callback. In
+the error case it can easily return a positive value when it should
+have returned a proper error code.
 
-Call trace:
-  dpu_vbif_init_memtypes+0x40/0xb8
-  dpu_runtime_resume+0xcc/0x1c0
-  pm_generic_runtime_resume+0x30/0x44
-  __genpd_runtime_resume+0x68/0x7c
-  genpd_runtime_resume+0x134/0x258
-  __rpm_callback+0x98/0x138
-  rpm_callback+0x30/0x88
-  rpm_resume+0x36c/0x49c
-  __pm_runtime_resume+0x80/0xb0
-  dpu_core_irq_uninstall+0x30/0xb0
-  dpu_irq_uninstall+0x18/0x24
-  msm_drm_uninit+0xd8/0x16c
+This commits attempts to fix these issues both in TX and in RX paths.
 
-Fixes: 25fdd5933e4c ("drm/msm: Add SDM845 DPU support")
-Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Patchwork: https://patchwork.freedesktop.org/patch/483255/
-Link: https://lore.kernel.org/r/1650857213-30075-1-git-send-email-quic_vpolimer@quicinc.com
-[DB: fixed Fixes tag]
+[1]: https://lore.kernel.org/linux-arm-msm/20211001123617.GH2283@kili/
+
+Fixes: a689554ba6ed ("drm/msm: Initial add DSI connector support")
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Tested-by: Marijn Suijten <marijn.suijten@somainline.org>
+Patchwork: https://patchwork.freedesktop.org/patch/480501/
+Link: https://lore.kernel.org/r/20220401231104.967193-1-dmitry.baryshkov@linaro.org
 Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/msm/dsi/dsi_host.c | 21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-index 52474dcd2573..c88bb92282df 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-@@ -657,8 +657,10 @@ static void _dpu_kms_hw_destroy(struct dpu_kms *dpu_kms)
- 		for (i = 0; i < dpu_kms->catalog->vbif_count; i++) {
- 			u32 vbif_idx = dpu_kms->catalog->vbif[i].id;
+diff --git a/drivers/gpu/drm/msm/dsi/dsi_host.c b/drivers/gpu/drm/msm/dsi/dsi_host.c
+index 9abfb19ea7ed..56cfa0a03fd5 100644
+--- a/drivers/gpu/drm/msm/dsi/dsi_host.c
++++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
+@@ -1354,10 +1354,10 @@ static int dsi_cmds2buf_tx(struct msm_dsi_host *msm_host,
+ 			dsi_get_bpp(msm_host->format) / 8;
  
--			if ((vbif_idx < VBIF_MAX) && dpu_kms->hw_vbif[vbif_idx])
-+			if ((vbif_idx < VBIF_MAX) && dpu_kms->hw_vbif[vbif_idx]) {
- 				dpu_hw_vbif_destroy(dpu_kms->hw_vbif[vbif_idx]);
-+				dpu_kms->hw_vbif[vbif_idx] = NULL;
-+			}
- 		}
+ 	len = dsi_cmd_dma_add(msm_host, msg);
+-	if (!len) {
++	if (len < 0) {
+ 		pr_err("%s: failed to add cmd type = 0x%x\n",
+ 			__func__,  msg->type);
+-		return -EINVAL;
++		return len;
  	}
  
+ 	/* for video mode, do not send cmds more than
+@@ -1376,10 +1376,14 @@ static int dsi_cmds2buf_tx(struct msm_dsi_host *msm_host,
+ 	}
+ 
+ 	ret = dsi_cmd_dma_tx(msm_host, len);
+-	if (ret < len) {
+-		pr_err("%s: cmd dma tx failed, type=0x%x, data0=0x%x, len=%d\n",
+-			__func__, msg->type, (*(u8 *)(msg->tx_buf)), len);
+-		return -ECOMM;
++	if (ret < 0) {
++		pr_err("%s: cmd dma tx failed, type=0x%x, data0=0x%x, len=%d, ret=%d\n",
++			__func__, msg->type, (*(u8 *)(msg->tx_buf)), len, ret);
++		return ret;
++	} else if (ret < len) {
++		pr_err("%s: cmd dma tx failed, type=0x%x, data0=0x%x, ret=%d len=%d\n",
++			__func__, msg->type, (*(u8 *)(msg->tx_buf)), ret, len);
++		return -EIO;
+ 	}
+ 
+ 	return len;
+@@ -2105,9 +2109,12 @@ int msm_dsi_host_cmd_rx(struct mipi_dsi_host *host,
+ 		}
+ 
+ 		ret = dsi_cmds2buf_tx(msm_host, msg);
+-		if (ret < msg->tx_len) {
++		if (ret < 0) {
+ 			pr_err("%s: Read cmd Tx failed, %d\n", __func__, ret);
+ 			return ret;
++		} else if (ret < msg->tx_len) {
++			pr_err("%s: Read cmd Tx failed, too short: %d\n", __func__, ret);
++			return -ECOMM;
+ 		}
+ 
+ 		/*
 -- 
 2.35.1
 
