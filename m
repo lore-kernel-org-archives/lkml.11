@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE983C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:37:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B15FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:37:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354926AbiFMLht (ORCPT
+        id S1355202AbiFMLhw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:37:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56038 "EHLO
+        Mon, 13 Jun 2022 07:37:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354920AbiFMLaS (ORCPT
+        with ESMTP id S1354977AbiFMLaV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:30:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 244ED403D9;
-        Mon, 13 Jun 2022 03:46:05 -0700 (PDT)
+        Mon, 13 Jun 2022 07:30:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2110C40929;
+        Mon, 13 Jun 2022 03:46:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DD4EEB80D41;
-        Mon, 13 Jun 2022 10:46:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D377C3411C;
-        Mon, 13 Jun 2022 10:46:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 700896125A;
+        Mon, 13 Jun 2022 10:46:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E10FC34114;
+        Mon, 13 Jun 2022 10:46:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117162;
-        bh=feGV6UqE0Uz4bq22NKfBxFKgpShCtuwbopW1MYiZROI=;
+        s=korg; t=1655117170;
+        bh=vQwcFYZTuk8a/owWSlhS1j4ElSisgSKd7FPvtHGCqvc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V78pbB+1k6iAjcQL+CjmjG7fWXcOVigufB8tCi0kXMcZ0x05Fv6j37AwJx9/7HKYA
-         l4qjz2tDYFaxaE0YY9mke+1PtU+olBlIWTlHHyCG5lWZsIvNNzylcjPstt9O4Ng4ai
-         fUr4Qxgn3+v98VmPTZOaExt4x/ReSdJ3SNWEDXf4=
+        b=2QXFQcwghanCcAGDtACrdjUl9LiideAez2RAgKB6AM8Alxhgq92M88LEe/GvzO500
+         flvS2HOFMgWDteLdq5DVxBbmF3o316YSQuOORcJSdwOWJw90t+dg2dw4Jbvu4XaLrR
+         w1FlMXNNe4EO06MPBgsEWvxMse/hW7qDc7nl8DKg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 308/411] serial: digicolor-usart: Dont allow CS5-6
-Date:   Mon, 13 Jun 2022 12:09:41 +0200
-Message-Id: <20220613094937.986016491@linuxfoundation.org>
+Subject: [PATCH 5.4 301/411] serial: sifive: Report actual baud base rather than fixed 115200
+Date:   Mon, 13 Jun 2022 12:09:34 +0200
+Message-Id: <20220613094937.781690868@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -50,41 +49,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+From: Maciej W. Rozycki <macro@orcam.me.uk>
 
-[ Upstream commit fd63031b8c0763addcecdefe0e0c59d49646204e ]
+[ Upstream commit 0a7ff843d507ce2cca2c3b7e169ee56e28133530 ]
 
-Only CS7 and CS8 seem supported but CSIZE is not sanitized to CS8 in
-the default: block.
+The base baud value reported is supposed to be the highest baud rate
+that can be set for a serial port.  The SiFive FU740-C000 SOC's on-chip
+UART supports baud rates of up to 1/16 of the input clock rate, which is
+the bus clock `tlclk'[1], often at 130MHz in the case of the HiFive
+Unmatched board.
 
-Set CSIZE correctly so that userspace knows the effective value.
-Incorrect CSIZE also results in miscalculation of the frame bits in
-tty_get_char_size() or in its predecessor where the roughly the same
-code is directly within uart_update_timeout().
+However the sifive UART driver reports a fixed value of 115200 instead:
 
-Fixes: 5930cb3511df (serial: driver for Conexant Digicolor USART)
-Acked-by: Baruch Siach <baruch@tkos.co.il>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/20220519081808.3776-3-ilpo.jarvinen@linux.intel.com
+10010000.serial: ttySIF0 at MMIO 0x10010000 (irq = 1, base_baud = 115200) is a SiFive UART v0
+10011000.serial: ttySIF1 at MMIO 0x10011000 (irq = 2, base_baud = 115200) is a SiFive UART v0
+
+even though we already support setting higher baud rates, e.g.:
+
+$ tty
+/dev/ttySIF1
+$ stty speed
+230400
+
+The baud base value is computed by the serial core by dividing the UART
+clock recorded in `struct uart_port' by 16, which is also the minimum
+value of the clock divider supported, so correct the baud base value
+reported by setting the UART clock recorded to the input clock rate
+rather than 115200:
+
+10010000.serial: ttySIF0 at MMIO 0x10010000 (irq = 1, base_baud = 8125000) is a SiFive UART v0
+10011000.serial: ttySIF1 at MMIO 0x10011000 (irq = 2, base_baud = 8125000) is a SiFive UART v0
+
+
+[1] "SiFive FU740-C000 Manual", v1p3, SiFive, Inc., August 13, 2021,
+    Section 16.9 "Baud Rate Divisor Register (div)", pp.143-144
+
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Fixes: 1f1496a923b6 ("riscv: Fix sifive serial driver")
+Link: https://lore.kernel.org/r/alpine.DEB.2.21.2204291656280.9383@angie.orcam.me.uk
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/digicolor-usart.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/serial/sifive.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/digicolor-usart.c b/drivers/tty/serial/digicolor-usart.c
-index 4446c13629b1..e06967ca62fa 100644
---- a/drivers/tty/serial/digicolor-usart.c
-+++ b/drivers/tty/serial/digicolor-usart.c
-@@ -309,6 +309,8 @@ static void digicolor_uart_set_termios(struct uart_port *port,
- 	case CS8:
- 	default:
- 		config |= UA_CONFIG_CHAR_LEN;
-+		termios->c_cflag &= ~CSIZE;
-+		termios->c_cflag |= CS8;
- 		break;
- 	}
+diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c
+index 6a2dc823ea82..ec9bd2207271 100644
+--- a/drivers/tty/serial/sifive.c
++++ b/drivers/tty/serial/sifive.c
+@@ -973,7 +973,7 @@ static int sifive_serial_probe(struct platform_device *pdev)
+ 	/* Set up clock divider */
+ 	ssp->clkin_rate = clk_get_rate(ssp->clk);
+ 	ssp->baud_rate = SIFIVE_DEFAULT_BAUD_RATE;
+-	ssp->port.uartclk = ssp->baud_rate * 16;
++	ssp->port.uartclk = ssp->clkin_rate;
+ 	__ssp_update_div(ssp);
  
+ 	platform_set_drvdata(pdev, ssp);
 -- 
 2.35.1
 
