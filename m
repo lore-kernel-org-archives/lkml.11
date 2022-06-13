@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1126CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:30:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38216C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:31:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245240AbiFMK1j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:27:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45834 "EHLO
+        id S236970AbiFMKaq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:30:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343705AbiFMKY6 (ORCPT
+        with ESMTP id S1343746AbiFMK2m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:24:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EC3123BEB;
-        Mon, 13 Jun 2022 03:19:25 -0700 (PDT)
+        Mon, 13 Jun 2022 06:28:42 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5AA124F15;
+        Mon, 13 Jun 2022 03:20:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DB6E760B8D;
-        Mon, 13 Jun 2022 10:19:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5A7AC3411C;
-        Mon, 13 Jun 2022 10:19:23 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A8DE3CE1102;
+        Mon, 13 Jun 2022 10:20:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9884CC34114;
+        Mon, 13 Jun 2022 10:20:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115564;
-        bh=EsMgRyH2Ui3b8N69KMl1Dg6EPahzTTOTDN582z6MPe0=;
+        s=korg; t=1655115608;
+        bh=NJv5yMjXEaLu4sTVaTqcnR+kvIcxGGSfqkc59P6ixjk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W2EKXT2Vz111GNO0zUJW823LX+CZ7lUhZsOv0JIIMevdVMhqSMBmSO316jtKb+I3F
-         QSezoYT1iohTqzl6es6SeNTsK4CkqGZ1xArmJbmv30zcKVuRDbDrXgMxkwlRnAYiTw
-         NCyNyuJCEhkKe46NFoYTCaDjo/aIZi2OfucTFfDk=
+        b=EQKm4ASH6SVQVB3HF6b/n5qt3BvJ7PyJMOROrghgx+wO/sfNv4U/qGN6raBRsV+Qe
+         ALsc9I+8UoQ+r73IpJcv/sKYOa5xaweCvP/ltZ7s6My+/g1q1am4Y7lH4GsEIveLA8
+         eUCLPyMl+zVSOsi0q8SImWF/6Ayg/0X50gwA0prw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
+        NeilBrown <neilb@suse.de>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 119/167] serial: sh-sci: Dont allow CS5-6
-Date:   Mon, 13 Jun 2022 12:09:53 +0200
-Message-Id: <20220613094908.655412139@linuxfoundation.org>
+Subject: [PATCH 4.9 135/167] SUNRPC: Fix the calculation of xdr->end in xdr_get_next_encode_buffer()
+Date:   Mon, 13 Jun 2022 12:10:09 +0200
+Message-Id: <20220613094912.560232671@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -49,45 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-[ Upstream commit 9b87162de8be26bf3156460b37deee6399fd0fcb ]
+[ Upstream commit 6c254bf3b637dd4ef4f78eb78c7447419c0161d7 ]
 
-Only CS7 and CS8 seem supported but CSIZE is not sanitized from
-CS5 or CS6 to CS8.
+I found that NFSD's new NFSv3 READDIRPLUS XDR encoder was screwing up
+right at the end of the page array. xdr_get_next_encode_buffer() does
+not compute the value of xdr->end correctly:
 
-Set CSIZE correctly so that userspace knows the effective value.
-Incorrect CSIZE also results in miscalculation of the frame bits in
-tty_get_char_size() or in its predecessor where the roughly the same
-code is directly within uart_update_timeout().
+ * The check to see if we're on the final available page in xdr->buf
+   needs to account for the space consumed by @nbytes.
 
-Fixes: 1da177e4c3f4 (Linux-2.6.12-rc2)
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Link: https://lore.kernel.org/r/20220519081808.3776-6-ilpo.jarvinen@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+ * The new xdr->end value needs to account for the portion of @nbytes
+   that is to be encoded into the previous buffer.
+
+Fixes: 2825a7f90753 ("nfsd4: allow encoding across page boundaries")
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Reviewed-by: NeilBrown <neilb@suse.de>
+Reviewed-by: J. Bruce Fields <bfields@fieldses.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/sh-sci.c | 6 +++++-
+ net/sunrpc/xdr.c | 6 +++++-
  1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 5c6243a31166..91c69fc3987a 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -2206,8 +2206,12 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
- 	unsigned long max_freq = 0;
- 	int best_clk = -1;
- 
--	if ((termios->c_cflag & CSIZE) == CS7)
-+	if ((termios->c_cflag & CSIZE) == CS7) {
- 		smr_val |= SCSMR_CHR;
-+	} else {
-+		termios->c_cflag &= ~CSIZE;
-+		termios->c_cflag |= CS8;
-+	}
- 	if (termios->c_cflag & PARENB)
- 		smr_val |= SCSMR_PE;
- 	if (termios->c_cflag & PARODD)
+diff --git a/net/sunrpc/xdr.c b/net/sunrpc/xdr.c
+index dd547edee59f..06b4b76edd9d 100644
+--- a/net/sunrpc/xdr.c
++++ b/net/sunrpc/xdr.c
+@@ -544,7 +544,11 @@ static __be32 *xdr_get_next_encode_buffer(struct xdr_stream *xdr,
+ 	 */
+ 	xdr->p = (void *)p + frag2bytes;
+ 	space_left = xdr->buf->buflen - xdr->buf->len;
+-	xdr->end = (void *)p + min_t(int, space_left, PAGE_SIZE);
++	if (space_left - nbytes >= PAGE_SIZE)
++		xdr->end = (void *)p + PAGE_SIZE;
++	else
++		xdr->end = (void *)p + space_left - frag1bytes;
++
+ 	xdr->buf->page_len += frag2bytes;
+ 	xdr->buf->len += nbytes;
+ 	return p;
 -- 
 2.35.1
 
