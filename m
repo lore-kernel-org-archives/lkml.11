@@ -2,93 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6FFEC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:17:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72A4DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 17:20:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239663AbiFMRR2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 13:17:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58142 "EHLO
+        id S241714AbiFMRUH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 13:20:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244461AbiFMROD (ORCPT
+        with ESMTP id S241079AbiFMRTj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 13:14:03 -0400
-Received: from smtp-42ac.mail.infomaniak.ch (smtp-42ac.mail.infomaniak.ch [84.16.66.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46D4B5549E
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 05:20:08 -0700 (PDT)
-Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4LM9cj5FsVzMpwtX;
-        Mon, 13 Jun 2022 14:20:05 +0200 (CEST)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4LM9cd4MYKzlpb2d;
-        Mon, 13 Jun 2022 14:20:01 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1655122805;
-        bh=P8NVyXj34ZvJVQWESPk01PC8KYswBLc2J5cBfxA5wlI=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=aOumEP/IoqVDxckhdOnow8XBOtzF6rPUHSpjAaEiKv4s4qTv9+QazdFI/MV0sY9Oj
-         WNcCDGC2NsIWSWr8htmOXQonlVhjqK6/U6g/yYRD9VTzd/JdIjpyOFwXcDvdlX4LMS
-         ZPoJ0aNzkEJ9Yh+5Wu0QvJ3PdsdwNy2lAdCZDTxY=
-Message-ID: <ff05d732-3202-7c9c-0d4c-d95101ed6ba3@digikod.net>
-Date:   Mon, 13 Jun 2022 14:20:00 +0200
-MIME-Version: 1.0
-User-Agent: 
-Subject: Re: [PATCH 1/4] certs/blacklist_hashes.c: fix const confusion in
- certs blacklist
-Content-Language: en-US
-To:     Masahiro Yamada <masahiroy@kernel.org>,
-        linux-kbuild@vger.kernel.org
-Cc:     David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        David Woodhouse <dwmw2@infradead.org>,
-        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Eric Snowberg <eric.snowberg@oracle.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>
-References: <20220611172233.1494073-1-masahiroy@kernel.org>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-In-Reply-To: <20220611172233.1494073-1-masahiroy@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Mon, 13 Jun 2022 13:19:39 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECCCA286FE;
+        Mon, 13 Jun 2022 05:30:08 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id g25so10838345ejh.9;
+        Mon, 13 Jun 2022 05:30:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=B8BwMYVvC8BQc7LNFzLo5v93X9Yq8XucGXAjmnMlByk=;
+        b=XQlPd903MYJVrjP4lIVH5ujucf95qpOh4AdpWxpDh4cwOKwMOOAIW4cC118V06hJ9a
+         T3TMQMJmES8fKi/7UThbnCQFj5EKvQcr7HejKhf2wNul6gyvsT3+Ge7twVgdeKP1nWEv
+         uwIbzMKWOKiP47tE0UgB6G5mhSHeYxLwODTM/RexPGqVmE39/30z5Pulr120htYUU8ux
+         sEEy+KmLgmXNwTufYry6X3EUNE71bBAGSz0JdGZSEANDqW6cZQ88epfU4NjllmeEfRMM
+         4jYOB1Hr46qvNWLdIZVKVJ/+NowzsCp3sqLzYk34mTl+HndThd4pmqkPV8v+i82aHkdp
+         Imsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=B8BwMYVvC8BQc7LNFzLo5v93X9Yq8XucGXAjmnMlByk=;
+        b=rkePbMlV0ncON3ykhB3nZhrQ7NH/0OxsAm2i7/jark/m1kCH9DeP3fTcCIczEcs5++
+         v6n/Rkdg/PWncpcb/qubTIeW4xWUCKUbfpkh3IlGz5BjU2clM7WFfri6kvW45Txa0FAN
+         FUt8RMtKtDza+Qgut2UuWeYZRmhdM9lsX2J7z5bIq4M8WqaoR5ofVDdA6E+SjqBaHHeP
+         YnP79TmO3+gDQQoTSvpUHOzota7iB2dPtDtsSZWIEolnTqNt9aZUPSJeH54Bk9JskxmU
+         kWyuHVeAiEi9N6eYkxQYuJ8WbqKTXrY0YPrOWape7E1opQB2S4Qrw8jaiIO4OWdqMO3U
+         2A8g==
+X-Gm-Message-State: AOAM533yn+NhFR8SRRyBPhfMMXnvaCMunaeJ0jlWNagWDp/BD1Eo5B6s
+        8PHUYv4ZIsZHml4b/gv6eCaAsvPDpcrLPA==
+X-Google-Smtp-Source: ABdhPJw0skCSkAMQnGEqFEAS/7uy8MwoJr18K9YU6RpZOacew9XsDqMzZMDbn4MbVTU7h3be90VoWA==
+X-Received: by 2002:a17:906:7254:b0:6fe:5637:cbe6 with SMTP id n20-20020a170906725400b006fe5637cbe6mr51977016ejk.612.1655123407428;
+        Mon, 13 Jun 2022 05:30:07 -0700 (PDT)
+Received: from felia.fritz.box (200116b8260df50011e978c0f780de03.dip.versatel-1u1.de. [2001:16b8:260d:f500:11e9:78c0:f780:de03])
+        by smtp.gmail.com with ESMTPSA id f12-20020a056402068c00b0042a2d9af0f8sm4812513edy.79.2022.06.13.05.30.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 05:30:07 -0700 (PDT)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] MAINTAINERS: add include/dt-bindings/pinctrl to PIN CONTROL SUBSYSTEM
+Date:   Mon, 13 Jun 2022 14:29:55 +0200
+Message-Id: <20220613122955.20714-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Maintainers of the directory Documentation/devicetree/bindings/pinctrl
+are also the maintainers of the corresponding directory
+include/dt-bindings/pinctrl.
 
-On 11/06/2022 19:22, Masahiro Yamada wrote:
-> This file fails to compile as follows:
-> 
->    CC      certs/blacklist_hashes.o
-> certs/blacklist_hashes.c:4:1: error: ignoring attribute ‘section (".init.data")’ because it conflicts with previous ‘section (".init.rodata")’ [-Werror=attributes]
->      4 | const char __initdata *const blacklist_hashes[] = {
->        | ^~~~~
-> In file included from certs/blacklist_hashes.c:2:
-> certs/blacklist.h:5:38: note: previous declaration here
->      5 | extern const char __initconst *const blacklist_hashes[];
->        |                                      ^~~~~~~~~~~~~~~~
-> 
-> Apply the same fix as commit 2be04df5668d ("certs/blacklist_nohashes.c:
-> fix const confusion in certs blacklist").
-> 
-> Fixes: 734114f8782f ("KEYS: Add a system blacklist keyring")
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Add the file entry for include/dt-bindings/pinctrl to the appropriate
+section in MAINTAINERS.
 
-Reviewed-by: Mickaël Salaün <mic@linux.microsoft.com>
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+---
+Linus, please pick this MAINTAINERS addition to your section.
 
-> ---
-> 
->   certs/blacklist_hashes.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/certs/blacklist_hashes.c b/certs/blacklist_hashes.c
-> index 344892337be0..d5961aa3d338 100644
-> --- a/certs/blacklist_hashes.c
-> +++ b/certs/blacklist_hashes.c
-> @@ -1,7 +1,7 @@
->   // SPDX-License-Identifier: GPL-2.0
->   #include "blacklist.h"
->   
-> -const char __initdata *const blacklist_hashes[] = {
-> +const char __initconst *const blacklist_hashes[] = {
->   #include CONFIG_SYSTEM_BLACKLIST_HASH_LIST
->   	, NULL
->   };
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 7a4c3e811262..9c67cd163cbb 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -15787,6 +15787,7 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-pinctrl.git
+ F:	Documentation/devicetree/bindings/pinctrl/
+ F:	Documentation/driver-api/pin-control.rst
+ F:	drivers/pinctrl/
++F:	include/dt-bindings/pinctrl/
+ F:	include/linux/pinctrl/
+ 
+ PIN CONTROLLER - AMD
+-- 
+2.17.1
+
