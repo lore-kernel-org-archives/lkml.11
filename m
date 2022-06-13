@@ -2,135 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FA02C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:08:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7321C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:09:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244711AbiFMSIC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:08:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49700 "EHLO
+        id S243451AbiFMSI6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:08:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244461AbiFMSHV (ORCPT
+        with ESMTP id S244908AbiFMSIR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 14:07:21 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9AFC8B0AF;
-        Mon, 13 Jun 2022 07:00:14 -0700 (PDT)
-X-UUID: 29656358474b4af889de45a5fd8967fd-20220613
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.6,REQID:576c7b65-f9ce-4c01-b821-e0a9b4a355b6,OB:40,L
-        OB:10,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham
-        ,ACTION:release,TS:95
-X-CID-INFO: VERSION:1.1.6,REQID:576c7b65-f9ce-4c01-b821-e0a9b4a355b6,OB:40,LOB
-        :10,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D
-        ,ACTION:quarantine,TS:95
-X-CID-META: VersionHash:b14ad71,CLOUDID:3a1069c6-12ba-4305-bfdf-9aefbdc32516,C
-        OID:c390d734f6ed,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:1,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 29656358474b4af889de45a5fd8967fd-20220613
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <lecopzer.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 858038477; Mon, 13 Jun 2022 22:00:07 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Mon, 13 Jun 2022 22:00:01 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Mon, 13 Jun 2022 22:00:01 +0800
-From:   Lecopzer Chen <lecopzer.chen@mediatek.com>
-To:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <pmladek@suse.com>, <acme@kernel.org>, <akpm@linux-foundation.org>,
-        <alexander.shishkin@linux.intel.com>, <catalin.marinas@arm.com>,
-        <davem@davemloft.net>, <jolsa@redhat.com>, <jthierry@redhat.com>,
-        <keescook@chromium.org>, <kernelfans@gmail.com>,
-        <lecopzer.chen@mediatek.com>, <linux-mediatek@lists.infradead.org>,
-        <linux-perf-users@vger.kernel.org>, <mark.rutland@arm.com>,
-        <masahiroy@kernel.org>, <matthias.bgg@gmail.com>, <maz@kernel.org>,
-        <mcgrof@kernel.org>, <mingo@redhat.com>, <namhyung@kernel.org>,
-        <nixiaoming@huawei.com>, <peterz@infradead.org>,
-        <sparclinux@vger.kernel.org>, <sumit.garg@linaro.org>,
-        <wangqing@vivo.com>, <will@kernel.org>, <yj.chiang@mediatek.com>
-Subject: [PATCH v5 5/6] arm64: add hw_nmi_get_sample_period for preparation of lockup detector
-Date:   Mon, 13 Jun 2022 21:59:55 +0800
-Message-ID: <20220613135956.15711-6-lecopzer.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220613135956.15711-1-lecopzer.chen@mediatek.com>
-References: <20220613135956.15711-1-lecopzer.chen@mediatek.com>
+        Mon, 13 Jun 2022 14:08:17 -0400
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52E0542EEB
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 06:55:54 -0700 (PDT)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id E1E6A68AA6; Mon, 13 Jun 2022 15:55:49 +0200 (CEST)
+Date:   Mon, 13 Jun 2022 15:55:49 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        "R, Monish Kumar" <monish.kumar.r@intel.com>,
+        "open list:NVM EXPRESS DRIVER" <linux-nvme@lists.infradead.org>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        "alan.adamson@oracle.com" <alan.adamson@oracle.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Yi Zhang <yi.zhang@redhat.com>,
+        Keith Busch <kbusch@kernel.org>, "axboe@fb.com" <axboe@fb.com>,
+        "Rao, Abhijeet" <abhijeet.rao@intel.com>
+Subject: Re: 2 second nvme initialization delay regression in 5.18 [Was:
+ Re: [bug report]nvme0: Admin Cmd(0x6), I/O Error (sct 0x0 / sc 0x2)
+ MORE DNR observed during blktests]
+Message-ID: <20220613135549.GA1714@lst.de>
+References: <CAHj4cs_iC+FE8ZAXXZPeia1V3ZX7zRbeASdOP_8c7DLiFozNfA@mail.gmail.com> <Ykyf5Zuz1W8yHhNY@zx2c4.com> <CAHmME9pwz4q0m-pSUy7ReWu4nNzxySNcYZrqyDZiTuGxHN=1NQ@mail.gmail.com> <CAHmME9o-orF52HzkT80054e3Op5fLOcTHb-KHpvvU7H3FpAJ7A@mail.gmail.com> <SA2PR11MB5115DCE45778910C96813CA1C3A79@SA2PR11MB5115.namprd11.prod.outlook.com> <YqG/pybFg0P5yQ9a@zx2c4.com> <20220610061449.GD24331@lst.de> <YqMMo2Dv9SZRtR7B@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YqMMo2Dv9SZRtR7B@zx2c4.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Set safe maximum CPU frequency to 5 GHz in case a particular platform
-doesn't implement cpufreq driver.
-Although, architecture doesn't put any restrictions on
-maximum frequency but 5 GHz seems to be safe maximum given the available
-Arm CPUs in the market which are clocked much less than 5 GHz.
+On Fri, Jun 10, 2022 at 11:19:31AM +0200, Jason A. Donenfeld wrote:
+> Right, that seems like the set of variance we're dealing with. If it's a
+> firmware version issue, then we revert because people can update? Or can
+> we quirk firmware version numbers too?
 
-On the other hand, we can't make it much higher as it would lead to
-a large hard-lockup detection timeout on parts which are running
-slower (eg. 1GHz on Developerbox) and doesn't possess a cpufreq driver.
+We can quirk on firmware version and model number as well.  Those quirks
+need to go into the core nvme module and not just the PCI driver, though.
 
-[1]:http://lore.kernel.org/linux-arm-kernel/1610712101-14929-1-git-send-email-sumit.garg@linaro.org
+> If it's ASIC stepping, I guess we
+> need to quirk that. And likewise thunderbolt, but that seems more
+> awkward to quirk around, because afaik, it all just appears as PCIe?
 
-Co-developed-by: Sumit Garg <sumit.garg@linaro.org>
-Signed-off-by: Sumit Garg <sumit.garg@linaro.org>
-Co-developed-by: Pingfan Liu <kernelfans@gmail.com>
-Signed-off-by: Pingfan Liu <kernelfans@gmail.com>
-Signed-off-by: Lecopzer Chen <lecopzer.chen@mediatek.com>
----
- arch/arm64/kernel/Makefile       |  1 +
- arch/arm64/kernel/watchdog_hld.c | 25 +++++++++++++++++++++++++
- 2 files changed, 26 insertions(+)
- create mode 100644 arch/arm64/kernel/watchdog_hld.c
+It all appears as PCIe, but the pci_dev has an is_thunderbolt flag.
 
-diff --git a/arch/arm64/kernel/Makefile b/arch/arm64/kernel/Makefile
-index fa7981d0d917..303b69ad5366 100644
---- a/arch/arm64/kernel/Makefile
-+++ b/arch/arm64/kernel/Makefile
-@@ -46,6 +46,7 @@ obj-$(CONFIG_MODULES)			+= module.o
- obj-$(CONFIG_ARM64_MODULE_PLTS)		+= module-plts.o
- obj-$(CONFIG_PERF_EVENTS)		+= perf_regs.o perf_callchain.o
- obj-$(CONFIG_HW_PERF_EVENTS)		+= perf_event.o
-+obj-$(CONFIG_HARDLOCKUP_DETECTOR_PERF)	+= watchdog_hld.o
- obj-$(CONFIG_HAVE_HW_BREAKPOINT)	+= hw_breakpoint.o
- obj-$(CONFIG_CPU_PM)			+= sleep.o suspend.o
- obj-$(CONFIG_CPU_IDLE)			+= cpuidle.o
-diff --git a/arch/arm64/kernel/watchdog_hld.c b/arch/arm64/kernel/watchdog_hld.c
-new file mode 100644
-index 000000000000..de43318e4dd6
---- /dev/null
-+++ b/arch/arm64/kernel/watchdog_hld.c
-@@ -0,0 +1,25 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/cpufreq.h>
-+
-+/*
-+ * Safe maximum CPU frequency in case a particular platform doesn't implement
-+ * cpufreq driver. Although, architecture doesn't put any restrictions on
-+ * maximum frequency but 5 GHz seems to be safe maximum given the available
-+ * Arm CPUs in the market which are clocked much less than 5 GHz. On the other
-+ * hand, we can't make it much higher as it would lead to a large hard-lockup
-+ * detection timeout on parts which are running slower (eg. 1GHz on
-+ * Developerbox) and doesn't possess a cpufreq driver.
-+ */
-+#define SAFE_MAX_CPU_FREQ	5000000000UL // 5 GHz
-+u64 hw_nmi_get_sample_period(int watchdog_thresh)
-+{
-+	unsigned int cpu = smp_processor_id();
-+	unsigned long max_cpu_freq;
-+
-+	max_cpu_freq = cpufreq_get_hw_max_freq(cpu) * 1000UL;
-+	if (!max_cpu_freq)
-+		max_cpu_freq = SAFE_MAX_CPU_FREQ;
-+
-+	return (u64)max_cpu_freq * watchdog_thresh;
-+}
-+
--- 
-2.25.1
-
+Thanks to both of you for the information.  I'd like to wait until the
+end of the week or so if we can hear something from Samsung, and if we
+don't we'll have to quirk based on the model number.
