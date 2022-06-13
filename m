@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D937BCCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:20:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C54FBCCA488
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:20:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376943AbiFMNTo (ORCPT
+        id S1359462AbiFMNUx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:19:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43522 "EHLO
+        Mon, 13 Jun 2022 09:20:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376268AbiFMNKq (ORCPT
+        with ESMTP id S1376283AbiFMNKr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:10:46 -0400
+        Mon, 13 Jun 2022 09:10:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 152155E77C;
-        Mon, 13 Jun 2022 04:21:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 878CF6220E;
+        Mon, 13 Jun 2022 04:21:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2520560F95;
-        Mon, 13 Jun 2022 11:21:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30E4DC34114;
-        Mon, 13 Jun 2022 11:21:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D2CDC60B6E;
+        Mon, 13 Jun 2022 11:21:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4202C3411E;
+        Mon, 13 Jun 2022 11:21:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119300;
-        bh=3TszrS3lAtEjZ2rupo4rzyU9qtS2/kAgbkhSgz7ytFE=;
+        s=korg; t=1655119303;
+        bh=k+/pVrIT8QfqIWbATLK3wlWEq5hh0GwRx7H7a3D01Zw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BbOodqTBlKRnH9Vcrmc6YRXmeqXrOaTQ8u3EdgeJkXO/mZj4xFsHolpXlQ8S3Fjms
-         9M2BOg7xG4/gXJmb0c5rMptDiR5+ndiRifIN3io6UFLTmkwvGh3MEPD2WVgmxwhMAX
-         8paLAk6kYywAPRWw+bVhYN6mtL2s+PuyygL1tIgo=
+        b=jm/UZVmeVfw6gotMCSrN7UeB6aYNoJHQdCdXYcR37+crrSSi+3Xe6eFVQsN8DNl9N
+         d6Wh/HR9HJrz5kjCKnS0wc6byY+qx+sulKjLRATmzTO7E9P+3op+JsT8bgwv7Zfe+k
+         JONjXC3qKIgn/jEq39R8IZHY0zp4tZ8KJaCA0FV0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michal Kubecek <mkubecek@suse.cz>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
+        stable@vger.kernel.org, Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 195/247] Revert "net: af_key: add check for pfkey_broadcast in function pfkey_process"
-Date:   Mon, 13 Jun 2022 12:11:37 +0200
-Message-Id: <20220613094928.864524800@linuxfoundation.org>
+Subject: [PATCH 5.15 213/247] scripts/gdb: change kernel config dumping method
+Date:   Mon, 13 Jun 2022 12:11:55 +0200
+Message-Id: <20220613094929.400111120@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094922.843438024@linuxfoundation.org>
 References: <20220613094922.843438024@linuxfoundation.org>
@@ -50,57 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michal Kubecek <mkubecek@suse.cz>
+From: Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
 
-[ Upstream commit 9c90c9b3e50e16d03c7f87d63e9db373974781e0 ]
+[ Upstream commit 1f7a6cf6b07c74a17343c2559cd5f5018a245961 ]
 
-This reverts commit 4dc2a5a8f6754492180741facf2a8787f2c415d7.
+MAGIC_START("IKCFG_ST") and MAGIC_END("IKCFG_ED") are moved out
+from the kernel_config_data variable.
 
-A non-zero return value from pfkey_broadcast() does not necessarily mean
-an error occurred as this function returns -ESRCH when no registered
-listener received the message. In particular, a call with
-BROADCAST_PROMISC_ONLY flag and null one_sk argument can never return
-zero so that this commit in fact prevents processing any PF_KEY message.
-One visible effect is that racoon daemon fails to find encryption
-algorithms like aes and refuses to start.
+Thus, we parse kernel_config_data directly instead of considering
+offset of MAGIC_START and MAGIC_END.
 
-Excluding -ESRCH return value would fix this but it's not obvious that
-we really want to bail out here and most other callers of
-pfkey_broadcast() also ignore the return value. Also, as pointed out by
-Steffen Klassert, PF_KEY is kind of deprecated and newer userspace code
-should use netlink instead so that we should only disturb the code for
-really important fixes.
-
-v2: add a comment explaining why is the return value ignored
-
-Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Fixes: 13610aa908dc ("kernel/configs: use .incbin directive to embed config_data.gz")
+Signed-off-by: Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/key/af_key.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ scripts/gdb/linux/config.py | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index 339d95df19d3..d93bde657359 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -2826,10 +2826,12 @@ static int pfkey_process(struct sock *sk, struct sk_buff *skb, const struct sadb
- 	void *ext_hdrs[SADB_EXT_MAX];
- 	int err;
+diff --git a/scripts/gdb/linux/config.py b/scripts/gdb/linux/config.py
+index 90e1565b1967..8843ab3cbadd 100644
+--- a/scripts/gdb/linux/config.py
++++ b/scripts/gdb/linux/config.py
+@@ -24,9 +24,9 @@ class LxConfigDump(gdb.Command):
+             filename = arg
  
--	err = pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
--			      BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
--	if (err)
--		return err;
-+	/* Non-zero return value of pfkey_broadcast() does not always signal
-+	 * an error and even on an actual error we may still want to process
-+	 * the message so rather ignore the return value.
-+	 */
-+	pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
-+			BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
+         try:
+-            py_config_ptr = gdb.parse_and_eval("kernel_config_data + 8")
+-            py_config_size = gdb.parse_and_eval(
+-                    "sizeof(kernel_config_data) - 1 - 8 * 2")
++            py_config_ptr = gdb.parse_and_eval("&kernel_config_data")
++            py_config_ptr_end = gdb.parse_and_eval("&kernel_config_data_end")
++            py_config_size = py_config_ptr_end - py_config_ptr
+         except gdb.error as e:
+             raise gdb.GdbError("Can't find config, enable CONFIG_IKCONFIG?")
  
- 	memset(ext_hdrs, 0, sizeof(ext_hdrs));
- 	err = parse_exthdrs(skb, hdr, ext_hdrs);
 -- 
 2.35.1
 
