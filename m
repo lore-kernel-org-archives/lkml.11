@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0825EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:24:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56B99C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:24:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353701AbiFMLYm (ORCPT
+        id S1353733AbiFMLYo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:24:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46720 "EHLO
+        Mon, 13 Jun 2022 07:24:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353740AbiFMLQQ (ORCPT
+        with ESMTP id S1352406AbiFMLQn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:16:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B1E13E3D;
-        Mon, 13 Jun 2022 03:39:52 -0700 (PDT)
+        Mon, 13 Jun 2022 07:16:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5133513FB2;
+        Mon, 13 Jun 2022 03:40:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 933BD6119F;
-        Mon, 13 Jun 2022 10:39:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99A2EC34114;
-        Mon, 13 Jun 2022 10:39:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E3EDE611AD;
+        Mon, 13 Jun 2022 10:40:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0E51C36B00;
+        Mon, 13 Jun 2022 10:40:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116791;
-        bh=lDsK+540RmwREZaERlJaP2SKBGrB1xvgPEhdWnr0PS4=;
+        s=korg; t=1655116802;
+        bh=/KA418GLVD+9TzUQqWQ1Xutqsaeu0rJn2Am7XBzKav8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0/Es6xM8rh1vW0q0a/6F/sP4amyT5ECtqDy0odKn0EafKGa6eQi9Li8PiIBAqhey4
-         PrOoTH568h6XE1aNYyh9/GsVSrPeSIYOajqr1uOdw3qLO/SurD7cnAG6z8n+sV9Kpt
-         FzM3eHxH4lQNcz/vCcmPQAxhCrD6E0lDEjT2GTI0=
+        b=sstcZuv/exFYagTJyQKo4drym8HjpQhl3kBG+m8tpQdkiHnX5/ZotYtfGr4HEAD2e
+         Qc33j0kwrwlZqyAD9mQOwOchqjUItQ0kguZ8cE5grPrUJ1qD4fzGIpTibOtqbFWmwR
+         iXR76d9RhAjYzFrsKzXzDllGtCxaj4KdRr7zeoYI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vishal Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Jeff Moyer <jmoyer@redhat.com>,
-        Krzysztof Kensicki <krzysztof.kensicki@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 175/411] nvdimm: Allow overwrite in the presence of disabled dimms
-Date:   Mon, 13 Jun 2022 12:07:28 +0200
-Message-Id: <20220613094933.904632229@linuxfoundation.org>
+Subject: [PATCH 5.4 190/411] macintosh: via-pmu and via-cuda need RTC_LIB
+Date:   Mon, 13 Jun 2022 12:07:43 +0200
+Message-Id: <20220613094934.358068710@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -54,48 +53,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Williams <dan.j.williams@intel.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit bb7bf697fed58eae9d3445944e457ab0de4da54f ]
+[ Upstream commit 9a9c5ff5fff87eb1a43db0d899473554e408fd7b ]
 
-It is not clear why the original implementation of overwrite support
-required the dimm driver to be active before overwrite could proceed. In
-fact that can lead to cases where the kernel retains an invalid cached
-copy of the labels from before the overwrite. Unfortunately the kernel
-has not only allowed that case, but enforced it.
+Fix build when RTC_LIB is not set/enabled.
+Eliminates these build errors:
 
-Going forward, allow for overwrite to happen while the label area is
-offline, and follow-on with updates to 'ndctl sanitize-dimm --overwrite'
-to trigger the label area invalidation by default.
+m68k-linux-ld: drivers/macintosh/via-pmu.o: in function `pmu_set_rtc_time':
+drivers/macintosh/via-pmu.c:1769: undefined reference to `rtc_tm_to_time64'
+m68k-linux-ld: drivers/macintosh/via-cuda.o: in function `cuda_set_rtc_time':
+drivers/macintosh/via-cuda.c:797: undefined reference to `rtc_tm_to_time64'
 
-Cc: Vishal Verma <vishal.l.verma@intel.com>
-Cc: Dave Jiang <dave.jiang@intel.com>
-Cc: Ira Weiny <ira.weiny@intel.com>
-Cc: Jeff Moyer <jmoyer@redhat.com>
-Reported-by: Krzysztof Kensicki <krzysztof.kensicki@intel.com>
-Fixes: 7d988097c546 ("acpi/nfit, libnvdimm/security: Add security DSM overwrite support")
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Fixes: 0792a2c8e0bb ("macintosh: Use common code to access RTC")
+Reported-by: kernel test robot <lkp@intel.com>
+Suggested-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220410161035.592-1-rdunlap@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvdimm/security.c | 5 -----
- 1 file changed, 5 deletions(-)
+ drivers/macintosh/Kconfig | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/nvdimm/security.c b/drivers/nvdimm/security.c
-index 35d265014e1e..0e23d8c27792 100644
---- a/drivers/nvdimm/security.c
-+++ b/drivers/nvdimm/security.c
-@@ -379,11 +379,6 @@ static int security_overwrite(struct nvdimm *nvdimm, unsigned int keyid)
- 			|| !nvdimm->sec.flags)
- 		return -EOPNOTSUPP;
- 
--	if (dev->driver == NULL) {
--		dev_dbg(dev, "Unable to overwrite while DIMM active.\n");
--		return -EINVAL;
--	}
--
- 	rc = check_security_state(nvdimm);
- 	if (rc)
- 		return rc;
+diff --git a/drivers/macintosh/Kconfig b/drivers/macintosh/Kconfig
+index abaf1401cca6..b5a534206edd 100644
+--- a/drivers/macintosh/Kconfig
++++ b/drivers/macintosh/Kconfig
+@@ -44,6 +44,7 @@ config ADB_IOP
+ config ADB_CUDA
+ 	bool "Support for Cuda/Egret based Macs and PowerMacs"
+ 	depends on (ADB || PPC_PMAC) && !PPC_PMAC64
++	select RTC_LIB
+ 	help
+ 	  This provides support for Cuda/Egret based Macintosh and
+ 	  Power Macintosh systems. This includes most m68k based Macs,
+@@ -57,6 +58,7 @@ config ADB_CUDA
+ config ADB_PMU
+ 	bool "Support for PMU based PowerMacs and PowerBooks"
+ 	depends on PPC_PMAC || MAC
++	select RTC_LIB
+ 	help
+ 	  On PowerBooks, iBooks, and recent iMacs and Power Macintoshes, the
+ 	  PMU is an embedded microprocessor whose primary function is to
 -- 
 2.35.1
 
