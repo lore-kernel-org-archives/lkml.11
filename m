@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5F71C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:21:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15AB2C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:21:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382618AbiFMOVD (ORCPT
+        id S1382742AbiFMOVG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:21:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41718 "EHLO
+        Mon, 13 Jun 2022 10:21:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383030AbiFMOPI (ORCPT
+        with ESMTP id S1383115AbiFMOPX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:15:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4816E9C2C7;
-        Mon, 13 Jun 2022 04:42:48 -0700 (PDT)
+        Mon, 13 Jun 2022 10:15:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB9E09CC81;
+        Mon, 13 Jun 2022 04:42:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EAFB8612D0;
-        Mon, 13 Jun 2022 11:42:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06C27C34114;
-        Mon, 13 Jun 2022 11:42:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 507C1B80ECD;
+        Mon, 13 Jun 2022 11:42:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A430BC34114;
+        Mon, 13 Jun 2022 11:42:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120566;
-        bh=fk0snry+InHU+B4/QPetFWBQtBuKmh2RmoCROynAung=;
+        s=korg; t=1655120569;
+        bh=mw/Kae021Zd0ilpCkoH0xuovLwi9c677QHtw690TGHg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TisOdVl3B1ivfciQE07nlor//UL0IQ3A9h5z9/v/ckOqNnF50hPER18D7baMH3Sim
-         yOm7YRWvOiVb/QDqq7IaJmyo/kQEKCrkhdIbO5M+LImIY6m9JhICkVOJmqxUDOes2J
-         hyyk0bx6ehCUwuvlWuJrX9a27kKMHPszF54yqSYs=
+        b=xfchMZCJSsx4iYFocSKDh1wWmpi0MMSFsE8odg+9yr2DAbyHrotWwHDD8RpTcGVpJ
+         rLBh0tFzwT2efvv/4EpzZPRrcojr0obPa7Kz8k6J4mECykCO1GKWU2qT6ItVGY8rsY
+         T1d6NhMFS8EpkkA77Bll87+OVdFMaO1nM3gXEeAY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, liuyacan <liuyacan@corp.netease.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 079/298] net/smc: set ini->smcrv2.ib_dev_v2 to NULL if SMC-Rv2 is unavailable
-Date:   Mon, 13 Jun 2022 12:09:33 +0200
-Message-Id: <20220613094927.342258382@linuxfoundation.org>
+Subject: [PATCH 5.17 062/298] serial: txx9: Dont allow CS5-6
+Date:   Mon, 13 Jun 2022 12:09:16 +0200
+Message-Id: <20220613094926.829673971@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -51,36 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: liuyacan <liuyacan@corp.netease.com>
+From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-[ Upstream commit b3b1a17538d3ef6a9667b2271216fd16d7678ab5 ]
+[ Upstream commit 79ac88655dc0551e3571ad16bdabdbe65d61553e ]
 
-In the process of checking whether RDMAv2 is available, the current
-implementation first sets ini->smcrv2.ib_dev_v2, and then allocates
-smc buf desc and register rmb, but the latter may fail. In this case,
-the pointer should be reset.
+Only CS7 and CS8 are supported but CSIZE is not sanitized with
+CS5 or CS6 to CS8.
 
-Fixes: e49300a6bf62 ("net/smc: add listen processing for SMC-Rv2")
-Signed-off-by: liuyacan <liuyacan@corp.netease.com>
-Reviewed-by: Karsten Graul <kgraul@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220525085408.812273-1-liuyacan@corp.netease.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Set CSIZE correctly so that userspace knows the effective value.
+Incorrect CSIZE also results in miscalculation of the frame bits in
+tty_get_char_size() or in its predecessor where the roughly the same
+code is directly within uart_update_timeout().
+
+Fixes: 1da177e4c3f4 (Linux-2.6.12-rc2)
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Link: https://lore.kernel.org/r/20220519081808.3776-5-ilpo.jarvinen@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/smc/af_smc.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/serial/serial_txx9.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index b9fe31834354..4bc6b16669f3 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -1973,6 +1973,7 @@ static void smc_find_rdma_v2_device_serv(struct smc_sock *new_smc,
- 
- not_found:
- 	ini->smcr_version &= ~SMC_V2;
-+	ini->smcrv2.ib_dev_v2 = NULL;
- 	ini->check_smcrv2 = false;
- }
+diff --git a/drivers/tty/serial/serial_txx9.c b/drivers/tty/serial/serial_txx9.c
+index aaca4fe38486..1f8362d5e3b9 100644
+--- a/drivers/tty/serial/serial_txx9.c
++++ b/drivers/tty/serial/serial_txx9.c
+@@ -644,6 +644,8 @@ serial_txx9_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	case CS6:	/* not supported */
+ 	case CS8:
+ 		cval |= TXX9_SILCR_UMODE_8BIT;
++		termios->c_cflag &= ~CSIZE;
++		termios->c_cflag |= CS8;
+ 		break;
+ 	}
  
 -- 
 2.35.1
