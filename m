@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2642C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:41:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7E0CCCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:41:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378385AbiFMNlP (ORCPT
+        id S1378422AbiFMNlb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:41:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59054 "EHLO
+        Mon, 13 Jun 2022 09:41:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378657AbiFMNjH (ORCPT
+        with ESMTP id S1378821AbiFMNjQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:39:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D6B278929;
-        Mon, 13 Jun 2022 04:27:48 -0700 (PDT)
+        Mon, 13 Jun 2022 09:39:16 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F7037936A;
+        Mon, 13 Jun 2022 04:28:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DBAE60B6E;
-        Mon, 13 Jun 2022 11:27:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7970CC34114;
-        Mon, 13 Jun 2022 11:27:46 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id AA4C9CE1192;
+        Mon, 13 Jun 2022 11:28:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BBF8C34114;
+        Mon, 13 Jun 2022 11:28:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119666;
-        bh=OW9TanCI/TQSFzGgkQDobyBKng33JAZMRBLKjnfSQd8=;
+        s=korg; t=1655119689;
+        bh=H7hRngXPMwAE0BVbWnal+00dHYV5bdYvCflzGFGpIE0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KFpPWvI7Rw7eU2Qe9BlgngZaAFscWn0kXR0GxXykl3R+y2Dl8sewBvVnVQ/7ft7cj
-         q9sBtDxb8mqg/Wq41VteAnV/IrXnMviSyn15JCekrDk/OFJuaGsuWq1E+a/JoSzy3b
-         g9TT3W/otgw5UQVzbFUhTdeShMk7gVslSunx5tmE=
+        b=B7f1NW0Z4PjetxBgLrPlPF9VCaa+XZWzxF2L2dqg2ghTdDU7JT4ClctNj8MzwNVkn
+         K4ZpEXEzyYmFfZhs0AqAz5qyV8EuLWarsTzGo8X/a9ldYJ3cay1fFOvjVcgt6ZXhYb
+         jDCgfpPw8fUuG5rjwgCa/PR2fOsgsMtO0CV10EuE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Siddharth Vadapalli <s-vadapalli@ti.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Menglong Dong <imagedong@tencent.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jiang Biao <benbjiang@tencent.com>,
+        Hao Peng <flyingpeng@tencent.com>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 088/339] net: ethernet: ti: am65-cpsw: Fix fwnode passed to phylink_create()
-Date:   Mon, 13 Jun 2022 12:08:33 +0200
-Message-Id: <20220613094929.185381069@linuxfoundation.org>
+Subject: [PATCH 5.18 104/339] bpf: Fix probe read error in ___bpf_prog_run()
+Date:   Mon, 13 Jun 2022 12:08:49 +0200
+Message-Id: <20220613094929.667429203@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,51 +53,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Siddharth Vadapalli <s-vadapalli@ti.com>
+From: Menglong Dong <imagedong@tencent.com>
 
-[ Upstream commit 0b7180072a9df5e18af5b58410fec38230848a8d ]
+[ Upstream commit caff1fa4118cec4dfd4336521ebd22a6408a1e3e ]
 
-am65-cpsw-nuss driver incorrectly uses fwnode member of common
-ethernet device's "struct device_node" instead of using fwnode
-member of the port's "struct device_node" in phylink_create().
-This results in all ports having the same phy data when there
-are multiple ports with their phy properties populated in their
-respective nodes rather than the common ethernet device node.
+I think there is something wrong with BPF_PROBE_MEM in ___bpf_prog_run()
+in big-endian machine. Let's make a test and see what will happen if we
+want to load a 'u16' with BPF_PROBE_MEM.
 
-Fix it here by using fwnode member of the port's node.
+Let's make the src value '0x0001', the value of dest register will become
+0x0001000000000000, as the value will be loaded to the first 2 byte of
+DST with following code:
 
-Fixes: e8609e69470f ("net: ethernet: ti: am65-cpsw: Convert to PHYLINK")
-Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
-Link: https://lore.kernel.org/r/20220524062558.19296-1-s-vadapalli@ti.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+  bpf_probe_read_kernel(&DST, SIZE, (const void *)(long) (SRC + insn->off));
+
+Obviously, the value in DST is not correct. In fact, we can compare
+BPF_PROBE_MEM with LDX_MEM_H:
+
+  DST = *(SIZE *)(unsigned long) (SRC + insn->off);
+
+If the memory load is done by LDX_MEM_H, the value in DST will be 0x1 now.
+
+And I think this error results in the test case 'test_bpf_sk_storage_map'
+failing:
+
+  test_bpf_sk_storage_map:PASS:bpf_iter_bpf_sk_storage_map__open_and_load 0 nsec
+  test_bpf_sk_storage_map:PASS:socket 0 nsec
+  test_bpf_sk_storage_map:PASS:map_update 0 nsec
+  test_bpf_sk_storage_map:PASS:socket 0 nsec
+  test_bpf_sk_storage_map:PASS:map_update 0 nsec
+  test_bpf_sk_storage_map:PASS:socket 0 nsec
+  test_bpf_sk_storage_map:PASS:map_update 0 nsec
+  test_bpf_sk_storage_map:PASS:attach_iter 0 nsec
+  test_bpf_sk_storage_map:PASS:create_iter 0 nsec
+  test_bpf_sk_storage_map:PASS:read 0 nsec
+  test_bpf_sk_storage_map:FAIL:ipv6_sk_count got 0 expected 3
+  $10/26 bpf_iter/bpf_sk_storage_map:FAIL
+
+The code of the test case is simply, it will load sk->sk_family to the
+register with BPF_PROBE_MEM and check if it is AF_INET6. With this patch,
+now the test case 'bpf_iter' can pass:
+
+  $10  bpf_iter:OK
+
+Fixes: 2a02759ef5f8 ("bpf: Add support for BTF pointers to interpreter")
+Signed-off-by: Menglong Dong <imagedong@tencent.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Reviewed-by: Jiang Biao <benbjiang@tencent.com>
+Reviewed-by: Hao Peng <flyingpeng@tencent.com>
+Cc: Ilya Leoshkevich <iii@linux.ibm.com>
+Link: https://lore.kernel.org/bpf/20220524021228.533216-1-imagedong@tencent.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ti/am65-cpsw-nuss.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ kernel/bpf/core.c | 14 +++++---------
+ 1 file changed, 5 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-index d2747e9db286..98969070ed4b 100644
---- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-+++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-@@ -9,6 +9,7 @@
- #include <linux/etherdevice.h>
- #include <linux/if_vlan.h>
- #include <linux/interrupt.h>
-+#include <linux/irqdomain.h>
- #include <linux/kernel.h>
- #include <linux/kmemleak.h>
- #include <linux/module.h>
-@@ -1989,7 +1990,9 @@ am65_cpsw_nuss_init_port_ndev(struct am65_cpsw_common *common, u32 port_idx)
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 05e701f0da81..1e92b52fc814 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -1950,6 +1950,11 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
+ 		CONT;							\
+ 	LDX_MEM_##SIZEOP:						\
+ 		DST = *(SIZE *)(unsigned long) (SRC + insn->off);	\
++		CONT;							\
++	LDX_PROBE_MEM_##SIZEOP:						\
++		bpf_probe_read_kernel(&DST, sizeof(SIZE),		\
++				      (const void *)(long) (SRC + insn->off));	\
++		DST = *((SIZE *)&DST);					\
+ 		CONT;
  
- 	phy_interface_set_rgmii(port->slave.phylink_config.supported_interfaces);
+ 	LDST(B,   u8)
+@@ -1957,15 +1962,6 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
+ 	LDST(W,  u32)
+ 	LDST(DW, u64)
+ #undef LDST
+-#define LDX_PROBE(SIZEOP, SIZE)							\
+-	LDX_PROBE_MEM_##SIZEOP:							\
+-		bpf_probe_read_kernel(&DST, SIZE, (const void *)(long) (SRC + insn->off));	\
+-		CONT;
+-	LDX_PROBE(B,  1)
+-	LDX_PROBE(H,  2)
+-	LDX_PROBE(W,  4)
+-	LDX_PROBE(DW, 8)
+-#undef LDX_PROBE
  
--	phylink = phylink_create(&port->slave.phylink_config, dev->fwnode, port->slave.phy_if,
-+	phylink = phylink_create(&port->slave.phylink_config,
-+				 of_node_to_fwnode(port->slave.phy_node),
-+				 port->slave.phy_if,
- 				 &am65_cpsw_phylink_mac_ops);
- 	if (IS_ERR(phylink))
- 		return PTR_ERR(phylink);
+ #define ATOMIC_ALU_OP(BOP, KOP)						\
+ 		case BOP:						\
 -- 
 2.35.1
 
