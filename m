@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA277C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:50:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20A76C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:50:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356473AbiFMLuc (ORCPT
+        id S1356513AbiFMLuh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:50:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43214 "EHLO
+        Mon, 13 Jun 2022 07:50:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356534AbiFMLol (ORCPT
+        with ESMTP id S1356558AbiFMLoq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:44:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E508A4757A;
-        Mon, 13 Jun 2022 03:50:53 -0700 (PDT)
+        Mon, 13 Jun 2022 07:44:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 758A947AE3;
+        Mon, 13 Jun 2022 03:50:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4876461306;
-        Mon, 13 Jun 2022 10:50:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BB77C34114;
-        Mon, 13 Jun 2022 10:50:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AE02DB80D3C;
+        Mon, 13 Jun 2022 10:50:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1646EC3411C;
+        Mon, 13 Jun 2022 10:50:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117449;
-        bh=RYGlt8XO8N6wGU/CPy6VpyAOXZydS1xA2/rRn4qKMHg=;
+        s=korg; t=1655117452;
+        bh=t7o3dVSPbYAXzDXsGXvIxTwGgdjNZH7ytre5uqNhv44=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ih8inzzHF4xdwYIJS2s4cGrglz1aCbv6PaxXWgqkiiU7gpI+se3p3U8wsxz3fPTUk
-         EUuCjs8NWbzZhs0tCETEtj+TLxtEre385GWbPJbSMU6MFsM2LNmgdWNut2haaOEH4m
-         YCugKzN0y1Q7TZufFrTXK9rwM+VilnBeWZxdlUwg=
+        b=lFnC/5AvVQ3U1p2Mm4vvUJX0W9inWFQ9sTxbQgHpYPKBrb4YfL1VpDh0mkNFJVEwK
+         A139Jc7bXPOk342yPlgO5EUvBHxzodS1m/IWv6ydb+rd1Oimlo941JpQ8KuUK2bdn2
+         9yZaBtFFfLPjXMOjqS1ReKS5IpeYawLy2k6xh3Jg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+6f5ecd144854c0d8580b@syzkaller.appspotmail.com,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Wang Cheng <wanngchenng@gmail.com>,
+        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 380/411] staging: rtl8712: fix uninit-value in usb_read8() and friends
-Date:   Mon, 13 Jun 2022 12:10:53 +0200
-Message-Id: <20220613094940.063937294@linuxfoundation.org>
+Subject: [PATCH 4.19 043/287] eth: tg3: silence the GCC 12 array-bounds warning
+Date:   Mon, 13 Jun 2022 12:07:47 +0200
+Message-Id: <20220613094925.173085228@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
+References: <20220613094923.832156175@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,151 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Cheng <wanngchenng@gmail.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit d1b57669732d09da7e13ef86d058dab0cd57f6e0 ]
+[ Upstream commit 9dec850fd7c210a04b4707df8e6c95bfafdd6a4b ]
 
-When r8712_usbctrl_vendorreq() returns negative, 'data' in
-usb_read{8,16,32} will not be initialized.
+GCC 12 currently generates a rather inconsistent warning:
 
-BUG: KMSAN: uninit-value in string_nocheck lib/vsprintf.c:643 [inline]
-BUG: KMSAN: uninit-value in string+0x4ec/0x6f0 lib/vsprintf.c:725
- string_nocheck lib/vsprintf.c:643 [inline]
- string+0x4ec/0x6f0 lib/vsprintf.c:725
- vsnprintf+0x2222/0x3650 lib/vsprintf.c:2806
- va_format lib/vsprintf.c:1704 [inline]
- pointer+0x18e6/0x1f70 lib/vsprintf.c:2443
- vsnprintf+0x1a9b/0x3650 lib/vsprintf.c:2810
- vprintk_store+0x537/0x2150 kernel/printk/printk.c:2158
- vprintk_emit+0x28b/0xab0 kernel/printk/printk.c:2256
- dev_vprintk_emit+0x5ef/0x6d0 drivers/base/core.c:4604
- dev_printk_emit+0x1dd/0x21f drivers/base/core.c:4615
- __dev_printk+0x3be/0x440 drivers/base/core.c:4627
- _dev_info+0x1ea/0x22f drivers/base/core.c:4673
- r871xu_drv_init+0x1929/0x3070 drivers/staging/rtl8712/usb_intf.c:401
- usb_probe_interface+0xf19/0x1600 drivers/usb/core/driver.c:396
- really_probe+0x6c7/0x1350 drivers/base/dd.c:621
- __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:752
- driver_probe_device drivers/base/dd.c:782 [inline]
- __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:899
- bus_for_each_drv+0x2d6/0x3f0 drivers/base/bus.c:427
- __device_attach+0x593/0x8e0 drivers/base/dd.c:970
- device_initial_probe+0x4a/0x60 drivers/base/dd.c:1017
- bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487
- device_add+0x1fff/0x26e0 drivers/base/core.c:3405
- usb_set_configuration+0x37e9/0x3ed0 drivers/usb/core/message.c:2170
- usb_generic_driver_probe+0x13c/0x300 drivers/usb/core/generic.c:238
- usb_probe_device+0x309/0x570 drivers/usb/core/driver.c:293
- really_probe+0x6c7/0x1350 drivers/base/dd.c:621
- __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:752
- driver_probe_device drivers/base/dd.c:782 [inline]
- __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:899
- bus_for_each_drv+0x2d6/0x3f0 drivers/base/bus.c:427
- __device_attach+0x593/0x8e0 drivers/base/dd.c:970
- device_initial_probe+0x4a/0x60 drivers/base/dd.c:1017
- bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487
- device_add+0x1fff/0x26e0 drivers/base/core.c:3405
- usb_new_device+0x1b91/0x2950 drivers/usb/core/hub.c:2566
- hub_port_connect drivers/usb/core/hub.c:5363 [inline]
- hub_port_connect_change drivers/usb/core/hub.c:5507 [inline]
- port_event drivers/usb/core/hub.c:5665 [inline]
- hub_event+0x58e3/0x89e0 drivers/usb/core/hub.c:5747
- process_one_work+0xdb6/0x1820 kernel/workqueue.c:2289
- worker_thread+0x10d0/0x2240 kernel/workqueue.c:2436
- kthread+0x3c7/0x500 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30
+drivers/net/ethernet/broadcom/tg3.c:17795:51: warning: array subscript 5 is above array bounds of ‘struct tg3_napi[5]’ [-Warray-bounds]
+17795 |                 struct tg3_napi *tnapi = &tp->napi[i];
+      |                                           ~~~~~~~~^~~
 
-Local variable data created at:
- usb_read8+0x5d/0x130 drivers/staging/rtl8712/usb_ops.c:33
- r8712_read8+0xa5/0xd0 drivers/staging/rtl8712/rtl8712_io.c:29
+i is guaranteed < tp->irq_max which in turn is either 1 or 5.
+There are more loops like this one in the driver, but strangely
+GCC 12 dislikes only this single one.
 
-KMSAN: uninit-value in r871xu_drv_init
-https://syzkaller.appspot.com/bug?id=3cd92b1d85428b128503bfa7a250294c9ae00bd8
+Silence this silliness for now.
 
-Reported-by: <syzbot+6f5ecd144854c0d8580b@syzkaller.appspotmail.com>
-Tested-by: <syzbot+6f5ecd144854c0d8580b@syzkaller.appspotmail.com>
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Wang Cheng <wanngchenng@gmail.com>
-Link: https://lore.kernel.org/r/b9b7a6ee02c02aa28054f5cf16129977775f3cd9.1652618244.git.wanngchenng@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8712/usb_ops.c | 27 ++++++++++++++++++---------
- 1 file changed, 18 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/broadcom/Makefile | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/staging/rtl8712/usb_ops.c b/drivers/staging/rtl8712/usb_ops.c
-index e64845e6adf3..af9966d03979 100644
---- a/drivers/staging/rtl8712/usb_ops.c
-+++ b/drivers/staging/rtl8712/usb_ops.c
-@@ -29,7 +29,8 @@ static u8 usb_read8(struct intf_hdl *intfhdl, u32 addr)
- 	u16 wvalue;
- 	u16 index;
- 	u16 len;
--	__le32 data;
-+	int status;
-+	__le32 data = 0;
- 	struct intf_priv *intfpriv = intfhdl->pintfpriv;
- 
- 	request = 0x05;
-@@ -37,8 +38,10 @@ static u8 usb_read8(struct intf_hdl *intfhdl, u32 addr)
- 	index = 0;
- 	wvalue = (u16)(addr & 0x0000ffff);
- 	len = 1;
--	r8712_usbctrl_vendorreq(intfpriv, request, wvalue, index, &data, len,
--				requesttype);
-+	status = r8712_usbctrl_vendorreq(intfpriv, request, wvalue, index,
-+					 &data, len, requesttype);
-+	if (status < 0)
-+		return 0;
- 	return (u8)(le32_to_cpu(data) & 0x0ff);
- }
- 
-@@ -49,7 +52,8 @@ static u16 usb_read16(struct intf_hdl *intfhdl, u32 addr)
- 	u16 wvalue;
- 	u16 index;
- 	u16 len;
--	__le32 data;
-+	int status;
-+	__le32 data = 0;
- 	struct intf_priv *intfpriv = intfhdl->pintfpriv;
- 
- 	request = 0x05;
-@@ -57,8 +61,10 @@ static u16 usb_read16(struct intf_hdl *intfhdl, u32 addr)
- 	index = 0;
- 	wvalue = (u16)(addr & 0x0000ffff);
- 	len = 2;
--	r8712_usbctrl_vendorreq(intfpriv, request, wvalue, index, &data, len,
--				requesttype);
-+	status = r8712_usbctrl_vendorreq(intfpriv, request, wvalue, index,
-+					 &data, len, requesttype);
-+	if (status < 0)
-+		return 0;
- 	return (u16)(le32_to_cpu(data) & 0xffff);
- }
- 
-@@ -69,7 +75,8 @@ static u32 usb_read32(struct intf_hdl *intfhdl, u32 addr)
- 	u16 wvalue;
- 	u16 index;
- 	u16 len;
--	__le32 data;
-+	int status;
-+	__le32 data = 0;
- 	struct intf_priv *intfpriv = intfhdl->pintfpriv;
- 
- 	request = 0x05;
-@@ -77,8 +84,10 @@ static u32 usb_read32(struct intf_hdl *intfhdl, u32 addr)
- 	index = 0;
- 	wvalue = (u16)(addr & 0x0000ffff);
- 	len = 4;
--	r8712_usbctrl_vendorreq(intfpriv, request, wvalue, index, &data, len,
--				requesttype);
-+	status = r8712_usbctrl_vendorreq(intfpriv, request, wvalue, index,
-+					 &data, len, requesttype);
-+	if (status < 0)
-+		return 0;
- 	return le32_to_cpu(data);
- }
- 
+diff --git a/drivers/net/ethernet/broadcom/Makefile b/drivers/net/ethernet/broadcom/Makefile
+index 7046ad6d3d0e..ac50da49ca77 100644
+--- a/drivers/net/ethernet/broadcom/Makefile
++++ b/drivers/net/ethernet/broadcom/Makefile
+@@ -16,3 +16,8 @@ obj-$(CONFIG_BGMAC_BCMA) += bgmac-bcma.o bgmac-bcma-mdio.o
+ obj-$(CONFIG_BGMAC_PLATFORM) += bgmac-platform.o
+ obj-$(CONFIG_SYSTEMPORT) += bcmsysport.o
+ obj-$(CONFIG_BNXT) += bnxt/
++
++# FIXME: temporarily silence -Warray-bounds on non W=1+ builds
++ifndef KBUILD_EXTRA_WARN
++CFLAGS_tg3.o += -Wno-array-bounds
++endif
 -- 
 2.35.1
 
