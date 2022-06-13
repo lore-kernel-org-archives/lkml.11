@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E3DEC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:31:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95584C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:31:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355394AbiFMMbN (ORCPT
+        id S1356347AbiFMMa1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:31:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34296 "EHLO
+        Mon, 13 Jun 2022 08:30:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355536AbiFMM04 (ORCPT
+        with ESMTP id S1354894AbiFMMXu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:26:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF4D7580FE;
-        Mon, 13 Jun 2022 04:05:50 -0700 (PDT)
+        Mon, 13 Jun 2022 08:23:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EE043150C;
+        Mon, 13 Jun 2022 04:04:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5386F61347;
-        Mon, 13 Jun 2022 11:05:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6600EC34114;
-        Mon, 13 Jun 2022 11:05:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3300CB80E92;
+        Mon, 13 Jun 2022 11:04:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C2D0C34114;
+        Mon, 13 Jun 2022 11:03:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118347;
-        bh=n6SzDndHEPUeNrIaKwwJ4XJ47Vvoh3ClZO6TlxlfqHE=;
+        s=korg; t=1655118239;
+        bh=zE4buU9Rak3E8B5T5HsD+nJsRxnOIs/mXRe++VDPmJs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SLGHvM7/Z5fuyBh/fvR5RRJCeRzi7Xujgg/UW3vynnG0IQqdueztx3G+lXqsb0f95
-         yTTHXvi69eM1ARbjqd7Cy3xrH1caldEvi3ZgXDFybNYo24bE6SGuqSTaz7bA/tUe/Y
-         U2d+G48VrQmGEGziebZqS9ruSnm5pBq859b3AHZA=
+        b=TP4x4Vd4rZRaPciW+2ig0v1HqBUqtQ/xn7ZgYGDKujdPM8e47o+qhoyqFX/jeN+aT
+         MwVvPxjlaMLJjjsnqJDfo/Qd8NJlmiG6uqMvZb+UcglKBx6q3eWb2GC090geomjcFI
+         O3Mzfqwsr2Gr6fIj6P9vY6+m9uCCUMf51N81jGPM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Schspa Shi <schspa@gmail.com>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Kees Cook <keescook@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 043/172] driver: base: fix UAF when driver_attach failed
-Date:   Mon, 13 Jun 2022 12:10:03 +0200
-Message-Id: <20220613094900.747026140@linuxfoundation.org>
+Subject: [PATCH 5.10 004/172] lkdtm/bugs: Check for the NULL pointer after calling kmalloc
+Date:   Mon, 13 Jun 2022 12:09:24 +0200
+Message-Id: <20220613094851.365027910@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -49,46 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Schspa Shi <schspa@gmail.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 310862e574001a97ad02272bac0fd13f75f42a27 ]
+[ Upstream commit 4a9800c81d2f34afb66b4b42e0330ae8298019a2 ]
 
-When driver_attach(drv); failed, the driver_private will be freed.
-But it has been added to the bus, which caused a UAF.
+As the possible failure of the kmalloc(), the not_checked and checked
+could be NULL pointer.
+Therefore, it should be better to check it in order to avoid the
+dereference of the NULL pointer.
+Also, we need to kfree the 'not_checked' and 'checked' to avoid
+the memory leak if fails.
+And since it is just a test, it may directly return without error
+number.
 
-To fix it, we need to delete it from the bus when failed.
-
-Fixes: 190888ac01d0 ("driver core: fix possible missing of device probe")
-Signed-off-by: Schspa Shi <schspa@gmail.com>
-Link: https://lore.kernel.org/r/20220513112444.45112-1-schspa@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: ae2e1aad3e48 ("drivers/misc/lkdtm/bugs.c: add arithmetic overflow and array bounds checks")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Acked-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220120092936.1874264-1-jiasheng@iscas.ac.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/bus.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/misc/lkdtm/bugs.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/base/bus.c b/drivers/base/bus.c
-index a9c23ecebc7c..df85e928b97f 100644
---- a/drivers/base/bus.c
-+++ b/drivers/base/bus.c
-@@ -621,7 +621,7 @@ int bus_add_driver(struct device_driver *drv)
- 	if (drv->bus->p->drivers_autoprobe) {
- 		error = driver_attach(drv);
- 		if (error)
--			goto out_unregister;
-+			goto out_del_list;
- 	}
- 	module_add_driver(drv->owner, drv);
+diff --git a/drivers/misc/lkdtm/bugs.c b/drivers/misc/lkdtm/bugs.c
+index a337f97b30e2..d39b8139b096 100644
+--- a/drivers/misc/lkdtm/bugs.c
++++ b/drivers/misc/lkdtm/bugs.c
+@@ -231,6 +231,11 @@ void lkdtm_ARRAY_BOUNDS(void)
  
-@@ -648,6 +648,8 @@ int bus_add_driver(struct device_driver *drv)
+ 	not_checked = kmalloc(sizeof(*not_checked) * 2, GFP_KERNEL);
+ 	checked = kmalloc(sizeof(*checked) * 2, GFP_KERNEL);
++	if (!not_checked || !checked) {
++		kfree(not_checked);
++		kfree(checked);
++		return;
++	}
  
- 	return 0;
- 
-+out_del_list:
-+	klist_del(&priv->knode_bus);
- out_unregister:
- 	kobject_put(&priv->kobj);
- 	/* drv->p is freed in driver_release()  */
+ 	pr_info("Array access within bounds ...\n");
+ 	/* For both, touch all bytes in the actual member size. */
 -- 
 2.35.1
 
