@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB632C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:47:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD289C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:47:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385531AbiFMOrL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:47:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35540 "EHLO
+        id S241843AbiFMOpw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 10:45:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386202AbiFMOop (ORCPT
+        with ESMTP id S1385642AbiFMOni (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:44:45 -0400
+        Mon, 13 Jun 2022 10:43:38 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DBFEB717E;
-        Mon, 13 Jun 2022 04:51:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A00B6B2E8A;
+        Mon, 13 Jun 2022 04:50:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4C2C9B80EDE;
-        Mon, 13 Jun 2022 11:51:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD6B5C34114;
-        Mon, 13 Jun 2022 11:51:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7782FB80EE6;
+        Mon, 13 Jun 2022 11:50:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C871CC341C6;
+        Mon, 13 Jun 2022 11:50:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655121086;
-        bh=sXhm+oMCrui/y0I0+QBtmpIK+POYQhAS48jgfA/2Ycw=;
+        s=korg; t=1655121045;
+        bh=O1BECb1BwhYEIW1CUebpdzDbEJQLtGkgaLnnWW6lRNQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ts7AqWDPJ/1YCVZN29TQuJLrclfKJd6LiTdSMPLSvq8z7V/QEWQKTOXz63iUyaEqc
-         hLVyxE8oj/QYrCVzCY4WWYdk/Uuqk85T5SbKyoyc3JH/t46DyQRBE04iHMxLHryABu
-         l+rCMN3yrWVwYHdPpeuLjW/JnrGmPqyfuko84IbU=
+        b=m86mfXN9srmtNV2v94lh/z1MWclq3obJTDDr4PtXMPp/9NLceiziPR8uJ1KGpyVU4
+         95kk+v2+FgnAMwQL4ITLei0/QRETZ9WRwaL5ROpAKnakJCxcNNHu1z3tGyCuQqnk27
+         WcaI/h+TywEMyxoCCPn2vBIfO2WpExHbDFzh/uhk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Safford <david.safford@gmail.com>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Subject: [PATCH 5.17 266/298] KEYS: trusted: tpm2: Fix migratable logic
-Date:   Mon, 13 Jun 2022 12:12:40 +0200
-Message-Id: <20220613094933.140190890@linuxfoundation.org>
+        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
+        Fam Zheng <fam.zheng@bytedance.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 252/298] vringh: Fix loop descriptors check in the indirect cases
+Date:   Mon, 13 Jun 2022 12:12:26 +0200
+Message-Id: <20220613094932.724487421@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -50,47 +51,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Safford <david.safford@gmail.com>
+From: Xie Yongji <xieyongji@bytedance.com>
 
-commit dda5384313a40ecbaafd8a9a80f47483255e4c4d upstream.
+[ Upstream commit dbd29e0752286af74243cf891accf472b2f3edd8 ]
 
-When creating (sealing) a new trusted key, migratable
-trusted keys have the FIXED_TPM and FIXED_PARENT attributes
-set, and non-migratable keys don't. This is backwards, and
-also causes creation to fail when creating a migratable key
-under a migratable parent. (The TPM thinks you are trying to
-seal a non-migratable blob under a migratable parent.)
+We should use size of descriptor chain to test loop condition
+in the indirect case. And another statistical count is also introduced
+for indirect descriptors to avoid conflict with the statistical count
+of direct descriptors.
 
-The following simple patch fixes the logic, and has been
-tested for all four combinations of migratable and non-migratable
-trusted keys and parent storage keys. With this logic, you will
-get a proper failure if you try to create a non-migratable
-trusted key under a migratable parent storage key, and all other
-combinations work correctly.
-
-Cc: stable@vger.kernel.org # v5.13+
-Fixes: e5fb5d2c5a03 ("security: keys: trusted: Make sealed key properly interoperable")
-Signed-off-by: David Safford <david.safford@gmail.com>
-Reviewed-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: f87d0fbb5798 ("vringh: host-side implementation of virtio rings.")
+Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+Signed-off-by: Fam Zheng <fam.zheng@bytedance.com>
+Message-Id: <20220505100910.137-1-xieyongji@bytedance.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/keys/trusted-keys/trusted_tpm2.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/vhost/vringh.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/security/keys/trusted-keys/trusted_tpm2.c
-+++ b/security/keys/trusted-keys/trusted_tpm2.c
-@@ -283,8 +283,8 @@ int tpm2_seal_trusted(struct tpm_chip *c
- 	/* key properties */
- 	flags = 0;
- 	flags |= options->policydigest_len ? 0 : TPM2_OA_USER_WITH_AUTH;
--	flags |= payload->migratable ? (TPM2_OA_FIXED_TPM |
--					TPM2_OA_FIXED_PARENT) : 0;
-+	flags |= payload->migratable ? 0 : (TPM2_OA_FIXED_TPM |
-+					    TPM2_OA_FIXED_PARENT);
- 	tpm_buf_append_u32(&buf, flags);
+diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+index 14e2043d7685..eab55accf381 100644
+--- a/drivers/vhost/vringh.c
++++ b/drivers/vhost/vringh.c
+@@ -292,7 +292,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
+ 	     int (*copy)(const struct vringh *vrh,
+ 			 void *dst, const void *src, size_t len))
+ {
+-	int err, count = 0, up_next, desc_max;
++	int err, count = 0, indirect_count = 0, up_next, desc_max;
+ 	struct vring_desc desc, *descs;
+ 	struct vringh_range range = { -1ULL, 0 }, slowrange;
+ 	bool slow = false;
+@@ -349,7 +349,12 @@ __vringh_iov(struct vringh *vrh, u16 i,
+ 			continue;
+ 		}
  
- 	/* policy */
+-		if (count++ == vrh->vring.num) {
++		if (up_next == -1)
++			count++;
++		else
++			indirect_count++;
++
++		if (count > vrh->vring.num || indirect_count > desc_max) {
+ 			vringh_bad("Descriptor loop in %p", descs);
+ 			err = -ELOOP;
+ 			goto fail;
+@@ -411,6 +416,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
+ 				i = return_from_indirect(vrh, &up_next,
+ 							 &descs, &desc_max);
+ 				slow = false;
++				indirect_count = 0;
+ 			} else
+ 				break;
+ 		}
+-- 
+2.35.1
+
 
 
