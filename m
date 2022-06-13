@@ -2,69 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1EB4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 06:23:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5036C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 06:24:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229784AbiFMGXG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 02:23:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42108 "EHLO
+        id S231364AbiFMGYk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 02:24:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233335AbiFMGW7 (ORCPT
+        with ESMTP id S231464AbiFMGYe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 02:22:59 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 445106411;
-        Sun, 12 Jun 2022 23:22:58 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id 708251E80D53;
-        Mon, 13 Jun 2022 14:21:47 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id GDzKuEfJdHjk; Mon, 13 Jun 2022 14:21:44 +0800 (CST)
-Received: from localhost.localdomain (unknown [180.167.10.98])
-        (Authenticated sender: liqiong@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id 4C4111E80D05;
-        Mon, 13 Jun 2022 14:21:44 +0800 (CST)
-From:   Li Qiong <liqiong@nfschina.com>
-To:     Casey Schaufler <casey@schaufler-ca.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E . Hallyn" <serge@hallyn.com>
-Cc:     linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, yuzhe@nfschina.com,
-        renyu@nfschina.com, Li Qiong <liqiong@nfschina.com>
-Subject: [PATCH] smackfs: check for allocation failure of kmalloc()
-Date:   Mon, 13 Jun 2022 14:22:02 +0800
-Message-Id: <20220613062202.29194-1-liqiong@nfschina.com>
-X-Mailer: git-send-email 2.11.0
+        Mon, 13 Jun 2022 02:24:34 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0869EDFEB
+        for <linux-kernel@vger.kernel.org>; Sun, 12 Jun 2022 23:24:32 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LM1jz2xC7zDqtM;
+        Mon, 13 Jun 2022 14:24:07 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 13 Jun 2022 14:24:29 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 13 Jun
+ 2022 14:24:29 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>
+CC:     <christian.koenig@amd.com>, <daniel.vetter@ffwll.ch>
+Subject: [PATCH -next] drm/syncobj: add missing error return code in drm_syncobj_transfer_to_timeline()
+Date:   Mon, 13 Jun 2022 14:34:54 +0800
+Message-ID: <20220613063454.2609364-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the possible failure of the kmalloc(), it should be better
-to check it and print a warning message.
+If dma_fence_unwrap_merge() fails, it should return error code
+in drm_syncobj_transfer_to_timeline()
 
-Signed-off-by: Li Qiong <liqiong@nfschina.com>
+Fixes: ec8d985ff26f ("drm: use dma_fence_unwrap_merge() in drm_syncobj")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- security/smack/smackfs.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/gpu/drm/drm_syncobj.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/security/smack/smackfs.c b/security/smack/smackfs.c
-index 4b58526450d4..0d11ba3cb4cd 100644
---- a/security/smack/smackfs.c
-+++ b/security/smack/smackfs.c
-@@ -695,6 +695,11 @@ static void smk_cipso_doi(void)
- 		       __func__, __LINE__, rc);
+diff --git a/drivers/gpu/drm/drm_syncobj.c b/drivers/gpu/drm/drm_syncobj.c
+index bbad9e4696e7..0c2be8360525 100644
+--- a/drivers/gpu/drm/drm_syncobj.c
++++ b/drivers/gpu/drm/drm_syncobj.c
+@@ -874,8 +874,10 @@ static int drm_syncobj_transfer_to_timeline(struct drm_file *file_private,
  
- 	doip = kmalloc(sizeof(struct cipso_v4_doi), GFP_KERNEL | __GFP_NOFAIL);
-+	if (unlikely(!doip)) {
-+		printk(KERN_WARNING "%s:%d failed to allocate a memory for doip\n",
-+		       __func__, __LINE__);
-+		return;
+ 	fence = dma_fence_unwrap_merge(tmp);
+ 	dma_fence_put(tmp);
+-	if (!fence)
++	if (!fence) {
++		ret = -ENOMEM;
+ 		goto err_put_timeline;
 +	}
- 	doip->map.std = NULL;
- 	doip->doi = smk_cipso_doi_value;
- 	doip->type = CIPSO_V4_MAP_PASS;
+ 
+ 	chain = dma_fence_chain_alloc();
+ 	if (!chain) {
 -- 
 2.25.1
 
