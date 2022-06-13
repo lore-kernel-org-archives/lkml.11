@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B672C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:46:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38972C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:47:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344066AbiFMKq5 (ORCPT
+        id S1344138AbiFMKrB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:46:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44900 "EHLO
+        Mon, 13 Jun 2022 06:47:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346174AbiFMKnc (ORCPT
+        with ESMTP id S1346621AbiFMKno (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:43:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FDCDDEE6;
-        Mon, 13 Jun 2022 03:24:46 -0700 (PDT)
+        Mon, 13 Jun 2022 06:43:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC2232737;
+        Mon, 13 Jun 2022 03:24:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C047DB80E90;
-        Mon, 13 Jun 2022 10:24:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3622BC3411C;
-        Mon, 13 Jun 2022 10:24:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 47EB460EF5;
+        Mon, 13 Jun 2022 10:24:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50A89C34114;
+        Mon, 13 Jun 2022 10:24:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115883;
-        bh=iSQaP7QYj6K6JwdrL57o8gwJDN1LTXxUkwCqnvwZYzs=;
+        s=korg; t=1655115891;
+        bh=9AWYvwpbknsiS/4G3LdwateIgFBMMn2KK4bA6s5Ljp4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YlWYD9Fx072BV+4Wl3qMDS0GiwXEcaMSJGvDooAgzJ3+aK3u10g9OYj/CC89OHY56
-         5pUYD616p+UaBtFuoTpQ2B6wjCwqOevCoNDj6LvDqL4CuTfggcoc+x3peByBRvpQQW
-         YJJ8lgYNGfF7YAAJyADNAb7RLVd+aF9+LPeckOVY=
+        b=rWWEI/jbgAyVLx48L94lfMmf1DtqmPCP2hGPK1eeonkD0KZCencrtn4RIsIE97DLB
+         Ib74X0fe0RsC0V8HAY96vpRzr1GZ40FrswpPkbOJySfkS141HUQjBnhWlcRp+nLvzA
+         Fk91z6qxZRwKx7sF3pzOXPYWuRJu0fA24soY1m1A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 065/218] x86: Fix return value of __setup handlers
-Date:   Mon, 13 Jun 2022 12:08:43 +0200
-Message-Id: <20220613094921.869494296@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 068/218] drm/msm: return an error pointer in msm_gem_prime_get_sg_table()
+Date:   Mon, 13 Jun 2022 12:08:46 +0200
+Message-Id: <20220613094922.108755881@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -50,102 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 12441ccdf5e2f5a01a46e344976cbbd3d46845c9 ]
+[ Upstream commit cf575e31611eb6dccf08fad02e57e35b2187704d ]
 
-__setup() handlers should return 1 to obsolete_checksetup() in
-init/main.c to indicate that the boot option has been handled. A return
-of 0 causes the boot option/value to be listed as an Unknown kernel
-parameter and added to init's (limited) argument (no '=') or environment
-(with '=') strings. So return 1 from these x86 __setup handlers.
+The msm_gem_prime_get_sg_table() needs to return error pointers on
+error.  This is called from drm_gem_map_dma_buf() and returning a
+NULL will lead to a crash in that function.
 
-Examples:
-
-  Unknown kernel command line parameters "apicpmtimer
-    BOOT_IMAGE=/boot/bzImage-517rc8 vdso=1 ring3mwait=disable", will be
-    passed to user space.
-
-  Run /sbin/init as init process
-   with arguments:
-     /sbin/init
-     apicpmtimer
-   with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc8
-     vdso=1
-     ring3mwait=disable
-
-Fixes: 2aae950b21e4 ("x86_64: Add vDSO for x86-64 with gettimeofday/clock_gettime/getcpu")
-Fixes: 77b52b4c5c66 ("x86: add "debugpat" boot option")
-Fixes: e16fd002afe2 ("x86/cpufeature: Enable RING3MWAIT for Knights Landing")
-Fixes: b8ce33590687 ("x86_64: convert to clock events")
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Link: https://lore.kernel.org/r/20220314012725.26661-1-rdunlap@infradead.org
+Fixes: ac45146733b0 ("drm/msm: fix msm_gem_prime_get_sg_table()")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/485023/
+Link: https://lore.kernel.org/r/YnOmtS5tfENywR9m@kili
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/entry/vdso/vma.c   | 2 +-
- arch/x86/kernel/apic/apic.c | 2 +-
- arch/x86/kernel/cpu/intel.c | 2 +-
- arch/x86/mm/pat.c           | 2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/msm/msm_gem_prime.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/entry/vdso/vma.c b/arch/x86/entry/vdso/vma.c
-index 2ab8628aef10..63ed146abef0 100644
---- a/arch/x86/entry/vdso/vma.c
-+++ b/arch/x86/entry/vdso/vma.c
-@@ -328,7 +328,7 @@ int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
- static __init int vdso_setup(char *s)
- {
- 	vdso64_enabled = simple_strtoul(s, NULL, 0);
--	return 0;
-+	return 1;
- }
- __setup("vdso=", vdso_setup);
- #endif
-diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
-index 76f2bbba92f9..488e0853a44d 100644
---- a/arch/x86/kernel/apic/apic.c
-+++ b/arch/x86/kernel/apic/apic.c
-@@ -167,7 +167,7 @@ static __init int setup_apicpmtimer(char *s)
- {
- 	apic_calibrate_pmtmr = 1;
- 	notsc_setup(NULL);
--	return 0;
-+	return 1;
- }
- __setup("apicpmtimer", setup_apicpmtimer);
- #endif
-diff --git a/arch/x86/kernel/cpu/intel.c b/arch/x86/kernel/cpu/intel.c
-index 3a5ea741701b..541e190c3f0e 100644
---- a/arch/x86/kernel/cpu/intel.c
-+++ b/arch/x86/kernel/cpu/intel.c
-@@ -71,7 +71,7 @@ static bool ring3mwait_disabled __read_mostly;
- static int __init ring3mwait_disable(char *__unused)
- {
- 	ring3mwait_disabled = true;
--	return 0;
-+	return 1;
- }
- __setup("ring3mwait=disable", ring3mwait_disable);
+diff --git a/drivers/gpu/drm/msm/msm_gem_prime.c b/drivers/gpu/drm/msm/msm_gem_prime.c
+index 13403c6da6c7..7e4664968106 100644
+--- a/drivers/gpu/drm/msm/msm_gem_prime.c
++++ b/drivers/gpu/drm/msm/msm_gem_prime.c
+@@ -26,7 +26,7 @@ struct sg_table *msm_gem_prime_get_sg_table(struct drm_gem_object *obj)
+ 	int npages = obj->size >> PAGE_SHIFT;
  
-diff --git a/arch/x86/mm/pat.c b/arch/x86/mm/pat.c
-index fe7d57a8fb60..49aeb4e73a35 100644
---- a/arch/x86/mm/pat.c
-+++ b/arch/x86/mm/pat.c
-@@ -74,7 +74,7 @@ int pat_debug_enable;
- static int __init pat_debug_setup(char *str)
- {
- 	pat_debug_enable = 1;
--	return 0;
-+	return 1;
- }
- __setup("debugpat", pat_debug_setup);
+ 	if (WARN_ON(!msm_obj->pages))  /* should have already pinned! */
+-		return NULL;
++		return ERR_PTR(-ENOMEM);
  
+ 	return drm_prime_pages_to_sg(msm_obj->pages, npages);
+ }
 -- 
 2.35.1
 
