@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCC99CCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:10:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B671CCA483
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:10:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381045AbiFMOHr (ORCPT
+        id S1380431AbiFMOKS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:07:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41468 "EHLO
+        Mon, 13 Jun 2022 10:10:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380851AbiFMOCI (ORCPT
+        with ESMTP id S1381147AbiFMOEE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:02:08 -0400
+        Mon, 13 Jun 2022 10:04:04 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C3BC8E18C;
-        Mon, 13 Jun 2022 04:38:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83F1590CE0;
+        Mon, 13 Jun 2022 04:38:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 10AFA612AC;
-        Mon, 13 Jun 2022 11:38:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 233CBC34114;
-        Mon, 13 Jun 2022 11:38:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F5E2612D0;
+        Mon, 13 Jun 2022 11:38:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D47AC34114;
+        Mon, 13 Jun 2022 11:38:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120292;
-        bh=ESJOXc+ulgUDWDeGKaExj2KeP38AFg76sXrosl5PjqU=;
+        s=korg; t=1655120319;
+        bh=c4w1EgW0DRe1Wh/8t6kUVx5gykMenjvrGY+2mlTnawc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VEP5UoulzWNunN4RrukIYGNzdMyrmAEBM3FdO7olRgEspP3QM2er0Ay4k2by/d7o+
-         CWWMiXaFVZEfZEuvN8E9kj6qpd7kII7mTJc96/c988tTId3DZ732J/dMOEejWyDIpR
-         h6mGXE5pfLbwWE5Axg6c8jdmVCSWudZOI/w6UD6Q=
+        b=CPytWm3z6uTdKhrbI00RfuLi0eUQykxVxftdLTDxdukIIu6a2Rd5Wtvxv2fjt1E8R
+         h7LeJiMcAfCQN+fcLC2JhNPbLsHOE7UXLNvlZBKpPBMUIhL+Q8hRsHoG4mq5ElkG8h
+         b9Y56gF1EWckTG3ALZJ7VCYsehmtDU/Rb2+wZUik=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Olivier Matz <olivier.matz@6wind.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.18 320/339] ixgbe: fix bcast packets Rx on VF after promisc removal
-Date:   Mon, 13 Jun 2022 12:12:25 +0200
-Message-Id: <20220613094936.453729811@linuxfoundation.org>
+        Tyler Erickson <tyler.erickson@seagate.com>,
+        Muhammad Ahmad <muhammad.ahmad@seagate.com>,
+        Michael English <michael.english@seagate.com>,
+        Hannes Reinecke <hare@suse.de>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Subject: [PATCH 5.18 310/339] libata: fix translation of concurrent positioning ranges
+Date:   Mon, 13 Jun 2022 12:12:15 +0200
+Message-Id: <20220613094936.157676944@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -52,43 +53,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Olivier Matz <olivier.matz@6wind.com>
+From: Tyler Erickson <tyler.erickson@seagate.com>
 
-commit 803e9895ea2b0fe80bc85980ae2d7a7e44037914 upstream.
+commit 6d11acd452fd885ef6ace184c9c70bc863a8c72f upstream.
 
-After a VF requested to remove the promiscuous flag on an interface, the
-broadcast packets are not received anymore. This breaks some protocols
-like ARP.
+Fixing the page length in the SCSI translation for the concurrent
+positioning ranges VPD page. It was writing starting in offset 3
+rather than offset 2 where the MSB is supposed to start for
+the VPD page length.
 
-In ixgbe_update_vf_xcast_mode(), we should keep the IXGBE_VMOLR_BAM
-bit (Broadcast Accept) on promiscuous removal.
-
-This flag is already set by default in ixgbe_set_vmolr() on VF reset.
-
-Fixes: 8443c1a4b192 ("ixgbe, ixgbevf: Add new mbox API xcast mode")
 Cc: stable@vger.kernel.org
-Cc: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Signed-off-by: Olivier Matz <olivier.matz@6wind.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: fe22e1c2f705 ("libata: support concurrent positioning ranges log")
+Signed-off-by: Tyler Erickson <tyler.erickson@seagate.com>
+Reviewed-by: Muhammad Ahmad <muhammad.ahmad@seagate.com>
+Tested-by: Michael English <michael.english@seagate.com>
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/ata/libata-scsi.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
-@@ -1184,9 +1184,9 @@ static int ixgbe_update_vf_xcast_mode(st
+--- a/drivers/ata/libata-scsi.c
++++ b/drivers/ata/libata-scsi.c
+@@ -2101,7 +2101,7 @@ static unsigned int ata_scsiop_inq_b9(st
  
- 	switch (xcast_mode) {
- 	case IXGBEVF_XCAST_MODE_NONE:
--		disable = IXGBE_VMOLR_BAM | IXGBE_VMOLR_ROMPE |
-+		disable = IXGBE_VMOLR_ROMPE |
- 			  IXGBE_VMOLR_MPE | IXGBE_VMOLR_UPE | IXGBE_VMOLR_VPE;
--		enable = 0;
-+		enable = IXGBE_VMOLR_BAM;
- 		break;
- 	case IXGBEVF_XCAST_MODE_MULTI:
- 		disable = IXGBE_VMOLR_MPE | IXGBE_VMOLR_UPE | IXGBE_VMOLR_VPE;
+ 	/* SCSI Concurrent Positioning Ranges VPD page: SBC-5 rev 1 or later */
+ 	rbuf[1] = 0xb9;
+-	put_unaligned_be16(64 + (int)cpr_log->nr_cpr * 32 - 4, &rbuf[3]);
++	put_unaligned_be16(64 + (int)cpr_log->nr_cpr * 32 - 4, &rbuf[2]);
+ 
+ 	for (i = 0; i < cpr_log->nr_cpr; i++, desc += 32) {
+ 		desc[0] = cpr_log->cpr[i].num;
 
 
