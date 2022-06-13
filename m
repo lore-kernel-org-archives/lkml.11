@@ -2,100 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30FFDC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:39:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 814F3C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:39:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245245AbiFMSjR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:39:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43590 "EHLO
+        id S245400AbiFMSjX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:39:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343691AbiFMSiW (ORCPT
+        with ESMTP id S1343761AbiFMSiY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 14:38:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AA584EF4B;
-        Mon, 13 Jun 2022 07:58:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D44DBB81058;
-        Mon, 13 Jun 2022 14:58:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFE5EC34114;
-        Mon, 13 Jun 2022 14:58:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655132324;
-        bh=AtniC0eJkDR5/lLb+bWQNBve4k7kz60lS+Lip7itflA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nDFMY9QYfPxcap0I7w9dv1UnAtXFCEkntc8tqkQ+Q7XX615OrKZnE/y2xbFFGmT+m
-         dDMRgrkJrtnBXDBCxnytqfdd/8EjVuFLxl5u0nLulRP8enviTFhN/ZdPw13DL9LDih
-         9Gnp7+t9s/it9oXt/uEOLsYqEawr0pyBufjguQnUPaaZTiSKRWR+GdxHa+oX5r9Z/0
-         aDRvnX2vthNldQ5OqUFFVwiKp80z+k5ZPxaX4VzcUGUyjqtqQon5hNaiZgHc8NVUDR
-         MYgEQIB9sngtbbqGOpavFkJbe2tkDHUK1u4fjyhSE4MU01r07GwbsqpZaYD4uh9v3E
-         WEumYYTd+NwnA==
-Date:   Mon, 13 Jun 2022 16:58:40 +0200
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Codrin.Ciubotariu@microchip.com
-Cc:     peda@axentia.se, linux-i2c@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, Ludovic.Desroches@microchip.com,
-        Nicolas.Ferre@microchip.com, alexandre.belloni@bootlin.com,
-        robh+dt@kernel.org, kamel.bouhara@bootlin.com
-Subject: Re: Regression: at24 eeprom writing times out on sama5d3
-Message-ID: <YqdQoJbsgwjQ9PYh@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Codrin.Ciubotariu@microchip.com, peda@axentia.se,
-        linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Ludovic.Desroches@microchip.com, Nicolas.Ferre@microchip.com,
-        alexandre.belloni@bootlin.com, robh+dt@kernel.org,
-        kamel.bouhara@bootlin.com
-References: <074b39c5-55fc-2bc1-072d-aef1070e284d@axentia.se>
- <2bb4868b-90ab-887e-bf13-9de8b79231bd@microchip.com>
+        Mon, 13 Jun 2022 14:38:24 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C5BD37A1A;
+        Mon, 13 Jun 2022 08:35:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655134529; x=1686670529;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=VaArXUZWlGkR+Rg5TxqlTrvxLQWmF66TsY0IDaHvDJU=;
+  b=i7tyoT18uRl6ySPsqGZst7te157jclRIvZKMGTMh1TS4sZZrECxYpygY
+   +ZXwA7kT+ctDiUX3sPHxLJzo259MFPlaY7UFHQA28Eg2YwkgAi38LeTYw
+   O80v9068dP90hPDwDiv2vCA6HdKM3kMNigzjYk88JuQ84TR3QKoTe3CB3
+   QpLVcOF9VNnGVOCF66TFwcFZEqMspgH8ZVk552FaY8+mogb2/x7JEeq7x
+   3TbF/MlwTzX36pYfC6/t2jhLGMZOYKaVr8KXO2wUVr1VRG5YP8NB7Tsyy
+   zfCnuMmlh/JaHpckjv+PNulW9M6nczdRNyhkevR1bw7WODy0CB2Fr1gq9
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="261357223"
+X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
+   d="scan'208";a="261357223"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 08:35:28 -0700
+X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
+   d="scan'208";a="582283738"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 08:35:24 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1o0m64-000b8T-6V;
+        Mon, 13 Jun 2022 18:35:20 +0300
+Date:   Mon, 13 Jun 2022 18:35:19 +0300
+From:   "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>
+To:     Dominik Kierner <dkierner@dh-electronics.com>
+Cc:     Javier Martinez Canillas <javierm@redhat.com>,
+        "airlied@linux.ie" <airlied@linux.ie>,
+        "daniel.vetter@ffwll.ch" <daniel.vetter@ffwll.ch>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "geert@linux-m68k.org" <geert@linux-m68k.org>,
+        "lee.jones@linaro.org" <lee.jones@linaro.org>,
+        "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
+        "maxime@cerno.tech" <maxime@cerno.tech>,
+        "noralf@tronnes.org" <noralf@tronnes.org>,
+        "sam@ravnborg.org" <sam@ravnborg.org>,
+        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
+        "tzimmermann@suse.de" <tzimmermann@suse.de>,
+        "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH v6 3/6] drm: Add driver for Solomon SSD130x OLED displays
+Message-ID: <YqdZN6mtEDF2CRtS@smile.fi.intel.com>
+References: <7a78d57342754a5d9bd3ce7c7bf3fa47@dh-electronics.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="4y9tLbk2+pC88VOo"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2bb4868b-90ab-887e-bf13-9de8b79231bd@microchip.com>
+In-Reply-To: <7a78d57342754a5d9bd3ce7c7bf3fa47@dh-electronics.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Jun 13, 2022 at 11:39:30AM +0000, Dominik Kierner wrote:
+> On 5/25/2022 21:46, Javier Martinez Canillas wrote:
 
---4y9tLbk2+pC88VOo
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+...
 
-Hi Codrin,
+> > Thanks, I looked at the code briefly and think that there are things there that we
+> > could use. I.e the 3-wire SPI support that's in panel-solomon-ssd130x-spi-3wire.c.
+> 
+> When writing my driver code, I wasn't even considering using regmaps,
+> like You did in Your I2C-Code. If that's applicable for 3-wire-SPI,
+> it would likely be the better, more generic option. Your SPI-code
+> reuses these parts to some extent. For that case,
+> ssd130x_spi_regmap_config.reg_bits would need be changed to 1,
+> as the "register address" has a length of 1 bit and we are sending
+> 9 bits over the line and not 16.
+> Since we still have 2 bytes of host memory,
+> it should still be compatible with the 4-wire write, right?
+> Or would 3-wire SPI require a second regmap?
 
-> could you please apply this patch-set [1] and let us know if it=20
-> addresses your issue?
-
-Any comments to the comments I gave to [1]? :)
-
-Happy hacking,
-
-   Wolfram
+I believe the cleanest solution is to have different regmap configurations.
 
 
---4y9tLbk2+pC88VOo
-Content-Type: application/pgp-signature; name="signature.asc"
+-- 
+With Best Regards,
+Andy Shevchenko
 
------BEGIN PGP SIGNATURE-----
 
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmKnUKAACgkQFA3kzBSg
-KbbfLBAAmTZMUsDejonz6ghBqRZNjxQUHOkBjzcun2R358W/QmpabM3JhLWxoYF8
-7d8BQDy28IrRYXgWvAdqZ7X9GzrO4J8+cP7ZnfafKWTlhUJDqFqeJSl0ZnJ0GsZk
-O/+LB0snGoP//zos2d30AdBeTL5OvVIDYNSlrXn0TjQ3SMGibvvaXzbcS/+9oNNS
-MqynO44hsKdeToTxE3PHsRIzCez03PXdhWQ1YiKxxMvuZW+1DRZwlS4/5cygEiKQ
-9AGL/Hq25VGkzVhypCLJBG8YVj8NZ+yZDKsSHe7297XGKURUC3rAmob6diviB7VH
-UX9DDZNpLer+umAE9mFIuL0cXM5QQR6Vj2HVFffpy1oQJqlNA6K7Zu9sxbUFs/jl
-meih4rLEMeSgcV8OKmUhcp3LT9hkd6kTUPWwIWML5xE+x+04gMfuenzebUUI/62H
-VDRapubhMOYCMRIWDs10T7293//q12QAJtiXWfPqMAr1zkNGPGte8y8snMpYs//S
-7FawMiCp/FEr25dT5DgF1YQveg9HALh5SQ+YIlWNVapdRCsJxXERGhCFnsUS6Wja
-kCJqVK2Vyn+Za/uGd4Ejt6vJ8LRrbrS4ZAlrVT7UwGv7S8qvwbTAXz0zYRnTVozj
-pMHJxXSi57O7EV3XSA2uFWrj4qIy7c/3/0sey87hAcGe46BYSqQ=
-=GnAC
------END PGP SIGNATURE-----
-
---4y9tLbk2+pC88VOo--
