@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D554C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:25:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01043C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:25:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243969AbiFMKZv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:25:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45604 "EHLO
+        id S244003AbiFMKZy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:25:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244900AbiFMKYO (ORCPT
+        with ESMTP id S244906AbiFMKYO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 06:24:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEC00CE1A;
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E1CBF7F;
         Mon, 13 Jun 2022 03:18:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BBAC60AE8;
-        Mon, 13 Jun 2022 10:18:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CFF3C34114;
-        Mon, 13 Jun 2022 10:18:28 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C4910CE1167;
+        Mon, 13 Jun 2022 10:18:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9842C34114;
+        Mon, 13 Jun 2022 10:18:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115508;
-        bh=UyTGTZOw/Ev9o5JpBoq+FIzadi3yCuLzcQ0l8Ah+elw=;
+        s=korg; t=1655115506;
+        bh=oqPA/ACm87bq+HnUmgZY5Y57yeqqGG49MOp2WmCKenE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0isQX4r+tZC/VYf74EQrBNT6ngrhJ0o2IA3boPY3GFNT+waVjId/DTsxen3sNgLWs
-         pGvPixGHyinEgMAy0LnAs3gFzCEYUyJ9k+W2yPMLmPANFUqfaMH1bvD/6KaNfTkfao
-         N5lb3ID8rRf6Mojc0NvVaB77OnzMt4x+Ml8L+1oI=
+        b=l5pjI1TdxBq50W0ccPqLB/ZDHZVxVt73YcVOrOY5mt1m05CTYtNioyaShuqISj6Sx
+         CCa6lb7yM9B8iMN63/hAU3k0d3WBKbJxryc+tlYm37t0/ba73NeXzV1ayC3Zl4ABb3
+         NgPVCUlQo6W7a20hKNzJEhJ0HdrNefHIw6am28Rw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Christian Lamparter <chunkeey@gmail.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>
-Subject: [PATCH 4.9 101/167] carl9170: tx: fix an incorrect use of list iterator
-Date:   Mon, 13 Jun 2022 12:09:35 +0200
-Message-Id: <20220613094904.473609077@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>
+Subject: [PATCH 4.9 100/167] ASoC: rt5514: Fix event generation for "DSP Voice Wake Up" control
+Date:   Mon, 13 Jun 2022 12:09:34 +0200
+Message-Id: <20220613094904.269247136@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -49,44 +47,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Mark Brown <broonie@kernel.org>
 
-commit 54a6f29522da3c914da30e50721dedf51046449a upstream.
+commit 4213ff556740bb45e2d9ff0f50d056c4e7dd0921 upstream.
 
-If the previous list_for_each_entry_continue_rcu() don't exit early
-(no goto hit inside the loop), the iterator 'cvif' after the loop
-will be a bogus pointer to an invalid structure object containing
-the HEAD (&ar->vif_list). As a result, the use of 'cvif' after that
-will lead to a invalid memory access (i.e., 'cvif->id': the invalid
-pointer dereference when return back to/after the callsite in the
-carl9170_update_beacon()).
+The driver has a custom put function for "DSP Voice Wake Up" which does
+not generate event notifications on change, instead returning 0. Since we
+already exit early in the case that there is no change this can be fixed
+by unconditionally returning 1 at the end of the function.
 
-The original intention should have been to return the valid 'cvif'
-when found in list, NULL otherwise. So just return NULL when no
-entry found, to fix this bug.
-
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Cc: stable@vger.kernel.org
-Fixes: 1f1d9654e183c ("carl9170: refactor carl9170_update_beacon")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Acked-by: Christian Lamparter <chunkeey@gmail.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220328122820.1004-1-xiam0nd.tong@gmail.com
+Link: https://lore.kernel.org/r/20220428162444.3883147-1-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/ath/carl9170/tx.c |    3 +++
- 1 file changed, 3 insertions(+)
+ sound/soc/codecs/rt5514.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/wireless/ath/carl9170/tx.c
-+++ b/drivers/net/wireless/ath/carl9170/tx.c
-@@ -1554,6 +1554,9 @@ static struct carl9170_vif_info *carl917
- 					goto out;
- 			}
- 		} while (ar->beacon_enabled && i--);
-+
-+		/* no entry found in list */
-+		return NULL;
+--- a/sound/soc/codecs/rt5514.c
++++ b/sound/soc/codecs/rt5514.c
+@@ -345,7 +345,7 @@ static int rt5514_dsp_voice_wake_up_put(
+ 		}
  	}
  
- out:
+-	return 0;
++	return 1;
+ }
+ 
+ static const struct snd_kcontrol_new rt5514_snd_controls[] = {
 
 
