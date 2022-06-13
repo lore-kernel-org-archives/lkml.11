@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F356C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:47:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10F19C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:47:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355848AbiFMLrT (ORCPT
+        id S1355911AbiFMLr0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:47:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55272 "EHLO
+        Mon, 13 Jun 2022 07:47:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356156AbiFMLnu (ORCPT
+        with ESMTP id S1356303AbiFMLoS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:43:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 861D82E698;
-        Mon, 13 Jun 2022 03:50:32 -0700 (PDT)
+        Mon, 13 Jun 2022 07:44:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05C5246C9A;
+        Mon, 13 Jun 2022 03:50:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 398B0B80E56;
-        Mon, 13 Jun 2022 10:50:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8241EC34114;
-        Mon, 13 Jun 2022 10:50:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BAE2B6128D;
+        Mon, 13 Jun 2022 10:50:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDD01C34114;
+        Mon, 13 Jun 2022 10:50:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117421;
-        bh=ogHTnG+5vM5g7tkfmQn9/Rp7sQo1fghtNC8wa05qGGk=;
+        s=korg; t=1655117430;
+        bh=+/FYCLGsRVRHNZXvwv77uB0pWt/M78vjProgDG0PYuM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IXbdc7OBMbBFWTRiu0FQtPO71ZLa/4JUxsoXPd+9E4I8DUa2jDCX2Tose7LRvH9Zk
-         W58h6F7YgI3M2xTDyL4XK8ZVrNrX7kiabJA7LcfVqB8SXGH5esKLz7QqRCa4l3LW/l
-         kFvidwMP4S4+j+jA+WFEAWokPAfP+V23WhJjmXZY=
+        b=2FuIpLalQrFtF/7PEgP37enOhj6gjnME4HPFfA/Ex6omQMEmS2GirnXPE1FNllXMB
+         VjbZZVGyAnAleXzSYsfN/vBfuia8poEJsHydID/aG+Qm3Cty4h5g5RG1Uf/e0M2MTH
+         zpYFFe8j+R7UdMVF/iDXrzTU1Lax+Kf8xqsJCXgQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        stable@vger.kernel.org, Maksym Yaremchuk <maksymy@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 365/411] iio: dummy: iio_simple_dummy: check the return value of kstrdup()
-Date:   Mon, 13 Jun 2022 12:10:38 +0200
-Message-Id: <20220613094939.633137494@linuxfoundation.org>
+Subject: [PATCH 4.19 029/287] mlxsw: spectrum_dcb: Do not warn about priority changes
+Date:   Mon, 13 Jun 2022 12:07:33 +0200
+Message-Id: <20220613094924.748650628@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
+References: <20220613094923.832156175@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,86 +52,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+From: Petr Machata <petrm@nvidia.com>
 
-[ Upstream commit ba93642188a6fed754bf7447f638bc410e05a929 ]
+[ Upstream commit b6b584562cbe7dc357083459d6dd5b171e12cadb ]
 
-kstrdup() is also a memory allocation-related function, it returns NULL
-when some memory errors happen. So it is better to check the return
-value of it so to catch the memory error in time. Besides, there should
-have a kfree() to clear up the allocation if we get a failure later in
-this function to prevent memory leak.
+The idea behind the warnings is that the user would get warned in case when
+more than one priority is configured for a given DSCP value on a netdevice.
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
-Link: https://lore.kernel.org/r/tencent_C920CFCC33B9CC1C63141FE1334A39FF8508@qq.com
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+The warning is currently wrong, because dcb_ieee_getapp_mask() returns
+the first matching entry, not all of them, and the warning will then claim
+that some priority is "current", when in fact it is not.
+
+But more importantly, the warning is misleading in general. Consider the
+following commands:
+
+ # dcb app flush dev swp19 dscp-prio
+ # dcb app add dev swp19 dscp-prio 24:3
+ # dcb app replace dev swp19 dscp-prio 24:2
+
+The last command will issue the following warning:
+
+ mlxsw_spectrum3 0000:07:00.0 swp19: Ignoring new priority 2 for DSCP 24 in favor of current value of 3
+
+The reason is that the "replace" command works by first adding the new
+value, and then removing all old values. This is the only way to make the
+replacement without causing the traffic to be prioritized to whatever the
+chip defaults to. The warning is issued in response to adding the new
+priority, and then no warning is shown when the old priority is removed.
+The upshot is that the canonical way to change traffic prioritization
+always produces a warning about ignoring the new priority, but what gets
+configured is in fact what the user intended.
+
+An option to just emit warning every time that the prioritization changes
+just to make it clear that it happened is obviously unsatisfactory.
+
+Therefore, in this patch, remove the warnings.
+
+Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/dummy/iio_simple_dummy.c | 20 ++++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c | 13 -------------
+ 1 file changed, 13 deletions(-)
 
-diff --git a/drivers/iio/dummy/iio_simple_dummy.c b/drivers/iio/dummy/iio_simple_dummy.c
-index 6cb02299a215..18cfe1cb7a40 100644
---- a/drivers/iio/dummy/iio_simple_dummy.c
-+++ b/drivers/iio/dummy/iio_simple_dummy.c
-@@ -568,10 +568,9 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
- 	struct iio_sw_device *swd;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
+index 21296fa7f7fb..bf51ed94952c 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
+@@ -227,8 +227,6 @@ static int mlxsw_sp_dcbnl_ieee_setets(struct net_device *dev,
+ static int mlxsw_sp_dcbnl_app_validate(struct net_device *dev,
+ 				       struct dcb_app *app)
+ {
+-	int prio;
+-
+ 	if (app->priority >= IEEE_8021QAZ_MAX_TCS) {
+ 		netdev_err(dev, "APP entry with priority value %u is invalid\n",
+ 			   app->priority);
+@@ -242,17 +240,6 @@ static int mlxsw_sp_dcbnl_app_validate(struct net_device *dev,
+ 				   app->protocol);
+ 			return -EINVAL;
+ 		}
+-
+-		/* Warn about any DSCP APP entries with the same PID. */
+-		prio = fls(dcb_ieee_getapp_mask(dev, app));
+-		if (prio--) {
+-			if (prio < app->priority)
+-				netdev_warn(dev, "Choosing priority %d for DSCP %d in favor of previously-active value of %d\n",
+-					    app->priority, app->protocol, prio);
+-			else if (prio > app->priority)
+-				netdev_warn(dev, "Ignoring new priority %d for DSCP %d in favor of current value of %d\n",
+-					    app->priority, app->protocol, prio);
+-		}
+ 		break;
  
- 	swd = kzalloc(sizeof(*swd), GFP_KERNEL);
--	if (!swd) {
--		ret = -ENOMEM;
--		goto error_kzalloc;
--	}
-+	if (!swd)
-+		return ERR_PTR(-ENOMEM);
-+
- 	/*
- 	 * Allocate an IIO device.
- 	 *
-@@ -583,7 +582,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
- 	indio_dev = iio_device_alloc(sizeof(*st));
- 	if (!indio_dev) {
- 		ret = -ENOMEM;
--		goto error_ret;
-+		goto error_free_swd;
- 	}
- 
- 	st = iio_priv(indio_dev);
-@@ -614,6 +613,10 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
- 	 *    indio_dev->name = spi_get_device_id(spi)->name;
- 	 */
- 	indio_dev->name = kstrdup(name, GFP_KERNEL);
-+	if (!indio_dev->name) {
-+		ret = -ENOMEM;
-+		goto error_free_device;
-+	}
- 
- 	/* Provide description of available channels */
- 	indio_dev->channels = iio_dummy_channels;
-@@ -630,7 +633,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
- 
- 	ret = iio_simple_dummy_events_register(indio_dev);
- 	if (ret < 0)
--		goto error_free_device;
-+		goto error_free_name;
- 
- 	ret = iio_simple_dummy_configure_buffer(indio_dev);
- 	if (ret < 0)
-@@ -647,11 +650,12 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
- 	iio_simple_dummy_unconfigure_buffer(indio_dev);
- error_unregister_events:
- 	iio_simple_dummy_events_unregister(indio_dev);
-+error_free_name:
-+	kfree(indio_dev->name);
- error_free_device:
- 	iio_device_free(indio_dev);
--error_ret:
-+error_free_swd:
- 	kfree(swd);
--error_kzalloc:
- 	return ERR_PTR(ret);
- }
- 
+ 	case IEEE_8021QAZ_APP_SEL_ETHERTYPE:
 -- 
 2.35.1
 
