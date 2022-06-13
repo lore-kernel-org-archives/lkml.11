@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 690CEC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:21:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44FD4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:21:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354332AbiFMMVq (ORCPT
+        id S1352306AbiFMMVx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:21:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53716 "EHLO
+        Mon, 13 Jun 2022 08:21:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358990AbiFMMTk (ORCPT
+        with ESMTP id S1357785AbiFMMT1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:19:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DA8E56FAE;
-        Mon, 13 Jun 2022 04:03:10 -0700 (PDT)
+        Mon, 13 Jun 2022 08:19:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56BBC56775;
+        Mon, 13 Jun 2022 04:02:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1681C614A8;
-        Mon, 13 Jun 2022 11:03:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 245DDC34114;
-        Mon, 13 Jun 2022 11:03:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C47BAB80D31;
+        Mon, 13 Jun 2022 11:02:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 237F4C3411C;
+        Mon, 13 Jun 2022 11:02:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118189;
-        bh=Aq5IGVpLu/dgzqu2jUzOzzSrBhplJ3oD1IJZ1ojJFc8=;
+        s=korg; t=1655118175;
+        bh=xyFbE5pv8bl67oZmKZ4mGg9acI4G9yfb0MUCQQZAONg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vJwSb62q7r9RMgltp6wgENga5f24aAzNstdzGl6qD17qI4U+N2dwguqfEJ6TAcwzk
-         c1leEEx7hVzGA/0nuBD/RX060W0iH4qMdKVIXUGN6OpmzZIOod2daPvxbjaye+oetg
-         JKv8/Zw1zfNBgv5KO8NLUjqvYtwr6gQoJWAMOwXo=
+        b=aV3sw3LWg3KO784Z/2CZQ7nZTHw/ZeUAHGzUo5+5qHfW7qZ3DMoxcw6tgRaAW134L
+         O0xgQ6zdlih0/zDgyXRRE99GSufQxHizmsmpKnOX7X5PQte2o+RtwLOARHhFKJsz9v
+         MP9P91RyBmbiJJTQ9SkT9K4poLp09WISInAB7qkE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
-        Fam Zheng <fam.zheng@bytedance.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
+        stable@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 274/287] vringh: Fix loop descriptors check in the indirect cases
-Date:   Mon, 13 Jun 2022 12:11:38 +0200
-Message-Id: <20220613094932.306134383@linuxfoundation.org>
+Subject: [PATCH 4.19 261/287] clocksource/drivers/sp804: Avoid error on multiple instances
+Date:   Mon, 13 Jun 2022 12:11:25 +0200
+Message-Id: <20220613094931.922183213@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -52,61 +51,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xie Yongji <xieyongji@bytedance.com>
+From: Andre Przywara <andre.przywara@arm.com>
 
-[ Upstream commit dbd29e0752286af74243cf891accf472b2f3edd8 ]
+[ Upstream commit a98399cbc1e05f7b977419f03905501d566cf54e ]
 
-We should use size of descriptor chain to test loop condition
-in the indirect case. And another statistical count is also introduced
-for indirect descriptors to avoid conflict with the statistical count
-of direct descriptors.
+When a machine sports more than one SP804 timer instance, we only bring
+up the first one, since multiple timers of the same kind are not useful
+to Linux. As this is intentional behaviour, we should not return an
+error message, as we do today:
+===============
+[    0.000800] Failed to initialize '/bus@8000000/motherboard-bus@8000000/iofpga-bus@300000000/timer@120000': -22
+===============
 
-Fixes: f87d0fbb5798 ("vringh: host-side implementation of virtio rings.")
-Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-Signed-off-by: Fam Zheng <fam.zheng@bytedance.com>
-Message-Id: <20220505100910.137-1-xieyongji@bytedance.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
+Replace the -EINVAL return with a debug message and return 0 instead.
+
+Also we do not reach the init function anymore if the DT node is
+disabled (as this is now handled by OF_DECLARE), so remove the explicit
+check for that case.
+
+This fixes a long standing bogus error when booting ARM's fastmodels.
+
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Link: https://lore.kernel.org/r/20220506162522.3675399-1-andre.przywara@arm.com
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vhost/vringh.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/clocksource/timer-sp804.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
-index 97aa9b87e572..6b2efff1c297 100644
---- a/drivers/vhost/vringh.c
-+++ b/drivers/vhost/vringh.c
-@@ -263,7 +263,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
- 	     gfp_t gfp,
- 	     int (*copy)(void *dst, const void *src, size_t len))
- {
--	int err, count = 0, up_next, desc_max;
-+	int err, count = 0, indirect_count = 0, up_next, desc_max;
- 	struct vring_desc desc, *descs;
- 	struct vringh_range range = { -1ULL, 0 }, slowrange;
- 	bool slow = false;
-@@ -320,7 +320,12 @@ __vringh_iov(struct vringh *vrh, u16 i,
- 			continue;
- 		}
+diff --git a/drivers/clocksource/timer-sp804.c b/drivers/clocksource/timer-sp804.c
+index e01222ea888f..738c50e916f7 100644
+--- a/drivers/clocksource/timer-sp804.c
++++ b/drivers/clocksource/timer-sp804.c
+@@ -228,6 +228,11 @@ static int __init sp804_of_init(struct device_node *np)
+ 	struct clk *clk1, *clk2;
+ 	const char *name = of_get_property(np, "compatible", NULL);
  
--		if (count++ == vrh->vring.num) {
-+		if (up_next == -1)
-+			count++;
-+		else
-+			indirect_count++;
++	if (initialized) {
++		pr_debug("%pOF: skipping further SP804 timer device\n", np);
++		return 0;
++	}
 +
-+		if (count > vrh->vring.num || indirect_count > desc_max) {
- 			vringh_bad("Descriptor loop in %p", descs);
- 			err = -ELOOP;
- 			goto fail;
-@@ -382,6 +387,7 @@ __vringh_iov(struct vringh *vrh, u16 i,
- 				i = return_from_indirect(vrh, &up_next,
- 							 &descs, &desc_max);
- 				slow = false;
-+				indirect_count = 0;
- 			} else
- 				break;
- 		}
+ 	base = of_iomap(np, 0);
+ 	if (!base)
+ 		return -ENXIO;
+@@ -236,11 +241,6 @@ static int __init sp804_of_init(struct device_node *np)
+ 	writel(0, base + TIMER_CTRL);
+ 	writel(0, base + TIMER_2_BASE + TIMER_CTRL);
+ 
+-	if (initialized || !of_device_is_available(np)) {
+-		ret = -EINVAL;
+-		goto err;
+-	}
+-
+ 	clk1 = of_clk_get(np, 0);
+ 	if (IS_ERR(clk1))
+ 		clk1 = NULL;
 -- 
 2.35.1
 
