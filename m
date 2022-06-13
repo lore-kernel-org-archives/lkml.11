@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47BA0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:20:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53C97C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:21:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382450AbiFMOUr (ORCPT
+        id S1382505AbiFMOVC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:20:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41608 "EHLO
+        Mon, 13 Jun 2022 10:21:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382981AbiFMOPB (ORCPT
+        with ESMTP id S1382980AbiFMOPB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 10:15:01 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D109C9B199;
-        Mon, 13 Jun 2022 04:42:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EDBB9B1B2;
+        Mon, 13 Jun 2022 04:42:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 52E77B80EA7;
-        Mon, 13 Jun 2022 11:42:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1D19C341C0;
-        Mon, 13 Jun 2022 11:42:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0C112B80EDD;
+        Mon, 13 Jun 2022 11:42:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73E48C34114;
+        Mon, 13 Jun 2022 11:42:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120557;
-        bh=ckANyrkMqg8JdbVw/F++oS0RepEeTBciE0XRiI5cdxU=;
+        s=korg; t=1655120559;
+        bh=LScDcHeqMPl2Kp8KDh49fGvlTXdrmkknJXbg85f/YUk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o/mozYCCwsWk0kWL0KcDtA96PojUrQhpfts+aapc6oouHkE14PWZ4nysVEa6nNea+
-         PqtSYLolnRfWIGTdyWp/zs1dULbd588yR5RP7r76AhzX39GRGZy+Gb0KKdHsS06JwV
-         yEjtjrwGOzrx8Yb74ttJEatUFbTod3oNfYBJCCcw=
+        b=A3M2KYtPfPxYPO071CjglnKRLIBw0JdD2fFcUDVvyacPiHLt/726H9Qq6FR0F9l3t
+         bulLR12A5dV+S2eSZVjcu5qkWqzGFVsnq/kiBeZJ4FoCoq3WqC47NA/iclDg2dvX9V
+         dHKWBYRNxsRvEQmfCTjECJrBDg96f5zAm55OqOZQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
-        Harald Freudenberger <freude@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
+        stable@vger.kernel.org, Taehee Yoo <ap420073@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.17 076/298] s390/crypto: fix scatterwalk_unmap() callers in AES-GCM
-Date:   Mon, 13 Jun 2022 12:09:30 +0200
-Message-Id: <20220613094927.252073006@linuxfoundation.org>
+Subject: [PATCH 5.17 077/298] amt: fix return value of amt_update_handler()
+Date:   Mon, 13 Jun 2022 12:09:31 +0200
+Message-Id: <20220613094927.282335867@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
 References: <20220613094924.913340374@linuxfoundation.org>
@@ -51,50 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jann Horn <jannh@google.com>
+From: Taehee Yoo <ap420073@gmail.com>
 
-[ Upstream commit bd52cd5e23f134019b23f0c389db0f9a436e4576 ]
+[ Upstream commit ac1dbf55981b88d64312858ea06e3e63001f085d ]
 
-The argument of scatterwalk_unmap() is supposed to be the void* that was
-returned by the previous scatterwalk_map() call.
-The s390 AES-GCM implementation was instead passing the pointer to the
-struct scatter_walk.
+If a relay receives an update message, it lookup a tunnel.
+and if there is no tunnel for that message, it should be treated
+as an error, not a success.
+But amt_update_handler() returns false, which means success.
 
-This doesn't actually break anything because scatterwalk_unmap() only uses
-its argument under CONFIG_HIGHMEM and ARCH_HAS_FLUSH_ON_KUNMAP.
-
-Fixes: bf7fa038707c ("s390/crypto: add s390 platform specific aes gcm support.")
-Signed-off-by: Jann Horn <jannh@google.com>
-Acked-by: Harald Freudenberger <freude@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220517143047.3054498-1-jannh@google.com
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+Fixes: cbc21dc1cfe9 ("amt: add data plane of amt interface")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/crypto/aes_s390.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/amt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/s390/crypto/aes_s390.c b/arch/s390/crypto/aes_s390.c
-index 54c7536f2482..1023e9d43d44 100644
---- a/arch/s390/crypto/aes_s390.c
-+++ b/arch/s390/crypto/aes_s390.c
-@@ -701,7 +701,7 @@ static inline void _gcm_sg_unmap_and_advance(struct gcm_sg_walk *gw,
- 					     unsigned int nbytes)
- {
- 	gw->walk_bytes_remain -= nbytes;
--	scatterwalk_unmap(&gw->walk);
-+	scatterwalk_unmap(gw->walk_ptr);
- 	scatterwalk_advance(&gw->walk, nbytes);
- 	scatterwalk_done(&gw->walk, 0, gw->walk_bytes_remain);
- 	gw->walk_ptr = NULL;
-@@ -776,7 +776,7 @@ static int gcm_out_walk_go(struct gcm_sg_walk *gw, unsigned int minbytesneeded)
- 		goto out;
+diff --git a/drivers/net/amt.c b/drivers/net/amt.c
+index fb774d568baa..6205282a09e5 100644
+--- a/drivers/net/amt.c
++++ b/drivers/net/amt.c
+@@ -2423,7 +2423,7 @@ static bool amt_update_handler(struct amt_dev *amt, struct sk_buff *skb)
+ 		}
  	}
  
--	scatterwalk_unmap(&gw->walk);
-+	scatterwalk_unmap(gw->walk_ptr);
- 	gw->walk_ptr = NULL;
+-	return false;
++	return true;
  
- 	gw->ptr = gw->buf;
+ report:
+ 	iph = ip_hdr(skb);
 -- 
 2.35.1
 
