@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 278E2CCA488
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FF7BCCA48A
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382543AbiFMOOV (ORCPT
+        id S1382631AbiFMOOm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:14:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42816 "EHLO
+        Mon, 13 Jun 2022 10:14:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381251AbiFMOEO (ORCPT
+        with ESMTP id S1381306AbiFMOEQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:04:14 -0400
+        Mon, 13 Jun 2022 10:04:16 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 292184550A;
-        Mon, 13 Jun 2022 04:39:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AADAD91590;
+        Mon, 13 Jun 2022 04:39:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DDFABB80EA7;
-        Mon, 13 Jun 2022 11:39:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 572FBC34114;
-        Mon, 13 Jun 2022 11:39:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6C27EB80EA7;
+        Mon, 13 Jun 2022 11:39:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB415C34114;
+        Mon, 13 Jun 2022 11:39:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120341;
-        bh=r5UkIx9IQWDvAj1alAKl7AX+3z3IEBhN+N1fO7ohM8Q=;
+        s=korg; t=1655120347;
+        bh=IWx7xFoWogZRwrZODxV7MO2FBtVKxXoS0aet2xYMj18=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iVzKaF+qGCnfytFVDmf8ZWbuC1JqnX3qptr7FLGhgwVSeBQ4vBFnq3raxmhmXrtgc
-         CgXgN47PywI8Mjfv8BEwwLfJocQkB7eSW5gvjMPhzWb+WwxqseMMQI8GGyx8QfdcPv
-         BI2ctgXC8WvOfh3oVPcGGGwQ0j/1gKRS23qyc+TE=
+        b=dymf0PzZIy+H6HAvNeWeo8sKrWqrgsxGlnNkM4xYq+/wDfkPuXOOlbWJZzP3A/hZH
+         4pdnlljO2FMGAImuu7Pp7Hfjo2j5dRsHL+90/GPyijIvupbJ8E/GCJfwIRSAw9N1TH
+         Mmvn75sn09FULPJQxbJ2cf7qGnCaNp6Y/3IWiHY4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, NeilBrown <neilb@suse.de>,
-        Pascal Hambourg <pascal@plouf.fr.eu.org>,
-        Song Liu <song@kernel.org>
-Subject: [PATCH 5.18 338/339] md/raid0: Ignore RAID0 layout if the second zone has only one device
-Date:   Mon, 13 Jun 2022 12:12:43 +0200
-Message-Id: <20220613094936.981970809@linuxfoundation.org>
+        stable@vger.kernel.org, Jesse Zhang <Jesse.Zhang@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>
+Subject: [PATCH 5.18 327/339] drm/amdkfd:Fix fw version for 10.3.6
+Date:   Mon, 13 Jun 2022 12:12:32 +0200
+Message-Id: <20220613094936.663304861@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -50,72 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pascal Hambourg <pascal@plouf.fr.eu.org>
+From: Jesse Zhang <Jesse.Zhang@amd.com>
 
-commit ea23994edc4169bd90d7a9b5908c6ccefd82fa40 upstream.
+commit a956a11ee669d069047525c8ec897b4c21a9cda1 upstream.
 
-The RAID0 layout is irrelevant if all members have the same size so the
-array has only one zone. It is *also* irrelevant if the array has two
-zones and the second zone has only one device, for example if the array
-has two members of different sizes.
+fix fw error when loading fw for 10.3.6
 
-So in that case it makes sense to allow assembly even when the layout is
-undefined, like what is done when the array has only one zone.
-
-Reviewed-by: NeilBrown <neilb@suse.de>
-Signed-off-by: Pascal Hambourg <pascal@plouf.fr.eu.org>
-Signed-off-by: Song Liu <song@kernel.org>
+Signed-off-by: Jesse Zhang <Jesse.Zhang@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Reviewed-by: Mario Limonciello <mario.limonciello@amd.com>
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org # 5.18.x
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/raid0.c |   31 ++++++++++++++++---------------
- 1 file changed, 16 insertions(+), 15 deletions(-)
+ drivers/gpu/drm/amd/amdkfd/kfd_device.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/md/raid0.c
-+++ b/drivers/md/raid0.c
-@@ -128,21 +128,6 @@ static int create_strip_zones(struct mdd
- 	pr_debug("md/raid0:%s: FINAL %d zones\n",
- 		 mdname(mddev), conf->nr_strip_zones);
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_device.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_device.c
+@@ -156,7 +156,9 @@ static void kfd_device_info_init(struct
  
--	if (conf->nr_strip_zones == 1) {
--		conf->layout = RAID0_ORIG_LAYOUT;
--	} else if (mddev->layout == RAID0_ORIG_LAYOUT ||
--		   mddev->layout == RAID0_ALT_MULTIZONE_LAYOUT) {
--		conf->layout = mddev->layout;
--	} else if (default_layout == RAID0_ORIG_LAYOUT ||
--		   default_layout == RAID0_ALT_MULTIZONE_LAYOUT) {
--		conf->layout = default_layout;
--	} else {
--		pr_err("md/raid0:%s: cannot assemble multi-zone RAID0 with default_layout setting\n",
--		       mdname(mddev));
--		pr_err("md/raid0: please set raid0.default_layout to 1 or 2\n");
--		err = -ENOTSUPP;
--		goto abort;
--	}
- 	/*
- 	 * now since we have the hard sector sizes, we can make sure
- 	 * chunk size is a multiple of that sector size
-@@ -273,6 +258,22 @@ static int create_strip_zones(struct mdd
- 			 (unsigned long long)smallest->sectors);
- 	}
- 
-+	if (conf->nr_strip_zones == 1 || conf->strip_zone[1].nb_dev == 1) {
-+		conf->layout = RAID0_ORIG_LAYOUT;
-+	} else if (mddev->layout == RAID0_ORIG_LAYOUT ||
-+		   mddev->layout == RAID0_ALT_MULTIZONE_LAYOUT) {
-+		conf->layout = mddev->layout;
-+	} else if (default_layout == RAID0_ORIG_LAYOUT ||
-+		   default_layout == RAID0_ALT_MULTIZONE_LAYOUT) {
-+		conf->layout = default_layout;
-+	} else {
-+		pr_err("md/raid0:%s: cannot assemble multi-zone RAID0 with default_layout setting\n",
-+		       mdname(mddev));
-+		pr_err("md/raid0: please set raid0.default_layout to 1 or 2\n");
-+		err = -EOPNOTSUPP;
-+		goto abort;
-+	}
-+
- 	pr_debug("md/raid0:%s: done.\n", mdname(mddev));
- 	*private_conf = conf;
- 
+ 		if (gc_version < IP_VERSION(11, 0, 0)) {
+ 			/* Navi2x+, Navi1x+ */
+-			if (gc_version >= IP_VERSION(10, 3, 0))
++			if (gc_version == IP_VERSION(10, 3, 6))
++				kfd->device_info.no_atomic_fw_version = 14;
++			else if (gc_version >= IP_VERSION(10, 3, 0))
+ 				kfd->device_info.no_atomic_fw_version = 92;
+ 			else if (gc_version >= IP_VERSION(10, 1, 1))
+ 				kfd->device_info.no_atomic_fw_version = 145;
 
 
