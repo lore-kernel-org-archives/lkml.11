@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2DC0CCA47F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DB06CCA47B
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:45:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354194AbiFMMn4 (ORCPT
+        id S1353917AbiFMMnu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:43:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54816 "EHLO
+        Mon, 13 Jun 2022 08:43:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356799AbiFMMjg (ORCPT
+        with ESMTP id S1354172AbiFMMix (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:39:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2782D33EB3;
-        Mon, 13 Jun 2022 04:09:58 -0700 (PDT)
+        Mon, 13 Jun 2022 08:38:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E76F65D651;
+        Mon, 13 Jun 2022 04:08:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3497960B8C;
-        Mon, 13 Jun 2022 11:09:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4180AC34114;
-        Mon, 13 Jun 2022 11:09:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9529B80EB3;
+        Mon, 13 Jun 2022 11:08:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BADAEC34114;
+        Mon, 13 Jun 2022 11:08:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118596;
-        bh=OlpJPWSY2SNasXNwjEIpme/S7xv6q5AqOMV1To9fp8A=;
+        s=korg; t=1655118502;
+        bh=4oxHm1p9md4OCeao8DceTL8n6o67+unER+HdBMgk2n8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EQ6rxw49oAvKuWy1cPf2KpuWzAvYyMeHntpmicqYDpDDcCFBMddIwpZkVMAw8PfV9
-         ipq+VnGzXZn2M83RFyVtwvklApTPu2Iyqiky+3cmX22CfgaWRrrJleUk3jfMlYFcf2
-         caTLKJDcWu8Cn1tAq7wdcmocnaNH72LQkxjlpop0=
+        b=dI3wDfagjDAdt+kvYQbIEGMN+O2TbRuAz0D6R6+szbb/nb3TsZ9367h+zMQsQC9VN
+         JUjKCPTx7qcet8uydpqI4UxbRvUyvLELZ33qkHxi94IXITMUrCfGWJggpPfh4qGQXm
+         IW46tH2czzlnbSvdbgi2uicsxlwsaFnY6BOElp2A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tejun Heo <tj@kernel.org>,
-        Hao Luo <haoluo@google.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 133/172] kernfs: Separate kernfs_pr_cont_buf and rename_lock.
-Date:   Mon, 13 Jun 2022 12:11:33 +0200
-Message-Id: <20220613094921.385767927@linuxfoundation.org>
+        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Juergen Gross <jgross@suse.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 099/172] xen: unexport __init-annotated xen_xlate_map_ballooned_pages()
+Date:   Mon, 13 Jun 2022 12:10:59 +0200
+Message-Id: <20220613094914.186773478@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -49,140 +53,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hao Luo <haoluo@google.com>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-[ Upstream commit 1a702dc88e150487c9c173a249b3d236498b9183 ]
+[ Upstream commit dbac14a5a05ff8e1ce7c0da0e1f520ce39ec62ea ]
 
-Previously the protection of kernfs_pr_cont_buf was piggy backed by
-rename_lock, which means that pr_cont() needs to be protected under
-rename_lock. This can cause potential circular lock dependencies.
+EXPORT_SYMBOL and __init is a bad combination because the .init.text
+section is freed up after the initialization. Hence, modules cannot
+use symbols annotated __init. The access to a freed symbol may end up
+with kernel panic.
 
-If there is an OOM, we have the following call hierarchy:
+modpost used to detect it, but it has been broken for a decade.
 
- -> cpuset_print_current_mems_allowed()
-   -> pr_cont_cgroup_name()
-     -> pr_cont_kernfs_name()
+Recently, I fixed modpost so it started to warn it again, then this
+showed up in linux-next builds.
 
-pr_cont_kernfs_name() will grab rename_lock and call printk. So we have
-the following lock dependencies:
+There are two ways to fix it:
 
- kernfs_rename_lock -> console_sem
+  - Remove __init
+  - Remove EXPORT_SYMBOL
 
-Sometimes, printk does a wakeup before releasing console_sem, which has
-the dependence chain:
+I chose the latter for this case because none of the in-tree call-sites
+(arch/arm/xen/enlighten.c, arch/x86/xen/grant-table.c) is compiled as
+modular.
 
- console_sem -> p->pi_lock -> rq->lock
-
-Now, imagine one wants to read cgroup_name under rq->lock, for example,
-printing cgroup_name in a tracepoint in the scheduler code. They will
-be holding rq->lock and take rename_lock:
-
- rq->lock -> kernfs_rename_lock
-
-Now they will deadlock.
-
-A prevention to this circular lock dependency is to separate the
-protection of pr_cont_buf from rename_lock. In principle, rename_lock
-is to protect the integrity of cgroup name when copying to buf. Once
-pr_cont_buf has got its content, rename_lock can be dropped. So it's
-safe to drop rename_lock after kernfs_name_locked (and
-kernfs_path_from_node_locked) and rely on a dedicated pr_cont_lock
-to protect pr_cont_buf.
-
-Acked-by: Tejun Heo <tj@kernel.org>
-Signed-off-by: Hao Luo <haoluo@google.com>
-Link: https://lore.kernel.org/r/20220516190951.3144144-1-haoluo@google.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 243848fc018c ("xen/grant-table: Move xlated_setup_gnttab_pages to common place")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Acked-by: Stefano Stabellini <sstabellini@kernel.org>
+Link: https://lore.kernel.org/r/20220606045920.4161881-1-masahiroy@kernel.org
+Signed-off-by: Juergen Gross <jgross@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/kernfs/dir.c | 31 +++++++++++++++++++------------
- 1 file changed, 19 insertions(+), 12 deletions(-)
+ drivers/xen/xlate_mmu.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/fs/kernfs/dir.c b/fs/kernfs/dir.c
-index 9aec80b9d7c6..afb39e1bbe3b 100644
---- a/fs/kernfs/dir.c
-+++ b/fs/kernfs/dir.c
-@@ -19,7 +19,15 @@
+diff --git a/drivers/xen/xlate_mmu.c b/drivers/xen/xlate_mmu.c
+index 34742c6e189e..f17c4c03db30 100644
+--- a/drivers/xen/xlate_mmu.c
++++ b/drivers/xen/xlate_mmu.c
+@@ -261,7 +261,6 @@ int __init xen_xlate_map_ballooned_pages(xen_pfn_t **gfns, void **virt,
  
- DEFINE_MUTEX(kernfs_mutex);
- static DEFINE_SPINLOCK(kernfs_rename_lock);	/* kn->parent and ->name */
--static char kernfs_pr_cont_buf[PATH_MAX];	/* protected by rename_lock */
-+/*
-+ * Don't use rename_lock to piggy back on pr_cont_buf. We don't want to
-+ * call pr_cont() while holding rename_lock. Because sometimes pr_cont()
-+ * will perform wakeups when releasing console_sem. Holding rename_lock
-+ * will introduce deadlock if the scheduler reads the kernfs_name in the
-+ * wakeup path.
-+ */
-+static DEFINE_SPINLOCK(kernfs_pr_cont_lock);
-+static char kernfs_pr_cont_buf[PATH_MAX];	/* protected by pr_cont_lock */
- static DEFINE_SPINLOCK(kernfs_idr_lock);	/* root->ino_idr */
- 
- #define rb_to_kn(X) rb_entry((X), struct kernfs_node, rb)
-@@ -230,12 +238,12 @@ void pr_cont_kernfs_name(struct kernfs_node *kn)
- {
- 	unsigned long flags;
- 
--	spin_lock_irqsave(&kernfs_rename_lock, flags);
-+	spin_lock_irqsave(&kernfs_pr_cont_lock, flags);
- 
--	kernfs_name_locked(kn, kernfs_pr_cont_buf, sizeof(kernfs_pr_cont_buf));
-+	kernfs_name(kn, kernfs_pr_cont_buf, sizeof(kernfs_pr_cont_buf));
- 	pr_cont("%s", kernfs_pr_cont_buf);
- 
--	spin_unlock_irqrestore(&kernfs_rename_lock, flags);
-+	spin_unlock_irqrestore(&kernfs_pr_cont_lock, flags);
+ 	return 0;
  }
+-EXPORT_SYMBOL_GPL(xen_xlate_map_ballooned_pages);
  
- /**
-@@ -249,10 +257,10 @@ void pr_cont_kernfs_path(struct kernfs_node *kn)
- 	unsigned long flags;
- 	int sz;
- 
--	spin_lock_irqsave(&kernfs_rename_lock, flags);
-+	spin_lock_irqsave(&kernfs_pr_cont_lock, flags);
- 
--	sz = kernfs_path_from_node_locked(kn, NULL, kernfs_pr_cont_buf,
--					  sizeof(kernfs_pr_cont_buf));
-+	sz = kernfs_path_from_node(kn, NULL, kernfs_pr_cont_buf,
-+				   sizeof(kernfs_pr_cont_buf));
- 	if (sz < 0) {
- 		pr_cont("(error)");
- 		goto out;
-@@ -266,7 +274,7 @@ void pr_cont_kernfs_path(struct kernfs_node *kn)
- 	pr_cont("%s", kernfs_pr_cont_buf);
- 
- out:
--	spin_unlock_irqrestore(&kernfs_rename_lock, flags);
-+	spin_unlock_irqrestore(&kernfs_pr_cont_lock, flags);
- }
- 
- /**
-@@ -864,13 +872,12 @@ static struct kernfs_node *kernfs_walk_ns(struct kernfs_node *parent,
- 
- 	lockdep_assert_held(&kernfs_mutex);
- 
--	/* grab kernfs_rename_lock to piggy back on kernfs_pr_cont_buf */
--	spin_lock_irq(&kernfs_rename_lock);
-+	spin_lock_irq(&kernfs_pr_cont_lock);
- 
- 	len = strlcpy(kernfs_pr_cont_buf, path, sizeof(kernfs_pr_cont_buf));
- 
- 	if (len >= sizeof(kernfs_pr_cont_buf)) {
--		spin_unlock_irq(&kernfs_rename_lock);
-+		spin_unlock_irq(&kernfs_pr_cont_lock);
- 		return NULL;
- 	}
- 
-@@ -882,7 +889,7 @@ static struct kernfs_node *kernfs_walk_ns(struct kernfs_node *parent,
- 		parent = kernfs_find_ns(parent, name, ns);
- 	}
- 
--	spin_unlock_irq(&kernfs_rename_lock);
-+	spin_unlock_irq(&kernfs_pr_cont_lock);
- 
- 	return parent;
- }
+ struct remap_pfn {
+ 	struct mm_struct *mm;
 -- 
 2.35.1
 
