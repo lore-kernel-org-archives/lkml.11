@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21BF9CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 402D7CCA480
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:20:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356705AbiFMMTF (ORCPT
+        id S1357522AbiFMMTZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:19:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44760 "EHLO
+        Mon, 13 Jun 2022 08:19:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359187AbiFMMOq (ORCPT
+        with ESMTP id S1353067AbiFMMM5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:14:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEF65D99;
-        Mon, 13 Jun 2022 04:02:18 -0700 (PDT)
+        Mon, 13 Jun 2022 08:12:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C3BE53B40;
+        Mon, 13 Jun 2022 04:01:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CC3F611B3;
-        Mon, 13 Jun 2022 11:02:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9573DC34114;
-        Mon, 13 Jun 2022 11:02:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5B6E61435;
+        Mon, 13 Jun 2022 11:01:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7547C34114;
+        Mon, 13 Jun 2022 11:01:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118137;
-        bh=mQ+W1qhY1vuzh0iFc4QMfQDJKXgJ1o37qRKHnW21/Bo=;
+        s=korg; t=1655118066;
+        bh=zm3NxJOg9RcQO3Fv9XrGLlwhng3EzEDb0bxk1SNKPhQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YIAIkBksl8vmSa341kSeGInLMQUckS6COOeMWtSGGRPFDLkWqC8He8L60JJxpnrLc
-         CKVjkwa8HaOoI1GRQYp6IxRR4duDHmHAb6QJ9KWKxokkRIgSlVqfuRyclb/jJMLJGI
-         BHK8ipXDei7eW022Z5RY/pHlUDkww3cXddEQK8co=
+        b=F8Twe6JOiqeOqOaCYRjbejzUFfpwOvz/9S9cKrieKrJkFRNRbAgKIJvL72ydU/6W3
+         5RQqr/BydyA17ksa/jPciycS5Yd2iMcMIK7eLWdHnY/NbQNhQwztsC+arAeBO+1agy
+         WV4E7ev03Vrzhukjljg8pehTgQnogljj38o4GmuA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        Evan Green <evgreen@chromium.org>,
+        stable@vger.kernel.org, Baokun Li <libaokun1@huawei.com>,
+        Richard Weinberger <richard@nod.at>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 257/287] USB: hcd-pci: Fully suspend across freeze/thaw cycle
-Date:   Mon, 13 Jun 2022 12:11:21 +0200
-Message-Id: <20220613094931.802835067@linuxfoundation.org>
+Subject: [PATCH 4.19 219/287] jffs2: fix memory leak in jffs2_do_fill_super
+Date:   Mon, 13 Jun 2022 12:10:43 +0200
+Message-Id: <20220613094930.500912195@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -50,48 +50,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evan Green <evgreen@chromium.org>
+From: Baokun Li <libaokun1@huawei.com>
 
-[ Upstream commit 63acaa8e9c65dc34dc249440216f8e977f5d2748 ]
+[ Upstream commit c14adb1cf70a984ed081c67e9d27bc3caad9537c ]
 
-The documentation for the freeze() method says that it "should quiesce
-the device so that it doesn't generate IRQs or DMA". The unspoken
-consequence of not doing this is that MSIs aimed at non-boot CPUs may
-get fully lost if they're sent during the period where the target CPU is
-offline.
+If jffs2_iget() or d_make_root() in jffs2_do_fill_super() returns
+an error, we can observe the following kmemleak report:
 
-The current callbacks for USB HCD do not fully quiesce interrupts,
-specifically on XHCI. Change to use the full suspend/resume flow for
-freeze/thaw to ensure interrupts are fully quiesced. This fixes issues
-where USB devices fail to thaw during hibernation because XHCI misses
-its interrupt and cannot recover.
+--------------------------------------------
+unreferenced object 0xffff888105a65340 (size 64):
+  comm "mount", pid 710, jiffies 4302851558 (age 58.239s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff859c45e5>] kmem_cache_alloc_trace+0x475/0x8a0
+    [<ffffffff86160146>] jffs2_sum_init+0x96/0x1a0
+    [<ffffffff86140e25>] jffs2_do_mount_fs+0x745/0x2120
+    [<ffffffff86149fec>] jffs2_do_fill_super+0x35c/0x810
+    [<ffffffff8614aae9>] jffs2_fill_super+0x2b9/0x3b0
+    [...]
+unreferenced object 0xffff8881bd7f0000 (size 65536):
+  comm "mount", pid 710, jiffies 4302851558 (age 58.239s)
+  hex dump (first 32 bytes):
+    bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
+    bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb bb  ................
+  backtrace:
+    [<ffffffff858579ba>] kmalloc_order+0xda/0x110
+    [<ffffffff85857a11>] kmalloc_order_trace+0x21/0x130
+    [<ffffffff859c2ed1>] __kmalloc+0x711/0x8a0
+    [<ffffffff86160189>] jffs2_sum_init+0xd9/0x1a0
+    [<ffffffff86140e25>] jffs2_do_mount_fs+0x745/0x2120
+    [<ffffffff86149fec>] jffs2_do_fill_super+0x35c/0x810
+    [<ffffffff8614aae9>] jffs2_fill_super+0x2b9/0x3b0
+    [...]
+--------------------------------------------
 
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Evan Green <evgreen@chromium.org>
-Link: https://lore.kernel.org/r/20220421103751.v3.2.I8226c7fdae88329ef70957b96a39b346c69a914e@changeid
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This is because the resources allocated in jffs2_sum_init() are not
+released. Call jffs2_sum_exit() to release these resources to solve
+the problem.
+
+Fixes: e631ddba5887 ("[JFFS2] Add erase block summary support (mount time improvement)")
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/core/hcd-pci.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/jffs2/fs.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/usb/core/hcd-pci.c b/drivers/usb/core/hcd-pci.c
-index 7537681355f6..fed331d786e2 100644
---- a/drivers/usb/core/hcd-pci.c
-+++ b/drivers/usb/core/hcd-pci.c
-@@ -605,10 +605,10 @@ const struct dev_pm_ops usb_hcd_pci_pm_ops = {
- 	.suspend_noirq	= hcd_pci_suspend_noirq,
- 	.resume_noirq	= hcd_pci_resume_noirq,
- 	.resume		= hcd_pci_resume,
--	.freeze		= check_root_hub_suspended,
-+	.freeze		= hcd_pci_suspend,
- 	.freeze_noirq	= check_root_hub_suspended,
- 	.thaw_noirq	= NULL,
--	.thaw		= NULL,
-+	.thaw		= hcd_pci_resume,
- 	.poweroff	= hcd_pci_suspend,
- 	.poweroff_noirq	= hcd_pci_suspend_noirq,
- 	.restore_noirq	= hcd_pci_resume_noirq,
+diff --git a/fs/jffs2/fs.c b/fs/jffs2/fs.c
+index 81f7a6efe168..6afaace72f2b 100644
+--- a/fs/jffs2/fs.c
++++ b/fs/jffs2/fs.c
+@@ -598,6 +598,7 @@ int jffs2_do_fill_super(struct super_block *sb, void *data, int silent)
+ 	jffs2_free_raw_node_refs(c);
+ 	kvfree(c->blocks);
+ 	jffs2_clear_xattr_subsystem(c);
++	jffs2_sum_exit(c);
+  out_inohash:
+ 	kfree(c->inocache_list);
+  out_wbuf:
 -- 
 2.35.1
 
