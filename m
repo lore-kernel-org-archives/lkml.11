@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0911CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B7B9CCA47F
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:05:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351273AbiFMLDx (ORCPT
+        id S1351217AbiFMLDn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:03:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59514 "EHLO
+        Mon, 13 Jun 2022 07:03:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347305AbiFMKxL (ORCPT
+        with ESMTP id S1350665AbiFMKzD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:53:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BB1A245B6;
-        Mon, 13 Jun 2022 03:27:40 -0700 (PDT)
+        Mon, 13 Jun 2022 06:55:03 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BB4C24BCE;
+        Mon, 13 Jun 2022 03:31:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F45D60EF5;
-        Mon, 13 Jun 2022 10:27:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75511C34114;
-        Mon, 13 Jun 2022 10:27:38 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4D642CE110D;
+        Mon, 13 Jun 2022 10:31:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E2D3C34114;
+        Mon, 13 Jun 2022 10:31:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116058;
-        bh=bNxTvQwfvlCQhLBV5XP5eB24HHOeNW7RiIDKe2u+9rk=;
+        s=korg; t=1655116306;
+        bh=3auhrHrzlTGiTtumf+6fB985sdZVoAfk/Jd9psB6YF0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2QXMygEJuw4+TWmV0t9fooRIDB34VI3DLEEV9QrCr+u6S/nq3/+6TC1MAvL9AS5Uf
-         fW9S2V62lMOiB4wiYP48e5I/3m7CW/JYSnsqdsvaW0Mr9OwDh5FhJXCDRo8JGLnGcc
-         siepVYCOsP433tZeYLe6mDvfhj9GRwlQ7Q6TSAiA=
+        b=z3k+Ds0Av1/7ii7Q7SYCMNmZF9/GVDDz7KYpqwK8NpPqzfI/hdfINLk8waeGakURT
+         Tl9Phan5pUAi26bNjoa4J0ZB6HOdDehcd7Zy5kai1fpwZX8tC4VvCc0vXbcunMEX9w
+         5Kt19bDiT4EbvfgeVRNoamJfUNL6ise6JJ04i1no=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 4.14 124/218] um: Fix out-of-bounds read in LDT setup
-Date:   Mon, 13 Jun 2022 12:09:42 +0200
-Message-Id: <20220613094924.334329649@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>, Jonas Bonn <jonas@southpole.se>,
+        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
+        Stafford Horne <shorne@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 052/411] openrisc: start CPU timer early in boot
+Date:   Mon, 13 Jun 2022 12:05:25 +0200
+Message-Id: <20220613094930.071174717@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,71 +54,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Whitchurch <vincent.whitchurch@axis.com>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-commit 2a4a62a14be1947fa945c5c11ebf67326381a568 upstream.
+[ Upstream commit 516dd4aacd67a0f27da94f3fe63fe0f4dbab6e2b ]
 
-syscall_stub_data() expects the data_count parameter to be the number of
-longs, not bytes.
+In order to measure the boot process, the timer should be switched on as
+early in boot as possible. As well, the commit defines the get_cycles
+macro, like the previous patches in this series, so that generic code is
+aware that it's implemented by the platform, as is done on other archs.
 
- ==================================================================
- BUG: KASAN: stack-out-of-bounds in syscall_stub_data+0x70/0xe0
- Read of size 128 at addr 000000006411f6f0 by task swapper/1
-
- CPU: 0 PID: 1 Comm: swapper Not tainted 5.18.0+ #18
- Call Trace:
-  show_stack.cold+0x166/0x2a7
-  __dump_stack+0x3a/0x43
-  dump_stack_lvl+0x1f/0x27
-  print_report.cold+0xdb/0xf81
-  kasan_report+0x119/0x1f0
-  kasan_check_range+0x3a3/0x440
-  memcpy+0x52/0x140
-  syscall_stub_data+0x70/0xe0
-  write_ldt_entry+0xac/0x190
-  init_new_ldt+0x515/0x960
-  init_new_context+0x2c4/0x4d0
-  mm_init.constprop.0+0x5ed/0x760
-  mm_alloc+0x118/0x170
-  0x60033f48
-  do_one_initcall+0x1d7/0x860
-  0x60003e7b
-  kernel_init+0x6e/0x3d4
-  new_thread_handler+0x1e7/0x2c0
-
- The buggy address belongs to stack of task swapper/1
-  and is located at offset 64 in frame:
-  init_new_ldt+0x0/0x960
-
- This frame has 2 objects:
-  [32, 40) 'addr'
-  [64, 80) 'desc'
- ==================================================================
-
-Fixes: 858259cf7d1c443c83 ("uml: maintain own LDT entries")
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Jonas Bonn <jonas@southpole.se>
+Cc: Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>
+Acked-by: Stafford Horne <shorne@gmail.com>
+Reported-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/um/ldt.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ arch/openrisc/include/asm/timex.h | 1 +
+ arch/openrisc/kernel/head.S       | 9 +++++++++
+ 2 files changed, 10 insertions(+)
 
---- a/arch/x86/um/ldt.c
-+++ b/arch/x86/um/ldt.c
-@@ -23,9 +23,11 @@ static long write_ldt_entry(struct mm_id
+diff --git a/arch/openrisc/include/asm/timex.h b/arch/openrisc/include/asm/timex.h
+index d52b4e536e3f..5487fa93dd9b 100644
+--- a/arch/openrisc/include/asm/timex.h
++++ b/arch/openrisc/include/asm/timex.h
+@@ -23,6 +23,7 @@ static inline cycles_t get_cycles(void)
  {
- 	long res;
- 	void *stub_addr;
+ 	return mfspr(SPR_TTCR);
+ }
++#define get_cycles get_cycles
+ 
+ /* This isn't really used any more */
+ #define CLOCK_TICK_RATE 1000
+diff --git a/arch/openrisc/kernel/head.S b/arch/openrisc/kernel/head.S
+index b0dc974f9a74..ffbbf639b7f9 100644
+--- a/arch/openrisc/kernel/head.S
++++ b/arch/openrisc/kernel/head.S
+@@ -521,6 +521,15 @@ _start:
+ 	l.ori	r3,r0,0x1
+ 	l.mtspr	r0,r3,SPR_SR
+ 
++	/*
++	 * Start the TTCR as early as possible, so that the RNG can make use of
++	 * measurements of boot time from the earliest opportunity. Especially
++	 * important is that the TTCR does not return zero by the time we reach
++	 * rand_initialize().
++	 */
++	l.movhi r3,hi(SPR_TTMR_CR)
++	l.mtspr r0,r3,SPR_TTMR
 +
-+	BUILD_BUG_ON(sizeof(*desc) % sizeof(long));
-+
- 	res = syscall_stub_data(mm_idp, (unsigned long *)desc,
--				(sizeof(*desc) + sizeof(long) - 1) &
--				    ~(sizeof(long) - 1),
-+				sizeof(*desc) / sizeof(long),
- 				addr, &stub_addr);
- 	if (!res) {
- 		unsigned long args[] = { func,
+ 	CLEAR_GPR(r1)
+ 	CLEAR_GPR(r2)
+ 	CLEAR_GPR(r3)
+-- 
+2.35.1
+
 
 
