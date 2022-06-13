@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD77CCCA481
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:59:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14124CCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:00:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351378AbiFMK7w (ORCPT
+        id S1346380AbiFMK75 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:59:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44384 "EHLO
+        Mon, 13 Jun 2022 06:59:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350175AbiFMKyo (ORCPT
+        with ESMTP id S1350174AbiFMKyo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 06:54:44 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD71EDFC2;
-        Mon, 13 Jun 2022 03:29:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3580CE1B;
+        Mon, 13 Jun 2022 03:29:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 55DD5B80E5E;
-        Mon, 13 Jun 2022 10:29:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4BFBC34114;
-        Mon, 13 Jun 2022 10:29:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B7B8B80E94;
+        Mon, 13 Jun 2022 10:29:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFE7BC34114;
+        Mon, 13 Jun 2022 10:29:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116193;
-        bh=RNeHE94BSj+4gptWB0XYtF6cAVaNg9bbvHZewnS9el8=;
+        s=korg; t=1655116190;
+        bh=96ceQgJASxyzZfSQvr0juwSMRmN1lL3Esf2pvX28VOk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XQYMmWBCetOzAnQ7oLGgKZ0534YGQ1RYHHXCRUsOt0Pf11CEN8TibFcJOom2oMpow
-         +b3GTl2T1cPp/Rcfq9CZWLrr41X//A/gZStc0iDj2QBiAGFbI/DG4MZX//fjJ5hCqN
-         rfYhccFulWlZq8D/9iae2gQHmdA1pj2YlpCjprqI=
+        b=URykTnEE1IqZGcMHZCwLp+VIkX/wivHEJ2khv6wh9SapA8sulsUEEHrA6Bht+aMm7
+         5LLdmq0SdPWia6C++UU8L49XjCDETRmbGvBUYJlG2qUR4ShxU/ZDo7CLurWMJFI6J7
+         M1Oj2dkzOm/hEkxuKczY38P1qrasjQn8Tgro3EyA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Aidan MacDonald <aidanmacdonald.0x0@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 030/411] mmc: jz4740: Apply DMA engine limits to maximum segment size
-Date:   Mon, 13 Jun 2022 12:05:03 +0200
-Message-Id: <20220613094929.408384514@linuxfoundation.org>
+        stable@vger.kernel.org, "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Stephen Zhang <starzhangzsd@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Subject: [PATCH 4.14 138/218] MIPS: IP27: Remove incorrect `cpu_has_fpu override
+Date:   Mon, 13 Jun 2022 12:09:56 +0200
+Message-Id: <20220613094924.771143010@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,89 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+From: Maciej W. Rozycki <macro@orcam.me.uk>
 
-[ Upstream commit afadb04f1d6e74b18a253403f5274cde5e3fd7bd ]
+commit 424c3781dd1cb401857585331eaaa425a13f2429 upstream.
 
-Do what is done in other DMA-enabled MMC host drivers (cf. host/mmci.c) and
-limit the maximum segment size based on the DMA engine's capabilities. This
-is needed to avoid warnings like the following with CONFIG_DMA_API_DEBUG=y.
+Remove unsupported forcing of `cpu_has_fpu' to 1, which makes the `nofpu'
+kernel parameter non-functional, and also causes a link error:
 
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 21 at kernel/dma/debug.c:1162 debug_dma_map_sg+0x2f4/0x39c
-DMA-API: jz4780-dma 13420000.dma-controller: mapping sg segment longer than device claims to support [len=98304] [max=65536]
-CPU: 0 PID: 21 Comm: kworker/0:1H Not tainted 5.18.0-rc1 #19
-Workqueue: kblockd blk_mq_run_work_fn
-Stack : 81575aec 00000004 80620000 80620000 80620000 805e7358 00000009 801537ac
-        814c832c 806276e3 806e34b4 80620000 81575aec 00000001 81575ab8 09291444
-        00000000 00000000 805e7358 81575958 ffffffea 8157596c 00000000 636f6c62
-        6220646b 80387a70 0000000f 6d5f6b6c 80620000 00000000 81575ba4 00000009
-        805e170c 80896640 00000001 00010000 00000000 00000000 00006098 806e0000
-        ...
-Call Trace:
-[<80107670>] show_stack+0x84/0x120
-[<80528cd8>] __warn+0xb8/0xec
-[<80528d78>] warn_slowpath_fmt+0x6c/0xb8
-[<8016f1d4>] debug_dma_map_sg+0x2f4/0x39c
-[<80169d4c>] __dma_map_sg_attrs+0xf0/0x118
-[<8016a27c>] dma_map_sg_attrs+0x14/0x28
-[<804f66b4>] jz4740_mmc_prepare_dma_data+0x74/0xa4
-[<804f6714>] jz4740_mmc_pre_request+0x30/0x54
-[<804f4ff4>] mmc_blk_mq_issue_rq+0x6e0/0x7bc
-[<804f5590>] mmc_mq_queue_rq+0x220/0x2d4
-[<8038b2c0>] blk_mq_dispatch_rq_list+0x480/0x664
-[<80391040>] blk_mq_do_dispatch_sched+0x2dc/0x370
-[<80391468>] __blk_mq_sched_dispatch_requests+0xec/0x164
-[<80391540>] blk_mq_sched_dispatch_requests+0x44/0x94
-[<80387900>] __blk_mq_run_hw_queue+0xb0/0xcc
-[<80134c14>] process_one_work+0x1b8/0x264
-[<80134ff8>] worker_thread+0x2ec/0x3b8
-[<8013b13c>] kthread+0x104/0x10c
-[<80101dcc>] ret_from_kernel_thread+0x14/0x1c
+ld: arch/mips/kernel/traps.o: in function `trap_init':
+./arch/mips/include/asm/msa.h:(.init.text+0x348): undefined reference to `handle_fpe'
+ld: ./arch/mips/include/asm/msa.h:(.init.text+0x354): undefined reference to `handle_fpe'
+ld: ./arch/mips/include/asm/msa.h:(.init.text+0x360): undefined reference to `handle_fpe'
 
----[ end trace 0000000000000000 ]---
+where the CONFIG_MIPS_FP_SUPPORT configuration option has been disabled.
 
-Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-Link: https://lore.kernel.org/r/20220411153753.50443-1-aidanmacdonald.0x0@gmail.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+Reported-by: Stephen Zhang <starzhangzsd@gmail.com>
+Fixes: 0ebb2f4159af ("MIPS: IP27: Update/restructure CPU overrides")
+Cc: stable@vger.kernel.org # v4.2+
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/host/jz4740_mmc.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ arch/mips/include/asm/mach-ip27/cpu-feature-overrides.h |    1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/mmc/host/jz4740_mmc.c b/drivers/mmc/host/jz4740_mmc.c
-index f816c06ef916..a316c912a118 100644
---- a/drivers/mmc/host/jz4740_mmc.c
-+++ b/drivers/mmc/host/jz4740_mmc.c
-@@ -224,6 +224,26 @@ static int jz4740_mmc_acquire_dma_channels(struct jz4740_mmc_host *host)
- 		return PTR_ERR(host->dma_rx);
- 	}
- 
-+	/*
-+	 * Limit the maximum segment size in any SG entry according to
-+	 * the parameters of the DMA engine device.
-+	 */
-+	if (host->dma_tx) {
-+		struct device *dev = host->dma_tx->device->dev;
-+		unsigned int max_seg_size = dma_get_max_seg_size(dev);
-+
-+		if (max_seg_size < host->mmc->max_seg_size)
-+			host->mmc->max_seg_size = max_seg_size;
-+	}
-+
-+	if (host->dma_rx) {
-+		struct device *dev = host->dma_rx->device->dev;
-+		unsigned int max_seg_size = dma_get_max_seg_size(dev);
-+
-+		if (max_seg_size < host->mmc->max_seg_size)
-+			host->mmc->max_seg_size = max_seg_size;
-+	}
-+
- 	return 0;
- }
- 
--- 
-2.35.1
-
+--- a/arch/mips/include/asm/mach-ip27/cpu-feature-overrides.h
++++ b/arch/mips/include/asm/mach-ip27/cpu-feature-overrides.h
+@@ -28,7 +28,6 @@
+ #define cpu_has_6k_cache		0
+ #define cpu_has_8k_cache		0
+ #define cpu_has_tx39_cache		0
+-#define cpu_has_fpu			1
+ #define cpu_has_nofpuex			0
+ #define cpu_has_32fpr			1
+ #define cpu_has_counter			1
 
 
