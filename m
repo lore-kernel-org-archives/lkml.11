@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DA13C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:42:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BC7CCCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:42:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353243AbiFMMmq (ORCPT
+        id S1353328AbiFMMmu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:42:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50068 "EHLO
+        Mon, 13 Jun 2022 08:42:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355145AbiFMMjF (ORCPT
+        with ESMTP id S1356122AbiFMMjS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:39:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BD6F5DD02;
-        Mon, 13 Jun 2022 04:08:45 -0700 (PDT)
+        Mon, 13 Jun 2022 08:39:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B96E2709;
+        Mon, 13 Jun 2022 04:09:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DB7C96062B;
-        Mon, 13 Jun 2022 11:08:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB8E0C34114;
-        Mon, 13 Jun 2022 11:08:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58220B80EA7;
+        Mon, 13 Jun 2022 11:09:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96A92C34114;
+        Mon, 13 Jun 2022 11:09:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118524;
-        bh=c2OJ11D3xmrT4o/HryZPy13gLRSwfwgVtCso28A74sk=;
+        s=korg; t=1655118580;
+        bh=NJds1PRBxkhqeMwlTvMxXHJV8bOsurKwG6d4ijbAlCo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N3GlWb7TL88feHDQd21Ej1+Whe6i1Z2ytw8dpudy0/+GlltT9szH5oVrNyWTV2K0z
-         gmxJjlFTvq/vbw3XgzxbTDnlij+io4Y70T19dqwXh+5GgL7szWyQwhuMNCIF/LQk64
-         ELjaJmawRdyMVMhrqPZHjkGljyA9Qht0QOvP4hhc=
+        b=bM7AU1a3TOG0tIpx+0JXx4d04mO3MExL3SMfqC6pkmH0B1NDZu87Uil/6x5wqjuVy
+         oXq+iY88zZkkv1fDP1cCvSRnALgyOqRCyPBMJkDSDb/N3BXuhnQXivHbswUCnIfv4l
+         iRXz9toJc9C053dcOPOt12+v1Tm1K9zfFo/E/lNk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kinglong Mee <kinglongmee@gmail.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        stable@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 090/172] xprtrdma: treat all calls not a bcall when bc_serv is NULL
-Date:   Mon, 13 Jun 2022 12:10:50 +0200
-Message-Id: <20220613094912.013528051@linuxfoundation.org>
+Subject: [PATCH 5.10 112/172] drm: imx: fix compiler warning with gcc-12
+Date:   Mon, 13 Jun 2022 12:11:12 +0200
+Message-Id: <20220613094917.196888618@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -51,71 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kinglong Mee <kinglongmee@gmail.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-[ Upstream commit 11270e7ca268e8d61b5d9e5c3a54bd1550642c9c ]
+[ Upstream commit 7aefd8b53815274f3ef398d370a3c9b27dd9f00c ]
 
-When a rdma server returns a fault format reply, nfs v3 client may
-treats it as a bcall when bc service is not exist.
+Gcc-12 correctly warned about this code using a non-NULL pointer as a
+truth value:
 
-The debug message at rpcrdma_bc_receive_call are,
+  drivers/gpu/drm/imx/ipuv3-crtc.c: In function ‘ipu_crtc_disable_planes’:
+  drivers/gpu/drm/imx/ipuv3-crtc.c:72:21: error: the comparison will always evaluate as ‘true’ for the address of ‘plane’ will never be NULL [-Werror=address]
+     72 |                 if (&ipu_crtc->plane[1] && plane == &ipu_crtc->plane[1]->base)
+        |                     ^
 
-[56579.837169] RPC:       rpcrdma_bc_receive_call: callback XID
-00000001, length=20
-[56579.837174] RPC:       rpcrdma_bc_receive_call: 00 00 00 01 00 00 00
-00 00 00 00 00 00 00 00 00 00 00 00 04
+due to the extraneous '&' address-of operator.
 
-After that, rpcrdma_bc_receive_call will meets NULL pointer as,
+Philipp Zabel points out that The mistake had no adverse effect since
+the following condition doesn't actually dereference the NULL pointer,
+but the intent of the code was obviously to check for it, not to take
+the address of the member.
 
-[  226.057890] BUG: unable to handle kernel NULL pointer dereference at
-00000000000000c8
-...
-[  226.058704] RIP: 0010:_raw_spin_lock+0xc/0x20
-...
-[  226.059732] Call Trace:
-[  226.059878]  rpcrdma_bc_receive_call+0x138/0x327 [rpcrdma]
-[  226.060011]  __ib_process_cq+0x89/0x170 [ib_core]
-[  226.060092]  ib_cq_poll_work+0x26/0x80 [ib_core]
-[  226.060257]  process_one_work+0x1a7/0x360
-[  226.060367]  ? create_worker+0x1a0/0x1a0
-[  226.060440]  worker_thread+0x30/0x390
-[  226.060500]  ? create_worker+0x1a0/0x1a0
-[  226.060574]  kthread+0x116/0x130
-[  226.060661]  ? kthread_flush_work_fn+0x10/0x10
-[  226.060724]  ret_from_fork+0x35/0x40
-...
-
-Signed-off-by: Kinglong Mee <kinglongmee@gmail.com>
-Reviewed-by: Chuck Lever <chuck.lever@oracle.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Fixes: eb8c88808c83 ("drm/imx: add deferred plane disabling")
+Acked-by: Philipp Zabel <p.zabel@pengutronix.de>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/xprtrdma/rpc_rdma.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/gpu/drm/imx/ipuv3-crtc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/sunrpc/xprtrdma/rpc_rdma.c b/net/sunrpc/xprtrdma/rpc_rdma.c
-index ca267a855a12..b8174c77dfe1 100644
---- a/net/sunrpc/xprtrdma/rpc_rdma.c
-+++ b/net/sunrpc/xprtrdma/rpc_rdma.c
-@@ -1137,6 +1137,7 @@ static bool
- rpcrdma_is_bcall(struct rpcrdma_xprt *r_xprt, struct rpcrdma_rep *rep)
- #if defined(CONFIG_SUNRPC_BACKCHANNEL)
- {
-+	struct rpc_xprt *xprt = &r_xprt->rx_xprt;
- 	struct xdr_stream *xdr = &rep->rr_stream;
- 	__be32 *p;
+diff --git a/drivers/gpu/drm/imx/ipuv3-crtc.c b/drivers/gpu/drm/imx/ipuv3-crtc.c
+index d412fc265395..fd9d8e51837f 100644
+--- a/drivers/gpu/drm/imx/ipuv3-crtc.c
++++ b/drivers/gpu/drm/imx/ipuv3-crtc.c
+@@ -68,7 +68,7 @@ static void ipu_crtc_disable_planes(struct ipu_crtc *ipu_crtc,
+ 	drm_atomic_crtc_state_for_each_plane(plane, old_crtc_state) {
+ 		if (plane == &ipu_crtc->plane[0]->base)
+ 			disable_full = true;
+-		if (&ipu_crtc->plane[1] && plane == &ipu_crtc->plane[1]->base)
++		if (ipu_crtc->plane[1] && plane == &ipu_crtc->plane[1]->base)
+ 			disable_partial = true;
+ 	}
  
-@@ -1160,6 +1161,10 @@ rpcrdma_is_bcall(struct rpcrdma_xprt *r_xprt, struct rpcrdma_rep *rep)
- 	if (*p != cpu_to_be32(RPC_CALL))
- 		return false;
- 
-+	/* No bc service. */
-+	if (xprt->bc_serv == NULL)
-+		return false;
-+
- 	/* Now that we are sure this is a backchannel call,
- 	 * advance to the RPC header.
- 	 */
 -- 
 2.35.1
 
