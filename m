@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0141C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:27:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA977C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:27:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376325AbiFMN1b (ORCPT
+        id S1377287AbiFMN1e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:27:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39746 "EHLO
+        Mon, 13 Jun 2022 09:27:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376768AbiFMNZR (ORCPT
+        with ESMTP id S1377157AbiFMNZl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:25:17 -0400
+        Mon, 13 Jun 2022 09:25:41 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1C416C550;
-        Mon, 13 Jun 2022 04:24:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F1456C54E;
+        Mon, 13 Jun 2022 04:24:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 24DE9B80D31;
-        Mon, 13 Jun 2022 11:24:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B413C34114;
-        Mon, 13 Jun 2022 11:24:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0C5E9B80E59;
+        Mon, 13 Jun 2022 11:24:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 313D5C34114;
+        Mon, 13 Jun 2022 11:24:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119462;
-        bh=ImOa6M+vX0pZUaeRvzlTij5274ApNCGxvk4wdllK4hg=;
+        s=korg; t=1655119465;
+        bh=canv2ps0GiqtAbGVbJ9EVEBrbwZCmvW6Vj5g/tdJqck=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q4ja0pdyMPFtxykt5KLlmLZq472gA7BDJMryat7vA55lbIxJdFzLvZe00oTh4tsr2
-         0yRKXprkE1tmfIIchta3Gi23ctk6w+qQ3edWZXDlK4URKkdIQWz3/DopLbLC8mlM6k
-         ED+f76SaABLhbNS1wyHMcCr/lwYfLShJs0qi3SAo=
+        b=NwTie4lMoSenpC+Q5ypnfb3QJeSGESIsF5zoaLOe0kBUFIzPd4AutI64SzCKg6FzU
+         KrLxcLxz80wMHPNx2TUo9MHwOvrs06qiHrwWdnu2WNSFD+eGD+J2/AFacaA6dAdxXF
+         3YrTUFOdf/fPNQHq7OB8vZ4RojeAyNC2J371mJlc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Kees Cook <keescook@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 006/339] remoteproc: mtk_scp: Fix a potential double free
-Date:   Mon, 13 Jun 2022 12:07:11 +0200
-Message-Id: <20220613094926.698578589@linuxfoundation.org>
+Subject: [PATCH 5.18 007/339] lkdtm/bugs: Check for the NULL pointer after calling kmalloc
+Date:   Mon, 13 Jun 2022 12:07:12 +0200
+Message-Id: <20220613094926.728646041@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -53,35 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit eac3e5b1c12f85732e60f5f8b985444d273866bb ]
+[ Upstream commit 4a9800c81d2f34afb66b4b42e0330ae8298019a2 ]
 
-'scp->rproc' is allocated using devm_rproc_alloc(), so there is no need
-to free it explicitly in the remove function.
+As the possible failure of the kmalloc(), the not_checked and checked
+could be NULL pointer.
+Therefore, it should be better to check it in order to avoid the
+dereference of the NULL pointer.
+Also, we need to kfree the 'not_checked' and 'checked' to avoid
+the memory leak if fails.
+And since it is just a test, it may directly return without error
+number.
 
-Fixes: c1407ac1099a ("remoteproc: mtk_scp: Use devm variant of rproc_alloc()")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/1d15023b4afb94591435c48482fe1276411b9a07.1648981531.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+Fixes: ae2e1aad3e48 ("drivers/misc/lkdtm/bugs.c: add arithmetic overflow and array bounds checks")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Acked-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20220120092936.1874264-1-jiasheng@iscas.ac.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/remoteproc/mtk_scp.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/misc/lkdtm/bugs.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/remoteproc/mtk_scp.c b/drivers/remoteproc/mtk_scp.c
-index ee6c4009586e..621174ea7fd6 100644
---- a/drivers/remoteproc/mtk_scp.c
-+++ b/drivers/remoteproc/mtk_scp.c
-@@ -912,7 +912,6 @@ static int scp_remove(struct platform_device *pdev)
- 	for (i = 0; i < SCP_IPI_MAX; i++)
- 		mutex_destroy(&scp->ipi_desc[i].lock);
- 	mutex_destroy(&scp->send_lock);
--	rproc_free(scp->rproc);
+diff --git a/drivers/misc/lkdtm/bugs.c b/drivers/misc/lkdtm/bugs.c
+index f21854ac5cc2..4f2808b2ca3c 100644
+--- a/drivers/misc/lkdtm/bugs.c
++++ b/drivers/misc/lkdtm/bugs.c
+@@ -327,6 +327,11 @@ void lkdtm_ARRAY_BOUNDS(void)
  
- 	return 0;
- }
+ 	not_checked = kmalloc(sizeof(*not_checked) * 2, GFP_KERNEL);
+ 	checked = kmalloc(sizeof(*checked) * 2, GFP_KERNEL);
++	if (!not_checked || !checked) {
++		kfree(not_checked);
++		kfree(checked);
++		return;
++	}
+ 
+ 	pr_info("Array access within bounds ...\n");
+ 	/* For both, touch all bytes in the actual member size. */
 -- 
 2.35.1
 
