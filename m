@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AF7FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:33:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04E06C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:33:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353582AbiFMMdE (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:33:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34360 "EHLO
+        id S239075AbiFMMdJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 08:33:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353230AbiFMM1E (ORCPT
+        with ESMTP id S1357279AbiFMM3B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:27:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61CCD326FF;
-        Mon, 13 Jun 2022 04:05:46 -0700 (PDT)
+        Mon, 13 Jun 2022 08:29:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B19CF59942;
+        Mon, 13 Jun 2022 04:06:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CC83614BF;
-        Mon, 13 Jun 2022 11:05:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9971C34114;
-        Mon, 13 Jun 2022 11:05:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 44799B80D3A;
+        Mon, 13 Jun 2022 11:06:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AD62C341C4;
+        Mon, 13 Jun 2022 11:06:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118345;
-        bh=EUTDtY3A60DHC0r/RLOq13/jsTP5MMXGOG1l/cmd1y8=;
+        s=korg; t=1655118367;
+        bh=7h4rZyqwtDdmYLoZ2kB4nYcPAMuofr5Hp9IrMWAmCj4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E8L/A+nVfT6oYRg2CP+sOrMhH0Q0Ym+tQ02C5xu9GVkOV9g+NsE2uf3iHagjcWr1X
-         +M28JfF7OD5u6a/XH4OXG9f3Dlj5f47l6fN12MOSuWKXKP0jPAy9H4/y+QNX577UFO
-         /s2csxjtWQvkklLUEihjKXW+nj22JwShFlRsbvhs=
+        b=v5z6VCpvEMetpx2hh4vWg+MWKESmZSFTchRHjuw61ouz25amS7dpmEKA+hXEMPEas
+         Pz+auxnYsc/z+eGNaaU0ffYgT8oRWm9PuByESvTKKNkeO6nfRZ01D7JZUQOu2RxaLY
+         fWa0t1b1clc/iANbHENUadsjPZ7GBOUvpKChuUBk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Romain Naour <romain.naour@smile.fr>,
-        Tony Lindgren <tony@atomide.com>,
+        stable@vger.kernel.org,
+        Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 042/172] bus: ti-sysc: Fix warnings for unbind for serial
-Date:   Mon, 13 Jun 2022 12:10:02 +0200
-Message-Id: <20220613094900.470349013@linuxfoundation.org>
+Subject: [PATCH 5.10 033/172] serial: 8250_fintek: Check SER_RS485_RTS_* only with RS485
+Date:   Mon, 13 Jun 2022 12:09:53 +0200
+Message-Id: <20220613094858.363619853@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -50,43 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Lindgren <tony@atomide.com>
+From: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
 
-[ Upstream commit c337125b8834f9719dfda0e40b25eaa266f1b8cf ]
+[ Upstream commit af0179270977508df6986b51242825d7edd59caf ]
 
-We can get "failed to disable" clock_unprepare warnings on unbind at least
-for the serial console device if the unbind is done before the device has
-been idled.
+SER_RS485_RTS_ON_SEND and SER_RS485_RTS_AFTER_SEND relate to behavior
+within RS485 operation. The driver checks if they have the same value
+which is not possible to realize with the hardware. The check is taken
+regardless of SER_RS485_ENABLED flag and -EINVAL is returned when the
+check fails, which creates problems.
 
-As some devices are using deferred idle, we must check the status for
-pending idle work to idle the device.
+This check makes it unnecessarily complicated to turn RS485 mode off as
+simple zeroed serial_rs485 struct will trigger that equal values check.
+In addition, the driver itself memsets its rs485 structure to zero when
+RS485 is disabled but if userspace would try to make an TIOCSRS485
+ioctl() call with the very same struct, it would end up failing with
+-EINVAL which doesn't make much sense.
 
-Fixes: 76f0f772e469 ("bus: ti-sysc: Improve handling for no-reset-on-init and no-idle-on-init")
-Cc: Romain Naour <romain.naour@smile.fr>
-Reviewed-by: Romain Naour <romain.naour@smile.fr>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
-Link: https://lore.kernel.org/r/20220512053021.61650-1-tony@atomide.com
+Resolve the problem by moving the check inside SER_RS485_ENABLED block.
+
+Fixes: 7ecc77011c6f ("serial: 8250_fintek: Return -EINVAL on invalid configuration")
+Cc: Ricardo Ribalda Delgado <ricardo.ribalda@gmail.com>
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Link: https://lore.kernel.org/r/035c738-8ea5-8b17-b1d7-84a7b3aeaa51@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bus/ti-sysc.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_fintek.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/bus/ti-sysc.c b/drivers/bus/ti-sysc.c
-index ac559c262033..4ee20be76508 100644
---- a/drivers/bus/ti-sysc.c
-+++ b/drivers/bus/ti-sysc.c
-@@ -3291,7 +3291,9 @@ static int sysc_remove(struct platform_device *pdev)
- 	struct sysc *ddata = platform_get_drvdata(pdev);
- 	int error;
+diff --git a/drivers/tty/serial/8250/8250_fintek.c b/drivers/tty/serial/8250/8250_fintek.c
+index 251f0018ae8c..dba5950b8d0e 100644
+--- a/drivers/tty/serial/8250/8250_fintek.c
++++ b/drivers/tty/serial/8250/8250_fintek.c
+@@ -200,12 +200,12 @@ static int fintek_8250_rs485_config(struct uart_port *port,
+ 	if (!pdata)
+ 		return -EINVAL;
  
--	cancel_delayed_work_sync(&ddata->idle_work);
-+	/* Device can still be enabled, see deferred idle quirk in probe */
-+	if (cancel_delayed_work_sync(&ddata->idle_work))
-+		ti_sysc_idle(&ddata->idle_work.work);
+-	/* Hardware do not support same RTS level on send and receive */
+-	if (!(rs485->flags & SER_RS485_RTS_ON_SEND) ==
+-			!(rs485->flags & SER_RS485_RTS_AFTER_SEND))
+-		return -EINVAL;
  
- 	error = pm_runtime_get_sync(ddata->dev);
- 	if (error < 0) {
+ 	if (rs485->flags & SER_RS485_ENABLED) {
++		/* Hardware do not support same RTS level on send and receive */
++		if (!(rs485->flags & SER_RS485_RTS_ON_SEND) ==
++		    !(rs485->flags & SER_RS485_RTS_AFTER_SEND))
++			return -EINVAL;
+ 		memset(rs485->padding, 0, sizeof(rs485->padding));
+ 		config |= RS485_URA;
+ 	} else {
 -- 
 2.35.1
 
