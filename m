@@ -2,150 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80283C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59731C43334
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:59:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351867AbiFMU6l (ORCPT
+        id S1351537AbiFMU6Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:58:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60678 "EHLO
+        Mon, 13 Jun 2022 16:58:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351350AbiFMUx3 (ORCPT
+        with ESMTP id S1348741AbiFMUnW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:53:29 -0400
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBAA213CE9
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 13:16:30 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1655151389;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=AFE9jCstOlqWjsTW+x7JNp4EBVRaTizWNRauezofwDY=;
-        b=i1iFXVY/xX12A8BbWkfb19YXcJrTjPzh7aIvkBr32UtiJHdrEOF7uA/Q1dKGciy/q5cEOl
-        nNzmk7g6Hx9KH+I2vuJBgPUzZxLTkySN0GctGkWv7LnHu6unfozHZxS5eWxuaUOAsLBHaK
-        WmMmgwEdQrOlcrl9YCnBcWWMd03eUBI=
-From:   andrey.konovalov@linux.dev
-To:     Marco Elver <elver@google.com>,
-        Alexander Potapenko <glider@google.com>
-Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        kasan-dev@googlegroups.com, Peter Collingbourne <pcc@google.com>,
-        Evgenii Stepanov <eugenis@google.com>,
-        Florian Mayer <fmayer@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH 08/32] kasan: introduce kasan_init_object_meta
-Date:   Mon, 13 Jun 2022 22:13:59 +0200
-Message-Id: <8d1cf94238a325e441f684cbdbb2a1da0db78add.1655150842.git.andreyknvl@google.com>
-In-Reply-To: <cover.1655150842.git.andreyknvl@google.com>
-References: <cover.1655150842.git.andreyknvl@google.com>
+        Mon, 13 Jun 2022 16:43:22 -0400
+Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EAB53CFF9;
+        Mon, 13 Jun 2022 12:47:25 -0700 (PDT)
+Received: from [192.168.1.103] (178.176.74.127) by msexch01.omp.ru
+ (10.188.4.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.14; Mon, 13 Jun
+ 2022 22:47:17 +0300
+Subject: Re: [PATCH 4.14 208/218] ata: libata-transport: fix
+ {dma|pio|xfer}_mode sysfs files
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <stable@vger.kernel.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>
+References: <20220613094908.257446132@linuxfoundation.org>
+ <20220613094926.933251321@linuxfoundation.org>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <7089e1f1-b017-85f2-84bf-d6e792011b9e@omp.ru>
+Date:   Mon, 13 Jun 2022 22:47:17 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+In-Reply-To: <20220613094926.933251321@linuxfoundation.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [178.176.74.127]
+X-ClientProxiedBy: msexch01.omp.ru (10.188.4.12) To msexch01.omp.ru
+ (10.188.4.12)
+X-KSE-ServerInfo: msexch01.omp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 06/13/2022 19:30:34
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 59
+X-KSE-AntiSpam-Info: Lua profiles 171077 [Jun 13 2022]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: s.shtylyov@omp.ru
+X-KSE-AntiSpam-Info: LuaCore: 489 489 b67d2e276d358fa514f5991440453e6a402e3a26
+X-KSE-AntiSpam-Info: {rep_avail}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: {relay has no DNS name}
+X-KSE-AntiSpam-Info: {SMTP from is not routable}
+X-KSE-AntiSpam-Info: {Found in DNSBL: 178.176.74.127 in (user)
+ b.barracudacentral.org}
+X-KSE-AntiSpam-Info: 178.176.74.127:7.1.2;omp.ru:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
+X-KSE-AntiSpam-Info: ApMailHostAddress: 178.176.74.127
+X-KSE-AntiSpam-Info: {DNS response errors}
+X-KSE-AntiSpam-Info: Rate: 59
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dmarc=temperror header.from=omp.ru;spf=temperror
+ smtp.mailfrom=omp.ru;dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 06/13/2022 19:33:00
+X-KSE-AttachmentFiltering-Interceptor-Info: protection disabled
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 6/13/2022 4:53:00 PM
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrey Konovalov <andreyknvl@google.com>
+On 6/13/22 1:11 PM, Greg Kroah-Hartman wrote:
 
-Add a kasan_init_object_meta() helper that initializes metadata for a slab
-object and use it in the common code.
+> From: Sergey Shtylyov <s.shtylyov@omp.ru>
+> 
+> commit 72aad489f992871e908ff6d9055b26c6366fb864 upstream.
+> 
+> The {dma|pio}_mode sysfs files are incorrectly documented as having a
+> list of the supported DMA/PIO transfer modes, while the corresponding
+> fields of the *struct* ata_device hold the transfer mode IDs, not masks.
+> 
+> To match these docs, the {dma|pio}_mode (and even xfer_mode!) sysfs
+> files are handled by the ata_bitfield_name_match() macro which leads to
+> reading such kind of nonsense from them:
+> 
+> $ cat /sys/class/ata_device/dev3.0/pio_mode
+> XFER_UDMA_7, XFER_UDMA_6, XFER_UDMA_5, XFER_UDMA_4, XFER_MW_DMA_4,
+> XFER_PIO_6, XFER_PIO_5, XFER_PIO_4, XFER_PIO_3, XFER_PIO_2, XFER_PIO_1,
+> XFER_PIO_0
+> 
+> Using the correct ata_bitfield_name_search() macro fixes that:
+> 
+> $ cat /sys/class/ata_device/dev3.0/pio_mode
+> XFER_PIO_4
+> 
+> While fixing the file documentation, somewhat reword the {dma|pio}_mode
+> file doc and add a note about being mostly useful for PATA devices to
+> the xfer_mode file doc...
+> 
+> Fixes: d9027470b886 ("[libata] Add ATA transport class")
+> Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> ---
+>  Documentation/ABI/testing/sysfs-ata |    5 +++--
+>  drivers/ata/libata-transport.c      |    2 +-
+>  2 files changed, 4 insertions(+), 3 deletions(-)
+> 
+> --- a/Documentation/ABI/testing/sysfs-ata
+> +++ b/Documentation/ABI/testing/sysfs-ata
+> @@ -59,17 +59,18 @@ class
+>  
+>  dma_mode
+>  
+> -	Transfer modes supported by the device when in DMA mode.
+> +	DMA transfer mode used by the device.
+>  	Mostly used by PATA device.
+>  
+>  pio_mode
+>  
+> -	Transfer modes supported by the device when in PIO mode.
+> +	PIO transfer mode used by the device.
+>  	Mostly used by PATA device.
+>  
+>  xfer_mode
+>  
+>  	Current transfer mode.
+> +	Mostly used by PATA device.
 
-For now, the implementations of this helper are the same for the Generic
-and tag-based modes, but they will diverge later in the series.
+   Missed s/device/devices/, as I've reported already...
 
-This change hides references to alloc_meta from the common code. This is
-desired as only the Generic mode will be using per-object metadata after
-this series.
-
-Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
----
- mm/kasan/common.c  | 10 +++-------
- mm/kasan/generic.c |  9 +++++++++
- mm/kasan/kasan.h   |  2 ++
- mm/kasan/tags.c    |  9 +++++++++
- 4 files changed, 23 insertions(+), 7 deletions(-)
-
-diff --git a/mm/kasan/common.c b/mm/kasan/common.c
-index 2848c7a2402a..f0ee1c1b4b3c 100644
---- a/mm/kasan/common.c
-+++ b/mm/kasan/common.c
-@@ -312,13 +312,9 @@ static inline u8 assign_tag(struct kmem_cache *cache,
- void * __must_check __kasan_init_slab_obj(struct kmem_cache *cache,
- 						const void *object)
- {
--	struct kasan_alloc_meta *alloc_meta;
--
--	if (kasan_stack_collection_enabled()) {
--		alloc_meta = kasan_get_alloc_meta(cache, object);
--		if (alloc_meta)
--			__memset(alloc_meta, 0, sizeof(*alloc_meta));
--	}
-+	/* Initialize per-object metadata if it is present. */
-+	if (kasan_stack_collection_enabled())
-+		kasan_init_object_meta(cache, object);
- 
- 	/* Tag is ignored in set_tag() without CONFIG_KASAN_SW/HW_TAGS */
- 	object = set_tag(object, assign_tag(cache, object, true));
-diff --git a/mm/kasan/generic.c b/mm/kasan/generic.c
-index f212b9ae57b5..5462ddbc21e6 100644
---- a/mm/kasan/generic.c
-+++ b/mm/kasan/generic.c
-@@ -328,6 +328,15 @@ DEFINE_ASAN_SET_SHADOW(f3);
- DEFINE_ASAN_SET_SHADOW(f5);
- DEFINE_ASAN_SET_SHADOW(f8);
- 
-+void kasan_init_object_meta(struct kmem_cache *cache, const void *object)
-+{
-+	struct kasan_alloc_meta *alloc_meta;
-+
-+	alloc_meta = kasan_get_alloc_meta(cache, object);
-+	if (alloc_meta)
-+		__memset(alloc_meta, 0, sizeof(*alloc_meta));
-+}
-+
- static void __kasan_record_aux_stack(void *addr, bool can_alloc)
- {
- 	struct slab *slab = kasan_addr_to_slab(addr);
-diff --git a/mm/kasan/kasan.h b/mm/kasan/kasan.h
-index 4005da62a1e1..751c3b17749a 100644
---- a/mm/kasan/kasan.h
-+++ b/mm/kasan/kasan.h
-@@ -278,6 +278,8 @@ void kasan_report_invalid_free(void *object, unsigned long ip);
- struct page *kasan_addr_to_page(const void *addr);
- struct slab *kasan_addr_to_slab(const void *addr);
- 
-+void kasan_init_object_meta(struct kmem_cache *cache, const void *object);
-+
- depot_stack_handle_t kasan_save_stack(gfp_t flags, bool can_alloc);
- void kasan_set_track(struct kasan_track *track, gfp_t flags);
- void kasan_save_alloc_info(struct kmem_cache *cache, void *object, gfp_t flags);
-diff --git a/mm/kasan/tags.c b/mm/kasan/tags.c
-index 7b1fc8e7c99c..2e200969a4b8 100644
---- a/mm/kasan/tags.c
-+++ b/mm/kasan/tags.c
-@@ -17,6 +17,15 @@
- 
- #include "kasan.h"
- 
-+void kasan_init_object_meta(struct kmem_cache *cache, const void *object)
-+{
-+	struct kasan_alloc_meta *alloc_meta;
-+
-+	alloc_meta = kasan_get_alloc_meta(cache, object);
-+	if (alloc_meta)
-+		__memset(alloc_meta, 0, sizeof(*alloc_meta));
-+}
-+
- void kasan_save_alloc_info(struct kmem_cache *cache, void *object, gfp_t flags)
- {
- 	struct kasan_alloc_meta *alloc_meta;
--- 
-2.25.1
-
+MBR, Sergey
