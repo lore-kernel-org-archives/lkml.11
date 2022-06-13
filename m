@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF437C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:43:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8362DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:43:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355941AbiFMLnC (ORCPT
+        id S1355947AbiFMLnI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:43:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43856 "EHLO
+        Mon, 13 Jun 2022 07:43:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355184AbiFMLhn (ORCPT
+        with ESMTP id S1354547AbiFMLiH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:37:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A5DA45537;
-        Mon, 13 Jun 2022 03:48:21 -0700 (PDT)
+        Mon, 13 Jun 2022 07:38:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1FB64579A;
+        Mon, 13 Jun 2022 03:48:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6BB58B80D41;
-        Mon, 13 Jun 2022 10:48:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D114CC34114;
-        Mon, 13 Jun 2022 10:48:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 376DD60AEB;
+        Mon, 13 Jun 2022 10:48:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47AB4C34114;
+        Mon, 13 Jun 2022 10:48:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117298;
-        bh=l+AybNHC05BqQuQ3Dkj3uvVIIyZwvXV3Ggmj5WIMdqE=;
+        s=korg; t=1655117303;
+        bh=BRcNqau3w1OO6mTQECHI3eeQRClvteae1utKAvruPa4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h8PEI0tHYxh2pcLQdqt56YM7zHDZfvsdNBLYeliW/alsc2mBrbP7+h9ydngW3Elie
-         5xl5rhXjtxKo7cu1nz3Ico32nDqId+uJzU+zEQrNryx9JFOXmYQeafVtbwIZmQfQMB
-         fAfvN1LS+HyhS0wQgw8FSRpo6kvWgQAzWZ6j4EiU=
+        b=IJEcxaMaiiHjrDjAYxnbUAIKOLv2UDR2s/GEVBJhh3y2n0YIRsmAj+46S0RQKj2SU
+         sdFSHZdliNp78G42FgrJLbB2iZ0TRSMjXZx29mxX7MREL9bsSqrYMuZAKAJy5gMbYM
+         ks0FAMzpK39D1+I53uu3EoW918dnAC26VltBicGk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 016/287] ACPICA: Avoid cache flush inside virtual machines
-Date:   Mon, 13 Jun 2022 12:07:20 +0200
-Message-Id: <20220613094924.347873511@linuxfoundation.org>
+        =?UTF-8?q?Luca=20B=C3=A9la=20Palkovics?= 
+        <luca.bela.palkovics@gmail.com>, Qu Wenruo <wqu@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 4.19 008/287] btrfs: repair super block num_devices automatically
+Date:   Mon, 13 Jun 2022 12:07:12 +0200
+Message-Id: <20220613094924.101605421@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -53,71 +51,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+From: Qu Wenruo <wqu@suse.com>
 
-[ Upstream commit e2efb6359e620521d1e13f69b2257de8ceaa9475 ]
+commit d201238ccd2f30b9bfcfadaeae0972e3a486a176 upstream.
 
-While running inside virtual machine, the kernel can bypass cache
-flushing. Changing sleep state in a virtual machine doesn't affect the
-host system sleep state and cannot lead to data loss.
+[BUG]
+There is a report that a btrfs has a bad super block num devices.
 
-Before entering sleep states, the ACPI code flushes caches to prevent
-data loss using the WBINVD instruction.  This mechanism is required on
-bare metal.
+This makes btrfs to reject the fs completely.
 
-But, any use WBINVD inside of a guest is worthless.  Changing sleep
-state in a virtual machine doesn't affect the host system sleep state
-and cannot lead to data loss, so most hypervisors simply ignore it.
-Despite this, the ACPI code calls WBINVD unconditionally anyway.
-It's useless, but also normally harmless.
+  BTRFS error (device sdd3): super_num_devices 3 mismatch with num_devices 2 found here
+  BTRFS error (device sdd3): failed to read chunk tree: -22
+  BTRFS error (device sdd3): open_ctree failed
 
-In TDX guests, though, WBINVD stops being harmless; it triggers a
-virtualization exception (#VE).  If the ACPI cache-flushing WBINVD
-were left in place, TDX guests would need handling to recover from
-the exception.
+[CAUSE]
+During btrfs device removal, chunk tree and super block num devs are
+updated in two different transactions:
 
-Avoid using WBINVD whenever running under a hypervisor.  This both
-removes the useless WBINVDs and saves TDX from implementing WBINVD
-handling.
+  btrfs_rm_device()
+  |- btrfs_rm_dev_item(device)
+  |  |- trans = btrfs_start_transaction()
+  |  |  Now we got transaction X
+  |  |
+  |  |- btrfs_del_item()
+  |  |  Now device item is removed from chunk tree
+  |  |
+  |  |- btrfs_commit_transaction()
+  |     Transaction X got committed, super num devs untouched,
+  |     but device item removed from chunk tree.
+  |     (AKA, super num devs is already incorrect)
+  |
+  |- cur_devices->num_devices--;
+  |- cur_devices->total_devices--;
+  |- btrfs_set_super_num_devices()
+     All those operations are not in transaction X, thus it will
+     only be written back to disk in next transaction.
 
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Reviewed-by: Dave Hansen <dave.hansen@linux.intel.com>
-Reviewed-by: Dan Williams <dan.j.williams@intel.com>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lkml.kernel.org/r/20220405232939.73860-30-kirill.shutemov@linux.intel.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+So after the transaction X in btrfs_rm_dev_item() committed, but before
+transaction X+1 (which can be minutes away), a power loss happen, then
+we got the super num mismatch.
+
+This has been fixed by commit bbac58698a55 ("btrfs: remove device item
+and update super block in the same transaction").
+
+[FIX]
+Make the super_num_devices check less strict, converting it from a hard
+error to a warning, and reset the value to a correct one for the current
+or next transaction commit.
+
+As the number of device items is the critical information where the
+super block num_devices is only a cached value (and also useful for
+cross checking), it's safe to automatically update it. Other device
+related problems like missing device are handled after that and may
+require other means to resolve, like degraded mount. With this fix,
+potentially affected filesystems won't fail mount and require the manual
+repair by btrfs check.
+
+Reported-by: Luca Béla Palkovics <luca.bela.palkovics@gmail.com>
+Link: https://lore.kernel.org/linux-btrfs/CA+8xDSpvdm_U0QLBAnrH=zqDq_cWCOH5TiV46CKmp3igr44okQ@mail.gmail.com/
+CC: stable@vger.kernel.org # 4.14+
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/acenv.h | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ fs/btrfs/volumes.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/include/asm/acenv.h b/arch/x86/include/asm/acenv.h
-index 1b010a859b8b..6de59a4f723c 100644
---- a/arch/x86/include/asm/acenv.h
-+++ b/arch/x86/include/asm/acenv.h
-@@ -16,7 +16,19 @@
- 
- /* Asm macros */
- 
--#define ACPI_FLUSH_CPU_CACHE()	wbinvd()
-+/*
-+ * ACPI_FLUSH_CPU_CACHE() flushes caches on entering sleep states.
-+ * It is required to prevent data loss.
-+ *
-+ * While running inside virtual machine, the kernel can bypass cache flushing.
-+ * Changing sleep state in a virtual machine doesn't affect the host system
-+ * sleep state and cannot lead to data loss.
-+ */
-+#define ACPI_FLUSH_CPU_CACHE()					\
-+do {								\
-+	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))	\
-+		wbinvd();					\
-+} while (0)
- 
- int __acpi_acquire_global_lock(unsigned int *lock);
- int __acpi_release_global_lock(unsigned int *lock);
--- 
-2.35.1
-
+--- a/fs/btrfs/volumes.c
++++ b/fs/btrfs/volumes.c
+@@ -6925,12 +6925,12 @@ int btrfs_read_chunk_tree(struct btrfs_f
+ 	 * do another round of validation checks.
+ 	 */
+ 	if (total_dev != fs_info->fs_devices->total_devices) {
+-		btrfs_err(fs_info,
+-	   "super_num_devices %llu mismatch with num_devices %llu found here",
++		btrfs_warn(fs_info,
++"super block num_devices %llu mismatch with DEV_ITEM count %llu, will be repaired on next transaction commit",
+ 			  btrfs_super_num_devices(fs_info->super_copy),
+ 			  total_dev);
+-		ret = -EINVAL;
+-		goto error;
++		fs_info->fs_devices->total_devices = total_dev;
++		btrfs_set_super_num_devices(fs_info->super_copy, total_dev);
+ 	}
+ 	if (btrfs_super_total_bytes(fs_info->super_copy) <
+ 	    fs_info->fs_devices->total_rw_bytes) {
 
 
