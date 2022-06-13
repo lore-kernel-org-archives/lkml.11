@@ -2,318 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55BC2C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:31:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEA4BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 21:31:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236312AbiFMVbB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 17:31:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60452 "EHLO
+        id S1347036AbiFMVbH (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 17:31:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353189AbiFMV3Z (ORCPT
+        with ESMTP id S235795AbiFMV36 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 17:29:25 -0400
-Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6202C62
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:25:41 -0700 (PDT)
-Received: by mail-pl1-x64a.google.com with SMTP id s10-20020a170902a50a00b00162359521c9so3634058plq.23
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 14:25:41 -0700 (PDT)
+        Mon, 13 Jun 2022 17:29:58 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A4D6409;
+        Mon, 13 Jun 2022 14:28:20 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id h1so6128232plf.11;
+        Mon, 13 Jun 2022 14:28:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=ff4fVSapUxUvxB9n2Zl0T+CskRaCkgl+6PL+fmMltA8=;
-        b=ViU1g4IXRwdIhNofi8BH7fqSlsEv32y03c03Y02Vk+QIDq1vArSJfsn201yYUkUbKU
-         W3wDGy7regdl6SSjmTlUtL/0MFrnZ2IRaUNkIhYCgtkhWjpK8MrVkbXRM4Eb8MDkWugK
-         0lI0IiD+26eyChVxDUVkVRAkcq2Vl4RoWM2d3NAH12Ghc5c6J2AmU1t2rl0vEEMQ5AZe
-         6zdP/Q8wKiY4QjpSFP+4ff37r2dHTqSe/FrRLG7AWzOfhzcMX+pTN749wHNbdLSveyk6
-         My1v8Hy/fMfpucWLbFm1eX5AVIOvif7SuHa5wVg0G1IWQDTWfruof1pjyqRjVfu3Ni+7
-         rQ8A==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=gxN/w1qcbqbye494uu3kK3mI9gmlkf76QjHUX/jq0jk=;
+        b=BJ3FNM10ThOwKy5Kn0oFOLHkB770mLO87XRTWBD4hkj/4Xl/E3irXqGu9mORKR8g6/
+         3DoeZCa42weHFaJiPHGkIBiUk5sH/uXqXajDrnpnGWsYxGeoKJTqVzLdJvGkhl/BuaYw
+         bt2KaNj/6IXJUiLFppQYA/50oZ6udp/1YQSLNAyi8ku7IHQ9ERI6abdE4IuZzN0njnA0
+         TtPQBTVKd8xyXCVETzdezlX5b+H+Iq9+SjJvvLF6XhaaS/YZX6/lTcjIPUVQHvLYfROf
+         ol3Vry6HbkPpqogJrm2Ofkg90gCJNQSVPNJFY8KH2pOCRHxzCDLbwOaGiMyte9OYLk8E
+         W0DQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=ff4fVSapUxUvxB9n2Zl0T+CskRaCkgl+6PL+fmMltA8=;
-        b=I3u+kq47fwIGzHL/VB0UK0u9altplnA2cSw80QFFBaw6cR0TPuex1PJV/wGakiOuPe
-         nFo3TYHLki/9hivPwR1t5xPiAT2ILGzY3qoKqUJpbn2CJv1LLVeCGCFeclQRz9tBJDp7
-         VPPjbNgeEareSsdwE2RbNzSbbeZLp/2y41zm1d9c5N1jEroA5niHBDtxq3KDNMlDGLeJ
-         mD8Lj22xy6N40vseJNpDd80hz29qIwSmDcKfkc/Ut55wFb6lQhso09Oj3o8NVeWV/kjw
-         eWP3ipMSUvKR9Zm25aAPTnMDNgSvLH2E5Aw+jBPTDhT3/xVuJnpGa6d1guUwHPkH28wE
-         97/g==
-X-Gm-Message-State: AOAM533tbj0clHfuE/PQpv+UDwsukwv7BCgzQj+eebQMj74xfdl9NnDm
-        1xMRhNEM8AezprEZbsfiVUL3rKwwhItP
-X-Google-Smtp-Source: AGRyM1ujH/8wJgnWLOU39KDbFOQcd+ADIaJJ+FNow/hKmegWIyz+ttFnHcvrApS9oLsLGz/ShD1JOxE+KHhq
-X-Received: from sweer.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:e45])
- (user=bgardon job=sendgmr) by 2002:aa7:92d2:0:b0:51b:4d60:6475 with SMTP id
- k18-20020aa792d2000000b0051b4d606475mr1251862pfa.73.1655155541209; Mon, 13
- Jun 2022 14:25:41 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 21:25:22 +0000
-In-Reply-To: <20220613212523.3436117-1-bgardon@google.com>
-Message-Id: <20220613212523.3436117-10-bgardon@google.com>
-Mime-Version: 1.0
-References: <20220613212523.3436117-1-bgardon@google.com>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH v9 09/10] KVM: selftests: Test disabling NX hugepages on a VM
-From:   Ben Gardon <bgardon@google.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, Peter Xu <peterx@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        David Matlack <dmatlack@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        David Dunn <daviddunn@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        Junaid Shahid <junaids@google.com>,
-        Ben Gardon <bgardon@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=gxN/w1qcbqbye494uu3kK3mI9gmlkf76QjHUX/jq0jk=;
+        b=az+wKfyBMYcNXtqYve3ahFPzXKdqZOWXStJcyjm9H6mBCEWPaFTM8RMN/NOtM6BfpC
+         yuhESyT0klZ3w9xY3sHK3txi2JuiJyRzwj+hC3WwHi9BWARV66DyYjjWj5wYmQHVi2Ea
+         EvYgf75/MMe0z8CVwgsXebukSt6fEbFuy4717MLTHBLI3gT3LD41r+2+B7tvAD5JOFBj
+         oQ8vG6ju7vK4L4zkUExerxeeUVVmRVO0IOXeH+8gzLPZ7/hKIEKo7tzpRN76+iyp4s/g
+         ZVVCU3+u7QqOOAN6SvEhSYEIZph8Sq9MgELRhoWvbwa7+g7r2vUL6LQ3HsmIviaLQLX6
+         uRKw==
+X-Gm-Message-State: AJIora8apgPWY54jgqnEBQIGV1xXmj4Y8605A0zN2b5pU8JMV+JScFnw
+        3NvQBpV5VEq55Kzlpu2oXtee1tU0DeI=
+X-Google-Smtp-Source: AGRyM1s0FiY95llbjr94fqtXJiJblkRew/GKk/iyo4JZmvI86xxmNwdWHEsptrZb3ykeJmWWx46m2Q==
+X-Received: by 2002:a17:90b:33c4:b0:1e8:6e2f:97a2 with SMTP id lk4-20020a17090b33c400b001e86e2f97a2mr740822pjb.165.1655155700326;
+        Mon, 13 Jun 2022 14:28:20 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id i17-20020a056a00225100b0051c04b1c89dsm5899252pfu.3.2022.06.13.14.28.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Jun 2022 14:28:19 -0700 (PDT)
+Message-ID: <3f59aa12-1859-1833-1742-06c0411be4ef@gmail.com>
+Date:   Mon, 13 Jun 2022 14:28:14 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 0/3] arm: bcmbca: Add BCM6856 SoC support
+Content-Language: en-US
+To:     William Zhang <william.zhang@broadcom.com>,
+        Linux ARM List <linux-arm-kernel@lists.infradead.org>
+Cc:     samyon.furman@broadcom.com,
+        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
+        dan.beygelman@broadcom.com, tomer.yacoby@broadcom.com,
+        philippe.reynes@softathome.com, kursad.oney@broadcom.com,
+        f.fainelli@gmail.com, anand.gore@broadcom.com,
+        joel.peshkin@broadcom.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220608180437.31971-1-william.zhang@broadcom.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220608180437.31971-1-william.zhang@broadcom.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add an argument to the NX huge pages test to test disabling the feature
-on a VM using the new capability.
+On 6/8/22 11:04, William Zhang wrote:
+> This change adds the basic support for Broadcom's ARM64 based
+> Broadband SoC BCM6856. The initial support includes a bare-bone DTS
+> for dual core ARM A53 with a Broadcom uart. Linux kernel image can be
+> build with the ARM64 defconfig.
 
-Reviewed-by: David Matlack <dmatlack@google.com>
-Signed-off-by: Ben Gardon <bgardon@google.com>
----
- .../selftests/kvm/include/kvm_util_base.h     |   6 +
- .../selftests/kvm/x86_64/nx_huge_pages_test.c | 134 ++++++++++++------
- .../kvm/x86_64/nx_huge_pages_test.sh          |  14 +-
- 3 files changed, 106 insertions(+), 48 deletions(-)
-
-diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index 81ab7adfbef5..537b8a047d6e 100644
---- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-+++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -804,4 +804,10 @@ static inline void virt_dump(FILE *stream, struct kvm_vm *vm, uint8_t indent)
- 	virt_arch_dump(stream, vm, indent);
- }
- 
-+
-+static inline int __vm_disable_nx_huge_pages(struct kvm_vm *vm)
-+{
-+	return __vm_enable_cap(vm, KVM_CAP_VM_DISABLE_NX_HUGE_PAGES, 0);
-+}
-+
- #endif /* SELFTEST_KVM_UTIL_BASE_H */
-diff --git a/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.c b/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.c
-index 5fa61d225787..cc6421716400 100644
---- a/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.c
-@@ -107,53 +107,34 @@ static void wait_for_reclaim(int reclaim_period_ms)
- 	nanosleep(&ts, NULL);
- }
- 
--static void help(char *name)
--{
--	puts("");
--	printf("usage: %s [-h] [-p period_ms] [-t token]\n", name);
--	puts("");
--	printf(" -p: The NX reclaim period in miliseconds.\n");
--	printf(" -t: The magic token to indicate environment setup is done.\n");
--	puts("");
--	exit(0);
--}
--
--int main(int argc, char **argv)
-+void run_test(int reclaim_period_ms, bool disable_nx_huge_pages,
-+	      bool reboot_permissions)
- {
--	int reclaim_period_ms = 0, token = 0, opt;
- 	struct kvm_vcpu *vcpu;
- 	struct kvm_vm *vm;
- 	void *hva;
-+	int r;
- 
--	while ((opt = getopt(argc, argv, "hp:t:")) != -1) {
--		switch (opt) {
--		case 'p':
--			reclaim_period_ms = atoi(optarg);
--			break;
--		case 't':
--			token = atoi(optarg);
--			break;
--		case 'h':
--		default:
--			help(argv[0]);
--			break;
--		}
--	}
--
--	if (token != MAGIC_TOKEN) {
--		print_skip("This test must be run with the magic token %d.\n"
--			   "This is done by nx_huge_pages_test.sh, which\n"
--			   "also handles environment setup for the test.",
--			   MAGIC_TOKEN);
--		exit(KSFT_SKIP);
--	}
-+	vm = vm_create(1);
- 
--	if (!reclaim_period_ms) {
--		print_skip("The NX reclaim period must be specified and non-zero");
--		exit(KSFT_SKIP);
-+	if (disable_nx_huge_pages) {
-+		/*
-+		 * Cannot run the test without NX huge pages if the kernel
-+		 * does not support it.
-+		 */
-+		if (!kvm_check_cap(KVM_CAP_VM_DISABLE_NX_HUGE_PAGES))
-+			return;
-+
-+		r = __vm_disable_nx_huge_pages(vm);
-+		if (reboot_permissions) {
-+			TEST_ASSERT(!r, "Disabling NX huge pages should succeed if process has reboot permissions");
-+		} else {
-+			TEST_ASSERT(r == -1 && errno == EPERM,
-+				    "This process should not have permission to disable NX huge pages");
-+			return;
-+		}
- 	}
- 
--	vm = vm_create(1);
- 	vcpu = vm_vcpu_add(vm, 0, guest_code);
- 
- 	vm_userspace_mem_region_add(vm, VM_MEM_SRC_ANONYMOUS_HUGETLB,
-@@ -187,31 +168,38 @@ int main(int argc, char **argv)
- 	/*
- 	 * Next, the guest will execute from the first huge page, causing it
- 	 * to be remapped at 4k.
-+	 *
-+	 * If NX huge pages are disabled, this should have no effect.
- 	 */
- 	vcpu_run(vcpu);
--	check_2m_page_count(vm, 1);
--	check_split_count(vm, 1);
-+	check_2m_page_count(vm, disable_nx_huge_pages ? 2 : 1);
-+	check_split_count(vm, disable_nx_huge_pages ? 0 : 1);
- 
- 	/*
- 	 * Executing from the third huge page (previously unaccessed) will
- 	 * cause part to be mapped at 4k.
-+	 *
-+	 * If NX huge pages are disabled, it should be mapped at 2M.
- 	 */
- 	vcpu_run(vcpu);
--	check_2m_page_count(vm, 1);
--	check_split_count(vm, 2);
-+	check_2m_page_count(vm, disable_nx_huge_pages ? 3 : 1);
-+	check_split_count(vm, disable_nx_huge_pages ? 0 : 2);
- 
- 	/* Reading from the first huge page again should have no effect. */
- 	vcpu_run(vcpu);
--	check_2m_page_count(vm, 1);
--	check_split_count(vm, 2);
-+	check_2m_page_count(vm, disable_nx_huge_pages ? 3 : 1);
-+	check_split_count(vm, disable_nx_huge_pages ? 0 : 2);
- 
- 	/* Give recovery thread time to run. */
- 	wait_for_reclaim(reclaim_period_ms);
- 
- 	/*
- 	 * Now that the reclaimer has run, all the split pages should be gone.
-+	 *
-+	 * If NX huge pages are disabled, the relaimer will not run, so
-+	 * nothing should change from here on.
- 	 */
--	check_2m_page_count(vm, 1);
-+	check_2m_page_count(vm, disable_nx_huge_pages ? 3 : 1);
- 	check_split_count(vm, 0);
- 
- 	/*
-@@ -219,10 +207,62 @@ int main(int argc, char **argv)
- 	 * reading from it causes a huge page mapping to be installed.
- 	 */
- 	vcpu_run(vcpu);
--	check_2m_page_count(vm, 2);
-+	check_2m_page_count(vm, disable_nx_huge_pages ? 3 : 2);
- 	check_split_count(vm, 0);
- 
- 	kvm_vm_free(vm);
-+}
-+
-+static void help(char *name)
-+{
-+	puts("");
-+	printf("usage: %s [-h] [-p period_ms] [-t token]\n", name);
-+	puts("");
-+	printf(" -p: The NX reclaim period in miliseconds.\n");
-+	printf(" -t: The magic token to indicate environment setup is done.\n");
-+	printf(" -r: The test has reboot permissions and can disable NX huge pages.\n");
-+	puts("");
-+	exit(0);
-+}
-+
-+int main(int argc, char **argv)
-+{
-+	int reclaim_period_ms = 0, token = 0, opt;
-+	bool reboot_permissions = false;
-+
-+	while ((opt = getopt(argc, argv, "hp:t:r")) != -1) {
-+		switch (opt) {
-+		case 'p':
-+			reclaim_period_ms = atoi(optarg);
-+			break;
-+		case 't':
-+			token = atoi(optarg);
-+			break;
-+		case 'r':
-+			reboot_permissions = true;
-+			break;
-+		case 'h':
-+		default:
-+			help(argv[0]);
-+			break;
-+		}
-+	}
-+
-+	if (token != MAGIC_TOKEN) {
-+		print_skip("This test must be run with the magic token %d.\n"
-+			   "This is done by nx_huge_pages_test.sh, which\n"
-+			   "also handles environment setup for the test.",
-+			   MAGIC_TOKEN);
-+		exit(KSFT_SKIP);
-+	}
-+
-+	if (!reclaim_period_ms) {
-+		print_skip("The NX reclaim period must be specified and non-zero");
-+		exit(KSFT_SKIP);
-+	}
-+
-+	run_test(reclaim_period_ms, false, reboot_permissions);
-+	run_test(reclaim_period_ms, true, reboot_permissions);
- 
- 	return 0;
- }
-diff --git a/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.sh b/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.sh
-index 4e090a84f5f3..6bd8e026ee61 100755
---- a/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.sh
-+++ b/tools/testing/selftests/kvm/x86_64/nx_huge_pages_test.sh
-@@ -20,6 +20,8 @@ function sudo_echo () {
- 	echo "$1" | sudo tee -a "$2" > /dev/null
- }
- 
-+NXECUTABLE="$(dirname $0)/nx_huge_pages_test"
-+
- (
- 	set -e
- 
-@@ -28,7 +30,17 @@ function sudo_echo () {
- 	sudo_echo 100 /sys/module/kvm/parameters/nx_huge_pages_recovery_period_ms
- 	sudo_echo "$(( $HUGE_PAGES + 3 ))" /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
- 
--	"$(dirname $0)"/nx_huge_pages_test -t 887563923 -p 100
-+	# Test with reboot permissions
-+	if [ $(whoami) != "root" ] ; then
-+		sudo setcap cap_sys_boot+ep $NXECUTABLE
-+	fi
-+	$NXECUTABLE -t 887563923 -p 100 -r
-+
-+	# Test without reboot permissions
-+	if [ $(whoami) != "root" ] ; then
-+		sudo setcap cap_sys_boot-ep $NXECUTABLE
-+		$NXECUTABLE -t 887563923 -p 100
-+	fi
- )
- RET=$?
- 
+Series applied, thanks William!
 -- 
-2.36.1.476.g0c4daa206d-goog
-
+Florian
