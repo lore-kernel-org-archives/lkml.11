@@ -2,75 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF0D2C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:17:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20278C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:19:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237408AbiFMTRM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:17:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40056 "EHLO
+        id S1345161AbiFMTSP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 15:18:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241745AbiFMTQk (ORCPT
+        with ESMTP id S234730AbiFMTRk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 15:16:40 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB28125291
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:13:59 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id s37so3616626pfg.11
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:13:59 -0700 (PDT)
+        Mon, 13 Jun 2022 15:17:40 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8B8731235
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:14:27 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id d129so6091129pgc.9
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:14:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=QeOkcvX3znDxHyf5NSZPCw2521sMVjp/b+SUjQM63oY=;
-        b=KPDsZ2ZIiectBfz7EK4WJ5pJ9CbQSHCuTC9DcYViAIZvC2AwqLo9jqCpnK6bQTWOO/
-         +5mkx8P5Fk8uGASuuEU3hbPsFqcl3t3oRn0MsPg552e0b+ERWXQOP0tnLiyIZpzShmd9
-         2Ag5a310uCQAW1lpYjfGyRLfav3KNE5kcA154=
+        bh=q3ll5jEP2t2CsOV5mJ9Lm/eNFB2SHb8fwGUCCDQrsO0=;
+        b=F9Dmyjwzv2BEelHz7PJex+FuAbmYcPkwAbOQWV7DkB6t+QTRrVMnlcX6ZYZwZOjH8E
+         9y5wWh+yhRfIpe69TakkGIbElqr5S2LK6a9iqYRNZAq85N9BEYBPmuaqLwdKgBO5mXU1
+         uFtWLQc+4ZR54mskxEeTmr1fDcj55QLyl1l8o=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=QeOkcvX3znDxHyf5NSZPCw2521sMVjp/b+SUjQM63oY=;
-        b=lwmLTCA5xiiNSzhd/o0Y3xAkpWBZBkIiCETTsMC2UJanPRW18Ypa6fas3l3PC3T2ux
-         y5+EM03e6+8fC9NLTKMLFhYHiAJL3ICrrWuehlQ1CzrP7LmiBmPiG+U9QtZ46spYHNID
-         IlZgh78gdnXsF0ZiNlJog9v5ui/7X4S0A9SmgreDlpzIUFr1BVWshmGi1F8XkI2I+/OD
-         YLcBR5KiDouBNkWH9cz9yDHq+b4j261QAlAFNqOoPiroPLym05YhUIzUTQHbR0s4B9Ql
-         0XtYzidiwZO3qY61Z93sqamD3JXni/NaWabm/EZnDew5jEeCjURWo2p8GIm0pRcYIBWM
-         ml4g==
-X-Gm-Message-State: AOAM531dYq5kO9Mx9ZWE8Q2R9e7OzEYHt333AorAyG8eCXM3OFzJXGk6
-        wXygbRlYbfGaKah3lYSE1WyNIlluHMuvkw==
-X-Google-Smtp-Source: ABdhPJywR4BfcJFwuZ1Bd4Qs0nnw2UK8P6xQr196LoaHBmQlYW6nfk7/zGDL+Lqa2GkEfmmAgd1VGQ==
-X-Received: by 2002:a63:1a1d:0:b0:3f5:eb02:b6b4 with SMTP id a29-20020a631a1d000000b003f5eb02b6b4mr518865pga.343.1655140439320;
-        Mon, 13 Jun 2022 10:13:59 -0700 (PDT)
+        bh=q3ll5jEP2t2CsOV5mJ9Lm/eNFB2SHb8fwGUCCDQrsO0=;
+        b=U+Y3tR+yk0CohMmPrzGramdrgj9uTmxT5j58NTh9cn4k4h3dEgjkI4flek/NavVUuC
+         F7qfm4eCEhyo+ckuHTW1hxQXmVP2y8n/ag18k2kBUFcUD7MYQf8YKTIt8CKLO2sTFuSm
+         R/qcO3tNG2NVVMOlv/X8BLmanTifMYOE1GIVjGVZooE7DtnpQm1Jh628kW4DrDbcv7sw
+         q2Xzi9IBi4euf98NvG9lq/9MusuYaFdOr0uWsoogTEkEwymQEdvwobV/mnbmeR1Wg4fK
+         kLWZgDbtvrnUl2ViO5Ln8Vd/T6MLQfDVpvvg4NE1NAi1HsMlvniRKhWAq9palcfDkaLr
+         RQqw==
+X-Gm-Message-State: AOAM531pwPGLlq5FdMJoa2sbkhEUpu3JZ/UQwMbzrqV+3ueGh0aSz1xK
+        YXMw0hOJasYPb+YtuRbvU+X6Gw==
+X-Google-Smtp-Source: ABdhPJyID9xIthmByLOSbmLQ+hZGxlQijKuPUli3jnD6NTly8DKqdxatMXFTWRIwuHQv0whCqlLxfA==
+X-Received: by 2002:a62:140c:0:b0:51b:bd14:6859 with SMTP id 12-20020a62140c000000b0051bbd146859mr346192pfu.28.1655140467272;
+        Mon, 13 Jun 2022 10:14:27 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id p10-20020a62b80a000000b0050dc76281aasm5643639pfe.132.2022.06.13.10.13.58
+        by smtp.gmail.com with ESMTPSA id iz3-20020a170902ef8300b0015e9d4a5d27sm5407597plb.23.2022.06.13.10.14.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 10:13:59 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 10:13:58 -0700
+        Mon, 13 Jun 2022 10:14:26 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 10:14:26 -0700
 From:   Kees Cook <keescook@chromium.org>
-To:     Colin Ian King <colin.i.king@gmail.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] lkdtm: cfi: use NULL for a null pointer rather than zero
-Message-ID: <202206131013.BC01222@keescook>
-References: <20220612202708.2754270-1-colin.i.king@gmail.com>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH] powerpc: Restore CONFIG_DEBUG_INFO in defconfigs
+Message-ID: <202206131014.B0552BDB8@keescook>
+References: <98a4c2603bf9e4b776e219f5b8541d23aa24e854.1654930308.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220612202708.2754270-1-colin.i.king@gmail.com>
+In-Reply-To: <98a4c2603bf9e4b776e219f5b8541d23aa24e854.1654930308.git.christophe.leroy@csgroup.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jun 12, 2022 at 09:27:08PM +0100, Colin Ian King wrote:
-> There is a pointer being initialized with a zero, use NULL instead.
+On Sat, Jun 11, 2022 at 08:51:57AM +0200, Christophe Leroy wrote:
+> Commit f9b3cd245784 ("Kconfig.debug: make DEBUG_INFO selectable from a
+> choice") broke the selection of CONFIG_DEBUG_INFO by powerpc defconfigs.
 > 
-> Cleans up sparse warning:
-> drivers/misc/lkdtm/cfi.c:100:27: warning: Using plain integer as NULL pointer
+> It is now necessary to select one of the three DEBUG_INFO_DWARF*
+> options to get DEBUG_INFO enabled.
 > 
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> Replace DEBUG_INFO=y by DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y in all
+> defconfigs using the following command:
+> 
+> sed -i s/DEBUG_INFO=y/DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y/g `git grep -l DEBUG_INFO arch/powerpc/configs/`
+> 
+> Fixes: f9b3cd245784 ("Kconfig.debug: make DEBUG_INFO selectable from a choice")
+> Cc: stable@vger.kernel.org
+> Cc: Kees Cook <keescook@chromium.org>
+> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-Acked-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: Kees Cook <keescook@chromium.org>
 
 -- 
 Kees Cook
