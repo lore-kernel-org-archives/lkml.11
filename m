@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 317DCC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:41:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0835DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:41:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355728AbiFMLlF (ORCPT
+        id S1355753AbiFMLlL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:41:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56760 "EHLO
+        Mon, 13 Jun 2022 07:41:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354380AbiFMLcZ (ORCPT
+        with ESMTP id S1354480AbiFMLcu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:32:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAE0CB8A;
-        Mon, 13 Jun 2022 03:47:18 -0700 (PDT)
+        Mon, 13 Jun 2022 07:32:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44A0ABF64;
+        Mon, 13 Jun 2022 03:47:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 59CD36112A;
-        Mon, 13 Jun 2022 10:47:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63F01C34114;
-        Mon, 13 Jun 2022 10:47:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C1FBDB80D3C;
+        Mon, 13 Jun 2022 10:47:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14DEBC34114;
+        Mon, 13 Jun 2022 10:47:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117237;
-        bh=ZvBvAv7kjVo49vs4eozwkRMvE0oHu/7YyhCnQ65kPVE=;
+        s=korg; t=1655117240;
+        bh=JLpxzX6Ra9Gwh88TaUwLoR3OG6uxLuu6Y7TrfmKyxU0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A4y45ZKV5Nk4m4/Aemz4/TD1TGV1Je7jghublVcLs6sbatnrInp8Bk9csPhVUEoKN
-         7az8vyAl8GjgpErUScWI4a0dhu2qYrTD6jyXrzMpv4BJ2KfXAckstjI00jCKwwL6jD
-         WLFwdA8GrG3yfHdVAocOs8chT6A1Am9oeR0LnhUI=
+        b=QgVvARS1As51bXtFtz/icsfggc7hslCsj49wI9PaNga/3meXdPCj/y1KAjwULDTAH
+         Kzn42u+LRM4h8jZPKjCiNP5Fu+MXZPdzFXo6Pj4sSzFMpD/4VM+iXbJS8GxgbB5jNg
+         /4Q0ZlOTO/OxavUfNSDfyEl+b/m21XhAP5ow+28E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yu Xiao <yu.xiao@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 329/411] nfp: only report pause frame configuration for physical device
-Date:   Mon, 13 Jun 2022 12:10:02 +0200
-Message-Id: <20220613094938.592298822@linuxfoundation.org>
+Subject: [PATCH 5.4 330/411] net/mlx5: Dont use already freed action pointer
+Date:   Mon, 13 Jun 2022 12:10:03 +0200
+Message-Id: <20220613094938.621794979@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -51,44 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Xiao <yu.xiao@corigine.com>
+From: Leon Romanovsky <leonro@nvidia.com>
 
-[ Upstream commit 0649e4d63420ebc8cbebef3e9d39e12ffc5eb9fa ]
+[ Upstream commit 80b2bd737d0e833e6a2b77e482e5a714a79c86a4 ]
 
-Only report pause frame configuration for physical device. Logical
-port of both PCI PF and PCI VF do not support it.
+The call to mlx5dr_action_destroy() releases "action" memory. That
+pointer is set to miss_action later and generates the following smatch
+error:
 
-Fixes: 9fdc5d85a8fe ("nfp: update ethtool reporting of pauseframe control")
-Signed-off-by: Yu Xiao <yu.xiao@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+ drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c:53 set_miss_action()
+ warn: 'action' was already freed.
+
+Make sure that the pointer is always valid by setting NULL after destroy.
+
+Fixes: 6a48faeeca10 ("net/mlx5: Add direct rule fs_cmd implementation")
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-index 89e578e25ff8..10857914c552 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-@@ -266,8 +266,6 @@ nfp_net_get_link_ksettings(struct net_device *netdev,
- 
- 	/* Init to unknowns */
- 	ethtool_link_ksettings_add_link_mode(cmd, supported, FIBRE);
--	ethtool_link_ksettings_add_link_mode(cmd, supported, Pause);
--	ethtool_link_ksettings_add_link_mode(cmd, advertising, Pause);
- 	cmd->base.port = PORT_OTHER;
- 	cmd->base.speed = SPEED_UNKNOWN;
- 	cmd->base.duplex = DUPLEX_UNKNOWN;
-@@ -275,6 +273,8 @@ nfp_net_get_link_ksettings(struct net_device *netdev,
- 	port = nfp_port_from_netdev(netdev);
- 	eth_port = nfp_port_get_eth_port(port);
- 	if (eth_port) {
-+		ethtool_link_ksettings_add_link_mode(cmd, supported, Pause);
-+		ethtool_link_ksettings_add_link_mode(cmd, advertising, Pause);
- 		cmd->base.autoneg = eth_port->aneg != NFP_ANEG_DISABLED ?
- 			AUTONEG_ENABLE : AUTONEG_DISABLE;
- 		nfp_net_set_fec_link_mode(eth_port, cmd);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
+index 348f02e336f6..d64368506754 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
+@@ -43,11 +43,10 @@ static int set_miss_action(struct mlx5_flow_root_namespace *ns,
+ 	err = mlx5dr_table_set_miss_action(ft->fs_dr_table.dr_table, action);
+ 	if (err && action) {
+ 		err = mlx5dr_action_destroy(action);
+-		if (err) {
+-			action = NULL;
+-			mlx5_core_err(ns->dev, "Failed to destroy action (%d)\n",
+-				      err);
+-		}
++		if (err)
++			mlx5_core_err(ns->dev,
++				      "Failed to destroy action (%d)\n", err);
++		action = NULL;
+ 	}
+ 	ft->fs_dr_table.miss_action = action;
+ 	if (old_miss_action) {
 -- 
 2.35.1
 
