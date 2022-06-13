@@ -2,42 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7AD1CCA488
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:45:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B998CCA48F
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:45:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379520AbiFMNoZ (ORCPT
+        id S1379770AbiFMNpF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:44:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60578 "EHLO
+        Mon, 13 Jun 2022 09:45:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379190AbiFMNkA (ORCPT
+        with ESMTP id S1379220AbiFMNkD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:40:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58F32F63;
-        Mon, 13 Jun 2022 04:29:38 -0700 (PDT)
+        Mon, 13 Jun 2022 09:40:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77D2BCE12;
+        Mon, 13 Jun 2022 04:30:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E9F606101F;
-        Mon, 13 Jun 2022 11:29:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 078A2C34114;
-        Mon, 13 Jun 2022 11:29:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 31F80B80E59;
+        Mon, 13 Jun 2022 11:30:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AEDBC34114;
+        Mon, 13 Jun 2022 11:30:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119777;
-        bh=zXBnwl3dRR2fllwyEC5SpVSqZXvI6ZpxC9v+Z9lz+78=;
+        s=korg; t=1655119818;
+        bh=HPUnD1Dr5TmwM9pXagBlCjJ6amDxqlZFbFZkTJmijQ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=khwLBk/mWWMxwJbPkRH2sB3vTJHeLZQIHK3hDxE6sF2J3ItJExhFXk3apZHDnFBWC
-         2bVteDIFqYxOynErvLOqG+Q44Nf/tsOFLwNEFyD5nKfyQ12Hz+QcZ+iwggbUWUn5OS
-         3iR2Sx9CRkwJdIidnFGogYwyusc/lvp+4r7f1/9E=
+        b=IaXNW8AFuqMEu0FA0I5OPccj74cy+2+j9fznAGCKQbyNjwL46Pt6nKlRzqkaK7dZy
+         3bJs7OwkAwrPMjEtSyTy0waKZP5YtYmwtHDD99wvC5adfvKJT/NO1Dry2ZepmV0zhD
+         +gKylDiO5MRMlLXyrPub8UZN5s5PGP63NknASF3M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matthew Wilcox <willy@infradead.org>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 116/339] block: make bioset_exit() fully resilient against being called twice
-Date:   Mon, 13 Jun 2022 12:09:01 +0200
-Message-Id: <20220613094930.027035477@linuxfoundation.org>
+        stable@vger.kernel.org, Leo Yan <leo.yan@linaro.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        Joe Mario <jmario@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 150/339] perf c2c: Fix sorting in percent_rmt_hitm_cmp()
+Date:   Mon, 13 Jun 2022 12:09:35 +0200
+Message-Id: <20220613094931.233721073@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -49,40 +56,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: Leo Yan <leo.yan@linaro.org>
 
-[ Upstream commit 605f7415ecfb426610195dd6c7577b30592b3369 ]
+[ Upstream commit b24192a17337abbf3f44aaa75e15df14a2d0016e ]
 
-Most of bioset_exit() is fine being called twice, as it clears the
-various allocations etc when they are freed. The exception is
-bio_alloc_cache_destroy(), which does not clear ->cache when it has
-freed it.
+The function percent_rmt_hitm_cmp() wrongly uses local HITMs for
+sorting remote HITMs.
 
-This isn't necessarily a bug, but can be if buggy users does call the
-exit path more then once, or with just a memset() bioset which has
-never been initialized. dm appears to be one such user.
+Since this function is to sort cache lines for remote HITMs, this patch
+changes to use 'rmt_hitm' field for correct sorting.
 
-Fixes: be4d234d7aeb ("bio: add allocation cache abstraction")
-Link: https://lore.kernel.org/linux-block/YpK7m+14A+pZKs5k@casper.infradead.org/
-Reported-by: Matthew Wilcox <willy@infradead.org>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 9cb3500afc0980c5 ("perf c2c report: Add hitm/store percent related sort keys")
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
+Acked-by: Namhyung Kim <namhyung@kernel.org>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Joe Mario <jmario@redhat.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220530084253.750190-1-leo.yan@linaro.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/bio.c | 1 +
- 1 file changed, 1 insertion(+)
+ tools/perf/builtin-c2c.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/block/bio.c b/block/bio.c
-index ac29c87c6735..d3ca79c3ebdf 100644
---- a/block/bio.c
-+++ b/block/bio.c
-@@ -693,6 +693,7 @@ static void bio_alloc_cache_destroy(struct bio_set *bs)
- 		bio_alloc_cache_prune(cache, -1U);
- 	}
- 	free_percpu(bs->cache);
-+	bs->cache = NULL;
- }
+diff --git a/tools/perf/builtin-c2c.c b/tools/perf/builtin-c2c.c
+index 8c9ffacbdd28..157533d451e3 100644
+--- a/tools/perf/builtin-c2c.c
++++ b/tools/perf/builtin-c2c.c
+@@ -925,8 +925,8 @@ percent_rmt_hitm_cmp(struct perf_hpp_fmt *fmt __maybe_unused,
+ 	double per_left;
+ 	double per_right;
  
- /**
+-	per_left  = PERCENT(left, lcl_hitm);
+-	per_right = PERCENT(right, lcl_hitm);
++	per_left  = PERCENT(left, rmt_hitm);
++	per_right = PERCENT(right, rmt_hitm);
+ 
+ 	return per_left - per_right;
+ }
 -- 
 2.35.1
 
