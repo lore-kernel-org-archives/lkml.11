@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FAC9C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:42:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0004C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:43:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378406AbiFMNm4 (ORCPT
+        id S1378537AbiFMNnB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:42:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35902 "EHLO
+        Mon, 13 Jun 2022 09:43:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379069AbiFMNjq (ORCPT
+        with ESMTP id S1379098AbiFMNju (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:39:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9404979837;
-        Mon, 13 Jun 2022 04:28:37 -0700 (PDT)
+        Mon, 13 Jun 2022 09:39:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7043F7A44A;
+        Mon, 13 Jun 2022 04:28:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C69961037;
-        Mon, 13 Jun 2022 11:28:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A576C3411C;
-        Mon, 13 Jun 2022 11:28:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA75D61037;
+        Mon, 13 Jun 2022 11:28:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03D62C34114;
+        Mon, 13 Jun 2022 11:28:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655119716;
-        bh=VUIwTE/R/gT6QkPadJm9m7QpXLSCUmu6jQ4IQETBtuI=;
+        s=korg; t=1655119719;
+        bh=cEu4KRtrBnSljr/Lmyy5Y7uH9MAX4Hs0aLMsgO8HJrc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wdv3Yl2W248cSL+YcyiCiwhLqqqP/DFIsujCsBTvTU2qiiXTMfFBi6TAaRO9jO1a/
-         E7wqZOtZP5Hyzly3Tz97OnhZvKUgDu2vu4GX2rsf/8q+YPFdzJN6Vdz5WyXnHXG13m
-         r+u7a3pWjaulCPKbNWrdhRPe5FtorJDadYPq6q3A=
+        b=LMGuM2/q/UDPww7WddJvJO6/iXWjI0KfEpdTdVYTY/YD7XX/LBOU/dTJB8lUUh01c
+         ng9EXeAxyJpp1GVVEEvk4QWN1nKBB2Zka3QGMyQuICQaJ9UT+Y12Q1gHoXpKTfrFIc
+         3nuksJshGeGUrlA5fU6xsXiHBQmguQazOYlphn9Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 095/339] net: ethernet: ti: am65-cpsw-nuss: Fix some refcount leaks
-Date:   Mon, 13 Jun 2022 12:08:40 +0200
-Message-Id: <20220613094929.394529394@linuxfoundation.org>
+Subject: [PATCH 5.18 096/339] net: dsa: mv88e6xxx: Fix refcount leak in mv88e6xxx_mdios_register
+Date:   Mon, 13 Jun 2022 12:08:41 +0200
+Message-Id: <20220613094929.424025670@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -52,46 +53,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 5dd89d2fc438457811cbbec07999ce0d80051ff5 ]
+[ Upstream commit 02ded5a173619b11728b8bf75a3fd995a2c1ff28 ]
 
 of_get_child_by_name() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-am65_cpsw_init_cpts() and am65_cpsw_nuss_probe() don't release
-the refcount in error case.
+incremented, we should use of_node_put() on it when done.
+
+mv88e6xxx_mdio_register() pass the device node to of_mdiobus_register().
+We don't need the device node after it.
+
 Add missing of_node_put() to avoid refcount leak.
 
-Fixes: b1f66a5bee07 ("net: ethernet: ti: am65-cpsw-nuss: enable packet timestamping support")
-Fixes: 93a76530316a ("net: ethernet: ti: introduce am65x/j721e gigabit eth subsystem driver")
+Fixes: a3c53be55c95 ("net: dsa: mv88e6xxx: Support multiple MDIO busses")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Marek Behún <kabel@kernel.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ti/am65-cpsw-nuss.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-index 98969070ed4b..6d978dbf708f 100644
---- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-+++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-@@ -1797,6 +1797,7 @@ static int am65_cpsw_init_cpts(struct am65_cpsw_common *common)
- 	if (IS_ERR(cpts)) {
- 		int ret = PTR_ERR(cpts);
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 64f4fdd02902..732570fb97b1 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -3960,6 +3960,7 @@ static int mv88e6xxx_mdios_register(struct mv88e6xxx_chip *chip,
+ 	 */
+ 	child = of_get_child_by_name(np, "mdio");
+ 	err = mv88e6xxx_mdio_register(chip, child, false);
++	of_node_put(child);
+ 	if (err)
+ 		return err;
  
-+		of_node_put(node);
- 		if (ret == -EOPNOTSUPP) {
- 			dev_info(dev, "cpts disabled\n");
- 			return 0;
-@@ -2673,9 +2674,9 @@ static int am65_cpsw_nuss_probe(struct platform_device *pdev)
- 	if (!node)
- 		return -ENOENT;
- 	common->port_num = of_get_child_count(node);
-+	of_node_put(node);
- 	if (common->port_num < 1 || common->port_num > AM65_CPSW_MAX_PORTS)
- 		return -ENOENT;
--	of_node_put(node);
- 
- 	common->rx_flow_id_base = -1;
- 	init_completion(&common->tdown_complete);
 -- 
 2.35.1
 
