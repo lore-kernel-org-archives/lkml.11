@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83F40C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:47:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5E29C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:47:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245751AbiFMKra (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:47:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47070 "EHLO
+        id S236714AbiFMKrl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:47:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347036AbiFMKnu (ORCPT
+        with ESMTP id S1347299AbiFMKnv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:43:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A66F0DF2F;
-        Mon, 13 Jun 2022 03:25:03 -0700 (PDT)
+        Mon, 13 Jun 2022 06:43:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0FD3201A8;
+        Mon, 13 Jun 2022 03:25:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 283D460F07;
-        Mon, 13 Jun 2022 10:25:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 367D4C3411E;
-        Mon, 13 Jun 2022 10:25:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7E9C3B80E90;
+        Mon, 13 Jun 2022 10:25:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E59D1C34114;
+        Mon, 13 Jun 2022 10:25:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115902;
-        bh=X+yRmY49qQ+vJXONkRbFaKbxGptgVbKxURcw4SeclfY=;
+        s=korg; t=1655115905;
+        bh=9ythTDZkGeWLz6qsU2TVMuvmR0x6chpVk0Z79NBNNjQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fPGuwlaqyp5M768vRM16h5RtKr980l41X7J5750AA6vv9V7cOxcN2owfg5l9DXICi
-         Ql8ixXK/XAv66stwItErrUGHM+peqgTOO6VyJ+9I2//+YoBVIxFjm+u7bimEeFQWhh
-         tG152cQTtqLZlw1lbTy6gTKNZ0nfUtxWagb7k3YQ=
+        b=w/pG/8vfTb0+tpDwp4ra9ZsAYK2f588/Z8bq4kCuPauqe4U+J7GQbaAelsrYVb6kP
+         WXqmhV/IdoMX4g9VcBbot+Ghvy4kz8pmcGSCzNNUZoa6MB3Ocp6GNE0rXXuN+QBeZI
+         koqLHyLghxUVrHokfMRqEmSgDJbBjbWraSkQyKoE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Hugues Fruchet <hugues.fruchet@foss.st.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        stable@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 072/218] media: st-delta: Fix PM disable depth imbalance in delta_probe
-Date:   Mon, 13 Jun 2022 12:08:50 +0200
-Message-Id: <20220613094922.435447285@linuxfoundation.org>
+Subject: [PATCH 4.14 063/218] drm/msm/hdmi: check return value after calling platform_get_resource_byname()
+Date:   Mon, 13 Jun 2022 12:08:41 +0200
+Message-Id: <20220613094921.683399799@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -51,55 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 94e3dba710fe0afc772172305444250023fc2d30 ]
+[ Upstream commit a36e506711548df923ceb7ec9f6001375be799a5 ]
 
-The pm_runtime_enable will decrease power disable depth.
-If the probe fails, we should use pm_runtime_disable() to balance
-pm_runtime_enable().
+It will cause null-ptr-deref if platform_get_resource_byname() returns NULL,
+we need check the return value.
 
-Fixes: f386509e4959 ("[media] st-delta: STiH4xx multi-format video decoder v4l2 driver")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Acked-by: Hugues Fruchet <hugues.fruchet@foss.st.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Fixes: c6a57a50ad56 ("drm/msm/hdmi: add hdmi hdcp support (V3)")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Patchwork: https://patchwork.freedesktop.org/patch/482992/
+Link: https://lore.kernel.org/r/20220422032227.2991553-1-yangyingliang@huawei.com
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/sti/delta/delta-v4l2.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/msm/hdmi/hdmi.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/media/platform/sti/delta/delta-v4l2.c b/drivers/media/platform/sti/delta/delta-v4l2.c
-index 7c925f309158..a489d0d17989 100644
---- a/drivers/media/platform/sti/delta/delta-v4l2.c
-+++ b/drivers/media/platform/sti/delta/delta-v4l2.c
-@@ -1880,7 +1880,7 @@ static int delta_probe(struct platform_device *pdev)
- 	if (ret) {
- 		dev_err(delta->dev, "%s failed to initialize firmware ipc channel\n",
- 			DELTA_PREFIX);
--		goto err;
-+		goto err_pm_disable;
- 	}
+diff --git a/drivers/gpu/drm/msm/hdmi/hdmi.c b/drivers/gpu/drm/msm/hdmi/hdmi.c
+index 17e069a133a4..0df62c9c2856 100644
+--- a/drivers/gpu/drm/msm/hdmi/hdmi.c
++++ b/drivers/gpu/drm/msm/hdmi/hdmi.c
+@@ -148,6 +148,10 @@ static struct hdmi *msm_hdmi_init(struct platform_device *pdev)
+ 	/* HDCP needs physical address of hdmi register */
+ 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
+ 		config->mmio_name);
++	if (!res) {
++		ret = -EINVAL;
++		goto fail;
++	}
+ 	hdmi->mmio_phy_addr = res->start;
  
- 	/* register all available decoders */
-@@ -1894,7 +1894,7 @@ static int delta_probe(struct platform_device *pdev)
- 	if (ret) {
- 		dev_err(delta->dev, "%s failed to register V4L2 device\n",
- 			DELTA_PREFIX);
--		goto err;
-+		goto err_pm_disable;
- 	}
- 
- 	delta->work_queue = create_workqueue(DELTA_NAME);
-@@ -1919,6 +1919,8 @@ static int delta_probe(struct platform_device *pdev)
- 	destroy_workqueue(delta->work_queue);
- err_v4l2:
- 	v4l2_device_unregister(&delta->v4l2_dev);
-+err_pm_disable:
-+	pm_runtime_disable(dev);
- err:
- 	return ret;
- }
+ 	hdmi->qfprom_mmio = msm_ioremap(pdev,
 -- 
 2.35.1
 
