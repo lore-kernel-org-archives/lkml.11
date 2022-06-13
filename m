@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BCEACCA487
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21C64C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:16:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382596AbiFMOO0 (ORCPT
+        id S1383073AbiFMOPQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:14:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43244 "EHLO
+        Mon, 13 Jun 2022 10:15:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381258AbiFMOEO (ORCPT
+        with ESMTP id S1382028AbiFMOFE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 10:04:14 -0400
+        Mon, 13 Jun 2022 10:05:04 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5835745530;
-        Mon, 13 Jun 2022 04:39:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89AFA93449;
+        Mon, 13 Jun 2022 04:40:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EA37B60B6E;
-        Mon, 13 Jun 2022 11:39:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0750CC34114;
-        Mon, 13 Jun 2022 11:39:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3AE8F612A8;
+        Mon, 13 Jun 2022 11:40:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47D5CC34114;
+        Mon, 13 Jun 2022 11:40:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120344;
-        bh=bSu8yqGY2DwAqxb0viMrKj2He+cGqtk0DtJOpvFsoEg=;
+        s=korg; t=1655120415;
+        bh=9WJw4ELdbzbiHeCqGWRljac6AwMwvdo0pSocOeweelI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tCXrZst1w6auvGGvSA8BZfK0M1ENnwlsfYPkOSC4ijqVR+Ft3jB2lpEwFAG/+nuJi
-         OuwZ6jzLNSSoogiH7umoqjHkjoNie125yIQwVm3y5TnHMDaRlQLiTIg8PihPbg25vx
-         pXc4HIz6Vz3wWjXcJ+O95QPHLUbRZ4StDZiUXpzc=
+        b=ZxTAafVDAGQJJ3NnZ1jfS1wKxb2WHIjle3RaIh+hZ3EpdIjQgg5hcrM0fuAycuZYN
+         +p3zvMg26461xer6pPt7J93OLgRcNIzNghUdZeu/88yOqJocd3uqVkEyBlPByXBkvj
+         ddLAI/YPhYQOwJZCGt2eHbmib/UNl/wuVApXW3nc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Subject: [PATCH 5.18 339/339] zonefs: fix handling of explicit_open option on mount
-Date:   Mon, 13 Jun 2022 12:12:44 +0200
-Message-Id: <20220613094937.011398916@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.17 025/298] firmware: stratix10-svc: fix a missing check on list iterator
+Date:   Mon, 13 Jun 2022 12:08:39 +0200
+Message-Id: <20220613094925.693738115@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
-References: <20220613094926.497929857@linuxfoundation.org>
+In-Reply-To: <20220613094924.913340374@linuxfoundation.org>
+References: <20220613094924.913340374@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,52 +49,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 
-commit a2a513be7139b279f1b5b2cee59c6c4950c34346 upstream.
+[ Upstream commit 5a0793ac66ac0e254d292f129a4d6c526f9f2aff ]
 
-Ignoring the explicit_open mount option on mount for devices that do not
-have a limit on the number of open zones must be done after the mount
-options are parsed and set in s_mount_opts. Move the check to ignore
-the explicit_open option after the call to zonefs_parse_options() in
-zonefs_fill_super().
+The bug is here:
+	pmem->vaddr = NULL;
 
-Fixes: b5c00e975779 ("zonefs: open/close zone on file open/close")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+The list iterator 'pmem' will point to a bogus position containing
+HEAD if the list is empty or no element is found. This case must
+be checked before any use of the iterator, otherwise it will
+lead to a invalid memory access.
+
+To fix this bug, just gen_pool_free/set NULL/list_del() and return
+when found, otherwise list_del HEAD and return;
+
+Fixes: 7ca5ce896524f ("firmware: add Intel Stratix10 service layer driver")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Link: https://lore.kernel.org/r/20220414035609.2239-1-xiam0nd.tong@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/zonefs/super.c |   11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/firmware/stratix10-svc.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
---- a/fs/zonefs/super.c
-+++ b/fs/zonefs/super.c
-@@ -1690,11 +1690,6 @@ static int zonefs_fill_super(struct supe
- 	sbi->s_mount_opts = ZONEFS_MNTOPT_ERRORS_RO;
- 	sbi->s_max_open_zones = bdev_max_open_zones(sb->s_bdev);
- 	atomic_set(&sbi->s_open_zones, 0);
--	if (!sbi->s_max_open_zones &&
--	    sbi->s_mount_opts & ZONEFS_MNTOPT_EXPLICIT_OPEN) {
--		zonefs_info(sb, "No open zones limit. Ignoring explicit_open mount option\n");
--		sbi->s_mount_opts &= ~ZONEFS_MNTOPT_EXPLICIT_OPEN;
--	}
+diff --git a/drivers/firmware/stratix10-svc.c b/drivers/firmware/stratix10-svc.c
+index c4bf934e3553..33ab24cfd600 100644
+--- a/drivers/firmware/stratix10-svc.c
++++ b/drivers/firmware/stratix10-svc.c
+@@ -941,17 +941,17 @@ EXPORT_SYMBOL_GPL(stratix10_svc_allocate_memory);
+ void stratix10_svc_free_memory(struct stratix10_svc_chan *chan, void *kaddr)
+ {
+ 	struct stratix10_svc_data_mem *pmem;
+-	size_t size = 0;
  
- 	ret = zonefs_read_super(sb);
- 	if (ret)
-@@ -1713,6 +1708,12 @@ static int zonefs_fill_super(struct supe
- 	zonefs_info(sb, "Mounting %u zones",
- 		    blkdev_nr_zones(sb->s_bdev->bd_disk));
+ 	list_for_each_entry(pmem, &svc_data_mem, node)
+ 		if (pmem->vaddr == kaddr) {
+-			size = pmem->size;
+-			break;
++			gen_pool_free(chan->ctrl->genpool,
++				       (unsigned long)kaddr, pmem->size);
++			pmem->vaddr = NULL;
++			list_del(&pmem->node);
++			return;
+ 		}
  
-+	if (!sbi->s_max_open_zones &&
-+	    sbi->s_mount_opts & ZONEFS_MNTOPT_EXPLICIT_OPEN) {
-+		zonefs_info(sb, "No open zones limit. Ignoring explicit_open mount option\n");
-+		sbi->s_mount_opts &= ~ZONEFS_MNTOPT_EXPLICIT_OPEN;
-+	}
-+
- 	/* Create root directory inode */
- 	ret = -ENOMEM;
- 	inode = new_inode(sb);
+-	gen_pool_free(chan->ctrl->genpool, (unsigned long)kaddr, size);
+-	pmem->vaddr = NULL;
+-	list_del(&pmem->node);
++	list_del(&svc_data_mem);
+ }
+ EXPORT_SYMBOL_GPL(stratix10_svc_free_memory);
+ 
+-- 
+2.35.1
+
 
 
