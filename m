@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 237E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:51:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DE2BCCA47F
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:51:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346544AbiFMKvJ (ORCPT
+        id S1346797AbiFMKvN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:51:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47842 "EHLO
+        Mon, 13 Jun 2022 06:51:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348145AbiFMKtK (ORCPT
+        with ESMTP id S1348109AbiFMKtK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 13 Jun 2022 06:49:10 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8847A20F56;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C74C82DAB6;
         Mon, 13 Jun 2022 03:26:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C43BFCE0EEB;
-        Mon, 13 Jun 2022 10:26:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABC73C34114;
-        Mon, 13 Jun 2022 10:26:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5903B60EF5;
+        Mon, 13 Jun 2022 10:26:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65594C34114;
+        Mon, 13 Jun 2022 10:26:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116001;
-        bh=N+XI1wzcd9Kxu8XYioKt1zD2W6+6VitmPYqJQxlxEXc=;
+        s=korg; t=1655116003;
+        bh=QNpWo+9nUEhuovgThzLGs6vrR0Oli/lJ/RPoVNSWLLU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VEFABxKBHmeuUIDdR7H0U+pI7dQ03Q2UdWyccLQnNGt0iEPbexp+b+3RvsL1pExY5
-         43GaLG0B6Xm5KSFMWzqJyYTrBEN7PbBFXQWdxDIG1p3P29pAtwrh5OUMOtu2rS9qK5
-         k4J5ejoYRWkXRlKAU+D/dAOkC+kSCPzRlAWmCKeE=
+        b=MztVCYD2iJoVbPNDEqkIDBuyb/wGPPsn/B1b+Hpsa33XSS1nRoUuTxuKX3oFDSUUs
+         I6c9jTdBL06SER2QCa/lmXluWPd2DykEfzM/2o477q1vP7WxyNH/e9GVvw1VTm7d8N
+         0MUUb4TiiD4tdE3o4lxtpr8WhjI6QCNJ8E3F+Ur4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhihao Cheng <chengzhihao1@huawei.com>,
-        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: =?UTF-8?q?=5BPATCH=204=2E14=20104/218=5D=20fs-writeback=3A=20writeback=5Fsb=5Finodes=EF=BC=9ARecalculate=20wrote=20according=20skipped=20pages?=
-Date:   Mon, 13 Jun 2022 12:09:22 +0200
-Message-Id: <20220613094923.709526796@linuxfoundation.org>
+        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
+        stable@kernel.org
+Subject: [PATCH 4.14 105/218] ext4: fix use-after-free in ext4_rename_dir_prepare
+Date:   Mon, 13 Jun 2022 12:09:23 +0200
+Message-Id: <20220613094923.741600262@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -50,151 +50,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhihao Cheng <chengzhihao1@huawei.com>
+From: Ye Bin <yebin10@huawei.com>
 
-commit 68f4c6eba70df70a720188bce95c85570ddfcc87 upstream.
+commit 0be698ecbe4471fcad80e81ec6a05001421041b3 upstream.
 
-Commit 505a666ee3fc ("writeback: plug writeback in wb_writeback() and
-writeback_inodes_wb()") has us holding a plug during wb_writeback, which
-may cause a potential ABBA dead lock:
+We got issue as follows:
+EXT4-fs (loop0): mounted filesystem without journal. Opts: ,errors=continue
+ext4_get_first_dir_block: bh->b_data=0xffff88810bee6000 len=34478
+ext4_get_first_dir_block: *parent_de=0xffff88810beee6ae bh->b_data=0xffff88810bee6000
+ext4_rename_dir_prepare: [1] parent_de=0xffff88810beee6ae
+==================================================================
+BUG: KASAN: use-after-free in ext4_rename_dir_prepare+0x152/0x220
+Read of size 4 at addr ffff88810beee6ae by task rep/1895
 
-    wb_writeback		fat_file_fsync
-blk_start_plug(&plug)
-for (;;) {
-  iter i-1: some reqs have been added into plug->mq_list  // LOCK A
-  iter i:
-    progress = __writeback_inodes_wb(wb, work)
-    . writeback_sb_inodes // fat's bdev
-    .   __writeback_single_inode
-    .   . generic_writepages
-    .   .   __block_write_full_page
-    .   .   . . 	    __generic_file_fsync
-    .   .   . . 	      sync_inode_metadata
-    .   .   . . 	        writeback_single_inode
-    .   .   . . 		  __writeback_single_inode
-    .   .   . . 		    fat_write_inode
-    .   .   . . 		      __fat_write_inode
-    .   .   . . 		        sync_dirty_buffer	// fat's bdev
-    .   .   . . 			  lock_buffer(bh)	// LOCK B
-    .   .   . . 			    submit_bh
-    .   .   . . 			      blk_mq_get_tag	// LOCK A
-    .   .   . trylock_buffer(bh)  // LOCK B
-    .   .   .   redirty_page_for_writepage
-    .   .   .     wbc->pages_skipped++
-    .   .   --wbc->nr_to_write
-    .   wrote += write_chunk - wbc.nr_to_write  // wrote > 0
-    .   requeue_inode
-    .     redirty_tail_locked
-    if (progress)    // progress > 0
-      continue;
-  iter i+1:
-      queue_io
-      // similar process with iter i, infinite for-loop !
-}
-blk_finish_plug(&plug)   // flush plug won't be called
+CPU: 13 PID: 1895 Comm: rep Not tainted 5.10.0+ #241
+Call Trace:
+ dump_stack+0xbe/0xf9
+ print_address_description.constprop.0+0x1e/0x220
+ kasan_report.cold+0x37/0x7f
+ ext4_rename_dir_prepare+0x152/0x220
+ ext4_rename+0xf44/0x1ad0
+ ext4_rename2+0x11c/0x170
+ vfs_rename+0xa84/0x1440
+ do_renameat2+0x683/0x8f0
+ __x64_sys_renameat+0x53/0x60
+ do_syscall_64+0x33/0x40
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x7f45a6fc41c9
+RSP: 002b:00007ffc5a470218 EFLAGS: 00000246 ORIG_RAX: 0000000000000108
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f45a6fc41c9
+RDX: 0000000000000005 RSI: 0000000020000180 RDI: 0000000000000005
+RBP: 00007ffc5a470240 R08: 00007ffc5a470160 R09: 0000000020000080
+R10: 00000000200001c0 R11: 0000000000000246 R12: 0000000000400bb0
+R13: 00007ffc5a470320 R14: 0000000000000000 R15: 0000000000000000
 
-Above process triggers a hungtask like:
-[  399.044861] INFO: task bb:2607 blocked for more than 30 seconds.
-[  399.046824]       Not tainted 5.18.0-rc1-00005-gefae4d9eb6a2-dirty
-[  399.051539] task:bb              state:D stack:    0 pid: 2607 ppid:
-2426 flags:0x00004000
-[  399.051556] Call Trace:
-[  399.051570]  __schedule+0x480/0x1050
-[  399.051592]  schedule+0x92/0x1a0
-[  399.051602]  io_schedule+0x22/0x50
-[  399.051613]  blk_mq_get_tag+0x1d3/0x3c0
-[  399.051640]  __blk_mq_alloc_requests+0x21d/0x3f0
-[  399.051657]  blk_mq_submit_bio+0x68d/0xca0
-[  399.051674]  __submit_bio+0x1b5/0x2d0
-[  399.051708]  submit_bio_noacct+0x34e/0x720
-[  399.051718]  submit_bio+0x3b/0x150
-[  399.051725]  submit_bh_wbc+0x161/0x230
-[  399.051734]  __sync_dirty_buffer+0xd1/0x420
-[  399.051744]  sync_dirty_buffer+0x17/0x20
-[  399.051750]  __fat_write_inode+0x289/0x310
-[  399.051766]  fat_write_inode+0x2a/0xa0
-[  399.051783]  __writeback_single_inode+0x53c/0x6f0
-[  399.051795]  writeback_single_inode+0x145/0x200
-[  399.051803]  sync_inode_metadata+0x45/0x70
-[  399.051856]  __generic_file_fsync+0xa3/0x150
-[  399.051880]  fat_file_fsync+0x1d/0x80
-[  399.051895]  vfs_fsync_range+0x40/0xb0
-[  399.051929]  __x64_sys_fsync+0x18/0x30
+The buggy address belongs to the page:
+page:00000000440015ce refcount:0 mapcount:0 mapping:0000000000000000 index:0x1 pfn:0x10beee
+flags: 0x200000000000000()
+raw: 0200000000000000 ffffea00043ff4c8 ffffea0004325608 0000000000000000
+raw: 0000000000000001 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
 
-In my test, 'need_resched()' (which is imported by 590dca3a71 "fs-writeback:
-unplug before cond_resched in writeback_sb_inodes") in function
-'writeback_sb_inodes()' seldom comes true, unless cond_resched() is deleted
-from write_cache_pages().
+Memory state around the buggy address:
+ ffff88810beee580: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff88810beee600: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+>ffff88810beee680: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                                  ^
+ ffff88810beee700: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+ ffff88810beee780: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+==================================================================
+Disabling lock debugging due to kernel taint
+ext4_rename_dir_prepare: [2] parent_de->inode=3537895424
+ext4_rename_dir_prepare: [3] dir=0xffff888124170140
+ext4_rename_dir_prepare: [4] ino=2
+ext4_rename_dir_prepare: ent->dir->i_ino=2 parent=-757071872
 
-Fix it by correcting wrote number according number of skipped pages
-in writeback_sb_inodes().
+Reason is first directory entry which 'rec_len' is 34478, then will get illegal
+parent entry. Now, we do not check directory entry after read directory block
+in 'ext4_get_first_dir_block'.
+To solve this issue, check directory entry in 'ext4_get_first_dir_block'.
 
-Goto Link to find a reproducer.
+[ Trigger an ext4_error() instead of just warning if the directory is
+  missing a '.' or '..' entry.   Also make sure we return an error code
+  if the file system is corrupted.  -TYT ]
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215837
-Cc: stable@vger.kernel.org # v4.3
-Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Ye Bin <yebin10@huawei.com>
 Reviewed-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220510133805.1988292-1-chengzhihao1@huawei.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Link: https://lore.kernel.org/r/20220414025223.4113128-1-yebin10@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/fs-writeback.c |   13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ fs/ext4/namei.c |   30 +++++++++++++++++++++++++++---
+ 1 file changed, 27 insertions(+), 3 deletions(-)
 
---- a/fs/fs-writeback.c
-+++ b/fs/fs-writeback.c
-@@ -1565,11 +1565,12 @@ static long writeback_sb_inodes(struct s
- 	};
- 	unsigned long start_time = jiffies;
- 	long write_chunk;
--	long wrote = 0;  /* count both pages and inodes */
-+	long total_wrote = 0;  /* count both pages and inodes */
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -3338,6 +3338,9 @@ static struct buffer_head *ext4_get_firs
+ 	struct buffer_head *bh;
  
- 	while (!list_empty(&wb->b_io)) {
- 		struct inode *inode = wb_inode(wb->b_io.prev);
- 		struct bdi_writeback *tmp_wb;
-+		long wrote;
- 
- 		if (inode->i_sb != sb) {
- 			if (work->sb) {
-@@ -1645,7 +1646,9 @@ static long writeback_sb_inodes(struct s
- 
- 		wbc_detach_inode(&wbc);
- 		work->nr_pages -= write_chunk - wbc.nr_to_write;
--		wrote += write_chunk - wbc.nr_to_write;
-+		wrote = write_chunk - wbc.nr_to_write - wbc.pages_skipped;
-+		wrote = wrote < 0 ? 0 : wrote;
-+		total_wrote += wrote;
- 
- 		if (need_resched()) {
- 			/*
-@@ -1667,7 +1670,7 @@ static long writeback_sb_inodes(struct s
- 		tmp_wb = inode_to_wb_and_lock_list(inode);
- 		spin_lock(&inode->i_lock);
- 		if (!(inode->i_state & I_DIRTY_ALL))
--			wrote++;
-+			total_wrote++;
- 		requeue_inode(inode, tmp_wb, &wbc);
- 		inode_sync_complete(inode);
- 		spin_unlock(&inode->i_lock);
-@@ -1681,14 +1684,14 @@ static long writeback_sb_inodes(struct s
- 		 * bail out to wb_writeback() often enough to check
- 		 * background threshold and other termination conditions.
+ 	if (!ext4_has_inline_data(inode)) {
++		struct ext4_dir_entry_2 *de;
++		unsigned int offset;
++
+ 		/* The first directory block must not be a hole, so
+ 		 * treat it as DIRENT_HTREE
  		 */
--		if (wrote) {
-+		if (total_wrote) {
- 			if (time_is_before_jiffies(start_time + HZ / 10UL))
- 				break;
- 			if (work->nr_pages <= 0)
- 				break;
+@@ -3346,9 +3349,30 @@ static struct buffer_head *ext4_get_firs
+ 			*retval = PTR_ERR(bh);
+ 			return NULL;
  		}
+-		*parent_de = ext4_next_entry(
+-					(struct ext4_dir_entry_2 *)bh->b_data,
+-					inode->i_sb->s_blocksize);
++
++		de = (struct ext4_dir_entry_2 *) bh->b_data;
++		if (ext4_check_dir_entry(inode, NULL, de, bh, bh->b_data,
++					 bh->b_size, 0) ||
++		    le32_to_cpu(de->inode) != inode->i_ino ||
++		    strcmp(".", de->name)) {
++			EXT4_ERROR_INODE(inode, "directory missing '.'");
++			brelse(bh);
++			*retval = -EFSCORRUPTED;
++			return NULL;
++		}
++		offset = ext4_rec_len_from_disk(de->rec_len,
++						inode->i_sb->s_blocksize);
++		de = ext4_next_entry(de, inode->i_sb->s_blocksize);
++		if (ext4_check_dir_entry(inode, NULL, de, bh, bh->b_data,
++					 bh->b_size, offset) ||
++		    le32_to_cpu(de->inode) == 0 || strcmp("..", de->name)) {
++			EXT4_ERROR_INODE(inode, "directory missing '..'");
++			brelse(bh);
++			*retval = -EFSCORRUPTED;
++			return NULL;
++		}
++		*parent_de = de;
++
+ 		return bh;
  	}
--	return wrote;
-+	return total_wrote;
- }
  
- static long __writeback_inodes_wb(struct bdi_writeback *wb,
 
 
