@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10C5AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:38:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F163AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:38:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355246AbiFMLh7 (ORCPT
+        id S1354479AbiFMLiG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:37:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56080 "EHLO
+        Mon, 13 Jun 2022 07:38:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355030AbiFMLaZ (ORCPT
+        with ESMTP id S1355064AbiFMLa2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:30:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1ECF40A37;
-        Mon, 13 Jun 2022 03:46:22 -0700 (PDT)
+        Mon, 13 Jun 2022 07:30:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5FAA2B240;
+        Mon, 13 Jun 2022 03:46:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F8DD60FDB;
-        Mon, 13 Jun 2022 10:46:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BEDFC34114;
-        Mon, 13 Jun 2022 10:46:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F77360FDB;
+        Mon, 13 Jun 2022 10:46:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B4F4C34114;
+        Mon, 13 Jun 2022 10:46:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117181;
-        bh=tHsvPguDk4QYluyRhb/0DQkGCdQEav2w/GLJP1pJuA0=;
+        s=korg; t=1655117184;
+        bh=aAA6hQIpGv3F1Y6sJQtvDmCD4JxsSlbLtBI+wfx5otg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z8boFe9LAp37D52RSfvNgXdnvhvnZFOS8dYTH2fnmD0trzwVOJI2iPxQYYoz5MLYx
-         Laj4J2ijKo91C+/32uvtN79smhE3HW6qmiUmy/JYbQDo1m5G0O4y5lny3dbzDdKmwK
-         Su0qAQwkDkzglpW3jyDx3vRHCZI4kQ2A7GhfAJUM=
+        b=QnOsbDk67zSnPWlBM8PzKgwQiEn/S26OC24TecK/F7IsTGWPqqcXsyl4qRaC+ZMLl
+         yjkYOE7Vpj1AZjpvMMREicFMKtK56sIowSs0m0Gil5LobDHxR6/Xjzd7J4iMBgkxKY
+         Q9QSrlMLuv0LSKm7tNeDFJXuQffpEL6DReZzj4ss=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
+        stable@vger.kernel.org, Romain Naour <romain.naour@smile.fr>,
+        Tony Lindgren <tony@atomide.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 326/411] modpost: fix removing numeric suffixes
-Date:   Mon, 13 Jun 2022 12:09:59 +0200
-Message-Id: <20220613094938.505365480@linuxfoundation.org>
+Subject: [PATCH 5.4 316/411] bus: ti-sysc: Fix warnings for unbind for serial
+Date:   Mon, 13 Jun 2022 12:09:49 +0200
+Message-Id: <20220613094938.216549236@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -52,56 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
+From: Tony Lindgren <tony@atomide.com>
 
-[ Upstream commit b5beffa20d83c4e15306c991ffd00de0d8628338 ]
+[ Upstream commit c337125b8834f9719dfda0e40b25eaa266f1b8cf ]
 
-With the `-z unique-symbol` linker flag or any similar mechanism,
-it is possible to trigger the following:
+We can get "failed to disable" clock_unprepare warnings on unbind at least
+for the serial console device if the unbind is done before the device has
+been idled.
 
-ERROR: modpost: "param_set_uint.0" [vmlinux] is a static EXPORT_SYMBOL
+As some devices are using deferred idle, we must check the status for
+pending idle work to idle the device.
 
-The reason is that for now the condition from remove_dot():
-
-if (m && (s[n + m] == '.' || s[n + m] == 0))
-
-which was designed to test if it's a dot or a '\0' after the suffix
-is never satisfied.
-This is due to that `s[n + m]` always points to the last digit of a
-numeric suffix, not on the symbol next to it (from a custom debug
-print added to modpost):
-
-param_set_uint.0, s[n + m] is '0', s[n + m + 1] is '\0'
-
-So it's off-by-one and was like that since 2014.
-
-Fix this for the sake of any potential upcoming features, but don't
-bother stable-backporting, as it's well hidden -- apart from that
-LD flag, it can be triggered only with GCC LTO which never landed
-upstream.
-
-Fixes: fcd38ed0ff26 ("scripts: modpost: fix compilation warning")
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Fixes: 76f0f772e469 ("bus: ti-sysc: Improve handling for no-reset-on-init and no-idle-on-init")
+Cc: Romain Naour <romain.naour@smile.fr>
+Reviewed-by: Romain Naour <romain.naour@smile.fr>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+Link: https://lore.kernel.org/r/20220512053021.61650-1-tony@atomide.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/mod/modpost.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/bus/ti-sysc.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 13cda6aa2688..74e2052f429d 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -1998,7 +1998,7 @@ static char *remove_dot(char *s)
+diff --git a/drivers/bus/ti-sysc.c b/drivers/bus/ti-sysc.c
+index 469ca73de4ce..44aeceaccfa4 100644
+--- a/drivers/bus/ti-sysc.c
++++ b/drivers/bus/ti-sysc.c
+@@ -2724,7 +2724,9 @@ static int sysc_remove(struct platform_device *pdev)
+ 	struct sysc *ddata = platform_get_drvdata(pdev);
+ 	int error;
  
- 	if (n && s[n]) {
- 		size_t m = strspn(s + n + 1, "0123456789");
--		if (m && (s[n + m] == '.' || s[n + m] == 0))
-+		if (m && (s[n + m + 1] == '.' || s[n + m + 1] == 0))
- 			s[n] = 0;
- 	}
- 	return s;
+-	cancel_delayed_work_sync(&ddata->idle_work);
++	/* Device can still be enabled, see deferred idle quirk in probe */
++	if (cancel_delayed_work_sync(&ddata->idle_work))
++		ti_sysc_idle(&ddata->idle_work.work);
+ 
+ 	error = pm_runtime_get_sync(ddata->dev);
+ 	if (error < 0) {
 -- 
 2.35.1
 
