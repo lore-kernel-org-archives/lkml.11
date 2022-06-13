@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4D53C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:31:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B4A1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:31:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355236AbiFMLa5 (ORCPT
+        id S1354009AbiFMLbS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:30:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47878 "EHLO
+        Mon, 13 Jun 2022 07:31:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353953AbiFMLUT (ORCPT
+        with ESMTP id S1353160AbiFMLXE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:20:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65BB53BBFB;
-        Mon, 13 Jun 2022 03:42:00 -0700 (PDT)
+        Mon, 13 Jun 2022 07:23:04 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB4523CA72;
+        Mon, 13 Jun 2022 03:42:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B20E1B80E94;
-        Mon, 13 Jun 2022 10:41:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06AB9C34114;
-        Mon, 13 Jun 2022 10:41:56 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0F97DCE1109;
+        Mon, 13 Jun 2022 10:42:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02404C34114;
+        Mon, 13 Jun 2022 10:42:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116917;
-        bh=XIh2g1nuffDH/ZtwYf71FH0zjt5fA2pQREW7lsH2zU0=;
+        s=korg; t=1655116931;
+        bh=Nua4sSapNUidDo4Iy+eYqZBfqmQhsqK8TfuuR9ObeOI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z9eR81LLH/vtDBe59OGicUn1afzL9MgsjlL6b1G3MwQSAEGEU27AoDfWCwVaNj+0p
-         CUlDFOe2u2pRcHKnnqfLPljNqO9Oul37Z9R2L/CSCnnRPVrQTk5VXvfzpuR4phTQoe
-         EL1kRo/rlYzBsFG/WbWXQHsUUu/FnBcx6SyPFJb4=
+        b=mwZEHchf06lB50bOwXNxjoSJS9hL7pUY9F+7Hku5uL5Bv1wXSDGxpiVFgiGQ0iIdm
+         baZl6D9qPVEdqep1ouoNtq2EzQjMzPYJWHk7YiQ6oW1VTBEnnwzyg2s0D+o/j2Voo0
+         gWIRzQd9luaV+cFIkd54kDZfcBMmZLgW2z43UOUw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan+linaro@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>
-Subject: [PATCH 5.4 232/411] PCI: qcom: Fix unbalanced PHY init on probe errors
-Date:   Mon, 13 Jun 2022 12:08:25 +0200
-Message-Id: <20220613094935.743751300@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Kara <jack@suse.cz>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.4 227/411] ext4: avoid cycles in directory h-tree
+Date:   Mon, 13 Jun 2022 12:08:20 +0200
+Message-Id: <20220613094935.449968316@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -52,42 +49,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan+linaro@kernel.org>
+From: Jan Kara <jack@suse.cz>
 
-commit 83013631f0f9961416abd812e228c8efbc2f6069 upstream.
+commit 3ba733f879c2a88910744647e41edeefbc0d92b2 upstream.
 
-Undo the PHY initialisation (e.g. balance runtime PM) if host
-initialisation fails during probe.
+A maliciously corrupted filesystem can contain cycles in the h-tree
+stored inside a directory. That can easily lead to the kernel corrupting
+tree nodes that were already verified under its hands while doing a node
+split and consequently accessing unallocated memory. Fix the problem by
+verifying traversed block numbers are unique.
 
-Link: https://lore.kernel.org/r/20220401133854.10421-3-johan+linaro@kernel.org
-Fixes: 82a823833f4e ("PCI: qcom: Add Qualcomm PCIe controller driver")
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Acked-by: Stanimir Varbanov <svarbanov@mm-sol.com>
-Cc: stable@vger.kernel.org      # 4.5
+Cc: stable@vger.kernel.org
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20220518093332.13986-2-jack@suse.cz
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/dwc/pcie-qcom.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ fs/ext4/namei.c |   22 +++++++++++++++++++---
+ 1 file changed, 19 insertions(+), 3 deletions(-)
 
---- a/drivers/pci/controller/dwc/pcie-qcom.c
-+++ b/drivers/pci/controller/dwc/pcie-qcom.c
-@@ -1351,11 +1351,13 @@ static int qcom_pcie_probe(struct platfo
- 	ret = dw_pcie_host_init(pp);
- 	if (ret) {
- 		dev_err(dev, "cannot initialize host\n");
--		goto err_pm_runtime_put;
-+		goto err_phy_exit;
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -750,12 +750,14 @@ static struct dx_frame *
+ dx_probe(struct ext4_filename *fname, struct inode *dir,
+ 	 struct dx_hash_info *hinfo, struct dx_frame *frame_in)
+ {
+-	unsigned count, indirect;
++	unsigned count, indirect, level, i;
+ 	struct dx_entry *at, *entries, *p, *q, *m;
+ 	struct dx_root *root;
+ 	struct dx_frame *frame = frame_in;
+ 	struct dx_frame *ret_err = ERR_PTR(ERR_BAD_DX_DIR);
+ 	u32 hash;
++	ext4_lblk_t block;
++	ext4_lblk_t blocks[EXT4_HTREE_LEVEL];
+ 
+ 	memset(frame_in, 0, EXT4_HTREE_LEVEL * sizeof(frame_in[0]));
+ 	frame->bh = ext4_read_dirblock(dir, 0, INDEX);
+@@ -811,6 +813,8 @@ dx_probe(struct ext4_filename *fname, st
  	}
  
- 	return 0;
+ 	dxtrace(printk("Look up %x", hash));
++	level = 0;
++	blocks[0] = 0;
+ 	while (1) {
+ 		count = dx_get_count(entries);
+ 		if (!count || count > dx_get_limit(entries)) {
+@@ -852,15 +856,27 @@ dx_probe(struct ext4_filename *fname, st
+ 			       dx_get_block(at)));
+ 		frame->entries = entries;
+ 		frame->at = at;
+-		if (!indirect--)
++
++		block = dx_get_block(at);
++		for (i = 0; i <= level; i++) {
++			if (blocks[i] == block) {
++				ext4_warning_inode(dir,
++					"dx entry: tree cycle block %u points back to block %u",
++					blocks[level], block);
++				goto fail;
++			}
++		}
++		if (++level > indirect)
+ 			return frame;
++		blocks[level] = block;
+ 		frame++;
+-		frame->bh = ext4_read_dirblock(dir, dx_get_block(at), INDEX);
++		frame->bh = ext4_read_dirblock(dir, block, INDEX);
+ 		if (IS_ERR(frame->bh)) {
+ 			ret_err = (struct dx_frame *) frame->bh;
+ 			frame->bh = NULL;
+ 			goto fail;
+ 		}
++
+ 		entries = ((struct dx_node *) frame->bh->b_data)->entries;
  
-+err_phy_exit:
-+	phy_exit(pcie->phy);
- err_pm_runtime_put:
- 	pm_runtime_put(dev);
- 	pm_runtime_disable(dev);
+ 		if (dx_get_limit(entries) != dx_node_limit(dir)) {
 
 
