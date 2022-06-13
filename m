@@ -2,51 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D0C2C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:51:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84796C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:51:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347285AbiFMKvs (ORCPT
+        id S1347331AbiFMKvx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:51:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58940 "EHLO
+        Mon, 13 Jun 2022 06:51:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347352AbiFMKs6 (ORCPT
+        with ESMTP id S1347838AbiFMKtF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:48:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD89D2CE20;
-        Mon, 13 Jun 2022 03:26:24 -0700 (PDT)
+        Mon, 13 Jun 2022 06:49:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 887782D1FE;
+        Mon, 13 Jun 2022 03:26:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1BAE7B80E2D;
-        Mon, 13 Jun 2022 10:26:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67FD3C3411C;
-        Mon, 13 Jun 2022 10:26:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FC0B60F09;
+        Mon, 13 Jun 2022 10:26:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31D56C34114;
+        Mon, 13 Jun 2022 10:26:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115981;
-        bh=CbWuPozbw07jPzDIoLPK+3zdnuoTe8KYs4WlOVRutZ0=;
+        s=korg; t=1655115995;
+        bh=TOJbzG2XZoI2WrokbFQt+q9q4+105c+y04J+e5RILtI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gHir4bW5HN6LKawfF6jd6NMIX0OT1HKPw1QEoWGFYcHbQsHdf2bUtYIHq84/6kNAA
-         1a61LOPxNtrW8Znjdo0AqfBHybxwbGupaY5Q2Y/DiuueCC2ZigQSVZ2+7TAdbFH2Bn
-         UCv2z3itvYn1XIX3AXgGGRxVPeU1umTzlMkvgsQ4=
+        b=nvc94pM8muGnzA4sEbTg3CXxbQ6R8l6gbFWGzvhrjrtgCNrba07Mwpzfrn8gjn8Kf
+         boDNQ1La76jJ8bB7/JrJrxcjniR3vVlox3Xmg5NMZoItlqZBG+0Ux0wDDKT26l8Mv/
+         A98K2cQXPBiyLXKwitqbMhQr0D9SknsJjlQ3T+5Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Junxiao Bi <junxiao.bi@oracle.com>,
-        Joseph Qi <joseph.qi@linux.alibaba.com>,
-        Mark Fasheh <mark@fasheh.com>,
-        Joel Becker <jlbec@evilplan.org>,
-        Joseph Qi <jiangqi903@gmail.com>,
-        Changwei Ge <gechangwei@live.cn>, Gang He <ghe@suse.com>,
-        Jun Piao <piaojun@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 4.14 111/218] ocfs2: dlmfs: fix error handling of user_dlm_destroy_lock
-Date:   Mon, 13 Jun 2022 12:09:29 +0200
-Message-Id: <20220613094923.929673842@linuxfoundation.org>
+        stable@vger.kernel.org, Carl Yin <carl.yin@quectel.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.4 003/411] USB: serial: option: add Quectel BG95 modem
+Date:   Mon, 13 Jun 2022 12:04:36 +0200
+Message-Id: <20220613094928.593102679@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,189 +49,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Junxiao Bi via Ocfs2-devel <ocfs2-devel@oss.oracle.com>
+From: Carl Yin(殷张成) <carl.yin@quectel.com>
 
-commit 863e0d81b6683c4cbc588ad831f560c90e494bef upstream.
+commit 33b7af2f459df453feb0d44628d820c47fefe7a8 upstream.
 
-When user_dlm_destroy_lock failed, it didn't clean up the flags it set
-before exit.  For USER_LOCK_IN_TEARDOWN, if this function fails because of
-lock is still in used, next time when unlink invokes this function, it
-will return succeed, and then unlink will remove inode and dentry if lock
-is not in used(file closed), but the dlm lock is still linked in dlm lock
-resource, then when bast come in, it will trigger a panic due to
-user-after-free.  See the following panic call trace.  To fix this,
-USER_LOCK_IN_TEARDOWN should be reverted if fail.  And also error should
-be returned if USER_LOCK_IN_TEARDOWN is set to let user know that unlink
-fail.
+The BG95 modem has 3 USB configurations that are configurable via the AT
+command AT+QCFGEXT="usbnet",["ecm"|"modem"|"rmnet"] which make the modem
+enumerate with the following interfaces, respectively:
 
-For the case of ocfs2_dlm_unlock failure, besides USER_LOCK_IN_TEARDOWN,
-USER_LOCK_BUSY is also required to be cleared.  Even though spin lock is
-released in between, but USER_LOCK_IN_TEARDOWN is still set, for
-USER_LOCK_BUSY, if before every place that waits on this flag,
-USER_LOCK_IN_TEARDOWN is checked to bail out, that will make sure no flow
-waits on the busy flag set by user_dlm_destroy_lock(), then we can
-simplely revert USER_LOCK_BUSY when ocfs2_dlm_unlock fails.  Fix
-user_dlm_cluster_lock() which is the only function not following this.
+"modem": Diag + GNSS + Modem + Modem
+"ecm"  : Diag + GNSS + Modem + ECM
+"rmnet": Diag + GNSS + Modem + QMI
+         Don't support Full QMI messages (e.g WDS_START_NETWORK_INTERFACE)
 
-[  941.336392] (python,26174,16):dlmfs_unlink:562 ERROR: unlink
-004fb0000060000b5a90b8c847b72e1, error -16 from destroy
-[  989.757536] ------------[ cut here ]------------
-[  989.757709] kernel BUG at fs/ocfs2/dlmfs/userdlm.c:173!
-[  989.757876] invalid opcode: 0000 [#1] SMP
-[  989.758027] Modules linked in: ksplice_2zhuk2jr_ib_ipoib_new(O)
-ksplice_2zhuk2jr(O) mptctl mptbase xen_netback xen_blkback xen_gntalloc
-xen_gntdev xen_evtchn cdc_ether usbnet mii ocfs2 jbd2 rpcsec_gss_krb5
-auth_rpcgss nfsv4 nfsv3 nfs_acl nfs fscache lockd grace ocfs2_dlmfs
-ocfs2_stack_o2cb ocfs2_dlm ocfs2_nodemanager ocfs2_stackglue configfs bnx2fc
-fcoe libfcoe libfc scsi_transport_fc sunrpc ipmi_devintf bridge stp llc
-rds_rdma rds bonding ib_sdp ib_ipoib rdma_ucm ib_ucm ib_uverbs ib_umad
-rdma_cm ib_cm iw_cm falcon_lsm_serviceable(PE) falcon_nf_netcontain(PE)
-mlx4_vnic falcon_kal(E) falcon_lsm_pinned_13402(E) mlx4_ib ib_sa ib_mad
-ib_core ib_addr xenfs xen_privcmd dm_multipath iTCO_wdt iTCO_vendor_support
-pcspkr sb_edac edac_core i2c_i801 lpc_ich mfd_core ipmi_ssif i2c_core ipmi_si
-ipmi_msghandler
-[  989.760686]  ioatdma sg ext3 jbd mbcache sd_mod ahci libahci ixgbe dca ptp
-pps_core vxlan udp_tunnel ip6_udp_tunnel megaraid_sas mlx4_core crc32c_intel
-be2iscsi bnx2i cnic uio cxgb4i cxgb4 cxgb3i libcxgbi ipv6 cxgb3 mdio
-libiscsi_tcp qla4xxx iscsi_boot_sysfs libiscsi scsi_transport_iscsi wmi
-dm_mirror dm_region_hash dm_log dm_mod [last unloaded:
-ksplice_2zhuk2jr_ib_ipoib_old]
-[  989.761987] CPU: 10 PID: 19102 Comm: dlm_thread Tainted: P           OE
-4.1.12-124.57.1.el6uek.x86_64 #2
-[  989.762290] Hardware name: Oracle Corporation ORACLE SERVER
-X5-2/ASM,MOTHERBOARD,1U, BIOS 30350100 06/17/2021
-[  989.762599] task: ffff880178af6200 ti: ffff88017f7c8000 task.ti:
-ffff88017f7c8000
-[  989.762848] RIP: e030:[<ffffffffc07d4316>]  [<ffffffffc07d4316>]
-__user_dlm_queue_lockres.part.4+0x76/0x80 [ocfs2_dlmfs]
-[  989.763185] RSP: e02b:ffff88017f7cbcb8  EFLAGS: 00010246
-[  989.763353] RAX: 0000000000000000 RBX: ffff880174d48008 RCX:
-0000000000000003
-[  989.763565] RDX: 0000000000120012 RSI: 0000000000000003 RDI:
-ffff880174d48170
-[  989.763778] RBP: ffff88017f7cbcc8 R08: ffff88021f4293b0 R09:
-0000000000000000
-[  989.763991] R10: ffff880179c8c000 R11: 0000000000000003 R12:
-ffff880174d48008
-[  989.764204] R13: 0000000000000003 R14: ffff880179c8c000 R15:
-ffff88021db7a000
-[  989.764422] FS:  0000000000000000(0000) GS:ffff880247480000(0000)
-knlGS:ffff880247480000
-[  989.764685] CS:  e033 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  989.764865] CR2: ffff8000007f6800 CR3: 0000000001ae0000 CR4:
-0000000000042660
-[  989.765081] Stack:
-[  989.765167]  0000000000000003 ffff880174d48040 ffff88017f7cbd18
-ffffffffc07d455f
-[  989.765442]  ffff88017f7cbd88 ffffffff816fb639 ffff88017f7cbd38
-ffff8800361b5600
-[  989.765717]  ffff88021db7a000 ffff88021f429380 0000000000000003
-ffffffffc0453020
-[  989.765991] Call Trace:
-[  989.766093]  [<ffffffffc07d455f>] user_bast+0x5f/0xf0 [ocfs2_dlmfs]
-[  989.766287]  [<ffffffff816fb639>] ? schedule_timeout+0x169/0x2d0
-[  989.766475]  [<ffffffffc0453020>] ? o2dlm_lock_ast_wrapper+0x20/0x20
-[ocfs2_stack_o2cb]
-[  989.766738]  [<ffffffffc045303a>] o2dlm_blocking_ast_wrapper+0x1a/0x20
-[ocfs2_stack_o2cb]
-[  989.767010]  [<ffffffffc0864ec6>] dlm_do_local_bast+0x46/0xe0 [ocfs2_dlm]
-[  989.767217]  [<ffffffffc084f5cc>] ? dlm_lockres_calc_usage+0x4c/0x60
-[ocfs2_dlm]
-[  989.767466]  [<ffffffffc08501f1>] dlm_thread+0xa31/0x1140 [ocfs2_dlm]
-[  989.767662]  [<ffffffff816f78da>] ? __schedule+0x24a/0x810
-[  989.767834]  [<ffffffff816f78ce>] ? __schedule+0x23e/0x810
-[  989.768006]  [<ffffffff816f78da>] ? __schedule+0x24a/0x810
-[  989.768178]  [<ffffffff816f78ce>] ? __schedule+0x23e/0x810
-[  989.768349]  [<ffffffff816f78da>] ? __schedule+0x24a/0x810
-[  989.768521]  [<ffffffff816f78ce>] ? __schedule+0x23e/0x810
-[  989.768693]  [<ffffffff816f78da>] ? __schedule+0x24a/0x810
-[  989.768893]  [<ffffffff816f78ce>] ? __schedule+0x23e/0x810
-[  989.769067]  [<ffffffff816f78da>] ? __schedule+0x24a/0x810
-[  989.769241]  [<ffffffff810ce4d0>] ? wait_woken+0x90/0x90
-[  989.769411]  [<ffffffffc084f7c0>] ? dlm_kick_thread+0x80/0x80 [ocfs2_dlm]
-[  989.769617]  [<ffffffff810a8bbb>] kthread+0xcb/0xf0
-[  989.769774]  [<ffffffff816f78da>] ? __schedule+0x24a/0x810
-[  989.769945]  [<ffffffff816f78da>] ? __schedule+0x24a/0x810
-[  989.770117]  [<ffffffff810a8af0>] ? kthread_create_on_node+0x180/0x180
-[  989.770321]  [<ffffffff816fdaa1>] ret_from_fork+0x61/0x90
-[  989.770492]  [<ffffffff810a8af0>] ? kthread_create_on_node+0x180/0x180
-[  989.770689] Code: d0 00 00 00 f0 45 7d c0 bf 00 20 00 00 48 89 83 c0 00 00
-00 48 89 83 c8 00 00 00 e8 55 c1 8c c0 83 4b 04 10 48 83 c4 08 5b 5d c3 <0f>
-0b 0f 1f 84 00 00 00 00 00 55 48 89 e5 41 55 41 54 53 48 83
-[  989.771892] RIP  [<ffffffffc07d4316>]
-__user_dlm_queue_lockres.part.4+0x76/0x80 [ocfs2_dlmfs]
-[  989.772174]  RSP <ffff88017f7cbcb8>
-[  989.772704] ---[ end trace ebd1e38cebcc93a8 ]---
-[  989.772907] Kernel panic - not syncing: Fatal exception
-[  989.773173] Kernel Offset: disabled
+A detailed description of the USB configuration for each mode follows:
 
-Link: https://lkml.kernel.org/r/20220518235224.87100-2-junxiao.bi@oracle.com
-Signed-off-by: Junxiao Bi <junxiao.bi@oracle.com>
-Reviewed-by: Joseph Qi <joseph.qi@linux.alibaba.com>
-Cc: Mark Fasheh <mark@fasheh.com>
-Cc: Joel Becker <jlbec@evilplan.org>
-Cc: Joseph Qi <jiangqi903@gmail.com>
-Cc: Changwei Ge <gechangwei@live.cn>
-Cc: Gang He <ghe@suse.com>
-Cc: Jun Piao <piaojun@huawei.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
++QCFGEXT: "usbnet","modem"
+--------------------------
+T:  Bus=01 Lev=02 Prnt=02 Port=01 Cnt=01 Dev#=  3 Spd=480  MxCh= 0
+D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
+P:  Vendor=2c7c ProdID=0700 Rev= 0.00
+S:  Manufacturer=Quectel, Incorporated
+S:  Product=Quectel LPWA Module
+S:  SerialNumber=884328a2
+C:* #Ifs= 4 Cfg#= 1 Atr=e0 MxPwr=500mA
+I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=83(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=fe Prot=ff Driver=option
+E:  Ad=85(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+
++QCFGEXT: "usbnet","ecm"
+------------------------
+T:  Bus=01 Lev=02 Prnt=02 Port=01 Cnt=01 Dev#=  4 Spd=480  MxCh= 0
+D:  Ver= 2.00 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=2c7c ProdID=0700 Rev= 0.00
+S:  Manufacturer=Quectel, Incorporated
+S:  Product=Quectel LPWA Module
+S:  SerialNumber=884328a2
+C:* #Ifs= 5 Cfg#= 1 Atr=e0 MxPwr=500mA
+A:  FirstIf#= 3 IfCount= 2 Cls=02(comm.) Sub=00 Prot=00
+I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=83(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 3 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=06 Prot=00 Driver=cdc_ether
+E:  Ad=85(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+I:  If#= 4 Alt= 0 #EPs= 0 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
+I:* If#= 4 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=cdc_ether
+E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+
++QCFGEXT: "usbnet","rmnet"
+--------------------------
+T:  Bus=01 Lev=02 Prnt=02 Port=01 Cnt=01 Dev#=  4 Spd=480  MxCh= 0
+D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
+P:  Vendor=2c7c ProdID=0700 Rev= 0.00
+S:  Manufacturer=Quectel, Incorporated
+S:  Product=Quectel LPWA Module
+S:  SerialNumber=884328a2
+C:* #Ifs= 4 Cfg#= 1 Atr=e0 MxPwr=500mA
+I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=83(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+E:  Ad=85(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
+E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+
+Signed-off-by: Carl Yin <carl.yin@quectel.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ocfs2/dlmfs/userdlm.c |   16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+ drivers/usb/serial/option.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/fs/ocfs2/dlmfs/userdlm.c
-+++ b/fs/ocfs2/dlmfs/userdlm.c
-@@ -449,6 +449,11 @@ again:
- 	}
- 
- 	spin_lock(&lockres->l_lock);
-+	if (lockres->l_flags & USER_LOCK_IN_TEARDOWN) {
-+		spin_unlock(&lockres->l_lock);
-+		status = -EAGAIN;
-+		goto bail;
-+	}
- 
- 	/* We only compare against the currently granted level
- 	 * here. If the lock is blocked waiting on a downconvert,
-@@ -615,7 +620,7 @@ int user_dlm_destroy_lock(struct user_lo
- 	spin_lock(&lockres->l_lock);
- 	if (lockres->l_flags & USER_LOCK_IN_TEARDOWN) {
- 		spin_unlock(&lockres->l_lock);
--		return 0;
-+		goto bail;
- 	}
- 
- 	lockres->l_flags |= USER_LOCK_IN_TEARDOWN;
-@@ -629,12 +634,17 @@ int user_dlm_destroy_lock(struct user_lo
- 	}
- 
- 	if (lockres->l_ro_holders || lockres->l_ex_holders) {
-+		lockres->l_flags &= ~USER_LOCK_IN_TEARDOWN;
- 		spin_unlock(&lockres->l_lock);
- 		goto bail;
- 	}
- 
- 	status = 0;
- 	if (!(lockres->l_flags & USER_LOCK_ATTACHED)) {
-+		/*
-+		 * lock is never requested, leave USER_LOCK_IN_TEARDOWN set
-+		 * to avoid new lock request coming in.
-+		 */
- 		spin_unlock(&lockres->l_lock);
- 		goto bail;
- 	}
-@@ -645,6 +655,10 @@ int user_dlm_destroy_lock(struct user_lo
- 
- 	status = ocfs2_dlm_unlock(conn, &lockres->l_lksb, DLM_LKF_VALBLK);
- 	if (status) {
-+		spin_lock(&lockres->l_lock);
-+		lockres->l_flags &= ~USER_LOCK_IN_TEARDOWN;
-+		lockres->l_flags &= ~USER_LOCK_BUSY;
-+		spin_unlock(&lockres->l_lock);
- 		user_log_dlm_error("ocfs2_dlm_unlock", status, lockres);
- 		goto bail;
- 	}
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -1137,6 +1137,8 @@ static const struct usb_device_id option
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_EM12, 0xff, 0, 0) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, 0x0620, 0xff, 0xff, 0x30) },	/* EM160R-GL */
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, 0x0620, 0xff, 0, 0) },
++	{ USB_DEVICE_INTERFACE_CLASS(QUECTEL_VENDOR_ID, 0x0700, 0xff), /* BG95 */
++	  .driver_info = RSVD(3) | ZLP },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_RM500Q, 0xff, 0xff, 0x30) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_RM500Q, 0xff, 0, 0) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(QUECTEL_VENDOR_ID, QUECTEL_PRODUCT_RM500Q, 0xff, 0xff, 0x10),
 
 
