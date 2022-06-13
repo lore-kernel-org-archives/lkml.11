@@ -2,80 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ADCDCCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:14:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88024CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:15:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235126AbiFMTOq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:14:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39592 "EHLO
+        id S1346403AbiFMTO7 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 15:14:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239018AbiFMTOI (ORCPT
+        with ESMTP id S231962AbiFMTOm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 15:14:08 -0400
-Received: from mailrelay2-1.pub.mailoutpod1-cph3.one.com (mailrelay2-1.pub.mailoutpod1-cph3.one.com [46.30.210.183])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DED8CE3D
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:12:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ravnborg.org; s=rsa1;
-        h=in-reply-to:content-type:mime-version:references:message-id:subject:cc:to:
-         from:date:from;
-        bh=lHjgrdlCsJlZNExw2i+5p/H7UmbCDOq2p/NEOrPWfhI=;
-        b=LpfJ3oPYuuqg6i3ho0XikhkAPNOBaQbZr82eZv0bUP4ve0Z4PFc69HjP4A1M56gmZKZ2eeqWeEmaK
-         /bUI2rk7ZHbhQLN3iywV3rXmHhTZmEd1p2FLPwDnC7hvKoXzu9/hs2Zxr+nrvWNjhCw34+f4LZh6pZ
-         RCZs2OIgx//zHcR4YywpNgW/VFVFDy3TU6TxoiGBxMJb2k/wI0CT68I90+bLDAH02G0QrW943PVKpd
-         AsUU63h3+s0KtUXIcN+1Au7F8a79oACmCtcr/1pCrG9iPqlQmT2DjilP0pjq9DvnxVpd8eUlSAiHTT
-         hgQfucYdZ9sfLrjuWUEjgqP/jBu8daA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
-        d=ravnborg.org; s=ed1;
-        h=in-reply-to:content-type:mime-version:references:message-id:subject:cc:to:
-         from:date:from;
-        bh=lHjgrdlCsJlZNExw2i+5p/H7UmbCDOq2p/NEOrPWfhI=;
-        b=ldsO6NEhLw+vp3UB1ZOzR2Yob+FMPpcyEw0+v01Wvw2DdWcTcV26CW6XMjhQ+5z+CJAUaadOaYIWC
-         Icw4EPWAg==
-X-HalOne-Cookie: 392d8748579318f935a12eb6f32b987bbdd36c36
-X-HalOne-ID: 0764a83b-eb3c-11ec-a913-d0431ea8a290
-Received: from mailproxy3.cst.dirpod4-cph3.one.com (80-162-45-141-cable.dk.customer.tdc.net [80.162.45.141])
-        by mailrelay2.pub.mailoutpod1-cph3.one.com (Halon) with ESMTPSA
-        id 0764a83b-eb3c-11ec-a913-d0431ea8a290;
-        Mon, 13 Jun 2022 17:12:40 +0000 (UTC)
-Date:   Mon, 13 Jun 2022 19:12:38 +0200
-From:   Sam Ravnborg <sam@ravnborg.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Liviu Dudau <Liviu.Dudau@arm.com>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] dt-bindings: display: Add Arm virtual platforms
- display
-Message-ID: <YqdwBoMldyuh+vjg@ravnborg.org>
-References: <20220613145709.3729053-1-robh@kernel.org>
+        Mon, 13 Jun 2022 15:14:42 -0400
+Received: from smtpbg.qq.com (smtpbg123.qq.com [175.27.65.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 360833524F;
+        Mon, 13 Jun 2022 10:33:14 -0700 (PDT)
+X-QQ-mid: bizesmtp86t1655141323ts5rjl84
+Received: from localhost.localdomain ( [223.198.87.69])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 14 Jun 2022 01:28:24 +0800 (CST)
+X-QQ-SSF: 01000000008000C0I000B00A0000000
+X-QQ-FEAT: qd+n8kjduJOL9mL+qbz/S+IdFhzIP1C9Pp5ki6IN83DZRU31j+HxGWsZ3XOXZ
+        VTfkLU6frAU7tzVH3SzqsIucu9KcyCPyRFuVHyJyJgnNNWBwpt8NhRun6/0TLscJ/1wg6oR
+        VWTNbmIG+B4njX4wduZYKWzqQW865ECTx7IfQnA4GNyCoK0C8x65Ysv87mSup24r8jcjRKh
+        odfIR8m/j2TdZ8aQw1aU4hPiQZmLGviQX+Y0aDswiS7M6ldOnq7qlN73TTo8coddp6ZrJal
+        n6s3qfzlBJ+KA/ZK/PFMTmDTm3Rcnr0qnnfpLRl7AYM1QnUB11cQreDRM=
+X-QQ-GoodBg: 0
+From:   Xiang wangx <wangxiang@cdjrlc.com>
+To:     kvalo@kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, loic.poulain@linaro.org,
+        wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xiang wangx <wangxiang@cdjrlc.com>
+Subject: [PATCH] wcn36xx: Fix typo in comment
+Date:   Tue, 14 Jun 2022 01:28:18 +0800
+Message-Id: <20220613172818.7491-1-wangxiang@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220613145709.3729053-1-robh@kernel.org>
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rob, thanks!
-On Mon, Jun 13, 2022 at 08:57:09AM -0600, Rob Herring wrote:
-> 'arm,rtsm-display' is a panel for Arm, Ltd. virtual platforms (e.g. FVP).
-> The binding has been in use for a long time, but was never documented.
-> 
-> Some users and an example have a 'panel-dpi' compatible, but that's not
-> needed without a 'panel-timing' node which none of the users have since
-> commit 928faf5e3e8d ("arm64: dts: fvp: Remove panel timings"). The
-> example does have a 'panel-timing' node, but it should not for the
-> same reasons the node was removed in the dts files. So update the
-> example in arm,pl11x.yaml to match the schema.
-> 
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: Andre Przywara <andre.przywara@arm.com>
-> Signed-off-by: Rob Herring <robh@kernel.org>
-Acked-by: Sam Ravnborg <sam@ravnborg.org>
+Delete the redundant word 'the'.
+
+Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
+---
+ drivers/net/wireless/ath/wcn36xx/hal.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/ath/wcn36xx/hal.h b/drivers/net/wireless/ath/wcn36xx/hal.h
+index 46a49f0a51b3..874746b5993c 100644
+--- a/drivers/net/wireless/ath/wcn36xx/hal.h
++++ b/drivers/net/wireless/ath/wcn36xx/hal.h
+@@ -1961,7 +1961,7 @@ struct wcn36xx_hal_config_bss_params {
+ 
+ 	/* HAL should update the existing BSS entry, if this flag is set.
+ 	 * UMAC will set this flag in case of reassoc, where we want to
+-	 * resue the the old BSSID and still return success 0 = Add, 1 =
++	 * resue the old BSSID and still return success 0 = Add, 1 =
+ 	 * Update */
+ 	u8 action;
+ 
+@@ -2098,7 +2098,7 @@ struct wcn36xx_hal_config_bss_params_v1 {
+ 
+ 	/* HAL should update the existing BSS entry, if this flag is set.
+ 	 * UMAC will set this flag in case of reassoc, where we want to
+-	 * resue the the old BSSID and still return success 0 = Add, 1 =
++	 * resue the old BSSID and still return success 0 = Add, 1 =
+ 	 * Update */
+ 	u8 action;
+ 
+-- 
+2.36.1
+
