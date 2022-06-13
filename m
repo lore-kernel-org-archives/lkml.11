@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C1EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:37:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AFB2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:37:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347430AbiFMMhc (ORCPT
+        id S1349497AbiFMMhh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:37:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49694 "EHLO
+        Mon, 13 Jun 2022 08:37:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353376AbiFMMfa (ORCPT
+        with ESMTP id S1353392AbiFMMfb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:35:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 650591C13F;
-        Mon, 13 Jun 2022 04:07:54 -0700 (PDT)
+        Mon, 13 Jun 2022 08:35:31 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02FE31C929;
+        Mon, 13 Jun 2022 04:07:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 826D5608D6;
-        Mon, 13 Jun 2022 11:07:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96547C34114;
-        Mon, 13 Jun 2022 11:07:51 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 73612CE1185;
+        Mon, 13 Jun 2022 11:07:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ABBAC34114;
+        Mon, 13 Jun 2022 11:07:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118471;
-        bh=Wvzg1eIbq/VH+8v4OxYzY979R1uuGnEZjw4IN6qm7tk=;
+        s=korg; t=1655118463;
+        bh=kQ9CY7qfRC61AELRVt8pgLCQlmpK47d5JfDENACx5Io=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OMHvy/oVBTIaFmb9UeJF0qp13wzW3QzWMcnLgpJb8t0nyzRbxBEV0RD9w0QdJ4y6+
-         4TudnCSakhWwgII28Q+CK4arZZC4fSRwOm6FRcIWznr0tm2PtO1ojEWgOBoY17lXQA
-         ryI2TqM5I8D0hBnVuqCswLiUKnnaYnfqfhLZ9Wi4=
+        b=fJFspY9rdS8AnHAQN8Cw/4QH9hZcZKK5PuseZ6ve0cQjB9X3wTqnXqCqkdXyErfAV
+         b5IQfZBQdYSrEAJlsD/Oe7GBnXqTNx/GVR8rC1BexQ13SKvQNdcAE1Atj/g7JOmdpm
+         Xt5jZmLFtgRqxMnmujVIU2jJILYgbh+fdw39wV54=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 070/172] afs: Fix infinite loop found by xfstest generic/676
-Date:   Mon, 13 Jun 2022 12:10:30 +0200
-Message-Id: <20220613094907.280795648@linuxfoundation.org>
+Subject: [PATCH 5.10 085/172] m68knommu: fix undefined reference to `_init_sp
+Date:   Mon, 13 Jun 2022 12:10:45 +0200
+Message-Id: <20220613094910.827334536@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -52,63 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Greg Ungerer <gerg@linux-m68k.org>
 
-[ Upstream commit 17eabd42560f4636648ad65ba5b20228071e2363 ]
+[ Upstream commit a71b9e66fee47c59b3ec34e652b5c23bc6550794 ]
 
-In AFS, a directory is handled as a file that the client downloads and
-parses locally for the purposes of performing lookup and getdents
-operations.  The in-kernel afs filesystem has a number of functions that
-do this.
+When configuring a nommu classic m68k system enabling the uboot parameter
+passing support (CONFIG_UBOOT) will produce the following compile error:
 
-A directory file is arranged as a series of 2K blocks divided into
-32-byte slots, where a directory entry occupies one or more slots, plus
-each block starts with one or more metadata blocks.
+   m68k-linux-ld: arch/m68k/kernel/uboot.o: in function `process_uboot_commandline':
+   uboot.c:(.init.text+0x32): undefined reference to `_init_sp'
 
-When parsing a block, if the last slots are occupied by a dirent that
-occupies more than a single slot and the file position points at a slot
-that's not the initial one, the logic in afs_dir_iterate_block() that
-skips over it won't advance the file pointer to the end of it.  This
-will cause an infinite loop in getdents() as it will keep retrying that
-block and failing to advance beyond the final entry.
+The logic to support this option is only used on ColdFire based platforms
+(in its head.S startup code). So make the selection of this option
+depend on building for a ColdFire based platform.
 
-Fix this by advancing the file pointer if the next entry will be beyond
-it when we skip a block.
-
-This was found by the generic/676 xfstest but can also be triggered with
-something like:
-
-	~/xfstests-dev/src/t_readdir_3 /xfstest.test/z 4000 1
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: David Howells <dhowells@redhat.com>
-Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
-Tested-by: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
-Link: http://lore.kernel.org/r/165391973497.110268.2939296942213894166.stgit@warthog.procyon.org.uk/
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/afs/dir.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ arch/m68k/Kconfig.machine | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/afs/dir.c b/fs/afs/dir.c
-index 262c0ae505af..159795059547 100644
---- a/fs/afs/dir.c
-+++ b/fs/afs/dir.c
-@@ -412,8 +412,11 @@ static int afs_dir_iterate_block(struct afs_vnode *dvnode,
- 		}
+diff --git a/arch/m68k/Kconfig.machine b/arch/m68k/Kconfig.machine
+index 51a878803fb6..16730561d166 100644
+--- a/arch/m68k/Kconfig.machine
++++ b/arch/m68k/Kconfig.machine
+@@ -321,6 +321,7 @@ comment "Machine Options"
  
- 		/* skip if starts before the current position */
--		if (offset < curr)
-+		if (offset < curr) {
-+			if (next > curr)
-+				ctx->pos = blkoff + next * sizeof(union afs_xdr_dirent);
- 			continue;
-+		}
- 
- 		/* found the next entry */
- 		if (!dir_emit(ctx, dire->u.name, nlen,
+ config UBOOT
+ 	bool "Support for U-Boot command line parameters"
++	depends on COLDFIRE
+ 	help
+ 	  If you say Y here kernel will try to collect command
+ 	  line parameters from the initial u-boot stack.
 -- 
 2.35.1
 
