@@ -2,177 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2978FC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:35:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BC6FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 20:35:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239541AbiFMUdf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:33:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35214 "EHLO
+        id S241492AbiFMUfn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 16:35:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232570AbiFMUdA (ORCPT
+        with ESMTP id S239731AbiFMUfB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 16:33:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E1B528726
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 12:23:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E2B67B8128D
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 19:23:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 454CBC3411F;
-        Mon, 13 Jun 2022 19:23:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655148188;
-        bh=XOWacsSFy4qQVUe4yC1Lr3xCRJ6lmmqOdxcVjKLkxx8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YCizNenf2u5d4ieuePcVEjzZ2J39Sj48RNI7hGwMQwP/Abq9boO2PmAU5PmHVHtos
-         K5zCk0uhTbHp67T5LrOHdPQirivVTyL+mIvseF7cg/vJOrabOuc9GBmWbd90836pWq
-         80AdC/J8slOkYQUhjnYmijIIcNH46See1cJo/ApvzWcC+dlTcwICTFJjEgsTLgpumq
-         zhRoiHq0nEHIAs+a8Tg5cXkc04tSfs/P9Czxgry3qfzQnD0ELzWBhGFQl6u5FvIPxB
-         /L61PzRRY849tV0+hguoIHWX/5IzklIs3N5PskB/9YNMI13TArwYX9VDHYDvdNiENf
-         OjDhaCgR8CI+w==
-From:   SeongJae Park <sj@kernel.org>
-To:     SeongJae Park <sj@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     damon@lists.linux.dev, linux-mm@kvack.org,
+        Mon, 13 Jun 2022 16:35:01 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 946AC39813;
+        Mon, 13 Jun 2022 12:25:03 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id v14so8351921wra.5;
+        Mon, 13 Jun 2022 12:25:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=P8UEDHDMT+jpQAXSUmhS5cnDmYTJqZrHS8auMDkB9iM=;
+        b=S1sqEUWptAMoNsL/yZl9X9liiQgbDSLBMK1KkPHulgqqQnYj7jDHIUdfDSG42r6P9p
+         kzOLpvQ0N2CVfDlTb+IqemtVyiTJOD7iZaE0mzCaDdqWnEoydjpxqhpMR+ZEYOYN2rjS
+         5MANGV2gGUT+ARXhNV9G4YAWhuDkG+egcnvDcAs+KWj/0IV8tssuoH7vuby+7ujFGbcl
+         hX9QRVGjS+amsgARu8kxWYe8ApJ4Y0lbtlc5Z6NFw5ZnSq1uZiTkgCiYVhZ1m/tSsJzH
+         rcfC9uAZWa/9KPdNOe/dLgIp4yLgPSKqmw+IRtuOWmxVs/8KpVqO2nWfCsQyEv195TSg
+         pTaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=P8UEDHDMT+jpQAXSUmhS5cnDmYTJqZrHS8auMDkB9iM=;
+        b=2607QojOAg1/UwUXqDixX/b3VLu2TNIUJ0Gc/kd5nfSit3oGPjibVoQ7+EtgQH4iII
+         feTDaiGaC1Ymg2IK57W6wA+BmblhukSWeqkqPlJHeE++TFqavjEF5hQhoK4XA3NubiiS
+         HFjSHDLwhZwDRO9c2AInIs727a0vzLkdyiWPIguzNlI4dMUDdoSWYHhsyptQzYQMnzpI
+         KaaDvOGhracgK/9LzpifQeisjkiOTBRzYMAy51PrA+rZnktWSdiB8XW1fsSR/E6DC4Nl
+         W5DyKkCiZLH+6cJe8+tVQQ2TY+eo/37ECpzp6CjldFk2SdqlfaxxnHp+I0cdesDSV6O5
+         mtIQ==
+X-Gm-Message-State: AJIora+qnUeeZfiFxzmVAu0c5qTaaqQs22hd/pBqxykZFZTO+ocV1Y2C
+        0YhlN+WGU6eb+OgsQvybCuI=
+X-Google-Smtp-Source: AGRyM1slSf3w814vQAIijwzMlXdNSr5rvAEgtNAg31xiBcBaLcqPq/W4p4cZy7cnhYm/OEWTOpEJWQ==
+X-Received: by 2002:a05:6000:1f8b:b0:219:bee5:6b77 with SMTP id bw11-20020a0560001f8b00b00219bee56b77mr1244672wrb.658.1655148301948;
+        Mon, 13 Jun 2022 12:25:01 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id a4-20020adff7c4000000b0021033caa332sm9669422wrq.42.2022.06.13.12.25.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 12:25:01 -0700 (PDT)
+Message-ID: <62a78f0d.1c69fb81.574dd.13b8@mx.google.com>
+X-Google-Original-Message-ID: <YqePGfEbLTutoYrN@Ansuel-xps.>
+Date:   Mon, 13 Jun 2022 21:25:13 +0200
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        =?utf-8?B?77+9ZWNraQ==?= <rafal@milecki.pl>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 1/8] mm/damon/dbgfs: add and use mappings between 'schemes' action inputs and 'damos_action' values
-Date:   Mon, 13 Jun 2022 19:22:53 +0000
-Message-Id: <20220613192301.8817-2-sj@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220613192301.8817-1-sj@kernel.org>
-References: <20220613192301.8817-1-sj@kernel.org>
+Subject: Re: [PATCH v5 1/3] dt-bindings: mtd: partitions: Support label only
+ partition
+References: <20220606151417.19227-1-ansuelsmth@gmail.com>
+ <20220606151417.19227-2-ansuelsmth@gmail.com>
+ <20220609183252.GA4072951-robh@kernel.org>
+ <62a250c4.1c69fb81.addd2.0eae@mx.google.com>
+ <20220610170205.GD1787330-robh@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220610170205.GD1787330-robh@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DAMON debugfs interface assumes users will write 'damos_action' value
-directly to the 'schemes' file.  This makes adding new 'damos_action' in
-the middle of its definition breaks the backward compatibility of DAMON
-debugfs interface, as values of some 'damos_action' could be changed.
-To mitigate the situation, this commit adds mappings between the user
-inputs and 'damos_action' value and makes DAMON debugfs code uses those.
+On Fri, Jun 10, 2022 at 11:02:05AM -0600, Rob Herring wrote:
+> On Thu, Jun 09, 2022 at 09:57:52PM +0200, Ansuel Smith wrote:
+> > On Thu, Jun 09, 2022 at 12:32:52PM -0600, Rob Herring wrote:
+> > > On Mon, Jun 06, 2022 at 05:14:15PM +0200, Ansuel Smith wrote:
+> > > > Document new partition nodes that declare only the label instead of the
+> > > > reg used to provide an OF node for partition registred at runtime by
+> > > > parsers. This is required for nvmem system to declare and detect
+> > > > nvmem-cells.
+> > > > 
+> > > > With these special partitions, the reg / offset is not required.
+> > > > The label binding is used to match the partition allocated by the
+> > > > parser at runtime and the parser will provide reg and offset of the mtd.
+> > > > 
+> > > > NVMEM will use the data from the parser and provide the NVMEM cells
+> > > > declared in the DTS, "connecting" the dynamic partition with a
+> > > > static declaration of cells in them.
+> > > > 
+> > > > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > > > ---
+> > > >  .../bindings/mtd/partitions/partition.yaml       | 16 ++++++++++++++--
+> > > >  1 file changed, 14 insertions(+), 2 deletions(-)
+> > > > 
+> > > > diff --git a/Documentation/devicetree/bindings/mtd/partitions/partition.yaml b/Documentation/devicetree/bindings/mtd/partitions/partition.yaml
+> > > > index e1ac08064425..bff6fb980e6b 100644
+> > > > --- a/Documentation/devicetree/bindings/mtd/partitions/partition.yaml
+> > > > +++ b/Documentation/devicetree/bindings/mtd/partitions/partition.yaml
+> > > > @@ -11,6 +11,13 @@ description: |
+> > > >    relative offset and size specified. Depending on partition function extra
+> > > >    properties can be used.
+> > > >  
+> > > > +  A partition may be dynamically allocated by a specific parser at runtime.
+> > > > +  In this specific case, the label is required instead of the reg.
+> > > > +  This is used to assign an OF node to the dynamiccally allocated partition
+> > > > +  so that subsystem like NVMEM can provide an OF node and declare NVMEM cells.
+> > > > +  The OF node will be assigned only if the partition label declared match the
+> > > > +  one assigned by the parser at runtime.
+> > > > +
+> > > >  maintainers:
+> > > >    - Rafał Miłecki <rafal@milecki.pl>
+> > > >  
+> > > > @@ -22,6 +29,8 @@ properties:
+> > > >    label:
+> > > >      description: The label / name for this partition. If omitted, the label
+> > > >        is taken from the node name (excluding the unit address).
+> > > > +      With dynamically allocated partition the label is required and won't
+> > > > +      fallback to the node name.
+> > > 
+> > > Generally, label is never required being something for humans rather 
+> > > than the s/w to consume. I don't see any reason why we can't still use 
+> > > the node name (with 'partition-' stripped off).
+> > > 
+> > 
+> > How to enforce the use of 'partition-'? Should the driver then check the
+> > node name and reject any wrong node name (and return error)?
+> 
+> The schema can do it either in the parent (of partition nodes) schema or 
+> with $nodename 'property'.
+> 
+> $nodename:
+>   oneOf:
+>     - pattern: '^.*@.*$'
+>     - pattern: '^partition-.*$'
+> 
+> or:
+> 
+> if:
+>   not:
+>     required:
+>       - reg
+> then:
+>   properties:
+>     $nodename:
+>       pattern: '^partition-.*$'
+> 
+> 
+> The latter is a bit clearer on the intent I think.
+>
 
-Signed-off-by: SeongJae Park <sj@kernel.org>
----
- mm/damon/dbgfs.c | 64 +++++++++++++++++++++++++++++++++++++-----------
- 1 file changed, 50 insertions(+), 14 deletions(-)
+Hi, I'm testing this but I'm having some difficulties.
+I put your second solution in partition.yaml
 
-diff --git a/mm/damon/dbgfs.c b/mm/damon/dbgfs.c
-index 5ae810927309..cb8a7e9926a4 100644
---- a/mm/damon/dbgfs.c
-+++ b/mm/damon/dbgfs.c
-@@ -97,6 +97,31 @@ static ssize_t dbgfs_attrs_write(struct file *file,
- 	return ret;
- }
- 
-+/*
-+ * Return corresponding dbgfs' scheme action value (int) for the given
-+ * damos_action if the given damos_action value is valid and supported by
-+ * dbgfs, negative error code otherwise.
-+ */
-+static int damos_action_to_dbgfs_scheme_action(enum damos_action action)
-+{
-+	switch (action) {
-+	case DAMOS_WILLNEED:
-+		return 0;
-+	case DAMOS_COLD:
-+		return 1;
-+	case DAMOS_PAGEOUT:
-+		return 2;
-+	case DAMOS_HUGEPAGE:
-+		return 3;
-+	case DAMOS_NOHUGEPAGE:
-+		return 4;
-+	case DAMOS_STAT:
-+		return 5;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
- static ssize_t sprint_schemes(struct damon_ctx *c, char *buf, ssize_t len)
- {
- 	struct damos *s;
-@@ -109,7 +134,7 @@ static ssize_t sprint_schemes(struct damon_ctx *c, char *buf, ssize_t len)
- 				s->min_sz_region, s->max_sz_region,
- 				s->min_nr_accesses, s->max_nr_accesses,
- 				s->min_age_region, s->max_age_region,
--				s->action,
-+				damos_action_to_dbgfs_scheme_action(s->action),
- 				s->quota.ms, s->quota.sz,
- 				s->quota.reset_interval,
- 				s->quota.weight_sz,
-@@ -160,18 +185,27 @@ static void free_schemes_arr(struct damos **schemes, ssize_t nr_schemes)
- 	kfree(schemes);
- }
- 
--static bool damos_action_valid(int action)
-+/*
-+ * Return corresponding damos_action for the given dbgfs input for a scheme
-+ * action if the input is valid, negative error code otherwise.
-+ */
-+static enum damos_action dbgfs_scheme_action_to_damos_action(int dbgfs_action)
- {
--	switch (action) {
--	case DAMOS_WILLNEED:
--	case DAMOS_COLD:
--	case DAMOS_PAGEOUT:
--	case DAMOS_HUGEPAGE:
--	case DAMOS_NOHUGEPAGE:
--	case DAMOS_STAT:
--		return true;
-+	switch (dbgfs_action) {
-+	case 0:
-+		return DAMOS_WILLNEED;
-+	case 1:
-+		return DAMOS_COLD;
-+	case 2:
-+		return DAMOS_PAGEOUT;
-+	case 3:
-+		return DAMOS_HUGEPAGE;
-+	case 4:
-+		return DAMOS_NOHUGEPAGE;
-+	case 5:
-+		return DAMOS_STAT;
- 	default:
--		return false;
-+		return -EINVAL;
- 	}
- }
- 
-@@ -189,7 +223,8 @@ static struct damos **str_to_schemes(const char *str, ssize_t len,
- 	int pos = 0, parsed, ret;
- 	unsigned long min_sz, max_sz;
- 	unsigned int min_nr_a, max_nr_a, min_age, max_age;
--	unsigned int action;
-+	unsigned int action_input;
-+	enum damos_action action;
- 
- 	schemes = kmalloc_array(max_nr_schemes, sizeof(scheme),
- 			GFP_KERNEL);
-@@ -204,7 +239,7 @@ static struct damos **str_to_schemes(const char *str, ssize_t len,
- 		ret = sscanf(&str[pos],
- 				"%lu %lu %u %u %u %u %u %lu %lu %lu %u %u %u %u %lu %lu %lu %lu%n",
- 				&min_sz, &max_sz, &min_nr_a, &max_nr_a,
--				&min_age, &max_age, &action, &quota.ms,
-+				&min_age, &max_age, &action_input, &quota.ms,
- 				&quota.sz, &quota.reset_interval,
- 				&quota.weight_sz, &quota.weight_nr_accesses,
- 				&quota.weight_age, &wmarks.metric,
-@@ -212,7 +247,8 @@ static struct damos **str_to_schemes(const char *str, ssize_t len,
- 				&wmarks.low, &parsed);
- 		if (ret != 18)
- 			break;
--		if (!damos_action_valid(action))
-+		action = dbgfs_scheme_action_to_damos_action(action_input);
-+		if ((int)action < 0)
- 			goto fail;
- 
- 		if (min_sz > max_sz || min_nr_a > max_nr_a || min_age > max_age)
+But I notice that if for example qcom,smem-part.yaml have
+
+patternProperties:
+  "^partition3-[0-9a-z]+$":
+    $ref: partition.yaml#
+
+Then the $nodename is ignored (or overwtitten?). Can't find a correct
+way to declare a patternProperties that ref another schema.
+
+I'm trying and searching a way to ref the partition.yaml but I can't
+find anything. Can you help with this? It does seem uselss putting a
+limitation in partition.yaml if then someone can just set a different
+one in the parser Documentation.
+
+> > > If the purpose is to define what the partition contains, then 
+> > > 'compatible' is the right thing for that.
+> > >
+> > 
+> > Introducing a compatible means creating another scheme I think or we can
+> > add that special compatible in the partition scheme?
+> 
+> It would be another schema. You could make 'compatible' required here 
+> perhaps, but maybe there's a use for an empty node?
+> 
+> Rob
+
 -- 
-2.25.1
-
+	Ansuel
