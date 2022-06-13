@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44A00C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:20:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24CEEC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:20:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242578AbiFMKUM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:20:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60922 "EHLO
+        id S242605AbiFMKUP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:20:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242139AbiFMKRy (ORCPT
+        with ESMTP id S242034AbiFMKR4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:17:54 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDC37DEB2;
-        Mon, 13 Jun 2022 03:15:51 -0700 (PDT)
+        Mon, 13 Jun 2022 06:17:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8C3D201B7;
+        Mon, 13 Jun 2022 03:15:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id AF091CE1106;
-        Mon, 13 Jun 2022 10:15:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C672C34114;
-        Mon, 13 Jun 2022 10:15:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 738FA614BF;
+        Mon, 13 Jun 2022 10:15:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FAEAC3411C;
+        Mon, 13 Jun 2022 10:15:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115344;
-        bh=ijCvAG5D6KxVV9sw1XIyTUNpxJ2pxD5vlmvuuYWonXA=;
+        s=korg; t=1655115354;
+        bh=Q99toUCX2fkKgYDn+5N9Jn1X5vq0KImIYHYXQ2Jg02I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G5vhYobMVQ91+StLHbTulK04VjjTBP1MVKByl/ylL5jeV01+RBGT4wtX7eXOleaQj
-         MuC4PrNkaa21CMNRFAwvwr/9Se0vddAYKMVzsC6bhM2tIpTT6MusiGwu7mVdiizPUW
-         wBeFfi3E7yU4seXdABcCAqEkt9KxmEQ3zk16GN40=
+        b=RV4Xz3JfWTlX8mk3SRAiQU/rXoYBjOhjsCH0Rmloq4YWV343CVllFR0NhhlGJa6hq
+         VupJASWfCqF7bWkOw/+vi0DfeqwIc7AIyUyzWm0Zv2kQKmhiilfWrdQt586AD4OZo3
+         ZtE6yXsAVavm+dsfXJ4b/AOl/AncwSmD0xVUVMWQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan Teh <jonathan.teh@outlook.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 042/167] HID: hid-led: fix maximum brightness for Dream Cheeky
-Date:   Mon, 13 Jun 2022 12:08:36 +0200
-Message-Id: <20220613094850.790751050@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Borislav Petkov <bp@suse.de>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 046/167] x86/pm: Fix false positive kmemleak report in msr_build_context()
+Date:   Mon, 13 Jun 2022 12:08:40 +0200
+Message-Id: <20220613094851.780465978@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -48,36 +52,159 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Teh <jonathan.teh@outlook.com>
+From: Matthieu Baerts <matthieu.baerts@tessares.net>
 
-[ Upstream commit 116c3f4a78ebe478d5ad5a038baf931e93e7d748 ]
+[ Upstream commit b0b592cf08367719e1d1ef07c9f136e8c17f7ec3 ]
 
-Increase maximum brightness for Dream Cheeky to 63. Emperically
-determined based on testing in kernel 4.4 on this device:
+Since
 
-Bus 003 Device 002: ID 1d34:0004 Dream Cheeky Webmail Notifier
+  e2a1256b17b1 ("x86/speculation: Restore speculation related MSRs during S3 resume")
 
-Fixes: 6c7ad07e9e05 ("HID: migrate USB LED driver from usb misc to hid")
-Signed-off-by: Jonathan Teh <jonathan.teh@outlook.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+kmemleak reports this issue:
+
+  unreferenced object 0xffff888009cedc00 (size 256):
+    comm "swapper/0", pid 1, jiffies 4294693823 (age 73.764s)
+    hex dump (first 32 bytes):
+      00 00 00 00 00 00 00 00 48 00 00 00 00 00 00 00  ........H.......
+      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    backtrace:
+      msr_build_context (include/linux/slab.h:621)
+      pm_check_save_msr (arch/x86/power/cpu.c:520)
+      do_one_initcall (init/main.c:1298)
+      kernel_init_freeable (init/main.c:1370)
+      kernel_init (init/main.c:1504)
+      ret_from_fork (arch/x86/entry/entry_64.S:304)
+
+Reproducer:
+
+  - boot the VM with a debug kernel config (see
+    https://github.com/multipath-tcp/mptcp_net-next/issues/268)
+  - wait ~1 minute
+  - start a kmemleak scan
+
+The root cause here is alignment within the packed struct saved_context
+(from suspend_64.h). Kmemleak only searches for pointers that are
+aligned (see how pointers are scanned in kmemleak.c), but pahole shows
+that the saved_msrs struct member and all members after it in the
+structure are unaligned:
+
+  struct saved_context {
+    struct pt_regs             regs;                 /*     0   168 */
+    /* --- cacheline 2 boundary (128 bytes) was 40 bytes ago --- */
+    u16                        ds;                   /*   168     2 */
+
+    ...
+
+    u64                        misc_enable;          /*   232     8 */
+    bool                       misc_enable_saved;    /*   240     1 */
+
+   /* Note below odd offset values for the remainder of this struct */
+
+    struct saved_msrs          saved_msrs;           /*   241    16 */
+    /* --- cacheline 4 boundary (256 bytes) was 1 bytes ago --- */
+    long unsigned int          efer;                 /*   257     8 */
+    u16                        gdt_pad;              /*   265     2 */
+    struct desc_ptr            gdt_desc;             /*   267    10 */
+    u16                        idt_pad;              /*   277     2 */
+    struct desc_ptr            idt;                  /*   279    10 */
+    u16                        ldt;                  /*   289     2 */
+    u16                        tss;                  /*   291     2 */
+    long unsigned int          tr;                   /*   293     8 */
+    long unsigned int          safety;               /*   301     8 */
+    long unsigned int          return_address;       /*   309     8 */
+
+    /* size: 317, cachelines: 5, members: 25 */
+    /* last cacheline: 61 bytes */
+  } __attribute__((__packed__));
+
+Move misc_enable_saved to the end of the struct declaration so that
+saved_msrs fits in before the cacheline 4 boundary.
+
+The comment above the saved_context declaration says to fix wakeup_64.S
+file and __save/__restore_processor_state() if the struct is modified:
+it looks like all the accesses in wakeup_64.S are done through offsets
+which are computed at build-time. Update that comment accordingly.
+
+At the end, the false positive kmemleak report is due to a limitation
+from kmemleak but it is always good to avoid unaligned members for
+optimisation purposes.
+
+Please note that it looks like this issue is not new, e.g.
+
+  https://lore.kernel.org/all/9f1bb619-c4ee-21c4-a251-870bd4db04fa@lwfinger.net/
+  https://lore.kernel.org/all/94e48fcd-1dbd-ebd2-4c91-f39941735909@molgen.mpg.de/
+
+  [ bp: Massage + cleanup commit message. ]
+
+Fixes: 7a9c2dd08ead ("x86/pm: Introduce quirk framework to save/restore extra MSR registers around suspend/resume")
+Suggested-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Link: https://lore.kernel.org/r/20220426202138.498310-1-matthieu.baerts@tessares.net
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-led.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/include/asm/suspend_32.h |  2 +-
+ arch/x86/include/asm/suspend_64.h | 12 ++++++++----
+ 2 files changed, 9 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/hid/hid-led.c b/drivers/hid/hid-led.c
-index d3e1ab162f7c..7fc5982a0ca4 100644
---- a/drivers/hid/hid-led.c
-+++ b/drivers/hid/hid-led.c
-@@ -369,7 +369,7 @@ static const struct hidled_config hidled_configs[] = {
- 		.type = DREAM_CHEEKY,
- 		.name = "Dream Cheeky Webmail Notifier",
- 		.short_name = "dream_cheeky",
--		.max_brightness = 31,
-+		.max_brightness = 63,
- 		.num_leds = 1,
- 		.report_size = 9,
- 		.report_type = RAW_REQUEST,
+diff --git a/arch/x86/include/asm/suspend_32.h b/arch/x86/include/asm/suspend_32.h
+index 5cc2ce4ab8a3..4cb2a435dc85 100644
+--- a/arch/x86/include/asm/suspend_32.h
++++ b/arch/x86/include/asm/suspend_32.h
+@@ -20,7 +20,6 @@ struct saved_context {
+ #endif
+ 	unsigned long cr0, cr2, cr3, cr4;
+ 	u64 misc_enable;
+-	bool misc_enable_saved;
+ 	struct saved_msrs saved_msrs;
+ 	struct desc_ptr gdt_desc;
+ 	struct desc_ptr idt;
+@@ -29,6 +28,7 @@ struct saved_context {
+ 	unsigned long tr;
+ 	unsigned long safety;
+ 	unsigned long return_address;
++	bool misc_enable_saved;
+ } __attribute__((packed));
+ 
+ #endif /* _ASM_X86_SUSPEND_32_H */
+diff --git a/arch/x86/include/asm/suspend_64.h b/arch/x86/include/asm/suspend_64.h
+index 701751918921..a235dd7983f0 100644
+--- a/arch/x86/include/asm/suspend_64.h
++++ b/arch/x86/include/asm/suspend_64.h
+@@ -13,9 +13,13 @@
+  * Image of the saved processor state, used by the low level ACPI suspend to
+  * RAM code and by the low level hibernation code.
+  *
+- * If you modify it, fix arch/x86/kernel/acpi/wakeup_64.S and make sure that
+- * __save/__restore_processor_state(), defined in arch/x86/kernel/suspend_64.c,
+- * still work as required.
++ * If you modify it, check how it is used in arch/x86/kernel/acpi/wakeup_64.S
++ * and make sure that __save/__restore_processor_state(), defined in
++ * arch/x86/power/cpu.c, still work as required.
++ *
++ * Because the structure is packed, make sure to avoid unaligned members. For
++ * optimisation purposes but also because tools like kmemleak only search for
++ * pointers that are aligned.
+  */
+ struct saved_context {
+ 	struct pt_regs regs;
+@@ -35,7 +39,6 @@ struct saved_context {
+ 
+ 	unsigned long cr0, cr2, cr3, cr4, cr8;
+ 	u64 misc_enable;
+-	bool misc_enable_saved;
+ 	struct saved_msrs saved_msrs;
+ 	unsigned long efer;
+ 	u16 gdt_pad; /* Unused */
+@@ -47,6 +50,7 @@ struct saved_context {
+ 	unsigned long tr;
+ 	unsigned long safety;
+ 	unsigned long return_address;
++	bool misc_enable_saved;
+ } __attribute__((packed));
+ 
+ #define loaddebug(thread,register) \
 -- 
 2.35.1
 
