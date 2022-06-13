@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AB91CCA47B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 414B5C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 14:06:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381060AbiFMODl (ORCPT
+        id S1381083AbiFMODr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:03:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35754 "EHLO
+        Mon, 13 Jun 2022 10:03:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381269AbiFMN4S (ORCPT
+        with ESMTP id S1381360AbiFMN41 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:56:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC92D880E8;
-        Mon, 13 Jun 2022 04:36:45 -0700 (PDT)
+        Mon, 13 Jun 2022 09:56:27 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37CDD8A06C;
+        Mon, 13 Jun 2022 04:36:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 03FAC612D0;
-        Mon, 13 Jun 2022 11:36:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 168AEC34114;
-        Mon, 13 Jun 2022 11:36:43 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id AA61ECE1179;
+        Mon, 13 Jun 2022 11:36:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD056C34114;
+        Mon, 13 Jun 2022 11:36:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120204;
-        bh=aqBhceqBGhC+HNxaI5YNjyD+0ZRKEAmv1OOd4cUY2SY=;
+        s=korg; t=1655120210;
+        bh=x31zvOB0b/h3T21ZNGLUMTm+uU569tG9DWKh8rttLcU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VHAXVGrdNSwv4whQkmwm5dImKfpUWzk5UeUaOf6KrfH8tK68JXl4+77ISmyQvApb3
-         ULl1cgeAAtuz9i3Wce/g2hygbzGOcf8XpjYpnb/6Vg0jELEggEivoMuphfyEct3r0Q
-         bbsJBejk8Dsk+YMPco2U52gZL0j5iVSvXo24ZBtw=
+        b=0ThDkHveyX2W+LvX23MBpAwpJCgPWgZInpt+7s3XyshhM9m2eOYNF0/GnW15bk7r4
+         zFchBlvtUO6UbPlv1klCPCyKf5xeeWbrcEZg2zy2Eehk4ZhybJLFEy5cKT7jO3geIx
+         aZm4D0CGrBJiVNPpyh+i1LJeDcxv8GDEvaNZD6fQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lijo Lazar <lijo.lazar@amd.com>,
-        Yang Wang <kevinyang.wang@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Venky Shankar <vshankar@redhat.com>,
+        Xiubo Li <xiubli@redhat.com>,
+        Ilya Dryomov <idryomov@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 268/339] drm/amd/pm: Fix missing thermal throttler status
-Date:   Mon, 13 Jun 2022 12:11:33 +0200
-Message-Id: <20220613094934.775240847@linuxfoundation.org>
+Subject: [PATCH 5.18 260/339] ceph: allow ceph.dir.rctime xattr to be updatable
+Date:   Mon, 13 Jun 2022 12:11:25 +0200
+Message-Id: <20220613094934.538473211@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -51,34 +51,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lijo Lazar <lijo.lazar@amd.com>
+From: Venky Shankar <vshankar@redhat.com>
 
-[ Upstream commit b0f4d663fce6a4232d3c20ce820f919111b1c60b ]
+[ Upstream commit d7a2dc523085f8b8c60548ceedc696934aefeb0e ]
 
-On aldebaran, when thermal throttling happens due to excessive GPU
-temperature, the reason for throttling event is missed in warning
-message. This patch fixes it.
+`rctime' has been a pain point in cephfs due to its buggy
+nature - inconsistent values reported and those sorts.
+Fixing rctime is non-trivial needing an overall redesign
+of the entire nested statistics infrastructure.
 
-Signed-off-by: Lijo Lazar <lijo.lazar@amd.com>
-Reviewed-by: Yang Wang <kevinyang.wang@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+As a workaround, PR
+
+     http://github.com/ceph/ceph/pull/37938
+
+allows this extended attribute to be manually set. This allows
+users to "fixup" inconsistent rctime values. While this sounds
+messy, its probably the wisest approach allowing users/scripts
+to workaround buggy rctime values.
+
+The above PR enables Ceph MDS to allow manually setting
+rctime extended attribute with the corresponding user-land
+changes. We may as well allow the same to be done via kclient
+for parity.
+
+Signed-off-by: Venky Shankar <vshankar@redhat.com>
+Reviewed-by: Xiubo Li <xiubli@redhat.com>
+Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c | 1 +
- 1 file changed, 1 insertion(+)
+ fs/ceph/xattr.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
-index cd81f848d45a..7f998f24af81 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
-@@ -1664,6 +1664,7 @@ static const struct throttling_logging_label {
- 	uint32_t feature_mask;
- 	const char *label;
- } logging_label[] = {
-+	{(1U << THROTTLER_TEMP_GPU_BIT), "GPU"},
- 	{(1U << THROTTLER_TEMP_MEM_BIT), "HBM"},
- 	{(1U << THROTTLER_TEMP_VR_GFX_BIT), "VR of GFX rail"},
- 	{(1U << THROTTLER_TEMP_VR_MEM_BIT), "VR of HBM rail"},
+diff --git a/fs/ceph/xattr.c b/fs/ceph/xattr.c
+index afec84088471..8c2dc2c762a4 100644
+--- a/fs/ceph/xattr.c
++++ b/fs/ceph/xattr.c
+@@ -366,6 +366,14 @@ static ssize_t ceph_vxattrcb_auth_mds(struct ceph_inode_info *ci,
+ 	}
+ #define XATTR_RSTAT_FIELD(_type, _name)			\
+ 	XATTR_NAME_CEPH(_type, _name, VXATTR_FLAG_RSTAT)
++#define XATTR_RSTAT_FIELD_UPDATABLE(_type, _name)			\
++	{								\
++		.name = CEPH_XATTR_NAME(_type, _name),			\
++		.name_size = sizeof (CEPH_XATTR_NAME(_type, _name)),	\
++		.getxattr_cb = ceph_vxattrcb_ ## _type ## _ ## _name,	\
++		.exists_cb = NULL,					\
++		.flags = VXATTR_FLAG_RSTAT,				\
++	}
+ #define XATTR_LAYOUT_FIELD(_type, _name, _field)			\
+ 	{								\
+ 		.name = CEPH_XATTR_NAME2(_type, _name, _field),	\
+@@ -404,7 +412,7 @@ static struct ceph_vxattr ceph_dir_vxattrs[] = {
+ 	XATTR_RSTAT_FIELD(dir, rsubdirs),
+ 	XATTR_RSTAT_FIELD(dir, rsnaps),
+ 	XATTR_RSTAT_FIELD(dir, rbytes),
+-	XATTR_RSTAT_FIELD(dir, rctime),
++	XATTR_RSTAT_FIELD_UPDATABLE(dir, rctime),
+ 	{
+ 		.name = "ceph.dir.pin",
+ 		.name_size = sizeof("ceph.dir.pin"),
 -- 
 2.35.1
 
