@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 072D1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:59:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B43EEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 13:59:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379962AbiFMN7t (ORCPT
+        id S1380122AbiFMN7w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 09:59:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54304 "EHLO
+        Mon, 13 Jun 2022 09:59:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380258AbiFMNx6 (ORCPT
+        with ESMTP id S1380296AbiFMNyC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 09:53:58 -0400
+        Mon, 13 Jun 2022 09:54:02 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 904D27DE1D;
-        Mon, 13 Jun 2022 04:34:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F41D42A2A;
+        Mon, 13 Jun 2022 04:34:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BDE7612D0;
-        Mon, 13 Jun 2022 11:34:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3898AC34114;
-        Mon, 13 Jun 2022 11:34:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C535612AC;
+        Mon, 13 Jun 2022 11:34:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B143C34114;
+        Mon, 13 Jun 2022 11:34:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655120059;
-        bh=FW/I7BVkoeE8In3t2dtd44ke8+0eARmdPhzZXUroxaY=;
+        s=korg; t=1655120070;
+        bh=Dw/3gXXoXHY7mgJ/HZYNJmtxF73sLdFYSq0budvTY5M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zhy8OVpiJjt5Uy7+J+hqv/f472BEzXwRoztJsoB2e/Zf07xGD051ncBsukVaoBapx
-         BOGECYHsMSmpqUN+lpvXhXQFwJt6rSVCo29KgIgb0VFwp6rD1jAZypxxhvS1Ajn61o
-         ALk6JjiTFJ25FFYfy7FypJHgBKecA79im9ZkdGdk=
+        b=uFp7G5NH1Q8KUlkNM9yFM2SCme2PNhNSxkAj6St4GzpKwyK3Ye4phpewVSVSpYP9H
+         xP8eWMFM6GVi3OJb1PHEUjfTi8IvzdRpQVdMngpTSCXYtroXLzyRCmRgHqhbY4wVbT
+         /iy+8gTPehFxynxisE9yQZaB2LkKEsNJ1OL5tgYs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Xiaoke Wang <xkernel.wang@foxmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 236/339] drivers: tty: serial: Fix deadlock in sa1100_set_termios()
-Date:   Mon, 13 Jun 2022 12:11:01 +0200
-Message-Id: <20220613094933.815191697@linuxfoundation.org>
+Subject: [PATCH 5.18 224/339] staging: rtl8712: fix a potential memory leak in r871xu_drv_init()
+Date:   Mon, 13 Jun 2022 12:10:49 +0200
+Message-Id: <20220613094933.451318867@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094926.497929857@linuxfoundation.org>
 References: <20220613094926.497929857@linuxfoundation.org>
@@ -49,59 +50,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-[ Upstream commit 62b2caef400c1738b6d22f636c628d9f85cd4c4c ]
+[ Upstream commit 7288ff561de650d4139fab80e9cb0da9b5b32434 ]
 
-There is a deadlock in sa1100_set_termios(), which is shown
-below:
+In r871xu_drv_init(), if r8712_init_drv_sw() fails, then the memory
+allocated by r8712_alloc_io_queue() in r8712_usb_dvobj_init() is not
+properly released as there is no action will be performed by
+r8712_usb_dvobj_deinit().
+To properly release it, we should call r8712_free_io_queue() in
+r8712_usb_dvobj_deinit().
 
-   (Thread 1)              |      (Thread 2)
-                           | sa1100_enable_ms()
-sa1100_set_termios()       |  mod_timer()
- spin_lock_irqsave() //(1) |  (wait a time)
- ...                       | sa1100_timeout()
- del_timer_sync()          |  spin_lock_irqsave() //(2)
- (wait timer to stop)      |  ...
+Besides, in r871xu_dev_remove(), r8712_usb_dvobj_deinit() will be called
+by r871x_dev_unload() under condition `padapter->bup` and
+r8712_free_io_queue() is called by r8712_free_drv_sw().
+However, r8712_usb_dvobj_deinit() does not rely on `padapter->bup` and
+calling r8712_free_io_queue() in r8712_free_drv_sw() is negative for
+better understading the code.
+So I move r8712_usb_dvobj_deinit() into r871xu_dev_remove(), and remove
+r8712_free_io_queue() from r8712_free_drv_sw().
 
-We hold sport->port.lock in position (1) of thread 1 and
-use del_timer_sync() to wait timer to stop, but timer handler
-also need sport->port.lock in position (2) of thread 2. As a result,
-sa1100_set_termios() will block forever.
-
-This patch moves del_timer_sync() before spin_lock_irqsave()
-in order to prevent the deadlock.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220417111626.7802-1-duoming@zju.edu.cn
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Link: https://lore.kernel.org/r/tencent_B8048C592777830380A23A7C4409F9DF1305@qq.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/sa1100.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/staging/rtl8712/os_intfs.c | 1 -
+ drivers/staging/rtl8712/usb_intf.c | 6 +++---
+ 2 files changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
-index 5fe6cccfc1ae..e64e42a19d1a 100644
---- a/drivers/tty/serial/sa1100.c
-+++ b/drivers/tty/serial/sa1100.c
-@@ -446,6 +446,8 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
- 	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16); 
- 	quot = uart_get_divisor(port, baud);
+diff --git a/drivers/staging/rtl8712/os_intfs.c b/drivers/staging/rtl8712/os_intfs.c
+index d15d52c0d1a7..003e97205124 100644
+--- a/drivers/staging/rtl8712/os_intfs.c
++++ b/drivers/staging/rtl8712/os_intfs.c
+@@ -332,7 +332,6 @@ void r8712_free_drv_sw(struct _adapter *padapter)
+ 	r8712_free_evt_priv(&padapter->evtpriv);
+ 	r8712_DeInitSwLeds(padapter);
+ 	r8712_free_mlme_priv(&padapter->mlmepriv);
+-	r8712_free_io_queue(padapter);
+ 	_free_xmit_priv(&padapter->xmitpriv);
+ 	_r8712_free_sta_priv(&padapter->stapriv);
+ 	_r8712_free_recv_priv(&padapter->recvpriv);
+diff --git a/drivers/staging/rtl8712/usb_intf.c b/drivers/staging/rtl8712/usb_intf.c
+index ee4c61f85a07..56450ede9f23 100644
+--- a/drivers/staging/rtl8712/usb_intf.c
++++ b/drivers/staging/rtl8712/usb_intf.c
+@@ -265,6 +265,7 @@ static uint r8712_usb_dvobj_init(struct _adapter *padapter)
  
-+	del_timer_sync(&sport->timer);
-+
- 	spin_lock_irqsave(&sport->port.lock, flags);
+ static void r8712_usb_dvobj_deinit(struct _adapter *padapter)
+ {
++	r8712_free_io_queue(padapter);
+ }
  
- 	sport->port.read_status_mask &= UTSR0_TO_SM(UTSR0_TFS);
-@@ -476,8 +478,6 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
- 				UTSR1_TO_SM(UTSR1_ROR);
+ void rtl871x_intf_stop(struct _adapter *padapter)
+@@ -302,9 +303,6 @@ void r871x_dev_unload(struct _adapter *padapter)
+ 			rtl8712_hal_deinit(padapter);
+ 		}
+ 
+-		/*s6.*/
+-		if (padapter->dvobj_deinit)
+-			padapter->dvobj_deinit(padapter);
+ 		padapter->bup = false;
  	}
+ }
+@@ -607,6 +605,8 @@ static void r871xu_dev_remove(struct usb_interface *pusb_intf)
+ 	/* Stop driver mlme relation timer */
+ 	r8712_stop_drv_timers(padapter);
+ 	r871x_dev_unload(padapter);
++	if (padapter->dvobj_deinit)
++		padapter->dvobj_deinit(padapter);
+ 	r8712_free_drv_sw(padapter);
+ 	free_netdev(pnetdev);
  
--	del_timer_sync(&sport->timer);
--
- 	/*
- 	 * Update the per-port timeout.
- 	 */
 -- 
 2.35.1
 
