@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5C7BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:46:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3361C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:46:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354484AbiFMMqY (ORCPT
+        id S1354683AbiFMMq3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:46:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56666 "EHLO
+        Mon, 13 Jun 2022 08:46:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358531AbiFMMkV (ORCPT
+        with ESMTP id S1354164AbiFMMix (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:40:21 -0400
+        Mon, 13 Jun 2022 08:38:53 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2966A5F26B;
-        Mon, 13 Jun 2022 04:10:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 338DF5D678;
+        Mon, 13 Jun 2022 04:08:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CEB7EB80EB5;
-        Mon, 13 Jun 2022 11:10:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21D81C34114;
-        Mon, 13 Jun 2022 11:10:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 864ADB80EB2;
+        Mon, 13 Jun 2022 11:08:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0B9AC34114;
+        Mon, 13 Jun 2022 11:08:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118618;
-        bh=ZxmjvAyRXC2LFYdT7yWmSVT58DifZY7x0GFuK+Fi3t4=;
+        s=korg; t=1655118505;
+        bh=lyrtj3lszdhFjS8B9+LWI462WQaxx6jyLcIwfw37xXc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ifnmst9961mOJd8J9D3AfsPqLY4CPuiFKphFN3KeTOkZGjFzw/47y04NfYnhUSKMX
-         FQFBhw1OrFym53Q3gFGzvDMFPsF1R13xQM2wncEyhiDENNUZ81P5V/zZuaS57TU1wO
-         VWJ1nEoKkjC3cmUK2vqBkCzsinNBFlo4ywNwXwvw=
+        b=aHglEoYxjg/JlAgeFSUG5oAdAAcYXuc6ZxUbypd6p1DOg/exdWOL3yMGEGY7Bo/yI
+         40blTzbWjBz3PUaxbo6rXfyebzF/QyEz9aYDqqvzTlGkzDE9klT4gTTJxDXSnycRxZ
+         96eCf54xjpOU8tGubZtBB9xApvHlJpeuiavPxyaM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 141/172] x86/cpu: Elide KCSAN for cpu_has() and friends
-Date:   Mon, 13 Jun 2022 12:11:41 +0200
-Message-Id: <20220613094922.046118448@linuxfoundation.org>
+Subject: [PATCH 5.10 100/172] af_unix: Fix a data-race in unix_dgram_peer_wake_me().
+Date:   Mon, 13 Jun 2022 12:11:00 +0200
+Message-Id: <20220613094914.440535898@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -50,48 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit a6a5eb269f6f3a2fe392f725a8d9052190c731e2 ]
+[ Upstream commit 662a80946ce13633ae90a55379f1346c10f0c432 ]
 
-As x86 uses the <asm-generic/bitops/instrumented-*.h> headers, the
-regular forms of all bitops are instrumented with explicit calls to
-KASAN and KCSAN checks. As these are explicit calls, these are not
-suppressed by the noinstr function attribute.
+unix_dgram_poll() calls unix_dgram_peer_wake_me() without `other`'s
+lock held and check if its receive queue is full.  Here we need to
+use unix_recvq_full_lockless() instead of unix_recvq_full(), otherwise
+KCSAN will report a data-race.
 
-This can result in calls to those check functions in noinstr code, which
-objtool warns about:
-
-vmlinux.o: warning: objtool: enter_from_user_mode+0x24: call to __kcsan_check_access() leaves .noinstr.text section
-vmlinux.o: warning: objtool: syscall_enter_from_user_mode+0x28: call to __kcsan_check_access() leaves .noinstr.text section
-vmlinux.o: warning: objtool: syscall_enter_from_user_mode_prepare+0x24: call to __kcsan_check_access() leaves .noinstr.text section
-vmlinux.o: warning: objtool: irqentry_enter_from_user_mode+0x24: call to __kcsan_check_access() leaves .noinstr.text section
-
-Prevent this by using the arch_*() bitops, which are the underlying
-bitops without explciit instrumentation.
-
-[null: Changelog]
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220502111216.290518605@infradead.org
+Fixes: 7d267278a9ec ("unix: avoid use-after-free in ep_remove_wait_queue")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Link: https://lore.kernel.org/r/20220605232325.11804-1-kuniyu@amazon.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/cpufeature.h | 2 +-
+ net/unix/af_unix.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/cpufeature.h b/arch/x86/include/asm/cpufeature.h
-index 59bf91c57aa8..619c1f80a2ab 100644
---- a/arch/x86/include/asm/cpufeature.h
-+++ b/arch/x86/include/asm/cpufeature.h
-@@ -49,7 +49,7 @@ extern const char * const x86_power_flags[32];
- extern const char * const x86_bug_flags[NBUGINTS*32];
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index b7edca89e0ba..28721e9575b7 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -438,7 +438,7 @@ static int unix_dgram_peer_wake_me(struct sock *sk, struct sock *other)
+ 	 * -ECONNREFUSED. Otherwise, if we haven't queued any skbs
+ 	 * to other and its full, we will hang waiting for POLLOUT.
+ 	 */
+-	if (unix_recvq_full(other) && !sock_flag(other, SOCK_DEAD))
++	if (unix_recvq_full_lockless(other) && !sock_flag(other, SOCK_DEAD))
+ 		return 1;
  
- #define test_cpu_cap(c, bit)						\
--	 test_bit(bit, (unsigned long *)((c)->x86_capability))
-+	 arch_test_bit(bit, (unsigned long *)((c)->x86_capability))
- 
- /*
-  * There are 32 bits/features in each mask word.  The high bits
+ 	if (connected)
 -- 
 2.35.1
 
