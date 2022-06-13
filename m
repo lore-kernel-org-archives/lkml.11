@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 318F8CCA47C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA52BCCA47B
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:09:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351849AbiFMLIm (ORCPT
+        id S1351870AbiFMLIo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:08:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58994 "EHLO
+        Mon, 13 Jun 2022 07:08:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350803AbiFMLDN (ORCPT
+        with ESMTP id S1351248AbiFMLDr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:03:13 -0400
+        Mon, 13 Jun 2022 07:03:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C15B631932;
-        Mon, 13 Jun 2022 03:33:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC9A63191F;
+        Mon, 13 Jun 2022 03:33:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D011B80EA3;
-        Mon, 13 Jun 2022 10:33:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1728C341C5;
-        Mon, 13 Jun 2022 10:33:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 92F25B80EAD;
+        Mon, 13 Jun 2022 10:33:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10869C34114;
+        Mon, 13 Jun 2022 10:33:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116403;
-        bh=c+ctPUQM9DoagDrIqdEoBv221V9tAwf8N+RV88BNbt4=;
+        s=korg; t=1655116400;
+        bh=LA8dCaaPKOMnOc8bVrWl/usps5F722STdoviF3RJ/pk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VuR6ItbqtXFTdjVpInpirUQqHiGSu2l8rQoCIqP4PKSMCC/sQ1KNUdn6YhJcwtW/f
-         9Dj3D3JfroKwVkclR3TkLdhIeYKQ+rU/x5sDUOYoztfVuNWAdRcSkvt4T8yRspTvvE
-         wAqgMcRhorh3boZ45WqJtfjBhmsZSAXDrrIqD1pk=
+        b=SIHW4HksrY57dEVz0ET+DUzbJ3M29TpwIlj3btnpgWl01/M8qUI6/WFvz04+A7IKG
+         55jHNqGgYcV1zFvITgO7BGIZC6qSDWqsMazQPpJ5R0SMoeQHKCZvxN7uw0fGAMzwxj
+         iOalRzmUnXLOLO7C/dbjvoZtv5ppuz3czj1LSC3Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-        Huang Guobin <huangguobin4@huawei.com>,
+        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
+        NeilBrown <neilb@suse.de>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 184/218] tty: Fix a possible resource leak in icom_probe
-Date:   Mon, 13 Jun 2022 12:10:42 +0200
-Message-Id: <20220613094926.193028771@linuxfoundation.org>
+Subject: [PATCH 4.14 175/218] SUNRPC: Fix the calculation of xdr->end in xdr_get_next_encode_buffer()
+Date:   Mon, 13 Jun 2022 12:10:33 +0200
+Message-Id: <20220613094925.913148777@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -50,35 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Huang Guobin <huangguobin4@huawei.com>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-[ Upstream commit ee157a79e7c82b01ae4c25de0ac75899801f322c ]
+[ Upstream commit 6c254bf3b637dd4ef4f78eb78c7447419c0161d7 ]
 
-When pci_read_config_dword failed, call pci_release_regions() and
-pci_disable_device() to recycle the resource previously allocated.
+I found that NFSD's new NFSv3 READDIRPLUS XDR encoder was screwing up
+right at the end of the page array. xdr_get_next_encode_buffer() does
+not compute the value of xdr->end correctly:
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Huang Guobin <huangguobin4@huawei.com>
-Link: https://lore.kernel.org/r/20220331091005.3290753-1-huangguobin4@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+ * The check to see if we're on the final available page in xdr->buf
+   needs to account for the space consumed by @nbytes.
+
+ * The new xdr->end value needs to account for the portion of @nbytes
+   that is to be encoded into the previous buffer.
+
+Fixes: 2825a7f90753 ("nfsd4: allow encoding across page boundaries")
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Reviewed-by: NeilBrown <neilb@suse.de>
+Reviewed-by: J. Bruce Fields <bfields@fieldses.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/icom.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/sunrpc/xdr.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/icom.c b/drivers/tty/serial/icom.c
-index fe92d74f4ea5..4711b3ec2c56 100644
---- a/drivers/tty/serial/icom.c
-+++ b/drivers/tty/serial/icom.c
-@@ -1515,7 +1515,7 @@ static int icom_probe(struct pci_dev *dev,
- 	retval = pci_read_config_dword(dev, PCI_COMMAND, &command_reg);
- 	if (retval) {
- 		dev_err(&dev->dev, "PCI Config read FAILED\n");
--		return retval;
-+		goto probe_exit0;
- 	}
- 
- 	pci_write_config_dword(dev, PCI_COMMAND,
+diff --git a/net/sunrpc/xdr.c b/net/sunrpc/xdr.c
+index 87cf0b933f99..51ccde7c1311 100644
+--- a/net/sunrpc/xdr.c
++++ b/net/sunrpc/xdr.c
+@@ -544,7 +544,11 @@ static __be32 *xdr_get_next_encode_buffer(struct xdr_stream *xdr,
+ 	 */
+ 	xdr->p = (void *)p + frag2bytes;
+ 	space_left = xdr->buf->buflen - xdr->buf->len;
+-	xdr->end = (void *)p + min_t(int, space_left, PAGE_SIZE);
++	if (space_left - nbytes >= PAGE_SIZE)
++		xdr->end = (void *)p + PAGE_SIZE;
++	else
++		xdr->end = (void *)p + space_left - frag1bytes;
++
+ 	xdr->buf->page_len += frag2bytes;
+ 	xdr->buf->len += nbytes;
+ 	return p;
 -- 
 2.35.1
 
