@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52517C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:08:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E0C5C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:08:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351747AbiFMLID (ORCPT
+        id S1351589AbiFMLIH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:08:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54036 "EHLO
+        Mon, 13 Jun 2022 07:08:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349881AbiFMLAx (ORCPT
+        with ESMTP id S1350096AbiFMLBC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:00:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAA783120E;
-        Mon, 13 Jun 2022 03:33:10 -0700 (PDT)
+        Mon, 13 Jun 2022 07:01:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39A123137C;
+        Mon, 13 Jun 2022 03:33:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D6D560FDD;
-        Mon, 13 Jun 2022 10:33:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28C03C34114;
-        Mon, 13 Jun 2022 10:33:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 800E660FDB;
+        Mon, 13 Jun 2022 10:32:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DB51C34114;
+        Mon, 13 Jun 2022 10:32:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116389;
-        bh=LtWRdp+pRimpsjuHTcv0lC8/M5fAbpiffwBSYWWitDM=;
+        s=korg; t=1655116375;
+        bh=tiyZ3eOGweBf18A/dadGgQ0sLxVwdPM+W/Agj24C7+w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=prSb9HJ2t2oW3bDtBSHXwHM7zHyGXBoANJRToRqYBEBachDy/92aH9wPFGnNJoH3K
-         /qpTUEn+ejODUQAiwMsHfT8bwt54hohFBg3nKcQ2Q4jSv2mj68/pnmKjiL8Hyml0lS
-         qlxYU7Mk37WSgtPnL3VF80Y++4km1BCIZi6Cqufg=
+        b=zb9Wa/JFB2eE9fi7FMCj+h0ju8V0qB9kfe1c3uK248RAuPIvrnRgudIs+amM6P5fS
+         4ZTWNPQva+fBeBypTROtinF1bm9yHPuX9bbZ/i0jK+hjlo4X8CSvay/DOyUcxxjeMu
+         0WvwNIo8DWXOseb2f95Qp6WRWhNjanT2p1QDfPXA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Kees Cook <keescook@chromium.org>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 182/218] lkdtm/usercopy: Expand size of "out of frame" object
-Date:   Mon, 13 Jun 2022 12:10:40 +0200
-Message-Id: <20220613094926.130121619@linuxfoundation.org>
+Subject: [PATCH 5.4 075/411] powerpc/xics: fix refcount leak in icp_opal_init()
+Date:   Mon, 13 Jun 2022 12:05:48 +0200
+Message-Id: <20220613094930.929463042@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
-References: <20220613094908.257446132@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,73 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-[ Upstream commit f387e86d3a74407bdd9c5815820ac9d060962840 ]
+[ Upstream commit 5dd9e27ea4a39f7edd4bf81e9e70208e7ac0b7c9 ]
 
-To be sufficiently out of range for the usercopy test to see the lifetime
-mismatch, expand the size of the "bad" buffer, which will let it be
-beyond current_stack_pointer regardless of stack growth direction.
-Paired with the recent addition of stack depth checking under
-CONFIG_HARDENED_USERCOPY=y, this will correctly start tripping again.
+The of_find_compatible_node() function returns a node pointer with
+refcount incremented, use of_node_put() on it when done.
 
-Reported-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
-Link: https://lore.kernel.org/lkml/762faf1b-0443-5ddf-4430-44a20cf2ec4d@collabora.com/
-Signed-off-by: Kees Cook <keescook@chromium.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20220402013419.2410298-1-lv.ruyi@zte.com.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/lkdtm_usercopy.c | 17 ++++++++++++++---
- 1 file changed, 14 insertions(+), 3 deletions(-)
+ arch/powerpc/sysdev/xics/icp-opal.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/misc/lkdtm_usercopy.c b/drivers/misc/lkdtm_usercopy.c
-index a64372cc148d..178b55141772 100644
---- a/drivers/misc/lkdtm_usercopy.c
-+++ b/drivers/misc/lkdtm_usercopy.c
-@@ -30,12 +30,12 @@ static const unsigned char test_text[] = "This is a test.\n";
-  */
- static noinline unsigned char *trick_compiler(unsigned char *stack)
- {
--	return stack + 0;
-+	return stack + unconst;
+diff --git a/arch/powerpc/sysdev/xics/icp-opal.c b/arch/powerpc/sysdev/xics/icp-opal.c
+index 68fd2540b093..7fa520efcefa 100644
+--- a/arch/powerpc/sysdev/xics/icp-opal.c
++++ b/arch/powerpc/sysdev/xics/icp-opal.c
+@@ -195,6 +195,7 @@ int icp_opal_init(void)
+ 
+ 	printk("XICS: Using OPAL ICP fallbacks\n");
+ 
++	of_node_put(np);
+ 	return 0;
  }
  
- static noinline unsigned char *do_usercopy_stack_callee(int value)
- {
--	unsigned char buf[32];
-+	unsigned char buf[128];
- 	int i;
- 
- 	/* Exercise stack to avoid everything living in registers. */
-@@ -43,7 +43,12 @@ static noinline unsigned char *do_usercopy_stack_callee(int value)
- 		buf[i] = value & 0xff;
- 	}
- 
--	return trick_compiler(buf);
-+	/*
-+	 * Put the target buffer in the middle of stack allocation
-+	 * so that we don't step on future stack users regardless
-+	 * of stack growth direction.
-+	 */
-+	return trick_compiler(&buf[(128/2)-32]);
- }
- 
- static noinline void do_usercopy_stack(bool to_user, bool bad_frame)
-@@ -66,6 +71,12 @@ static noinline void do_usercopy_stack(bool to_user, bool bad_frame)
- 		bad_stack -= sizeof(unsigned long);
- 	}
- 
-+#ifdef ARCH_HAS_CURRENT_STACK_POINTER
-+	pr_info("stack     : %px\n", (void *)current_stack_pointer);
-+#endif
-+	pr_info("good_stack: %px-%px\n", good_stack, good_stack + sizeof(good_stack));
-+	pr_info("bad_stack : %px-%px\n", bad_stack, bad_stack + sizeof(good_stack));
-+
- 	user_addr = vm_mmap(NULL, 0, PAGE_SIZE,
- 			    PROT_READ | PROT_WRITE | PROT_EXEC,
- 			    MAP_ANONYMOUS | MAP_PRIVATE, 0);
 -- 
 2.35.1
 
