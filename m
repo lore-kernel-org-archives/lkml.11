@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2838DCCA482
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08F08CCA47F
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:49:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356406AbiFMLtC (ORCPT
+        id S1356379AbiFMLs7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:49:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35654 "EHLO
+        Mon, 13 Jun 2022 07:48:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356965AbiFMLpP (ORCPT
+        with ESMTP id S1356716AbiFMLo6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:45:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB6D14969E;
-        Mon, 13 Jun 2022 03:51:29 -0700 (PDT)
+        Mon, 13 Jun 2022 07:44:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF2F948883;
+        Mon, 13 Jun 2022 03:51:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 476DB612BC;
-        Mon, 13 Jun 2022 10:51:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 502D4C34114;
-        Mon, 13 Jun 2022 10:51:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E4E37B80E07;
+        Mon, 13 Jun 2022 10:51:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5363BC34114;
+        Mon, 13 Jun 2022 10:51:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117488;
-        bh=7NQUcC/FlqpwOfcBIb3NaowHI4IDjxIyTjXjX85mQTw=;
+        s=korg; t=1655117465;
+        bh=OeYBXK7Vd8Z7875GdHc2vCw+10nPHVIVgJicLuUH/T0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hbf0+19qR3hPc7DVp26QwFtI9FBBkpL93yboH5FrXpEIzb8KvnzvVXeGhq7s2t+iX
-         /ooU5G5on+oChToEzrHerYYYIqBqWyqB+ypN2B7sr2P1VkGTiAgFvch7pIZK4ctZuG
-         ARMBiwD1d79mCY32ZNrUuWPQv6pV0MWzK9e736mU=
+        b=0/PH84VfejeX27z0lZp4bWxkT3u4Aos+aZ9Srl8Rcaf3eWno5D/Tdj3KKJgD3mqTY
+         XBWpXXAwNiuamh4IE7RT1DbcEMNVFcBOCOh0l18U0ebFCj8UJ6L+GD2zMMNkdUS/XT
+         On9wM+8+XN4MM+XpMEVHL3YCvZNdayzS6N6UzY0k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabio Estevam <festevam@denx.de>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Petr Mladek <pmladek@suse.com>,
+        John Ogness <john.ogness@linutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 039/287] net: phy: micrel: Allow probing without .driver_data
-Date:   Mon, 13 Jun 2022 12:07:43 +0200
-Message-Id: <20220613094925.051039214@linuxfoundation.org>
+Subject: [PATCH 5.4 382/411] serial: msm_serial: disable interrupts in __msm_console_write()
+Date:   Mon, 13 Jun 2022 12:10:55 +0200
+Message-Id: <20220613094940.121008282@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
-References: <20220613094923.832156175@linuxfoundation.org>
+In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
+References: <20220613094928.482772422@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,70 +52,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@denx.de>
+From: John Ogness <john.ogness@linutronix.de>
 
-[ Upstream commit f2ef6f7539c68c6bd6c32323d8845ee102b7c450 ]
+[ Upstream commit aabdbb1b7a5819e18c403334a31fb0cc2c06ad41 ]
 
-Currently, if the .probe element is present in the phy_driver structure
-and the .driver_data is not, a NULL pointer dereference happens.
+__msm_console_write() assumes that interrupts are disabled, but
+with threaded console printers it is possible that the write()
+callback of the console is called with interrupts enabled.
 
-Allow passing .probe without .driver_data by inserting NULL checks
-for priv->type.
+Explicitly disable interrupts using local_irq_save() to preserve
+the assumed context.
 
-Signed-off-by: Fabio Estevam <festevam@denx.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://lore.kernel.org/r/20220513114613.762810-1-festevam@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/r/20220506213324.470461-1-john.ogness@linutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/micrel.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/tty/serial/msm_serial.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 013590330059..1d00a563892a 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -285,7 +285,7 @@ static int kszphy_config_reset(struct phy_device *phydev)
- 		}
- 	}
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index 5129c2dfbe07..aac96659694d 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -1579,6 +1579,7 @@ static inline struct uart_port *msm_get_port_from_line(unsigned int line)
+ static void __msm_console_write(struct uart_port *port, const char *s,
+ 				unsigned int count, bool is_uartdm)
+ {
++	unsigned long flags;
+ 	int i;
+ 	int num_newlines = 0;
+ 	bool replaced = false;
+@@ -1596,6 +1597,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
+ 			num_newlines++;
+ 	count += num_newlines;
  
--	if (priv->led_mode >= 0)
-+	if (priv->type && priv->led_mode >= 0)
- 		kszphy_setup_led(phydev, priv->type->led_mode_reg, priv->led_mode);
++	local_irq_save(flags);
++
+ 	if (port->sysrq)
+ 		locked = 0;
+ 	else if (oops_in_progress)
+@@ -1641,6 +1644,8 @@ static void __msm_console_write(struct uart_port *port, const char *s,
  
- 	return 0;
-@@ -301,10 +301,10 @@ static int kszphy_config_init(struct phy_device *phydev)
+ 	if (locked)
+ 		spin_unlock(&port->lock);
++
++	local_irq_restore(flags);
+ }
  
- 	type = priv->type;
- 
--	if (type->has_broadcast_disable)
-+	if (type && type->has_broadcast_disable)
- 		kszphy_broadcast_disable(phydev);
- 
--	if (type->has_nand_tree_disable)
-+	if (type && type->has_nand_tree_disable)
- 		kszphy_nand_tree_disable(phydev);
- 
- 	return kszphy_config_reset(phydev);
-@@ -775,7 +775,7 @@ static int kszphy_probe(struct phy_device *phydev)
- 
- 	priv->type = type;
- 
--	if (type->led_mode_reg) {
-+	if (type && type->led_mode_reg) {
- 		ret = of_property_read_u32(np, "micrel,led-mode",
- 				&priv->led_mode);
- 		if (ret)
-@@ -796,7 +796,8 @@ static int kszphy_probe(struct phy_device *phydev)
- 		unsigned long rate = clk_get_rate(clk);
- 		bool rmii_ref_clk_sel_25_mhz;
- 
--		priv->rmii_ref_clk_sel = type->has_rmii_ref_clk_sel;
-+		if (type)
-+			priv->rmii_ref_clk_sel = type->has_rmii_ref_clk_sel;
- 		rmii_ref_clk_sel_25_mhz = of_property_read_bool(np,
- 				"micrel,rmii-reference-clock-select-25-mhz");
- 
+ static void msm_console_write(struct console *co, const char *s,
 -- 
 2.35.1
 
