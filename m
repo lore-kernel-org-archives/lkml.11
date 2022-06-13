@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7960CCCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:32:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1F7FCCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:32:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354399AbiFMLc3 (ORCPT
+        id S1354114AbiFMLce (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:32:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43690 "EHLO
+        Mon, 13 Jun 2022 07:32:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353934AbiFML0D (ORCPT
+        with ESMTP id S1353830AbiFML1E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:26:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 223A428E26;
-        Mon, 13 Jun 2022 03:42:42 -0700 (PDT)
+        Mon, 13 Jun 2022 07:27:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F3F3DA72;
+        Mon, 13 Jun 2022 03:42:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6754760F9A;
-        Mon, 13 Jun 2022 10:42:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76952C34114;
-        Mon, 13 Jun 2022 10:42:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E09B3B80D3C;
+        Mon, 13 Jun 2022 10:42:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B582C34114;
+        Mon, 13 Jun 2022 10:42:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116961;
-        bh=t2zDwXwqV3UJuH7+JUlMMeP7lCL9FAR663swTtAmhVM=;
+        s=korg; t=1655116964;
+        bh=sU4af+R8hY2Xsfo+mlNUVQheGOnnT4hlS2Cs6ZXmbzA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wLFh2lwuU7WnR+GCsVv6Q7mha9le2jXb6zp8LWaaDtOHoiiip1s+oBk9pWzT12alJ
-         EJiqXgch5o1AzP9TWX9i1l+4R8tZhly4SoQ6NeWF8S1htPmm3mqy3d9J6OX8svZS/E
-         Qx/YweehInXjjXmzQycSS4kAg4HbB6SSNu/Ks8Xk=
+        b=r/D4xiZwbTd0Yf0R95Vb+YBZll6oThN0jJM1coVMq/s7QXhQ2lDP2tdwAt03KZkJ9
+         dQ+wJPI9ZQkSjsJAFbnY8qSTCkD3D/AN1uBTl+u/bBsa0C1cSWKKMPwr2hrHo9BqxT
+         BmWFzQz7tG/PU50DYgH0drWcBTlBsqbh0flDR3bk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        stable@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
         "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.4 237/411] scsi: dc395x: Fix a missing check on list iterator
-Date:   Mon, 13 Jun 2022 12:08:30 +0200
-Message-Id: <20220613094935.889223648@linuxfoundation.org>
+Subject: [PATCH 5.4 238/411] scsi: ufs: qcom: Add a readl() to make sure ref_clk gets enabled
+Date:   Mon, 13 Jun 2022 12:08:31 +0200
+Message-Id: <20220613094935.918367748@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
 References: <20220613094928.482772422@linuxfoundation.org>
@@ -49,56 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-commit 036a45aa587a10fa2abbd50fbd0f6c4cfc44f69f upstream.
+commit 8eecddfca30e1651dc1c74531ed5eef21dcce7e3 upstream.
 
-The bug is here:
+In ufs_qcom_dev_ref_clk_ctrl(), it was noted that the ref_clk needs to be
+stable for at least 1us. Even though there is wmb() to make sure the write
+gets "completed", there is no guarantee that the write actually reached the
+UFS device. There is a good chance that the write could be stored in a
+Write Buffer (WB). In that case, even though the CPU waits for 1us, the
+ref_clk might not be stable for that period.
 
-	p->target_id, p->target_lun);
+So lets do a readl() to make sure that the previous write has reached the
+UFS device before udelay().
 
-The list iterator 'p' will point to a bogus position containing HEAD if the
-list is empty or no element is found. This case must be checked before any
-use of the iterator, otherwise it will lead to an invalid memory access.
+Also, the wmb() after writel_relaxed() is not really needed. Both writel()
+and readl() are ordered on all architectures and the CPU won't speculate
+instructions after readl() due to the in-built control dependency with read
+value on weakly ordered architectures. So it can be safely removed.
 
-To fix this bug, add a check. Use a new variable 'iter' as the list
-iterator, and use the original variable 'p' as a dedicated pointer to point
-to the found element.
-
-Link: https://lore.kernel.org/r/20220414040231.2662-1-xiam0nd.tong@gmail.com
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Link: https://lore.kernel.org/r/20220504084212.11605-4-manivannan.sadhasivam@linaro.org
+Fixes: f06fcc7155dc ("scsi: ufs-qcom: add QUniPro hardware support and power optimizations")
 Cc: stable@vger.kernel.org
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/dc395x.c |   15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ drivers/scsi/ufs/ufs-qcom.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/drivers/scsi/dc395x.c
-+++ b/drivers/scsi/dc395x.c
-@@ -3664,10 +3664,19 @@ static struct DeviceCtlBlk *device_alloc
- #endif
- 	if (dcb->target_lun != 0) {
- 		/* Copy settings */
--		struct DeviceCtlBlk *p;
--		list_for_each_entry(p, &acb->dcb_list, list)
--			if (p->target_id == dcb->target_id)
-+		struct DeviceCtlBlk *p = NULL, *iter;
-+
-+		list_for_each_entry(iter, &acb->dcb_list, list)
-+			if (iter->target_id == dcb->target_id) {
-+				p = iter;
- 				break;
-+			}
-+
-+		if (!p) {
-+			kfree(dcb);
-+			return NULL;
-+		}
-+
- 		dprintkdbg(DBG_1, 
- 		       "device_alloc: <%02i-%i> copy from <%02i-%i>\n",
- 		       dcb->target_id, dcb->target_lun,
+--- a/drivers/scsi/ufs/ufs-qcom.c
++++ b/drivers/scsi/ufs/ufs-qcom.c
+@@ -781,8 +781,11 @@ static void ufs_qcom_dev_ref_clk_ctrl(st
+ 
+ 		writel_relaxed(temp, host->dev_ref_clk_ctrl_mmio);
+ 
+-		/* ensure that ref_clk is enabled/disabled before we return */
+-		wmb();
++		/*
++		 * Make sure the write to ref_clk reaches the destination and
++		 * not stored in a Write Buffer (WB).
++		 */
++		readl(host->dev_ref_clk_ctrl_mmio);
+ 
+ 		/*
+ 		 * If we call hibern8 exit after this, we need to make sure that
 
 
