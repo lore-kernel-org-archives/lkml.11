@@ -2,80 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA493C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:21:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C85DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 19:21:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349053AbiFMTU5 (ORCPT
+        id S1349190AbiFMTVk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 15:20:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44934 "EHLO
+        Mon, 13 Jun 2022 15:21:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245565AbiFMTTy (ORCPT
+        with ESMTP id S1348552AbiFMTVT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 15:19:54 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C16E3190F
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:17:15 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id 129so6125386pgc.2
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:17:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=MjIxgZgAdZ27pbz58kc/VXLniYidA8CZXuhlH7oOL/o=;
-        b=mqFYc6a/HcXcKs/9YanvoMICMIuT7Wl66V73KxHIDkb/h7yA9GpclZMyy4uZSy0Dki
-         5q4Ah9RguD7PZQMp/OS5SHAr9joAtuStNRY9xXnuMXrRF/VuActBwoS0Tr2JOqvfmBgf
-         ZkUxVNFkwLZk6Nb1woQicWhrdUGxoZQuLXqm9eoyycCwUUim3HUAozK4GpBl/e06eOl7
-         D9oC5itpW1ZNf5BN7UjWqMKiBQqrx7Mrq8kSi0hS1KTwkZbhqz9epAbzvaDa97fLHh6h
-         f1fvuzV/LqaDrsl2HwdPAUACKS/KdX7eWwpTal/N8Fkbs0oi8Tr/uEN54crpeU4fvQqW
-         cLWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=MjIxgZgAdZ27pbz58kc/VXLniYidA8CZXuhlH7oOL/o=;
-        b=A+OOw55snpWSUzDstdHWoBJ9L/vxuo9fheyh7Ex3F/pShynubCgeMp5+A4oyykonav
-         cI9q06JOxcNEL6f8cyq6WumOcIGGH00+KWvPZRVo+nHm2fJd61K9eo6T7+/hCUpNUI0a
-         VHfueU7iteSaJqthI/4JDOdn82Rjy+0VmBavE4OaZBKUthxZVsFTx1QmdWk5NlfvNkJa
-         K6jgsW8D24nWwNub7XFFeHhEkR8cPl0iBcxwYD+eJgiMPk/RyYcMmyLXbpka5cHbq43q
-         QYMpg7xicp88OzGfkSRr+D0SXE27DYw1AWIm1Ap91apc7jq7okSioPBRFqZePRcao8/2
-         StXg==
-X-Gm-Message-State: AOAM531ciigoG0RV4bR155FiUjCV/IkMxmwSi5ni5TigiMzInxUwcVgc
-        Y1DQvULh2TCOJggzSvdgg90=
-X-Google-Smtp-Source: AGRyM1sFz4TfdQtxwAKrfOcN0y+jj6y6S4D3hbgTh+fkCvSb5wOARWaEp6e3lePVhUAwkSr171ZtqQ==
-X-Received: by 2002:a05:6a00:1a91:b0:51c:2ef4:fa1c with SMTP id e17-20020a056a001a9100b0051c2ef4fa1cmr553542pfv.75.1655140634869;
-        Mon, 13 Jun 2022 10:17:14 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id x15-20020a17090ab00f00b001e8875e3326sm7646802pjq.47.2022.06.13.10.17.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 10:17:14 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     bcm-kernel-feedback-list@broadcom.com,
-        William Zhang <william.zhang@broadcom.com>,
-        Linux ARM List <linux-arm-kernel@lists.infradead.org>
-Cc:     tomer.yacoby@broadcom.com, anand.gore@broadcom.com,
-        dan.beygelman@broadcom.com, philippe.reynes@softathome.com,
-        samyon.furman@broadcom.com, kursad.oney@broadcom.com,
-        joel.peshkin@broadcom.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] MAINTAINERS: Add BCM6756 to bcmbca arch entry
-Date:   Mon, 13 Jun 2022 10:17:13 -0700
-Message-Id: <20220613171713.241955-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220608175629.31538-4-william.zhang@broadcom.com>
-References: <20220608175629.31538-1-william.zhang@broadcom.com> <20220608175629.31538-4-william.zhang@broadcom.com>
+        Mon, 13 Jun 2022 15:21:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E6541CB38
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 10:23:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D592060C26
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 17:23:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32C84C34114;
+        Mon, 13 Jun 2022 17:23:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655140987;
+        bh=5Fok1MzW22buXw55Kbx09DXpCWfLARQYnQkHsxPjVgU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=urm4WeNgQD64HPL+w0eL+IFtNJBWXZsbwagXOmHVMF4xq/DGrjJSTCR9H6XxUF/WZ
+         rt6jpXhESVwWsHnVWMQ2WBEmz78qhENmmSBV89XOSQW1fsoc9pPHZGdImGEZqtDazU
+         qAbtG2imSxIQmeCljO0T5otetIvwkOXqF2lmMIrflBrDbafuCYicyjEK2k7juHfqXE
+         z7zcJxiQO5xYNCnb9vGZjXQkEOJocYFQLbzvqLIai/d4GD6xRDYr71FMCBAFXmn/Mr
+         iX+yXNqmVjahye89pcu0mHyl7hSQ/gaaLeJYQBWs+IcT/+1RPLvTYYmJzTFR0hIA9E
+         GrCJyrMzS5L2w==
+From:   Jaegeuk Kim <jaegeuk@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH] f2fs: do not skip updating inode when retrying to flush node page
+Date:   Mon, 13 Jun 2022 10:23:05 -0700
+Message-Id: <20220613172305.1559743-1-jaegeuk@kernel.org>
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed,  8 Jun 2022 10:56:29 -0700, William Zhang <william.zhang@broadcom.com> wrote:
-> Add BCM6756 related files to BCMBCA ARCH maintainer list entry
-> 
-> Signed-off-by: William Zhang <william.zhang@broadcom.com>
-> 
-> ---
+Let's try to flush dirty inode again to improve subtle i_blocks mismatch.
 
-Applied to https://github.com/Broadcom/stblinux/commits/maintainers/next, thanks!
---
-Florian
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+---
+ fs/f2fs/node.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
+
+diff --git a/fs/f2fs/node.c b/fs/f2fs/node.c
+index 836c79a20afc..4181d03a7ef7 100644
+--- a/fs/f2fs/node.c
++++ b/fs/f2fs/node.c
+@@ -1943,7 +1943,6 @@ int f2fs_sync_node_pages(struct f2fs_sb_info *sbi,
+ 		for (i = 0; i < nr_pages; i++) {
+ 			struct page *page = pvec.pages[i];
+ 			bool submitted = false;
+-			bool may_dirty = true;
+ 
+ 			/* give a priority to WB_SYNC threads */
+ 			if (atomic_read(&sbi->wb_sync_req[NODE]) &&
+@@ -1996,11 +1995,8 @@ int f2fs_sync_node_pages(struct f2fs_sb_info *sbi,
+ 			}
+ 
+ 			/* flush dirty inode */
+-			if (IS_INODE(page) && may_dirty) {
+-				may_dirty = false;
+-				if (flush_dirty_inode(page))
+-					goto lock_node;
+-			}
++			if (IS_INODE(page) && flush_dirty_inode(page))
++				goto lock_node;
+ write_node:
+ 			f2fs_wait_on_page_writeback(page, NODE, true, true);
+ 
+-- 
+2.36.1.476.g0c4daa206d-goog
+
