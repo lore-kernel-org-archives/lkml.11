@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16511CCA481
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:45:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1301CCA47C
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:45:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357328AbiFMMoy (ORCPT
+        id S1356634AbiFMMor (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:44:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56268 "EHLO
+        Mon, 13 Jun 2022 08:44:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356625AbiFMMjc (ORCPT
+        with ESMTP id S1358038AbiFMMkJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:39:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40ECB33E37;
-        Mon, 13 Jun 2022 04:09:55 -0700 (PDT)
+        Mon, 13 Jun 2022 08:40:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F06745EBCD;
+        Mon, 13 Jun 2022 04:10:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 751BE60B7B;
-        Mon, 13 Jun 2022 11:09:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 809F4C34114;
-        Mon, 13 Jun 2022 11:09:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 126A9B80EB4;
+        Mon, 13 Jun 2022 11:10:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77F60C34114;
+        Mon, 13 Jun 2022 11:10:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655118593;
-        bh=T39f0eVQOSJ9MBYJVxLyGztljyf680swlm25slWr4q4=;
+        s=korg; t=1655118615;
+        bh=arevvUO6TDs1XZqB0gk0HZtXTixvkAi4HuNOxI5L6VA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UGTA5d3AiC1VfkfVE4uyUPtxwH7PObbNdtlHuXAFkbYNW7R+Im6BKn/kV7t1AZVlI
-         mQfJXdrwMPxFpwZ+866nDjVFIcQz5lnzDQ0zozwR/F9P0lyifXOBuGqY7LDy6bGau1
-         TA76UV0xr6lOzW6K6gjq8dLUgNSp6G5OZAGvJDMU=
+        b=ebJCvkoKtrnl36seW3952EUtZEUI4c4I/sw+ed+o+g69IVHm1oVsv70vrgjtdtgvs
+         W5sg0kWHTXBvc99oF8h6/yo0nFXmzDBKCMV19SnQ7tS1DoiKYwzA97j2/ga/4MUQP4
+         2Yu35CdKnGYPodnZkJ9mgpgKYxbxMaTwv6g6rtGc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        Evan Green <evgreen@chromium.org>,
+        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 124/172] USB: hcd-pci: Fully suspend across freeze/thaw cycle
-Date:   Mon, 13 Jun 2022 12:11:24 +0200
-Message-Id: <20220613094920.320151695@linuxfoundation.org>
+Subject: [PATCH 5.10 140/172] modpost: fix undefined behavior of is_arm_mapping_symbol()
+Date:   Mon, 13 Jun 2022 12:11:40 +0200
+Message-Id: <20220613094921.956896824@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094850.166931805@linuxfoundation.org>
 References: <20220613094850.166931805@linuxfoundation.org>
@@ -50,48 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evan Green <evgreen@chromium.org>
+From: Masahiro Yamada <masahiroy@kernel.org>
 
-[ Upstream commit 63acaa8e9c65dc34dc249440216f8e977f5d2748 ]
+[ Upstream commit d6b732666a1bae0df3c3ae06925043bba34502b1 ]
 
-The documentation for the freeze() method says that it "should quiesce
-the device so that it doesn't generate IRQs or DMA". The unspoken
-consequence of not doing this is that MSIs aimed at non-boot CPUs may
-get fully lost if they're sent during the period where the target CPU is
-offline.
+The return value of is_arm_mapping_symbol() is unpredictable when "$"
+is passed in.
 
-The current callbacks for USB HCD do not fully quiesce interrupts,
-specifically on XHCI. Change to use the full suspend/resume flow for
-freeze/thaw to ensure interrupts are fully quiesced. This fixes issues
-where USB devices fail to thaw during hibernation because XHCI misses
-its interrupt and cannot recover.
+strchr(3) says:
+  The strchr() and strrchr() functions return a pointer to the matched
+  character or NULL if the character is not found. The terminating null
+  byte is considered part of the string, so that if c is specified as
+  '\0', these functions return a pointer to the terminator.
 
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Evan Green <evgreen@chromium.org>
-Link: https://lore.kernel.org/r/20220421103751.v3.2.I8226c7fdae88329ef70957b96a39b346c69a914e@changeid
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+When str[1] is '\0', strchr("axtd", str[1]) is not NULL, and str[2] is
+referenced (i.e. buffer overrun).
+
+Test code
+---------
+
+  char str1[] = "abc";
+  char str2[] = "ab";
+
+  strcpy(str1, "$");
+  strcpy(str2, "$");
+
+  printf("test1: %d\n", is_arm_mapping_symbol(str1));
+  printf("test2: %d\n", is_arm_mapping_symbol(str2));
+
+Result
+------
+
+  test1: 0
+  test2: 1
+
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/core/hcd-pci.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ scripts/mod/modpost.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/usb/core/hcd-pci.c b/drivers/usb/core/hcd-pci.c
-index ec0d6c50610c..eee78cbfaa72 100644
---- a/drivers/usb/core/hcd-pci.c
-+++ b/drivers/usb/core/hcd-pci.c
-@@ -614,10 +614,10 @@ const struct dev_pm_ops usb_hcd_pci_pm_ops = {
- 	.suspend_noirq	= hcd_pci_suspend_noirq,
- 	.resume_noirq	= hcd_pci_resume_noirq,
- 	.resume		= hcd_pci_resume,
--	.freeze		= check_root_hub_suspended,
-+	.freeze		= hcd_pci_suspend,
- 	.freeze_noirq	= check_root_hub_suspended,
- 	.thaw_noirq	= NULL,
--	.thaw		= NULL,
-+	.thaw		= hcd_pci_resume,
- 	.poweroff	= hcd_pci_suspend,
- 	.poweroff_noirq	= hcd_pci_suspend_noirq,
- 	.restore_noirq	= hcd_pci_resume_noirq,
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index a21aa74b4948..79aef50ede17 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -1271,7 +1271,8 @@ static int secref_whitelist(const struct sectioncheck *mismatch,
+ 
+ static inline int is_arm_mapping_symbol(const char *str)
+ {
+-	return str[0] == '$' && strchr("axtd", str[1])
++	return str[0] == '$' &&
++	       (str[1] == 'a' || str[1] == 'd' || str[1] == 't' || str[1] == 'x')
+ 	       && (str[2] == '\0' || str[2] == '.');
+ }
+ 
 -- 
 2.35.1
 
