@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D1DFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:11:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F990C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:11:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351608AbiFMLLN (ORCPT
+        id S1351673AbiFMLLP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:11:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45182 "EHLO
+        Mon, 13 Jun 2022 07:11:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351576AbiFMLGk (ORCPT
+        with ESMTP id S1351744AbiFMLIC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:06:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED9153335F;
-        Mon, 13 Jun 2022 03:35:03 -0700 (PDT)
+        Mon, 13 Jun 2022 07:08:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3637D33A04;
+        Mon, 13 Jun 2022 03:35:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F3BE561018;
-        Mon, 13 Jun 2022 10:35:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A46BC34114;
-        Mon, 13 Jun 2022 10:34:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 64CF5B80E93;
+        Mon, 13 Jun 2022 10:35:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D37B9C36AFE;
+        Mon, 13 Jun 2022 10:35:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116500;
-        bh=qOVzcPFsMGm4txDxzbRtTtKwNnOjmHxSlt3BmOqhZp0=;
+        s=korg; t=1655116503;
+        bh=jdxYV56eY7XhApEmOlDXD1XspYqjrLg6jh431dpAOcQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pVCUwqXMu/wM3laIOvysQcw+Yr2ItW9zRkMaeojgYgE0topSSSHVf12h22tqSFeg3
-         LUCWeGpCbWlZeyox07KO88Gtpx7hGdkoXDq1UxdOV4IOvu+uiIh9hp701ZbArxPcEV
-         hrXZNjNbm5Ns0xWspIHQ/GjwTi9K2e2F503hM3xo=
+        b=Fx2kVZVypyHujTft7z+y9VjZyCEXAMFm3GCk3s/AOaeAVv6mvc/0hqT2KJxjUoaF4
+         6cA8eYPmimihVTlQJ5/FhupnetP8Hcnj337fC14KEXKAWO5cMDZJAovNzae6mMoXbd
+         G9n6sewi/38GXL8hNRaj6cCxP9nqZuxzTA1JQks8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        =?UTF-8?q?Christoph=20B=C3=B6hmwalder?= 
-        <christoph.boehmwalder@linbit.com>, Jens Axboe <axboe@kernel.dk>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 097/411] drbd: fix duplicate array initializer
-Date:   Mon, 13 Jun 2022 12:06:10 +0200
-Message-Id: <20220613094931.589825563@linuxfoundation.org>
+        stable@vger.kernel.org, Yu Kuai <yukuai3@huawei.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 203/218] nbd: fix io hung while disconnecting device
+Date:   Mon, 13 Jun 2022 12:11:01 +0200
+Message-Id: <20220613094926.779729747@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
+In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
+References: <20220613094908.257446132@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,89 +50,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Yu Kuai <yukuai3@huawei.com>
 
-[ Upstream commit 33cb0917bbe241dd17a2b87ead63514c1b7e5615 ]
+[ Upstream commit 09dadb5985023e27d4740ebd17e6fea4640110e5 ]
 
-There are two initializers for P_RETRY_WRITE:
+In our tests, "qemu-nbd" triggers a io hung:
 
-drivers/block/drbd/drbd_main.c:3676:22: warning: initialized field overwritten [-Woverride-init]
+INFO: task qemu-nbd:11445 blocked for more than 368 seconds.
+      Not tainted 5.18.0-rc3-next-20220422-00003-g2176915513ca #884
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:qemu-nbd        state:D stack:    0 pid:11445 ppid:     1 flags:0x00000000
+Call Trace:
+ <TASK>
+ __schedule+0x480/0x1050
+ ? _raw_spin_lock_irqsave+0x3e/0xb0
+ schedule+0x9c/0x1b0
+ blk_mq_freeze_queue_wait+0x9d/0xf0
+ ? ipi_rseq+0x70/0x70
+ blk_mq_freeze_queue+0x2b/0x40
+ nbd_add_socket+0x6b/0x270 [nbd]
+ nbd_ioctl+0x383/0x510 [nbd]
+ blkdev_ioctl+0x18e/0x3e0
+ __x64_sys_ioctl+0xac/0x120
+ do_syscall_64+0x35/0x80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7fd8ff706577
+RSP: 002b:00007fd8fcdfebf8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 0000000040000000 RCX: 00007fd8ff706577
+RDX: 000000000000000d RSI: 000000000000ab00 RDI: 000000000000000f
+RBP: 000000000000000f R08: 000000000000fbe8 R09: 000055fe497c62b0
+R10: 00000002aff20000 R11: 0000000000000246 R12: 000000000000006d
+R13: 0000000000000000 R14: 00007ffe82dc5e70 R15: 00007fd8fcdff9c0
 
-Remove the first one since it was already ignored by the compiler
-and reorder the list to match the enum definition. As P_ZEROES had
-no entry, add that one instead.
+"qemu-ndb -d" will call ioctl 'NBD_DISCONNECT' first, however, following
+message was found:
 
-Fixes: 036b17eaab93 ("drbd: Receiving part for the PROTOCOL_UPDATE packet")
-Fixes: f31e583aa2c2 ("drbd: introduce P_ZEROES (REQ_OP_WRITE_ZEROES on the "wire")")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Reviewed-by: Christoph Böhmwalder <christoph.boehmwalder@linbit.com>
-Link: https://lore.kernel.org/r/20220406190715.1938174-2-christoph.boehmwalder@linbit.com
+block nbd0: Send disconnect failed -32
+
+Which indicate that something is wrong with the server. Then,
+"qemu-nbd -d" will call ioctl 'NBD_CLEAR_SOCK', however ioctl can't clear
+requests after commit 2516ab1543fd("nbd: only clear the queue on device
+teardown"). And in the meantime, request can't complete through timeout
+because nbd_xmit_timeout() will always return 'BLK_EH_RESET_TIMER', which
+means such request will never be completed in this situation.
+
+Now that the flag 'NBD_CMD_INFLIGHT' can make sure requests won't
+complete multiple times, switch back to call nbd_clear_sock() in
+nbd_clear_sock_ioctl(), so that inflight requests can be cleared.
+
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+Reviewed-by: Josef Bacik <josef@toxicpanda.com>
+Link: https://lore.kernel.org/r/20220521073749.3146892-5-yukuai3@huawei.com
 Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/drbd/drbd_main.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/block/nbd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/block/drbd/drbd_main.c b/drivers/block/drbd/drbd_main.c
-index ba10fa24fa1f..5ece2fd70d9c 100644
---- a/drivers/block/drbd/drbd_main.c
-+++ b/drivers/block/drbd/drbd_main.c
-@@ -3709,9 +3709,8 @@ const char *cmdname(enum drbd_packet cmd)
- 	 * when we want to support more than
- 	 * one PRO_VERSION */
- 	static const char *cmdnames[] = {
-+
- 		[P_DATA]	        = "Data",
--		[P_WSAME]	        = "WriteSame",
--		[P_TRIM]	        = "Trim",
- 		[P_DATA_REPLY]	        = "DataReply",
- 		[P_RS_DATA_REPLY]	= "RSDataReply",
- 		[P_BARRIER]	        = "Barrier",
-@@ -3722,7 +3721,6 @@ const char *cmdname(enum drbd_packet cmd)
- 		[P_DATA_REQUEST]	= "DataRequest",
- 		[P_RS_DATA_REQUEST]     = "RSDataRequest",
- 		[P_SYNC_PARAM]	        = "SyncParam",
--		[P_SYNC_PARAM89]	= "SyncParam89",
- 		[P_PROTOCOL]            = "ReportProtocol",
- 		[P_UUIDS]	        = "ReportUUIDs",
- 		[P_SIZES]	        = "ReportSizes",
-@@ -3730,6 +3728,7 @@ const char *cmdname(enum drbd_packet cmd)
- 		[P_SYNC_UUID]           = "ReportSyncUUID",
- 		[P_AUTH_CHALLENGE]      = "AuthChallenge",
- 		[P_AUTH_RESPONSE]	= "AuthResponse",
-+		[P_STATE_CHG_REQ]       = "StateChgRequest",
- 		[P_PING]		= "Ping",
- 		[P_PING_ACK]	        = "PingAck",
- 		[P_RECV_ACK]	        = "RecvAck",
-@@ -3740,24 +3739,26 @@ const char *cmdname(enum drbd_packet cmd)
- 		[P_NEG_DREPLY]	        = "NegDReply",
- 		[P_NEG_RS_DREPLY]	= "NegRSDReply",
- 		[P_BARRIER_ACK]	        = "BarrierAck",
--		[P_STATE_CHG_REQ]       = "StateChgRequest",
- 		[P_STATE_CHG_REPLY]     = "StateChgReply",
- 		[P_OV_REQUEST]          = "OVRequest",
- 		[P_OV_REPLY]            = "OVReply",
- 		[P_OV_RESULT]           = "OVResult",
- 		[P_CSUM_RS_REQUEST]     = "CsumRSRequest",
- 		[P_RS_IS_IN_SYNC]	= "CsumRSIsInSync",
-+		[P_SYNC_PARAM89]	= "SyncParam89",
- 		[P_COMPRESSED_BITMAP]   = "CBitmap",
- 		[P_DELAY_PROBE]         = "DelayProbe",
- 		[P_OUT_OF_SYNC]		= "OutOfSync",
--		[P_RETRY_WRITE]		= "RetryWrite",
- 		[P_RS_CANCEL]		= "RSCancel",
- 		[P_CONN_ST_CHG_REQ]	= "conn_st_chg_req",
- 		[P_CONN_ST_CHG_REPLY]	= "conn_st_chg_reply",
- 		[P_RETRY_WRITE]		= "retry_write",
- 		[P_PROTOCOL_UPDATE]	= "protocol_update",
-+		[P_TRIM]	        = "Trim",
- 		[P_RS_THIN_REQ]         = "rs_thin_req",
- 		[P_RS_DEALLOCATED]      = "rs_deallocated",
-+		[P_WSAME]	        = "WriteSame",
-+		[P_ZEROES]		= "Zeroes",
- 
- 		/* enum drbd_packet, but not commands - obsoleted flags:
- 		 *	P_MAY_IGNORE
+diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
+index 9596f93d98b2..338d02a67afb 100644
+--- a/drivers/block/nbd.c
++++ b/drivers/block/nbd.c
+@@ -1275,7 +1275,7 @@ static int nbd_start_device_ioctl(struct nbd_device *nbd, struct block_device *b
+ static void nbd_clear_sock_ioctl(struct nbd_device *nbd,
+ 				 struct block_device *bdev)
+ {
+-	sock_shutdown(nbd);
++	nbd_clear_sock(nbd);
+ 	__invalidate_device(bdev, true);
+ 	nbd_bdev_reset(bdev);
+ 	if (test_and_clear_bit(NBD_HAS_CONFIG_REF,
 -- 
 2.35.1
 
