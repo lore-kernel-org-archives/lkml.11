@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B60AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:21:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2B7FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 10:21:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243136AbiFMKVQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 06:21:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44012 "EHLO
+        id S242787AbiFMKUi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 06:20:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242994AbiFMKUo (ORCPT
+        with ESMTP id S243045AbiFMKTA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:20:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6631EF47;
-        Mon, 13 Jun 2022 03:17:28 -0700 (PDT)
+        Mon, 13 Jun 2022 06:19:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7497D132;
+        Mon, 13 Jun 2022 03:16:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4BE4B80E94;
-        Mon, 13 Jun 2022 10:17:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 295A2C3411E;
-        Mon, 13 Jun 2022 10:17:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 75FD36066C;
+        Mon, 13 Jun 2022 10:16:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 827A1C34114;
+        Mon, 13 Jun 2022 10:16:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655115445;
-        bh=+l/Nx/a5XALx/gZy/D7ecejLI4B/gZmd54H3ChmGk+g=;
+        s=korg; t=1655115401;
+        bh=b9fvL+Aln/GyyXZsWK12ZQBLHcA2LKsCkHVZHZoRrhg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=avmgUTfCt6LNvXugK6QUuVOG3Ok7GrZyi4WwELh7jegrLbjQeedC3IOyA1WAJ72fX
-         XFhDOCowiZA81iHn7bgktBZJLw4FraLHKB/Bg/QdliHl3760FxhTtJYPp7J/ixrj4T
-         8TRbCWHD4Jwh3Rp12u9owe0CKbNV5p7zPsaAD/0c=
+        b=0KG/S13ePBoDh3AwFwIIL4j1ov+aDEALnaCS5ube2sNJ1r1fJXPM7i9cT1TVRaRRb
+         Yg8Wqvd9cD+d005fiP9t1dKLdxFo3QmuZon1Ttn5W1K/U5pdDlaNa+VPF9Ip+Jcopw
+         nmtxpN+PCn/HhN5uJGK9MJJSLd6c12RwAwdGfOMs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Gregory Greenman <gregory.greenman@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 4.9 076/167] iwlwifi: mvm: fix assert 1F04 upon reconfig
-Date:   Mon, 13 Jun 2022 12:09:10 +0200
-Message-Id: <20220613094858.677567856@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 059/167] sctp: read sk->sk_bound_dev_if once in sctp_rcv()
+Date:   Mon, 13 Jun 2022 12:08:53 +0200
+Message-Id: <20220613094854.726968989@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094840.720778945@linuxfoundation.org>
 References: <20220613094840.720778945@linuxfoundation.org>
@@ -50,36 +52,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 9d096e3d3061dbf4ee10e2b59fc2c06e05bdb997 upstream.
+[ Upstream commit a20ea298071f46effa3aaf965bf9bb34c901db3f ]
 
-When we reconfig we must not send the MAC_POWER command that relates to
-a MAC that was not yet added to the firmware.
+sctp_rcv() reads sk->sk_bound_dev_if twice while the socket
+is not locked. Another cpu could change this field under us.
 
-Ignore those in the iterator.
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-Signed-off-by: Gregory Greenman <gregory.greenman@intel.com>
-Link: https://lore.kernel.org/r/20220517120044.ed2ffc8ce732.If786e19512d0da4334a6382ea6148703422c7d7b@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 0fd9a65a76e8 ("[SCTP] Support SO_BINDTODEVICE socket option on incoming packets.")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Neil Horman <nhorman@tuxdriver.com>
+Cc: Vlad Yasevich <vyasevich@gmail.com>
+Cc: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/power.c |    3 +++
- 1 file changed, 3 insertions(+)
+ net/sctp/input.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/net/wireless/intel/iwlwifi/mvm/power.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/power.c
-@@ -612,6 +612,9 @@ static void iwl_mvm_power_get_vifs_itera
- 	struct iwl_mvm_vif *mvmvif = iwl_mvm_vif_from_mac80211(vif);
- 	struct iwl_power_vifs *power_iterator = _data;
- 
-+	if (!mvmvif->uploaded)
-+		return;
-+
- 	switch (ieee80211_vif_type_p2p(vif)) {
- 	case NL80211_IFTYPE_P2P_DEVICE:
- 		break;
+diff --git a/net/sctp/input.c b/net/sctp/input.c
+index 9c1670b4a687..ed3a8a66a00b 100644
+--- a/net/sctp/input.c
++++ b/net/sctp/input.c
+@@ -103,6 +103,7 @@ int sctp_rcv(struct sk_buff *skb)
+ 	struct sctp_chunk *chunk;
+ 	union sctp_addr src;
+ 	union sctp_addr dest;
++	int bound_dev_if;
+ 	int family;
+ 	struct sctp_af *af;
+ 	struct net *net = dev_net(skb->dev);
+@@ -180,7 +181,8 @@ int sctp_rcv(struct sk_buff *skb)
+ 	 * If a frame arrives on an interface and the receiving socket is
+ 	 * bound to another interface, via SO_BINDTODEVICE, treat it as OOTB
+ 	 */
+-	if (sk->sk_bound_dev_if && (sk->sk_bound_dev_if != af->skb_iif(skb))) {
++	bound_dev_if = READ_ONCE(sk->sk_bound_dev_if);
++	if (bound_dev_if && (bound_dev_if != af->skb_iif(skb))) {
+ 		if (transport) {
+ 			sctp_transport_put(transport);
+ 			asoc = NULL;
+-- 
+2.35.1
+
 
 
