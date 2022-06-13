@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34485C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:10:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A6EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 12:10:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350336AbiFMMKh (ORCPT
+        id S1352111AbiFMMKq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 08:10:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53046 "EHLO
+        Mon, 13 Jun 2022 08:10:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358891AbiFMME5 (ORCPT
+        with ESMTP id S1358604AbiFMMEW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 08:04:57 -0400
+        Mon, 13 Jun 2022 08:04:22 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D13650442;
-        Mon, 13 Jun 2022 03:57:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03B85252B5;
+        Mon, 13 Jun 2022 03:57:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 07B1DB80E5E;
-        Mon, 13 Jun 2022 10:57:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E6F4C34114;
-        Mon, 13 Jun 2022 10:57:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4238CB80EB0;
+        Mon, 13 Jun 2022 10:57:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98A3FC34114;
+        Mon, 13 Jun 2022 10:57:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117873;
-        bh=S6CzGRvk0XLaPZ/CM67BXYd3ef5d7le9NEe512uq/sI=;
+        s=korg; t=1655117849;
+        bh=z0OnhAjKxGS38kZTghHBO1DwJFgEjyN50ryVXkR171Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hUoWgmrV3MDVBnCXW4fWTlBr8FqSuTVF9eMVadMyBnrhpjJPRBbvzXbGRYQhcQkSq
-         qInm6+95Bp5khXR2XyLZxyhGIo3jAuEh+PIuT4AdcmCumtz0adjfo/B7ERg++DKn/x
-         r2cUeSXCxu89jMG4qVuJ003TDfK+bb8ZLZNuy8p4=
+        b=FnNUvkHHj1DOKqQeGyf3v9SH7at+pxws9KKntX8eXpt12mYEVN37W97EjJtblHnR0
+         YJ6SYvMWHJlmTZztL8nehNrdqF1a727HYqEBHcTrWaVkMuLOKaq9JQbc+B7H6bi+o/
+         naImmx0RMeZeFOXKZV2pZcc84iL5kEWHCiedXb6U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guoqing Jiang <guoqing.jiang@linux.dev>,
-        Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Goldwyn Rodrigues <rgoldwyn@suse.com>,
-        Song Liu <song@kernel.org>
-Subject: [PATCH 4.19 163/287] md: fix an incorrect NULL check in does_sb_need_changing
-Date:   Mon, 13 Jun 2022 12:09:47 +0200
-Message-Id: <20220613094928.820110371@linuxfoundation.org>
+        stable@vger.kernel.org, Ming Yan <yanming@tju.edu.cn>,
+        Chao Yu <chao.yu@oppo.com>, Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 4.19 142/287] f2fs: fix deadloop in foreground GC
+Date:   Mon, 13 Jun 2022 12:09:26 +0200
+Message-Id: <20220613094928.182535059@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
 References: <20220613094923.832156175@linuxfoundation.org>
@@ -51,55 +49,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Chao Yu <chao@kernel.org>
 
-commit fc8738343eefc4ea8afb6122826dea48eacde514 upstream.
+commit cfd66bb715fd11fde3338d0660cffa1396adc27d upstream.
 
-The bug is here:
-	if (!rdev)
+As Yanming reported in bugzilla:
 
-The list iterator value 'rdev' will *always* be set and non-NULL
-by rdev_for_each(), so it is incorrect to assume that the iterator
-value will be NULL if the list is empty or no element found.
-Otherwise it will bypass the NULL check and lead to invalid memory
-access passing the check.
+https://bugzilla.kernel.org/show_bug.cgi?id=215914
 
-To fix the bug, use a new variable 'iter' as the list iterator,
-while using the original variable 'rdev' as a dedicated pointer to
-point to the found element.
+The root cause is: in a very small sized image, it's very easy to
+exceed threshold of foreground GC, if we calculate free space and
+dirty data based on section granularity, in corner case,
+has_not_enough_free_secs() will always return true, result in
+deadloop in f2fs_gc().
+
+So this patch refactors has_not_enough_free_secs() as below to fix
+this issue:
+1. calculate needed space based on block granularity, and separate
+all blocks to two parts, section part, and block part, comparing
+section part to free section, and comparing block part to free space
+in openned log.
+2. account F2FS_DIRTY_NODES, F2FS_DIRTY_IMETA and F2FS_DIRTY_DENTS
+as node block consumer;
+3. account F2FS_DIRTY_DENTS as data block consumer;
 
 Cc: stable@vger.kernel.org
-Fixes: 2aa82191ac36 ("md-cluster: Perform a lazy update")
-Acked-by: Guoqing Jiang <guoqing.jiang@linux.dev>
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Acked-by: Goldwyn Rodrigues <rgoldwyn@suse.com>
-Signed-off-by: Song Liu <song@kernel.org>
+Reported-by: Ming Yan <yanming@tju.edu.cn>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/md.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ fs/f2fs/segment.h |   32 ++++++++++++++++++++------------
+ 1 file changed, 20 insertions(+), 12 deletions(-)
 
---- a/drivers/md/md.c
-+++ b/drivers/md/md.c
-@@ -2443,14 +2443,16 @@ static void sync_sbs(struct mddev *mddev
+--- a/fs/f2fs/segment.h
++++ b/fs/f2fs/segment.h
+@@ -534,11 +534,10 @@ static inline int reserved_sections(stru
+ 	return GET_SEC_FROM_SEG(sbi, (unsigned int)reserved_segments(sbi));
+ }
  
- static bool does_sb_need_changing(struct mddev *mddev)
+-static inline bool has_curseg_enough_space(struct f2fs_sb_info *sbi)
++static inline bool has_curseg_enough_space(struct f2fs_sb_info *sbi,
++			unsigned int node_blocks, unsigned int dent_blocks)
  {
--	struct md_rdev *rdev;
-+	struct md_rdev *rdev = NULL, *iter;
- 	struct mdp_superblock_1 *sb;
- 	int role;
+-	unsigned int node_blocks = get_pages(sbi, F2FS_DIRTY_NODES) +
+-					get_pages(sbi, F2FS_DIRTY_DENTS);
+-	unsigned int dent_blocks = get_pages(sbi, F2FS_DIRTY_DENTS);
++
+ 	unsigned int segno, left_blocks;
+ 	int i;
  
- 	/* Find a good rdev */
--	rdev_for_each(rdev, mddev)
--		if ((rdev->raid_disk >= 0) && !test_bit(Faulty, &rdev->flags))
-+	rdev_for_each(iter, mddev)
-+		if ((iter->raid_disk >= 0) && !test_bit(Faulty, &iter->flags)) {
-+			rdev = iter;
- 			break;
-+		}
+@@ -564,19 +563,28 @@ static inline bool has_curseg_enough_spa
+ static inline bool has_not_enough_free_secs(struct f2fs_sb_info *sbi,
+ 					int freed, int needed)
+ {
+-	int node_secs = get_blocktype_secs(sbi, F2FS_DIRTY_NODES);
+-	int dent_secs = get_blocktype_secs(sbi, F2FS_DIRTY_DENTS);
+-	int imeta_secs = get_blocktype_secs(sbi, F2FS_DIRTY_IMETA);
++	unsigned int total_node_blocks = get_pages(sbi, F2FS_DIRTY_NODES) +
++					get_pages(sbi, F2FS_DIRTY_DENTS) +
++					get_pages(sbi, F2FS_DIRTY_IMETA);
++	unsigned int total_dent_blocks = get_pages(sbi, F2FS_DIRTY_DENTS);
++	unsigned int node_secs = total_node_blocks / BLKS_PER_SEC(sbi);
++	unsigned int dent_secs = total_dent_blocks / BLKS_PER_SEC(sbi);
++	unsigned int node_blocks = total_node_blocks % BLKS_PER_SEC(sbi);
++	unsigned int dent_blocks = total_dent_blocks % BLKS_PER_SEC(sbi);
++	unsigned int free, need_lower, need_upper;
  
- 	/* No good device found. */
- 	if (!rdev)
+ 	if (unlikely(is_sbi_flag_set(sbi, SBI_POR_DOING)))
+ 		return false;
+ 
+-	if (free_sections(sbi) + freed == reserved_sections(sbi) + needed &&
+-			has_curseg_enough_space(sbi))
++	free = free_sections(sbi) + freed;
++	need_lower = node_secs + dent_secs + reserved_sections(sbi) + needed;
++	need_upper = need_lower + (node_blocks ? 1 : 0) + (dent_blocks ? 1 : 0);
++
++	if (free > need_upper)
+ 		return false;
+-	return (free_sections(sbi) + freed) <=
+-		(node_secs + 2 * dent_secs + imeta_secs +
+-		reserved_sections(sbi) + needed);
++	else if (free <= need_lower)
++		return true;
++	return !has_curseg_enough_space(sbi, node_blocks, dent_blocks);
+ }
+ 
+ static inline bool excess_prefree_segs(struct f2fs_sb_info *sbi)
 
 
