@@ -2,118 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B14A0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:40:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1A23C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 18:40:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245726AbiFMSkI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 14:40:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43376 "EHLO
+        id S1344053AbiFMSkc (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:40:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245581AbiFMSjn (ORCPT
+        with ESMTP id S1343893AbiFMSkE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 14:39:43 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F449D1
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 08:34:29 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id a29so9488891lfk.2
-        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 08:34:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aUVrD5sZvhy5pi929qRyfNG0F+b3Zc/EW53D0+fY2uU=;
-        b=cLxqLvD7xD6X5YtMkj/pR8TW/akQrGK2QTo+Z1G9xksqo9jEnqRMdQ8SY9AYMmckFC
-         HJ5AvqMRnxQcVPbXzVQ3v3A/WZS/ADypsHxDbf4m1r/LAEVoUoP8iO4W8YpKtVoM9tfa
-         Okp/StB9ZLXVpPjEduqgrhG+Qpnh9Ixp/7Abm3G1wPEAB1OdV3aLNRUnPYP5LV1vUti6
-         aLDebyyBICArtB06SLl29jLYmJSNf8wcnasQ3r2C+vAGJ9q7aAg8AJCkt1g9mOwtHr+Y
-         o4ETYLGJJTtlRm86g3IkVOBdTxr3UOSvG0Ify/sX7MvZKfSy6eM21P9ehvhrxhCk6Je4
-         a64Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aUVrD5sZvhy5pi929qRyfNG0F+b3Zc/EW53D0+fY2uU=;
-        b=5RJbb11Igf5U4SToglPsXZMXI4VumYYjiNwnhjQm8V5q8AyJFwxIvq7brklne+CzeR
-         hG3CAQti2Aop9tBfDAs7m1jcMmJoiWhiZYjOLXYFYYCFQToNtJQFqzt/GrPuRKG1gePK
-         RA1ay6rraxZBgwIzVbdcqQiGI6y44kp0ZvJNehOM131CvBSBzXA1ERdnPuOT2njFI4+x
-         uvrR90sQsZQ8w1hPSyXXwlFxTTJxj7Fu5jmS3xq0ZO2zhezpCNgs0lX9j+iIWfosc9v4
-         jN552MPhEtiF6epm8aVj+w+hDsKFdHnT4WtfZANGrj8nZ8q6BuWfhD+cOk6PV7va+8os
-         9qPQ==
-X-Gm-Message-State: AJIora/YxLLSgDsZ8W6yoQ4UAguveJplUQVWrwEDlA8pvT8TUH2tz02n
-        uoxUC/pt0WJxhl/BZqG5JXnomH2KC5H00/M7RxuaEQ==
-X-Google-Smtp-Source: AGRyM1sivSKtZ2HgEKJkMKPlx6MiLhcJIawAYX5/5JBtlgrK15mqjiclGttnbibu0eAnQ9GvJo6wuuGvSpufL7YXxw0=
-X-Received: by 2002:a05:6512:3c8b:b0:479:324c:dfd9 with SMTP id
- h11-20020a0565123c8b00b00479324cdfd9mr258533lfv.644.1655134467556; Mon, 13
- Jun 2022 08:34:27 -0700 (PDT)
+        Mon, 13 Jun 2022 14:40:04 -0400
+Received: from conssluserg-01.nifty.com (conssluserg-01.nifty.com [210.131.2.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA40D35DFC;
+        Mon, 13 Jun 2022 08:29:29 -0700 (PDT)
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53]) (authenticated)
+        by conssluserg-01.nifty.com with ESMTP id 25DFTBPr014866;
+        Tue, 14 Jun 2022 00:29:12 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 25DFTBPr014866
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1655134152;
+        bh=U8e6xBBpGNq52HU5UCv+aLe6rXlJafZA9BHju3EnG0w=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=S099LBHFLevAqisrzBFoHtirHccwg1PjI1CDo6+ebI9+hqvyVkQdpDEim/VpdRi2z
+         /bpPNrKWLL5+W8C1eavYKq9eDQdCdFr2vwdV5bEFtJHCARyz9WyO326GUe2fNCeeaE
+         we88Hp79ThHEvpIl4yarZqY/swmq5SWtP53KlL6i7PuwLz08jx81k/deX/SXYPUILb
+         i1Enx3VcaCc4teHtGpMyo8P48fInZnEMs0X1ZUn5PGRgMEQw5bQr/Il/SXSkP8QV+o
+         5mDsmIZMcKbObVVT3rm1KY0xGuCovMfTDBAL98hXVXEeHv03HVhutOrJZihrUzBF8C
+         WdXIe07T+A5Qw==
+X-Nifty-SrcIP: [209.85.128.53]
+Received: by mail-wm1-f53.google.com with SMTP id m16-20020a7bca50000000b0039c8a224c95so2416891wml.2;
+        Mon, 13 Jun 2022 08:29:12 -0700 (PDT)
+X-Gm-Message-State: AOAM533AF09pieQk0lgAlDSNH6GjYyiiXwQYsL9kZqCDlLsbXPnL/fns
+        mU1HNDqCKY0qGUhc6nLRoI0l2Lf6tqLSXzNxK2I=
+X-Google-Smtp-Source: ABdhPJwR2BO70ewcMkpasiG+oq3cRiDpOY3zt44AL5wd2UEyJV0VTm5/CIVcKEFhTBdJDJCNhGeMLpZK8RPebsKjGaE=
+X-Received: by 2002:a7b:c346:0:b0:397:626d:d2c4 with SMTP id
+ l6-20020a7bc346000000b00397626dd2c4mr15731645wmj.172.1655134150862; Mon, 13
+ Jun 2022 08:29:10 -0700 (PDT)
 MIME-Version: 1.0
-References: <202206131853.x4KJwC5Q-lkp@intel.com>
-In-Reply-To: <202206131853.x4KJwC5Q-lkp@intel.com>
-From:   Peter Gonda <pgonda@google.com>
-Date:   Mon, 13 Jun 2022 09:34:15 -0600
-Message-ID: <CAMkAt6oxQqRCMt54ZRsx_TGd2banbwAy4Hq+A6GHokpMsoo-AA@mail.gmail.com>
-Subject: Re: arch/x86/kvm/svm/sev.c:1605:30: warning: parameter 'role' set but
- not used
-To:     kernel test robot <lkp@intel.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        David Rientjes <rientjes@google.com>
+References: <20220611172233.1494073-1-masahiroy@kernel.org>
+ <20220611172233.1494073-3-masahiroy@kernel.org> <e7850717-dad6-daef-c96c-2a74248e98f6@digikod.net>
+In-Reply-To: <e7850717-dad6-daef-c96c-2a74248e98f6@digikod.net>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Tue, 14 Jun 2022 00:28:34 +0900
+X-Gmail-Original-Message-ID: <CAK7LNASR6Hwj-Q+z6GCGTOz0gXv5XXTV8phqe7duGm+uuo3eDQ@mail.gmail.com>
+Message-ID: <CAK7LNASR6Hwj-Q+z6GCGTOz0gXv5XXTV8phqe7duGm+uuo3eDQ@mail.gmail.com>
+Subject: Re: [PATCH 3/4] certs: move scripts/check-blacklist-hashes.awk to certs/
+To:     =?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mic@digikod.net>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        David Howells <dhowells@redhat.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        David Woodhouse <dwmw2@infradead.org>,
+        keyrings@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Eric Snowberg <eric.snowberg@oracle.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Tyler Hicks <tyhicks@linux.microsoft.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 5:03 AM kernel test robot <lkp@intel.com> wrote:
->
-> Hi Peter,
->
-> FYI, the error/warning still remains.
->
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> head:   b13baccc3850ca8b8cccbf8ed9912dbaa0fdf7f3
-> commit: 0c2c7c069285374fc8feacddc0498f8ab7627117 KVM: SEV: Mark nested locking of vcpu->lock
-> date:   5 weeks ago
-> config: x86_64-buildonly-randconfig-r005-20220613 (https://download.01.org/0day-ci/archive/20220613/202206131853.x4KJwC5Q-lkp@intel.com/config)
-> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d378268ead93c85803c270277f0243737b536ae7)
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0c2c7c069285374fc8feacddc0498f8ab7627117
->         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
->         git fetch --no-tags linus master
->         git checkout 0c2c7c069285374fc8feacddc0498f8ab7627117
->         # save the config file
->         mkdir build_dir && cp config build_dir/.config
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/kvm/ drivers/media/platform/qcom/camss/
->
-> If you fix the issue, kindly add following tag where applicable
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> All warnings (new ones prefixed by >>):
->
-> >> arch/x86/kvm/svm/sev.c:1605:30: warning: parameter 'role' set but not used [-Wunused-but-set-parameter]
->                                            enum sev_migration_role role)
->                                                                    ^
->    1 warning generated.
+On Mon, Jun 13, 2022 at 9:36 PM Micka=C3=ABl Sala=C3=BCn <mic@digikod.net> =
+wrote:
 >
 >
-> vim +/role +1605 arch/x86/kvm/svm/sev.c
 >
->   1603
->   1604  static int sev_lock_vcpus_for_migration(struct kvm *kvm,
-> > 1605                                          enum sev_migration_role role)
->   1606  {
->   1607          struct kvm_vcpu *vcpu;
->   1608          unsigned long i, j;
->   1609          bool first = true;
->   1610
->   1611          kvm_for_each_vcpu(i, vcpu, kvm) {
->   1612                  if (mutex_lock_killable_nested(&vcpu->mutex, role))
->   1613                          goto out_unlock;
->   1614
+> On 11/06/2022 19:22, Masahiro Yamada wrote:
+> > This script is only used in certs/Makefile, so certs/ is a better
+> > home for it.
+> >
+> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> > ---
+> >
+> >   MAINTAINERS                                   | 1 -
+> >   certs/Makefile                                | 2 +-
+> >   {scripts =3D> certs}/check-blacklist-hashes.awk | 0
+> >   3 files changed, 1 insertion(+), 2 deletions(-)
+> >   rename {scripts =3D> certs}/check-blacklist-hashes.awk (100%)
+> >
+> > diff --git a/MAINTAINERS b/MAINTAINERS
+> > index 1fc9ead83d2a..7c2a7c304824 100644
+> > --- a/MAINTAINERS
+> > +++ b/MAINTAINERS
+> > @@ -4627,7 +4627,6 @@ L:      keyrings@vger.kernel.org
+> >   S:  Maintained
+> >   F:  Documentation/admin-guide/module-signing.rst
+> >   F:  certs/
+> > -F:   scripts/check-blacklist-hashes.awk >   F:       scripts/sign-file=
+.c
+> >   F:  tools/certs/
+> >
+> > diff --git a/certs/Makefile b/certs/Makefile
+> > index a8d628fd5f7b..df7aaeafd19c 100644
+> > --- a/certs/Makefile
+> > +++ b/certs/Makefile
+> > @@ -13,7 +13,7 @@ CFLAGS_blacklist_hashes.o :=3D -I $(obj)
+> >
+> >   quiet_cmd_check_and_copy_blacklist_hash_list =3D GEN     $@
+> >         cmd_check_and_copy_blacklist_hash_list =3D \
+> > -     $(AWK) -f $(srctree)/scripts/check-blacklist-hashes.awk $(CONFIG_=
+SYSTEM_BLACKLIST_HASH_LIST) >&2; \
+> > +     $(AWK) -f $(srctree)/$(src)/check-blacklist-hashes.awk $(CONFIG_S=
+YSTEM_BLACKLIST_HASH_LIST) >&2; \
+> >       cat $(CONFIG_SYSTEM_BLACKLIST_HASH_LIST) > $@
+> >
+> >   $(obj)/blacklist_hash_list: $(CONFIG_SYSTEM_BLACKLIST_HASH_LIST) FORC=
+E
+> > diff --git a/scripts/check-blacklist-hashes.awk b/certs/check-blacklist=
+-hashes.awk
+> > similarity index 100%
+> > rename from scripts/check-blacklist-hashes.awk
+> > rename to certs/check-blacklist-hashes.awk
 >
+> It looks more appropriate and consistent to me to keep it in scripts/,
+> close to other cert scripts. Is there some precedent to move such script?
 
-I am confused about this warning. |role| is used on this line above.
-Is this because CONFIG_DEBUG_LOCK_ALLOC the subclass argument is
-dropped in the macro?
+
+I always did that.   For example,
+
+  f6f57a46435d7253a52a1a07a58183678ad266a0
+  78a20a012ecea857e438b1f9e8091acb290bd0f5
+  28ba53c07638f31b153e3a32672a6124d0ff2a97
+  4484aa800ac588a1fe2175cd53076c21067f44b4
+  340a02535ee785c64c62a9c45706597a0139e972
+
+
+Tools can stay in scripts/ if and only if:
+
+  - it is used globally during kernel builds
+
+  - it is still needed after the kernel builds.
+     "make clean" removes most of the build artifacts
+      but keeps ones under scripts/.
+
+
+
+
+scripts/insert-sys-cert is apparently unneeded for building the kernel.
+If the intended use is to manipulate vmlinux later,
+that is the legitimate reason to stay in scripts/.
+(but even better place might be tools/)
+
+
+certs/signing_key.pem is needed even after kernel builds.
+So, it should have been kept under scripts/ instead of certs/.
+
+
+
+
+
+--
+Best Regards
+Masahiro Yamada
