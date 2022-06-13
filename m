@@ -2,84 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D00CACCA47B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00A39CCA47F
 	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:55:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357238AbiFMLxi (ORCPT
+        id S1357260AbiFMLxm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:53:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43190 "EHLO
+        Mon, 13 Jun 2022 07:53:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356649AbiFMLtX (ORCPT
+        with ESMTP id S1356675AbiFMLt0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 07:49:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8262E4CD6E;
+        Mon, 13 Jun 2022 07:49:26 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C6934D256
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 03:53:14 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id t3-20020a17090a510300b001ea87ef9a3dso5545377pjh.4
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 03:53:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=1N87jaDz7xgqtRKZ019DqNT4gWSC5vBMC3wZ8eIoED0=;
+        b=cng1+RwTADpH1AsFwMkL1lC/l5oylFw7ud76JxPJ+FOEGYwQbX7UTI+rw1XZ5u1uRm
+         m4fF+D03MJnp5kZaXpmrsjioE+Wpx3vbMw5DAAT4t7mzUBdfOxPnXTvSmgIc3zZYEGJK
+         SkRcZj/NlANQOOF0e0vkalapl9PFbZKcGqDKzjbDCxXF7fHtkJwNXce2ZMxcIlSd1NoA
+         Vy0TaE9EGvVaOvddVN15QMJRLpW6Rcw0/QVN1aZvvDGrMJAmGXZ1OweXnLMUe3Sh6sj8
+         Lth3xozjAtO+n6QP9O4QGeZCK8v/zDQun2CU/pglp4QamgaRKTP6rKAaZu7jvkcYJe1O
+         FBdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1N87jaDz7xgqtRKZ019DqNT4gWSC5vBMC3wZ8eIoED0=;
+        b=flrdwjeHXBzOldqPK7P/RO1IUijEBTNqU6mEbtm3XjX1xzKkd2OpfPF74n2twGEas2
+         vQf2kzPUrg2dMnI6uWlDPynefQ1FtvdBOpcocCIIKHi2CQQOdfNd+AIwG8T5lG9/NUia
+         wq7v1Yc3Xv3+UaEfxToeLjcHGYv9vSLRkTYA78F6g6NL3wffrSRJEbDkkZYzTXTSs1eJ
+         O1kUWWv/CbNbGyJSqA2bd5EhhKAc+1Ok28Tq3tsiUG6vhRlIKTyvz14lUe3Qxrb3LOIz
+         fXmJL8f6wBs296il6nbWPxTtIyki/MdhOj+ttWwBs+U6OWmXmhArsoUTto2KCXn1tlhG
+         SVXA==
+X-Gm-Message-State: AOAM531T3PaX2WrCaJ5PN4Pol9sm62+EGOd0D02A8IsuOxrr3BusoeCQ
+        XeEg+tISOsG7NQvH/GDx8jeJeg==
+X-Google-Smtp-Source: ABdhPJzv7fAvDHLRtPrKRU9YnGV8eNC8Rg2x+oIW99aqPnlO6EYF9j5QNrlXqk9ijEBjA9I1+j5onw==
+X-Received: by 2002:a17:90a:fb90:b0:1e3:809:9296 with SMTP id cp16-20020a17090afb9000b001e308099296mr14859426pjb.26.1655117593809;
         Mon, 13 Jun 2022 03:53:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 17057B80E92;
-        Mon, 13 Jun 2022 10:53:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67A50C34114;
-        Mon, 13 Jun 2022 10:53:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655117590;
-        bh=3TpWI1KdoN8i7CxcBm0R+0xZDhLuJMO/7QjZY2GbSkk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UmgxQUC6okVSk6cCNPjZW0mH+cTEYl6BKekwN7juMdKQf0Nbjsscj0pTMyUrZ8YBS
-         Ex1RnIxdFBrCRy3nw3YhYcRz56OOHHVNEhKKjnKuAt5yO5C201UG8b2BLC4AI6AdCu
-         1ZuRKRuJD1ZBgStiVf9RyFptN+vquqWgmUpCaiBQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 067/287] nl80211: show SSID for P2P_GO interfaces
-Date:   Mon, 13 Jun 2022 12:08:11 +0200
-Message-Id: <20220613094925.902247184@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094923.832156175@linuxfoundation.org>
-References: <20220613094923.832156175@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from localhost ([122.162.234.2])
+        by smtp.gmail.com with ESMTPSA id i26-20020aa796fa000000b0050dc76281e5sm5004773pfq.191.2022.06.13.03.53.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 03:53:13 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 16:23:11 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Lukasz Luba <lukasz.luba@arm.com>
+Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        daniel.lezcano@linaro.org, amitk@kernel.org, rui.zhang@intel.com,
+        rafael@kernel.org, dietmar.eggemann@arm.com
+Subject: Re: [PATCH 1/3] thermal: cpufreq_cooling: Use a copy of local ops
+ for each cooling device
+Message-ID: <20220613105311.jdyjubid4jrgofwu@vireshk-i7>
+References: <20220610100343.32378-1-lukasz.luba@arm.com>
+ <20220613091611.ncd2hziu4nbyip4x@vireshk-i7>
+ <5bac6f98-e1ba-3584-6eac-21eeaaa0ed26@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5bac6f98-e1ba-3584-6eac-21eeaaa0ed26@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+On 13-06-22, 11:37, Lukasz Luba wrote:
+> Hi Viresh,
+> 
+> Thank you for the ACKs in the other patches and suggestion in this one.
+> 
+> On 6/13/22 10:16, Viresh Kumar wrote:
+> > On 10-06-22, 11:03, Lukasz Luba wrote:
+> > > It is very unlikely that one CPU cluster would have the EM and some other
+> > > won't have it (because EM registration failed or DT lacks needed entry).
+> > > Although, we should avoid modifying global variable with callbacks anyway.
+> > > Redesign this and add safety for such situation.
+> > > 
+> > > Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
+> > > ---
+> > >   drivers/thermal/cpufreq_cooling.c | 16 +++++++++++++---
+> > >   1 file changed, 13 insertions(+), 3 deletions(-)
+> > > 
+> > > diff --git a/drivers/thermal/cpufreq_cooling.c b/drivers/thermal/cpufreq_cooling.c
+> > > index b8151d95a806..e33183785fac 100644
+> > > --- a/drivers/thermal/cpufreq_cooling.c
+> > > +++ b/drivers/thermal/cpufreq_cooling.c
+> > > @@ -554,7 +554,12 @@ __cpufreq_cooling_register(struct device_node *np,
+> > >   	/* max_level is an index, not a counter */
+> > >   	cpufreq_cdev->max_level = i - 1;
+> > > -	cooling_ops = &cpufreq_cooling_ops;
+> > > +	cooling_ops = kmemdup(&cpufreq_cooling_ops, sizeof(*cooling_ops),
+> > > +			      GFP_KERNEL);
+> > 
+> > I don't like the way we are duplicating the ops here. Instead of this it would
+> > be better to add the OPs field in the cooling device structure and fill its
+> > fields from here. The ops structure will be allocated with the cooling device
+> > itself.
+> > 
+> 
+> I think I know what you mean. Make sense. There are quite a few
+> different cooling types of devices which are using the API
+> thermal_of_cooling_device_register() with the custom 'ops'. We
+> probably don't want to disturb that well working drivers and ecosystem.
 
-[ Upstream commit a75971bc2b8453630e9f85e0beaa4da8db8277a3 ]
+I was just suggesting to update "struct cpufreq_cooling_device" :)
 
-There's no real reason not to send the SSID to userspace
-when it requests information about P2P_GO, it is, in that
-respect, exactly the same as AP interfaces. Fix that.
+This is what I was, wrongly, referring to as cooling device.
 
-Fixes: 44905265bc15 ("nl80211: don't expose wdev->ssid for most interfaces")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Link: https://lore.kernel.org/r/20220318134656.14354ae223f0.Ia25e85a512281b92e1645d4160766a4b1a471597@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/wireless/nl80211.c | 1 +
- 1 file changed, 1 insertion(+)
+I should have written the exact structure name instead, my bad.
 
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 2799ff117f5a..534f57363f4a 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -2885,6 +2885,7 @@ static int nl80211_send_iface(struct sk_buff *msg, u32 portid, u32 seq, int flag
- 	wdev_lock(wdev);
- 	switch (wdev->iftype) {
- 	case NL80211_IFTYPE_AP:
-+	case NL80211_IFTYPE_P2P_GO:
- 		if (wdev->ssid_len &&
- 		    nla_put(msg, NL80211_ATTR_SSID, wdev->ssid_len, wdev->ssid))
- 			goto nla_put_failure_locked;
 -- 
-2.35.1
-
-
-
+viresh
