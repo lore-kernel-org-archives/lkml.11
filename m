@@ -2,108 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 663CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:06:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D587C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:06:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351341AbiFMLF4 (ORCPT
+        id S1351424AbiFMLGD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:05:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44846 "EHLO
+        Mon, 13 Jun 2022 07:06:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348995AbiFMK4p (ORCPT
+        with ESMTP id S1349031AbiFMK4r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:56:45 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97F712558F;
-        Mon, 13 Jun 2022 03:32:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Mon, 13 Jun 2022 06:56:47 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2E7825590
+        for <linux-kernel@vger.kernel.org>; Mon, 13 Jun 2022 03:32:09 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 2D5031F74A;
+        Mon, 13 Jun 2022 10:32:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1655116328; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=WYTWO2pXaYgtlF8kR1d/FAF/9Bij0oQPrsARxS+CWZo=;
+        b=Y7Nn5vmbARa0cdH/zy9KNjuKlHN5vus+rPUVAYZLaZhKsszoqcK3B704Sqh++cA5mkkFLw
+        lJehbqmWyaw8q/s0XkSTmwwkbNz+G8UT4uffZvW263+wxxW/+M+/xSUwFafZrjDILpZU+Z
+        jLeyTibWH4euV1l/78ynaoZKmydH5Qk=
+Received: from suse.cz (unknown [10.100.201.202])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C36D4CE110D;
+        by relay2.suse.de (Postfix) with ESMTPS id BBFD92C141;
         Mon, 13 Jun 2022 10:32:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0706C3411E;
-        Mon, 13 Jun 2022 10:32:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116326;
-        bh=Pee4iM1pwQZocsKFEr4FpnFl5ch4rnt8kPIrAq5CT90=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MP8DdSvu/akqLGqGrbc7hIuI7BvxmlsgJ9VRSjtF8hcFepldnmpYMi5UJQBbj+/1h
-         LcbHXuhH2G5GId5yjzFO96mCgNZQihoP/5drQILZSoKXF5tWNUu3K12DvzqgOJhM2T
-         HjOwRbwuDbS2PybaCnMxcgg4+6H5f0NBQcSLGA7Y=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Zixuan Fu <r33s3n6@gmail.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 066/411] fs: jfs: fix possible NULL pointer dereference in dbFree()
-Date:   Mon, 13 Jun 2022 12:05:39 +0200
-Message-Id: <20220613094930.496548289@linuxfoundation.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220613094928.482772422@linuxfoundation.org>
-References: <20220613094928.482772422@linuxfoundation.org>
-User-Agent: quilt/0.66
+Date:   Mon, 13 Jun 2022 12:32:07 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     paulmck@kernel.org, linux-kernel@vger.kernel.org,
+        frederic@kernel.org, Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [BUG] 8e274732115f ("printk: extend console_lock for per-console
+ locking")
+Message-ID: <YqcSJyTnuRVAPmLI@alley>
+References: <20220610205038.GA3050413@paulmck-ThinkPad-P17-Gen-1>
+ <87v8t5l39z.fsf@jogness.linutronix.de>
+ <20220613042937.GZ1790663@paulmck-ThinkPad-P17-Gen-1>
+ <87tu8pgcj0.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87tu8pgcj0.fsf@jogness.linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zixuan Fu <r33s3n6@gmail.com>
+On Mon 2022-06-13 11:10:19, John Ogness wrote:
+> On 2022-06-12, "Paul E. McKenney" <paulmck@kernel.org> wrote:
+> >> As I suspected, the final printk's cannot direct print because the
+> >> kthread was printing. Using the below patch did seem to address your
+> >> problem. But this is probably not the way forward.
+> >
+> > When I apply it, I still lose output, perhaps due to different timing?
+> > Doing the pr_flush(1000, true) just before the call to kernel_power_off()
+> > has been working quite well thus far, though.
+> 
+> Your pr_flush() is appropriate for your RCU tests, but this is a problem
+> in general that needs to be addressed. I suppose we should start a new
+> thread for that. ;-)
+> 
+> During development we experimented with the idea of kthreads pausing
+> themselves whenever direct printing is activated. It was racey because
+> there are situations when direct printing is only temporarily active and
+> it was hard to coordinate who prints when direct printing becomes
+> inactive again. So we dropped that idea. However, in this situation the
+> system will not be disabling direct printing.
+> 
+> @Paul, can you try the below change instead? Until this has been
+> officially solved, you probably want to keep your pr_flush()
+> solution. (After all, that is exactly what pr_flush() is for.) But it
+> would be helpful if you could run this last test for us.
+> 
+> @Petr, I like the idea of the kthreads getting out of the way rather
+> than trying to direct print themselves (for this situation). It still
+> isn't optimal because that final pr_emerg("Power down\n") might come
+> before the kthread has finished its current line. But in that case the
+> kthread may not have much a chance to finish the printing anyway.
 
-[ Upstream commit 0d4837fdb796f99369cf7691d33de1b856bcaf1f ]
+I wonder if we could somehow combine it with pr_flush(timeout).
 
-In our fault-injection testing, the variable "nblocks" in dbFree() can be
-zero when kmalloc_array() fails in dtSearch(). In this case, the variable
- "mp" in dbFree() would be NULL and then it is dereferenced in
-"write_metapage(mp)".
-
-The failure log is listed as follows:
-
-[   13.824137] BUG: kernel NULL pointer dereference, address: 0000000000000020
-...
-[   13.827416] RIP: 0010:dbFree+0x5f7/0x910 [jfs]
-[   13.834341] Call Trace:
-[   13.834540]  <TASK>
-[   13.834713]  txFreeMap+0x7b4/0xb10 [jfs]
-[   13.835038]  txUpdateMap+0x311/0x650 [jfs]
-[   13.835375]  jfs_lazycommit+0x5f2/0xc70 [jfs]
-[   13.835726]  ? sched_dynamic_update+0x1b0/0x1b0
-[   13.836092]  kthread+0x3c2/0x4a0
-[   13.836355]  ? txLockFree+0x160/0x160 [jfs]
-[   13.836763]  ? kthread_unuse_mm+0x160/0x160
-[   13.837106]  ret_from_fork+0x1f/0x30
-[   13.837402]  </TASK>
-...
-
-This patch adds a NULL check of "mp" before "write_metapage(mp)" is called.
-
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
-Signed-off-by: Dave Kleikamp <dave.kleikamp@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- fs/jfs/jfs_dmap.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/fs/jfs/jfs_dmap.c b/fs/jfs/jfs_dmap.c
-index 79f3440e204b..d3cb27487c70 100644
---- a/fs/jfs/jfs_dmap.c
-+++ b/fs/jfs/jfs_dmap.c
-@@ -385,7 +385,8 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
- 	}
- 
- 	/* write the last buffer. */
--	write_metapage(mp);
-+	if (mp)
-+		write_metapage(mp);
- 
- 	IREAD_UNLOCK(ipbmap);
- 
--- 
-2.35.1
+The kthread might bail-out when pr_flush() is running. It will
+know that someone would continue printing. The timeout might
+help to avoid a deadlock. We could somehow reuse
+console_trylock_spinning() code here.
 
 
+> John Ogness
+> 
+> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+> index ea3dd55709e7..45c6c2b0b104 100644
+> --- a/kernel/printk/printk.c
+> +++ b/kernel/printk/printk.c
+> @@ -3729,7 +3729,9 @@ static bool printer_should_wake(struct console *con, u64 seq)
+>  		return true;
+>  
+>  	if (con->blocked ||
+> -	    console_kthreads_atomically_blocked()) {
+> +	    console_kthreads_atomically_blocked() ||
+> +	    system_state > SYSTEM_RUNNING ||
+> +	    oops_in_progress) {
+>  		return false;
+>  	}
 
+Also this is an interesting idea. We know that panic() will try
+to flush the messages. Well, panic() is not always called
+after Oops.
+
+Best Regards,
+Petr
