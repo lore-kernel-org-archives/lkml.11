@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24B86CCA47C
-	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:00:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB81DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 13 Jun 2022 11:00:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349416AbiFMLAN (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 13 Jun 2022 07:00:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43336 "EHLO
+        id S239823AbiFMLAZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 13 Jun 2022 07:00:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350169AbiFMKyo (ORCPT
+        with ESMTP id S1350199AbiFMKyp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 13 Jun 2022 06:54:44 -0400
+        Mon, 13 Jun 2022 06:54:45 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 129D0CE27;
-        Mon, 13 Jun 2022 03:29:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28C55FC;
+        Mon, 13 Jun 2022 03:30:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B347BB80E95;
-        Mon, 13 Jun 2022 10:29:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 308E8C34114;
-        Mon, 13 Jun 2022 10:29:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C866FB80E95;
+        Mon, 13 Jun 2022 10:30:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B952C34114;
+        Mon, 13 Jun 2022 10:30:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1655116184;
-        bh=zLNYGnhl3HROVhvLdtptN+k7B+4om0XZMN1MPs90rtQ=;
+        s=korg; t=1655116209;
+        bh=1bHKVpQyhEW1w0URJKjGqU3yZrzSpBsz2kNzQOdOcTI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cezxAUu1Hy7rjA7rfa7zZ45rKnlrnrP3qrobQF6snOR0Oqe0uuPcSJBeyhHYzguL/
-         SmzXzzvTufTUQn5RkddcGUiT8OaREKfAwrLDVUKSIasSc+1nOMLqdbTag1zB8NHfIR
-         BplKq38ZlaYV/igqrj4BQG7AODigvW2uUgAETM6I=
+        b=SYOM0I/DU2P8Y3AbvR5QZVHxyRmb7t4V7ik9c4q38MT9qtEC1odK9wO1ctKPP0bsD
+         lxoUkfQNrqNK/Dxk61y9Ol0V3RZyd2GpscBWif4IZvGyu1owemwNfVdZxTwhpJK5YN
+         n77JWvoJMjSpaGjrDRcWiKSR3VjQarT9JNxRAsn8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiao Yang <yangx.jy@fujitsu.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 4.14 137/218] RDMA/rxe: Generate a completion for unsupported/invalid opcode
-Date:   Mon, 13 Jun 2022 12:09:55 +0200
-Message-Id: <20220613094924.740783571@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 151/218] serial: meson: acquire port->lock in startup()
+Date:   Mon, 13 Jun 2022 12:10:09 +0200
+Message-Id: <20220613094925.171526660@linuxfoundation.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220613094908.257446132@linuxfoundation.org>
 References: <20220613094908.257446132@linuxfoundation.org>
@@ -49,35 +53,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiao Yang <yangx.jy@fujitsu.com>
+From: John Ogness <john.ogness@linutronix.de>
 
-commit 2f917af777011c88e977b9b9a5d00b280d3a59ce upstream.
+[ Upstream commit 589f892ac8ef244e47c5a00ffd8605daa1eaef8e ]
 
-Current rxe_requester() doesn't generate a completion when processing an
-unsupported/invalid opcode. If rxe driver doesn't support a new opcode
-(e.g. RDMA Atomic Write) and RDMA library supports it, an application
-using the new opcode can reproduce this issue. Fix the issue by calling
-"goto err;".
+The uart_ops startup() callback is called without interrupts
+disabled and without port->lock locked, relatively late during the
+boot process (from the call path of console_on_rootfs()). If the
+device is a console, it was already previously registered and could
+be actively printing messages.
 
-Fixes: 8700e3e7c485 ("Soft RoCE driver")
-Link: https://lore.kernel.org/r/20220410113513.27537-1-yangx.jy@fujitsu.com
-Signed-off-by: Xiao Yang <yangx.jy@fujitsu.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Since the startup() callback is reading/writing registers used by
+the console write() callback (AML_UART_CONTROL), its access must
+be synchronized using the port->lock. Currently it is not.
+
+The startup() callback is the only function that explicitly enables
+interrupts. Without the synchronization, it is possible that
+interrupts become accidentally permanently disabled.
+
+CPU0                           CPU1
+meson_serial_console_write     meson_uart_startup
+--------------------------     ------------------
+spin_lock(port->lock)
+val = readl(AML_UART_CONTROL)
+uart_console_write()
+                               writel(INT_EN, AML_UART_CONTROL)
+writel(val, AML_UART_CONTROL)
+spin_unlock(port->lock)
+
+Add port->lock synchronization to meson_uart_startup() to avoid
+racing with meson_serial_console_write().
+
+Also add detailed comments to meson_uart_reset() explaining why it
+is *not* using port->lock synchronization.
+
+Link: https://lore.kernel.org/lkml/2a82eae7-a256-f70c-fd82-4e510750906e@samsung.com
+Fixes: ff7693d079e5 ("ARM: meson: serial: add MesonX SoC on-chip uart driver")
+Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Link: https://lore.kernel.org/r/20220508103547.626355-1-john.ogness@linutronix.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/sw/rxe/rxe_req.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/meson_uart.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
---- a/drivers/infiniband/sw/rxe/rxe_req.c
-+++ b/drivers/infiniband/sw/rxe/rxe_req.c
-@@ -680,7 +680,7 @@ next_wqe:
- 	opcode = next_opcode(qp, wqe, wqe->wr.opcode);
- 	if (unlikely(opcode < 0)) {
- 		wqe->status = IB_WC_LOC_QP_OP_ERR;
--		goto exit;
-+		goto err;
- 	}
+diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+index 07c0f98be3ac..2bb5ab508321 100644
+--- a/drivers/tty/serial/meson_uart.c
++++ b/drivers/tty/serial/meson_uart.c
+@@ -253,6 +253,14 @@ static const char *meson_uart_type(struct uart_port *port)
+ 	return (port->type == PORT_MESON) ? "meson_uart" : NULL;
+ }
  
- 	mask = rxe_opcode[opcode].mask;
++/*
++ * This function is called only from probe() using a temporary io mapping
++ * in order to perform a reset before setting up the device. Since the
++ * temporarily mapped region was successfully requested, there can be no
++ * console on this port at this time. Hence it is not necessary for this
++ * function to acquire the port->lock. (Since there is no console on this
++ * port at this time, the port->lock is not initialized yet.)
++ */
+ static void meson_uart_reset(struct uart_port *port)
+ {
+ 	u32 val;
+@@ -267,9 +275,12 @@ static void meson_uart_reset(struct uart_port *port)
+ 
+ static int meson_uart_startup(struct uart_port *port)
+ {
++	unsigned long flags;
+ 	u32 val;
+ 	int ret = 0;
+ 
++	spin_lock_irqsave(&port->lock, flags);
++
+ 	val = readl(port->membase + AML_UART_CONTROL);
+ 	val |= AML_UART_CLR_ERR;
+ 	writel(val, port->membase + AML_UART_CONTROL);
+@@ -285,6 +296,8 @@ static int meson_uart_startup(struct uart_port *port)
+ 	val = (AML_UART_RECV_IRQ(1) | AML_UART_XMIT_IRQ(port->fifosize / 2));
+ 	writel(val, port->membase + AML_UART_MISC);
+ 
++	spin_unlock_irqrestore(&port->lock, flags);
++
+ 	ret = request_irq(port->irq, meson_uart_interrupt, 0,
+ 			  port->name, port);
+ 
+-- 
+2.35.1
+
 
 
